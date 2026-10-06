@@ -432,6 +432,17 @@ jobs:
           failed=0
           while IFS='|' read -r run_id reason; do
             [ -n "$run_id" ] || continue
+            pre_cancel_state="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" --jq '.status' 2>/dev/null || true)"
+            pre_cancel_active_jobs="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/jobs?per_page=100" --jq '[.jobs[] | select(.status=="in_progress")] | length' 2>/dev/null || echo 0)"
+            pre_cancel_state="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" --jq '.status' 2>/dev/null || true)"
+            if [ "$pre_cancel_state" = 'in_progress' ] || [ "${pre_cancel_active_jobs:-0}" != '0' ]; then
+              echo "DIRECTOR_RUNNER_DRAIN_ACTIVE_PRESERVED=${run_id}:${reason}:${pre_cancel_state:-unknown}:${pre_cancel_active_jobs:-0}"
+              continue
+            fi
+            if [[ "$pre_cancel_state" != 'queued' && "$pre_cancel_state" != 'pending' && "$pre_cancel_state" != 'requested' && "$pre_cancel_state" != 'waiting' ]]; then
+              echo "DIRECTOR_RUNNER_DRAIN_NON_WAITING_PRESERVED=${run_id}:${reason}:${pre_cancel_state:-unknown}"
+              continue
+            fi
             safe_force_cancel=false
             if [[ "$reason" == 'DUPLICATE_TITLE_STALE_QUEUED' || "$reason" == 'ROBLOX_STALE_LEGACY_OR_BATCH' || "$reason" == 'CONTROL_PLANE_SUPERSEDED' || "$reason" == 'VIBE2_RECOVERY_FAST_SUPERSEDED_QUEUED' || "$reason" == 'CENTRAL_EXACT_GAME_STALE_HEAD_REPLACED_BY_CURRENT_GAME_RUN' || "$reason" == 'CENTRAL_EXACT_GAME_DUPLICATE_SAME_HEAD' || "$reason" == 'ROBLOX_LEGACY_STUDIO_MCP_DISABLED_BY_CLOUD_ONLY' ]]; then
               safe_force_cancel=true
@@ -467,9 +478,19 @@ jobs:
                 cancelled=$((cancelled+1))
                 echo "DIRECTOR_RUNNER_DRAIN_CANCELLED=${run_id}:${reason}:${current_state:-unknown}"
               fi
-            elif [ "$safe_force_cancel" = true ] && gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/force-cancel" >/dev/null 2>&1; then
-              cancelled=$((cancelled+1))
-              echo "DIRECTOR_RUNNER_DRAIN_FORCE_CANCELLED=${run_id}:${reason}"
+            elif [ "$safe_force_cancel" = true ]; then
+              force_state="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" --jq '.status' 2>/dev/null || true)"
+              force_active_jobs="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/jobs?per_page=100" --jq '[.jobs[] | select(.status=="in_progress")] | length' 2>/dev/null || echo 0)"
+              force_state="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" --jq '.status' 2>/dev/null || true)"
+              if [ "$force_state" = 'in_progress' ] || [ "${force_active_jobs:-0}" != '0' ]; then
+                echo "DIRECTOR_RUNNER_DRAIN_ACTIVE_PRESERVED=${run_id}:${reason}:${force_state:-unknown}:${force_active_jobs:-0}"
+              elif [[ "$force_state" == 'queued' || "$force_state" == 'pending' || "$force_state" == 'requested' || "$force_state" == 'waiting' ]] && gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/force-cancel" >/dev/null 2>&1; then
+                cancelled=$((cancelled+1))
+                echo "DIRECTOR_RUNNER_DRAIN_FORCE_CANCELLED=${run_id}:${reason}:${force_state}"
+              else
+                failed=$((failed+1))
+                echo "DIRECTOR_RUNNER_DRAIN_CANCEL_FAILED=${run_id}:${reason}:${force_state:-unknown}"
+              fi
             else
               failed=$((failed+1))
               echo "DIRECTOR_RUNNER_DRAIN_CANCEL_FAILED=${run_id}:${reason}"
