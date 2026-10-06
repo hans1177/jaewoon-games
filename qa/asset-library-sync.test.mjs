@@ -31,16 +31,21 @@ test('asset homepage automatically publishes new entries, preserves selection, e
  const settle=async()=>{for(let n=0;n<6;n++)await new Promise(resolve=>setImmediate(resolve));};
  await settle();
  const e=id=>elements.get(id);
- assert.equal(e('assetCount').textContent,'5');assert.equal(e('monsterCount').textContent,1);
+ assert.equal(e('assetCount').textContent,'5');assert.equal(e('allCount').textContent,5);assert.equal(e('monsterCount').textContent,1);
  assert.equal(e('assetList').children.length,1);assert.equal(e('selectedTitle').textContent,'시험 몬스터');
  assert.equal(e('assetImage').src,'/assets/monster.png');assert.equal(intervals.length,1);
  e('assetList').scrollTop=73;e('assetList').children[0].focus();
  registry.assets.push({id:'monster-b',title:'자동 추가 몬스터',category:'CREATURE',path:'https://untrusted.invalid/image.png'});
+ registry.assets.push({id:'ui-a',title:'시험 UI',category:'UI',platform:'ROBLOX',status:'REPO_ASSET',path:'/assets/ui.svg'});
  await intervals[0]();await settle();
- assert.equal(e('monsterCount').textContent,2);assert.equal(e('assetList').children.length,2);
+ assert.equal(e('allCount').textContent,7);assert.equal(e('monsterCount').textContent,2);assert.equal(e('assetList').children.length,2);
  assert.equal(e('selectedTitle').textContent,'시험 몬스터');assert.equal(e('assetList').scrollTop,73);assert.equal(document.activeElement.dataset.id,'monster-a');
  await e('assetList').children[1].listeners.click();await settle();
  assert.equal(e('assetImage').hidden,true);assert.equal(e('previewBadge').textContent,'준비 중');
+ e('allTab').listeners.click();await settle();
+ assert.equal(e('assetList').children.length,7);
+ const uiButton=e('assetList').children.find(row=>row.dataset?.id==='ui-a');assert.ok(uiButton);
+ await uiButton.listeners.click();await settle();assert.equal(e('selectedTitle').textContent,'시험 UI');assert.match(e('selectedInfo').textContent,/UI.*ROBLOX.*REPO_ASSET/);
  e('environmentTab').listeners.click();await settle();assert.equal(e('selectedTitle').textContent,'숲');
  e('assetSearch').value='없는 이름';e('assetSearch').listeners.input();assert.match(e('assetList').children[0].textContent,/찾는 자산이 없어/);
  offline=true;await intervals[0]();await settle();assert.match(e('syncStatus').textContent,/이전 목록/);assert.equal(e('environmentCount').textContent,1);
@@ -54,7 +59,7 @@ test('common character assets use the 3D R15 motion viewer instead of image fall
  const script=fs.readFileSync('assets/asset-library.js','utf8');
  const viewer=fs.readFileSync('assets/asset-library-viewer.js','utf8');
  assert.match(page,/공용 캐릭터/);
- assert.match(script,/kind==='common'&&row\.atom/);
+ assert.match(script,/else if\(row\.atom\)/);
  assert.match(script,/activeViewer\.setCommonMotion\(row\.atom\)/);
  assert.match(script,/previewBadge'\)\.textContent='모션 재생'/);
  assert.match(viewer,/function setCommonMotion\(atom\)/);
@@ -84,5 +89,20 @@ test('featured authored movement and action remain source-bound and reuse the ca
   assert.equal(clip.frames.length,121);
  }
  assert.match(script,/await choose\(row,true\);applyClip\(clipId\);/);
- assert.match(script,/activeViewer\.setModel\(data,kind==='environment'\)/);
+ assert.match(script,/const environmentPreview=category==='ENVIRONMENT'/);
+ assert.match(script,/activeViewer\.setModel\(data,environmentPreview\)/);
+});
+
+
+test('asset homepage all tab exposes every registry family while preserving retired preview restrictions',()=>{
+ const page=fs.readFileSync('asset-library.html','utf8');
+ const script=fs.readFileSync('assets/asset-library.js','utf8');
+ assert.match(page,/id="allTab"[^>]*>전체/);
+ assert.match(page,/id="allCount"/);
+ assert.match(script,/if\(kind==='all'\)return registry\.assets\.map/);
+ for(const category of ['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP']){
+  assert.match(script,new RegExp(category+":'"));
+ }
+ assert.match(script,/retiredPreview=retiredPreviews\.has\(asset\.id\)/);
+ assert.match(script,/row\.retiredPreview\?'홈 미리보기 제외'/);
 });
