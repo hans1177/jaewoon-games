@@ -89,7 +89,8 @@ test('featured authored movement and action remain source-bound and reuse the ca
   assert.equal(clip.frames.length,121);
  }
  assert.match(script,/await choose\(row,true\);applyClip\(clipId\);/);
- assert.match(script,/activeViewer\.setModel\(data,kind==='environment'\)/);
+ assert.match(script,/const environmentPreview=category==='ENVIRONMENT'/);
+ assert.match(script,/activeViewer\.setModel\(data,environmentPreview\)/);
 });
 
 
