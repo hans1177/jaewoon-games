@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-action-survival-rogu-echoes-of-the-lost-star-build-up-g21-f3825fe233b4",
-  "directiveFingerprint": "f3825fe233b4385f8b157c8b52efdd3909fdcac05e9eb73afca8ac3fab78ab1c",
-  "previousDirectiveFingerprint": "5ffd5c93e6fbc6cb2d8357c7e190fef0927e41e195f756e7f1b25030db752a32",
-  "forbiddenRepeatFingerprint": "5ffd5c93e6fbc6cb2d8357c7e190fef0927e41e195f756e7f1b25030db752a32",
+  "directiveId": "seed-action-survival-rogu-echoes-of-the-lost-star-build-up-g22-6f4218015927",
+  "directiveFingerprint": "6f4218015927a7ea452302f276d5c010567894651f0de7d7b36a4e9171788829",
+  "previousDirectiveFingerprint": "f3825fe233b4385f8b157c8b52efdd3909fdcac05e9eb73afca8ac3fab78ab1c",
+  "forbiddenRepeatFingerprint": "f3825fe233b4385f8b157c8b52efdd3909fdcac05e9eb73afca8ac3fab78ab1c",
   "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
   "gameName": "잃어버린 별의 메아리",
-  "generation": 21,
+  "generation": 22,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star",
-  "sourceTreeFingerprint": "2ccd13e81bef012286d045f01040620f7301be4d35114959b5534a2855d56356",
+  "sourceTreeFingerprint": "328f83e4f486fca31334b10e4bc5d050ea45d3a9a2fa8d731526b61cf336858e",
   "designFingerprint": "30ec3e9de4501f5cf65bf0afe3bc5348140d0d78760efd1366c75322923bd4b2",
   "gameIdentityAndNonNegotiables": {
     "identity": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.",
@@ -51,11 +51,10 @@
     "sourceObservations": [
       "CURRENT_SOURCE_FILES=4",
       "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH",
-      "AUDIO_IMPLEMENTATION_SPARSE",
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 82,
+      "combat": 85,
       "progression": 114,
       "ai": 19,
       "save": 43,
@@ -63,9 +62,9 @@
       "animation": 29,
       "motionStates": 132,
       "gameFeel": 29,
-      "vfx": 21,
+      "vfx": 24,
       "camera": 33,
-      "audio": 1,
+      "audio": 4,
       "audioDynamics": 14,
       "ui": 61,
       "uiFlow": 33,
@@ -80,8 +79,8 @@
       "settings": 2,
       "feedback": 68,
       "session": 12,
-      "content": 94,
-      "choice": 16,
+      "content": 103,
+      "choice": 20,
       "connection": 2,
       "performance": 17,
       "lighting": 39,
@@ -100,7 +99,7 @@
       },
       {
         "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
-        "score": 140
+        "score": 155
       },
       {
         "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/default.project.json",
@@ -110,7 +109,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
-        "line": 362,
+        "line": 390,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -166,7 +165,7 @@
       },
       {
         "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
-        "line": 381,
+        "line": 409,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -182,7 +181,7 @@
       },
       {
         "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
-        "line": 182,
+        "line": 210,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
         "context": "local function playVerifiedLearningActionFeedback(control)",
@@ -198,7 +197,7 @@
       },
       {
         "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
-        "line": 259,
+        "line": 287,
         "kind": "FUNCTION",
         "symbol": "bindVerifiedLearningControl",
         "context": "local function bindVerifiedLearningControl(control)",
@@ -206,7 +205,7 @@
       },
       {
         "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
-        "line": 112,
+        "line": 140,
         "kind": "FUNCTION",
         "symbol": "syncVerifiedLearningCharacterMotion",
         "context": "local function syncVerifiedLearningCharacterMotion(character)",
@@ -257,9 +256,9 @@
   "previousVersionDelta": {
     "previousGoal": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 20,
-    "previousSourceTreeFingerprint": "8e362afd21980f6517b694bdddb8bfc317e23913455560bd0568c27020b7365e",
-    "currentSourceTreeFingerprint": "2ccd13e81bef012286d045f01040620f7301be4d35114959b5534a2855d56356",
+    "previousGeneration": 21,
+    "previousSourceTreeFingerprint": "2ccd13e81bef012286d045f01040620f7301be4d35114959b5534a2855d56356",
+    "currentSourceTreeFingerprint": "328f83e4f486fca31334b10e4bc5d050ea45d3a9a2fa8d731526b61cf336858e",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -537,8 +536,8 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "REPLAYABILITY_VARIATION",
@@ -1117,8 +1116,8 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "배경음악은 지역/상태/전투 강도 전환과 연결하고, 핵심 행동·위험 전조·피격·보상·UI SFX를 서로 구별해 화면을 보지 않아도 중요한 사건을 인지할 수 있게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1326,11 +1325,6 @@
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
-      "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
       "domain": "CHARACTER_VISUALS",
       "state": "GAP",
       "reason": "placeholder or primitive-heavy implementation remains"
@@ -1409,7 +1403,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 93610,
+        "sourceBytes": 123873,
         "largestFileBytes": 48232,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1442,13 +1436,13 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 2,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=4.",
+    "themeDepth": 3,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=4.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 2,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 3,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 9,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -1467,7 +1461,7 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY"
       ],
@@ -1500,7 +1494,7 @@
     "scoredThemes": [
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 168,
+        "score": 150,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
@@ -1616,11 +1610,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 21,
-    "previousGeneration": 20,
+    "generation": 22,
+    "previousGeneration": 21,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "2ccd13e81bef012286d045f01040620f7301be4d35114959b5534a2855d56356",
-    "priorSourceFingerprint": "8e362afd21980f6517b694bdddb8bfc317e23913455560bd0568c27020b7365e",
+    "sourceFingerprint": "328f83e4f486fca31334b10e4bc5d050ea45d3a9a2fa8d731526b61cf336858e",
+    "priorSourceFingerprint": "2ccd13e81bef012286d045f01040620f7301be4d35114959b5534a2855d56356",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -1708,7 +1702,7 @@
       },
       {
         "track": "AUDIO_MUSIC_AND_FEEDBACK",
-        "status": "WEAK_OR_MISSING"
+        "status": "PRESENT"
       },
       {
         "track": "VFX_CAMERA_AND_IMPACT_SYNC",
@@ -1738,9 +1732,7 @@
       "MOBILE_TOUCH_AND_ACCESSIBILITY",
       "PERFORMANCE_AND_RUNTIME_STABILITY"
     ],
-    "weakestTracks": [
-      "AUDIO_MUSIC_AND_FEEDBACK"
-    ],
+    "weakestTracks": [],
     "loop": [
       "OBSERVE_CURRENT_RUNTIME_AND_PLAYER_FLOW",
       "RANK_WEAKEST_APPLICABLE_TRACKS",
@@ -1875,7 +1867,7 @@
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
-        "line": 362,
+        "line": 390,
         "kind": "FUNCTION",
         "symbol": "render",
         "currentBehavior": "local function render()",
@@ -1938,7 +1930,7 @@
       },
       {
         "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
-        "line": 381,
+        "line": 409,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "currentBehavior": "local function reportNativeFoundationReady()",
@@ -2082,7 +2074,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "2ccd13e81bef012286d045f01040620f7301be4d35114959b5534a2855d56356",
+    "sourceTreeFingerprint": "328f83e4f486fca31334b10e4bc5d050ea45d3a9a2fa8d731526b61cf336858e",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2172,7 +2164,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "2ccd13e81bef012286d045f01040620f7301be4d35114959b5534a2855d56356",
+    "sourceTreeFingerprint": "328f83e4f486fca31334b10e4bc5d050ea45d3a9a2fa8d731526b61cf336858e",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2217,7 +2209,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
-        "line": 362,
+        "line": 390,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -2301,7 +2293,7 @@
       },
       {
         "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
-        "line": 381,
+        "line": 409,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -2435,7 +2427,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "2ccd13e81bef012286d045f01040620f7301be4d35114959b5534a2855d56356",
+      "sourceTreeFingerprint": "328f83e4f486fca31334b10e4bc5d050ea45d3a9a2fa8d731526b61cf336858e",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2482,7 +2474,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 22,
+    "nextGeneration": 23,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2550,5 +2542,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-05T17:59:49.405Z"
+  "generatedAt": "2026-10-06T04:44:23.491Z"
 }

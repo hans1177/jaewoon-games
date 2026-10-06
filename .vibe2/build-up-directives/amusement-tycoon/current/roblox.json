@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "amusement-tycoon-build-up-g24-18d504765aef",
-  "directiveFingerprint": "18d504765aefe56361b3413187818d79d9771d81bb6e0bc938c33d6d2e07d7bd",
-  "previousDirectiveFingerprint": "8e951ebf11830f31581b9ed65316c19e6f979124e3eb811eac205a31862d77a0",
-  "forbiddenRepeatFingerprint": "8e951ebf11830f31581b9ed65316c19e6f979124e3eb811eac205a31862d77a0",
+  "directiveId": "amusement-tycoon-build-up-g25-55e33a22723f",
+  "directiveFingerprint": "55e33a22723fa389570763f75f73b0e21864fc57299145e4211ab2a813ed6311",
+  "previousDirectiveFingerprint": "18d504765aefe56361b3413187818d79d9771d81bb6e0bc938c33d6d2e07d7bd",
+  "forbiddenRepeatFingerprint": "18d504765aefe56361b3413187818d79d9771d81bb6e0bc938c33d6d2e07d7bd",
   "gameId": "amusement-tycoon",
   "gameName": "놀이공원 타이쿤",
-  "generation": 24,
+  "generation": 25,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/amusement-tycoon",
-  "sourceTreeFingerprint": "2c37f6a2a9f2242278ed2425ac7f89c5b78e45d69f34646840ffe6b3d6840e0c",
+  "sourceTreeFingerprint": "53f7ed6a6c9f8c59a6014a85c1dec48dc3cc13edae7cb8a4f7bfc2897da5ff8c",
   "designFingerprint": "8d0223a3e8fc1f104f65ba9b1be2c72e2eab36c4f2573227e8940b9af8d6a5a8",
   "gameIdentityAndNonNegotiables": {
     "identity": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.",
@@ -51,11 +51,10 @@
     "sourceObservations": [
       "CURRENT_SOURCE_FILES=4",
       "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH",
-      "AUDIO_IMPLEMENTATION_SPARSE",
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 32,
+      "combat": 35,
       "progression": 107,
       "ai": 19,
       "save": 48,
@@ -63,9 +62,9 @@
       "animation": 33,
       "motionStates": 145,
       "gameFeel": 29,
-      "vfx": 21,
+      "vfx": 24,
       "camera": 33,
-      "audio": 1,
+      "audio": 4,
       "audioDynamics": 16,
       "ui": 61,
       "uiFlow": 33,
@@ -80,8 +79,8 @@
       "settings": 2,
       "feedback": 69,
       "session": 13,
-      "content": 69,
-      "choice": 39,
+      "content": 78,
+      "choice": 43,
       "connection": 2,
       "performance": 18,
       "lighting": 39,
@@ -100,7 +99,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
-        "score": 138
+        "score": 153
       },
       {
         "file": "roblox-games/amusement-tycoon/default.project.json",
@@ -118,7 +117,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
-        "line": 362,
+        "line": 390,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -126,7 +125,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
-        "line": 382,
+        "line": 410,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -150,7 +149,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
-        "line": 182,
+        "line": 210,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
         "context": "local function playVerifiedLearningActionFeedback(control)",
@@ -230,7 +229,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
-        "line": 259,
+        "line": 287,
         "kind": "FUNCTION",
         "symbol": "bindVerifiedLearningControl",
         "context": "local function bindVerifiedLearningControl(control)",
@@ -254,7 +253,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
-        "line": 112,
+        "line": 140,
         "kind": "FUNCTION",
         "symbol": "syncVerifiedLearningCharacterMotion",
         "context": "local function syncVerifiedLearningCharacterMotion(character)",
@@ -313,9 +312,9 @@
   "previousVersionDelta": {
     "previousGoal": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 23,
-    "previousSourceTreeFingerprint": "273a346340a78a1cd6a920eba38706d68529a120675911d85ee32d6a04646fef",
-    "currentSourceTreeFingerprint": "2c37f6a2a9f2242278ed2425ac7f89c5b78e45d69f34646840ffe6b3d6840e0c",
+    "previousGeneration": 24,
+    "previousSourceTreeFingerprint": "2c37f6a2a9f2242278ed2425ac7f89c5b78e45d69f34646840ffe6b3d6840e0c",
+    "currentSourceTreeFingerprint": "53f7ed6a6c9f8c59a6014a85c1dec48dc3cc13edae7cb8a4f7bfc2897da5ff8c",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -593,8 +592,8 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "REPLAYABILITY_VARIATION",
@@ -1173,8 +1172,8 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "배경음악은 지역/상태/전투 강도 전환과 연결하고, 핵심 행동·위험 전조·피격·보상·UI SFX를 서로 구별해 화면을 보지 않아도 중요한 사건을 인지할 수 있게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1382,11 +1381,6 @@
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
-      "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
       "domain": "CHARACTER_VISUALS",
       "state": "GAP",
       "reason": "placeholder or primitive-heavy implementation remains"
@@ -1465,7 +1459,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 99626,
+        "sourceBytes": 129893,
         "largestFileBytes": 48091,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1497,14 +1491,14 @@
       ],
       "weakExistingContentMayPreemptNewContent": true
     },
-    "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 10,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=9; uncoveredBefore=4.",
+    "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
+    "themeDepth": 1,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=4.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 6,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 1,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 10,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -1515,7 +1509,6 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1525,7 +1518,8 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY"
       ],
       "requiredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -1536,17 +1530,15 @@
         "MID_LATE_ENDGAME_COMPLETION",
         "PRESENTATION_WORLD_COHESION"
       ],
-      "distinctCovered": 3,
+      "distinctCovered": 4,
       "totalThemes": 7,
       "breadthCycleComplete": false,
       "missingThemes": [
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "MID_LATE_ENDGAME_COMPLETION"
       ],
       "leastCoveredThemes": [
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "MID_LATE_ENDGAME_COMPLETION"
@@ -1554,13 +1546,6 @@
       "selectionPolicy": "SUCCESSFUL_ITERATIONS_PRIORITIZE_UNCOVERED_OR_LEAST_COVERED_COHERENT_THEMES; VERIFIED_FAILURE_MAY_DEEPEN_THE_SAME_CAUSAL_THEME"
     },
     "scoredThemes": [
-      {
-        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 30,
-        "gapDomains": [
-          "EQUIPMENT_LOADOUT"
-        ]
-      },
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
         "score": 26,
@@ -1584,6 +1569,13 @@
         "gapDomains": []
       },
       {
+        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "score": 12,
+        "gapDomains": [
+          "EQUIPMENT_LOADOUT"
+        ]
+      },
+      {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
         "score": -94,
         "gapDomains": []
@@ -1600,13 +1592,13 @@
       }
     ],
     "coherentContentBundle": [
-      "SOURCE_AND_DISCOVERY: 아이템이 어디서 왜 나오는지 지역·몹·퀘스트·제작과 연결한다.",
-      "DISTINCT_USE_CASE: 데미지 숫자만 다른 복제 장비가 아니라 사거리·타이밍·상태·위험·보상·조합 역할이 달라야 한다.",
-      "INVENTORY_AND_EQUIP_FLOW: 획득→비교→장착·사용→교체→피드백이 같은 authoritative 상태를 사용한다.",
-      "CRAFT_OR_UPGRADE_CONNECTION: 재료·레시피·제작·강화 결과가 실제 플레이 선택을 바꾼다.",
-      "PROGRESSION_PURPOSE: 아이템이 특정 지역·적·빌드·퀘스트·해금과 연결되어 성장 경로에 의미를 가진다.",
-      "SYNERGY_AND_TRADEOFF: 장비·스킬·소모품 사이에 조합 또는 선택 비용이 있어 하나의 정답만 반복되지 않게 한다.",
-      "WORLD_PRESENTATION: 외형·이름·설명·획득 연출이 실제 기능과 세계 설정을 일치시킨다."
+      "ENEMY_ROLE_SET: 추격·견제·방어·지원·매복·지역 통제 등 서로 다른 전투 역할을 만든다.",
+      "BEHAVIOR_AND_COUNTERPLAY: 이름·HP·공격력만 다른 적이 아니라 이동·전조·공격·약점·대응 선택이 달라야 한다.",
+      "ENCOUNTER_COMPOSITION: 적 역할 조합과 지형·목표가 만나 새로운 판단을 만들게 한다.",
+      "ELITE_OR_BOSS_SIGNATURE: 보스·엘리트는 페이즈·공간 압박·전조·대응·보상 중 여러 축에서 일반 적과 구별한다.",
+      "ECOLOGICAL_WORLD_REASON: 적이 해당 지역·스토리·자원·세력 관계 안에 존재하는 이유를 연결한다.",
+      "DISTINCT_REWARD_PURPOSE: 처치 보상은 다음 장비·퀘스트·제작·지역 해금 중 실제 목적을 가진다.",
+      "VISUAL_TELEGRAPH: 실루엣·모션·VFX·음향·UI 전조가 행동 규칙과 일치해야 한다."
     ],
     "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
     "antiCloneContract": {
@@ -1672,11 +1664,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 24,
-    "previousGeneration": 23,
+    "generation": 25,
+    "previousGeneration": 24,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "2c37f6a2a9f2242278ed2425ac7f89c5b78e45d69f34646840ffe6b3d6840e0c",
-    "priorSourceFingerprint": "273a346340a78a1cd6a920eba38706d68529a120675911d85ee32d6a04646fef",
+    "sourceFingerprint": "53f7ed6a6c9f8c59a6014a85c1dec48dc3cc13edae7cb8a4f7bfc2897da5ff8c",
+    "priorSourceFingerprint": "2c37f6a2a9f2242278ed2425ac7f89c5b78e45d69f34646840ffe6b3d6840e0c",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -1764,7 +1756,7 @@
       },
       {
         "track": "AUDIO_MUSIC_AND_FEEDBACK",
-        "status": "WEAK_OR_MISSING"
+        "status": "PRESENT"
       },
       {
         "track": "VFX_CAMERA_AND_IMPACT_SYNC",
@@ -1794,9 +1786,7 @@
       "MOBILE_TOUCH_AND_ACCESSIBILITY",
       "PERFORMANCE_AND_RUNTIME_STABILITY"
     ],
-    "weakestTracks": [
-      "AUDIO_MUSIC_AND_FEEDBACK"
-    ],
+    "weakestTracks": [],
     "loop": [
       "OBSERVE_CURRENT_RUNTIME_AND_PLAYER_FLOW",
       "RANK_WEAKEST_APPLICABLE_TRACKS",
@@ -1940,7 +1930,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
-        "line": 362,
+        "line": 390,
         "kind": "FUNCTION",
         "symbol": "render",
         "currentBehavior": "local function render()",
@@ -1949,7 +1939,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
-        "line": 382,
+        "line": 410,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "currentBehavior": "local function reportNativeFoundationReady()",
@@ -1976,7 +1966,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
-        "line": 182,
+        "line": 210,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
         "currentBehavior": "local function playVerifiedLearningActionFeedback(control)",
@@ -2138,7 +2128,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "2c37f6a2a9f2242278ed2425ac7f89c5b78e45d69f34646840ffe6b3d6840e0c",
+    "sourceTreeFingerprint": "53f7ed6a6c9f8c59a6014a85c1dec48dc3cc13edae7cb8a4f7bfc2897da5ff8c",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2228,7 +2218,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "2c37f6a2a9f2242278ed2425ac7f89c5b78e45d69f34646840ffe6b3d6840e0c",
+    "sourceTreeFingerprint": "53f7ed6a6c9f8c59a6014a85c1dec48dc3cc13edae7cb8a4f7bfc2897da5ff8c",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2285,7 +2275,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
-        "line": 362,
+        "line": 390,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -2297,7 +2287,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
-        "line": 382,
+        "line": 410,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -2333,7 +2323,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
-        "line": 182,
+        "line": 210,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
         "context": "local function playVerifiedLearningActionFeedback(control)",
@@ -2491,7 +2481,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "2c37f6a2a9f2242278ed2425ac7f89c5b78e45d69f34646840ffe6b3d6840e0c",
+      "sourceTreeFingerprint": "53f7ed6a6c9f8c59a6014a85c1dec48dc3cc13edae7cb8a4f7bfc2897da5ff8c",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2538,7 +2528,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 25,
+    "nextGeneration": 26,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2606,5 +2596,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-05T17:59:49.314Z"
+  "generatedAt": "2026-10-06T04:44:23.403Z"
 }

@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "village-dungeons-build-up-g21-a233cd7cfd1f",
-  "directiveFingerprint": "a233cd7cfd1ff8d2dd3810f1e17ae514b41fbfe236a89c0df0698511545ac851",
-  "previousDirectiveFingerprint": "aeacd9fbd87a26fc539779ba97ff1a12d79dcf89a46188d1873f33c3818d4bf1",
-  "forbiddenRepeatFingerprint": "aeacd9fbd87a26fc539779ba97ff1a12d79dcf89a46188d1873f33c3818d4bf1",
+  "directiveId": "village-dungeons-build-up-g22-2129f64fa068",
+  "directiveFingerprint": "2129f64fa06868bdacaae66ea006c53ca6d7f1f113dc16cd541550165fd8dc15",
+  "previousDirectiveFingerprint": "a233cd7cfd1ff8d2dd3810f1e17ae514b41fbfe236a89c0df0698511545ac851",
+  "forbiddenRepeatFingerprint": "a233cd7cfd1ff8d2dd3810f1e17ae514b41fbfe236a89c0df0698511545ac851",
   "gameId": "village-dungeons",
   "gameName": "마을 던전 RPG",
-  "generation": 21,
+  "generation": 22,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/village-dungeons",
-  "sourceTreeFingerprint": "3f29a9746b7f2bbe516763fe8a1132ef65e2d39a7733fe1a4ae289c85bc071d3",
+  "sourceTreeFingerprint": "ed8e949bf8ba12c65015562f9811207e5b356f29be8902b1679fc33d258b62ff",
   "designFingerprint": "c915b5e2afa7f2c4b9b5767a6f020edb0f215c2908fb8e77c16a09789c0d7131",
   "gameIdentityAndNonNegotiables": {
     "identity": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.",
@@ -53,11 +53,10 @@
     "sourceObservations": [
       "CURRENT_SOURCE_FILES=4",
       "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH",
-      "AUDIO_IMPLEMENTATION_SPARSE",
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 181,
+      "combat": 184,
       "progression": 240,
       "ai": 27,
       "save": 76,
@@ -65,9 +64,9 @@
       "animation": 29,
       "motionStates": 218,
       "gameFeel": 32,
-      "vfx": 21,
+      "vfx": 24,
       "camera": 33,
-      "audio": 1,
+      "audio": 4,
       "audioDynamics": 16,
       "ui": 62,
       "uiFlow": 46,
@@ -82,8 +81,8 @@
       "settings": 2,
       "feedback": 74,
       "session": 147,
-      "content": 276,
-      "choice": 23,
+      "content": 285,
+      "choice": 27,
       "connection": 2,
       "performance": 23,
       "lighting": 39,
@@ -102,7 +101,7 @@
       },
       {
         "file": "roblox-games/village-dungeons/client/Game.client.luau",
-        "score": 147
+        "score": 162
       },
       {
         "file": "roblox-games/village-dungeons/default.project.json",
@@ -144,7 +143,7 @@
       },
       {
         "file": "roblox-games/village-dungeons/client/Game.client.luau",
-        "line": 363,
+        "line": 391,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -256,7 +255,7 @@
       },
       {
         "file": "roblox-games/village-dungeons/client/Game.client.luau",
-        "line": 392,
+        "line": 420,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -320,7 +319,7 @@
       },
       {
         "file": "roblox-games/village-dungeons/client/Game.client.luau",
-        "line": 183,
+        "line": 211,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
         "context": "local function playVerifiedLearningActionFeedback(control)",
@@ -328,7 +327,7 @@
       },
       {
         "file": "roblox-games/village-dungeons/client/Game.client.luau",
-        "line": 260,
+        "line": 288,
         "kind": "FUNCTION",
         "symbol": "bindVerifiedLearningControl",
         "context": "local function bindVerifiedLearningControl(control)",
@@ -336,7 +335,7 @@
       },
       {
         "file": "roblox-games/village-dungeons/client/Game.client.luau",
-        "line": 113,
+        "line": 141,
         "kind": "FUNCTION",
         "symbol": "syncVerifiedLearningCharacterMotion",
         "context": "local function syncVerifiedLearningCharacterMotion(character)",
@@ -363,9 +362,9 @@
   "previousVersionDelta": {
     "previousGoal": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 20,
-    "previousSourceTreeFingerprint": "2910b355c6012ea28e146495afe621e90ae170108f009e09c84464c6504f98c9",
-    "currentSourceTreeFingerprint": "3f29a9746b7f2bbe516763fe8a1132ef65e2d39a7733fe1a4ae289c85bc071d3",
+    "previousGeneration": 21,
+    "previousSourceTreeFingerprint": "3f29a9746b7f2bbe516763fe8a1132ef65e2d39a7733fe1a4ae289c85bc071d3",
+    "currentSourceTreeFingerprint": "ed8e949bf8ba12c65015562f9811207e5b356f29be8902b1679fc33d258b62ff",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -643,8 +642,8 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "REPLAYABILITY_VARIATION",
@@ -1223,8 +1222,8 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "배경음악은 지역/상태/전투 강도 전환과 연결하고, 핵심 행동·위험 전조·피격·보상·UI SFX를 서로 구별해 화면을 보지 않아도 중요한 사건을 인지할 수 있게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1427,11 +1426,6 @@
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
-      "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
       "domain": "CHARACTER_VISUALS",
       "state": "GAP",
       "reason": "placeholder or primitive-heavy implementation remains"
@@ -1512,7 +1506,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 117194,
+        "sourceBytes": 147537,
         "largestFileBytes": 48671,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1545,13 +1539,13 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 3,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=4.",
+    "themeDepth": 4,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=4.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 3,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 4,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -1569,7 +1563,7 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY"
@@ -1603,7 +1597,7 @@
     "scoredThemes": [
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 150,
+        "score": 132,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
@@ -1717,11 +1711,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 21,
-    "previousGeneration": 20,
+    "generation": 22,
+    "previousGeneration": 21,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "3f29a9746b7f2bbe516763fe8a1132ef65e2d39a7733fe1a4ae289c85bc071d3",
-    "priorSourceFingerprint": "2910b355c6012ea28e146495afe621e90ae170108f009e09c84464c6504f98c9",
+    "sourceFingerprint": "ed8e949bf8ba12c65015562f9811207e5b356f29be8902b1679fc33d258b62ff",
+    "priorSourceFingerprint": "3f29a9746b7f2bbe516763fe8a1132ef65e2d39a7733fe1a4ae289c85bc071d3",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -1809,7 +1803,7 @@
       },
       {
         "track": "AUDIO_MUSIC_AND_FEEDBACK",
-        "status": "WEAK_OR_MISSING"
+        "status": "PRESENT"
       },
       {
         "track": "VFX_CAMERA_AND_IMPACT_SYNC",
@@ -1839,9 +1833,7 @@
       "MOBILE_TOUCH_AND_ACCESSIBILITY",
       "PERFORMANCE_AND_RUNTIME_STABILITY"
     ],
-    "weakestTracks": [
-      "AUDIO_MUSIC_AND_FEEDBACK"
-    ],
+    "weakestTracks": [],
     "loop": [
       "OBSERVE_CURRENT_RUNTIME_AND_PLAYER_FLOW",
       "RANK_WEAKEST_APPLICABLE_TRACKS",
@@ -2012,7 +2004,7 @@
       },
       {
         "file": "roblox-games/village-dungeons/client/Game.client.luau",
-        "line": 363,
+        "line": 391,
         "kind": "FUNCTION",
         "symbol": "render",
         "currentBehavior": "local function render()",
@@ -2185,7 +2177,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "3f29a9746b7f2bbe516763fe8a1132ef65e2d39a7733fe1a4ae289c85bc071d3",
+    "sourceTreeFingerprint": "ed8e949bf8ba12c65015562f9811207e5b356f29be8902b1679fc33d258b62ff",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2277,7 +2269,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "3f29a9746b7f2bbe516763fe8a1132ef65e2d39a7733fe1a4ae289c85bc071d3",
+    "sourceTreeFingerprint": "ed8e949bf8ba12c65015562f9811207e5b356f29be8902b1679fc33d258b62ff",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2370,7 +2362,7 @@
       },
       {
         "file": "roblox-games/village-dungeons/client/Game.client.luau",
-        "line": 363,
+        "line": 391,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -2535,7 +2527,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "3f29a9746b7f2bbe516763fe8a1132ef65e2d39a7733fe1a4ae289c85bc071d3",
+      "sourceTreeFingerprint": "ed8e949bf8ba12c65015562f9811207e5b356f29be8902b1679fc33d258b62ff",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2582,7 +2574,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 22,
+    "nextGeneration": 23,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2648,5 +2640,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-05T17:59:49.654Z"
+  "generatedAt": "2026-10-06T04:44:23.745Z"
 }

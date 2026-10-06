@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-story-complete-rpg-chronicles-of-eldoria-build-up-g18-53cb13a4d37b",
-  "directiveFingerprint": "53cb13a4d37b96c522abd9987e8766e22a8d3848c8df4ecde760d0bf23951fd3",
-  "previousDirectiveFingerprint": "fdc70fde98345a304acd9861a3ddd14602ef23cf6c7325f365a6d1a13135408f",
-  "forbiddenRepeatFingerprint": "fdc70fde98345a304acd9861a3ddd14602ef23cf6c7325f365a6d1a13135408f",
+  "directiveId": "seed-story-complete-rpg-chronicles-of-eldoria-build-up-g19-26b04a9ee351",
+  "directiveFingerprint": "26b04a9ee35194d8044da10e7fd7487637d0171cb01032248fd1bb08f7f42836",
+  "previousDirectiveFingerprint": "53cb13a4d37b96c522abd9987e8766e22a8d3848c8df4ecde760d0bf23951fd3",
+  "forbiddenRepeatFingerprint": "53cb13a4d37b96c522abd9987e8766e22a8d3848c8df4ecde760d0bf23951fd3",
   "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
   "gameName": "엘도리아 연대기",
-  "generation": 18,
+  "generation": 19,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria",
-  "sourceTreeFingerprint": "ce3ca2a1c6e14919bbed0a07d4d7fa59f2acccf5357156819b95e5424246773b",
+  "sourceTreeFingerprint": "96b46d2be1c8765a7086c272b3a9d8cce8f2782a76bf9dda5e18c4b177e89267",
   "designFingerprint": "5413bb90f0a9a601e226e9a8d58f64eb777bc4367cd03ac100c39fb9b4f073f6",
   "gameIdentityAndNonNegotiables": {
     "identity": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.",
@@ -51,11 +51,10 @@
     "sourceObservations": [
       "CURRENT_SOURCE_FILES=4",
       "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH",
-      "AUDIO_IMPLEMENTATION_SPARSE",
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 78,
+      "combat": 81,
       "progression": 123,
       "ai": 19,
       "save": 49,
@@ -63,9 +62,9 @@
       "animation": 29,
       "motionStates": 133,
       "gameFeel": 29,
-      "vfx": 21,
+      "vfx": 24,
       "camera": 33,
-      "audio": 1,
+      "audio": 4,
       "audioDynamics": 16,
       "ui": 61,
       "uiFlow": 33,
@@ -80,8 +79,8 @@
       "settings": 2,
       "feedback": 73,
       "session": 11,
-      "content": 94,
-      "choice": 18,
+      "content": 103,
+      "choice": 22,
       "connection": 2,
       "performance": 17,
       "lighting": 39,
@@ -100,7 +99,7 @@
       },
       {
         "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
-        "score": 140
+        "score": 155
       },
       {
         "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/default.project.json",
@@ -110,7 +109,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
-        "line": 362,
+        "line": 390,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -158,7 +157,7 @@
       },
       {
         "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
-        "line": 381,
+        "line": 409,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -174,7 +173,7 @@
       },
       {
         "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
-        "line": 182,
+        "line": 210,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
         "context": "local function playVerifiedLearningActionFeedback(control)",
@@ -198,7 +197,7 @@
       },
       {
         "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
-        "line": 259,
+        "line": 287,
         "kind": "FUNCTION",
         "symbol": "bindVerifiedLearningControl",
         "context": "local function bindVerifiedLearningControl(control)",
@@ -206,7 +205,7 @@
       },
       {
         "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
-        "line": 112,
+        "line": 140,
         "kind": "FUNCTION",
         "symbol": "syncVerifiedLearningCharacterMotion",
         "context": "local function syncVerifiedLearningCharacterMotion(character)",
@@ -257,9 +256,9 @@
   "previousVersionDelta": {
     "previousGoal": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 17,
-    "previousSourceTreeFingerprint": "f3e06987ffb202c97af0d7cfab0619681af5b7adfefc0a87bf83d38812977a28",
-    "currentSourceTreeFingerprint": "ce3ca2a1c6e14919bbed0a07d4d7fa59f2acccf5357156819b95e5424246773b",
+    "previousGeneration": 18,
+    "previousSourceTreeFingerprint": "ce3ca2a1c6e14919bbed0a07d4d7fa59f2acccf5357156819b95e5424246773b",
+    "currentSourceTreeFingerprint": "96b46d2be1c8765a7086c272b3a9d8cce8f2782a76bf9dda5e18c4b177e89267",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -537,8 +536,8 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "REPLAYABILITY_VARIATION",
@@ -1117,8 +1116,8 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "배경음악은 지역/상태/전투 강도 전환과 연결하고, 핵심 행동·위험 전조·피격·보상·UI SFX를 서로 구별해 화면을 보지 않아도 중요한 사건을 인지할 수 있게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1326,11 +1325,6 @@
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
-      "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
       "domain": "CHARACTER_VISUALS",
       "state": "GAP",
       "reason": "placeholder or primitive-heavy implementation remains"
@@ -1409,7 +1403,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 93719,
+        "sourceBytes": 123986,
         "largestFileBytes": 48300,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1442,15 +1436,15 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 3,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=4.",
+    "themeDepth": 4,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=4.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 6,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 3,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 4,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 11
@@ -1466,7 +1460,7 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
@@ -1500,7 +1494,7 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 156,
+        "score": 138,
         "gapDomains": [
           "EQUIPMENT_LOADOUT"
         ]
@@ -1616,11 +1610,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 18,
-    "previousGeneration": 17,
+    "generation": 19,
+    "previousGeneration": 18,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "ce3ca2a1c6e14919bbed0a07d4d7fa59f2acccf5357156819b95e5424246773b",
-    "priorSourceFingerprint": "f3e06987ffb202c97af0d7cfab0619681af5b7adfefc0a87bf83d38812977a28",
+    "sourceFingerprint": "96b46d2be1c8765a7086c272b3a9d8cce8f2782a76bf9dda5e18c4b177e89267",
+    "priorSourceFingerprint": "ce3ca2a1c6e14919bbed0a07d4d7fa59f2acccf5357156819b95e5424246773b",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -1708,7 +1702,7 @@
       },
       {
         "track": "AUDIO_MUSIC_AND_FEEDBACK",
-        "status": "WEAK_OR_MISSING"
+        "status": "PRESENT"
       },
       {
         "track": "VFX_CAMERA_AND_IMPACT_SYNC",
@@ -1738,9 +1732,7 @@
       "MOBILE_TOUCH_AND_ACCESSIBILITY",
       "PERFORMANCE_AND_RUNTIME_STABILITY"
     ],
-    "weakestTracks": [
-      "AUDIO_MUSIC_AND_FEEDBACK"
-    ],
+    "weakestTracks": [],
     "loop": [
       "OBSERVE_CURRENT_RUNTIME_AND_PLAYER_FLOW",
       "RANK_WEAKEST_APPLICABLE_TRACKS",
@@ -1875,7 +1867,7 @@
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
-        "line": 362,
+        "line": 390,
         "kind": "FUNCTION",
         "symbol": "render",
         "currentBehavior": "local function render()",
@@ -1929,7 +1921,7 @@
       },
       {
         "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
-        "line": 381,
+        "line": 409,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "currentBehavior": "local function reportNativeFoundationReady()",
@@ -2082,7 +2074,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "ce3ca2a1c6e14919bbed0a07d4d7fa59f2acccf5357156819b95e5424246773b",
+    "sourceTreeFingerprint": "96b46d2be1c8765a7086c272b3a9d8cce8f2782a76bf9dda5e18c4b177e89267",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2172,7 +2164,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "ce3ca2a1c6e14919bbed0a07d4d7fa59f2acccf5357156819b95e5424246773b",
+    "sourceTreeFingerprint": "96b46d2be1c8765a7086c272b3a9d8cce8f2782a76bf9dda5e18c4b177e89267",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2217,7 +2209,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
-        "line": 362,
+        "line": 390,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -2289,7 +2281,7 @@
       },
       {
         "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
-        "line": 381,
+        "line": 409,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -2435,7 +2427,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "ce3ca2a1c6e14919bbed0a07d4d7fa59f2acccf5357156819b95e5424246773b",
+      "sourceTreeFingerprint": "96b46d2be1c8765a7086c272b3a9d8cce8f2782a76bf9dda5e18c4b177e89267",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2482,7 +2474,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 19,
+    "nextGeneration": 20,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2550,5 +2542,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-05T17:59:49.568Z"
+  "generatedAt": "2026-10-06T04:44:23.657Z"
 }

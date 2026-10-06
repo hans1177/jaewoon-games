@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "fantasy-survival-build-up-g20-c00beb0087eb",
-  "directiveFingerprint": "c00beb0087eb18866eaf01af0ccd694ed1b6a1ebc363d7c39d6e36275995d965",
-  "previousDirectiveFingerprint": "6a8d935baa744fa4f3a49bef58e8f621fa22923a5c2b5cdb2b1a3eb04744ddb4",
-  "forbiddenRepeatFingerprint": "6a8d935baa744fa4f3a49bef58e8f621fa22923a5c2b5cdb2b1a3eb04744ddb4",
+  "directiveId": "fantasy-survival-build-up-g21-d0881e80b703",
+  "directiveFingerprint": "d0881e80b70306c3e1dc7981db4795937b5af419309c51b0fa3aa4952817524a",
+  "previousDirectiveFingerprint": "c00beb0087eb18866eaf01af0ccd694ed1b6a1ebc363d7c39d6e36275995d965",
+  "forbiddenRepeatFingerprint": "c00beb0087eb18866eaf01af0ccd694ed1b6a1ebc363d7c39d6e36275995d965",
   "gameId": "fantasy-survival",
   "gameName": "마력숲 생존기",
-  "generation": 20,
+  "generation": 21,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/fantasy-survival",
-  "sourceTreeFingerprint": "a0390216088305810f11c4a25b622c37f30a106feb181b2109bf08f7570949cd",
+  "sourceTreeFingerprint": "58d386022a15523646d52f1d18a08001c89bfd99d5bd33844dcd89e572392098",
   "designFingerprint": "c0b9724dfa70595eed4f3dcdbad86f85b920f6ca09212771960ebf85447ddcc8",
   "gameIdentityAndNonNegotiables": {
     "identity": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.",
@@ -51,11 +51,10 @@
     "sourceObservations": [
       "CURRENT_SOURCE_FILES=4",
       "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH",
-      "AUDIO_IMPLEMENTATION_SPARSE",
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 86,
+      "combat": 89,
       "progression": 136,
       "ai": 19,
       "save": 51,
@@ -63,9 +62,9 @@
       "animation": 29,
       "motionStates": 146,
       "gameFeel": 29,
-      "vfx": 21,
+      "vfx": 24,
       "camera": 33,
-      "audio": 1,
+      "audio": 4,
       "audioDynamics": 14,
       "ui": 63,
       "uiFlow": 34,
@@ -80,8 +79,8 @@
       "settings": 2,
       "feedback": 68,
       "session": 17,
-      "content": 103,
-      "choice": 24,
+      "content": 112,
+      "choice": 28,
       "connection": 2,
       "performance": 18,
       "lighting": 39,
@@ -100,7 +99,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "score": 153
+        "score": 168
       },
       {
         "file": "roblox-games/fantasy-survival/default.project.json",
@@ -110,7 +109,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 376,
+        "line": 404,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -174,7 +173,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 395,
+        "line": 423,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -190,7 +189,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 182,
+        "line": 210,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
         "context": "local function playVerifiedLearningActionFeedback(control)",
@@ -198,7 +197,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 259,
+        "line": 287,
         "kind": "FUNCTION",
         "symbol": "bindVerifiedLearningControl",
         "context": "local function bindVerifiedLearningControl(control)",
@@ -206,7 +205,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 112,
+        "line": 140,
         "kind": "FUNCTION",
         "symbol": "syncVerifiedLearningCharacterMotion",
         "context": "local function syncVerifiedLearningCharacterMotion(character)",
@@ -257,9 +256,9 @@
   "previousVersionDelta": {
     "previousGoal": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
     "previousFocus": "USABILITY",
-    "previousGeneration": 19,
-    "previousSourceTreeFingerprint": "0ee0ba4ecc33ef206a247eb22d2ac82ac84ba03b6ffd8dfabb55c8befaaa9484",
-    "currentSourceTreeFingerprint": "a0390216088305810f11c4a25b622c37f30a106feb181b2109bf08f7570949cd",
+    "previousGeneration": 20,
+    "previousSourceTreeFingerprint": "a0390216088305810f11c4a25b622c37f30a106feb181b2109bf08f7570949cd",
+    "currentSourceTreeFingerprint": "58d386022a15523646d52f1d18a08001c89bfd99d5bd33844dcd89e572392098",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -537,8 +536,8 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "REPLAYABILITY_VARIATION",
@@ -1117,8 +1116,8 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "배경음악은 지역/상태/전투 강도 전환과 연결하고, 핵심 행동·위험 전조·피격·보상·UI SFX를 서로 구별해 화면을 보지 않아도 중요한 사건을 인지할 수 있게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1326,11 +1325,6 @@
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
-      "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
       "domain": "CHARACTER_VISUALS",
       "state": "GAP",
       "reason": "placeholder or primitive-heavy implementation remains"
@@ -1409,7 +1403,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 98915,
+        "sourceBytes": 129178,
         "largestFileBytes": 47539,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1441,14 +1435,14 @@
       ],
       "weakExistingContentMayPreemptNewContent": true
     },
-    "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 12,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=11; uncoveredBefore=5.",
+    "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
+    "themeDepth": 1,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 1,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 10,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -1457,7 +1451,6 @@
       },
       "sequence": [
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1469,7 +1462,8 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION"
+        "PRESENTATION_WORLD_COHESION",
+        "ENEMY_BOSS_COMBAT_ECOLOGY"
       ],
       "requiredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -1480,19 +1474,17 @@
         "MID_LATE_ENDGAME_COMPLETION",
         "PRESENTATION_WORLD_COHESION"
       ],
-      "distinctCovered": 2,
+      "distinctCovered": 3,
       "totalThemes": 7,
       "breadthCycleComplete": false,
       "missingThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "MID_LATE_ENDGAME_COMPLETION"
       ],
       "leastCoveredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "MID_LATE_ENDGAME_COMPLETION"
@@ -1501,19 +1493,19 @@
     },
     "scoredThemes": [
       {
-        "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 38,
+        "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "score": 26,
         "gapDomains": [
-          "ENVIRONMENT",
-          "TERRAIN",
-          "CHARACTER_VISUALS",
           "ENEMY_VISUALS"
         ]
       },
       {
-        "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 26,
+        "theme": "PRESENTATION_WORLD_COHESION",
+        "score": 20,
         "gapDomains": [
+          "ENVIRONMENT",
+          "TERRAIN",
+          "CHARACTER_VISUALS",
           "ENEMY_VISUALS"
         ]
       },
@@ -1546,13 +1538,13 @@
       }
     ],
     "coherentContentBundle": [
-      "BACKGROUND_DEPTH: 전경·중경·후경·지형·랜드마크로 빈 무대 느낌을 줄이고 장소의 기능을 읽게 한다.",
-      "CHARACTER_AND_ENEMY_IDENTITY: 역할과 위험도가 실루엣·자세·모션·재질에서 구별되어야 한다.",
-      "ACTION_TIMELINE: anticipation→impact→recovery와 VFX·카메라·오디오·판정을 같은 사건에 동기화한다.",
-      "ENVIRONMENTAL_MOTION: 식생·물·빛·먼지·기계 등 세계에 맞는 움직임으로 정적인 배경을 줄인다.",
-      "STATE_READABILITY: 위험·보상·상호작용·퀘스트 상태를 UI와 월드 표현에서 같은 언어로 보여준다.",
-      "REGION_COHESION: 배경·몹·아이템·스토리·규칙의 시각적 이유가 같은 지역 정체성을 공유한다.",
-      "PERFORMANCE_BUDGET: 표현을 늘리면서 모바일·플랫폼별 객체·파티클·조명·메모리 비용을 같이 관리한다."
+      "ENEMY_ROLE_SET: 추격·견제·방어·지원·매복·지역 통제 등 서로 다른 전투 역할을 만든다.",
+      "BEHAVIOR_AND_COUNTERPLAY: 이름·HP·공격력만 다른 적이 아니라 이동·전조·공격·약점·대응 선택이 달라야 한다.",
+      "ENCOUNTER_COMPOSITION: 적 역할 조합과 지형·목표가 만나 새로운 판단을 만들게 한다.",
+      "ELITE_OR_BOSS_SIGNATURE: 보스·엘리트는 페이즈·공간 압박·전조·대응·보상 중 여러 축에서 일반 적과 구별한다.",
+      "ECOLOGICAL_WORLD_REASON: 적이 해당 지역·스토리·자원·세력 관계 안에 존재하는 이유를 연결한다.",
+      "DISTINCT_REWARD_PURPOSE: 처치 보상은 다음 장비·퀘스트·제작·지역 해금 중 실제 목적을 가진다.",
+      "VISUAL_TELEGRAPH: 실루엣·모션·VFX·음향·UI 전조가 행동 규칙과 일치해야 한다."
     ],
     "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
     "antiCloneContract": {
@@ -1618,11 +1610,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 20,
-    "previousGeneration": 19,
+    "generation": 21,
+    "previousGeneration": 20,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "a0390216088305810f11c4a25b622c37f30a106feb181b2109bf08f7570949cd",
-    "priorSourceFingerprint": "0ee0ba4ecc33ef206a247eb22d2ac82ac84ba03b6ffd8dfabb55c8befaaa9484",
+    "sourceFingerprint": "58d386022a15523646d52f1d18a08001c89bfd99d5bd33844dcd89e572392098",
+    "priorSourceFingerprint": "a0390216088305810f11c4a25b622c37f30a106feb181b2109bf08f7570949cd",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -1710,7 +1702,7 @@
       },
       {
         "track": "AUDIO_MUSIC_AND_FEEDBACK",
-        "status": "WEAK_OR_MISSING"
+        "status": "PRESENT"
       },
       {
         "track": "VFX_CAMERA_AND_IMPACT_SYNC",
@@ -1740,9 +1732,7 @@
       "MOBILE_TOUCH_AND_ACCESSIBILITY",
       "PERFORMANCE_AND_RUNTIME_STABILITY"
     ],
-    "weakestTracks": [
-      "AUDIO_MUSIC_AND_FEEDBACK"
-    ],
+    "weakestTracks": [],
     "loop": [
       "OBSERVE_CURRENT_RUNTIME_AND_PLAYER_FLOW",
       "RANK_WEAKEST_APPLICABLE_TRACKS",
@@ -1877,7 +1867,7 @@
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 376,
+        "line": 404,
         "kind": "FUNCTION",
         "symbol": "render",
         "currentBehavior": "local function render()",
@@ -2077,7 +2067,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "a0390216088305810f11c4a25b622c37f30a106feb181b2109bf08f7570949cd",
+    "sourceTreeFingerprint": "58d386022a15523646d52f1d18a08001c89bfd99d5bd33844dcd89e572392098",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2160,7 +2150,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "a0390216088305810f11c4a25b622c37f30a106feb181b2109bf08f7570949cd",
+    "sourceTreeFingerprint": "58d386022a15523646d52f1d18a08001c89bfd99d5bd33844dcd89e572392098",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2205,7 +2195,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 376,
+        "line": 404,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -2423,7 +2413,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "a0390216088305810f11c4a25b622c37f30a106feb181b2109bf08f7570949cd",
+      "sourceTreeFingerprint": "58d386022a15523646d52f1d18a08001c89bfd99d5bd33844dcd89e572392098",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2470,7 +2460,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 21,
+    "nextGeneration": 22,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2535,5 +2525,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-05T17:59:49.750Z"
+  "generatedAt": "2026-10-06T04:44:23.847Z"
 }

@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "survival-build-up-g7-8cbb6f823f17",
-  "directiveFingerprint": "8cbb6f823f17c75f7a9a2f363633ab335e52c0653f2c6c1dd56858ecc41c1b71",
-  "previousDirectiveFingerprint": "7620ed9d96def7bfc53f7c566e15e1ab80bde82dde0025607ca42be159a4eade",
-  "forbiddenRepeatFingerprint": "7620ed9d96def7bfc53f7c566e15e1ab80bde82dde0025607ca42be159a4eade",
+  "directiveId": "survival-build-up-g8-f8f54a7689dc",
+  "directiveFingerprint": "f8f54a7689dc8569352014f4f1f7148a9abc41ea54a2cf05a22a8a5c9f2ce2b9",
+  "previousDirectiveFingerprint": "8cbb6f823f17c75f7a9a2f363633ab335e52c0653f2c6c1dd56858ecc41c1b71",
+  "forbiddenRepeatFingerprint": "8cbb6f823f17c75f7a9a2f363633ab335e52c0653f2c6c1dd56858ecc41c1b71",
   "gameId": "survival",
   "gameName": "나의 생존기",
-  "generation": 7,
+  "generation": 8,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/survival",
-  "sourceTreeFingerprint": "28ca5f96c7d912ea8f988c427c1e9dbeecc3693d79594212f8a7b7e15a6c361c",
+  "sourceTreeFingerprint": "d6a700d1499665bc0dd8258901f0bd3fc1dc174e69620492a183dde75510f2be",
   "designFingerprint": "44ffc6a9e74fd73a9559a6145347b9e8c6868798288b43f49e9d92657cdbae83",
   "gameIdentityAndNonNegotiables": {
     "identity": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.",
@@ -52,11 +52,10 @@
     "sourceObservations": [
       "CURRENT_SOURCE_FILES=4",
       "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH",
-      "AUDIO_IMPLEMENTATION_SPARSE",
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 86,
+      "combat": 89,
       "progression": 125,
       "ai": 28,
       "save": 49,
@@ -64,9 +63,9 @@
       "animation": 41,
       "motionStates": 153,
       "gameFeel": 29,
-      "vfx": 22,
+      "vfx": 25,
       "camera": 33,
-      "audio": 1,
+      "audio": 4,
       "audioDynamics": 15,
       "ui": 62,
       "uiFlow": 34,
@@ -81,8 +80,8 @@
       "settings": 2,
       "feedback": 69,
       "session": 12,
-      "content": 94,
-      "choice": 18,
+      "content": 103,
+      "choice": 22,
       "connection": 2,
       "performance": 31,
       "lighting": 39,
@@ -96,12 +95,12 @@
         "score": 283
       },
       {
-        "file": "roblox-games/survival/server/Game.server.luau",
-        "score": 204
+        "file": "roblox-games/survival/client/Game.client.luau",
+        "score": 218
       },
       {
-        "file": "roblox-games/survival/client/Game.client.luau",
-        "score": 203
+        "file": "roblox-games/survival/server/Game.server.luau",
+        "score": 204
       },
       {
         "file": "roblox-games/survival/default.project.json",
@@ -111,7 +110,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 622,
+        "line": 650,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -175,7 +174,7 @@
       },
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 256,
+        "line": 284,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningMotionFailureReason",
         "context": "local function verifiedLearningMotionFailureReason(state)",
@@ -183,7 +182,7 @@
       },
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 121,
+        "line": 149,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningBindTrack",
         "context": "local function verifiedLearningBindTrack(state, track)",
@@ -191,7 +190,7 @@
       },
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 641,
+        "line": 669,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -207,7 +206,7 @@
       },
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 442,
+        "line": 470,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
         "context": "local function playVerifiedLearningActionFeedback(control)",
@@ -223,7 +222,7 @@
       },
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 139,
+        "line": 167,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningCreateFootIk",
         "context": "local function verifiedLearningCreateFootIk(state, side)",
@@ -231,7 +230,7 @@
       },
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 519,
+        "line": 547,
         "kind": "FUNCTION",
         "symbol": "bindVerifiedLearningControl",
         "context": "local function bindVerifiedLearningControl(control)",
@@ -239,7 +238,7 @@
       },
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 168,
+        "line": 196,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningBindMotionActor",
         "context": "local function verifiedLearningBindMotionActor(character)",
@@ -247,7 +246,7 @@
       },
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 370,
+        "line": 398,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningTryBindMotionInstance",
         "context": "local function verifiedLearningTryBindMotionInstance(instance)",
@@ -295,7 +294,7 @@
       },
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 117,
+        "line": 145,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningHorizontal",
         "context": "local function verifiedLearningHorizontal(v)",
@@ -306,9 +305,9 @@
   "previousVersionDelta": {
     "previousGoal": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 6,
-    "previousSourceTreeFingerprint": "4643ef4f640a59a5e42b1af7e68ef51bd95b51101803994ffe164adce8b6901f",
-    "currentSourceTreeFingerprint": "28ca5f96c7d912ea8f988c427c1e9dbeecc3693d79594212f8a7b7e15a6c361c",
+    "previousGeneration": 7,
+    "previousSourceTreeFingerprint": "28ca5f96c7d912ea8f988c427c1e9dbeecc3693d79594212f8a7b7e15a6c361c",
+    "currentSourceTreeFingerprint": "d6a700d1499665bc0dd8258901f0bd3fc1dc174e69620492a183dde75510f2be",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -586,8 +585,8 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "REPLAYABILITY_VARIATION",
@@ -1166,8 +1165,8 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "배경음악은 지역/상태/전투 강도 전환과 연결하고, 핵심 행동·위험 전조·피격·보상·UI SFX를 서로 구별해 화면을 보지 않아도 중요한 사건을 인지할 수 있게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1375,11 +1374,6 @@
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
-      "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
       "domain": "CHARACTER_VISUALS",
       "state": "GAP",
       "reason": "placeholder or primitive-heavy implementation remains"
@@ -1459,7 +1453,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 104191,
+        "sourceBytes": 134458,
         "largestFileBytes": 48128,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1492,8 +1486,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 1,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=6.",
+    "themeDepth": 2,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1503,7 +1497,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 1
+        "PRESENTATION_WORLD_COHESION": 2
       },
       "sequence": [
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1514,6 +1508,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
       ],
       "requiredThemes": [
@@ -1547,19 +1542,12 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 68,
+        "score": 210,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
           "CHARACTER_VISUALS",
           "ENEMY_VISUALS"
-        ]
-      },
-      {
-        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 50,
-        "gapDomains": [
-          "EQUIPMENT_LOADOUT"
         ]
       },
       {
@@ -1588,6 +1576,13 @@
         "theme": "QUEST_STORY_PROGRESSION_CHAIN",
         "score": 10,
         "gapDomains": []
+      },
+      {
+        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "score": -110,
+        "gapDomains": [
+          "EQUIPMENT_LOADOUT"
+        ]
       }
     ],
     "coherentContentBundle": [
@@ -1663,11 +1658,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 7,
-    "previousGeneration": 6,
+    "generation": 8,
+    "previousGeneration": 7,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "28ca5f96c7d912ea8f988c427c1e9dbeecc3693d79594212f8a7b7e15a6c361c",
-    "priorSourceFingerprint": "4643ef4f640a59a5e42b1af7e68ef51bd95b51101803994ffe164adce8b6901f",
+    "sourceFingerprint": "d6a700d1499665bc0dd8258901f0bd3fc1dc174e69620492a183dde75510f2be",
+    "priorSourceFingerprint": "28ca5f96c7d912ea8f988c427c1e9dbeecc3693d79594212f8a7b7e15a6c361c",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -1755,7 +1750,7 @@
       },
       {
         "track": "AUDIO_MUSIC_AND_FEEDBACK",
-        "status": "WEAK_OR_MISSING"
+        "status": "PRESENT"
       },
       {
         "track": "VFX_CAMERA_AND_IMPACT_SYNC",
@@ -1785,9 +1780,7 @@
       "MOBILE_TOUCH_AND_ACCESSIBILITY",
       "PERFORMANCE_AND_RUNTIME_STABILITY"
     ],
-    "weakestTracks": [
-      "AUDIO_MUSIC_AND_FEEDBACK"
-    ],
+    "weakestTracks": [],
     "loop": [
       "OBSERVE_CURRENT_RUNTIME_AND_PLAYER_FLOW",
       "RANK_WEAKEST_APPLICABLE_TRACKS",
@@ -1922,7 +1915,7 @@
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 622,
+        "line": 650,
         "kind": "FUNCTION",
         "symbol": "render",
         "currentBehavior": "local function render()",
@@ -2130,7 +2123,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "28ca5f96c7d912ea8f988c427c1e9dbeecc3693d79594212f8a7b7e15a6c361c",
+    "sourceTreeFingerprint": "d6a700d1499665bc0dd8258901f0bd3fc1dc174e69620492a183dde75510f2be",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2221,7 +2214,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "28ca5f96c7d912ea8f988c427c1e9dbeecc3693d79594212f8a7b7e15a6c361c",
+    "sourceTreeFingerprint": "d6a700d1499665bc0dd8258901f0bd3fc1dc174e69620492a183dde75510f2be",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2266,7 +2259,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 622,
+        "line": 650,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -2484,7 +2477,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "28ca5f96c7d912ea8f988c427c1e9dbeecc3693d79594212f8a7b7e15a6c361c",
+      "sourceTreeFingerprint": "d6a700d1499665bc0dd8258901f0bd3fc1dc174e69620492a183dde75510f2be",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2531,7 +2524,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 8,
+    "nextGeneration": 9,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2599,5 +2592,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-05T17:59:49.611Z"
+  "generatedAt": "2026-10-06T04:44:23.700Z"
 }
