@@ -1221,13 +1221,11 @@ task.defer(reportNativeFoundationReady)
     }))if(!re.test(combined))throw new Error('EXISTING_FOUNDATION_REPAIR_VERIFY_FAILED:'+token);
   }
 
-  fs.writeFileSync(configFile,afterConfig,'utf8');
-  fs.writeFileSync(clientFile,afterClient,'utf8');
-  if(afterProject!==beforeProject)fs.writeFileSync(projectFile,afterProject,'utf8');
-  if(foundationRepair===true&&afterServer!==beforeServer)fs.writeFileSync(serverFile,afterServer,'utf8');
-  const changedFiles=[configFile,clientFile];
-  if(afterProject!==beforeProject)changedFiles.push(projectFile);
-  if(foundationRepair===true&&afterServer!==beforeServer)changedFiles.push(serverFile);
+  const changedFiles=[];
+  if(afterConfig!==beforeConfig){fs.writeFileSync(configFile,afterConfig,'utf8');changedFiles.push(configFile);}
+  if(afterClient!==beforeClient){fs.writeFileSync(clientFile,afterClient,'utf8');changedFiles.push(clientFile);}
+  if(afterProject!==beforeProject){fs.writeFileSync(projectFile,afterProject,'utf8');changedFiles.push(projectFile);}
+  if(foundationRepair===true&&afterServer!==beforeServer){fs.writeFileSync(serverFile,afterServer,'utf8');changedFiles.push(serverFile);}
   return Object.freeze({
     existingSourcePreserved:true,
     changedFiles:Object.freeze(changedFiles),
@@ -1551,22 +1549,18 @@ async function main(){
       nextRequiredStage:'TARGET_PLATFORM_RUNTIME',
     };
     const bootstrapEvidenceFile=path.join(outputRoot,'roblox-source-bootstrap.json');
-    const previousEvidence=fs.existsSync(bootstrapEvidenceFile)?readJson(bootstrapEvidenceFile):null;
+    const repositoryEvidenceExists=fs.existsSync(bootstrapEvidenceFile);
+    const previousEvidence=repositoryEvidenceExists?readJson(bootstrapEvidenceFile):null;
     const previousCreatedAt=clean(previousEvidence?.createdAt);
-    const previousSemantic=previousEvidence&&typeof previousEvidence==='object'&&!Array.isArray(previousEvidence)
-      ?Object.fromEntries(Object.entries(previousEvidence).filter(([key])=>key!=='createdAt'))
-      :null;
-    const semanticEvidenceUnchanged=Array.isArray(applied.changedFiles)&&applied.changedFiles.length===0
-      &&previousSemantic!==null
-      &&JSON.stringify(previousSemantic)===JSON.stringify(evidence);
-    evidence.createdAt=semanticEvidenceUnchanged&&previousCreatedAt?previousCreatedAt:new Date().toISOString();
+    const sourceDelta=Array.isArray(applied.changedFiles)&&applied.changedFiles.length>0;
+    evidence.createdAt=!sourceDelta&&previousCreatedAt?previousCreatedAt:new Date().toISOString();
     fs.mkdirSync(path.dirname(evidenceFile),{recursive:true});
     fs.writeFileSync(evidenceFile,`${JSON.stringify(evidence,null,2)}\n`,'utf8');
-    if(semanticEvidenceUnchanged){
-      console.log('ROBLOX_SOURCE_BOOTSTRAP_REPO_EVIDENCE=PRESERVED_NO_SOURCE_DELTA');
-    }else{
+    if(sourceDelta||!repositoryEvidenceExists){
       fs.copyFileSync(evidenceFile,bootstrapEvidenceFile);
       console.log('ROBLOX_SOURCE_BOOTSTRAP_REPO_EVIDENCE=UPDATED');
+    }else{
+      console.log('ROBLOX_SOURCE_BOOTSTRAP_REPO_EVIDENCE=PRESERVED_NO_SOURCE_DELTA');
     }
     console.log('ROBLOX_SOURCE_BOOTSTRAP=PASS');
     console.log(`ROBLOX_GAME_ID=${gameId}`);
