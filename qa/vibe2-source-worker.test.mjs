@@ -14,7 +14,7 @@ import { execFileSync } from 'node:child_process';
 import { learningGuidance } from '../tools/vibe2-learning-motor.mjs';
 import { buildInternalMotionCoaching, singleMotionResponseSchema } from '../tools/vibe2-motion-coaching.mjs';
 import { validateCandidateSyntax } from '../tools/vibe2-source-worker.mjs';
-import { evaluateSingleMotionWorkUnit, SINGLE_MOTION_DEPTH_AXES, generateCandidateWithRecovery, runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, attachSelectedInternalAssetApiContext, evaluateRobloxInternalAssetFamilyBindingCandidate, evaluateAllGameDynamicAssetBindingCandidate, assertAllGameDynamicAssetBindingContract, ROBLOX_INTERNAL_ASSET_FAMILIES } from '../tools/vibe2-source-worker.mjs';
+import { evaluateSingleMotionWorkUnit, SINGLE_MOTION_DEPTH_AXES, generateCandidateWithRecovery, runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, singleMotionPromptWindow, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, attachSelectedInternalAssetApiContext, evaluateRobloxInternalAssetFamilyBindingCandidate, evaluateAllGameDynamicAssetBindingCandidate, assertAllGameDynamicAssetBindingContract, ROBLOX_INTERNAL_ASSET_FAMILIES } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { buildVibeAssetProductionPlan, assetProductionGuidance } from '../tools/vibe2-asset-production-plan.mjs';
 import { createVibeContinuousQueue } from '../assets/vibe-continuous-queue.js';
@@ -362,6 +362,8 @@ test('single motion generation sends a required nonempty patch schema through th
   assert.equal(requests.length,1);
   assert.deepEqual(requests[0].format,singleMotionResponseSchema());
   assert.equal(requests[0].think,false);
+  assert.equal(requests[0].options.num_predict,2048);
+  assert.equal(requests[0].options.num_ctx,12288);
   assert.equal(result.generation.completionMode,'JSON_SINGLE_MOTION');
   assert.equal(result.candidateValidation.runtimeVerified,false);
 });
@@ -400,13 +402,19 @@ test('internal motion coaching drops a stale reference and fails closed on chang
   fs.appendFileSync(path.join(cwd,root,'GhostSkinFactory.luau'),'\n-- changed rig');
   assert.equal(buildInternalMotionCoaching({cwd,order}).evidence.retrieved,false);
 });
-test('internal motion prompt uses one compatible compiled example while retaining all quality axes',()=>{
+test('internal motion prompt narrows legacy wide source windows to the exact clip while retaining quality axes',()=>{
   const source=fs.readFileSync('assets/roblox/world-ghosts/motions/aswang/init.luau','utf8');
-  const unit={scope:'INTERNAL_ASSET_LIBRARY',objectId:'roblox-world-ghost-aswang',clipId:'walk',sourcePath:'init.luau',sourceWindow:source.slice(source.indexOf('function Motion.walk'),source.lastIndexOf('return Motion')).trim(),sourceHash:crypto.createHash('sha256').update(source).digest('hex')};
+  const walk=source.slice(source.indexOf('function Motion.walk'),source.lastIndexOf('return Motion')).trim();
+  const unrelated='function Motion.attack(form,bones,time)\n local state="attack"\n return {}\nend';
+  const legacyWideWindow=walk+'\n'+unrelated;
+  const unit={scope:'INTERNAL_ASSET_LIBRARY',objectId:'roblox-world-ghost-aswang',clipId:'walk',sourcePath:'init.luau',clipBindingEvidence:'function Motion.walk(form,bones,time)',sourceWindow:legacyWideWindow,sourceHash:crypto.createHash('sha256').update(source).digest('hex')};
   const order={target:'roblox',assetProductionLane:true,source:{internalAssetMotion:true},assetProduction:{motionRepairWorkUnit:unit}};
   const context={files:[{path:'init.luau',editable:true,content:source}]};
   const motionCoaching=buildInternalMotionCoaching({order});
   assert.ok(motionCoaching.evidence.reference);
+  const focused=singleMotionPromptWindow(unit);
+  assert.ok(focused.startsWith(unit.clipBindingEvidence));
+  assert.equal(focused.includes('function Motion.attack'),false);
   const prompt=buildPrompt(order,context,['init.luau'],{motionCoaching});
   const duplicated=buildPrompt(order,context,['init.luau'],{motionCoaching:{block:motionCoaching.block}});
   const recipe=JSON.parse(prompt.split('[MOTION TEACHER PRACTICE BEGIN]\n')[1].split('\n[MOTION TEACHER PRACTICE END]')[0]);
@@ -414,7 +422,9 @@ test('internal motion prompt uses one compatible compiled example while retainin
   assert.equal(recipe.example.reference.sha256,motionCoaching.evidence.reference.sha256);
   assert.equal(recipe.example.source,undefined);
   assert.ok(prompt.includes(motionCoaching.block));
-  assert.ok(prompt.includes(unit.sourceWindow));
+  assert.ok(prompt.includes(focused));
+  assert.equal(prompt.includes(unrelated),false);
+  assert.ok(Buffer.byteLength(prompt)<20000);
   assert.ok(Buffer.byteLength(prompt)<Buffer.byteLength(duplicated)-2000);
   assert.match(prompt,/quarter speed/);assert.match(prompt,/worst frame/);
   assert.match(prompt,/motionRepairReport/);assert.match(prompt,/SOURCE SAMPLING/);
