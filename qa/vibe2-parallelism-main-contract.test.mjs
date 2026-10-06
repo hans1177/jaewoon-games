@@ -442,6 +442,9 @@ test('24h runner keeps asset lane independent from generic repository runner pre
   assert.match(runner,/asset_development_active/);
   assert.match(runner,/asset_development_queued/);
   assert.match(runner,/asset_development_refill_ready/);
+  assert.match(runner,/VIBE2_24H_ASSET_SATURATION_RECOVERY=PROBE/);
+  assert.match(runner,/recover-completed-reservations/);
+  assert.match(runner,/VIBE2_24H_ASSET_SATURATION_RECOVERED_RUNS=/);
   const assetStart=runner.indexOf('\n  asset_development:\n');
   const assetEnd=runner.indexOf('\n  learning_idle:',assetStart);
   assert.ok(assetStart>=0&&assetEnd>assetStart);
