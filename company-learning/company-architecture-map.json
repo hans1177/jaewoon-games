@@ -5219,6 +5219,29 @@
           "stateWriteFailureRemainsGlobal": true
         }
       }
+    },
+    "gameIdentityConcept": {
+      "version": 1,
+      "centralContract": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameIdentityConceptContract",
+      "existingPipelineOnly": true,
+      "gameSeedOwner": "tools/company-game-seed-bootstrap.mjs::normalizeGameplaySketch",
+      "validationOwner": "tools/company-game-seed-contract.mjs::validateGameplaySketch",
+      "designOwner": "tools/company-design-cycle.mjs::generateDesignerDraft",
+      "buildUpOwner": "tools/company-build-up-directive.mjs::buildGameSpecificBuildUpDirective",
+      "dataFlow": [
+        "GAMEPLAY_SKETCH.identityCore",
+        "DESIGN_EXISTING_FIELDS",
+        "BUILD_UP.identityReinforcement",
+        "CURRENT_SOURCE_INSPECTION",
+        "EXISTING_RESPONSIBLE_SOURCE_MUTATION",
+        "QA_RUNTIME",
+        "NEXT_BUILD_UP"
+      ],
+      "newWorkflow": false,
+      "newQueue": false,
+      "newScheduler": false,
+      "wrapperOrShadowPipeline": false,
+      "genreSpecificPrimaryActionPreserved": true
     }
   },
   "nonblockingCoordinationTelemetryTopology": {

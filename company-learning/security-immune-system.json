@@ -851,7 +851,18 @@
       "existingGameBackfillMustPreserveProtectedSemantics": true,
       "allFiveRequiredBackfillPillarsMustVerifyBeforeHolisticBaseline": true
     },
-    "failureAction": "REGENERATE_OR_REPAIR_AFFECTED_DIRECTIVE_SCOPE_WITHOUT_STOPPING_UNRELATED_GAME_DEVELOPMENT"
+    "failureAction": "REGENERATE_OR_REPAIR_AFFECTED_DIRECTIVE_SCOPE_WITHOUT_STOPPING_UNRELATED_GAME_DEVELOPMENT",
+    "gameIdentityConceptProtections": {
+      "version": 1,
+      "authority": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameIdentityConceptContract",
+      "identityQualityCannotAuthorizeProtectedBalanceChange": true,
+      "identityQualityCannotChangeSaveMeaningWithoutMigration": true,
+      "identityQualityCannotMoveServerAuthorityToClient": true,
+      "identityQualityCannotReplaceExistingWorkingCoreWithGenericTemplate": true,
+      "allGenreApplicationCannotForceOneGenreSystemModel": true,
+      "gameIdentityMustUseExistingAuthorizedGameStateAndResponsibleSource": true,
+      "buildUpIdentityEvidenceCannotSelfApproveQaRuntimeOrRelease": true
+    }
   },
   "minimumNecessaryDevelopmentSecurity": {
     "version": 1,

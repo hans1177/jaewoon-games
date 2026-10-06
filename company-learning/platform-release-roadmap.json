@@ -26367,6 +26367,91 @@
       "globalPlatformPriorityUnchanged": true,
       "recentOwnerWebEligibility": "ownerDirect&&resetRequired&&sourceExists&&!playable",
       "recentPriorityEndsWhen": "playable"
+    },
+    "gameIdentityConceptContract": {
+      "version": 1,
+      "status": "ACTIVE_ALL_GENRES",
+      "authority": "OWNER_DIRECTIVE_2026-10-06",
+      "purpose": "MAKE_EACH_GAME_IMMEDIATELY_UNDERSTANDABLE_DISTINCT_AND_GROWTH_SPECIFIC_WITHOUT_FORCING_ONE_GENRE_SYSTEM_TEMPLATE",
+      "appliesToAllGenres": true,
+      "canonicalApplication": [
+        "GAME_SEED.GAMEPLAY_SKETCH.identityCore",
+        "DESIGN.identity",
+        "DESIGN.playerFantasy",
+        "DESIGN.coreFun",
+        "DESIGN.coreLoop",
+        "DESIGN.signatureSystems",
+        "DESIGN.systemInterconnections",
+        "DESIGN.progressionDirection",
+        "DESIGN.visualDirection",
+        "DESIGN.artAudioDirection",
+        "BUILD_UP.identityReinforcement"
+      ],
+      "identityCore": {
+        "oneLineFantasy": "WHO_THE_PLAYER_IS_AND_WHAT_THEY_DO_IN_ONE_CLEAR_SENTENCE",
+        "playerRole": "PLAYER_ROLE_RESPONSIBILITY_AND_WORLD_POSITION",
+        "representativeAction": "MOST_REPEATED_REAL_PLAYER_ACTION",
+        "representativeChoice": "RECURRING_DECISION_THAT_CHANGES_RESULT_RISK_ROUTE_RESOURCE_RELATIONSHIP_OR_BUILD",
+        "signatureWorldRule": "GAME_SPECIFIC_WORLD_RULE_THAT_CHANGES_PLAY_NOT_ONLY_LORE",
+        "signatureSystemPromise": "ONE_OR_TWO_SYSTEM_PROMISES_RECOGNIZABLE_WITHOUT_THE_GAME_TITLE",
+        "growthIdentity": "WHAT_NEW_ACTION_ROUTE_COMBINATION_RELATIONSHIP_DISCOVERY_OR_COUNTERPLAY_BECOMES_POSSIBLE",
+        "identityCoherence": [
+          "WORLD_CULTURE_AND_HISTORY_SUPPORT_CORE_ACTION",
+          "VISUAL_LANGUAGE_SUPPORTS_ROLE_RISK_AND_REWARD_READABILITY",
+          "AUDIO_LANGUAGE_SUPPORTS_WORLD_AND_GAME_STATE",
+          "ENEMY_ITEM_NPC_AND_UI_SHARE_THE_SAME_GAME_LOGIC"
+        ],
+        "threeSentenceTest": [
+          "WHAT_GAME_IS_THIS",
+          "WHAT_MAKES_IT_DIFFERENT_FROM_SAME_GENRE_GAMES",
+          "WHAT_NEW_THINGS_BECOME_POSSIBLE_AS_THE_PLAYER_GROWS"
+        ]
+      },
+      "qualityRules": {
+        "conceptMustBeClearBeforeFeatureCount": true,
+        "representativeActionMustRemainGenreNative": true,
+        "signatureWorldRuleMustAffectRealState": true,
+        "signatureSystemsMustAffectRealChoices": true,
+        "growthMustOpenPossibilitiesNotOnlyIncreaseNumbers": true,
+        "visualAudioWorldNpcEnemyItemUiCoherenceRequiredWhenApplicable": true,
+        "buildUpMustPreserveOrStrengthenIdentity": true,
+        "genericFeatureCountCannotProveIdentityGrowth": true
+      },
+      "genreAdaptation": {
+        "PUZZLE": "SOLUTION_METHOD_ORDER_INFORMATION_AND_STATE_CHANGE",
+        "RACING": "DRIVING_LINE_TIMING_VEHICLE_OR_TEAM_DECISION_AND_ROUTE_PRESSURE",
+        "TYCOON": "BUILD_OPERATE_STAFF_CUSTOMER_MARKET_AND_CAPACITY_DECISIONS",
+        "DEFENSE": "PLACEMENT_TARGET_PRIORITY_RESOURCE_TIMING_AND_ENEMY_COUNTERPLAY",
+        "SURVIVAL": "EXPLORATION_RESOURCE_RISK_CRAFTING_SHELTER_AND_ENVIRONMENTAL_DECISIONS",
+        "ACTION": "COMBAT_MOVEMENT_TIMING_COMBO_POSITIONING_AND_COUNTERPLAY",
+        "RPG": "ROLE_COMBAT_COMPANION_RELATIONSHIP_EXPLORATION_AND_GROWTH_CHOICE",
+        "CARD": "HAND_RISK_COMBINATION_OPPONENT_INFORMATION_AND_RESOURCE_DECISION",
+        "BOARD_STRATEGY": "AREA_ROUTE_RESOURCE_TRADE_POSITIONING_AND_TURN_ECONOMY",
+        "CASUAL": "SIMPLE_CORE_ACTION_WITH_DISTINCT_TRANSFORMATION_COLLECTION_GOAL_OR_DISCOVERY",
+        "OTHER": "USE_THE_GENRES_REAL_PRIMARY_ACTION_AND_DECISION_STRUCTURE"
+      },
+      "designTest": {
+        "passIntent": "THE_THREE_SENTENCE_TEST_HAS_THREE_CLEAR_NON_REDUNDANT_ANSWERS_AND_EXISTING_DESIGN_FIELDS_IMPLEMENT_THEM",
+        "weakExamples": [
+          "ONLY_BECOME_STRONGER",
+          "ONLY_GO_TO_NEW_REGION",
+          "ONLY_GET_BETTER_ITEM",
+          "ONLY_ADD_MORE_CONTENT_WITHOUT_A_DISTINCT_PLAYER_DECISION"
+        ]
+      },
+      "preservation": {
+        "existingGameIdentityFirst": true,
+        "existingRulesBalanceSaveEconomyAndNetworkAuthorityPreserved": true,
+        "sourceInspectionBeforeExistingGameIdentityExpansion": true,
+        "existingResponsibleFunctionsAndDataStructuresFirst": true,
+        "saveMigrationRequiredWhenPersistedShapeChanges": true
+      },
+      "bindings": [
+        "tools/company-game-seed-contract.mjs",
+        "tools/company-game-seed-bootstrap.mjs",
+        "tools/company-design-cycle.mjs",
+        "tools/company-build-up-directive.mjs"
+      ]
     }
   },
   "robloxNativeCodingQualityContract": {

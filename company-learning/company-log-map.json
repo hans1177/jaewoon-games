@@ -1281,7 +1281,24 @@
     "presentationOnlyEvidenceCannotHideApplicableGameplayWorldInventoryUiGap": true,
     "existingGamesUseCurrentHolisticStandard": true,
     "existingGameGrandfatherExemptionForbidden": true,
-    "allFiveBackfillPillarsRequiredBeforeExistingHolisticBaseline": true
+    "allFiveBackfillPillarsRequiredBeforeExistingHolisticBaseline": true,
+    "gameIdentityConceptEvidence": {
+      "version": 1,
+      "source": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameIdentityConceptContract",
+      "required": [
+        "GAME_IDENTITY",
+        "IDENTITY_ONE_LINE_FANTASY",
+        "IDENTITY_REPRESENTATIVE_ACTION",
+        "IDENTITY_REPRESENTATIVE_CHOICE",
+        "IDENTITY_SIGNATURE_WORLD_RULE",
+        "IDENTITY_SIGNATURE_SYSTEMS",
+        "IDENTITY_GROWTH",
+        "IDENTITY_THREE_SENTENCE_TEST",
+        "IDENTITY_BUILD_UP_RULE"
+      ],
+      "allGenreApplicationRequired": true,
+      "genericFeatureCountCannotProveIdentityGrowth": true
+    }
   },
   "minimumNecessaryProcedureDevelopmentEvidence": {
     "version": 1,
