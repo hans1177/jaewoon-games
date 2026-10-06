@@ -92,6 +92,8 @@ const ASSET_DEVELOPMENT_ROBLOX_FOCUSED_MAX_PREDICT=768;
 const ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS=120000;
 const ASSET_DEVELOPMENT_WEB_TIMEOUT_MS=Math.max(240000,DEFAULT_TIMEOUT_MS);
 const ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW=8192;
+const SINGLE_MOTION_MAX_PREDICT=2048;
+const SINGLE_MOTION_CONTEXT_WINDOW=12288;
 const ASSET_DEVELOPMENT_ROBLOX_MAX_GENERATION_ATTEMPTS=3;
 const JSON_CONTEXT_WINDOW=16384;
 const JSON_FINAL_CONTEXT_WINDOW=16384;
@@ -3257,6 +3259,22 @@ function boundedPromptText(value='',maxBytes=COMPACT_DIRECTIVE_LINE_BYTES){
   }
   return best;
 }
+export function singleMotionPromptWindow(unit={}){
+  const window=String(unit?.sourceWindow||''),binding=clean(unit?.clipBindingEvidence);
+  if(!window||!binding)return window;
+  const start=window.indexOf(binding);
+  if(start<0)return window;
+  const owner=binding.match(/^function\s+([A-Za-z_][A-Za-z0-9_]*)\./)?.[1]||'';
+  if(!owner)return window;
+  const tail=window.slice(start+binding.length);
+  const nextMotion=tail.search(new RegExp('\\nfunction\\s+'+owner+'\\.[A-Za-z_][A-Za-z0-9_]*\\s*\\('));
+  const moduleReturn=tail.search(new RegExp('\\nreturn\\s+'+owner+'\\b'));
+  const ends=[nextMotion,moduleReturn].filter(index=>index>=0).map(index=>start+binding.length+index);
+  const end=ends.length?Math.min(...ends):window.length;
+  const focused=window.slice(start,end).trimEnd();
+  return focused.includes(binding)?focused:window;
+}
+
 export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=false,exploration=null,sourceRootBootstrap=false,focusedWebRepair=false,verifiedExternalLearningContract=null,motionCoaching=null,robloxSourceCoaching=null}={}){const sourceText=context.files.map(file=>`\n=== FILE ${file.path}${file.editable?' [EDITABLE]':' [READ-ONLY IMPACT CONTEXT]'}${file.exactSourceWindow?' [EXACT SOURCE WINDOW:'+String(file.windowLabel||'responsibility')+']':''}${file.truncated?' [TRUNCATED]':''} ===\n${file.content}`).join('\n');const allowed=responsibleFiles.length?responsibleFiles.join(', '):context.files.filter(file=>file.editable!==false).map(file=>file.path).join(', ');const fullWebTarget=fullWebGenerationTarget(order);
   // 학습 계약이 보존하는 원문은 목표 설명에 두 번 보내지 않는다.
   const learningContract=verifiedExternalLearningContract||buildVerifiedExternalLearningPromptContract(order);
@@ -3295,8 +3313,13 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
   if(motionUnit?.scope==='INTERNAL_ASSET_LIBRARY'&&order.source?.internalAssetMotion===true&&!allowFullRewrite){
     const {sourceWindow,...binding}=motionUnit;
     const compactUnit=singleMotionBlock.replace(JSON.stringify(motionUnit),()=>JSON.stringify(binding));
-    const targetFile=context.files.find(file=>file.path===motionUnit.sourcePath)?.content||'';
-    const outsideWindow=targetFile.includes(sourceWindow)?targetFile.replace(sourceWindow,'[EDITABLE WINDOW SHOWN BELOW]'):'';
+    const promptWindow=singleMotionPromptWindow(motionUnit);
+    const lockContext=unique([
+      motionUnit.objectBindingEvidence,
+      ...(Array.isArray(motionUnit.lockedSource)?motionUnit.lockedSource:[]),
+      ...Object.values(motionUnit.preservedAxes&&typeof motionUnit.preservedAxes==='object'?motionUnit.preservedAxes:{})
+    ]).join('\n');
+    if(promptWindow!==sourceWindow)console.log('VIBE2_SINGLE_MOTION_PROMPT_WINDOW='+Buffer.byteLength(sourceWindow,'utf8')+'->'+Buffer.byteLength(promptWindow,'utf8'));
     return [
       'You are the Vibe2 source worker. Implement the assigned existing motion. Return JSON only; instructions or plans without edits are invalid.',
       'Engine: '+order.target+'; allowed edit path: '+allowed,
@@ -3304,13 +3327,13 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
       learningContract.block,
       motionCoaching?.block||'',
       assetTeachingBlock,
-      outsideWindow?'READ-ONLY TARGET MODULE CONTEXT (do not edit):\n'+outsideWindow:'',
-      'TARGET SOURCE: edits[].find must be a unique character-for-character excerpt wholly inside this exact sourceWindow. Prefer non-overlapping focused edits with short exact anchors; return a complete patch and all six depth axes together.',
-      '=== FILE '+motionUnit.sourcePath+' [EDITABLE EXACT SOURCE WINDOW] ===\n'+sourceWindow,
-      'Preserve the current API and all behavior outside this window. Root authority, gameplay, saves, damage, hitboxes, hit timing and clip duration cannot change. Use only real bound joints. No newFiles or replaceFiles.',
+      lockContext?'BOUND SOURCE LOCKS OUTSIDE THE EDIT WINDOW (preserve exactly):\n'+lockContext:'',
+      'TARGET SOURCE: edits[].find must be a unique character-for-character excerpt wholly inside this assigned motion function, which is itself inside the source-bound sourceWindow. Prefer short exact anchors; return a complete patch and all six depth axes together.',
+      '=== FILE '+motionUnit.sourcePath+' [EDITABLE EXACT MOTION FUNCTION] ===\n'+promptWindow,
+      'Preserve the current API and all behavior outside this function. Root authority, gameplay, saves, damage, hitboxes, hit timing and clip duration cannot change. Use only real bound joints. No newFiles or replaceFiles.',
       'SOURCE SAMPLING: the candidate must change an actually visible joint or its ancestor, retain time-varying visible motion, return identical poses when the same times are sampled in reverse order, and never mutate the input bones. Unused-joint edits and frozen poses fail. These source checks cannot prove world-space contact or native visual quality.',
       'Required response schema: '+JSON.stringify(singleMotionResponseSchema()),
-      'motionRepairReport.objectId='+JSON.stringify(motionUnit.objectId)+'; clipId='+JSON.stringify(motionUnit.clipId)+'. Report exact executable before/after excerpts for each axis, not prose. Each CHANGED pair must differ and be distinct; PRESERVED is allowed only for that axis in preservedAxes. Never report tests or runtime inspection as passed unless executed.'
+      'motionRepairReport.objectId='+JSON.stringify(motionUnit.objectId)+'; clipId='+JSON.stringify(motionUnit.clipId)+'. Report the shortest exact executable before/after excerpts that prove each axis. Each CHANGED pair must differ and be distinct; PRESERVED is allowed only for that axis in preservedAxes. Never report tests or runtime inspection as passed unless executed.'
     ].filter(Boolean).join('\n');
   }
   const detailReview=order.assetProduction?.detailReview,motionAudit=order.assetProduction?.motionContinuityAudit;
@@ -4530,7 +4553,8 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
       recoveredOutputBudget=Math.min(JSON_OUTPUT_RECOVERY_MAX_PREDICT,Math.max(recoveredOutputBudget,Number(lastError.vibe2MaxPredict||maxPredict)*2));
       console.log(`VIBE2_TRUNCATED_OUTPUT_RECOVERY=${attempt}:maxPredict=${Math.max(maxPredict,recoveredOutputBudget)}`);
     }
-    if(!allowFullRewrite)maxPredict=Math.max(maxPredict,recoveredOutputBudget,singleMotionWorkUnit?JSON_RETRY_MAX_PREDICT:0);
+    if(singleMotionWorkUnit&&!lastError?.vibe2OutputTruncated)maxPredict=Math.min(maxPredict,SINGLE_MOTION_MAX_PREDICT);
+    if(!allowFullRewrite)maxPredict=Math.max(maxPredict,recoveredOutputBudget);
     const timeoutMs=priorFailureClass==='TIMEOUT'&&!clean(lastRaw)
       ?(assetDevelopmentLane&&target==='web'?ASSET_DEVELOPMENT_WEB_TIMEOUT_MS:ZERO_OUTPUT_RETRY_TIMEOUT_MS)
       :(expansionMode
@@ -4538,9 +4562,11 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
         :(allowFullRewrite
           ?(attempt>=maxAttempts?FULL_WEB_FINAL_RETRY_TIMEOUT_MS:(retry?FULL_WEB_RETRY_TIMEOUT_MS:FULL_WEB_TIMEOUT_MS))
           :((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_RETRY_TIMEOUT_MS:(unityStudioTimeoutFocusedRecovery?UNITY_STUDIO_FOCUSED_TIMEOUT_MS:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS:JSON_FOCUSED_REPLACE_TIMEOUT_MS))):(focusedFinal?JSON_FINAL_RETRY_TIMEOUT_MS:(retry?JSON_RETRY_TIMEOUT_MS:DEFAULT_TIMEOUT_MS)))));
-    const baseContextWindow=expansionMode
-      ?FULL_WEB_EXPANSION_CONTEXT_WINDOW
-      :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_CONTEXT_WINDOW:(robloxRebuildFocused?JSON_CONTEXT_WINDOW:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW))):(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW))));
+    const baseContextWindow=singleMotionWorkUnit
+      ?SINGLE_MOTION_CONTEXT_WINDOW
+      :(expansionMode
+        ?FULL_WEB_EXPANSION_CONTEXT_WINDOW
+        :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_CONTEXT_WINDOW:(robloxRebuildFocused?JSON_CONTEXT_WINDOW:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW))):(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW)))));
     // 압축·부분 수정·확장 재시도에서도 원본 관찰과 잠금/수정 범위를 보존하고 실제 전송량으로 예산을 잡는다.
     for(const label of ['IMAGE ASSET OBSERVATION','ASSET DETAIL REPAIR','RUNTIME VISUAL REVIEW','SINGLE MOTION WORK UNIT','INTERNAL MOTION COACHING','ROBLOX SOURCE COACHING','INTERNAL ASSET TEACHER PRACTICE']){
       const block=prompt.match(new RegExp('\\['+label+' BEGIN\\][\\s\\S]*?\\['+label+' END\\]'))?.[0]||'';
