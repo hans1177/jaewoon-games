@@ -53,6 +53,30 @@ function stripManagedRobloxStudioAssetDetectionSource(text=''){
     .replace(/\bSTUDIO_ASSET_SELECTION\s*=\s*\{[\s\S]*?\n\}/g,' ')
     .replace(/--[^\n]*/g,' ');
 }
+export function robloxStudioAssetDetectionSourceFromRoot(root=''){
+  const base=path.resolve(root),rows=[],stack=[base];
+  while(stack.length){
+    const current=stack.pop();
+    let entries=[];
+    try{entries=fs.readdirSync(current,{withFileTypes:true});}catch{continue;}
+    for(const entry of entries){
+      if(entry.isDirectory()){
+        if(['.git','Packages','Binaries','Intermediate','Saved'].includes(entry.name))continue;
+        stack.push(path.join(current,entry.name));
+        continue;
+      }
+      if(!/\.(?:lua|luau)$/i.test(entry.name))continue;
+      const absolute=path.join(current,entry.name);
+      const relative=path.relative(base,absolute).replaceAll('\\','/');
+      if(/(?:^|\/)GameConfig\.luau$/i.test(relative))continue;
+      rows.push({relative,text:fs.readFileSync(absolute,'utf8')});
+    }
+  }
+  return stripManagedRobloxStudioAssetDetectionSource(
+    rows.sort((a,b)=>a.relative.localeCompare(b.relative)).map(row=>row.text).join('\n')
+  );
+}
+
 function robloxStudioAssetSystemNearby(source='',semanticPattern,nativePattern,window=1200){
   const flags=semanticPattern.flags.includes('i')?'ig':'g';
   const matcher=new RegExp(semanticPattern.source,flags);
@@ -1051,7 +1075,7 @@ export function applyRobloxStudioAssetBindingToExistingSource({root='',gameId=''
   const beforeClient=fs.readFileSync(clientFile,'utf8');
   const beforeServer=fs.existsSync(serverFile)?fs.readFileSync(serverFile,'utf8'):'';
   const beforeProject=fs.readFileSync(projectFile,'utf8');
-  const studioAssetFamilyStatus=robloxStudioAssetFamilyStatusFromSource({clientSource:beforeClient,serverSource:beforeServer});
+  const studioAssetFamilyStatus=robloxStudioAssetFamilyStatusFromSource({sourceText:robloxStudioAssetDetectionSourceFromRoot(root)});
   const project=JSON.parse(beforeProject.replace(/^\uFEFF/,''));
   if(!project.tree||project.tree.$className!=='DataModel')throw new Error('EXISTING_ROBLOX_PROJECT_DATAMODEL_REQUIRED');
   const existingLighting=project.tree.Lighting&&typeof project.tree.Lighting==='object'?project.tree.Lighting:{};
