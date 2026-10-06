@@ -180,6 +180,7 @@ function validateGameplaySketch(sketch,errors){
     errors.push('GAMEPLAY_SKETCH.compositionDepth is required for version 3+');
   }else{
     if(!isNonEmptyString(composition.mainContent))errors.push('GAMEPLAY_SKETCH.compositionDepth.mainContent is required for version 3+');
+    if(!isNonEmptyString(composition.conceptFusion))errors.push('GAMEPLAY_SKETCH.compositionDepth.conceptFusion is required for version 3+');
     const depthArrays=[
       ['majorSubSystems',3],
       ['extensionSystems',6],
