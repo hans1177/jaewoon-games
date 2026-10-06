@@ -887,7 +887,10 @@ function replaceOrInsertStudioAssetConfig(source='',studioAssets={}){
 
 function bindExistingClientStudioAssets(source='',familyStatus={}){
   const managed=/-- STUDIO_ASSET_BINDING_CLIENT_BEGIN\n[\s\S]*?-- STUDIO_ASSET_BINDING_CLIENT_END\n/;
-  let output=source.replace(/(STUDIO_ASSET_BINDING_VERSION\s*=\s*)1\b/g,(_match,prefix)=>`${prefix}2`);
+  const dynamicManaged=/-- STUDIO_ASSET_DYNAMIC_BINDING_BEGIN\n[\s\S]*?-- STUDIO_ASSET_DYNAMIC_BINDING_END\n?/g;
+  let output=source
+    .replace(/(STUDIO_ASSET_BINDING_VERSION\s*=\s*)1\b/g,(_match,prefix)=>`${prefix}2`)
+    .replace(dynamicManaged,'');
   const requireMatch=output.match(/local\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*require\([^\n]*GameConfig[^\n]*\)/);
   if(!requireMatch)throw new Error('EXISTING_STUDIO_ASSET_CLIENT_CONFIG_REQUIRE_MISSING');
   const configVar=requireMatch[1];
