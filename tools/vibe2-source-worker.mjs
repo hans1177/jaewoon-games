@@ -1982,6 +1982,20 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     'sourceRepairPolicy='+JSON.stringify(failure.assetRepairPolicy||{}),
     'sourceRepairHints='+boundedPromptText(unique((failure.qualityFailureDetails||[]).map(row=>row?.hint)).join(' | '),COMPACT_DIRECTIVE_LINE_BYTES)
   ]:[];
+  const blueprintJson=(value,limit=COMPACT_DIRECTIVE_LINE_BYTES)=>boundedPromptText(JSON.stringify(value??{}),limit);
+  const blueprintCritical={
+    status:blueprint?.status||null,
+    mode:blueprint?.mode||null,
+    foundationRepairFirst:blueprint?.foundationRepairFirst===true,
+    implementationFacts:{
+      mobileUx:blueprint?.implementationFacts?.mobileUx||null,
+      technicalAssumptions:blueprint?.implementationFacts?.technicalAssumptions||[],
+      forbiddenScope:blueprint?.implementationFacts?.forbiddenScope||[],
+      exactCodePaths:blueprint?.implementationFacts?.exactCodePaths||{}
+    },
+    verticalSlice:blueprint?.verticalSlice||{},
+    completionGate:blueprint?.completionGate||{}
+  };
   return[
     '[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]',
     `directiveId=${clean(d.directiveId)} generation=${Number(d.generation||0)} developmentDepth=${Number(d.developmentDepth||1)} escalationStage=${clean(d.escalationStage)} primaryFocus=${clean(d.primaryFocus)}`,
@@ -1989,14 +2003,32 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     `primaryGoal=${clean(d.thisLoopPrimaryGoal)}`,
     ...production,
     `implementationUnit=${clean(ownedAnchors[0]?.intendedBehavior)||clean(d.thisLoopPrimaryGoal)}; observableResult=${clean(ownedAnchors[0]?.observableAcceptance)||clean(d?.effectivenessMeasurement?.expectedPlayerEffect)}`,
-    `buildReadyBlueprint=status:${clean(blueprint?.status)||'MISSING'} mode:${clean(blueprint?.mode)||'UNKNOWN'} foundationRepairFirst:${blueprint?.foundationRepairFirst===true}`,
-    `verticalSlice=${JSON.stringify(blueprint?.verticalSlice||{})}`,
-    `stateTransitions=${JSON.stringify(blueprint?.stateTransitions||[])}`,
-    `systemContracts=${JSON.stringify(blueprint?.systemContracts||[])}`,
-    `responsibleSourcePlan=${JSON.stringify(blueprint?.responsibleSourcePlan||[])}`,
-    `presentationPlan=${JSON.stringify(blueprint?.presentationPlan||{})}`,
-    `runtimeAcceptance=${JSON.stringify(blueprint?.runtimeAcceptance||[])}`,
-    `buildCompletionGate=${JSON.stringify(blueprint?.completionGate||{})}`,
+    `buildReadyBlueprint=status:${clean(blueprint?.status)||'MISSING'} mode:${clean(blueprint?.mode)||'UNKNOWN'} detailLevel:${clean(blueprint?.detailLevel)||'UNKNOWN'} foundationRepairFirst:${blueprint?.foundationRepairFirst===true}`,
+    `blueprintCritical=${blueprintJson(blueprintCritical,1800)}`,
+    `implementationFacts=${blueprintJson(blueprint?.implementationFacts||{},1600)}`,
+    `verticalSlice=${blueprintJson(blueprint?.verticalSlice||{},1300)}`,
+    `coreLoopExecutionPlan=${blueprintJson(blueprint?.coreLoopExecutionPlan||[],1800)}`,
+    `stateTransitions=${blueprintJson(blueprint?.stateTransitions||[],1100)}`,
+    `systemContracts=${blueprintJson(blueprint?.systemContracts||[],1400)}`,
+    `rosterContracts=${blueprintJson(blueprint?.rosterContracts||{},1400)}`,
+    `worldMapContract=${blueprintJson(blueprint?.worldMapContract||{},1100)}`,
+    `interactionCombatContract=${blueprintJson(blueprint?.interactionCombatContract||{},1200)}`,
+    `inputUiContract=${blueprintJson(blueprint?.inputUiContract||{},1200)}`,
+    `networkContract=${blueprintJson(blueprint?.networkContract||{},1200)}`,
+    `persistenceContract=${blueprintJson(blueprint?.persistenceContract||{},1100)}`,
+    `aiEncounterContract=${blueprintJson(blueprint?.aiEncounterContract||{},1300)}`,
+    `progressionEconomyContract=${blueprintJson(blueprint?.progressionEconomyContract||{},1400)}`,
+    `presentationContract=${blueprintJson(blueprint?.presentationContract||{},1600)}`,
+    `performanceContract=${blueprintJson(blueprint?.performanceContract||{},900)}`,
+    `failureRecoveryContract=${blueprintJson(blueprint?.failureRecoveryContract||{},1100)}`,
+    `sourceImplementationContract=${blueprintJson(blueprint?.sourceImplementationContract||{},1600)}`,
+    `orderedImplementationSteps=${blueprintJson(blueprint?.orderedImplementationSteps||[],1600)}`,
+    `acceptanceScenarios=${blueprintJson(blueprint?.acceptanceScenarios||[],1800)}`,
+    `antiShallowImplementationContract=${blueprintJson(blueprint?.antiShallowImplementationContract||{},1400)}`,
+    `responsibleSourcePlan=${blueprintJson(blueprint?.responsibleSourcePlan||[],1600)}`,
+    `presentationPlan=${blueprintJson(blueprint?.presentationPlan||{},900)}`,
+    `runtimeAcceptance=${blueprintJson(blueprint?.runtimeAcceptance||[],1000)}`,
+    `buildCompletionGate=${blueprintJson(blueprint?.completionGate||{},1100)}`,
     'Complete one coherent player action-to-state-to-feedback/result chain inside this goal. Include every required dependency and atomic file pair. Defer unrelated expansion, not required connected improvements or acceptance gates.',
     `whyNow=${clean(d.primaryGoalReason)}`,
     ...(sourceAnchors.length?sourceAnchors.map(anchor=>`sourceAnchors=${anchor}`):['sourceAnchors=EXACT_SYMBOL_UNAVAILABLE_USE_RESPONSIBLE_FILE_AND_STATE_ANCHOR']),
@@ -2041,11 +2073,11 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   if(!compact&&!responsiblePaths.length)return block;
   const keepPrefixes=focusedRobloxVisual?[
     'robloxProduction','gameProduction',
-    'directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','buildReadyBlueprint=','verticalSlice=','stateTransitions=','systemContracts=','responsibleSourcePlan=','presentationPlan=','runtimeAcceptance=','buildCompletionGate=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','buildReadyBlueprint=','blueprintCritical=','implementationFacts=','coreLoopExecutionPlan=','rosterContracts=','worldMapContract=','interactionCombatContract=','inputUiContract=','networkContract=','persistenceContract=','aiEncounterContract=','progressionEconomyContract=','presentationContract=','performanceContract=','failureRecoveryContract=','sourceImplementationContract=','orderedImplementationSteps=','acceptanceScenarios=','antiShallowImplementationContract=','verticalSlice=','stateTransitions=','systemContracts=','responsibleSourcePlan=','presentationPlan=','runtimeAcceptance=','buildCompletionGate=','sourceAnchors=','expectedPlayerEffect=',
     'visual=','platform=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
   ]:[
     'robloxProduction','gameProduction',
-    'directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','buildReadyBlueprint=','verticalSlice=','stateTransitions=','systemContracts=','responsibleSourcePlan=','presentationPlan=','runtimeAcceptance=','buildCompletionGate=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','buildReadyBlueprint=','blueprintCritical=','implementationFacts=','coreLoopExecutionPlan=','rosterContracts=','worldMapContract=','interactionCombatContract=','inputUiContract=','networkContract=','persistenceContract=','aiEncounterContract=','progressionEconomyContract=','presentationContract=','performanceContract=','failureRecoveryContract=','sourceImplementationContract=','orderedImplementationSteps=','acceptanceScenarios=','antiShallowImplementationContract=','verticalSlice=','stateTransitions=','systemContracts=','responsibleSourcePlan=','presentationPlan=','runtimeAcceptance=','buildCompletionGate=','sourceAnchors=','expectedPlayerEffect=',
     'nextVibeAction=','contentExpansionVersion=','contentTheme=','contentBreadth=','existingCompletenessReview=','contentBundle=',
     'antiClone=','continuity=','derivedRuleEvolution=','contentCompletionAcceptance=','contentRule=',
     ...(focusedPresentation?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
@@ -2077,11 +2109,11 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
     return[prefix+boundedPromptText(line.slice(at+1),Math.max(256,COMPACT_DIRECTIVE_LINE_BYTES-Buffer.byteLength(prefix,'utf8')))];
   });
   const compacted=compactedLines.join('\n');
-  if(!compact||Buffer.byteLength(compacted,'utf8')<=6000)return compacted;
+  if(!compact||Buffer.byteLength(compacted,'utf8')<=9000)return compacted;
 
   const essentialPrefixes=[
     ...['robloxProduction','gameProduction'].flatMap(prefix=>['CONCEPT','IDEA','CONNECTION','FILES','QUALITY','SCOPE','OWNER'].map(field=>prefix+field+'=')),
-    'directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','buildReadyBlueprint=','verticalSlice=','stateTransitions=','responsibleSourcePlan=','runtimeAcceptance=','buildCompletionGate=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','buildReadyBlueprint=','blueprintCritical=','implementationFacts=','coreLoopExecutionPlan=','interactionCombatContract=','inputUiContract=','networkContract=','presentationContract=','sourceImplementationContract=','orderedImplementationSteps=','acceptanceScenarios=','antiShallowImplementationContract=','verticalSlice=','stateTransitions=','responsibleSourcePlan=','runtimeAcceptance=','buildCompletionGate=','sourceAnchors=','expectedPlayerEffect=',
     'contentTheme=','contentCompletionAcceptance=',
     ...(focusedPresentation||focusedRobloxVisual?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
     'platform=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
@@ -2103,7 +2135,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
     essential.push(line);
   }
   const payloadCount=Math.max(1,essential.filter(line=>line!==begin&&line!==end).length);
-  const lineBudget=Math.max(256,Math.min(640,Math.floor(5400/payloadCount)));
+  const lineBudget=Math.max(320,Math.min(900,Math.floor(8200/payloadCount)));
   const bounded=essential.map(line=>{
     if(line===begin||line===end||SOURCE_REPAIR_DIRECTIVE_PREFIXES.some(prefix=>line.startsWith(prefix))||/^(?:roblox|game)ProductionOWNER=/.test(line))return line;
     const at=line.indexOf('=');
