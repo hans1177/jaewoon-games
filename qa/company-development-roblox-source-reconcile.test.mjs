@@ -917,7 +917,7 @@ test('unchanged package asset failure cannot be turned into a new source PASS by
 
 test('verified learning refresh debt coalesces into one existing batch sweep',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
-  const start=workflow.indexOf('      - name: Dispatch verified learning sweep per game when reconciliation finds refresh debt');
+  const start=workflow.indexOf('      - name: Dispatch verified learning batch sweep when reconciliation finds refresh debt');
   const end=workflow.indexOf('      - name: Resolve next Roblox source execution slice',start);
   assert.ok(start>=0&&end>start);
   const block=workflow.slice(start,end);
