@@ -23,7 +23,7 @@ test('internal motion planning binds 100 registered parents to one current walk 
       const id='ghost-'+i;
       assets.push({id:'roblox-world-ghost-'+id,intendedConsumerGameIds:['horror-escape-room']});
       fs.mkdirSync(path.join(root,sourceRoot,id));
-      fs.writeFileSync(path.join(root,sourceRoot,id,'init.luau'),'local Motion={}\nMotion.AssetId = "'+id+'"\nfunction Motion.walk(form,bones,time)\n local state="walk"\n return {}\nend\nreturn Motion\n');
+      fs.writeFileSync(path.join(root,sourceRoot,id,'init.luau'),'local Motion={}\nMotion.AssetId = "'+id+'"\nfunction Motion.walk(form,bones,time)\n local state="walk"\n return {}\nend\nfunction Motion.attack(form,bones,time)\n local state="attack"\n return {}\nend\nreturn Motion\n');
     }
     fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({assets}));
     const project={gameId:'horror-escape-room',engine:'roblox',releaseState:'development-confirmed'};
@@ -35,6 +35,10 @@ test('internal motion planning binds 100 registered parents to one current walk 
       assert.equal(unit.objectCount,1);assert.equal(unit.motionCount,1);assert.equal(unit.estimatedModificationMinutes,60);
       assert.match(unit.sourceHash,/^[a-f0-9]{64}$/);
       assert.ok(unit.sourceWindow.startsWith(unit.clipBindingEvidence));
+      assert.ok(unit.sourceWindow.includes('local state="walk"'));
+      assert.equal(unit.sourceWindow.includes('function Motion.attack'),false);
+      assert.equal(unit.sourceWindow.includes('local state="attack"'),false);
+      assert.ok(Buffer.byteLength(unit.sourceWindow)<12000);
       assert.equal(task.responsibleFiles[0],task.sourceRoot+'/'+unit.sourcePath);
     }
     assert.equal(findSafeTasks(project,root,{tasks:tasks.slice(0,64)}).length,36);
