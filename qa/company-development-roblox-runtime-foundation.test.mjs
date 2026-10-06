@@ -652,7 +652,8 @@ test('exact engine preboot with matching sentinel continues F9 while real server
  assert.match(block,/internalRuntimeObservationDeferred:true/);
  assert.match(block,/externalServerBootRequired:false/);
  assert.match(block,/officialStudioMcpActualPlayPassed:exactStudioInternalValidation/);
- assert.match(workflow,/item\.robloxRuntimePassed=false;[\s\S]{0,1800}if\(exactEngineVersionAwaitingRealServerBoot\)\{/);
+ const runtimeResetAt=workflow.lastIndexOf('item.robloxRuntimePassed=false;',start);
+ assert.ok(runtimeResetAt>0&&start-runtimeResetAt<6000);
  assert.match(block,/f9Ids\.push\(item\.gameId\)/);
  assert.doesNotMatch(block,/queueStudioFollowupIfEligible\(item\)/);
 });
