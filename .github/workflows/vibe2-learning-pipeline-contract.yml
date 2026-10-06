@@ -9,12 +9,20 @@ on:
       - 'company-learning/training-samples/**'
       - 'company-learning/distillation-status.json'
       - 'company-learning/distillation-training-request.json'
+      - '.vibe2/external-ai-distilled-knowledge.json'
+      - 'tools/vibe2-external-ai-distillation.mjs'
+      - 'qa/vibe2-external-ai-distillation.test.mjs'
+      - 'qa/vibe2-learning-motor.test.mjs'
+      - 'qa/company-system-ai-learning.test.mjs'
       - 'tools/vibe2-learning-pipeline-contract.mjs'
       - 'tools/vibe2-distillation-ingest.mjs'
       - 'tools/vibe2-distillation-status.mjs'
       - 'tools/vibe2-training-request.mjs'
       - 'tools/vibe2-weight-learning.mjs'
       - 'tools/vibe2-train.py'
+      - '.github/workflows/vibe2-24h-runner.yml'
+      - '.github/workflows/company-evolution-qa.yml'
+      - '.github/workflows/vibe2-core-qa.yml'
       - '.github/workflows/vibe2-distillation-ingest.yml'
       - '.github/workflows/vibe2-local-distillation-train.yml'
       - '.github/workflows/vibe2-learning-pipeline-contract.yml'
@@ -27,15 +35,28 @@ on:
       - 'company-learning/training-samples/**'
       - 'company-learning/distillation-status.json'
       - 'company-learning/distillation-training-request.json'
+      - '.vibe2/external-ai-distilled-knowledge.json'
+      - 'tools/vibe2-external-ai-distillation.mjs'
+      - 'qa/vibe2-external-ai-distillation.test.mjs'
+      - 'qa/vibe2-learning-motor.test.mjs'
+      - 'qa/company-system-ai-learning.test.mjs'
       - 'tools/vibe2-learning-pipeline-contract.mjs'
       - 'tools/vibe2-distillation-ingest.mjs'
       - 'tools/vibe2-distillation-status.mjs'
       - 'tools/vibe2-training-request.mjs'
       - 'tools/vibe2-weight-learning.mjs'
       - 'tools/vibe2-train.py'
+      - '.github/workflows/vibe2-24h-runner.yml'
+      - '.github/workflows/company-evolution-qa.yml'
+      - '.github/workflows/vibe2-core-qa.yml'
       - '.github/workflows/vibe2-distillation-ingest.yml'
       - '.github/workflows/vibe2-local-distillation-train.yml'
       - '.github/workflows/vibe2-learning-pipeline-contract.yml'
+  workflow_run:
+    workflows:
+      - Company Evolution QA
+      - Vibe2 Core QA
+    types: [completed]
   workflow_dispatch:
 
 permissions:
@@ -43,6 +64,7 @@ permissions:
 
 jobs:
   contract:
+    if: ${{ github.event_name != 'workflow_run' }}
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
@@ -52,3 +74,129 @@ jobs:
           node-version: '22'
       - name: Validate canonical learning chain and Block Blast success-learning method
         run: node tools/vibe2-learning-pipeline-contract.mjs
+
+  verified_static_learning_promotion:
+    if: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: write
+      pull-requests: write
+    concurrency:
+      group: verified-learning-main-promotion-${{ github.event.workflow_run.head_sha }}
+      cancel-in-progress: false
+    steps:
+      - name: Checkout trusted main promotion gate
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate exact PR, immutable knowledge, and required QA
+        id: gate
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TRIGGER_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          repo="$GITHUB_REPOSITORY"
+          head_sha="$TRIGGER_HEAD_SHA"
+
+          skip() {
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "VERIFIED_LEARNING_MAIN_PROMOTION_SKIP=$1"
+            exit 0
+          }
+
+          pr_number="$(jq -r '.workflow_run.pull_requests[0].number // empty' "$GITHUB_EVENT_PATH")"
+          [ -n "$pr_number" ] || skip 'NO_PULL_REQUEST'
+
+          gh api "repos/$repo/pulls/$pr_number" > /tmp/verified-learning-pr.json
+          state="$(jq -r '.state' /tmp/verified-learning-pr.json)"
+          base_ref="$(jq -r '.base.ref' /tmp/verified-learning-pr.json)"
+          pr_head_sha="$(jq -r '.head.sha' /tmp/verified-learning-pr.json)"
+          head_repo="$(jq -r '.head.repo.full_name // empty' /tmp/verified-learning-pr.json)"
+          head_ref="$(jq -r '.head.ref' /tmp/verified-learning-pr.json)"
+
+          [ "$state" = 'open' ] || skip 'PR_NOT_OPEN'
+          [ "$base_ref" = 'main' ] || skip 'BASE_NOT_MAIN'
+          [ "$pr_head_sha" = "$head_sha" ] || skip 'HEAD_SHA_MOVED'
+          [ "$head_repo" = "$repo" ] || skip 'FORK_OR_EXTERNAL_HEAD_FORBIDDEN'
+
+          gh api --paginate "repos/$repo/pulls/$pr_number/files?per_page=100" --jq '.[].filename' > /tmp/verified-learning-changed-files.txt
+          test -s /tmp/verified-learning-changed-files.txt || skip 'NO_CHANGED_FILES'
+
+          store_seen='NO'
+          while IFS= read -r file; do
+            case "$file" in
+              '.vibe2/external-ai-distilled-knowledge.json')
+                store_seen='YES'
+                ;;
+              'qa/vibe2-external-ai-distillation.test.mjs'|'qa/vibe2-learning-motor.test.mjs'|'qa/company-system-ai-learning.test.mjs')
+                ;;
+              *)
+                skip "NON_LEARNING_PROMOTION_FILE:$file"
+                ;;
+            esac
+          done < /tmp/verified-learning-changed-files.txt
+          [ "$store_seen" = 'YES' ] || skip 'DISTILLED_STORE_NOT_CHANGED'
+
+          gh api             -H 'Accept: application/vnd.github.raw+json'             "repos/$repo/contents/.vibe2/external-ai-distilled-knowledge.json?ref=$head_sha"             > /tmp/verified-learning-candidate.json
+
+          changed_csv="$(paste -sd, /tmp/verified-learning-changed-files.txt)"
+          if ! node tools/vibe2-external-ai-distillation.mjs             --verify-main-promotion=true             --base=.vibe2/external-ai-distilled-knowledge.json             --candidate=/tmp/verified-learning-candidate.json             --changed-files="$changed_csv" | tee /tmp/verified-learning-promotion-gate.log; then
+            skip 'TRUSTED_MAIN_PROMOTION_GATE_FAILED'
+          fi
+          grep -q '^VIBE2_EXTERNAL_AI_MAIN_PROMOTION=PASS$' /tmp/verified-learning-promotion-gate.log || skip 'TRUSTED_MAIN_PROMOTION_MARKER_MISSING'
+
+          gh api "repos/$repo/actions/runs?head_sha=$head_sha&event=pull_request&per_page=100" > /tmp/verified-learning-runs.json
+          qa_ready="$(HEAD_SHA="$head_sha" node <<'NODE'
+          const fs=require('fs');
+          const data=JSON.parse(fs.readFileSync('/tmp/verified-learning-runs.json','utf8'));
+          const required=['Company Evolution QA','Vibe2 Core QA'];
+          const head=process.env.HEAD_SHA;
+          for(const name of required){
+            const matches=(data.workflow_runs||[])
+              .filter(run=>run.name===name&&run.head_sha===head)
+              .sort((a,b)=>Number(b.id)-Number(a.id));
+            const latest=matches[0];
+            if(!latest||latest.status!=='completed'||latest.conclusion!=='success'){
+              console.log('NO');
+              process.exit(0);
+            }
+          }
+          console.log('YES');
+          NODE
+          )"
+          [ "$qa_ready" = 'YES' ] || skip 'REQUIRED_QA_NOT_ALL_SUCCESS'
+
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+          echo "pr_number=$pr_number" >> "$GITHUB_OUTPUT"
+          echo "head_sha=$head_sha" >> "$GITHUB_OUTPUT"
+          echo "head_ref=$head_ref" >> "$GITHUB_OUTPUT"
+          echo "VERIFIED_LEARNING_MAIN_PROMOTION_READY=YES"
+
+      - name: Squash merge exact verified learning PR
+        if: ${{ steps.gate.outputs.ready == 'true' }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ steps.gate.outputs.pr_number }}
+          HEAD_SHA: ${{ steps.gate.outputs.head_sha }}
+        run: |
+          set -euo pipefail
+          repo="$GITHUB_REPOSITORY"
+          gh api -X PUT "repos/$repo/pulls/$PR_NUMBER/merge"             -f merge_method='squash'             -f sha="$HEAD_SHA" > /tmp/verified-learning-merge.json
+          jq -e '.merged == true' /tmp/verified-learning-merge.json >/dev/null
+          merge_sha="$(jq -r '.sha' /tmp/verified-learning-merge.json)"
+          test -n "$merge_sha"
+          git fetch origin main --quiet
+          git merge-base --is-ancestor "$merge_sha" origin/main
+          echo "VERIFIED_LEARNING_MAIN_PROMOTION_MERGED=YES"
+          echo "VERIFIED_LEARNING_MAIN_PROMOTION_SHA=$merge_sha"
