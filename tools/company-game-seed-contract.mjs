@@ -311,9 +311,9 @@ function validateGameplaySketch(sketch,errors){
     errors.push('GAMEPLAY_SKETCH.worldbuildingDepth is required for version 3+');
   }else{
     if(world.allGenreApplicable!==true)errors.push('GAMEPLAY_SKETCH.worldbuildingDepth.allGenreApplicable must be true for every game genre');
-    const worldStrings=['worldPremise','civilizationPowerOrder','geographyEcology','economyDailyLife','beliefMythTaboo','technologyInstitutions','placeNameLogic','journalArchiveLogic','monsterOpponentEcology','dialogueMemoryLogic','genreExpression'];
+    const worldStrings=['worldPremise','sharedConceptAnchor','civilizationPowerOrder','geographyEcology','economyDailyLife','beliefMythTaboo','technologyInstitutions','placeNameLogic','journalArchiveLogic','monsterOpponentEcology','dialogueMemoryLogic','genreExpression'];
     for(const field of worldStrings)if(!isNonEmptyString(world[field]))errors.push(`GAMEPLAY_SKETCH.worldbuildingDepth.${field} is required for version 3+`);
-    const worldArrays=[['worldDnaSources',3],['causalChains',4],['worldStateEvolution',2],['crossMediaClueLinks',3]];
+    const worldArrays=[['worldDnaSources',3],['componentConceptLinks',6],['causalChains',4],['worldStateEvolution',2],['crossMediaClueLinks',3]];
     for(const [field,min] of worldArrays)if(!Array.isArray(world[field])||uniq(world[field]).length<min)errors.push(`GAMEPLAY_SKETCH.worldbuildingDepth.${field} requires at least ${min} meaningful items for version 3+`);
     const worldFamilies=new Set(GAMEPLAY_WORLDBUILDING_DNA_FAMILIES);
     for(const family of uniq(world.worldDnaSources))if(!worldFamilies.has(family))errors.push(`GAMEPLAY_SKETCH.worldbuildingDepth.worldDnaSources invalid family: ${family}`);
@@ -324,6 +324,8 @@ function validateGameplaySketch(sketch,errors){
     errors.push('GAMEPLAY_SKETCH.libraryLinkage is required for version 3+');
   }else{
     if(libraries.allCanonicalLibrariesSearchable!==true)errors.push('GAMEPLAY_SKETCH.libraryLinkage.allCanonicalLibrariesSearchable must be true');
+    if(libraries.referenceOnly!==true)errors.push('GAMEPLAY_SKETCH.libraryLinkage.referenceOnly must be true');
+    if(libraries.perLibraryUseOptional!==true)errors.push('GAMEPLAY_SKETCH.libraryLinkage.perLibraryUseOptional must be true');
     if(libraries.compatibilityRightsAndGameIdentityFirst!==true)errors.push('GAMEPLAY_SKETCH.libraryLinkage.compatibilityRightsAndGameIdentityFirst must be true');
     if(libraries.actualConsumerEvidenceRequired!==true)errors.push('GAMEPLAY_SKETCH.libraryLinkage.actualConsumerEvidenceRequired must be true');
     if(libraries.noForcedUse!==true)errors.push('GAMEPLAY_SKETCH.libraryLinkage.noForcedUse must be true');
