@@ -487,3 +487,16 @@ test('24H pre-plan production dispatch obeys canonical runner backpressure',()=>
   assert.match(step,/VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=DISPATCHED/);
   assert.match(step,/VIBE2_ASSET_PRIORITY_BURST_MAX/);
 });
+
+test('asset-development callbacks honor live runner pressure and preserve cohort artifact fallback',()=>{
+  const start=core.indexOf('- name: Dispatch or coalesce atomic neuron completion');
+  const end=core.indexOf('\n  fan_in:',start);
+  assert.ok(start>=0&&end>start);
+  const block=core.slice(start,end);
+  assert.doesNotMatch(block,/VIBE2_ASSET_ATOMIC_CALLBACK_PRESSURE_BYPASS/);
+  assert.match(block,/VIBE2_ASSET_ATOMIC_CALLBACK=COALESCED_UNDER_RUNNER_PRESSURE/);
+  assert.match(block,/VIBE2_ATOMIC_NEURON_RESULT_CARRIER=WORKER_ARTIFACT/);
+  assert.match(block,/VIBE2_PRESSURE_REFILL_DISPATCH=SKIPPED_DEFER_TO_COHORT_FANIN/);
+  assert.match(block,/VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=COALESCED_TO_COHORT_FANIN/);
+  assert.match(block,/pressureStates=new Set\(\['queued','pending','requested'\]\)/);
+});
