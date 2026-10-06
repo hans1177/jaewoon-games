@@ -789,22 +789,24 @@ jobs:
 
           pr_url="$(gh pr list --repo "$repo" --state open --base main --head "$promotion_branch" --json url --jq '.[0].url // empty')"
           if [ -z "$pr_url" ]; then
+            promotion_body="$(printf '%s\n' \
+              'Automatic verified static learning promotion from the existing 24H learning chain.' \
+              '' \
+              '- trusted store: .vibe2/external-ai-distilled-knowledge.json' \
+              '- all trusted distilled learning domains eligible' \
+              '- existing canonical entries immutable' \
+              '- independent verification evidence >= 2' \
+              '- raw external output forbidden' \
+              '- direct main write: NO' \
+              '- automatic merge only after Company Evolution QA + Vibe2 Core QA succeed on the exact head' \
+              '- model-weight training promotion remains FIXED_HOLDOUT_AB_THEN_CANARY' \
+              '- central policy / finalDevelopmentLock mutation forbidden')"
             pr_url="$(gh pr create \
               --repo "$repo" \
               --base main \
               --head "$promotion_branch" \
               --title 'learning: auto promote verified distilled knowledge' \
-              --body "Automatic verified static learning promotion from the existing 24H learning chain.
-
-- trusted store: .vibe2/external-ai-distilled-knowledge.json
-- all trusted distilled learning domains eligible
-- existing canonical entries immutable
-- independent verification evidence >= 2
-- raw external output forbidden
-- direct main write: NO
-- automatic merge only after Company Evolution QA + Vibe2 Core QA succeed on the exact head
-- model-weight training promotion remains FIXED_HOLDOUT_AB_THEN_CANARY
-- central policy / finalDevelopmentLock mutation forbidden")"
+              --body "$promotion_body")"
           fi
 
           echo "VIBE2_VERIFIED_LEARNING_PROMOTION_PR=$pr_url"
