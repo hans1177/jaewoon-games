@@ -270,7 +270,19 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
     const studioState=fs.existsSync(root)?studioAssetRefreshState({root,assetLibrary}):{required:false,refreshRequired:false,libraryVersion:Number(assetLibrary?.version||0)};
     const learningState=fs.existsSync(root)?verifiedExternalLearningRefreshState({root,playbooks,gameId:item.gameId,profile:learningProfile}):{required:false,refreshRequired:false,expectedIds:[],fingerprint:null};
     if(learningState.refreshRequired===true){
-      results.push({gameId:item.gameId,pass:false,sourcePath,sourceRevision:currentRevision,sourceTreeSha,sourceDrift:!sourceBind,saveRequired:false,blockers:['ROBLOX_VERIFIED_EXTERNAL_LEARNING_REFRESH_REQUIRED'],failure:'existing-source-verified-external-learning-required',verifiedExternalLearningRefreshRequired:true,verifiedExternalLearningExpectedIds:learningState.expectedIds,verifiedExternalLearningCurrentIds:learningState.currentIds||[],verifiedExternalLearningFingerprint:learningState.fingerprint,verifiedExternalLearningCurrentFingerprint:learningState.currentFingerprint||null});
+      results.push({
+        gameId:item.gameId,pass:false,sourcePath,sourceRevision:currentRevision,sourceTreeSha,sourceDrift:!sourceBind,saveRequired:false,
+        blockers:['ROBLOX_VERIFIED_EXTERNAL_LEARNING_REFRESH_REQUIRED'],failure:'existing-source-verified-external-learning-required',
+        verifiedExternalLearningRefreshRequired:true,
+        verifiedExternalLearningExpectedIds:learningState.expectedIds,
+        verifiedExternalLearningCurrentIds:learningState.currentIds||[],
+        verifiedExternalLearningFingerprint:learningState.fingerprint,
+        verifiedExternalLearningCurrentFingerprint:learningState.currentFingerprint||null,
+        verifiedExternalLearningExpectedSemanticMappingFingerprints:learningState.acceptedSemanticMappingFingerprints||[],
+        verifiedExternalLearningCurrentSemanticMappingFingerprint:learningState.currentSemanticMappingFingerprint||null,
+        verifiedExternalLearningSourceSubgenreRefinementAllowed:learningState.sourceSubgenreRefinementAllowed===true,
+        verifiedExternalLearningSourceProfile:learningState.sourceProfile||null
+      });
       continue;
     }
     if(studioState.refreshRequired===true){
