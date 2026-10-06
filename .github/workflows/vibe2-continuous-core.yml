@@ -2607,9 +2607,9 @@ jobs:
             exit 0
           fi
 
-          # ASSET_DEVELOPMENT must fan in each completed task immediately.
-          # A slow unrelated worker in the same matrix may not hold the finished asset task,
-          # its Work Lock, or its causal retry behind the cohort barrier.
+          # Asset workers stay parallel, but callback workflow creation is backpressured.
+          # Under queue pressure the immutable result artifact is consumed by the existing cohort fan-in,
+          # so no finished task or causal retry is lost while redundant workflow runs are avoided.
           queue_pressure=0
           # All auxiliary lanes use the existing immutable artifact + cohort fan-in path when
           # the Actions queue is already pressured. Asset work stays parallel; only redundant
