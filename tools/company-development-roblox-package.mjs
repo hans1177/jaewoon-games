@@ -220,8 +220,8 @@ function stripRobloxPackageAssetTrace(text=''){
     .replace(/-- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_END/g,' ')
     .replace(/-- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_BEGIN[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_END/g,' ')
     .replace(/-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END/g,' ')
-    .replace(/-- native-foundation-sentinel-v1 client readiness[\s\S]*$/g,' ')
-    .replace(/-- native-foundation-sentinel-v1[\s\S]*$/g,' ')
+    .replace(/-- native-foundation-sentinel-v1 client readiness[\s\S]*?task\.defer\(reportNativeFoundationReady\)/g,' ')
+    .replace(/-- native-foundation-sentinel-v1[\s\S]*?game:BindToClose\(function\(\) end\)/g,' ')
     .replace(/--[^\n]*/g,' ')
     .replace(/\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{[\s\S]*?\}/g,' ')
     .replace(/\bSTUDIO_ASSET_SELECTION\s*=\s*\{[\s\S]*?\}/g,' ');
