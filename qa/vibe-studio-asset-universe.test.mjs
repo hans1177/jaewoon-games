@@ -4768,18 +4768,65 @@ test('source-bound consumer sync maps project paths exact asset ids and managed 
     assert.equal(byId.get('roblox-world-ghost-unused').sourceBoundConsumerGameIds,undefined);
     assert.deepEqual(byId.get('roblox-common-motion-walk').sourceBoundConsumerGameIds,['horror-demo']);
     assert.equal(byId.get('roblox-common-motion-jog').sourceBoundConsumerGameIds,undefined);
+    assert.deepEqual(byId.get('roblox-common-motion-jog').sourceRequiredConsumerGameIds,['horror-demo']);
+    assert.equal(byId.get('roblox-common-motion-jog').sourceRequirementState,'DECLARED_SOURCE_REQUIREMENT');
     assert.deepEqual(byId.get('roblox-common-motion-walk').consumerGameIds,['manual-game']);
     assert.equal(byId.get('roblox-common-motion-walk').productionVerified,undefined);
     assert.equal(result.summary.sourceOnlyDoesNotGrantRuntimeVerification,true);
+    assert.equal(result.summary.requirementsAreDemandReferenceOnly,true);
+    assert.equal(result.summary.declaredRequirementDoesNotEqualActualBinding,true);
     assert.equal(result.summary.newQueueCreated,false);
     assert.equal(result.summary.newSchedulerCreated,false);
     assert.ok(result.summary.boundAssetCount>=3);
+    assert.equal(result.summary.requiredAssetCount,1);
+    assert.equal(result.summary.requirementCount,1);
+    assert.deepEqual(result.summary.requirementsByGame,[{gameId:'horror-demo',assetIds:['roblox-common-motion-jog'],families:['MOTION']}]);
     assert.ok(result.bindings.some(row=>row.assetId==='roblox-world-ghost-yurei'&&row.mode==='PACK_PATH_AND_IDENTITY'));
     assert.ok(result.bindings.some(row=>row.assetId==='roblox-common-motion-walk'&&row.mode==='MANAGED_LIBRARY_IDENTITY'));
+    assert.ok(result.requirements.some(row=>row.assetId==='roblox-common-motion-jog'&&row.classification==='DECLARED_SOURCE_REQUIREMENT'&&row.actualSourceBound===false));
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
 
+
+
+test('asset production plan exposes declared source requirements as reference demand without forcing library expansion',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-requirement-plan-'));
+  try{
+    fs.mkdirSync(path.join(root,'roblox-games','demo','client'),{recursive:true});
+    fs.mkdirSync(path.join(root,'assets','roblox','common-motion-v1'),{recursive:true});
+    fs.writeFileSync(path.join(root,'assets','asset-manifest.json'),JSON.stringify({version:1,assets:[]}));
+    fs.writeFileSync(path.join(root,'assets','roblox','common-motion-v1','RobloxCommonMotion.luau'),'return {}');
+    fs.writeFileSync(path.join(root,'roblox-games','demo','client','Game.client.luau'),[
+      '-- STUDIO_ASSET_BINDING_BEGIN',
+      'local StudioAssets = { Families = { MOTION = { "JOG" } } }',
+      '-- STUDIO_ASSET_BINDING_END'
+    ].join('\n'));
+    fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify({games:[{
+      id:'demo',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',
+      robloxProjectPath:'roblox-games/demo',selectedPlatform:'ROBLOX'
+    }]}));
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
+      version:1,
+      assets:[
+        {id:'roblox-common-motion-v1',packId:'roblox-common-motion-v1',family:'MOTION',platform:'ROBLOX',sourceFiles:['assets/roblox/common-motion-v1/RobloxCommonMotion.luau'],license:'project-original'},
+        {id:'roblox-common-motion-jog',packId:'roblox-common-motion-v1',family:'MOTION',platform:'ROBLOX',atomId:'JOG',bindingHint:{configCollection:'StudioAssets.Families.MOTION'},sourceFiles:['assets/roblox/common-motion-v1/RobloxCommonMotion.luau'],license:'project-original'}
+      ]
+    }));
+    const plan=buildVibeAssetProductionPlan({repoRoot:root,target:'roblox',task:{gameId:'demo',target:'roblox'}});
+    assert.equal(plan.internalLibraryEvolution.sourceConsumerDemand.requirementCount,1);
+    assert.equal(plan.internalLibraryEvolution.sourceConsumerDemand.requiredAssetCount,1);
+    assert.equal(plan.internalLibraryEvolution.sourceConsumerDemand.referenceOnlyUntilExplicitProductionNeed,true);
+    assert.equal(plan.internalLibraryEvolution.sourceConsumerDemand.allLibraryExpansionRequired,false);
+    const row=plan.internalLibraryEvolution.sourceConsumerDemand.requirements[0];
+    assert.equal(row.assetId,'roblox-common-motion-jog');
+    assert.equal(row.gameId,'demo');
+    assert.equal(row.classification,'DECLARED_SOURCE_REQUIREMENT');
+    assert.equal(row.actualSourceBound,false);
+    assert.equal(row.runtimeVerified,false);
+    assert.equal(row.productionVerified,false);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
 test('dynamic source consumers stay outside registry identity and refresh on the next planning cycle',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-consumer-overlay-'));
   try{
