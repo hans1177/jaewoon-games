@@ -2718,8 +2718,9 @@ export function buildVibeAssetProductionPlan({
     assetDomainFamilies(row?.domain).some(family=>currentDemandFamilies.includes(family))
   );
   const currentGameId=clean(task.gameId);
+  const qualityAssetId=clean(task?.assetQualityWorkUnit?.assetId);
   const activeQualityActions=(executionLibraryPlan.nextQualityActions||[]).filter(row=>
-    !currentGameId||(row?.consumerGameIds||[]).map(clean).includes(currentGameId)
+    qualityAssetId?clean(row?.assetId)===qualityAssetId:(!currentGameId||(row?.consumerGameIds||[]).map(clean).includes(currentGameId))
   );
   const currentExecutionPhase=activeQualityActions.length?'QUALITY_UP_1000':activeNextVolumeActions.length?'VOLUME_UP':'HOLD';
   const internalLibraryEvolution=freeze({
@@ -3463,6 +3464,7 @@ export function buildVibeAssetProductionPlan({
     runtimeVisualRepair,
     engineMeasurementCapture,
     motionRepairWorkUnit:task.motionRepairWorkUnit?freeze({...task.motionRepairWorkUnit,required:true,estimatedModificationMinutes:60,objectCount:task.motionRepairWorkUnit.objectCount??1,motionCount:task.motionRepairWorkUnit.motionCount??1,runtimeVerified:false}):null,
+    assetQualityWorkUnit:task.assetQualityWorkUnit?freeze({...task.assetQualityWorkUnit,required:true,scope:'INTERNAL_ASSET_LIBRARY_QUALITY',estimatedModificationMinutes:60,qualityWorkSession:INTERNAL_ASSET_FULL_QUALITY_WORK_SESSION,runtimeVerified:false}):null,
     sourceGlbReconstruction:freezeList((Array.isArray(task.sourceGlbs)?task.sourceGlbs:[]).map(source=>inspectVibeSourceGlb({repoRoot,source}))),
     mapDetailReconstruction,
     imageAssetCreation:freeze({
