@@ -840,22 +840,26 @@ end
 local function syncStudioAssetSemanticInstance(instance)
   if not instance then return end
   local name = string.lower(instance.Name or "")
-  if instance:IsA("Humanoid") or instance:IsA("Accessory") then bindStudioAssetSemanticFamily(instance, "CHARACTER") end
+  if instance:IsA("Humanoid") or instance:IsA("Accessory") or (instance:IsA("Model") and instance:FindFirstChildOfClass("Humanoid")) then bindStudioAssetSemanticFamily(instance, "CHARACTER") end
   if instance:IsA("Tool") then bindStudioAssetSemanticFamily(instance, "WEAPON") end
   if instance:IsA("Sound") then bindStudioAssetSemanticFamily(instance, "AUDIO") end
-  if instance:IsA("ParticleEmitter") or instance:IsA("Beam") or instance:IsA("Trail") then
+  if instance:IsA("ParticleEmitter") or instance:IsA("Beam") or instance:IsA("Trail") or instance:IsA("PointLight") or instance:IsA("SpotLight") or instance:IsA("SurfaceLight") then
     bindStudioAssetSemanticFamily(instance, "VFX")
     bindStudioAssetSemanticFamily(instance, "SKILL")
   end
-  if instance:IsA("Animator") or instance:IsA("Animation") or instance:IsA("Motor6D") or instance:IsA("Bone") then bindStudioAssetSemanticFamily(instance, "MOTION") end
+  if instance:IsA("Animator") or instance:IsA("Animation") or instance:IsA("Motor6D") or instance:IsA("Bone") then
+    bindStudioAssetSemanticFamily(instance, "MOTION")
+    if instance:IsA("Animation") and (string.find(name, "skill", 1, true) or string.find(name, "cast", 1, true) or string.find(name, "attack", 1, true)) then bindStudioAssetSemanticFamily(instance, "SKILL") end
+  end
   if instance:IsA("Frame") or instance:IsA("TextLabel") or instance:IsA("TextButton") or instance:IsA("ImageLabel") or instance:IsA("ImageButton") then bindStudioAssetSemanticFamily(instance, "UI") end
-  if instance:IsA("SurfaceAppearance") or instance:IsA("MaterialVariant") then bindStudioAssetSemanticFamily(instance, "MATERIAL") end
-  if instance:IsA("Atmosphere") then bindStudioAssetSemanticFamily(instance, "ENVIRONMENT") end
+  if instance:IsA("BasePart") or instance:IsA("SurfaceAppearance") or instance:IsA("MaterialVariant") then bindStudioAssetSemanticFamily(instance, "MATERIAL") end
+  if instance:IsA("Lighting") or instance:IsA("Terrain") or instance:IsA("Atmosphere") then bindStudioAssetSemanticFamily(instance, "ENVIRONMENT") end
   if instance:IsA("Model") or instance:IsA("BasePart") then
-    if string.find(name, "enemy", 1, true) or string.find(name, "monster", 1, true) or string.find(name, "boss", 1, true) or string.find(name, "creature", 1, true) or string.find(name, "mob", 1, true) then bindStudioAssetSemanticFamily(instance, "CREATURE") end
-    if string.find(name, "house", 1, true) or string.find(name, "building", 1, true) or string.find(name, "shop", 1, true) or string.find(name, "wall", 1, true) or string.find(name, "roof", 1, true) or string.find(name, "tower", 1, true) or string.find(name, "gate", 1, true) then bindStudioAssetSemanticFamily(instance, "BUILDING") end
-    if string.find(name, "sword", 1, true) or string.find(name, "axe", 1, true) or string.find(name, "spear", 1, true) or string.find(name, "weapon", 1, true) or string.find(name, "staff", 1, true) then bindStudioAssetSemanticFamily(instance, "WEAPON") end
-    if string.find(name, "chest", 1, true) or string.find(name, "crate", 1, true) or string.find(name, "barrel", 1, true) or string.find(name, "lamp", 1, true) or string.find(name, "tree", 1, true) or string.find(name, "rock", 1, true) or string.find(name, "workbench", 1, true) then bindStudioAssetSemanticFamily(instance, "PROP") end
+    if string.find(name, "enemy", 1, true) or string.find(name, "monster", 1, true) or string.find(name, "boss", 1, true) or string.find(name, "creature", 1, true) or string.find(name, "mob", 1, true) or string.find(name, "wildlife", 1, true) then bindStudioAssetSemanticFamily(instance, "CREATURE") end
+    if string.find(name, "house", 1, true) or string.find(name, "building", 1, true) or string.find(name, "shop", 1, true) or string.find(name, "wall", 1, true) or string.find(name, "roof", 1, true) or string.find(name, "tower", 1, true) or string.find(name, "gate", 1, true) or string.find(name, "foundation", 1, true) or string.find(name, "village", 1, true) or string.find(name, "dungeon", 1, true) or string.find(name, "castle", 1, true) or string.find(name, "school", 1, true) or string.find(name, "temple", 1, true) then bindStudioAssetSemanticFamily(instance, "BUILDING") end
+    if string.find(name, "sword", 1, true) or string.find(name, "blade", 1, true) or string.find(name, "axe", 1, true) or string.find(name, "spear", 1, true) or string.find(name, "hammer", 1, true) or string.find(name, "bow", 1, true) or string.find(name, "gun", 1, true) or string.find(name, "weapon", 1, true) or string.find(name, "staff", 1, true) or string.find(name, "shield", 1, true) then bindStudioAssetSemanticFamily(instance, "WEAPON") end
+    if string.find(name, "ground", 1, true) or string.find(name, "terrain", 1, true) or string.find(name, "world", 1, true) or string.find(name, "garden", 1, true) or string.find(name, "island", 1, true) or string.find(name, "forest", 1, true) or string.find(name, "desert", 1, true) or string.find(name, "snow", 1, true) or string.find(name, "swamp", 1, true) or string.find(name, "cave", 1, true) then bindStudioAssetSemanticFamily(instance, "ENVIRONMENT") end
+    if string.find(name, "chest", 1, true) or string.find(name, "crate", 1, true) or string.find(name, "barrel", 1, true) or string.find(name, "lamp", 1, true) or string.find(name, "tree", 1, true) or string.find(name, "rock", 1, true) or string.find(name, "workbench", 1, true) or string.find(name, "resource", 1, true) or string.find(name, "pickup", 1, true) or string.find(name, "log", 1, true) or string.find(name, "stump", 1, true) then bindStudioAssetSemanticFamily(instance, "PROP") end
   end
 end
 for _, studioAssetInstance in ipairs(game:GetDescendants()) do syncStudioAssetSemanticInstance(studioAssetInstance) end
