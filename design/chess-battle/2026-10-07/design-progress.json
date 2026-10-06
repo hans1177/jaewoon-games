@@ -12,20 +12,20 @@
   "lastSuccessfulModelCallAt": null,
   "failedPhase": "designer_draft",
   "failedTask": null,
-  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=OPTIONAL_EXTERNAL_AI_DISABLED local=schema required missing: root.identity",
+  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=OPTIONAL_EXTERNAL_AI_DISABLED local=OLLAMA_DESIGN_HTTP_500 {\"error\":\"prediction aborted, token repeat limit reached\"}",
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 86,
+      "calls": 87,
       "successes": 0,
-      "failures": 86,
-      "timeouts": 62,
+      "failures": 87,
+      "timeouts": 63,
       "jsonFailures": 24,
-      "totalMs": 8658111,
-      "lastMs": 120100,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
-      "updatedAt": "2026-10-06T22:19:06.387Z"
+      "totalMs": 8723591,
+      "lastMs": 65480,
+      "lastError": "OLLAMA_DESIGN_HTTP_500 {\"error\":\"prediction aborted, token repeat limit reached\"}",
+      "updatedAt": "2026-10-06T22:20:11.868Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-06T22:19:06.387Z"
+  "updatedAt": "2026-10-06T22:20:11.869Z"
 }
