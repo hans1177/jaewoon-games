@@ -86,7 +86,7 @@ const JSON_FINAL_RETRY_TIMEOUT_MS=150000;
 const JSON_FINAL_RETRY_MAX_PREDICT=768;
 const JSON_FOCUSED_REPLACE_MAX_PREDICT=384;
 const ROBLOX_REBUILD_FOCUSED_MAX_PREDICT=1024;
-const JSON_FOCUSED_REPLACE_TIMEOUT_MS=Math.max(120000,DEFAULT_TIMEOUT_MS);
+const JSON_FOCUSED_REPLACE_TIMEOUT_MS=90000;
 const UNITY_STUDIO_FOCUSED_TIMEOUT_MS=120000;
 const ASSET_DEVELOPMENT_ROBLOX_FOCUSED_MAX_PREDICT=768;
 const ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS=120000;
@@ -1339,7 +1339,7 @@ export function buildDiagnosticFocusedReplaceOnlyPrompt(prompt,{exploration={},s
     prompt:[
       'You are the Vibe2 causal diagnostic source repair worker. Return JSON only.',
       goal,
-      verifiedExternalLearningBlockFromPrompt(raw),
+      compactVerifiedExternalLearningBlockFromPrompt(raw),
       `Reproduced diagnostic: ${spec.diagnosticType}:${spec.path}; line=${spec.diagnosticLine??'UNKNOWN'}; needle=${spec.diagnosticNeedle||'UNKNOWN'}`,
       spec.diagnosticMicroTask?`Required repair: ${spec.diagnosticMicroTask}`:'',
       hardRule,
@@ -3831,7 +3831,10 @@ export function focusedReplaceOnlySpec(prompt,{responsibleFiles=[],sourceRoot=''
 export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFiles=[],sourceRoot='',anchorIndex=0,preferredTargets=[],presentationRecovery=false,previousOutput='',controlTokenRecoveryCount=0,syntaxRecoveryCount=0,failureRepeatCount=0}={}){
   const spec=focusedReplaceOnlySpec(prompt,{responsibleFiles,sourceRoot,anchorIndex,preferredTargets});
   if(!spec)return null;
-  const raw=String(prompt??''),goal=raw.split('\n').find(line=>line.startsWith('Goal:'))||'Goal: make the smallest real implementation change required by the work order';
+  const raw=String(prompt??''),rawGoal=raw.split('\n').find(line=>line.startsWith('Goal:'))||'';
+  const goal=rawGoal
+    ?'Goal: '+boundedPromptText(rawGoal.slice(rawGoal.indexOf(':')+1).trimStart(),COMPACT_DIRECTIVE_LINE_BYTES)
+    :'Goal: make the smallest real implementation change required by the work order';
   const reason=clean(error?.message||error).replace(/\s+/g,' ').slice(0,240);
   const presentationTask=/^Goal:[^\n]*(?:presentation|graphics|visual)|^\[PRESENTATION(?:_PASS:| IMPLEMENTATION)|^(?:\[STUDIO_QUALITY_EVOLUTION\]|directiveId=)[^\n]*(?:focus|primaryFocus)=PRESENTATION/im.test(raw.split(/\n=== FILE /)[0]);
   const robloxPresentationTask=presentationTask&&/Engine:\s*roblox/i.test(raw);
@@ -3853,7 +3856,7 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
     prompt:[
       'You are the Vibe2 focused source repair worker. Return JSON only.',
       goal,
-      verifiedExternalLearningBlockFromPrompt(raw),
+      compactVerifiedExternalLearningBlockFromPrompt(raw,{triggerBytes:8000,targetBytes:8000}),
       buildUpDirectiveBlockFromPrompt(raw,{compact:true,focusedRobloxVisual:robloxPresentationTask,focusedPresentation:presentationTask,selectedPath:spec.path}),
       gameContextCapsuleBlockFromPrompt(raw),
       preSubmitSelfReviewBlockFromPrompt(raw),
@@ -4542,13 +4545,20 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
       console.log(`VIBE2_TRUNCATED_OUTPUT_RECOVERY=${attempt}:maxPredict=${Math.max(maxPredict,recoveredOutputBudget)}`);
     }
     if(!allowFullRewrite)maxPredict=Math.max(maxPredict,recoveredOutputBudget,singleMotionWorkUnit?JSON_RETRY_MAX_PREDICT:0);
-    const timeoutMs=priorFailureClass==='TIMEOUT'&&!clean(lastRaw)
-      ?(assetDevelopmentLane&&target==='web'?ASSET_DEVELOPMENT_WEB_TIMEOUT_MS:ZERO_OUTPUT_RETRY_TIMEOUT_MS)
-      :(expansionMode
-        ?FULL_WEB_EXPANSION_TIMEOUT_MS
-        :(allowFullRewrite
-          ?(attempt>=maxAttempts?FULL_WEB_FINAL_RETRY_TIMEOUT_MS:(retry?FULL_WEB_RETRY_TIMEOUT_MS:FULL_WEB_TIMEOUT_MS))
-          :((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_RETRY_TIMEOUT_MS:(unityStudioTimeoutFocusedRecovery?UNITY_STUDIO_FOCUSED_TIMEOUT_MS:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS:JSON_FOCUSED_REPLACE_TIMEOUT_MS))):(focusedFinal?JSON_FINAL_RETRY_TIMEOUT_MS:(retry?JSON_RETRY_TIMEOUT_MS:DEFAULT_TIMEOUT_MS)))));
+    const focusedReplaceTimeoutMs=unityStudioTimeoutFocusedRecovery
+      ?UNITY_STUDIO_FOCUSED_TIMEOUT_MS
+      :(assetDevelopmentFocusedGraphics
+        ?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS
+        :(robloxRebuildFocused?DEFAULT_TIMEOUT_MS:JSON_FOCUSED_REPLACE_TIMEOUT_MS));
+    const timeoutMs=focusedReplaceOnly&&!systemAtomicPairCompletion
+      ?focusedReplaceTimeoutMs
+      :(priorFailureClass==='TIMEOUT'&&!clean(lastRaw)
+        ?(assetDevelopmentLane&&target==='web'?ASSET_DEVELOPMENT_WEB_TIMEOUT_MS:ZERO_OUTPUT_RETRY_TIMEOUT_MS)
+        :(expansionMode
+          ?FULL_WEB_EXPANSION_TIMEOUT_MS
+          :(allowFullRewrite
+            ?(attempt>=maxAttempts?FULL_WEB_FINAL_RETRY_TIMEOUT_MS:(retry?FULL_WEB_RETRY_TIMEOUT_MS:FULL_WEB_TIMEOUT_MS))
+            :(systemAtomicPairCompletion?JSON_RETRY_TIMEOUT_MS:(focusedFinal?JSON_FINAL_RETRY_TIMEOUT_MS:(retry?JSON_RETRY_TIMEOUT_MS:DEFAULT_TIMEOUT_MS))))));
     const baseContextWindow=expansionMode
       ?FULL_WEB_EXPANSION_CONTEXT_WINDOW
       :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_CONTEXT_WINDOW:(robloxRebuildFocused?JSON_CONTEXT_WINDOW:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW))):(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(sourceCandidatePressureInitial?SOURCE_CANDIDATE_COMPACT_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW)))));
@@ -4560,10 +4570,14 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
       attemptPrompt+='\n'+retryBlock;
       if(retry&&retryBlock!==block)console.log(`VIBE2_RETRY_OBSERVATION_COMPACTED=${label}:${Buffer.byteLength(block,'utf8')}->${Buffer.byteLength(retryBlock,'utf8')}`);
     }
-    const contextWindow=sourcePromptContextWindow(attemptPrompt,{baseContextWindow,maxPredict});
+    const contextWindow=focusedReplaceOnly&&!systemAtomicPairCompletion
+      ?(robloxRebuildFocused
+        ?sourcePromptContextWindow(attemptPrompt,{baseContextWindow:JSON_CONTEXT_WINDOW,maxPredict})
+        :(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW))
+      :sourcePromptContextWindow(attemptPrompt,{baseContextWindow,maxPredict});
     const fake=responseFileForAttempt(responseFile,responseFiles,attempt);
     const attemptPromptBytes=Buffer.byteLength(attemptPrompt,'utf8');
-    const firstOutputTimeoutMs=assetDevelopmentLane&&target==='web'?ASSET_DEVELOPMENT_WEB_TIMEOUT_MS:MODEL_FIRST_OUTPUT_TIMEOUT_MS;
+    const firstOutputTimeoutMs=assetDevelopmentLane&&target==='web'?ASSET_DEVELOPMENT_WEB_TIMEOUT_MS:Math.min(MODEL_FIRST_OUTPUT_TIMEOUT_MS,timeoutMs);
     console.log(`VIBE2_GENERATION_BUDGET=${attempt}:promptBytes=${attemptPromptBytes}:maxPredict=${maxPredict}:contextWindow=${contextWindow}:timeoutMs=${timeoutMs}:firstOutputTimeoutMs=${firstOutputTimeoutMs}`);
     if(allowFullRewrite&&retry)console.log(`VIBE2_FULL_WEB_RETRY_PROMPT_BYTES=${attempt}:${attemptPromptBytes}`);
     if(focusedReplaceOnly){
