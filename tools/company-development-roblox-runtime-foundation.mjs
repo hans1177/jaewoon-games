@@ -286,6 +286,7 @@ export async function probeRobloxOpenCloudEngine({
     'print("JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_ATOMS="..table.concat(studioAssetAtoms,","))',
     'print("JAEWOON_OPEN_CLOUD_ENGINE_PLACE="..tostring(game.PlaceId))',
     'print("JAEWOON_OPEN_CLOUD_ENGINE_VERSION="..tostring(game.PlaceVersion))',
+    'print("JAEWOON_OPEN_CLOUD_ENGINE_SERVER_CONTEXT=true")',
     'print("JAEWOON_OPEN_CLOUD_ENGINE_PLAYERS="..tostring(#Players:GetPlayers()))',
     'local RunService=game:GetService("RunService")',
     'local simulationRunning=RunService:IsRunning()',
@@ -379,7 +380,23 @@ export async function probeRobloxOpenCloudEngine({
   const exactPlace=clean(joined.match(/^JAEWOON_OPEN_CLOUD_ENGINE_PLACE=([0-9]+)$/m)?.[1])===place;
   const exactVersion=Number(joined.match(/^JAEWOON_OPEN_CLOUD_ENGINE_VERSION=([0-9]+)$/m)?.[1]||0)===version;
   const simulationRunning=joined.includes('JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_RUNNING=true');
-  const serverBootObserved=joined.includes('JAEWOON_OPEN_CLOUD_ENGINE_FOUNDATION_SERVER_BOOT=true');
+  const legacyFoundationServerBootMarkerObserved=joined.includes('JAEWOON_OPEN_CLOUD_ENGINE_FOUNDATION_SERVER_BOOT=true');
+  const serverContextExecuted=joined.includes('JAEWOON_OPEN_CLOUD_ENGINE_SERVER_CONTEXT=true');
+  // Roblox Open Cloud Luau Execution launches a server, loads the exact place version, then executes this task.
+  // Exact task execution is therefore direct server-boot evidence; the legacy workspace marker remains diagnostic only.
+  const serverBootObserved=serverContextExecuted&&exactPlace&&exactVersion;
+  const serverBootEvidence=Object.freeze({
+    observed:serverBootObserved,
+    provider:'ROBLOX_OPEN_CLOUD_LUAU_EXECUTION',
+    taskState:state,
+    exactPlace,
+    exactVersion,
+    scriptExecuted:serverContextExecuted,
+    headlessServerExecution:true,
+    livePlayerSimulationClaimed:false,
+    legacyFoundationServerBootMarkerObserved,
+    authority:'roblox-open-cloud-luau-execution-session-task',
+  });
   const studioAssetApplied=joined.includes('JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_APPLIED=true');
   const studioAssetBindingVersion=Number(joined.match(/JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_BINDING_VERSION=(\d+)/)?.[1]||0);
   const observedStudioAssetSelectionFingerprint=clean(joined.match(/JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_SELECTION_FINGERPRINT=([^\n]*)/)?.[1]||'');
@@ -421,7 +438,7 @@ export async function probeRobloxOpenCloudEngine({
     sameLuauExecutionSession:true
   });
   return Object.freeze({
-    available:true,permissionDenied:false,status:200,engineExecuted:true,exactPlace,exactVersion,simulationRunning,serverBootObserved,worldEvidence,
+    available:true,permissionDenied:false,status:200,engineExecuted:true,exactPlace,exactVersion,simulationRunning,serverBootObserved,serverContextExecuted,serverBootEvidence,legacyFoundationServerBootMarkerObserved,worldEvidence,
     playerCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_ENGINE_PLAYERS=(\d+)/)?.[1]||0),
     studioAssetBindingRequired,studioAssetApplied,studioAssetBindingVersion,expectedStudioAssetBindingVersion,
     expectedStudioAssetSelectionFingerprint:expectedStudioAssetSelectionFingerprint||null,
