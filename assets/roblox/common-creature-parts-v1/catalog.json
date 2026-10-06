@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "packId": "roblox-common-creature-parts-v1",
   "title": "Roblox 회사 공용 생물·몬스터 외형 모듈 24종 v3",
   "platform": "ROBLOX",
@@ -227,6 +227,42 @@
       "familyRootId": "CREATURE_ELITE",
       "bodyPlan": "MULTI",
       "ecologyRole": "ELITE_VARIANT"
+    },
+    {
+      "assetId": "AMORPHOUS_CORE",
+      "name": "무정형 점액 코어",
+      "subfamily": "AMORPHOUS_CORE",
+      "creatureRole": "BODY_CORE",
+      "familyRootId": "CREATURE_AMORPHOUS",
+      "bodyPlan": "AMORPHOUS",
+      "ecologyRole": "AMBUSH_PREDATOR"
+    },
+    {
+      "assetId": "ARMORED_TORSO_VARIANT",
+      "name": "장갑 몸통 변형",
+      "subfamily": "ARMORED_TORSO_VARIANT",
+      "creatureRole": "TORSO_VARIANT",
+      "familyRootId": "CREATURE_TORSO_VARIANT",
+      "bodyPlan": "MULTI",
+      "ecologyRole": "GENERAL"
+    },
+    {
+      "assetId": "CRYSTAL_SURFACE_VARIANT",
+      "name": "수정 표면 변형",
+      "subfamily": "CRYSTAL_SURFACE_VARIANT",
+      "creatureRole": "SURFACE_VARIANT",
+      "familyRootId": "CREATURE_SURFACE_VARIANT",
+      "bodyPlan": "MULTI",
+      "ecologyRole": "GENERAL"
+    },
+    {
+      "assetId": "BOSS_CROWN_SIGNATURE",
+      "name": "보스 왕관 시그니처",
+      "subfamily": "BOSS_CROWN_SIGNATURE",
+      "creatureRole": "BOSS_SIGNATURE",
+      "familyRootId": "CREATURE_BOSS_SIGNATURE",
+      "bodyPlan": "MULTI",
+      "ecologyRole": "BOSS_VARIANT"
     }
   ],
   "systemDepthContract": {
@@ -298,13 +334,17 @@
       "FIN_PAIR",
       "CLAW_PAIR",
       "MANDIBLE_PAIR",
-      "ELITE_ORNAMENT"
+      "ELITE_ORNAMENT",
+      "AMORPHOUS_CORE",
+      "AMORPHOUS",
+      "ARMORED_TORSO_VARIANT",
+      "TORSO_VARIANT",
+      "CRYSTAL_SURFACE_VARIANT",
+      "SURFACE_VARIANT",
+      "BOSS_CROWN_SIGNATURE",
+      "BOSS_SIGNATURE"
     ],
     "missingComponentCandidates": [
-      "AMORPHOUS",
-      "TORSO_VARIANT",
-      "SURFACE_VARIANT",
-      "BOSS_SIGNATURE",
       "RIG_PROFILE",
       "LOCOMOTION_SET",
       "ATTACK_SET",
@@ -314,7 +354,7 @@
     "qualityScoreIsNotUsageGate": true,
     "existingAssetsRemainUsable": true,
     "gameplayAuthority": false,
-    "currentAssetCount": 24
+    "currentAssetCount": 28
   },
   "internalAssetStandard": {
     "version": 1,
