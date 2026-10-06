@@ -1163,17 +1163,17 @@ jobs:
               const message=String(error?.message||error);
               if(/HTTP_404/.test(message)){
                 const attempts=Math.max(0,Number(item.robloxRuntimeRetryCount||0))+1;
-                const exactEnginePrebootFromProbe=
+                const exactEngineServerBootFromProbe=
                   engineProbe?.engineExecuted===true
                   &&engineProbe?.exactPlace===true
                   &&engineProbe?.exactVersion===true
-                  &&engineProbe?.serverBootObserved!==true;
+                  &&engineProbe?.serverBootObserved===true;
                 item.robloxRuntimeRetryCount=attempts;
                 item.robloxRuntimeLastObservationAttemptAt=stamp;
                 item.robloxRuntimeFoundationPassed=false;
                 item.robloxRuntimePassed=false;
                 item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
-                if(exactEnginePrebootFromProbe){
+                if(exactEngineServerBootFromProbe){
                   item.robloxRuntimeFoundationEvidence={
                     version:2,
                     gameId:item.gameId,
@@ -1187,22 +1187,23 @@ jobs:
                     observedVersionNumber:null,
                     exactGame:true,
                     exactPlace:true,
-                    exactVersion:false,
+                    exactVersion:true,
                     exactEngineVersion:true,
                     engineExecuted:true,
                     simulationRunning:engineProbe?.simulationRunning===true,
-                    serverBootObserved:false,
+                    serverBootObserved:true,
+                    serverBootEvidence:engineProbe?.serverBootEvidence||null,
                     openCloudWorldEvidence:engineProbe?.worldEvidence||null,
                     openCloudImageEvidence:engineProbe?.imageEvidence||null,
-                    blockers:['runtime-sentinel-unavailable'],
+                    blockers:['runtime-sentinel-unavailable','client-runtime-observation-pending'],
                     observedAt:stamp,
                     workflowRunId:Number(process.env.GITHUB_RUN_ID||0),
-                    authority:'exact-engine-version-awaiting-real-server-boot',
+                    authority:'roblox-open-cloud-exact-server-boot-runtime-sentinel-unavailable',
                   };
                   item.robloxRuntimeFoundationInternalReleaseException=true;
                   item.robloxPublicReleaseRuntimeObservationPending=true;
-                  item.robloxPublicReleaseFailureSignature='ROBLOX_PUBLIC_RELEASE_AWAITING_REAL_SERVER_BOOT';
-                  item.robloxPublicReleaseBlockers=['roblox-public-release-awaiting-real-server-boot'];
+                  item.robloxPublicReleaseFailureSignature='ROBLOX_PUBLIC_RELEASE_CLIENT_RUNTIME_OBSERVATION_PENDING';
+                  item.robloxPublicReleaseBlockers=['roblox-public-release-client-runtime-observation-pending'];
                   item.robloxIndependentQaPassed=true;
                   item.robloxIndependentQaPassedAt=stamp;
                   item.robloxRegressionPassed=true;
@@ -1220,6 +1221,8 @@ jobs:
                     regressionPassed:true,
                     multiplayerValidationPassed:exactMultiplayerValidationReusable,
                     actualRuntimeEvidence:false,
+                    actualServerRuntimeEvidence:true,
+                    actualClientRuntimeEvidence:false,
                     internalRuntimeObservationDeferred:true,
                     exactEngineExecutionEvidence:true,
                     externalServerBootRequired:false,
@@ -1228,7 +1231,7 @@ jobs:
                     studioAssetBindingRequired,
                     studioAssetRuntimeBindingPassed:item.robloxStudioAssetRuntimeBindingPassed===true,
                     studioAssetEngineBindingMatched:engineProbe?.studioAssetSelectionMatched===true,
-                    authority:'roblox-internal-qa-external-real-server-observation-deferred',
+                    authority:'roblox-internal-qa-open-cloud-server-boot-client-runtime-deferred',
                     verifiedAt:stamp,
                   };
                   item.robloxInternalReleaseReady=true;
@@ -1237,19 +1240,19 @@ jobs:
                   item.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
                   item.canonicalState='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
                   item.robloxFailureStage='PUBLIC_RELEASE_RUNTIME_OBSERVATION';
-                  item.robloxFailureSignature='ROBLOX_PUBLIC_RELEASE_AWAITING_REAL_SERVER_BOOT';
+                  item.robloxFailureSignature='ROBLOX_PUBLIC_RELEASE_CLIENT_RUNTIME_OBSERVATION_PENDING';
                   item.routingBlockers=[];
                   if(item.executionEvidence){
                     item.executionEvidence.runtimePassed=false;
                     item.executionEvidence.independentQaPassed=true;
                     item.executionEvidence.regressionPassed=true;
                     item.executionEvidence.failureStage='PUBLIC_RELEASE_RUNTIME_OBSERVATION';
-                    item.executionEvidence.failureSignature='ROBLOX_PUBLIC_RELEASE_AWAITING_REAL_SERVER_BOOT';
+                    item.executionEvidence.failureSignature='ROBLOX_PUBLIC_RELEASE_CLIENT_RUNTIME_OBSERVATION_PENDING';
                   }
                   item.updatedAt=stamp;
                   changed=true;
                   f9Ids.push(item.gameId);
-                  console.log(`ROBLOX_INTERNAL_FLOW_PASS_EXTERNAL_SERVER_BOOT_PENDING=${item.gameId}:attempt=${attempts}:engineVersion=${Number(candidate.versionNumber)}:sentinel=HTTP_404:studioExact=${exactStudioInternalValidation?'YES':'NO'}`);
+                  console.log(`ROBLOX_OPEN_CLOUD_SERVER_BOOT_PASS_CLIENT_RUNTIME_PENDING=${item.gameId}:attempt=${attempts}:engineVersion=${Number(candidate.versionNumber)}:sentinel=HTTP_404:studioExact=${exactStudioInternalValidation?'YES':'NO'}`);
                 }else{
                   item.robloxFailureSignature='ROBLOX_RUNTIME_FOUNDATION_PENDING';
                   item.routingBlockers=['roblox-runtime-foundation-awaiting-observation'];
