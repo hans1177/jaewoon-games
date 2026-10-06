@@ -1624,6 +1624,8 @@ export function directivePrompt(d={}){
   const anchors=(d.responsibleSystemsAndFiles?.sourceAnchors||[]).slice(0,8).map(row=>`- ${row.file}:${row.line||'?'} ${row.kind||'SYMBOL'} ${row.symbol||'UNKNOWN'} | CURRENT=${row.currentBehavior||row.context||'UNKNOWN'} | INTENDED=${row.intendedBehavior||'FOLLOW_PRIMARY_GOAL'} | ACCEPT=${row.observableAcceptance||'REAL_SOURCE_AND_EFFECT_DELTA'}`).join('\n');
   const expansion=d.autonomousContentExpansion||{};
   const fusion=d.systemFusionDepthPlan||{};
+  const world=d.worldbuildingDepthPlan||{};
+  const libraries=d.canonicalLibraryLinkagePlan||{};
   const expansionBundle=(expansion.coherentContentBundle||[]).map(row=>`- ${row}`).join('\n');
   const continuityQuestions=(expansion.continuityAndCausality?.questions||[]).join(',');
   const platformGuidance=d.platformAdaptationDirectives?.[clean(d.platform).toUpperCase()]||d.platformAdaptationDirectives?.WEB||'';
@@ -1651,6 +1653,14 @@ export function directivePrompt(d={}){
     `SYSTEM_FUSION_GROWTH_MUTATION: ${(fusion.growthMutations||[]).join(' | ')||'MISSING'}`,
     `SYSTEM_FUSION_LEGACY_REVISIT: ${(fusion.legacyContentRevisitHooks||[]).join(' | ')||'MISSING'}`,
     `SYSTEM_FUSION_ENDGAME: ${fusion.endgameFusion||'MISSING'}`,
+    `WORLD_BUILDING_DEPTH: allGenres=${world.allGenres===true}; storyWeight=${world.storyWeight||'DERIVE'}; dna=${(world.worldDnaSources||[]).join(',')||'MISSING'}; gaps=${(world.gaps||[]).join(',')||'NONE'}`,
+    `WORLD_CAUSALITY_CHAIN: ${world.continuityChain||'PLACE_HISTORY→PLACE_NAME→DIALOGUE→JOURNAL→OPPOSITION→SIDE_CONTENT→MAIN_EVENT→WORLD_STATE'}`,
+    `WORLD_PLACE_NAMES: ${(world.placeNameLedger||[]).join(' | ')||'MISSING'}`,
+    `WORLD_JOURNAL_DIALOGUE: journals=${(world.journalRecordChains||[]).join(' | ')||'MISSING'}; dialogueLinks=${(world.dialogueJournalLinks||[]).join(' | ')||'MISSING'}`,
+    `WORLD_OPPOSITION_LORE: ${(world.monsterOpponentLoreEcologyLinks||[]).join(' | ')||'MISSING'}`,
+    `CANONICAL_LIBRARY_LINKAGE: mode=${libraries.searchMode||'DYNAMIC_CURRENT_BUILD_UP_CONTEXT'}; families=${libraries.exposedFamilyCount||0}; available=${libraries.availableFamilyCount||0}; candidateDoesNotEqualConsumer=${libraries.candidateDoesNotEqualConsumer===true}; actualConsumerEvidenceRequired=${libraries.actualConsumerEvidenceRequired===true}; fingerprint=${libraries.searchFingerprint||'NONE'}`,
+    `CANONICAL_LIBRARY_MATCHES: ${(libraries.libraries||[]).map(row=>row.family+':'+(row.available?'AVAILABLE':'UNAVAILABLE')+':'+((row.matchedTerms||[]).join(',')||'NO_CONTEXT_MATCH')).join(' | ')}`,
+    'CANONICAL_LIBRARY_RULE: 후보 발견은 실제 사용이 아니다. 호환성·권리·게임 정체성을 먼저 확인하고 기존 책임 소스/canonical consumer에서 실제 소비된 증거와 관련 QA가 있어야 사용으로 인정한다. 호환 후보가 없으면 강제 대입하지 않는다.',
     `CONTENT_BREADTH_LEDGER: covered=${expansion.themeCoverageLedger?.distinctCovered||0}/${expansion.themeCoverageLedger?.totalThemes||0}; missing=${(expansion.themeCoverageLedger?.missingThemes||[]).join(',')||'NONE'}; leastCovered=${(expansion.themeCoverageLedger?.leastCoveredThemes||[]).join(',')||'NONE'}`,
     `DATA_CAPACITY_BUDGET: state=${expansion.dataCapacityBudget?.state||'NORMAL'}; strategy=${expansion.dataCapacityBudget?.strategy||'CONTINUE_BUILD_UP'}; saveMax=${expansion.dataCapacityBudget?.limits?.savePersistedDataBytes||0}; webMax=${expansion.dataCapacityBudget?.limits?.webDownloadBytes||0}; singleFileMax=${expansion.dataCapacityBudget?.limits?.singleFileBytes||0}; mobileMemoryTarget=${expansion.dataCapacityBudget?.limits?.mobileMemoryTargetBytes||0}; mobileMinFps=${expansion.dataCapacityBudget?.limits?.mobileMinimumFps||0}; generationLimit=NONE; contentCountLimit=NONE`,
     expansion.dataCapacityBudget?.state==='NORMAL'?'DATA_CAPACITY_ACTION: 새 콘텐츠와 기존 시스템 심화 중 플레이어 가치가 높은 쪽을 선택한다.':'DATA_CAPACITY_ACTION: BUILD_UP을 멈추지 말고 새 원시 데이터 추가보다 기존 에셋/시스템 재사용·재조합, 압축, 스트리밍/LOD, 풀링, 수명 관리와 시스템 심화를 우선한다. 저장 진행/인벤토리/장비/해금/퀘스트 의미를 삭제해서 예산을 맞추지 않는다.',
@@ -1693,6 +1703,8 @@ export function buildGameSpecificBuildUpDirective({
   const design=extractDesignContext(designRecord||{});
   const source=sourceObservation||inspectGameSource({repoRoot,sourceRoot});
   const systemFusionDepthPlan=deriveSystemFusionDepthPlan({design,source});
+  const worldbuildingDepthPlan=deriveWorldbuildingDepthPlan({design,source});
+  const canonicalLibraryLinkagePlan=deriveCanonicalLibraryLinkagePlan({repoRoot,gameId:id,design,source,worldPlan:worldbuildingDepthPlan});
   const signals=uniq([
     ...qualitySignals,
     ...(source?.observations||[]),
@@ -1735,8 +1747,8 @@ export function buildGameSpecificBuildUpDirective({
   };
   const goal=goalByFocus[focus]||goalByFocus.CORE_FUN;
   const previousFingerprint=clean(previousDirective?.directiveFingerprint);
-  const fingerprint=sha(JSON.stringify({id,generation,focus,goal,source:source.sourceTreeFingerprint,design,previousDirectiveOutcome:clean(previousDirectiveOutcome),previousEffectiveness,qualitySignals:signals,runtimeEvidence,safeDesignlessMode}));
-  const baseStates=BUILD_UP_DOMAINS.map(domain=>domainState(domain,{design,source}));
+  const fingerprint=sha(JSON.stringify({id,generation,focus,goal,source:source.sourceTreeFingerprint,design,worldbuildingDepthPlan,librarySearchFingerprint:canonicalLibraryLinkagePlan.searchFingerprint,previousDirectiveOutcome:clean(previousDirectiveOutcome),previousEffectiveness,qualitySignals:signals,runtimeEvidence,safeDesignlessMode}));
+  const baseStates=BUILD_UP_DOMAINS.map(domain=>domainState(domain,{design,source,worldDepthPlan:worldbuildingDepthPlan,libraryLinkagePlan:canonicalLibraryLinkagePlan}));
   const designlessAllowedDomains=new Set(safeDesignlessMode?(DESIGNLESS_SAFE_BUILD_UP_DOMAINS[focus]||[]):BUILD_UP_DOMAINS);
   const states=safeDesignlessMode
     ?baseStates.map(row=>designlessAllowedDomains.has(row.domain)?row:{domain:row.domain,state:'NOT_APPLICABLE',reason:'designless source-safe BUILD_UP cannot expand gameplay/progression semantics'})
@@ -1887,6 +1899,10 @@ export function buildGameSpecificBuildUpDirective({
     'ROBLOX_EXPERIENCE_BUILD_UP_USES_EXTRA_NATIVE_STUDIO_ATTENTION',
     'AUTONOMOUS_CONTENT_EXPANSION_STAYS_INSIDE_EXISTING_BUILD_UP',
     'CONTENT_EXPANSION_MUST_BE_COHERENT_CONNECTED_AND_NON_CLONE',
+    'ALL_GENRES_WORLD_CAUSALITY_REVIEWED_AT_GENRE_APPROPRIATE_WEIGHT',
+    'PLACE_NAME_DIALOGUE_JOURNAL_OPPOSITION_AND_WORLD_STATE_CONTINUITY_REVIEWED',
+    'ALL_CANONICAL_LIBRARY_FAMILIES_SEARCHABLE_WITHOUT_FORCED_USE',
+    'LIBRARY_CANDIDATE_IS_NOT_ACTUAL_CONSUMER_WITHOUT_SOURCE_AND_QA_EVIDENCE',
     'EXISTING_COMPLETENESS_RECHECK_REQUIRED_EVERY_BUILD_UP',
     'WEB_ROBLOX_UNITY_COMMON_EXPANSION_CONTRACT'
   ];
@@ -1976,6 +1992,8 @@ export function buildGameSpecificBuildUpDirective({
     progressionContentWorldDirectives:effectiveProgression,
     autonomousContentExpansion,
     systemFusionDepthPlan,
+    worldbuildingDepthPlan,
+    canonicalLibraryLinkagePlan,
     internalAssetEvolution:{
       required:true,
       generation,
