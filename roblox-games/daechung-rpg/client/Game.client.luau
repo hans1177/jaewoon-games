@@ -4,6 +4,7 @@ local Players=game:GetService("Players")
 local RS=game:GetService("ReplicatedStorage")
 local UserInputService=game:GetService("UserInputService")
 local SoundService=game:GetService("SoundService")
+local TweenService=game:GetService("TweenService")
 local touchEnabled=UserInputService.TouchEnabled
 local p=Players.LocalPlayer
 local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
@@ -75,6 +76,94 @@ local actionSfx=sound("RPGAction",C.Audio.Action,.22)
 local hitSfx=sound("RPGHit",C.Audio.Hit,.2)
 local skillSfx=sound("RPGSkill",C.Audio.Skill,.24)
 local levelSfx=sound("RPGLevel",C.Audio.LevelUp,.26)
+actionSfx.Volume = table.find(studioAssetFamily("AUDIO"), "ATTACK_SWING_LIGHT") and .24 or actionSfx.Volume
+
+local studioSkillEmitter = nil
+
+-- 기존 Five Portal RPG 시스템에 선택된 내부 자산 family를 실제 Roblox 네이티브 소비자로 연결한다.
+local function bindStudioCharacterAssets(character)
+  if not character then return end
+  local torso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso")
+  if torso and torso:IsA("BasePart") then
+    torso.Material = table.find(studioAssetFamily("CHARACTER"), "TORSO_PLATE") and Enum.Material.Metal or torso.Material
+  end
+  local function bindWeapon(part)
+    if part:IsA("BasePart") and part.Name:find("ClassWeapon", 1, true) then
+      part.Material = table.find(studioAssetFamily("WEAPON"), "BLADE_LONG") and Enum.Material.Metal or part.Material
+    end
+  end
+  for _, descendant in ipairs(character:GetDescendants()) do bindWeapon(descendant) end
+  character.DescendantAdded:Connect(bindWeapon)
+
+  local rootPart = character:FindFirstChild("HumanoidRootPart") or character:WaitForChild("HumanoidRootPart", 5)
+  if rootPart and not rootPart:FindFirstChild("StudioRpgSkillAttachment") then
+    local attachment = Instance.new("Attachment")
+    attachment.Name = "StudioRpgSkillAttachment"
+    attachment.Parent = rootPart
+    local emitter = Instance.new("ParticleEmitter")
+    emitter.Name = "StudioRpgSkillEmitter"
+    emitter.Rate = 0
+    emitter.Lifetime = NumberRange.new(0.16, 0.34)
+    emitter.Speed = NumberRange.new(5, 9)
+    emitter.SpreadAngle = Vector2.new(45, 45)
+    emitter.LightEmission = table.find(studioAssetFamily("SKILL"), "IMPACT_SMALL") and 0.8 or 0
+    emitter.LightInfluence = table.find(studioAssetFamily("VFX"), "IMPACT_FLASH") and 0 or 1
+    emitter.Parent = attachment
+    studioSkillEmitter = emitter
+  end
+end
+if p.Character then task.defer(bindStudioCharacterAssets, p.Character) end
+p.CharacterAdded:Connect(bindStudioCharacterAssets)
+
+task.defer(function()
+  local rpgWorld = workspace:FindFirstChild("DaechungRPGWorld") or workspace:WaitForChild("DaechungRPGWorld", 8)
+  if not rpgWorld then return end
+
+  local village = rpgWorld:FindFirstChild("Village")
+  local plaza = village and village:FindFirstChild("VillagePlaza")
+  if plaza and plaza:IsA("BasePart") then
+    plaza.Material = table.find(studioAssetFamily("MATERIAL"), "STONE") and Enum.Material.Cobblestone or plaza.Material
+    if not village:FindFirstChild("StudioRpgBuildingTrim") then
+      local trim = Instance.new("Part")
+      trim.Name = "StudioRpgBuildingTrim"
+      trim.Size = Vector3.new(18, 0.45, 1)
+      trim.Position = plaza.Position + Vector3.new(0, plaza.Size.Y * 0.5 + 0.3, -34)
+      trim.Anchored = true
+      trim.CanCollide = false
+      trim.Material = table.find(studioAssetFamily("BUILDING"), "WALL_SOLID") and Enum.Material.Slate or Enum.Material.SmoothPlastic
+      trim.Color = Color3.fromRGB(117, 104, 88)
+      trim.Parent = village
+    end
+  end
+
+  local lighting = game:GetService("Lighting")
+  local atmosphere = lighting:FindFirstChild("StudioRpgAtmosphere")
+  if not atmosphere then
+    atmosphere = Instance.new("Atmosphere")
+    atmosphere.Name = "StudioRpgAtmosphere"
+    atmosphere.Parent = lighting
+  end
+  atmosphere.Color = table.find(studioAssetFamily("ENVIRONMENT"), "FOG_LAYER") and Color3.fromRGB(205, 213, 225) or atmosphere.Color
+  atmosphere.Density = 0.12
+  atmosphere.Haze = 0.65
+
+  local function bindCreature(instance)
+    if not instance:IsA("BasePart") or instance:GetAttribute("EnemyId") == nil then return end
+    instance.Material = table.find(studioAssetFamily("CREATURE"), "FUR_PATCH") and Enum.Material.Fabric or instance.Material
+  end
+  local function bindProp(instance)
+    if not instance:IsA("MeshPart") or not instance.Name:find("AssetProp_", 1, true) then return end
+    instance.Material = table.find(studioAssetFamily("PROP"), "LAMP") and Enum.Material.Metal or instance.Material
+  end
+  for _, descendant in ipairs(rpgWorld:GetDescendants()) do
+    bindCreature(descendant)
+    bindProp(descendant)
+  end
+  rpgWorld.DescendantAdded:Connect(function(descendant)
+    bindCreature(descendant)
+    bindProp(descendant)
+  end)
+end)
 
 local gui=Instance.new("ScreenGui");gui.Name="RPGHUD";gui.ResetOnSpawn=false;gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets;gui:SetAttribute("TouchEnabled",touchEnabled);gui.Parent=p:WaitForChild("PlayerGui")
 task.spawn(function()
@@ -475,6 +564,9 @@ end
 stats:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)
 stats:SetAttribute("StudioAssetAtoms", table.concat(studioAssetFamily("UI"), ","))
 stats.Name="RPGTopHUD";stats.Size=touchEnabled and UDim2.fromOffset(214,82)or UDim2.fromOffset(270,88);stats.Position=UDim2.fromOffset(8,8);stats.BackgroundColor3=Color3.fromRGB(25,28,35);stats.BackgroundTransparency=.1;stats.Parent=gui;corner(stats,13);stroke(stats,.5)
+local studioStatsTarget = stats.Position
+stats.Position = studioStatsTarget + UDim2.fromOffset(0, -5)
+TweenService:Create(stats, TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = table.find(studioAssetFamily("MOTION"), "START") and studioStatsTarget or stats.Position}):Play()
 local title=Instance.new("TextLabel");title.Size=UDim2.new(1,-14,0,23);title.Position=UDim2.fromOffset(7,4);title.BackgroundTransparency=1;title.Text="대충 RPG";title.TextColor3=Color3.fromRGB(255,223,157);title.TextXAlignment=Enum.TextXAlignment.Left;title.Font=Enum.Font.GothamBold;title.TextSize=16;title.Parent=stats
 local statLine=Instance.new("TextLabel");statLine.Size=UDim2.new(1,-14,0,38);statLine.Position=UDim2.fromOffset(7,27);statLine.BackgroundTransparency=1;statLine.TextColor3=Color3.fromRGB(230,234,241);statLine.TextXAlignment=Enum.TextXAlignment.Left;statLine.TextYAlignment=Enum.TextYAlignment.Top;statLine.TextWrapped=true;statLine.TextSize=12;statLine.Font=Enum.Font.Gotham;statLine.Parent=stats
 
@@ -511,7 +603,11 @@ local function setBlock(on)
  remote:FireServer(on and C.Actions.BLOCK_START or C.Actions.BLOCK_END)
 end
 attack.Activated:Connect(function()setBlock(false);playCombatAnimation(false);actionSfx:Play();remote:FireServer(C.Actions.ATTACK)end)
-skill.Activated:Connect(function()setBlock(false);playCombatAnimation(true);skillSfx:Play();remote:FireServer(C.Actions.SKILL)end)
+skill.Activated:Connect(function()
+ setBlock(false);playCombatAnimation(true);skillSfx:Play()
+ if studioSkillEmitter then studioSkillEmitter:Emit(18) end
+ remote:FireServer(C.Actions.SKILL)
+end)
 dodge.Activated:Connect(function()setBlock(false);remote:FireServer(C.Actions.DODGE)end)
 block.InputBegan:Connect(function(input)
  if input.UserInputType==Enum.UserInputType.Touch or input.UserInputType==Enum.UserInputType.MouseButton1 then setBlock(true)end
