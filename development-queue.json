@@ -5902,13 +5902,13 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "canonicalState": "PRE_F9_VALIDATION_CANDIDATE_DEPLOYED",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-06T12:03:09.312Z",
+      "updatedAt": "2026-10-06T12:05:31.541Z",
       "robloxSourceCommit": "46d70fc1a8e85c2bdc5a043ef706d93110601f72",
       "robloxSourceBootstrapPassedAt": "2026-10-06T11:59:05.578Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -6569,9 +6569,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED",
       "routingBlockers": [
-        "roblox-runtime-foundation-awaiting-observation"
+        "roblox-first-frame-grounding-unobserved"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -7370,7 +7370,34 @@
         "gameplayAuthority": false
       },
       "robloxValidationPublishRepairRequired": true,
-      "robloxValidationPublishRepairAt": "2026-10-06T11:58:00.751Z"
+      "robloxValidationPublishRepairAt": "2026-10-06T11:58:00.751Z",
+      "robloxFirstFrameGroundingEvidence": {
+        "observed": true,
+        "basePartCount": 1,
+        "spawnCount": 0,
+        "spawnsInBounds": false,
+        "markerSpawnCount": 0,
+        "spawnGroundingObserved": false,
+        "unsupportedSpawns": 0,
+        "floatingSpawns": 0,
+        "maximumSpawnGroundGap": 0,
+        "meshPartCount": 0,
+        "graphicsEvidenceScope": "ENGINE_SCENE_STRUCTURE_NOT_RENDERED_SCREENSHOT",
+        "finiteWorldBounds": true,
+        "boundsSize": {
+          "x": 2044,
+          "y": 252,
+          "z": 2044
+        },
+        "landmarkCount": 0,
+        "objectiveCount": 0,
+        "terrainPresent": true,
+        "lightingAtmospherePresent": false,
+        "streamingEnabled": false,
+        "scanCapped": false,
+        "worldGeometryPresent": true,
+        "sameLuauExecutionSession": true
+      }
     },
     {
       "gameId": "village-dungeons",
@@ -44457,7 +44484,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-06T12:04:17.230Z",
+  "updatedAt": "2026-10-06T12:05:31.541Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
