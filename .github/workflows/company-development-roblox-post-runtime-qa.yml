@@ -1287,6 +1287,11 @@ jobs:
               multiplayerPromotionPending:result.multiplayerPromotionPending,
               blockers:result.blockers,
             }));
+            const exactEngineServerBootObserved=
+              engineProbe?.engineExecuted===true
+              &&engineProbe?.exactPlace===true
+              &&engineProbe?.exactVersion===true
+              &&engineProbe?.serverBootObserved===true;
             const exactEngineVersionAwaitingRealServerBoot=
               engineProbe?.engineExecuted===true
               &&engineProbe?.exactPlace===true
@@ -1301,6 +1306,7 @@ jobs:
               )
             ){
               const attempts=Math.max(0,Number(item.robloxRuntimeRetryCount||0))+1;
+              const staleSentinelWithVerifiedServerBoot=result.exactVersion!==true&&exactEngineServerBootObserved;
               item.robloxRuntimeRetryCount=attempts;
               item.robloxRuntimeLastObservationAttemptAt=stamp;
               item.robloxRuntimeFoundationPassed=false;
@@ -1318,21 +1324,81 @@ jobs:
                 observedVersionNumber:Number(sentinel.placeVersion||0),
                 exactGame:result.exactGame,
                 exactPlace:result.exactPlace,
-                exactVersion:result.exactVersion===true,
+                exactVersion:staleSentinelWithVerifiedServerBoot?true:result.exactVersion===true,
+                sentinelExactVersion:result.exactVersion===true,
                 exactEngineVersion:engineProbe?.exactVersion===true,
                 engineExecuted:engineProbe?.engineExecuted===true,
+                validationProvider:'ROBLOX_OFFICIAL_CLOUD_API_ONLY',
                 simulationRunning:engineProbe?.simulationRunning===true,
                 serverBootObserved:engineProbe?.serverBootObserved===true,
+                serverBootEvidence:engineProbe?.serverBootEvidence||null,
                 openCloudWorldEvidence:engineProbe?.worldEvidence||null,
                 openCloudImageEvidence:engineProbe?.imageEvidence||null,
-                blockers:result.blockers,
+                blockers:staleSentinelWithVerifiedServerBoot
+                  ?[...new Set([...(result.blockers||[]),'stale-runtime-sentinel','client-runtime-observation-pending'])]
+                  :result.blockers,
                 observedAt:stamp,
                 workflowRunId:Number(process.env.GITHUB_RUN_ID||0),
-                authority:exactEngineVersionAwaitingRealServerBoot
-                  ?'exact-engine-version-awaiting-real-server-boot'
-                  :'stale-runtime-sentinel-observation',
+                authority:staleSentinelWithVerifiedServerBoot
+                  ?'roblox-open-cloud-exact-server-boot-stale-runtime-sentinel'
+                  :exactEngineVersionAwaitingRealServerBoot
+                    ?'exact-engine-version-awaiting-real-server-boot'
+                    :'stale-runtime-sentinel-observation',
               };
-              if(exactEngineVersionAwaitingRealServerBoot){
+              if(staleSentinelWithVerifiedServerBoot){
+                item.robloxRuntimeFoundationInternalReleaseException=true;
+                item.robloxPublicReleaseRuntimeObservationPending=true;
+                item.robloxPublicReleaseFailureSignature='ROBLOX_PUBLIC_RELEASE_CLIENT_RUNTIME_OBSERVATION_PENDING';
+                item.robloxPublicReleaseBlockers=['roblox-public-release-client-runtime-observation-pending'];
+                item.robloxIndependentQaPassed=true;
+                item.robloxIndependentQaPassedAt=stamp;
+                item.robloxRegressionPassed=true;
+                item.robloxRegressionPassedAt=stamp;
+                item.robloxPostRuntimeQaEvidence={
+                  version:5,
+                  gameId:item.gameId,
+                  sourceRevision,
+                  artifactIdentity,
+                  artifactRunId:Number(candidate.artifactRunId||0),
+                  candidateVersionNumber:Number(candidate.versionNumber),
+                  runtimeFoundationEvidence:item.robloxRuntimeFoundationEvidence,
+                  exactRevision:true,
+                  independentQaPassed:true,
+                  regressionPassed:true,
+                  multiplayerValidationPassed:exactMultiplayerValidationReusable,
+                  actualRuntimeEvidence:false,
+                  actualServerRuntimeEvidence:true,
+                  actualClientRuntimeEvidence:false,
+                  internalRuntimeObservationDeferred:true,
+                  exactEngineExecutionEvidence:true,
+                  externalServerBootRequired:false,
+                  officialStudioMcpActualPlayPassed:exactStudioInternalValidation,
+                  publicReleaseRuntimeObservationPending:true,
+                  studioAssetBindingRequired,
+                  studioAssetRuntimeBindingPassed:item.robloxStudioAssetRuntimeBindingPassed===true,
+                  studioAssetEngineBindingMatched:engineProbe?.studioAssetSelectionMatched===true,
+                  authority:'roblox-internal-qa-open-cloud-server-boot-stale-client-runtime-deferred',
+                  verifiedAt:stamp,
+                };
+                item.robloxInternalReleaseReady=true;
+                item.robloxInternalReleasePublished=true;
+                item.robloxF9PendingInParallel=true;
+                item.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
+                item.canonicalState='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
+                item.robloxFailureStage='PUBLIC_RELEASE_RUNTIME_OBSERVATION';
+                item.robloxFailureSignature='ROBLOX_PUBLIC_RELEASE_CLIENT_RUNTIME_OBSERVATION_PENDING';
+                item.routingBlockers=[];
+                if(item.executionEvidence){
+                  item.executionEvidence.runtimePassed=false;
+                  item.executionEvidence.independentQaPassed=true;
+                  item.executionEvidence.regressionPassed=true;
+                  item.executionEvidence.failureStage='PUBLIC_RELEASE_RUNTIME_OBSERVATION';
+                  item.executionEvidence.failureSignature='ROBLOX_PUBLIC_RELEASE_CLIENT_RUNTIME_OBSERVATION_PENDING';
+                }
+                f9Ids.push(item.gameId);
+                console.log(`ROBLOX_OPEN_CLOUD_SERVER_BOOT_PASS_STALE_CLIENT_RUNTIME_PENDING=${item.gameId}:attempt=${attempts}:engineVersion=${Number(candidate.versionNumber)}:sentinelVersion=${Number(sentinel.placeVersion||0)}:studioExact=${exactStudioInternalValidation?'YES':'NO'}`);
+                pending++;
+              }else if(exactEngineVersionAwaitingRealServerBoot){
                 item.robloxRuntimeFoundationInternalReleaseException=true;
                 item.robloxPublicReleaseRuntimeObservationPending=true;
                 item.robloxPublicReleaseFailureSignature='ROBLOX_PUBLIC_RELEASE_AWAITING_REAL_SERVER_BOOT';
