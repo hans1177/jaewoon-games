@@ -385,6 +385,18 @@ test('director coalesces queued Recovery Fast wakes while preserving active reco
   assert.doesNotMatch(director,/recoveryFastQueued[\s\S]{0,400}?in_progress/);
 });
 
+test('runner drain workflow shell parses as Bash',()=>{
+  const director=read('.github/workflows/director-supervisor.yml');
+  const step='      - name: Cancel superseded control-plane and duplicate Roblox queue runs\n';
+  const stepAt=director.indexOf(step);
+  const runAt=director.indexOf('        run: |\n',stepAt);
+  const nextJob=director.indexOf('\n  game-primary-gate:',runAt);
+  assert.ok(stepAt>=0&&runAt>stepAt&&nextJob>runAt);
+  const raw=director.slice(runAt+'        run: |\n'.length,nextJob);
+  const script=raw.split('\n').map(line=>line.startsWith('          ')?line.slice(10):line).join('\n')+'\n';
+  assert.doesNotThrow(()=>execFileSync('bash',['-n'],{input:script,encoding:'utf8',stdio:['pipe','pipe','pipe']}));
+});
+
 test('runner drain uses a YAML-safe delimiter and preserves the game gate block',()=>{
   const director=read('.github/workflows/director-supervisor.yml');
   assert.match(director,/while IFS='\\|' read -r run_id reason; do/);
@@ -500,10 +512,15 @@ test('runner drain force-settles only still-queued safe duplicates after accepte
   const director=read('.github/workflows/director-supervisor.yml');
   assert.match(director,/safe_force_cancel=false/);
   assert.match(director,/DUPLICATE_TITLE_STALE_QUEUED/);
+  assert.match(director,/pre_cancel_state=.*actions\/runs\/\$\{run_id\}/);
+  assert.match(director,/pre_cancel_active_jobs=.*jobs\?per_page=100/);
+  assert.match(director,/if \[ "\$pre_cancel_state" = 'in_progress' \] \|\| \[ "\$\{pre_cancel_active_jobs:-0\}" != '0' \]; then[\s\S]*?DIRECTOR_RUNNER_DRAIN_ACTIVE_PRESERVED=[\s\S]*?continue/);
   assert.match(director,/current_state=.*actions\/runs\/\$\{run_id\}/);
   assert.match(director,/current_state.*'queued'.*'pending'.*'requested'.*'waiting'/s);
+  assert.match(director,/force_state=.*actions\/runs\/\$\{run_id\}/);
+  assert.match(director,/force_active_jobs=.*jobs\?per_page=100/);
   assert.match(director,/DIRECTOR_RUNNER_DRAIN_FORCE_CANCELLED_AFTER_ACCEPTED_CANCEL=/);
-  assert.doesNotMatch(director,/current_state.*in_progress.*force-cancel/s);
+  assert.match(director,/if \[ "\$force_state" = 'in_progress' \] \|\| \[ "\$\{force_active_jobs:-0\}" != '0' \]; then[\s\S]*?DIRECTOR_RUNNER_DRAIN_ACTIVE_PRESERVED=[\s\S]*?elif \[\[ "\$force_state" == 'queued' \|\| "\$force_state" == 'pending' \|\| "\$force_state" == 'requested' \|\| "\$force_state" == 'waiting' \]\] && gh api --method POST .*force-cancel/);
 });
 
 test('director treats accepted asynchronous cancel settlement as success before counting failure',()=>{
@@ -513,6 +530,8 @@ test('director treats accepted asynchronous cancel settlement as success before 
   assert.match(director,/DIRECTOR_RUNNER_DRAIN_CANCEL_SETTLED_AFTER_ACCEPTED_CANCEL=/);
   assert.match(director,/if \[ "\$settled" = true \]; then[\s\S]*?cancelled=\$\(\(cancelled\+1\)\)[\s\S]*?else[\s\S]*?failed=\$\(\(failed\+1\)\)/);
   assert.match(director,/if \[ "\$safe_force_cancel" = true \] && \[\[ "\$current_state" == 'queued' \|\| "\$current_state" == 'pending' \|\| "\$current_state" == 'requested' \|\| "\$current_state" == 'waiting' \]\]; then/);
+  assert.match(director,/elif \[ "\$safe_force_cancel" = true \]; then[\s\S]*?force_state=.*actions\/runs\/\$\{run_id\}/);
+  assert.match(director,/elif \[\[ "\$force_state" == 'queued' \|\| "\$force_state" == 'pending' \|\| "\$force_state" == 'requested' \|\| "\$force_state" == 'waiting' \]\] && gh api --method POST .*force-cancel/);
 });
 
 test('director coalesces pending pre-supervision wakes while preserving active completion',()=>{
