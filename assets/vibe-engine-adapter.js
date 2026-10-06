@@ -36,7 +36,17 @@ export function detectVibeEngineTarget(request = '', target = 'auto') {
   return 'web';
 }
 
-function sourceContract(target, slug, motionRepairWorkUnit=null) {
+function sourceContract(target, slug, motionRepairWorkUnit=null, assetQualityWorkUnit=null) {
+  if(assetQualityWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY_QUALITY'){
+    const unit=assetQualityWorkUnit;
+    const root=clean(unit.sourceRoot).replaceAll('\\','/').replace(/\/$/,'');
+    const sourcePath=clean(unit.sourcePath).replaceAll('\\','/').replace(/^\//,'');
+    const file=root+'/'+sourcePath;
+    const ext=(sourcePath.match(/\.[^.\/]+$/)?.[0]||'').toLowerCase();
+    const allowed=target==='roblox'?new Set(['.luau','.lua','.json']):target==='unity'?new Set(['.cs','.asmdef','.json','.uxml','.uss','.unity','.prefab','.asset']):target==='web'?new Set(['.html','.htm','.css','.js','.mjs','.cjs','.json','.svg']):new Set([]);
+    if(!['roblox','unity','web'].includes(target)||!root.startsWith('assets/')||root.split('/').includes('..')||!sourcePath||sourcePath.split('/').includes('..')||!allowed.has(ext)||clean(unit.sourceFile)!==file||Number(unit.estimatedModificationMinutes)!==60)throw new Error('INTERNAL_ASSET_QUALITY_SOURCE_SCOPE_INVALID');
+    return freeze({root,writable:true,internalAssetQuality:true,candidateFiles:freezeList([file]),textWritablePatterns:freezeList([file]),editorRequiredPatterns:freezeList([]),ignoredPaths:freezeList([]),maintenanceOnly:false,newGameAutomatic:true});
+  }
   if(motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY'){
     const unit=motionRepairWorkUnit;
     const id=clean(unit.objectId).replace(/^roblox-world-ghost-/, '');
@@ -152,9 +162,9 @@ function executionContract(target, source) {
   return freeze({textWorkerAllowed:true, editorWorkerRequiredForBinaryAssets:false, editorRuntime:'browser-runtime', editorRequiredCapabilities:freezeList(['browser runtime','mobile layout','touch input']), binaryAssetsDirectTextEditForbidden:true, localEditorPreferred:false, textWritablePatterns:source.textWritablePatterns, editorRequiredPatterns:source.editorRequiredPatterns, maintenanceOnly:false, newGameAutomatic:true});
 }
 
-export function createVibeEngineAdapter({ request = '', target = 'auto', gameSlug = '', motionRepairWorkUnit = null } = {}) {
+export function createVibeEngineAdapter({ request = '', target = 'auto', gameSlug = '', motionRepairWorkUnit = null, assetQualityWorkUnit = null } = {}) {
   const resolvedTarget = detectVibeEngineTarget(request, target);
-  const source = sourceContract(resolvedTarget, gameSlug, motionRepairWorkUnit);
+  const source = sourceContract(resolvedTarget, gameSlug, motionRepairWorkUnit, assetQualityWorkUnit);
   return freeze({
     version:3,
     target:resolvedTarget,
@@ -182,7 +192,7 @@ export function validateVibeEngineAdapter(adapter) {
   if (adapter?.target === 'web' && adapter?.mayWriteSource !== true) issues.push('existing-web-maintenance-must-be-writable');
   if (adapter?.target === 'web' && adapter?.source?.maintenanceOnly === true) issues.push('web-first-implementation-must-not-be-maintenance-only');
   if (adapter?.target === 'web' && adapter?.source?.newGameAutomatic !== true) issues.push('web-first-implementation-must-be-automatic-after-company-gate');
-  if (adapter?.target === 'roblox' && adapter?.source?.root?.startsWith('roblox-games/') !== true && !(adapter.source.internalAssetMotion===true&& /^assets\/roblox\/world-ghosts\/motions\/[a-z0-9-]+$/.test(adapter.source.root)&&adapter.source.candidateFiles.length===1&&adapter.source.candidateFiles[0]===adapter.source.root+'/init.luau')) issues.push('roblox-source-root-required');
+  if (adapter?.target === 'roblox' && adapter?.source?.root?.startsWith('roblox-games/') !== true && !(adapter.source.internalAssetMotion===true&& /^assets\/roblox\/world-ghosts\/motions\/[a-z0-9-]+$/.test(adapter.source.root)&&adapter.source.candidateFiles.length===1&&adapter.source.candidateFiles[0]===adapter.source.root+'/init.luau') && !(adapter.source.internalAssetQuality===true&&adapter.source.root.startsWith('assets/')&&adapter.source.candidateFiles.length===1&&adapter.source.candidateFiles[0].startsWith(adapter.source.root+'/'))) issues.push('roblox-source-root-required');
   if (adapter?.target === 'roblox' && adapter?.execution?.binaryAssetsDirectTextEditForbidden !== true) issues.push('roblox-place-assets-must-not-be-text-edited');
   if (adapter?.target === 'unreal' && !adapter.source.candidateFiles.some((value) => value.endsWith('*.uproject'))) issues.push('unreal-uproject-required');
   if (adapter?.target === 'unreal' && adapter?.execution?.binaryAssetsDirectTextEditForbidden !== true) issues.push('unreal-binary-assets-must-not-be-text-edited');

@@ -1,5 +1,5 @@
 {
-  "version": 540,
+  "version": 541,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-03",
@@ -15278,8 +15278,8 @@
         "allRobloxConsumers": true
       },
       "qualityFirstDevelopment": {
-        "version": 1,
-        "authority": "OWNER_DIRECTIVE_2026-10-06",
+        "version": 2,
+        "authority": "OWNER_DIRECTIVE_2026-10-07",
         "concurrentSlots": 63,
         "slotMeaning": "MAX_SIMULTANEOUS_DISTINCT_SAFE_TASKS_NOT_TOTAL_ASSET_COUNT",
         "normalOperationsOwner": "VIBE2_VIBE3",
@@ -15302,7 +15302,46 @@
         "safeWorkShortageMayLeaveSlotsIdle": true,
         "actualRuntimeAndBeforeAfterRequiredForQualityPass": true,
         "sourceOnlyPassIsNotQualityPass": true,
-        "newWorkflowQueueOrScheduler": false
+        "newWorkflowQueueOrScheduler": false,
+        "fullLibraryQualityScope": "ALL_ELIGIBLE_INTERNAL_LIBRARY_ASSETS",
+        "fullLibraryQualityWorkSession": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.fullLibraryQualityWork",
+        "gameDemandIdeation": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.gameDemandIdeation",
+        "fixedWorkerExecution": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.parallelism.fixedAssetWorkerExecution",
+        "scoreOnlyPassForbidden": true,
+        "elapsedTimeOnlyPassForbidden": true,
+        "fiveMinutePolishCompletionForbidden": true,
+        "releasedGameRepeatUntilMaterialQualityDebtClosed": true
+      },
+      "fixedAssetWorkerExecution": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-10-07",
+        "fixedWorkerSlots": 12,
+        "logicalAssetLaneMax": 63,
+        "fixedWorkerSlotsDoNotReduceLogicalReservationParallelism": true,
+        "partition": {
+          "robloxPrioritySlots": 10,
+          "unityWebReservedSlots": 2,
+          "robloxPriorityOrder": [
+            "RELEASE_CONFIRMED",
+            "DEVELOPMENT_CONFIRMED",
+            "OTHER_ELIGIBLE_ROBLOX_ASSET_WORK"
+          ],
+          "releasedRobloxFirst": true,
+          "otherRobloxGamesRemainEligible": true,
+          "unityAndWebGamesRemainEligible": true,
+          "unityWebReservedSlotsSharedBy": [
+            "UNITY",
+            "WEB"
+          ],
+          "shortageBorrowingAllowed": true,
+          "shortageBorrowingRule": "EMPTY_PARTITION_MAY_BE_FILLED_BY_OTHER_ELIGIBLE_ASSET_WORK_WITHOUT_CANCELLING_RUNNING_WORK",
+          "noGameWideLock": true,
+          "sameResponsibleFileParallelForbidden": true
+        },
+        "workflow": ".github/workflows/vibe2-continuous-core.yml",
+        "existingQueueOnly": true,
+        "existingSchedulerOnly": true,
+        "newWorkflowQueueSchedulerForbidden": true
       }
     },
     "failureHandling": {
@@ -16059,7 +16098,7 @@
       }
     },
     "companyGraphicsLibrary24h": {
-      "version": 10,
+      "version": 11,
       "authority": "OWNER_DIRECTIVE_2026-09-24",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
       "purpose": "CONTINUOUSLY_PREPARE_DIVERSE_REUSABLE_CHARACTER_RIG_MOTION_VFX_ENVIRONMENT_AND_UI_CAPABILITIES_DURING_PREEMPTIBLE_IDLE_CAPACITY_AND_PROMOTE_ONLY_RUNTIME_VERIFIED_RESULTS_TO_THE_COMPANY_LIBRARY",
@@ -20263,7 +20302,174 @@
         ],
         "qualityIntent": "HIGH_DENSITY_STYLIZED_FANTASY_RPG_VISUAL_BAR_WITH_CROSS_GENRE_REUSE"
       },
-      "runnerLabel": "ubuntu-24.04-arm"
+      "runnerLabel": "ubuntu-24.04-arm",
+      "fullLibraryQualityWork": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-10-07",
+        "scope": "ALL_ELIGIBLE_INTERNAL_LIBRARY_ASSETS",
+        "families": [
+          "CHARACTER",
+          "CREATURE",
+          "MOTION",
+          "WEAPON",
+          "SKILL",
+          "BUILDING",
+          "ENVIRONMENT",
+          "WORLD_PROP",
+          "ITEM",
+          "MATERIAL",
+          "VFX",
+          "AUDIO",
+          "UI",
+          "PRESENTATION",
+          "FOLIAGE",
+          "CHARACTER_GEAR"
+        ],
+        "session": {
+          "estimatedModificationMinutes": 60,
+          "workerTimeoutMinutes": 60,
+          "meaning": "MAX_DEEP_ACTIVE_MODIFICATION_WINDOW_NOT_COMPLETION_PROOF",
+          "repeatable": true,
+          "sameAssetUntilReviewResolved": true,
+          "fiveMinutePolishCompletionForbidden": true,
+          "singleSmallPatchCompletionForbidden": true,
+          "noIdlePadding": true,
+          "elapsedTimeCannotPass": true,
+          "scoreAloneCannotPass": true,
+          "sourceDiffAloneCannotPass": true
+        },
+        "releasedGameLoop": {
+          "repeatUntilMaterialQualityDebtClosed": true,
+          "nextSessionSelection": "SAME_ASSET_UNRESOLVED_FINDING_FIRST_THEN_NEXT_HIGHEST_PLAYER_VISIBLE_GAP",
+          "minimumAlternativeIdeasPerSession": 3,
+          "ideaSources": [
+            "CURRENT_RUNTIME_CAPTURE_FINDING",
+            "VISUAL_DEBT",
+            "GAME_VISUAL_DNA_GAP",
+            "MISSING_OR_WEAK_GAME_COMPONENT",
+            "MOBILE_OR_PERFORMANCE_FINDING",
+            "PLAYER_FACING_READABILITY_GAP"
+          ],
+          "randomPolishIdeaForbidden": true,
+          "qualityCompleteIsCheckpointNotPermanentTerminal": true,
+          "newVerifiedFindingReopensQualityWork": true
+        },
+        "completionGate": {
+          "allApplicableFamiliesReviewed": true,
+          "noOpenCriticalOrHighPlayerVisibleQualityDebt": true,
+          "noPrimaryGameplayPlaceholderOrPrimitiveDebt": true,
+          "heroBossSignatureBeforeAfterRuntimeRequired": true,
+          "motionWeightContactJointTrajectoryOverlapSettleLoopTransitionRequired": true,
+          "uiCriticalStatesTouchScrollSafeAreaReadabilityRequired": true,
+          "audioMusicAmbienceFeedbackDistanceOcclusionReverbMobileMixRequired": true,
+          "environmentForegroundMidgroundBackgroundLandmarkMaterialLightingRequired": true,
+          "mobileFrameInputAndReadabilityRequired": true,
+          "noStrongAxisRegression": true,
+          "exactCurrentSourceAndCaptureHashRequired": true,
+          "actualTargetRuntimeAndBeforeAfterRequired": true,
+          "productionVerifiedMayAdvanceOnlyAfterExistingRuntimePromotionGate": true,
+          "missingEvidenceAction": "KEEP_UNVERIFIED_AND_REPEAT_60_MINUTE_SESSION"
+        },
+        "existingAssetUse": {
+          "lowScoreSafeCompatibleUseAllowed": true,
+          "lowScoreDoesNotBlockUse": true,
+          "placeholderPreferredOverCompatibleAsset": false,
+          "compatibleAssetMayBeUsedWithQualityDebtOpen": true
+        },
+        "newPipeline": false,
+        "newQueue": false,
+        "newScheduler": false,
+        "wrapperOrShadowPipelineForbidden": true
+      },
+      "gameDemandIdeation": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-10-07",
+        "ideaScope": "ACTIVE_DEVELOPMENT_CONFIRMED_AND_RELEASE_CONFIRMED_GAME_DEMAND",
+        "releasedGameIdeasFirst": true,
+        "otherRobloxGameIdeasRemainEligible": true,
+        "unityWebGameIdeasRemainEligible": true,
+        "genericUnboundIdeaProductionForbidden": true,
+        "releasePriorityDoesNotExcludeOtherGames": true,
+        "ideaMustReferenceRealGameId": true,
+        "ideaMustReferenceDesignOrRuntimeGap": true,
+        "domains": "ALL_LIBRARY_GAME_COMPONENTS",
+        "domainExamples": [
+          "PLAYER",
+          "NPC",
+          "MONSTER",
+          "BOSS",
+          "MOTION",
+          "ACTION",
+          "WEAPON",
+          "SKILL",
+          "ENVIRONMENT",
+          "BACKGROUND",
+          "TERRAIN",
+          "BUILDING",
+          "INTERIOR",
+          "PROP",
+          "FOLIAGE",
+          "MATERIAL",
+          "VFX",
+          "AUDIO",
+          "BGM",
+          "HUD",
+          "MENU",
+          "INVENTORY",
+          "SHOP",
+          "MAP",
+          "TOOLTIP",
+          "TOUCH_CONTROLS",
+          "PRESENTATION"
+        ]
+      },
+      "releasedGameBuildUpSharing": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-10-07",
+        "scope": "RELEASE_CONFIRMED_AND_POST_RELEASE_FOCUSED_GAME_WORK",
+        "requiredBeforeImplementation": true,
+        "source": "tools/company-build-up-directive.mjs#buildGameSpecificBuildUpDirective.ownerBuildUpShare",
+        "transport": [
+          "PLANNER_TASK_OBJECT",
+          "WORK_ORDER",
+          "ACTIONS_LOG"
+        ],
+        "exactSameObjectRequiredAcrossTransport": true,
+        "requiredSections": [
+          "DESIGN",
+          "BUILD_UP",
+          "CURRENT_RUNTIME",
+          "CURRENT_IMPLEMENTATION",
+          "IMPLEMENTATION_SPECIFICATION",
+          "QUALITY_GAPS",
+          "ASSET_MOTION_UI_AUDIO",
+          "RESPONSIBILITY",
+          "ACCEPTANCE",
+          "NEXT_GENERATION"
+        ],
+        "implementationDetailRequiredPerApplicableDomain": true,
+        "domainFields": [
+          "WHAT_MUST_EXIST",
+          "TRIGGER_AND_PRECONDITION",
+          "AUTHORITATIVE_STATE_CHANGE",
+          "PLAYER_VISIBLE_FEEDBACK",
+          "SYSTEM_CONNECTIONS",
+          "FAILURE_AND_RECOVERY",
+          "MOBILE",
+          "MULTIPLAYER",
+          "SAVE",
+          "PERFORMANCE",
+          "ASSET_AND_PRESENTATION",
+          "IMPLEMENTATION_STEPS",
+          "RUNTIME_SCENARIOS",
+          "REQUIRED_EVIDENCE",
+          "PROHIBITED_SUBSTITUTES"
+        ],
+        "terseSummaryCannotReplaceDetailedSpecification": true,
+        "hiddenImplementationAssumptionsForbidden": true,
+        "missingEvidenceRemainsUnknown": true,
+        "noInventedCurrentImplementation": true
+      }
     },
     "buildUpRuntimeClosure": {
       "version": 2,

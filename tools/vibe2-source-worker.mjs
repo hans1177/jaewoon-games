@@ -147,7 +147,32 @@ function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true})
 function parseArgs(argv=process.argv.slice(2)){const args={};for(const raw of argv){if(!raw.startsWith('--'))continue;const body=raw.slice(2),at=body.indexOf('=');if(at<0)args[body]=true;else args[body.slice(0,at)]=body.slice(at+1);}return args;}
 function targetExtensions(target){const x=TARGET_EXTENSIONS[clean(target).toLowerCase()];if(!x)throw new Error(`지원하지 않는 Vibe2 source target: ${target}`);return x;}
 function sourcePrefix(target){if(target==='roblox')return'roblox-games/';if(target==='web')return'web-games/';if(target==='unity')return'unity-games/';if(target==='unreal')return'unreal-games/';if(target==='godot')return'godot-games/';return'';}
-function assertSourceRoot(root,target,order={}){const normalized=posix(root);if(normalized.startsWith('assets/roblox/world-ghosts/motions/')){const unit=order?.assetProduction?.motionRepairWorkUnit;if(target!=='roblox'||order?.source?.internalAssetMotion!==true||unit?.scope!=='INTERNAL_ASSET_LIBRARY'||unit.objectCount!==1||unit.motionCount!==1||unit.clipId!=='walk'||!/^roblox-world-ghost-[a-z0-9-]+$/.test(unit.objectId)||unit.sourcePath!=='init.luau'||normalized!=='assets/roblox/world-ghosts/motions/'+unit.objectId.slice('roblox-world-ghost-'.length))throw new Error('INTERNAL_MOTION_SOURCE_SCOPE_INVALID');return normalized;}if(target==='system'){if(normalized!=='.')throw new Error(`system source root must be repo root: ${root}`);return normalized;}const prefix=sourcePrefix(target);if(!prefix||!normalized.startsWith(prefix)||normalized.includes('..'))throw new Error(`허용되지 않은 source root: ${root}`);if(target==='web'&&normalized.split('/').length!==2)throw new Error(`기존 웹게임 루트만 허용: ${root}`);return normalized;}
+function assertSourceRoot(root,target,order={}){
+  const normalized=posix(root);
+  if(order?.source?.internalAssetQuality===true){
+    const unit=order?.selectedTask?.assetQualityWorkUnit;
+    const platform=clean(unit?.platform).toLowerCase();
+    const sourceFile=posix(unit?.sourceFile),sourcePath=posix(unit?.sourcePath);
+    if(unit?.scope!=='INTERNAL_ASSET_LIBRARY_QUALITY'||!clean(unit?.assetId)
+      ||Number(unit?.estimatedModificationMinutes)!==60
+      ||!/^assets\/[A-Za-z0-9._/-]+$/.test(normalized)||normalized.includes('..')
+      ||posix(unit?.sourceRoot)!==normalized
+      ||!sourcePath||sourcePath.includes('..')||sourceFile!==normalized+'/'+sourcePath
+      ||!['roblox','unity','web'].includes(platform)||platform!==target
+      ||!/^([a-f0-9]{64})$/i.test(clean(unit?.sourceHash)))throw new Error('INTERNAL_ASSET_QUALITY_SOURCE_SCOPE_INVALID');
+    return normalized;
+  }
+  if(normalized.startsWith('assets/roblox/world-ghosts/motions/')){
+    const unit=order?.assetProduction?.motionRepairWorkUnit;
+    if(target!=='roblox'||order?.source?.internalAssetMotion!==true||unit?.scope!=='INTERNAL_ASSET_LIBRARY'||unit.objectCount!==1||unit.motionCount!==1||unit.clipId!=='walk'||!/^roblox-world-ghost-[a-z0-9-]+$/.test(unit.objectId)||unit.sourcePath!=='init.luau'||normalized!=='assets/roblox/world-ghosts/motions/'+unit.objectId.slice('roblox-world-ghost-'.length))throw new Error('INTERNAL_MOTION_SOURCE_SCOPE_INVALID');
+    return normalized;
+  }
+  if(target==='system'){if(normalized!=='.')throw new Error(`system source root must be repo root: ${root}`);return normalized;}
+  const prefix=sourcePrefix(target);
+  if(!prefix||!normalized.startsWith(prefix)||normalized.includes('..'))throw new Error(`허용되지 않은 source root: ${root}`);
+  if(target==='web'&&normalized.split('/').length!==2)throw new Error(`기존 웹게임 루트만 허용: ${root}`);
+  return normalized;
+}
 function assertRelativeSourcePath(relative,target){const normalized=posix(relative);if(!normalized||normalized.startsWith('/')||normalized.split('/').includes('..'))throw new Error(`잘못된 상대 경로: ${relative}`);if(target==='system'&&!isAllowedSystemArchitecturePath(normalized))throw new Error(`system architecture 허용 경로 아님: ${relative}`);const ext=path.extname(normalized).toLowerCase();if(BINARY_EXTENSIONS.has(ext))throw new Error(`엔진 에디터 필요 바이너리 파일: ${relative}`);if(!targetExtensions(target).has(ext))throw new Error(`텍스트 worker 허용 확장자 아님: ${relative}`);return normalized;}
 function normalizeResponsibleFiles(order,root,target){return(order?.source?.responsibleFiles||[]).map(value=>{const normalized=posix(value);const relative=normalized.startsWith(`${root}/`)?normalized.slice(root.length+1):normalized;return assertRelativeSourcePath(relative,target);}).filter(Boolean);}
 function sourceRootBootstrapAllowed(order,target,root,responsibleFiles){
@@ -2262,6 +2287,11 @@ function gatedRetryStrategyGuidance(order = {}) {
 export function assertAllGameDynamicAssetBindingContract({order={},target='',usageContract={}}={}){
   const resolved=clean(target||order?.target).toLowerCase();
   if(resolved==='system')return Object.freeze({required:false,pass:true,target:resolved});
+  if(order?.source?.internalAssetQuality===true){
+    const unit=order?.selectedTask?.assetQualityWorkUnit;
+    if(unit?.scope!=='INTERNAL_ASSET_LIBRARY_QUALITY'||posix(unit?.sourceRoot)!==posix(order.source.root)||Number(unit?.estimatedModificationMinutes)!==60)throw new Error('INTERNAL_ASSET_QUALITY_SOURCE_SCOPE_INVALID');
+    return Object.freeze({required:false,pass:true,target:resolved,scope:'INTERNAL_ASSET_QUALITY_AUTHORING',runtimeVerified:false});
+  }
   if(order?.source?.internalAssetMotion===true){
     if(!/^assets\/roblox\/world-ghosts\/motions\/[a-z0-9-]+$/.test(order.source.root)||order?.assetProduction?.motionRepairWorkUnit?.scope!=='INTERNAL_ASSET_LIBRARY')throw new Error('INTERNAL_MOTION_SOURCE_SCOPE_INVALID');
     return Object.freeze({required:false,pass:true,target:resolved,scope:'INTERNAL_ASSET_AUTHORING',runtimeVerified:false});
@@ -2749,6 +2779,7 @@ function internalAssetApiIndexGuidance(context={}){
 }
 
 function internalAssetSourceUsageGuidance(order={}){
+  if(order?.source?.internalAssetQuality===true){const unit=order?.selectedTask?.assetQualityWorkUnit||{};return '[INTERNAL ASSET QUALITY AUTHORING] Edit only '+clean(unit.sourceFile)+' for registered asset '+clean(unit.assetId)+'. Keep source hash binding, preserveAxes, family expectations and gameplay authority. This is a 60-minute maximum deep modification window, not completion proof. Five-minute polish, marker/comment-only edits, score-only completion and elapsed-time completion are forbidden. Same-condition before/after and target/mobile evidence remain required; if release-game material quality debt remains, the planner must create the next generation.';}
   if(order?.source?.internalAssetMotion===true)return '[INTERNAL ASSET AUTHORING] Edit only the registered parent object and exact derived walk function in the source-bound work unit. Preserve the parent source, all other clips and gameplay roots. Library-wide game binding belongs to the unchanged consumer; do not add game UI, asset-family markers or other objects to this derived motion file. Native before/after playback remains required.';
   const contract=order?.internalAssetSourceUsage||buildInternalAssetSourceUsageContract(order);
   if(!Object.keys(contract.exactFamilies||{}).length&&!contract.flowSelections.length&&!contract.sourceCandidates.length)return'';
@@ -2786,7 +2817,7 @@ function internalAssetSourceUsageGuidance(order={}){
 }
 
 function universalAssetWorkerGuidance(order={}) {
-  if(order?.source?.internalAssetMotion===true)return '';
+  if(order?.source?.internalAssetQuality===true||order?.source?.internalAssetMotion===true)return '';
   const target=clean(order?.target).toLowerCase();
   if(!['roblox','unity','web'].includes(target))return'';
   const loadout=order?.assetProduction?.baseMaterialLoadout||{};
@@ -3105,7 +3136,7 @@ export function buildVerifiedExternalLearningPromptContract(order={}){
   for(const id of ids)if(!byId.has(id))throw new Error('VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT_ROW_MISSING:'+id);
   const gameId=clean(order?.selectedTask?.gameId||order?.gameId);
   const target=clean(order?.target||order?.selectedTask?.target);
-  const semantic=classifyVerifiedExternalBlackBoxPrinciples(ids.map(id=>byId.get(id)),{gameId,target,sourceScope:order?.source?.internalAssetMotion?'INTERNAL_ASSET_LIBRARY':''});
+  const semantic=classifyVerifiedExternalBlackBoxPrinciples(ids.map(id=>byId.get(id)),{gameId,target,sourceScope:(order?.source?.internalAssetMotion||order?.source?.internalAssetQuality)?'INTERNAL_ASSET_LIBRARY':''});
   if(!semantic.allDisposed)throw new Error('VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT_MAPPING_REQUIRED:'+semantic.failClosed.map(row=>row.id).join(','));
   if(contract.allRetrievedPrinciplesHaveExplicitDisposition!==true)throw new Error('VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT_DISPOSITIONS_MISSING');
   const declared=contract.verifiedExternalLearningDispositions||[];
@@ -3288,6 +3319,18 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
   // Bound motion functions keep pure samples; carrying new spring/lifecycle state is
   // outside their responsibility. Full recipes retain those examples for other owners.
   const assetTeachingBlock=assetTeaching?'[INTERNAL ASSET TEACHER PRACTICE BEGIN]\n'+JSON.stringify({...assetTeaching,...(motionUnit?{advancedTechniques:assetTeaching.advancedTechniques.map(({id,when,check})=>({id,when,check})),applicationExamples:boundMotionReference?[]:assetTeaching.applicationExamples.filter(example=>['HERMITE_POSE_SEGMENT','TWO_BONE_REACH_GEOMETRY','SHORTEST_QUATERNION_BLEND'].includes(example.id)),...(boundMotionReference?{sourceBoundExample:boundMotionReference}:{})}:{}),...(studioMotionTeaching?{studioMotion:studioMotionTeaching}:{})})+'\n[INTERNAL ASSET TEACHER PRACTICE END]':'';
+  const assetQualityUnit=order?.source?.internalAssetQuality===true?order?.selectedTask?.assetQualityWorkUnit:null;
+  const assetQualityBlock=assetQualityUnit?[
+    '[INTERNAL ASSET QUALITY WORK UNIT BEGIN]',
+    JSON.stringify(assetQualityUnit),
+    'Edit exactly one registered asset responsibility. The work unit is source-bound by assetId, sourceFile and sourceHash.',
+    'Review at least three improvement approaches from ideaAlternatives. Choose the highest player-visible quality gain that preserves identity and strong axes with the lowest regression risk.',
+    'Use the sixty-minute maximum active modification window deeply across applicable FORM_IDENTITY_AND_STRUCTURE, MATERIAL_STATE_AND_DETAIL, MOTION_INTERACTION_AND_FEEDBACK and SAME_CONDITION_RUNTIME_REPAIR stages. Do not pad time.',
+    'A small patch may be correct only when it materially closes the verified finding; five-minute polish, comment/marker-only changes, score changes, elapsed time, file existence or source scope alone never prove quality completion.',
+    'Preserve gameplay balance, save meaning, progression, economy, hit semantics and network authority.',
+    'Return JSON edits only. Runtime/native before-after review remains outside source-generation authority and must stay pending until actual evidence exists.',
+    '[INTERNAL ASSET QUALITY WORK UNIT END]'
+  ].join('\n'):'';
   const singleMotionBlock=motionUnit?[
     '[SINGLE MOTION WORK UNIT BEGIN]',JSON.stringify(motionUnit),
     motionLesson?'[MOTION TEACHER PRACTICE BEGIN]\n'+JSON.stringify(motionLesson)+'\n[MOTION TEACHER PRACTICE END]':'',
@@ -3296,6 +3339,20 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
   ].join('\n'):'';
   // One exact motion does not need the whole-game rebuilding, marketing and asset universe prompt.
   // Keep its complete scope/depth contract and verified learning, not the lossy generic compactor.
+  if(assetQualityUnit?.scope==='INTERNAL_ASSET_LIBRARY_QUALITY'&&order.source?.internalAssetQuality===true&&!allowFullRewrite){
+    const targetFile=context.files.find(file=>file.path===assetQualityUnit.sourcePath)?.content||'';
+    return [
+      'You are the Vibe2 source worker. Implement the assigned internal library quality repair. Return JSON only; plans without edits are invalid.',
+      'Engine: '+order.target+'; allowed edit path: '+allowed,
+      assetQualityBlock,
+      learningContract.block,
+      assetTeachingBlock,
+      '[CURRENT EXACT ASSET SOURCE]',
+      targetFile,
+      '[END CURRENT EXACT ASSET SOURCE]',
+      'Do not create new files. Do not edit outside the exact responsible source. Use edits:[{path,find,replace}] and preserve non-target behavior.'
+    ].filter(Boolean).join('\n\n');
+  }
   if(motionUnit?.scope==='INTERNAL_ASSET_LIBRARY'&&order.source?.internalAssetMotion===true&&!allowFullRewrite){
     const {sourceWindow,...binding}=motionUnit;
     const compactUnit=singleMotionBlock.replace(JSON.stringify(motionUnit),()=>JSON.stringify(binding));
@@ -5275,6 +5332,14 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const sourceRootRelative=assertSourceRoot(order?.source?.root,target,order);
   const sourceRoot=path.resolve(cwd,sourceRootRelative);
   const responsibleFiles=normalizeResponsibleFiles(order,sourceRootRelative,target);
+  const assetQualityUnit=order?.source?.internalAssetQuality===true?order?.selectedTask?.assetQualityWorkUnit:null;
+  if(assetQualityUnit){
+    if(assetQualityUnit.scope!=='INTERNAL_ASSET_LIBRARY_QUALITY'||responsibleFiles.length!==1||responsibleFiles[0]!==posix(assetQualityUnit.sourcePath)||Number(assetQualityUnit.estimatedModificationMinutes)!==60)throw new Error('INTERNAL_ASSET_QUALITY_EXACT_RESPONSIBILITY_REQUIRED');
+    const qualityFile=path.join(sourceRoot,responsibleFiles[0]);
+    if(!fs.existsSync(qualityFile)||!fs.statSync(qualityFile).isFile())throw new Error('INTERNAL_ASSET_QUALITY_SOURCE_FILE_MISSING');
+    const currentHash=crypto.createHash('sha256').update(fs.readFileSync(qualityFile)).digest('hex');
+    if(currentHash!==clean(assetQualityUnit.sourceHash))throw new Error('INTERNAL_ASSET_QUALITY_SOURCE_HASH_STALE');
+  }
   const singleMotionPreflight=evaluateSingleMotionWorkUnit({order,sourceRoot,responsibleFiles});
   if(!singleMotionPreflight.pass)throw new Error(singleMotionPreflight.reason);
   let dccEvidence=null;
@@ -5369,7 +5434,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     &&systemRegressionFiles.length>0
     &&systemSourceFiles.length>0
     &&(order?.selectedTask?.completionCriteria||[]).some(value=>/BEFORE_AFTER|CAUSAL_PROOF|STRUCTURAL_CAUSE/i.test(clean(value)));
-  const robloxInternalAssetApplicationRequired=target==='roblox'&&order?.source?.internalAssetMotion!==true
+  const robloxInternalAssetApplicationRequired=target==='roblox'&&order?.source?.internalAssetMotion!==true&&order?.source?.internalAssetQuality!==true
     &&order?.assetProduction?.baseMaterialLoadout?.robloxSelectionHandoff?.handoffRequired===true
     &&order?.assetProduction?.baseMaterialLoadout?.robloxSelectionHandoff?.downstreamApplicationRequired===true;
   const robloxInternalAssetVisualOwners=robloxInternalAssetApplicationRequired?responsibleFiles.filter(file=>

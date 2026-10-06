@@ -1,5 +1,5 @@
 {
-  "version": 323,
+  "version": 324,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3148,7 +3148,19 @@
       "sourceWorkerBuildUpDirectiveSyntaxGuard": true,
       "cacheGeneration": 5,
       "modelCachePersistOnMiss": true,
-      "workerModelRepullAfterSharedCacheHitForbidden": true
+      "workerModelRepullAfterSharedCacheHitForbidden": true,
+      "fixedWorkerSlots": 12,
+      "workerPartition": {
+        "robloxPrioritySlots": 10,
+        "unityWebReservedSlots": 2,
+        "releasedRobloxFirst": true,
+        "otherRobloxEligible": true,
+        "unityWebEligible": true,
+        "shortageBorrowingAllowed": true
+      },
+      "fullLibraryQualityWorkSessionMinutes": 60,
+      "generalAssetQualityWorkUnit": "INTERNAL_ASSET_LIBRARY_QUALITY",
+      "releasedGameBuildUpShare": "tools/company-build-up-directive.mjs#ownerBuildUpShare"
     }
   },
   "platformPresentationSeparation": {
@@ -7113,7 +7125,7 @@
   },
   "assetQualityFirstDevelopment": {
     "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.parallelism.qualityFirstDevelopment",
-    "version": 1,
+    "version": 2,
     "concurrentSlots": 63,
     "slotMeaning": "MAX_SIMULTANEOUS_DISTINCT_SAFE_TASKS_NOT_TOTAL_ASSET_COUNT",
     "normalOperationsOwner": "VIBE2_VIBE3",
@@ -7136,7 +7148,11 @@
     "safeWorkShortageMayLeaveSlotsIdle": true,
     "actualRuntimeAndBeforeAfterRequiredForQualityPass": true,
     "sourceOnlyPassIsNotQualityPass": true,
-    "newWorkflowQueueOrScheduler": false
+    "newWorkflowQueueOrScheduler": false,
+    "fullLibraryQualityScope": "ALL_ELIGIBLE_INTERNAL_LIBRARY_ASSETS",
+    "releasedGameRepeatUntilMaterialQualityDebtClosed": true,
+    "strictCompletionGate": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.fullLibraryQualityWork.completionGate",
+    "gameDemandIdeation": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.gameDemandIdeation"
   },
   "fixedRepeatDevelopment64": {
     "version": 1,
@@ -7157,5 +7173,13 @@
     "internalAndExternalReleaseRemainCheckpoints": true,
     "externalPublicReleaseOwnerApprovalPreserved": true,
     "postReleaseRepeatDevelopmentContinues": true
+  },
+  "releaseGameBuildUpSharing": {
+    "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.releasedGameBuildUpSharing",
+    "planner": "tools/vibe2-auto-planner.mjs",
+    "directive": "tools/company-build-up-directive.mjs",
+    "workerOrder": "tools/vibe2-continuous-runner.mjs",
+    "actionsLogMarker": "VIBE2_RELEASE_GAME_BUILD_UP_SHARE=",
+    "exactObjectContinuityRequired": true
   }
 }
