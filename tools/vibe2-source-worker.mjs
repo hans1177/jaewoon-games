@@ -22,6 +22,7 @@ import { assertSystemArchitectureTask, isAllowedSystemArchitecturePath, systemAr
 import {bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {createRobloxWalkTeachingRecipe,createStudioMotionActionProfile} from '../assets/vibe-motion-director.js';
 import {createAssetProductionTeachingRecipe} from '../assets/vibe-studio-asset-universe.js';
+import {detectRobloxStudioAssetSystems,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from './company-development-roblox-bootstrap.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -680,9 +681,7 @@ export function collectNativeAssetRuntimePromotionCandidates({order={},candidate
   }
   return Object.freeze([...rows.values()]);
 }
-export const ROBLOX_INTERNAL_ASSET_FAMILIES=Object.freeze([
-  'CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'
-]);
+export const ROBLOX_INTERNAL_ASSET_FAMILIES=ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES;
 const ROBLOX_INTERNAL_ASSET_SYSTEM_PATTERNS=Object.freeze({
   CHARACTER:/\b(?:Players|LocalPlayer|CharacterAdded|Humanoid|character|avatar|npc)\b/i,
   CREATURE:/\b(?:enemy|monster|boss|creature|mob|wildlife|beetle|spider|wolf|bear|golem)\b/i,
@@ -785,6 +784,7 @@ export function evaluateRobloxInternalAssetFamilyBindingCandidate({candidate={},
     .filter(([relative])=>!/(?:^|\/)GameConfig\.luau$/i.test(relative))
     .map(([,text])=>robloxInternalAssetTraceStripped(text))
     .join('\n');
+  const detectedSystems=detectRobloxStudioAssetSystems({sourceText:semanticSource});
   const rows=[],blockers=[];
   if(expectedFingerprint&&observedSelectionFingerprint!==expectedFingerprint){
     blockers.push('ROBLOX_INTERNAL_ASSET_SELECTION_FINGERPRINT_MISMATCH');
@@ -795,7 +795,7 @@ export function evaluateRobloxInternalAssetFamilyBindingCandidate({candidate={},
   let appliedCount=0,notApplicableCount=0,changedAppliedFamilyCount=0,configFamilyMatchCount=0;
   for(const family of ROBLOX_INTERNAL_ASSET_FAMILIES){
     const status=clean(statusBlock.match(new RegExp('\\b'+family+'\\s*=\\s*["\\\'](APPLIED|NOT_APPLICABLE)["\\\']','i'))?.[1]).toUpperCase();
-    const systemPresent=ROBLOX_INTERNAL_ASSET_SYSTEM_PATTERNS[family]?.test(semanticSource)===true;
+    const systemPresent=detectedSystems[family]===true;
     const selectedAtoms=Array.isArray(expectedFamilies?.[family])?[...new Set(expectedFamilies[family].map(clean).filter(Boolean))].sort():[];
     const configFamilyBody=configText.match(new RegExp('\\b'+family+'\\s*=\\s*\\{([^}]*)\\}','m'))?.[1]||'';
     const configuredAtoms=[...new Set([...configFamilyBody.matchAll(/["']([^"']+)["']/g)].map(match=>clean(match[1])).filter(Boolean))].sort();
