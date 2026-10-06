@@ -219,6 +219,8 @@ function validateGameplaySketch(sketch,errors){
       ['historicalMythReinterpretations',2],
       ['worldbuildingFusion',3],
       ['storySystemLinks',3],
+      ['contentCausalityLinks',4],
+      ['worldEvolutionHooks',2],
       ['culturalRespectRules',3]
     ];
     for(const [field,min] of narrativeArrays){
