@@ -406,7 +406,7 @@ task.defer(function()
       emitter.Rate = 0
       emitter.Lifetime = NumberRange.new(0.12, 0.24)
       emitter.Speed = NumberRange.new(4, 7)
-      emitter.LightEmission = 0.7
+      emitter.LightEmission = table.find(studioAssetFamily("VFX"), "IMPACT_FLASH") and 0.7 or 0.7
       emitter.Parent = attachment
       player:GetAttributeChangedSignal("LastApprovedScope"):Connect(function()
         if player:GetAttribute("LastApprovedScope") == "scope-corefun-27c99c0f63" then emitter:Emit(10) end
