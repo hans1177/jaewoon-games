@@ -4713,3 +4713,37 @@ test('package asset failure reaches the existing Roblox buildup with asset-prese
   );
 });
 
+
+
+test('current-use internal motion planning accepts dynamically source-bound consumers',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'motion-source-consumer-'));
+  try{
+    fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
+    fs.mkdirSync(path.join(root,'roblox-games','horror-escape-room','client'),{recursive:true});
+    fs.mkdirSync(path.join(root,'assets','roblox','world-ghosts','motions','yurei'),{recursive:true});
+    fs.mkdirSync(path.join(root,'assets','roblox','world-ghosts'),{recursive:true});
+    fs.writeFileSync(path.join(root,'company-learning','platform-release-roadmap.json'),JSON.stringify({
+      assetProductionParallelContract:{parallelism:{internalAssetFocus:{enabled:true,gameId:'horror-escape-room',requireCurrentGameUse:true}}}
+    }));
+    fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify({games:[{
+      id:'horror-escape-room',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',
+      robloxProjectPath:'roblox-games/horror-escape-room'
+    }]}));
+    fs.writeFileSync(path.join(root,'assets','roblox','world-ghosts','GhostSkinFactory.luau'),'return {}');
+    fs.writeFileSync(path.join(root,'roblox-games','horror-escape-room','default.project.json'),JSON.stringify({
+      tree:{ReplicatedStorage:{WorldGhostSkins:{GhostSkinFactory:{$path:'../../assets/roblox/world-ghosts/GhostSkinFactory.luau'}}}}
+    }));
+    fs.writeFileSync(path.join(root,'roblox-games','horror-escape-room','client','Game.client.luau'),'local map={YUREI="yurei"}');
+    fs.writeFileSync(path.join(root,'assets','roblox','world-ghosts','motions','yurei','init.luau'),
+      'local Motion={}\nMotion.AssetId = "yurei"\nfunction Motion.walk(form,bones,time)\n local state="walk"\n return {}\nend\nreturn Motion\n');
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({assets:[
+      {id:'roblox-world-ghost-skins-v1',packId:'roblox-world-ghost-skins-v1',family:'CREATURE',sourceFiles:['assets/roblox/world-ghosts/GhostSkinFactory.luau'],license:'project-original'},
+      {id:'roblox-world-ghost-yurei',packId:'roblox-world-ghost-skins-v1',family:'CREATURE',skinId:'yurei',sourceFiles:['assets/roblox/world-ghosts/GhostSkinFactory.luau'],intendedConsumerGameIds:['horror-escape-room'],license:'project-original'}
+    ]}));
+    const project={gameId:'horror-escape-room',engine:'roblox',releaseState:'development-confirmed'};
+    const tasks=findSafeTasks(project,root,{tasks:[]});
+    assert.equal(tasks.length,1);
+    assert.equal(tasks[0].id,'internal-motion-yurei-walk-v1');
+    assert.ok(tasks[0].evidence.includes('asset-current-consumer:horror-escape-room'));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
