@@ -36,6 +36,25 @@ test('early fan-in review never suppresses new runnable worker reservations',()=
   assert.doesNotMatch(block,/matrix:\[\]/);
 });
 
+test('fan-in refill suppresses only exact pending same-lane duplicate before dispatch',()=>{
+  assert.match(core,/run-name: Vibe2 Continuous Core · .*execution_lane.*github\.event\.action/);
+  assert.equal((core.match(/DEDUPED_PENDING_SAME_LANE/g)||[]).length,2);
+  assert.equal((core.match(/states=new Set\(\['queued','pending','requested'\]\)/g)||[]).length,2);
+  assert.equal((core.match(/String\(run\.display_title\|\|''\)===title/g)||[]).length,2);
+  assert.equal((core.match(/String\(run\.head_sha\|\|''\)===head/g)||[]).length,2);
+  const microStart=core.indexOf("if [ \"$neuron_refill\" = '1' ]; then");
+  const microEnd=core.indexOf("echo 'VIBE2_NEURON_REFILL_DISPATCH=SKIPPED_NO_RUNNABLE_WORK_OR_PENDING_VARIANTS'",microStart);
+  assert.ok(microStart>=0&&microEnd>microStart);
+  const micro=core.slice(microStart,microEnd);
+  assert.match(micro,/display_title/);
+  assert.doesNotMatch(micro,/states=new Set\([^\n]*in_progress/);
+  const fallbackStart=core.indexOf('      - name: Event-driven fan-in refill fallback');
+  assert.ok(fallbackStart>=0);
+  const fallback=core.slice(fallbackStart,core.indexOf('\n  ',fallbackStart+8)>fallbackStart?core.indexOf('\n  ',fallbackStart+8):core.length);
+  assert.match(fallback,/DEDUPED_PENDING_SAME_LANE/);
+  assert.doesNotMatch(fallback,/states=new Set\([^\n]*in_progress/);
+});
+
 test('repeat development is fixed at 64 while physical provider capacity and conflict safety remain',()=>{
   const wave=roadmap.neuralDevelopmentBrain.currentWaveExecution;
   assert.equal(wave.externalProviderAndPlanningBound,256);
