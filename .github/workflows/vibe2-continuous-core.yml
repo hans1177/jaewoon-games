@@ -85,7 +85,7 @@ env:
   VIBE2_EXTERNAL_MATRIX_BATCH_MAX: '256'
   VIBE2_GAME_PRIMARY_BASELINE_TARGET: '64'
   VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '64'
-  VIBE2_ASSET_FIXED_RUNNER_SLOTS: '5'
+  VIBE2_ASSET_FIXED_RUNNER_SLOTS: '12'
   VIBE2_NATIVE_RELEASE_DISPATCH_BATCH_MAX: '256'
   OLLAMA_HOST: 127.0.0.1:11434
   VIBE2_GAME_DEVELOPMENT_OWNER: VIBE2_VIBE3
@@ -1165,7 +1165,7 @@ jobs:
       fail-fast: false
       # Asset lane keeps 63 logical reservations while GitHub continuously rolls exactly five workers.
       # As one matrix worker finishes, the next reserved asset starts automatically on the same canonical lane.
-      max-parallel: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && 5 || 256 }}
+      max-parallel: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && 12 || 256 }}
       matrix: ${{ fromJSON(needs.reserve.outputs.worker_matrix) }}
     env:
       WORKER_CONTEXT_EXPECTED_POLICY_SHA256: ${{ needs.reserve.outputs.shared_policy_sha256 }}
