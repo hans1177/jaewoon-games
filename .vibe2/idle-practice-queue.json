@@ -473,6 +473,102 @@
       "countsAsProductionPass": false
     },
     {
+      "id": "roblox-remote-validation",
+      "kind": "ROBLOX_CODE_REPAIR",
+      "robloxCodePractice": true,
+      "robloxPracticeDrill": "remote-validation",
+      "level": "고급",
+      "sourceFailure": "REMOTE_TRUST_AND_REPLAY",
+      "domains": [
+        "ROBLOX_REMOTE_SECURITY",
+        "ROBLOX_REPLICATION",
+        "STATE_MACHINE"
+      ],
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false
+    },
+    {
+      "id": "roblox-datastore-transaction",
+      "kind": "ROBLOX_CODE_REPAIR",
+      "robloxCodePractice": true,
+      "robloxPracticeDrill": "datastore-transaction",
+      "level": "고급",
+      "sourceFailure": "DATASTORE_COMMIT_BEFORE_DURABLE_WRITE",
+      "domains": [
+        "ROBLOX_DATASTORE",
+        "SAVE",
+        "RECOVERY"
+      ],
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false
+    },
+    {
+      "id": "roblox-replication-revision",
+      "kind": "ROBLOX_CODE_REPAIR",
+      "robloxCodePractice": true,
+      "robloxPracticeDrill": "replication-revision",
+      "level": "고급",
+      "sourceFailure": "STALE_REPLICATION_OVERWRITE",
+      "domains": [
+        "ROBLOX_REPLICATION",
+        "ROBLOX_MULTIPLAYER",
+        "UI_STATE"
+      ],
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false
+    },
+    {
+      "id": "roblox-respawn-lifecycle",
+      "kind": "ROBLOX_CODE_REPAIR",
+      "robloxCodePractice": true,
+      "robloxPracticeDrill": "respawn-lifecycle",
+      "level": "고급",
+      "sourceFailure": "RESPAWN_HANDLER_LEAK",
+      "domains": [
+        "ROBLOX_CHARACTER_STATE",
+        "ROBLOX_REMOTE_SECURITY",
+        "DEBUGGING"
+      ],
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false
+    },
+    {
+      "id": "roblox-touch-intent",
+      "kind": "ROBLOX_CODE_REPAIR",
+      "robloxCodePractice": true,
+      "robloxPracticeDrill": "touch-intent",
+      "level": "실전",
+      "sourceFailure": "CLIENT_UI_AUTHORITY_LEAK",
+      "domains": [
+        "ROBLOX_TOUCH_INPUT",
+        "ROBLOX_UI_STATE",
+        "ROBLOX_REMOTE_SECURITY"
+      ],
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false
+    },
+    {
+      "id": "roblox-bounded-cache",
+      "kind": "ROBLOX_CODE_REPAIR",
+      "robloxCodePractice": true,
+      "robloxPracticeDrill": "bounded-cache",
+      "level": "실전",
+      "sourceFailure": "UNBOUNDED_SESSION_CACHE",
+      "domains": [
+        "PERFORMANCE",
+        "ROBLOX_MULTIPLAYER",
+        "STATE_MACHINE"
+      ],
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false
+    },
+    {
       "id": "web-input-save",
       "kind": "PLATFORM_CODE_REPAIR",
       "codingPracticeDrill": "web-input-save",
