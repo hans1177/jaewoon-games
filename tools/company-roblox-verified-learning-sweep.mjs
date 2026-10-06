@@ -1,10 +1,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import {execFileSync} from 'node:child_process';
 import {createRobloxVibe3LearningContext,existingRobloxGameLearningProfile} from './vibe3-roblox-learning-context.mjs';
 import {robloxLearningProfileFromSource} from './company-development-roblox-gameplay-product-readiness.mjs';
 import {latestVerifiedDesign} from './company-all-games-design-reset.mjs';
 import {latestMinimumDesign} from './company-minimum-design-contract.mjs';
 import {applyVerifiedExternalLearningToExistingRobloxSource,robloxBuildProfileFromBaseline,ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION} from './company-development-roblox-bootstrap.mjs';
+import {verifiedExternalLearningRefreshState} from './company-development-roblox-source-reconcile.mjs';
 
 const args=Object.fromEntries(process.argv.slice(2).filter(x=>x.startsWith('--')).map(x=>{
   const i=x.indexOf('=');
@@ -14,6 +16,8 @@ const root=path.resolve(String(args.root||'roblox-games'));
 const playbooksFile=path.resolve(String(args.playbooks||''));
 const recombinationFile=String(args.recombination||'').trim()?path.resolve(String(args.recombination)):'';
 const reportFile=String(args.report||'').trim()?path.resolve(String(args.report)):'';
+const runtimeRef=String(args['runtime-ref']||'').trim();
+const queueFile=String(args.queue||'').trim()?path.resolve(String(args.queue)):'';
 const requestedGameId=String(args['game-id']||'').trim();
 const requestedGameIds=[...new Set([
   requestedGameId,
@@ -27,6 +31,21 @@ if(!fs.existsSync(root))throw new Error('ROBLOX_GAMES_ROOT_MISSING:'+root);
 if(!playbooksFile||!fs.existsSync(playbooksFile))throw new Error('ROBLOX_LEARNING_PLAYBOOKS_MISSING:'+playbooksFile);
 
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));
+const runtimeQueue=queueFile&&fs.existsSync(queueFile)?readJson(queueFile):{items:[]};
+const runtimeQueueByGameId=new Map((runtimeQueue.items||[]).map(item=>[String(item?.gameId||'').trim(),item]).filter(([gameId])=>gameId));
+const runtimeBaselineForGame=gameId=>{
+  if(!runtimeRef)return null;
+  const item=runtimeQueueByGameId.get(gameId);
+  const baselineSource=String(item?.designBaselineSource||item?.platformDesignProfiles?.ROBLOX?.source||'').trim();
+  if(!baselineSource)return null;
+  let raw='';
+  try{
+    raw=execFileSync('git',['show',runtimeRef+':'+baselineSource],{encoding:'utf8',maxBuffer:8*1024*1024,stdio:['ignore','pipe','pipe']});
+  }catch(error){
+    throw new Error('ROBLOX_LEARNING_SWEEP_RUNTIME_BASELINE_UNAVAILABLE:'+gameId+':'+baselineSource+':'+String(error?.message||error));
+  }
+  return Object.freeze({source:baselineSource,record:JSON.parse(raw.replace(/^\uFEFF/,''))});
+};
 const nativeBindingVersion=source=>{
   const match=String(source||'').match(/VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION\s*=\s*(\d+)/);
   return Number(match?.[1]||0);
@@ -51,9 +70,13 @@ for(const gameId of gameIds){
   const configSource=fs.readFileSync(path.join(gameRoot,'shared','GameConfig.luau'),'utf8');
   const fallbackProfile=existingRobloxGameLearningProfile(gameId);
   const sourceProfile=robloxLearningProfileFromSource({gameId,config:configSource,fallback:fallbackProfile});
-  const designContext=latestVerifiedDesign(process.cwd(),gameId)||latestMinimumDesign(process.cwd(),gameId);
-  const designProfile=designContext?.record?robloxBuildProfileFromBaseline(designContext.record):null;
+  const runtimeBaseline=runtimeBaselineForGame(gameId);
+  const designContext=runtimeBaseline?null:(latestVerifiedDesign(process.cwd(),gameId)||latestMinimumDesign(process.cwd(),gameId));
+  const designProfile=runtimeBaseline?.record
+    ?robloxBuildProfileFromBaseline(runtimeBaseline.record)
+    :designContext?.record?robloxBuildProfileFromBaseline(designContext.record):null;
   const learningProfile=designProfile||sourceProfile;
+  const learningProfileSource=runtimeBaseline?'COMPANY_RUNTIME_BOUND_BASELINE':designContext?.record?'MAIN_DESIGN_FALLBACK':'SOURCE_PROFILE_FALLBACK';
   const learning=createRobloxVibe3LearningContext({gameId,profile:learningProfile,artbook:{},playbooks,recombination});
   if(learning.applied!==true)throw new Error('ROBLOX_SWEEP_LEARNING_NOT_APPLIED:'+gameId);
   if(learning.allRetrievedPrinciplesHaveExplicitDisposition!==true||Number(learning.semanticMappingVersion||0)!==1)throw new Error('ROBLOX_SWEEP_SEMANTIC_MAPPING_NOT_FAIL_CLOSED:'+gameId);
@@ -78,6 +101,21 @@ for(const gameId of gameIds){
     });
   }else{
     applied=applyVerifiedExternalLearningToExistingRobloxSource({root:gameRoot,learning});
+  }
+  const postApplyRefresh=verifiedExternalLearningRefreshState({root:gameRoot,playbooks,gameId,profile:learningProfile});
+  if(postApplyRefresh.refreshRequired===true){
+    const detail={
+      reason:postApplyRefresh.reason,
+      expectedFingerprint:postApplyRefresh.fingerprint,
+      currentFingerprint:postApplyRefresh.currentFingerprint,
+      expectedSemanticMappingFingerprint:postApplyRefresh.semanticMappingFingerprint,
+      currentSemanticMappingFingerprint:postApplyRefresh.currentSemanticMappingFingerprint,
+      expectedNativeBindingVersion:postApplyRefresh.expectedNativeBindingVersion,
+      nativeBindingVersion:postApplyRefresh.nativeBindingVersion,
+      clientNativeBindingVersion:postApplyRefresh.clientNativeBindingVersion,
+      fullNativeClient:postApplyRefresh.fullNativeClient,
+    };
+    throw new Error('ROBLOX_LEARNING_SWEEP_POST_APPLY_REFRESH_REQUIRED:'+gameId+':'+JSON.stringify(detail));
   }
   const evidenceFile=path.join(gameRoot,'roblox-source-bootstrap.json');
   let evidence={version:1,gameId,platform:'ROBLOX',sourcePath:path.relative(process.cwd(),gameRoot).replaceAll('\\','/')};
@@ -130,6 +168,9 @@ for(const gameId of gameIds){
     gameSpecificMappingCount:Number(learning.verifiedExternalLearningGameDevelopmentAppliedCount||0),
     sourceProfile,
     designProfile,
+    learningProfileSource,
+    runtimeBaselineSource:runtimeBaseline?.source||null,
+    postApplyRefreshRequired:false,
     profileMismatch:Boolean(designProfile&&(String(designProfile.genre)!==String(sourceProfile.genre)||String(designProfile.playMode)!==String(sourceProfile.playMode))),
     validationOnlyPrincipleCount:Number(learning.verifiedExternalValidationOnlyPrincipleCount||0),
     serverInspection:applied.serverInspection||'AFFECTED_SCOPE_ONLY_PRESENTATION_BINDING',
