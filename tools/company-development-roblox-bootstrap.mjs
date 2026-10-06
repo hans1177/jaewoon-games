@@ -178,49 +178,37 @@ export const ROBLOX_STUDIO_ASSET_FAMILIES=Object.freeze([
   'CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'
 ]);
 
-const ROBLOX_STUDIO_ASSET_SYSTEM_RULES=Object.freeze({
-  CHARACTER:Object.freeze([
-    /\b(?:Players|LocalPlayer|CharacterAdded)\b/i,
-    /\bHumanoid\b/i,
-  ]),
-  CREATURE:Object.freeze([
-    /\b(?:enemy|monster|boss|creature|mob|wildlife|beetle|spider|wolf|bear|golem)\b/i,
-    /(?:\bHumanoid\b|\bAnimationController\b|Instance\.new\(["']Model["']\))/i,
-  ]),
-  BUILDING:Object.freeze([
-    /\b(?:building|house|shop|school|temple|castle|dungeon|interior|wall|roof|foundation|settlement|village)\b/i,
-    /(?:Instance\.new\(["'](?:Model|Part|MeshPart)["']\)|\bClone\s*\()/i,
-  ]),
-  ENVIRONMENT:Object.freeze([
-    /(?:\bTerrain\b|\bLighting\b|\bAtmosphere\b|game:GetService\(["']Lighting["']\))/i,
-  ]),
-  WEAPON:Object.freeze([
-    /\b(?:weapon|sword|blade|spear|axe|hammer|bow|gun|staff|shield|equip|loadout)\b/i,
-    /(?:Instance\.new\(["'](?:Tool|Model|MeshPart|Attachment|WeldConstraint)["']\)|\bWeldConstraint\b)/i,
-  ]),
-  SKILL:Object.freeze([
-    /\b(?:skill|ability|cast|projectile|aoe|spell|ultimate|telegraph|summon|buff|debuff)\b/i,
-    /(?:ParticleEmitter|Beam|Trail|Attachment|PointLight|SpotLight|SurfaceLight|Instance\.new\(["']Model["']\))/i,
-  ]),
-  MATERIAL:Object.freeze([
-    /(?:Enum\.Material|SurfaceAppearance|MaterialVariant|TextureID|\.Material\s*=)/i,
-  ]),
-  AUDIO:Object.freeze([
-    /(?:SoundService|SoundId|Instance\.new\(["']Sound["']\))/i,
-  ]),
-  VFX:Object.freeze([
-    /(?:ParticleEmitter|Beam|Trail|PointLight|SpotLight|SurfaceLight)/i,
-  ]),
-  UI:Object.freeze([
-    /(?:ScreenGui|ScrollingFrame|TextLabel|TextButton|ImageLabel|ImageButton|UIStroke|UICorner|UIGradient)/i,
-  ]),
-  MOTION:Object.freeze([
-    /(?:Animator|AnimationTrack|Instance\.new\(["']Animation["']\)|TweenService|Motor6D|Bone)/i,
-  ]),
-  PROP:Object.freeze([
-    /\b(?:prop|chest|crate|barrel|lamp|workbench|furniture|sign|pickup|resource|tree|rock)\b/i,
-    /(?:Instance\.new\(["'](?:Model|Part|MeshPart|ProximityPrompt|Attachment)["']\)|\bClone\s*\()/i,
-  ]),
+const ROBLOX_STUDIO_ASSET_DIRECT_SYSTEM_PATTERNS=Object.freeze({
+  CHARACTER:/(?:\b(?:Players|LocalPlayer|CharacterAdded)\b[\s\S]{0,3000}\bHumanoid\b|\bHumanoid\b[\s\S]{0,3000}\b(?:Players|LocalPlayer|CharacterAdded)\b)/i,
+  ENVIRONMENT:/(?:\bTerrain\b|\bLighting\b|\bAtmosphere\b|game:GetService\(["']Lighting["']\))/i,
+  MATERIAL:/(?:Enum\.Material|SurfaceAppearance|MaterialVariant|TextureID|\.Material\s*=)/i,
+  AUDIO:/(?:SoundService|SoundId|Instance\.new\(["']Sound["']\))/i,
+  VFX:/(?:ParticleEmitter|Beam|Trail|PointLight|SpotLight|SurfaceLight)/i,
+  UI:/(?:ScreenGui|ScrollingFrame|TextLabel|TextButton|ImageLabel|ImageButton|UIStroke|UICorner|UIGradient)/i,
+  MOTION:/(?:Animator|AnimationTrack|Instance\.new\(["']Animation["']\)|TweenService|Motor6D|Bone)/i,
+});
+
+const ROBLOX_STUDIO_ASSET_COUPLED_SYSTEM_PATTERNS=Object.freeze({
+  CREATURE:Object.freeze({
+    semantic:/\b(?:enemy|monster|boss|creature|mob|wildlife|beetle|spider|wolf|bear|golem)\b/ig,
+    native:/(?:\bHumanoid\b|\bAnimationController\b|Instance\.new\(["']Model["']\))/i,
+  }),
+  BUILDING:Object.freeze({
+    semantic:/\b(?:building|house|shop|school|temple|castle|dungeon|interior|wall|roof|settlement|village)\b/ig,
+    native:/(?:Instance\.new\(["'](?:Model|Part|MeshPart)["']\)|\bClone\s*\()/i,
+  }),
+  WEAPON:Object.freeze({
+    semantic:/\b(?:weapon|sword|blade|spear|axe|hammer|bow|gun|staff|shield|equip|loadout)\b/ig,
+    native:/(?:Instance\.new\(["'](?:Tool|Model|MeshPart|Attachment|WeldConstraint)["']\)|\bWeldConstraint\b)/i,
+  }),
+  SKILL:Object.freeze({
+    semantic:/\b(?:skill|ability|cast|projectile|aoe|spell|ultimate|telegraph|summon|buff|debuff)\b/ig,
+    native:/(?:ParticleEmitter|Beam|Trail|Attachment|PointLight|SpotLight|SurfaceLight|Instance\.new\(["']Model["']\))/i,
+  }),
+  PROP:Object.freeze({
+    semantic:/\b(?:prop|chest|crate|barrel|lamp|workbench|furniture|sign|pickup|resource|tree|rock)\b/ig,
+    native:/(?:Instance\.new\(["'](?:Model|Part|MeshPart|ProximityPrompt|Attachment)["']\)|\bClone\s*\()/i,
+  }),
 });
 
 function stripManagedRobloxStudioAssetSource(source=''){
@@ -230,11 +218,27 @@ function stripManagedRobloxStudioAssetSource(source=''){
     .replace(/--[^\n]*/g,' ');
 }
 
+function hasCoupledRobloxStudioAssetSystem(raw='',semanticPattern=null,nativePattern=null){
+  if(!semanticPattern||!nativePattern)return false;
+  const semantic=new RegExp(semanticPattern.source,semanticPattern.flags.includes('g')?semanticPattern.flags:semanticPattern.flags+'g');
+  for(const match of raw.matchAll(semantic)){
+    const index=Number(match.index||0);
+    const start=Math.max(0,index-2200);
+    const end=Math.min(raw.length,index+String(match[0]||'').length+2200);
+    if(nativePattern.test(raw.slice(start,end)))return true;
+  }
+  return false;
+}
+
 export function detectRobloxStudioAssetSystemsFromSource(source=''){
   const raw=stripManagedRobloxStudioAssetSource(source);
-  return Object.freeze(Object.fromEntries(ROBLOX_STUDIO_ASSET_FAMILIES.map(family=>[
-    family,(ROBLOX_STUDIO_ASSET_SYSTEM_RULES[family]||[]).every(pattern=>pattern.test(raw))
-  ])));
+  const detected={};
+  for(const family of ROBLOX_STUDIO_ASSET_FAMILIES){
+    const direct=ROBLOX_STUDIO_ASSET_DIRECT_SYSTEM_PATTERNS[family];
+    const coupled=ROBLOX_STUDIO_ASSET_COUPLED_SYSTEM_PATTERNS[family];
+    detected[family]=direct?direct.test(raw):hasCoupledRobloxStudioAssetSystem(raw,coupled?.semantic,coupled?.native);
+  }
+  return Object.freeze(detected);
 }
 
 export function buildRobloxStudioAssetFamilyStatus({source='',studioAssets={}}={}){
@@ -841,7 +845,7 @@ function replaceOrInsertStudioAssetConfig(source='',studioAssets={}){
   return source.slice(0,closeIndex+1)+block+source.slice(closeIndex+1);
 }
 
-function studioAssetDynamicSyncBlock({frameVar='root',familyStatus={}}={}){
+function studioAssetDynamicSyncBlock({frameVar='root',configVar='Config',familyStatus={}}={}){
   const selectionRows=ROBLOX_STUDIO_ASSET_FAMILIES.map(family=>`  ${family} = studioAssetFamily("${family}"),`).join('\n');
   const statusRows=ROBLOX_STUDIO_ASSET_FAMILIES.map(family=>`  ${family} = "${familyStatus[family]==='APPLIED'?'APPLIED':'NOT_APPLICABLE'}",`).join('\n');
   return `-- STUDIO_ASSET_DYNAMIC_SYNC_BEGIN
@@ -851,8 +855,9 @@ ${selectionRows}
 local STUDIO_ASSET_FAMILY_STATUS = {
 ${statusRows}
 }
-local studioAssetLibraryVersion = studioAssetConfig.LibraryVersion or 0
-local studioAssetDynamicSelectionFingerprint = studioAssetConfig.SelectionFingerprint or studioAssetSelectionFingerprint
+local studioAssetDynamicConfig = ${configVar}.StudioAssets or {}
+local studioAssetLibraryVersion = studioAssetDynamicConfig.LibraryVersion or 0
+local studioAssetDynamicSelectionFingerprint = studioAssetDynamicConfig.SelectionFingerprint or ""
 local function bindStudioAssetFamily(instance, family)
   if not instance or STUDIO_ASSET_FAMILY_STATUS[family] ~= "APPLIED" then return end
   local atoms = STUDIO_ASSET_SELECTION[family] or {}
@@ -860,6 +865,13 @@ local function bindStudioAssetFamily(instance, family)
   instance:SetAttribute("StudioAsset:" .. family, table.concat(atoms, ","))
   instance:SetAttribute("StudioAssetLibraryVersion", studioAssetLibraryVersion)
   instance:SetAttribute("StudioAssetSelectionFingerprint", studioAssetDynamicSelectionFingerprint)
+end
+local function studioAssetNameMatches(instance, csv)
+  local name = string.lower(instance.Name)
+  for token in string.gmatch(csv, "[^,]+") do
+    if string.find(name, token, 1, true) then return true end
+  end
+  return false
 end
 bindStudioAssetFamily(${frameVar}, "UI")
 if STUDIO_ASSET_FAMILY_STATUS.CHARACTER == "APPLIED" then
@@ -875,13 +887,13 @@ end
 if STUDIO_ASSET_FAMILY_STATUS.ENVIRONMENT == "APPLIED" then bindStudioAssetFamily(game:GetService("Lighting"), "ENVIRONMENT") end
 for _, studioInstance in ipairs(workspace:GetDescendants()) do
   if STUDIO_ASSET_FAMILY_STATUS.CREATURE == "APPLIED" and studioInstance:IsA("Model") and studioInstance ~= (player and player.Character) and studioInstance:FindFirstChildOfClass("Humanoid") then bindStudioAssetFamily(studioInstance, "CREATURE") end
-  if STUDIO_ASSET_FAMILY_STATUS.BUILDING == "APPLIED" and (studioInstance:IsA("Model") or studioInstance:IsA("BasePart")) and string.find(string.lower(studioInstance.Name), "house|shop|school|temple|castle|dungeon|wall|roof|foundation|village") then bindStudioAssetFamily(studioInstance, "BUILDING") end
+  if STUDIO_ASSET_FAMILY_STATUS.BUILDING == "APPLIED" and (studioInstance:IsA("Model") or studioInstance:IsA("BasePart")) and studioAssetNameMatches(studioInstance, "building,house,shop,school,temple,castle,dungeon,wall,roof,village") then bindStudioAssetFamily(studioInstance, "BUILDING") end
   if STUDIO_ASSET_FAMILY_STATUS.WEAPON == "APPLIED" and studioInstance:IsA("Tool") then bindStudioAssetFamily(studioInstance, "WEAPON") end
   if STUDIO_ASSET_FAMILY_STATUS.SKILL == "APPLIED" and (studioInstance:IsA("ParticleEmitter") or studioInstance:IsA("Beam") or studioInstance:IsA("Trail")) then bindStudioAssetFamily(studioInstance, "SKILL") end
   if STUDIO_ASSET_FAMILY_STATUS.MATERIAL == "APPLIED" and studioInstance:IsA("BasePart") then bindStudioAssetFamily(studioInstance, "MATERIAL") end
   if STUDIO_ASSET_FAMILY_STATUS.AUDIO == "APPLIED" and studioInstance:IsA("Sound") then bindStudioAssetFamily(studioInstance, "AUDIO") end
   if STUDIO_ASSET_FAMILY_STATUS.VFX == "APPLIED" and (studioInstance:IsA("ParticleEmitter") or studioInstance:IsA("Beam") or studioInstance:IsA("Trail") or studioInstance:IsA("PointLight") or studioInstance:IsA("SpotLight") or studioInstance:IsA("SurfaceLight")) then bindStudioAssetFamily(studioInstance, "VFX") end
-  if STUDIO_ASSET_FAMILY_STATUS.PROP == "APPLIED" and (studioInstance:IsA("ProximityPrompt") or studioInstance:IsA("Tool") or string.find(string.lower(studioInstance.Name), "chest|crate|barrel|lamp|workbench|sign|pickup|resource|tree|rock")) then bindStudioAssetFamily(studioInstance, "PROP") end
+  if STUDIO_ASSET_FAMILY_STATUS.PROP == "APPLIED" and (studioInstance:IsA("ProximityPrompt") or studioInstance:IsA("Tool") or studioAssetNameMatches(studioInstance, "prop,chest,crate,barrel,lamp,workbench,sign,pickup,resource,tree,rock")) then bindStudioAssetFamily(studioInstance, "PROP") end
 end
 -- STUDIO_ASSET_DYNAMIC_SYNC_END
 `;
@@ -944,7 +956,7 @@ ${frameVar}:SetAttribute("StudioAssetAtoms", table.concat(studioAssetFamily("UI"
   const runtimeTarget=output.match(/local\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*Instance\.new\(\s*["']Frame["']\s*\)/)?.[1]
     ||output.match(/local\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*Instance\.new\(\s*["']ScreenGui["']\s*\)/)?.[1];
   if(!runtimeTarget)throw new Error('EXISTING_STUDIO_ASSET_DYNAMIC_SYNC_TARGET_REQUIRED');
-  const dynamicBlock=studioAssetDynamicSyncBlock({frameVar:runtimeTarget,familyStatus});
+  const dynamicBlock=studioAssetDynamicSyncBlock({frameVar:runtimeTarget,configVar,familyStatus});
   const managedDynamic=/-- STUDIO_ASSET_DYNAMIC_SYNC_BEGIN\n[\s\S]*?-- STUDIO_ASSET_DYNAMIC_SYNC_END\n?/;
   output=managedDynamic.test(output)
     ?output.replace(managedDynamic,dynamicBlock)
