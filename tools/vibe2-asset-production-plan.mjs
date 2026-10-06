@@ -963,6 +963,18 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   const next=JSON.parse(JSON.stringify(original));
   next.assets=Array.isArray(next.assets)?next.assets:[];
   const gameCatalog=readJson(path.join(repoRoot,'game-catalog.json'),{games:[]});
+  const homepageExposure=readJson(path.join(repoRoot,'homepage-platform-exposure.json'),{games:[]});
+  const publicReleaseIds=new Set((homepageExposure.games||[]).filter(row=>
+    clean(row?.externalPublicReleaseState).toUpperCase()==='PUBLIC_RELEASE'
+    ||(row?.platforms||[]).some(platform=>platform?.publicRelease===true||clean(platform?.publicReleaseState).toUpperCase()==='PUBLIC_RELEASE')
+  ).map(row=>clean(row?.gameId)).filter(Boolean));
+  const releasedGames=(gameCatalog.games||[]).filter(game=>{
+    const id=clean(game?.id||game?.gameId);
+    const lifecycle=clean(game?.lifecycleState||game?.canonical?.lifecycle?.state||'ACTIVE').toUpperCase();
+    const production=clean(game?.productionClass||game?.canonical?.production?.class||game?.homepageCategory).toUpperCase().replaceAll('-','_');
+    return Boolean(id)&&lifecycle==='ACTIVE'&&(production==='RELEASE_CONFIRMED'||publicReleaseIds.has(id));
+  }).sort((a,b)=>clean(a.id||a.gameId).localeCompare(clean(b.id||b.gameId)));
+  const releasedGameIds=new Set(releasedGames.map(game=>clean(game.id||game.gameId)).filter(Boolean));
   const catalogs=commonCatalogFiles(repoRoot).map(file=>({path:path.relative(repoRoot,file).replaceAll('\\','/'),catalog:readJson(file,{})})).filter(row=>row.catalog?.packId);
   const fingerprint=catalogFingerprint(catalogs);
   const syncRows=catalogs.map(row=>synchronizeCatalogRows({registry:next,catalog:row.catalog}));
@@ -984,8 +996,26 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     const row=syncRows.find(item=>item.packId===packId);
     return row?Number(row.count||0):Number(fallback||0);
   };
-  const seeds=companySeedRows(repoRoot);
-  const seedPlan=createCompanySeedAssetIdeationPlan({seeds,assets:next.assets});
+  const seedRowsByGameId=new Map(companySeedRows(repoRoot).map(row=>[clean(row.gameId),row]));
+  const seeds=releasedGames.map(game=>{
+    const gameId=clean(game.id||game.gameId),existing=seedRowsByGameId.get(gameId);
+    if(existing)return existing;
+    const identity=game?.canonical?.identity||{},homepage=game?.canonical?.homepage||{};
+    const genres=Array.isArray(identity.genres)?identity.genres:Array.isArray(game.genre)?game.genre:[game.genre].filter(Boolean);
+    return{
+      gameId,
+      gameName:clean(game.name||identity.name)||gameId,
+      identity:clean(identity.description||game.description||identity.name||game.name)||gameId,
+      genre:genres.join(' '),
+      coreFun:clean(homepage.recentWork||game.homepageRecentWork||game.description),
+      coreLoop:[clean(game.description),clean(homepage.recentWork||game.homepageRecentWork)].filter(Boolean),
+      signatureSystems:[],
+      progressionDirection:clean(game.homepageStage||game?.canonical?.production?.stage),
+      visualDirection:clean(game?.canonical?.marketing?.homepageMedia?.style||game.homepageInfo?.marketing?.homepageMedia?.style),
+      mobileUx:'MOBILE_FIRST_RELEASED_GAME'
+    };
+  });
+  const seedPlan=createCompanySeedAssetIdeationPlan({seeds,assets:next.assets,scope:'RELEASE_CONFIRMED_GAME_DEMAND_ONLY'});
   const uiCatalog=catalogs.find(row=>row.catalog.packId==='roblox-common-ui-v1')?.catalog||{};
   const audioRoleIds=collectCommonCatalogAudioRoles(catalogs);
   const previousMaintenance=original?.internalAssetLibraryAutomation?.maintenance||null;
@@ -995,7 +1025,9 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     uiAtomIds:(uiCatalog.atoms||[]).map(row=>row.atomId),
     audioRoleIds,
     externalSources:next.externalSources||[],
-    consumerGames:gameCatalog.games||[],
+    consumerGames:releasedGames,
+    productionScopeGameIds:[...releasedGameIds],
+    releaseScopedProduction:true,
     previousMaintenance
   });
   const dynamicPlanningAssets=consumerSync.registry.assets.map(asset=>{
@@ -1010,7 +1042,9 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     uiAtomIds:(uiCatalog.atoms||[]).map(row=>row.atomId),
     audioRoleIds,
     externalSources:next.externalSources||[],
-    consumerGames:gameCatalog.games||[],
+    consumerGames:releasedGames,
+    productionScopeGameIds:[...releasedGameIds],
+    releaseScopedProduction:true,
     previousMaintenance
   });
   const transientMaintenanceReasons=new Set(['INVENTORY_CHANGED','TYPE_OR_ROLE_CHANGED','QUALITY_METADATA_CHANGED']);
@@ -1077,10 +1111,13 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     ...(next.companyCommonSeedAssetIdeation||{}),
     version:Math.max(1,Number(next.companyCommonSeedAssetIdeation?.version)||1),
     status:'ACTIVE_MACHINE_READABLE_INTERNAL_ASSET_IDEATION',
-    scope:'ALL_COMPANY_COMMON_SEEDS',
-    sourcePattern:'artbook-submissions/seed-*/current.json',
+    scope:'RELEASE_CONFIRMED_GAME_DEMAND_ONLY',
+    sourcePattern:'game-catalog.json + homepage-platform-exposure.json + matching artbook-submissions/seed-*/current.json',
+    releasedGameOnly:true,
+    genericUnscopedIdeaProductionForbidden:true,
     currentSeedCount:seedPlan.seedCount,
     currentSeedIds:seedPlan.seeds.map(row=>row.gameId),
+    releasedGameIds:[...releasedGameIds].sort(),
     planBuilder:'assets/vibe-studio-asset-universe.js#createCompanySeedAssetIdeationPlan'
   };
 
@@ -1109,6 +1146,10 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     version:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,
     contract:'assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT',
     catalogDiscovery:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.catalogDiscovery,
+    releaseScopedProduction:libraryPlan.releaseScopedProduction===true,
+    productionScopeGameIds:libraryPlan.productionScopeGameIds,
+    releasedGameDemandAvailable:libraryPlan.releasedGameDemandAvailable===true,
+    unscopedGenericIdeaProductionForbidden:libraryPlan.unscopedGenericIdeaProductionForbidden===true,
     countPolicy:libraryPlan.countPolicy,
     hardMaximum:null,
     overSoftLimitAction:libraryPlan.overSoftLimitAction,
