@@ -119,6 +119,18 @@ test('game-specific directive covers the whole game and all visual domains',()=>
   assert.ok(directive.responsibleSystemsAndFiles.sourceAnchors.every(row=>String(row.currentBehavior||'').length>5));
   assert.ok(directive.responsibleSystemsAndFiles.sourceAnchors.every(row=>String(row.intendedBehavior||'').includes('primary goal')));
   assert.ok(directive.responsibleSystemsAndFiles.sourceAnchors.every(row=>String(row.observableAcceptance||'').includes(row.file)));
+  assert.equal(directive.implementationBlueprint.status,'BUILD_READY_IMPLEMENTATION_BLUEPRINT');
+  assert.equal(directive.implementationBlueprint.mode,'VERTICAL_SLICE_BUILD_UP');
+  assert.equal(directive.implementationBlueprint.foundationRepairFirst,false);
+  assert.equal(directive.implementationBlueprint.newContentMayPreemptFoundationRepair,false);
+  assert.equal(directive.implementationBlueprint.verticalSlice.completeChainRequired,true);
+  assert.equal(directive.implementationBlueprint.stateTransitions.length,4);
+  assert.ok(directive.implementationBlueprint.systemContracts.length>=2);
+  assert.ok(directive.implementationBlueprint.responsibleSourcePlan.length>=1);
+  assert.equal(directive.implementationBlueprint.presentationPlan.materialOrMarkerOnlyCannotCloseGraphicsBuildUp,true);
+  assert.equal(directive.implementationBlueprint.completionGate.bootstrapOnlyCompletionForbidden,true);
+  assert.equal(directive.implementationBlueprint.completionGate.statusOrMarkerOnlyCompletionForbidden,true);
+  assert.equal(directive.implementationBlueprint.completionGate.realGameplaySourceDeltaRequired,true);
   assert.ok(directive.effectivenessMeasurement.expectedPlayerEffect.length>20);
   assert.equal(directive.effectivenessMeasurement.previousGeneration.classification,'NO_PREVIOUS_GENERATION');
   assert.equal(directive.nextActionDecision.action,'CONTINUE_BUILD_UP_CURRENT_SYSTEM');
@@ -147,6 +159,12 @@ test('game-specific directive covers the whole game and all visual domains',()=>
   assert.match(directivePrompt(directive),/ANTI_CLONE:/);
   assert.match(directivePrompt(directive),/CONTINUITY_CAUSALITY:/);
   assert.match(directivePrompt(directive),/DERIVED_RULE_EVOLUTION:/);
+  assert.match(directivePrompt(directive),/BUILD_READY_IMPLEMENTATION_BLUEPRINT:/);
+  assert.match(directivePrompt(directive),/VERTICAL_SLICE:/);
+  assert.match(directivePrompt(directive),/STATE_TRANSITIONS:/);
+  assert.match(directivePrompt(directive),/RESPONSIBLE_SOURCE_PLAN:/);
+  assert.match(directivePrompt(directive),/RUNTIME_ACCEPTANCE:/);
+  assert.match(directivePrompt(directive),/BUILD_COMPLETION_GATE:/);
 });
 
 test('holistic build-up marks sparse map inventory UI session and convenience systems as explicit gaps',()=>{
@@ -391,6 +409,38 @@ test('verified product-quality failure routes first buildup generation directly 
   assert.match(directive.nextActionDecision.reason,/failure|regression/i);
 });
 
+
+test('runtime failure forces implementation blueprint into foundation repair first and blocks decorative preemption',()=>{
+  const directive=buildGameSpecificBuildUpDirective({
+    gameId:'foundation-broken',
+    gameName:'기본 작동 실패 게임',
+    platform:'ROBLOX',
+    designRecord:design(),
+    sourceObservation:{
+      sourceRoot:'roblox-games/foundation-broken',
+      sourceTreeFingerprint:'a'.repeat(64),
+      fileCount:2,
+      topFiles:[{file:'roblox-games/foundation-broken/server/Game.server.luau',score:20}],
+      sourceAnchors:[{file:'roblox-games/foundation-broken/server/Game.server.luau',line:1,kind:'FUNCTION',symbol:'startRound',context:'function startRound()',score:40}],
+      signals:{combat:2,progression:1,ai:1,save:1,multiplayer:1,animation:1,vfx:1,camera:1,ui:1,uiFlow:1,input:1,map:1,landmark:0,interaction:1,inventory:0,equipment:0,settings:0,feedback:1,session:1,content:2,choice:1,connection:1,performance:1,lighting:1,primitive:1,todo:0,errorRecovery:1},
+      observations:['CURRENT_SOURCE_FILES=2']
+    },
+    runtimeEvidence:{
+      runtimeObserved:true,
+      runtimePassed:false,
+      failureStage:'F1_SERVER_BOOT',
+      failureSignature:'SERVER_BOOT_NOT_OBSERVED',
+      blockers:['core-loop-start']
+    }
+  });
+  const blueprint=directive.implementationBlueprint;
+  assert.equal(blueprint.mode,'FOUNDATION_REPAIR_FIRST');
+  assert.equal(blueprint.foundationRepairFirst,true);
+  assert.equal(blueprint.newContentMayPreemptFoundationRepair,false);
+  assert.equal(blueprint.completionGate.basicPlayabilityFailureBlocksDecorativeExpansion,true);
+  assert.equal(blueprint.completionGate.sameVerticalSliceMustReachInputStateFeedbackResult,true);
+  assert.match(blueprint.verticalSlice.failureAndRetry,/다시 수행/);
+});
 
 test('autonomous content expansion rotates after a verified effective generation instead of cloning the same content theme',()=>{
   const sourceObservation={
