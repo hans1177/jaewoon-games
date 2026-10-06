@@ -394,7 +394,7 @@ jobs:
             asset_queued_before="$(jq -r '.queued // 0' <<< "$asset_saturation_json")"
             asset_active_before="$(jq -r '.active // 0' <<< "$asset_saturation_json")"
             asset_max="$(jq -r '.max // 63' <<< "$asset_saturation_json")"
-            asset_reservation_runs="$(jq -r '.runIds // [] | join(\",\")' <<< "$asset_saturation_json")"
+            asset_reservation_runs="$(jq -r '.runIds // [] | join(",")' <<< "$asset_saturation_json")"
             if [ "${asset_queued_before:-0}" -gt 0 ] && [ "${asset_active_before:-0}" -ge "${asset_max:-63}" ] && [ -n "${asset_reservation_runs:-}" ]; then
               echo "VIBE2_24H_ASSET_SATURATION_RECOVERY=PROBE:queued=$asset_queued_before:active=$asset_active_before:max=$asset_max:runs=$asset_reservation_runs"
               rm -f /tmp/vibe2-24h-asset-run-*.completed /tmp/vibe2-24h-asset-run-*.error
@@ -403,7 +403,7 @@ jobs:
               for reservation_run_id in "${saturation_run_ids[@]}"; do
                 [ -n "$reservation_run_id" ] || continue
                 (
-                  if reservation_status="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${reservation_run_id}" --jq '.status // \"\"' 2>/dev/null)"; then
+                  if reservation_status="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${reservation_run_id}" --jq '.status // ""' 2>/dev/null)"; then
                     if [ "$reservation_status" = 'completed' ]; then
                       printf '%s\n' "$reservation_run_id" > "/tmp/vibe2-24h-asset-run-${reservation_run_id}.completed"
                     fi
