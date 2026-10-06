@@ -10,9 +10,21 @@
   "completedPhases": [],
   "phases": {},
   "tasks": {},
-  "modelHealth": {},
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 1,
+      "jsonFailures": 0,
+      "totalMs": 120085,
+      "lastMs": 120085,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
+      "updatedAt": "2026-10-06T15:59:53.352Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-06T15:57:52.831Z",
-  "updatedAt": "2026-10-06T15:57:52.927Z"
+  "updatedAt": "2026-10-06T15:59:53.352Z"
 }
