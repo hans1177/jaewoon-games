@@ -346,6 +346,75 @@ root.BackgroundColor3 = hasStudioAtom("FRAME_PANEL") and Color3.fromRGB(22, 34, 
 root:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)
 root:SetAttribute("StudioAssetAtoms", table.concat(studioAssetFamily("UI"), ","))
 root.Parent = gui
+
+-- 선택된 내부 자산 family를 기존 골목 방어 월드의 실제 Roblox 표현에 연결한다.
+task.defer(function()
+  local world = workspace:FindFirstChild("LineDefenseWorld") or workspace:WaitForChild("LineDefenseWorld", 5)
+  if not world then return end
+
+  if #studioAssetFamily("CREATURE") > 0 then
+    local creatureAtom = studioAssetFamily("CREATURE")[1] or ""
+    local function applyCreaturePresentation(instance)
+      if not instance:IsA("Model") then return end
+      if not (instance.Name:find("Enemy_", 1, true) or instance.Name == "BossEnemy") then return end
+      local body = instance:FindFirstChild("Body")
+      if body and body:IsA("BasePart") then
+        body:SetAttribute("StudioCreatureAtom", creatureAtom)
+        body.Material = creatureAtom:find("CRYSTAL", 1, true) and Enum.Material.Glass or Enum.Material.Slate
+      end
+    end
+    for _, descendant in ipairs(world:GetDescendants()) do applyCreaturePresentation(descendant) end
+    world.DescendantAdded:Connect(applyCreaturePresentation)
+  end
+
+  if #studioAssetFamily("BUILDING") > 0 then
+    local hideout = world:FindFirstChild("HideoutObjective")
+    if hideout and hideout:IsA("BasePart") and not world:FindFirstChild("StudioHideoutTrim") then
+      local trim = Instance.new("Part")
+      trim.Name = "StudioHideoutTrim"
+      trim.Size = Vector3.new(math.max(2, hideout.Size.X - 2), 0.4, 0.5)
+      trim.Position = hideout.Position + Vector3.new(0, hideout.Size.Y * 0.42, -hideout.Size.Z * 0.51)
+      trim.Anchored = true
+      trim.CanCollide = false
+      trim.Material = Enum.Material.Metal
+      trim.Color = Color3.fromRGB(145, 162, 180)
+      trim:SetAttribute("StudioBuildingAtom", studioAssetFamily("BUILDING")[1] or "")
+      trim.Parent = world
+    end
+  end
+
+  if #studioAssetFamily("MATERIAL") > 0 then
+    local enemyPath = world:FindFirstChild("EnemyPath")
+    if enemyPath and enemyPath:IsA("BasePart") then
+      local materialAtom = studioAssetFamily("MATERIAL")[1] or ""
+      enemyPath:SetAttribute("StudioMaterialAtom", materialAtom)
+      enemyPath.Material = materialAtom == "WOOD" and Enum.Material.WoodPlanks or Enum.Material.Cobblestone
+    end
+  end
+
+  if #studioAssetFamily("SKILL") > 0 then
+    local character = player.Character or player.CharacterAdded:Wait()
+    local rootPart = character:WaitForChild("HumanoidRootPart", 5)
+    if rootPart then
+      local attachment = Instance.new("Attachment")
+      attachment.Name = "StudioDefenseSkillAttachment"
+      attachment.Position = Vector3.new(0, 0.5, 0)
+      attachment:SetAttribute("StudioSkillAtom", studioAssetFamily("SKILL")[1] or "")
+      attachment.Parent = rootPart
+      local emitter = Instance.new("ParticleEmitter")
+      emitter.Name = "StudioDefenseSkillEmitter"
+      emitter.Rate = 0
+      emitter.Lifetime = NumberRange.new(0.12, 0.24)
+      emitter.Speed = NumberRange.new(4, 7)
+      emitter.LightEmission = 0.7
+      emitter.Parent = attachment
+      player:GetAttributeChangedSignal("LastApprovedScope"):Connect(function()
+        if player:GetAttribute("LastApprovedScope") == "scope-corefun-27c99c0f63" then emitter:Emit(10) end
+      end)
+    end
+  end
+end)
+
 local title = Instance.new("TextLabel")
 title.Name = "Title"
 title.Size = UDim2.new(1, -20, 0, 44)
