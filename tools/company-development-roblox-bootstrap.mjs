@@ -920,9 +920,12 @@ function bindExistingClientStudioAssets(source='',familyStatus={}){
   if(!requireMatch)throw new Error('EXISTING_STUDIO_ASSET_CLIENT_CONFIG_REQUIRE_MISSING');
   const configVar=requireMatch[1];
   const block=studioAssetDynamicBindingBlock({familyStatus,configVar});
-  const insertAt=requireMatch.index+requireMatch[0].length;
+  const learningContext=output.match(/-- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN\n[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_END\n?/);
+  const insertAt=learningContext
+    ?Number(learningContext.index||0)+learningContext[0].length
+    :requireMatch.index+requireMatch[0].length;
   const tail=output.slice(insertAt).replace(/^\n*/,'');
-  output=output.slice(0,insertAt)+'\n'+block+tail;
+  output=output.slice(0,insertAt).replace(/\n*$/,'\n')+block+tail;
   const studioUiVisualMissing=!/StudioAssetFramePanel/.test(output);
   const studioUiTraceMissing=!/SetAttribute\s*\(\s*["']StudioAssetBindingVersion["']/.test(output);
   if(studioUiVisualMissing||studioUiTraceMissing){
