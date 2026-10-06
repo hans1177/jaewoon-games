@@ -1960,6 +1960,7 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
   const ownedAnchors=(d?.responsibleSystemsAndFiles?.sourceAnchors||[]).filter(row=>!responsibleFiles.length||responsibleFiles.some(file=>posix(row?.file||'')===posix(file)||posix(row?.file||'').endsWith('/'+posix(file))));
   const sourceAnchors=ownedAnchors.slice(0,8).map(row=>`${clean(row?.file)}:${Number(row?.line||0)||'?'} ${clean(row?.kind)||'SYMBOL'} ${clean(row?.symbol)||'UNKNOWN'} CURRENT=${clean(row?.currentBehavior||row?.context)||'UNKNOWN'} INTENDED=${clean(row?.intendedBehavior)||'FOLLOW_PRIMARY_GOAL'} ACCEPT=${clean(row?.observableAcceptance)||'REAL_SOURCE_AND_EFFECT_DELTA'}`).filter(Boolean);
   const expansion=d?.autonomousContentExpansion||{};
+  const blueprint=d?.implementationBlueprint||{};
   const breadth=expansion?.themeCoverageLedger||{};
   const completeness=expansion?.existingCompletenessReview||{};
   const completionAcceptance=(expansion?.completionAcceptance||[]).map(clean).filter(Boolean);
@@ -1988,6 +1989,14 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     `primaryGoal=${clean(d.thisLoopPrimaryGoal)}`,
     ...production,
     `implementationUnit=${clean(ownedAnchors[0]?.intendedBehavior)||clean(d.thisLoopPrimaryGoal)}; observableResult=${clean(ownedAnchors[0]?.observableAcceptance)||clean(d?.effectivenessMeasurement?.expectedPlayerEffect)}`,
+    `buildReadyBlueprint=status:${clean(blueprint?.status)||'MISSING'} mode:${clean(blueprint?.mode)||'UNKNOWN'} foundationRepairFirst:${blueprint?.foundationRepairFirst===true}`,
+    `verticalSlice=${JSON.stringify(blueprint?.verticalSlice||{})}`,
+    `stateTransitions=${JSON.stringify(blueprint?.stateTransitions||[])}`,
+    `systemContracts=${JSON.stringify(blueprint?.systemContracts||[])}`,
+    `responsibleSourcePlan=${JSON.stringify(blueprint?.responsibleSourcePlan||[])}`,
+    `presentationPlan=${JSON.stringify(blueprint?.presentationPlan||{})}`,
+    `runtimeAcceptance=${JSON.stringify(blueprint?.runtimeAcceptance||[])}`,
+    `buildCompletionGate=${JSON.stringify(blueprint?.completionGate||{})}`,
     'Complete one coherent player action-to-state-to-feedback/result chain inside this goal. Include every required dependency and atomic file pair. Defer unrelated expansion, not required connected improvements or acceptance gates.',
     `whyNow=${clean(d.primaryGoalReason)}`,
     ...(sourceAnchors.length?sourceAnchors.map(anchor=>`sourceAnchors=${anchor}`):['sourceAnchors=EXACT_SYMBOL_UNAVAILABLE_USE_RESPONSIBLE_FILE_AND_STATE_ANCHOR']),
@@ -2032,11 +2041,11 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   if(!compact&&!responsiblePaths.length)return block;
   const keepPrefixes=focusedRobloxVisual?[
     'robloxProduction','gameProduction',
-    'directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','buildReadyBlueprint=','verticalSlice=','stateTransitions=','systemContracts=','responsibleSourcePlan=','presentationPlan=','runtimeAcceptance=','buildCompletionGate=','sourceAnchors=','expectedPlayerEffect=',
     'visual=','platform=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
   ]:[
     'robloxProduction','gameProduction',
-    'directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','buildReadyBlueprint=','verticalSlice=','stateTransitions=','systemContracts=','responsibleSourcePlan=','presentationPlan=','runtimeAcceptance=','buildCompletionGate=','sourceAnchors=','expectedPlayerEffect=',
     'nextVibeAction=','contentExpansionVersion=','contentTheme=','contentBreadth=','existingCompletenessReview=','contentBundle=',
     'antiClone=','continuity=','derivedRuleEvolution=','contentCompletionAcceptance=','contentRule=',
     ...(focusedPresentation?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
@@ -2072,7 +2081,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
 
   const essentialPrefixes=[
     ...['robloxProduction','gameProduction'].flatMap(prefix=>['CONCEPT','IDEA','CONNECTION','FILES','QUALITY','SCOPE','OWNER'].map(field=>prefix+field+'=')),
-    'directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','buildReadyBlueprint=','verticalSlice=','stateTransitions=','responsibleSourcePlan=','runtimeAcceptance=','buildCompletionGate=','sourceAnchors=','expectedPlayerEffect=',
     'contentTheme=','contentCompletionAcceptance=',
     ...(focusedPresentation||focusedRobloxVisual?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
     'platform=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
