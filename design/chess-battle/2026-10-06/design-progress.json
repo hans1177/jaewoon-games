@@ -2,7 +2,7 @@
   "version": 2,
   "gameId": "chess-battle",
   "date": "2026-10-06",
-  "engineDigest": "0af5b058a6b812d2ff192b51597b738252ed24acacea496d47a0bf071af64568",
+  "engineDigest": "685bbb331f69eafaf0eb9a0618b530658f6f77121fc27881beaa8f4f962b4012",
   "status": "IN_PROGRESS",
   "currentStage": "DESIGNER_DRAFT",
   "percent": 17,
@@ -10,22 +10,10 @@
   "completedPhaseCount": 0,
   "cachedTaskCount": 0,
   "lastSuccessfulModelCallAt": null,
-  "failedPhase": "designer_draft",
+  "failedPhase": null,
   "failedTask": null,
-  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=OPTIONAL_EXTERNAL_AI_DISABLED local=Expected ',' or ']' after array element in JSON at position 3071 (line 1 column 3072)",
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 0,
-      "failures": 8,
-      "timeouts": 5,
-      "jsonFailures": 3,
-      "totalMs": 797301,
-      "lastMs": 75514,
-      "lastError": "Expected ',' or ']' after array element in JSON at position 3071 (line 1 column 3072)",
-      "updatedAt": "2026-10-06T11:24:41.639Z"
-    }
-  },
+  "lastError": null,
+  "modelHealth": {},
   "slowPhases": {},
-  "updatedAt": "2026-10-06T11:24:44.704Z"
+  "updatedAt": "2026-10-06T11:33:10.634Z"
 }
