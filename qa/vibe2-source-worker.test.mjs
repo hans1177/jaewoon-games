@@ -5341,6 +5341,21 @@ test('asset-development Roblox graphics stays on bounded focused retries while g
   assert.match(workflow,/coding-roblox-timeout-recovery-escalated-full-graphics:YES/);
 });
 
+test('internal Roblox single-motion asset work enforces the central focused generation budget',()=>{
+  const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(source,/const assetDevelopmentSingleMotion=assetDevelopmentLane&&target==='roblox'&&singleMotionWorkUnit/);
+  assert.match(source,/assetDevelopmentLane&&target==='roblox'&&\(robloxGraphicsInitial\|\|singleMotionWorkUnit\)[\s\S]*?ASSET_DEVELOPMENT_ROBLOX_MAX_GENERATION_ATTEMPTS/);
+  assert.match(source,/singleMotionWorkUnit\?\(assetDevelopmentSingleMotion\?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_MAX_PREDICT:JSON_RETRY_MAX_PREDICT\):0/);
+  assert.match(source,/if\(assetDevelopmentSingleMotion\)maxPredict=Math\.min\(maxPredict,ASSET_DEVELOPMENT_ROBLOX_FOCUSED_MAX_PREDICT\)/);
+  assert.match(source,/const timeoutMs=assetDevelopmentSingleMotion\?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS/);
+  assert.match(source,/const baseContextWindow=assetDevelopmentSingleMotion[\s\S]*?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW/);
+  assert.match(source,/let firstOutputTimeoutMs=assetDevelopmentLane&&target==='web'\?ASSET_DEVELOPMENT_WEB_TIMEOUT_MS:MODEL_FIRST_OUTPUT_TIMEOUT_MS/);
+  assert.match(source,/if\(assetDevelopmentSingleMotion\)firstOutputTimeoutMs=ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS/);
+  assert.match(source,/attempt>=maxAttempts&&!truncatedOutputCreditUsed&&!assetDevelopmentSingleMotion/);
+  assert.match(source,/const robloxStructuralRetry=!allowFullRewrite&&target==='roblox'[\s\S]*?&&!assetDevelopmentSingleMotion/);
+  assert.match(source,/VIBE2_ASSET_SINGLE_MOTION_ATTEMPT_CAP/);
+});
+
 test('Roblox game workers smoke-check Luau binaries but leave the full compiler regression suite to Core QA',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
   const candidateStart=workflow.indexOf('- name: Generate isolated candidate from pinned main contract');

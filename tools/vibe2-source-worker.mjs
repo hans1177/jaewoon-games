@@ -4378,6 +4378,7 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
   let repeatedFailureShiftKey='';
   const studioExpansion=/\[STUDIO[_ ]QUALITY[_ ]EVOLUTION\]/i.test(String(prompt??''));
   const assetDevelopmentLane=clean(process.env.VIBE2_EXECUTION_LANE).toLowerCase()==='asset-development';
+  const assetDevelopmentSingleMotion=assetDevelopmentLane&&target==='roblox'&&singleMotionWorkUnit;
   const robloxGraphicsInitial=!allowFullRewrite
     &&/Engine:\s*roblox/i.test(String(prompt??''))
     &&/(?:\[PRESENTATION_PASS:ASSET_ADAPTATION\]|pass=ASSET_ADAPTATION)/i.test(String(prompt??''));
@@ -4413,7 +4414,7 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
     &&Buffer.byteLength(initialStudioPrompt,'utf8')>MAX_CONTEXT_BYTES;
   if(robloxRebuildFocused)console.log('VIBE2_ROBLOX_REBUILD_FOCUSED_INITIAL=bytes:'+Buffer.byteLength(initialStudioPrompt,'utf8'));
   const configuredBaseMaxAttempts=generationAttemptBudget({allowFullRewrite,variant:candidateVariant});
-  const baseMaxAttempts=assetDevelopmentLane&&robloxGraphicsInitial
+  const baseMaxAttempts=assetDevelopmentLane&&target==='roblox'&&(robloxGraphicsInitial||singleMotionWorkUnit)
     ?Math.min(ASSET_DEVELOPMENT_ROBLOX_MAX_GENERATION_ATTEMPTS,configuredBaseMaxAttempts)
     :(studioExpansion&&!allowFullRewrite
       ?Math.min(3,configuredBaseMaxAttempts)
@@ -4530,15 +4531,18 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
       recoveredOutputBudget=Math.min(JSON_OUTPUT_RECOVERY_MAX_PREDICT,Math.max(recoveredOutputBudget,Number(lastError.vibe2MaxPredict||maxPredict)*2));
       console.log(`VIBE2_TRUNCATED_OUTPUT_RECOVERY=${attempt}:maxPredict=${Math.max(maxPredict,recoveredOutputBudget)}`);
     }
-    if(!allowFullRewrite)maxPredict=Math.max(maxPredict,recoveredOutputBudget,singleMotionWorkUnit?JSON_RETRY_MAX_PREDICT:0);
-    const timeoutMs=priorFailureClass==='TIMEOUT'&&!clean(lastRaw)
+    if(!allowFullRewrite)maxPredict=Math.max(maxPredict,recoveredOutputBudget,singleMotionWorkUnit?(assetDevelopmentSingleMotion?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_MAX_PREDICT:JSON_RETRY_MAX_PREDICT):0);
+    if(assetDevelopmentSingleMotion)maxPredict=Math.min(maxPredict,ASSET_DEVELOPMENT_ROBLOX_FOCUSED_MAX_PREDICT);
+    const timeoutMs=assetDevelopmentSingleMotion?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS:priorFailureClass==='TIMEOUT'&&!clean(lastRaw)
       ?(assetDevelopmentLane&&target==='web'?ASSET_DEVELOPMENT_WEB_TIMEOUT_MS:ZERO_OUTPUT_RETRY_TIMEOUT_MS)
       :(expansionMode
         ?FULL_WEB_EXPANSION_TIMEOUT_MS
         :(allowFullRewrite
           ?(attempt>=maxAttempts?FULL_WEB_FINAL_RETRY_TIMEOUT_MS:(retry?FULL_WEB_RETRY_TIMEOUT_MS:FULL_WEB_TIMEOUT_MS))
           :((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_RETRY_TIMEOUT_MS:(unityStudioTimeoutFocusedRecovery?UNITY_STUDIO_FOCUSED_TIMEOUT_MS:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS:JSON_FOCUSED_REPLACE_TIMEOUT_MS))):(focusedFinal?JSON_FINAL_RETRY_TIMEOUT_MS:(retry?JSON_RETRY_TIMEOUT_MS:DEFAULT_TIMEOUT_MS)))));
-    const baseContextWindow=expansionMode
+    const baseContextWindow=assetDevelopmentSingleMotion
+      ?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW
+      :expansionMode
       ?FULL_WEB_EXPANSION_CONTEXT_WINDOW
       :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_CONTEXT_WINDOW:(robloxRebuildFocused?JSON_CONTEXT_WINDOW:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW))):(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW))));
     // 압축·부분 수정·확장 재시도에서도 원본 관찰과 잠금/수정 범위를 보존하고 실제 전송량으로 예산을 잡는다.
@@ -4552,7 +4556,8 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
     const contextWindow=sourcePromptContextWindow(attemptPrompt,{baseContextWindow,maxPredict});
     const fake=responseFileForAttempt(responseFile,responseFiles,attempt);
     const attemptPromptBytes=Buffer.byteLength(attemptPrompt,'utf8');
-    const firstOutputTimeoutMs=assetDevelopmentLane&&target==='web'?ASSET_DEVELOPMENT_WEB_TIMEOUT_MS:MODEL_FIRST_OUTPUT_TIMEOUT_MS;
+    let firstOutputTimeoutMs=assetDevelopmentLane&&target==='web'?ASSET_DEVELOPMENT_WEB_TIMEOUT_MS:MODEL_FIRST_OUTPUT_TIMEOUT_MS;
+    if(assetDevelopmentSingleMotion)firstOutputTimeoutMs=ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS;
     console.log(`VIBE2_GENERATION_BUDGET=${attempt}:promptBytes=${attemptPromptBytes}:maxPredict=${maxPredict}:contextWindow=${contextWindow}:timeoutMs=${timeoutMs}:firstOutputTimeoutMs=${firstOutputTimeoutMs}`);
     if(allowFullRewrite&&retry)console.log(`VIBE2_FULL_WEB_RETRY_PROMPT_BYTES=${attempt}:${attemptPromptBytes}`);
     if(focusedReplaceOnly){
@@ -4830,7 +4835,7 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
       if(repeatedIntermediateOutputs)console.log(`VIBE2_FULL_WEB_REPEATED_INTERMEDIATE=${attempt}:${repeatedIntermediateOutputs}`);
       // 마지막 응답이 잘렸어도 예산을 늘릴 수 있을 때 복구를 한 번 실행한다.
       let truncatedOutputRetry=!allowFullRewrite&&error.vibe2OutputTruncated===true&&maxPredict<JSON_OUTPUT_RECOVERY_MAX_PREDICT&&attempt<maxAttempts;
-      if(!allowFullRewrite&&error.vibe2OutputTruncated===true&&maxPredict<JSON_OUTPUT_RECOVERY_MAX_PREDICT&&attempt>=maxAttempts&&!truncatedOutputCreditUsed){
+      if(!allowFullRewrite&&error.vibe2OutputTruncated===true&&maxPredict<JSON_OUTPUT_RECOVERY_MAX_PREDICT&&attempt>=maxAttempts&&!truncatedOutputCreditUsed&&!assetDevelopmentSingleMotion){
         maxAttempts=attempt+1;
         truncatedOutputCreditUsed=true;
         truncatedOutputRetry=true;
@@ -4838,6 +4843,7 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
       }
       // 마지막 제어 문자/컴파일 오류도 실제 수리 요청을 한 번 실행한다.
       const robloxStructuralRetry=!allowFullRewrite&&target==='roblox'
+        &&!assetDevelopmentSingleMotion
         &&failureClass==='ROBLOX_STRUCTURAL_CONTINUITY'
         &&/MODEL_CONTROL_TOKEN|LUAU_SYNTAX/.test(clean(error?.message))
         &&attempt>=3&&!robloxStructuralCreditUsed;
@@ -4855,6 +4861,10 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
       const fullWebFallbackRetry=allowFullRewrite&&!accumulatedFullWeb&&attempt===2&&fullWebFinalRetryAllowed(error)&&attempt<maxAttempts;
       const zeroOutputCircuitOpen=consecutiveZeroOutputTimeouts>=2;
       if(zeroOutputCircuitOpen)console.log(`VIBE2_ZERO_OUTPUT_TIMEOUT_CIRCUIT_OPEN=${attempt}:${candidateVariant}`);
+      if(assetDevelopmentSingleMotion&&maxAttempts>ASSET_DEVELOPMENT_ROBLOX_MAX_GENERATION_ATTEMPTS){
+        maxAttempts=ASSET_DEVELOPMENT_ROBLOX_MAX_GENERATION_ATTEMPTS;
+        console.log(`VIBE2_ASSET_SINGLE_MOTION_ATTEMPT_CAP=${maxAttempts}`);
+      }
       const hasAnother=!zeroOutputCircuitOpen&&(singleMotionRetry||robloxStructuralRetry||truncatedOutputRetry||ordinaryRetry||focusedRetry||focusedPrimaryBudgetRetry||multiFilePairRetry||robloxFullGraphicsRecoveryRetry||presentationRecoveryRetry||focusedNoOpCreditRetry||studioEditMatchCreditRetry||studioCausalRecoveryCreditRetry||speculativeFocusedRetryCredit||presentationPatchDeltaCreditRetry||diagnosticPostconditionCreditRetry||systemAtomicPairCreditRetry||progressiveFullWebCreditRetry||fullWebAccumulationRetry||fullWebFallbackRetry);
       const fakeSequence=Array.isArray(responseFiles)&&responseFiles.filter(Boolean).length>attempt;
       if(!hasAnother||(responseFile&&!fakeSequence)){
