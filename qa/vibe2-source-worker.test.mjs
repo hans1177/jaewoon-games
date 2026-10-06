@@ -4187,13 +4187,23 @@ test('zero-output timeout keeps focused recovery enabled for studio build-up',()
 
 test('zero-output model stalls use first-output deadline and stop after two empty timeouts',()=>{
   const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
-  assert.match(workerSource,/MODEL_FIRST_OUTPUT_TIMEOUT_MS=Math\.max\(30000,Math\.min\(DEFAULT_TIMEOUT_MS,Number\(process\.env\.VIBE2_MODEL_FIRST_OUTPUT_TIMEOUT_MS\|\|120000\)\)\)/);
-  assert.match(workerSource,/ZERO_OUTPUT_RETRY_TIMEOUT_MS=120000/);
+  assert.match(workerSource,/MODEL_FIRST_OUTPUT_TIMEOUT_MS=Math\.max\(30000,Math\.min\(DEFAULT_TIMEOUT_MS,Number\(process\.env\.VIBE2_MODEL_FIRST_OUTPUT_TIMEOUT_MS\|\|180000\)\)\)/);
+  assert.match(workerSource,/ZERO_OUTPUT_RETRY_TIMEOUT_MS=180000/);
+  assert.match(workerSource,/MODEL_KEEP_ALIVE=clean\(process\.env\.VIBE2_MODEL_KEEP_ALIVE\|\|'20m'\)/);
+  assert.match(workerSource,/keep_alive:MODEL_KEEP_ALIVE/);
   assert.match(workerSource,/Ollama 첫 출력 시간 초과/);
   assert.match(workerSource,/VIBE2_ZERO_OUTPUT_TIMEOUT_STREAK/);
   assert.match(workerSource,/consecutiveZeroOutputTimeouts>=2/);
   assert.match(workerSource,/VIBE2_ZERO_OUTPUT_TIMEOUT_CIRCUIT_OPEN/);
   assert.match(workerSource,/priorFailureClass==='TIMEOUT'&&!clean\(lastRaw\)[\s\S]*?ZERO_OUTPUT_RETRY_TIMEOUT_MS/);
+});
+
+test('quality model keeps the original source-context budget instead of shrinking it',()=>{
+  const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(workerSource,/if\(required<=24576\)return Math\.max\(base,24576\)/);
+  assert.match(workerSource,/return Math\.max\(base,32768\)/);
+  assert.equal(sourcePromptContextWindow('x'.repeat(52000),{baseContextWindow:16384,maxPredict:3072}),24576);
+  assert.equal(sourcePromptContextWindow('x'.repeat(76000),{baseContextWindow:16384,maxPredict:3072}),32768);
 });
 
 test('Unity Studio timeout recovery pins one exact responsible file before another large model retry',()=>{
