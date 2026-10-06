@@ -452,11 +452,13 @@ jobs:
           git show origin/vibe2-unreal-core:.vibe2/experience.json > /tmp/system-ai-experience.json 2>/dev/null || printf '%s\n' '{"version":3,"records":[]}' > /tmp/system-ai-experience.json
           git show origin/vibe2-unreal-core:.vibe2/code-pattern-library.json > /tmp/system-ai-code-patterns.json 2>/dev/null || printf '%s\n' '{"patterns":[]}' > /tmp/system-ai-code-patterns.json
           git show origin/vibe2-unreal-core:.vibe2/learning-motor-state.json > /tmp/system-ai-learning-state.json 2>/dev/null || printf '%s\n' '{}' > /tmp/system-ai-learning-state.json
+          test -s .vibe2/external-ai-distilled-knowledge.json
           node tools/company-system-ai-learning-context.mjs \
             --task=/tmp/system-ai-task.json \
             --experience=/tmp/system-ai-experience.json \
             --patterns=/tmp/system-ai-code-patterns.json \
             --mastery=/tmp/system-ai-learning-state.json \
+            --external-ai-distilled=.vibe2/external-ai-distilled-knowledge.json \
             --output=/tmp/system-ai-learning-context.json | tee /tmp/system-ai-learning-context.log
           safe="$(printf '%s' "$TASK_ID" | tr -cs 'A-Za-z0-9._-' '-')"
           branch="system-ai/candidate/${safe}/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"

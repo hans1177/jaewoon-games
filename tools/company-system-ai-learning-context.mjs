@@ -39,6 +39,16 @@ function inferLearningTarget(task={}){
   return explicit||'system';
 }
 
+function systemAiExternalDistilledInput(input={},target='system'){
+  const resolved=clean(target).toLowerCase()||'system';
+  const shared=new Set(['cross-engine','general','system','shared']);
+  const entries=(input?.entries||[]).filter(row=>{
+    const engine=clean(row?.engine).toLowerCase();
+    return !engine||shared.has(engine)||engine===resolved;
+  });
+  return{...input,entries};
+}
+
 const BOTTLENECK_PLAYBOOK_AUTHORITY='company-learning/platform-release-roadmap.json#aiExecutionEfficiency.systemAiEvolution';
 const BOTTLENECK_METHODS=Object.freeze([
   ['CAUSAL_WAIT_GRAPH','대기열·pending workflow·reservation wait·runner startup·fan-in·release wait를 한 그래프로 묶고 가장 긴 실제 대기 경로부터 고친다. 단순 queue depth만 원인으로 취급하지 않는다.'],
@@ -92,11 +102,12 @@ function advancedBottleneckPlaybook(task={},policy={}){
   };
 }
 
-export function buildSystemAiLearningContext({task={},experienceInput={},codePatternsInput={},masteryInput={},policyInput=null}={}){
+export function buildSystemAiLearningContext({task={},experienceInput={},codePatternsInput={},masteryInput={},externalAiDistilledInput={},policyInput=null}={}){
+  const resolvedTarget=inferLearningTarget(task);
   const retrieval=retrieveUnifiedLearning({
-    task:{...task,target:inferLearningTarget(task),taskType:clean(task.taskType)||'system-ai'},
+    task:{...task,target:resolvedTarget,taskType:clean(task.taskType)||'system-ai'},
     experienceInput,codePatternsInput,masteryInput,
-    playbooksInput:{},practiceDistilledInput:{entries:[]},externalAiDistilledInput:{entries:[]}
+    playbooksInput:{},practiceDistilledInput:{entries:[]},externalAiDistilledInput:systemAiExternalDistilledInput(externalAiDistilledInput,resolvedTarget)
   });
   const exactKnowledgeIds=(retrieval.exactKnowledgeIds||[]).slice(0,20);
   const signature=failureSignature(task);
@@ -111,7 +122,7 @@ export function buildSystemAiLearningContext({task={},experienceInput={},codePat
     taskId:clean(task.id),
     gameId,
     failureSignature:signature,
-    resolvedTarget:inferLearningTarget(task),
+    resolvedTarget,
     exactKnowledgeIds,
     domainClassification:retrieval.domainClassification||{primary:[],secondary:[],all:[],ranked:[]},
     priorityOrder:retrieval.priority||[],
@@ -139,6 +150,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     experienceInput:readJson(clean(a.experience),{records:[]}),
     codePatternsInput:readJson(clean(a.patterns),{patterns:[]}),
     masteryInput:readJson(clean(a.mastery),{}),
+    externalAiDistilledInput:readJson(clean(a['external-ai-distilled']),{entries:[]}),
     policyInput:readJson(clean(a.roadmap)||'company-learning/platform-release-roadmap.json',{})
   });
   writeJson(clean(a.output)||'/tmp/company-system-ai-learning-context.json',result);
