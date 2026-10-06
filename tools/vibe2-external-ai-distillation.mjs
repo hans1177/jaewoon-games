@@ -77,7 +77,7 @@ export function isTrustedDistilledExternalAiEntry(row={}){
 }
 
 function normalizedChangedFiles(values=[]){
-  return unique((Array.isArray(values)?values:clean(values).split(',')).map(value=>clean(value).replaceAll('\\\\','/')).filter(Boolean));
+  return unique((Array.isArray(values)?values:clean(values).split(',')).map(value=>clean(value).replaceAll('\\','/')).filter(Boolean));
 }
 
 function exactJson(value){return JSON.stringify(value);}
