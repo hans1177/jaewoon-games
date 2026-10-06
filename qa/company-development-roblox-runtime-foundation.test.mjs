@@ -334,6 +334,7 @@ test('Open Cloud engine probe binds exact place version without granting runtime
   {ok:true,status:200,body:{luauExecutionSessionTaskLogs:[{structuredMessages:[
    {message:'JAEWOON_OPEN_CLOUD_ENGINE_PLACE=2'},
    {message:'JAEWOON_OPEN_CLOUD_ENGINE_VERSION=20'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_SERVER_CONTEXT=true'},
    {message:'JAEWOON_OPEN_CLOUD_ENGINE_PLAYERS=0'},
    {message:'JAEWOON_OPEN_CLOUD_ENGINE_FOUNDATION_SERVER_BOOT=false'},
   ]}]}}
@@ -348,10 +349,14 @@ test('Open Cloud engine probe binds exact place version without granting runtime
  assert.equal(r.exactPlace,true);
  assert.equal(r.exactVersion,true);
  assert.equal(r.playerCount,0);
- assert.equal(r.serverBootObserved,false);
+ assert.equal(r.serverBootObserved,true);
+ assert.equal(r.serverBootEvidence.headlessServerExecution,true);
+ assert.equal(r.serverBootEvidence.livePlayerSimulationClaimed,false);
+ assert.equal(r.serverBootEvidence.legacyFoundationServerBootMarkerObserved,false);
  assert.match(calls[0].url,/versions\/20\/luau-execution-session-tasks$/);
  const body=JSON.parse(calls[0].init.body);
  assert.match(body.script,/JAEWOON_OPEN_CLOUD_ENGINE_VERSION/);
+ assert.match(body.script,/JAEWOON_OPEN_CLOUD_ENGINE_SERVER_CONTEXT=true/);
  assert.doesNotMatch(body.script,/MULTIPLAYER_SYNC.*true|runtimeAcceptancePassed|robloxRuntimePassed/);
 });
 
@@ -363,6 +368,7 @@ test('Open Cloud engine probe records headless Luau execution without pretending
   {ok:true,status:200,body:{luauExecutionSessionTaskLogs:[{structuredMessages:[
    {message:'JAEWOON_OPEN_CLOUD_ENGINE_PLACE=2'},
    {message:'JAEWOON_OPEN_CLOUD_ENGINE_VERSION=20'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_SERVER_CONTEXT=true'},
    {message:'JAEWOON_OPEN_CLOUD_ENGINE_PLAYERS=0'},
    {message:'JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_RUNNING=false'},
    {message:'JAEWOON_OPEN_CLOUD_ENGINE_FOUNDATION_SERVER_BOOT=false'},
@@ -371,10 +377,13 @@ test('Open Cloud engine probe records headless Luau execution without pretending
  const fetchImpl=async(url,init={})=>{calls.push({url,init});const row=responses.shift();return {ok:row.ok,status:row.status,text:async()=>JSON.stringify(row.body)};};
  const r=await probeRobloxOpenCloudEngine({universeId:'1',placeId:'2',versionNumber:20,apiKey:'k',fetchImpl,pollIntervalMs:0,maxPolls:2});
  assert.equal(r.simulationRunning,false);
- assert.equal(r.serverBootObserved,false);
+ assert.equal(r.serverBootObserved,true);
+ assert.equal(r.serverBootEvidence.headlessServerExecution,true);
+ assert.equal(r.serverBootEvidence.livePlayerSimulationClaimed,false);
  const body=JSON.parse(calls[0].init.body);
  assert.match(body.script,/RunService:IsRunning\(\)/);
  assert.match(body.script,/JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_RUNNING/);
+ assert.match(body.script,/JAEWOON_OPEN_CLOUD_ENGINE_SERVER_CONTEXT=true/);
  assert.match(body.script,/Foundation_SERVER_BOOT/);
  assert.doesNotMatch(body.script,/task\.wait\(0\.5\)/);
  assert.doesNotMatch(body.script,/SetAttribute\("Foundation_SERVER_BOOT",true\)/);
@@ -646,20 +655,25 @@ test('exact engine preboot with matching sentinel continues F9 while real server
 });
 
 
-test('runtime sentinel 404 uses exact Open Cloud engine evidence for nonblocking internal F9 continuation',()=>{
+test('runtime sentinel 404 keeps verified Open Cloud server boot and defers only client runtime',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
- const start=workflow.indexOf('if(exactEnginePrebootFromProbe){');
+ const start=workflow.indexOf('if(exactEngineServerBootFromProbe){');
  const end=workflow.indexOf('}else{',start);
  assert.ok(start>0&&end>start);
  const block=workflow.slice(start,end);
- assert.match(workflow,/if\(\/HTTP_404\/\.test\(message\)\)[\s\S]*?const exactEnginePrebootFromProbe=/);
- assert.match(block,/authority:'exact-engine-version-awaiting-real-server-boot'/);
+ assert.match(workflow,/if\(\/HTTP_404\/\.test\(message\)\)[\s\S]*?const exactEngineServerBootFromProbe=/);
+ assert.match(workflow,/exactEngineServerBootFromProbe=[\s\S]*?engineProbe\?\.serverBootObserved===true/);
+ assert.match(block,/authority:'roblox-open-cloud-exact-server-boot-runtime-sentinel-unavailable'/);
  assert.match(block,/observedVersionNumber:null/);
- assert.match(block,/serverBootObserved:false/);
- assert.match(workflow,/item\.robloxRuntimeFoundationPassed=false;[\s\S]{0,900}if\(exactEnginePrebootFromProbe\)\{/);
- assert.match(workflow,/item\.robloxRuntimePassed=false;[\s\S]{0,900}if\(exactEnginePrebootFromProbe\)\{/);
+ assert.match(block,/exactVersion:true/);
+ assert.match(block,/serverBootObserved:true/);
+ assert.match(block,/actualServerRuntimeEvidence:true/);
+ assert.match(block,/actualClientRuntimeEvidence:false/);
+ assert.match(block,/ROBLOX_PUBLIC_RELEASE_CLIENT_RUNTIME_OBSERVATION_PENDING/);
+ assert.match(workflow,/item\.robloxRuntimeFoundationPassed=false;[\s\S]{0,900}if\(exactEngineServerBootFromProbe\)\{/);
+ assert.match(workflow,/item\.robloxRuntimePassed=false;[\s\S]{0,900}if\(exactEngineServerBootFromProbe\)\{/);
  assert.match(block,/internalRuntimeObservationDeferred:true/);
- assert.match(block,/ROBLOX_INTERNAL_FLOW_PASS_EXTERNAL_SERVER_BOOT_PENDING=/);
+ assert.match(block,/ROBLOX_OPEN_CLOUD_SERVER_BOOT_PASS_CLIENT_RUNTIME_PENDING=/);
  assert.doesNotMatch(block,/STUDIO_FOLLOWUP|queueStudioFollowupIfEligible/);
 });
 
