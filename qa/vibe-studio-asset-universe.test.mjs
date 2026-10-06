@@ -4743,9 +4743,11 @@ test('source-bound consumer sync maps project paths exact asset ids and managed 
     }));
     fs.writeFileSync(path.join(root,'roblox-games','horror-demo','client','Game.client.luau'),[
       'local internalGhostSkinByCatalogId={YUREI="yurei"}',
+      '-- STUDIO_ASSET_BINDING_BEGIN',
       'local STUDIO_ASSET_BINDING_VERSION = 2',
-      'local StudioAssets = { Families = { MOTION = { "WALK" } } }',
-      '-- STUDIO_ASSET_BINDING_END'
+      'local StudioAssets = { Families = { MOTION = { "WALK", "JOG" } } }',
+      '-- STUDIO_ASSET_BINDING_END',
+      'local usedMotion=table.find(studioAssetFamily("MOTION"),"WALK")'
     ].join('\n'));
     fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify({games:[{
       id:'horror-demo',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',
@@ -4756,7 +4758,8 @@ test('source-bound consumer sync maps project paths exact asset ids and managed 
       {id:'roblox-world-ghost-yurei',packId:'roblox-world-ghost-skins-v1',family:'CREATURE',skinId:'yurei',sourceFiles:['assets/roblox/world-ghosts/GhostSkinFactory.luau'],license:'project-original',consumerGameIds:[]},
       {id:'roblox-world-ghost-unused',packId:'roblox-world-ghost-skins-v1',family:'CREATURE',skinId:'unused',sourceFiles:['assets/roblox/world-ghosts/GhostSkinFactory.luau'],license:'project-original',consumerGameIds:[]},
       {id:'roblox-common-motion-v1',packId:'roblox-common-motion-v1',family:'MOTION',sourceFiles:['assets/roblox/common-motion-v1/RobloxCommonMotion.luau'],license:'project-original',consumerGameIds:[]},
-      {id:'roblox-common-motion-walk',packId:'roblox-common-motion-v1',family:'MOTION',atomId:'WALK',bindingHint:{configCollection:'StudioAssets.Families.MOTION'},license:'project-original',consumerGameIds:['manual-game']}
+      {id:'roblox-common-motion-walk',packId:'roblox-common-motion-v1',family:'MOTION',atomId:'WALK',bindingHint:{configCollection:'StudioAssets.Families.MOTION'},license:'project-original',consumerGameIds:['manual-game']},
+      {id:'roblox-common-motion-jog',packId:'roblox-common-motion-v1',family:'MOTION',atomId:'JOG',bindingHint:{configCollection:'StudioAssets.Families.MOTION'},license:'project-original',consumerGameIds:[]}
     ]};
     const result=synchronizeSourceBoundAssetConsumers({repoRoot:root,registry,useCache:false});
     const byId=new Map(result.registry.assets.map(row=>[row.id,row]));
@@ -4764,6 +4767,7 @@ test('source-bound consumer sync maps project paths exact asset ids and managed 
     assert.deepEqual(byId.get('roblox-world-ghost-yurei').sourceBoundConsumerGameIds,['horror-demo']);
     assert.equal(byId.get('roblox-world-ghost-unused').sourceBoundConsumerGameIds,undefined);
     assert.deepEqual(byId.get('roblox-common-motion-walk').sourceBoundConsumerGameIds,['horror-demo']);
+    assert.equal(byId.get('roblox-common-motion-jog').sourceBoundConsumerGameIds,undefined);
     assert.deepEqual(byId.get('roblox-common-motion-walk').consumerGameIds,['manual-game']);
     assert.equal(byId.get('roblox-common-motion-walk').productionVerified,undefined);
     assert.equal(result.summary.sourceOnlyDoesNotGrantRuntimeVerification,true);
