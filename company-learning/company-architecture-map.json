@@ -1,5 +1,5 @@
 {
-  "version": 323,
+  "version": 324,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1289,7 +1289,7 @@
           "VIBE2_24H_FIVE_MINUTE_SAFETY_NET",
           "RECOVERY_FAST_CAUSAL_RETURN"
         ],
-        "laneMax": 64
+        "laneMax": 128
       },
       "innerReservation": ".github/workflows/vibe2-continuous-core.yml::reserve-batch",
       "vibeGameControlRunnerPool": {
@@ -1350,9 +1350,9 @@
       "workLockMayNotCoverReadOnlyExploration": true,
       "neuralAuthority": "GATED_REQUEUE_REPRIORITIZE_REFILL_AND_THROUGHPUT_TUNING_ONLY",
       "externalProviderAndPlanningBound": 256,
-      "gamePrimaryActiveExecutionCap": "FIXED_REPEAT_DEVELOPMENT_64",
-      "refillExample": "ACTIVE_48_FREE_16_AT_FIXED_REPEAT_DEVELOPMENT_64",
-      "adaptiveControl": "GAME_PRIMARY_REPEAT_DEVELOPMENT_FIXED_64; TELEMETRY_MAY_OBSERVE_PRESSURE_BUT_MAY_NOT_CHANGE_RESERVATION_TARGET",
+      "gamePrimaryActiveExecutionCap": "FIXED_REPEAT_DEVELOPMENT_128",
+      "refillExample": "ACTIVE_96_FREE_32_AT_FIXED_REPEAT_DEVELOPMENT_128",
+      "adaptiveControl": "GAME_PRIMARY_REPEAT_DEVELOPMENT_FIXED_128; TELEMETRY_MAY_OBSERVE_PRESSURE_BUT_MAY_NOT_CHANGE_RESERVATION_TARGET",
       "gamePrimaryFixedInternalCap": 64,
       "reserveIngressRuntimeSync": {
         "required": true,
@@ -1512,8 +1512,8 @@
         "assetDevelopmentWorkerRunner": "ubuntu-24.04-arm",
         "gamePrimaryPrewarmRunner": "ubuntu-latest"
       },
-      "externalSpareBeyond30": "SUPERSEDED; GAME_PRIMARY_REPEAT_DEVELOPMENT_LOGICAL_TARGET_IS_FIXED_64",
-      "repeatDevelopmentFixedSlots": 64,
+      "externalSpareBeyond30": "SUPERSEDED; GAME_PRIMARY_REPEAT_DEVELOPMENT_LOGICAL_TARGET_IS_FIXED_128",
+      "repeatDevelopmentFixedSlots": 128,
       "repeatDevelopmentAutomaticRefill": true,
       "externalProviderBoundaryMeaning": "PHYSICAL_QUEUE_CAPACITY_ONLY"
     },
@@ -7075,6 +7075,22 @@
     "auxiliaryLanesExcluded": true,
     "refill": "TASK_MICRO_FANIN_AND_FIVE_MINUTE_SAFETY_NET",
     "sequenceLockUnchanged": true,
-    "newTopologyCreated": false
+    "newTopologyCreated": false,
+    "status": "SUPERSEDED_BY_FIXED_REPEAT_DEVELOPMENT_128",
+    "supersededBy": "fixedRepeatDevelopment128"
+  },
+  "fixedRepeatDevelopment128": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#fixedAutonomousDevelopmentOperatingContract.repeatDevelopmentConcurrency",
+    "executionLane": "GAME_PRIMARY",
+    "logicalFixedSlots": 128,
+    "externalProviderBoundary": 256,
+    "externalProviderBoundaryIsPhysicalOnly": true,
+    "assetDevelopmentSlots": 63,
+    "auxiliaryLanesExcluded": true,
+    "refill": "TASK_MICRO_FANIN_AND_FIVE_MINUTE_SAFETY_NET",
+    "sequenceLockUnchanged": true,
+    "newTopologyCreated": false,
+    "supersedes": "fixedRepeatDevelopment64"
   }
 }
