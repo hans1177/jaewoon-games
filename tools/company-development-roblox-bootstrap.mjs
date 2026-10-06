@@ -1052,7 +1052,13 @@ task.defer(reportNativeFoundationReady)
   const studioClientConfigBound=/STUDIO_ASSET_BINDING_VERSION\s*=\s*2/.test(afterClient)&&/[A-Za-z_][A-Za-z0-9_]*\.StudioAssets/.test(afterClient);
   const studioClientVisibleBound=/StudioAssetFramePanel/.test(afterClient)
     ||(/StudioAssetBindingVersion/.test(afterClient)&&/StudioAssetAtoms/.test(afterClient)&&/FRAME_PANEL/.test(afterClient)&&/(hasStudioAssetAtom|hasStudioAtom)/.test(afterClient));
-  if(!studioClientConfigBound||!studioClientVisibleBound)throw new Error('EXISTING_STUDIO_ASSET_CLIENT_VERIFY_FAILED');
+  const studioSelectionBlock=afterClient.match(/\bSTUDIO_ASSET_SELECTION\s*=\s*\{([\s\S]*?)\n\}/)?.[1]||'';
+  const studioStatusBlock=afterClient.match(/\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{([\s\S]*?)\n\}/)?.[1]||'';
+  const studioFamilyTraceComplete=ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES.every(family=>
+    new RegExp('\\b'+family+'\\s*=').test(studioSelectionBlock)
+    &&new RegExp('\\b'+family+'\\s*=\\s*["\\\'](?:APPLIED|NOT_APPLICABLE)["\\\']','i').test(studioStatusBlock)
+  );
+  if(!studioClientConfigBound||!studioClientVisibleBound||!studioFamilyTraceComplete)throw new Error('EXISTING_STUDIO_ASSET_CLIENT_VERIFY_FAILED');
   if(!/VERIFIED_EXTERNAL_LEARNING_BINDING_BEGIN/.test(afterConfig)    ||!/ContentComplete\s*=\s*true/.test(afterConfig)    ||!/GameSpecificSemanticMappings\s*=\s*\{/.test(afterConfig)    ||!/LearningDispositions\s*=\s*\{/.test(afterConfig)    ||!afterConfig.includes(`SemanticMappingVersion = ${Number(verifiedLearning.semanticMappingVersion||0)}`)    ||!afterConfig.includes(`MemoryFingerprint = ${luauString(verifiedLearning.verifiedExternalLearningFingerprint||'')}`))throw new Error('EXISTING_VERIFIED_EXTERNAL_LEARNING_CONFIG_VERIFY_FAILED');
   if(!/VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN/.test(afterClient)    ||!/VerifiedExternalLearningContentComplete/.test(afterClient)    ||!/VerifiedExternalLearningSemanticMappingVersion/.test(afterClient)    ||!/VerifiedExternalLearningSemanticMappingFingerprint/.test(afterClient)    ||!/VerifiedLearningSemanticVariant/.test(afterClient)    ||!/VerifiedLearningSemanticMappingFingerprint/.test(afterClient)    ||!/VerifiedLearningTouchTarget/.test(afterClient)    ||!/VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN/.test(afterClient)    ||!/FieldOfView/.test(afterClient)    ||Number(afterClient.match(/VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION\s*=\s*(\d+)/)?.[1]||0)<ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION)throw new Error('EXISTING_VERIFIED_EXTERNAL_LEARNING_CLIENT_VERIFY_FAILED');
   if(foundationRepair===true){
@@ -1154,6 +1160,12 @@ export function validateRobloxBootstrap({sharedConfig='',serverCode='',clientCod
     if(!/STUDIO_ASSET_BINDING_VERSION\s*=\s*2/.test(clientCode))blockers.push('CLIENT_STUDIO_ASSET_BINDING_VERSION_REQUIRED');
     if(!/[A-Za-z_][A-Za-z0-9_]*\.StudioAssets/.test(clientCode))blockers.push('CLIENT_STUDIO_ASSET_CONFIG_USAGE_REQUIRED');
     if(!/(?:Instance\.new\s*\(\s*["']Frame["']|Color3\.fromRGB|BackgroundColor3)/.test(clientCode))blockers.push('CLIENT_STUDIO_ASSET_VISIBLE_BINDING_REQUIRED');
+    const selectionBlock=clientCode.match(/\bSTUDIO_ASSET_SELECTION\s*=\s*\{([\s\S]*?)\n\}/)?.[1]||'';
+    const statusBlock=clientCode.match(/\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{([\s\S]*?)\n\}/)?.[1]||'';
+    for(const family of ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES){
+      if(!new RegExp('\\b'+family+'\\s*=').test(selectionBlock))blockers.push('CLIENT_STUDIO_ASSET_SELECTION_REQUIRED:'+family);
+      if(!new RegExp('\\b'+family+'\\s*=\\s*["\\\'](?:APPLIED|NOT_APPLICABLE)["\\\']','i').test(statusBlock))blockers.push('CLIENT_STUDIO_ASSET_FAMILY_STATUS_REQUIRED:'+family);
+    }
   }
   if(learning?.applied===true){
     if(!/LearningContext\s*=/.test(sharedConfig))blockers.push('CONFIG_VIBE3_LEARNING_CONTEXT_REQUIRED');
