@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "survival-build-up-g8-f8f54a7689dc",
-  "directiveFingerprint": "f8f54a7689dc8569352014f4f1f7148a9abc41ea54a2cf05a22a8a5c9f2ce2b9",
-  "previousDirectiveFingerprint": "8cbb6f823f17c75f7a9a2f363633ab335e52c0653f2c6c1dd56858ecc41c1b71",
-  "forbiddenRepeatFingerprint": "8cbb6f823f17c75f7a9a2f363633ab335e52c0653f2c6c1dd56858ecc41c1b71",
+  "directiveId": "survival-build-up-g9-afc3b9f479b5",
+  "directiveFingerprint": "afc3b9f479b5f674eeea8ac783a7a22c58c5383de995ec157fbd3ad138bbab86",
+  "previousDirectiveFingerprint": "f8f54a7689dc8569352014f4f1f7148a9abc41ea54a2cf05a22a8a5c9f2ce2b9",
+  "forbiddenRepeatFingerprint": "f8f54a7689dc8569352014f4f1f7148a9abc41ea54a2cf05a22a8a5c9f2ce2b9",
   "gameId": "survival",
   "gameName": "나의 생존기",
-  "generation": 8,
+  "generation": 9,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,8 +14,8 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/survival",
-  "sourceTreeFingerprint": "d6a700d1499665bc0dd8258901f0bd3fc1dc174e69620492a183dde75510f2be",
-  "designFingerprint": "44ffc6a9e74fd73a9559a6145347b9e8c6868798288b43f49e9d92657cdbae83",
+  "sourceTreeFingerprint": "6fdeae438bba8994fc34a0405cc7e601c539bb3e6ff0786430e869a2c0cce47b",
+  "designFingerprint": "786c934469c3da49fba9b7d17118c93478a87f4c2075c3ddb1446d0c10acab57",
   "gameIdentityAndNonNegotiables": {
     "identity": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.",
     "coreFun": "실시간 액션의 긴박함과 자원 관리의 전략적 선택이 결합된 재미입니다. 적의 파상공세를 버텨내는 피지컬과, 어떤 장비를 제작하고 어떤 스킬을 선택할지 결정하는 빌드 구성의 쾌감이 핵심입니다.",
@@ -57,11 +57,11 @@
     "signals": {
       "combat": 89,
       "progression": 125,
-      "ai": 28,
+      "ai": 30,
       "save": 49,
       "multiplayer": 13,
       "animation": 41,
-      "motionStates": 153,
+      "motionStates": 158,
       "gameFeel": 29,
       "vfx": 25,
       "camera": 33,
@@ -72,7 +72,7 @@
       "entryFlow": 6,
       "loadingFlow": 0,
       "input": 68,
-      "map": 109,
+      "map": 112,
       "landmark": 8,
       "interaction": 29,
       "inventory": 6,
@@ -110,7 +110,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 650,
+        "line": 649,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -174,7 +174,7 @@
       },
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 284,
+        "line": 283,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningMotionFailureReason",
         "context": "local function verifiedLearningMotionFailureReason(state)",
@@ -182,7 +182,7 @@
       },
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 149,
+        "line": 148,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningBindTrack",
         "context": "local function verifiedLearningBindTrack(state, track)",
@@ -190,7 +190,7 @@
       },
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 669,
+        "line": 668,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -206,7 +206,7 @@
       },
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 470,
+        "line": 469,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
         "context": "local function playVerifiedLearningActionFeedback(control)",
@@ -214,7 +214,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 202,
+        "line": 248,
         "kind": "FUNCTION",
         "symbol": "bindNativeFoundationPlayer",
         "context": "local function bindNativeFoundationPlayer(player)",
@@ -222,7 +222,7 @@
       },
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 167,
+        "line": 166,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningCreateFootIk",
         "context": "local function verifiedLearningCreateFootIk(state, side)",
@@ -230,7 +230,7 @@
       },
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 547,
+        "line": 546,
         "kind": "FUNCTION",
         "symbol": "bindVerifiedLearningControl",
         "context": "local function bindVerifiedLearningControl(control)",
@@ -238,7 +238,7 @@
       },
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 196,
+        "line": 195,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningBindMotionActor",
         "context": "local function verifiedLearningBindMotionActor(character)",
@@ -246,7 +246,7 @@
       },
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 398,
+        "line": 397,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningTryBindMotionInstance",
         "context": "local function verifiedLearningTryBindMotionInstance(instance)",
@@ -294,7 +294,7 @@
       },
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 145,
+        "line": 144,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningHorizontal",
         "context": "local function verifiedLearningHorizontal(v)",
@@ -305,173 +305,19 @@
   "previousVersionDelta": {
     "previousGoal": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 7,
-    "previousSourceTreeFingerprint": "28ca5f96c7d912ea8f988c427c1e9dbeecc3693d79594212f8a7b7e15a6c361c",
-    "currentSourceTreeFingerprint": "d6a700d1499665bc0dd8258901f0bd3fc1dc174e69620492a183dde75510f2be",
+    "previousGeneration": 8,
+    "previousSourceTreeFingerprint": "d6a700d1499665bc0dd8258901f0bd3fc1dc174e69620492a183dde75510f2be",
+    "currentSourceTreeFingerprint": "6fdeae438bba8994fc34a0405cc7e601c539bb3e6ff0786430e869a2c0cce47b",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": {
-      "sourceRevision": "cb843f7bb851943eb623c22b6b2220732c5b6209",
-      "artifactIdentity": "sha256:bd0192a4749909658ecee32a3a435ea7ba66f8488962cbd7a41ec757444e5e0c",
-      "authority": "roblox-f0-gameplay-product-readiness-failure",
-      "workflowRunId": 37421742420,
-      "testedAt": "2026-10-06T06:23:56.491Z",
-      "repairSurfaces": [
-        "CORE_GAMEPLAY",
-        "WORLD_MAP",
-        "COMBAT_FEEL",
-        "PROGRESSION_CONTENT"
-      ],
-      "qualityFailureDetails": [
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P0",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:CRAFTING\",\"MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:INVENTORY\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"CORE_LOOP_STEP_UNIMPLEMENTED:3\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"WAVE\",\"INVENTORY\",\"EQUIPMENT\",\"PROGRESSION\",\"DEFENSE\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"CRAFTING\":false,\"DAY_NIGHT\":false,\"WAVE\":false,\"INVENTORY\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"DEFENSE\":true,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"낮 시간 동안 제한된 구역을 탐색하여 자원을 채집하고 생존에 필요한 도구와 무기를 제작합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"EQUIPMENT\"],\"pass\":false},{\"index\":1,\"step\":\"밤이 되면 몰려오는 적의 파상공세를 실시간 액션으로 방어하며 생존합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"DAY_NIGHT\",\"WAVE\"],\"pass\":false},{\"index\":2,\"step\":\"전투 종료 후 획득한 경험치와 자원으로 캐릭터의 능력치를 강화하거나 새로운 제작법을 해금합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"CRAFTING\",\"PROGRESSION\"],\"pass\":false},{\"index\":3,\"step\":\"생존 기록을 바탕으로 다음 날의 탐색 우선순위와 제작 전략을 재설정합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"일일 생존 기록 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"PROGRESSION\"],\"pass\":false},{\"index\":1,\"name\":\"즉석 제작 및 개조 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"ROUGH\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"RESOURCE_TO_CRAFT\",\"pass\":false},{\"id\":\"CRAFT_TO_EQUIPMENT\",\"pass\":false},{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"65905b75e8d3a837ab7fef1fef33fff9a29eacde3e8468f254575c0b979ac33a\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P0",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:CRAFTING\",\"MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:INVENTORY\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"CORE_LOOP_STEP_UNIMPLEMENTED:3\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"WAVE\",\"INVENTORY\",\"EQUIPMENT\",\"PROGRESSION\",\"DEFENSE\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"CRAFTING\":false,\"DAY_NIGHT\":false,\"WAVE\":false,\"INVENTORY\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"DEFENSE\":true,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"낮 시간 동안 제한된 구역을 탐색하여 자원을 채집하고 생존에 필요한 도구와 무기를 제작합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"EQUIPMENT\"],\"pass\":false},{\"index\":1,\"step\":\"밤이 되면 몰려오는 적의 파상공세를 실시간 액션으로 방어하며 생존합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"DAY_NIGHT\",\"WAVE\"],\"pass\":false},{\"index\":2,\"step\":\"전투 종료 후 획득한 경험치와 자원으로 캐릭터의 능력치를 강화하거나 새로운 제작법을 해금합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"CRAFTING\",\"PROGRESSION\"],\"pass\":false},{\"index\":3,\"step\":\"생존 기록을 바탕으로 다음 날의 탐색 우선순위와 제작 전략을 재설정합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"일일 생존 기록 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"PROGRESSION\"],\"pass\":false},{\"index\":1,\"name\":\"즉석 제작 및 개조 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"ROUGH\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"RESOURCE_TO_CRAFT\",\"pass\":false},{\"id\":\"CRAFT_TO_EQUIPMENT\",\"pass\":false},{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"65905b75e8d3a837ab7fef1fef33fff9a29eacde3e8468f254575c0b979ac33a\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P0",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:CRAFTING\",\"MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:INVENTORY\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"CORE_LOOP_STEP_UNIMPLEMENTED:3\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"WAVE\",\"INVENTORY\",\"EQUIPMENT\",\"PROGRESSION\",\"DEFENSE\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"CRAFTING\":false,\"DAY_NIGHT\":false,\"WAVE\":false,\"INVENTORY\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"DEFENSE\":true,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"낮 시간 동안 제한된 구역을 탐색하여 자원을 채집하고 생존에 필요한 도구와 무기를 제작합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"EQUIPMENT\"],\"pass\":false},{\"index\":1,\"step\":\"밤이 되면 몰려오는 적의 파상공세를 실시간 액션으로 방어하며 생존합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"DAY_NIGHT\",\"WAVE\"],\"pass\":false},{\"index\":2,\"step\":\"전투 종료 후 획득한 경험치와 자원으로 캐릭터의 능력치를 강화하거나 새로운 제작법을 해금합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"CRAFTING\",\"PROGRESSION\"],\"pass\":false},{\"index\":3,\"step\":\"생존 기록을 바탕으로 다음 날의 탐색 우선순위와 제작 전략을 재설정합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"일일 생존 기록 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"PROGRESSION\"],\"pass\":false},{\"index\":1,\"name\":\"즉석 제작 및 개조 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"ROUGH\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"RESOURCE_TO_CRAFT\",\"pass\":false},{\"id\":\"CRAFT_TO_EQUIPMENT\",\"pass\":false},{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"65905b75e8d3a837ab7fef1fef33fff9a29eacde3e8468f254575c0b979ac33a\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:CRAFTING\",\"MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:INVENTORY\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"CORE_LOOP_STEP_UNIMPLEMENTED:3\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"WAVE\",\"INVENTORY\",\"EQUIPMENT\",\"PROGRESSION\",\"DEFENSE\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"CRAFTING\":false,\"DAY_NIGHT\":false,\"WAVE\":false,\"INVENTORY\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"DEFENSE\":true,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"낮 시간 동안 제한된 구역을 탐색하여 자원을 채집하고 생존에 필요한 도구와 무기를 제작합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"EQUIPMENT\"],\"pass\":false},{\"index\":1,\"step\":\"밤이 되면 몰려오는 적의 파상공세를 실시간 액션으로 방어하며 생존합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"DAY_NIGHT\",\"WAVE\"],\"pass\":false},{\"index\":2,\"step\":\"전투 종료 후 획득한 경험치와 자원으로 캐릭터의 능력치를 강화하거나 새로운 제작법을 해금합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"CRAFTING\",\"PROGRESSION\"],\"pass\":false},{\"index\":3,\"step\":\"생존 기록을 바탕으로 다음 날의 탐색 우선순위와 제작 전략을 재설정합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"일일 생존 기록 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"PROGRESSION\"],\"pass\":false},{\"index\":1,\"name\":\"즉석 제작 및 개조 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"ROUGH\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"RESOURCE_TO_CRAFT\",\"pass\":false},{\"id\":\"CRAFT_TO_EQUIPMENT\",\"pass\":false},{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"65905b75e8d3a837ab7fef1fef33fff9a29eacde3e8468f254575c0b979ac33a\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:CRAFTING\",\"MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:INVENTORY\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"CORE_LOOP_STEP_UNIMPLEMENTED:3\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"WAVE\",\"INVENTORY\",\"EQUIPMENT\",\"PROGRESSION\",\"DEFENSE\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"CRAFTING\":false,\"DAY_NIGHT\":false,\"WAVE\":false,\"INVENTORY\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"DEFENSE\":true,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"낮 시간 동안 제한된 구역을 탐색하여 자원을 채집하고 생존에 필요한 도구와 무기를 제작합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"EQUIPMENT\"],\"pass\":false},{\"index\":1,\"step\":\"밤이 되면 몰려오는 적의 파상공세를 실시간 액션으로 방어하며 생존합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"DAY_NIGHT\",\"WAVE\"],\"pass\":false},{\"index\":2,\"step\":\"전투 종료 후 획득한 경험치와 자원으로 캐릭터의 능력치를 강화하거나 새로운 제작법을 해금합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"CRAFTING\",\"PROGRESSION\"],\"pass\":false},{\"index\":3,\"step\":\"생존 기록을 바탕으로 다음 날의 탐색 우선순위와 제작 전략을 재설정합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"일일 생존 기록 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"PROGRESSION\"],\"pass\":false},{\"index\":1,\"name\":\"즉석 제작 및 개조 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"ROUGH\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"RESOURCE_TO_CRAFT\",\"pass\":false},{\"id\":\"CRAFT_TO_EQUIPMENT\",\"pass\":false},{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"65905b75e8d3a837ab7fef1fef33fff9a29eacde3e8468f254575c0b979ac33a\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:CRAFTING\",\"MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:INVENTORY\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"CORE_LOOP_STEP_UNIMPLEMENTED:3\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"WAVE\",\"INVENTORY\",\"EQUIPMENT\",\"PROGRESSION\",\"DEFENSE\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"CRAFTING\":false,\"DAY_NIGHT\":false,\"WAVE\":false,\"INVENTORY\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"DEFENSE\":true,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"낮 시간 동안 제한된 구역을 탐색하여 자원을 채집하고 생존에 필요한 도구와 무기를 제작합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"EQUIPMENT\"],\"pass\":false},{\"index\":1,\"step\":\"밤이 되면 몰려오는 적의 파상공세를 실시간 액션으로 방어하며 생존합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"DAY_NIGHT\",\"WAVE\"],\"pass\":false},{\"index\":2,\"step\":\"전투 종료 후 획득한 경험치와 자원으로 캐릭터의 능력치를 강화하거나 새로운 제작법을 해금합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"CRAFTING\",\"PROGRESSION\"],\"pass\":false},{\"index\":3,\"step\":\"생존 기록을 바탕으로 다음 날의 탐색 우선순위와 제작 전략을 재설정합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"일일 생존 기록 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"PROGRESSION\"],\"pass\":false},{\"index\":1,\"name\":\"즉석 제작 및 개조 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"ROUGH\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"RESOURCE_TO_CRAFT\",\"pass\":false},{\"id\":\"CRAFT_TO_EQUIPMENT\",\"pass\":false},{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"65905b75e8d3a837ab7fef1fef33fff9a29eacde3e8468f254575c0b979ac33a\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:CRAFTING\",\"MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:INVENTORY\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"CORE_LOOP_STEP_UNIMPLEMENTED:3\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"WAVE\",\"INVENTORY\",\"EQUIPMENT\",\"PROGRESSION\",\"DEFENSE\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"CRAFTING\":false,\"DAY_NIGHT\":false,\"WAVE\":false,\"INVENTORY\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"DEFENSE\":true,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"낮 시간 동안 제한된 구역을 탐색하여 자원을 채집하고 생존에 필요한 도구와 무기를 제작합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"EQUIPMENT\"],\"pass\":false},{\"index\":1,\"step\":\"밤이 되면 몰려오는 적의 파상공세를 실시간 액션으로 방어하며 생존합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"DAY_NIGHT\",\"WAVE\"],\"pass\":false},{\"index\":2,\"step\":\"전투 종료 후 획득한 경험치와 자원으로 캐릭터의 능력치를 강화하거나 새로운 제작법을 해금합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"CRAFTING\",\"PROGRESSION\"],\"pass\":false},{\"index\":3,\"step\":\"생존 기록을 바탕으로 다음 날의 탐색 우선순위와 제작 전략을 재설정합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"일일 생존 기록 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"PROGRESSION\"],\"pass\":false},{\"index\":1,\"name\":\"즉석 제작 및 개조 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"ROUGH\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"RESOURCE_TO_CRAFT\",\"pass\":false},{\"id\":\"CRAFT_TO_EQUIPMENT\",\"pass\":false},{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"65905b75e8d3a837ab7fef1fef33fff9a29eacde3e8468f254575c0b979ac33a\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:CRAFTING",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:CRAFTING\",\"MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:INVENTORY\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"CORE_LOOP_STEP_UNIMPLEMENTED:3\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"WAVE\",\"INVENTORY\",\"EQUIPMENT\",\"PROGRESSION\",\"DEFENSE\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"CRAFTING\":false,\"DAY_NIGHT\":false,\"WAVE\":false,\"INVENTORY\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"DEFENSE\":true,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"낮 시간 동안 제한된 구역을 탐색하여 자원을 채집하고 생존에 필요한 도구와 무기를 제작합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"EQUIPMENT\"],\"pass\":false},{\"index\":1,\"step\":\"밤이 되면 몰려오는 적의 파상공세를 실시간 액션으로 방어하며 생존합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"DAY_NIGHT\",\"WAVE\"],\"pass\":false},{\"index\":2,\"step\":\"전투 종료 후 획득한 경험치와 자원으로 캐릭터의 능력치를 강화하거나 새로운 제작법을 해금합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"CRAFTING\",\"PROGRESSION\"],\"pass\":false},{\"index\":3,\"step\":\"생존 기록을 바탕으로 다음 날의 탐색 우선순위와 제작 전략을 재설정합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"일일 생존 기록 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"PROGRESSION\"],\"pass\":false},{\"index\":1,\"name\":\"즉석 제작 및 개조 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"ROUGH\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"RESOURCE_TO_CRAFT\",\"pass\":false},{\"id\":\"CRAFT_TO_EQUIPMENT\",\"pass\":false},{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"65905b75e8d3a837ab7fef1fef33fff9a29eacde3e8468f254575c0b979ac33a\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:CRAFTING\",\"MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:INVENTORY\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"CORE_LOOP_STEP_UNIMPLEMENTED:3\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"WAVE\",\"INVENTORY\",\"EQUIPMENT\",\"PROGRESSION\",\"DEFENSE\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"CRAFTING\":false,\"DAY_NIGHT\":false,\"WAVE\":false,\"INVENTORY\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"DEFENSE\":true,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"낮 시간 동안 제한된 구역을 탐색하여 자원을 채집하고 생존에 필요한 도구와 무기를 제작합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"EQUIPMENT\"],\"pass\":false},{\"index\":1,\"step\":\"밤이 되면 몰려오는 적의 파상공세를 실시간 액션으로 방어하며 생존합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"DAY_NIGHT\",\"WAVE\"],\"pass\":false},{\"index\":2,\"step\":\"전투 종료 후 획득한 경험치와 자원으로 캐릭터의 능력치를 강화하거나 새로운 제작법을 해금합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"CRAFTING\",\"PROGRESSION\"],\"pass\":false},{\"index\":3,\"step\":\"생존 기록을 바탕으로 다음 날의 탐색 우선순위와 제작 전략을 재설정합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"일일 생존 기록 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"PROGRESSION\"],\"pass\":false},{\"index\":1,\"name\":\"즉석 제작 및 개조 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"ROUGH\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"RESOURCE_TO_CRAFT\",\"pass\":false},{\"id\":\"CRAFT_TO_EQUIPMENT\",\"pass\":false},{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"65905b75e8d3a837ab7fef1fef33fff9a29eacde3e8468f254575c0b979ac33a\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:CRAFTING\",\"MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:INVENTORY\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"CORE_LOOP_STEP_UNIMPLEMENTED:3\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"WAVE\",\"INVENTORY\",\"EQUIPMENT\",\"PROGRESSION\",\"DEFENSE\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"CRAFTING\":false,\"DAY_NIGHT\":false,\"WAVE\":false,\"INVENTORY\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"DEFENSE\":true,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"낮 시간 동안 제한된 구역을 탐색하여 자원을 채집하고 생존에 필요한 도구와 무기를 제작합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"EQUIPMENT\"],\"pass\":false},{\"index\":1,\"step\":\"밤이 되면 몰려오는 적의 파상공세를 실시간 액션으로 방어하며 생존합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"DAY_NIGHT\",\"WAVE\"],\"pass\":false},{\"index\":2,\"step\":\"전투 종료 후 획득한 경험치와 자원으로 캐릭터의 능력치를 강화하거나 새로운 제작법을 해금합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"CRAFTING\",\"PROGRESSION\"],\"pass\":false},{\"index\":3,\"step\":\"생존 기록을 바탕으로 다음 날의 탐색 우선순위와 제작 전략을 재설정합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"일일 생존 기록 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"PROGRESSION\"],\"pass\":false},{\"index\":1,\"name\":\"즉석 제작 및 개조 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"ROUGH\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"RESOURCE_TO_CRAFT\",\"pass\":false},{\"id\":\"CRAFT_TO_EQUIPMENT\",\"pass\":false},{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"65905b75e8d3a837ab7fef1fef33fff9a29eacde3e8468f254575c0b979ac33a\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:INVENTORY",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:CRAFTING\",\"MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:INVENTORY\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"CORE_LOOP_STEP_UNIMPLEMENTED:3\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"WAVE\",\"INVENTORY\",\"EQUIPMENT\",\"PROGRESSION\",\"DEFENSE\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"CRAFTING\":false,\"DAY_NIGHT\":false,\"WAVE\":false,\"INVENTORY\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"DEFENSE\":true,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"낮 시간 동안 제한된 구역을 탐색하여 자원을 채집하고 생존에 필요한 도구와 무기를 제작합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"EQUIPMENT\"],\"pass\":false},{\"index\":1,\"step\":\"밤이 되면 몰려오는 적의 파상공세를 실시간 액션으로 방어하며 생존합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"DAY_NIGHT\",\"WAVE\"],\"pass\":false},{\"index\":2,\"step\":\"전투 종료 후 획득한 경험치와 자원으로 캐릭터의 능력치를 강화하거나 새로운 제작법을 해금합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"CRAFTING\",\"PROGRESSION\"],\"pass\":false},{\"index\":3,\"step\":\"생존 기록을 바탕으로 다음 날의 탐색 우선순위와 제작 전략을 재설정합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"일일 생존 기록 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"PROGRESSION\"],\"pass\":false},{\"index\":1,\"name\":\"즉석 제작 및 개조 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"ROUGH\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"RESOURCE_TO_CRAFT\",\"pass\":false},{\"id\":\"CRAFT_TO_EQUIPMENT\",\"pass\":false},{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"65905b75e8d3a837ab7fef1fef33fff9a29eacde3e8468f254575c0b979ac33a\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:CRAFTING\",\"MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:INVENTORY\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"CORE_LOOP_STEP_UNIMPLEMENTED:3\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"WAVE\",\"INVENTORY\",\"EQUIPMENT\",\"PROGRESSION\",\"DEFENSE\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"CRAFTING\":false,\"DAY_NIGHT\":false,\"WAVE\":false,\"INVENTORY\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"DEFENSE\":true,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"낮 시간 동안 제한된 구역을 탐색하여 자원을 채집하고 생존에 필요한 도구와 무기를 제작합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"EQUIPMENT\"],\"pass\":false},{\"index\":1,\"step\":\"밤이 되면 몰려오는 적의 파상공세를 실시간 액션으로 방어하며 생존합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"DAY_NIGHT\",\"WAVE\"],\"pass\":false},{\"index\":2,\"step\":\"전투 종료 후 획득한 경험치와 자원으로 캐릭터의 능력치를 강화하거나 새로운 제작법을 해금합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"CRAFTING\",\"PROGRESSION\"],\"pass\":false},{\"index\":3,\"step\":\"생존 기록을 바탕으로 다음 날의 탐색 우선순위와 제작 전략을 재설정합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"일일 생존 기록 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"PROGRESSION\"],\"pass\":false},{\"index\":1,\"name\":\"즉석 제작 및 개조 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"ROUGH\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"RESOURCE_TO_CRAFT\",\"pass\":false},{\"id\":\"CRAFT_TO_EQUIPMENT\",\"pass\":false},{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"65905b75e8d3a837ab7fef1fef33fff9a29eacde3e8468f254575c0b979ac33a\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:CRAFTING\",\"MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:INVENTORY\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"CORE_LOOP_STEP_UNIMPLEMENTED:3\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"WAVE\",\"INVENTORY\",\"EQUIPMENT\",\"PROGRESSION\",\"DEFENSE\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"CRAFTING\":false,\"DAY_NIGHT\":false,\"WAVE\":false,\"INVENTORY\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"DEFENSE\":true,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"낮 시간 동안 제한된 구역을 탐색하여 자원을 채집하고 생존에 필요한 도구와 무기를 제작합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"EQUIPMENT\"],\"pass\":false},{\"index\":1,\"step\":\"밤이 되면 몰려오는 적의 파상공세를 실시간 액션으로 방어하며 생존합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"DAY_NIGHT\",\"WAVE\"],\"pass\":false},{\"index\":2,\"step\":\"전투 종료 후 획득한 경험치와 자원으로 캐릭터의 능력치를 강화하거나 새로운 제작법을 해금합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"CRAFTING\",\"PROGRESSION\"],\"pass\":false},{\"index\":3,\"step\":\"생존 기록을 바탕으로 다음 날의 탐색 우선순위와 제작 전략을 재설정합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"일일 생존 기록 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"PROGRESSION\"],\"pass\":false},{\"index\":1,\"name\":\"즉석 제작 및 개조 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"ROUGH\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"RESOURCE_TO_CRAFT\",\"pass\":false},{\"id\":\"CRAFT_TO_EQUIPMENT\",\"pass\":false},{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"65905b75e8d3a837ab7fef1fef33fff9a29eacde3e8468f254575c0b979ac33a\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:CRAFTING\",\"MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:INVENTORY\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"CORE_LOOP_STEP_UNIMPLEMENTED:3\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"WAVE\",\"INVENTORY\",\"EQUIPMENT\",\"PROGRESSION\",\"DEFENSE\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"CRAFTING\":false,\"DAY_NIGHT\":false,\"WAVE\":false,\"INVENTORY\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"DEFENSE\":true,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"낮 시간 동안 제한된 구역을 탐색하여 자원을 채집하고 생존에 필요한 도구와 무기를 제작합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"EQUIPMENT\"],\"pass\":false},{\"index\":1,\"step\":\"밤이 되면 몰려오는 적의 파상공세를 실시간 액션으로 방어하며 생존합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"DAY_NIGHT\",\"WAVE\"],\"pass\":false},{\"index\":2,\"step\":\"전투 종료 후 획득한 경험치와 자원으로 캐릭터의 능력치를 강화하거나 새로운 제작법을 해금합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"CRAFTING\",\"PROGRESSION\"],\"pass\":false},{\"index\":3,\"step\":\"생존 기록을 바탕으로 다음 날의 탐색 우선순위와 제작 전략을 재설정합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"일일 생존 기록 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"PROGRESSION\"],\"pass\":false},{\"index\":1,\"name\":\"즉석 제작 및 개조 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"ROUGH\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"RESOURCE_TO_CRAFT\",\"pass\":false},{\"id\":\"CRAFT_TO_EQUIPMENT\",\"pass\":false},{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"65905b75e8d3a837ab7fef1fef33fff9a29eacde3e8468f254575c0b979ac33a\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:CRAFTING\",\"MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:INVENTORY\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"CORE_LOOP_STEP_UNIMPLEMENTED:3\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"WAVE\",\"INVENTORY\",\"EQUIPMENT\",\"PROGRESSION\",\"DEFENSE\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"CRAFTING\":false,\"DAY_NIGHT\":false,\"WAVE\":false,\"INVENTORY\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"DEFENSE\":true,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"낮 시간 동안 제한된 구역을 탐색하여 자원을 채집하고 생존에 필요한 도구와 무기를 제작합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"EQUIPMENT\"],\"pass\":false},{\"index\":1,\"step\":\"밤이 되면 몰려오는 적의 파상공세를 실시간 액션으로 방어하며 생존합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"DAY_NIGHT\",\"WAVE\"],\"pass\":false},{\"index\":2,\"step\":\"전투 종료 후 획득한 경험치와 자원으로 캐릭터의 능력치를 강화하거나 새로운 제작법을 해금합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"CRAFTING\",\"PROGRESSION\"],\"pass\":false},{\"index\":3,\"step\":\"생존 기록을 바탕으로 다음 날의 탐색 우선순위와 제작 전략을 재설정합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"일일 생존 기록 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"PROGRESSION\"],\"pass\":false},{\"index\":1,\"name\":\"즉석 제작 및 개조 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"ROUGH\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"RESOURCE_TO_CRAFT\",\"pass\":false},{\"id\":\"CRAFT_TO_EQUIPMENT\",\"pass\":false},{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"65905b75e8d3a837ab7fef1fef33fff9a29eacde3e8468f254575c0b979ac33a\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:CRAFTING\",\"MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:INVENTORY\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"CORE_LOOP_STEP_UNIMPLEMENTED:3\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"WAVE\",\"INVENTORY\",\"EQUIPMENT\",\"PROGRESSION\",\"DEFENSE\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"CRAFTING\":false,\"DAY_NIGHT\":false,\"WAVE\":false,\"INVENTORY\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"DEFENSE\":true,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"낮 시간 동안 제한된 구역을 탐색하여 자원을 채집하고 생존에 필요한 도구와 무기를 제작합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"EQUIPMENT\"],\"pass\":false},{\"index\":1,\"step\":\"밤이 되면 몰려오는 적의 파상공세를 실시간 액션으로 방어하며 생존합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"DAY_NIGHT\",\"WAVE\"],\"pass\":false},{\"index\":2,\"step\":\"전투 종료 후 획득한 경험치와 자원으로 캐릭터의 능력치를 강화하거나 새로운 제작법을 해금합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"CRAFTING\",\"PROGRESSION\"],\"pass\":false},{\"index\":3,\"step\":\"생존 기록을 바탕으로 다음 날의 탐색 우선순위와 제작 전략을 재설정합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"일일 생존 기록 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"PROGRESSION\"],\"pass\":false},{\"index\":1,\"name\":\"즉석 제작 및 개조 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"ROUGH\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"RESOURCE_TO_CRAFT\",\"pass\":false},{\"id\":\"CRAFT_TO_EQUIPMENT\",\"pass\":false},{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"65905b75e8d3a837ab7fef1fef33fff9a29eacde3e8468f254575c0b979ac33a\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "CORE_LOOP_STEP_UNIMPLEMENTED:3",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:CRAFTING\",\"MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:INVENTORY\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"CORE_LOOP_STEP_UNIMPLEMENTED:3\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"WAVE\",\"INVENTORY\",\"EQUIPMENT\",\"PROGRESSION\",\"DEFENSE\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"CRAFTING\":false,\"DAY_NIGHT\":false,\"WAVE\":false,\"INVENTORY\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"DEFENSE\":true,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"낮 시간 동안 제한된 구역을 탐색하여 자원을 채집하고 생존에 필요한 도구와 무기를 제작합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"EQUIPMENT\"],\"pass\":false},{\"index\":1,\"step\":\"밤이 되면 몰려오는 적의 파상공세를 실시간 액션으로 방어하며 생존합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"DAY_NIGHT\",\"WAVE\"],\"pass\":false},{\"index\":2,\"step\":\"전투 종료 후 획득한 경험치와 자원으로 캐릭터의 능력치를 강화하거나 새로운 제작법을 해금합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"CRAFTING\",\"PROGRESSION\"],\"pass\":false},{\"index\":3,\"step\":\"생존 기록을 바탕으로 다음 날의 탐색 우선순위와 제작 전략을 재설정합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"일일 생존 기록 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"PROGRESSION\"],\"pass\":false},{\"index\":1,\"name\":\"즉석 제작 및 개조 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"ROUGH\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"RESOURCE_TO_CRAFT\",\"pass\":false},{\"id\":\"CRAFT_TO_EQUIPMENT\",\"pass\":false},{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"65905b75e8d3a837ab7fef1fef33fff9a29eacde3e8468f254575c0b979ac33a\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:CRAFTING\",\"MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:INVENTORY\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"CORE_LOOP_STEP_UNIMPLEMENTED:3\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"WAVE\",\"INVENTORY\",\"EQUIPMENT\",\"PROGRESSION\",\"DEFENSE\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"CRAFTING\":false,\"DAY_NIGHT\":false,\"WAVE\":false,\"INVENTORY\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"DEFENSE\":true,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"낮 시간 동안 제한된 구역을 탐색하여 자원을 채집하고 생존에 필요한 도구와 무기를 제작합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"EQUIPMENT\"],\"pass\":false},{\"index\":1,\"step\":\"밤이 되면 몰려오는 적의 파상공세를 실시간 액션으로 방어하며 생존합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"DAY_NIGHT\",\"WAVE\"],\"pass\":false},{\"index\":2,\"step\":\"전투 종료 후 획득한 경험치와 자원으로 캐릭터의 능력치를 강화하거나 새로운 제작법을 해금합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"CRAFTING\",\"PROGRESSION\"],\"pass\":false},{\"index\":3,\"step\":\"생존 기록을 바탕으로 다음 날의 탐색 우선순위와 제작 전략을 재설정합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"일일 생존 기록 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"PROGRESSION\"],\"pass\":false},{\"index\":1,\"name\":\"즉석 제작 및 개조 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"ROUGH\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"RESOURCE_TO_CRAFT\",\"pass\":false},{\"id\":\"CRAFT_TO_EQUIPMENT\",\"pass\":false},{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"65905b75e8d3a837ab7fef1fef33fff9a29eacde3e8468f254575c0b979ac33a\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:CRAFTING\",\"MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:INVENTORY\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"CORE_LOOP_STEP_UNIMPLEMENTED:3\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"WAVE\",\"INVENTORY\",\"EQUIPMENT\",\"PROGRESSION\",\"DEFENSE\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"CRAFTING\":false,\"DAY_NIGHT\":false,\"WAVE\":false,\"INVENTORY\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"DEFENSE\":true,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"낮 시간 동안 제한된 구역을 탐색하여 자원을 채집하고 생존에 필요한 도구와 무기를 제작합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"EQUIPMENT\"],\"pass\":false},{\"index\":1,\"step\":\"밤이 되면 몰려오는 적의 파상공세를 실시간 액션으로 방어하며 생존합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"DAY_NIGHT\",\"WAVE\"],\"pass\":false},{\"index\":2,\"step\":\"전투 종료 후 획득한 경험치와 자원으로 캐릭터의 능력치를 강화하거나 새로운 제작법을 해금합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"CRAFTING\",\"PROGRESSION\"],\"pass\":false},{\"index\":3,\"step\":\"생존 기록을 바탕으로 다음 날의 탐색 우선순위와 제작 전략을 재설정합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"일일 생존 기록 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"PROGRESSION\"],\"pass\":false},{\"index\":1,\"name\":\"즉석 제작 및 개조 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"ROUGH\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"RESOURCE_TO_CRAFT\",\"pass\":false},{\"id\":\"CRAFT_TO_EQUIPMENT\",\"pass\":false},{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"65905b75e8d3a837ab7fef1fef33fff9a29eacde3e8468f254575c0b979ac33a\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "GENERIC_SCOPE_HANDLER_SKELETON",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:CRAFTING\",\"MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:INVENTORY\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"CORE_LOOP_STEP_UNIMPLEMENTED:3\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"WAVE\",\"INVENTORY\",\"EQUIPMENT\",\"PROGRESSION\",\"DEFENSE\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"CRAFTING\":false,\"DAY_NIGHT\":false,\"WAVE\":false,\"INVENTORY\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"DEFENSE\":true,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"낮 시간 동안 제한된 구역을 탐색하여 자원을 채집하고 생존에 필요한 도구와 무기를 제작합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"GATHERING\",\"CRAFTING\",\"DAY_NIGHT\",\"EQUIPMENT\"],\"pass\":false},{\"index\":1,\"step\":\"밤이 되면 몰려오는 적의 파상공세를 실시간 액션으로 방어하며 생존합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"DAY_NIGHT\",\"WAVE\"],\"pass\":false},{\"index\":2,\"step\":\"전투 종료 후 획득한 경험치와 자원으로 캐릭터의 능력치를 강화하거나 새로운 제작법을 해금합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"CRAFTING\",\"PROGRESSION\"],\"pass\":false},{\"index\":3,\"step\":\"생존 기록을 바탕으로 다음 날의 탐색 우선순위와 제작 전략을 재설정합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"일일 생존 기록 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"PROGRESSION\"],\"pass\":false},{\"index\":1,\"name\":\"즉석 제작 및 개조 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"ROUGH\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"RESOURCE_TO_CRAFT\",\"pass\":false},{\"id\":\"CRAFT_TO_EQUIPMENT\",\"pass\":false},{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":7,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"65905b75e8d3a837ab7fef1fef33fff9a29eacde3e8468f254575c0b979ac33a\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        }
-      ]
-    },
-    "failureStage": "",
-    "failureSignature": "",
+    "studioQualityFailure": null,
+    "failureStage": "F0_SOURCE_INTEGRITY",
+    "failureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
     "blockers": [],
-    "runtimeObserved": true,
+    "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -1607,7 +1453,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 134458,
+        "sourceBytes": 108414,
         "largestFileBytes": 48128,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1640,8 +1486,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 2,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=5.",
+    "themeDepth": 3,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1651,7 +1497,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 2
+        "PRESENTATION_WORLD_COHESION": 3
       },
       "sequence": [
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1662,6 +1508,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
       ],
@@ -1696,7 +1543,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 210,
+        "score": 192,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -1812,11 +1659,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 8,
-    "previousGeneration": 7,
+    "generation": 9,
+    "previousGeneration": 8,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "d6a700d1499665bc0dd8258901f0bd3fc1dc174e69620492a183dde75510f2be",
-    "priorSourceFingerprint": "28ca5f96c7d912ea8f988c427c1e9dbeecc3693d79594212f8a7b7e15a6c361c",
+    "sourceFingerprint": "6fdeae438bba8994fc34a0405cc7e601c539bb3e6ff0786430e869a2c0cce47b",
+    "priorSourceFingerprint": "d6a700d1499665bc0dd8258901f0bd3fc1dc174e69620492a183dde75510f2be",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2061,15 +1908,15 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/survival/client/Game.client.luau",
-      "roblox-games/survival/server/Game.server.luau",
       "roblox-games/survival/shared/GameConfig.luau",
+      "roblox-games/survival/server/Game.server.luau",
+      "roblox-games/survival/client/Game.client.luau",
       "roblox-games/survival/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 650,
+        "line": 649,
         "kind": "FUNCTION",
         "symbol": "render",
         "currentBehavior": "local function render()",
@@ -2222,9 +2069,9 @@
     "executionSurface": "ROBLOX",
     "mode": "EXISTING_SOURCE_REPAIR",
     "gameId": "survival",
-    "genreProfile": "SURVIVAL",
+    "genreProfile": "STRATEGY",
     "conceptIdentity": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.",
-    "coreAction": "탐색·수급·위험 대응",
+    "coreAction": "자원·배치·순서 선택",
     "ownerFeatureChanges": [],
     "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
     "systemConnection": "현재 실패 원인 → 기존 행동 복구",
@@ -2241,18 +2088,18 @@
     "progressionDirection": "로그라이트 요소인 영구적 능력치 강화와 매 세션의 빌드 최적화를 병행합니다. 생존 일수가 늘어날수록 더 희귀한 자원과 강력한 적이 등장하며, 플레이어는 점차 복잡한 제작 트리를 해금하여 자신만의 생존 스타일을 구축합니다.",
     "ideas": [
       {
-        "id": "SURVIVAL:SOURCE_REPAIR",
+        "id": "STRATEGY:SOURCE_REPAIR",
         "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
         "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
       }
     ],
     "selectedIdea": {
-      "id": "SURVIVAL:SOURCE_REPAIR",
+      "id": "STRATEGY:SOURCE_REPAIR",
       "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
       "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
     },
     "ideaHistory": [
-      "SURVIVAL:SOURCE_REPAIR"
+      "STRATEGY:SOURCE_REPAIR"
     ],
     "implementationPackages": [
       {
@@ -2277,7 +2124,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "d6a700d1499665bc0dd8258901f0bd3fc1dc174e69620492a183dde75510f2be",
+    "sourceTreeFingerprint": "6fdeae438bba8994fc34a0405cc7e601c539bb3e6ff0786430e869a2c0cce47b",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2313,9 +2160,9 @@
     "executionSurface": "ROBLOX",
     "mode": "EXISTING_SOURCE_REPAIR",
     "gameId": "survival",
-    "genreProfile": "SURVIVAL",
+    "genreProfile": "STRATEGY",
     "conceptIdentity": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.",
-    "coreAction": "탐색·수급·위험 대응",
+    "coreAction": "자원·배치·순서 선택",
     "ownerFeatureChanges": [],
     "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
     "systemConnection": "현재 실패 원인 → 기존 행동 복구",
@@ -2332,18 +2179,18 @@
     "progressionDirection": "로그라이트 요소인 영구적 능력치 강화와 매 세션의 빌드 최적화를 병행합니다. 생존 일수가 늘어날수록 더 희귀한 자원과 강력한 적이 등장하며, 플레이어는 점차 복잡한 제작 트리를 해금하여 자신만의 생존 스타일을 구축합니다.",
     "ideas": [
       {
-        "id": "SURVIVAL:SOURCE_REPAIR",
+        "id": "STRATEGY:SOURCE_REPAIR",
         "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
         "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
       }
     ],
     "selectedIdea": {
-      "id": "SURVIVAL:SOURCE_REPAIR",
+      "id": "STRATEGY:SOURCE_REPAIR",
       "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
       "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
     },
     "ideaHistory": [
-      "SURVIVAL:SOURCE_REPAIR"
+      "STRATEGY:SOURCE_REPAIR"
     ],
     "implementationPackages": [
       {
@@ -2368,7 +2215,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "d6a700d1499665bc0dd8258901f0bd3fc1dc174e69620492a183dde75510f2be",
+    "sourceTreeFingerprint": "6fdeae438bba8994fc34a0405cc7e601c539bb3e6ff0786430e869a2c0cce47b",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2405,15 +2252,15 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/survival/client/Game.client.luau",
-      "roblox-games/survival/server/Game.server.luau",
       "roblox-games/survival/shared/GameConfig.luau",
+      "roblox-games/survival/server/Game.server.luau",
+      "roblox-games/survival/client/Game.client.luau",
       "roblox-games/survival/default.project.json"
     ],
     "sourceAnchors": [
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 650,
+        "line": 649,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -2551,9 +2398,9 @@
     "gameId": "survival",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/survival/client/Game.client.luau",
-      "roblox-games/survival/server/Game.server.luau",
       "roblox-games/survival/shared/GameConfig.luau",
+      "roblox-games/survival/server/Game.server.luau",
+      "roblox-games/survival/client/Game.client.luau",
       "roblox-games/survival/default.project.json"
     ],
     "impact": {
@@ -2626,16 +2473,16 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "current source Studio product-quality failure requires source repair before another observation",
-      "runtimeObserved": true
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
+      "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "d6a700d1499665bc0dd8258901f0bd3fc1dc174e69620492a183dde75510f2be",
+      "sourceTreeFingerprint": "6fdeae438bba8994fc34a0405cc7e601c539bb3e6ff0786430e869a2c0cce47b",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": null,
-      "failureSignature": null
+      "failureStage": "F0_SOURCE_INTEGRITY",
+      "failureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2646,8 +2493,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "current source Studio product-quality failure requires source repair before another observation"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -2678,7 +2525,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 9,
+    "nextGeneration": 10,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2746,5 +2593,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-06T04:44:23.700Z"
+  "generatedAt": "2026-10-06T07:33:52.574Z"
 }
