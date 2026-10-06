@@ -574,6 +574,34 @@ export function extractDesignContext(record={}){
           ?d.gameplaySketch.compositionDepth
           :d?.compositionDepth&&typeof d.compositionDepth==='object'?d.compositionDepth:null
     ),
+    narrativeDepth:(
+      record?.gameplaySketch?.narrativeDepth&&typeof record.gameplaySketch.narrativeDepth==='object'
+        ?record.gameplaySketch.narrativeDepth
+        :d?.gameplaySketch?.narrativeDepth&&typeof d.gameplaySketch.narrativeDepth==='object'
+          ?d.gameplaySketch.narrativeDepth
+          :d?.narrativeDepth&&typeof d.narrativeDepth==='object'?d.narrativeDepth:null
+    ),
+    styleWorldDepth:(
+      record?.gameplaySketch?.styleWorldDepth&&typeof record.gameplaySketch.styleWorldDepth==='object'
+        ?record.gameplaySketch.styleWorldDepth
+        :d?.gameplaySketch?.styleWorldDepth&&typeof d.gameplaySketch.styleWorldDepth==='object'
+          ?d.gameplaySketch.styleWorldDepth
+          :d?.styleWorldDepth&&typeof d.styleWorldDepth==='object'?d.styleWorldDepth:null
+    ),
+    worldbuildingDepth:(
+      record?.gameplaySketch?.worldbuildingDepth&&typeof record.gameplaySketch.worldbuildingDepth==='object'
+        ?record.gameplaySketch.worldbuildingDepth
+        :d?.gameplaySketch?.worldbuildingDepth&&typeof d.gameplaySketch.worldbuildingDepth==='object'
+          ?d.gameplaySketch.worldbuildingDepth
+          :d?.worldbuildingDepth&&typeof d.worldbuildingDepth==='object'?d.worldbuildingDepth:null
+    ),
+    libraryLinkage:(
+      record?.gameplaySketch?.libraryLinkage&&typeof record.gameplaySketch.libraryLinkage==='object'
+        ?record.gameplaySketch.libraryLinkage
+        :d?.gameplaySketch?.libraryLinkage&&typeof d.gameplaySketch.libraryLinkage==='object'
+          ?d.gameplaySketch.libraryLinkage
+          :d?.libraryLinkage&&typeof d.libraryLinkage==='object'?d.libraryLinkage:null
+    ),
     progressionDirection:clean(d?.progressionDirection),
     multiplayerMode:clean(d?.multiplayerMode),
     platformProfiles:d?.platformProfiles&&typeof d.platformProfiles==='object'?d.platformProfiles:{}
@@ -660,6 +688,146 @@ export function deriveSystemFusionDepthPlan({design={},source={}}={}){
     implementationBoundary:'USE_APPROVED_DESIGN_AND_EXISTING_RESPONSIBLE_SOURCE; A NEW MAJOR SYSTEM MAY NOT CHANGE PROTECTED RULE_BALANCE_ECONOMY_SAVE_NETWORK MEANING WITHOUT CANONICAL DESIGN AUTHORITY',
     disconnectedSubsystemOrMinigameDumpForbidden:true,
     legacyContentMustGainReturnReasonAsGrowthDeepens:true
+  });
+}
+
+export function deriveWorldbuildingDepthPlan({design={},source={}}={}){
+  const world=design?.worldbuildingDepth&&typeof design.worldbuildingDepth==='object'?design.worldbuildingDepth:{};
+  const narrative=design?.narrativeDepth&&typeof design.narrativeDepth==='object'?design.narrativeDepth:{};
+  const contentText=[
+    design.identity,design.coreFun,design.progressionDirection,
+    ...(design.coreLoop||[]),
+    ...(design.signatureSystems||[]).flatMap(row=>[row.name,row.purpose,row.playerChoice]),
+    ...(design.systemInterconnections||[]).flatMap(row=>[row.fromSystem,row.toSystem,row.trigger,row.stateChange]),
+    ...(design.contentExpansionPlan||[]).flatMap(row=>[row.milestone,row.newGameplay,row.systemImpact])
+  ].map(clean).join(' ');
+  const worldDnaSources=uniq(world.worldDnaSources?.length?world.worldDnaSources:[
+    /faction|세력|권력|guild|kingdom|state/i.test(contentText)?'CIVILIZATION_AND_POWER':null,
+    /region|map|biome|지역|지형|생태|탐험/i.test(contentText)?'GEOGRAPHY_AND_ECOLOGY':null,
+    /trade|shop|econom|무역|상점|경제|생활/i.test(contentText)?'ECONOMY_AND_DAILY_LIFE':null,
+    /myth|belief|ritual|신화|신앙|금기|의식/i.test(contentText)?'BELIEF_MYTH_AND_TABOO':null,
+    /technology|research|institution|기술|연구|제도/i.test(contentText)?'TECHNOLOGY_AND_INSTITUTIONS':null,
+    /journal|record|dialogue|저널|기록|대화|소문/i.test(contentText)?'ARCHIVE_JOURNAL_AND_RUMOR':null,
+    /monster|enemy|opponent|몬스터|적|상대/i.test(contentText)?'MONSTER_OPPOSITION_ECOLOGY':null
+  ]);
+  const placeNameLedger=uniq(narrative.placeNameLedger);
+  const journalRecordChains=uniq(narrative.journalRecordChains);
+  const dialogueJournalLinks=uniq(narrative.dialogueJournalLinks);
+  const monsterOpponentLoreEcologyLinks=uniq(narrative.monsterOpponentLoreEcologyLinks);
+  const causalChains=uniq(world.causalChains?.length?world.causalChains:narrative.contentCausalityLinks);
+  const worldStateEvolution=uniq(world.worldStateEvolution?.length?world.worldStateEvolution:narrative.worldEvolutionHooks);
+  const gaps=uniq([
+    worldDnaSources.length<3?'WORLD_DNA_FAMILIES_BELOW_3':null,
+    placeNameLedger.length<3?'PLACE_NAME_LEDGER_BELOW_3':null,
+    journalRecordChains.length<2?'JOURNAL_RECORD_CHAINS_BELOW_2':null,
+    dialogueJournalLinks.length<2?'DIALOGUE_JOURNAL_LINKS_BELOW_2':null,
+    monsterOpponentLoreEcologyLinks.length<2?'OPPOSITION_LORE_LINKS_BELOW_2':null,
+    causalChains.length<4?'WORLD_CAUSAL_CHAINS_BELOW_4':null,
+    worldStateEvolution.length<2?'WORLD_STATE_EVOLUTION_BELOW_2':null,
+    Number(source?.signals?.worldCausality||0)<3?'SOURCE_WORLD_CAUSALITY_SPARSE':null,
+    Number(source?.signals?.dialogueWorld||0)<2?'SOURCE_DIALOGUE_SPARSE':null,
+    Number(source?.signals?.journalArchive||0)<2?'SOURCE_JOURNAL_SPARSE':null,
+    Number(source?.signals?.namingContinuity||0)<2?'SOURCE_PLACE_NAME_SPARSE':null,
+    Number(source?.signals?.oppositionLore||0)<2?'SOURCE_OPPOSITION_LORE_SPARSE':null
+  ]);
+  return Object.freeze({
+    version:1,
+    allGenres:true,
+    storyWeight:clean(narrative.storyWeight)||'DERIVE_BY_GENRE',
+    worldPremise:clean(world.worldPremise)||clean(narrative.worldConflict)||clean(design.identity),
+    worldDnaSources:Object.freeze(worldDnaSources),
+    civilizationPowerOrder:clean(world.civilizationPowerOrder),
+    geographyEcology:clean(world.geographyEcology),
+    economyDailyLife:clean(world.economyDailyLife),
+    beliefMythTaboo:clean(world.beliefMythTaboo),
+    technologyInstitutions:clean(world.technologyInstitutions),
+    placeNameLogic:clean(world.placeNameLogic),
+    journalArchiveLogic:clean(world.journalArchiveLogic),
+    monsterOpponentEcology:clean(world.monsterOpponentEcology),
+    dialogueMemoryLogic:clean(world.dialogueMemoryLogic),
+    placeNameLedger:Object.freeze(placeNameLedger),
+    journalRecordChains:Object.freeze(journalRecordChains),
+    dialogueJournalLinks:Object.freeze(dialogueJournalLinks),
+    monsterOpponentLoreEcologyLinks:Object.freeze(monsterOpponentLoreEcologyLinks),
+    causalChains:Object.freeze(causalChains),
+    worldStateEvolution:Object.freeze(worldStateEvolution),
+    crossMediaClueLinks:Object.freeze(uniq(world.crossMediaClueLinks)),
+    genreExpression:clean(world.genreExpression),
+    sourceEvidence:Object.freeze({
+      worldCausality:Number(source?.signals?.worldCausality||0),
+      dialogue:Number(source?.signals?.dialogueWorld||0),
+      journal:Number(source?.signals?.journalArchive||0),
+      naming:Number(source?.signals?.namingContinuity||0),
+      oppositionLore:Number(source?.signals?.oppositionLore||0)
+    }),
+    gaps:Object.freeze(gaps),
+    continuityChain:'PLACE_HISTORY→PLACE_NAME→DIALOGUE→JOURNAL_OR_RECORD→MONSTER_OR_OPPOSITION_ECOLOGY→SIDE_CONTENT→MAIN_EVENT→WORLD_STATE'
+  });
+}
+
+function librarySearchTerms({design={},worldPlan={}}={}){
+  const text=[
+    design.identity,design.coreFun,design.progressionDirection,
+    ...(design.coreLoop||[]),
+    ...(design.signatureSystems||[]).flatMap(row=>[row.name,row.purpose,row.playerChoice]),
+    ...(worldPlan.worldDnaSources||[]),worldPlan.worldPremise,
+    ...(worldPlan.placeNameLedger||[]),...(worldPlan.monsterOpponentLoreEcologyLinks||[])
+  ].map(clean).join(' ').toLowerCase();
+  const stop=new Set(['game','system','player','current','world','게임','시스템','플레이어','현재','세계','콘텐츠','content','사용','연결','build']);
+  return uniq(text.split(/[^a-z0-9가-힣_]+/i).filter(token=>token.length>=3&&!stop.has(token))).slice(0,32);
+}
+function searchLibraryFile({repoRoot,file,terms=[]}={}){
+  const absolute=path.resolve(repoRoot,file);
+  let source='';
+  try{
+    const stat=fs.statSync(absolute);
+    if(!stat.isFile()||stat.size<=0||stat.size>12*1024*1024)return{available:false,matchedTerms:[]};
+    source=fs.readFileSync(absolute,'utf8').toLowerCase();
+  }catch{return{available:false,matchedTerms:[]};}
+  const matched=terms.filter(term=>source.includes(term)).slice(0,12);
+  return{available:true,matchedTerms:matched};
+}
+export function deriveCanonicalLibraryLinkagePlan({repoRoot=process.cwd(),gameId='',design={},source={},worldPlan={}}={}){
+  const terms=librarySearchTerms({design,worldPlan});
+  const rows=CANONICAL_LIBRARY_SPECS.map(spec=>{
+    if(spec.family==='DESIGN_BASELINE_LIBRARY'){
+      return Object.freeze({
+        family:spec.family,
+        available:Boolean(clean(design.identity)||clean(design.coreFun)),
+        sourcePaths:Object.freeze(['CURRENT_VERIFIED_OR_MINIMUM_DESIGN_RECORD']),
+        matchedTerms:Object.freeze(terms.slice(0,8)),
+        candidateOnly:true
+      });
+    }
+    const evidence=spec.paths.map(file=>({file,...searchLibraryFile({repoRoot,file,terms})}));
+    return Object.freeze({
+      family:spec.family,
+      available:evidence.some(row=>row.available),
+      sourcePaths:Object.freeze(spec.paths),
+      matchedTerms:Object.freeze(uniq(evidence.flatMap(row=>row.matchedTerms)).slice(0,12)),
+      candidateOnly:true
+    });
+  });
+  const fingerprint=sha(JSON.stringify(rows.map(row=>({family:row.family,available:row.available,matchedTerms:row.matchedTerms}))));
+  return Object.freeze({
+    version:1,
+    gameId:clean(gameId),
+    searchMode:'DYNAMIC_CURRENT_BUILD_UP_CONTEXT',
+    allCanonicalLibrariesSearchable:true,
+    exposedFamilyCount:rows.length,
+    availableFamilyCount:rows.filter(row=>row.available).length,
+    libraries:Object.freeze(rows),
+    searchTerms:Object.freeze(terms),
+    searchFingerprint:fingerprint,
+    candidateDoesNotEqualConsumer:true,
+    compatibilityRightsAndGameIdentityFirst:true,
+    actualConsumerEvidenceRequired:true,
+    noForcedUse:true,
+    noShadowPipeline:true,
+    selectionRule:'search all canonical libraries, then select only compatible rights-safe game-specific candidates; reuse existing canonical asset/learning/pattern consumers rather than creating a new pipeline',
+    consumerRule:'a candidate becomes used only when the existing responsible game source or canonical native consumer actually references/consumes it and downstream QA confirms the changed behavior',
+    fallbackRule:'when no compatible candidate exists, keep the current game source/design and use the existing canonical generation or library-production path only when a verified gap requires it',
+    sourceSignals:Object.freeze({libraryReference:Number(source?.signals?.libraryReference||0)})
   });
 }
 
