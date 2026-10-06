@@ -488,6 +488,173 @@ function sourceConsumerPath(value=''){
 function currentAssetConsumerIds(asset={}){
   return unique([...(asset.consumerGameIds||[]),...(asset.sourceBoundConsumerGameIds||[])]);
 }
+const ASSET_SUPPLY_DECISIONS=Object.freeze(['USE','ADAPT','IMPROVE','AUTHOR','HOLD']);
+const ASSET_DOMAIN_TO_FAMILIES=Object.freeze({
+  CHARACTER_GEAR:Object.freeze(['CHARACTER']),
+  CREATURE:Object.freeze(['CREATURE']),
+  BUILDING:Object.freeze(['BUILDING']),
+  ENVIRONMENT:Object.freeze(['ENVIRONMENT']),
+  WEAPON:Object.freeze(['WEAPON']),
+  ITEM:Object.freeze(['PROP','WEAPON']),
+  SKILL:Object.freeze(['SKILL']),
+  MATERIAL:Object.freeze(['MATERIAL']),
+  AUDIO:Object.freeze(['AUDIO']),
+  VFX:Object.freeze(['VFX']),
+  UI:Object.freeze(['UI']),
+  MOTION:Object.freeze(['MOTION']),
+  WORLD_PROP:Object.freeze(['PROP']),
+  FOLIAGE:Object.freeze(['ENVIRONMENT','PROP']),
+  PRESENTATION:Object.freeze(['UI','VFX','AUDIO'])
+});
+const ASSET_REQUIREMENT_FAMILY_RULES=Object.freeze([
+  Object.freeze({re:/(?:monster|enemy|creature|몬스터|적|몹|생물)/i,families:Object.freeze(['CREATURE','MOTION','VFX','AUDIO'])}),
+  Object.freeze({re:/(?:boss|보스)/i,families:Object.freeze(['CREATURE','MOTION','SKILL','VFX','AUDIO'])}),
+  Object.freeze({re:/(?:combat|attack|hit|battle|전투|공격|타격|피격)/i,families:Object.freeze(['WEAPON','MOTION','VFX','AUDIO'])}),
+  Object.freeze({re:/(?:village|town|마을)/i,families:Object.freeze(['BUILDING','ENVIRONMENT','PROP','MATERIAL'])}),
+  Object.freeze({re:/(?:housing|house|home|하우징|주택|집짓|건축)/i,families:Object.freeze(['BUILDING','PROP','MATERIAL','UI'])}),
+  Object.freeze({re:/(?:explor|adventure|탐험|탐색)/i,families:Object.freeze(['ENVIRONMENT','BUILDING','PROP','VFX','AUDIO'])}),
+  Object.freeze({re:/(?:ui|hud|menu|interface|버튼|메뉴|인벤토리|인터페이스)/i,families:Object.freeze(['UI','AUDIO','MOTION'])})
+]);
+function assetRuntimeConsumerVerified(asset={}){
+  const state=clean(asset.runtimeVerificationState).toUpperCase();
+  return asset.productionVerified===true
+    ||asset.verifiedCompanyReusable===true
+    ||asset.nativeStudioVerified===true
+    ||asset.robloxStudioVerified===true
+    ||asset.unityWebVerified===true
+    ||state==='VERIFIED'
+    ||state==='VERIFIED_RUNTIME'
+    ||state==='RUNTIME_VERIFIED'
+    ||/^VERIFIED(?:_|$)/.test(state);
+}
+function assetConsumerRelationClassification(asset={},gameId='',sourceBound=false){
+  const id=clean(gameId);
+  const confirmed=(asset.consumerGameIds||[]).map(clean).includes(id);
+  if(confirmed&&assetRuntimeConsumerVerified(asset))return'RUNTIME_VERIFIED_CONSUMER';
+  if(sourceBound)return'ACTUAL_SOURCE_BOUND';
+  if(confirmed)return'CONFIRMED_CONSUMER';
+  if((asset.intendedConsumerGameIds||[]).map(clean).includes(id))return'INTENDED_ONLY';
+  return'NOT_BOUND';
+}
+function assetDomainFamilies(domain=''){
+  return ASSET_DOMAIN_TO_FAMILIES[clean(domain).toUpperCase()]||Object.freeze([clean(domain).toUpperCase()].filter(Boolean));
+}
+function requiredAssetFamilies({request='',requirements=[]}={}){
+  const families=new Set((requirements||[]).map(row=>clean(row?.family).toUpperCase()).filter(Boolean));
+  for(const rule of ASSET_REQUIREMENT_FAMILY_RULES)if(rule.re.test(clean(request)))for(const family of rule.families)families.add(family);
+  return [...families].sort();
+}
+function assetSupplyCandidateAllowed(asset={},target=''){
+  if(asset?.catalogActive===false||asset?.rightsPass===false)return false;
+  if(/STALE|QUARANTIN|RETIRED|REJECTED/.test((clean(asset?.catalogState)+' '+clean(asset?.status)).toUpperCase()))return false;
+  return internalAssetPlatformApplicationMode(asset,target)!=='NOT_SUPPORTED';
+}
+export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',requirements=[],registry={},executionPlan={},sourceConsumerSummary=null}={}){
+  const id=clean(gameId);
+  const assets=Array.isArray(registry?.assets)?registry.assets:[];
+  const requiredFamilies=requiredAssetFamilies({request,requirements});
+  const currentAssets=assets.filter(asset=>currentAssetConsumerIds(asset).includes(id));
+  const intendedOnlyAssets=assets.filter(asset=>(asset.intendedConsumerGameIds||[]).map(clean).includes(id)&&!currentAssetConsumerIds(asset).includes(id));
+  const currentByFamily=new Map();
+  for(const asset of currentAssets){
+    const family=clean(asset.family||asset.category).toUpperCase();if(!family)continue;
+    const rows=currentByFamily.get(family)||[];rows.push(asset);currentByFamily.set(family,rows);
+  }
+  const qualityActions=(executionPlan?.nextQualityActions||[]).filter(action=>
+    (action.consumerGameIds||[]).map(clean).includes(id)
+    ||currentAssets.some(asset=>clean(asset.id)===clean(action.assetId))
+  );
+  const repairsByFamily=new Map();
+  for(const action of qualityActions){
+    const family=clean(action.family||assets.find(asset=>clean(asset.id)===clean(action.assetId))?.family).toUpperCase();
+    const rows=repairsByFamily.get(family)||[];rows.push(action);repairsByFamily.set(family,rows);
+  }
+  const actions=[],actionKeys=new Set();
+  const pushAction=row=>{
+    const action=ASSET_SUPPLY_DECISIONS.includes(row.action)?row.action:'HOLD';
+    const key=[action,row.assetId||'',row.family||'',row.reason||''].join('|');
+    if(actionKeys.has(key))return;actionKeys.add(key);
+    actions.push(Object.freeze({...row,action}));
+  };
+  for(const repair of qualityActions){
+    pushAction({
+      action:'IMPROVE',
+      assetId:clean(repair.assetId)||null,
+      family:clean(repair.family).toUpperCase()||null,
+      reason:'CURRENT_CONSUMER_QUALITY_GAP',
+      responsibleFiles:Object.freeze([...(repair.sourceFiles||[])])
+    });
+  }
+  for(const family of requiredFamilies){
+    const used=(currentByFamily.get(family)||[]).sort((a,b)=>clean(a.id).localeCompare(clean(b.id)));
+    if(used.length){
+      if(!(repairsByFamily.get(family)||[]).length){
+        const asset=used[0],mode=internalAssetPlatformApplicationMode(asset,target);
+        pushAction({
+          action:mode==='USE_AS_IS'?'USE':'ADAPT',
+          assetId:clean(asset.id)||null,
+          family,
+          reason:mode==='USE_AS_IS'?'CURRENT_SOURCE_BOUND_READY':'CURRENT_SOURCE_BOUND_PLATFORM_OR_STYLE_ADAPT',
+          applicationMode:mode
+        });
+      }
+      continue;
+    }
+    const candidates=assets.filter(asset=>
+      clean(asset.family||asset.category).toUpperCase()===family
+      &&!currentAssetConsumerIds(asset).includes(id)
+      &&assetSupplyCandidateAllowed(asset,target)
+    ).sort((a,b)=>Number(b.internalAuditScore??b.qualityScore??-1)-Number(a.internalAuditScore??a.qualityScore??-1)||clean(a.id).localeCompare(clean(b.id)));
+    if(candidates.length){
+      const asset=candidates[0],mode=internalAssetPlatformApplicationMode(asset,target);
+      pushAction({
+        action:mode==='USE_AS_IS'?'USE':'ADAPT',
+        assetId:clean(asset.id)||null,
+        family,
+        reason:mode==='USE_AS_IS'?'REUSABLE_LIBRARY_MATCH':'REUSABLE_LIBRARY_ADAPTATION',
+        applicationMode:mode
+      });
+    }else{
+      pushAction({action:'AUTHOR',assetId:null,family,reason:'CURRENT_GAME_DEMAND_NO_REUSABLE_ASSET'});
+    }
+  }
+  const heldVolumeActions=(executionPlan?.nextVolumeActions||[]).filter(row=>
+    !assetDomainFamilies(row?.domain).some(family=>requiredFamilies.includes(family))
+  ).map(row=>Object.freeze({
+    action:'HOLD',
+    family:assetDomainFamilies(row?.domain)[0]||null,
+    domain:clean(row?.domain).toUpperCase()||null,
+    assetId:null,
+    ideaId:clean(row?.ideaId)||null,
+    reason:'REFERENCE_VOLUME_ONLY_NO_CURRENT_GAME_DEMAND'
+  }));
+  if(!actions.length)pushAction({action:'HOLD',assetId:null,family:null,reason:'NO_CURRENT_GAME_DEMAND_OR_SAFE_INDEPENDENT_WORK'});
+  const familyKeys=unique([...requiredFamilies,...currentByFamily.keys(),...repairsByFamily.keys()]).sort();
+  const families=Object.fromEntries(familyKeys.map(family=>[family,Object.freeze({
+    used:(currentByFamily.get(family)||[]).length,
+    missing:requiredFamilies.includes(family)&&(currentByFamily.get(family)||[]).length===0?1:0,
+    repair:(repairsByFamily.get(family)||[]).length
+  })]));
+  return Object.freeze({
+    version:1,
+    gameId:id||null,
+    currentConsumers:currentAssets.length,
+    intendedOnly:intendedOnlyAssets.length,
+    requiredFamilies:Object.freeze(requiredFamilies),
+    families:Object.freeze(families),
+    nextActions:Object.freeze(actions.slice(0,24)),
+    heldActions:Object.freeze(heldVolumeActions.slice(0,24)),
+    heldVolumeActionCount:heldVolumeActions.length,
+    decisionVocabulary:ASSET_SUPPLY_DECISIONS,
+    currentConsumerFields:Object.freeze(['consumerGameIds','sourceBoundConsumerGameIds']),
+    intendedConsumerIsNotCurrentUse:true,
+    volumeTargetsAdvisoryOnly:true,
+    safeWorkShortageMayLeaveSlotsIdle:true,
+    sourceConsumerSummary:sourceConsumerSummary||null,
+    productionVerificationGranted:false,
+    runtimeVerificationGranted:false
+  });
+}
 function sourceConsumerEligibleGame(game={}){
   const lifecycle=clean(game.lifecycleState||game?.canonical?.lifecycle?.state||'ACTIVE').toUpperCase();
   const production=clean(game.productionClass||game?.canonical?.production?.class||game.homepageCategory).toUpperCase().replaceAll('-','_');
@@ -644,6 +811,8 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
   const catalog=gameCatalog||readJson(path.join(repoRoot,'game-catalog.json'),{games:[]});
   const games=(catalog.games||[]).filter(sourceConsumerEligibleGame).sort((a,b)=>clean(a.id||a.gameId).localeCompare(clean(b.id||b.gameId)));
   const next=JSON.parse(JSON.stringify(original));next.assets=Array.isArray(next.assets)?next.assets:[];
+  const previousDynamicByAsset=new Map((original.assets||[]).map(asset=>[clean(asset.id),unique(asset.sourceBoundConsumerGameIds||[])]));
+  // 한 planning cycle에서 게임 소스는 게임당 한 번만 읽고 모든 자산 매핑이 같은 snapshot을 공유한다.
   const snapshots=games.map(game=>({game,snapshot:sourceConsumerSnapshot({repoRoot,game})}));
   const packLinks=new Map();
   for(const {game,snapshot} of snapshots){
@@ -655,7 +824,7 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
     }
     packLinks.set(gameId,linked);
   }
-  const bindings=[];
+  const bindings=[],relations=[];
   for(const asset of next.assets){
     const assetBindings=[],packId=clean(asset.packId),isPack=Boolean(packId&&packId===clean(asset.id));
     const family=clean(asset.family||asset.category).toUpperCase();
@@ -687,41 +856,104 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
         ];
       }
       if(!mode)continue;
+      const classification=assetConsumerRelationClassification(asset,gameId,true);
       const binding=Object.freeze({
-        gameId,classification:'ACTUAL_SOURCE_BOUND',mode,
+        gameId,classification,mode,bindingMode:mode,family,
         identities:Object.freeze(unique(matchedIds)),
         evidenceFiles:Object.freeze(unique(evidenceFiles).sort().slice(0,8)),
         sourceFingerprint:snapshot.sourceFingerprint,
-        runtimeVerified:false,productionVerified:false
+        sourceBound:true,runtimeVerified:classification==='RUNTIME_VERIFIED_CONSUMER',
+        productionVerified:false
       });
-      assetBindings.push(binding);bindings.push(Object.freeze({assetId:clean(asset.id),...binding}));
+      assetBindings.push(binding);
+      const relation=Object.freeze({assetId:clean(asset.id),...binding});
+      bindings.push(relation);relations.push(relation);
     }
+    const currentBoundGames=new Set(assetBindings.map(row=>row.gameId));
     if(assetBindings.length){
       asset.sourceBoundConsumerGameIds=unique(assetBindings.map(row=>row.gameId)).sort();
       asset.sourceConsumerBindings=assetBindings.sort((a,b)=>a.gameId.localeCompare(b.gameId)||a.mode.localeCompare(b.mode));
-      asset.sourceConsumerState='ACTUAL_SOURCE_BOUND';
+      asset.sourceConsumerState=assetBindings.some(row=>row.classification==='RUNTIME_VERIFIED_CONSUMER')?'RUNTIME_VERIFIED_CONSUMER':'ACTUAL_SOURCE_BOUND';
     }else{
       delete asset.sourceBoundConsumerGameIds;
       delete asset.sourceConsumerBindings;
       delete asset.sourceConsumerState;
     }
+    const relationGames=new Set(currentBoundGames);
+    for(const gameId of unique(asset.consumerGameIds||[])){
+      if(relationGames.has(gameId))continue;
+      relations.push(Object.freeze({
+        assetId:clean(asset.id),gameId,family,
+        classification:assetConsumerRelationClassification(asset,gameId,false),
+        mode:'STATIC_CONSUMER_HISTORY',bindingMode:'STATIC_CONSUMER_HISTORY',
+        evidenceFiles:Object.freeze([]),sourceFingerprint:null,sourceBound:false,
+        runtimeVerified:assetRuntimeConsumerVerified(asset),productionVerified:asset.productionVerified===true
+      }));
+      relationGames.add(gameId);
+    }
+    for(const gameId of unique(asset.intendedConsumerGameIds||[])){
+      if(relationGames.has(gameId))continue;
+      relations.push(Object.freeze({
+        assetId:clean(asset.id),gameId,family,classification:'INTENDED_ONLY',
+        mode:'INTENDED_CONSUMER',bindingMode:'INTENDED_CONSUMER',
+        evidenceFiles:Object.freeze([]),sourceFingerprint:null,sourceBound:false,
+        runtimeVerified:false,productionVerified:false
+      }));
+      relationGames.add(gameId);
+    }
+    for(const gameId of previousDynamicByAsset.get(clean(asset.id))||[]){
+      if(currentBoundGames.has(gameId))continue;
+      relations.push(Object.freeze({
+        assetId:clean(asset.id),gameId,family,classification:'STALE_SOURCE_BINDING',
+        mode:'STALE_SOURCE_BINDING',bindingMode:'STALE_SOURCE_BINDING',
+        evidenceFiles:Object.freeze([]),sourceFingerprint:null,sourceBound:false,
+        runtimeVerified:false,productionVerified:false
+      }));
+    }
   }
   const modes={};for(const row of bindings)modes[row.mode]=(modes[row.mode]||0)+1;
+  const relationStates={};for(const row of relations)relationStates[row.classification]=(relationStates[row.classification]||0)+1;
+  const gameSummaries=snapshots.map(({game,snapshot})=>{
+    const gameId=clean(game.id||game.gameId);
+    const current=next.assets.filter(asset=>currentAssetConsumerIds(asset).includes(gameId));
+    const intendedOnly=next.assets.filter(asset=>(asset.intendedConsumerGameIds||[]).map(clean).includes(gameId)&&!currentAssetConsumerIds(asset).includes(gameId));
+    const families={};
+    for(const asset of current){
+      const currentFamily=clean(asset.family||asset.category).toUpperCase()||'UNCLASSIFIED';
+      families[currentFamily]=families[currentFamily]||{used:0,missing:0,repair:0};
+      families[currentFamily].used+=1;
+    }
+    return Object.freeze({
+      gameId,currentConsumers:current.length,intendedOnly:intendedOnly.length,
+      sourceFingerprint:snapshot.sourceFingerprint,
+      scannedFileCount:snapshot.scannedFileCount,
+      families:Object.freeze(Object.fromEntries(Object.entries(families).sort(([a],[b])=>a.localeCompare(b)).map(([name,value])=>[name,Object.freeze(value)]))),
+      nextActions:Object.freeze([])
+    });
+  });
   const summary=Object.freeze({
-    version:1,status:'SOURCE_BOUND_CONSUMER_SYNC',dynamicSourceSearch:true,
+    version:2,status:'SOURCE_BOUND_CONSUMER_SYNC',dynamicSourceSearch:true,
     scannedGameCount:snapshots.length,
     scannedFileCount:snapshots.reduce((sum,row)=>sum+row.snapshot.scannedFileCount,0),
     scannedBytes:snapshots.reduce((sum,row)=>sum+row.snapshot.scannedBytes,0),
     boundAssetCount:new Set(bindings.map(row=>row.assetId)).size,
-    bindingCount:bindings.length,
+    bindingCount:bindings.length,relationCount:relations.length,
+    relationStates:Object.freeze(relationStates),
+    staleSourceBindingCount:Number(relationStates.STALE_SOURCE_BINDING||0),
+    runtimeVerifiedConsumerCount:Number(relationStates.RUNTIME_VERIFIED_CONSUMER||0),
+    actualSourceBoundCount:Number(relationStates.ACTUAL_SOURCE_BOUND||0),
+    intendedOnlyRelationCount:Number(relationStates.INTENDED_ONLY||0),
     intendedOnlyAssetCount:next.assets.filter(asset=>(asset.intendedConsumerGameIds||[]).length&&currentAssetConsumerIds(asset).length===0).length,
     modes:Object.freeze(modes),
+    gameSummaries:Object.freeze(gameSummaries),
     currentConsumerFields:Object.freeze(['consumerGameIds','sourceBoundConsumerGameIds']),
+    sourceBoundConsumerIsDerivedView:true,
     sourceOnlyDoesNotGrantRuntimeVerification:true,
     productionVerificationUnchanged:true,
+    runtimeVerificationUnchanged:true,
     newWorkflowCreated:false,newQueueCreated:false,newSchedulerCreated:false,newPipelineCreated:false
   });
-  return Object.freeze({registry:next,bindings:Object.freeze(bindings),summary});
+  return Object.freeze({registry:next,bindings:Object.freeze(bindings),relations:Object.freeze(relations),summary});
 }
 
 export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),registry=null,persist=true}={}){
@@ -1022,6 +1254,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     synchronizedPackIds:freezeList(syncRows.map(row=>row.packId)),
     sourceConsumerSync:consumerSync.summary,
     sourceConsumerBindings:consumerSync.bindings,
+    sourceConsumerRelations:consumerSync.relations,
     sourceConsumerRegistry:consumerSync.registry,
     seedCount:seedPlan.seedCount,
     automationPlan:libraryPlan,
@@ -2409,7 +2642,9 @@ export function buildVibeAssetProductionPlan({
 }={}){
   const targetResolution=resolveAssetProductionTarget({target,task,repoRoot});
   const resolvedTarget=targetResolution.target;
+  const request=clean(task.goal||task.request||task.gameId||'game asset production');
   const flowAssetRequirements=normalizeFlowAssetRequirements(task.assetRequirements);
+  const currentDemandFamilies=requiredAssetFamilies({request,requirements:flowAssetRequirements});
   const manifestBase=manifest||readJson(path.join(repoRoot,'assets','asset-manifest.json'),{version:0,assets:[]});
   const librarySync=synchronizeCompanyCommonAssetRegistry({repoRoot,persist:!process.env.NODE_TEST_CONTEXT});
   const companyRegistry=librarySync.registry;
@@ -2421,14 +2656,16 @@ export function buildVibeAssetProductionPlan({
     &&libraryAutomation.maintenance?.inventoryFingerprint===executionLibraryPlan.maintenance.inventoryFingerprint
     &&libraryAutomation.maintenance?.qualityFingerprint===executionLibraryPlan.maintenance.qualityFingerprint
     &&Array.isArray(libraryAutomation.nextVolumeActions);
-  const activeNextVolumeActions=
-    executionLibraryPlan.focusPhase==='VOLUME_UP'
-      ?(persistedWorklistFresh&&libraryAutomation.nextVolumeActions.length
-        ?libraryAutomation.nextVolumeActions
-        :(executionLibraryPlan.nextVolumeActions||[]))
-      :[];
+  const referenceVolumeActions=persistedWorklistFresh&&libraryAutomation.nextVolumeActions.length
+    ?libraryAutomation.nextVolumeActions
+    :(executionLibraryPlan.nextVolumeActions||[]);
+  const activeNextVolumeActions=referenceVolumeActions.filter(row=>
+    assetDomainFamilies(row?.domain).some(family=>currentDemandFamilies.includes(family))
+  );
+  const activeQualityActions=(executionLibraryPlan.nextQualityActions||[]).filter(row=>Number(row?.consumerPriority||0)>0);
+  const currentExecutionPhase=activeQualityActions.length?'QUALITY_UP_1000':activeNextVolumeActions.length?'VOLUME_UP':'HOLD';
   const internalLibraryEvolution=freeze({
-    phase:clean(executionLibraryPlan.focusPhase||libraryAutomation.focusPhase)||'VOLUME_UP',
+    phase:currentExecutionPhase,
     volumeReady:executionLibraryPlan.volumeReady===true,
     qualityTarget:Number(executionLibraryPlan.qualityTarget||libraryAutomation.qualityTarget||1000),
     volumeBlockingDomains:freezeList((executionLibraryPlan.volumeBlockingDomains||[]).map(row=>row?.domain).filter(Boolean)),
@@ -2437,7 +2674,12 @@ export function buildVibeAssetProductionPlan({
     progressionComplexityProfiles:freezeList(Object.keys(INTERNAL_PROGRESSION_COMPLEXITY_PROFILES)),
     nextVolumeActions:freezeList(activeNextVolumeActions),
     activeNextVolumeAction:activeNextVolumeActions[0]||null,
-    nextQualityActions:freezeList(executionLibraryPlan.nextQualityActions||[]),
+    nextQualityActions:freezeList(activeQualityActions),
+    referenceVolumeActionCount:referenceVolumeActions.length,
+    heldReferenceVolumeActionCount:Math.max(0,referenceVolumeActions.length-activeNextVolumeActions.length),
+    volumeTargetsAdvisoryOnly:true,
+    safeWorkShortageMayLeaveSlotsIdle:true,
+    decisionVocabulary:ASSET_SUPPLY_DECISIONS,
     worklistSource:persistedWorklistFresh&&libraryAutomation.nextVolumeActions.length?'COMPANY_ASSET_LIBRARY_PERSISTED':'CURRENT_EXECUTION_RECOMPUTED',
     consumePersistedNextVolumeActionsFirst:true,
     persistentWorklistField:clean(executionLibraryPlan.persistentWorklistField||libraryAutomation.persistentWorklistField)||'internalAssetLibraryAutomation.nextVolumeActions',
@@ -2461,7 +2703,11 @@ export function buildVibeAssetProductionPlan({
     autonomousMaintenanceContract:freeze({...libraryAutomation.autonomousMaintenanceContract,...executionLibraryPlan.autonomousMaintenanceContract}),
     maintenance:freeze({...libraryAutomation.maintenance,...executionLibraryPlan.maintenance}),
     studioVariationAxes:freeze({...libraryAutomation.studioVariationAxes,...executionLibraryPlan.studioVariationAxes}),
-    autonomousNextAction:freeze({...libraryAutomation.autonomousNextAction,...executionLibraryPlan.autonomousNextAction}),
+    autonomousNextAction:currentExecutionPhase==='QUALITY_UP_1000'
+      ?freeze({action:'IMPROVE',phase:'QUALITY_UP_1000',item:activeQualityActions[0]||null})
+      :currentExecutionPhase==='VOLUME_UP'
+        ?freeze({action:'AUTHOR',phase:'VOLUME_UP',item:activeNextVolumeActions[0]||null})
+        :freeze({action:'HOLD',phase:'HOLD',reason:'NO_CURRENT_GAME_DEMAND_OR_SAFE_INDEPENDENT_WORK'}),
     autonomousContinuationRequired:true,
     ownerPresenceRequired:false,
     humanPresenceRequired:false,
@@ -2486,7 +2732,6 @@ export function buildVibeAssetProductionPlan({
   const manifestWithSameGameAssets={...manifestBase,assets:[...(Array.isArray(manifestBase?.assets)?manifestBase.assets:[]),...sameGameRobloxAssets]};
   const manifestInput=mergeManifestWithCompanyLibrary(manifestWithSameGameAssets,companyRegistry);
   const presetInput=presetCatalog||readJson(path.join(repoRoot,'assets','prototype-asset-presets.json'),{version:0,presets:[]});
-  const request=clean(task.goal||task.request||task.gameId||'game asset production');
   const characterCustomizationRequested=Boolean(task.characterCustomization||task.npcCustomization)||/(?:CHARACTER|NPC|AVATAR|CUSTOMI[ZS]|캐릭터|케릭터|커마|커스터마이징|NPC|주민|시민|동료)/i.test(request);
   const duelCombatRequested=/(?:duel|dueling|결투|대전|격투|맨손|무기.?전투|combat|fight|fighter|카타나|katana|검술|쌍검|대검|창술|boxing|복싱|kickboxing|킥복싱|muay|무에타이|karate|가라테|taekwondo|태권도|mma|레슬링|wrestling|judo|유도|jiu.?jitsu|주짓수)/i.test(request);
   const survivalWildlifeRequested=/(?:gravewood|그레이브우드|생존|survival|야생동물|동물|wildlife|animal|곰|bear|멧돼지|boar|사슴|deer|elk|엘크|moose|무스|bison|들소|wolf|늑대|fox|여우|rabbit|토끼|raccoon|너구리|squirrel|다람쥐|beaver|비버|badger|오소리|goat|염소|turkey|칠면조|crow|까마귀)/i.test(request);
@@ -2710,7 +2955,7 @@ export function buildVibeAssetProductionPlan({
     });
   }));
   const effectiveNextVolumeActions=freezeList(
-    (executionLibraryPlan.focusPhase==='VOLUME_UP'||taskLocalReferenceVolumeActions.length>0)
+    (activeNextVolumeActions.length>0||taskLocalReferenceVolumeActions.length>0)
       ?[
         ...taskLocalReferenceVolumeActions,
         ...activeNextVolumeActions.filter(row=>!referenceDrivenAssetIdeas.some(idea=>idea.ideaId===row?.ideaId))
@@ -2727,27 +2972,31 @@ export function buildVibeAssetProductionPlan({
       })
       :[]
   );
-  const effectiveAutonomousNextAction=executionLibraryPlan.focusPhase==='QUALITY_UP_1000'&&!taskLocalReferenceVolumeActions.length
+  const effectiveAutonomousNextAction=internalLibraryEvolution.nextQualityActions.length>0&&!taskLocalReferenceVolumeActions.length
     ?freeze({
-      kind:'QUALITY_UP_1000',
+      kind:'ASSET_SUPPLY_DECISION',
+      action:'IMPROVE',
       phase:'QUALITY_UP_1000',
       selection:internalLibraryEvolution.qualityUpPolicy.selection,
       workingBandMin:internalLibraryEvolution.qualityUpPolicy.workingBandMin,
       target:internalLibraryEvolution.qualityUpPolicy.target,
-      action:internalLibraryEvolution.nextQualityActions[0]||null,
+      item:internalLibraryEvolution.nextQualityActions[0]||null,
       continueWithoutHuman:true
     })
     :effectiveNextVolumeActions.length
       ?freeze({
-        kind:'CONSUME_PRIORITY_WORKLIST_ACTION',
+        kind:'ASSET_SUPPLY_DECISION',
+        action:'AUTHOR',
         phase:'VOLUME_UP',
-        action:effectiveNextVolumeActions[0],
+        item:effectiveNextVolumeActions[0],
         continueAfterCompletion:true,
         continueWithoutHuman:true
       })
       :freeze({
-        kind:'REBUILD_VOLUME_WORKLIST',
-        phase:'VOLUME_UP',
+        kind:'ASSET_SUPPLY_DECISION',
+        action:'HOLD',
+        phase:'HOLD',
+        reason:'NO_CURRENT_GAME_DEMAND_OR_SAFE_INDEPENDENT_WORK',
         continueWithoutHuman:true
       });
   const effectiveInternalLibraryEvolution=freeze({
@@ -2767,7 +3016,11 @@ export function buildVibeAssetProductionPlan({
     styleExpressionRequiredForAllDomains:true,
     styleExpression:taskStyleExpression,
     styleExpressionDomainBindings:freeze(INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS),
-    photoReferenceMaySuggestButNotOverrideConceptLock:true
+    photoReferenceMaySuggestButNotOverrideConceptLock:true,
+    volumeTargetsAdvisoryOnly:true,
+    safeWorkShortageMayLeaveSlotsIdle:true,
+    recommendedVolumeBlocksQuality:false,
+    decisionVocabulary:ASSET_SUPPLY_DECISIONS
   });
   const npcCustomizationPopulation=characterCustomizationRequested?createVibeNpcCustomizationPopulation({
     count:Number(task.npcCustomization?.previewCount||task.characterCustomization?.npcPreviewCount||48),
@@ -3065,6 +3318,15 @@ export function buildVibeAssetProductionPlan({
       missingAuthoringToolLeavesExactAuthoringStagePending:true
     })
   });
+  const assetSupplySummary=buildAssetSupplyDecisionSummary({
+    gameId:task.gameId,
+    target:resolvedTarget,
+    request,
+    requirements:flowAssetRequirements,
+    registry:librarySync.sourceConsumerRegistry||companyRegistry,
+    executionPlan:{...executionLibraryPlan,nextQualityActions:activeQualityActions,nextVolumeActions:referenceVolumeActions},
+    sourceConsumerSummary:librarySync.sourceConsumerSync
+  });
   return freeze({
     version:1,
     kind:'vibe2-asset-production-plan',
@@ -3083,6 +3345,7 @@ export function buildVibeAssetProductionPlan({
     commercialDistillation,
     internalLibraryEvolution:effectiveInternalLibraryEvolution,
     flowAssetRequirements,
+    assetSupplySummary,
     flowAssetLoadout:freeze({
       libraryVersion:studioUniversePlan?.loadout?.libraryVersion||0,
       librarySnapshotId:studioUniversePlan?.loadout?.librarySnapshotId||null,
