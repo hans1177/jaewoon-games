@@ -13305,6 +13305,17 @@
         "actorCanReconsiderAfterNewEvidence": true,
         "unresolvedEmotionMayCarryIntoLaterScene": true
       }
+    },
+    "causalGameGrammarIntegration": {
+      "version": 1,
+      "source": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameIdentityConceptContract.novelCausalGameGrammar",
+      "sameGameplayAndStoryIdentityRequired": true,
+      "gameSeedGrammarIsNarrativeConstraintWhenPresent": true,
+      "useExistingStoryEngineAndCore": true,
+      "separateLorePipelineForbidden": true,
+      "characterMonsterRegionStoryMustExpressSameCausalWorldLawWhenApplicable": true,
+      "familiarHumanConflictRequiredForComprehensibility": true,
+      "d1LightComicMayStayShortSimpleAndSystemic": true
     }
   },
   "presentationPipelineImplementation": {
@@ -26369,7 +26380,7 @@
       "recentPriorityEndsWhen": "playable"
     },
     "gameIdentityConceptContract": {
-      "version": 1,
+      "version": 2,
       "status": "ACTIVE_ALL_GENRES",
       "authority": "OWNER_DIRECTIVE_2026-10-06",
       "purpose": "MAKE_EACH_GAME_IMMEDIATELY_UNDERSTANDABLE_DISTINCT_AND_GROWTH_SPECIFIC_WITHOUT_FORCING_ONE_GENRE_SYSTEM_TEMPLATE",
@@ -26451,7 +26462,194 @@
         "tools/company-game-seed-bootstrap.mjs",
         "tools/company-design-cycle.mjs",
         "tools/company-build-up-directive.mjs"
-      ]
+      ],
+      "novelCausalGameGrammar": {
+        "version": 1,
+        "status": "ACTIVE_WITHIN_EXISTING_CANONICAL_RESPONSIBILITIES",
+        "authority": "OWNER_DIRECTIVE_2026-10-06",
+        "purpose": "CREATE_NEW_GAME_GRAMMAR_FROM_CAUSAL_RELATIONSHIPS_IN_CULTURAL_HISTORICAL_MYTHIC_PHILOSOPHICAL_COMIC_AND_POLITICAL_MATERIALS_NOT_DECORATIVE_THEME_STACKING",
+        "executionBoundary": "EXISTING_GAME_SEED_DESIGN_STORY_BUILD_UP_ONLY",
+        "pipelineMutationForbidden": true,
+        "newWorkflowForbidden": true,
+        "newQueueForbidden": true,
+        "newSchedulerForbidden": true,
+        "shadowOrWrapperPipelineForbidden": true,
+        "formula": "FAMILIAR_HUMAN_CONFLICT × CAUSAL_DNA × BROKEN_GENRE_ASSUMPTION → NEW_PRIMARY_VERB → WORLD_RULE → CHARACTER_MONSTER_REGION_STORY_BINDING → ESCALATION_AND_EXPANSION",
+        "materialLayer": {
+          "existingSeedMaterialPoolPreserved": true,
+          "metadataOnlyExtension": [
+            "causalDNA",
+            "causalDepthAffinity"
+          ],
+          "materialFamiliesRemainCanonical": true,
+          "sourceDomains": [
+            "EASTERN_HISTORY",
+            "WESTERN_HISTORY",
+            "CLASSICAL_LITERATURE",
+            "FANTASY_ARCHETYPES",
+            "RELIGION",
+            "MYTH",
+            "PHILOSOPHY",
+            "TRAGEDY",
+            "COMEDY",
+            "SATIRE_AND_HUMOR",
+            "POLITICS",
+            "HISTORICAL_FIGURE_ARCHETYPES"
+          ],
+          "causalDNAExamples": [
+            "KARMA_RETURN",
+            "MANDATE_LEGITIMACY",
+            "RITUAL_RECIPROCITY",
+            "ANCESTOR_MEMORY",
+            "PROPHECY_SELF_FULFILLMENT",
+            "HUBRIS_NEMESIS",
+            "OATH_CONTRACT",
+            "SACRIFICE_SUBSTITUTION",
+            "TABOO_POLLUTION",
+            "TRICKSTER_REVERSAL",
+            "COMEDIC_MISUNDERSTANDING",
+            "CARNIVAL_STATUS_REVERSAL",
+            "DIALECTIC_SYNTHESIS",
+            "SHIP_OF_THESEUS_IDENTITY",
+            "TESTIMONY_CONSENSUS_REALITY",
+            "DYNASTIC_INHERITANCE",
+            "FACTION_BALANCE",
+            "PATRONAGE_NETWORK",
+            "EXILE_RETURN",
+            "MARTYRDOM_MOVEMENT",
+            "PILGRIMAGE_TRANSFORMATION",
+            "FORTUNE_REVERSAL",
+            "ABSURD_BUREAUCRACY",
+            "NAME_AND_REPUTATION_POWER"
+          ],
+          "abstractionRule": "USE_CAUSAL_STRUCTURE_HUMAN_CONFLICT_AND_ARCHETYPE_AS_MATERIAL; DO_NOT_COPY_PROTECTED_MODERN_CHARACTERS_DIALOGUE_SCENES_OR_UNIQUE_SETTING_EXPRESSION"
+        },
+        "grammarLayer": {
+          "canonicalField": "GAME_SEED.GAMEPLAY_SKETCH.novelGameGrammar",
+          "minimumCausalDNA": 2,
+          "requirements": [
+            "FAMILIAR_ANCHOR",
+            "BROKEN_GENRE_ASSUMPTION",
+            "NEW_PRIMARY_VERB",
+            "WORLD_RULE",
+            "CAUSAL_FUSION",
+            "IRREDUCIBILITY_TEST",
+            "STORY_WORLD_BINDINGS",
+            "ESCALATION",
+            "EXPANSION_VECTORS"
+          ],
+          "fusionRule": "CAUSAL_DNA_MUST_EXCHANGE_CAUSE_CONSTRAINT_COST_REWARD_OR_STATE_CHANGE; PARALLEL_FEATURE_STACKING_DOES_NOT_COUNT",
+          "irreducibilityRule": "REMOVING_A_MAJOR_CAUSAL_AXIS_SHOULD_COLLAPSE_THE_CONCEPT_TOWARD_A_MORE_CONVENTIONAL_GENRE_LOOP",
+          "worldPlausibilityRule": "STRANGE_RULES_REQUIRE_WORLD_INTERNAL_REASONS_IN_HISTORY_CULTURE_LIFE_POWER_RELIGION_ECOLOGY_OR_SOCIAL_PRACTICE"
+        },
+        "depthModel": {
+          "depthIsQualityRank": false,
+          "D1_LIGHT_COMIC": {
+            "purpose": "ONE_CLEAR_ABSURD_OR_COMIC_RULE_WITH_REAL_REPEATABLE_GAME_STATE_EFFECT",
+            "epicComplexityRequired": false,
+            "comicAbsurdityRequired": true
+          },
+          "D2_STRANGE_FUSION": {
+            "purpose": "TWO_OR_THREE_CAUSAL_RULES_CREATE_A_NEW_DECISION_STRUCTURE",
+            "epicComplexityRequired": false
+          },
+          "D3_DEEP_CULTURAL": {
+            "purpose": "HISTORY_MYTH_RELIGION_PHILOSOPHY_OR_POLITICAL_CAUSALITY_BINDS_CHARACTERS_MONSTERS_REGIONS_AND_STORY_TO_ONE_WORLD_LAW"
+          },
+          "D4_SYSTEMIC_MYTHIC": {
+            "purpose": "MULTIPLE_CAUSAL_LAWS_INTERACT_ACROSS_GENERATIONS_MEMORY_LEGITIMACY_KARMA_OR_OTHER_SYSTEMIC_AXES_AND_CAN_BE_REINTERPRETED_OR_REASSEMBLED_IN_ENDGAME"
+          },
+          "selectionRule": "MATCH_DEPTH_TO_GAME_SCALE_GENRE_TONE_AND_PLAYER_PROMISE; NEVER_FORCE_D4_ON_A_GAME_THAT_IS_BETTER_AS_D1_OR_D2"
+        },
+        "narrativeIdentityRule": {
+          "newGrammarCanBeStrange": true,
+          "humanConflictMustRemainReadable": true,
+          "storyIdentityEqualsGameplayIdentity": true,
+          "familiarEmotionalAnchors": [
+            "LOSS",
+            "DESIRE",
+            "FAMILY",
+            "BELONGING",
+            "RECOGNITION",
+            "SURVIVAL",
+            "HONOR",
+            "BETRAYAL",
+            "RIVALRY",
+            "FEAR_OF_EXPOSURE",
+            "AMBITION",
+            "LOYALTY"
+          ],
+          "characterRule": "CHARACTER_GOAL_FEAR_DESIRE_SECRET_RELATIONSHIP_AND_BEHAVIOR_EXPRESS_OR_RESIST_THE_WORLD_CAUSAL_RULE_WHEN_NARRATIVE_APPLIES",
+          "monsterRule": "MONSTERS_EMBODY_TRANSMIT_DISTORT_FEED_ON_INHERIT_OR_COUNTER_THE_CAUSAL_WORLD_RULE_NOT_ONLY_RESKIN_STATS",
+          "regionRule": "REGIONS_INTERPRET_THE_SAME_RULE_DIFFERENTLY_THROUGH_CULTURE_ECOLOGY_POWER_OR_HISTORY",
+          "storyRule": "PLOT_PROGRESSION_USES_GAMEPLAY_CAUSAL_STATE_WHEN_NARRATIVE_APPLIES_NOT_ONLY_CUTSCENE_SEQUENCE"
+        },
+        "expansionRule": {
+          "rule": "EXPAND_BY_MUTATING_HOW_THE_CAUSAL_RULE_WORKS_ACROSS_REGIONS_MONSTERS_NPCS_ITEMS_FACTIONS_AND_REVISITS_NOT_BY_ONLY_ADDING_OBJECTS",
+          "mutationVerbs": [
+            "TRANSFER",
+            "DISTORT",
+            "INHERIT",
+            "REDISTRIBUTE",
+            "HIDE",
+            "FORGE",
+            "REVERSE",
+            "SUBSTITUTE",
+            "DEFER",
+            "AMPLIFY",
+            "CANCEL_WITH_COST"
+          ],
+          "revisitMustReflectEarlierConsequencesWhenApplicable": true,
+          "statOnlyCloneDoesNotCount": true,
+          "decorativeLoreDoesNotCount": true
+        },
+        "designAndGate": {
+          "existingDesignFieldsRemainCanonical": true,
+          "fields": [
+            "identity",
+            "playerFantasy",
+            "coreFun",
+            "coreLoop",
+            "signatureSystems",
+            "systemInterconnections",
+            "progressionDirection",
+            "contentExpansionPlan",
+            "narrativeDialoguePlan",
+            "referenceHomagePlan",
+            "designIntegrityPlan"
+          ],
+          "strictGateRule": "V4_GRAMMAR_MAY_NOT_BE_DILUTED_INTO_GENERIC_GENRE_DESIGN",
+          "failureCode": "NOVEL_GRAMMAR_DILUTED",
+          "depthDoesNotIncreaseScoreByItself": true,
+          "lightComicSimplicityCannotBePenalizedWhenItsRuleHasRealStateEffect": true
+        },
+        "storyIntegration": {
+          "existingEngineOnly": true,
+          "engine": "tools/vibe2-artbook-story-engine.mjs",
+          "core": "tools/vibe2-artbook-story-core.mjs",
+          "source": "GAME_SEED.GAMEPLAY_SKETCH.novelGameGrammar",
+          "separateLorePipelineForbidden": true,
+          "fallbackMayProposeButCannotOverrideVerifiedSeedGrammar": true
+        },
+        "buildUpIntegration": {
+          "existingBuildUpOnly": true,
+          "owner": "tools/company-build-up-directive.mjs",
+          "rule": "EACH_BUILD_UP_MAY_PRESERVE_DEEPEN_OR_MUTATE_THE_APPROVED_CAUSAL_GRAMMAR_WITH_REAL_SOURCE_AND_GAME_STATE_EFFECT",
+          "genericFeatureCountCannotProveGrammarGrowth": true,
+          "d1MayRemainSimple": true
+        },
+        "bindings": [
+          "tools/game-seed-state.mjs",
+          "tools/company-game-seed-bootstrap.mjs",
+          "tools/company-game-seed-contract.mjs",
+          "tools/company-vibe2-game-flow-architect.mjs",
+          "tools/company-design-cycle.mjs",
+          "tools/company-design-gate-scoring-v2.mjs",
+          "tools/company-build-up-directive.mjs",
+          "tools/vibe2-artbook-story-engine.mjs",
+          "tools/vibe2-artbook-story-core.mjs"
+        ]
+      }
     }
   },
   "robloxNativeCodingQualityContract": {

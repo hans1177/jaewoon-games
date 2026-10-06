@@ -903,7 +903,24 @@
     "existingCanonicalLearningMotorOnly": true,
     "factionRelationshipMutationWithoutSourceEventMustBeLoggedAsFailure": true,
     "duplicateFactionRelationshipSourceEventMustNotApplyDeltaTwice": true,
-    "outOfRangeFactionRelationshipStateMustBeLoggedAsFailure": true
+    "outOfRangeFactionRelationshipStateMustBeLoggedAsFailure": true,
+    "causalGameGrammarEvidence": {
+      "sourceField": "GAME_SEED.GAMEPLAY_SKETCH.novelGameGrammar",
+      "correlationKeys": [
+        "GAME_ID",
+        "CAUSAL_DNA_ID",
+        "WORLD_RULE",
+        "SOURCE_EVENT_ID"
+      ],
+      "expectedEvidence": [
+        "CHARACTER_CAUSAL_RULE",
+        "MONSTER_CAUSAL_RULE",
+        "REGION_CAUSAL_RULE",
+        "STORY_CAUSAL_STATE_CHANGE"
+      ],
+      "lightComicSystemPayoffCountsAsValidNarrativeGameplayEvidence": true,
+      "loreOnlyStatementDoesNotCount": true
+    }
   },
   "existingGameWorldPatternEvidenceContract": {
     "version": 1,
@@ -1283,7 +1300,7 @@
     "existingGameGrandfatherExemptionForbidden": true,
     "allFiveBackfillPillarsRequiredBeforeExistingHolisticBaseline": true,
     "gameIdentityConceptEvidence": {
-      "version": 1,
+      "version": 2,
       "source": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameIdentityConceptContract",
       "required": [
         "GAME_IDENTITY",
@@ -1297,7 +1314,21 @@
         "IDENTITY_BUILD_UP_RULE"
       ],
       "allGenreApplicationRequired": true,
-      "genericFeatureCountCannotProveIdentityGrowth": true
+      "genericFeatureCountCannotProveIdentityGrowth": true,
+      "causalGameGrammarEvidence": {
+        "requiredWhenSeedV4GrammarExists": true,
+        "requiredEvidence": [
+          "CAUSAL_GRAMMAR_EVIDENCE",
+          "CAUSAL_GRAMMAR_BUILD_UP_RULE",
+          "APPROVED_CAUSAL_GAME_GRAMMAR_PRESERVED_OR_MUTATED_WITH_REAL_STATE_EFFECT",
+          "CHARACTER_MONSTER_REGION_STORY_SHARE_CAUSAL_WORLD_LAW_WHEN_APPLICABLE"
+        ],
+        "depthIsQualityRank": false,
+        "d1EpicComplexityEvidenceNotRequired": true,
+        "decorativeLoreCannotSatisfy": true,
+        "parallelFeatureStackCannotSatisfy": true,
+        "designGateFailureCodeWhenDiluted": "NOVEL_GRAMMAR_DILUTED"
+      }
     }
   },
   "minimumNecessaryProcedureDevelopmentEvidence": {
