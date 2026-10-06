@@ -5,7 +5,7 @@ import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {hasVerifiedVibe2SourceHandoff,validateExistingRobloxSourceTree,robloxPackageAssetRepairContext} from './company-development-roblox-source-reconcile.mjs';
-import {buildRobloxStudioAssetBootstrapPlan,detectRobloxStudioAssetSystems,robloxBuildProfileFromBaseline,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from './company-development-roblox-bootstrap.mjs';
+import {buildRobloxStudioAssetBootstrapPlan,detectRobloxStudioAssetSystems,robloxBuildProfileFromBaseline,ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from './company-development-roblox-bootstrap.mjs';
 
 const SHA=/^[0-9a-f]{40}$/i;
 const clean=value=>String(value??'').trim();
