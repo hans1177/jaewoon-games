@@ -95,6 +95,25 @@ export const GAMEPLAY_NARRATIVE_RIGHTS_MODES = Object.freeze([
   'ORIGINAL_SYNTHESIS'
 ]);
 
+export const GAMEPLAY_STYLE_DNA_FAMILIES = Object.freeze([
+  'EAST_ASIAN_CLASSICAL',
+  'MEDITERRANEAN_CLASSICAL',
+  'ROMAN_CIVIC_MILITARY',
+  'MEDIEVAL_FORTRESS_TOWN',
+  'FAIRYTALE_HANDCRAFTED',
+  'GOTHIC_HORROR',
+  'MYTHIC_MONUMENTAL',
+  'INDUSTRIAL_REVOLUTION_URBAN',
+  'MODERNIST_DYSTOPIAN',
+  'WAR_TORN_MODERN',
+  'MARITIME_TRADE_PORT',
+  'FRONTIER_SETTLEMENT',
+  'NATURAL_BIOREGIONAL',
+  'ARCANE_SCHOLARLY',
+  'SCIENCE_TECHNOLOGICAL',
+  'MYSTERY_NOIR'
+]);
+
 const isNonEmptyString = value => typeof value === 'string' && value.trim().length > 0;
 const isNonEmptyArray = value => Array.isArray(value) && value.length > 0;
 const hasMeaningfulValue = value => {
@@ -238,6 +257,22 @@ function validateGameplaySketch(sketch,errors){
     if(!Array.isArray(narrative.rightsModes)||uniq(narrative.rightsModes).length<1)errors.push('GAMEPLAY_SKETCH.narrativeDepth.rightsModes requires at least 1 rights mode');
   }
 }
+
+  const style=sketch.styleWorldDepth;
+  if(!style||typeof style!=='object'||Array.isArray(style)){
+    errors.push('GAMEPLAY_SKETCH.styleWorldDepth is required for version 3+');
+    return;
+  }
+  const styleRequiredStrings=['styleFusion','architectureSettlement','environmentBiomes','materialPropLanguage','characterCostumeSilhouette','paletteLightingWeather','backgroundStorytelling'];
+  for(const field of styleRequiredStrings)if(!isNonEmptyString(style[field]))errors.push(`GAMEPLAY_SKETCH.styleWorldDepth.${field} is required for version 3+`);
+  const styleArrays=[['styleDnaSources',2],['regionalStyleVariation',3],['gameplayReadabilityLinks',3],['styleExpansionHooks',2],['artRightsRules',3]];
+  for(const [field,min] of styleArrays){
+    if(!Array.isArray(style[field])||uniq(style[field]).length<min)errors.push(`GAMEPLAY_SKETCH.styleWorldDepth.${field} requires at least ${min} meaningful items for version 3+`);
+  }
+  const styleFamilySet=new Set(GAMEPLAY_STYLE_DNA_FAMILIES);
+  for(const family of uniq(style.styleDnaSources)){
+    if(!styleFamilySet.has(family))errors.push(`GAMEPLAY_SKETCH.styleWorldDepth.styleDnaSources invalid family: ${family}`);
+  }
 
 function validateMarketNumericClaims(summary, errors) {
   if (!summary || typeof summary !== 'object' || Array.isArray(summary)) return;
