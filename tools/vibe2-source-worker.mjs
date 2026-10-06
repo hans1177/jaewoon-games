@@ -98,6 +98,7 @@ const JSON_CONTEXT_WINDOW=16384;
 const JSON_FINAL_CONTEXT_WINDOW=16384;
 const JSON_FOCUSED_REPLACE_CONTEXT_WINDOW=8192;
 const FULL_WEB_CONTEXT_WINDOW=32768;
+const QUALITY_MODEL_CONTEXT_WINDOW=32768;
 export function sourcePromptContextWindow(prompt='',{baseContextWindow=JSON_CONTEXT_WINDOW,maxPredict=DEFAULT_MAX_PREDICT}={}){
   const base=Math.max(8192,Number(baseContextWindow)||JSON_CONTEXT_WINDOW);
   const estimatedPromptTokens=Math.ceil(Buffer.byteLength(String(prompt??''),'utf8')/3);
@@ -4550,7 +4551,10 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
       attemptPrompt+='\n'+retryBlock;
       if(retry&&retryBlock!==block)console.log(`VIBE2_RETRY_OBSERVATION_COMPACTED=${label}:${Buffer.byteLength(block,'utf8')}->${Buffer.byteLength(retryBlock,'utf8')}`);
     }
-    const contextWindow=sourcePromptContextWindow(attemptPrompt,{baseContextWindow,maxPredict});
+    const qualityModel=/\b4b\b/i.test(clean(model));
+    const requestBaseContextWindow=qualityModel?Math.max(baseContextWindow,QUALITY_MODEL_CONTEXT_WINDOW):baseContextWindow;
+    const contextWindow=sourcePromptContextWindow(attemptPrompt,{baseContextWindow:requestBaseContextWindow,maxPredict});
+    if(qualityModel)console.log(`VIBE2_QUALITY_MODEL_CONTEXT_PINNED=${model}:${contextWindow}`);
     const fake=responseFileForAttempt(responseFile,responseFiles,attempt);
     const attemptPromptBytes=Buffer.byteLength(attemptPrompt,'utf8');
     const firstOutputTimeoutMs=assetDevelopmentLane&&target==='web'?ASSET_DEVELOPMENT_WEB_TIMEOUT_MS:MODEL_FIRST_OUTPUT_TIMEOUT_MS;
