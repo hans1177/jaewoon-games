@@ -70,17 +70,17 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-06T07:35:48.858Z",
-      "robloxSourceCommit": "0e0e007e8fe66f32d3e626e4404671797da0a010",
-      "robloxSourceBootstrapPassedAt": "2026-10-06T07:25:04.956Z",
+      "updatedAt": "2026-10-06T08:05:44.470Z",
+      "robloxSourceCommit": "e99445dc7f128a253c474fc0a394afa72517dd32",
+      "robloxSourceBootstrapPassedAt": "2026-10-06T08:05:44.470Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": "0e0e007e8fe66f32d3e626e4404671797da0a010",
+      "robloxBuildSourceRevision": null,
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
-      "robloxBuildFailedAt": "2026-10-06T07:35:48.858Z",
+      "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -123,9 +123,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "roblox-package-asset-binding-failed",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
       "routingBlockers": [
-        "roblox-build-package:roblox-package-asset-binding-failed"
+        "roblox-build-package-revalidation-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -138,7 +138,7 @@
       "strictDesignReviewRefreshRequired": true,
       "ownerPreservationPresentationUpgrade": false,
       "presentationFirstPass": null,
-      "robloxExactRevisionPassed": true,
+      "robloxExactRevisionPassed": false,
       "robloxValidationTarget": {
         "version": 3,
         "gameId": "amusement-tycoon",
@@ -1488,9 +1488,9 @@
       "robloxFastMvpPublished": false,
       "robloxFastMvpPublishedAt": null,
       "robloxEvidenceInvalidatedBySourceChange": {
-        "previousSourceRevision": "73e6ae68d20e0120cb2fcda36ea602a62b483bb6",
-        "newSourceRevision": "73e6ae68d20e0120cb2fcda36ea602a62b483bb6",
-        "invalidatedAt": "2026-10-03T16:07:00.751Z"
+        "previousSourceRevision": "0e0e007e8fe66f32d3e626e4404671797da0a010",
+        "newSourceRevision": "e99445dc7f128a253c474fc0a394afa72517dd32",
+        "invalidatedAt": "2026-10-06T08:05:44.470Z"
       },
       "robloxValidationPublishRepairRequired": true,
       "robloxValidationPublishRepairAt": "2026-10-05T06:27:46.592Z"
@@ -48866,7 +48866,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-06T08:00:10.546Z",
+  "updatedAt": "2026-10-06T08:05:44.470Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
