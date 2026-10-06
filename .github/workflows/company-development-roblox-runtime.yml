@@ -265,7 +265,7 @@ jobs:
             --playbooks=/tmp/vibe3-task-playbooks.json \
             --results=/tmp/roblox-source-reconciliation.json
 
-      - name: Dispatch verified learning sweep per game when reconciliation finds refresh debt
+      - name: Dispatch one verified learning sweep batch when reconciliation finds refresh debt
         if: steps.freshness.outputs.run == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -289,17 +289,16 @@ jobs:
             exit 0
           fi
 
-          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-roblox-verified-learning-sweep.yml/runs?per_page=100" > /tmp/roblox-learning-sweep-runs.json
+          game_ids="$(paste -sd, /tmp/roblox-learning-rebind-ids)"
+          scope_hash="$(printf '%s' "$game_ids" | sha256sum | awk '{print substr($1,1,16)}')"
+          scope_key="batch-$scope_hash"
           current_main="$(git rev-parse origin/main)"
-          dispatched=0
-          deduped=0
-          while IFS= read -r game_id; do
-            [ -n "$game_id" ] || continue
-            active="$(GAME_ID="$game_id" CURRENT_MAIN="$current_main" node - <<'NODE'
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-roblox-verified-learning-sweep.yml/runs?per_page=100" > /tmp/roblox-learning-sweep-runs.json
+          active="$(SCOPE_KEY="$scope_key" CURRENT_MAIN="$current_main" node - <<'NODE'
           const fs=require('fs');
           const payload=JSON.parse(fs.readFileSync('/tmp/roblox-learning-sweep-runs.json','utf8'));
-          const states=new Set(['queued','pending','in_progress','requested']);
-          const title='Roblox verified learning sweep · '+String(process.env.GAME_ID||'');
+          const states=new Set(['queued','pending','in_progress','requested','waiting']);
+          const title='Roblox verified learning sweep · '+String(process.env.SCOPE_KEY||'');
           const currentMain=String(process.env.CURRENT_MAIN||'');
           const found=(payload.workflow_runs||[]).some(run=>
             states.has(String(run.status||'').toLowerCase())
@@ -308,18 +307,24 @@ jobs:
           );
           process.stdout.write(found?'yes':'no');
           NODE
-            )"
-            if [ "$active" = 'yes' ]; then
-              deduped=$((deduped+1))
-              echo "ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH=DEDUPED:$game_id:$current_main"
-              continue
-            fi
-            gh workflow run company-roblox-verified-learning-sweep.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$game_id"
-            dispatched=$((dispatched+1))
-            echo "ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH=YES:$game_id:$current_main"
-          done < /tmp/roblox-learning-rebind-ids
-          echo "ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH_COUNT=$dispatched"
-          echo "ROBLOX_VERIFIED_LEARNING_SWEEP_DEDUPED_COUNT=$deduped"
+          )"
+          echo "ROBLOX_VERIFIED_LEARNING_SWEEP_BATCH_SIZE=$learning_debt"
+          echo "ROBLOX_VERIFIED_LEARNING_SWEEP_BATCH_SCOPE=$scope_key"
+          if [ "$active" = 'yes' ]; then
+            echo "ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH=DEDUPED_BATCH:$scope_key:$current_main"
+            echo 'ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH_COUNT=0'
+            echo "ROBLOX_VERIFIED_LEARNING_SWEEP_DEDUPED_COUNT=$learning_debt"
+            exit 0
+          fi
+
+          gh workflow run company-roblox-verified-learning-sweep.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref main \
+            -f game_ids="$game_ids" \
+            -f scope_key="$scope_key"
+          echo "ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH=YES_BATCH:$scope_key:$current_main:$game_ids"
+          echo 'ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH_COUNT=1'
+          echo 'ROBLOX_VERIFIED_LEARNING_SWEEP_DEDUPED_COUNT=0'
 
       - name: Resolve next Roblox source execution slice from unbounded native queue
         if: steps.freshness.outputs.run == 'true'
