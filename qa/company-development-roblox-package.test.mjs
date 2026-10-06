@@ -469,3 +469,17 @@ test('Roblox product repair emits one batch fan-in wake instead of one wake per 
   assert.doesNotMatch(block,/source_task:\$game/);
 });
 
+
+
+test('Roblox package asset repair stays on GAME_PRIMARY and does not re-enable presentation micro-fanin',()=>{
+  const planner=fs.readFileSync(new URL('../tools/vibe2-auto-planner.mjs',import.meta.url),'utf8');
+  const start=planner.indexOf('function bindSharedBuildUpDirective(taskInput,directive)');
+  const end=planner.indexOf('\nfunction hasCurrentAutonomousContentExpansionDirective',start);
+  assert.ok(start>=0&&end>start);
+  const block=planner.slice(start,end);
+  assert.match(block,/packageAssetSourceRepair/);
+  assert.match(block,/assetProductionLane:packageAssetSourceRepair\?false/);
+  assert.match(block,/roblox-package-asset-source-repair-lane:GAME_PRIMARY/);
+  assert.match(block,/roblox-package-asset-repair-authority:GAME_SOURCE_BINDINGS_ONLY/);
+  assert.match(block,/presentationFocus&&!packageAssetSourceRepair/);
+});
