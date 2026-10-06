@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-y2qfwe",
+      "worker": "vibe2",
+      "taskId": "fantasy-survival-existing-web-assessment-v1",
+      "gameId": "fantasy-survival",
+      "files": [
+        "web-games/fantasy-survival/index.html"
+      ],
+      "baseSha": "840218ca884d1f47bd815cdcc5af4808037ff2ac",
+      "runId": "37427978414",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-06T07:14:34.697Z",
+      "expiresAt": "2026-10-06T07:59:34.697Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:fantasy-survival-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
