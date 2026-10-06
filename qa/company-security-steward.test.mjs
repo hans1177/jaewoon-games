@@ -473,12 +473,15 @@ test('specialized verification security allows only final fan-in to mint canonic
 });
 
 
-test('security workflow keeps patch scanning always-on but runs full contract QA only for security-authority changes',()=>{
+test('security workflow scans changed candidates without scheduled duplicate replay',()=>{
   assert.match(securityWorkflow,/Resolve impact-scoped security contract work/);
   assert.match(securityWorkflow,/SECURITY_PATCH_SCAN_ALWAYS=YES/);
   assert.match(securityWorkflow,/contract_changed=NO/);
   assert.match(securityWorkflow,/if: \$\{\{ steps\.scope\.outputs\.contract_changed == 'YES' \}\}/);
   assert.match(securityWorkflow,/Verify immune-system contracts only when security authority changed/);
   assert.match(securityWorkflow,/Scan changed attack surface/);
+  assert.match(securityWorkflow,/workflow_dispatch:/);
+  assert.doesNotMatch(securityWorkflow,/\n  schedule:\n/);
+  assert.doesNotMatch(securityWorkflow,/cron: '13 3 \* \* \*'/);
   assert.doesNotMatch(securityWorkflow,/name: Verify immune-system contracts\n\s+run:/);
 });
