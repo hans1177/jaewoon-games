@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import {validateGameSeed,GAMEPLAY_COMPOSITION_MECHANIC_FAMILIES,GAMEPLAY_NARRATIVE_DNA_FAMILIES,GAMEPLAY_NARRATIVE_RIGHTS_MODES} from './company-game-seed-contract.mjs';
+import {validateGameSeed,GAMEPLAY_COMPOSITION_MECHANIC_FAMILIES,GAMEPLAY_NARRATIVE_DNA_FAMILIES,GAMEPLAY_NARRATIVE_RIGHTS_MODES,GAMEPLAY_STYLE_DNA_FAMILIES} from './company-game-seed-contract.mjs';
 import {normalizeSeedState,SEED_MATERIAL_POOL_TARGET,SEED_MATERIAL_SOURCE_FAMILIES} from './game-seed-state.mjs';
 import {categorySeedProfile,loadPlatformProfiles,normalizeSeedPlatform} from './game-seed-platform-profile.mjs';
 import {evaluateGameFlowArchitecture} from './company-vibe2-game-flow-architect.mjs';
@@ -247,6 +247,50 @@ function v2GameplaySketchFailures(sketch){
     const protectedWorkCopy=/고유 (?:인물|캐릭터|명칭|대사|장면)|직접 복제|copy (?:character|world|dialogue|scene)/i;
     const abstractTransform=/추상|구조|기법|재해석|변형|original|abstract|reinterpret|transform|공공영역|historical/i;
     if(protectedWorkCopy.test(rightsText)&&!abstractTransform.test(rightsText))out.push('v3-protected-expression-copy-risk');
+    const style=sketch?.styleWorldDepth||{};
+    const styleFamilies=uniq(style.styleDnaSources);
+    const regional=uniq(style.regionalStyleVariation);
+    const readability=uniq(style.gameplayReadabilityLinks);
+    const expansionHooks=uniq(style.styleExpansionHooks);
+    const artRights=uniq(style.artRightsRules);
+    if(clean(style.styleFusion).length<30)out.push('v3-style-fusion-too-shallow');
+    if(styleFamilies.length<2)out.push(`v3-style-dna-families=${styleFamilies.length}/2`);
+    if(clean(style.architectureSettlement).length<30)out.push('v3-architecture-settlement-too-shallow');
+    if(clean(style.environmentBiomes).length<30)out.push('v3-environment-biomes-too-shallow');
+    if(clean(style.materialPropLanguage).length<30)out.push('v3-material-prop-language-too-shallow');
+    if(clean(style.characterCostumeSilhouette).length<30)out.push('v3-character-costume-silhouette-too-shallow');
+    if(clean(style.paletteLightingWeather).length<30)out.push('v3-palette-lighting-weather-too-shallow');
+    if(clean(style.backgroundStorytelling).length<30)out.push('v3-background-storytelling-too-shallow');
+    if(regional.length<3)out.push(`v3-regional-style-variation=${regional.length}/3`);
+    if(readability.length<3)out.push(`v3-style-gameplay-readability=${readability.length}/3`);
+    if(expansionHooks.length<2)out.push(`v3-style-expansion-hooks=${expansionHooks.length}/2`);
+    if(artRights.length<3)out.push(`v3-art-rights-rules=${artRights.length}/3`);
+    if(style.assetLibraryExpansionRequired===true)out.push('v3-asset-library-expansion-must-remain-optional');
+
+    const allowedStyleFamilies=new Set(GAMEPLAY_STYLE_DNA_FAMILIES);
+    for(const family of styleFamilies)if(!allowedStyleFamilies.has(family))out.push(`v3-invalid-style-family=${family}`);
+
+    const styleText=[clean(style.styleFusion),clean(style.architectureSettlement),clean(style.environmentBiomes),clean(style.materialPropLanguage),clean(style.characterCostumeSilhouette),clean(style.paletteLightingWeather),clean(style.backgroundStorytelling),...regional,...readability].join(' ');
+    const styleGroups=[
+      [/건축|도시|마을|정착|요새|광장|시장|도로|architecture|city|village|settlement|fortress|market|road/i],
+      [/지형|기후|식생|수계|폐허|산업|terrain|climate|vegetation|water|ruin|industry/i],
+      [/의상|실루엣|장비|직업|세력|계급|costume|silhouette|equipment|role|faction|class/i],
+      [/재질|소품|표면|생활|상업|군사|material|prop|surface|commercial|military/i],
+      [/팔레트|조명|날씨|시간|위험|전조|palette|light|weather|time|danger|telegraph/i],
+      [/배경|환경 이야기|과거|역사|사건|background|environmental story|history|event/i]
+    ];
+    const styleCoverage=semanticGroupCoverage(styleText,styleGroups);
+    if(styleCoverage<4)out.push(`v3-style-world-semantic-coverage=${styleCoverage}/4`);
+
+    const readabilityText=readability.join(' ');
+    const readabilityGroups=[
+      [/길찾|랜드마크|wayfind|landmark|route|경로/i],
+      [/위험|전조|danger|telegraph|threat/i],
+      [/상호작용|역할|interaction|role|npc|적|enemy/i],
+      [/세력|지역 상태|faction|region state|world state/i]
+    ];
+    const readabilityCoverage=semanticGroupCoverage(readabilityText,readabilityGroups);
+    if(readabilityCoverage<3)out.push(`v3-style-readability-semantic-coverage=${readabilityCoverage}/3`);
 
   }
   return out;
