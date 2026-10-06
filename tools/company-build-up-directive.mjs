@@ -15,7 +15,7 @@ const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file
 
 export const BUILD_UP_DOMAINS=Object.freeze([
   'CORE_FUN','COMBAT_OR_PRIMARY_INTERACTION','PLAYER_ACTIONS','PLAYER_AGENCY','ANTI_GRIND','ENEMY_AI','BOSS_AND_SIGNATURE_MOMENTS',
-  'PROGRESSION','GOALS','REWARDS','UNLOCKS','QUESTS','CONTENT_VARIETY','CONTENT_DENSITY','CONTENT_DISCOVERY','MID_LATE_GAME_DEPTH','SUBSYSTEM_BREADTH','SYSTEM_FUSION_DEPTH','MECHANIC_VARIETY','LEGACY_CONTENT_REVISIT',
+  'PROGRESSION','GOALS','REWARDS','UNLOCKS','QUESTS','CONTENT_VARIETY','CONTENT_DENSITY','CONTENT_DISCOVERY','MID_LATE_GAME_DEPTH','SUBSYSTEM_BREADTH','SYSTEM_FUSION_DEPTH','MECHANIC_VARIETY','LEGACY_CONTENT_REVISIT','WORLD_BUILDING_FUSION','DIALOGUE_JOURNAL_CONTINUITY','PLACE_NAME_CONTINUITY','OPPOSITION_WORLD_CAUSALITY','LIBRARY_LINKAGE',
   'WORLD_MAP_TOPOLOGY','MAP_EXPANSION','REGIONS','WORLD_DENSITY','WORLD_NAVIGATION','LANDMARKS','TRAVERSAL','INTERACTION_DISCOVERABILITY',
   'ECONOMY','INVENTORY','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','CRAFTING','SYSTEM_CONNECTION',
   'SESSION_FLOW','FIRST_10_MINUTES','FAILURE_RESPAWN_CHECKPOINTS','SAVE_AND_RECOVERY','SAVE_COMPLETENESS','RECONNECT_RECOVERY','MULTIPLAYER_AND_SYNC',
@@ -31,7 +31,7 @@ export const HOLISTIC_CORE_DOMAINS=Object.freeze([
   'CORE_FUN','PLAYER_ACTIONS','PLAYER_AGENCY','PROGRESSION','CONTENT_VARIETY','CONTENT_DENSITY',
   'WORLD_MAP_TOPOLOGY','MAP_EXPANSION','REGIONS','WORLD_DENSITY','WORLD_NAVIGATION','INTERACTION_DISCOVERABILITY',
   'INVENTORY','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','SYSTEM_CONNECTION',
-  'SESSION_FLOW','FIRST_10_MINUTES','MID_LATE_GAME_DEPTH','SUBSYSTEM_BREADTH','SYSTEM_FUSION_DEPTH','MECHANIC_VARIETY','LEGACY_CONTENT_REVISIT','SAVE_COMPLETENESS',
+  'SESSION_FLOW','FIRST_10_MINUTES','MID_LATE_GAME_DEPTH','SUBSYSTEM_BREADTH','SYSTEM_FUSION_DEPTH','MECHANIC_VARIETY','LEGACY_CONTENT_REVISIT','WORLD_BUILDING_FUSION','DIALOGUE_JOURNAL_CONTINUITY','PLACE_NAME_CONTINUITY','OPPOSITION_WORLD_CAUSALITY','LIBRARY_LINKAGE','SAVE_COMPLETENESS',
   'INPUT','MOBILE_UX','SETTINGS_ACCESSIBILITY','MENU_FLOW','CONVENIENCE','UI_DESIGN_SYSTEM','UI_INFORMATION_PRIORITY','FEEDBACK_CLARITY',
   'ANTI_GRIND','CONTENT_DISCOVERY','PERFORMANCE_BUDGET','RUNTIME_STABILITY'
 ]);
@@ -200,6 +200,17 @@ export const PLATFORM_EXPERIENCE_PROFILES=Object.freeze({
     mobileRuntimeEvidenceRequired:true
   })
 });
+
+const CANONICAL_LIBRARY_SPECS=Object.freeze([
+  Object.freeze({family:'INTERNAL_ASSET_LIBRARY',paths:Object.freeze(['company-asset-library.json'])}),
+  Object.freeze({family:'VERIFIED_LEARNING_LIBRARY',paths:Object.freeze(['company-learning/vibe3-memory-index.json','company-learning/canonical-learning-pipeline.json'])}),
+  Object.freeze({family:'CODE_PATTERN_LIBRARY',paths:Object.freeze(['company-learning/vibe2-code-pattern-library.json'])}),
+  Object.freeze({family:'GAME_SEED_MATERIAL_LIBRARY',paths:Object.freeze(['game-seed-state.json'])}),
+  Object.freeze({family:'DESIGN_BASELINE_LIBRARY',paths:Object.freeze([])}),
+  Object.freeze({family:'GAME_CATALOG_LIBRARY',paths:Object.freeze(['game-catalog.json'])}),
+  Object.freeze({family:'LICENSED_REFERENCE_LIBRARY',paths:Object.freeze(['tools/vibe2-licensed-reference-samples.mjs','company-learning/external-game-design-principles.json'])}),
+  Object.freeze({family:'OPEN_SOURCE_REFERENCE_CATALOG',paths:Object.freeze(['company-learning/rpg-open-source-catalog.json'])})
+]);
 
 const AUTONOMOUS_CONTENT_EXPANSION_POLICY_PATH='company-learning/vibe-autonomous-content-expansion-policy.json';
 const AUTONOMOUS_CONTENT_EXPANSION_DEFAULT=Object.freeze({
@@ -451,7 +462,13 @@ export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
     collectionMeta:tokenCount(joined,/collection|catalog|codex|set.?bonus|merge|evol|relic|pet|summon|수집|도감|세트|합성|진화|유물|펫|소환/gi),
     companionParty:tokenCount(joined,/companion|party|ally|affinity|relationship|formation|동료|파티|호감|관계|진형/gi),
     explorationMechanic:tokenCount(joined,/explor|secret|ruin|treasure|discover|map.?unlock|탐험|비밀|유적|보물|발견|지도.?해금/gi),
-    craftBuild:tokenCount(joined,/craft|recipe|workbench|build|housing|farm|cook|fish|mine|제작|레시피|제작대|건축|하우징|농사|요리|낚시|채광/gi)
+    craftBuild:tokenCount(joined,/craft|recipe|workbench|build|housing|farm|cook|fish|mine|제작|레시피|제작대|건축|하우징|농사|요리|낚시|채광/gi),
+    dialogueWorld:tokenCount(joined,/dialogue|conversation|npc.?line|speech|대화|대사|말풍선|증언|소문/gi),
+    journalArchive:tokenCount(joined,/journal|record|letter|inscription|codex|lore|archive|저널|기록|편지|비문|도감|문서|아카이브/gi),
+    namingContinuity:tokenCount(joined,/place.?name|region.?name|location.?name|signpost|map.?label|지명|지역명|장소명|표지판|지도.?이름/gi),
+    oppositionLore:tokenCount(joined,/monster.*(?:region|habitat|lore|faction)|enemy.*(?:region|lore|faction)|opponent.*(?:world|history)|몬스터.*(?:지역|서식|역사|세력)|적.*(?:지역|역사|세력)|상대.*(?:세계|기원)/gi),
+    worldCausality:tokenCount(joined,/world.?state|faction.?state|region.?state|quest.*dialogue|journal.*quest|lore.*unlock|history.*region|place.*journal|세계.*상태|세력.*상태|지역.*상태|퀘스트.*대화|저널.*퀘스트|역사.*지역|지명.*기록/gi),
+    libraryReference:tokenCount(joined,/company-asset-library|vibe2-code-pattern-library|game-seed-state|rpg-open-source-catalog|licensed.?reference|internal.?asset|library.?selection|라이브러리|자산.?선택/gi)
   };
   signals.mechanicFamilyCount=[
     'classicCard','boardMechanic','arcadeMechanic','socialEconomy','collectionMeta','companionParty','explorationMechanic','craftBuild'
@@ -494,7 +511,11 @@ export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
       signals.todo>0?'EXPLICIT_TODO_OR_NOT_IMPLEMENTED_PRESENT':null,
       signals.fusion<3?'SYSTEM_FUSION_DEPTH_SPARSE':null,
       signals.mechanicFamilyCount<3?'MECHANIC_VARIETY_SPARSE':null,
-      signals.revisit<2?'LEGACY_CONTENT_REVISIT_SPARSE':null
+      signals.revisit<2?'LEGACY_CONTENT_REVISIT_SPARSE':null,
+      signals.worldCausality<3?'WORLD_CAUSALITY_SPARSE':null,
+      signals.dialogueWorld<2||signals.journalArchive<2?'DIALOGUE_JOURNAL_CONTINUITY_SPARSE':null,
+      signals.namingContinuity<2?'PLACE_NAME_CONTINUITY_SPARSE':null,
+      signals.oppositionLore<2?'OPPOSITION_WORLD_CAUSALITY_SPARSE':null
     ])
   });
 }
