@@ -58,7 +58,6 @@ local STUDIO_ASSET_FAMILY_STATUS = {
   PROP = "NOT_APPLICABLE",
 }
 -- STUDIO_ASSET_BINDING_CLIENT_END
-
 local remote = ReplicatedStorage:WaitForChild(Config.RemoteName)
 
 local gui = Instance.new("ScreenGui")
