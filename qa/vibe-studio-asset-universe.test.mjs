@@ -106,7 +106,7 @@ import {
   createStudioAssetUniversePlan
 } from '../assets/vibe-studio-asset-universe.js';
 import {createVibeCharacterPersona,resolveVibeCharacterBehaviorIntent,createVibePopulationPersonaDiversity,VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,createVibeCharacterCustomizationRecipe,createVibeNpcCustomizationPopulation} from '../assets/vibe-character-identity-director.js';
-import {synchronizeCompanyCommonAssetRegistry,buildVibeAssetProductionPlan} from '../tools/vibe2-asset-production-plan.mjs';
+import {synchronizeCompanyCommonAssetRegistry,synchronizeSourceBoundAssetConsumers,buildVibeAssetProductionPlan} from '../tools/vibe2-asset-production-plan.mjs';
 
 const fullQualityEvidence=Object.freeze({
   SILHOUETTE_FORM:100,
@@ -4726,4 +4726,50 @@ test('current-consumer RPG menu is byte-identical with the reusable source and r
   assert.equal(quality.runtimeVerificationState,'PENDING_STUDIO');
   assert.equal(quality.sourceAudit.evidenceBasis.currentConsumerCanonicalParity,true);
   assert.equal(quality.sourceAudit.claim,'SOURCE_AUTHORING_INTERNAL_ASSET_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS');
+});
+
+
+test('source-bound consumer sync maps project paths exact asset ids and managed StudioAssets without runtime promotion',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-consumer-sync-'));
+  try{
+    fs.mkdirSync(path.join(root,'roblox-games','horror-demo','client'),{recursive:true});
+    fs.mkdirSync(path.join(root,'assets','roblox','world-ghosts'),{recursive:true});
+    fs.mkdirSync(path.join(root,'assets','roblox','common-motion-v1'),{recursive:true});
+    fs.writeFileSync(path.join(root,'assets','roblox','world-ghosts','GhostSkinFactory.luau'),'return {}');
+    fs.writeFileSync(path.join(root,'assets','roblox','common-motion-v1','RobloxCommonMotion.luau'),'return {}');
+    fs.writeFileSync(path.join(root,'roblox-games','horror-demo','default.project.json'),JSON.stringify({
+      tree:{ReplicatedStorage:{WorldGhostSkins:{GhostSkinFactory:{$path:'../../assets/roblox/world-ghosts/GhostSkinFactory.luau'}}}}
+    }));
+    fs.writeFileSync(path.join(root,'roblox-games','horror-demo','client','Game.client.luau'),[
+      'local internalGhostSkinByCatalogId={YUREI="yurei"}',
+      'local STUDIO_ASSET_BINDING_VERSION = 2',
+      'local StudioAssets = { Families = { MOTION = { "WALK" } } }',
+      '-- STUDIO_ASSET_BINDING_END'
+    ].join('\n'));
+    fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify({games:[{
+      id:'horror-demo',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',
+      robloxProjectPath:'roblox-games/horror-demo'
+    }]}));
+    const registry={version:1,assets:[
+      {id:'roblox-world-ghost-skins-v1',packId:'roblox-world-ghost-skins-v1',family:'CREATURE',sourceFiles:['assets/roblox/world-ghosts/GhostSkinFactory.luau'],license:'project-original',consumerGameIds:[]},
+      {id:'roblox-world-ghost-yurei',packId:'roblox-world-ghost-skins-v1',family:'CREATURE',skinId:'yurei',sourceFiles:['assets/roblox/world-ghosts/GhostSkinFactory.luau'],license:'project-original',consumerGameIds:[]},
+      {id:'roblox-world-ghost-unused',packId:'roblox-world-ghost-skins-v1',family:'CREATURE',skinId:'unused',sourceFiles:['assets/roblox/world-ghosts/GhostSkinFactory.luau'],license:'project-original',consumerGameIds:[]},
+      {id:'roblox-common-motion-v1',packId:'roblox-common-motion-v1',family:'MOTION',sourceFiles:['assets/roblox/common-motion-v1/RobloxCommonMotion.luau'],license:'project-original',consumerGameIds:[]},
+      {id:'roblox-common-motion-walk',packId:'roblox-common-motion-v1',family:'MOTION',atomId:'WALK',bindingHint:{configCollection:'StudioAssets.Families.MOTION'},license:'project-original',consumerGameIds:['manual-game']}
+    ]};
+    const result=synchronizeSourceBoundAssetConsumers({repoRoot:root,registry,useCache:false});
+    const byId=new Map(result.registry.assets.map(row=>[row.id,row]));
+    assert.deepEqual(byId.get('roblox-world-ghost-skins-v1').sourceBoundConsumerGameIds,['horror-demo']);
+    assert.deepEqual(byId.get('roblox-world-ghost-yurei').sourceBoundConsumerGameIds,['horror-demo']);
+    assert.equal(byId.get('roblox-world-ghost-unused').sourceBoundConsumerGameIds,undefined);
+    assert.deepEqual(byId.get('roblox-common-motion-walk').sourceBoundConsumerGameIds,['horror-demo']);
+    assert.deepEqual(byId.get('roblox-common-motion-walk').consumerGameIds,['manual-game']);
+    assert.equal(byId.get('roblox-common-motion-walk').productionVerified,undefined);
+    assert.equal(result.summary.sourceOnlyDoesNotGrantRuntimeVerification,true);
+    assert.equal(result.summary.newQueueCreated,false);
+    assert.equal(result.summary.newSchedulerCreated,false);
+    assert.ok(result.summary.boundAssetCount>=3);
+    assert.ok(result.bindings.some(row=>row.assetId==='roblox-world-ghost-yurei'&&row.mode==='PACK_PATH_AND_IDENTITY'));
+    assert.ok(result.bindings.some(row=>row.assetId==='roblox-common-motion-walk'&&row.mode==='MANAGED_LIBRARY_IDENTITY'));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
