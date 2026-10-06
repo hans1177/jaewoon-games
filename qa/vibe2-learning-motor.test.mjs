@@ -223,20 +223,24 @@ test('same asset and same motion verified experience has highest retrieval prior
   assert.match(learningGuidance(ctx),/exact-asset\+motion/);
 });
 
-test('seeded advanced graphics knowledge is retrieved for aesthetics rig materials vfx and camera work',()=>{
+test('seeded advanced graphics knowledge is retrieved by its matching visual responsibility',()=>{
   const distilled=JSON.parse(fs.readFileSync('.vibe2/external-ai-distilled-knowledge.json','utf8'));
-  const ctx=retrieveUnifiedLearning({
-    task:{gameId:'graphics-demo',target:'roblox',taskType:'graphics',
-      goal:'improve silhouette visual identity materials lighting rig joints walk animation secondary motion vfx camera performance'},
-    experienceInput:{records:[]},codePatternsInput:{patterns:[]},playbooksInput:{taskTypes:{}},
-    practiceDistilledInput:{entries:[]},externalAiDistilledInput:distilled,masteryInput:{}
-  });
-  const ids=ctx.externalAiDistilled.map(row=>row.id);
-  assert.ok(ids.includes('external-ai-distilled:openai-visual-aesthetic-v1'));
-  assert.ok(ids.includes('external-ai-distilled:openai-rig-joint-motion-v1'));
-  assert.ok(ids.includes('external-ai-distilled:openai-material-lighting-v1'));
-  assert.ok(ids.includes('external-ai-distilled:openai-vfx-camera-readability-v1'));
-  assert.equal(ctx.externalAiDistilled.every(row=>row.state!=='RETIRED'),true);
+  const cases=[
+    ['external-ai-distilled:openai-visual-aesthetic-v1','silhouette visual identity shape language composition palette focal contrast mobile readability'],
+    ['external-ai-distilled:openai-rig-joint-motion-v1','rig joints skin weights locomotion contact secondary motion attack settle animation'],
+    ['external-ai-distilled:openai-material-lighting-v1','material roughness normals lighting color script texture wear uv shading'],
+    ['external-ai-distilled:openai-vfx-camera-readability-v1','vfx camera hit feedback particles trails shake mobile performance readability']
+  ];
+  for(const [id,goal] of cases){
+    const ctx=retrieveUnifiedLearning({
+      task:{gameId:'graphics-demo',target:'roblox',taskType:'graphics',goal},
+      experienceInput:{records:[]},codePatternsInput:{patterns:[]},playbooksInput:{taskTypes:{}},
+      practiceDistilledInput:{entries:[]},externalAiDistilledInput:distilled,masteryInput:{}
+    });
+    assert.ok(ctx.externalAiDistilled.some(row=>row.id===id),id);
+    assert.ok(ctx.exactKnowledgeIds.includes('EXTERNAL_AI_DISTILLED:'+id),id);
+    assert.equal(ctx.externalAiDistilled.every(row=>row.state!=='RETIRED'),true);
+  }
 });
 
 test('verified commercial playbook reuse is fully injected and traceable for game development',()=>{
