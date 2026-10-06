@@ -341,6 +341,67 @@ root.Size = UDim2.new(1, -24, 0, 360)
 root.BackgroundTransparency = 0.15
 root.BackgroundColor3 = Color3.fromRGB(18, 28, 48)
 root.Parent = gui
+
+-- 선택된 내부 자산 family를 기존 성채 방어 월드의 실제 Roblox 표현에 연결한다.
+task.defer(function()
+  local world = workspace:FindFirstChild("CelestialBastionWorld") or workspace:WaitForChild("CelestialBastionWorld", 5)
+  if not world then return end
+
+  if #studioAssetFamily("CREATURE") > 0 then
+    local creatureAtom = studioAssetFamily("CREATURE")[1] or ""
+    local function applyCreaturePresentation(instance)
+      if not instance:IsA("Model") or not instance.Name:find("DarkLegion_", 1, true) then return end
+      local body = instance:FindFirstChild("Body")
+      if body and body:IsA("BasePart") then
+        body:SetAttribute("StudioCreatureAtom", creatureAtom)
+        body.Material = creatureAtom:find("CRYSTAL", 1, true) and Enum.Material.Glass or Enum.Material.Slate
+      end
+    end
+    for _, descendant in ipairs(world:GetDescendants()) do applyCreaturePresentation(descendant) end
+    world.DescendantAdded:Connect(applyCreaturePresentation)
+  end
+
+  if #studioAssetFamily("BUILDING") > 0 then
+    local beacon = world:FindFirstChild("BastionBeacon")
+    if beacon and beacon:IsA("BasePart") and not world:FindFirstChild("StudioBastionTrim") then
+      local trim = Instance.new("Part")
+      trim.Name = "StudioBastionTrim"
+      trim.Size = Vector3.new(math.max(2, beacon.Size.X + 2), 0.45, math.max(2, beacon.Size.Z + 2))
+      trim.Position = beacon.Position + Vector3.new(0, -beacon.Size.Y * 0.45, 0)
+      trim.Anchored = true
+      trim.CanCollide = false
+      trim.Material = Enum.Material.Metal
+      trim.Color = Color3.fromRGB(174, 188, 224)
+      trim:SetAttribute("StudioBuildingAtom", studioAssetFamily("BUILDING")[1] or "")
+      trim.Parent = world
+    end
+  end
+
+  if #studioAssetFamily("ENVIRONMENT") > 0 then
+    local Lighting = game:GetService("Lighting")
+    local atmosphere = Lighting:FindFirstChild("StudioCelestialAtmosphere")
+    if not atmosphere then
+      atmosphere = Instance.new("Atmosphere")
+      atmosphere.Name = "StudioCelestialAtmosphere"
+      atmosphere.Parent = Lighting
+    end
+    atmosphere.Color = Color3.fromRGB(178, 191, 230)
+    atmosphere.Decay = Color3.fromRGB(92, 78, 126)
+    atmosphere.Density = 0.2
+    atmosphere:SetAttribute("StudioEnvironmentAtom", studioAssetFamily("ENVIRONMENT")[1] or "")
+  end
+
+  if #studioAssetFamily("MATERIAL") > 0 then
+    local materialAtom = studioAssetFamily("MATERIAL")[1] or ""
+    for _, descendant in ipairs(world:GetDescendants()) do
+      if descendant:IsA("BasePart") and descendant.Name == "EnemyPath" then
+        descendant:SetAttribute("StudioMaterialAtom", materialAtom)
+        descendant.Material = materialAtom == "WOOD" and Enum.Material.WoodPlanks or Enum.Material.Cobblestone
+      end
+    end
+  end
+end)
+
 local title = Instance.new("TextLabel")
 title.Name = "Title"
 title.Size = UDim2.new(1, -20, 0, 44)
