@@ -8,6 +8,8 @@ on:
       - '.github/workflows/company-roblox-verified-learning-sweep.yml'
       - 'tools/company-roblox-verified-learning-sweep.mjs'
       - 'tools/company-development-roblox-bootstrap.mjs'
+      - 'tools/company-development-roblox-source-reconcile.mjs'
+      - 'qa/company-development-roblox-source-reconcile.test.mjs'
       - 'tools/vibe3-roblox-learning-context.mjs'
   workflow_dispatch:
     inputs:
