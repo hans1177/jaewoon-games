@@ -48,6 +48,7 @@ jobs:
           mkdir -p /tmp/vibe2-recovery-fast
           changed=0
           system_ai_queued=0
+          system_ai_runnable=0
           system_ai_recovery_dispatched=0
           primary_ai_collaboration_requested=0
           vibe_requeued=0
@@ -68,8 +69,103 @@ jobs:
             node tools/company-recovery-escalation.mjs --queue="$control/.vibe2/queue.json" --system-ai="$control/.vibe2/system-ai-queue.json" --recovery="$control/.vibe2/recovery-queue.json" | tee /tmp/vibe2-recovery-fast/escalation.log
             node tools/company-recovery-dispatch.mjs --route=all --queue="$control/.vibe2/queue.json" --system-ai="$control/.vibe2/system-ai-queue.json" --recovery="$control/.vibe2/recovery-queue.json" | tee /tmp/vibe2-recovery-fast/dispatch.log
 
-            system_ai_recovery_dispatched="$(grep -Ec '^RECOVERY_DISPATCH=.*:SYSTEM_AI:[1-9][0-9]*$' /tmp/vibe2-recovery-fast/dispatch.log || true)"
+            system_ai_recovery_dispatched="$(grep -Ec '^RECOVERY_DISPATCH=.*:SYSTEM_AI:[1-9][0-9]*
+            # 누적 대기 작업 수는 새 복구가 아니다. 이번 호출이 돌려보낸 작업만 즉시 예약한다.
+            vibe_requeued="$(awk -F= '$1 == "RECOVERY_GAME_REQUEUED_COUNT" { print $2 }' /tmp/vibe2-recovery-fast/dispatch.log)"
+            [[ "$vibe_requeued" =~ ^[0-9]+$ ]]
+
+            cd "$control"
+            git config user.name 'jaewoon-vibe2-recovery-fast'
+            git config user.email 'vibe2-recovery-fast@users.noreply.github.com'
+            git add .vibe2/queue.json .vibe2/system-ai-queue.json .vibe2/recovery-queue.json
+
+            if git diff --cached --quiet; then
+              echo 'VIBE2_RECOVERY_FAST_WRITE=NO'
+              changed=0
+              break
+            fi
+
+            git commit -m 'vibe2: fast recovery escalation and redispatch [skip ci]'
+            if git push origin HEAD:vibe2-unreal-core; then
+              changed=1
+              echo 'VIBE2_RECOVERY_FAST_WRITE=YES'
+              break
+            fi
+
+            sleep_for=$((attempt<5?attempt:5))
+            echo "VIBE2_RECOVERY_FAST_PUSH_RETRY=$attempt:$sleep_for"
+            cd "$GITHUB_WORKSPACE"
+            rm -rf /tmp/vibe2-recovery-control
+            sleep "$sleep_for"
+          done
+
+          cd "$GITHUB_WORKSPACE"
+          echo "changed=$changed" >> "$GITHUB_OUTPUT"
+          echo "system_ai_queued=$system_ai_queued" >> "$GITHUB_OUTPUT"
+          echo "system_ai_runnable=$system_ai_runnable" >> "$GITHUB_OUTPUT"
+          echo "system_ai_recovery_dispatched=$system_ai_recovery_dispatched" >> "$GITHUB_OUTPUT"
+          echo "primary_ai_collaboration_requested=$primary_ai_collaboration_requested" >> "$GITHUB_OUTPUT"
+          echo "vibe_requeued=$vibe_requeued" >> "$GITHUB_OUTPUT"
+          echo "VIBE2_RECOVERY_FAST_SYSTEM_AI_QUEUED=$system_ai_queued"
+          echo "VIBE2_RECOVERY_FAST_SYSTEM_AI_RUNNABLE=$system_ai_runnable"
+          echo "VIBE2_RECOVERY_FAST_SYSTEM_AI_NEW_RECOVERY_DISPATCH=$system_ai_recovery_dispatched"
+          echo "VIBE2_RECOVERY_FAST_PRIMARY_AI_COLLABORATION_REQUESTED=$primary_ai_collaboration_requested"
+          echo "VIBE2_RECOVERY_FAST_GAME_REQUEUED=$vibe_requeued"
+          if [ "$vibe_requeued" -gt 0 ]; then
+            echo 'VIBE2_RECOVERY_FAST_GAME_WORKER_DISPATCH=PENDING_CAUSAL_RETURN_TO_GAME_PRIMARY_ATOMIC_REFILL'
+          else
+            echo 'VIBE2_RECOVERY_FAST_GAME_WORKER_DISPATCH=SKIPPED_NO_NEW_GAME_RECOVERY'
+          fi
+
+      - name: Return recovered game work to GAME_PRIMARY immediately
+        if: steps.recovery.outputs.vibe_requeued != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'VIBE2_RECOVERY_FAST_PRODUCTION_PRESSURE_GATE=DISABLED_EXTERNAL_RUNNER_QUEUE_OWNS_CAPACITY'
+          payload='{"event_type":"vibe2-fanin-refill","client_payload":{"execution_lane":"game-primary","reason":"recovery-fast-causal-return"}}'
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
+            --data "$payload"
+          echo 'VIBE2_RECOVERY_FAST_GAME_WORKER_DISPATCH=GAME_PRIMARY_ATOMIC_REFILL'
+
+      - name: Dispatch supervised system-AI recovery immediately
+        if: steps.recovery.outputs.system_ai_recovery_dispatched != '0' || steps.recovery.outputs.system_ai_runnable != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          active_system_ai=0
+          if ! active_system_ai="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" --jq '[.workflow_runs[] | select(.path==".github/workflows/company-system-ai-workers.yml" and .event!="push" and (.status=="queued" or .status=="pending" or .status=="waiting" or .status=="requested" or .status=="in_progress"))] | length')"; then
+            echo 'VIBE2_RECOVERY_FAST_SYSTEM_AI_DISPATCH=SKIPPED_ACTIVE_OBSERVATION_FAILED'
+            exit 0
+          fi
+          if [ "${active_system_ai:-0}" != '0' ]; then
+            echo "VIBE2_RECOVERY_FAST_SYSTEM_AI_DISPATCH=SKIPPED_ACTIVE:${active_system_ai}"
+            exit 0
+          fi
+          curl --fail-with-body --silent --show-error --request POST --header 'Accept: application/vnd.github+json' --header "Authorization: Bearer $GH_TOKEN" --header 'X-GitHub-Api-Version: 2022-11-28' "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" --data '{"event_type":"company-system-ai-cycle"}'
+          echo 'VIBE2_RECOVERY_FAST_SYSTEM_AI_DISPATCH=RUNNABLE_BACKLOG_OR_NEW_RECOVERY'
+
+      - name: Upload fast recovery evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-recovery-fast-${{ github.run_id }}
+          path: /tmp/vibe2-recovery-fast
+          if-no-files-found: ignore
+          retention-days: 3
+ /tmp/vibe2-recovery-fast/dispatch.log || true)"
             system_ai_queued="$(node -e "const q=require(process.argv[1]);process.stdout.write(String((q.tasks||[]).filter(t=>String(t.status||'').toLowerCase()==='queued').length))" "$control/.vibe2/system-ai-queue.json")"
+            system_ai_runnable="$(node --input-type=module -e 'import fs from "node:fs";import {reserveSystemAiBatch,ownerExclusiveSystemAiGameIds} from "./tools/company-system-ai-queue.mjs";const q=JSON.parse(fs.readFileSync(process.argv[1],"utf8"));const roadmap=JSON.parse(fs.readFileSync("company-learning/platform-release-roadmap.json","utf8"));const probe=reserveSystemAiBatch(q,{max:1,reservationId:"recovery-fast-readonly-probe",excludedGameIds:ownerExclusiveSystemAiGameIds(roadmap)});process.stdout.write(String(probe.reserved.length));' "$control/.vibe2/system-ai-queue.json")"
+            [[ "$system_ai_runnable" =~ ^[0-9]+$ ]]
             primary_ai_collaboration_requested="$(node -e "const q=require(process.argv[1]);process.stdout.write(String((q.tasks||[]).filter(t=>(t.evidence||[]).includes('primary-ai-collaboration:REQUESTED')).length))" "$control/.vibe2/recovery-queue.json")"
             # 누적 대기 작업 수는 새 복구가 아니다. 이번 호출이 돌려보낸 작업만 즉시 예약한다.
             vibe_requeued="$(awk -F= '$1 == "RECOVERY_GAME_REQUEUED_COUNT" { print $2 }' /tmp/vibe2-recovery-fast/dispatch.log)"
