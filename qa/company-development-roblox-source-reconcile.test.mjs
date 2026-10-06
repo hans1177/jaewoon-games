@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
-import {applyRobloxStudioAssetBindingToExistingSource,applyVerifiedExternalLearningToExistingRobloxSource,compileRobloxSource,projectJsonForGame,robloxBuildProfileFromBaseline,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from '../tools/company-development-roblox-bootstrap.mjs';
+import {applyRobloxStudioAssetBindingToExistingSource,applyVerifiedExternalLearningToExistingRobloxSource,compileRobloxSource,projectJsonForGame,robloxBuildProfileFromBaseline,robloxStudioAssetDetectionSourceFromRoot,robloxStudioAssetFamilyStatusFromSource,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from '../tools/company-development-roblox-bootstrap.mjs';
 import {eligibleForRobloxSourceReconciliation,evaluateExistingRobloxSources,robloxPackageAssetRepairContext,hasVerifiedVibe2SourceHandoff,validateExistingRobloxSourceTree} from '../tools/company-development-roblox-source-reconcile.mjs';
 import {createRobloxVibe3LearningContext,verifiedExternalBlackBoxPlaybookContract} from '../tools/vibe3-roblox-learning-context.mjs';
 import {robloxDesignProfileFromBaseline} from '../tools/company-development-roblox-gameplay-product-readiness.mjs';
@@ -411,6 +411,27 @@ test('existing Roblox source re-enters rebind when client asset binding is still
   }finally{
     fs.rmSync(tmp,{recursive:true,force:true});
   }
+});
+
+test('existing Roblox asset rebind records family status from the full canonical Luau source scope',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-family-full-source-scope-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    fs.writeFileSync(path.join(root,'shared','CreatureSystem.luau'),`local enemy = Instance.new("Model")
+enemy.Name = "Enemy"
+return enemy
+`);
+    applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning});
+    const client=fs.readFileSync(path.join(root,'client','Game.client.luau'),'utf8');
+    const statusBlock=client.match(/\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{([\s\S]*?)\n\}/)?.[1]||'';
+    const expected=robloxStudioAssetFamilyStatusFromSource({sourceText:robloxStudioAssetDetectionSourceFromRoot(root)});
+    for(const family of ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES){
+      const current=(statusBlock.match(new RegExp('\\b'+family+'\\s*=\\s*["\\\'](APPLIED|NOT_APPLICABLE)["\\\']','i'))?.[1]||'').toUpperCase();
+      assert.equal(current,expected[family],family+' family status must use the canonical full-source detector scope');
+    }
+    assert.equal(expected.CREATURE,'APPLIED');
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
 });
 
 test('existing Roblox source automatically enters rebind when company library binding is missing even without source drift',()=>{
