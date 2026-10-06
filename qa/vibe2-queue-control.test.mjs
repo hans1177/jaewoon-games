@@ -687,6 +687,34 @@ test('game-primary reserve lane excludes recovery control and learning tasks fro
   assert.deepEqual(new Set(reserved.selection.laneDeferred.map(task=>task.id)),new Set(['control-fast','learning-idle']));
 });
 
+test('recovery-fast refills runnable System AI backlog through the existing control event without duplicate active cycles',()=>{
+  const recovery=fs.readFileSync('.github/workflows/vibe2-recovery-fast.yml','utf8');
+  assert.match(recovery,/system_ai_runnable=0/);
+  assert.match(recovery,/reserveSystemAiBatch,ownerExclusiveSystemAiGameIds/);
+  assert.match(recovery,/max:1,reservationId:"recovery-fast-readonly-probe"/);
+  assert.match(recovery,/system_ai_runnable=\$system_ai_runnable/);
+  assert.match(recovery,/if: steps\.recovery\.outputs\.system_ai_recovery_dispatched != '0' \|\| steps\.recovery\.outputs\.system_ai_runnable != '0'/);
+  assert.match(recovery,/\.path==".github\/workflows\/company-system-ai-workers\.yml"[\s\S]*?\.event!="push"/);
+  assert.match(recovery,/VIBE2_RECOVERY_FAST_SYSTEM_AI_DISPATCH=SKIPPED_ACTIVE_OBSERVATION_FAILED/);
+  assert.match(recovery,/VIBE2_RECOVERY_FAST_SYSTEM_AI_DISPATCH=SKIPPED_ACTIVE:/);
+  assert.match(recovery,/"event_type":"company-system-ai-cycle"/);
+  assert.match(recovery,/VIBE2_RECOVERY_FAST_SYSTEM_AI_DISPATCH=RUNNABLE_BACKLOG_OR_NEW_RECOVERY/);
+
+  for(const [name,next] of [
+    ['Escalate and redispatch recovery from latest control state','Return recovered game work to GAME_PRIMARY immediately'],
+    ['Dispatch supervised system-AI recovery immediately','Upload fast recovery evidence']
+  ]){
+    const step='      - name: '+name+'\n';
+    const stepAt=recovery.indexOf(step);
+    const runAt=recovery.indexOf('        run: |\n',stepAt);
+    const nextAt=recovery.indexOf('\n      - name: '+next,runAt);
+    assert.ok(stepAt>=0&&runAt>stepAt&&nextAt>runAt,name);
+    const raw=recovery.slice(runAt+'        run: |\n'.length,nextAt);
+    const script=raw.split('\n').map(line=>line.startsWith('          ')?line.slice(10):line).join('\n')+'\n';
+    assert.doesNotThrow(()=>execFileSync('bash',['-n'],{input:script,encoding:'utf8',stdio:['pipe','pipe','pipe']}),name);
+  }
+});
+
 test('recovery-fast lane runs disjoint system work in parallel while responsible-file locks stay exclusive',()=>{
   const runner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
   const start=runner.indexOf('\n  recovery_fast:');
