@@ -111,6 +111,11 @@ jobs:
   plan:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-24.04-arm
+    # 제어 plan만 coalesce한다. 이미 실행 중인 게임/에셋 워커는 건드리지 않고,
+    # 동일 제어 wake가 몰릴 때 활성 1개 + 최신 대기 1개만 유지한다.
+    concurrency:
+      group: vibe2-24h-plan-control-v1
+      cancel-in-progress: false
     timeout-minutes: 8
     outputs:
       continue_required: ${{ steps.queue_state.outputs.continue_required }}
