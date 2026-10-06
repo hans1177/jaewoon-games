@@ -622,6 +622,67 @@
       "directMasteryCredit": false,
       "directTrainingSample": false,
       "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:openai-roblox-distributed-services-v3",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI",
+      "model": "GPT-5.6-SOL",
+      "engine": "roblox",
+      "gameId": "cross-game",
+      "domains": [
+        "ROBLOX_MEMORYSTORE",
+        "ROBLOX_MESSAGING",
+        "ROBLOX_PATHFINDING",
+        "ROBLOX_COLLECTION_LIFECYCLE",
+        "ROBLOX_MULTIPLAYER",
+        "PERFORMANCE",
+        "RECOVERY"
+      ],
+      "patterns": [
+        "Use MemoryStore for ephemeral cross-server coordination, matchmaking, caches, and rapidly changing shared state; keep durable progression and session-rejoin truth in DataStore.",
+        "Choose MemoryStore structures by access semantics: hash map for keyed lookup, sorted map for ordered state, queue for ordered work; use short TTLs and explicit cleanup to bound shared memory.",
+        "Treat MemoryStore calls as fallible network operations. Catch failures, bound retry pressure, stagger recurring requests, and monitor universe-level quota and throttling instead of hot-loop retrying.",
+        "MemoryStore queue items can reappear after invisibility timeout or failed removal, so make processing idempotent and remove an item only after the intended durable or authoritative effect succeeds.",
+        "For contended MemoryStore map state, prefer UpdateAsync-style transforms over blind Set writes when the new value depends on existing state; reject stale or invalid transitions inside the transform.",
+        "MessagingService is best-effort cross-server signaling, not durable authority. Critical state must be recoverable without a message; attach identity or revision data and make subscribers safe to replay.",
+        "Own MessagingService subscriptions by lifecycle and disconnect them when their owner leaves or shuts down; validate topic payload shape before it can trigger server-side gameplay actions.",
+        "For NPC navigation, react to Path.Blocked only when the blocked waypoint is still ahead, then recompute deliberately; avoid per-frame path recomputation and handle path failure as a normal state.",
+        "In streaming worlds, do not assume a client can see the destination instance used for pathfinding. Prefer server-side world-aware navigation or explicit streamed-instance availability checks.",
+        "Use CollectionService tags for centralized behavior registration: initialize already-tagged instances, subscribe to future additions, and release connections or tables when tags or instances are removed.",
+        "Treat server-applied tags as canonical for authoritative behavior. Client-only tags can be overwritten by server replication, so client tag mutation must not grant damage, rewards, ownership, or progression."
+      ],
+      "cautions": [
+        "Do not use MemoryStore as a persistence substitute or allow expired ephemeral coordination state to become permanent player truth.",
+        "Do not make MessagingService delivery a prerequisite for irreversible rewards, purchases, saves, or security decisions.",
+        "Do not use CollectionService tags or client-visible path state as a substitute for server validation of authoritative gameplay."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "1dc869c5da9013baaedcbbcaf6fbf391a49e381be9311ab1db6575438df12604",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "source-backed-review",
+        "evidence": [
+          "source:https://create.roblox.com/docs/cloud-services/memory-stores",
+          "source:https://create.roblox.com/docs/cloud-services/memory-stores/queue",
+          "source:https://create.roblox.com/docs/reference/engine/classes/MessagingService",
+          "source:https://create.roblox.com/docs/characters/pathfinding",
+          "source:https://create.roblox.com/docs/reference/engine/classes/CollectionService",
+          "qa:qa/company-system-ai-learning.test.mjs#roblox-distributed-services-v3"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
     }
   ],
   "policy": {
