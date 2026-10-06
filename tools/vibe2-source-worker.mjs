@@ -93,6 +93,8 @@ const ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS=120000;
 const ASSET_DEVELOPMENT_WEB_TIMEOUT_MS=Math.max(240000,DEFAULT_TIMEOUT_MS);
 const ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW=8192;
 const ASSET_DEVELOPMENT_ROBLOX_MAX_GENERATION_ATTEMPTS=3;
+const SOURCE_CANDIDATE_INITIAL_PROMPT_BYTES=16000;
+const SOURCE_CANDIDATE_COMPACT_CONTEXT_WINDOW=12288;
 const JSON_CONTEXT_WINDOW=16384;
 const JSON_FINAL_CONTEXT_WINDOW=16384;
 const JSON_FOCUSED_REPLACE_CONTEXT_WINDOW=8192;
@@ -3142,10 +3144,12 @@ export function verifiedExternalLearningBlockFromPrompt(prompt=''){
   return raw.slice(start,end+VERIFIED_EXTERNAL_LEARNING_END.length);
 }
 
-export function compactVerifiedExternalLearningBlockFromPrompt(prompt=''){
+export function compactVerifiedExternalLearningBlockFromPrompt(prompt='',{triggerBytes=18000,targetBytes=16000}={}){
   const block=verifiedExternalLearningBlockFromPrompt(prompt);
   if(!block)return'';
-  if(Buffer.byteLength(block,'utf8')<=18000)return block;
+  const trigger=Math.max(4000,Math.min(18000,Number(triggerBytes)||18000));
+  const target=Math.max(4000,Math.min(16000,Number(targetBytes)||16000));
+  if(Buffer.byteLength(block,'utf8')<=trigger)return block;
   const itemPattern=/\[EXTERNAL_LEARNING ([^\]]+)\]\n([\s\S]*?)\n\[END_EXTERNAL_LEARNING \1\]/g;
   const items=[...block.matchAll(itemPattern)];
   if(!items.length)return block;
@@ -3202,13 +3206,13 @@ export function compactVerifiedExternalLearningBlockFromPrompt(prompt=''){
     suffix
   ].filter(Boolean).join('\n');
   const first=render(
-    Math.max(96,Math.min(640,Math.floor(9000/Math.max(1,applyCount)))),
-    Math.max(48,Math.min(220,Math.floor(4000/Math.max(1,dispositionCount))))
+    Math.max(96,Math.min(640,Math.floor((target*0.5625)/Math.max(1,applyCount)))),
+    Math.max(48,Math.min(220,Math.floor((target*0.25)/Math.max(1,dispositionCount))))
   );
-  if(Buffer.byteLength(first,'utf8')<=16000)return first;
+  if(Buffer.byteLength(first,'utf8')<=target)return first;
   for(const budget of [128,96,72,56,40,24]){
     const compact=render(budget,0);
-    if(Buffer.byteLength(compact,'utf8')<=16000)return compact;
+    if(Buffer.byteLength(compact,'utf8')<=target)return compact;
   }
   return render(24,0);
 }
@@ -3998,8 +4002,10 @@ export function recoverFocusedReplaceOnly(raw,spec={}){
   }
   return null;
 }
-export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=null,responsibleFiles=[],attempt=2,previousOutput='',sourceRoot='',systemAtomicPairRequired=false,multiFilePairRequired=false,studioInitial=false,robloxGraphicsInitial=false,robloxFullGraphicsPackageActive=false,oversizedInitial=false,failureRepeatCount=0}={}){
+export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=null,responsibleFiles=[],attempt=2,previousOutput='',sourceRoot='',systemAtomicPairRequired=false,multiFilePairRequired=false,studioInitial=false,robloxGraphicsInitial=false,robloxFullGraphicsPackageActive=false,oversizedInitial=false,initialPromptLimitBytes=MAX_INITIAL_JSON_PROMPT_BYTES,failureRepeatCount=0}={}){
   const rawPrompt=String(prompt??'');
+  const initialPromptLimit=Math.max(12000,Math.min(MAX_INITIAL_JSON_PROMPT_BYTES,Number(initialPromptLimitBytes)||MAX_INITIAL_JSON_PROMPT_BYTES));
+  const tightInitial=oversizedInitial&&initialPromptLimit<MAX_INITIAL_JSON_PROMPT_BYTES;
   const rawGoalLine=rawPrompt.split('\n').find(value=>value.startsWith('Goal:'))||'';
   const compactGoalLine=rawGoalLine
     ?'Goal: '+boundedPromptText(rawGoalLine.slice(rawGoalLine.indexOf(':')+1).trimStart(),COMPACT_DIRECTIVE_LINE_BYTES)
@@ -4228,8 +4234,10 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
       ?`FINAL FULL-WEB RETRY: produce one complete playable index.html replacement of at least ${fullWebTargetMin} UTF-8 bytes and no more than ${fullWebTargetMax} bytes. Include direct mobile input, substantial executable game logic, a real update/render or equivalent state-transition loop, progression, explicit win/loss/result state, restart, responsive layout, and persistent-capable state. Do not stop early. Finish with </html> and the required end marker.`
       :'';
   let result=retryBase+'\n\n'+correction+(finalInstruction?'\n'+finalInstruction:'');
-  if(oversizedInitial&&Buffer.byteLength(result,'utf8')>MAX_INITIAL_JSON_PROMPT_BYTES){
-    const learning=compactVerifiedExternalLearningBlockFromPrompt(rawPrompt);
+  if(oversizedInitial&&Buffer.byteLength(result,'utf8')>initialPromptLimit){
+    const learning=compactVerifiedExternalLearningBlockFromPrompt(rawPrompt,tightInitial
+      ?{triggerBytes:6000,targetBytes:4000}
+      :{});
     const compactDirective=buildUpDirectiveBlockFromPrompt(rawPrompt,{compact:true,responsiblePaths:exactResponsible});
     const directivePrefixes=['[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]','directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES,'[GAME SPECIFIC BUILD UP DIRECTIVE END]'];
     const directive=compactDirective.split('\n')
@@ -4267,19 +4275,21 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
     const orderedSections=exactResponsible.length
       ?exactResponsible.map(relative=>sourceSections.find(row=>row.path===relative)).filter(Boolean)
       :sourceSections;
-    const sectionLimit=(systemAtomicPairRequired||multiFilePairRequired)?Math.max(2,exactResponsible.length):3;
+    const sectionLimit=(systemAtomicPairRequired||multiFilePairRequired)?Math.max(2,exactResponsible.length):(tightInitial?2:3);
     const boundedSections=orderedSections.slice(0,sectionLimit).map(row=>{
       const excerpt=boundedLargeExcerpt(row.content,900);
       return row.header+'\n'+excerpt.content;
     });
+    const compactCapsule=tightInitial?boundedPromptText(gameContextCapsuleBlockFromPrompt(rawPrompt),1200):gameContextCapsuleBlockFromPrompt(rawPrompt);
+    const compactSelfReview=tightInitial?boundedPromptText(preSubmitSelfReviewBlockFromPrompt(rawPrompt),900):preSubmitSelfReviewBlockFromPrompt(rawPrompt);
     result=[
       'You are the Vibe2 game source worker. Return JSON only.',
       rawPrompt.split('\n').find(line=>line.startsWith('Engine:'))||'',
       compactGoalLine,
       learning,
       directive,
-      gameContextCapsuleBlockFromPrompt(rawPrompt),
-      preSubmitSelfReviewBlockFromPrompt(rawPrompt),
+      compactCapsule,
+      compactSelfReview,
       allowedLine,
       'INITIAL BOUNDED SOURCE REQUEST: oversized planning context was removed. Exact writable source and verified learning remain authoritative.',
       'Preserve gameplay values, save meaning and existing behavior unless the work order explicitly authorizes a protected change.',
@@ -4290,7 +4300,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
       ...boundedSections,
       'Return one strict JSON object only. Use double quotes for every key and string. No markdown, comments, placeholders, trailing commas, or extra prose.'
     ].filter(Boolean).join('\n\n');
-    console.log('VIBE2_INITIAL_JSON_PROMPT_FALLBACK_BYTES='+Buffer.byteLength(result,'utf8'));
+    console.log('VIBE2_INITIAL_JSON_PROMPT_FALLBACK_BYTES='+Buffer.byteLength(result,'utf8')+':limit='+initialPromptLimit);
   }
   return result;
 }
@@ -4389,18 +4399,19 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
       :prompt;
   const dedicatedRobloxOversizePath=target==='roblox'
     &&/\[(?:SECOND_PLATFORM_ADAPTATION_REBUILD:ROBLOX|POST_RELEASE_FOCUSED_DEVELOPMENT)\]/.test(String(prompt));
-  const oversizedStandardInitial=!allowFullRewrite
+  const sourceCandidatePressureInitial=!allowFullRewrite
+    &&!assetDevelopmentLane
     &&!singleMotionWorkUnit
-    &&specializedInitialPrompt===prompt
+    &&!systemAtomicPairRequired
     &&!dedicatedRobloxOversizePath
-    &&Buffer.byteLength(prompt,'utf8')>MAX_INITIAL_JSON_PROMPT_BYTES;
-  const initialStudioPrompt=oversizedStandardInitial
-    ?buildGenerationRetryPrompt(prompt,{allowFullRewrite:false,responsibleFiles,attempt:1,sourceRoot,systemAtomicPairRequired,multiFilePairRequired,oversizedInitial:true})
+    &&Buffer.byteLength(specializedInitialPrompt,'utf8')>SOURCE_CANDIDATE_INITIAL_PROMPT_BYTES;
+  const initialStudioPrompt=sourceCandidatePressureInitial
+    ?buildGenerationRetryPrompt(prompt,{allowFullRewrite:false,responsibleFiles,attempt:1,sourceRoot,systemAtomicPairRequired,multiFilePairRequired,oversizedInitial:true,initialPromptLimitBytes:SOURCE_CANDIDATE_INITIAL_PROMPT_BYTES})
     :specializedInitialPrompt;
-  if(oversizedStandardInitial){
-    const originalBytes=Buffer.byteLength(prompt,'utf8');
+  if(sourceCandidatePressureInitial){
+    const originalBytes=Buffer.byteLength(specializedInitialPrompt,'utf8');
     const compactBytes=Buffer.byteLength(initialStudioPrompt,'utf8');
-    console.log(`VIBE2_INITIAL_JSON_PROMPT_COMPACTED=${originalBytes}->${compactBytes}`);
+    console.log(`VIBE2_SOURCE_CANDIDATE_INITIAL_PROMPT_COMPACTED=${originalBytes}->${compactBytes}:limit=${SOURCE_CANDIDATE_INITIAL_PROMPT_BYTES}`);
     if(compactBytes>=originalBytes)throw new Error(`INITIAL_PROMPT_COMPACTION_REGRESSION:${originalBytes}->${compactBytes}`);
     if(compactBytes>MAX_INITIAL_JSON_PROMPT_BYTES)throw new Error(`INITIAL_PROMPT_COMPACTION_BUDGET_EXCEEDED:${compactBytes}>${MAX_INITIAL_JSON_PROMPT_BYTES}`);
   }
@@ -4540,7 +4551,7 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
           :((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_RETRY_TIMEOUT_MS:(unityStudioTimeoutFocusedRecovery?UNITY_STUDIO_FOCUSED_TIMEOUT_MS:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS:JSON_FOCUSED_REPLACE_TIMEOUT_MS))):(focusedFinal?JSON_FINAL_RETRY_TIMEOUT_MS:(retry?JSON_RETRY_TIMEOUT_MS:DEFAULT_TIMEOUT_MS)))));
     const baseContextWindow=expansionMode
       ?FULL_WEB_EXPANSION_CONTEXT_WINDOW
-      :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_CONTEXT_WINDOW:(robloxRebuildFocused?JSON_CONTEXT_WINDOW:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW))):(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW))));
+      :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_CONTEXT_WINDOW:(robloxRebuildFocused?JSON_CONTEXT_WINDOW:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW))):(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(sourceCandidatePressureInitial?SOURCE_CANDIDATE_COMPACT_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW)))));
     // 압축·부분 수정·확장 재시도에서도 원본 관찰과 잠금/수정 범위를 보존하고 실제 전송량으로 예산을 잡는다.
     for(const label of ['IMAGE ASSET OBSERVATION','ASSET DETAIL REPAIR','RUNTIME VISUAL REVIEW','SINGLE MOTION WORK UNIT','INTERNAL MOTION COACHING','ROBLOX SOURCE COACHING','INTERNAL ASSET TEACHER PRACTICE']){
       const block=prompt.match(new RegExp('\\['+label+' BEGIN\\][\\s\\S]*?\\['+label+' END\\]'))?.[0]||'';

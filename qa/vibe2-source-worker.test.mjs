@@ -365,6 +365,69 @@ test('single motion generation sends a required nonempty patch schema through th
   assert.equal(result.generation.completionMode,'JSON_SINGLE_MOTION');
   assert.equal(result.candidateValidation.runtimeVerified,false);
 });
+test('large non-full source request is compacted before local model generation without widening scope',async t=>{
+  const cwd=tempRoot();t.after(()=>fs.rmSync(cwd,{recursive:true,force:true}));
+  const sourceRoot=path.join(cwd,'unity-games/demo');
+  const relative='Assets/Scripts/GameCore.cs';
+  const source='public sealed class GameCore { public int State = 1; }\n';
+  write(path.join(sourceRoot,relative),source);
+  const prompt=[
+    'You are the Vibe2 game source worker. Return JSON only.',
+    'Engine: unity',
+    'Goal: improve the existing responsible game source without changing save or gameplay authority',
+    'OVERSIZED_PLANNING_CONTEXT='+('duplicate planning detail '.repeat(1800)),
+    'Allowed edit paths: '+relative,
+    '=== FILE '+relative+' [EDITABLE] ===',
+    source
+  ].join('\n');
+  assert.ok(Buffer.byteLength(prompt,'utf8')>16000);
+  const response=path.join(cwd,'answer.json');
+  write(response,JSON.stringify({edits:[{path:relative,find:'public int State = 1;',replace:'public int State = 2;'}]}));
+  const result=await generateCandidateWithRecovery({
+    prompt,target:'unity',sourceRoot,sourceRootRelative:'unity-games/demo',
+    responsibleFiles:[relative],allowFullRewrite:false,responseFiles:[response]
+  });
+  assert.equal(result.generation.attempts,1);
+  assert.ok(result.generation.requestPromptBytes<16000);
+  assert.ok(result.generation.requestPromptBytes<result.generation.initialPromptBytes);
+  assert.equal(result.generation.contextWindow,12288);
+  assert.equal(result.candidate.edits.length,1);
+  assert.equal(result.candidate.edits[0].path,relative);
+});
+
+test('source candidate prompt compaction never applies to asset-development lane',async t=>{
+  const cwd=tempRoot();t.after(()=>fs.rmSync(cwd,{recursive:true,force:true}));
+  const sourceRoot=path.join(cwd,'unity-games/demo');
+  const relative='Assets/Scripts/GameCore.cs';
+  const source='public sealed class GameCore { public int State = 1; }\n';
+  write(path.join(sourceRoot,relative),source);
+  const prompt=[
+    'You are the Vibe2 game source worker. Return JSON only.',
+    'Engine: unity',
+    'Goal: preserve full asset-development context while editing the exact responsible source',
+    'OVERSIZED_ASSET_CONTEXT='+('asset quality context '.repeat(1800)),
+    'Allowed edit paths: '+relative,
+    '=== FILE '+relative+' [EDITABLE] ===',
+    source
+  ].join('\n');
+  assert.ok(Buffer.byteLength(prompt,'utf8')>16000);
+  const response=path.join(cwd,'answer.json');
+  write(response,JSON.stringify({edits:[{path:relative,find:'public int State = 1;',replace:'public int State = 2;'}]}));
+  const previousLane=process.env.VIBE2_EXECUTION_LANE;
+  process.env.VIBE2_EXECUTION_LANE='asset-development';
+  try{
+    const result=await generateCandidateWithRecovery({
+      prompt,target:'unity',sourceRoot,sourceRootRelative:'unity-games/demo',
+      responsibleFiles:[relative],allowFullRewrite:false,responseFiles:[response]
+    });
+    assert.equal(result.generation.requestPromptBytes,Buffer.byteLength(prompt,'utf8'));
+    assert.ok(result.generation.contextWindow>=24576);
+  }finally{
+    if(previousLane===undefined)delete process.env.VIBE2_EXECUTION_LANE;
+    else process.env.VIBE2_EXECUTION_LANE=previousLane;
+  }
+});
+
 test('internal motion coaching selects source-hash-bound matching anatomy and never claims learned weights or runtime quality',()=>{
   const make=(id,clipId='walk')=>buildInternalMotionCoaching({order:{source:{internalAssetMotion:true},assetProduction:{motionRepairWorkUnit:{scope:'INTERNAL_ASSET_LIBRARY',objectId:'roblox-world-ghost-'+id,clipId}}}});
   const beast=make('bulgasari'),shroud=make('gwisin-bride'),serpent=make('gangcheori');
@@ -4189,6 +4252,9 @@ test('zero-output model stalls use first-output deadline and stop after two empt
   const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.match(workerSource,/MODEL_FIRST_OUTPUT_TIMEOUT_MS=Math\.max\(30000,Math\.min\(DEFAULT_TIMEOUT_MS,Number\(process\.env\.VIBE2_MODEL_FIRST_OUTPUT_TIMEOUT_MS\|\|120000\)\)\)/);
   assert.match(workerSource,/ZERO_OUTPUT_RETRY_TIMEOUT_MS=120000/);
+  assert.match(workerSource,/SOURCE_CANDIDATE_INITIAL_PROMPT_BYTES=16000/);
+  assert.match(workerSource,/SOURCE_CANDIDATE_COMPACT_CONTEXT_WINDOW=12288/);
+  assert.match(workerSource,/sourceCandidatePressureInitial=!allowFullRewrite[\s\S]*?&&!assetDevelopmentLane/);
   assert.match(workerSource,/Ollama 첫 출력 시간 초과/);
   assert.match(workerSource,/VIBE2_ZERO_OUTPUT_TIMEOUT_STREAK/);
   assert.match(workerSource,/consecutiveZeroOutputTimeouts>=2/);
