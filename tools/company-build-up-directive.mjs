@@ -1448,6 +1448,281 @@ function buildImplementationBlueprint({
     materialOrMarkerOnlyCannotCloseGraphicsBuildUp:true
   });
 
+  const details=design.implementationDetails||{};
+  const platformKey=clean(platform).toUpperCase()||'COMMON';
+  const profile=(design.platformProfiles&&typeof design.platformProfiles==='object')
+    ?(design.platformProfiles[platformKey]||design.platformProfiles[platformKey==='UNITY_WEB'?'WEB':platformKey==='UNITY_APP'?'UNITY':platformKey]||{})
+    :{};
+  const assumptions=Array.isArray(details.technicalAssumptions)?details.technicalAssumptions.map(clean).filter(Boolean):[];
+  const assumptionsBy=(re)=>Object.freeze(assumptions.filter(value=>re.test(value)));
+  const contentScope=details.mvpScope&&typeof details.mvpScope==='object'?details.mvpScope:{};
+  const implementationSync=details.implementationSync&&typeof details.implementationSync==='object'?details.implementationSync:{};
+  const graphics=details.graphicsConcept&&typeof details.graphicsConcept==='object'?details.graphicsConcept:{};
+  const failureRetry=details.failureRetryRisk&&typeof details.failureRetryRisk==='object'?details.failureRetryRisk:{};
+  const artAudio=details.artAudioDirection&&typeof details.artAudioDirection==='object'?details.artAudioDirection:{};
+  const balance=details.balanceContract&&typeof details.balanceContract==='object'?details.balanceContract:{};
+  const equipment=details.equipment&&typeof details.equipment==='object'?details.equipment:{};
+  const sourceCodePaths=implementationSync.codePaths&&typeof implementationSync.codePaths==='object'?implementationSync.codePaths:{};
+
+  const implementationFacts=Object.freeze({
+    identity:clean(design.identity),
+    genre:clean(design.genre),
+    subgenre:clean(design.subgenre),
+    coreFun:clean(design.coreFun),
+    coreLoop:Object.freeze([...coreLoop]),
+    progressionDirection:clean(design.progressionDirection),
+    multiplayerMode:clean(design.multiplayerMode),
+    mobileUx:clean(details.mobileUx),
+    technicalAssumptions:Object.freeze([...assumptions]),
+    platformProfile:cloneDesignDetail(profile,{}),
+    failureRetryRisk:cloneDesignDetail(failureRetry,{}),
+    launchScope:cloneDesignDetail(contentScope.launch||[],[]),
+    deferredScope:cloneDesignDetail(contentScope.deferred||[],[]),
+    forbiddenScope:cloneDesignDetail(contentScope.forbidden||[],[]),
+    exactCodePaths:cloneDesignDetail(sourceCodePaths,{}),
+    systemImplementation:cloneDesignDetail(details.systemImplementation,{}),
+    noInventedBalanceOrRuleValue:true,
+    missingExactValueResolution:'READ_APPROVED_DESIGN_THEN_CURRENT_SOURCE; IF STILL_UNKNOWN LEAVE UNCHANGED AND REPORT UNRESOLVED'
+  });
+
+  const coreLoopExecutionPlan=Object.freeze(coreLoop.slice(0,12).map((step,index)=>{
+    const sourceRow=sourceResponsibilities[index%Math.max(1,sourceResponsibilities.length)]||null;
+    const next=coreLoop[index+1]||nextStep;
+    return Object.freeze({
+      order:index+1,
+      designStep:step,
+      entryCondition:index===0?'SESSION_OR_RETRY_READY':'PREVIOUS_CORE_LOOP_STEP_COMPLETED',
+      playerInputOrSystemTrigger:step,
+      exactSourceFile:clean(sourceRow?.file)||clean(topFiles[index%Math.max(1,topFiles.length)])||'RESOLVE_FROM_CURRENT_SOURCE_BEFORE_WRITE',
+      exactSourceSymbol:clean(sourceRow?.symbol)||'RESOLVE_EXACT_HANDLER_FROM_CURRENT_SOURCE_BEFORE_WRITE',
+      authoritativeOwner:'PRESERVE_EXISTING_OWNER; SERVER_OR_SESSION_OWNER_FOR_AUTHORITATIVE_GAME_STATE_WHEN_APPLICABLE',
+      requiredStateMutation:'THE DESIGN STEP MUST CHANGE REAL GAME STATE OR ADVANCE THE VERIFIED PLAYER FLOW',
+      worldAndActorResult:'THE RESULT MUST BE OBSERVABLE IN THE PLAY SPACE WHEN THE STEP HAS A WORLD OR ACTOR SURFACE',
+      uiBinding:'HUD_OR_MENU MUST READ THE SAME REAL STATE WHEN THIS STEP HAS PLAYER-FACING STATUS',
+      presentationBinding:'MOTION_VFX_CAMERA_AUDIO_MUST FOLLOW THE SAME STATE OR IMPACT EVENT WHEN APPLICABLE',
+      successCondition:'STEP RESULT IS OBSERVED AND THE NEXT DESIGN STEP BECOMES REACHABLE',
+      failureCondition:'INVALID_OR_FAILED ACTION DOES NOT ADVANCE STATE AND EXPLAINS OR SHOWS WHY WHEN PLAYER-FACING',
+      retryCondition:'PLAYER CAN RETRY WITHOUT STALE_COOLDOWN_DUPLICATE_REWARD_OR_DESYNC',
+      nextStep:next
+    });
+  }));
+
+  const rosterContracts=Object.freeze({
+    humans:Object.freeze((Array.isArray(details.humanRoster)?details.humanRoster:[]).slice(0,32).map((row,index)=>Object.freeze({
+      order:index+1,
+      design:cloneDesignDetail(row,{}),
+      implementationRequirements:Object.freeze(['DISTINCT_ROLE_BEHAVIOR','REAL_INPUT_OR_AI_PATH','AUTHORITATIVE_STATE_RESULT','VISIBLE_ROLE_FEEDBACK','SPAWN_RESPAWN_LIFECYCLE'])
+    }))),
+    monsters:Object.freeze((Array.isArray(details.monsterRoster)?details.monsterRoster:[]).slice(0,32).map((row,index)=>Object.freeze({
+      order:index+1,
+      design:cloneDesignDetail(row,{}),
+      implementationRequirements:Object.freeze(['DISTINCT_SILHOUETTE_OR_PRESENTATION','DISTINCT_BEHAVIOR_OR_COUNTERPLAY','TARGET_AND_ATTACK_LIFECYCLE','HIT_DEATH_OR_STATE_EXIT','ACTUAL_RUNTIME_SPAWN'])
+    }))),
+    classes:Object.freeze((Array.isArray(details.startingClasses)?details.startingClasses:[]).slice(0,24).map((row,index)=>Object.freeze({
+      order:index+1,
+      design:cloneDesignDetail(row,{}),
+      implementationRequirements:Object.freeze(['CLASS_IDENTITY_AFFECTS_REAL_ACTION_OR_STATE','UI_SELECTION_AND_CURRENT_CLASS_STATE_SYNC','SAVE_OR_SESSION_PERSISTENCE_WHEN_DESIGN_REQUIRES'])
+    }))),
+    companions:Object.freeze((Array.isArray(details.launchCompanions)?details.launchCompanions:[]).slice(0,24).map((row,index)=>Object.freeze({
+      order:index+1,
+      design:cloneDesignDetail(row,{}),
+      implementationRequirements:Object.freeze(['UNLOCK_CONDITION','PARTY_OR_WORLD_SPAWN','AI_ROLE','LEADER_OR_LEVEL_SYNC_WHEN_DESIGN_REQUIRES','VISIBLE_IDENTITY'])
+    })))
+  });
+
+  const worldMapContract=Object.freeze({
+    designWorldSignals:Object.freeze(uniq([
+      ...coreLoop,
+      ...signatureSystems.flatMap(system=>[clean(system?.name),clean(system?.purpose)]),
+      ...(Array.isArray(contentScope.launch)?contentScope.launch.map(clean):[])
+    ]).filter(value=>/(map|world|region|zone|portal|village|town|island|forest|dungeon|school|hospital|park|base|거점|맵|지역|포탈|마을|섬|학교|병원|놀이공원|사냥터|초원|협곡|유적|설원|심연)/i.test(value))),
+    spawnContract:'PLAYER_AND_REQUIRED_ACTORS_SPAWN_INSIDE_PLAYABLE_BOUNDS_WITHOUT_OVERLAP_SOFTLOCK_OR_FALL_THROUGH',
+    traversalContract:'CORE_LOOP_OBJECTIVES_MUST_BE_REACHABLE_WITH_PLATFORM_NATIVE_MOVEMENT_AND_COLLISION',
+    topologyContract:'START_SAFE_OR_PREP_AREA -> PLAY_ROUTE_OR_REGION -> OBJECTIVE_OR_ENCOUNTER -> RESULT_OR_RETURN_FLOW MUST BE CONNECTED WHEN THE GAME HAS A WORLD',
+    landmarkContract:'OBJECTIVE_AND_REGION_ROLE_MUST_BE_READABLE_FROM_DISTINCT_LANDMARK_OR_SPATIAL_CUE_WHEN APPLICABLE',
+    encounterPlacement:'SPAWN_AND_ENCOUNTER_LOCATIONS_MUST_MATCH_DESIGN_ROLE_AND_NOT_BLOCK_REQUIRED_PATHS',
+    collisionAndBounds:'NO_REQUIRED_OBJECTIVE_OUTSIDE_BOUNDS; NO_INVISIBLE_COLLISION_SOFTLOCK; NO_SPAWN_INSIDE_HAZARD_UNLESS_DESIGN_EXPLICITLY_REQUIRES',
+    emptyStageCompletionForbidden:true
+  });
+
+  const interactionCombatContract=Object.freeze({
+    exactApprovedRules:assumptionsBy(/attack|damage|combat|cooldown|range|energy|infect|purify|parry|guard|hit|death|enemy|boss|공격|데미지|전투|쿨다운|사거리|감염|정화|패링|가드|피격|사망|보스/i),
+    stateTimeline:Object.freeze(['INPUT_OR_AI_DECISION','PRECONDITION_VALIDATION','ANTICIPATION_OR_PREP','AUTHORITATIVE_RESOLUTION','IMPACT_OR_STATE_CHANGE','RECOVERY_OR_COOLDOWN','NEXT_DECISION']),
+    duplicateResolutionForbidden:true,
+    clientAuthoritativeDamageRewardOrProgressForbidden:true,
+    invalidTargetOrOutOfRangeMustNotMutateState:true,
+    deathRemovalConversionOrFailureMustHaveExplicitExitState:true,
+    approvedNumbersMustComeFromDesignOrCurrentSource:true
+  });
+
+  const inputUiContract=Object.freeze({
+    mobileUx:clean(details.mobileUx)||clean(profile?.uiUx)||'RESOLVE_FROM_APPROVED_PLATFORM_PROFILE_AND_CURRENT_UI_SOURCE',
+    inputModel:clean(profile?.inputModel)||'RESOLVE_EXISTING_PLATFORM_NATIVE_INPUT_MAPPING',
+    uiUx:clean(profile?.uiUx)||clean(details.mobileUx)||'RESOLVE_EXISTING_GAME_STATE_TO_UI_BINDINGS',
+    touchFirstRequired:/mobile|touch|모바일|터치/i.test([clean(details.mobileUx),clean(profile?.inputModel)].join(' ')),
+    actionAvailabilityMustMatchRealState:true,
+    disabledActionMustExplainOrVisiblySignalReasonWhenPlayerFacing:true,
+    hudValuesMustReadAuthoritativeOrReplicatedRealState:true,
+    modalAndMenuInputLeakForbidden:true,
+    equipQuestResourceHealthCooldownFakeDisplayForbidden:true,
+    reconnectRespawnUiMustRebindCurrentState:true
+  });
+
+  const networkContract=Object.freeze({
+    multiplayerMode:clean(design.multiplayerMode)||'UNSPECIFIED',
+    multiplayerRuntime:clean(profile?.multiplayerRuntime),
+    sessionModel:clean(profile?.sessionModel),
+    exactApprovedRules:assumptionsBy(/server|authoritative|remote|multi|coop|player|room|sync|network|서버|권한|멀티|협동|플레이어|방|동기화/i),
+    clientRole:'SEND_INTENT_AND_RENDER_REPLICATED_FEEDBACK',
+    authoritativeRole:'VALIDATE_PRECONDITIONS_AND_MUTATE_SHARED_GAME_STATE',
+    replicationRole:'REPLICATE_ONLY_COMMITTED_STATE_AND_REQUIRED_EFFECT_EVENTS',
+    duplicateRequestAndRewardProtection:true,
+    leaveReconnectLateJoinMustPreserveExistingDesignMeaning:true,
+    minimumParticipantsForRequiredQa:Number(details?.robloxBuildProfile?.minimumParticipantsForRequiredQa||0)||null
+  });
+
+  const persistenceContract=Object.freeze({
+    saveAndNetwork:clean(profile?.saveAndNetwork),
+    exactApprovedRules:assumptionsBy(/save|datastore|persist|rejoin|level|xp|gold|unlock|equipment|inventory|저장|데이터|재접속|레벨|골드|해금|장비|인벤/i),
+    existingKeysAndMeaningPreserved:true,
+    loadBeforeDependentUiOrGameplay:true,
+    saveAfterAuthoritativeCommitNotClientDisplay:true,
+    boundedRetryAndFailureRecoveryRequired:true,
+    missingLoadMustNotSilentlyOverwriteValidPriorProgress:true,
+    migrationRequiredBeforeSchemaMeaningChange:true
+  });
+
+  const aiEncounterContract=Object.freeze({
+    actorRosters:rosterContracts,
+    exactApprovedRules:assumptionsBy(/AI|aggro|target|spawn|monster|enemy|companion|resident|villager|충원|어그로|타깃|스폰|몬스터|적|동료|주민/i),
+    lifecycle:Object.freeze(['SPAWN','ACQUIRE_OR_ASSIGN_ROLE','IDLE_OR_PATROL','TARGET_OR_TASK_SELECTION','ACTION_TELEGRAPH','ACTION_RESOLUTION','RECOVERY_OR_REPATH','HIT_OR_STATE_REACTION','DEATH_DESPAWN_CONVERSION_OR_RETURN']),
+    targetSelectionMustHaveLossOrInvalidationRule:true,
+    pathFailureMustRecoverWithoutPermanentFreeze:true,
+    deadOrRemovedActorMustStopCombatAndUpdateLoops:true,
+    visualMotionMustMatchLogicalState:true,
+    spawnCapsAndUpdateCadenceMustUseExistingApprovedValuesOrSourceDefaults:true
+  });
+
+  const progressionEconomyContract=Object.freeze({
+    progressionDirection:clean(design.progressionDirection),
+    equipment:cloneDesignDetail(equipment,{}),
+    balanceContract:cloneDesignDetail(balance,{}),
+    tacticalCommands:cloneDesignDetail(details.tacticalCommands,[]),
+    startingClasses:cloneDesignDetail(details.startingClasses,[]),
+    firstAdvancements:cloneDesignDetail(details.firstAdvancements,[]),
+    companions:cloneDesignDetail(details.launchCompanions,[]),
+    exactApprovedRules:assumptionsBy(/level|xp|gold|reward|tier|quest|unlock|barracks|soldier|resource|레벨|경험|골드|보상|티어|퀘스트|해금|병영|병사|자원/i),
+    rewardMustFollowVerifiedCompletion:true,
+    progressionUiMustReadSameCommittedState:true,
+    duplicateRewardOrUnlockForbidden:true,
+    unapprovedBalanceRetuneForbidden:true
+  });
+
+  const presentationContract=Object.freeze({
+    visualDirection:clean(details.visualDirection),
+    artAudioDirection:cloneDesignDetail(artAudio,{}),
+    graphicsConcept:cloneDesignDetail(graphics,{}),
+    visualQualityTarget:clean(details?.robloxBuildProfile?.visualQualityTarget),
+    visualPriority:cloneDesignDetail(details?.robloxBuildProfile?.visualPriority,[]),
+    runtimeWorldArtPass:clean(implementationSync?.runtimeWorldArtPass),
+    runtimeCharacterArtDirection:clean(implementationSync?.runtimeCharacterArtDirection),
+    exactRules:cloneDesignDetail(graphics?.rules,[]),
+    forbidden:cloneDesignDetail(graphics?.forbidden,[]),
+    actorSilhouetteMustMatchRole:true,
+    materialsMustAffectActualRenderedObjectsNotOnlyConfig:true,
+    animationMustFollowRealState:true,
+    vfxCameraAudioMustShareActualImpactOrStateEvent:true,
+    uiVisualStateMustMatchRealGameState:true,
+    beforeAfterSameSceneRuntimeRequiredWhenChanged:true,
+    thumbnailOrMetadataCannotProveRuntimeVisualChange:true
+  });
+
+  const performanceContract=Object.freeze({
+    platformBudget:clean(profile?.performanceBudget)||'USE_EXISTING_PLATFORM_BUDGET_AND_CURRENT_RUNTIME_BASELINE',
+    noUnboundedPerFrameGlobalScans:true,
+    noUnboundedSpawnOrConnectionGrowth:true,
+    actorAndEffectLifetimeCleanupRequired:true,
+    aiAndHeavyUpdatesMayNeedCadenceDistribution:true,
+    mobileReadabilityCannotBeSacrificedForEffectVolume:true,
+    optimizationCannotRemoveRequiredGameplayState:true
+  });
+
+  const failureRecoveryContract=Object.freeze({
+    design:cloneDesignDetail(failureRetry,{}),
+    explicitFailureStates:cloneDesignDetail(failureRetry?.failureStates,[]),
+    retryDirection:clean(failureRetry?.retryDirection||failureRetry?.retryFlow||failureRetry?.recoveryRules),
+    invalidInput:'REJECT_WITHOUT_STATE_MUTATION_OR_DUPLICATE_COST',
+    missingTargetOrDestroyedObject:'CANCEL_OR_REACQUIRE_WITHOUT_STALE_REFERENCE',
+    respawn:'REBIND_CHARACTER_INPUT_UI_AND_RUNTIME_REFERENCES',
+    disconnectReconnect:'RESTORE_EXISTING_PERSISTENT_OR_SESSION_STATE_ACCORDING_TO_APPROVED_RULES',
+    saveLoadFailure:'BOUNDED_RETRY_OR_SAFE_RECOVERY; DO_NOT SILENTLY DESTROY_VALID_PROGRESS',
+    aiPathFailure:'REPATH_OR_RETURN_TO_VALID_STATE; DO NOT FREEZE PERMANENTLY',
+    partialSystemFailure:'KEEP_AUTHORITATIVE_STATE_CONSISTENT_AND_ALLOW_RETRY_OR_RECOVERY'
+  });
+
+  const sourceImplementationContract=Object.freeze({
+    approvedCodePaths:cloneDesignDetail(sourceCodePaths,{}),
+    designSyncRule:clean(implementationSync?.syncRule),
+    priorDesignSourceRevision:clean(implementationSync?.sourceRevision),
+    responsibleSourcePlan,
+    exactAnchorPreferred:true,
+    inspectCurrentSourceBeforeWrite:true,
+    serverClientSharedAtomicPairRequiredWhenSameBehaviorCrossesBoundary:true,
+    existingResponsibleSystemDirectEditRequired:true,
+    wrapperShadowTemporaryOverrideForbidden:true,
+    metadataBootstrapAndEvidenceFilesDoNotCountAsBehaviorImplementation:true
+  });
+
+  const orderedImplementationSteps=Object.freeze([
+    Object.freeze({order:1,id:'READ_CURRENT_IMPLEMENTATION',required:'Read approved design facts, exact responsible files, current state ownership, and runtime failure evidence before writing.'}),
+    Object.freeze({order:2,id:'REPAIR_FOUNDATION_IF_BROKEN',required:foundationRepairFirst?'Repair boot/spawn/input/movement/core-state blocker first and replay it before any decorative expansion.':'Confirm boot/spawn/input/core flow remains executable while applying this BUILD_UP.'}),
+    Object.freeze({order:3,id:'AUTHORITATIVE_GAME_STATE',required:'Implement or repair server/session/shared authoritative rules, validation, state transitions, rewards and progression owned by this vertical slice.'}),
+    Object.freeze({order:4,id:'PLAYER_INPUT_AND_UI_BINDING',required:'Bind native input and UI to the same real state; no button, label, HUD or menu may claim behavior not reached by source state.'}),
+    Object.freeze({order:5,id:'WORLD_AI_AND_ENTITY_LIFECYCLE',required:'Complete required map reachability, spawn, AI/actor lifecycle, interaction targets and failure cleanup for this same slice.'}),
+    Object.freeze({order:6,id:'PRESENTATION_BINDING',required:'Bind model/material/motion/VFX/camera/audio to real runtime objects and state events; presentation-only metadata is not implementation.'}),
+    Object.freeze({order:7,id:'SAVE_NETWORK_RECOVERY',required:'Preserve or repair save, reconnect, multiplayer replication and retry behavior when applicable to the slice.'}),
+    Object.freeze({order:8,id:'IMPACT_SCOPED_QA_AND_RUNTIME_REPLAY',required:'Run existing impact-scoped QA then replay the exact changed player flow and observe state plus feedback before claiming completion.'})
+  ]);
+
+  const acceptanceScenarios=Object.freeze([
+    Object.freeze({id:'BOOT_TO_PLAY',required:true,steps:Object.freeze(['launch exact changed artifact/source','load required state','spawn player and required actors','reach first actionable state']),pass:'NO_SCRIPT_ERROR_NO_SOFTLOCK_FIRST_INPUT_REACHABLE'}),
+    Object.freeze({id:'PRIMARY_HAPPY_PATH',required:true,steps:Object.freeze([firstStep,'authoritative validation/state mutation','player-facing feedback','reach '+nextStep]),pass:'FULL_VERTICAL_SLICE_OBSERVED'}),
+    Object.freeze({id:'INVALID_OR_BLOCKED_ACTION',required:true,steps:Object.freeze(['attempt action with invalid target/state/cooldown or equivalent blocked precondition']),pass:'NO_UNAUTHORIZED_STATE_MUTATION_NO_DUPLICATE_COST_OR_REWARD'}),
+    Object.freeze({id:'FAILURE_AND_RETRY',required:true,steps:Object.freeze(['reach applicable failure state','observe failure feedback','retry or recover','repeat primary action']),pass:'NO_STALE_STATE_RETRY_REACHABLE'}),
+    Object.freeze({id:'UI_STATE_BINDING',required:true,steps:Object.freeze(['change real gameplay state','observe HUD/menu/inventory/objective state','respawn or reopen when applicable']),pass:'DISPLAY_MATCHES_CURRENT_REAL_STATE'}),
+    Object.freeze({id:'ACTOR_LIFECYCLE',required:true,steps:Object.freeze(['spawn required player/NPC/enemy/companion','execute role behavior','hit/change/death/convert/despawn or equivalent exit']),pass:'NO_FROZEN_OR_DUPLICATE_ACTOR_STATE'}),
+    Object.freeze({id:'SAVE_REJOIN',required:Boolean(clean(profile?.saveAndNetwork)||assumptions.some(v=>/save|datastore|저장/i.test(v))),steps:Object.freeze(['commit persistent progress','save through existing owner','reload/rejoin','verify same meaning']),pass:'PERSISTED_MEANING_RESTORED_NO_SILENT_RESET'}),
+    Object.freeze({id:'MULTIPLAYER_SYNC',required:/multi|coop|competitive|pvp|멀티|협동/i.test([clean(design.multiplayerMode),clean(profile?.multiplayerRuntime)].join(' ')),steps:Object.freeze(['run with required participant count when available','perform shared-state action','observe all participants','leave/rejoin or role transition when applicable']),pass:'AUTHORITATIVE_STATE_AND_RESULT_CONSISTENT_FOR_ALL'}),
+    Object.freeze({id:'PRESENTATION_BEFORE_AFTER',required:focus==='PRESENTATION'||Boolean(clean(details.visualDirection)||clean(graphics?.id)),steps:Object.freeze(['capture same scene/state before','run changed action/state','capture exact changed runtime after']),pass:'ACTUAL_RENDERED_OR_AUDIBLE_DELTA_MATCHES_DESIGN_AND_REMAINS_PLAYABLE'}),
+    Object.freeze({id:'ERROR_AND_PERFORMANCE_SANITY',required:true,steps:Object.freeze(['exercise changed flow repeatedly','observe errors/connections/spawns/update behavior']),pass:'NO_NEW_ERROR_NO_UNBOUNDED_GROWTH_NO_OBVIOUS_RUNTIME_REGRESSION'})
+  ]);
+
+  const antiShallowImplementationContract=Object.freeze({
+    forbiddenAsCompletion:Object.freeze([
+      'BOOTSTRAP_JSON_ONLY',
+      'STATUS_OR_MARKER_ONLY',
+      'COMMENT_OR_PROMPT_ONLY',
+      'PRINT_PASS_OR_SELF_ASSERTED_PASS',
+      'CONFIG_VALUE_ONLY_WHEN_BEHAVIOR_IS_MISSING',
+      'BUTTON_LABEL_OR_UI_SHELL_WITHOUT_STATE_BINDING',
+      'ASSET_REGISTRY_OR_ID_ONLY_WITHOUT_RUNTIME_CONSUMPTION',
+      'MATERIAL_OR_COLOR_ONLY_WHEN_MODEL_WORLD_OR_MOTION_GAP_REMAINS',
+      'STATIC_THUMBNAIL_OR_METADATA_AS_RUNTIME_VISUAL_PROOF',
+      'NO_OP_FUNCTION_OR_EMPTY_HANDLER',
+      'PLACEHOLDER_PRIMITIVE_AS_FINISHED_ACTOR_OR_WORLD',
+      'CLIENT_ONLY_FAKE_STATE_FOR_SERVER_OWNED_RESULT',
+      'SOURCE_DIFF_WITHOUT_REACHABLE_PLAYER_FLOW'
+    ]),
+    minimumImplementationEvidence:Object.freeze([
+      'REAL_RESPONSIBLE_GAME_SOURCE_DELTA',
+      'INPUT_OR_SYSTEM_TRIGGER_REACHES_REAL_STATE_MUTATION',
+      'PLAYER_FACING_RESULT_OR_FEEDBACK_OBSERVED',
+      'RELEVANT_QA_PASSES',
+      'EXACT_CHANGED_RUNTIME_REPLAY_WHEN_RUNTIME_SURFACE_EXISTS'
+    ]),
+    unresolvedDesignRule:'DO_NOT_INVENT_MISSING_GAME_VALUES; READ_CURRENT_SOURCE_OR_LEAVE_EXISTING_VALUE_AND_RECORD_UNRESOLVED'
+  });
+
   const runtimeAcceptance=Object.freeze([
     'EXACT_CHANGED_SOURCE_OR_ARTIFACT',
     'ACTUAL_PLAYER_INPUT_OR_PLATFORM_NATIVE_INTERACTION',
@@ -1460,16 +1735,36 @@ function buildImplementationBlueprint({
   ]);
 
   return Object.freeze({
-    version:1,
-    status:'BUILD_READY_IMPLEMENTATION_BLUEPRINT',
+    version:2,
+    status:'DETAILED_BUILD_READY_IMPLEMENTATION_SPEC',
     platform:clean(platform).toUpperCase()||'COMMON',
     mode:foundationRepairFirst?'FOUNDATION_REPAIR_FIRST':'VERTICAL_SLICE_BUILD_UP',
     foundationRepairFirst,
     newContentMayPreemptFoundationRepair:false,
     designMustResolveToExecutableBehavior:true,
+    detailLevel:'SOURCE_IMPLEMENTATION_EXPLICIT',
+    approximateOrGenericDesignSummaryCannotCloseBuildUp:true,
+    everyApplicableSurfaceMustNameImplementationAndRuntimeProof:true,
     verticalSlice,
     stateTransitions,
+    implementationFacts,
+    coreLoopExecutionPlan,
     systemContracts,
+    rosterContracts,
+    worldMapContract,
+    interactionCombatContract,
+    inputUiContract,
+    networkContract,
+    persistenceContract,
+    aiEncounterContract,
+    progressionEconomyContract,
+    presentationContract,
+    performanceContract,
+    failureRecoveryContract,
+    sourceImplementationContract,
+    orderedImplementationSteps,
+    acceptanceScenarios,
+    antiShallowImplementationContract,
     responsibleSourcePlan,
     presentationPlan,
     dataAndStateContract:Object.freeze({
