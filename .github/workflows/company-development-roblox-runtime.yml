@@ -638,7 +638,8 @@ jobs:
           const generated=!superseded&&!noChange&&process.env.GENERATE_OUTCOME==='success';
           const promoted=generated&&process.env.MERGE_OUTCOME==='success';
           const candidateReady=generated&&Boolean(String(process.env.SOURCE_BRANCH||'').trim());
-          const failure=superseded?'source-plan-contract-superseded':noChange?null:!generated?'source-generation-failed':!promoted?'source-promotion-pending':null;
+          let failure=superseded?'source-plan-contract-superseded':!generated?'source-generation-failed':!promoted?'source-promotion-pending':null;
+          if(noChange)failure=null;
           const bootstrapEvidencePath=path.join('/tmp',`roblox-source-bootstrap-${safe}.json`);
           const bootstrapEvidence=fs.existsSync(bootstrapEvidencePath)?JSON.parse(fs.readFileSync(bootstrapEvidencePath,'utf8')):{};
           const result={
