@@ -619,14 +619,17 @@ test('post-runtime scan persists successful sibling probes before surfacing pers
 });
 
 
-test('exact engine preboot continues internal F9 without making Studio a gate',()=>{
+test('exact Open Cloud server boot continues internal F9 without making Studio a gate',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
- const start=workflow.indexOf('if(exactEnginePrebootFromProbe){');
+ const start=workflow.indexOf('if(exactEngineServerBootFromProbe){');
  const end=workflow.indexOf('}else{',start);
  assert.ok(start>0&&end>start);
  const block=workflow.slice(start,end);
- assert.match(workflow,/item\.robloxRuntimeFoundationPassed=false;[\s\S]{0,900}if\(exactEnginePrebootFromProbe\)\{/);
- assert.match(workflow,/item\.robloxRuntimePassed=false;[\s\S]{0,900}if\(exactEnginePrebootFromProbe\)\{/);
+ assert.match(workflow,/item\.robloxRuntimeFoundationPassed=false;[\s\S]{0,900}if\(exactEngineServerBootFromProbe\)\{/);
+ assert.match(workflow,/item\.robloxRuntimePassed=false;[\s\S]{0,900}if\(exactEngineServerBootFromProbe\)\{/);
+ assert.match(block,/serverBootObserved:true/);
+ assert.match(block,/actualServerRuntimeEvidence:true/);
+ assert.match(block,/actualClientRuntimeEvidence:false/);
  assert.match(block,/internalRuntimeObservationDeferred:true/);
  assert.match(block,/externalServerBootRequired:false/);
  assert.match(block,/officialStudioMcpActualPlayPassed:exactStudioInternalValidation/);
