@@ -42947,14 +42947,14 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-06T07:41:24.756Z",
+      "updatedAt": "2026-10-06T07:52:21.298Z",
       "robloxSourceCommit": "4380e1501129938da07f1deaa9b5e3ed44d24b5d",
       "robloxSourceBootstrapPassedAt": "2026-10-06T07:35:30.606Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -43017,19 +43017,19 @@
         "blockers": [],
         "authority": "roblox-vibe-shared-model-build-preflight"
       },
-      "robloxFoundationF0Passed": false,
-      "robloxFoundationF0PassedAt": null,
+      "robloxFoundationF0Passed": true,
+      "robloxFoundationF0PassedAt": "2026-10-06T07:52:21.298Z",
       "robloxFoundationF0Evidence": {
         "version": 5,
         "gameId": "survival",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-06T07:40:17.017Z",
+        "checkedAt": "2026-10-06T07:52:17.775Z",
         "sourcePath": "roblox-games/survival",
         "sourceRevision": "4380e1501129938da07f1deaa9b5e3ed44d24b5d",
         "artifactIdentity": "sha256:4703237b7eabf4f58acec2fb2323bd38c4f13d776588a78f3fbf7360ad9b105e",
         "rebuiltArtifactIdentity": "sha256:4703237b7eabf4f58acec2fb2323bd38c4f13d776588a78f3fbf7360ad9b105e",
-        "artifactRunId": 37430369016,
+        "artifactRunId": 37432073516,
         "buildUpAssetSourceUsageFingerprint": null,
         "assetSelectionFingerprint": null,
         "observedAssetSelectionFingerprint": "15aa68b54c7f7e7e070270b3f128293967d30cd5f6172702d6f441265dc49ca5",
@@ -43040,7 +43040,7 @@
         "playMode": "SINGLE",
         "saveExists": true,
         "multiplayerApplicable": false,
-        "sourcePreflightPassed": false,
+        "sourcePreflightPassed": true,
         "f0SourceIntegrityPassed": true,
         "sourceStartupMarkersPassed": true,
         "gameStartPassed": false,
@@ -43058,143 +43058,27 @@
         "combatOrRoundMarkersPassed": true,
         "datastoreContractPassed": true,
         "multiplayerSyncContractPassed": true,
-        "protectedStatePreserved": false,
+        "protectedStatePreserved": true,
         "exactRevision": true,
-        "gameplayProductReadinessRequired": true,
+        "gameplayProductReadinessRequired": false,
         "gameplayProductReadiness": {
           "version": 1,
           "gameId": "survival",
           "pass": false,
           "blockers": [
             "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-            "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-            "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-            "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-            "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-            "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
-            "MISSING_GAMEPLAY_CAPABILITY:CRAFTING",
-            "MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT",
-            "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-            "MISSING_GAMEPLAY_CAPABILITY:INVENTORY",
-            "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-            "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-            "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-            "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-            "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-            "CORE_LOOP_STEP_UNIMPLEMENTED:3",
-            "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-            "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
             "GENERIC_SCOPE_HANDLER_SKELETON"
           ],
           "requiredCapabilities": [
             "CORE_GAMEPLAY_STATE",
-            "SESSION_FLOW",
-            "WORLD",
-            "CONTENT_ENTITY",
-            "COMBAT",
-            "ENEMY_AI",
-            "GATHERING",
-            "CRAFTING",
-            "DAY_NIGHT",
-            "WAVE",
-            "INVENTORY",
-            "EQUIPMENT",
-            "PROGRESSION",
-            "DEFENSE",
-            "SAVE",
             "MOBILE_UI"
           ],
           "implementedCapabilities": {
             "CORE_GAMEPLAY_STATE": false,
-            "SESSION_FLOW": false,
-            "WORLD": false,
-            "CONTENT_ENTITY": false,
-            "COMBAT": false,
-            "ENEMY_AI": false,
-            "GATHERING": false,
-            "CRAFTING": false,
-            "DAY_NIGHT": false,
-            "WAVE": false,
-            "INVENTORY": false,
-            "EQUIPMENT": false,
-            "PROGRESSION": false,
-            "DEFENSE": true,
-            "SAVE": true,
             "MOBILE_UI": true
           },
-          "coreLoopTrace": [
-            {
-              "index": 0,
-              "step": "낮 시간 동안 제한된 구역을 탐색하여 자원을 채집하고 생존에 필요한 도구와 무기를 제작합니다.",
-              "capabilities": [
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "GATHERING",
-                "CRAFTING",
-                "DAY_NIGHT",
-                "EQUIPMENT"
-              ],
-              "pass": false
-            },
-            {
-              "index": 1,
-              "step": "밤이 되면 몰려오는 적의 파상공세를 실시간 액션으로 방어하며 생존합니다.",
-              "capabilities": [
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "DAY_NIGHT",
-                "WAVE"
-              ],
-              "pass": false
-            },
-            {
-              "index": 2,
-              "step": "전투 종료 후 획득한 경험치와 자원으로 캐릭터의 능력치를 강화하거나 새로운 제작법을 해금합니다.",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "CRAFTING",
-                "PROGRESSION"
-              ],
-              "pass": false
-            },
-            {
-              "index": 3,
-              "step": "생존 기록을 바탕으로 다음 날의 탐색 우선순위와 제작 전략을 재설정합니다.",
-              "capabilities": [
-                "CORE_GAMEPLAY_STATE"
-              ],
-              "pass": false
-            }
-          ],
-          "signatureSystemTrace": [
-            {
-              "index": 0,
-              "name": "일일 생존 기록 시스템",
-              "capabilities": [
-                "WORLD",
-                "CONTENT_ENTITY",
-                "PROGRESSION"
-              ],
-              "pass": false
-            },
-            {
-              "index": 1,
-              "name": "즉석 제작 및 개조 시스템",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "EQUIPMENT",
-                "PROGRESSION"
-              ],
-              "pass": false
-            }
-          ],
+          "coreLoopTrace": [],
+          "signatureSystemTrace": [],
           "placeholderDebt": {
             "primitiveConstructionCount": 0,
             "meshConstructionCount": 0,
@@ -43203,12 +43087,12 @@
             "meaningfulGameplayFunctionCount": 0
           },
           "studioQualitySheet": {
-            "Core": "ROUGH",
-            "Content": "ROUGH",
-            "World": "MISSING",
-            "Combat": "MISSING",
-            "AI": "MISSING",
-            "Progression": "MISSING",
+            "Core": "MISSING",
+            "Content": "N/A",
+            "World": "N/A",
+            "Combat": "N/A",
+            "AI": "N/A",
+            "Progression": "N/A",
             "UI": "POLISHED",
             "Graphics": "ROUGH",
             "Motion": "POLISHED",
@@ -43219,49 +43103,32 @@
           },
           "studioReadiness": {
             "ai": {
-              "applicable": true,
+              "applicable": false,
               "signalCount": 0,
-              "pass": false
+              "pass": true
             },
             "combatFeel": {
-              "applicable": true,
+              "applicable": false,
               "signalCount": 2,
-              "pass": false
+              "pass": true
             },
             "worldTopology": {
-              "applicable": true,
+              "applicable": false,
               "signalCount": 1,
-              "pass": false
+              "pass": true
             },
             "firstTenMinutes": {
               "signalCount": 3,
               "pass": false
             },
             "midLateGame": {
-              "applicable": true,
+              "applicable": false,
               "signalCount": 3,
               "pass": true
             },
             "systemConnections": {
-              "rows": [
-                {
-                  "id": "RESOURCE_TO_CRAFT",
-                  "pass": false
-                },
-                {
-                  "id": "CRAFT_TO_EQUIPMENT",
-                  "pass": false
-                },
-                {
-                  "id": "EQUIPMENT_TO_COMBAT",
-                  "pass": false
-                },
-                {
-                  "id": "WORLD_TO_CONTENT",
-                  "pass": false
-                }
-              ],
-              "pass": false
+              "rows": [],
+              "pass": true
             },
             "placeholder": {
               "pass": true,
@@ -43272,38 +43139,34 @@
               "meaningfulGameplayFunctionCount": 0
             },
             "criticalGaps": [
-              "AI_STATE_DEPTH",
-              "COMBAT_FEEL_CHAIN",
-              "WORLD_TOPOLOGY_AND_LANDMARKS",
-              "FIRST_10_MINUTES_FLOW",
-              "SYSTEM_CONNECTION_CHAIN"
+              "FIRST_10_MINUTES_FLOW"
             ],
             "f9SourceQualityReady": false
           },
           "runtimeRequirements": {
-            "worldRequired": true,
-            "minimumBasePartCount": 5,
-            "spawnRequired": true,
-            "landmarkRequired": true,
-            "objectiveRequired": true,
+            "worldRequired": false,
+            "minimumBasePartCount": 1,
+            "spawnRequired": false,
+            "landmarkRequired": false,
+            "objectiveRequired": false,
             "serverBootRequired": true,
             "simulationRequired": true,
             "actualPlayRequired": true
           },
-          "designFingerprint": "65905b75e8d3a837ab7fef1fef33fff9a29eacde3e8468f254575c0b979ac33a",
+          "designFingerprint": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
           "antiSkeletonPassed": false,
-          "designGenre": "Strategy",
+          "designGenre": null,
           "sourceGenre": "Strategy",
           "designPlayMode": "SINGLE",
           "sourcePlayMode": "SINGLE"
         },
         "studioQualitySheet": {
-          "Core": "ROUGH",
-          "Content": "ROUGH",
-          "World": "MISSING",
-          "Combat": "MISSING",
-          "AI": "MISSING",
-          "Progression": "MISSING",
+          "Core": "MISSING",
+          "Content": "N/A",
+          "World": "N/A",
+          "Combat": "N/A",
+          "AI": "N/A",
+          "Progression": "N/A",
           "UI": "POLISHED",
           "Graphics": "ROUGH",
           "Motion": "POLISHED",
@@ -43335,28 +43198,26 @@
           "multiplayerSync": true,
           "sessionEndRestart": true,
           "errorGuards": true,
-          "gameplayProductReadiness": false,
+          "gameplayProductReadiness": true,
           "f0SourceIntegrity": true
         },
-        "pass": false,
-        "state": "BLOCKED",
-        "blockers": [
-          "gameplayProductReadiness"
-        ],
+        "pass": true,
+        "state": "PASS",
+        "blockers": [],
         "authority": "roblox-headless-source-preflight-f0"
       },
-      "robloxHeadlessFastMvpPassed": false,
+      "robloxHeadlessFastMvpPassed": true,
       "robloxHeadlessFastMvpEvidence": {
         "version": 5,
         "gameId": "survival",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-06T07:40:17.017Z",
+        "checkedAt": "2026-10-06T07:52:17.775Z",
         "sourcePath": "roblox-games/survival",
         "sourceRevision": "4380e1501129938da07f1deaa9b5e3ed44d24b5d",
         "artifactIdentity": "sha256:4703237b7eabf4f58acec2fb2323bd38c4f13d776588a78f3fbf7360ad9b105e",
         "rebuiltArtifactIdentity": "sha256:4703237b7eabf4f58acec2fb2323bd38c4f13d776588a78f3fbf7360ad9b105e",
-        "artifactRunId": 37430369016,
+        "artifactRunId": 37432073516,
         "buildUpAssetSourceUsageFingerprint": null,
         "assetSelectionFingerprint": null,
         "observedAssetSelectionFingerprint": "15aa68b54c7f7e7e070270b3f128293967d30cd5f6172702d6f441265dc49ca5",
@@ -43367,7 +43228,7 @@
         "playMode": "SINGLE",
         "saveExists": true,
         "multiplayerApplicable": false,
-        "sourcePreflightPassed": false,
+        "sourcePreflightPassed": true,
         "f0SourceIntegrityPassed": true,
         "sourceStartupMarkersPassed": true,
         "gameStartPassed": false,
@@ -43385,143 +43246,27 @@
         "combatOrRoundMarkersPassed": true,
         "datastoreContractPassed": true,
         "multiplayerSyncContractPassed": true,
-        "protectedStatePreserved": false,
+        "protectedStatePreserved": true,
         "exactRevision": true,
-        "gameplayProductReadinessRequired": true,
+        "gameplayProductReadinessRequired": false,
         "gameplayProductReadiness": {
           "version": 1,
           "gameId": "survival",
           "pass": false,
           "blockers": [
             "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-            "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-            "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-            "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-            "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-            "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
-            "MISSING_GAMEPLAY_CAPABILITY:CRAFTING",
-            "MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT",
-            "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-            "MISSING_GAMEPLAY_CAPABILITY:INVENTORY",
-            "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-            "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-            "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-            "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-            "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-            "CORE_LOOP_STEP_UNIMPLEMENTED:3",
-            "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-            "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
             "GENERIC_SCOPE_HANDLER_SKELETON"
           ],
           "requiredCapabilities": [
             "CORE_GAMEPLAY_STATE",
-            "SESSION_FLOW",
-            "WORLD",
-            "CONTENT_ENTITY",
-            "COMBAT",
-            "ENEMY_AI",
-            "GATHERING",
-            "CRAFTING",
-            "DAY_NIGHT",
-            "WAVE",
-            "INVENTORY",
-            "EQUIPMENT",
-            "PROGRESSION",
-            "DEFENSE",
-            "SAVE",
             "MOBILE_UI"
           ],
           "implementedCapabilities": {
             "CORE_GAMEPLAY_STATE": false,
-            "SESSION_FLOW": false,
-            "WORLD": false,
-            "CONTENT_ENTITY": false,
-            "COMBAT": false,
-            "ENEMY_AI": false,
-            "GATHERING": false,
-            "CRAFTING": false,
-            "DAY_NIGHT": false,
-            "WAVE": false,
-            "INVENTORY": false,
-            "EQUIPMENT": false,
-            "PROGRESSION": false,
-            "DEFENSE": true,
-            "SAVE": true,
             "MOBILE_UI": true
           },
-          "coreLoopTrace": [
-            {
-              "index": 0,
-              "step": "낮 시간 동안 제한된 구역을 탐색하여 자원을 채집하고 생존에 필요한 도구와 무기를 제작합니다.",
-              "capabilities": [
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "GATHERING",
-                "CRAFTING",
-                "DAY_NIGHT",
-                "EQUIPMENT"
-              ],
-              "pass": false
-            },
-            {
-              "index": 1,
-              "step": "밤이 되면 몰려오는 적의 파상공세를 실시간 액션으로 방어하며 생존합니다.",
-              "capabilities": [
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "DAY_NIGHT",
-                "WAVE"
-              ],
-              "pass": false
-            },
-            {
-              "index": 2,
-              "step": "전투 종료 후 획득한 경험치와 자원으로 캐릭터의 능력치를 강화하거나 새로운 제작법을 해금합니다.",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "CRAFTING",
-                "PROGRESSION"
-              ],
-              "pass": false
-            },
-            {
-              "index": 3,
-              "step": "생존 기록을 바탕으로 다음 날의 탐색 우선순위와 제작 전략을 재설정합니다.",
-              "capabilities": [
-                "CORE_GAMEPLAY_STATE"
-              ],
-              "pass": false
-            }
-          ],
-          "signatureSystemTrace": [
-            {
-              "index": 0,
-              "name": "일일 생존 기록 시스템",
-              "capabilities": [
-                "WORLD",
-                "CONTENT_ENTITY",
-                "PROGRESSION"
-              ],
-              "pass": false
-            },
-            {
-              "index": 1,
-              "name": "즉석 제작 및 개조 시스템",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "EQUIPMENT",
-                "PROGRESSION"
-              ],
-              "pass": false
-            }
-          ],
+          "coreLoopTrace": [],
+          "signatureSystemTrace": [],
           "placeholderDebt": {
             "primitiveConstructionCount": 0,
             "meshConstructionCount": 0,
@@ -43530,12 +43275,12 @@
             "meaningfulGameplayFunctionCount": 0
           },
           "studioQualitySheet": {
-            "Core": "ROUGH",
-            "Content": "ROUGH",
-            "World": "MISSING",
-            "Combat": "MISSING",
-            "AI": "MISSING",
-            "Progression": "MISSING",
+            "Core": "MISSING",
+            "Content": "N/A",
+            "World": "N/A",
+            "Combat": "N/A",
+            "AI": "N/A",
+            "Progression": "N/A",
             "UI": "POLISHED",
             "Graphics": "ROUGH",
             "Motion": "POLISHED",
@@ -43546,49 +43291,32 @@
           },
           "studioReadiness": {
             "ai": {
-              "applicable": true,
+              "applicable": false,
               "signalCount": 0,
-              "pass": false
+              "pass": true
             },
             "combatFeel": {
-              "applicable": true,
+              "applicable": false,
               "signalCount": 2,
-              "pass": false
+              "pass": true
             },
             "worldTopology": {
-              "applicable": true,
+              "applicable": false,
               "signalCount": 1,
-              "pass": false
+              "pass": true
             },
             "firstTenMinutes": {
               "signalCount": 3,
               "pass": false
             },
             "midLateGame": {
-              "applicable": true,
+              "applicable": false,
               "signalCount": 3,
               "pass": true
             },
             "systemConnections": {
-              "rows": [
-                {
-                  "id": "RESOURCE_TO_CRAFT",
-                  "pass": false
-                },
-                {
-                  "id": "CRAFT_TO_EQUIPMENT",
-                  "pass": false
-                },
-                {
-                  "id": "EQUIPMENT_TO_COMBAT",
-                  "pass": false
-                },
-                {
-                  "id": "WORLD_TO_CONTENT",
-                  "pass": false
-                }
-              ],
-              "pass": false
+              "rows": [],
+              "pass": true
             },
             "placeholder": {
               "pass": true,
@@ -43599,38 +43327,34 @@
               "meaningfulGameplayFunctionCount": 0
             },
             "criticalGaps": [
-              "AI_STATE_DEPTH",
-              "COMBAT_FEEL_CHAIN",
-              "WORLD_TOPOLOGY_AND_LANDMARKS",
-              "FIRST_10_MINUTES_FLOW",
-              "SYSTEM_CONNECTION_CHAIN"
+              "FIRST_10_MINUTES_FLOW"
             ],
             "f9SourceQualityReady": false
           },
           "runtimeRequirements": {
-            "worldRequired": true,
-            "minimumBasePartCount": 5,
-            "spawnRequired": true,
-            "landmarkRequired": true,
-            "objectiveRequired": true,
+            "worldRequired": false,
+            "minimumBasePartCount": 1,
+            "spawnRequired": false,
+            "landmarkRequired": false,
+            "objectiveRequired": false,
             "serverBootRequired": true,
             "simulationRequired": true,
             "actualPlayRequired": true
           },
-          "designFingerprint": "65905b75e8d3a837ab7fef1fef33fff9a29eacde3e8468f254575c0b979ac33a",
+          "designFingerprint": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
           "antiSkeletonPassed": false,
-          "designGenre": "Strategy",
+          "designGenre": null,
           "sourceGenre": "Strategy",
           "designPlayMode": "SINGLE",
           "sourcePlayMode": "SINGLE"
         },
         "studioQualitySheet": {
-          "Core": "ROUGH",
-          "Content": "ROUGH",
-          "World": "MISSING",
-          "Combat": "MISSING",
-          "AI": "MISSING",
-          "Progression": "MISSING",
+          "Core": "MISSING",
+          "Content": "N/A",
+          "World": "N/A",
+          "Combat": "N/A",
+          "AI": "N/A",
+          "Progression": "N/A",
           "UI": "POLISHED",
           "Graphics": "ROUGH",
           "Motion": "POLISHED",
@@ -43662,14 +43386,12 @@
           "multiplayerSync": true,
           "sessionEndRestart": true,
           "errorGuards": true,
-          "gameplayProductReadiness": false,
+          "gameplayProductReadiness": true,
           "f0SourceIntegrity": true
         },
-        "pass": false,
-        "state": "BLOCKED",
-        "blockers": [
-          "gameplayProductReadiness"
-        ],
+        "pass": true,
+        "state": "PASS",
+        "blockers": [],
         "authority": "roblox-headless-source-preflight-f0"
       },
       "robloxHeadlessFinalReviewPassed": false,
@@ -43704,10 +43426,10 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
-      "robloxFailureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
+      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
       "routingBlockers": [
-        "roblox-f0-gameplay-product-readiness-failed"
+        "roblox-runtime-candidate-deploy-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -43720,7 +43442,7 @@
       "strictDesignReviewRefreshRequired": true,
       "ownerPreservationPresentationUpgrade": false,
       "presentationFirstPass": null,
-      "robloxExactRevisionPassed": false,
+      "robloxExactRevisionPassed": true,
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": "development/unity-tech-survival-37327263262",
       "unitySourceCommit": "ac758e07fdecbb1e7b1fff0fa6157a3980630ae7",
@@ -49294,7 +49016,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-06T07:51:44.753Z",
+  "updatedAt": "2026-10-06T07:52:21.298Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
