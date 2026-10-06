@@ -4208,7 +4208,29 @@ test('zero-output focused Roblox Studio recovery bounds oversized build-up guida
     'gameIdentity=demo survival',
     'primaryGoal=make combat presentation readable',
     'implementationUnit='+huge,
-    'buildReadyBlueprint=status:BUILD_READY_IMPLEMENTATION_BLUEPRINT mode:VERTICAL_SLICE_BUILD_UP foundationRepairFirst:false',
+    'buildReadyBlueprint=status:DETAILED_BUILD_READY_IMPLEMENTATION_SPEC mode:VERTICAL_SLICE_BUILD_UP foundationRepairFirst:false',
+    'blueprintCritical={"mode":"VERTICAL_SLICE_BUILD_UP","implementationFacts":{"technicalAssumptions":["server authoritative"],"exactCodePaths":{"client":"client/Game.client.luau"}}}',
+    'implementationFacts={"mobileUx":"touch","technicalAssumptions":["server authoritative"]}',
+    'coreLoopExecutionPlan=[{"order":1,"designStep":"벌 돌진","exactSourceFile":"client/Game.client.luau"}]',
+    'interactionCombatContract={"exactApprovedRules":["attack cooldown"]}',
+    'inputUiContract={"mobileUx":"touch"}',
+    'networkContract={"clientRole":"SEND_INTENT_AND_RENDER_REPLICATED_FEEDBACK"}',
+    'presentationContract={"materialsMustAffectActualRenderedObjectsNotOnlyConfig":true}',
+    'sourceImplementationContract={"approvedCodePaths":{"client":"client/Game.client.luau"}}',
+    'orderedImplementationSteps=[{"order":1,"id":"READ_CURRENT_IMPLEMENTATION"}]',
+    'acceptanceScenarios=[{"id":"PRIMARY_HAPPY_PATH","required":true}]',
+    'antiShallowImplementationContract={"forbiddenAsCompletion":["BOOTSTRAP_JSON_ONLY"]}',
+    'blueprintCritical={"status":"DETAILED_BUILD_READY_IMPLEMENTATION_SPEC","mode":"VERTICAL_SLICE_BUILD_UP","implementationFacts":{"technicalAssumptions":["server authoritative"],"exactCodePaths":{"client":"client/Game.client.luau"}}}',
+    'implementationFacts={"mobileUx":"touch attack","technicalAssumptions":["server authoritative","cooldown 1.2"],"forbiddenScope":["marker-only"],"exactCodePaths":{"client":"client/Game.client.luau"}}',
+    'coreLoopExecutionPlan=[{"order":1,"designStep":"attack","exactSourceFile":"client/Game.client.luau","requiredStateMutation":"real state"}]',
+    'interactionCombatContract={"exactApprovedRules":["cooldown 1.2"],"clientAuthoritativeDamageRewardOrProgressForbidden":true}',
+    'inputUiContract={"mobileUx":"touch attack","hudValuesMustReadAuthoritativeOrReplicatedRealState":true}',
+    'networkContract={"clientRole":"SEND_INTENT_AND_RENDER_REPLICATED_FEEDBACK","authoritativeRole":"VALIDATE_PRECONDITIONS_AND_MUTATE_SHARED_GAME_STATE"}',
+    'presentationContract={"materialsMustAffectActualRenderedObjectsNotOnlyConfig":true,"thumbnailOrMetadataCannotProveRuntimeVisualChange":true}',
+    'sourceImplementationContract={"approvedCodePaths":{"client":"client/Game.client.luau"},"metadataBootstrapAndEvidenceFilesDoNotCountAsBehaviorImplementation":true}',
+    'orderedImplementationSteps=[{"order":1,"id":"READ_CURRENT_IMPLEMENTATION"},{"order":2,"id":"REPAIR_FOUNDATION_IF_BROKEN"}]',
+    'acceptanceScenarios=[{"id":"BOOT_TO_PLAY","required":true},{"id":"PRIMARY_HAPPY_PATH","required":true}]',
+    'antiShallowImplementationContract={"forbiddenAsCompletion":["BOOTSTRAP_JSON_ONLY","STATUS_OR_MARKER_ONLY"]}',
     'verticalSlice={"playerAction":"attack","validatedStateChange":"enemy hp changes","nextLoopConnection":"reward"}',
     'stateTransitions=[{"from":"READY","to":"ACTION_REQUESTED"},{"from":"ACTION_REQUESTED","to":"AUTHORITATIVE_STATE_CHANGED"}]',
     'responsibleSourcePlan=[{"file":"client/Game.client.luau","symbol":"render"}]',
@@ -4240,7 +4262,15 @@ test('zero-output focused Roblox Studio recovery bounds oversized build-up guida
   assert.ok(focused);
   assert.equal(verifiedExternalLearningBlockFromPrompt(focused.prompt),external);
   assert.match(focused.prompt,/primaryGoal=make combat presentation readable/);
-  assert.match(focused.prompt,/buildReadyBlueprint=status:BUILD_READY_IMPLEMENTATION_BLUEPRINT/);
+  assert.match(focused.prompt,/buildReadyBlueprint=status:DETAILED_BUILD_READY_IMPLEMENTATION_SPEC/);
+  assert.match(focused.prompt,/blueprintCritical=/);
+  assert.match(focused.prompt,/server authoritative/);
+  assert.match(focused.prompt,/coreLoopExecutionPlan=/);
+  assert.match(focused.prompt,/interactionCombatContract=/);
+  assert.match(focused.prompt,/inputUiContract=/);
+  assert.match(focused.prompt,/sourceImplementationContract=/);
+  assert.match(focused.prompt,/acceptanceScenarios=/);
+  assert.match(focused.prompt,/BOOTSTRAP_JSON_ONLY/);
   assert.match(focused.prompt,/verticalSlice=/);
   assert.match(focused.prompt,/stateTransitions=/);
   assert.match(focused.prompt,/responsibleSourcePlan=/);
@@ -5318,7 +5348,12 @@ test('game-specific BUILD_UP directive survives compact generation retries',()=>
   });
   assert.match(retry,/bug-defense-build-up-g3-demo/);
   assert.match(retry,/벌 돌진, 거미 속박, 사마귀 베기/);
-  assert.match(retry,/BUILD_READY_IMPLEMENTATION_BLUEPRINT/);
+  assert.match(retry,/DETAILED_BUILD_READY_IMPLEMENTATION_SPEC/);
+  assert.match(retry,/blueprintCritical=/);
+  assert.match(retry,/coreLoopExecutionPlan=/);
+  assert.match(retry,/sourceImplementationContract=/);
+  assert.match(retry,/acceptanceScenarios=/);
+  assert.match(retry,/BOOTSTRAP_JSON_ONLY/);
   assert.match(retry,/verticalSlice=/);
   assert.match(retry,/runtimeAcceptance=/);
   assert.match(retry,/bootstrapOnlyCompletionForbidden/);
@@ -5351,6 +5386,24 @@ test('game-specific BUILD_UP worker guidance carries source current-to-intended 
   assert.match(source,/presentationPlan=/);
   assert.match(source,/runtimeAcceptance=/);
   assert.match(source,/buildCompletionGate=/);
+  assert.match(source,/blueprintCritical=/);
+  assert.match(source,/implementationFacts=/);
+  assert.match(source,/coreLoopExecutionPlan=/);
+  assert.match(source,/rosterContracts=/);
+  assert.match(source,/worldMapContract=/);
+  assert.match(source,/interactionCombatContract=/);
+  assert.match(source,/inputUiContract=/);
+  assert.match(source,/networkContract=/);
+  assert.match(source,/persistenceContract=/);
+  assert.match(source,/aiEncounterContract=/);
+  assert.match(source,/progressionEconomyContract=/);
+  assert.match(source,/presentationContract=/);
+  assert.match(source,/performanceContract=/);
+  assert.match(source,/failureRecoveryContract=/);
+  assert.match(source,/sourceImplementationContract=/);
+  assert.match(source,/orderedImplementationSteps=/);
+  assert.match(source,/acceptanceScenarios=/);
+  assert.match(source,/antiShallowImplementationContract=/);
   assert.match(source,/FORTNITE_UEFN/);
 });
 
