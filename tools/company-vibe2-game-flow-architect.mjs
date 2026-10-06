@@ -176,6 +176,29 @@ function systemDescriptor(id,priority='REQUIRED'){
     gameplayAuthorityMustStayWithExistingResponsibleSystem:true,
   });
 }
+function novelGrammarFromBaseline(baseline={}){
+  const content=baseline?.content&&typeof baseline.content==='object'?baseline.content:baseline;
+  const grammar=content?.novelGameGrammar;
+  if(!grammar||typeof grammar!=='object'||Array.isArray(grammar))return null;
+  return Object.freeze({
+    depth:clean(grammar.depth).toUpperCase(),
+    toneMode:clean(grammar.toneMode).toUpperCase(),
+    familiarAnchor:clean(grammar.familiarAnchor),
+    newPrimaryVerb:clean(grammar.newPrimaryVerb),
+    brokenGenreAssumption:clean(grammar.brokenGenreAssumption),
+    worldRule:clean(grammar.worldRule),
+    causalDNAs:Object.freeze((grammar.causalDNAs||[]).map(row=>Object.freeze({id:clean(row?.id),source:clean(row?.source),principle:clean(row?.principle),gameplayConversion:clean(row?.gameplayConversion),fusionRole:clean(row?.fusionRole)})).filter(row=>row.id).slice(0,4)),
+    causalFusion:Object.freeze(uniq(grammar.causalFusion||[]).slice(0,6)),
+    storyWorldBindings:grammar.storyWorldBindings||null,
+    comicAbsurdity:grammar.comicAbsurdity||null,
+    escalation:grammar.escalation||null,
+    expansionVectors:Object.freeze(uniq(grammar.expansionVectors||[]).slice(0,8)),
+    irreducibilityTest:grammar.irreducibilityTest||null,
+    culturalAbstractionRule:clean(grammar.culturalAbstractionRule),
+    rule:'CAUSAL_DNA_MUST_CREATE_GAMEPLAY_CAUSALITY_NOT_DECORATIVE_LORE_OR_PARALLEL_FEATURE_STACK',
+    depthIsQualityRank:false
+  });
+}
 export function buildConceptSystemBlueprint({genre='',baseline={},architecture={}}={}){
   const {key,bundle}=normalizedGenreSystemBundle(genre);
   const semantic=baselineText(baseline).toUpperCase();
@@ -190,6 +213,7 @@ export function buildConceptSystemBlueprint({genre='',baseline={},architecture={
   if(/WEATHER|RAIN|SNOW|STORM|FOG|날씨|비|눈|폭풍|안개/.test(semantic))promote('WEATHER_ENVIRONMENT');
   if(/SKILL|MAGIC|ABILITY|스킬|마법/.test(semantic))promote('SKILL_BUILD');
   if(/SHOP|ECONOM|상점|경제/.test(semantic))promote('ECONOMY_SHOP');
+  const novelGrammarContract=novelGrammarFromBaseline(baseline);
   const requiredRows=[...required].map(id=>systemDescriptor(id,'REQUIRED'));
   const recommendedRows=[...recommended].filter(id=>!required.has(id)).map(id=>systemDescriptor(id,'EXPANSION'));
   const phasePlan={};
@@ -204,6 +228,7 @@ export function buildConceptSystemBlueprint({genre='',baseline={},architecture={
     expansionSystems:Object.freeze(recommendedRows),
     phasePlan:Object.freeze(phasePlan),
     interconnectionChains:Object.freeze(uniq(bundle.chains||[])),
+    novelGrammarContract,
     awardCaliberPrinciples:AWARD_CALIBER_SYSTEM_PRINCIPLES,
     libraryReusePolicy:Object.freeze({
       existingCompatibleLibraryFirst:true,
@@ -219,6 +244,11 @@ export function buildConceptSystemBlueprint({genre='',baseline={},architecture={
       statOnlyReskinOnlyAndMenuOnlyExpansionDoesNotCount:true,
       sideContentMustFeedCoreFantasyOrWorldState:true,
       laterUpdatesMayAddSystemsWithoutRewritingValidatedCore:true,
+      causalGrammarMustMutateAcrossExpansion:true,
+      expansionShouldChangeHowTheCoreRuleBehavesNotOnlyAddObjects:true,
+      depthIsNotQualityRank:true,
+      lightComicGrammarMayRemainSimpleWhenSystemicallyConsistent:true,
+      characterMonsterRegionStoryShouldExpressTheSameCausalWorldLawWhenApplicable:true,
     }),
     sourceFlowDNA:Object.freeze(uniq(architecture.flowDNA||[])),
   });
@@ -309,6 +339,7 @@ function baselineText(baseline={}){
     content?.identity,content?.playerFantasy,content?.coreFun,content?.progressionDirection,
     ...(Array.isArray(content?.coreLoop)?content.coreLoop:[]),
     ...(Array.isArray(content?.signatureSystems)?content.signatureSystems.flatMap(row=>[row?.name,row?.purpose,row?.playerChoice]):[]),
+    content?.novelGameGrammar?JSON.stringify(content.novelGameGrammar):'',
   ].map(clean).filter(Boolean).join(' ');
 }
 function assetRequirement(family,subfamily,{flowRoles=[],systemRoles=[],phases=[],reason='FLOW_ROLE',required=true}={}){
@@ -494,6 +525,14 @@ export function evaluateGameFlowArchitecture(architecture={}){
   if((systemBlueprint.awardCaliberPrinciples||[]).length<8)blockers.push('FLOW_AWARD_CALIBER_SYSTEM_PRINCIPLES_REQUIRED');
   if(systemBlueprint.libraryReusePolicy?.wrapperOrShadowSystemForbidden!==true)blockers.push('FLOW_SHADOW_SYSTEM_FORBIDDEN_POLICY_REQUIRED');
   if(systemBlueprint.expansionPolicy?.contentBundlesMustConnectAtLeastTwoSystems!==true)blockers.push('FLOW_INTERCONNECTED_CONTENT_EXPANSION_REQUIRED');
+  if(systemBlueprint.novelGrammarContract){
+    const grammar=systemBlueprint.novelGrammarContract;
+    if(!clean(grammar.newPrimaryVerb)||!clean(grammar.brokenGenreAssumption)||!clean(grammar.worldRule))blockers.push('FLOW_NOVEL_GAME_GRAMMAR_REQUIRED');
+    if((grammar.causalDNAs||[]).length<2||(grammar.causalFusion||[]).length<2)blockers.push('FLOW_CAUSAL_DNA_FUSION_REQUIRED');
+    if(!clean(grammar.irreducibilityTest?.verdict))blockers.push('FLOW_GRAMMAR_IRREDUCIBILITY_REQUIRED');
+    if((grammar.expansionVectors||[]).length<4)blockers.push('FLOW_GRAMMAR_EXPANSION_VECTORS_REQUIRED');
+    if(grammar.depth==='D1_LIGHT_COMIC'&&grammar.comicAbsurdity?.enabled!==true)blockers.push('FLOW_D1_COMIC_SYSTEM_RULE_REQUIRED');
+  }
   const quality=architecture.qualityGrowthContract||{};
   if((quality.funDrivers||[]).length<3)blockers.push('FLOW_FUN_DRIVERS_REQUIRED');
   if((quality.balanceRules||[]).length<4)blockers.push('FLOW_BALANCE_RULES_REQUIRED');

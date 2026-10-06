@@ -128,7 +128,8 @@ function buildQuestGraph(mainQuestChain=[],sideQuestHooks=[]){
   return {nodes,edges,rule:'QUESTS_REQUIRE_CAUSE_PREREQUISITE_STATE_CHANGE_CONSEQUENCE_AND_NO_DUPLICATE_REWARD'};
 }
 
-export function expandCompactSeed(seed,{gameName='게임',genreText='',minimumPages=16,evidenceSnippets=[]}={}){
+export function expandCompactSeed(seed,{gameName='게임',genreText='',minimumPages=16,evidenceSnippets=[],causalGrammar=null}={}){
+  const grammar=causalGrammar&&typeof causalGrammar==='object'&&!Array.isArray(causalGrammar)?causalGrammar:null;
   const fallback=buildFallbackSeed({gameName,genreText,minimumPages}),phases=normalizedPhases(seed,fallback);
   const contaminated=[];
   for(const row of Array.isArray(seed?.phases)?seed.phases:[]){
@@ -171,7 +172,13 @@ export function expandCompactSeed(seed,{gameName='게임',genreText='',minimumPa
     sideQuestHooks,questGraph,
     npcMotivations,characterProfiles,foreshadowingGraph,
     relationshipMemoryContract:{axes:['TRUST','AFFINITY','FEAR','RESPECT','DEBT','BETRAYAL'],memorySourceEventRequired:true,knowledgeBoundaryRequired:true,gameplayAuthority:false},
-    worldNarrativeBindings:{channels:['REGION','LANDMARK','ENVIRONMENT','ITEM','NPC_DIALOGUE','FACTION_STATE','BOSS','QUEST_STATE'],worldStateConsistencyRequired:true},
+    worldNarrativeBindings:{channels:['REGION','LANDMARK','ENVIRONMENT','ITEM','NPC_DIALOGUE','FACTION_STATE','BOSS','QUEST_STATE'],worldStateConsistencyRequired:true,causalGrammarRequired:Boolean(grammar),causalDepth:clean(grammar?.depth)||null,newPrimaryVerb:clean(grammar?.newPrimaryVerb)||null,worldRule:clean(grammar?.worldRule)||null,causalDNA:(grammar?.causalDNAs||[]).map(row=>clean(row?.id)).filter(Boolean)},
+    causalNarrativeContract:grammar?{
+      depth:clean(grammar.depth),toneMode:clean(grammar.toneMode),familiarAnchor:clip(grammar.familiarAnchor,300),newPrimaryVerb:clip(grammar.newPrimaryVerb,220),worldRule:clip(grammar.worldRule,320),
+      causalDNA:(grammar.causalDNAs||[]).map(row=>({id:clean(row?.id),source:clean(row?.source),principle:clip(row?.principle,220)})).filter(row=>row.id),
+      storyWorldBindings:grammar.storyWorldBindings||null,comicAbsurdity:grammar.comicAbsurdity||null,escalation:grammar.escalation||null,
+      depthIsQualityRank:false,lightComicMayRemainSimple:true,familiarHumanConflictRequired:true,characterMonsterRegionStoryShareWorldLaw:true
+    }:null,
     majorBosses:[boss.boss],bossCausality:[boss],gaps,
     proposalAdditions:phasePlans.map(p=>`${p.stage}: ${p.region} / ${p.quest}`),
     conflictEscalation:clip(phasePlans.map(p=>p.cause).join(' → '),420),

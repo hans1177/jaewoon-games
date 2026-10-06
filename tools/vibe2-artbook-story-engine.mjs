@@ -3,6 +3,7 @@ import path from 'node:path';
 import { clean, clip, REQUIRED_STAGES, gameplayEvidenceSnippets, buildFallbackSeed, expandCompactSeed, validExpandedDraft } from './vibe2-artbook-story-core.mjs';
 import { buildGameFactPack, factPackPromptView, draftSemanticProblems } from './vibe2-game-fact-pack.mjs';
 import { normalizeCompactSeedStages } from './vibe2-compact-seed-normalizer.mjs';
+import { loadSeedState, activeSeedForGame } from './game-seed-state.mjs';
 
 const readJson=(f,v=null)=>{try{return JSON.parse(fs.readFileSync(f,'utf8'));}catch{return v;}};
 const writeJson=(f,v)=>{fs.mkdirSync(path.dirname(f),{recursive:true});fs.writeFileSync(f,JSON.stringify(v,null,2)+'\n');};
@@ -19,6 +20,8 @@ const sourceDate=clean(workOrder.secondWork?.sourceDate||date),reusablePath=path
 const catalog=readJson('game-catalog.json',{games:[]}),catalogGame=(catalog.games||[]).find(x=>clean(x.id)===gameId)||{};
 const genreText=Array.isArray(catalogGame.genre)?catalogGame.genre.join(' '):clean(catalogGame.genre||'');
 const gameName=clean(workOrder.gameName||catalogGame.name||gameId);
+const gameSeed=activeSeedForGame(loadSeedState(),gameId);
+const seedNovelGameGrammar=gameSeed?.GAMEPLAY_SKETCH?.novelGameGrammar&&typeof gameSeed.GAMEPLAY_SKETCH.novelGameGrammar==='object'?gameSeed.GAMEPLAY_SKETCH.novelGameGrammar:null;
 
 function complexityMinimumPages(){
   const text=`${gameName} ${genreText} ${workOrder.styleProfile||''} ${workOrder.departmentTasks?.planning?.scope||''}`;
@@ -125,10 +128,10 @@ const creativeDirectionSeed={type:'object',required:['id','focus','playerExperie
 const compactSchema={type:'object',required:['recommendedPages','playerMotivation','centralConflict','twist','phases','finalBoss','ending','postgame','npcSeeds','creativeDirections'],additionalProperties:false,properties:{recommendedPages:{type:'integer',minimum:12,maximum:30},playerMotivation:shortString,centralConflict:shortString,twist:shortString,phases:{type:'array',minItems:6,maxItems:6,items:phaseSeed},finalBoss:{type:'object',required:['boss','trigger','whyNow','winConsequence'],additionalProperties:false,properties:{boss:shortString,trigger:shortString,whyNow:shortString,winConsequence:shortString}},ending:shortString,postgame:shortString,npcSeeds:{type:'array',minItems:2,maxItems:4,items:{type:'object',required:['name','goal','conflict','relationshipToPlayer','voice','fear','secret'],additionalProperties:false,properties:{name:shortString,goal:shortString,conflict:shortString,relationshipToPlayer:shortString,voice:shortString,fear:shortString,secret:shortString}}},creativeDirections:{type:'array',minItems:3,maxItems:3,items:creativeDirectionSeed}}};
 async function callCompact(){
   let last=null;
-  const system='/no_think\n너는 Vibe2 게임 기획 1차 초안 엔진이다. 입력의 gameFactPack은 코드에서 먼저 추출한 검토 자료다. categories의 SOURCE_EVIDENCE는 실제 근거이며 unknownAreas는 확인되지 않은 영역이다. 확인되지 않은 세계관을 FACT처럼 만들지 말고 PROPOSAL로만 보완한다. gameSpecificTerms가 4개 이상이면 서로 다른 실제 용어를 최소 2개 이상 사용하고, 최소 2개 단계가 실제 게임 특징에 직접 연결되어야 한다. phases 배열 순서는 반드시 OPENING, EARLY, MID, LATE, FINAL_BOSS, ENDING 순서다. 각 단계의 원인→행동→결과가 다음 단계로 이어져야 한다. 단계마다 같은 전략적 계획/전략적 이해 같은 문장을 반복하지 않는다. npcSeeds는 최소 2명이며 서로 다른 욕망·두려움·비밀·말투를 가진다. 비밀과 반전은 초반 단서로 뒷받침되어야 하고 캐릭터가 관찰하지 않은 정보를 아는 것처럼 쓰지 않는다. 퀘스트는 원인·선행조건·상태변화·결과가 있는 구조를 우선하고 단순 심부름 반복을 피한다. creativeDirections는 A/B/C 정확히 3개를 만든다. 세 방향은 플레이어가 무엇을 보고·결정하고·반복하는지가 서로 달라야 하며, 각 방향에 이 게임 코드에서 나온 고유 용어나 규칙을 넣는다. A/B/C 중 하나만 채택해도 완성될 정도로 독립된 짧은 방향이어야 한다. 다른 게임 이름으로 바꿔도 자연스러운 일반론은 쓰지 않는다. 렌더링·카메라·canvas·DPR·resize·DOM·CSS·픽셀·이벤트리스너 같은 기술 구현을 세계관이나 사건으로 쓰지 않는다. 짧은 한국어 JSON만 출력한다.';
+  const system='/no_think\n너는 Vibe2 게임 기획 1차 초안 엔진이다. 입력의 gameFactPack은 코드에서 먼저 추출한 검토 자료다. categories의 SOURCE_EVIDENCE는 실제 근거이며 unknownAreas는 확인되지 않은 영역이다. 확인되지 않은 세계관을 FACT처럼 만들지 말고 PROPOSAL로만 보완한다. gameSpecificTerms가 4개 이상이면 서로 다른 실제 용어를 최소 2개 이상 사용하고, 최소 2개 단계가 실제 게임 특징에 직접 연결되어야 한다. phases 배열 순서는 반드시 OPENING, EARLY, MID, LATE, FINAL_BOSS, ENDING 순서다. 각 단계의 원인→행동→결과가 다음 단계로 이어져야 한다. 단계마다 같은 전략적 계획/전략적 이해 같은 문장을 반복하지 않는다. npcSeeds는 최소 2명이며 서로 다른 욕망·두려움·비밀·말투를 가진다. 비밀과 반전은 초반 단서로 뒷받침되어야 하고 캐릭터가 관찰하지 않은 정보를 아는 것처럼 쓰지 않는다. 퀘스트는 원인·선행조건·상태변화·결과가 있는 구조를 우선하고 단순 심부름 반복을 피한다. creativeDirections는 A/B/C 정확히 3개를 만든다. 세 방향은 플레이어가 무엇을 보고·결정하고·반복하는지가 서로 달라야 하며, 각 방향에 이 게임 코드에서 나온 고유 용어나 규칙을 넣는다. A/B/C 중 하나만 채택해도 완성될 정도로 독립된 짧은 방향이어야 한다. 다른 게임 이름으로 바꿔도 자연스러운 일반론은 쓰지 않는다. seedNovelGameGrammar가 있으면 새 세계관을 별도로 발명하지 말고 그 문법을 스토리 인과로 확장한다. familiarAnchor는 공감 가능한 인간 욕망·상실·경쟁·소속·명예·가족·생존 갈등으로 유지하고, causalDNAs는 역사·고전·종교·신화·철학·비극·희극·해학·정치 원형의 이름 장식이 아니라 실제 사건의 원인→선택→대가 구조로 사용한다. characterRule/monsterRule/regionRule/storyRule이 같은 worldRule을 서로 다른 방식으로 증명해야 한다. D1_LIGHT_COMIC이면 장대한 서사로 과장하지 말고 comicAbsurdity의 사소한 setup→엽기적인 규칙 뒤집기→실제 상태 후폭풍을 짧고 반복 가능하게 살린다. D2~D4는 해당 escalation 깊이까지만 확장하며 깊이는 품질 서열이 아니다. 현대 보호 작품의 고유 캐릭터·장면·대사·설정은 복제하지 않고 추상 구조만 참고한다. 렌더링·카메라·canvas·DPR·resize·DOM·CSS·픽셀·이벤트리스너 같은 기술 구현을 세계관이나 사건으로 쓰지 않는다. 짧은 한국어 JSON만 출력한다.';
   for(let attempt=1;attempt<=2;attempt++){
     try{
-      const payload={gameId,gameName,genre:genreText,sourceMode,minimumRecommendedPages:minimumPages,gameFactPack:compactFactPack,evidenceSnippets:evidenceSnippets.slice(0,attempt===1?18:10)};
+      const payload={gameId,gameName,genre:genreText,sourceMode,minimumRecommendedPages:minimumPages,seedNovelGameGrammar,gameFactPack:compactFactPack,evidenceSnippets:evidenceSnippets.slice(0,attempt===1?18:10)};
       const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,think:false,format:compactSchema,messages:[{role:'system',content:system},{role:'user',content:JSON.stringify(payload)}],options:{temperature:attempt===1?0.24:0.12,seed:8100+attempt,num_ctx:6144,num_predict:1800}})});
       if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);
       const packet=await response.json(),text=clean(packet?.message?.content).replace(/^```json\s*/i,'').replace(/```$/,'');
@@ -137,7 +140,7 @@ async function callCompact(){
       normalized.seed.creativeDirections=normalizeCreativeDirections(normalized.seed.creativeDirections);
       const directionProblems=creativeDirectionProblems(normalized.seed.creativeDirections);
       if(directionProblems.length)throw new Error(`creative directions: ${directionProblems.join(',')}`);
-      const preview=expandCompactSeed(normalized.seed,{gameName,genreText,minimumPages,evidenceSnippets});
+      const preview=expandCompactSeed(normalized.seed,{gameName,genreText,minimumPages,evidenceSnippets,causalGrammar:seedNovelGameGrammar});
       preview.creativeDirections=normalized.seed.creativeDirections;
       preview.storySpine={...(preview.storySpine||{}),creativeDirections:normalized.seed.creativeDirections};
       if(!validExpandedDraft(preview))throw new Error('expanded draft shape invalid');
@@ -150,11 +153,12 @@ async function callCompact(){
   return {seed:{...buildFallbackSeed({gameName,genreText,minimumPages}),creativeDirections:fallbackCreativeDirections()},attempt:2,fallbackReason:clean(last?.message||'compact generation failed'),stageLabelsNormalized:false,originalStages:null};
 }
 const generated=await callCompact();
-const draft=expandCompactSeed(generated.seed,{gameName,genreText,minimumPages,evidenceSnippets});
+const draft=expandCompactSeed(generated.seed,{gameName,genreText,minimumPages,evidenceSnippets,causalGrammar:seedNovelGameGrammar});
 draft.creativeDirections=normalizeCreativeDirections(generated.seed.creativeDirections);
 draft.storySpine={...(draft.storySpine||{}),creativeDirections:draft.creativeDirections};
 draft.generationMode=generated.fallbackReason?'DETERMINISTIC_FALLBACK':'COMPACT_MODEL_PLUS_DETERMINISTIC_EXPANSION';
 draft.fallbackReason=generated.fallbackReason||null;
+draft.seedNovelGameGrammar=seedNovelGameGrammar;
 draft.runner={type:'vibe2-local-open-model-compact-first-draft',model,localInference:true,paidApi:false,apiKeyRequired:false,modelAttempts:generated.attempt,stageLabelsNormalized:generated.stageLabelsNormalized===true,originalStageLabels:generated.originalStages||null,stages:['DETERMINISTIC_GAME_FACT_PACK','COMPACT_CAUSALITY_SEED','THREE_CREATIVE_DIRECTIONS','DETERMINISTIC_STAGE_LABEL_NORMALIZATION','DETERMINISTIC_EXPANSION','QUEST_GRAPH','FORESHADOWING_PAYOFF_GRAPH','CHARACTER_PERSONA_VOICE_MEMORY','WORLD_NARRATIVE_BINDING','SEMANTIC_GROUNDING_GATE','TECHNICAL_NARRATIVE_FILTER']};
 draft.sourceMode=sourceMode;draft.evidenceFiles=evidenceFiles.slice(0,24);draft.evidenceSnippets=evidenceSnippets.slice(0,32);
 if(!validExpandedDraft(draft))throw new Error('Vibe2 draft quality contract failed after compact expansion');

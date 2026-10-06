@@ -77,9 +77,19 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
   const platformKnown=['ROBLOX','UNITY'].includes(platform);
   const playMode=clean(design.multiplayerMode||seed.MULTIPLAYER_DESIGN_MODE).toUpperCase();
   const playModeKnown=['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(playMode);
+  const seedGrammar=Number(seed?.GAMEPLAY_SKETCH?.version||0)>=4&&seed?.GAMEPLAY_SKETCH?.novelGameGrammar&&typeof seed.GAMEPLAY_SKETCH.novelGameGrammar==='object'?seed.GAMEPLAY_SKETCH.novelGameGrammar:null;
+  const designText=JSON.stringify(design);
+  const grammarIds=distinct(list(seedGrammar?.causalDNAs).map(row=>clean(row?.id)));
+  const carriedGrammarIds=grammarIds.filter(id=>id&&designText.includes(id));
+  const grammarIdMinimum=seedGrammar?Math.min(2,grammarIds.length):0;
+  const primaryVerb=clean(seedGrammar?.newPrimaryVerb);
+  const worldRule=clean(seedGrammar?.worldRule);
+  const primaryVerbCarried=!seedGrammar||!primaryVerb||designText.includes(primaryVerb);
+  const worldRuleCarried=!seedGrammar||!worldRule||designText.includes(worldRule);
+  const grammarCarryOk=!seedGrammar||(carriedGrammarIds.length>=grammarIdMinimum&&(primaryVerbCarried||worldRuleCarried));
 
   const ideaBasic=textReady(design.identity,60)&&textReady(design.playerFantasy,40)&&textReady(design.coreFun,40)&&materialContractOk;
-  const ideaConnected=ideaBasic&&loops.length>=3&&signatureSystems.length>=2;
+  const ideaConnected=ideaBasic&&loops.length>=3&&signatureSystems.length>=2&&grammarCarryOk;
   const categoryBasic=textReady(seed.GAME_CATEGORY,3)&&clean(robloxGenreProfile?.genre).length>0;
   const categoryConnected=categoryBasic&&clean(robloxGenreProfile?.genre)!=='Utility & other'&&playModeKnown;
   const coreBasic=loops.length>=3;
@@ -157,6 +167,10 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
     hardFailures.push('CATEGORY_MISMATCH');
     rejectionReasons.push(rejectionReason({code:'CATEGORY_MISMATCH',axis:'CATEGORY_IDENTITY',evidenceLevel:evidenceLevels.CATEGORY_IDENTITY,minimumRequired:DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT,evidence:{category:clean(seed.GAME_CATEGORY),genre:clean(robloxGenreProfile?.genre),playMode:playMode||'MISSING'},requiredAction:AXIS_REPAIR_ACTION.CATEGORY_IDENTITY}));
   }
+  if(seedGrammar&&!grammarCarryOk){
+    hardFailures.push('NOVEL_GRAMMAR_DILUTED');
+    rejectionReasons.push(rejectionReason({code:'NOVEL_GRAMMAR_DILUTED',axis:'IDEA_AND_DISTINCTNESS',evidenceLevel:evidenceLevels.IDEA_AND_DISTINCTNESS,minimumRequired:DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT,evidence:{depth:clean(seedGrammar.depth),requiredCausalIds:grammarIds,carriedCausalIds,primaryVerbCarried,worldRuleCarried},requiredAction:'GAMEPLAY_SKETCH v4의 newPrimaryVerb와 causalDNA 인과축을 기존 identity/coreFun/signatureSystems/systemInterconnections/narrativeDialoguePlan/referenceHomagePlan에 다시 연결한다. 깊이를 올리는 것이 목적이 아니라 선택된 D1~D4 문법을 희석하지 않는 것이 목적이다.'}));
+  }
   if(Number(evidenceLevels.IDEA_AND_DISTINCTNESS)<60||Number(evidenceLevels.CORE_LOOP_DESIGN)<60){
     hardFailures.push('CORE_FUN_WEAK');
     rejectionReasons.push(rejectionReason({code:'CORE_FUN_WEAK',axis:'CORE_LOOP_DESIGN',evidenceLevel:Math.min(Number(evidenceLevels.IDEA_AND_DISTINCTNESS||0),Number(evidenceLevels.CORE_LOOP_DESIGN||0)),minimumRequired:60,evidence:{ideaAndDistinctness:evidenceLevels.IDEA_AND_DISTINCTNESS,coreLoopDesign:evidenceLevels.CORE_LOOP_DESIGN,coreLoopCount:loops.length,signatureSystemCount:signatureSystems.length},requiredAction:'핵심 재미를 정체성·core loop·signature system의 실제 선택과 상태변화로 강화한다.'}));
@@ -181,5 +195,6 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
     revalidated,
     thirtyMinuteHardGateApplied:false,
     materialContractOk,
+    grammarCarryEvidence:seedGrammar?{depth:clean(seedGrammar.depth),requiredCausalIds:grammarIds,carriedCausalIds,primaryVerbCarried,worldRuleCarried,depthIsQualityRank:false}:null,
   };
 }

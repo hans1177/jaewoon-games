@@ -526,6 +526,10 @@ export function extractDesignContext(record={}){
     coreLoop:uniq(d?.coreLoop).slice(0,10),
     signatureSystems:systems,
     systemInterconnections:(Array.isArray(d?.systemInterconnections)?d.systemInterconnections:[]).map(row=>({fromSystem:clean(row?.fromSystem),toSystem:clean(row?.toSystem),trigger:clean(row?.trigger),stateChange:clean(row?.stateChange)})).filter(row=>row.fromSystem||row.toSystem).slice(0,12),
+    contentExpansionPlan:(Array.isArray(d?.contentExpansionPlan)?d.contentExpansionPlan:[]).map(row=>({milestone:clean(row?.milestone),newGameplay:clean(row?.newGameplay),systemImpact:clean(row?.systemImpact)})).slice(0,8),
+    narrativeWorldRules:uniq(d?.narrativeDialoguePlan?.worldRules).slice(0,8),
+    referenceCausalInspirations:(Array.isArray(d?.referenceHomagePlan?.inspirations)?d.referenceHomagePlan.inspirations:[]).map(row=>({titleOrTradition:clean(row?.titleOrTradition),rightsBasis:clean(row?.rightsBasis),borrowedTechnique:clean(row?.borrowedTechnique),transformation:clean(row?.transformation)})).slice(0,8),
+    designIntegrityNotes:uniq(d?.designIntegrityPlan?.notes).slice(0,12),
     progressionDirection:clean(d?.progressionDirection),
     multiplayerMode:clean(d?.multiplayerMode),
     platformProfiles:d?.platformProfiles&&typeof d.platformProfiles==='object'?d.platformProfiles:{}
@@ -1276,6 +1280,8 @@ export function directivePrompt(d={}){
     `IDENTITY_GROWTH: ${d.identityReinforcement?.growthIdentity||d.gameIdentityAndNonNegotiables.progressionDirection}`,
     `IDENTITY_THREE_SENTENCE_TEST: WHAT=${d.identityReinforcement?.threeSentenceTest?.whatGame||''} | DIFFERENT=${d.identityReinforcement?.threeSentenceTest?.whatDifferent||''} | GROWTH=${d.identityReinforcement?.threeSentenceTest?.whatGrowthUnlocks||''}`,
     `IDENTITY_BUILD_UP_RULE: ${d.identityReinforcement?.buildUpRule||'PRESERVE_AND_STRENGTHEN_GAME_IDENTITY'}`,
+    `CAUSAL_GRAMMAR_EVIDENCE: ${JSON.stringify(d.identityReinforcement?.causalGrammarEvidence||{})}`,
+    `CAUSAL_GRAMMAR_BUILD_UP_RULE: ${d.identityReinforcement?.causalGrammarEvidence?.rule||'PRESERVE_APPROVED_CAUSAL_GAME_GRAMMAR'}`,
     `PRIMARY_GOAL: ${d.thisLoopPrimaryGoal}`,
     `WHY_NOW: ${d.primaryGoalReason}`,
     ...robloxProductionPromptLines(d.productionPlan||d.robloxProductionPlan),
@@ -1378,6 +1384,17 @@ export function buildGameSpecificBuildUpDirective({
       whatGame:identity,
       whatDifferent:clean(firstSignature.purpose)||clean(firstConnection.stateChange)||`${anchor}와 ${secondary}의 결합 결과가 이 게임의 차별점이다.`,
       whatGrowthUnlocks:design.progressionDirection||'성장할수록 기존 핵심 시스템을 새로운 방식으로 사용할 수 있어야 한다.'
+    }),
+    causalGrammarEvidence:Object.freeze({
+      worldRules:Object.freeze(design.narrativeWorldRules||[]),
+      causalInspirations:Object.freeze(design.referenceCausalInspirations||[]),
+      systemInterconnections:Object.freeze(design.systemInterconnections||[]),
+      expansionPlan:Object.freeze(design.contentExpansionPlan||[]),
+      integrityNotes:Object.freeze(design.designIntegrityNotes||[]),
+      rule:'NEW_CONTENT_MUST_MUTATE_OR_DEEPEN_THE_APPROVED_CAUSAL_GAME_GRAMMAR; DECORATIVE_LORE_OR_PARALLEL_FEATURE_STACK_DOES_NOT_COUNT',
+      depthIsQualityRank:false,
+      lightComicMayRemainSimple:true,
+      familiarHumanConflictShouldRemainReadable:true
     }),
     buildUpRule:'EACH_BUILD_UP_MUST_STRENGTHEN_OR_PRESERVE_THE_REPRESENTATIVE_ACTION_CHOICE_WORLD_RULE_SIGNATURE_SYSTEM_OR_GROWTH_IDENTITY; GENERIC_FEATURE_COUNT_DOES_NOT_COUNT',
     genreAdaptationRule:'PRESERVE_THE_GENRE_PRIMARY_ACTION; DO_NOT_FORCE_RPG_STYLE_SYSTEMS_ON_PUZZLE_RACING_TYCOON_DEFENSE_SURVIVAL_ACTION_CARD_BOARD_STRATEGY_CASUAL_OR_OTHER_GENRES'
@@ -1516,7 +1533,9 @@ export function buildGameSpecificBuildUpDirective({
     '초반 10분과 중후반을 각각 점검해 초반 학습·첫 보상과 중후반 전략/콘텐츠 확장이 모두 실제 소스와 플레이 흐름에 존재하게 한다.',
     '콘텐츠 확장은 배경·지역·몹·아이템·퀘스트·스토리·보상·규칙 중 관련 요소를 서로 연결된 묶음으로 설계하고, 한 요소만 고립해서 개수만 늘리는 업데이트를 피한다.',
     '이전 세대와 이름·색·수치만 다른 복제 콘텐츠를 추가하지 말고 역할·행동·플레이어 선택·세계 이유·결과/보상·시스템 연결 중 최소 두 축 이상에서 실제 차이를 만든다.',
-    '새 스토리·퀘스트·지역·규칙은 이전 상태에서 왜 발생하고 완료 후 무엇이 달라지는지 게임 상태와 세계 흐름에 남겨 개연성과 진행 연결을 유지한다.'
+    '새 스토리·퀘스트·지역·규칙은 이전 상태에서 왜 발생하고 완료 후 무엇이 달라지는지 게임 상태와 세계 흐름에 남겨 개연성과 진행 연결을 유지한다.',
+    '승인된 인과 문법이 있으면 새 지역·몬스터·NPC·아이템·세력은 같은 법칙을 복제하지 말고 서로 다른 방식으로 전달·왜곡·상속·분산·역전시켜 새 선택 구조를 만든다.',
+    '가벼운 D1 엽기/코믹 문법은 억지로 장대한 신화·정치 구조로 키우지 않는다. 단순한 농담 규칙이라도 실제 상태 변화와 후폭풍이 반복 가능하면 깊이 있는 정체성으로 인정한다.'
   ];
   const ux=[
     '핵심 행동, 위험, 현재 목표, 다음 선택을 모바일 화면에서 우선순위가 명확하게 보이게 한다.',
@@ -1546,6 +1565,9 @@ export function buildGameSpecificBuildUpDirective({
     'GAME_IDENTITY_THREE_SENTENCE_TEST_PRESERVED_OR_STRENGTHENED',
     'REPRESENTATIVE_ACTION_CHOICE_SIGNATURE_WORLD_RULE_AND_GROWTH_IDENTITY_REVIEWED',
     'GENRE_PRIMARY_ACTION_PRESERVED_WITHOUT_FORCED_RPG_SYSTEMS',
+    'APPROVED_CAUSAL_GAME_GRAMMAR_PRESERVED_OR_MUTATED_WITH_REAL_STATE_EFFECT',
+    'LIGHT_COMIC_DEPTH_NOT_FORCED_INTO_UNNECESSARY_COMPLEXITY',
+    'CHARACTER_MONSTER_REGION_STORY_SHARE_CAUSAL_WORLD_LAW_WHEN_APPLICABLE',
     'EXISTING_COMPLETENESS_RECHECK_REQUIRED_EVERY_BUILD_UP',
     'WEB_ROBLOX_UNITY_COMMON_EXPANSION_CONTRACT'
   ];
