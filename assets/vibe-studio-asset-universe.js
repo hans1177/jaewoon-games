@@ -6,6 +6,7 @@
 const text=value=>String(value??'').trim();
 const upper=value=>text(value).toUpperCase();
 const uniq=values=>[...new Set((values||[]).map(text).filter(Boolean))];
+const currentAssetConsumerGameIds=asset=>uniq([...(asset?.consumerGameIds||[]),...(asset?.sourceBoundConsumerGameIds||[])]);
 const freezeList=values=>Object.freeze([...(Array.isArray(values)?values:[])]);
 const clamp=(value,min,max)=>Math.max(min,Math.min(max,Number(value)||0));
 
@@ -1853,14 +1854,15 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
     const family=upper(asset?.family||asset?.category);
     const roles=internalAssetMaintenanceRoleTokens(asset);
     const quality=internalAssetMaintenanceQuality(asset);
+    const currentConsumers=currentAssetConsumerGameIds(asset);
     return Object.freeze({
       id:text(asset?.id||asset?.assetId||asset?.atomId),
       packId:text(asset?.packId),
       family,
       subfamily:upper(asset?.subfamily||asset?.type),
       roles:Object.freeze(roles),
-      consumerGameIds:Object.freeze(uniq(asset.consumerGameIds||[])),
-      consumerPriority:Math.max(0,...(asset.consumerGameIds||[]).map(id=>{
+      consumerGameIds:Object.freeze(currentConsumers),
+      consumerPriority:Math.max(0,...currentConsumers.map(id=>{
         const game=gamesById.get(text(id));if(!game)return 0;
         const state=upper(game.productionClass||game.canonical?.production?.class);
         const roblox=upper(asset.platform)==='ROBLOX'||(asset.platforms||[]).some(p=>upper(p)==='ROBLOX');
@@ -3063,7 +3065,7 @@ export function scoreStudioAssetQuality120({asset={},evidence={}}={}){
   const excluded=new Set((asset?.notApplicableQualityAxes||source.notApplicableQualityAxes||[]).map(upper));
   const applicableAxes=configuredAxes.filter(axis=>!excluded.has(axis));
   const runtimeState=upper(asset?.runtimeVerificationState||source.runtimeVerificationState);
-  const actualBinding=source.actualGameBinding===true||source.ACTUAL_GAME_BINDING===true||(asset?.consumerGameIds||[]).length>0;
+  const actualBinding=source.actualGameBinding===true||source.ACTUAL_GAME_BINDING===true||currentAssetConsumerGameIds(asset).length>0;
   const productionVerified=(asset?.productionVerified===true||asset?.verifiedCompanyReusable===true)
     &&(/VERIFIED_NATIVE_RUNTIME|VERIFIED_RUNTIME/.test(runtimeState)||source.runtimeVerified===true);
   const normalized={};
@@ -5344,7 +5346,7 @@ export function createStudioAssetUniversePlan({
     const family=upper(requirement.family),subfamily=upper(requirement.subfamily);
     const current=combinedAssets.find(asset=>{
       const row=normalizeRegistryAsset(asset);
-      const currentConsumer=asset?.sameGameExistingRoblox===true||(asset?.consumerGameIds||[]).map(text).includes(text(gameId));
+      const currentConsumer=asset?.sameGameExistingRoblox===true||currentAssetConsumerGameIds(asset).map(text).includes(text(gameId));
       return currentConsumer&&row.family===family&&(!subfamily||row.subfamily===subfamily||row.tags.includes(subfamily));
     });
     return current?{...requirement,currentAssetId:text(current.id)}:requirement;
