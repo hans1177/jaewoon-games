@@ -98,9 +98,10 @@ env:
 
 jobs:
   reserve:
-    # Result callbacks and stateless refills use ubuntu-latest because the ARM control pool was observed queued
-    # while ubuntu-latest game workers were actively running. Push/manual reserve stays on slim.
-    runs-on: ${{ (github.event_name == 'repository_dispatch' && (github.event.action == 'vibe2-fanin-refill' || github.event.action == 'vibe2-neuron-complete') && 'ubuntu-latest' || 'ubuntu-slim') }}
+    # Result-bearing neuron callbacks are lightweight control-plane ingestion and stay on ubuntu-slim
+    # so heavy ubuntu-latest game workers cannot starve immutable result persistence.
+    # Stateless fan-in refill wakes remain on ubuntu-latest and are already lane-coalesced.
+    runs-on: ${{ (github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && 'ubuntu-latest' || 'ubuntu-slim') }}
     timeout-minutes: 7
     # Reserve runs are run-unique. Shared queue writes use optimistic fetch/reset/replan/push retry,
     # so fan-in refill wakes must not serialize by lane or occupy a single pending concurrency slot.
