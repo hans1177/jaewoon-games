@@ -341,6 +341,74 @@ root.Size = UDim2.new(1, -24, 0.46, 0)
 root.BackgroundTransparency = 0.15
 root.BackgroundColor3 = Color3.fromRGB(18, 28, 48)
 root.Parent = gui
+
+-- 선택된 내부 자산 family를 기존 마을/던전 네이티브 표현에 직접 소비한다.
+task.defer(function()
+  local world = workspace:FindFirstChild("VillageDungeonWorld") or workspace:WaitForChild("VillageDungeonWorld", 5)
+  if not world then return end
+
+  if #studioAssetFamily("CREATURE") > 0 then
+    local creatureAtom = studioAssetFamily("CREATURE")[1] or ""
+    local function applyCreaturePresentation(instance)
+      if not instance:IsA("Model") then return end
+      if not (instance.Name:find("MONSTER", 1, true) or instance.Name:find("BOSS", 1, true)) then return end
+      local body = instance:FindFirstChild("Body")
+      if body and body:IsA("BasePart") then
+        body:SetAttribute("StudioCreatureAtom", creatureAtom)
+        body.Material = creatureAtom:find("CRYSTAL", 1, true) and Enum.Material.Glass or Enum.Material.Slate
+      end
+    end
+    for _, descendant in ipairs(world:GetDescendants()) do applyCreaturePresentation(descendant) end
+    world.DescendantAdded:Connect(applyCreaturePresentation)
+  end
+
+  if #studioAssetFamily("BUILDING") > 0 then
+    local blacksmith = world:FindFirstChild("BlacksmithFacility")
+    if blacksmith and blacksmith:IsA("BasePart") and not world:FindFirstChild("StudioBuildingTrim") then
+      local trim = Instance.new("Part")
+      trim.Name = "StudioBuildingTrim"
+      trim.Size = Vector3.new(math.max(2, blacksmith.Size.X - 2), 0.35, 0.5)
+      trim.Position = blacksmith.Position + Vector3.new(0, blacksmith.Size.Y * 0.45, -blacksmith.Size.Z * 0.51)
+      trim.Anchored = true
+      trim.CanCollide = false
+      trim.Material = Enum.Material.Metal
+      trim.Color = Color3.fromRGB(164, 142, 105)
+      trim:SetAttribute("StudioBuildingAtom", studioAssetFamily("BUILDING")[1] or "")
+      trim.Parent = world
+    end
+  end
+
+  if #studioAssetFamily("MATERIAL") > 0 then
+    local questBoard = world:FindFirstChild("VillageQuestBoard")
+    if questBoard and questBoard:IsA("BasePart") then
+      local materialAtom = studioAssetFamily("MATERIAL")[1] or ""
+      questBoard:SetAttribute("StudioMaterialAtom", materialAtom)
+      questBoard.Material = materialAtom == "WOOD" and Enum.Material.WoodPlanks or Enum.Material.Cobblestone
+    end
+  end
+
+  if #studioAssetFamily("SKILL") > 0 then
+    local character = player.Character or player.CharacterAdded:Wait()
+    local rootPart = character:WaitForChild("HumanoidRootPart", 5)
+    if rootPart then
+      local attachment = Instance.new("Attachment")
+      attachment.Name = "StudioSkillAttachment"
+      attachment.Position = Vector3.new(0, 0.5, 0)
+      attachment:SetAttribute("StudioSkillAtom", studioAssetFamily("SKILL")[1] or "")
+      attachment.Parent = rootPart
+      local emitter = Instance.new("ParticleEmitter")
+      emitter.Name = "StudioSkillEmitter"
+      emitter.Rate = 0
+      emitter.Lifetime = NumberRange.new(0.15, 0.28)
+      emitter.Speed = NumberRange.new(3, 6)
+      emitter.LightEmission = 0.65
+      emitter.Parent = attachment
+      player:GetAttributeChangedSignal("LastApprovedScope"):Connect(function()
+        if player:GetAttribute("LastApprovedScope") == "scope-corefun-029d85a01a" then emitter:Emit(10) end
+      end)
+    end
+  end
+end)
 local title = Instance.new("TextLabel")
 title.Name = "Title"
 title.Size = UDim2.new(1, -20, 0, 44)
