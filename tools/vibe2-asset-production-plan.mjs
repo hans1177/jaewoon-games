@@ -655,9 +655,9 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
     }
     packLinks.set(gameId,linked);
   }
-  const bindings=[];
+  const bindings=[],requirements=[];
   for(const asset of next.assets){
-    const assetBindings=[],packId=clean(asset.packId),isPack=Boolean(packId&&packId===clean(asset.id));
+    const assetBindings=[],assetRequirements=[],packId=clean(asset.packId),isPack=Boolean(packId&&packId===clean(asset.id));
     const family=clean(asset.family||asset.category).toUpperCase();
     const identities=sourceConsumerIdentityTokens(asset);
     for(const {game,snapshot} of snapshots){
@@ -665,7 +665,9 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
       if(!snapshot.roots.length)continue;
       const directPaths=sourceConsumerAssetPaths(asset).filter(assetPath=>snapshot.assetPaths.has(assetPath));
       const literalIds=identities.filter(value=>snapshot.usageTokens.has(value.toLowerCase()));
-      const managed=identities.filter(value=>snapshot.managedByFamily.get(family)?.has(value.toLowerCase())&&snapshot.usageTokens.has(value.toLowerCase()));
+      const declared=identities.filter(value=>snapshot.managedByFamily.get(family)?.has(value.toLowerCase()));
+      const managed=declared.filter(value=>snapshot.usageTokens.has(value.toLowerCase()));
+      const declaredOnly=declared.filter(value=>!snapshot.usageTokens.has(value.toLowerCase()));
       const linkedPack=packId&&!isPack?packLinks.get(gameId)?.get(packId)||[]:[];
       let mode='',evidenceFiles=[],matchedIds=[];
       if((!packId||isPack)&&directPaths.length){
@@ -686,6 +688,24 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
           ...snapshot.managedFiles
         ];
       }
+      if(!mode&&declaredOnly.length&&(asset.atomId||asset.assetId||asset?.bindingHint?.configCollection)){
+        const requirement=Object.freeze({
+          gameId,
+          classification:'DECLARED_SOURCE_REQUIREMENT',
+          mode:'MANAGED_LIBRARY_DECLARATION',
+          family:family||null,
+          identities:Object.freeze(unique(declaredOnly)),
+          evidenceFiles:Object.freeze(unique(declaredOnly.map(value=>snapshot.managedByFamily.get(family)?.get(value.toLowerCase()))).filter(Boolean).sort().slice(0,8)),
+          sourceFingerprint:snapshot.sourceFingerprint,
+          actualSourceBound:false,
+          runtimeVerified:false,
+          productionVerified:false,
+          expansionRequired:false,
+          fulfillmentPolicy:'REFERENCE_DEMAND_UNTIL_SOURCE_USE_OR_EXPLICIT_PRODUCTION_NEED'
+        });
+        assetRequirements.push(requirement);
+        requirements.push(Object.freeze({assetId:clean(asset.id),...requirement}));
+      }
       if(!mode)continue;
       const binding=Object.freeze({
         gameId,classification:'ACTUAL_SOURCE_BOUND',mode,
@@ -705,8 +725,31 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
       delete asset.sourceConsumerBindings;
       delete asset.sourceConsumerState;
     }
+    if(assetRequirements.length){
+      asset.sourceRequiredConsumerGameIds=unique(assetRequirements.map(row=>row.gameId)).sort();
+      asset.sourceRequirementBindings=assetRequirements.sort((a,b)=>a.gameId.localeCompare(b.gameId)||a.mode.localeCompare(b.mode));
+      asset.sourceRequirementState='DECLARED_SOURCE_REQUIREMENT';
+    }else{
+      delete asset.sourceRequiredConsumerGameIds;
+      delete asset.sourceRequirementBindings;
+      delete asset.sourceRequirementState;
+    }
   }
   const modes={};for(const row of bindings)modes[row.mode]=(modes[row.mode]||0)+1;
+  const requirementByGame=new Map();
+  for(const row of requirements){
+    const entry=requirementByGame.get(row.gameId)||{gameId:row.gameId,assetIds:[],families:[]};
+    entry.assetIds.push(row.assetId);
+    if(row.family)entry.families.push(row.family);
+    requirementByGame.set(row.gameId,entry);
+  }
+  const requirementsByGame=Object.freeze([...requirementByGame.values()]
+    .map(row=>Object.freeze({
+      gameId:row.gameId,
+      assetIds:Object.freeze(unique(row.assetIds).sort()),
+      families:Object.freeze(unique(row.families).sort())
+    }))
+    .sort((a,b)=>a.gameId.localeCompare(b.gameId)));
   const summary=Object.freeze({
     version:1,status:'SOURCE_BOUND_CONSUMER_SYNC',dynamicSourceSearch:true,
     scannedGameCount:snapshots.length,
@@ -714,14 +757,20 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
     scannedBytes:snapshots.reduce((sum,row)=>sum+row.snapshot.scannedBytes,0),
     boundAssetCount:new Set(bindings.map(row=>row.assetId)).size,
     bindingCount:bindings.length,
+    requiredAssetCount:new Set(requirements.map(row=>row.assetId)).size,
+    requirementCount:requirements.length,
+    requirementsByGame,
     intendedOnlyAssetCount:next.assets.filter(asset=>(asset.intendedConsumerGameIds||[]).length&&currentAssetConsumerIds(asset).length===0).length,
     modes:Object.freeze(modes),
     currentConsumerFields:Object.freeze(['consumerGameIds','sourceBoundConsumerGameIds']),
+    requirementFields:Object.freeze(['sourceRequiredConsumerGameIds','sourceRequirementBindings']),
+    requirementsAreDemandReferenceOnly:true,
+    declaredRequirementDoesNotEqualActualBinding:true,
     sourceOnlyDoesNotGrantRuntimeVerification:true,
     productionVerificationUnchanged:true,
     newWorkflowCreated:false,newQueueCreated:false,newSchedulerCreated:false,newPipelineCreated:false
   });
-  return Object.freeze({registry:next,bindings:Object.freeze(bindings),summary});
+  return Object.freeze({registry:next,bindings:Object.freeze(bindings),requirements:Object.freeze(requirements),summary});
 }
 
 export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),registry=null,persist=true}={}){
@@ -1022,6 +1071,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     synchronizedPackIds:freezeList(syncRows.map(row=>row.packId)),
     sourceConsumerSync:consumerSync.summary,
     sourceConsumerBindings:consumerSync.bindings,
+    sourceConsumerRequirements:consumerSync.requirements,
     sourceConsumerRegistry:consumerSync.registry,
     seedCount:seedPlan.seedCount,
     automationPlan:libraryPlan,
@@ -2438,6 +2488,27 @@ export function buildVibeAssetProductionPlan({
     nextVolumeActions:freezeList(activeNextVolumeActions),
     activeNextVolumeAction:activeNextVolumeActions[0]||null,
     nextQualityActions:freezeList(executionLibraryPlan.nextQualityActions||[]),
+    sourceConsumerDemand:freeze({
+      status:'DYNAMIC_SOURCE_REQUIREMENTS',
+      requirementCount:Number(librarySync.sourceConsumerSync?.requirementCount||0),
+      requiredAssetCount:Number(librarySync.sourceConsumerSync?.requiredAssetCount||0),
+      requirementsByGame:freezeList(librarySync.sourceConsumerSync?.requirementsByGame||[]),
+      requirements:freezeList((librarySync.sourceConsumerRequirements||[]).map(row=>freeze({
+        assetId:clean(row.assetId)||null,
+        gameId:clean(row.gameId)||null,
+        family:clean(row.family).toUpperCase()||null,
+        classification:clean(row.classification)||'DECLARED_SOURCE_REQUIREMENT',
+        mode:clean(row.mode)||null,
+        identities:freezeList(row.identities||[]),
+        evidenceFiles:freezeList(row.evidenceFiles||[]),
+        expansionRequired:false,
+        actualSourceBound:false,
+        runtimeVerified:false,
+        productionVerified:false
+      }))),
+      referenceOnlyUntilExplicitProductionNeed:true,
+      allLibraryExpansionRequired:false
+    }),
     worklistSource:persistedWorklistFresh&&libraryAutomation.nextVolumeActions.length?'COMPANY_ASSET_LIBRARY_PERSISTED':'CURRENT_EXECUTION_RECOMPUTED',
     consumePersistedNextVolumeActionsFirst:true,
     persistentWorklistField:clean(executionLibraryPlan.persistentWorklistField||libraryAutomation.persistentWorklistField)||'internalAssetLibraryAutomation.nextVolumeActions',
