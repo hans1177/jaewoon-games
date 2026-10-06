@@ -72,7 +72,7 @@ function studioAssetRefreshState({root='',assetLibrary={}}={}){
   return {required:true,refreshRequired,libraryVersion:Number(expected.libraryVersion||0),currentLibraryVersion:libraryVersion,bindingVersion,clientBindingVersion,expectedBindingVersion,applied,clientConfigBound,clientVisibleBound,familySelectionTraceComplete,familyStatusTraceComplete,reason:refreshRequired?'STALE_OR_MISSING_STUDIO_ASSET_BINDING':null};
 }
 
-function verifiedExternalLearningRefreshState({root='',playbooks={},gameId='',profile=null}={}){
+export function verifiedExternalLearningRefreshState({root='',playbooks={},gameId='',profile=null}={}){
   const expectedContract=verifiedExternalBlackBoxPlaybookContract(playbooks);
   const expectedLearning=createRobloxVibe3LearningContext({gameId,profile:profile||existingRobloxGameLearningProfile(gameId),playbooks});
   if(!expectedContract.ids.length)return {required:false,refreshRequired:false,expectedIds:[],fingerprint:null};
