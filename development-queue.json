@@ -35957,17 +35957,17 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-06T07:35:48.858Z",
-      "robloxSourceCommit": "0e0e007e8fe66f32d3e626e4404671797da0a010",
-      "robloxSourceBootstrapPassedAt": "2026-10-06T07:33:03.057Z",
+      "updatedAt": "2026-10-06T08:28:42.768Z",
+      "robloxSourceCommit": "0efd322e2f50bbf70f3f610d6a78528051eeb0b7",
+      "robloxSourceBootstrapPassedAt": "2026-10-06T08:28:42.768Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": "0e0e007e8fe66f32d3e626e4404671797da0a010",
+      "robloxBuildSourceRevision": null,
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
-      "robloxBuildFailedAt": "2026-10-06T07:35:48.858Z",
+      "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -36010,9 +36010,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "roblox-package-asset-binding-failed",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
       "routingBlockers": [
-        "roblox-build-package:roblox-package-asset-binding-failed"
+        "roblox-build-package-revalidation-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -36025,7 +36025,7 @@
       "strictDesignReviewRefreshRequired": true,
       "ownerPreservationPresentationUpgrade": false,
       "presentationFirstPass": null,
-      "robloxExactRevisionPassed": true,
+      "robloxExactRevisionPassed": false,
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": "development/unity-tech-seed-single-defense-strat-celestial-bastion-37327263262",
       "unitySourceCommit": "01aad774cfdb73616c746a711dac18ee00e290b7",
@@ -37392,9 +37392,9 @@
       "robloxFastMvpPublished": false,
       "robloxFastMvpPublishedAt": null,
       "robloxEvidenceInvalidatedBySourceChange": {
-        "previousSourceRevision": "f9d4b286aa2a9bcbdadc78527d97aa88a965789b",
-        "newSourceRevision": "44d5dc46189fc06837ba40de3562aa564df6b5c6",
-        "invalidatedAt": "2026-10-04T05:38:58.316Z"
+        "previousSourceRevision": "0e0e007e8fe66f32d3e626e4404671797da0a010",
+        "newSourceRevision": "0efd322e2f50bbf70f3f610d6a78528051eeb0b7",
+        "invalidatedAt": "2026-10-06T08:28:42.768Z"
       },
       "robloxValidationPublishRepairRequired": true,
       "robloxValidationPublishRepairAt": "2026-10-04T11:19:02.280Z"
@@ -47412,7 +47412,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-06T08:28:00.305Z",
+  "updatedAt": "2026-10-06T08:28:42.768Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
