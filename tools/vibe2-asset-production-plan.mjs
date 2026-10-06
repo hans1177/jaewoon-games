@@ -2400,8 +2400,8 @@ export function buildVibeAssetProductionPlan({
   const flowAssetRequirements=normalizeFlowAssetRequirements(task.assetRequirements);
   const manifestBase=manifest||readJson(path.join(repoRoot,'assets','asset-manifest.json'),{version:0,assets:[]});
   const librarySync=synchronizeCompanyCommonAssetRegistry({repoRoot,persist:!process.env.NODE_TEST_CONTEXT});
-  const companyRegistry=librarySync.sourceConsumerRegistry||librarySync.registry;
-  const libraryAutomation=librarySync.registry?.internalAssetLibraryAutomation||{};
+  const companyRegistry=librarySync.registry;
+  const libraryAutomation=companyRegistry?.internalAssetLibraryAutomation||{};
   const executionLibraryPlan=librarySync.executionAutomationPlan||librarySync.automationPlan;
   const persistedWorklistFresh=
     Number(libraryAutomation.lastCatalogSynchronizedVersion)===Number(companyRegistry?.version)
