@@ -194,9 +194,6 @@ function robloxPackageAssetFamilyRefPattern(family=''){
 function robloxPackageAssetFamilyBoundInText(text='',family=''){
   const raw=String(text||''),nativePattern=ROBLOX_PACKAGE_ASSET_NATIVE_PATTERNS[family];
   if(!nativePattern)return false;
-  const dynamicBlock=raw.match(/-- STUDIO_ASSET_DYNAMIC_BINDING_BEGIN[\s\S]*?-- STUDIO_ASSET_DYNAMIC_BINDING_END/)?.[0]||'';
-  const dynamicFamily=new RegExp('bindStudioAssetSemanticFamily\\s*\\([^\\n]{0,220}["\\\']'+clean(family)+'["\\\']','i');
-  if(dynamicFamily.test(dynamicBlock)&&/SetAttribute\s*\(/.test(dynamicBlock))return true;
   for(const ref of raw.matchAll(robloxPackageAssetFamilyRefPattern(family))){
     const start=Math.max(0,Number(ref.index||0)-3500);
     const end=Math.min(raw.length,Number(ref.index||0)+String(ref[0]||'').length+3500);
