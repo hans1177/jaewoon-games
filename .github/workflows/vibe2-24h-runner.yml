@@ -181,14 +181,17 @@ jobs:
           NODE
             )"
           fi
+          preplan_pressure_blocks_game='NO'
           if [[ "$preplan_pressure" =~ ^[0-9]+$ ]] && [ "$preplan_pressure" -ge "$pressure_threshold" ]; then
             echo "VIBE2_PREPLAN_PRODUCTION_PRESSURE_GATE=DEFERRED_TO_FIVE_MINUTE_SAFETY_NET:$preplan_pressure:$pressure_threshold"
-            exit 0
-          fi
-          if [[ "$preplan_pressure" =~ ^[0-9]+$ ]]; then
+            echo 'VIBE2_PREPLAN_ASSET_PRESSURE_GATE=BYPASS_ASSET_RUNNER_CAPACITY_INDEPENDENT'
+            preplan_pressure_blocks_game='YES'
+          elif [[ "$preplan_pressure" =~ ^[0-9]+$ ]]; then
             echo "VIBE2_PREPLAN_PRODUCTION_PRESSURE_GATE=PASS:$preplan_pressure:$pressure_threshold"
+            echo 'VIBE2_PREPLAN_ASSET_PRESSURE_GATE=PASS'
           else
             echo 'VIBE2_PREPLAN_PRODUCTION_PRESSURE_GATE=OBSERVATION_UNAVAILABLE_FAIL_OPEN'
+            echo 'VIBE2_PREPLAN_ASSET_PRESSURE_GATE=OBSERVATION_UNAVAILABLE_FAIL_OPEN'
           fi
 
           state="$(node <<'NODE'
@@ -279,6 +282,11 @@ jobs:
             else
               echo 'VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=FAILED_FALLBACK_POST_PLAN' >&2
             fi
+            exit 0
+          fi
+
+          if [ "$preplan_pressure_blocks_game" = 'YES' ]; then
+            echo "VIBE2_PREPLAN_GAME_PRIMARY_PRESSURE_GATE=DEFERRED_TO_FIVE_MINUTE_SAFETY_NET:$preplan_pressure:$pressure_threshold"
             exit 0
           fi
 
