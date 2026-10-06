@@ -909,14 +909,16 @@ function bindExistingClientStudioAssets(source='',familyStatus={}){
   const block=studioAssetDynamicBindingBlock({familyStatus,configVar});
   const insertAt=requireMatch.index+requireMatch[0].length;
   output=output.slice(0,insertAt)+'\n'+block+output.slice(insertAt);
-  if(!/StudioAssetBindingVersion/.test(output)){
+  const studioUiVisualMissing=!/StudioAssetFramePanel/.test(output);
+  const studioUiTraceMissing=!/SetAttribute\s*\(\s*["']StudioAssetBindingVersion["']/.test(output);
+  if(studioUiVisualMissing||studioUiTraceMissing){
     const frameMatch=output.match(/local\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*Instance\.new\(\s*["']Frame["']\s*\)/);
     if(!frameMatch)throw new Error('EXISTING_STUDIO_ASSET_VISIBLE_TARGET_REQUIRED');
     const frameVar=frameMatch[1];
     let frameInsertAt=(frameMatch.index||0)+frameMatch[0].length;
     if(output[frameInsertAt]===';')frameInsertAt++;
-    const visible=`
-if hasStudioAssetAtom("FRAME_PANEL") then
+    const visual=studioUiVisualMissing?`
+if hasStudioAssetAtom("UI", "FRAME_PANEL") then
   local studioAssetStroke = Instance.new("UIStroke")
   studioAssetStroke.Name = "StudioAssetFramePanel"
   studioAssetStroke.Thickness = 1
@@ -924,11 +926,13 @@ if hasStudioAssetAtom("FRAME_PANEL") then
   studioAssetStroke.Color = Color3.fromRGB(210, 225, 255)
   studioAssetStroke.Parent = ${frameVar}
 end
+`:'';
+    const trace=studioUiTraceMissing?`
 ${frameVar}:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)
 ${frameVar}:SetAttribute("StudioAssetSelectionFingerprint", studioAssetSelectionFingerprint)
 ${frameVar}:SetAttribute("StudioAssetAtoms", table.concat(studioAssetFamily("UI"), ","))
-`;
-    output=output.slice(0,frameInsertAt)+visible+output.slice(frameInsertAt);
+`:'';
+    output=output.slice(0,frameInsertAt)+visual+trace+output.slice(frameInsertAt);
   }
   output=output.replace(/\btable\.concat\(\s*studioUi\s*,/g,'table.concat(studioAssetFamily("UI"),');
   return output;
