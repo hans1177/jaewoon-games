@@ -32,7 +32,7 @@ export const ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS=Object.freeze({
   ENVIRONMENT:/(?:\bTerrain\b|\bLighting\b|\bAtmosphere\b|Instance\.new\(["'](?:Model|Part|MeshPart|Atmosphere|Sky|Clouds)["']\)|:\s*IsA\(["'](?:Terrain|Atmosphere|Sky|Clouds|Model|BasePart|Part|MeshPart)["']\))/i,
   WEAPON:/(?:Instance\.new\(["'](?:Tool|Model|Part|MeshPart|Attachment|WeldConstraint)["']\)|:\s*IsA\(["'](?:Tool|Model|BasePart|Part|MeshPart|Attachment|WeldConstraint)["']\)|\bWeldConstraint\b)/i,
   SKILL:/(?:ParticleEmitter|Beam|Trail|Attachment|PointLight|SpotLight|SurfaceLight|Instance\.new\(["']Model["']\)|:\s*IsA\(["'](?:ParticleEmitter|Beam|Trail|Attachment|PointLight|SpotLight|SurfaceLight|Model)["']\))/i,
-  MATERIAL:/(?:Enum\.Material|SurfaceAppearance|MaterialVariant|TextureID|\.Material\s*=|:\s*IsA\(["'](?:SurfaceAppearance|MaterialVariant|BasePart|Part|MeshPart)["']\))/i,
+  MATERIAL:/(?:Enum\.Material|SurfaceAppearance|MaterialVariant|TextureID|\.Material\s*=|:\s*IsA\(["'](?:SurfaceAppearance|MaterialVariant)["']\))/i,
   AUDIO:/(?:SoundService|SoundId|Instance\.new\(["']Sound["']\)|:\s*IsA\(["'](?:Sound|SoundGroup)["']\))/i,
   VFX:/(?:ParticleEmitter|Beam|Trail|PointLight|SpotLight|SurfaceLight|:\s*IsA\(["'](?:ParticleEmitter|Beam|Trail|PointLight|SpotLight|SurfaceLight)["']\))/i,
   UI:/(?:ScreenGui|Frame|TextLabel|TextButton|ImageLabel|ImageButton|UIStroke|UICorner|UIGradient|:\s*IsA\(["'](?:GuiObject|LayerCollector|ScreenGui|Frame|TextLabel|TextButton|ImageLabel|ImageButton|UIStroke|UICorner|UIGradient)["']\))/i,
@@ -89,6 +89,64 @@ export function robloxStudioAssetFamilyStatusFromSource(source={}){
   return Object.freeze(Object.fromEntries(ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES.map(family=>[
     family,systems[family]===true?'APPLIED':'NOT_APPLICABLE'
   ])));
+}
+
+function robloxStudioAssetFamilyRefPattern(family=''){
+  const value=clean(family);
+  return new RegExp(
+    '(?:studioAssetFamily\\s*\\(\\s*["\\\']'+value+'["\\\']'
+      +'|hasStudio(?:Asset)?Atom\\s*\\(\\s*["\\\']'+value+'["\\\']'
+      +'|STUDIO_ASSET_SELECTION\\s*\\.\\s*'+value
+      +'|STUDIO_ASSET_SELECTION\\s*\\[\\s*["\\\']'+value+'["\\\']\\s*\\])',
+    'ig'
+  );
+}
+function stripRobloxStudioAssetBindingDeclarations(text=''){
+  return String(text||'')
+    .replace(/-- STUDIO_ASSET_BINDING_CLIENT_BEGIN[\s\S]*?-- STUDIO_ASSET_BINDING_CLIENT_END/g,' ')
+    .replace(/-- STUDIO_ASSET_DYNAMIC_BINDING_BEGIN[\s\S]*?-- STUDIO_ASSET_DYNAMIC_BINDING_END/g,' ')
+    .replace(/\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{[\s\S]*?\n\}/g,' ')
+    .replace(/\bSTUDIO_ASSET_SELECTION\s*=\s*\{[\s\S]*?\n\}/g,' ');
+}
+export function robloxStudioAssetFamilyBoundInText(text='',family=''){
+  const raw=stripRobloxStudioAssetBindingDeclarations(text);
+  const nativePattern=ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS[family];
+  if(!nativePattern)return false;
+  const renderSink=/(?:\.(?:Color|BackgroundColor3|TextColor3|ImageColor3|Material|MaterialVariant|TextureID|MeshId|Transparency|Size|CFrame|Position|Orientation|Rotation|LightEmission|Rate|Volume|PlaybackSpeed|AnimationId|Transform|Thickness|CornerRadius)\s*=|TweenService\s*:\s*Create\s*\(|:\s*Create\s*\([^\n]*(?:TweenInfo|Position|Rotation|Transform)|Instance\.new\s*\(\s*["'](?:UIStroke|UICorner|UIGradient|SurfaceAppearance|ParticleEmitter|Beam|Trail|PointLight|SpotLight|SurfaceLight)["']\s*\))/i;
+  const statements=raw.split(/[;\n]/);
+  for(const ref of raw.matchAll(robloxStudioAssetFamilyRefPattern(family))){
+    const index=Number(ref.index||0);
+    const statementStart=Math.max(raw.lastIndexOf(';',index),raw.lastIndexOf('\n',index))+1;
+    const statementEndCandidates=[raw.indexOf(';',index),raw.indexOf('\n',index)].filter(value=>value>=0);
+    const statementEnd=statementEndCandidates.length?Math.min(...statementEndCandidates):raw.length;
+    const statement=raw.slice(statementStart,statementEnd);
+    if(renderSink.test(statement)&&nativePattern.test(raw.slice(Math.max(0,index-500),Math.min(raw.length,index+1200))))return true;
+
+    const lineStart=raw.lastIndexOf('\n',index)+1;
+    const lineEnd=raw.indexOf('\n',index);
+    const line=raw.slice(lineStart,lineEnd<0?raw.length:lineEnd);
+    if(/\b(?:if|elseif)\b[\s\S]*\bthen\b/.test(line)){
+      const after=raw.slice(lineEnd<0?raw.length:lineEnd+1,Math.min(raw.length,(lineEnd<0?raw.length:lineEnd+1)+1800));
+      const blockEnd=after.search(/\n\s*end\b/);
+      const block=blockEnd>=0?after.slice(0,blockEnd):after;
+      if(renderSink.test(block)&&nativePattern.test(block))return true;
+    }
+
+    const assignmentPrefix=raw.slice(statementStart,index).match(/\b(?:local\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*$/);
+    if(!assignmentPrefix)continue;
+    const aliases=new Set([assignmentPrefix[1]]);
+    for(let pass=0;pass<statements.length;pass++){
+      let changed=false;
+      for(const row of statements){
+        if(![...aliases].some(alias=>new RegExp('\\b'+alias+'\\b').test(row)))continue;
+        if(renderSink.test(row)&&nativePattern.test(row))return true;
+        const derived=row.match(/\b(?:local\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*[^=]/);
+        if(derived&&!aliases.has(derived[1])){aliases.add(derived[1]);changed=true;}
+      }
+      if(!changed)break;
+    }
+  }
+  return false;
 }
 
 const SHA256=/^[a-f0-9]{64}$/i;
@@ -862,46 +920,6 @@ local STUDIO_ASSET_FAMILY_STATUS = {
 ${statusRows}
 }
 -- STUDIO_ASSET_BINDING_CLIENT_END
--- STUDIO_ASSET_DYNAMIC_BINDING_BEGIN
-local function bindStudioAssetSemanticFamily(instance, family)
-  if not instance or STUDIO_ASSET_FAMILY_STATUS[family] ~= "APPLIED" then return end
-  local atoms = STUDIO_ASSET_SELECTION[family] or {}
-  if #atoms == 0 then return end
-  instance:SetAttribute("StudioAssetFamily_" .. family, true)
-  instance:SetAttribute("StudioAssetFamily_" .. family .. "_AtomCount", #atoms)
-  instance:SetAttribute("StudioAssetSelectionFingerprint", studioAssetSelectionFingerprint)
-end
-local function studioAssetNameHas(name, words)
-  for _, word in ipairs(words) do
-    if string.find(name, word, 1, true) then return true end
-  end
-  return false
-end
-local function syncStudioAssetSemanticInstance(instance)
-  if not instance then return end
-  local name = string.lower(instance.Name or "")
-  if instance:IsA("Humanoid") or instance:IsA("Accessory") then bindStudioAssetSemanticFamily(instance, "CHARACTER") end
-  if instance:IsA("Sound") then bindStudioAssetSemanticFamily(instance, "AUDIO") end
-  if instance:IsA("ParticleEmitter") or instance:IsA("Beam") or instance:IsA("Trail") or instance:IsA("PointLight") or instance:IsA("SpotLight") or instance:IsA("SurfaceLight") then
-    bindStudioAssetSemanticFamily(instance, "VFX")
-    bindStudioAssetSemanticFamily(instance, "SKILL")
-  end
-  if instance:IsA("Animator") or instance:IsA("Animation") or instance:IsA("Motor6D") or instance:IsA("Bone") then bindStudioAssetSemanticFamily(instance, "MOTION") end
-  if instance:IsA("GuiObject") or instance:IsA("LayerCollector") then bindStudioAssetSemanticFamily(instance, "UI") end
-  if instance:IsA("SurfaceAppearance") or instance:IsA("MaterialVariant") or instance:IsA("BasePart") then bindStudioAssetSemanticFamily(instance, "MATERIAL") end
-  if instance:IsA("Terrain") or instance:IsA("Atmosphere") or instance:IsA("Sky") or instance:IsA("Clouds") then bindStudioAssetSemanticFamily(instance, "ENVIRONMENT") end
-  if instance:IsA("Tool") then bindStudioAssetSemanticFamily(instance, "WEAPON") end
-  if instance:IsA("Model") or instance:IsA("BasePart") or instance:IsA("Tool") then
-    if studioAssetNameHas(name, {"enemy","monster","boss","creature","mob","beetle","spider","wolf","bear","golem"}) then bindStudioAssetSemanticFamily(instance, "CREATURE") end
-    if studioAssetNameHas(name, {"building","house","shop","school","temple","castle","dungeon","wall","roof","foundation","village","tower","gate"}) then bindStudioAssetSemanticFamily(instance, "BUILDING") end
-    if studioAssetNameHas(name, {"weapon","sword","blade","spear","axe","hammer","bow","gun","staff","shield"}) then bindStudioAssetSemanticFamily(instance, "WEAPON") end
-    if studioAssetNameHas(name, {"tree","rock","road","path","water","forest","desert","snow","swamp","cave","landmark"}) then bindStudioAssetSemanticFamily(instance, "ENVIRONMENT") end
-    if studioAssetNameHas(name, {"prop","chest","crate","barrel","lamp","workbench","furniture","sign","pickup","resource","tree","rock"}) then bindStudioAssetSemanticFamily(instance, "PROP") end
-  end
-end
-for _, studioAssetInstance in ipairs(game:GetDescendants()) do syncStudioAssetSemanticInstance(studioAssetInstance) end
-game.DescendantAdded:Connect(syncStudioAssetSemanticInstance)
--- STUDIO_ASSET_DYNAMIC_BINDING_END
 `;
 }
 
