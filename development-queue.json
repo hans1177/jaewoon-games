@@ -4997,9 +4997,9 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-06T16:45:07.428Z",
-      "robloxSourceCommit": "7c1ebf1bc575763dff8c6a09c2f017b9773b55be",
-      "robloxSourceBootstrapPassedAt": "2026-10-06T16:45:07.428Z",
+      "updatedAt": "2026-10-06T16:49:51.648Z",
+      "robloxSourceCommit": "c92dbfa59c8ab433fbfcfa026076121e44b9ca5a",
+      "robloxSourceBootstrapPassedAt": "2026-10-06T16:49:51.648Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
@@ -11298,16 +11298,16 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-06T16:40:27.135Z",
-      "robloxSourceCommit": "61773805b715f8a92c630b0bf35cd68659b7077e",
-      "robloxSourceBootstrapPassedAt": "2026-10-06T16:21:14.555Z",
+      "updatedAt": "2026-10-06T16:49:51.648Z",
+      "robloxSourceCommit": "526972053b6fc9ea67c1e3c18fc6d603bfa04322",
+      "robloxSourceBootstrapPassedAt": "2026-10-06T16:49:51.648Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
@@ -11408,7 +11408,7 @@
       "robloxFailureStage": "F0_SOURCE_INTEGRITY",
       "robloxFailureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
       "routingBlockers": [
-        "roblox-f0-source-preflight-failed"
+        "roblox-runtime-evidence-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -43154,7 +43154,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-06T16:45:07.428Z",
+  "updatedAt": "2026-10-06T16:49:51.648Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
