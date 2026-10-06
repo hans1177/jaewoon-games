@@ -12,20 +12,20 @@
   "lastSuccessfulModelCallAt": null,
   "failedPhase": "designer_draft",
   "failedTask": null,
-  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=OPTIONAL_EXTERNAL_AI_DISABLED local=schema required missing: root.identity",
+  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=OPTIONAL_EXTERNAL_AI_DISABLED local=Expected ',' or ']' after array element in JSON at position 3107 (line 1 column 3108)",
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
+      "calls": 14,
       "successes": 0,
-      "failures": 13,
+      "failures": 14,
       "timeouts": 10,
-      "jsonFailures": 3,
-      "totalMs": 1254590,
-      "lastMs": 120101,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
-      "updatedAt": "2026-10-06T17:14:58.252Z"
+      "jsonFailures": 4,
+      "totalMs": 1340379,
+      "lastMs": 85789,
+      "lastError": "Expected ',' or ']' after array element in JSON at position 3107 (line 1 column 3108)",
+      "updatedAt": "2026-10-06T17:16:24.042Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-06T17:14:58.252Z"
+  "updatedAt": "2026-10-06T17:16:28.114Z"
 }
