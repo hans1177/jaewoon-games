@@ -307,6 +307,69 @@
       "directMasteryCredit": false,
       "directTrainingSample": false,
       "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:openai-roblox-production-systems-v2",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI",
+      "model": "GPT-5.6-SOL",
+      "engine": "roblox",
+      "gameId": "cross-game",
+      "domains": [
+        "COMBAT",
+        "AI",
+        "NAVIGATION",
+        "STREAMING",
+        "ROBLOX_REMOTE_SECURITY",
+        "ROBLOX_REPLICATION",
+        "ROBLOX_MULTIPLAYER",
+        "ROBLOX_CHARACTER_STATE",
+        "STATE_MACHINE",
+        "RECOVERY",
+        "SECURITY",
+        "PERFORMANCE"
+      ],
+      "patterns": [
+        "Treat combat remotes as intent tickets: validate server-owned actor/target state, monotonic sequence, cooldown, server-derived distance or hit evidence, and server-owned damage before mutation.",
+        "Budget NPC path recomputation: reuse valid paths until target displacement, expiry, obstruction, or state transition justifies a new solve; failed solves preserve the last usable route and enter a retry cooldown.",
+        "Streaming makes instance references ephemeral. Reacquire by stable identity or tag, tolerate nil/unloaded state, and never let a cached reference silently outlive the world/version context that produced it.",
+        "For temporary cross-server ownership such as matchmaking or work leases, use TTL plus fencing tokens; stale lease holders must be unable to commit after a newer owner acquires the resource.",
+        "Treat cross-server messages as at-least-once invalidation hints, not canonical state. Deduplicate message ids and fetch the authoritative snapshot before applying a newer revision.",
+        "Tag-driven systems must attach exactly once and detach exactly once per live instance. Duplicate add/remove notifications are normal lifecycle noise, not permission to leak connections or handlers.",
+        "Use server-side token buckets or equivalent bounded rate limiting per player/action in addition to semantic validation; client cooldown UI is presentation, not an authority boundary.",
+        "Parallel Luau workers should compute on isolated or immutable data and return generation-bound results. Validate the whole result before a synchronized canonical commit so stale or malformed work cannot partially mutate state.",
+        "Keep network ownership and client physics as performance mechanisms only; rewards, damage, capture, progression, and anti-cheat decisions require server-owned validation of the resulting game state.",
+        "Degrade deterministically under load: cap path solves, remote work, transient effects, streaming lookups, cross-server refreshes, and parallel jobs before they create frame-time or queue explosions."
+      ],
+      "cautions": [
+        "Do not turn practice-only Luau logic into production evidence; Open Cloud exact-candidate runtime, independent QA, and regression remain required for Roblox production mastery.",
+        "Do not trust client hit distance, damage, lease ownership, message payload state, streamed object presence, or parallel worker output without server-side or generation-bound validation.",
+        "Do not create a shadow scheduler, new learning pipeline, or wider write authority to apply these patterns."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "3028a1f531215a3b124f479111fa21377a2dcae23653d12b16753e15b1212d23",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "source-backed-review",
+        "evidence": [
+          "source:company-learning/roblox-practice.json#advanced-production-systems-v2",
+          "qa:qa/vibe2-learning-practice-worker.test.mjs#standalone-luau-regression-and-variants",
+          "source:tools/vibe2-learning-motor.mjs#roblox-open-cloud-verified-learning-gate",
+          "qa:qa/vibe2-learning-motor.test.mjs#open-cloud-runtime-mastery-gate"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
     }
   ],
   "policy": {
