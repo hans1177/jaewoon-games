@@ -1561,7 +1561,9 @@ test('distillation ingest preserves active rebuilds and stays off heavy game run
 test('Vibe2 control-plane and heavy jobs use their selected runner pools',()=>{
   const coreWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
   const runnerWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-24h-runner.yml',import.meta.url),'utf8');
-  assert.match(coreWorkflow,/\n  reserve:\n(?:\s+#.*\n)*\s+runs-on: \$\{\{ \(github\.event_name == 'repository_dispatch' && \(github\.event\.action == 'vibe2-fanin-refill' \|\| github\.event\.action == 'vibe2-neuron-complete'\) && 'ubuntu-latest' \|\| 'ubuntu-slim'\) \}\}/);
+  assert.match(coreWorkflow,/\n  reserve:\n(?:\s+#.*\n)*\s+runs-on: \$\{\{ \(github\.event_name == 'repository_dispatch' && github\.event\.action == 'vibe2-fanin-refill' && 'ubuntu-latest' \|\| 'ubuntu-slim'\) \}\}/);
+  const reserveHeader=coreWorkflow.slice(coreWorkflow.indexOf('\n  reserve:'),coreWorkflow.indexOf('\n    timeout-minutes:',coreWorkflow.indexOf('\n  reserve:')));
+  assert.doesNotMatch(reserveHeader,/vibe2-neuron-complete[^\n]*ubuntu-latest/);
   assert.match(coreWorkflow,/\n  fan_in:[\s\S]*?runs-on: ubuntu-latest/);
   assert.match(coreWorkflow,/\n  worker:[\s\S]*?runs-on: \$\{\{ \(inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) == 'asset-development' && matrix\.target == 'roblox' && 'ubuntu-latest' \|\| \(\(inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) == 'asset-development' && 'ubuntu-24\.04-arm' \|\| 'ubuntu-latest'\) \}\}/);
   assert.match(runnerWorkflow,/\n  plan:[\s\S]{0,180}?runs-on: ubuntu-24\.04-arm/);
