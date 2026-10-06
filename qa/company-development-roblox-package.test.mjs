@@ -235,6 +235,24 @@ ${familyRows}
     assert.equal(pass.productionVerified,false);
     assert.equal(pass.runtimeVerified,false);
 
+    const managedLearningOverlay=[
+      client,
+      'local character = game.Players.LocalPlayer.Character',
+      'local camera = workspace.CurrentCamera',
+      '-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN',
+      'local humanoid = character and character:FindFirstChildOfClass("Humanoid")',
+      'local lighting = game:GetService("Lighting")',
+      'local emitter = Instance.new("ParticleEmitter")',
+      'local animator = humanoid and humanoid:FindFirstChildOfClass("Animator")',
+      '-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END'
+    ].join('\n');
+    fs.writeFileSync(path.join(root,'client','Game.client.luau'),managedLearningOverlay);
+    const overlayPass=validateRobloxPackageAssetThreshold({root,gameId:'demo',baseline,assetLibrary});
+    assert.equal(overlayPass.pass,true,overlayPass.blockers.join(','));
+    assert.equal(overlayPass.familyBindingPassCount,1);
+    assert.equal(overlayPass.notApplicableFamilyCount,11);
+
+    fs.writeFileSync(path.join(root,'client','Game.client.luau'),client);
     fs.writeFileSync(path.join(root,'shared','GameConfig.luau'),config.replace('      PROP = { "PROP_ATOM" },\n',''));
     const missing=validateRobloxPackageAssetThreshold({root,gameId:'demo',baseline,assetLibrary});
     assert.equal(missing.pass,false);
