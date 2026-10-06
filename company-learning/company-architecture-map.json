@@ -4768,13 +4768,16 @@
       "gameOwnedSavePersistenceRequiredWhenPersistent": true
     },
     "causalGameGrammarBridge": {
+      "version": 2,
       "source": "GAME_SEED.GAMEPLAY_SKETCH.novelGameGrammar",
       "consumer": "tools/vibe2-artbook-story-engine.mjs -> tools/vibe2-artbook-story-core.mjs",
       "existingStoryPipelineOnly": true,
+      "formula": "MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @",
+      "mainAndABMajorAxesPreserved": true,
+      "cRemainsSubElementCollection": true,
+      "atRemainsDelveLayer": true,
       "gameplayIdentityAndNarrativeIdentityShareWorldRule": true,
-      "familiarHumanConflictPreserved": true,
-      "characterMonsterRegionStoryUseSameCausalLawWhenApplicable": true,
-      "d1LightComicSupportedWithoutForcedEpicExpansion": true
+      "familiarHumanConflictPreserved": true
     }
   },
   "robloxStudioAssetSelectionHandoff": {
@@ -5230,7 +5233,7 @@
       }
     },
     "gameIdentityConcept": {
-      "version": 2,
+      "version": 3,
       "centralContract": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameIdentityConceptContract",
       "existingPipelineOnly": true,
       "gameSeedOwner": "tools/company-game-seed-bootstrap.mjs::normalizeGameplaySketch",
@@ -5252,7 +5255,9 @@
       "wrapperOrShadowPipeline": false,
       "genreSpecificPrimaryActionPreserved": true,
       "causalGrammarFlow": {
+        "version": 2,
         "existingPipelineOnly": true,
+        "formula": "MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @",
         "flow": [
           "EXISTING_SEED_MATERIAL_POOL_WITH_CAUSAL_DNA_METADATA",
           "GAMEPLAY_SKETCH.novelGameGrammar",
@@ -5266,12 +5271,20 @@
           "QA_RUNTIME",
           "NEXT_BUILD_UP"
         ],
+        "roles": {
+          "MAIN": "CENTRAL_REPEATED_ACTION",
+          "A": "MAJOR_AXIS_ONE",
+          "B": "MAJOR_AXIS_TWO",
+          "c": "SUB_ELEMENT_COLLECTION_NOT_MAJOR_AXIS",
+          "at": "DELVE_LAYER_NOT_GENERAL_SYSTEM"
+        },
+        "categoryRole": "SEED_DISCOVERY_AND_OPERATIONAL_ROUTING_HINT_ONLY",
+        "emergentGenreCreatedAfterGrammar": true,
+        "existingGameMode": "RECONSTRUCT_CURRENT_MAIN_A_B_c_AT_FROM_DESIGN_AND_SOURCE_THEN_CLOSE_MISSING_CONNECTIONS",
         "newWorkflow": false,
         "newQueue": false,
         "newScheduler": false,
-        "shadowPipeline": false,
-        "depthIsQualityRank": false,
-        "d1LightComicUsesSameCanonicalFlow": true
+        "shadowPipeline": false
       }
     }
   },
