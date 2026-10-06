@@ -3403,10 +3403,15 @@ export function findSafeTasks(project,repoRoot,queue){
       const source=fs.readFileSync(file,'utf8');
       const clipBindingEvidence='function Motion.walk(form,bones,time)';
       const objectBindingEvidence='Motion.AssetId = "'+object+'"';
-      const start=source.indexOf(clipBindingEvidence),end=source.lastIndexOf('\nreturn Motion');
+      const start=source.indexOf(clipBindingEvidence);
+      const nextMotion=source.indexOf('\nfunction Motion.',start+clipBindingEvidence.length);
+      const moduleReturn=source.indexOf('\nreturn Motion',start+clipBindingEvidence.length);
+      const endCandidates=[nextMotion,moduleReturn].filter(index=>index>start);
+      const end=endCandidates.length?Math.min(...endCandidates):-1;
       if(start<0||end<=start||source.indexOf(clipBindingEvidence,start+1)>=0||!source.includes(objectBindingEvidence))continue;
-      const sourceWindow=source.slice(start,end);
-      if(Buffer.byteLength(sourceWindow)>24000)continue;
+      // 한 모션 작업은 정확한 Motion.walk 함수만 책임진다. 뒤의 attack/hit/death 함수까지 sourceWindow에 섞지 않는다.
+      const sourceWindow=source.slice(start,end).trimEnd();
+      if(Buffer.byteLength(sourceWindow)>12000)continue;
       tasks.push({id:taskId,gameId:project.gameId,target:'roblox',department:'graphics',type:'implementation',
         sourceRoot,responsibleFiles:[sourceRoot+'/'+sourcePath],ownerDirective:true,priority:'critical',
         releaseState:project.releaseState,assetProductionLane:true,speculativeEligible:false,
