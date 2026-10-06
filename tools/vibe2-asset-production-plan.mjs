@@ -1139,33 +1139,45 @@ const COMPANY_CATEGORY_TYPES=freeze({
   WEAPON:freeze(['item'])
 });
 
-function verifiedCompanyManifestAssets(registry={}){
+function companyManifestAssets(registry={}){
   return (Array.isArray(registry?.assets)?registry.assets:[])
-    .filter(asset=>asset?.verifiedCompanyReusable===true||/^VERIFIED_COMPANY_/.test(clean(asset?.status).toUpperCase()))
-    .map(asset=>({
-      ...asset,
-      id:clean(asset.id),
-      path:clean(asset.path).replace(/^\//,''),
-      types:Array.isArray(asset.types)&&asset.types.length?asset.types:(COMPANY_CATEGORY_TYPES[clean(asset.category).toUpperCase()]||[]),
-      tags:Array.isArray(asset.tags)?asset.tags:[clean(asset.title),clean(asset.category)].filter(Boolean),
-      platforms:Array.isArray(asset.platforms)?asset.platforms:(clean(asset.platform)&&!/^SHARED|WEB_/i.test(clean(asset.platform))?[clean(asset.platform).toLowerCase()]:[]),
-      downloaded:true,
-      companyVerified:true,
-      source:clean(asset.source)||'COMPANY_ASSET_LIBRARY'
-    }))
+    .filter(asset=>{
+      const id=clean(asset?.id);
+      const status=clean(asset?.status).toUpperCase();
+      const license=clean(asset?.license||asset?.policy),licenseLower=license.toLowerCase();
+      const licenseBlocked=!license||/(?:^|[^a-z0-9])nc(?:[^a-z0-9]|$)/i.test(license)||licenseLower.includes('unknown')||licenseLower.includes('출처 불명')||licenseLower.includes('재배포 제한');
+      const hardBlocked=asset?.corruptSource===true||asset?.securityBlocked===true||asset?.quarantined===true||asset?.platformIncompatible===true||asset?.explicitInternalUseForbidden===true||/(?:BLOCKED|QUARANTINED|CORRUPT|REJECTED)/.test(status);
+      return Boolean(id&&!licenseBlocked&&!hardBlocked);
+    })
+    .map(asset=>{
+      const companyVerified=asset?.verifiedCompanyReusable===true||/^VERIFIED_COMPANY_/.test(clean(asset?.status).toUpperCase());
+      return{
+        ...asset,
+        id:clean(asset.id),
+        path:clean(asset.path).replace(/^\//,''),
+        types:Array.isArray(asset.types)&&asset.types.length?asset.types:(COMPANY_CATEGORY_TYPES[clean(asset.category).toUpperCase()]||[]),
+        tags:Array.isArray(asset.tags)?asset.tags:[clean(asset.title),clean(asset.category)].filter(Boolean),
+        platforms:Array.isArray(asset.platforms)?asset.platforms:(clean(asset.platform)&&!/^SHARED|WEB_/i.test(clean(asset.platform))?[clean(asset.platform).toLowerCase()]:[]),
+        downloaded:true,
+        companyInternal:true,
+        companyVerified,
+        source:clean(asset.source)||'COMPANY_ASSET_LIBRARY'
+      };
+    })
     .filter(asset=>asset.id);
 }
 
 function mergeManifestWithCompanyLibrary(manifest={},registry={}){
   const rows=[...(Array.isArray(manifest?.assets)?manifest.assets:[])];
   const byId=new Map(rows.map(asset=>[clean(asset?.id),asset]));
-  for(const asset of verifiedCompanyManifestAssets(registry))byId.set(asset.id,{...(byId.get(asset.id)||{}),...asset});
+  for(const asset of companyManifestAssets(registry))byId.set(asset.id,{...(byId.get(asset.id)||{}),...asset});
   return {...manifest,assets:[...byId.values()]};
 }
 
 function sourceTierFor(asset={}){
   if(asset?.sameGameExistingRoblox===true)return 'SAME_GAME_EXISTING_ROBLOX_ASSET';
   if(asset?.companyVerified===true)return 'VERIFIED_COMPANY_ASSET';
+  if(asset?.companyInternal===true)return 'COMPANY_INTERNAL_ASSET';
   const assetPath=clean(asset.path);
   const sourceUrl=clean(asset.sourceUrl);
   if(asset?.downloaded!==false&&!sourceUrl)return 'LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET';
@@ -1176,6 +1188,7 @@ function sourceTierFor(asset={}){
 function assetTargetCompatible(asset={},target=''){
   const resolvedTarget=clean(target).toLowerCase();
   const assetPath=clean(asset.path).replaceAll('\\\\','/');
+  const platformLabel=clean(asset.platform).toLowerCase();
   const platforms=(Array.isArray(asset.platforms)?asset.platforms:[]).map(value=>clean(value).toLowerCase()).filter(Boolean);
   const researchTargets=(Array.isArray(asset.platformResearchTargets)?asset.platformResearchTargets:[]).map(value=>clean(value).toLowerCase()).filter(Boolean);
   if(resolvedTarget==='web'){
@@ -1191,10 +1204,11 @@ function assetTargetCompatible(asset={},target=''){
   }
   if(resolvedTarget==='roblox'){
     if(assetPath.startsWith('web-games/')||assetPath.startsWith('unity-games/'))return false;
-    if(platforms.length&&platforms.includes('roblox'))return true;
+    if(platformLabel==='roblox'||platforms.includes('roblox'))return true;
+    if(assetPath.startsWith('assets/roblox/')||assetPath.startsWith('roblox-games/'))return true;
     if(!assetPath&&researchTargets.includes('roblox'))return true;
-    if(platforms.length)return false;
-    return !assetPath||assetPath.startsWith('roblox-games/');
+    if(platforms.length||platformLabel)return false;
+    return !assetPath;
   }
   return false;
 }
@@ -1222,13 +1236,14 @@ function matchedForType(selector={},type='',manifest={},target=''){
       source:clean(row.source||asset.source)||null,
       sourceUrl:clean(asset.sourceUrl)||null,
       downloaded:asset.downloaded!==false,
-      acquiredExternal:Boolean(asset.companyVerified!==true&&asset.sameGameExistingRoblox!==true&&clean(asset.sourceUrl||asset.externalSourceUrl||asset.acquiredFrom)),
-      acquisitionOrigin:asset.companyVerified===true?'COMPANY_INTERNAL':asset.sameGameExistingRoblox===true?'SAME_GAME':clean(asset.sourceUrl||asset.externalSourceUrl||asset.acquiredFrom)?'EXTERNAL_ACQUIRED':'REPOSITORY_INTERNAL',
+      acquiredExternal:Boolean(asset.companyInternal!==true&&asset.companyVerified!==true&&asset.sameGameExistingRoblox!==true&&clean(asset.sourceUrl||asset.externalSourceUrl||asset.acquiredFrom)),
+      acquisitionOrigin:asset.companyInternal===true||asset.companyVerified===true?'COMPANY_INTERNAL':asset.sameGameExistingRoblox===true?'SAME_GAME':clean(asset.sourceUrl||asset.externalSourceUrl||asset.acquiredFrom)?'EXTERNAL_ACQUIRED':'REPOSITORY_INTERNAL',
       animated:adaptationBaseOnly?false:row.animated===true,
       motionMode:adaptationBaseOnly?null:clean(row.motionMode)||null,
       motionStates:freezeList(unique([...(Array.isArray(asset.states)?asset.states:[]),...(Array.isArray(asset.animations)?asset.animations:[])].filter(value=>typeof value==='string').map(value=>clean(value).toLowerCase()))),
       rigType:clean(asset.rigType)||null,
       sourceTier:sourceTierFor(asset),
+      companyInternal:asset.companyInternal===true,
       companyVerified:asset.companyVerified===true,
       sameGameExistingRoblox:asset.sameGameExistingRoblox===true,
       robloxAssetId:clean(asset.robloxAssetId)||null,
@@ -1605,7 +1620,8 @@ function assetApplyFirstCandidate(asset={},target='',binding={}){
   const variant=asset?.platformVariants?.[platform.toUpperCase()]||asset?.platformVariants?.[platform]||null;
   const sameGame=asset.sameGameExistingRoblox===true&&platform==='roblox';
   const hasNativeReference=Boolean(sameGame&&(asset.path||asset.robloxAssetId)||variant?.path||asset.path||asset.robloxAssetId);
-  const nativeReady=Boolean(sameGame||variant?.path||asset.productionVerified===true);
+  const safeInternalNative=asset.companyInternal===true&&asset.targetCompatible===true&&hasNativeReference;
+  const nativeReady=Boolean(sameGame||variant?.path||asset.productionVerified===true||safeInternalNative);
   const adaptable=Boolean(!nativeReady&&hasNativeReference&&(asset.retargetable===true||asset.rigType||asset.sourceHash));
   const lane=nativeReady?(sameGame?'A_SAME_GAME_BOUND':'B_NATIVE_READY'):adaptable?'C_MINIMAL_ADAPT':'D_AUTHORING_REQUIRED';
   const bindingCost=lane==='A_SAME_GAME_BOUND'?0:lane==='B_NATIVE_READY'?1:lane==='C_MINIMAL_ADAPT'?2:3;
@@ -1616,7 +1632,7 @@ function assetApplyFirstCandidate(asset={},target='',binding={}){
   const compatibilityScore=
     (lane==='A_SAME_GAME_BOUND'?50:lane==='B_NATIVE_READY'?40:lane==='C_MINIMAL_ADAPT'?25:0)
     +(asset.productionVerified===true?8:0)
-    +(asset.companyVerified===true?4:0)
+    +(asset.companyVerified===true?4:asset.companyInternal===true?3:0)
     +Math.min(20,roleMatches*6)
     +(asset.sourceHash?5:0)
     +(asset.retargetable===true?5:0);
@@ -1644,6 +1660,10 @@ function assetApplyFirstCandidate(asset={},target='',binding={}){
     acquiredExternal:asset.acquiredExternal===true,
     acquisitionOrigin:asset.acquisitionOrigin||null,
     productionVerified:asset.productionVerified===true,
+    companyInternal:asset.companyInternal===true,
+    qualityScoreThreshold:0,
+    qualityScoreIsUsageGate:false,
+    visualDebtRequired:asset.productionVerified!==true,
     ready:Boolean(hasNativeReference&&asset.downloaded!==false&&lane!=='D_AUTHORING_REQUIRED'),
     adaptationAllowed:true,
     adaptationAxes:freezeList(lane==='C_MINIMAL_ADAPT'?['RIG_RETARGET','MATERIAL_REMAP','SOCKET_REBIND','SCALE_AXIS_PIVOT_NORMALIZE','LOD_GENERATION']:[]),
@@ -1775,7 +1795,7 @@ function createConceptFitContract({task={},requestedConcept={},binding={}}={}){
 
 function createPostDownloadInternalComparison({matched=[],target='',binding={},conceptFit=null}={}){
   const internal=matched.filter(asset=>asset.acquiredExternal!==true&&[
-    'VERIFIED_COMPANY_ASSET','SAME_GAME_EXISTING_ROBLOX_ASSET','LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET'
+    'VERIFIED_COMPANY_ASSET','COMPANY_INTERNAL_ASSET','SAME_GAME_EXISTING_ROBLOX_ASSET','LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET'
   ].includes(asset.sourceTier));
   const acquired=matched.filter(asset=>asset.acquiredExternal===true);
   const externalRows=acquired.map(asset=>assetApplyFirstCandidate(asset,target,binding))
@@ -1833,9 +1853,10 @@ function decisionFor(selector={},target='',binding={},manifest={},conceptContext
   const matched=matchedForType(selector,type,manifest,target);
   const sameGameCandidates=freezeList(matched.filter(asset=>asset.sourceTier==='SAME_GAME_EXISTING_ROBLOX_ASSET'));
   const companyCandidates=freezeList(matched.filter(asset=>asset.sourceTier==='VERIFIED_COMPANY_ASSET'));
+  const companyInternalCandidates=freezeList(matched.filter(asset=>asset.sourceTier==='COMPANY_INTERNAL_ASSET'));
   const repositoryCandidates=freezeList(matched.filter(asset=>asset.sourceTier==='LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET'));
   const externalCandidates=freezeList(matched.filter(asset=>asset.sourceTier==='LICENSE_VERIFIED_EXTERNAL_ASSET'));
-  const reuseCandidates=freezeList([...companyCandidates,...sameGameCandidates,...repositoryCandidates]);
+  const reuseCandidates=freezeList([...companyCandidates,...companyInternalCandidates,...sameGameCandidates,...repositoryCandidates]);
   const directAuthoring=directAuthoringFor(target,type);
   const candidateRows=freezeList([...reuseCandidates,...externalCandidates].map(asset=>assetApplyFirstCandidate(asset,target,binding)));
   const applyFirstCandidates=freezeList(candidateRows.filter(row=>row.ready).sort((a,b)=>b.compatibilityScore-a.compatibilityScore||a.bindingCost-b.bindingCost||a.id.localeCompare(b.id)));
@@ -1846,6 +1867,7 @@ function decisionFor(selector={},target='',binding={},manifest={},conceptContext
   const decisionOrder=unique([
     'COMPARE_TARGET_GAME_QUALITY',
     companyCandidates.length?'REUSE_VERIFIED_COMPANY_ASSET':'',
+    companyInternalCandidates.length?'REUSE_COMPANY_INTERNAL_ASSET_REGARDLESS_OF_QUALITY_SCORE':'',
     sameGameCandidates.length?'REUSE_SAME_GAME_EXISTING_ROBLOX_ASSET':'',
     repositoryCandidates.length?'REUSE_LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET':'',
     externalCandidates.length?'ACQUIRE_LICENSE_VERIFIED_EXTERNAL_ASSET':'',
@@ -1874,6 +1896,7 @@ function decisionFor(selector={},target='',binding={},manifest={},conceptContext
     targetStates:freezeList(binding.targetStates||[]),
     sameGameCandidates,
     companyCandidates,
+    companyInternalCandidates,
     repositoryCandidates,
     externalCandidates,
     reuseCandidates,
@@ -2749,8 +2772,12 @@ export function buildVibeAssetProductionPlan({
       verificationStatusIsNotVisualQuality:true,
       qualityScaleMaximum:120,
       qualityScoreIsNotDevelopmentBindingGate:true,
-      lowScoreAssetMayBindWhenNoBetterSafeCompatibleAlternative:true,
+      minimumQualityScoreForSafeCompatibleBinding:0,
+      lowScoreSafeCompatibleInternalAssetMustRemainEligible:true,
+      lowScoreAssetMayBindRegardlessOfInternalQualityScore:true,
       lowScoreBindingMustKeepVisualDebtOpen:true,
+      safeCompatibleInternalAssetPreferredOverBlankOrPrimitive:true,
+      primitiveFallbackForbiddenWhenSafeCompatibleInternalAssetExists:true,
       productionVerifiedStillRequiresExactRuntimeEvidence:true,
       heroAssetsDefineQualityBaseline:true,
       worstPartFirstEvolution:true,
@@ -3150,7 +3177,17 @@ export function buildVibeAssetProductionPlan({
         externalLicensedMotionGapFill:companyLibrary?.unarmedCombatStudio?.externalMotionUse?.searchExternalLicensedMotionBeforeAuthoringMissingCoverage===true,
         platformNativeRuntimeVerificationRequired:companyLibrary?.unarmedCombatStudio?.externalMotionUse?.retargetCleanupAndPlatformNativeRuntimeValidationRequired===true
       }),
-      verifiedCompanyAssetCount:verifiedCompanyManifestAssets(companyRegistry).length,
+      companyInternalSelectableAssetCount:companyManifestAssets(companyRegistry).length,
+      verifiedCompanyAssetCount:companyManifestAssets(companyRegistry).filter(asset=>asset.companyVerified===true).length,
+      robloxInternalUseThreshold:freeze({
+        minimumQualityScore:0,
+        qualityScoreIsUsageGate:false,
+        safeCompatibleInternalAssetMustRemainEligible:true,
+        productionVerifiedRequiredForDevelopmentBinding:false,
+        runtimeVerificationStillRequiredForPromotion:true,
+        blankOrPrimitiveFallbackForbidden:true,
+        hardBlockersOnly:freezeList(['SECURITY','LICENSE','CORRUPT_SOURCE','PLATFORM_INCOMPATIBLE','EXPLICIT_INTERNAL_USE_FORBIDDEN'])
+      }),
       externalSourceCount:Array.isArray(companyRegistry?.externalSources)?companyRegistry.externalSources.length:0,
       externalSourceIds:freezeList((companyRegistry?.externalSources||[]).map(row=>clean(row.id)).filter(Boolean))
     }),
