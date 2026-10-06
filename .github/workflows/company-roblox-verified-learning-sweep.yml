@@ -1,5 +1,5 @@
 name: Company Roblox Verified Learning Sweep
-run-name: Roblox verified learning sweep · ${{ inputs.game_id || 'batch' }}
+run-name: Roblox verified learning sweep · ${{ inputs.game_ids || inputs.game_id || 'batch' }}
 
 on:
   push:
@@ -15,6 +15,10 @@ on:
         description: Optional exact Roblox gameId. Empty keeps batch-compatible sweep behavior.
         required: false
         type: string
+      game_ids:
+        description: Optional comma-separated selected Roblox gameIds for one deduped batch sweep.
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -22,7 +26,7 @@ permissions:
 
 concurrency:
   # 같은 게임의 학습 갱신만 합치고 실행 중인 작업은 보존한다.
-  group: roblox-verified-learning-sweep-${{ inputs.game_id || 'batch' }}
+  group: roblox-verified-learning-sweep-${{ inputs.game_ids || inputs.game_id || 'batch' }}
   cancel-in-progress: false
 
 env:
@@ -64,15 +68,18 @@ jobs:
         id: apply
         env:
           GAME_ID: ${{ inputs.game_id || '' }}
+          GAME_IDS: ${{ inputs.game_ids || '' }}
         shell: bash
         run: |
           set -euo pipefail
           scope="${GAME_ID:-batch}"
+          if [ -n "${GAME_IDS:-}" ]; then scope='selected-batch'; fi
           branch="development/roblox-learning-sweep-${scope}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           git switch -c "$branch"
           node tools/company-roblox-verified-learning-sweep.mjs \
             --root=roblox-games \
             --game-id="$GAME_ID" \
+            --game-ids="$GAME_IDS" \
             --playbooks=/tmp/vibe3-task-playbooks.json \
             --recombination=/tmp/vibe3-recombination-memory.json \
             --report=/tmp/roblox-learning-sweep.json
@@ -80,6 +87,7 @@ jobs:
           node tools/company-roblox-verified-learning-sweep.mjs \
             --root=roblox-games \
             --game-id="$GAME_ID" \
+            --game-ids="$GAME_IDS" \
             --playbooks=/tmp/vibe3-task-playbooks.json \
             --recombination=/tmp/vibe3-recombination-memory.json \
             --report=/tmp/roblox-learning-sweep-repeat.json
@@ -99,6 +107,12 @@ jobs:
           git config user.email 'actions@users.noreply.github.com'
           if [ -n "$GAME_ID" ]; then
             git add "roblox-games/$GAME_ID"
+          elif [ -n "$GAME_IDS" ]; then
+            IFS=',' read -r -a selected_game_ids <<< "$GAME_IDS"
+            for selected_game_id in "${selected_game_ids[@]}"; do
+              [ -n "$selected_game_id" ] || continue
+              git add "roblox-games/$selected_game_id"
+            done
           else
             git add roblox-games
           fi
