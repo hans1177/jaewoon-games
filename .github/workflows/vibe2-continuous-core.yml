@@ -3302,6 +3302,7 @@ jobs:
             String(run.id||'')!==String(process.env.CURRENT_RUN||'')
             &&states.has(String(run.status||'').toLowerCase())
             &&String(run.display_title||'')===String(process.env.REFILL_TITLE||'')
+            &&String(run.head_sha||'')===String(process.env.CURRENT_MAIN||'')
           );
           process.stdout.write(found?'yes':'no');
           NODE
