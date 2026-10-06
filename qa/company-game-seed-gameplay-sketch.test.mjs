@@ -192,6 +192,69 @@ test('GAMEPLAY_SKETCH v3 requires diverse cross-system composition depth without
       endgameFusion:'엔드게임은 방어 × 탐험 × 수집 + 무역 × 파티 조합으로 비밀 웨이브와 희귀 빌드를 여는 융합 구조다.',
       mechanicDiversitySources:['CLASSIC_CARD','MODERN_BOARD','EXPLORATION','COLLECTION_META']
     },
+    narrativeDepth:{
+      applicable:true,storyWeight:'MEDIUM',
+      worldConflict:'옛 방어도시와 신흥 상단이 유적 자원과 안전한 교역로를 두고 경쟁하며 지역 주민과 방어선 상태가 함께 변한다.',
+      mainStoryArc:'초반 방어 사건에서 시작해 상단·수비대·탐험가의 서로 다른 기록을 모으고 중반 동료와 서브퀘 선택을 거쳐 후반 도시의 과거와 비밀 웨이브의 원인을 밝힌다.',
+      narrativeDnaSources:['CHINESE_CLASSICAL_HISTORY','GREEK_EPIC_MYTH','DETECTIVE_MYSTERY'],
+      rightsModes:['PUBLIC_DOMAIN_OR_HISTORICAL_STRUCTURE','ORIGINAL_SYNTHESIS'],
+      npcRelationshipWeb:['수비대장과 상단주는 교역로 통제권을 두고 경쟁하며 플레이어 평판에 따라 지원과 가격이 달라진다','탐험가 동료는 기록원과 사제 사이의 오래된 갈등을 알고 있어 저널 단서와 대화 분기를 연다'],
+      companionArcs:['탐험가 동료는 유적 조사→가문 기록 발견→세력 선택 갈등→비밀 경로 안내 순으로 성장하고 파티 구성에 따라 대사가 바뀐다'],
+      mainSubquestLinks:['상단의 잃어버린 장부 서브퀘 결과가 메인 방어 보급과 지원군 상태를 바꾼다','수비대 묘지 기록 조사 결과가 후반 비밀 웨이브 원인과 보스 대응법을 연다'],
+      foreshadowPayoffs:['초반 성벽 낙서의 옛 지명이 중반 저널에서 옛 광산 입구임이 밝혀지고 후반 비밀 지역으로 회수된다','NPC가 반복해서 언급하는 검은 비늘이 후반 몬스터 이동 경로와 유적 붕괴 원인을 설명한다'],
+      factionCultureHooks:['수비대는 명예와 배급 규율을 중시하고 상단은 계약과 신용을 중시해 퀘스트·가격·대화 규칙이 다르다','외곽 주민은 괴물 출현과 옛 지명에 대한 민간 전승을 보존해 탐험 단서를 제공한다'],
+      historicalMythReinterpretations:['고전 군웅 경쟁의 권력 구조를 도시 방어와 상단 경쟁으로 재구성한다','영웅 서사와 미스터리 기법을 유적 기록과 동료 선택으로 변형한다'],
+      worldbuildingFusion:['권력 경쟁 × 교역로 × 유적 신화를 도시 방어 사건으로 연결한다','지역 경제 × 주민 관계 × 몬스터 이동을 하나의 월드 상태로 연결한다','저널 미스터리 × 탐험 × 방어 보스 대응을 후반 진실로 연결한다'],
+      storySystemLinks:['평판 변화가 상점 가격과 동료 지원을 바꾼다','저널 단서가 지도 표식과 비밀 퀘스트를 연다','세력 선택이 방어 지원군과 보스 진입 경로를 바꾼다'],
+      contentCausalityLinks:['새 지역은 옛 전쟁과 자원 갈등 때문에 열린다','몬스터는 유적 붕괴와 먹이 이동 때문에 방어선에 등장한다','유물은 기록 해석과 장비 조합에 사용된다','미니게임 결과가 상단 평판과 보급품을 바꾼다'],
+      worldEvolutionHooks:['메인 방어 결과가 성벽·상점·NPC 배치와 위험도를 바꾼다','후반 기록 해석이 초기 지역의 옛 지명과 숨은 길을 새 의미로 연다'],
+      placeNameLedger:['회색문 성벽: 옛 광산 관문에서 유래하며 지도·표지판·대화·저널이 같은 이름을 쓴다','세 갈래 시장: 세 교역로가 만나는 곳이라 상단 사건과 가격 변동의 중심이다','검은비늘 골짜기: 괴물 이동 흔적에서 유래하며 도감과 주민 소문이 같은 지명을 공유한다'],
+      journalRecordChains:['수비대 일지와 상단 장부와 묘지 비문을 조합하면 옛 방어 실패의 원인을 재구성할 수 있다','탐험가 메모의 지명이 지도 표식과 NPC 질문, 비밀 지역 해금으로 이어진다'],
+      dialogueJournalLinks:['저널을 읽은 뒤 수비대장에게 새 질문이 열리고 메인 방어 준비 상태가 갱신된다','상단 장부를 발견하면 상인 NPC의 기존 주장과 충돌하는 대화가 열려 서브퀘가 분기된다'],
+      monsterOpponentLoreEcologyLinks:['검은비늘 포식자는 골짜기 먹이 이동과 유적 열기 때문에 성벽으로 이동하며 도감·저널·전투 패턴이 이를 공유한다','약탈대는 상단 교역로와 세력 갈등 때문에 나타나며 처치/협상 결과가 시장 상태를 바꾼다'],
+      namingRules:['같은 도시권 지명은 문·길·시장·골짜기처럼 기능/지형 어휘를 공유하고 실제 고유명 복제를 피한다','몬스터·조직 이름은 지역 사건과 역할이 드러나되 UI에서 구분 가능한 길이로 유지한다'],
+      culturalRespectRules:['역사 소재를 민족 우열로 단순화하지 않는다','실제 비극을 보상 장치로 희화화하지 않는다','보호 작품의 고유 명칭과 인물은 복제하지 않는다']
+    },
+    styleWorldDepth:{
+      styleFusion:'동아시아 성곽도시 × 교역항 × 유적 미스터리의 시각 언어를 방어 가독성과 결합한다.',
+      styleDnaSources:['EAST_ASIAN_CLASSICAL','MARITIME_TRADE_PORT','MYSTERY_NOIR'],
+      architectureSettlement:'성벽·시장·부두·기록원 건축이 세력의 권한과 물류 동선을 보여주고 방어 배치 위치를 읽기 쉽게 만든다.',
+      environmentBiomes:'성벽 외곽 골짜기와 강변 교역로, 유적지의 지형과 기후가 몬스터 이동과 자원 경로를 구분한다.',
+      materialPropLanguage:'석재 성벽·목재 상점·금속 방어시설·낡은 기록 소품이 시대와 기능 차이를 표면 흔적으로 보여준다.',
+      characterCostumeSilhouette:'수비대·상인·탐험가·적 역할이 의상 실루엣과 장비 형태로 구분된다.',
+      paletteLightingWeather:'시장과 안전구역은 따뜻한 조명, 외곽 위험지역은 차가운 안개와 경고 조명으로 구분한다.',
+      backgroundStorytelling:'부서진 성문·옛 표지석·폐쇄 광산·장부가 세계의 전쟁과 교역 역사를 배경만으로 추론하게 한다.',
+      regionalStyleVariation:['성벽 중심지는 군사 규율과 석재 구조','시장은 상업 소품과 간판 밀도','골짜기는 유적 파편과 몬스터 흔적'],
+      gameplayReadabilityLinks:['랜드마크 실루엣이 길찾기를 돕는다','적 실루엣이 역할을 전달한다','조명과 안개가 위험 상태를 전달한다'],
+      styleExpansionHooks:['세력 선택에 따라 시장 깃발과 방어시설이 변한다','후반 재방문 시 폐쇄 광산이 복원되어 새 시각 상태를 가진다'],
+      artRightsRules:['공공영역 구조만 재해석한다','보호 작품 고유 디자인을 복제하지 않는다','실제 문화권을 단일 고정관념으로 표현하지 않는다'],
+      assetLibraryExpansionRequired:false,assetLibraryReferenceHints:['기존 호환 환경·재질·소품을 우선 검색한다']
+    },
+    worldbuildingDepth:{
+      allGenreApplicable:true,
+      worldPremise:'성벽 도시의 방어, 교역, 유적 조사, 주민 관계가 옛 전쟁과 현재 몬스터 이동이라는 같은 원인망에서 움직이는 세계다.',
+      worldDnaSources:['CIVILIZATION_AND_POWER','GEOGRAPHY_AND_ECOLOGY','ECONOMY_AND_DAILY_LIFE','ARCHIVE_JOURNAL_AND_RUMOR','MONSTER_OPPOSITION_ECOLOGY'],
+      civilizationPowerOrder:'수비대·상단·기록원이 서로 다른 권한과 의무를 갖고 지역 통제와 퀘스트 발생 조건에 영향을 준다.',
+      geographyEcology:'강·골짜기·폐광·성벽 통로가 자원과 교역로, 몬스터 서식과 방어 경로를 결정한다.',
+      economyDailyLife:'시장 보급과 주민 생업, 교역 가격과 축제가 상점·서브퀘·방어 준비 상태에 연결된다.',
+      beliefMythTaboo:'옛 전쟁 영웅과 유적 금기에 대한 전승이 의식, 유물, 비밀지역과 몬스터 소문의 기원이 된다.',
+      technologyInstitutions:'기록원·대장간·방어공방이 정보 해석, 장비 제작, 성벽 강화와 탐험 도구를 제공한다.',
+      placeNameLogic:'지명은 지형·역사·산업·괴물 사건에서 유래하고 지도·표지판·대화·저널에서 같은 표기를 사용한다.',
+      journalArchiveLogic:'저널·장부·비문은 서로 다른 관점으로 같은 사건을 기록하고 현장 흔적과 NPC 증언으로 교차검증된다.',
+      monsterOpponentEcology:'몬스터와 약탈대는 지역 생태와 교역 갈등, 옛 유적 사건 때문에 출현하며 행동과 보상이 그 원인을 반영한다.',
+      dialogueMemoryLogic:'NPC는 플레이어가 읽은 기록과 세력 선택, 최근 방어 결과를 기억해 질문과 태도, 후속 퀘스트를 바꾼다.',
+      causalChains:['옛 전쟁→옛 지명→저널→NPC 질문→비밀 퀘스트','골짜기 생태→몬스터 이동→방어 웨이브→도감/보상','교역로→시장 가격→상단 관계→보급 선택','유적 금기→기록 해석→탐험 경로→후반 보스 대응'],
+      worldStateEvolution:['방어와 세력 선택에 따라 시장·성벽·NPC·몬스터 출현이 변한다','후반 정보가 초기 지명과 기록의 의미를 재해석해 새 상호작용을 연다'],
+      crossMediaClueLinks:['지도 지명과 표지판과 저널이 같은 장소를 가리킨다','도감과 NPC 소문과 전투 패턴이 같은 몬스터 생태를 설명한다','저널 단서 확인 후 대화와 퀘스트 상태가 바뀐다'],
+      genreExpression:'디펜스 장르에서는 긴 컷신보다 웨이브 전후 대화, 지도 지명, 짧은 저널, 몬스터 도감과 지역 변화로 세계관을 표현한다.'
+    },
+    libraryLinkage:{
+      allCanonicalLibrariesSearchable:true,
+      libraryFamilies:['INTERNAL_ASSET_LIBRARY','VERIFIED_LEARNING_LIBRARY','CODE_PATTERN_LIBRARY','GAME_SEED_MATERIAL_LIBRARY','DESIGN_BASELINE_LIBRARY','GAME_CATALOG_LIBRARY','LICENSED_REFERENCE_LIBRARY','OPEN_SOURCE_REFERENCE_CATALOG'],
+      selectionRule:'모든 canonical 라이브러리를 현재 장르·플랫폼·세계관·책임 소스와 대조하고 호환성·권리·게임 정체성을 통과한 후보만 기존 책임 시스템에서 실제 소비한다.',
+      fallbackRule:'호환 후보가 없으면 강제 대입하지 않고 기존 소스와 설계를 유지하며 검증된 필요가 있을 때만 기존 canonical 생성 경로를 사용한다.',
+      compatibilityRightsAndGameIdentityFirst:true,actualConsumerEvidenceRequired:true,noForcedUse:true,noShadowPipeline:true
+    },
     flowArchitecture:buildGameFlowArchitecture({gameId:'seed-v3-depth',genre:seed.GAME_CATEGORY,baseline:{content:{identity:seed.DISTINCT_IDENTITY,coreFun:seed.CORE_FUN_TO_LEARN.join(' '),coreLoop:seed.CORE_LOOP,progressionDirection:'탐험과 수집, 무역이 방어 성장에 연결된다.'}},inventory:[]})
   };
   const pass=validateGameSeed(seed);
@@ -201,11 +264,17 @@ test('GAMEPLAY_SKETCH v3 requires diverse cross-system composition depth without
   broken.GAMEPLAY_SKETCH.compositionDepth.majorSubSystems=['탐험','수집'];
   broken.GAMEPLAY_SKETCH.compositionDepth.crossSystemCombinations=['A×B'];
   broken.GAMEPLAY_SKETCH.compositionDepth.endgameFusion='';
+  broken.GAMEPLAY_SKETCH.narrativeDepth.placeNameLedger=['하나'];
+  broken.GAMEPLAY_SKETCH.worldbuildingDepth.allGenreApplicable=false;
+  broken.GAMEPLAY_SKETCH.libraryLinkage.actualConsumerEvidenceRequired=false;
   const fail=validateGameSeed(broken);
   assert.equal(fail.pass,false);
   assert.ok(fail.errors.some(error=>error.includes('majorSubSystems')));
   assert.ok(fail.errors.some(error=>error.includes('crossSystemCombinations')));
   assert.ok(fail.errors.some(error=>error.includes('endgameFusion')));
+  assert.ok(fail.errors.some(error=>error.includes('placeNameLedger')));
+  assert.ok(fail.errors.some(error=>error.includes('allGenreApplicable')));
+  assert.ok(fail.errors.some(error=>error.includes('actualConsumerEvidenceRequired')));
 });
 
 test('seed bootstrap emits v3 fusion schema and explicit diverse mechanic instructions',()=>{
@@ -217,4 +286,10 @@ test('seed bootstrap emits v3 fusion schema and explicit diverse mechanic instru
   assert.match(source,/legacyContentRevisitHooks/);
   assert.match(source,/A×B×C\+@/);
   assert.match(source,/고전 카드\/주사위\/타일\/경매/);
+  assert.match(source,/WORLDBUILDING_DEPTH_SCHEMA/);
+  assert.match(source,/LIBRARY_LINKAGE_SCHEMA/);
+  assert.match(source,/placeNameLedger/);
+  assert.match(source,/journalRecordChains/);
+  assert.match(source,/monsterOpponentLoreEcologyLinks/);
+  assert.match(source,/모든 canonical 라이브러리/);
 });
