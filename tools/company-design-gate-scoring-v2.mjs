@@ -107,6 +107,11 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
     &&distinct(list(narrativePlan.payoffs)).length>=2
     &&list(narrativePlan.characterVoiceProfiles).length>=1
     &&list(narrativePlan.sceneBeats).length>=2
+    &&distinct(list(narrativePlan.placeNameContinuity)).length>=3
+    &&distinct(list(narrativePlan.journalRecordLinks)).length>=2
+    &&distinct(list(narrativePlan.dialogueJournalLinks)).length>=2
+    &&distinct(list(narrativePlan.oppositionLoreLinks)).length>=2
+    &&distinct(list(narrativePlan.worldStateCallbacks)).length>=2
     &&list(homagePlan.inspirations).length>=2
   );
   const narrativeSystemText=[
@@ -144,6 +149,11 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
     ...list(narrativePlan.foreshadowing),
     ...list(narrativePlan.payoffs),
     ...list(narrativePlan.sceneBeats).flatMap(row=>[row?.scene,row?.purpose,row?.conflict,row?.informationAsymmetry,row?.stateChange]),
+    ...list(narrativePlan.placeNameContinuity),
+    ...list(narrativePlan.journalRecordLinks),
+    ...list(narrativePlan.dialogueJournalLinks),
+    ...list(narrativePlan.oppositionLoreLinks),
+    ...list(narrativePlan.worldStateCallbacks),
     ...styleRegions.flatMap(row=>[row?.name,row?.landmark,row?.storyContext,row?.encounterPattern]),
     ...list(contentVariety.enemiesOrChallenges).flatMap(row=>[row?.name,row?.behavior,row?.identity,row?.rewardMeaning]),
     ...list(design.systemInterconnections).flatMap(row=>[row?.fromSystem,row?.toSystem,row?.trigger,row?.stateChange]),
@@ -294,6 +304,11 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
       styleConnected,
       worldbuildingRequired,
       worldbuildingConnected,
+      narrativePlaceNameCount:distinct(list(narrativePlan.placeNameContinuity)).length,
+      narrativeJournalRecordCount:distinct(list(narrativePlan.journalRecordLinks)).length,
+      narrativeDialogueJournalCount:distinct(list(narrativePlan.dialogueJournalLinks)).length,
+      narrativeOppositionLoreCount:distinct(list(narrativePlan.oppositionLoreLinks)).length,
+      narrativeWorldStateCallbackCount:distinct(list(narrativePlan.worldStateCallbacks)).length,
       libraryContractReady,
       assetLibraryExpansionRequired:false
     }),
