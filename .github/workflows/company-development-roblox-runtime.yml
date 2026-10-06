@@ -1926,9 +1926,8 @@ jobs:
             payload="$(jq -nc \
               --arg run "${GITHUB_RUN_ID:-}" \
               --arg attempt "${GITHUB_RUN_ATTEMPT:-}" \
-              --arg tasks "$product_repair_csv" \
-              --arg count "$product_refill_count" \
-              '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,source_tasks:$tasks,source_task_count:$count,source_outcome:"FAILED",execution_lane:"game-primary",reason:"roblox-f0-gameplay-product-repair-batch"}}')"
+              --arg task "$product_repair_csv" \
+              '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,source_task:$task,source_outcome:"FAILED",execution_lane:"game-primary",reason:"roblox-f0-gameplay-product-repair-batch"}}')"
             curl --fail-with-body --silent --show-error \
               --request POST \
               --header 'Accept: application/vnd.github+json' \
