@@ -71,6 +71,10 @@ local Config = {
     Wave = 1, Position = 0, Objective = 0, Combo = 0, EnemyHealth = 100,
     PuzzleChain = 0, Towers = 0, BaseHealth = 100, SocialBond = 0,
     SharedObjective = 0, RoundScore = 0,
+    -- 기존 저장은 그대로 읽고, 없는 생존 시스템 키만 기본값으로 채운다.
+    CurrentDay = 1, DayPhase = 0, ResourceWood = 0, ResourceStone = 0,
+    InventoryItems = 0, EquippedToolTier = 0, RecipeUnlock = 0,
+    SurvivalRecord = 0, EnemyKills = 0,
   },
   Actions = {
     { Id = "genre-core", Label = "Strategy core gameplay", Kind = "OBJECTIVE", Order = 1, LearningPattern = "board-grid-placement" },
