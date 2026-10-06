@@ -765,9 +765,10 @@ function robloxInternalAssetApplyCandidateDocuments(documents,candidate={}){
   for(const file of candidate?.replaceFiles||[])out.set(posix(file.path),String(file.content||''));
   return out;
 }
-export function evaluateRobloxInternalAssetFamilyBindingCandidate({candidate={},sourceRoot='',expectedFamilies={},expectedSelectionFingerprint='',expectedLibraryVersion=0}={}){
+export function evaluateRobloxInternalAssetFamilyBindingCandidate({candidate={},sourceRoot='',expectedFamilies={},expectedSelectionFingerprint='',expectedLibraryVersion=0,allowIncrementalRepair=false}={}){
   const base=robloxInternalAssetSourceDocuments(sourceRoot);
   const result=robloxInternalAssetApplyCandidateDocuments(base,candidate);
+  const incrementalRepair=allowIncrementalRepair===true;
   const touched=new Set([
     ...(candidate?.edits||[]).map(row=>posix(row.path)),
     ...(candidate?.newFiles||[]).map(row=>posix(row.path)),
@@ -775,6 +776,8 @@ export function evaluateRobloxInternalAssetFamilyBindingCandidate({candidate={},
   ]);
   const statusSource=[...result.values()].join('\n');
   const statusBlock=statusSource.match(/\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{([\s\S]*?)\}/)?.[1]||'';
+  const baseStatusSource=[...base.values()].join('\n');
+  const baseStatusBlock=baseStatusSource.match(/\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{([\s\S]*?)\}/)?.[1]||'';
   const configEntry=[...result.entries()].find(([relative])=>/(?:^|\/)GameConfig\.luau$/i.test(relative))||null;
   const configText=String(configEntry?.[1]||'');
   const expectedFingerprint=clean(expectedSelectionFingerprint);
@@ -785,17 +788,23 @@ export function evaluateRobloxInternalAssetFamilyBindingCandidate({candidate={},
     .filter(([relative])=>!/(?:^|\/)GameConfig\.luau$/i.test(relative))
     .map(([,text])=>robloxInternalAssetTraceStripped(text))
     .join('\n');
-  const rows=[],blockers=[];
+  const baseSemanticSource=[...base.entries()]
+    .filter(([relative])=>!/(?:^|\/)GameConfig\.luau$/i.test(relative))
+    .map(([,text])=>robloxInternalAssetTraceStripped(text))
+    .join('\n');
+  const rows=[],blockers=[],unresolvedFamilies=[];
   if(expectedFingerprint&&observedSelectionFingerprint!==expectedFingerprint){
     blockers.push('ROBLOX_INTERNAL_ASSET_SELECTION_FINGERPRINT_MISMATCH');
   }
   if(requiredLibraryVersion>0&&observedLibraryVersion!==requiredLibraryVersion){
     blockers.push('ROBLOX_INTERNAL_ASSET_LIBRARY_VERSION_MISMATCH');
   }
-  let appliedCount=0,notApplicableCount=0,changedAppliedFamilyCount=0,configFamilyMatchCount=0;
+  let appliedCount=0,notApplicableCount=0,changedAppliedFamilyCount=0,configFamilyMatchCount=0,resolvedFamilyCount=0;
   for(const family of ROBLOX_INTERNAL_ASSET_FAMILIES){
     const status=clean(statusBlock.match(new RegExp('\\b'+family+'\\s*=\\s*["\\\'](APPLIED|NOT_APPLICABLE)["\\\']','i'))?.[1]).toUpperCase();
+    const beforeStatus=clean(baseStatusBlock.match(new RegExp('\\b'+family+'\\s*=\\s*["\\\'](APPLIED|NOT_APPLICABLE)["\\\']','i'))?.[1]).toUpperCase();
     const systemPresent=ROBLOX_INTERNAL_ASSET_SYSTEM_PATTERNS[family]?.test(semanticSource)===true;
+    const beforeSystemPresent=ROBLOX_INTERNAL_ASSET_SYSTEM_PATTERNS[family]?.test(baseSemanticSource)===true;
     const selectedAtoms=Array.isArray(expectedFamilies?.[family])?[...new Set(expectedFamilies[family].map(clean).filter(Boolean))].sort():[];
     const configFamilyBody=configText.match(new RegExp('\\b'+family+'\\s*=\\s*\\{([^}]*)\\}','m'))?.[1]||'';
     const configuredAtoms=[...new Set([...configFamilyBody.matchAll(/["']([^"']+)["']/g)].map(match=>clean(match[1])).filter(Boolean))].sort();
@@ -803,29 +812,45 @@ export function evaluateRobloxInternalAssetFamilyBindingCandidate({candidate={},
     if(configFamilyMatch)configFamilyMatchCount+=1;
     else blockers.push('ROBLOX_INTERNAL_ASSET_CONFIG_FAMILY_SELECTION_MISMATCH:'+family);
     const boundFiles=[...result.entries()].filter(([,text])=>robloxInternalAssetFamilyBoundInText(text,family)).map(([relative])=>relative);
+    const beforeBoundFiles=[...base.entries()].filter(([,text])=>robloxInternalAssetFamilyBoundInText(text,family)).map(([relative])=>relative);
     const actualBinding=boundFiles.length>0;
+    const beforeActualBinding=beforeBoundFiles.length>0;
     const changedBinding=boundFiles.some(relative=>touched.has(relative));
-    if(!status)blockers.push('ROBLOX_INTERNAL_ASSET_FAMILY_STATUS_MISSING:'+family);
-    else if(status==='NOT_APPLICABLE'){
+    const beforeResolved=(beforeStatus==='NOT_APPLICABLE'&&!beforeSystemPresent)||(beforeStatus==='APPLIED'&&beforeActualBinding);
+    let resolved=false;
+    if(!status){
+      if(incrementalRepair)unresolvedFamilies.push(family);
+      else blockers.push('ROBLOX_INTERNAL_ASSET_FAMILY_STATUS_MISSING:'+family);
+    }else if(status==='NOT_APPLICABLE'){
       notApplicableCount+=1;
       if(systemPresent)blockers.push('ROBLOX_INTERNAL_ASSET_NOT_APPLICABLE_EXISTING_SYSTEM:'+family);
+      else{resolved=true;resolvedFamilyCount+=1;}
     }else if(status==='APPLIED'){
       appliedCount+=1;
       if(!selectedAtoms.length)blockers.push('ROBLOX_INTERNAL_ASSET_SELECTED_FAMILY_EMPTY:'+family);
       if(!actualBinding)blockers.push('ROBLOX_INTERNAL_ASSET_FAMILY_NOT_ACTUALLY_BOUND:'+family);
+      if(selectedAtoms.length&&actualBinding){resolved=true;resolvedFamilyCount+=1;}
       if(changedBinding)changedAppliedFamilyCount+=1;
+    }
+    if(incrementalRepair&&beforeResolved&&!resolved){
+      blockers.push('ROBLOX_INTERNAL_ASSET_INCREMENTAL_REPAIR_REGRESSION:'+family);
     }
     rows.push(Object.freeze({
       family,status:status||null,systemPresent,selectedAtomCount:selectedAtoms.length,
       configuredAtoms:Object.freeze(configuredAtoms),configFamilyMatch,
-      actualBinding,changedBinding,boundFiles:Object.freeze(boundFiles)
+      actualBinding,changedBinding,boundFiles:Object.freeze(boundFiles),
+      beforeStatus:beforeStatus||null,beforeSystemPresent,beforeActualBinding,beforeResolved,resolved
     }));
   }
   if(changedAppliedFamilyCount===0)blockers.push('ROBLOX_INTERNAL_ASSET_NO_APPLICABLE_FAMILY_BOUND_IN_CANDIDATE');
+  const strictAllFamiliesResolved=resolvedFamilyCount===ROBLOX_INTERNAL_ASSET_FAMILIES.length;
   return Object.freeze({
-    pass:blockers.length===0,
+    pass:blockers.length===0&&(incrementalRepair||strictAllFamiliesResolved),
     requiredFamilies:ROBLOX_INTERNAL_ASSET_FAMILIES,
-    appliedCount,notApplicableCount,changedAppliedFamilyCount,configFamilyMatchCount,
+    appliedCount,notApplicableCount,changedAppliedFamilyCount,configFamilyMatchCount,resolvedFamilyCount,
+    strictAllFamiliesResolved,
+    incrementalRepair,
+    unresolvedFamilies:Object.freeze(unresolvedFamilies),
     configSelectionFingerprint:observedSelectionFingerprint||null,
     expectedSelectionFingerprint:expectedFingerprint||null,
     configLibraryVersion:observedLibraryVersion||null,
@@ -837,7 +862,8 @@ export function evaluateRobloxInternalAssetFamilyBindingCandidate({candidate={},
     blockers:Object.freeze([...new Set(blockers)]),
     markerOnlyApplicationForbidden:true,
     notApplicableRequiresSystemAbsenceEvidence:true,
-    authority:'vibe2-roblox-internal-asset-family-binding'
+    finalPackageGateStillStrict:true,
+    authority:incrementalRepair?'vibe2-roblox-incremental-package-asset-repair':'vibe2-roblox-internal-asset-family-binding'
   });
 }
 
@@ -5385,6 +5411,12 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const robloxInternalAssetApplicationRequired=target==='roblox'&&order?.source?.internalAssetMotion!==true
     &&order?.assetProduction?.baseMaterialLoadout?.robloxSelectionHandoff?.handoffRequired===true
     &&order?.assetProduction?.baseMaterialLoadout?.robloxSelectionHandoff?.downstreamApplicationRequired===true;
+  const robloxAssetRepairFailure=(order?.selectedTask?.buildUpDirective||order?.buildUpDirective)?.playtestRuntimeFindings?.studioQualityFailure;
+  const robloxIncrementalPackageAssetRepair=robloxInternalAssetApplicationRequired
+    &&robloxAssetRepairFailure?.authority==='roblox-package-asset-binding-failure'
+    &&robloxAssetRepairFailure?.assetThreshold?.pass===false
+    &&robloxAssetRepairFailure?.assetRepairPolicy?.mode==='GAME_SOURCE_BINDINGS_ONLY'
+    &&robloxAssetRepairFailure?.assetRepairPolicy?.requireActualNativeConsumption===true;
   const robloxInternalAssetVisualOwners=robloxInternalAssetApplicationRequired?responsibleFiles.filter(file=>
     /(?:^|\/)client\/|VisualStyle\.luau$|BattleVisual\.luau$/i.test(clean(file))
   ):[];
@@ -5484,7 +5516,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
         candidate,sourceRoot,
         expectedFamilies:order?.assetProduction?.baseMaterialLoadout?.families||{},
         expectedSelectionFingerprint:order?.assetProduction?.baseMaterialLoadout?.robloxSelectionFingerprint||'',
-        expectedLibraryVersion:order?.assetProduction?.baseMaterialLoadout?.robloxSelectionLibraryVersion||0
+        expectedLibraryVersion:order?.assetProduction?.baseMaterialLoadout?.robloxSelectionLibraryVersion||0,
+        allowIncrementalRepair:robloxIncrementalPackageAssetRepair
       });
       if(!familyBinding.pass){
         throw new Error('ROBLOX_INTERNAL_ASSET_FAMILY_BINDING_REQUIRED:'+familyBinding.blockers.join(','));
@@ -5564,7 +5597,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
         candidate,sourceRoot,
         expectedFamilies:order?.assetProduction?.baseMaterialLoadout?.families||{},
         expectedSelectionFingerprint:order?.assetProduction?.baseMaterialLoadout?.robloxSelectionFingerprint||'',
-        expectedLibraryVersion:order?.assetProduction?.baseMaterialLoadout?.robloxSelectionLibraryVersion||0
+        expectedLibraryVersion:order?.assetProduction?.baseMaterialLoadout?.robloxSelectionLibraryVersion||0,
+        allowIncrementalRepair:robloxIncrementalPackageAssetRepair
       })
       :null;
     return{...result,sourceSyntax,candidateSelfReview,diagnosticPostcondition,presentationDelta,graphicsReplacementReport,studioQualityDelta,studioAssetQualityAxes,allGameDynamicFamilyBinding,robloxInternalAssetFamilyBinding,singleMotionCheck};
