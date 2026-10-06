@@ -3328,7 +3328,10 @@
       "VIBE2_24H_GAME_PRIMARY_ACTIVE_MAX=64",
       "VIBE2_GAME_PRIMARY_REFILL_TARGET=64",
       "VIBE2_PREPLAN_PRODUCTION_PRESSURE_OBSERVATION=QUEUE_ALLOWED",
-      "VIBE2_24H_REFILL_RUNNER_PRESSURE_POLICY=EXTERNAL_QUEUE_OWNS_PHYSICAL_BACKPRESSURE"
+      "VIBE2_24H_REFILL_RUNNER_PRESSURE_POLICY=EXTERNAL_QUEUE_OWNS_PHYSICAL_BACKPRESSURE",
+      "VIBE2_GAME_PRIMARY_WORK_BUDGET_MINUTES=60",
+      "VIBE2_GAME_PRIMARY_WORK_BUDGET_MODE=MAXIMUM_NOT_MINIMUM",
+      "VIBE2_GAME_PRIMARY_EARLY_COMPLETION=YES"
     ],
     "assetDevelopmentSlotsMustRemain": 63,
     "adaptiveTargetMutationForbidden": true,
@@ -3340,6 +3343,13 @@
     "runnerPressureMaySuppressGamePrimaryRefill": false,
     "runnerPressureMaySuppressNextCycleRefill": false,
     "externalPublicReleaseOwnerApprovalPreserved": true,
-    "internalAndExternalReleaseAreDevelopmentCheckpoints": true
+    "internalAndExternalReleaseAreDevelopmentCheckpoints": true,
+    "gamePrimaryMaxWorkMinutes": 60,
+    "gamePrimaryMinimumWorkMinutes": 0,
+    "gamePrimaryEarlyCompletionAllowed": true,
+    "gamePrimaryWorkBudgetMode": "MAXIMUM_NOT_MINIMUM",
+    "gamePrimaryWorkBudgetAppliesTo": "ALL_GAME_PRIMARY_GAME_BUILD_UP_WORKERS_PRE_AND_POST_RELEASE",
+    "modelCallTimeoutAndRetryUnchanged": true,
+    "canonicalF0ThroughF9SequenceUnchanged": true
   }
 }

@@ -19,6 +19,8 @@ const candidateReleaseWorkflow=fs.readFileSync(new URL('../.github/workflows/vib
 const recoveryFastWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-recovery-fast.yml',import.meta.url),'utf8');
 const runtime=JSON.parse(fs.readFileSync(new URL('../vibe2-runtime.json',import.meta.url),'utf8'));
 const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+const companyLogMap=JSON.parse(fs.readFileSync(new URL('../company-learning/company-log-map.json',import.meta.url),'utf8'));
+const companyArchitectureMap=JSON.parse(fs.readFileSync(new URL('../company-learning/company-architecture-map.json',import.meta.url),'utf8'));
 const continuousRunnerSource=fs.readFileSync(new URL('../tools/vibe2-continuous-runner.mjs',import.meta.url),'utf8');
 const prepareOllamaAction=fs.readFileSync(new URL('../.github/actions/prepare-ollama/action.yml',import.meta.url),'utf8');
 
@@ -286,6 +288,36 @@ test('asset and recovery reserve retries stay lane-local instead of rerunning gl
   assert.match(globalPath,/vibe2-learning-motor\.mjs/);
   assert.match(workflow,/VIBE2_CONTROL_OPTIMISTIC_RETRY_POLICY=UNBOUNDED/);
   assert.match(workflow,/VIBE2_CONTROL_OPTIMISTIC_RETRY_BACKOFF_SECONDS=/);
+});
+
+test('game-primary BUILD_UP workers have a 60 minute maximum budget with immediate early completion',()=>{
+  assert.equal(runtime.continuous.maxWorkMinutes,22);
+  assert.equal(runtime.continuous.gamePrimaryMaxWorkMinutes,60);
+  assert.equal(runtime.continuous.gamePrimaryMinimumWorkMinutes,0);
+  assert.equal(runtime.continuous.gamePrimaryEarlyCompletionAllowed,true);
+  assert.equal(runtime.continuous.gamePrimaryWorkBudgetMode,'MAXIMUM_NOT_MINIMUM');
+  assert.equal(runtime.continuous.gamePrimaryWorkBudgetScope,'ALL_GAME_PRIMARY_GAME_BUILD_UP_WORKERS_PRE_AND_POST_RELEASE');
+  assert.equal(runtime.continuous.gamePrimaryWorkBudgetPreserves.modelTimeoutAndRetry,true);
+  assert.equal(runtime.continuous.gamePrimaryWorkBudgetPreserves.fixedLogicalSlots64,true);
+  assert.equal(runtime.continuous.gamePrimaryWorkBudgetPreserves.workLockSemantics,true);
+  assert.equal(runtime.continuous.gamePrimaryWorkBudgetPreserves.incrementalQa,true);
+  assert.equal(runtime.continuous.gamePrimaryWorkBudgetPreserves.canonicalF0ThroughF9,true);
+  const deepPolicy=roadmap.changeRecord.fixedRepeatDevelopment64_20261006;
+  assert.equal(deepPolicy.gamePrimaryMaxWorkMinutes,60);
+  assert.equal(deepPolicy.gamePrimaryMinimumWorkMinutes,0);
+  assert.equal(deepPolicy.gamePrimaryEarlyCompletionAllowed,true);
+  assert.equal(deepPolicy.gamePrimaryWorkBudgetAppliesTo,'ALL_GAME_PRIMARY_GAME_BUILD_UP_WORKERS_PRE_AND_POST_RELEASE');
+  assert.equal(roadmap.vibeExecutionLaneContract.gamePrimary.maxWorkMinutes,60);
+  assert.equal(roadmap.vibeExecutionLaneContract.gamePrimary.earlyCompletionAllowed,true);
+  assert.equal(companyLogMap.fixedRepeatDevelopment64EvidenceContract.gamePrimaryMaxWorkMinutes,60);
+  assert.equal(companyArchitectureMap.neuralWorkGraphTopology.currentWaveExecution.gamePrimaryMaxWorkMinutes,60);
+  assert(workflow.includes("VIBE2_GAME_PRIMARY_WORK_BUDGET_MINUTES: '60'"));
+  assert(workflow.includes('VIBE2_GAME_PRIMARY_WORK_BUDGET_MODE=MAXIMUM_NOT_MINIMUM'));
+  assert(workflow.includes('VIBE2_GAME_PRIMARY_EARLY_COMPLETION=YES'));
+  assert.match(workflow,/timeout-minutes: \${\{ \(\(inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) == 'asset-development' \|\| \(inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) == 'game-primary'\) && 60 \|\| 22 \}\}/);
+  assert(continuousRunnerSource.includes("lane === 'game-primary'"));
+  assert(continuousRunnerSource.includes('runtime?.continuous?.gamePrimaryMaxWorkMinutes'));
+  assert.equal((continuousRunnerSource.match(/currentLaneMaxWorkMinutes\(runtime\)/g)||[]).length,2);
 });
 
 test('controller reserves repeat-development batches at the fixed 64-slot target',()=>{
