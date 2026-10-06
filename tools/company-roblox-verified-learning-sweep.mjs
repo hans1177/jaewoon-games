@@ -15,7 +15,14 @@ const playbooksFile=path.resolve(String(args.playbooks||''));
 const recombinationFile=String(args.recombination||'').trim()?path.resolve(String(args.recombination)):'';
 const reportFile=String(args.report||'').trim()?path.resolve(String(args.report)):'';
 const requestedGameId=String(args['game-id']||'').trim();
-if(requestedGameId&&!/^[a-z0-9][a-z0-9-]{1,80}$/.test(requestedGameId))throw new Error('ROBLOX_LEARNING_SWEEP_GAME_ID_INVALID:'+requestedGameId);
+const requestedGameIds=[...new Set([
+  requestedGameId,
+  ...String(args['game-ids']||'').split(',').map(value=>value.trim())
+].filter(Boolean))].sort();
+for(const gameId of requestedGameIds){
+  if(!/^[a-z0-9][a-z0-9-]{1,80}$/.test(gameId))throw new Error('ROBLOX_LEARNING_SWEEP_GAME_ID_INVALID:'+gameId);
+}
+const requestedGameSet=new Set(requestedGameIds);
 if(!fs.existsSync(root))throw new Error('ROBLOX_GAMES_ROOT_MISSING:'+root);
 if(!playbooksFile||!fs.existsSync(playbooksFile))throw new Error('ROBLOX_LEARNING_PLAYBOOKS_MISSING:'+playbooksFile);
 
@@ -29,10 +36,14 @@ const recombination=recombinationFile&&fs.existsSync(recombinationFile)?readJson
 const gameIds=fs.readdirSync(root,{withFileTypes:true})
   .filter(entry=>entry.isDirectory())
   .map(entry=>entry.name)
-  .filter(gameId=>!requestedGameId||gameId===requestedGameId)
+  .filter(gameId=>!requestedGameSet.size||requestedGameSet.has(gameId))
   .filter(gameId=>fs.existsSync(path.join(root,gameId,'shared','GameConfig.luau'))&&fs.existsSync(path.join(root,gameId,'client','Game.client.luau')))
   .sort();
-if(requestedGameId&&!gameIds.length)throw new Error('ROBLOX_LEARNING_SWEEP_GAME_NOT_FOUND:'+requestedGameId);
+if(requestedGameSet.size){
+  const found=new Set(gameIds);
+  const missing=requestedGameIds.filter(gameId=>!found.has(gameId));
+  if(missing.length)throw new Error('ROBLOX_LEARNING_SWEEP_GAME_NOT_FOUND:'+missing.join(','));
+}
 
 const results=[];
 for(const gameId of gameIds){
@@ -128,8 +139,9 @@ for(const gameId of gameIds){
   });
 }
 const report={
-  version:3,
+  version:4,
   requestedGameId:requestedGameId||null,
+  requestedGameIds,
   semanticMappingVersion:1,
   scannedGameCount:results.length,
   changedGameCount:results.filter(row=>row.changed).length,
@@ -140,7 +152,7 @@ if(reportFile){
   fs.mkdirSync(path.dirname(reportFile),{recursive:true});
   fs.writeFileSync(reportFile,JSON.stringify(report,null,2)+'\n');
 }
-console.log('ROBLOX_VERIFIED_EXTERNAL_LEARNING_SWEEP_SCOPE='+(requestedGameId||'ALL'));
+console.log('ROBLOX_VERIFIED_EXTERNAL_LEARNING_SWEEP_SCOPE='+(requestedGameIds.length?requestedGameIds.join(','):'ALL'));
 console.log('ROBLOX_VERIFIED_EXTERNAL_LEARNING_SWEEP_SCANNED='+report.scannedGameCount);
 console.log('ROBLOX_VERIFIED_EXTERNAL_LEARNING_SWEEP_CHANGED='+report.changedGameCount);
 console.log('ROBLOX_VERIFIED_EXTERNAL_LEARNING_SWEEP_SERVER_TOUCHED=NO');

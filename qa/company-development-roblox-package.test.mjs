@@ -7,7 +7,7 @@ import {execFileSync,spawnSync} from 'node:child_process';
 import {runInNewContext} from 'node:vm';
 import {collectRobloxSourceScriptInventory,createRobloxBuildEvidence,normalizeRobloxArtifactLightingSerialization,resolvePackageSourceValidation,ROBLOX_PACKAGE_REQUIRED_ASSET_FAMILIES,ROBLOX_PACKAGE_TOOL,validateRobloxArtifactLightingMigrationGuard,validateRobloxArtifactScriptInventory,validateRobloxPackageAssetThreshold} from '../tools/company-development-roblox-package.mjs';
 import {hasCurrentRobloxPackageAssetRepair,robloxPackageAssetRepairContext} from '../tools/company-development-roblox-source-reconcile.mjs';
-import {buildRobloxStudioAssetBootstrapPlan,robloxBuildProfileFromBaseline} from '../tools/company-development-roblox-bootstrap.mjs';
+import {buildRobloxStudioAssetBootstrapPlan,detectRobloxStudioAssetSystems,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES,robloxBuildProfileFromBaseline,robloxStudioAssetFamilyBoundInText,robloxStudioAssetFamilyStatusFromSource} from '../tools/company-development-roblox-bootstrap.mjs';
 
 test('asset failure survives worker recording and exact-source persistence while stale results preserve siblings',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
@@ -261,6 +261,62 @@ ${familyRows}
   }
 });
 
+test('Roblox dynamic asset family detection follows actual native systems and ignores generic scaffold words',()=>{
+  const generic=detectRobloxStudioAssetSystems({sourceText:[
+    'local camera = workspace.CurrentCamera',
+    'local itemCount = 3',
+    'local function run() return itemCount end',
+    'return run()',
+  ].join('\n')});
+  assert.equal(generic.ENVIRONMENT,false);
+  assert.equal(generic.PROP,false);
+  assert.equal(generic.MOTION,false);
+  assert.equal(generic.WEAPON,false);
+
+  const native=detectRobloxStudioAssetSystems({sourceText:[
+    'local enemy = Instance.new("Model")',
+    'enemy.Name = "EnemyBoss"',
+    'local blade = Instance.new("Tool")',
+    'blade.Name = "Sword"',
+    'local sound = Instance.new("Sound")',
+    'sound.SoundId = "rbxassetid://1"',
+    'local fx = Instance.new("ParticleEmitter")',
+    'local frame = Instance.new("Frame")',
+    'local animation = Instance.new("Animation")',
+    'local part = Instance.new("Part")',
+    'part.Material = Enum.Material.Metal',
+  ].join('\n')});
+  for(const family of ['CREATURE','WEAPON','AUDIO','VFX','UI','MOTION','MATERIAL'])assert.equal(native[family],true,family);
+  assert.deepEqual(Object.keys(native),[...ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES]);
+  const status=robloxStudioAssetFamilyStatusFromSource({sourceText:'local enemy = Instance.new("Model")\nenemy.Name = "EnemyBoss"'});
+  assert.equal(status.CREATURE,'APPLIED');
+  assert.equal(status.AUDIO,'NOT_APPLICABLE');
+});
+
+test('Roblox family binding proof requires selected values to reach a native presentation consumer',()=>{
+  const real=[
+    'local studioAssetFamilies={UI={"FRAME_PANEL"}}',
+    'local function studioAssetFamily(family) return studioAssetFamilies[family] or {} end',
+    'local function hasStudioAssetAtom(family, atom) return table.find(studioAssetFamily(family), atom) ~= nil end',
+    'local root=Instance.new("Frame")',
+    'if hasStudioAssetAtom("UI","FRAME_PANEL") then',
+    '  local stroke=Instance.new("UIStroke")',
+    '  stroke.Thickness=2',
+    '  stroke.Parent=root',
+    'end'
+  ].join('\n');
+  assert.equal(robloxStudioAssetFamilyBoundInText(real,'UI'),true);
+
+  const markerOnly=[
+    'local studioAssetFamilies={UI={"FRAME_PANEL"}}',
+    'local function studioAssetFamily(family) return studioAssetFamilies[family] or {} end',
+    'local atoms=studioAssetFamily("UI")',
+    'local root=Instance.new("Frame")',
+    'root:SetAttribute("StudioAssetAtoms", table.concat(atoms, ","))'
+  ].join('\n');
+  assert.equal(robloxStudioAssetFamilyBoundInText(markerOnly,'UI'),false);
+});
+
 test('Roblox package rejects artifacts missing mapped Luau script classes',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-package-test-'));
   try{
@@ -500,7 +556,12 @@ ${familyRows}
       statusRows,
       '}',
       'local root = Instance.new("Frame")',
-      'local stroke = Instance.new("UIStroke")',
+      'local function hasStudioAssetAtom(family, atom) return table.find(studioAssetFamily(family), atom) ~= nil end',
+      'if hasStudioAssetAtom("UI","UI_ATOM") then',
+      '  local stroke = Instance.new("UIStroke")',
+      '  stroke.Thickness = 2',
+      '  stroke.Parent = root',
+      'end',
       'root:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)',
       'root:SetAttribute("StudioAssetAtoms", table.concat(STUDIO_ASSET_SELECTION.UI, ","))',
       '-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN',

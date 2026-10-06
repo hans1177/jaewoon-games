@@ -25,6 +25,129 @@ export const ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION=6;
 export const ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES=Object.freeze([
   'CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'
 ]);
+export const ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS=Object.freeze({
+  CHARACTER:/(?:Instance\.new\(["'](?:Model|MeshPart|Accessory|Attachment)["']\)|:\s*IsA\(["'](?:Humanoid|Accessory|Model|MeshPart|Attachment)["']\)|\bHumanoid\b|\bCharacter\b)/i,
+  CREATURE:/(?:Instance\.new\(["'](?:Model|Part|MeshPart|Attachment|Bone|Motor6D)["']\)|:\s*IsA\(["'](?:Model|BasePart|Part|MeshPart|Attachment|Bone|Motor6D|Humanoid|AnimationController)["']\)|\bHumanoid\b|\bAnimationController\b)/i,
+  BUILDING:/(?:Instance\.new\(["'](?:Model|Part|MeshPart|Attachment)["']\)|:\s*IsA\(["'](?:Model|BasePart|Part|MeshPart|Attachment)["']\)|\bClone\s*\()/i,
+  ENVIRONMENT:/(?:\bTerrain\b|\bLighting\b|\bAtmosphere\b|Instance\.new\(["'](?:Model|Part|MeshPart|Atmosphere|Sky|Clouds)["']\)|:\s*IsA\(["'](?:Terrain|Atmosphere|Sky|Clouds|Model|BasePart|Part|MeshPart)["']\))/i,
+  WEAPON:/(?:Instance\.new\(["'](?:Tool|Model|Part|MeshPart|Attachment|WeldConstraint)["']\)|:\s*IsA\(["'](?:Tool|Model|BasePart|Part|MeshPart|Attachment|WeldConstraint)["']\)|\bWeldConstraint\b)/i,
+  SKILL:/(?:ParticleEmitter|Beam|Trail|Attachment|PointLight|SpotLight|SurfaceLight|Instance\.new\(["']Model["']\)|:\s*IsA\(["'](?:ParticleEmitter|Beam|Trail|Attachment|PointLight|SpotLight|SurfaceLight|Model)["']\))/i,
+  MATERIAL:/(?:Enum\.Material|SurfaceAppearance|MaterialVariant|TextureID|\.Material\s*=|:\s*IsA\(["'](?:SurfaceAppearance|MaterialVariant)["']\))/i,
+  AUDIO:/(?:SoundService|SoundId|Instance\.new\(["']Sound["']\)|:\s*IsA\(["'](?:Sound|SoundGroup)["']\))/i,
+  VFX:/(?:ParticleEmitter|Beam|Trail|PointLight|SpotLight|SurfaceLight|:\s*IsA\(["'](?:ParticleEmitter|Beam|Trail|PointLight|SpotLight|SurfaceLight)["']\))/i,
+  UI:/(?:ScreenGui|Frame|TextLabel|TextButton|ImageLabel|ImageButton|UIStroke|UICorner|UIGradient|:\s*IsA\(["'](?:GuiObject|LayerCollector|ScreenGui|Frame|TextLabel|TextButton|ImageLabel|ImageButton|UIStroke|UICorner|UIGradient)["']\))/i,
+  MOTION:/(?:Animator|AnimationTrack|Animation|TweenService|Motor6D|Bone|RenderStepped|Heartbeat|:\s*IsA\(["'](?:Animator|Animation|Motor6D|Bone)["']\))/i,
+  PROP:/(?:Instance\.new\(["'](?:Model|Part|MeshPart|ProximityPrompt|Attachment)["']\)|:\s*IsA\(["'](?:Model|BasePart|Part|MeshPart|ProximityPrompt|Attachment)["']\)|\bClone\s*\()/i
+});
+
+function stripManagedRobloxStudioAssetDetectionSource(text=''){
+  return String(text||'')
+    .replace(/-- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_END/g,' ')
+    .replace(/-- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_BEGIN[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_END/g,' ')
+    .replace(/-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END/g,' ')
+    .replace(/-- native-foundation-sentinel-v1 client readiness[\s\S]*?task\.defer\(reportNativeFoundationReady\)/g,' ')
+    .replace(/-- native-foundation-sentinel-v1[\s\S]*?game:BindToClose\(function\(\) end\)/g,' ')
+    .replace(/-- STUDIO_ASSET_DYNAMIC_BINDING_BEGIN[\s\S]*?-- STUDIO_ASSET_DYNAMIC_BINDING_END/g,' ')
+    .replace(/-- STUDIO_ASSET_BINDING_CLIENT_BEGIN[\s\S]*?-- STUDIO_ASSET_BINDING_CLIENT_END/g,' ')
+    .replace(/\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{[\s\S]*?\n\}/g,' ')
+    .replace(/\bSTUDIO_ASSET_SELECTION\s*=\s*\{[\s\S]*?\n\}/g,' ')
+    .replace(/--[^\n]*/g,' ');
+}
+function robloxStudioAssetSystemNearby(source='',semanticPattern,nativePattern,window=1200){
+  const flags=semanticPattern.flags.includes('i')?'ig':'g';
+  const matcher=new RegExp(semanticPattern.source,flags);
+  for(const match of source.matchAll(matcher)){
+    const index=Number(match.index||0);
+    const slice=source.slice(Math.max(0,index-window),Math.min(source.length,index+String(match[0]||'').length+window));
+    if(nativePattern.test(slice))return true;
+  }
+  return false;
+}
+export function detectRobloxStudioAssetSystems({sourceText='',clientSource='',serverSource=''}={}){
+  const source=stripManagedRobloxStudioAssetDetectionSource([sourceText,clientSource,serverSource].filter(Boolean).join('\n'));
+  const has=pattern=>pattern.test(source);
+  const near=(semantic,native)=>robloxStudioAssetSystemNearby(source,semantic,native);
+  const systems={
+    CHARACTER:near(/\b(?:HumanoidDescription|avatar|npc|companion|character(?:Model|Visual|Appearance|Skin|Outfit|Rig)|outfit|armor)\b/i,ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.CHARACTER),
+    CREATURE:near(/\b(?:enemy|enemies|monster|boss|creature|mob|wildlife|beetle|spider|wolf|bear|golem)\b/i,ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.CREATURE),
+    BUILDING:near(/\b(?:building|house|shop|school|temple|castle|dungeon|interior|wall|roof|foundation|settlement|village|tower|gate)\b/i,ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.BUILDING),
+    ENVIRONMENT:has(/(?:game:GetService\(["']Lighting["']\)|workspace\.Terrain\b|Instance\.new\(["'](?:Atmosphere|Sky|Clouds)["']\)|\bTerrain:)/i)
+      ||near(/\b(?:biome|forest|desert|snow|swamp|cave|environment|landmark|tree|rock|road|path|water)\b/i,ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.ENVIRONMENT),
+    WEAPON:near(/\b(?:weapon|sword|blade|spear|axe|hammer|bow|gun|staff|shield|loadout)\b/i,ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.WEAPON),
+    SKILL:near(/\b(?:skill|ability|cast|projectile|beam|aoe|spell|ultimate|telegraph|summon|buff|debuff)\b/i,ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.SKILL),
+    MATERIAL:has(ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.MATERIAL),
+    AUDIO:has(ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.AUDIO),
+    VFX:has(ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.VFX),
+    UI:has(ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.UI),
+    MOTION:has(ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.MOTION),
+    PROP:near(/\b(?:prop|chest|crate|barrel|lamp|workbench|furniture|sign|pickup|resource|tree|rock)\b/i,ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.PROP),
+  };
+  return Object.freeze(Object.fromEntries(ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES.map(family=>[family,systems[family]===true])));
+}
+export function robloxStudioAssetFamilyStatusFromSource(source={}){
+  const systems=detectRobloxStudioAssetSystems(source);
+  return Object.freeze(Object.fromEntries(ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES.map(family=>[
+    family,systems[family]===true?'APPLIED':'NOT_APPLICABLE'
+  ])));
+}
+
+function robloxStudioAssetFamilyRefPattern(family=''){
+  const value=clean(family);
+  return new RegExp(
+    '(?:studioAssetFamily\\s*\\(\\s*["\\\']'+value+'["\\\']'
+      +'|hasStudio(?:Asset)?Atom\\s*\\(\\s*["\\\']'+value+'["\\\']'
+      +'|STUDIO_ASSET_SELECTION\\s*\\.\\s*'+value
+      +'|STUDIO_ASSET_SELECTION\\s*\\[\\s*["\\\']'+value+'["\\\']\\s*\\])',
+    'ig'
+  );
+}
+function stripRobloxStudioAssetBindingDeclarations(text=''){
+  return String(text||'')
+    .replace(/-- STUDIO_ASSET_BINDING_CLIENT_BEGIN[\s\S]*?-- STUDIO_ASSET_BINDING_CLIENT_END/g,' ')
+    .replace(/-- STUDIO_ASSET_DYNAMIC_BINDING_BEGIN[\s\S]*?-- STUDIO_ASSET_DYNAMIC_BINDING_END/g,' ')
+    .replace(/\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{[\s\S]*?\n\}/g,' ')
+    .replace(/\bSTUDIO_ASSET_SELECTION\s*=\s*\{[\s\S]*?\n\}/g,' ');
+}
+export function robloxStudioAssetFamilyBoundInText(text='',family=''){
+  const raw=stripRobloxStudioAssetBindingDeclarations(text);
+  const nativePattern=ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS[family];
+  if(!nativePattern)return false;
+  const renderSink=/(?:\.(?:Color|BackgroundColor3|TextColor3|ImageColor3|Material|MaterialVariant|TextureID|MeshId|Transparency|Size|CFrame|Position|Orientation|Rotation|LightEmission|Rate|Volume|PlaybackSpeed|AnimationId|Transform|Thickness|CornerRadius)\s*=|TweenService\s*:\s*Create\s*\(|:\s*Create\s*\([^\n]*(?:TweenInfo|Position|Rotation|Transform)|Instance\.new\s*\(\s*["'](?:UIStroke|UICorner|UIGradient|SurfaceAppearance|ParticleEmitter|Beam|Trail|PointLight|SpotLight|SurfaceLight)["']\s*\))/i;
+  const statements=raw.split(/[;\n]/);
+  for(const ref of raw.matchAll(robloxStudioAssetFamilyRefPattern(family))){
+    const index=Number(ref.index||0);
+    const statementStart=Math.max(raw.lastIndexOf(';',index),raw.lastIndexOf('\n',index))+1;
+    const statementEndCandidates=[raw.indexOf(';',index),raw.indexOf('\n',index)].filter(value=>value>=0);
+    const statementEnd=statementEndCandidates.length?Math.min(...statementEndCandidates):raw.length;
+    const statement=raw.slice(statementStart,statementEnd);
+    if(renderSink.test(statement)&&nativePattern.test(raw.slice(Math.max(0,index-500),Math.min(raw.length,index+1200))))return true;
+
+    const lineStart=raw.lastIndexOf('\n',index)+1;
+    const lineEnd=raw.indexOf('\n',index);
+    const line=raw.slice(lineStart,lineEnd<0?raw.length:lineEnd);
+    if(/\b(?:if|elseif)\b[\s\S]*\bthen\b/.test(line)){
+      const after=raw.slice(lineEnd<0?raw.length:lineEnd+1,Math.min(raw.length,(lineEnd<0?raw.length:lineEnd+1)+1800));
+      const blockEnd=after.search(/\n\s*end\b/);
+      const block=blockEnd>=0?after.slice(0,blockEnd):after;
+      if(renderSink.test(block)&&nativePattern.test(block))return true;
+    }
+
+    const assignmentPrefix=raw.slice(statementStart,index).match(/\b(?:local\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*$/);
+    if(!assignmentPrefix)continue;
+    const aliases=new Set([assignmentPrefix[1]]);
+    for(let pass=0;pass<statements.length;pass++){
+      let changed=false;
+      for(const row of statements){
+        if(![...aliases].some(alias=>new RegExp('\\b'+alias+'\\b').test(row)))continue;
+        if(renderSink.test(row)&&nativePattern.test(row))return true;
+        const derived=row.match(/\b(?:local\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*[^=]/);
+        if(derived&&!aliases.has(derived[1])){aliases.add(derived[1]);changed=true;}
+      }
+      if(!changed)break;
+    }
+  }
+  return false;
+}
 
 const SHA256=/^[a-f0-9]{64}$/i;
 export function validateWebPlatformHandoff({handoff={},roadmap={},gameId=''}={}){
@@ -773,33 +896,10 @@ function replaceOrInsertStudioAssetConfig(source='',studioAssets={}){
   return source.slice(0,closeIndex+1)+block+source.slice(closeIndex+1);
 }
 
-function bindExistingClientStudioAssets(source=''){
-  const requiredFamilies=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'];
-  const managed=/-- STUDIO_ASSET_BINDING_CLIENT_BEGIN\n[\s\S]*?-- STUDIO_ASSET_BINDING_CLIENT_END\n/;
-  let output=source.replace(/(STUDIO_ASSET_BINDING_VERSION\s*=\s*)1\b/g,(_match,prefix)=>`${prefix}2`);
-  const requireMatch=output.match(/local\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*require\([^\n]*GameConfig[^\n]*\)/);
-  if(!requireMatch)throw new Error('EXISTING_STUDIO_ASSET_CLIENT_CONFIG_REQUIRE_MISSING');
-  const configVar=requireMatch[1];
-  const managedCurrent=output.match(managed)?.[0]||'';
-  const outsideManaged=managedCurrent?output.replace(managed,''):output;
-  const selectionRe=/local\s+STUDIO_ASSET_SELECTION\s*=\s*\{[\s\S]*?\n\}/;
-  const statusRe=/local\s+STUDIO_ASSET_FAMILY_STATUS\s*=\s*\{[\s\S]*?\n\}/;
-  const preservedSelection=outsideManaged.match(selectionRe)?.[0]||managedCurrent.match(selectionRe)?.[0]||'';
-  const preservedStatus=outsideManaged.match(statusRe)?.[0]||managedCurrent.match(statusRe)?.[0]||'';
-  const externalSelection=selectionRe.test(outsideManaged);
-  const externalStatus=statusRe.test(outsideManaged);
-  const traceBlock=externalSelection&&externalStatus
-    ?''
-    :preservedSelection&&preservedStatus
-      ?preservedSelection+'\n'+preservedStatus+'\n'
-      :`local STUDIO_ASSET_SELECTION = {
-${requiredFamilies.map(family=>'  '+family+' = studioAssetFamily("'+family+'"),').join('\n')}
-}
-local STUDIO_ASSET_FAMILY_STATUS = {
-${requiredFamilies.map(family=>'  '+family+' = "'+(family==='UI'?'APPLIED':'NOT_APPLICABLE')+'",').join('\n')}
-}
-`;
-  const block=`-- STUDIO_ASSET_BINDING_CLIENT_BEGIN
+function studioAssetDynamicBindingBlock({familyStatus={},configVar='Config'}={}){
+  const statusRows=ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES.map(family=>`  ${family} = "${familyStatus[family]==='APPLIED'?'APPLIED':'NOT_APPLICABLE'}",`).join('\n');
+  const selectionRows=ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES.map(family=>`  ${family} = studioAssetFamily("${family}"),`).join('\n');
+  return `-- STUDIO_ASSET_BINDING_CLIENT_BEGIN
 local STUDIO_ASSET_BINDING_VERSION = 2
 local studioAssetConfig = ${configVar}.StudioAssets or {}
 local studioAssetFamilies = studioAssetConfig.Families or {}
@@ -813,28 +913,48 @@ local function hasStudioAssetAtom(familyOrAtom, atom)
   local assetAtom = atom == nil and familyOrAtom or atom
   return table.find(studioAssetFamily(family), assetAtom) ~= nil
 end
-${traceBlock}-- STUDIO_ASSET_BINDING_CLIENT_END
+local STUDIO_ASSET_SELECTION = {
+${selectionRows}
+}
+local STUDIO_ASSET_FAMILY_STATUS = {
+${statusRows}
+}
+-- STUDIO_ASSET_BINDING_CLIENT_END
 `;
-  if(managed.test(output)){
-    output=output.replace(managed,block);
-  }else{
-    const existingUnmanagedClientBinding=/STUDIO_ASSET_BINDING_VERSION\s*=\s*2/.test(output)&&/[A-Za-z_][A-Za-z0-9_]*\.StudioAssets/.test(output);
-    if(existingUnmanagedClientBinding){
-      output=output.replace(/^\s*local\s+STUDIO_ASSET_BINDING_VERSION\s*=\s*2\s*\n/m,'');
-    }
-    const refreshedRequireMatch=output.match(/local\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*require\([^\n]*GameConfig[^\n]*\)/);
-    if(!refreshedRequireMatch)throw new Error('EXISTING_STUDIO_ASSET_CLIENT_CONFIG_REQUIRE_MISSING');
-    const insertAt=refreshedRequireMatch.index+refreshedRequireMatch[0].length;
-    output=output.slice(0,insertAt)+'\n'+block+output.slice(insertAt);
-  }
-  if(!/StudioAssetBindingVersion/.test(output)){
+}
+
+function bindExistingClientStudioAssets(source='',familyStatus={}){
+  const managed=/-- STUDIO_ASSET_BINDING_CLIENT_BEGIN\n[\s\S]*?-- STUDIO_ASSET_BINDING_CLIENT_END\n?/;
+  const dynamicManaged=/-- STUDIO_ASSET_DYNAMIC_BINDING_BEGIN\n[\s\S]*?-- STUDIO_ASSET_DYNAMIC_BINDING_END\n?/;
+  const selectionRe=/local\s+STUDIO_ASSET_SELECTION\s*=\s*\{[\s\S]*?\n\}\n?/;
+  const statusRe=/local\s+STUDIO_ASSET_FAMILY_STATUS\s*=\s*\{[\s\S]*?\n\}\n?/;
+  let output=source
+    .replace(managed,'')
+    .replace(dynamicManaged,'')
+    .replace(selectionRe,'')
+    .replace(statusRe,'')
+    .replace(/^\s*local\s+STUDIO_ASSET_BINDING_VERSION\s*=\s*[12]\s*\n/m,'');
+  const requireMatch=output.match(/local\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*require\([^\n]*GameConfig[^\n]*\)/);
+  if(!requireMatch)throw new Error('EXISTING_STUDIO_ASSET_CLIENT_CONFIG_REQUIRE_MISSING');
+  const configVar=requireMatch[1];
+  const block=studioAssetDynamicBindingBlock({familyStatus,configVar});
+  const learningContext=output.match(/-- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN\n[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_END\n?/);
+  const insertAt=learningContext
+    ?Number(learningContext.index||0)+learningContext[0].length
+    :requireMatch.index+requireMatch[0].length;
+  const tail=output.slice(insertAt).replace(/^\n*/,'');
+  const prefix=output.slice(0,insertAt).replace(/\n*$/,'');
+  output=prefix+(learningContext?'\n\n':'\n')+block+tail;
+  const studioUiVisualMissing=!/StudioAssetFramePanel/.test(output);
+  const studioUiTraceMissing=!/SetAttribute\s*\(\s*["']StudioAssetBindingVersion["']/.test(output);
+  if(studioUiVisualMissing||studioUiTraceMissing){
     const frameMatch=output.match(/local\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*Instance\.new\(\s*["']Frame["']\s*\)/);
     if(!frameMatch)throw new Error('EXISTING_STUDIO_ASSET_VISIBLE_TARGET_REQUIRED');
     const frameVar=frameMatch[1];
-    let insertAt=(frameMatch.index||0)+frameMatch[0].length;
-    if(output[insertAt]===';')insertAt++;
-    const visible=`
-if hasStudioAssetAtom("FRAME_PANEL") then
+    let frameInsertAt=(frameMatch.index||0)+frameMatch[0].length;
+    if(output[frameInsertAt]===';')frameInsertAt++;
+    const visual=studioUiVisualMissing?`
+if hasStudioAssetAtom("UI", "FRAME_PANEL") then
   local studioAssetStroke = Instance.new("UIStroke")
   studioAssetStroke.Name = "StudioAssetFramePanel"
   studioAssetStroke.Thickness = 1
@@ -842,13 +962,14 @@ if hasStudioAssetAtom("FRAME_PANEL") then
   studioAssetStroke.Color = Color3.fromRGB(210, 225, 255)
   studioAssetStroke.Parent = ${frameVar}
 end
+`:'';
+    const trace=studioUiTraceMissing?`
 ${frameVar}:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)
 ${frameVar}:SetAttribute("StudioAssetSelectionFingerprint", studioAssetSelectionFingerprint)
 ${frameVar}:SetAttribute("StudioAssetAtoms", table.concat(studioAssetFamily("UI"), ","))
-`;
-    output=output.slice(0,insertAt)+visible+output.slice(insertAt);
+`:'';
+    output=output.slice(0,frameInsertAt)+visual+trace+output.slice(frameInsertAt);
   }
-  // 기존 managed block 교체로 사라진 studioUi를 기존 실제 UI 소비 위치에서 직접 정리한다.
   output=output.replace(/\btable\.concat\(\s*studioUi\s*,/g,'table.concat(studioAssetFamily("UI"),');
   return output;
 }
@@ -924,8 +1045,9 @@ export function applyRobloxStudioAssetBindingToExistingSource({root='',gameId=''
   if(foundationRepair===true&&!fs.existsSync(serverFile))throw new Error('EXISTING_ROBLOX_SOURCE_FILE_MISSING:'+path.basename(serverFile));
   const beforeConfig=fs.readFileSync(configFile,'utf8');
   const beforeClient=fs.readFileSync(clientFile,'utf8');
-  const beforeServer=foundationRepair===true?fs.readFileSync(serverFile,'utf8'):'';
+  const beforeServer=fs.existsSync(serverFile)?fs.readFileSync(serverFile,'utf8'):'';
   const beforeProject=fs.readFileSync(projectFile,'utf8');
+  const studioAssetFamilyStatus=robloxStudioAssetFamilyStatusFromSource({clientSource:beforeClient,serverSource:beforeServer});
   const project=JSON.parse(beforeProject.replace(/^\uFEFF/,''));
   if(!project.tree||project.tree.$className!=='DataModel')throw new Error('EXISTING_ROBLOX_PROJECT_DATAMODEL_REQUIRED');
   const existingLighting=project.tree.Lighting&&typeof project.tree.Lighting==='object'?project.tree.Lighting:{};
@@ -952,7 +1074,7 @@ export function applyRobloxStudioAssetBindingToExistingSource({root='',gameId=''
   }
   const afterProject=`${JSON.stringify(project,null,2)}\n`;
   let afterConfig=replaceOrInsertStudioAssetConfig(beforeConfig,studioAssets);
-  let afterClient=bindExistingClientStudioAssets(beforeClient);
+  let afterClient=bindExistingClientStudioAssets(beforeClient,studioAssetFamilyStatus);
   let afterServer=beforeServer;
   afterConfig=replaceOrInsertVerifiedExternalLearningConfig(afterConfig,verifiedLearning);
   afterClient=bindExistingClientVerifiedExternalLearning(afterClient,verifiedLearning);
@@ -1082,6 +1204,7 @@ task.defer(reportNativeFoundationReady)
     existingSourcePreserved:true,
     changedFiles:Object.freeze(changedFiles),
     studioAssets,
+    studioAssetFamilyStatus,
     verifiedExternalLearningApplied:true,
     verifiedExternalLearningFingerprint:verifiedLearning.verifiedExternalLearningFingerprint||null,
     verifiedExternalLearningIds:Object.freeze([...(verifiedLearning.verifiedExternalLearningIds||[])]),
@@ -1275,15 +1398,9 @@ function serverSource({gameId,saveRequired,actions,profile,learning={}}){
   player:SetAttribute("ActionSequence", 0)\nend\n\n${handlers}\n\nlocal handlers = {\n${mapRows}\n}\n\nPlayers.PlayerAdded:Connect(function(player)\n  bindFoundationPlayer(player)\n${loadBlock}end)\nfor _, player in ipairs(Players:GetPlayers()) do\n  task.defer(function()\n    bindFoundationPlayer(player)\n    if player:GetAttribute("Score") == nil then initializePlayer(player) end\n  end)\nend\nremote.OnServerEvent:Connect(function(player, actionId)\n  if typeof(actionId) ~= "string" then return end\n  local handler = handlers[actionId]\n  if typeof(handler) ~= "function" then return end\n  local now = os.clock()\n  local previous = lastAction[player] or 0\n  if now - previous < Config.RateLimitSeconds then return end\n  lastAction[player] = now\n  handler(player)\nend)\nPlayers.PlayerRemoving:Connect(function(player)\n${saveBlock}  lastAction[player] = nil\nend)\ngame:BindToClose(function() end)\n`;
 }
 
-function clientSource({profile,learning={},studioAssets={}}){
+function clientSource({profile,learning={},studioAssets={},studioAssetFamilyStatus={}}){
   requireRobloxVerifiedExternalLearning(learning);
-  const studioAssetTrace=`local STUDIO_ASSET_SELECTION = {
-${ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES.map(family=>'  '+family+' = studioAssetFamily("'+family+'"),').join('\n')}
-}
-local STUDIO_ASSET_FAMILY_STATUS = {
-${ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES.map(family=>'  '+family+' = "'+(family==='UI'?'APPLIED':'NOT_APPLICABLE')+'",').join('\n')}
-}
-`;
+  const studioAssetTrace=studioAssetDynamicBindingBlock({familyStatus:studioAssetFamilyStatus,configVar:'Config'});
   const nativeLearningRuntime=robloxNativeLearningRuntimeBlock({frameVar:'root',configVar:'Config',learning});
   const learnedInput=`local ContextActionService = game:GetService("ContextActionService")\n`;
   const learnedBinding=`\nif #Config.Actions > 0 then\n  ContextActionService:BindAction("VibePrimaryAction", function(_, inputState)\n    if inputState == Enum.UserInputState.Begin then remote:FireServer(Config.Actions[1].Id) end\n    return Enum.ContextActionResult.Sink\n  end, false, Enum.KeyCode.Space, Enum.KeyCode.ButtonA)\nend\n`;
@@ -1301,10 +1418,15 @@ export function compileRobloxSource({gameId='',gameName='',baseline={},artbook={
   const learning=requireRobloxVerifiedExternalLearning(createRobloxVibe3LearningContext({gameId,profile,artbook,playbooks,recombination}));
   const actions=approvedActions(baseline,profile,learning);
   const studioAssets=buildRobloxStudioAssetBootstrapPlan({gameId,profile,assetLibrary});
+  const generatedServerCode=serverSource({gameId,saveRequired,actions,profile,learning});
+  const studioAssetFamilyStatus=robloxStudioAssetFamilyStatusFromSource({
+    serverSource:generatedServerCode,
+    clientSource:'local root = Instance.new("Frame")'
+  });
   const result={
     sharedConfig:sharedConfigSource({gameId,gameName,saveRequired,actions,profile,platformProfile,learning,studioAssets}),
-    serverCode:serverSource({gameId,saveRequired,actions,profile,learning}),
-    clientCode:clientSource({profile,learning,studioAssets}),
+    serverCode:generatedServerCode,
+    clientCode:clientSource({profile,learning,studioAssets,studioAssetFamilyStatus}),
     implementationNotes:[
       `approved scope count=${actions.length}`,
       `roblox genre=${profile.genre}${profile.subgenre?`/${profile.subgenre}`:''}`,
@@ -1329,7 +1451,7 @@ export function compileRobloxSource({gameId='',gameName='',baseline={},artbook={
   };
   const validation=validateRobloxBootstrap({...result,baseline,profile,learning,studioAssets});
   if(!validation.pass)throw new Error(`ROBLOX_BOOTSTRAP_COMPILER_FAILED: ${validation.blockers.join('|')}`);
-  return {result,validation,actions,profile,platformProfile,learning,studioAssets,webHandoff:null,handoffValidation,generationMode:'DETERMINISTIC_PROFILE_BOUND_WITH_VIBE3_LEARNING_CONTEXT',modelUsed:false,attempts:0,failures:[]};
+  return {result,validation,actions,profile,platformProfile,learning,studioAssets,studioAssetFamilyStatus,webHandoff:null,handoffValidation,generationMode:'DETERMINISTIC_PROFILE_BOUND_WITH_VIBE3_LEARNING_CONTEXT',modelUsed:false,attempts:0,failures:[]};
 }
 
 export async function buildRobloxSource({gameId,gameName,baseline,artbook,playbooks,recombination,webHandoff,roadmap,assetLibrary,model,buildUpDirective}){
@@ -1393,7 +1515,7 @@ async function main(){
       verifiedExternalLearningIds:existingLearning.verifiedExternalLearningIds||[],
       verifiedExternalLearningFingerprint:existingLearning.verifiedExternalLearningFingerprint||null,
       verifiedExternalLearningApplyAxes:existingLearning.verifiedExternalLearningApplyAxes||[],
-      studioAssetBinding:applied.studioAssets,studioAssetBindingApplied:applied.studioAssets.applied===true,studioAssetRuntimeVerified:false,studioAssetPromotionEligible:false,
+      studioAssetBinding:applied.studioAssets,studioAssetFamilyStatus:applied.studioAssetFamilyStatus,studioAssetBindingApplied:applied.studioAssets.applied===true,studioAssetRuntimeVerified:false,studioAssetPromotionEligible:false,
       implementationNotes:foundationRepair?['existing Roblox gameplay source preserved','native foundation/input/runtime readiness scaffolding repaired without changing gameplay balance save schema or network authority','runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass']:['existing Roblox gameplay source preserved','company library Studio asset binding updated in existing config and client presentation','runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass'],
       buildUpDirectiveId:buildUpDirectiveConsumed?buildUpDirective.directiveId:null,buildUpGeneration:buildUpDirectiveConsumed?buildUpDirective.generation:null,
       buildUpGoal:buildUpDirectiveConsumed?buildUpDirective.thisLoopPrimaryGoal:null,buildUpDirectiveFingerprint:buildUpDirectiveConsumed?buildUpDirective.directiveFingerprint:null,
@@ -1439,7 +1561,7 @@ async function main(){
     verifiedExternalLearningApplyAxes:built.learning.verifiedExternalLearningApplyAxes||[],
     recombinationOperator:built.learning.transformationOperator,recombinationSourceProjects:built.learning.sourceProjects,learningFeatureBlend:built.learning.featureBlend,
     platformDesignProfile:built.platformProfile,webPlatformHandoffLegacy:built.webHandoff,webPlatformHandoffRequired:false,
-    studioAssetBinding:built.studioAssets,studioAssetBindingApplied:built.studioAssets.applied===true,studioAssetRuntimeVerified:false,studioAssetPromotionEligible:false,
+    studioAssetBinding:built.studioAssets,studioAssetFamilyStatus:built.studioAssetFamilyStatus,studioAssetBindingApplied:built.studioAssets.applied===true,studioAssetRuntimeVerified:false,studioAssetPromotionEligible:false,
     implementationNotes:built.result.implementationNotes,
     buildUpDirectiveId:buildUpDirectiveConsumed?buildUpDirective.directiveId:null,buildUpGeneration:buildUpDirectiveConsumed?buildUpDirective.generation:null,
     buildUpGoal:buildUpDirectiveConsumed?buildUpDirective.thisLoopPrimaryGoal:null,buildUpDirectiveFingerprint:buildUpDirectiveConsumed?buildUpDirective.directiveFingerprint:null,

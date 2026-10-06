@@ -885,13 +885,25 @@ test('source reconciliation and sweep derive verified learning from the same bui
   assert.doesNotMatch(sweep,/robloxDesignProfileFromBaseline/);
 });
 
-test('verified learning sweep supports exact per-game scope',()=>{
+test('verified learning sweep supports exact per-game and exact batched scope without per-game dispatch fanout',()=>{
   const sweep=fs.readFileSync(new URL('../tools/company-roblox-verified-learning-sweep.mjs',import.meta.url),'utf8');
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-roblox-verified-learning-sweep.yml',import.meta.url),'utf8');
+  const runtime=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.match(sweep,/const requestedGameId=String\(args\['game-id'\]\|\|''\)\.trim\(\)/);
-  assert.match(sweep,/\.filter\(gameId=>!requestedGameId\|\|gameId===requestedGameId\)/);
+  assert.match(sweep,/args\['game-ids'\]/);
+  assert.match(sweep,/const requestedGameSet=new Set\(requestedGameIds\)/);
+  assert.match(sweep,/\.filter\(gameId=>!requestedGameSet\.size\|\|requestedGameSet\.has\(gameId\)\)/);
   assert.match(sweep,/ROBLOX_LEARNING_SWEEP_GAME_NOT_FOUND/);
-  assert.match(sweep,/requestedGameId:requestedGameId\|\|null/);
-  assert.match(sweep,/ROBLOX_VERIFIED_EXTERNAL_LEARNING_SWEEP_SCOPE=/);
+  assert.match(sweep,/requestedGameIds,/);
+  assert.match(workflow,/game_ids:/);
+  assert.match(workflow,/scope_key:/);
+  assert.match(workflow,/--game-ids="\$GAME_IDS"/);
+  assert.match(runtime,/Dispatch verified learning batch sweep when reconciliation finds refresh debt/);
+  assert.match(runtime,/-f game_ids="\$game_ids"/);
+  assert.match(runtime,/-f scope_key="\$scope_key"/);
+  const dispatch=runtime.slice(runtime.indexOf('Dispatch verified learning batch sweep'),runtime.indexOf('Resolve next Roblox source execution slice'));
+  assert.doesNotMatch(dispatch,/while IFS= read -r game_id/);
+  assert.match(dispatch,/ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH_COUNT=1/);
 });
 
 
@@ -915,15 +927,18 @@ test('unchanged package asset failure cannot be turned into a new source PASS by
 });
 
 
-test('verified learning refresh debt coalesces into one existing batch sweep',()=>{
+test('verified learning refresh debt coalesces into one exact existing batch sweep',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
   const start=workflow.indexOf('      - name: Dispatch verified learning batch sweep when reconciliation finds refresh debt');
   const end=workflow.indexOf('      - name: Resolve next Roblox source execution slice',start);
   assert.ok(start>=0&&end>start);
   const block=workflow.slice(start,end);
-  assert.match(block,/Roblox verified learning sweep · batch/);
+  assert.match(block,/scope_key="batch-\$scope_hash"/);
+  assert.match(block,/const title='Roblox verified learning sweep · '\+String\(process\.env\.SCOPE_KEY\|\|''\)/);
   assert.match(block,/ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH=YES_BATCH/);
-  assert.match(block,/company-roblox-verified-learning-sweep\.yml --repo "\$GITHUB_REPOSITORY" --ref main/);
+  assert.match(block,/gh workflow run company-roblox-verified-learning-sweep\.yml/);
+  assert.match(block,/-f game_ids="\$game_ids"/);
+  assert.match(block,/-f scope_key="\$scope_key"/);
   assert.doesNotMatch(block,/while IFS= read -r game_id/);
   assert.doesNotMatch(block,/-f game_id=/);
 });

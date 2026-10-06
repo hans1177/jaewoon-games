@@ -22,6 +22,7 @@ import { assertSystemArchitectureTask, isAllowedSystemArchitecturePath, systemAr
 import {bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {createRobloxWalkTeachingRecipe,createStudioMotionActionProfile} from '../assets/vibe-motion-director.js';
 import {createAssetProductionTeachingRecipe} from '../assets/vibe-studio-asset-universe.js';
+import {detectRobloxStudioAssetSystems,robloxStudioAssetFamilyBoundInText,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from './company-development-roblox-bootstrap.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -680,58 +681,12 @@ export function collectNativeAssetRuntimePromotionCandidates({order={},candidate
   }
   return Object.freeze([...rows.values()]);
 }
-export const ROBLOX_INTERNAL_ASSET_FAMILIES=Object.freeze([
-  'CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'
-]);
-const ROBLOX_INTERNAL_ASSET_SYSTEM_PATTERNS=Object.freeze({
-  CHARACTER:/\b(?:Players|LocalPlayer|CharacterAdded|Humanoid|character|avatar|npc)\b/i,
-  CREATURE:/\b(?:enemy|monster|boss|creature|mob|wildlife|beetle|spider|wolf|bear|golem)\b/i,
-  BUILDING:/\b(?:building|house|shop|school|temple|castle|dungeon|interior|wall|roof|foundation|settlement|village)\b/i,
-  ENVIRONMENT:/\b(?:Terrain|Lighting|Atmosphere|biome|forest|desert|snow|swamp|cave|environment|landmark|world|workspace)\b/i,
-  WEAPON:/\b(?:weapon|sword|blade|spear|axe|hammer|bow|gun|staff|shield|equip|loadout)\b/i,
-  SKILL:/\b(?:skill|ability|cast|projectile|beam|aoe|spell|ultimate|telegraph|summon|buff|debuff)\b/i,
-  MATERIAL:/\b(?:Enum\.Material|SurfaceAppearance|MaterialVariant|TextureID|material|surface)\b/i,
-  AUDIO:/\b(?:SoundService|SoundId|Instance\.new\(["']Sound["']\)|bgm|music|sfx|audio)\b/i,
-  VFX:/\b(?:ParticleEmitter|Beam|Trail|vfx|effect|burst|flash|particle|telegraph)\b/i,
-  UI:/\b(?:ScreenGui|Frame|TextLabel|TextButton|ImageLabel|ImageButton|hud|menu|inventory|quest|shop|button)\b/i,
-  MOTION:/\b(?:Animator|AnimationTrack|Animation|TweenService|Motor6D|Bone|RenderStepped|Heartbeat|motion|locomotion|idle|walk|run)\b/i,
-  PROP:/\b(?:prop|chest|crate|barrel|lamp|workbench|furniture|sign|pickup|resource|tree|rock|item)\b/i
-});
-const ROBLOX_INTERNAL_ASSET_NATIVE_PATTERNS=Object.freeze({
-  CHARACTER:/(?:Instance\.new\(["'](?:Model|MeshPart|Accessory|Attachment)["']\)|\bHumanoid\b|\bCharacter\b)/i,
-  CREATURE:/(?:Instance\.new\(["'](?:Model|MeshPart|Attachment|Bone|Motor6D)["']\)|\bHumanoid\b|\bAnimationController\b)/i,
-  BUILDING:/(?:Instance\.new\(["'](?:Model|Part|MeshPart|Attachment)["']\)|\bClone\s*\()/i,
-  ENVIRONMENT:/(?:\bTerrain\b|\bLighting\b|\bAtmosphere\b|Instance\.new\(["'](?:Model|Part|MeshPart)["']\))/i,
-  WEAPON:/(?:Instance\.new\(["'](?:Tool|Model|MeshPart|Attachment|WeldConstraint)["']\)|\bWeldConstraint\b)/i,
-  SKILL:/(?:ParticleEmitter|Beam|Trail|Attachment|PointLight|SpotLight|SurfaceLight|Instance\.new\(["']Model["']\))/i,
-  MATERIAL:/(?:Enum\.Material|SurfaceAppearance|MaterialVariant|TextureID|\.Material\s*=)/i,
-  AUDIO:/(?:SoundService|SoundId|Instance\.new\(["']Sound["']\))/i,
-  VFX:/(?:ParticleEmitter|Beam|Trail|PointLight|SpotLight|SurfaceLight)/i,
-  UI:/(?:ScreenGui|Frame|TextLabel|TextButton|ImageLabel|ImageButton|UIStroke|UICorner|UIGradient)/i,
-  MOTION:/(?:Animator|AnimationTrack|Animation|TweenService|Motor6D|Bone|RenderStepped|Heartbeat)/i,
-  PROP:/(?:Instance\.new\(["'](?:Model|Part|MeshPart|ProximityPrompt|Attachment)["']\)|\bClone\s*\()/i
-});
-function robloxInternalAssetFamilyRefPattern(family=''){
-  const value=clean(family);
-  return new RegExp('(?:studioAssetFamily\\s*\\(\\s*["\\\']'+value+'["\\\']|hasStudio(?:Asset)?Atom\\s*\\(\\s*["\\\']'+value+'["\\\']|studioAssetFamilies(?:\\s*\\.\\s*'+value+'|\\s*\\[\\s*["\\\']'+value+'["\\\']\\s*\\]))','ig');
-}
+export const ROBLOX_INTERNAL_ASSET_FAMILIES=ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES;
 function robloxInternalAssetTraceStripped(text=''){
   return String(text||'')
     .replace(/--[^\n]*/g,' ')
     .replace(/\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{[\s\S]*?\}/g,' ')
     .replace(/\bSTUDIO_ASSET_SELECTION\s*=\s*\{[\s\S]*?\}/g,' ');
-}
-function robloxInternalAssetFamilyBoundInText(text='',family=''){
-  const raw=String(text||'');
-  const nativePattern=ROBLOX_INTERNAL_ASSET_NATIVE_PATTERNS[family];
-  if(!nativePattern)return false;
-  const refs=[...raw.matchAll(robloxInternalAssetFamilyRefPattern(family))];
-  for(const ref of refs){
-    const start=Math.max(0,Number(ref.index||0)-3500);
-    const end=Math.min(raw.length,Number(ref.index||0)+String(ref[0]||'').length+3500);
-    if(nativePattern.test(raw.slice(start,end)))return true;
-  }
-  return false;
 }
 function robloxInternalAssetSourceDocuments(sourceRoot=''){
   const root=path.resolve(sourceRoot),documents=new Map(),stack=[root];
@@ -785,6 +740,7 @@ export function evaluateRobloxInternalAssetFamilyBindingCandidate({candidate={},
     .filter(([relative])=>!/(?:^|\/)GameConfig\.luau$/i.test(relative))
     .map(([,text])=>robloxInternalAssetTraceStripped(text))
     .join('\n');
+  const detectedSystems=detectRobloxStudioAssetSystems({sourceText:semanticSource});
   const rows=[],blockers=[];
   if(expectedFingerprint&&observedSelectionFingerprint!==expectedFingerprint){
     blockers.push('ROBLOX_INTERNAL_ASSET_SELECTION_FINGERPRINT_MISMATCH');
@@ -795,14 +751,14 @@ export function evaluateRobloxInternalAssetFamilyBindingCandidate({candidate={},
   let appliedCount=0,notApplicableCount=0,changedAppliedFamilyCount=0,configFamilyMatchCount=0;
   for(const family of ROBLOX_INTERNAL_ASSET_FAMILIES){
     const status=clean(statusBlock.match(new RegExp('\\b'+family+'\\s*=\\s*["\\\'](APPLIED|NOT_APPLICABLE)["\\\']','i'))?.[1]).toUpperCase();
-    const systemPresent=ROBLOX_INTERNAL_ASSET_SYSTEM_PATTERNS[family]?.test(semanticSource)===true;
+    const systemPresent=detectedSystems[family]===true;
     const selectedAtoms=Array.isArray(expectedFamilies?.[family])?[...new Set(expectedFamilies[family].map(clean).filter(Boolean))].sort():[];
     const configFamilyBody=configText.match(new RegExp('\\b'+family+'\\s*=\\s*\\{([^}]*)\\}','m'))?.[1]||'';
     const configuredAtoms=[...new Set([...configFamilyBody.matchAll(/["']([^"']+)["']/g)].map(match=>clean(match[1])).filter(Boolean))].sort();
     const configFamilyMatch=selectedAtoms.length===configuredAtoms.length&&selectedAtoms.every((atom,index)=>atom===configuredAtoms[index]);
     if(configFamilyMatch)configFamilyMatchCount+=1;
     else blockers.push('ROBLOX_INTERNAL_ASSET_CONFIG_FAMILY_SELECTION_MISMATCH:'+family);
-    const boundFiles=[...result.entries()].filter(([,text])=>robloxInternalAssetFamilyBoundInText(text,family)).map(([relative])=>relative);
+    const boundFiles=[...result.entries()].filter(([,text])=>robloxStudioAssetFamilyBoundInText(text,family)).map(([relative])=>relative);
     const actualBinding=boundFiles.length>0;
     const changedBinding=boundFiles.some(relative=>touched.has(relative));
     if(!status)blockers.push('ROBLOX_INTERNAL_ASSET_FAMILY_STATUS_MISSING:'+family);
@@ -842,12 +798,18 @@ export function evaluateRobloxInternalAssetFamilyBindingCandidate({candidate={},
 }
 
 const ALL_GAME_INTERNAL_ASSET_SYSTEM_PATTERNS=Object.freeze({
-  ...ROBLOX_INTERNAL_ASSET_SYSTEM_PATTERNS,
   CHARACTER:/\b(?:character|avatar|npc|CharacterController|SkinnedMeshRenderer)\b/i,
-  ENVIRONMENT:/\b(?:Terrain|Lighting|Atmosphere|RenderSettings|Skybox|biome|forest|desert|environment|world)\b/i,
+  CREATURE:/\b(?:enemy|monster|boss|creature|mob|wildlife|beetle|spider|wolf|bear|golem|NavMeshAgent)\b/i,
+  BUILDING:/\b(?:building|house|shop|school|temple|castle|dungeon|interior|wall|roof|foundation|settlement|village|Prefab)\b/i,
+  ENVIRONMENT:/\b(?:Terrain|Lighting|Atmosphere|RenderSettings|Skybox|biome|forest|desert|snow|swamp|cave|environment|world)\b/i,
+  WEAPON:/\b(?:weapon|sword|blade|spear|axe|hammer|bow|gun|staff|shield|equip|loadout)\b/i,
+  SKILL:/\b(?:skill|ability|cast|projectile|beam|aoe|spell|ultimate|telegraph|summon|buff|debuff|ParticleSystem)\b/i,
+  MATERIAL:/\b(?:Material|Shader|Renderer|SurfaceAppearance|MaterialVariant|TextureID|fillStyle|strokeStyle|gradient|filter)\b/i,
   AUDIO:/\b(?:AudioSource|AudioClip|AudioMixer|AudioContext|HTMLAudioElement|bgm|music|sfx|audio)\b/i,
+  VFX:/\b(?:ParticleSystem|ParticleEmitter|VisualEffect|TrailRenderer|LineRenderer|Beam|Trail|vfx|effect|burst|flash|particle|telegraph)\b/i,
   UI:/\b(?:Canvas|Image|Button|TMP_Text|TextMeshPro|RectTransform|HTMLElement|hud|menu|inventory|quest|shop|button)\b/i,
-  MOTION:/\b(?:Animator|Animation|PlayableGraph|Tween|requestAnimationFrame|motion|locomotion)\b/i
+  MOTION:/\b(?:Animator|Animation|PlayableGraph|Tween|requestAnimationFrame|motion|locomotion)\b/i,
+  PROP:/\b(?:prop|chest|crate|barrel|lamp|workbench|furniture|sign|pickup|resource|tree|rock|item|Collider)\b/i
 });
 const ALL_GAME_INTERNAL_ASSET_NATIVE_PATTERNS=Object.freeze({
   unity:Object.freeze({

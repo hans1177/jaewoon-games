@@ -289,30 +289,39 @@ jobs:
             exit 0
           fi
 
-          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-roblox-verified-learning-sweep.yml/runs?per_page=100" > /tmp/roblox-learning-sweep-runs.json
+          game_ids="$(paste -sd, /tmp/roblox-learning-rebind-ids)"
+          scope_hash="$(printf '%s' "$game_ids" | sha256sum | awk '{print substr($1,1,16)}')"
+          scope_key="batch-$scope_hash"
           current_main="$(git rev-parse origin/main)"
-          debt_ids="$(paste -sd, /tmp/roblox-learning-rebind-ids)"
-          active="$(CURRENT_MAIN="$current_main" node - <<'NODE'
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-roblox-verified-learning-sweep.yml/runs?per_page=100" > /tmp/roblox-learning-sweep-runs.json
+          active="$(SCOPE_KEY="$scope_key" CURRENT_MAIN="$current_main" node - <<'NODE'
           const fs=require('fs');
           const payload=JSON.parse(fs.readFileSync('/tmp/roblox-learning-sweep-runs.json','utf8'));
-          const states=new Set(['queued','pending','in_progress','requested']);
+          const states=new Set(['queued','pending','in_progress','requested','waiting']);
+          const title='Roblox verified learning sweep · '+String(process.env.SCOPE_KEY||'');
           const currentMain=String(process.env.CURRENT_MAIN||'');
           const found=(payload.workflow_runs||[]).some(run=>
             states.has(String(run.status||'').toLowerCase())
-            &&String(run.display_title||'')==='Roblox verified learning sweep · batch'
+            &&String(run.display_title||'')===title
             &&String(run.head_sha||'')===currentMain
           );
           process.stdout.write(found?'yes':'no');
           NODE
           )"
+          echo "ROBLOX_VERIFIED_LEARNING_SWEEP_BATCH_SIZE=$learning_debt"
+          echo "ROBLOX_VERIFIED_LEARNING_SWEEP_BATCH_SCOPE=$scope_key"
           if [ "$active" = 'yes' ]; then
-            echo "ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH=DEDUPED_BATCH:$current_main:$debt_ids"
+            echo "ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH=DEDUPED_BATCH:$scope_key:$current_main"
             echo 'ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH_COUNT=0'
-            echo 'ROBLOX_VERIFIED_LEARNING_SWEEP_DEDUPED_COUNT=1'
+            echo "ROBLOX_VERIFIED_LEARNING_SWEEP_DEDUPED_COUNT=$learning_debt"
             exit 0
           fi
-          gh workflow run company-roblox-verified-learning-sweep.yml --repo "$GITHUB_REPOSITORY" --ref main
-          echo "ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH=YES_BATCH:$current_main:$debt_ids"
+          gh workflow run company-roblox-verified-learning-sweep.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref main \
+            -f game_ids="$game_ids" \
+            -f scope_key="$scope_key"
+          echo "ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH=YES_BATCH:$scope_key:$current_main:$game_ids"
           echo 'ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH_COUNT=1'
           echo 'ROBLOX_VERIFIED_LEARNING_SWEEP_DEDUPED_COUNT=0'
 
