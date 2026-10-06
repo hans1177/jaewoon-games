@@ -2,6 +2,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 local ContextActionService = game:GetService("ContextActionService")
+local TweenService = game:GetService("TweenService")
 
 local player = Players.LocalPlayer
 local Shared = ReplicatedStorage:WaitForChild("Shared")
@@ -600,6 +601,62 @@ root.Size = UDim2.new(1, -24, 0, 360)
 root.BackgroundTransparency = 0.15
 root.BackgroundColor3 = Color3.fromRGB(18, 28, 48)
 root.Parent = gui
+
+-- 생존 시스템에서 선택된 내부 자산 계열을 실제 Roblox 표현 소비자로 연결한다.
+local function applySurvivalCharacterPresentation(character)
+  if #studioAssetFamily("CHARACTER") == 0 then return end
+  local humanoid = character:FindFirstChildOfClass("Humanoid")
+  local torso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso")
+  if humanoid and torso and torso:IsA("BasePart") then
+    torso.Material = Enum.Material.Fabric
+  end
+end
+
+local function applySurvivalCreaturePresentation(enemy)
+  if #studioAssetFamily("CREATURE") == 0 or not enemy:IsA("Model") then return end
+  local humanoid = enemy:FindFirstChildOfClass("Humanoid")
+  local rootPart = enemy:FindFirstChild("HumanoidRootPart")
+  if humanoid and rootPart and rootPart:IsA("BasePart") then
+    rootPart.Material = Enum.Material.SmoothPlastic
+  end
+end
+
+task.defer(function()
+  local survivalWorld = workspace:FindFirstChild("SurvivalWorld") or workspace:WaitForChild("SurvivalWorld", 5)
+  if not survivalWorld then return end
+
+  local camp = survivalWorld:FindFirstChild("SurvivalLandmarkCamp")
+  if #studioAssetFamily("ENVIRONMENT") > 0 and camp and camp:IsA("BasePart") then
+    camp.Material = Enum.Material.Slate
+  end
+
+  local workbench = survivalWorld:FindFirstChild("SurvivalObjectiveWorkbench")
+  if #studioAssetFamily("PROP") > 0 and workbench and workbench:IsA("BasePart") then
+    workbench.Material = Enum.Material.WoodPlanks
+  end
+  if #studioAssetFamily("MATERIAL") > 0 and workbench and workbench:IsA("BasePart") then
+    workbench.Material = Enum.Material.Wood
+  end
+
+  local enemies = survivalWorld:FindFirstChild("Enemies")
+  if enemies then
+    for _, enemy in ipairs(enemies:GetChildren()) do applySurvivalCreaturePresentation(enemy) end
+    enemies.ChildAdded:Connect(applySurvivalCreaturePresentation)
+  end
+
+  if #studioAssetFamily("MOTION") > 0 then
+    local settledPosition = root.Position
+    root.Position = UDim2.new(settledPosition.X.Scale, settledPosition.X.Offset, 1.03, 0)
+    TweenService:Create(
+      root,
+      TweenInfo.new(0.22, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+      { Position = settledPosition }
+    ):Play()
+  end
+end)
+
+if player.Character then task.defer(applySurvivalCharacterPresentation, player.Character) end
+player.CharacterAdded:Connect(applySurvivalCharacterPresentation)
 local title = Instance.new("TextLabel")
 title.Name = "Title"
 title.Size = UDim2.new(1, -20, 0, 44)
@@ -645,9 +702,19 @@ for index, action in ipairs(Config.Actions) do
   button.Parent = list
   button.Activated:Connect(function() remote:FireServer(action.Id) end)
 end
-local watched = {"Score","Coins","Level","Progress","Health","Wave","Position","Objective","Combo","EnemyHealth","PuzzleChain","Towers","BaseHealth","SocialBond","SharedObjective","RoundScore","LastApprovedScope"}
+local watched = {"Score","Coins","Level","Progress","Health","Wave","Position","Objective","Combo","EnemyHealth","PuzzleChain","Towers","BaseHealth","SocialBond","SharedObjective","RoundScore","CurrentDay","DayPhase","ResourceWood","ResourceStone","InventoryItems","EquippedToolTier","RecipeUnlock","SurvivalRecord","EnemyKills","LastApprovedScope"}
 local function render()
-  status.Text = string.format("Score %d · Lv %d · Progress %d · HP %d · Wave %d", player:GetAttribute("Score") or 0, player:GetAttribute("Level") or 1, player:GetAttribute("Progress") or 0, player:GetAttribute("Health") or 100, player:GetAttribute("Wave") or 1)
+  local phase = (player:GetAttribute("DayPhase") or 0) == 1 and "밤" or "낮"
+  status.Text = string.format(
+    "%d일 %s · HP %d · Wave %d · 목재 %d / 돌 %d · 장비 T%d",
+    player:GetAttribute("CurrentDay") or 1,
+    phase,
+    player:GetAttribute("Health") or 100,
+    player:GetAttribute("Wave") or 1,
+    player:GetAttribute("ResourceWood") or 0,
+    player:GetAttribute("ResourceStone") or 0,
+    player:GetAttribute("EquippedToolTier") or 0
+  )
 end
 for _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end
 render()
