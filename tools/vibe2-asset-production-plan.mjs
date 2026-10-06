@@ -2552,7 +2552,8 @@ export function buildVibeAssetProductionPlan({
     ...inferStyleExpressionOverridesFromText(request),
     ...(task.styleExpressionOverrides||task.styleExpression?.axes||{})
   };
-  const assetLearningRequired=clean(executionLane).toLowerCase()==='asset-development'||['roblox','unity','web'].includes(resolvedTarget);
+  const assetDevelopmentExecution=clean(executionLane).toLowerCase()==='asset-development';
+  const assetLearningRequired=!assetDevelopmentExecution&&['roblox','unity','web'].includes(resolvedTarget);
   const verifiedCommercialReuse=freezeList((verifiedLearning?.playbookReuse||[])
     .filter(row=>row?.verified===true&&clean(row?.authority)==='verified-task-playbook'&&clean(row?.id).startsWith('external-black-box-'))
     .map(row=>freeze({
@@ -2589,6 +2590,7 @@ export function buildVibeAssetProductionPlan({
     required:assetLearningRequired,
     ready:!assetLearningRequired||(verifiedCommercialReuse.length>0&&fullRetrievedSetBound),
     verifiedExternalBlackBoxRequired:assetLearningRequired,
+    externalLearningMode:assetDevelopmentExecution?'OPTIONAL_ASSET_DEVELOPMENT':'REQUIRED_GAME_PRODUCTION',
     allRetrievedVerifiedExternalApplied:fullRetrievedSetBound,
     retrievedVerifiedExternalTruncationForbidden:true,
     applicationOrder:'VERIFIED_EXTERNAL_LEARNING_FIRST_THEN_TRANSFORMATIVE_INTERNAL_ASSET_EVOLUTION',
@@ -2605,7 +2607,7 @@ export function buildVibeAssetProductionPlan({
     exactRetrievedSetBinding:fullRetrievedSetBound,
     applicationCoveragePct:actualApplicationCoveragePct,
     applicationMode:'TRANSFORMATIVE_INTERNAL_ASSET_EVOLUTION',
-    mandatoryApplicationCoveragePct:100,
+    mandatoryApplicationCoveragePct:assetLearningRequired?100:null,
     internalAssetEvolutionRequired:true,
     applyAxes:freezeList([
       'MENU_FLOW_AND_INFORMATION_ARCHITECTURE',
