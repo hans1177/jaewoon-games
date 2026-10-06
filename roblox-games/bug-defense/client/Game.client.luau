@@ -343,6 +343,67 @@ root.Size = UDim2.new(1, -24, 0, 360)
 root.BackgroundTransparency = 0.15
 root.BackgroundColor3 = Color3.fromRGB(18, 28, 48)
 root.Parent = gui
+
+-- 선택된 내부 자산 family를 기존 정원 방어 네이티브 표현에 직접 연결한다.
+task.defer(function()
+  local world = workspace:FindFirstChild("BugDefenseGarden") or workspace:WaitForChild("BugDefenseGarden", 5)
+  if not world then return end
+
+  if #studioAssetFamily("CHARACTER") > 0 then
+    local character = player.Character or player.CharacterAdded:Wait()
+    local torso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso") or character:FindFirstChild("HumanoidRootPart")
+    if torso and torso:IsA("BasePart") then
+      local light = Instance.new("PointLight")
+      light.Name = "StudioCharacterReadabilityLight"
+      light.Brightness = 0.2
+      light.Range = 6
+      light.Color = Color3.fromRGB(181, 224, 166)
+      light:SetAttribute("StudioCharacterAtom", studioAssetFamily("CHARACTER")[1] or "")
+      light.Parent = torso
+    end
+  end
+
+  if #studioAssetFamily("CREATURE") > 0 then
+    local creatureAtom = studioAssetFamily("CREATURE")[1] or ""
+    local function applyCreaturePresentation(instance)
+      if not instance:IsA("Model") then return end
+      if not (instance.Name:find("Pest_", 1, true) or instance.Name == "BossPest") then return end
+      local body = instance:FindFirstChild("Body")
+      if body and body:IsA("BasePart") then
+        body:SetAttribute("StudioCreatureAtom", creatureAtom)
+        body.Material = creatureAtom:find("CARAPACE", 1, true) and Enum.Material.Metal or Enum.Material.Slate
+      end
+    end
+    for _, descendant in ipairs(world:GetDescendants()) do applyCreaturePresentation(descendant) end
+    world.DescendantAdded:Connect(applyCreaturePresentation)
+  end
+
+  if #studioAssetFamily("BUILDING") > 0 then
+    local gardenCore = world:FindFirstChild("GardenCoreObjective")
+    if gardenCore and gardenCore:IsA("BasePart") and not world:FindFirstChild("StudioGardenCoreTrim") then
+      local trim = Instance.new("Part")
+      trim.Name = "StudioGardenCoreTrim"
+      trim.Size = Vector3.new(math.max(2, gardenCore.Size.X - 2), 0.4, 0.5)
+      trim.Position = gardenCore.Position + Vector3.new(0, gardenCore.Size.Y * 0.42, -gardenCore.Size.Z * 0.51)
+      trim.Anchored = true
+      trim.CanCollide = false
+      trim.Material = Enum.Material.WoodPlanks
+      trim.Color = Color3.fromRGB(111, 161, 91)
+      trim:SetAttribute("StudioBuildingAtom", studioAssetFamily("BUILDING")[1] or "")
+      trim.Parent = world
+    end
+  end
+
+  if #studioAssetFamily("MATERIAL") > 0 then
+    local enemyPath = world:FindFirstChild("EnemyPath")
+    if enemyPath and enemyPath:IsA("BasePart") then
+      local materialAtom = studioAssetFamily("MATERIAL")[1] or ""
+      enemyPath:SetAttribute("StudioMaterialAtom", materialAtom)
+      enemyPath.Material = materialAtom == "WOOD" and Enum.Material.WoodPlanks or Enum.Material.Ground
+    end
+  end
+end)
+
 local title = Instance.new("TextLabel")
 title.Name = "Title"
 title.Size = UDim2.new(1, -20, 0, 44)
