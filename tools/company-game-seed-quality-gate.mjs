@@ -304,12 +304,15 @@ function v2GameplaySketchFailures(sketch){
 
     const world=sketch?.worldbuildingDepth||{};
     const worldDna=uniq(world.worldDnaSources);
+    const componentConceptLinks=uniq(world.componentConceptLinks);
     const causalChains=uniq(world.causalChains);
     const worldEvolutionRows=uniq(world.worldStateEvolution);
     const clueLinks=uniq(world.crossMediaClueLinks);
     if(world.allGenreApplicable!==true)out.push('v3-worldbuilding-all-genres-required');
     if(clean(world.worldPremise).length<30)out.push('v3-world-premise-too-shallow');
+    if(clean(world.sharedConceptAnchor).length<30)out.push('v3-shared-concept-anchor-too-shallow');
     if(worldDna.length<3)out.push(`v3-world-dna-families=${worldDna.length}/3`);
+    if(componentConceptLinks.length<6)out.push(`v3-component-concept-links=${componentConceptLinks.length}/6`);
     for(const field of ['civilizationPowerOrder','geographyEcology','economyDailyLife','beliefMythTaboo','technologyInstitutions','placeNameLogic','journalArchiveLogic','monsterOpponentEcology','dialogueMemoryLogic','genreExpression']){
       if(clean(world[field]).length<20)out.push(`v3-worldbuilding-${field}-too-shallow`);
     }
@@ -320,11 +323,11 @@ function v2GameplaySketchFailures(sketch){
     for(const family of worldDna)if(!allowedWorldFamilies.has(family))out.push(`v3-invalid-worldbuilding-family=${family}`);
 
     const worldCausalityText=[
-      clean(world.worldPremise),clean(world.civilizationPowerOrder),clean(world.geographyEcology),
+      clean(world.worldPremise),clean(world.sharedConceptAnchor),clean(world.civilizationPowerOrder),clean(world.geographyEcology),
       clean(world.economyDailyLife),clean(world.beliefMythTaboo),clean(world.technologyInstitutions),
       clean(world.placeNameLogic),clean(world.journalArchiveLogic),clean(world.monsterOpponentEcology),
       clean(world.dialogueMemoryLogic),...causalChains,...worldEvolutionRows,...clueLinks,
-      ...placeNames,...journalChains,...dialogueJournal,...monsterLore,...namingRules
+      ...placeNames,...journalChains,...dialogueJournal,...monsterLore,...namingRules,...componentConceptLinks
     ].join(' ');
     const worldCausalityGroups=[
       [/지명|place.?name|지도|map|표지판|sign/i],
@@ -339,9 +342,23 @@ function v2GameplaySketchFailures(sketch){
     const worldCausalityCoverage=semanticGroupCoverage(worldCausalityText,worldCausalityGroups);
     if(worldCausalityCoverage<6)out.push(`v3-world-causality-semantic-coverage=${worldCausalityCoverage}/6`);
 
+    const conceptCoverage=semanticGroupCoverage(componentConceptLinks.join(' '),[
+      [/대화|dialogue|conversation/i],
+      [/npc|주민|상인|character/i],
+      [/동료|companion|party|ally.*ai|ai.*ally/i],
+      [/몬스터|enemy|opponent|적.*ai|monster.*ai|상대.*ai/i],
+      [/퀘스트|quest|mission/i],
+      [/아이템|item|equipment|pet|재화|상점|economy|trade/i],
+      [/지명|place.?name|region|background|배경|environment/i],
+      [/저널|journal|record|codex|map|ui/i]
+    ]);
+    if(conceptCoverage<6)out.push(`v3-shared-concept-component-coverage=${conceptCoverage}/6`);
+
     const libraries=sketch?.libraryLinkage||{};
     const libraryFamilies=uniq(libraries.libraryFamilies);
     if(libraries.allCanonicalLibrariesSearchable!==true)out.push('v3-all-canonical-libraries-searchable-required');
+    if(libraries.referenceOnly!==true)out.push('v3-library-reference-only-required');
+    if(libraries.perLibraryUseOptional!==true)out.push('v3-library-per-use-optional-required');
     if(libraries.compatibilityRightsAndGameIdentityFirst!==true)out.push('v3-library-compatibility-rights-identity-first-required');
     if(libraries.actualConsumerEvidenceRequired!==true)out.push('v3-library-actual-consumer-evidence-required');
     if(libraries.noForcedUse!==true)out.push('v3-library-no-forced-use-required');
