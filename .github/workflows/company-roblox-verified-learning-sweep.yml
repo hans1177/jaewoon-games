@@ -1,5 +1,5 @@
 name: Company Roblox Verified Learning Sweep
-run-name: Roblox verified learning sweep · ${{ inputs.game_id || 'batch' }}
+run-name: Roblox verified learning sweep · ${{ inputs.scope_key || inputs.game_id || 'batch' }}
 
 on:
   push:
@@ -15,14 +15,22 @@ on:
         description: Optional exact Roblox gameId. Empty keeps batch-compatible sweep behavior.
         required: false
         type: string
+      game_ids:
+        description: Optional comma-separated exact Roblox gameIds for one batched sweep.
+        required: false
+        type: string
+      scope_key:
+        description: Optional stable exact batch identity used for dispatch dedupe/concurrency.
+        required: false
+        type: string
 
 permissions:
   contents: write
   pull-requests: write
 
 concurrency:
-  # 같은 게임의 학습 갱신만 합치고 실행 중인 작업은 보존한다.
-  group: roblox-verified-learning-sweep-${{ inputs.game_id || 'batch' }}
+  # 동일한 정확한 게임/배치 학습 갱신만 합치고 실행 중인 다른 범위는 보존한다.
+  group: roblox-verified-learning-sweep-${{ inputs.scope_key || inputs.game_id || 'batch' }}
   cancel-in-progress: false
 
 env:
@@ -64,15 +72,18 @@ jobs:
         id: apply
         env:
           GAME_ID: ${{ inputs.game_id || '' }}
+          GAME_IDS: ${{ inputs.game_ids || '' }}
+          SCOPE_KEY: ${{ inputs.scope_key || '' }}
         shell: bash
         run: |
           set -euo pipefail
-          scope="${GAME_ID:-batch}"
+          scope="${SCOPE_KEY:-${GAME_ID:-batch}}"
           branch="development/roblox-learning-sweep-${scope}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           git switch -c "$branch"
           node tools/company-roblox-verified-learning-sweep.mjs \
             --root=roblox-games \
             --game-id="$GAME_ID" \
+            --game-ids="$GAME_IDS" \
             --playbooks=/tmp/vibe3-task-playbooks.json \
             --recombination=/tmp/vibe3-recombination-memory.json \
             --report=/tmp/roblox-learning-sweep.json
@@ -80,6 +91,7 @@ jobs:
           node tools/company-roblox-verified-learning-sweep.mjs \
             --root=roblox-games \
             --game-id="$GAME_ID" \
+            --game-ids="$GAME_IDS" \
             --playbooks=/tmp/vibe3-task-playbooks.json \
             --recombination=/tmp/vibe3-recombination-memory.json \
             --report=/tmp/roblox-learning-sweep-repeat.json
@@ -97,7 +109,13 @@ jobs:
           fi
           git config user.name 'jaewoon-roblox-learning-sweep'
           git config user.email 'actions@users.noreply.github.com'
-          if [ -n "$GAME_ID" ]; then
+          if [ -n "$GAME_IDS" ]; then
+            IFS=',' read -r -a selected_ids <<< "$GAME_IDS"
+            for selected_id in "${selected_ids[@]}"; do
+              [ -n "$selected_id" ] || continue
+              git add "roblox-games/$selected_id"
+            done
+          elif [ -n "$GAME_ID" ]; then
             git add "roblox-games/$GAME_ID"
           else
             git add roblox-games
@@ -117,11 +135,12 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           SOURCE_BRANCH: ${{ steps.apply.outputs.branch }}
           GAME_ID: ${{ inputs.game_id || '' }}
+          SCOPE_KEY: ${{ inputs.scope_key || '' }}
         shell: bash
         run: |
           set -euo pipefail
           pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$SOURCE_BRANCH" \
-            --title "development: apply verified learning to Roblox ${GAME_ID:-batch}" \
+            --title "development: apply verified learning to Roblox ${SCOPE_KEY:-${GAME_ID:-batch}}" \
             --body "Updates the selected Roblox shared/client source scope with current verified external black-box distilled learning. Server files are not modified by this sweep.")"
           attempt=0
           while true; do
