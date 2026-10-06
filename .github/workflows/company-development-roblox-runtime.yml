@@ -319,7 +319,6 @@ jobs:
           echo 'ROBLOX_VERIFIED_LEARNING_SWEEP_DEDUPED_COUNT=0'
 
       - name: Resolve next Roblox source execution slice from unbounded native queue
-      - name: Resolve next Roblox source execution slice from unbounded native queue
         if: steps.freshness.outputs.run == 'true'
         id: targets
         env:
