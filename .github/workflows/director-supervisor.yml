@@ -240,6 +240,7 @@ jobs:
           // Native runtime duplicates for the same title carry newer source/runtime state.
           // Never cancel active same-title work; when none is active, keep only the newest queued run.
           dedupeByTitle('.github/workflows/company-development-roblox-runtime.yml',true);
+          dedupeByTitle('.github/workflows/company-development-roblox-runtime-continuation.yml',true);
           dedupeByTitle('.github/workflows/company-development-unity-runtime.yml',true);
           dedupeByTitle('.github/workflows/company-development-roblox-release-promotion.yml',false);
           dedupeByTitle('.github/workflows/unity-android-independent-qa.yml',false);
