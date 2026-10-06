@@ -24,7 +24,7 @@ const expectedChain = [
   'PROMOTE_OR_ROLLBACK',
 ];
 
-eq(contract.version, 13, 'contract.version');
+eq(contract.version, 14, 'contract.version');
 eq(contract.authority, 'CENTRAL_POLICY_SUBORDINATE_IMPLEMENTATION_CONTRACT', 'contract.authority');
 eq(contract.sourceOfTruth, 'company-learning/platform-release-roadmap.json#canonicalLearningChain', 'contract.sourceOfTruth');
 eq(contract.policyAuthority, false, 'contract.policyAuthority');
@@ -43,6 +43,31 @@ eq(contract.trainingPolicy.minFreshTrainSamples, 12, 'minFreshTrainSamples');
 eq(contract.trainingPolicy.minDistinctProjects, 2, 'minDistinctProjects');
 eq(contract.trainingPolicy.maxProjectShare, 0.75, 'maxProjectShare');
 eq(contract.trainingPolicy.promotionGate, 'FIXED_HOLDOUT_AB_THEN_CANARY', 'promotionGate');
+const staticPromotion=contract.verifiedStaticKnowledgeMainPromotion;
+eq(staticPromotion?.enabled, true, 'verified static knowledge main promotion enabled');
+eq(staticPromotion?.scope, 'ALL_TRUSTED_EXTERNAL_AI_DISTILLED_LEARNING_DOMAINS', 'verified static learning scope');
+eq(staticPromotion?.sourceStore, '.vibe2/external-ai-distilled-knowledge.json', 'verified static learning store');
+eq(staticPromotion?.runtimeProducer, '.github/workflows/vibe2-24h-runner.yml', 'verified static learning producer');
+eq(staticPromotion?.promotionGateWorkflow, '.github/workflows/vibe2-learning-pipeline-contract.yml', 'verified static learning promotion workflow');
+eq(staticPromotion?.trustedValidator, 'tools/vibe2-external-ai-distillation.mjs', 'verified static learning validator');
+eq(JSON.stringify(staticPromotion?.requiredQaWorkflows), JSON.stringify(['Company Evolution QA','Vibe2 Core QA']), 'verified static learning QA workflows');
+eq(staticPromotion?.promotionMode, 'PR_SQUASH_MERGE_AFTER_EXACT_HEAD_QA_SUCCESS', 'verified static learning promotion mode');
+eq(staticPromotion?.directMainWrite, false, 'verified static learning direct main write');
+eq(staticPromotion?.prOnly, true, 'verified static learning PR only');
+eq(staticPromotion?.existingCanonicalEntriesImmutable, true, 'verified static learning canonical entry immutability');
+eq(staticPromotion?.trustedNewEntryRequired, true, 'verified static learning trusted new entry');
+eq(staticPromotion?.independentlyVerifiedRequired, true, 'verified static learning independent verification');
+eq(staticPromotion?.minimumTraceableVerificationEvidenceItems, 2, 'verified static learning evidence minimum');
+eq(staticPromotion?.rawExternalOutputStored, false, 'verified static learning raw external output');
+eq(staticPromotion?.authorityExpansion, false, 'verified static learning authority expansion');
+eq(staticPromotion?.allLearningDomainsEligible, true, 'verified static learning all domains');
+eq(staticPromotion?.trainingThresholdsUnchanged, true, 'verified static learning training thresholds');
+eq(staticPromotion?.modelWeightPromotionGateUnchanged, 'FIXED_HOLDOUT_AB_THEN_CANARY', 'verified static learning weight promotion gate');
+eq(staticPromotion?.centralPolicyMutationByPromotionForbidden, true, 'verified static learning central policy mutation');
+eq(staticPromotion?.finalDevelopmentLockMutationForbidden, true, 'verified static learning final lock mutation');
+eq(staticPromotion?.newWorkflowOrShadowPipelineCreated, false, 'verified static learning no shadow pipeline');
+if (!(staticPromotion?.excludedRuntimeOrTrainingState||[]).includes('.vibe2/learning-motor-state.json')) fail('verified static learning runtime state exclusion missing');
+if (!(staticPromotion?.excludedRuntimeOrTrainingState||[]).includes('MODEL_WEIGHT_PROMOTION')) fail('verified static learning weight promotion exclusion missing');
 eq(contract.motionRuntimeEvidence?.enabled, true, 'motion runtime evidence enabled');
 eq(contract.motionRuntimeEvidence?.usesCanonicalChainOnly, true, 'motion runtime canonical chain only');
 eq(contract.motionRuntimeEvidence?.separatePipelineForbidden, true, 'motion runtime separate pipeline forbidden');
@@ -97,6 +122,10 @@ eq(portableWeb?.status, 'LEGACY_DISABLED', 'legacy Web learning status');
 
 eq(JSON.stringify(roadmap.canonicalLearningChain), JSON.stringify(expectedChain), 'central canonical learning chain');
 eq(roadmap.parallelLearningPipelineAllowed, false, 'central parallel learning pipeline policy');
+eq(roadmap.externalAiLearningPipeline?.independentVerificationRequired, true, 'central external AI independent verification');
+eq(roadmap.externalAiLearningPipeline?.directSourceWrite, false, 'central external AI direct source write');
+eq(roadmap.externalAiLearningPipeline?.directProductionPass, false, 'central external AI direct production pass');
+eq(roadmap.learningClosedLoopContract?.externalAiRetrieval?.independentlyVerifiedDistilledOnly, true, 'central independently verified distilled retrieval only');
 eq(roadmap.webCompanion?.role, 'UNITY_WEB_FULL_DEVELOPMENT_QA_LOOP_COMPATIBILITY_ALIAS', 'central Web role');
 eq(roadmap.webCompanion?.developmentAdmissionGate, true, 'central Web development admission');
 eq(roadmap.webCompanion?.cannotReplaceNativeRuntimeEvidence, true, 'central Web native evidence boundary');
@@ -114,6 +143,29 @@ const ingestOrder = [
   'node tools/vibe2-training-request.mjs',
 ].map((token) => ingestWorkflow.indexOf(token));
 if (!(ingestOrder[0] >= 0 && ingestOrder[0] < ingestOrder[1] && ingestOrder[1] < ingestOrder[2])) fail('ingest/status/request order drifted');
+
+const verifiedPromotionWorkflow=readText(staticPromotion.promotionGateWorkflow);
+includesAll(verifiedPromotionWorkflow, [
+  'workflow_run:',
+  'Company Evolution QA',
+  'Vibe2 Core QA',
+  'VIBE2_EXTERNAL_AI_MAIN_PROMOTION=PASS',
+  'VERIFIED_LEARNING_MAIN_PROMOTION_MERGED=YES',
+  'pull-requests: write',
+  'contents: write',
+], 'verified static learning promotion workflow');
+const continuousRunner=readText(staticPromotion.runtimeProducer);
+includesAll(continuousRunner, [
+  'VIBE2_EXTERNAL_AI_MAIN_STORE_MERGE=PASS',
+  'VIBE2_VERIFIED_LEARNING_PROMOTION_PR=',
+  'vibe2/learning-promotion/external-ai-',
+  'PUBLIC_MAIN_WRITE=NO',
+], 'verified static learning producer');
+const companyEvolutionQa=readText('.github/workflows/company-evolution-qa.yml');
+const vibeCoreQa=readText('.github/workflows/vibe2-core-qa.yml');
+for(const [name,text] of [['Company Evolution QA',companyEvolutionQa],['Vibe2 Core QA',vibeCoreQa]]){
+  if(!text.includes("'.vibe2/external-ai-distilled-knowledge.json'"))fail(`${name}: distilled store path trigger missing`);
+}
 
 const trainWorkflow = readText(contract.implementationBindings.localTrainingWorkflow);
 includesAll(trainWorkflow, [
@@ -160,3 +212,5 @@ console.log('BLOCK_BLAST_SUCCESS_LEARNING_METHOD=LOCKED_RUN30');
 console.log(`BLOCK_BLAST_QA_ACCEPTED=${status.tasks.qa.accepted}`);
 console.log(`BLOCK_BLAST_QA_TRAIN=${status.tasks.qa.train}`);
 console.log(`TRAINING_REQUEST_STATE=${request.state}`);
+console.log('VERIFIED_STATIC_LEARNING_MAIN_PROMOTION=LOCKED_PR_ONLY');
+console.log('VERIFIED_STATIC_LEARNING_ALL_DOMAINS=YES');
