@@ -65,5 +65,8 @@ test('24h scheduler wakes remain run-scoped while fixed repeat development may q
   assert.match(runner,/cancel-in-progress:\s*false/);
   assert.doesNotMatch(runner,/group: vibe2-24h-cycle-singleton-v9/);
   assert.match(runner,/cron: '\*\/5 \* \* \* \*'/);
-  assert.match(runner,/if: \$\{\{ always\(\) \}\}[\s\S]*VIBE2_24H_REFILL_RUNNER_PRESSURE_POLICY=EXTERNAL_QUEUE_OWNS_PHYSICAL_BACKPRESSURE[\s\S]*VIBE2_24H_REFILL=SKIPPED_EXISTING_SCHEDULER:[\s\S]*actions\/workflows\/vibe2-24h-runner\.yml\/dispatches/);
+  assert.match(runner,/refill:\s*\n\s*needs: \[plan, recovery_fast, continuous, asset_development, learning_idle, game_study\][\s\S]*if: \$\{\{ always\(\) \}\}/);
+  assert.match(runner,/VIBE2_24H_REFILL_RUNNER_PRESSURE_POLICY=EXTERNAL_QUEUE_OWNS_PHYSICAL_BACKPRESSURE/);
+  assert.match(runner,/VIBE2_24H_REFILL=SKIPPED_EXISTING_SCHEDULER:/);
+  assert.match(runner,/actions\/workflows\/vibe2-24h-runner\.yml\/dispatches/);
 });
