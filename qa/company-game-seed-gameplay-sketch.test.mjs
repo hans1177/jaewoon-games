@@ -54,6 +54,13 @@ test('seed bootstrap asks the model to sketch the world before code and persists
   assert.match(source,/longGoalScenario/);
   assert.match(source,/validationRisks/);
   assert.match(source,/GAMEPLAY_SKETCH_REQUIRED_FOR_NEW_SEEDS=YES/);
+  assert.match(source,/identityCore:IDENTITY_CORE_SCHEMA/);
+  assert.match(source,/threeSentenceTest/);
+  assert.match(source,/representativeAction/);
+  assert.match(source,/representativeChoice/);
+  assert.match(source,/signatureWorldRule/);
+  assert.match(source,/genreAdaptationRule/);
+  assert.match(source,/모든 장르/);
 });
 
 test('GAMEPLAY_SKETCH v2 keeps quality depth and flow asset authority separated',()=>{
@@ -153,3 +160,42 @@ test('design cycle preserves v2 sketch and BUILD_UP reuses the full verified des
   assert.match(autoPlanner,/out\.flowArchitecture=flowArchitecture/);
 });
 
+
+
+test('GAMEPLAY_SKETCH v3 identity core is enforced while legacy sketches stay compatible',()=>{
+  const seed=legacySeed();
+  const flowArchitecture=buildGameFlowArchitecture({
+    gameId:'identity-v3-test',genre:seed.GAME_CATEGORY,
+    baseline:{content:{identity:seed.DISTINCT_IDENTITY,playerFantasy:'대표 역할',coreFun:seed.CORE_FUN_TO_LEARN.join(' '),coreLoop:seed.CORE_LOOP,progressionDirection:'새 전략과 경로를 연다.'}},
+    inventory:[]
+  });
+  seed.GAMEPLAY_SKETCH={
+    version:3,source:'IDENTITY_V3_TEST',worldModel:'대표 행동과 선택이 월드 상태를 바꾸는 실제 플레이 공간.',
+    actors:['플레이어','월드/상대'],interactionChains:['선택 -> 입력 -> 상태 변화 -> 다음 선택'],
+    stateMachine:['ENTRY','READ','ACTION','STATE_CHANGE','CHOICE','RISK','GOAL'],firstPlayableCycle:['진입','관찰','행동','상태 변화','선택','위험','목표'],
+    identityCore:{
+      oneLineFantasy:'움직이는 도시의 운명을 거래와 탐험 선택으로 바꾸는 플레이어가 된다.',
+      playerRole:'도시의 경로와 자원을 책임지는 운영자이자 탐험가다.',
+      representativeAction:'지역을 탐험하고 자원·경로·대상을 실제 입력으로 선택한다.',
+      representativeChoice:'지금 안전을 택할지 더 큰 보상을 위해 위험한 경로를 택할지 결정한다.',
+      signatureWorldRule:'플레이어의 거래와 탐험 결과가 도시 이동 경로와 다음 지역의 접근 상태를 바꾼다.',
+      signatureSystemPromise:['이동 도시의 경로와 경제가 같은 상태로 연결된다.'],
+      growthIdentity:'성장하면 새 경로·거래 방식·탐험 조합과 이전 지역의 새 접근법이 열린다.',
+      identityCoherence:{worldCulture:'도시 문화와 경제가 이동 생활에서 나온다.',visualLanguage:'UI와 지역 실루엣이 역할을 공유한다.',audioLanguage:'이동·시장·위험 상태의 소리가 구별된다.',enemyItemNpcCoherence:'적·아이템·NPC가 이동 도시의 자원과 갈등에 연결된다.'},
+      threeSentenceTest:{whatGame:'이동 도시의 경로와 자원을 선택하는 탐험 운영 게임이다.',whatDifferent:'도시의 이동 자체가 경제와 탐험 경로를 바꾸는 세계 규칙이 핵심 차이다.',whatGrowthUnlocks:'성장하면 새 이동 경로·거래 방식·탐험 조합과 재방문 사건이 열린다.'},
+      genreAdaptationRule:'해당 장르의 대표 행동을 우선하며 RPG식 시스템을 강제하지 않는다.'
+    },
+    playerPromise:'대표 행동과 선택을 숙련해 새로운 전략 경로를 연다.',
+    funDrivers:['즉시 피드백','위험 보상 선택','숙련 후 새 선택'],balanceRules:['지배전략 방지','위협 동반 성장','복구 가능한 실패','경제 source/sink'],
+    pacingPlan:{first5Minutes:'핵심 행동',minutes5To15:'첫 성장',minutes15To25:'새 연결',minutes25To30:'중간 목표',midLateGame:'시스템 조합',replayMotivation:'다른 선택'},
+    progressionLayers:['세션 선택 확장','중기 경로 확장','장기 조합 확장'],expansionPlan:['새 행동','새 선택','새 공간','새 연결'],
+    longGoalScenario:['초기 성공','중간 확장','장기 조합'],completionCriteria:['첫 성공','중반 변화','장기 조합','복구 가능'],
+    codingGrowthHooks:['기존 함수 재사용','stable ID','중복 권한 금지','저장 마이그레이션'],validationRisks:['겉구현 금지','수치 복제 금지'],flowArchitecture
+  };
+  const pass=validateGameSeed(seed);
+  assert.equal(pass.pass,true,pass.errors.join(','));
+  delete seed.GAMEPLAY_SKETCH.identityCore;
+  const fail=validateGameSeed(seed);
+  assert.equal(fail.pass,false);
+  assert.ok(fail.errors.some(error=>error.includes('identityCore')));
+});

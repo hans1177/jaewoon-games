@@ -125,6 +125,14 @@ test('game-specific directive covers the whole game and all visual domains',()=>
   assert.match(directivePrompt(directive),/GAME_SPECIFIC_BUILD_UP_DIRECTIVE/);
   assert.match(directivePrompt(directive),/SOURCE_ANCHORS:/);
   assert.match(directivePrompt(directive),/EXPECTED_PLAYER_EFFECT:/);
+  assert.equal(directive.identityReinforcement.appliesToAllGenres,true);
+  assert.ok(directive.identityReinforcement.oneLineFantasy.length>0);
+  assert.ok(directive.identityReinforcement.representativeAction.length>0);
+  assert.ok(directive.identityReinforcement.representativeChoice.length>0);
+  assert.ok(directive.identityReinforcement.signatureWorldRule.length>0);
+  assert.ok(directive.identityReinforcement.growthIdentity.length>0);
+  assert.match(directivePrompt(directive),/IDENTITY_THREE_SENTENCE_TEST:/);
+  assert.match(directivePrompt(directive),/IDENTITY_BUILD_UP_RULE:/);
   assert.match(directivePrompt(directive),/HOLISTIC_CORE_DOMAIN_STATUS:/);
   assert.match(directivePrompt(directive),/AUTONOMOUS_CONTENT_EXPANSION:/);
   assert.match(directivePrompt(directive),/CONTENT_BREADTH_LEDGER:/);

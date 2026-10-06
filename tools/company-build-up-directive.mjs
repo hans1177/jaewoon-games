@@ -518,12 +518,14 @@ export function extractDesignContext(record={}){
   })).filter(x=>x.name||x.purpose||x.playerChoice).slice(0,12);
   return Object.freeze({
     identity:clean(d?.identity),
+    playerFantasy:clean(d?.playerFantasy),
     genre:clean(d?.robloxBuildProfile?.genre||d?.genre),
     subgenre:clean(d?.robloxBuildProfile?.subgenre||d?.subgenre),
     ownerFeatureChanges:Array.isArray(d?.ownerFeatureChanges)?d.ownerFeatureChanges:[],
     coreFun:clean(d?.coreFun),
     coreLoop:uniq(d?.coreLoop).slice(0,10),
     signatureSystems:systems,
+    systemInterconnections:(Array.isArray(d?.systemInterconnections)?d.systemInterconnections:[]).map(row=>({fromSystem:clean(row?.fromSystem),toSystem:clean(row?.toSystem),trigger:clean(row?.trigger),stateChange:clean(row?.stateChange)})).filter(row=>row.fromSystem||row.toSystem).slice(0,12),
     progressionDirection:clean(d?.progressionDirection),
     multiplayerMode:clean(d?.multiplayerMode),
     platformProfiles:d?.platformProfiles&&typeof d.platformProfiles==='object'?d.platformProfiles:{}
@@ -1266,6 +1268,14 @@ export function directivePrompt(d={}){
     '[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]',
     `id=${d.directiveId}; generation=${d.generation}; depth=${d.developmentDepth}; stage=${d.escalationStage}; focus=${d.primaryFocus}`,
     `GAME_IDENTITY: ${d.gameIdentityAndNonNegotiables.identity}`,
+    `IDENTITY_ONE_LINE_FANTASY: ${d.identityReinforcement?.oneLineFantasy||d.gameIdentityAndNonNegotiables.identity}`,
+    `IDENTITY_REPRESENTATIVE_ACTION: ${d.identityReinforcement?.representativeAction||'CURRENT_CORE_ACTION'}`,
+    `IDENTITY_REPRESENTATIVE_CHOICE: ${d.identityReinforcement?.representativeChoice||'CURRENT_CORE_CHOICE'}`,
+    `IDENTITY_SIGNATURE_WORLD_RULE: ${d.identityReinforcement?.signatureWorldRule||'CURRENT_GAME_SPECIFIC_WORLD_RULE'}`,
+    `IDENTITY_SIGNATURE_SYSTEMS: ${(d.identityReinforcement?.signatureSystems||[]).join(',')||'CURRENT_SIGNATURE_SYSTEMS'}`,
+    `IDENTITY_GROWTH: ${d.identityReinforcement?.growthIdentity||d.gameIdentityAndNonNegotiables.progressionDirection}`,
+    `IDENTITY_THREE_SENTENCE_TEST: WHAT=${d.identityReinforcement?.threeSentenceTest?.whatGame||''} | DIFFERENT=${d.identityReinforcement?.threeSentenceTest?.whatDifferent||''} | GROWTH=${d.identityReinforcement?.threeSentenceTest?.whatGrowthUnlocks||''}`,
+    `IDENTITY_BUILD_UP_RULE: ${d.identityReinforcement?.buildUpRule||'PRESERVE_AND_STRENGTHEN_GAME_IDENTITY'}`,
     `PRIMARY_GOAL: ${d.thisLoopPrimaryGoal}`,
     `WHY_NOW: ${d.primaryGoalReason}`,
     ...robloxProductionPromptLines(d.productionPlan||d.robloxProductionPlan),
@@ -1353,6 +1363,25 @@ export function buildGameSpecificBuildUpDirective({
     :keepPriorFocus?priorFocus:previousDirective&&!depthInfo.advanceAllowed&&priorFocus?priorFocus:nextFocus({preferred,previous:previousDirective||{}});
   const anchor=primaryDesignAnchor(design),secondary=secondaryDesignAnchor(design);
   const identity=design.identity||clean(gameName)||id;
+  const firstSignature=design.signatureSystems?.[0]||{};
+  const firstConnection=design.systemInterconnections?.[0]||{};
+  const identityReinforcement=Object.freeze({
+    appliesToAllGenres:true,
+    genre:design.genre||'GAME_SPECIFIC',
+    oneLineFantasy:design.playerFantasy||identity,
+    representativeAction:design.coreLoop?.[0]||design.coreFun||anchor,
+    representativeChoice:clean(firstSignature.playerChoice)||design.coreLoop?.[1]||secondary,
+    signatureWorldRule:clean(firstConnection.stateChange)||clean(firstConnection.trigger)||`${anchor}의 결과가 다음 월드·목표·위험·보상 상태를 바꾼다.`,
+    signatureSystems:Object.freeze(design.signatureSystems.slice(0,2).map(row=>row.name||row.purpose).filter(Boolean)),
+    growthIdentity:design.progressionDirection||'성장 후 새 행동·경로·조합·관계·발견·대응법을 연다.',
+    threeSentenceTest:Object.freeze({
+      whatGame:identity,
+      whatDifferent:clean(firstSignature.purpose)||clean(firstConnection.stateChange)||`${anchor}와 ${secondary}의 결합 결과가 이 게임의 차별점이다.`,
+      whatGrowthUnlocks:design.progressionDirection||'성장할수록 기존 핵심 시스템을 새로운 방식으로 사용할 수 있어야 한다.'
+    }),
+    buildUpRule:'EACH_BUILD_UP_MUST_STRENGTHEN_OR_PRESERVE_THE_REPRESENTATIVE_ACTION_CHOICE_WORLD_RULE_SIGNATURE_SYSTEM_OR_GROWTH_IDENTITY; GENERIC_FEATURE_COUNT_DOES_NOT_COUNT',
+    genreAdaptationRule:'PRESERVE_THE_GENRE_PRIMARY_ACTION; DO_NOT_FORCE_RPG_STYLE_SYSTEMS_ON_PUZZLE_RACING_TYCOON_DEFENSE_SURVIVAL_ACTION_CARD_BOARD_STRATEGY_CASUAL_OR_OTHER_GENRES'
+  });
   const goalByFocus={
     CORE_FUN:`${identity}의 ${anchor}를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.`,
     PROGRESSION:`${identity}의 ${design.progressionDirection||secondary}가 짧은 목표·보상·해금·다음 선택으로 실제 플레이에 연결되도록 깊이를 높인다.`,
@@ -1514,6 +1543,9 @@ export function buildGameSpecificBuildUpDirective({
     'ROBLOX_EXPERIENCE_BUILD_UP_USES_EXTRA_NATIVE_STUDIO_ATTENTION',
     'AUTONOMOUS_CONTENT_EXPANSION_STAYS_INSIDE_EXISTING_BUILD_UP',
     'CONTENT_EXPANSION_MUST_BE_COHERENT_CONNECTED_AND_NON_CLONE',
+    'GAME_IDENTITY_THREE_SENTENCE_TEST_PRESERVED_OR_STRENGTHENED',
+    'REPRESENTATIVE_ACTION_CHOICE_SIGNATURE_WORLD_RULE_AND_GROWTH_IDENTITY_REVIEWED',
+    'GENRE_PRIMARY_ACTION_PRESERVED_WITHOUT_FORCED_RPG_SYSTEMS',
     'EXISTING_COMPLETENESS_RECHECK_REQUIRED_EVERY_BUILD_UP',
     'WEB_ROBLOX_UNITY_COMMON_EXPANSION_CONTRACT'
   ];
@@ -1578,6 +1610,7 @@ export function buildGameSpecificBuildUpDirective({
     sourceRoot:posix(sourceRoot),
     sourceTreeFingerprint:source.sourceTreeFingerprint,
     designFingerprint:sha(JSON.stringify(design)),
+    identityReinforcement,
     gameIdentityAndNonNegotiables:{
       identity,
       coreFun:design.coreFun,

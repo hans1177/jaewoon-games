@@ -36,7 +36,7 @@ export const GAME_SEED_POLICY = Object.freeze({
   multiplayerModes: Object.freeze(['SINGLE','COOP','COMPETITIVE','HYBRID']),
   targetSessionMinutes: 30,
   gameplaySketchRequired: true,
-  advancedGameplaySketchVersion: 2,
+  advancedGameplaySketchVersion: 3,
   advancedGameplaySketchRequiredForNewSeeds: true,
   numericMarketClaimRequiresSource: true,
   numericMarketClaimRequiresObservedAt: true,
@@ -93,6 +93,20 @@ function validateGameplaySketch(sketch,errors){
   const version=Math.max(1,Number(sketch.version||1));
   if(version<2)return;
   if(!isNonEmptyString(sketch.playerPromise))errors.push('GAMEPLAY_SKETCH.playerPromise is required for version 2+');
+  if(version>=3){
+    const identity=sketch.identityCore;
+    if(!identity||typeof identity!=='object'||Array.isArray(identity))errors.push('GAMEPLAY_SKETCH.identityCore is required for version 3+');
+    else{
+      for(const field of ['oneLineFantasy','playerRole','representativeAction','representativeChoice','signatureWorldRule','growthIdentity','genreAdaptationRule'])if(!isNonEmptyString(identity[field]))errors.push(`GAMEPLAY_SKETCH.identityCore.${field} is required for version 3+`);
+      if(!Array.isArray(identity.signatureSystemPromise)||uniq(identity.signatureSystemPromise).length<1||uniq(identity.signatureSystemPromise).length>2)errors.push('GAMEPLAY_SKETCH.identityCore.signatureSystemPromise requires 1 to 2 items');
+      const coherence=identity.identityCoherence;
+      if(!coherence||typeof coherence!=='object'||Array.isArray(coherence))errors.push('GAMEPLAY_SKETCH.identityCore.identityCoherence is required for version 3+');
+      else for(const field of ['worldCulture','visualLanguage','audioLanguage','enemyItemNpcCoherence'])if(!isNonEmptyString(coherence[field]))errors.push(`GAMEPLAY_SKETCH.identityCore.identityCoherence.${field} is required for version 3+`);
+      const test=identity.threeSentenceTest;
+      if(!test||typeof test!=='object'||Array.isArray(test))errors.push('GAMEPLAY_SKETCH.identityCore.threeSentenceTest is required for version 3+');
+      else for(const field of ['whatGame','whatDifferent','whatGrowthUnlocks'])if(!isNonEmptyString(test[field]))errors.push(`GAMEPLAY_SKETCH.identityCore.threeSentenceTest.${field} is required for version 3+`);
+    }
+  }
   const advanced=[['funDrivers',3],['balanceRules',4],['progressionLayers',3],['completionCriteria',4],['codingGrowthHooks',4]];
   for(const [field,min] of advanced)if(!Array.isArray(sketch[field])||uniq(sketch[field]).length<min)errors.push(`GAMEPLAY_SKETCH.${field} requires at least ${min} meaningful items for version 2+`);
   const pacing=sketch.pacingPlan;
