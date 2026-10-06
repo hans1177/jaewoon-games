@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "survival-build-up-g11-b78886a339a9",
-  "directiveFingerprint": "b78886a339a9bc898db35beb03a027fe538409debd496a351a04224ec3e27dbd",
-  "previousDirectiveFingerprint": "957be3c31f9bf8e6b9b54728cdeb352fbe0e522ea3e3c28074c3f0cfdc83dddc",
-  "forbiddenRepeatFingerprint": "957be3c31f9bf8e6b9b54728cdeb352fbe0e522ea3e3c28074c3f0cfdc83dddc",
+  "directiveId": "survival-build-up-g10-957be3c31f9b",
+  "directiveFingerprint": "957be3c31f9bf8e6b9b54728cdeb352fbe0e522ea3e3c28074c3f0cfdc83dddc",
+  "previousDirectiveFingerprint": "afc3b9f479b5f674eeea8ac783a7a22c58c5383de995ec157fbd3ad138bbab86",
+  "forbiddenRepeatFingerprint": "afc3b9f479b5f674eeea8ac783a7a22c58c5383de995ec157fbd3ad138bbab86",
   "gameId": "survival",
   "gameName": "나의 생존기",
-  "generation": 11,
+  "generation": 10,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/survival",
-  "sourceTreeFingerprint": "a558125c30077069b9bf27c844402fc52cda839141a8e636828ad3628a0713d7",
+  "sourceTreeFingerprint": "bcfa74221f8075a80055dcafde87f59728145c4d098192a582d645fef967ed4b",
   "designFingerprint": "44ffc6a9e74fd73a9559a6145347b9e8c6868798288b43f49e9d92657cdbae83",
   "gameIdentityAndNonNegotiables": {
     "identity": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.",
@@ -409,9 +409,9 @@
   "previousVersionDelta": {
     "previousGoal": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 10,
-    "previousSourceTreeFingerprint": "bcfa74221f8075a80055dcafde87f59728145c4d098192a582d645fef967ed4b",
-    "currentSourceTreeFingerprint": "a558125c30077069b9bf27c844402fc52cda839141a8e636828ad3628a0713d7",
+    "previousGeneration": 9,
+    "previousSourceTreeFingerprint": "6fdeae438bba8994fc34a0405cc7e601c539bb3e6ff0786430e869a2c0cce47b",
+    "currentSourceTreeFingerprint": "bcfa74221f8075a80055dcafde87f59728145c4d098192a582d645fef967ed4b",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1552,7 +1552,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 116623,
+        "sourceBytes": 116732,
         "largestFileBytes": 48403,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1585,8 +1585,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 5,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=4; uncoveredBefore=5.",
+    "themeDepth": 4,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1596,7 +1596,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 5
+        "PRESENTATION_WORLD_COHESION": 4
       },
       "sequence": [
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1607,7 +1607,6 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1644,7 +1643,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 156,
+        "score": 174,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -1758,11 +1757,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 11,
-    "previousGeneration": 10,
+    "generation": 10,
+    "previousGeneration": 9,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "a558125c30077069b9bf27c844402fc52cda839141a8e636828ad3628a0713d7",
-    "priorSourceFingerprint": "bcfa74221f8075a80055dcafde87f59728145c4d098192a582d645fef967ed4b",
+    "sourceFingerprint": "bcfa74221f8075a80055dcafde87f59728145c4d098192a582d645fef967ed4b",
+    "priorSourceFingerprint": "6fdeae438bba8994fc34a0405cc7e601c539bb3e6ff0786430e869a2c0cce47b",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2223,7 +2222,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "a558125c30077069b9bf27c844402fc52cda839141a8e636828ad3628a0713d7",
+    "sourceTreeFingerprint": "bcfa74221f8075a80055dcafde87f59728145c4d098192a582d645fef967ed4b",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2314,7 +2313,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "a558125c30077069b9bf27c844402fc52cda839141a8e636828ad3628a0713d7",
+    "sourceTreeFingerprint": "bcfa74221f8075a80055dcafde87f59728145c4d098192a582d645fef967ed4b",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2572,7 +2571,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "a558125c30077069b9bf27c844402fc52cda839141a8e636828ad3628a0713d7",
+      "sourceTreeFingerprint": "bcfa74221f8075a80055dcafde87f59728145c4d098192a582d645fef967ed4b",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2619,7 +2618,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 12,
+    "nextGeneration": 11,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2686,5 +2685,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-06T08:24:46.418Z"
+  "generatedAt": "2026-10-06T08:19:32.410Z"
 }

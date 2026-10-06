@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "amusement-tycoon-build-up-g26-bd1621bf6f8c",
-  "directiveFingerprint": "bd1621bf6f8c207c8e5898a198a422fd1b6b9f8a52c088e3f52d3424774c0013",
-  "previousDirectiveFingerprint": "55e33a22723fa389570763f75f73b0e21864fc57299145e4211ab2a813ed6311",
-  "forbiddenRepeatFingerprint": "55e33a22723fa389570763f75f73b0e21864fc57299145e4211ab2a813ed6311",
+  "directiveId": "amusement-tycoon-build-up-g28-5c2db54a2dfb",
+  "directiveFingerprint": "5c2db54a2dfbbf989bf6a9d611811e591bbbcd165bd55f405f0c418dee9c11a0",
+  "previousDirectiveFingerprint": "6729eb44b3a91e8a63c3cf6120eadc1558d0823ebc1c5826646e68eb71cf0851",
+  "forbiddenRepeatFingerprint": "6729eb44b3a91e8a63c3cf6120eadc1558d0823ebc1c5826646e68eb71cf0851",
   "gameId": "amusement-tycoon",
   "gameName": "놀이공원 타이쿤",
-  "generation": 26,
+  "generation": 28,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,8 +14,8 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/amusement-tycoon",
-  "sourceTreeFingerprint": "d945434d500a145c96caa60a4c752236fa4df27e6ce9eafae17553014779bb1b",
-  "designFingerprint": "8d0223a3e8fc1f104f65ba9b1be2c72e2eab36c4f2573227e8940b9af8d6a5a8",
+  "sourceTreeFingerprint": "fc3b182f8aacc624ea48d81813cc75c9503758454469e19b359a1b457a4e800e",
+  "designFingerprint": "480715967af5694d2d319b2a6da4beb2c7c73dd6dac4132bdb61af90631ce6d3",
   "gameIdentityAndNonNegotiables": {
     "identity": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.",
     "coreFun": "놀이공원 타이쿤의 핵심 재미는 '최적의 동선 설계'와 '손님 만족도 관리'입니다. 플레이어는 놀이기구의 위치를 조정하여 손님의 대기 시간을 줄이고, 상점 배치를 통해 수익을 극대화하는 선택을 반복합니다. 이러한 선택은 손님의 이동 경로와 행복도 수치에 즉각적인 변화를 주며, 결과적으로 공원의 일일 수익과 평판이라는 가시적인 성과로 이어집니다.",
@@ -56,22 +56,22 @@
     "signals": {
       "combat": 35,
       "progression": 107,
-      "ai": 19,
+      "ai": 21,
       "save": 48,
       "multiplayer": 13,
-      "animation": 33,
-      "motionStates": 145,
+      "animation": 37,
+      "motionStates": 157,
       "gameFeel": 29,
       "vfx": 24,
       "camera": 33,
       "audio": 4,
       "audioDynamics": 16,
-      "ui": 61,
+      "ui": 62,
       "uiFlow": 33,
       "entryFlow": 24,
       "loadingFlow": 0,
       "input": 61,
-      "map": 115,
+      "map": 120,
       "landmark": 11,
       "interaction": 43,
       "inventory": 6,
@@ -99,7 +99,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
-        "score": 153
+        "score": 155
       },
       {
         "file": "roblox-games/amusement-tycoon/default.project.json",
@@ -117,7 +117,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
-        "line": 389,
+        "line": 420,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -125,7 +125,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
-        "line": 409,
+        "line": 440,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -149,7 +149,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
-        "line": 209,
+        "line": 210,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
         "context": "local function playVerifiedLearningActionFeedback(control)",
@@ -189,7 +189,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 381,
+        "line": 441,
         "kind": "FUNCTION",
         "symbol": "bindNativeFoundationPlayer",
         "context": "local function bindNativeFoundationPlayer(player)",
@@ -229,7 +229,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
-        "line": 286,
+        "line": 287,
         "kind": "FUNCTION",
         "symbol": "bindVerifiedLearningControl",
         "context": "local function bindVerifiedLearningControl(control)",
@@ -253,7 +253,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
-        "line": 139,
+        "line": 140,
         "kind": "FUNCTION",
         "symbol": "syncVerifiedLearningCharacterMotion",
         "context": "local function syncVerifiedLearningCharacterMotion(character)",
@@ -277,7 +277,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
-        "line": 27,
+        "line": 28,
         "kind": "FUNCTION",
         "symbol": "hasStudioAssetAtom",
         "context": "local function hasStudioAssetAtom(familyOrAtom, atom)",
@@ -293,7 +293,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
-        "line": 23,
+        "line": 24,
         "kind": "FUNCTION",
         "symbol": "studioAssetFamily",
         "context": "local function studioAssetFamily(family)",
@@ -312,17 +312,17 @@
   "previousVersionDelta": {
     "previousGoal": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 25,
-    "previousSourceTreeFingerprint": "53f7ed6a6c9f8c59a6014a85c1dec48dc3cc13edae7cb8a4f7bfc2897da5ff8c",
-    "currentSourceTreeFingerprint": "d945434d500a145c96caa60a4c752236fa4df27e6ce9eafae17553014779bb1b",
+    "previousGeneration": 27,
+    "previousSourceTreeFingerprint": "8efebe003d91a25039c70161fa8f398b388f46d489694f5b71f39fff359c29b3",
+    "currentSourceTreeFingerprint": "fc3b182f8aacc624ea48d81813cc75c9503758454469e19b359a1b457a4e800e",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "",
-    "failureSignature": "",
+    "failureStage": "F0_SOURCE_INTEGRITY",
+    "failureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
     "blockers": [],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -1459,7 +1459,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 100902,
+        "sourceBytes": 104109,
         "largestFileBytes": 48091,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1492,13 +1492,13 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 2,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=3.",
+    "themeDepth": 4,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=3.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 6,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 2,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 4,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 10,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -1506,8 +1506,6 @@
         "PRESENTATION_WORLD_COHESION": 10
       },
       "sequence": [
-        "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1518,6 +1516,8 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY"
       ],
@@ -1548,7 +1548,7 @@
     "scoredThemes": [
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 168,
+        "score": 132,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
@@ -1664,11 +1664,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 26,
-    "previousGeneration": 25,
+    "generation": 28,
+    "previousGeneration": 27,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "d945434d500a145c96caa60a4c752236fa4df27e6ce9eafae17553014779bb1b",
-    "priorSourceFingerprint": "53f7ed6a6c9f8c59a6014a85c1dec48dc3cc13edae7cb8a4f7bfc2897da5ff8c",
+    "sourceFingerprint": "fc3b182f8aacc624ea48d81813cc75c9503758454469e19b359a1b457a4e800e",
+    "priorSourceFingerprint": "8efebe003d91a25039c70161fa8f398b388f46d489694f5b71f39fff359c29b3",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -1913,9 +1913,9 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/amusement-tycoon/client/Game.client.luau",
-      "roblox-games/amusement-tycoon/server/Game.server.luau",
       "roblox-games/amusement-tycoon/shared/GameConfig.luau",
+      "roblox-games/amusement-tycoon/server/Game.server.luau",
+      "roblox-games/amusement-tycoon/client/Game.client.luau",
       "roblox-games/amusement-tycoon/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -1930,7 +1930,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
-        "line": 389,
+        "line": 420,
         "kind": "FUNCTION",
         "symbol": "render",
         "currentBehavior": "local function render()",
@@ -1939,7 +1939,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
-        "line": 409,
+        "line": 440,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "currentBehavior": "local function reportNativeFoundationReady()",
@@ -1966,7 +1966,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
-        "line": 209,
+        "line": 210,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
         "currentBehavior": "local function playVerifiedLearningActionFeedback(control)",
@@ -2074,9 +2074,9 @@
     "executionSurface": "ROBLOX",
     "mode": "EXISTING_SOURCE_REPAIR",
     "gameId": "amusement-tycoon",
-    "genreProfile": "TYCOON",
+    "genreProfile": "STRATEGY",
     "conceptIdentity": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.",
-    "coreAction": "건설·운영 선택",
+    "coreAction": "자원·배치·순서 선택",
     "ownerFeatureChanges": [],
     "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
     "systemConnection": "현재 실패 원인 → 기존 행동 복구",
@@ -2092,18 +2092,18 @@
     "progressionDirection": "초반에는 소규모 놀이기구와 기본 시설을 통해 경영의 기초를 익히고, 중반에는 테마 구역 확장과 효율적인 동선 설계를 통해 수익을 극대화합니다. 후반부에는 대규모 랜드마크 건설과 고도화된 만족도 관리를 통해 세계 최고의 놀이공원으로 성장하는 것을 목표로 합니다.",
     "ideas": [
       {
-        "id": "TYCOON:SOURCE_REPAIR",
+        "id": "STRATEGY:SOURCE_REPAIR",
         "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
         "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
       }
     ],
     "selectedIdea": {
-      "id": "TYCOON:SOURCE_REPAIR",
+      "id": "STRATEGY:SOURCE_REPAIR",
       "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
       "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
     },
     "ideaHistory": [
-      "TYCOON:SOURCE_REPAIR"
+      "STRATEGY:SOURCE_REPAIR"
     ],
     "implementationPackages": [
       {
@@ -2128,7 +2128,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "d945434d500a145c96caa60a4c752236fa4df27e6ce9eafae17553014779bb1b",
+    "sourceTreeFingerprint": "fc3b182f8aacc624ea48d81813cc75c9503758454469e19b359a1b457a4e800e",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2164,9 +2164,9 @@
     "executionSurface": "ROBLOX",
     "mode": "EXISTING_SOURCE_REPAIR",
     "gameId": "amusement-tycoon",
-    "genreProfile": "TYCOON",
+    "genreProfile": "STRATEGY",
     "conceptIdentity": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.",
-    "coreAction": "건설·운영 선택",
+    "coreAction": "자원·배치·순서 선택",
     "ownerFeatureChanges": [],
     "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
     "systemConnection": "현재 실패 원인 → 기존 행동 복구",
@@ -2182,18 +2182,18 @@
     "progressionDirection": "초반에는 소규모 놀이기구와 기본 시설을 통해 경영의 기초를 익히고, 중반에는 테마 구역 확장과 효율적인 동선 설계를 통해 수익을 극대화합니다. 후반부에는 대규모 랜드마크 건설과 고도화된 만족도 관리를 통해 세계 최고의 놀이공원으로 성장하는 것을 목표로 합니다.",
     "ideas": [
       {
-        "id": "TYCOON:SOURCE_REPAIR",
+        "id": "STRATEGY:SOURCE_REPAIR",
         "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
         "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
       }
     ],
     "selectedIdea": {
-      "id": "TYCOON:SOURCE_REPAIR",
+      "id": "STRATEGY:SOURCE_REPAIR",
       "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
       "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
     },
     "ideaHistory": [
-      "TYCOON:SOURCE_REPAIR"
+      "STRATEGY:SOURCE_REPAIR"
     ],
     "implementationPackages": [
       {
@@ -2218,7 +2218,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "d945434d500a145c96caa60a4c752236fa4df27e6ce9eafae17553014779bb1b",
+    "sourceTreeFingerprint": "fc3b182f8aacc624ea48d81813cc75c9503758454469e19b359a1b457a4e800e",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2255,9 +2255,9 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/amusement-tycoon/client/Game.client.luau",
-      "roblox-games/amusement-tycoon/server/Game.server.luau",
       "roblox-games/amusement-tycoon/shared/GameConfig.luau",
+      "roblox-games/amusement-tycoon/server/Game.server.luau",
+      "roblox-games/amusement-tycoon/client/Game.client.luau",
       "roblox-games/amusement-tycoon/default.project.json"
     ],
     "sourceAnchors": [
@@ -2275,7 +2275,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
-        "line": 389,
+        "line": 420,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -2287,7 +2287,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
-        "line": 409,
+        "line": 440,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -2323,7 +2323,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
-        "line": 209,
+        "line": 210,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
         "context": "local function playVerifiedLearningActionFeedback(control)",
@@ -2401,9 +2401,9 @@
     "gameId": "amusement-tycoon",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/amusement-tycoon/client/Game.client.luau",
-      "roblox-games/amusement-tycoon/server/Game.server.luau",
       "roblox-games/amusement-tycoon/shared/GameConfig.luau",
+      "roblox-games/amusement-tycoon/server/Game.server.luau",
+      "roblox-games/amusement-tycoon/client/Game.client.luau",
       "roblox-games/amusement-tycoon/default.project.json"
     ],
     "impact": {
@@ -2481,11 +2481,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "d945434d500a145c96caa60a4c752236fa4df27e6ce9eafae17553014779bb1b",
+      "sourceTreeFingerprint": "fc3b182f8aacc624ea48d81813cc75c9503758454469e19b359a1b457a4e800e",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": null,
-      "failureSignature": null
+      "failureStage": "F0_SOURCE_INTEGRITY",
+      "failureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2528,7 +2528,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 27,
+    "nextGeneration": 29,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2596,5 +2596,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-06T07:33:52.114Z"
+  "generatedAt": "2026-10-06T08:24:46.329Z"
 }
