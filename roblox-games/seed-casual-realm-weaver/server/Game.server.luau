@@ -37,17 +37,229 @@ local function initializePlayer(player)
   end
 end
 
-local function scopeHandler1(player)
+local puzzleSessions = {}
+local PIECE_COLORS = {
+  Color3.fromRGB(102, 181, 112),
+  Color3.fromRGB(96, 154, 211),
+  Color3.fromRGB(224, 184, 92),
+}
+
+local function markPuzzleAction(player, actionId, learningPattern)
+  player:SetAttribute("LastApprovedScope", actionId)
+  setNumber(player, "ActionSequence", readNumber(player, "ActionSequence", 0) + 1)
+  player:SetAttribute("LastLearningPattern", learningPattern)
+end
+
+local function makeRealmPart(parent, name, size, position, color, material)
+  local part = parent:FindFirstChild(name)
+  if part and not part:IsA("BasePart") then part:Destroy(); part = nil end
+  if not part then
+    part = Instance.new("Part")
+    part.Name = name
+    part.Anchored = true
+    part.CanCollide = false
+    part.Parent = parent
+  end
+  part.Size = size
+  part.Position = position
+  part.Color = color
+  part.Material = material
+  return part
+end
+
+local function buildRealmWeaverWorld()
+  local world = workspace:FindFirstChild("RealmWeaverWorld")
+  if world and not world:IsA("Model") then world:Destroy(); world = nil end
+  if not world then
+    world = Instance.new("Model")
+    world.Name = "RealmWeaverWorld"
+    world.Parent = workspace
+  end
+
+  local landmark = makeRealmPart(
+    world,
+    "RealmLandmarkGarden",
+    Vector3.new(34, 1, 34),
+    Vector3.new(0, 0.5, 28),
+    Color3.fromRGB(112, 159, 105),
+    Enum.Material.Grass
+  )
+  landmark.CanCollide = true
+
+  local objective = makeRealmPart(
+    world,
+    "RealmObjectiveBoard",
+    Vector3.new(18, 0.8, 18),
+    Vector3.new(0, 1.05, 28),
+    Color3.fromRGB(128, 116, 97),
+    Enum.Material.Slate
+  )
+  objective:SetAttribute("Objective", "WEAVE_TERRAIN_PATTERN")
+  objective:SetAttribute("Landmark", true)
+
+  local boardFolder = world:FindFirstChild("PuzzleBoards")
+  if not boardFolder then
+    boardFolder = Instance.new("Folder")
+    boardFolder.Name = "PuzzleBoards"
+    boardFolder.Parent = world
+  end
+  world:SetAttribute("WorldReady", true)
+  return world, boardFolder
+end
+
+local realmWorld, boardFolder = buildRealmWeaverWorld()
+
+local function emptyBoard()
+  return {0,0,0,0,0,0,0,0,0}
+end
+
+local function encodeBoard(board)
+  local rows = {}
+  for index = 1, 9 do rows[index] = tostring(board[index] or 0) end
+  return table.concat(rows, ",")
+end
+
+local function ensurePlayerBoard(player)
+  local name = "PlayerBoard_" .. tostring(player.UserId)
+  local model = boardFolder:FindFirstChild(name)
+  if model and not model:IsA("Model") then model:Destroy(); model = nil end
+  if not model then
+    model = Instance.new("Model")
+    model.Name = name
+    model.Parent = boardFolder
+    local offsetX = ((player.UserId % 5) - 2) * 22
+    for index = 1, 9 do
+      local row = math.floor((index - 1) / 3)
+      local col = (index - 1) % 3
+      local tile = makeRealmPart(
+        model,
+        "RealmTile" .. index,
+        Vector3.new(5.2, 0.6, 5.2),
+        Vector3.new(offsetX + (col - 1) * 5.8, 1.55, 28 + (row - 1) * 5.8),
+        Color3.fromRGB(74, 79, 84),
+        Enum.Material.SmoothPlastic
+      )
+      tile:SetAttribute("BoardCell", index)
+    end
+  end
+  return model
+end
+
+local function renderPuzzleBoard(player, board)
+  local model = ensurePlayerBoard(player)
+  for index = 1, 9 do
+    local tile = model:FindFirstChild("RealmTile" .. index)
+    local piece = board[index] or 0
+    if tile and tile:IsA("BasePart") then
+      tile.Color = piece > 0 and PIECE_COLORS[piece] or Color3.fromRGB(74, 79, 84)
+      tile.Material = piece > 0 and Enum.Material.Grass or Enum.Material.SmoothPlastic
+      tile:SetAttribute("PieceType", piece)
+    end
+  end
+  player:SetAttribute("BoardState", encodeBoard(board))
+end
+
+local function ensurePuzzleSession(player)
+  local session = puzzleSessions[player]
+  if session then return session end
+  session = {
+    active = false,
+    stage = math.max(1, readNumber(player, "CurrentStage", 1)),
+    turns = math.max(1, readNumber(player, "TurnsRemaining", 8)),
+    nextPiece = math.clamp(readNumber(player, "NextPiece", 1), 1, 3),
+    board = emptyBoard(),
+  }
+  puzzleSessions[player] = session
+  renderPuzzleBoard(player, session.board)
+  player:SetAttribute("PuzzleSessionActive", false)
+  return session
+end
+
+local function syncPuzzleSession(player, session)
+  setNumber(player, "CurrentStage", session.stage)
+  setNumber(player, "TurnsRemaining", session.turns)
+  setNumber(player, "NextPiece", session.nextPiece)
+  setNumber(player, "BoardPlaced", 9 - table.find(session.board, 0) and 0 or readNumber(player, "BoardPlaced", 0))
+  player:SetAttribute("PuzzleSessionActive", session.active)
+  renderPuzzleBoard(player, session.board)
+end
+
+local function setBoardPlacedCount(player, session)
+  local placed = 0
+  for index = 1, 9 do if (session.board[index] or 0) > 0 then placed += 1 end end
+  setNumber(player, "BoardPlaced", placed)
+end
+
+local function beginPuzzleSessionState(player)
+  local session = ensurePuzzleSession(player)
+  if not session.active then
+    session.active = true
+    session.turns = math.max(1, readNumber(player, "TurnsRemaining", 8))
+    if session.turns <= 0 then session.turns = 8 end
+    player:SetAttribute("PuzzleSessionActive", true)
+  end
+  return session
+end
+
+local function startPuzzleSession(player)
+  local session = beginPuzzleSessionState(player)
   local chain = readNumber(player, "PuzzleChain", 0) + 1
   setNumber(player, "PuzzleChain", chain)
   setNumber(player, "Score", readNumber(player, "Score", 0) + chain * 3)
   setNumber(player, "Progress", readNumber(player, "Progress", 0) + 6)
-  player:SetAttribute("LastApprovedScope", "genre-core")
-  setNumber(player, "ActionSequence", readNumber(player, "ActionSequence", 0) + 1)
-  player:SetAttribute("LastLearningPattern", "board-grid-placement")
+  player:SetAttribute("PuzzleHint", "DRAG_A_TERRAIN_PIECE")
+  markPuzzleAction(player, "genre-core", "board-grid-placement")
+  syncPuzzleSession(player, session)
 end
 
-local function scopeHandler2(player)
+local function nearestEmptyCell(board, preferred)
+  if typeof(preferred) == "number" then
+    local requested = math.clamp(math.floor(preferred), 1, 9)
+    if (board[requested] or 0) == 0 then return requested end
+  end
+  for index = 1, 9 do if (board[index] or 0) == 0 then return index end end
+  return nil
+end
+
+local function placeTerrainPiece(player, requestedCell)
+  local session = beginPuzzleSessionState(player)
+  local cell = nearestEmptyCell(session.board, requestedCell)
+  if not cell then
+    session.board = emptyBoard()
+    cell = nearestEmptyCell(session.board, requestedCell)
+  end
+
+  session.board[cell] = session.nextPiece
+  session.nextPiece = session.nextPiece % 3 + 1
+  session.turns = math.max(0, session.turns - 1)
+  setNumber(player, "Position", (readNumber(player, "Position", 0) + 3) % 12)
+  setNumber(player, "Score", readNumber(player, "Score", 0) + 5)
+  setNumber(player, "Progress", readNumber(player, "Progress", 0) + 8)
+  player:SetAttribute("PuzzleHint", "CONNECT_MATCHING_TERRAIN")
+  setBoardPlacedCount(player, session)
+  markPuzzleAction(player, "scope-coreloop-0-b46035eaa3", "input-drag-touch")
+  syncPuzzleSession(player, session)
+end
+
+local function matchingEdges(board)
+  local matches = 0
+  for index = 1, 9 do
+    local value = board[index] or 0
+    if value > 0 then
+      local col = (index - 1) % 3
+      local row = math.floor((index - 1) / 3)
+      if col < 2 and board[index + 1] == value then matches += 1 end
+      if row < 2 and board[index + 3] == value then matches += 1 end
+    end
+  end
+  return matches
+end
+
+local function connectRealmPattern(player)
+  local session = beginPuzzleSessionState(player)
+  local matches = matchingEdges(session.board)
+  setNumber(player, "RestorationGauge", math.min(100, readNumber(player, "RestorationGauge", 0) + math.max(5, matches * 8)))
+
   local enemy = math.max(0, readNumber(player, "EnemyHealth", 100) - 12)
   setNumber(player, "EnemyHealth", enemy)
   setNumber(player, "Combo", readNumber(player, "Combo", 0) + 1)
@@ -58,66 +270,72 @@ local function scopeHandler2(player)
     setNumber(player, "Wave", readNumber(player, "Wave", 1) + 1)
     setNumber(player, "Coins", readNumber(player, "Coins", 0) + 3)
   end
-  player:SetAttribute("LastApprovedScope", "scope-corefun-5b52385f9a")
-  setNumber(player, "ActionSequence", readNumber(player, "ActionSequence", 0) + 1)
-  player:SetAttribute("LastLearningPattern", "score-combo-reward")
+  player:SetAttribute("PuzzleHint", matches > 0 and "RESTORATION_CHAIN_ACTIVE" or "TRY_ANOTHER_PATTERN")
+  markPuzzleAction(player, "scope-corefun-5b52385f9a", "score-combo-reward")
 end
 
-local function scopeHandler3(player)
-  setNumber(player, "Position", (readNumber(player, "Position", 0) + 3) % 12)
-  setNumber(player, "Score", readNumber(player, "Score", 0) + 5)
-  setNumber(player, "Progress", readNumber(player, "Progress", 0) + 8)
-  player:SetAttribute("LastApprovedScope", "scope-coreloop-0-b46035eaa3")
-  setNumber(player, "ActionSequence", readNumber(player, "ActionSequence", 0) + 1)
-  player:SetAttribute("LastLearningPattern", "input-drag-touch")
-end
-
-local function scopeHandler4(player)
+local function activateRestoredRegion(player)
+  beginPuzzleSessionState(player)
   setNumber(player, "Level", readNumber(player, "Level", 1) + 1)
   setNumber(player, "Progress", readNumber(player, "Progress", 0) + 11)
   setNumber(player, "Score", readNumber(player, "Score", 0) + 9)
   setNumber(player, "Coins", readNumber(player, "Coins", 0) + 6)
-  player:SetAttribute("LastApprovedScope", "scope-coreloop-1-a21a6e21b0")
-  setNumber(player, "ActionSequence", readNumber(player, "ActionSequence", 0) + 1)
-  player:SetAttribute("LastLearningPattern", "progression-difficulty")
+  setNumber(player, "RestorationGauge", math.min(100, readNumber(player, "RestorationGauge", 0) + 20))
+  player:SetAttribute("RestoredRegion", "STAGE_" .. tostring(readNumber(player, "CurrentStage", 1)))
+  markPuzzleAction(player, "scope-coreloop-1-a21a6e21b0", "progression-difficulty")
 end
 
-local function scopeHandler5(player)
+local function finishPuzzleStage(player)
+  local session = ensurePuzzleSession(player)
   setNumber(player, "Objective", readNumber(player, "Objective", 0) + 1)
   setNumber(player, "Score", readNumber(player, "Score", 0) + 11)
   setNumber(player, "Progress", readNumber(player, "Progress", 0) + 13)
-  player:SetAttribute("LastApprovedScope", "scope-coreloop-2-edebd26130")
-  setNumber(player, "ActionSequence", readNumber(player, "ActionSequence", 0) + 1)
-  player:SetAttribute("LastLearningPattern", "save-state-persistence")
+  session.active = false
+  session.stage += 1
+  session.turns = 8
+  session.board = emptyBoard()
+  session.nextPiece = (session.stage - 1) % 3 + 1
+  setNumber(player, "RestorationGauge", 0)
+  setNumber(player, "BoardPlaced", 0)
+  player:SetAttribute("PuzzleHint", "NEXT_STAGE_READY")
+  markPuzzleAction(player, "scope-coreloop-2-edebd26130", "save-state-persistence")
+  syncPuzzleSession(player, session)
 end
 
-local function scopeHandler6(player)
+local function addInventoryThemeShard(player, amount)
+  setNumber(player, "InventoryThemeShards", readNumber(player, "InventoryThemeShards", 0) + math.max(0, amount))
+end
+
+local function unlockThemeReward(player)
   setNumber(player, "Level", readNumber(player, "Level", 1) + 1)
   setNumber(player, "Progress", readNumber(player, "Progress", 0) + 13)
   setNumber(player, "Score", readNumber(player, "Score", 0) + 11)
   setNumber(player, "Coins", readNumber(player, "Coins", 0) + 8)
-  player:SetAttribute("LastApprovedScope", "scope-coreloop-3-545e010215")
-  setNumber(player, "ActionSequence", readNumber(player, "ActionSequence", 0) + 1)
-  player:SetAttribute("LastLearningPattern", "ads-monetization")
+  addInventoryThemeShard(player, 1)
+  setNumber(player, "ThemeUnlockLevel", readNumber(player, "ThemeUnlockLevel", 0) + 1)
+  setNumber(player, "GardenDecorCount", readNumber(player, "GardenDecorCount", 0) + 1)
+  player:SetAttribute("PuzzleHint", "NEW_THEME_UNLOCKED")
+  markPuzzleAction(player, "scope-coreloop-3-545e010215", "ads-monetization")
 end
 
-local function scopeHandler7(player)
+local function inspectPuzzleGarden(player)
+  local session = ensurePuzzleSession(player)
   setNumber(player, "Position", (readNumber(player, "Position", 0) + 1) % 12)
   setNumber(player, "Score", readNumber(player, "Score", 0) + 9)
   setNumber(player, "Progress", readNumber(player, "Progress", 0) + 10)
-  player:SetAttribute("LastApprovedScope", "scope-mobileux-6b1e61eae0")
-  setNumber(player, "ActionSequence", readNumber(player, "ActionSequence", 0) + 1)
-  player:SetAttribute("LastLearningPattern", "board-state")
+  player:SetAttribute("PuzzleHint", session.active and "BOARD_STATE_VISIBLE" or "START_NEXT_WEAVE")
+  markPuzzleAction(player, "scope-mobileux-6b1e61eae0", "board-state")
+  syncPuzzleSession(player, session)
 end
 
 local handlers = {
-  ["genre-core"] = scopeHandler1,
-  ["scope-corefun-5b52385f9a"] = scopeHandler2,
-  ["scope-coreloop-0-b46035eaa3"] = scopeHandler3,
-  ["scope-coreloop-1-a21a6e21b0"] = scopeHandler4,
-  ["scope-coreloop-2-edebd26130"] = scopeHandler5,
-  ["scope-coreloop-3-545e010215"] = scopeHandler6,
-  ["scope-mobileux-6b1e61eae0"] = scopeHandler7,
+  ["genre-core"] = startPuzzleSession,
+  ["scope-corefun-5b52385f9a"] = connectRealmPattern,
+  ["scope-coreloop-0-b46035eaa3"] = placeTerrainPiece,
+  ["scope-coreloop-1-a21a6e21b0"] = activateRestoredRegion,
+  ["scope-coreloop-2-edebd26130"] = finishPuzzleStage,
+  ["scope-coreloop-3-545e010215"] = unlockThemeReward,
+  ["scope-mobileux-6b1e61eae0"] = inspectPuzzleGarden,
 }
 
 Players.PlayerAdded:Connect(function(player)
@@ -136,7 +354,7 @@ end)
 for _, player in ipairs(Players:GetPlayers()) do
   task.defer(function() if player:GetAttribute("Score") == nil then initializePlayer(player) end end)
 end
-remote.OnServerEvent:Connect(function(player, actionId)
+remote.OnServerEvent:Connect(function(player, actionId, payload)
   if typeof(actionId) ~= "string" then return end
   local handler = handlers[actionId]
   if typeof(handler) ~= "function" then return end
@@ -144,7 +362,7 @@ remote.OnServerEvent:Connect(function(player, actionId)
   local previous = lastAction[player] or 0
   if now - previous < Config.RateLimitSeconds then return end
   lastAction[player] = now
-  handler(player)
+  handler(player, payload)
 end)
 Players.PlayerRemoving:Connect(function(player)
   local snapshot = {}
@@ -153,6 +371,9 @@ Players.PlayerRemoving:Connect(function(player)
     store:UpdateAsync("player:" .. player.UserId, function() return snapshot end)
   end)
   lastAction[player] = nil
+  puzzleSessions[player] = nil
+  local board = boardFolder:FindFirstChild("PlayerBoard_" .. tostring(player.UserId))
+  if board then board:Destroy() end
 end)
 
 
