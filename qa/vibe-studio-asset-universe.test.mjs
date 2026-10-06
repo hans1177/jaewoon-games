@@ -4828,6 +4828,54 @@ test('dynamic source consumers stay outside registry identity and refresh on the
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('real horror-escape-room source fixture resolves project pack identity and managed motion without verification promotion',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  const result=synchronizeSourceBoundAssetConsumers({
+    repoRoot:root,
+    registry,
+    gameCatalog:{games:[{
+      id:'horror-escape-room',
+      lifecycleState:'ACTIVE',
+      productionClass:'DEVELOPMENT_CONFIRMED',
+      robloxProjectPath:'roblox-games/horror-escape-room'
+    }]}
+  });
+  const byId=new Map(result.registry.assets.map(row=>[row.id,row]));
+  const yurei=byId.get('roblox-world-ghost-yurei');
+  const walk=byId.get('roblox-common-motion-walk');
+  assert.ok(yurei);
+  assert.ok(walk);
+  assert.deepEqual(yurei.sourceBoundConsumerGameIds,['horror-escape-room']);
+  assert.deepEqual(walk.sourceBoundConsumerGameIds,['horror-escape-room']);
+  assert.ok(result.bindings.some(row=>
+    row.assetId==='roblox-world-ghost-yurei'
+    &&row.gameId==='horror-escape-room'
+    &&row.classification==='ACTUAL_SOURCE_BOUND'
+    &&row.bindingMode==='PACK_PATH_AND_IDENTITY'
+    &&row.evidenceFiles.some(file=>file==='roblox-games/horror-escape-room/default.project.json')
+    &&row.evidenceFiles.some(file=>file==='roblox-games/horror-escape-room/client/Game.client.luau')
+  ));
+  assert.ok(result.bindings.some(row=>
+    row.assetId==='roblox-common-motion-walk'
+    &&row.gameId==='horror-escape-room'
+    &&row.classification==='ACTUAL_SOURCE_BOUND'
+    &&row.bindingMode==='MANAGED_LIBRARY_IDENTITY'
+  ));
+  assert.equal(yurei.productionVerified,false);
+  assert.equal(yurei.verifiedCompanyReusable,false);
+  assert.equal(yurei.runtimeVerificationState,'PENDING_STUDIO');
+  assert.equal(walk.productionVerified,false);
+  assert.equal(walk.verifiedCompanyReusable,false);
+  assert.equal(walk.runtimeVerificationState,'PENDING_STUDIO');
+  assert.equal(result.summary.sourceOnlyDoesNotGrantRuntimeVerification,true);
+  assert.equal(result.summary.productionVerificationUnchanged,true);
+  assert.equal(result.summary.runtimeVerificationUnchanged,true);
+  assert.equal(result.summary.gameSummaries[0].gameId,'horror-escape-room');
+  assert.ok(result.summary.gameSummaries[0].currentConsumers>=2);
+});
+
 test('demand-bound asset supply uses five decisions and holds quantity-only library work',()=>{
   const registry={assets:[
     {id:'used-creature',family:'CREATURE',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',sourceBoundConsumerGameIds:['demo'],internalAuditScore:700},
