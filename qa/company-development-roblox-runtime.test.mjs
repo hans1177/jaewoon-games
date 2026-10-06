@@ -1258,30 +1258,37 @@ test('exact duplicate validation deployment coalesces by game stage and control 
   assert.match(publish,/ROBLOX_PRIVATE_RUNTIME_DUPLICATE_SKIPPED=/);
 });
 
-test('verified learning refresh debt coalesces to one current-main batch sweep',()=>{
+test('verified learning refresh debt coalesces to one exact current-main batch sweep',()=>{
   const runtime=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const sweep=fs.readFileSync(new URL('../.github/workflows/company-roblox-verified-learning-sweep.yml',import.meta.url),'utf8');
   const start=runtime.indexOf('      - name: Dispatch verified learning batch sweep when reconciliation finds refresh debt');
   const end=runtime.indexOf('      - name: Resolve next Roblox source execution slice',start);
   assert.ok(start>=0&&end>start);
   const block=runtime.slice(start,end);
-  assert.match(block,/Roblox verified learning sweep · batch/);
-  assert.match(block,/gh workflow run company-roblox-verified-learning-sweep\.yml --repo "\$GITHUB_REPOSITORY" --ref main/);
+  assert.match(block,/scope_key="batch-\$scope_hash"/);
+  assert.match(block,/const title='Roblox verified learning sweep · '\+String\(process\.env\.SCOPE_KEY\|\|''\)/);
+  assert.match(block,/gh workflow run company-roblox-verified-learning-sweep\.yml/);
+  assert.match(block,/-f game_ids="\$game_ids"/);
+  assert.match(block,/-f scope_key="\$scope_key"/);
   assert.doesNotMatch(block,/-f game_id=/);
-  assert.match(block,/ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH_COUNT=/);
-  assert.match(block,/ROBLOX_VERIFIED_LEARNING_SWEEP_DEDUPED_COUNT=/);
-  assert.match(sweep,/run-name: Roblox verified learning sweep · \$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
-  assert.match(sweep,/group: roblox-verified-learning-sweep-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
+  assert.doesNotMatch(block,/while IFS= read -r game_id/);
+  assert.match(block,/ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH_COUNT=1/);
+  assert.match(block,/ROBLOX_VERIFIED_LEARNING_SWEEP_DEDUPED_COUNT=\$learning_debt/);
+  assert.match(sweep,/run-name: Roblox verified learning sweep · \$\{\{ inputs\.scope_key \|\| inputs\.game_id \|\| 'batch' \}\}/);
+  assert.match(sweep,/group: roblox-verified-learning-sweep-\$\{\{ inputs\.scope_key \|\| inputs\.game_id \|\| 'batch' \}\}/);
   assert.match(sweep,/cancel-in-progress: false/);
   assert.doesNotMatch(sweep,/group: roblox-verified-learning-sweep-[^\n]*github\.sha/);
   assert.match(sweep,/--game-id="\$GAME_ID"/);
+  assert.match(sweep,/--game-ids="\$GAME_IDS"/);
 });
 
 test('existing asset rebind migrates removed studioUi consumers and remains idempotent',()=>{
   const source=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
-  const start=source.indexOf("function bindExistingClientStudioAssets(source=''){");
+  const start=source.indexOf('function studioAssetDynamicBindingBlock');
   const end=source.indexOf('\nfunction foundationCharacterSource',start);
-  const bind=runInNewContext(source.slice(start,end)+'\nbindExistingClientStudioAssets');
+  assert.ok(start>=0&&end>start);
+  const familyPrelude='const ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES='+JSON.stringify(['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'])+';\n';
+  const bind=runInNewContext(familyPrelude+source.slice(start,end)+'\nbindExistingClientStudioAssets');
   const original=[
     'local C=require(script.Parent.GameConfig)',
     '-- STUDIO_ASSET_BINDING_CLIENT_BEGIN',
