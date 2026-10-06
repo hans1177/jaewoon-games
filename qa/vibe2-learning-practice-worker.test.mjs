@@ -100,6 +100,24 @@ test('Roblox code practice cannot pass on prose or a missing executor',()=>{
   assert.equal(result.pass,false);
   assert.equal(result.codeVerification.reason,'LUAU_EXECUTOR_UNAVAILABLE');
 });
+test('advanced Roblox production-system drills stay practice-only and cover high-risk runtime boundaries',()=>{
+  assert.equal(robloxCurriculum.version,4);
+  assert.equal(robloxCurriculum.runtimePromotionAllowed,false);
+  assert.equal(robloxCurriculum.nativeRuntimeVerified,false);
+  const required=[
+    'server-combat-ticket','npc-repath-budget','streaming-reference-guard','memory-lease-fencing',
+    'messaging-canonical-refresh','tagged-instance-lifecycle','remote-token-bucket','parallel-generation-merge'
+  ];
+  for(const id of required){
+    const drill=robloxCurriculum.drills.find(row=>row.id===id);
+    assert.ok(drill,id);
+    assert.ok(Array.isArray(drill.domains)&&drill.domains.length>=3,id);
+    assert.ok(typeof drill.reference==='string'&&drill.reference.includes('return function'),id);
+    assert.ok(Array.isArray(drill.tests)&&drill.tests.length>=2,id);
+    assert.notEqual(drill.broken,drill.reference,id);
+  }
+});
+
 for(const drill of robloxCurriculum.drills){
   test('Luau regression and variants: '+drill.id,{skip:!process.env.VIBE2_LUAU_BINARY},()=>{
     const fixed=evaluatePracticeAnswer({...practiceAnswer,code:drill.reference},{drill});
