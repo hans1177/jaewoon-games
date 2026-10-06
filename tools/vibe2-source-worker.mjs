@@ -57,8 +57,9 @@ function assertGameDevelopmentAuthority(){
   };
 }
 const DEFAULT_TIMEOUT_MS=Math.max(10000,Math.min(300000,Number(process.env.VIBE2_MODEL_TIMEOUT_MS||240000)));
-const MODEL_FIRST_OUTPUT_TIMEOUT_MS=Math.max(30000,Math.min(DEFAULT_TIMEOUT_MS,Number(process.env.VIBE2_MODEL_FIRST_OUTPUT_TIMEOUT_MS||120000)));
-const ZERO_OUTPUT_RETRY_TIMEOUT_MS=120000;
+const MODEL_FIRST_OUTPUT_TIMEOUT_MS=Math.max(30000,Math.min(DEFAULT_TIMEOUT_MS,Number(process.env.VIBE2_MODEL_FIRST_OUTPUT_TIMEOUT_MS||180000)));
+const ZERO_OUTPUT_RETRY_TIMEOUT_MS=180000;
+const MODEL_KEEP_ALIVE=clean(process.env.VIBE2_MODEL_KEEP_ALIVE||'20m')||'20m';
 const DEFAULT_MAX_PREDICT=Math.max(512,Math.min(4096,Number(process.env.VIBE2_MODEL_MAX_PREDICT||3072)));
 const FULL_WEB_INITIAL_SEED_TARGET_MIN_BYTES=4200;
 const FULL_WEB_INITIAL_SEED_TARGET_MAX_BYTES=6500;
@@ -97,6 +98,7 @@ const JSON_CONTEXT_WINDOW=16384;
 const JSON_FINAL_CONTEXT_WINDOW=16384;
 const JSON_FOCUSED_REPLACE_CONTEXT_WINDOW=8192;
 const FULL_WEB_CONTEXT_WINDOW=32768;
+const QUALITY_MODEL_CONTEXT_WINDOW=32768;
 export function sourcePromptContextWindow(prompt='',{baseContextWindow=JSON_CONTEXT_WINDOW,maxPredict=DEFAULT_MAX_PREDICT}={}){
   const base=Math.max(8192,Number(baseContextWindow)||JSON_CONTEXT_WINDOW);
   const estimatedPromptTokens=Math.ceil(Buffer.byteLength(String(prompt??''),'utf8')/3);
@@ -4549,7 +4551,10 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
       attemptPrompt+='\n'+retryBlock;
       if(retry&&retryBlock!==block)console.log(`VIBE2_RETRY_OBSERVATION_COMPACTED=${label}:${Buffer.byteLength(block,'utf8')}->${Buffer.byteLength(retryBlock,'utf8')}`);
     }
-    const contextWindow=sourcePromptContextWindow(attemptPrompt,{baseContextWindow,maxPredict});
+    const qualityModel=/\b4b\b/i.test(clean(model));
+    const requestBaseContextWindow=qualityModel?Math.max(baseContextWindow,QUALITY_MODEL_CONTEXT_WINDOW):baseContextWindow;
+    const contextWindow=sourcePromptContextWindow(attemptPrompt,{baseContextWindow:requestBaseContextWindow,maxPredict});
+    if(qualityModel)console.log(`VIBE2_QUALITY_MODEL_CONTEXT_PINNED=${model}:${contextWindow}`);
     const fake=responseFileForAttempt(responseFile,responseFiles,attempt);
     const attemptPromptBytes=Buffer.byteLength(attemptPrompt,'utf8');
     const firstOutputTimeoutMs=assetDevelopmentLane&&target==='web'?ASSET_DEVELOPMENT_WEB_TIMEOUT_MS:MODEL_FIRST_OUTPUT_TIMEOUT_MS;
@@ -4866,7 +4871,7 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
   }
   throw lastError||new Error('candidate generation failed');
 }
-async function requestLocalModel(prompt,{model=DEFAULT_MODEL,responseFile='',images=[],maxPredict=DEFAULT_MAX_PREDICT,timeoutMs=DEFAULT_TIMEOUT_MS,firstOutputTimeoutMs=MODEL_FIRST_OUTPUT_TIMEOUT_MS,contextWindow=0,temperature=.08,completionMode='JSON_EDIT',rejectSourceControlTokens=false}={}){const fake=images.length?'':clean(responseFile||process.env.VIBE2_MODEL_RESPONSE_FILE);if(fake)return fs.readFileSync(path.resolve(fake),'utf8');const options={num_predict:maxPredict,temperature:Math.max(.02,Math.min(.4,Number(temperature)||.08))};if(contextWindow>0)options.num_ctx=contextWindow;const format=completionMode==='JSON_REPLACE_ONLY'?{type:'object',properties:{replace:{type:'string'}},required:['replace'],additionalProperties:false}:(completionMode==='JSON_SINGLE_MOTION'?singleMotionResponseSchema():(/^JSON_/.test(completionMode)?'json':null));const body=JSON.stringify({model,prompt,...(images.length?{images}:{}),stream:true,think:false,...(format?{format}:{}),options});return await new Promise((resolve,reject)=>{let settled=false,request=null,pending='',output='',doneReason='',firstOutputSeen=false;const finish=(error,value='')=>{if(settled)return;settled=true;clearTimeout(timer);clearTimeout(firstOutputTimer);if(request&&!request.destroyed)request.destroy();if(error)reject(error);else resolve(value);};const timer=setTimeout(()=>{const error=new Error(`Ollama 응답 시간 초과: ${timeoutMs}ms`);error.vibe2PartialOutput=output;finish(error);},timeoutMs);const firstOutputTimer=setTimeout(()=>{if(firstOutputSeen||settled)return;const error=new Error(`Ollama 첫 출력 시간 초과: ${firstOutputTimeoutMs}ms`);error.vibe2PartialOutput='';error.vibe2ZeroOutputTimeout=true;finish(error);},Math.min(timeoutMs,firstOutputTimeoutMs));request=http.request({hostname:'127.0.0.1',port:11434,path:'/api/generate',method:'POST',headers:{'content-type':'application/json','content-length':Buffer.byteLength(body)}},response=>{if((response.statusCode||0)<200||(response.statusCode||0)>=300){response.resume();finish(new Error(`Ollama HTTP ${response.statusCode}`));return;}response.setEncoding('utf8');const consume=line=>{const text=line.trim();if(!text)return;let payload;try{payload=JSON.parse(text);}catch(error){throw new Error(`Ollama 스트림 JSON 파싱 실패: ${error.message}`);}if(payload?.error)throw new Error(`Ollama 오류: ${payload.error}`);if(payload?.done===true)doneReason=clean(payload.done_reason);if(typeof payload?.response==='string'){if(payload.response.length&&!firstOutputSeen){firstOutputSeen=true;clearTimeout(firstOutputTimer);}output+=payload.response;
+async function requestLocalModel(prompt,{model=DEFAULT_MODEL,responseFile='',images=[],maxPredict=DEFAULT_MAX_PREDICT,timeoutMs=DEFAULT_TIMEOUT_MS,firstOutputTimeoutMs=MODEL_FIRST_OUTPUT_TIMEOUT_MS,contextWindow=0,temperature=.08,completionMode='JSON_EDIT',rejectSourceControlTokens=false}={}){const fake=images.length?'':clean(responseFile||process.env.VIBE2_MODEL_RESPONSE_FILE);if(fake)return fs.readFileSync(path.resolve(fake),'utf8');const options={num_predict:maxPredict,temperature:Math.max(.02,Math.min(.4,Number(temperature)||.08))};if(contextWindow>0)options.num_ctx=contextWindow;const format=completionMode==='JSON_REPLACE_ONLY'?{type:'object',properties:{replace:{type:'string'}},required:['replace'],additionalProperties:false}:(completionMode==='JSON_SINGLE_MOTION'?singleMotionResponseSchema():(/^JSON_/.test(completionMode)?'json':null));const body=JSON.stringify({model,prompt,...(images.length?{images}:{}),stream:true,think:false,keep_alive:MODEL_KEEP_ALIVE,...(format?{format}:{}),options});return await new Promise((resolve,reject)=>{let settled=false,request=null,pending='',output='',doneReason='',firstOutputSeen=false;const finish=(error,value='')=>{if(settled)return;settled=true;clearTimeout(timer);clearTimeout(firstOutputTimer);if(request&&!request.destroyed)request.destroy();if(error)reject(error);else resolve(value);};const timer=setTimeout(()=>{const error=new Error(`Ollama 응답 시간 초과: ${timeoutMs}ms`);error.vibe2PartialOutput=output;finish(error);},timeoutMs);const firstOutputTimer=setTimeout(()=>{if(firstOutputSeen||settled)return;const error=new Error(`Ollama 첫 출력 시간 초과: ${firstOutputTimeoutMs}ms`);error.vibe2PartialOutput='';error.vibe2ZeroOutputTimeout=true;finish(error);},Math.min(timeoutMs,firstOutputTimeoutMs));request=http.request({hostname:'127.0.0.1',port:11434,path:'/api/generate',method:'POST',headers:{'content-type':'application/json','content-length':Buffer.byteLength(body)}},response=>{if((response.statusCode||0)<200||(response.statusCode||0)>=300){response.resume();finish(new Error(`Ollama HTTP ${response.statusCode}`));return;}response.setEncoding('utf8');const consume=line=>{const text=line.trim();if(!text)return;let payload;try{payload=JSON.parse(text);}catch(error){throw new Error(`Ollama 스트림 JSON 파싱 실패: ${error.message}`);}if(payload?.error)throw new Error(`Ollama 오류: ${payload.error}`);if(payload?.done===true)doneReason=clean(payload.done_reason);if(typeof payload?.response==='string'){if(payload.response.length&&!firstOutputSeen){firstOutputSeen=true;clearTimeout(firstOutputTimer);}output+=payload.response;
 // 교체 문자열 전용 응답은 제어 문자 혼입이 확정되면 남은 생성을 기다리지 않는다.
 if(rejectSourceControlTokens&&completionMode==='JSON_REPLACE_ONLY'&&/(?:\/no_think\b|<\/?think\b|```)/i.test(output)){
   const error=new Error('ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:MODEL_CONTROL_TOKEN:STREAM_OUTPUT');

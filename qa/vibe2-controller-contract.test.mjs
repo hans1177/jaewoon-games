@@ -1117,6 +1117,11 @@ test('worker model cache is architecture-aware while runtime preparation reuses 
   assert(prepareOllamaAction.includes('https://ollama.com/download/ollama-linux-${ollama_arch}.tar.zst?version='));
   assert(prepareOllamaAction.includes("grep -qx 'lib/ollama/llama-server'"));
   assert(prepareOllamaAction.includes('sudo tar --zstd -xf "$slim" -C /usr'));
+  assert(prepareOllamaAction.includes('- name: Preload requested local model'));
+  assert(prepareOllamaAction.includes('http://127.0.0.1:11434/api/generate'));
+  assert(prepareOllamaAction.includes('keep_alive:"20m"'));
+  assert(prepareOllamaAction.includes('num_ctx:32768'));
+  assert(prepareOllamaAction.includes('OLLAMA_MODEL_PRELOAD=PASS'));
   assert(!workflow.includes('key: vibe2-ollama-v2-Linux-qwen3-1.7b'));
 });
 

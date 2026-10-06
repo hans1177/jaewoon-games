@@ -358,10 +358,13 @@ test('single motion generation sends a required nonempty patch schema through th
   await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(11434,'127.0.0.1',resolve);});
   t.after(()=>new Promise(resolve=>server.close(resolve)));
   const prompt=buildPrompt({...f.order,target:'web'},{files:[{path:'motion.js',content:f.unit.sourceWindow}]},f.responsibleFiles);
-  const result=await generateCandidateWithRecovery({prompt,model:'test-local-model',target:'web',sourceRoot:f.sourceRoot,sourceRootRelative:'web-games/demo',responsibleFiles:f.responsibleFiles,allowFullRewrite:false,singleMotionWorkUnit:true,candidateValidator(candidate){const check=evaluateSingleMotionWorkUnit({...f,candidate});if(!check.pass)throw new Error(check.reason);return check;}});
+  const result=await generateCandidateWithRecovery({prompt,model:'qwen3:4b-instruct',target:'web',sourceRoot:f.sourceRoot,sourceRootRelative:'web-games/demo',responsibleFiles:f.responsibleFiles,allowFullRewrite:false,singleMotionWorkUnit:true,candidateValidator(candidate){const check=evaluateSingleMotionWorkUnit({...f,candidate});if(!check.pass)throw new Error(check.reason);return check;}});
   assert.equal(requests.length,1);
   assert.deepEqual(requests[0].format,singleMotionResponseSchema());
   assert.equal(requests[0].think,false);
+  assert.equal(requests[0].keep_alive,'20m');
+  assert.equal(requests[0].options.num_ctx,32768);
+  assert.equal(result.generation.contextWindow,32768);
   assert.equal(result.generation.completionMode,'JSON_SINGLE_MOTION');
   assert.equal(result.candidateValidation.runtimeVerified,false);
 });
@@ -4187,13 +4190,25 @@ test('zero-output timeout keeps focused recovery enabled for studio build-up',()
 
 test('zero-output model stalls use first-output deadline and stop after two empty timeouts',()=>{
   const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
-  assert.match(workerSource,/MODEL_FIRST_OUTPUT_TIMEOUT_MS=Math\.max\(30000,Math\.min\(DEFAULT_TIMEOUT_MS,Number\(process\.env\.VIBE2_MODEL_FIRST_OUTPUT_TIMEOUT_MS\|\|120000\)\)\)/);
-  assert.match(workerSource,/ZERO_OUTPUT_RETRY_TIMEOUT_MS=120000/);
+  assert.match(workerSource,/MODEL_FIRST_OUTPUT_TIMEOUT_MS=Math\.max\(30000,Math\.min\(DEFAULT_TIMEOUT_MS,Number\(process\.env\.VIBE2_MODEL_FIRST_OUTPUT_TIMEOUT_MS\|\|180000\)\)\)/);
+  assert.match(workerSource,/ZERO_OUTPUT_RETRY_TIMEOUT_MS=180000/);
+  assert.match(workerSource,/MODEL_KEEP_ALIVE=clean\(process\.env\.VIBE2_MODEL_KEEP_ALIVE\|\|'20m'\)/);
+  assert.match(workerSource,/keep_alive:MODEL_KEEP_ALIVE/);
+  assert.match(workerSource,/QUALITY_MODEL_CONTEXT_WINDOW=32768/);
+  assert.match(workerSource,/VIBE2_QUALITY_MODEL_CONTEXT_PINNED/);
   assert.match(workerSource,/Ollama 첫 출력 시간 초과/);
   assert.match(workerSource,/VIBE2_ZERO_OUTPUT_TIMEOUT_STREAK/);
   assert.match(workerSource,/consecutiveZeroOutputTimeouts>=2/);
   assert.match(workerSource,/VIBE2_ZERO_OUTPUT_TIMEOUT_CIRCUIT_OPEN/);
   assert.match(workerSource,/priorFailureClass==='TIMEOUT'&&!clean\(lastRaw\)[\s\S]*?ZERO_OUTPUT_RETRY_TIMEOUT_MS/);
+});
+
+test('quality model keeps the original source-context budget instead of shrinking it',()=>{
+  const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(workerSource,/if\(required<=24576\)return Math\.max\(base,24576\)/);
+  assert.match(workerSource,/return Math\.max\(base,32768\)/);
+  assert.equal(sourcePromptContextWindow('x'.repeat(52000),{baseContextWindow:16384,maxPredict:3072}),24576);
+  assert.equal(sourcePromptContextWindow('x'.repeat(76000),{baseContextWindow:16384,maxPredict:3072}),32768);
 });
 
 test('Unity Studio timeout recovery pins one exact responsible file before another large model retry',()=>{
