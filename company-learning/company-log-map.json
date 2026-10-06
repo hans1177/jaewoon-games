@@ -3341,5 +3341,33 @@
     "runnerPressureMaySuppressNextCycleRefill": false,
     "externalPublicReleaseOwnerApprovalPreserved": true,
     "internalAndExternalReleaseAreDevelopmentCheckpoints": true
+  },
+  "buildReadyDesignToSourceEvidenceContract": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#changeRecord.buildReadyDesignToSource20261007",
+    "directiveProducer": "tools/company-build-up-directive.mjs",
+    "sourceConsumer": "tools/vibe2-source-worker.mjs",
+    "requiredPromptMarkers": [
+      "BUILD_READY_IMPLEMENTATION_BLUEPRINT:",
+      "VERTICAL_SLICE:",
+      "STATE_TRANSITIONS:",
+      "RESPONSIBLE_SOURCE_PLAN:",
+      "RUNTIME_ACCEPTANCE:",
+      "BUILD_COMPLETION_GATE:"
+    ],
+    "compactPromptRequiredPrefixes": [
+      "buildReadyBlueprint=",
+      "verticalSlice=",
+      "stateTransitions=",
+      "responsibleSourcePlan=",
+      "runtimeAcceptance=",
+      "buildCompletionGate="
+    ],
+    "foundationRepairFirstWhenRuntimeFailed": true,
+    "realGameplaySourceDeltaRequired": true,
+    "bootstrapOnlyCompletionRejected": true,
+    "statusMarkerOnlyCompletionRejected": true,
+    "exactResponsibleSourcePlanRequiredWhenAnchorsExist": true,
+    "sameVerticalSliceInputStateFeedbackResultRequired": true
   }
 }
