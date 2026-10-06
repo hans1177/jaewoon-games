@@ -2509,7 +2509,7 @@ test('expanded common item tool creature and VFX registry mirrors current catalo
     ['assets/roblox/common-tools-v1/catalog.json','roblox-common-tools-v1','items','roblox-common-tool-',20],
     ['assets/roblox/common-character-gear-v1/catalog.json','roblox-common-character-gear-v1','items','roblox-common-character-gear-',18],
     ['assets/roblox/common-foliage-v1/catalog.json','roblox-common-foliage-v1','items','roblox-common-foliage-',18],
-    ['assets/roblox/common-creature-parts-v1/catalog.json','roblox-common-creature-parts-v1','items','roblox-common-creature-part-',24],
+    ['assets/roblox/common-creature-parts-v1/catalog.json','roblox-common-creature-parts-v1','items','roblox-common-creature-part-',28],
     ['assets/roblox/common-skill-v1/catalog.json','roblox-common-skill-v1','atoms','roblox-common-skill-',20],
     ['assets/roblox/common-vfx-v1/catalog.json','roblox-common-vfx-v1','atoms','roblox-common-vfx-',27],
     ['assets/roblox/common-materials-v1/catalog.json','roblox-common-materials-v1','atoms','roblox-common-material-',25],
