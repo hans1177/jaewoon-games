@@ -4772,7 +4772,7 @@
       "source": "GAME_SEED.GAMEPLAY_SKETCH.novelGameGrammar",
       "consumer": "tools/vibe2-artbook-story-engine.mjs -> tools/vibe2-artbook-story-core.mjs",
       "existingStoryPipelineOnly": true,
-      "formula": "MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @",
+      "formula": "MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @ = EMERGENT_COMPOSITE_GENRE",
       "mainAndABMajorAxesPreserved": true,
       "cRemainsSubElementCollection": true,
       "atRemainsDelveLayer": true,
@@ -5257,7 +5257,7 @@
       "causalGrammarFlow": {
         "version": 2,
         "existingPipelineOnly": true,
-        "formula": "MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @",
+        "formula": "MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @ = EMERGENT_COMPOSITE_GENRE",
         "flow": [
           "EXISTING_SEED_MATERIAL_POOL_WITH_CAUSAL_DNA_METADATA",
           "GAMEPLAY_SKETCH.novelGameGrammar",
@@ -5284,7 +5284,14 @@
         "newWorkflow": false,
         "newQueue": false,
         "newScheduler": false,
-        "shadowPipeline": false
+        "shadowPipeline": false,
+        "aAndBOnlyMajorAxes": true,
+        "cSubordinateElements": true,
+        "atDelveLayerNotSystem": true,
+        "gameCategoryRoutingHintOnly": true,
+        "emergentGenreFinalCompositeIdentity": true,
+        "existingGameSourceAndDesignReconstructionFirst": true,
+        "existingGameIdentityRewriteRequired": false
       }
     }
   },
@@ -7142,6 +7149,13 @@
     "auxiliaryLanesExcluded": true,
     "refill": "TASK_MICRO_FANIN_AND_FIVE_MINUTE_SAFETY_NET",
     "sequenceLockUnchanged": true,
-    "newTopologyCreated": false
+    "newTopologyCreated": false,
+    "runnerBackpressureOwner": "EXTERNAL_GITHUB_ACTIONS_QUEUE",
+    "logicalCapacityUnaffectedByRunnerPressure": true,
+    "gamePrimaryDispatchNotPressureGated": true,
+    "nextCycleRefillNotPressureGated": true,
+    "internalAndExternalReleaseRemainCheckpoints": true,
+    "externalPublicReleaseOwnerApprovalPreserved": true,
+    "postReleaseRepeatDevelopmentContinues": true
   }
 }
