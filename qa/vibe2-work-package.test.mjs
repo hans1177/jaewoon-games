@@ -112,3 +112,6 @@ test('workload telemetry measures completed features change volume rework qa dup
   assert.equal(t.averagePackageCycleTimeMs,1000);
   assert.equal(t.duplicateFullRegressionExpected,false);
 });
+
+// Keep source-candidate regressions in the existing canonical QA invocation.
+import "./vibe2-source-delta-sanity.test.mjs";
