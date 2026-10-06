@@ -1548,11 +1548,26 @@ async function main(){
       buildUpDirectiveId:buildUpDirectiveConsumed?buildUpDirective.directiveId:null,buildUpGeneration:buildUpDirectiveConsumed?buildUpDirective.generation:null,
       buildUpGoal:buildUpDirectiveConsumed?buildUpDirective.thisLoopPrimaryGoal:null,buildUpDirectiveFingerprint:buildUpDirectiveConsumed?buildUpDirective.directiveFingerprint:null,
       buildUpDirectiveConsumed,buildUpDirectiveCompletionClaim:false,
-      nextRequiredStage:'TARGET_PLATFORM_RUNTIME',createdAt:new Date().toISOString(),
+      nextRequiredStage:'TARGET_PLATFORM_RUNTIME',
     };
+    const bootstrapEvidenceFile=path.join(outputRoot,'roblox-source-bootstrap.json');
+    const previousEvidence=fs.existsSync(bootstrapEvidenceFile)?readJson(bootstrapEvidenceFile):null;
+    const previousCreatedAt=clean(previousEvidence?.createdAt);
+    const previousSemantic=previousEvidence&&typeof previousEvidence==='object'&&!Array.isArray(previousEvidence)
+      ?Object.fromEntries(Object.entries(previousEvidence).filter(([key])=>key!=='createdAt'))
+      :null;
+    const semanticEvidenceUnchanged=Array.isArray(applied.changedFiles)&&applied.changedFiles.length===0
+      &&previousSemantic!==null
+      &&JSON.stringify(previousSemantic)===JSON.stringify(evidence);
+    evidence.createdAt=semanticEvidenceUnchanged&&previousCreatedAt?previousCreatedAt:new Date().toISOString();
     fs.mkdirSync(path.dirname(evidenceFile),{recursive:true});
     fs.writeFileSync(evidenceFile,`${JSON.stringify(evidence,null,2)}\n`,'utf8');
-    fs.copyFileSync(evidenceFile,path.join(outputRoot,'roblox-source-bootstrap.json'));
+    if(semanticEvidenceUnchanged){
+      console.log('ROBLOX_SOURCE_BOOTSTRAP_REPO_EVIDENCE=PRESERVED_NO_SOURCE_DELTA');
+    }else{
+      fs.copyFileSync(evidenceFile,bootstrapEvidenceFile);
+      console.log('ROBLOX_SOURCE_BOOTSTRAP_REPO_EVIDENCE=UPDATED');
+    }
     console.log('ROBLOX_SOURCE_BOOTSTRAP=PASS');
     console.log(`ROBLOX_GAME_ID=${gameId}`);
     console.log('ROBLOX_EXISTING_SOURCE_PRESERVED=YES');
