@@ -4638,10 +4638,11 @@ test('maintenance refresh uses current evidence file axes before cached registry
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('canonical company asset registry is dry-run synchronization idempotent',()=>{
+test('canonical company asset registry becomes dry-run idempotent after current source-consumer synchronization',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
-  const result=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:false});
+  const first=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:false});
+  const result=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry:first.registry,persist:false});
   assert.equal(result.changed,false,JSON.stringify(result.changedSections));
   assert.deepEqual(result.changedSections,[]);
   assert.equal(result.persisted,false);
