@@ -59,7 +59,7 @@ test('common character assets use the 3D R15 motion viewer instead of image fall
  const script=fs.readFileSync('assets/asset-library.js','utf8');
  const viewer=fs.readFileSync('assets/asset-library-viewer.js','utf8');
  assert.match(page,/공용 캐릭터/);
- assert.match(script,/kind==='common'&&row\.atom/);
+ assert.match(script,/else if\(row\.atom\)/);
  assert.match(script,/activeViewer\.setCommonMotion\(row\.atom\)/);
  assert.match(script,/previewBadge'\)\.textContent='모션 재생'/);
  assert.match(viewer,/function setCommonMotion\(atom\)/);
