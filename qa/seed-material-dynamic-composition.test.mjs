@@ -31,9 +31,7 @@ test('strong validated learning fit can simplify a clean concept to two compleme
   assert.equal(new Set(selected.map(row=>row.sourceFamily)).size,2);
   assert.ok(selected.some(row=>signals.preferFamilies.includes(row.sourceFamily)));
   assert.ok(selected.every(row=>Array.isArray(row.causalDNA)&&row.causalDNA.length>=2));
-  // depth hierarchy intentionally removed; all causal materials are peers.
   assert.ok(selected.every(row=>row.causalDepthAffinity===undefined));
-  //.test(row.causalDepthAffinity)));
 });
 
 test('Top30 category saturation expands composition to four materials for differentiation',()=>{

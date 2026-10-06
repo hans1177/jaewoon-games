@@ -333,6 +333,6 @@ test('causal grammar keeps MAIN×A×B×c + @ roles inside the existing story pip
   const engine=fs.readFileSync('tools/vibe2-artbook-story-engine.mjs','utf8');
   assert.match(engine,/seedNovelGameGrammar/);
   assert.match(engine,/A\/B만 대축, c는 서브요소/);
-  assert.doesNotMatch(engine,/D1_LIGHT_COMIC|D2~D4/);
+  assert.doesNotMatch(engine,/깊이 서열을 만들지 않는다.*D[1-4]_/);
   assert.doesNotMatch(engine,/new\s+.*StoryPipeline/i);
 });
