@@ -899,7 +899,7 @@ jobs:
                 &&String(run.head_sha||'')===String(process.env.CURRENT_MAIN||'')
               );
               process.stdout.write(found?'yes':'no');
-                NODE
+          NODE
                 refill_active="$(cat /tmp/vibe2-neuron-refill-active.txt)"
               fi
               if [ "$refill_active" = yes ]; then
@@ -2954,7 +2954,7 @@ jobs:
                 &&String(run.head_sha||'')===String(process.env.CURRENT_MAIN||'')
               );
               process.stdout.write(found?'yes':'no');
-                NODE
+          NODE
                 refill_active="$(cat /tmp/vibe2-regression-refill-active.txt)"
               fi
               if [ "$refill_active" = yes ]; then
@@ -3306,7 +3306,7 @@ jobs:
             &&String(run.head_sha||'')===String(process.env.CURRENT_MAIN||'')
           );
           process.stdout.write(found?'yes':'no');
-            NODE
+          NODE
             refill_active="$(cat /tmp/vibe2-fanin-refill-active.txt)"
           fi
           if [ "$refill_active" = yes ]; then
