@@ -38,6 +38,34 @@ local function hasStudioAssetAtom(familyOrAtom, atom)
   local assetAtom = atom == nil and familyOrAtom or atom
   return table.find(studioAssetFamily(family), assetAtom) ~= nil
 end
+local STUDIO_ASSET_SELECTION = {
+  CHARACTER = studioAssetFamily("CHARACTER"),
+  CREATURE = studioAssetFamily("CREATURE"),
+  BUILDING = studioAssetFamily("BUILDING"),
+  ENVIRONMENT = studioAssetFamily("ENVIRONMENT"),
+  WEAPON = studioAssetFamily("WEAPON"),
+  SKILL = studioAssetFamily("SKILL"),
+  MATERIAL = studioAssetFamily("MATERIAL"),
+  AUDIO = studioAssetFamily("AUDIO"),
+  VFX = studioAssetFamily("VFX"),
+  UI = studioAssetFamily("UI"),
+  MOTION = studioAssetFamily("MOTION"),
+  PROP = studioAssetFamily("PROP"),
+}
+local STUDIO_ASSET_FAMILY_STATUS = {
+  CHARACTER = "NOT_APPLICABLE",
+  CREATURE = "NOT_APPLICABLE",
+  BUILDING = "NOT_APPLICABLE",
+  ENVIRONMENT = "NOT_APPLICABLE",
+  WEAPON = "NOT_APPLICABLE",
+  SKILL = "NOT_APPLICABLE",
+  MATERIAL = "NOT_APPLICABLE",
+  AUDIO = "NOT_APPLICABLE",
+  VFX = "NOT_APPLICABLE",
+  UI = "APPLIED",
+  MOTION = "NOT_APPLICABLE",
+  PROP = "NOT_APPLICABLE",
+}
 -- STUDIO_ASSET_BINDING_CLIENT_END
 
 local QACamera=require(RS:WaitForChild("Shared"):WaitForChild("QACamera"))
