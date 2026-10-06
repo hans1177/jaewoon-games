@@ -5,7 +5,7 @@ import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {hasVerifiedVibe2SourceHandoff,validateExistingRobloxSourceTree,robloxPackageAssetRepairContext} from './company-development-roblox-source-reconcile.mjs';
-import {buildRobloxStudioAssetBootstrapPlan,robloxBuildProfileFromBaseline,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from './company-development-roblox-bootstrap.mjs';
+import {buildRobloxStudioAssetBootstrapPlan,detectRobloxStudioAssetSystems,robloxBuildProfileFromBaseline,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from './company-development-roblox-bootstrap.mjs';
 
 const SHA=/^[0-9a-f]{40}$/i;
 const clean=value=>String(value??'').trim();
@@ -154,33 +154,19 @@ export function validateRobloxArtifactLightingMigrationGuard({artifactPath='',pr
 
 export const ROBLOX_PACKAGE_REQUIRED_ASSET_FAMILIES=ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES;
 
-const ROBLOX_PACKAGE_ASSET_SYSTEM_PATTERNS=Object.freeze({
-  CHARACTER:/\b(?:HumanoidDescription|avatar|npc|companion|character(?:Model|Visual|Appearance|Skin|Outfit|Rig)|outfit|armor)\b/i,
-  CREATURE:/\b(?:enemy|monster|boss|creature|mob|wildlife|beetle|spider|wolf|bear|golem)\b/i,
-  BUILDING:/\b(?:building|house|shop|school|temple|castle|dungeon|interior|wall|roof|foundation|settlement|village)\b/i,
-  ENVIRONMENT:/\b(?:Terrain|Lighting|Atmosphere|biome|forest|desert|snow|swamp|cave|environment|landmark|tree|rock|road|path|water)\b/i,
-  WEAPON:/\b(?:weapon|sword|blade|spear|axe|hammer|bow|gun|staff|shield|equip|loadout)\b/i,
-  SKILL:/\b(?:skill|ability|cast|projectile|beam|aoe|spell|ultimate|telegraph|summon|buff|debuff)\b/i,
-  MATERIAL:/\b(?:Enum\.Material|SurfaceAppearance|MaterialVariant|TextureID|material|surface)\b/i,
-  AUDIO:/\b(?:SoundService|SoundId|Instance\.new\(["']Sound["']\)|bgm|music|sfx|audio)\b/i,
-  VFX:/\b(?:ParticleEmitter|Beam|Trail|vfx|effect|burst|flash|particle|telegraph)\b/i,
-  UI:/\b(?:ScreenGui|Frame|TextLabel|TextButton|ImageLabel|ImageButton|hud|menu|inventory|quest|shop|button)\b/i,
-  MOTION:/\b(?:Animator|AnimationTrack|AnimationId|Motor6D|Bone|locomotion|idleAnimation|walkAnimation|runAnimation|attackAnimation|hitAnimation|deathAnimation)\b/i,
-  PROP:/\b(?:prop|chest|crate|barrel|lamp|workbench|furniture|sign|pickup|resource|tree|rock)\b/i
-});
 const ROBLOX_PACKAGE_ASSET_NATIVE_PATTERNS=Object.freeze({
-  CHARACTER:/(?:Instance\.new\(["'](?:Model|MeshPart|Accessory|Attachment)["']\)|\bHumanoid\b|\bCharacter\b)/i,
-  CREATURE:/(?:Instance\.new\(["'](?:Model|MeshPart|Attachment|Bone|Motor6D)["']\)|\bHumanoid\b|\bAnimationController\b)/i,
-  BUILDING:/(?:Instance\.new\(["'](?:Model|Part|MeshPart|Attachment)["']\)|\bClone\s*\()/i,
-  ENVIRONMENT:/(?:\bTerrain\b|\bLighting\b|\bAtmosphere\b|Instance\.new\(["'](?:Model|Part|MeshPart)["']\))/i,
-  WEAPON:/(?:Instance\.new\(["'](?:Tool|Model|MeshPart|Attachment|WeldConstraint)["']\)|\bWeldConstraint\b)/i,
-  SKILL:/(?:ParticleEmitter|Beam|Trail|Attachment|PointLight|SpotLight|SurfaceLight|Instance\.new\(["']Model["']\))/i,
-  MATERIAL:/(?:Enum\.Material|SurfaceAppearance|MaterialVariant|TextureID|\.Material\s*=)/i,
-  AUDIO:/(?:SoundService|SoundId|Instance\.new\(["']Sound["']\))/i,
-  VFX:/(?:ParticleEmitter|Beam|Trail|PointLight|SpotLight|SurfaceLight)/i,
-  UI:/(?:ScreenGui|Frame|TextLabel|TextButton|ImageLabel|ImageButton|UIStroke|UICorner|UIGradient)/i,
-  MOTION:/(?:Animator|AnimationTrack|Animation|TweenService|Motor6D|Bone|RenderStepped|Heartbeat)/i,
-  PROP:/(?:Instance\.new\(["'](?:Model|Part|MeshPart|ProximityPrompt|Attachment)["']\)|\bClone\s*\()/i
+  CHARACTER:/(?:Instance\.new\(["'](?:Model|MeshPart|Accessory|Attachment)["']\)|\bHumanoid\b|\bCharacter\b|IsA\(["'](?:Humanoid|Accessory|Model)["']\))/i,
+  CREATURE:/(?:Instance\.new\(["'](?:Model|MeshPart|Attachment|Bone|Motor6D)["']\)|\bHumanoid\b|\bAnimationController\b|IsA\(["'](?:Model|BasePart)["']\))/i,
+  BUILDING:/(?:Instance\.new\(["'](?:Model|Part|MeshPart|Attachment)["']\)|\bClone\s*\(|IsA\(["'](?:Model|BasePart)["']\))/i,
+  ENVIRONMENT:/(?:\bTerrain\b|\bLighting\b|\bAtmosphere\b|Instance\.new\(["'](?:Model|Part|MeshPart)["']\)|IsA\(["'](?:Lighting|Terrain|Atmosphere|Model|BasePart)["']\))/i,
+  WEAPON:/(?:Instance\.new\(["'](?:Tool|Model|MeshPart|Attachment|WeldConstraint)["']\)|\bWeldConstraint\b|IsA\(["'](?:Tool|Model|BasePart)["']\))/i,
+  SKILL:/(?:ParticleEmitter|Beam|Trail|Attachment|PointLight|SpotLight|SurfaceLight|Animation|Instance\.new\(["']Model["']\)|IsA\(["'](?:ParticleEmitter|Beam|Trail|PointLight|SpotLight|SurfaceLight|Animation)["']\))/i,
+  MATERIAL:/(?:Enum\.Material|SurfaceAppearance|MaterialVariant|TextureID|\.Material\s*=|IsA\(["'](?:BasePart|SurfaceAppearance|MaterialVariant)["']\))/i,
+  AUDIO:/(?:SoundService|SoundId|Instance\.new\(["']Sound["']\)|IsA\(["']Sound["']\))/i,
+  VFX:/(?:ParticleEmitter|Beam|Trail|PointLight|SpotLight|SurfaceLight|IsA\(["'](?:ParticleEmitter|Beam|Trail|PointLight|SpotLight|SurfaceLight)["']\))/i,
+  UI:/(?:ScreenGui|Frame|TextLabel|TextButton|ImageLabel|ImageButton|UIStroke|UICorner|UIGradient|IsA\(["'](?:Frame|TextLabel|TextButton|ImageLabel|ImageButton)["']\))/i,
+  MOTION:/(?:Animator|AnimationTrack|Animation|TweenService|Motor6D|Bone|RenderStepped|Heartbeat|IsA\(["'](?:Animator|Animation|Motor6D|Bone)["']\))/i,
+  PROP:/(?:Instance\.new\(["'](?:Model|Part|MeshPart|ProximityPrompt|Attachment)["']\)|\bClone\s*\(|IsA\(["'](?:Model|BasePart)["']\))/i
 });
 function collectRobloxPackageSourceTexts(sourceRoot=''){
   const root=path.resolve(sourceRoot),rows=[],stack=[root];
@@ -208,6 +194,8 @@ function robloxPackageAssetFamilyRefPattern(family=''){
 function robloxPackageAssetFamilyBoundInText(text='',family=''){
   const raw=String(text||''),nativePattern=ROBLOX_PACKAGE_ASSET_NATIVE_PATTERNS[family];
   if(!nativePattern)return false;
+  const dynamicBinding=new RegExp('bindStudioAssetSemanticFamily\\s*\\([^\\n]{0,180}["\\\']'+clean(family)+'["\\\']','i');
+  if(dynamicBinding.test(raw)&&nativePattern.test(raw))return true;
   for(const ref of raw.matchAll(robloxPackageAssetFamilyRefPattern(family))){
     const start=Math.max(0,Number(ref.index||0)-3500);
     const end=Math.min(raw.length,Number(ref.index||0)+String(ref[0]||'').length+3500);
@@ -299,11 +287,12 @@ export function validateRobloxPackageAssetThreshold({root='',gameId='',baseline=
   if(!sourceBindingTracePass)blockers.push('ROBLOX_PACKAGE_INTERNAL_ASSET_SOURCE_BINDING_TRACE_REQUIRED');
 
   const statusBlock=sourceText.match(/\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{([\s\S]*?)\}/)?.[1]||'';
+  const detectedSystems=detectRobloxStudioAssetSystems({sourceText:semanticSource});
   const familyResults=[];
   let familyBindingPassCount=0,resolvedFamilyCount=0,appliedFamilyCount=0,notApplicableFamilyCount=0;
   for(const family of ROBLOX_PACKAGE_REQUIRED_ASSET_FAMILIES){
     const status=clean(statusBlock.match(new RegExp('\\b'+family+'\\s*=\\s*["\\\'](APPLIED|NOT_APPLICABLE)["\\\']','i'))?.[1]).toUpperCase();
-    const systemPresent=ROBLOX_PACKAGE_ASSET_SYSTEM_PATTERNS[family]?.test(semanticSource)===true;
+    const systemPresent=detectedSystems[family]===true;
     const boundFiles=sourceRows.filter(row=>robloxPackageAssetFamilyBoundInText(row.text,family)).map(row=>row.relative);
     const actualBinding=boundFiles.length>0;
     if(!status){
@@ -352,6 +341,7 @@ export function validateRobloxPackageAssetThreshold({root='',gameId='',baseline=
     ]))),
     runtimeVerified:false,
     productionVerified:false,
+    systemDetectionAuthority:'company-development-roblox-bootstrap-dynamic-source-sync',
     authority:'roblox-package-universal-asset-threshold',
   });
 }
