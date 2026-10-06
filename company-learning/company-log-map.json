@@ -909,16 +909,20 @@
       "correlationKeys": [
         "GAME_ID",
         "CAUSAL_DNA_ID",
+        "MAIN_SYSTEM",
+        "A_AXIS",
+        "B_AXIS",
+        "c_SUB_ELEMENT",
+        "AT_DELVE_ELEMENT",
         "WORLD_RULE",
         "SOURCE_EVENT_ID"
       ],
       "expectedEvidence": [
-        "CHARACTER_CAUSAL_RULE",
-        "MONSTER_CAUSAL_RULE",
-        "REGION_CAUSAL_RULE",
-        "STORY_CAUSAL_STATE_CHANGE"
+        "SYSTEM_STATE_EXCHANGE",
+        "c_CONTEXT_VARIATION",
+        "AT_DELVE_DISCOVERY_OR_MASTERY_EFFECT",
+        "CHARACTER_MONSTER_REGION_STORY_CAUSAL_BINDING_WHEN_APPLICABLE"
       ],
-      "lightComicSystemPayoffCountsAsValidNarrativeGameplayEvidence": true,
       "loreOnlyStatementDoesNotCount": true
     }
   },
@@ -1300,7 +1304,7 @@
     "existingGameGrandfatherExemptionForbidden": true,
     "allFiveBackfillPillarsRequiredBeforeExistingHolisticBaseline": true,
     "gameIdentityConceptEvidence": {
-      "version": 2,
+      "version": 3,
       "source": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameIdentityConceptContract",
       "required": [
         "GAME_IDENTITY",
@@ -1317,14 +1321,18 @@
       "genericFeatureCountCannotProveIdentityGrowth": true,
       "causalGameGrammarEvidence": {
         "requiredWhenSeedV4GrammarExists": true,
+        "formula": "MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @",
         "requiredEvidence": [
           "CAUSAL_GRAMMAR_EVIDENCE",
           "CAUSAL_GRAMMAR_BUILD_UP_RULE",
+          "EXISTING_GAME_MAIN_A_B_c_AT_MAP",
           "APPROVED_CAUSAL_GAME_GRAMMAR_PRESERVED_OR_MUTATED_WITH_REAL_STATE_EFFECT",
-          "CHARACTER_MONSTER_REGION_STORY_SHARE_CAUSAL_WORLD_LAW_WHEN_APPLICABLE"
+          "MAIN_A_B_MAJOR_AXES_AND_c_SUB_ELEMENTS_ROLE_PRESERVED",
+          "AT_DELVE_LAYER_IS_NOT_GENERAL_SYSTEM_AXIS"
         ],
-        "depthIsQualityRank": false,
-        "d1EpicComplexityEvidenceNotRequired": true,
+        "existingGameReconstructionRequiredWhenApplicable": true,
+        "cThirdMajorAxisEvidenceInvalid": true,
+        "atGeneralSystemAxisEvidenceInvalid": true,
         "decorativeLoreCannotSatisfy": true,
         "parallelFeatureStackCannotSatisfy": true,
         "designGateFailureCodeWhenDiluted": "NOVEL_GRAMMAR_DILUTED"
