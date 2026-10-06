@@ -14,7 +14,7 @@ import {
   releaseSeedMaterialReservations,
   seedPlatform,
 } from './game-seed-state.mjs';
-import {assertGameSeed,GAMEPLAY_COMPOSITION_MECHANIC_FAMILIES} from './company-game-seed-contract.mjs';
+import {assertGameSeed,GAMEPLAY_COMPOSITION_MECHANIC_FAMILIES,GAMEPLAY_NARRATIVE_DNA_FAMILIES,GAMEPLAY_NARRATIVE_RIGHTS_MODES} from './company-game-seed-contract.mjs';
 import {
   categorySeedProfile,
   loadPlatformProfiles,
@@ -120,9 +120,31 @@ const COMPOSITION_DEPTH_SCHEMA={
   },
   additionalProperties:false,
 };
+const NARRATIVE_DEPTH_SCHEMA={
+  type:'object',
+  required:['applicable','storyWeight','worldConflict','mainStoryArc','narrativeDnaSources','rightsModes','npcRelationshipWeb','companionArcs','mainSubquestLinks','foreshadowPayoffs','factionCultureHooks','historicalMythReinterpretations','worldbuildingFusion','storySystemLinks','culturalRespectRules'],
+  properties:{
+    applicable:{type:'boolean'},
+    storyWeight:{type:'string',enum:['LIGHT','MEDIUM','HEAVY']},
+    worldConflict:{type:'string',minLength:20,maxLength:900},
+    mainStoryArc:{type:'string',minLength:30,maxLength:1000},
+    narrativeDnaSources:{type:'array',minItems:2,maxItems:6,uniqueItems:true,items:{type:'string',enum:[...GAMEPLAY_NARRATIVE_DNA_FAMILIES]}},
+    rightsModes:{type:'array',minItems:1,maxItems:3,uniqueItems:true,items:{type:'string',enum:[...GAMEPLAY_NARRATIVE_RIGHTS_MODES]}},
+    npcRelationshipWeb:{type:'array',minItems:2,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
+    companionArcs:{type:'array',minItems:1,maxItems:6,uniqueItems:true,items:SKETCH_ITEM},
+    mainSubquestLinks:{type:'array',minItems:2,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
+    foreshadowPayoffs:{type:'array',minItems:2,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
+    factionCultureHooks:{type:'array',minItems:2,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
+    historicalMythReinterpretations:{type:'array',minItems:2,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
+    worldbuildingFusion:{type:'array',minItems:3,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
+    storySystemLinks:{type:'array',minItems:3,maxItems:10,uniqueItems:true,items:SKETCH_ITEM},
+    culturalRespectRules:{type:'array',minItems:3,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
+  },
+  additionalProperties:false,
+};
 const GAMEPLAY_SKETCH_SCHEMA={
   type:'object',
-  required:['worldModel','actors','interactionChains','stateMachine','firstPlayableCycle','playerPromise','funDrivers','balanceRules','pacingPlan','progressionLayers','expansionPlan','longGoalScenario','completionCriteria','codingGrowthHooks','validationRisks','compositionDepth'],
+  required:['worldModel','actors','interactionChains','stateMachine','firstPlayableCycle','playerPromise','funDrivers','balanceRules','pacingPlan','progressionLayers','expansionPlan','longGoalScenario','completionCriteria','codingGrowthHooks','validationRisks','compositionDepth','narrativeDepth'],
   properties:{
     worldModel:{type:'string',minLength:1,maxLength:900},
     actors:{type:'array',minItems:2,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
@@ -140,6 +162,7 @@ const GAMEPLAY_SKETCH_SCHEMA={
     codingGrowthHooks:{type:'array',minItems:4,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
     validationRisks:{type:'array',minItems:2,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
     compositionDepth:COMPOSITION_DEPTH_SCHEMA,
+    narrativeDepth:NARRATIVE_DEPTH_SCHEMA,
   },
   additionalProperties:false,
 };
@@ -431,6 +454,73 @@ function normalizeGameplaySketch(target,p,coreLoop,gameName){
     3,8
   );
   const compositionDepth={mainContent,majorSubSystems,extensionSystems,crossSystemCombinations,hiddenCombinations,growthMutations,legacyContentRevisitHooks,endgameFusion,mechanicDiversitySources};
+  const narrativeRaw=raw.narrativeDepth&&typeof raw.narrativeDepth==='object'&&!Array.isArray(raw.narrativeDepth)?raw.narrativeDepth:{};
+  const storyWeight=clean(narrativeRaw.storyWeight).toUpperCase()
+    ||(/RPG|ADVENTURE|HORROR|STRATEGY|SIMULATION/i.test(target.category)?'HEAVY':/PUZZLE|CASUAL|ARCADE/i.test(target.category)?'LIGHT':'MEDIUM');
+  const narrativePool=[...GAMEPLAY_NARRATIVE_DNA_FAMILIES];
+  const narrativeSeed=clean(target.requestId||gameName).split('').reduce((sum,ch)=>sum+ch.charCodeAt(0),0);
+  const narrativeFallback=[];
+  for(let i=0;i<3;i++)narrativeFallback.push(narrativePool[(narrativeSeed+i*7)%narrativePool.length]);
+  const allowedNarrativeFamilies=new Set(GAMEPLAY_NARRATIVE_DNA_FAMILIES);
+  const narrativeDnaSources=sketchArray(
+    (Array.isArray(narrativeRaw.narrativeDnaSources)?narrativeRaw.narrativeDnaSources:[]).filter(value=>allowedNarrativeFamilies.has(clean(value))),
+    narrativeFallback,2,6
+  );
+  const allowedRightsModes=new Set(GAMEPLAY_NARRATIVE_RIGHTS_MODES);
+  const rightsModes=sketchArray(
+    (Array.isArray(narrativeRaw.rightsModes)?narrativeRaw.rightsModes:[]).filter(value=>allowedRightsModes.has(clean(value))),
+    ['PUBLIC_DOMAIN_OR_HISTORICAL_STRUCTURE','ABSTRACT_TECHNIQUE_ONLY','ORIGINAL_SYNTHESIS'],1,3
+  );
+  const worldConflict=clean(narrativeRaw.worldConflict)
+    ||(gameName+'의 세계는 서로 다른 세력·지역·가치관이 '+mainContent+'의 자원과 목표를 두고 충돌하며 플레이어 선택으로 관계와 지역 상태가 달라진다.');
+  const mainStoryArc=clean(narrativeRaw.mainStoryArc)
+    ||'초반에는 지역 사건과 NPC 관계를 통해 갈등을 발견하고, 중반에는 동료·세력·서브퀘의 선택 결과가 메인 갈등에 합류하며, 후반에는 과거의 복선과 역사·신화 재해석이 현재 세계의 진실과 최종 선택을 바꾼다.';
+  const npcRelationshipWeb=sketchArray(narrativeRaw.npcRelationshipWeb,[
+    '핵심 NPC는 목표·두려움·비밀·소속 세력·플레이어 기억을 가지며 퀘스트 결과에 따라 관계 상태가 바뀐다',
+    'NPC끼리 동맹·경쟁·가족·사제·채무·은원 중 하나 이상의 관계를 공유하고 한 인물의 선택이 다른 인물의 태도와 사건 조건에 영향을 준다',
+    '상인·장인·정보원·주민 같은 기능 NPC도 경제·제작·탐험·세력 상태와 개인 사연을 연결한다'
+  ],2,8);
+  const companionArcs=sketchArray(narrativeRaw.companionArcs,[
+    '동료는 영입 계기→개인 갈등→관계 선택→전투/탐험 역할 변화→후반 결단의 단계가 있고 파티 조합이 대사·서브퀘·숨은 사건 조건에 영향을 준다',
+    '동료의 개인 목표와 메인 세력 갈등이 충돌하는 순간을 만들어 충성·이탈·화해·전용 능력/정보 해금이 플레이 결과로 이어진다'
+  ],1,6);
+  const mainSubquestLinks=sketchArray(narrativeRaw.mainSubquestLinks,[
+    '메인 사건이 여러 NPC 관점의 서브퀘를 만들고 서브퀘 결과가 이후 메인 대사·지원·경로·보스 대응·세력 상태 중 하나 이상을 바꾼다',
+    '초반의 작은 부탁이나 수집 단서가 중후반 가문·세력·유적·전쟁·미스터리의 핵심 증거 또는 선택 조건으로 회수된다',
+    '서브퀘 완료 보상은 단순 재화만이 아니라 정보·동료 관계·새 거래·탐험 경로·제작법·평판 등 다른 시스템에 연결된다'
+  ],2,8);
+  const foreshadowPayoffs=sketchArray(narrativeRaw.foreshadowPayoffs,[
+    '초반 환경 단서·대사·유물·소문 중 하나를 중반 사건에서 재해석하고 후반 메인 갈등에서 실제 선택 근거로 회수한다',
+    '서로 모순되는 NPC 증언이나 기록을 남겨 플레이어가 탐험·수집·관계 정보를 조합하면 숨은 진실과 다른 해결법을 발견하게 한다'
+  ],2,8);
+  const factionCultureHooks=sketchArray(narrativeRaw.factionCultureHooks,[
+    '세력마다 통치·거래·명예·신앙·기술·전쟁 방식 중 최소 두 축이 달라 지역 구조와 NPC 행동, 상점/퀘스트/적대 규칙에 반영된다',
+    '세력 관계는 고정 선악이 아니라 이해관계·역사적 상처·자원·외교 조건으로 설명하고 플레이어 행동에 따라 동맹·중립·갈등이 변화한다'
+  ],2,8);
+  const historicalMythReinterpretations=sketchArray(narrativeRaw.historicalMythReinterpretations,[
+    narrativeDnaSources[0]+'의 권력·관계·운명·사회구조를 이름과 사건을 복제하지 않고 게임 세계의 세력/지역/인물 갈등으로 재구성한다',
+    narrativeDnaSources[1]+'의 서사 기법을 메인 퀘스트와 동료/서브퀘 구조로 변형하고 원전의 고유 표현·대사·캐릭터·장면 배열은 복제하지 않는다',
+    '로마 공화정/제정의 원로원·가문 경쟁·군단·속주·시민권·대중정치·무역 구조와 현대사의 산업화·도시화·혁명·총력전·냉전/첩보·탈식민·국제질서 구조를 필요할 때 세계관 시스템으로 재해석한다'
+  ],2,8);
+  const worldbuildingFusion=sketchArray(narrativeRaw.worldbuildingFusion,[
+    '역사적 권력 구조 × 신화적 세계 규칙을 결합해 세력 제도·지역 신앙·금기·유물의 기원을 한 세계사로 연결한다',
+    '경제/무역/기술 변화 × NPC 관계망을 결합해 도시·마을·상점·직업·세력의 생활상이 메인 갈등의 원인이자 결과가 되게 한다',
+    '전쟁/정치 갈등 × 탐험/미스터리를 결합해 폐허·기록·국경·유적이 과거 사건의 증거이자 현재 플레이 경로가 되게 한다',
+    '민담/공포/신화 × 일상 문화 요소를 결합해 괴이·축제·의식·금기·지역 전설이 퀘스트와 환경 상호작용으로 드러나게 한다'
+  ],3,8);
+  const storySystemLinks=sketchArray(narrativeRaw.storySystemLinks,[
+    'NPC 관계/평판 변화가 동료 영입·상점·무역·서브퀘·지역 접근 중 실제 시스템 상태를 바꾼다',
+    '탐험에서 발견한 기록·유물·증거가 메인/서브퀘 분기와 제작·수집·숨은 보스/지역 조건으로 연결된다',
+    '세력 선택과 동료 조합이 파티 시너지·지원군·가격·경로·보스 대응 방식 중 하나 이상을 변화시킨다',
+    '하우징/거점/박물관/기록실 같은 적합한 시스템이 수집한 서사 자산을 보관·해석하고 새 사건·제작·탐험 목표를 연다'
+  ],3,10);
+  const culturalRespectRules=sketchArray(narrativeRaw.culturalRespectRules,[
+    '역사·신화·민담은 단일 민족/문화의 고정 관념이나 우열 서열로 단순화하지 않고 내부의 다양한 역할과 이해관계를 구분한다',
+    '실제 비극·전쟁·식민지배·박해·학살을 가벼운 보상 장치나 희화화로 사용하지 않고 필요하면 허구화·거리두기·맥락화를 적용한다',
+    '김용·톨킨·오웰 등 현대 보호 작품은 고유 캐릭터·세계관·명칭·대사·장면을 복제하지 않고 문파 관계·권력 감시·원정 구조 같은 추상 기법만 변형한다',
+    '공공영역 고전과 역사 소재도 원문 복제가 아니라 세계관·시스템·인물관계에 맞는 독자적 재구성을 우선한다'
+  ],3,8);
+  const narrativeDepth={applicable:true,storyWeight,worldConflict,mainStoryArc,narrativeDnaSources,rightsModes,npcRelationshipWeb,companionArcs,mainSubquestLinks,foreshadowPayoffs,factionCultureHooks,historicalMythReinterpretations,worldbuildingFusion,storySystemLinks,culturalRespectRules};
   const flowBaseline={content:{
     identity:clean(p?.distinctIdentity)||gameName,
     playerFantasy:playerPromise,
@@ -439,7 +529,7 @@ function normalizeGameplaySketch(target,p,coreLoop,gameName){
     progressionDirection:progressionLayers.join(' '),
   }};
   const flowArchitecture=buildGameFlowArchitecture({gameId:`seed:${target.requestId}`,genre:target.category,baseline:flowBaseline,inventory:[]});
-  return{version:3,source:clean(raw.source)||'GAME_SEED_MODEL_OR_NORMALIZED_SKETCH_V3',worldModel,actors,interactionChains,stateMachine,firstPlayableCycle,playerPromise,funDrivers,balanceRules,pacingPlan,progressionLayers,expansionPlan,longGoalScenario,completionCriteria,codingGrowthHooks,validationRisks,compositionDepth,flowArchitecture};
+  return{version:3,source:clean(raw.source)||'GAME_SEED_MODEL_OR_NORMALIZED_SKETCH_V3',worldModel,actors,interactionChains,stateMachine,firstPlayableCycle,playerPromise,funDrivers,balanceRules,pacingPlan,progressionLayers,expansionPlan,longGoalScenario,completionCriteria,codingGrowthHooks,validationRisks,compositionDepth,narrativeDepth,flowArchitecture};
 }
 function normalizeProposal(target,p={}){
   const existingNames=new Set((state.seeds||[]).map(s=>norm(s.gameName)).filter(Boolean));
@@ -478,7 +568,7 @@ function validateProposal(target,p){
   if(target.lockedPlatform&&normalizeSeedPlatform(p.initialTargetPlatform)!==target.platform)errors.push('lockedPlatform');
   if(!['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(p.multiplayerDesignMode))errors.push('multiplayerDesignMode');
   const sketch=p.gameplaySketch||{};
-  if(Number(sketch.version||0)<3||!clean(sketch.worldModel)||!Array.isArray(sketch.actors)||sketch.actors.length<2||!Array.isArray(sketch.interactionChains)||sketch.interactionChains.length<1||!Array.isArray(sketch.stateMachine)||sketch.stateMachine.length<5||!Array.isArray(sketch.firstPlayableCycle)||sketch.firstPlayableCycle.length<6||!clean(sketch.playerPromise)||!Array.isArray(sketch.funDrivers)||sketch.funDrivers.length<3||!Array.isArray(sketch.balanceRules)||sketch.balanceRules.length<4||!sketch.pacingPlan||!Array.isArray(sketch.progressionLayers)||sketch.progressionLayers.length<3||!Array.isArray(sketch.expansionPlan)||sketch.expansionPlan.length<4||!Array.isArray(sketch.longGoalScenario)||sketch.longGoalScenario.length<3||!Array.isArray(sketch.completionCriteria)||sketch.completionCriteria.length<4||!Array.isArray(sketch.codingGrowthHooks)||sketch.codingGrowthHooks.length<4||!Array.isArray(sketch.validationRisks)||sketch.validationRisks.length<2||!Array.isArray(sketch.flowArchitecture?.flowDNA)||sketch.flowArchitecture.flowDNA.length<2||!sketch.compositionDepth||!clean(sketch.compositionDepth.mainContent)||!Array.isArray(sketch.compositionDepth.majorSubSystems)||sketch.compositionDepth.majorSubSystems.length<3||!Array.isArray(sketch.compositionDepth.extensionSystems)||sketch.compositionDepth.extensionSystems.length<6||!Array.isArray(sketch.compositionDepth.crossSystemCombinations)||sketch.compositionDepth.crossSystemCombinations.length<4||!Array.isArray(sketch.compositionDepth.hiddenCombinations)||sketch.compositionDepth.hiddenCombinations.length<2||!Array.isArray(sketch.compositionDepth.growthMutations)||sketch.compositionDepth.growthMutations.length<2||!Array.isArray(sketch.compositionDepth.legacyContentRevisitHooks)||sketch.compositionDepth.legacyContentRevisitHooks.length<2||!clean(sketch.compositionDepth.endgameFusion)||!Array.isArray(sketch.compositionDepth.mechanicDiversitySources)||sketch.compositionDepth.mechanicDiversitySources.length<3)errors.push('gameplaySketch');
+  if(Number(sketch.version||0)<3||!clean(sketch.worldModel)||!Array.isArray(sketch.actors)||sketch.actors.length<2||!Array.isArray(sketch.interactionChains)||sketch.interactionChains.length<1||!Array.isArray(sketch.stateMachine)||sketch.stateMachine.length<5||!Array.isArray(sketch.firstPlayableCycle)||sketch.firstPlayableCycle.length<6||!clean(sketch.playerPromise)||!Array.isArray(sketch.funDrivers)||sketch.funDrivers.length<3||!Array.isArray(sketch.balanceRules)||sketch.balanceRules.length<4||!sketch.pacingPlan||!Array.isArray(sketch.progressionLayers)||sketch.progressionLayers.length<3||!Array.isArray(sketch.expansionPlan)||sketch.expansionPlan.length<4||!Array.isArray(sketch.longGoalScenario)||sketch.longGoalScenario.length<3||!Array.isArray(sketch.completionCriteria)||sketch.completionCriteria.length<4||!Array.isArray(sketch.codingGrowthHooks)||sketch.codingGrowthHooks.length<4||!Array.isArray(sketch.validationRisks)||sketch.validationRisks.length<2||!Array.isArray(sketch.flowArchitecture?.flowDNA)||sketch.flowArchitecture.flowDNA.length<2||!sketch.compositionDepth||!clean(sketch.compositionDepth.mainContent)||!Array.isArray(sketch.compositionDepth.majorSubSystems)||sketch.compositionDepth.majorSubSystems.length<3||!Array.isArray(sketch.compositionDepth.extensionSystems)||sketch.compositionDepth.extensionSystems.length<6||!Array.isArray(sketch.compositionDepth.crossSystemCombinations)||sketch.compositionDepth.crossSystemCombinations.length<4||!Array.isArray(sketch.compositionDepth.hiddenCombinations)||sketch.compositionDepth.hiddenCombinations.length<2||!Array.isArray(sketch.compositionDepth.growthMutations)||sketch.compositionDepth.growthMutations.length<2||!Array.isArray(sketch.compositionDepth.legacyContentRevisitHooks)||sketch.compositionDepth.legacyContentRevisitHooks.length<2||!clean(sketch.compositionDepth.endgameFusion)||!Array.isArray(sketch.compositionDepth.mechanicDiversitySources)||sketch.compositionDepth.mechanicDiversitySources.length<3||!sketch.narrativeDepth||sketch.narrativeDepth.applicable!==true||!clean(sketch.narrativeDepth.worldConflict)||!clean(sketch.narrativeDepth.mainStoryArc)||!Array.isArray(sketch.narrativeDepth.narrativeDnaSources)||sketch.narrativeDepth.narrativeDnaSources.length<2||!Array.isArray(sketch.narrativeDepth.npcRelationshipWeb)||sketch.narrativeDepth.npcRelationshipWeb.length<2||!Array.isArray(sketch.narrativeDepth.mainSubquestLinks)||sketch.narrativeDepth.mainSubquestLinks.length<2||!Array.isArray(sketch.narrativeDepth.worldbuildingFusion)||sketch.narrativeDepth.worldbuildingFusion.length<3||!Array.isArray(sketch.narrativeDepth.storySystemLinks)||sketch.narrativeDepth.storySystemLinks.length<3)errors.push('gameplaySketch');
   if(errors.length)throw new Error(`GAME_SEED_INVALID ${target.platform}/${target.category}: ${errors.join(',')}`);
 }
 async function callModelBatch(targets){
@@ -496,7 +586,7 @@ async function callModelBatch(targets){
     multiplayerMustBeDecidedNow:true,
     allowedMultiplayerModes:['SINGLE','COOP','COMPETITIVE','HYBRID'],
   }));
-  const prompt=`GAME_SEED를 작성하라. 각 요청의 seedMaterials는 100개 재료 풀에서 목표 플랫폼, 카테고리 적합성, 재료 상호보완성, 검증된 학습 성과, 기존 Top30과의 차별성을 기준으로 2~4개가 동적으로 선정되었다. 주어진 재료를 모두 실제로 조합한다. 재료는 기존 게임일 필요가 없으며 직업·산업·자연·과학·스포츠·놀이·사회관계·생존상황·공간운영·완전 신규 아이디어를 동등하게 사용할 수 있다. existing game reference는 선택사항이다. 동일 참고 게임이나 동일 장르 재사용은 허용하지만 최종 coreLoop와 distinctIdentity가 기존 프로젝트와 사실상 같으면 안 된다. 직접적인 이름·스토리·캐릭터·맵·아트·소스코드 복제를 금지한다. initialTargetPlatform은 Roblox/Unity/Fortnite UEFN 중 프로젝트에 가장 맞게 정하고, multiplayerDesignMode를 설계 전에 SINGLE/COOP/COMPETITIVE/HYBRID 중 하나로 확정한다. gameplaySketch는 코드 작성 전에 게임 전체를 머릿속에서 실행해 보는 스케치다. worldModel에는 실제 플레이 공간·경로·위치가 게임 결과에 어떻게 연결되는지 적고, actors에는 플레이어/NPC/적/사물 역할을, interactionChains에는 접근·선택→입력→대상 상태 변화→게임 결과 변화를 적는다. stateMachine과 firstPlayableCycle은 시작부터 실제 입력·핵심 행동·상태변화·성장/선택·위험/실패·목표/재도전까지 이어져야 한다. playerPromise는 플레이어가 반복할 핵심 경험과 숙련의 보상을 한 문장으로 고정한다. funDrivers는 즉시 피드백·트레이드오프·숙련에 따른 새 선택·월드/적 반응을 구체적으로 적고, balanceRules는 지배전략 방지·파워/위협 동반 성장·복구 가능한 실패·경제 source/sink·후반 판단구조 변화를 포함한다. pacingPlan은 0~5/5~15/15~25/25~30분과 중후반/재플레이를 각각 다른 역할로 설계하고, progressionLayers는 세션/중기/장기 성장의 선택 폭 변화를 적는다. expansionPlan은 새 적·구역·목표·상호작용·전략 결과로 실제 콘텐츠를 늘리며 색상/체력/데미지 배수만 다른 변형이나 반복/재시작/대기를 깊이로 세지 않는다. compositionDepth는 메인 콘텐츠 1개를 중심으로 실제 대형 서브시스템을 최소 3개 설계하고, 판매·동료·서브퀘·미니게임·무역·수집·강화·펫/소환·아이템 조합·파티 조합 같은 @ 확장요소를 게임 정체성에 맞게 최소 6개 풀로 구성한다. 고전 카드/주사위/타일/경매 같은 고전 규칙부터 덱빌딩·드래프트·일꾼배치·엔진빌딩 같은 현대 보드 규칙, 아케이드·생활·사회경제·수집 메타까지 mechanicDiversitySources에서 최소 3개 서로 다른 계통을 사용한다. crossSystemCombinations는 A×B, A×C, B×C, A×B×C+@처럼 최소 4개 실제 상태 연결을 만들고 hiddenCombinations는 조건형 숨은 조합, growthMutations는 성장에 따라 단독 시스템이 융복합으로 변하는 과정, legacyContentRevisitHooks는 성장 후 옛 지역/콘텐츠에 돌아올 이유, endgameFusion은 최종 파고들기 구조를 구체적으로 적는다. 서브 시스템과 미니게임은 독립 메뉴로 던져놓지 말고 메인 성장·탐험·경제·수집·관계 중 하나 이상과 실제 상태를 주고받게 한다. completionCriteria는 첫 플레이부터 30분+, 실패복구, 모바일, 초중후반 역할 차이를 포함하고 codingGrowthHooks는 기존 책임 함수·데이터 테이블·안정 ID·저장 마이그레이션·프레젠테이션 자산 분리를 고려한다. longGoalScenario는 여러 단계 목표를 실제 플레이 순서로 적고 validationRisks에는 소프트락·저장·경제·난이도·성능·모바일·겉구현 위험 중 핵심을 적는다. 첫 세션은 정확히 30분의 의미 있는 진행을 전제로 하며 단순 반복·대기·체력 증가로 시간을 채우면 안 된다. REQUESTS=${JSON.stringify(requests)}. JSON 스키마만 출력하라.`;
+  const prompt=`GAME_SEED를 작성하라. 각 요청의 seedMaterials는 100개 재료 풀에서 목표 플랫폼, 카테고리 적합성, 재료 상호보완성, 검증된 학습 성과, 기존 Top30과의 차별성을 기준으로 2~4개가 동적으로 선정되었다. 주어진 재료를 모두 실제로 조합한다. 재료는 기존 게임일 필요가 없으며 직업·산업·자연·과학·스포츠·놀이·사회관계·생존상황·공간운영·완전 신규 아이디어를 동등하게 사용할 수 있다. existing game reference는 선택사항이다. 동일 참고 게임이나 동일 장르 재사용은 허용하지만 최종 coreLoop와 distinctIdentity가 기존 프로젝트와 사실상 같으면 안 된다. 직접적인 이름·스토리·캐릭터·맵·아트·소스코드 복제를 금지한다. initialTargetPlatform은 Roblox/Unity/Fortnite UEFN 중 프로젝트에 가장 맞게 정하고, multiplayerDesignMode를 설계 전에 SINGLE/COOP/COMPETITIVE/HYBRID 중 하나로 확정한다. gameplaySketch는 코드 작성 전에 게임 전체를 머릿속에서 실행해 보는 스케치다. worldModel에는 실제 플레이 공간·경로·위치가 게임 결과에 어떻게 연결되는지 적고, actors에는 플레이어/NPC/적/사물 역할을, interactionChains에는 접근·선택→입력→대상 상태 변화→게임 결과 변화를 적는다. stateMachine과 firstPlayableCycle은 시작부터 실제 입력·핵심 행동·상태변화·성장/선택·위험/실패·목표/재도전까지 이어져야 한다. playerPromise는 플레이어가 반복할 핵심 경험과 숙련의 보상을 한 문장으로 고정한다. funDrivers는 즉시 피드백·트레이드오프·숙련에 따른 새 선택·월드/적 반응을 구체적으로 적고, balanceRules는 지배전략 방지·파워/위협 동반 성장·복구 가능한 실패·경제 source/sink·후반 판단구조 변화를 포함한다. pacingPlan은 0~5/5~15/15~25/25~30분과 중후반/재플레이를 각각 다른 역할로 설계하고, progressionLayers는 세션/중기/장기 성장의 선택 폭 변화를 적는다. expansionPlan은 새 적·구역·목표·상호작용·전략 결과로 실제 콘텐츠를 늘리며 색상/체력/데미지 배수만 다른 변형이나 반복/재시작/대기를 깊이로 세지 않는다. compositionDepth는 메인 콘텐츠 1개를 중심으로 실제 대형 서브시스템을 최소 3개 설계하고, 판매·동료·서브퀘·미니게임·무역·수집·강화·펫/소환·아이템 조합·파티 조합 같은 @ 확장요소를 게임 정체성에 맞게 최소 6개 풀로 구성한다. 고전 카드/주사위/타일/경매 같은 고전 규칙부터 덱빌딩·드래프트·일꾼배치·엔진빌딩 같은 현대 보드 규칙, 아케이드·생활·사회경제·수집 메타까지 mechanicDiversitySources에서 최소 3개 서로 다른 계통을 사용한다. crossSystemCombinations는 A×B, A×C, B×C, A×B×C+@처럼 최소 4개 실제 상태 연결을 만들고 hiddenCombinations는 조건형 숨은 조합, growthMutations는 성장에 따라 단독 시스템이 융복합으로 변하는 과정, legacyContentRevisitHooks는 성장 후 옛 지역/콘텐츠에 돌아올 이유, endgameFusion은 최종 파고들기 구조를 구체적으로 적는다. 서브 시스템과 미니게임은 독립 메뉴로 던져놓지 말고 메인 성장·탐험·경제·수집·관계 중 하나 이상과 실제 상태를 주고받게 한다. narrativeDepth는 세계관 형성 자체에도 융복합을 적용한다. 중국 사기/초한지/삼국지/수호지 같은 역사·영웅군상, 로마 공화정·제정의 가문/원로원/군단/속주/시민권/대중정치, 그리스·북유럽·이집트·메소포타미아 신화, 셰익스피어·그림형제·안데르센·뒤마 등 공공영역 고전의 갈등/관계/모험 구조, 일본 전국시대/요괴민담, 중세/교역/학문사, 산업혁명·혁명/공화정·제국주의/식민지 경쟁·세계대전형 총력전·냉전/첩보·탈식민/신생국·대중정치/선전·산업자본/도시노동·국제질서 같은 현대사 구조, 공포신화·미스터리를 2~4개 이상 독자적으로 재조합한다. NPC 관계망·동료 개인서사·세력 문화·메인↔서브퀘 양방향 영향·복선/회수·유물/기록/환경 단서·스토리×게임시스템 연결을 설계한다. 김용·톨킨·오웰 등 현대 보호 작품은 이름/인물/세계관/대사/장면을 복제하지 않고 문파 관계, 감시사회, 원정/동료관계 같은 추상 기법만 참고한다. completionCriteria는 첫 플레이부터 30분+, 실패복구, 모바일, 초중후반 역할 차이를 포함하고 codingGrowthHooks는 기존 책임 함수·데이터 테이블·안정 ID·저장 마이그레이션·프레젠테이션 자산 분리를 고려한다. longGoalScenario는 여러 단계 목표를 실제 플레이 순서로 적고 validationRisks에는 소프트락·저장·경제·난이도·성능·모바일·겉구현 위험 중 핵심을 적는다. 첫 세션은 정확히 30분의 의미 있는 진행을 전제로 하며 단순 반복·대기·체력 증가로 시간을 채우면 안 된다. REQUESTS=${JSON.stringify(requests)}. JSON 스키마만 출력하라.`;
   try{
     const r=await fetch('http://127.0.0.1:11434/api/chat',{
       method:'POST',
@@ -504,7 +594,7 @@ async function callModelBatch(targets){
       body:JSON.stringify({
         model,stream:false,keep_alive:'0s',format:batchSchema(targets.length),
         messages:[
-          {role:'system',content:'너는 재운컴퍼니 GAME_SEED 조합 AI다. 재료를 게임으로 오해하지 말고 여러 출처의 추상 재료를 독립 게임 설계 후보로 조합한다. 코드 생성 전에 실제 월드와 플레이 흐름을 GAMEPLAY_SKETCH로 먼저 구성한다. 재미·밸런스·페이싱·성장·중후반 확장·완성 기준을 서로 연결하고 수치만 키운 복제 콘텐츠를 금지한다. GAMEPLAY_SKETCH v3에서는 메인 장르만 바꾸는 반복을 피하고 고전 카드·보드·아케이드부터 현대 보드/수집/생활/사회경제 규칙까지 다른 계통의 메커니즘을 재조합해 메인×서브×서브×서브+@의 후반 파고들기 구조를 만든다.'},
+          {role:'system',content:'너는 재운컴퍼니 GAME_SEED 조합 AI다. 재료를 게임으로 오해하지 말고 여러 출처의 추상 재료를 독립 게임 설계 후보로 조합한다. 코드 생성 전에 실제 월드와 플레이 흐름을 GAMEPLAY_SKETCH로 먼저 구성한다. 재미·밸런스·페이싱·성장·중후반 확장·완성 기준을 서로 연결하고 수치만 키운 복제 콘텐츠를 금지한다. GAMEPLAY_SKETCH v3에서는 메인 장르만 바꾸는 반복을 피하고 고전 카드·보드·아케이드부터 현대 보드/수집/생활/사회경제 규칙까지 다른 계통의 메커니즘을 재조합해 메인×서브×서브×서브+@의 후반 파고들기 구조를 만든다. 세계관도 단일 레퍼런스 복제가 아니라 역사·신화·고전문학·민담·미스터리·공포·세력정치·관계극 DNA를 융합하고, 그 결과를 NPC/동료/서브퀘/세력/지역/경제/수집/탐험 상태와 연결한다.'},
           {role:'user',content:prompt},
         ],
         options:{temperature:0.25,num_ctx:16384,num_predict:7000},
