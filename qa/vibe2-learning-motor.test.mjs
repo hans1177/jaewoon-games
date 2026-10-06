@@ -239,6 +239,31 @@ test('seeded advanced graphics knowledge is retrieved for aesthetics rig materia
   assert.equal(ctx.externalAiDistilled.every(row=>row.state!=='RETIRED'),true);
 });
 
+test('advanced Roblox production systems advisory is retrieved for combat pathfinding streaming cross-server and parallel Luau work',()=>{
+  const distilled=JSON.parse(fs.readFileSync('.vibe2/external-ai-distilled-knowledge.json','utf8'));
+  const ctx=retrieveUnifiedLearning({
+    task:{
+      gameId:'roblox-production-demo',
+      target:'roblox',
+      taskType:'coding',
+      goal:'repair server authoritative combat remote validation, NPC pathfinding performance, streaming lifecycle, matchmaking cross-server replication, and parallel Luau worker commit'
+    },
+    experienceInput:{records:[]},
+    codePatternsInput:{patterns:[]},
+    playbooksInput:{taskTypes:{}},
+    practiceDistilledInput:{entries:[]},
+    externalAiDistilledInput:distilled,
+    masteryInput:{}
+  });
+  const ids=ctx.externalAiDistilled.map(row=>row.id);
+  assert.ok(ids.includes('external-ai-distilled:openai-roblox-production-systems-v2'));
+  const row=ctx.externalAiDistilled.find(item=>item.id==='external-ai-distilled:openai-roblox-production-systems-v2');
+  assert.ok(row.primaryDomainMatches.includes('COMBAT')||row.primaryDomainMatches.includes('AI')||row.secondaryDomainMatches.includes('NAVIGATION'));
+  assert.ok(row.patterns.some(value=>/intent tickets/i.test(value)));
+  assert.ok(row.patterns.some(value=>/path recomputation/i.test(value)));
+  assert.ok(row.patterns.some(value=>/Parallel Luau/i.test(value)));
+});
+
 test('verified commercial playbook reuse is fully injected and traceable for game development',()=>{
   const reuse=[
     {

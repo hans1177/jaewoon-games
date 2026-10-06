@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "authority": "PRACTICE_ONLY",
   "sourceKind": "teacher",
   "synthetic": true,
@@ -186,6 +186,149 @@
       "tests": [
         "local solve=require(\"./candidate\")\nlocal s={values={},order={}}; for n=1,50 do assert(solve(s,\"k\"..n,n,8)<=8) end; assert(#s.order==8 and s.values.k1==nil and s.values.k50==50)",
         "local solve=require(\"./candidate\")\nlocal s={values={},order={}}; solve(s,\"a\",1,3); solve(s,\"b\",2,3); solve(s,\"a\",9,3); assert(#s.order==2 and s.values.a==9); solve(s,\"c\",3,3); solve(s,\"d\",4,3); assert(#s.order==3 and s.values.a==nil)"
+      ]
+    },
+    {
+      "id": "server-combat-ticket",
+      "level": "고급",
+      "failure": "CLIENT_COMBAT_AUTHORITY_AND_REPLAY",
+      "domains": [
+        "COMBAT",
+        "ROBLOX_REMOTE_SECURITY",
+        "ROBLOX_REPLICATION",
+        "STATE_MACHINE"
+      ],
+      "scenario": "서버 권위 전투 판정 함수(state, playerId, request, now)를 반환하라. playerId와 request.targetId는 state.players에 존재하고 서로 달라야 한다. request.seq는 이전 lastSeq보다 큰 양의 정수여야 한다. 공격 가능 시각 now가 nextAttackAt 이상이고, 거리는 request가 아니라 state.distances[playerId..\":\"..targetId]에서 읽어 state.attackRange 이하여야 한다. 통과하면 lastSeq를 갱신하고 nextAttackAt=now+cooldown, 대상 HP를 state.damage만큼 감소(최소 0)시키고 true. 거부 시 상태를 바꾸지 않고 false. 클라이언트가 damage/distance를 정하게 두지 않는다.",
+      "broken": "return function(state,playerId,request,now)\n local p=state.players[playerId]; local t=state.players[request.targetId]\n t.hp=math.max(0,t.hp-(request.damage or state.damage)); p.lastSeq=request.seq; return true\nend",
+      "reference": "return function(state,playerId,request,now)\n if type(request)~=\"table\" or type(playerId)~=\"string\" or type(now)~=\"number\" then return false end\n local p=state.players[playerId]; local targetId=request.targetId; local t=state.players[targetId]\n local seq=request.seq\n if not p or not t or targetId==playerId or p.hp<=0 or t.hp<=0 then return false end\n if type(seq)~=\"number\" or seq%1~=0 or seq<=0 or seq<=p.lastSeq then return false end\n if now<p.nextAttackAt then return false end\n local distance=state.distances[playerId..\":\"..targetId]\n if type(distance)~=\"number\" or distance<0 or distance>state.attackRange then return false end\n p.lastSeq=seq; p.nextAttackAt=now+state.cooldown; t.hp=math.max(0,t.hp-state.damage); return true\nend",
+      "tests": [
+        "local solve=require(\"./candidate\")\nlocal s={players={a={hp=20,lastSeq=0,nextAttackAt=0},b={hp=30,lastSeq=0,nextAttackAt=0}},distances={[\"a:b\"]=4},attackRange=5,damage=7,cooldown=2}; assert(solve(s,\"a\",{seq=1,targetId=\"b\",damage=999},10)); assert(s.players.b.hp==23 and s.players.a.lastSeq==1 and s.players.a.nextAttackAt==12); assert(not solve(s,\"a\",{seq=1,targetId=\"b\"},13)); assert(not solve(s,\"a\",{seq=2,targetId=\"b\"},11)); assert(s.players.b.hp==23)",
+        "local solve=require(\"./candidate\")\nlocal s={players={a={hp=20,lastSeq=3,nextAttackAt=0},b={hp=8,lastSeq=0,nextAttackAt=0}},distances={[\"a:b\"]=9},attackRange=5,damage=10,cooldown=1}; assert(not solve(s,\"a\",{seq=4,targetId=\"b\",distance=1},5)); assert(s.players.b.hp==8 and s.players.a.lastSeq==3); s.distances[\"a:b\"]=2; assert(solve(s,\"a\",{seq=4,targetId=\"b\"},5)); assert(s.players.b.hp==0)"
+      ]
+    },
+    {
+      "id": "npc-repath-budget",
+      "level": "고급",
+      "failure": "PATHFINDING_RECOMPUTE_STORM",
+      "domains": [
+        "AI",
+        "NAVIGATION",
+        "PERFORMANCE",
+        "RECOVERY"
+      ],
+      "scenario": "NPC 경로 재계산 예산 함수(state, target, now, computePath)를 반환하라. target은 x,z 숫자다. 마지막 target과의 이동량이 state.repathDistance 미만이고 now가 nextRepathAt보다 이르면 기존 path를 그대로 반환하고 계산하지 않는다. 재계산이 필요하면 pcall(computePath,target)을 사용한다. 성공한 비어있지 않은 path만 새 배열로 복사해 저장하고 lastTarget을 복사하며 nextRepathAt=now+repathInterval. 실패/빈 경로는 기존 path와 lastTarget을 보존하고 nextRepathAt=now+retryInterval로 두어 매 프레임 재시도를 막는다. 두 번째 반환값은 새 경로 적용 여부다.",
+      "broken": "return function(state,target,now,computePath)\n local path=computePath(target); state.path=path; state.lastTarget=target; return path,true\nend",
+      "reference": "return function(state,target,now,computePath)\n if type(target)~=\"table\" or type(target.x)~=\"number\" or type(target.z)~=\"number\" then return state.path,false end\n local last=state.lastTarget or target; local dx=target.x-last.x; local dz=target.z-last.z; local moved2=dx*dx+dz*dz; local threshold=state.repathDistance or 0\n if now<(state.nextRepathAt or 0) and moved2<threshold*threshold then return state.path,false end\n local ok,path=pcall(computePath,target)\n if not ok or type(path)~=\"table\" or #path==0 then state.nextRepathAt=now+(state.retryInterval or 0.5); return state.path,false end\n local copy={}; for i,v in ipairs(path) do copy[i]=v end\n state.path=copy; state.lastTarget={x=target.x,z=target.z}; state.nextRepathAt=now+(state.repathInterval or 1); return copy,true\nend",
+      "tests": [
+        "local solve=require(\"./candidate\")\nlocal calls=0; local s={path={\"old\"},lastTarget={x=0,z=0},nextRepathAt=10,repathDistance=4,repathInterval=2,retryInterval=.5}; local p,changed=solve(s,{x=1,z=1},5,function() calls+=1; return {\"new\"} end); assert(not changed and p[1]==\"old\" and calls==0); local raw={\"a\",\"b\"}; p,changed=solve(s,{x=10,z=0},5,function() calls+=1; return raw end); assert(changed and calls==1 and p[1]==\"a\" and s.nextRepathAt==7); raw[1]=\"mutated\"; assert(s.path[1]==\"a\")",
+        "local solve=require(\"./candidate\")\nlocal s={path={1,2},lastTarget={x=0,z=0},nextRepathAt=0,repathDistance=1,repathInterval=3,retryInterval=2}; local p,changed=solve(s,{x=5,z=0},10,function() error(\"blocked\") end); assert(not changed and p[1]==1 and s.lastTarget.x==0 and s.nextRepathAt==12); local calls=0; solve(s,{x=5,z=0},11,function() calls+=1; return {9} end); assert(calls==0)"
+      ]
+    },
+    {
+      "id": "streaming-reference-guard",
+      "level": "실전",
+      "failure": "STREAMED_INSTANCE_STALE_REFERENCE",
+      "domains": [
+        "STREAMING",
+        "ROBLOX_CHARACTER_STATE",
+        "UI_STATE",
+        "RECOVERY"
+      ],
+      "scenario": "Streaming 환경의 임시 참조를 안전하게 재획득하는 함수(state,id,resolve)를 반환하라. id는 빈 문자열이 아닌 string. state.refs[id]가 loaded=true이고 worldVersion이 현재 state.worldVersion과 같으면 값 사용. 아니면 resolve(id,state.worldVersion)를 pcall로 호출하고 {loaded=true,value=...} 형태의 결과만 새 캐시 wrapper로 저장한다. 실패/미로드는 해당 stale 캐시를 제거하고 nil을 반환한다. 다른 id의 캐시는 건드리지 않는다.",
+      "broken": "return function(state,id,resolve)\n if state.refs[id] then return state.refs[id].value end\n state.refs[id]=resolve(id,state.worldVersion); return state.refs[id].value\nend",
+      "reference": "return function(state,id,resolve)\n if type(id)~=\"string\" or id==\"\" then return nil end\n local cached=state.refs[id]\n if cached and cached.loaded==true and cached.worldVersion==state.worldVersion then return cached.value end\n local ok,row=pcall(resolve,id,state.worldVersion)\n if not ok or type(row)~=\"table\" or row.loaded~=true or row.value==nil then state.refs[id]=nil; return nil end\n state.refs[id]={loaded=true,worldVersion=state.worldVersion,value=row.value}; return row.value\nend",
+      "tests": [
+        "local solve=require(\"./candidate\")\nlocal calls=0; local s={worldVersion=1,refs={door={loaded=true,worldVersion=1,value=\"A\"}}}; assert(solve(s,\"door\",function() calls+=1 end)==\"A\" and calls==0); s.worldVersion=2; assert(solve(s,\"door\",function(id,v) calls+=1; return {loaded=true,value=id..v} end)==\"door2\" and calls==1); assert(s.refs.door.worldVersion==2)",
+        "local solve=require(\"./candidate\")\nlocal s={worldVersion=4,refs={x={loaded=true,worldVersion=3,value=7},keep={loaded=true,worldVersion=4,value=9}}}; assert(solve(s,\"x\",function() return {loaded=false} end)==nil); assert(s.refs.x==nil and s.refs.keep.value==9); assert(solve(s,\"\",function() error(\"no\") end)==nil)"
+      ]
+    },
+    {
+      "id": "memory-lease-fencing",
+      "level": "최고급",
+      "failure": "STALE_MATCH_LEASE_COMMIT",
+      "domains": [
+        "ROBLOX_MULTIPLAYER",
+        "STATE_MACHINE",
+        "RECOVERY",
+        "SECURITY"
+      ],
+      "scenario": "MemoryStore 같은 임시 lease의 fencing commit을 연습하는 함수(state,key,owner,token,value,now)를 반환하라. state.leases[key]에는 owner,token,expiresAt가 있다. key/owner는 string, token은 양의 정수, now 숫자. 현재 lease가 존재하고 owner/token이 정확히 같으며 now < expiresAt일 때만 state.values[key]=value로 commit하고 true. 만료·다른 owner·오래된 token은 false이고 기존 값은 보존한다. stale holder가 새 lease 이후 결과를 덮어쓰면 안 된다.",
+      "broken": "return function(state,key,owner,token,value,now)\n state.values[key]=value; return true\nend",
+      "reference": "return function(state,key,owner,token,value,now)\n if type(key)~=\"string\" or key==\"\" or type(owner)~=\"string\" or owner==\"\" or type(token)~=\"number\" or token%1~=0 or token<=0 or type(now)~=\"number\" then return false end\n local lease=state.leases[key]\n if not lease or lease.owner~=owner or lease.token~=token or now>=lease.expiresAt then return false end\n state.values[key]=value; return true\nend",
+      "tests": [
+        "local solve=require(\"./candidate\")\nlocal s={leases={m={owner=\"a\",token=4,expiresAt=20}},values={m=\"old\"}}; assert(not solve(s,\"m\",\"a\",3,\"stale\",10)); assert(not solve(s,\"m\",\"b\",4,\"other\",10)); assert(not solve(s,\"m\",\"a\",4,\"expired\",20)); assert(s.values.m==\"old\"); assert(solve(s,\"m\",\"a\",4,\"new\",19.9)); assert(s.values.m==\"new\")",
+        "local solve=require(\"./candidate\")\nlocal s={leases={q={owner=\"worker2\",token=12,expiresAt=101}},values={q=5}}; for token=1,11 do assert(not solve(s,\"q\",\"worker1\",token,99,90)) end; assert(s.values.q==5); assert(solve(s,\"q\",\"worker2\",12,8,100)); assert(s.values.q==8)"
+      ]
+    },
+    {
+      "id": "messaging-canonical-refresh",
+      "level": "최고급",
+      "failure": "CROSS_SERVER_MESSAGE_PAYLOAD_TRUST",
+      "domains": [
+        "ROBLOX_MULTIPLAYER",
+        "ROBLOX_REPLICATION",
+        "STATE_MACHINE",
+        "RECOVERY"
+      ],
+      "scenario": "MessagingService 같은 at-least-once 알림을 처리하는 함수(state,event,fetch) 를 반환하라. event.id와 event.key는 빈 문자열이 아닌 string이어야 한다. 이미 state.seen[id]면 true로 종료. 새 메시지는 event.payload를 권위 상태로 쓰지 말고 fetch(key)를 pcall하여 canonical {version,payload}를 가져온다. fetch 실패/형식 오류는 false이고 seen 처리하지 않아 재시도 가능해야 한다. 성공했는데 version<=state.version이면 seen만 기록하고 true. 더 새 버전이면 payload를 새 table로 복사해 snapshot/version을 갱신한 뒤 seen 기록. 알림은 힌트이고 canonical fetch가 진실이다.",
+      "broken": "return function(state,event,fetch)\n state.snapshot=event.payload; state.version=event.version; state.seen[event.id]=true; return true\nend",
+      "reference": "return function(state,event,fetch)\n if type(event)~=\"table\" or type(event.id)~=\"string\" or event.id==\"\" or type(event.key)~=\"string\" or event.key==\"\" then return false end\n if state.seen[event.id] then return true end\n local ok,row=pcall(fetch,event.key)\n if not ok or type(row)~=\"table\" or type(row.version)~=\"number\" or row.version%1~=0 or type(row.payload)~=\"table\" then return false end\n if row.version>state.version then local copy={}; for k,v in row.payload do copy[k]=v end; state.snapshot=copy; state.version=row.version end\n state.seen[event.id]=true; return true\nend",
+      "tests": [
+        "local solve=require(\"./candidate\")\nlocal s={version=2,snapshot={score=2},seen={}}; local evil={score=999}; assert(solve(s,{id=\"e1\",key=\"p\",version=99,payload=evil},function() return {version=3,payload={score=7}} end)); assert(s.version==3 and s.snapshot.score==7 and s.seen.e1); evil.score=1; assert(s.snapshot.score==7); assert(solve(s,{id=\"e1\",key=\"p\"},function() error(\"must not call\") end))",
+        "local solve=require(\"./candidate\")\nlocal s={version=5,snapshot={x=5},seen={}}; assert(not solve(s,{id=\"retry\",key=\"k\"},function() error(\"503\") end)); assert(not s.seen.retry and s.version==5); assert(solve(s,{id=\"retry\",key=\"k\"},function() return {version=4,payload={x=4}} end)); assert(s.seen.retry and s.version==5 and s.snapshot.x==5)"
+      ]
+    },
+    {
+      "id": "tagged-instance-lifecycle",
+      "level": "실전",
+      "failure": "COLLECTION_TAG_HANDLER_DUPLICATION",
+      "domains": [
+        "ROBLOX_CHARACTER_STATE",
+        "DEBUGGING",
+        "PERFORMANCE"
+      ],
+      "scenario": "CollectionService 태그처럼 등장/퇴장하는 객체의 연결을 정확히 한 번 유지하는 함수(state,id,present,connect)를 반환하라. present=true이고 state.connections[id]가 없을 때만 connect(id)를 호출해 disconnect 함수를 저장한다. 이미 있으면 재연결 금지. present=false이면 기존 disconnect를 한 번 호출하고 제거한다. 반환값은 현재 활성 연결 수. 반복 add/remove 이벤트에도 누수·중복이 없어야 한다.",
+      "broken": "return function(state,id,present,connect)\n if present then state.connections[id]=connect(id) end\n local n=0; for _ in state.connections do n+=1 end; return n\nend",
+      "reference": "return function(state,id,present,connect)\n if type(id)~=\"string\" or id==\"\" then return 0 end\n local current=state.connections[id]\n if present then if not current then state.connections[id]=connect(id) end elseif current then current(); state.connections[id]=nil end\n local n=0; for _ in state.connections do n+=1 end; return n\nend",
+      "tests": [
+        "local solve=require(\"./candidate\")\nlocal live=0; local calls=0; local s={connections={}}; local function connect(id) calls+=1; live+=1; local closed=false; return function() if not closed then closed=true; live-=1 end end end; for _=1,10 do assert(solve(s,\"enemy\",true,connect)==1) end; assert(calls==1 and live==1); assert(solve(s,\"enemy\",false,connect)==0 and live==0); assert(solve(s,\"enemy\",false,connect)==0 and live==0)",
+        "local solve=require(\"./candidate\")\nlocal live=0; local s={connections={}}; local function connect() live+=1; return function() live-=1 end end; for n=1,20 do solve(s,\"x\"..n,true,connect) end; assert(live==20); for n=1,20,2 do solve(s,\"x\"..n,false,connect) end; assert(live==10)"
+      ]
+    },
+    {
+      "id": "remote-token-bucket",
+      "level": "고급",
+      "failure": "REMOTE_RATE_LIMIT_BYPASS",
+      "domains": [
+        "ROBLOX_REMOTE_SECURITY",
+        "SECURITY",
+        "PERFORMANCE",
+        "ROBLOX_MULTIPLAYER"
+      ],
+      "scenario": "서버 Remote rate-limit 함수(state,playerId,now,cost)를 반환하라. state.players[playerId]가 있어야 하고 cost는 0보다 크고 capacity 이하 숫자여야 한다. bucket은 tokens,lastAt. 처음이면 capacity로 시작. 시간 역행은 거부한다. elapsed에 refillPerSecond를 곱해 capacity까지 보충하고 lastAt을 now로 갱신한다. tokens<cost면 false, 충분하면 cost를 차감하고 true. 클라이언트 cooldown 주장은 사용하지 않는다.",
+      "broken": "return function(state,playerId,now,cost)\n state.calls[playerId]=(state.calls[playerId] or 0)+1; return true\nend",
+      "reference": "return function(state,playerId,now,cost)\n if not state.players[playerId] or type(now)~=\"number\" or type(cost)~=\"number\" or cost<=0 or cost>state.capacity then return false end\n local b=state.buckets[playerId]\n if not b then b={tokens=state.capacity,lastAt=now}; state.buckets[playerId]=b end\n if now<b.lastAt then return false end\n b.tokens=math.min(state.capacity,b.tokens+(now-b.lastAt)*state.refillPerSecond); b.lastAt=now\n if b.tokens<cost then return false end\n b.tokens-=cost; return true\nend",
+      "tests": [
+        "local solve=require(\"./candidate\")\nlocal s={players={a=true},buckets={},capacity=5,refillPerSecond=2}; for n=1,5 do assert(solve(s,\"a\",0,1)) end; assert(not solve(s,\"a\",0,1)); assert(solve(s,\"a\",.5,1)); assert(not solve(s,\"a\",.5,1)); assert(s.buckets.a.tokens==0)",
+        "local solve=require(\"./candidate\")\nlocal s={players={p=true},buckets={},capacity=3,refillPerSecond=1}; assert(solve(s,\"p\",10,3)); assert(not solve(s,\"p\",9,1)); assert(not solve(s,\"missing\",11,1)); assert(solve(s,\"p\",13,3)); assert(not solve(s,\"p\",13,4))"
+      ]
+    },
+    {
+      "id": "parallel-generation-merge",
+      "level": "최고급",
+      "failure": "PARALLEL_STALE_RESULT_COMMIT",
+      "domains": [
+        "PERFORMANCE",
+        "STATE_MACHINE",
+        "ROBLOX_REPLICATION",
+        "RECOVERY"
+      ],
+      "scenario": "Parallel Luau/Actor 작업 결과를 canonical 상태에 합치는 순수 commit 함수(state,generation,result)를 반환하라. generation은 현재 state.generation과 정확히 같아야 하고 result.updates는 table. 모든 key가 string, value가 number인지 먼저 전체 검증한 뒤에만 state.values에 적용한다. 하나라도 잘못되면 부분 적용 없이 false. 오래된 generation 결과는 false. worker는 계산만 하고 canonical mutation은 동기화된 commit 경계에서만 한다.",
+      "broken": "return function(state,generation,result)\n for k,v in result.updates do state.values[k]=v end; return true\nend",
+      "reference": "return function(state,generation,result)\n if generation~=state.generation or type(result)~=\"table\" or type(result.updates)~=\"table\" then return false end\n local staged={}; for k,v in result.updates do if type(k)~=\"string\" or type(v)~=\"number\" then return false end; staged[k]=v end\n for k,v in staged do state.values[k]=v end; return true\nend",
+      "tests": [
+        "local solve=require(\"./candidate\")\nlocal s={generation=4,values={a=1,b=2}}; assert(not solve(s,3,{updates={a=9}})); assert(s.values.a==1); assert(solve(s,4,{updates={a=5,c=7}})); assert(s.values.a==5 and s.values.c==7)",
+        "local solve=require(\"./candidate\")\nlocal s={generation=8,values={safe=10}}; assert(not solve(s,8,{updates={safe=99,bad=\"x\"}})); assert(s.values.safe==10 and s.values.bad==nil); assert(not solve(s,9,{updates={safe=77}})); assert(s.values.safe==10)"
       ]
     }
   ],
