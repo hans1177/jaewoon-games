@@ -682,20 +682,6 @@ export function collectNativeAssetRuntimePromotionCandidates({order={},candidate
   return Object.freeze([...rows.values()]);
 }
 export const ROBLOX_INTERNAL_ASSET_FAMILIES=ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES;
-const ROBLOX_INTERNAL_ASSET_SYSTEM_PATTERNS=Object.freeze({
-  CHARACTER:/\b(?:Players|LocalPlayer|CharacterAdded|Humanoid|character|avatar|npc)\b/i,
-  CREATURE:/\b(?:enemy|monster|boss|creature|mob|wildlife|beetle|spider|wolf|bear|golem)\b/i,
-  BUILDING:/\b(?:building|house|shop|school|temple|castle|dungeon|interior|wall|roof|foundation|settlement|village)\b/i,
-  ENVIRONMENT:/\b(?:Terrain|Lighting|Atmosphere|biome|forest|desert|snow|swamp|cave|environment|landmark|world|workspace)\b/i,
-  WEAPON:/\b(?:weapon|sword|blade|spear|axe|hammer|bow|gun|staff|shield|equip|loadout)\b/i,
-  SKILL:/\b(?:skill|ability|cast|projectile|beam|aoe|spell|ultimate|telegraph|summon|buff|debuff)\b/i,
-  MATERIAL:/\b(?:Enum\.Material|SurfaceAppearance|MaterialVariant|TextureID|material|surface)\b/i,
-  AUDIO:/\b(?:SoundService|SoundId|Instance\.new\(["']Sound["']\)|bgm|music|sfx|audio)\b/i,
-  VFX:/\b(?:ParticleEmitter|Beam|Trail|vfx|effect|burst|flash|particle|telegraph)\b/i,
-  UI:/\b(?:ScreenGui|Frame|TextLabel|TextButton|ImageLabel|ImageButton|hud|menu|inventory|quest|shop|button)\b/i,
-  MOTION:/\b(?:Animator|AnimationTrack|Animation|TweenService|Motor6D|Bone|RenderStepped|Heartbeat|motion|locomotion|idle|walk|run)\b/i,
-  PROP:/\b(?:prop|chest|crate|barrel|lamp|workbench|furniture|sign|pickup|resource|tree|rock|item)\b/i
-});
 function robloxInternalAssetTraceStripped(text=''){
   return String(text||'')
     .replace(/--[^\n]*/g,' ')
