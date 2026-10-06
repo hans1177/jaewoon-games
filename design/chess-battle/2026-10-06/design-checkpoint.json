@@ -3,30 +3,16 @@
   "gameId": "chess-battle",
   "date": "2026-10-06",
   "seedId": "OWNER-ENROLL-CHESS-BATTLE-20260913",
-  "fingerprint": "6c2c1a673ec6337895be776aa2636432ab088511fb465f3f23f083b65b9838fe",
+  "fingerprint": "36efe0fd7dcca34f7bace839423d677b9bf4fc832550af5b79d158b19d2104b5",
   "policyDigest": "72678e3ae710034216f0914408dfdd5cd9928d25b7dae465d8f466a62e894349",
   "engineDigest": "0af5b058a6b812d2ff192b51597b738252ed24acacea496d47a0bf071af64568",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
   "tasks": {},
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 0,
-      "failures": 2,
-      "timeouts": 2,
-      "jsonFailures": 0,
-      "totalMs": 210161,
-      "lastMs": 90060,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 90000ms",
-      "updatedAt": "2026-10-06T09:36:03.287Z"
-    }
-  },
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-06T09:32:32.700Z",
-  "updatedAt": "2026-10-06T09:36:03.288Z",
-  "failedPhase": "designer_draft",
-  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=OPTIONAL_EXTERNAL_AI_DISABLED local=OLLAMA_DESIGN_TIMEOUT 90000ms"
+  "createdAt": "2026-10-06T09:48:39.635Z",
+  "updatedAt": "2026-10-06T09:48:39.746Z"
 }
