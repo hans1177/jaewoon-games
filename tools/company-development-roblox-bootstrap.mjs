@@ -943,7 +943,8 @@ function bindExistingClientStudioAssets(source='',familyStatus={}){
     ?Number(learningContext.index||0)+learningContext[0].length
     :requireMatch.index+requireMatch[0].length;
   const tail=output.slice(insertAt).replace(/^\n*/,'');
-  output=output.slice(0,insertAt).replace(/\n*$/,'\n')+block+tail;
+  const prefix=output.slice(0,insertAt).replace(/\n*$/,'');
+  output=prefix+(learningContext?'\n\n':'\n')+block+tail;
   const studioUiVisualMissing=!/StudioAssetFramePanel/.test(output);
   const studioUiTraceMissing=!/SetAttribute\s*\(\s*["']StudioAssetBindingVersion["']/.test(output);
   if(studioUiVisualMissing||studioUiTraceMissing){
