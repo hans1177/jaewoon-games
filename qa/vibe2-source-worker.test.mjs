@@ -365,6 +365,36 @@ test('single motion generation sends a required nonempty patch schema through th
   assert.equal(result.generation.completionMode,'JSON_SINGLE_MOTION');
   assert.equal(result.candidateValidation.runtimeVerified,false);
 });
+
+test('asset-development Roblox single motion uses the central bounded focused budget',async t=>{
+  const f=singleMotionFixture(t);
+  const response=path.join(f.sourceRoot,'asset-motion.json');
+  write(response,JSON.stringify(f.candidate));
+  const previousLane=process.env.VIBE2_EXECUTION_LANE;
+  process.env.VIBE2_EXECUTION_LANE='asset-development';
+  try{
+    const prompt=buildPrompt(
+      {...f.order,target:'roblox',source:{internalAssetMotion:true},goal:'Improve the exact existing walk motion only'},
+      {files:[{path:'motion.js',content:f.unit.sourceWindow,editable:true}]},
+      f.responsibleFiles
+    );
+    assert.ok(Buffer.byteLength(prompt,'utf8')<20000);
+    const result=await generateCandidateWithRecovery({
+      prompt,target:'roblox',sourceRoot:f.sourceRoot,sourceRootRelative:'assets/roblox/world-ghosts/motions/bride',
+      responsibleFiles:f.responsibleFiles,allowFullRewrite:false,singleMotionWorkUnit:true,responseFiles:[response],
+      candidateValidator(candidate){const check=evaluateSingleMotionWorkUnit({...f,candidate});if(!check.pass)throw new Error(check.reason);return check;}
+    });
+    assert.equal(result.generation.baseAttemptBudget,3);
+    assert.equal(result.generation.effectiveAttemptBudget,3);
+    assert.equal(result.generation.maxPredict,768);
+    assert.equal(result.generation.timeoutMs,120000);
+    assert.equal(result.generation.contextWindow,8192);
+    assert.equal(result.generation.completionMode,'JSON_SINGLE_MOTION');
+  }finally{
+    if(previousLane===undefined)delete process.env.VIBE2_EXECUTION_LANE;
+    else process.env.VIBE2_EXECUTION_LANE=previousLane;
+  }
+});
 test('internal motion coaching selects source-hash-bound matching anatomy and never claims learned weights or runtime quality',()=>{
   const make=(id,clipId='walk')=>buildInternalMotionCoaching({order:{source:{internalAssetMotion:true},assetProduction:{motionRepairWorkUnit:{scope:'INTERNAL_ASSET_LIBRARY',objectId:'roblox-world-ghost-'+id,clipId}}}});
   const beast=make('bulgasari'),shroud=make('gwisin-bride'),serpent=make('gangcheori');
@@ -1507,6 +1537,46 @@ test('asset-development Roblox graphics starts with bounded focused local-model 
     if(previousLane===undefined)delete process.env.VIBE2_EXECUTION_LANE;
     else process.env.VIBE2_EXECUTION_LANE=previousLane;
   }
+});
+
+
+test('asset-development focused Roblox prompt compacts oversized verified learning without losing identity',()=>{
+  const id='external-asset-focused-learning';
+  const rows=[];
+  for(let index=0;index<80;index++){
+    rows.push('DISPOSITION=p'+index+':APPLIED_GAME_SOURCE;GAME=demo;TARGET=roblox;DOMAINS=GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION;GENRE_MOOD=demo');
+    rows.push('APPLY=id=p'+index+';lesson='+('preserve visible style and native motion '.repeat(45)));
+  }
+  const learning=[
+    '[VERIFIED EXTERNAL BLACK-BOX LEARNING BEGIN]',
+    'dispositions=80/80; sourcePrinciples=80; validationOnly=0; truncation=FORBIDDEN',
+    'sourcePromptScope=ALL_DISPOSED_APPLICATION_PRINCIPLES; nonSourceAvoidanceAndUsePolicy=RETAINED_IN_VERIFIED_MEMORY_AND_QA',
+    '[EXTERNAL_LEARNING '+id+']',
+    ...rows,
+    '[END_EXTERNAL_LEARNING '+id+']',
+    '[VERIFIED EXTERNAL BLACK-BOX LEARNING END]'
+  ].join('\n');
+  const relative='client/Game.client.luau';
+  const source='local panel = Instance.new("Frame")\npanel.BackgroundColor3 = Color3.fromRGB(18,28,48)\n';
+  const prompt=[
+    'Goal: presentation asset adaptation with native motion',
+    'Engine: roblox',
+    'Allowed edit paths: '+relative,
+    '[PRESENTATION_PASS:ASSET_ADAPTATION]',
+    learning,
+    '[STUDIO ASSET QUALITY CORE BEGIN]',
+    'Runtime capture and before/after comparison remain required for visual closure.',
+    '[STUDIO ASSET QUALITY CORE END]',
+    '=== FILE '+relative+' [EDITABLE] ===',
+    source
+  ].join('\n');
+  assert.ok(Buffer.byteLength(prompt,'utf8')>100000);
+  const focused=buildFocusedReplaceOnlyPrompt(prompt,{responsibleFiles:[relative]});
+  assert.ok(focused);
+  assert.ok(Buffer.byteLength(focused.prompt,'utf8')<24000);
+  assertVerifiedExternalLearningPromptCoverage(focused.prompt,{required:true,ids:[id]});
+  assert.match(focused.prompt,/\[STUDIO ASSET QUALITY CORE BEGIN\]/);
+  assert.match(focused.prompt,/Runtime capture and before\/after comparison remain required/);
 });
 
 test('asset-development studio quality core survives initial focused and compact retry prompts',()=>{
