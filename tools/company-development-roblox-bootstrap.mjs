@@ -93,9 +93,13 @@ export function robloxStudioAssetFamilyStatusFromSource(source={}){
 
 function robloxStudioAssetFamilyRefPattern(family=''){
   const value=clean(family);
+  const legacyUiAtom=value==='UI'
+    ?'|hasStudio(?:Asset)?Atom\\s*\\(\\s*["\\\'][^"\\\']+["\\\']\\s*\\)'
+    :'';
   return new RegExp(
     '(?:studioAssetFamily\\s*\\(\\s*["\\\']'+value+'["\\\']'
       +'|hasStudio(?:Asset)?Atom\\s*\\(\\s*["\\\']'+value+'["\\\']'
+      +legacyUiAtom
       +'|STUDIO_ASSET_SELECTION\\s*\\.\\s*'+value
       +'|STUDIO_ASSET_SELECTION\\s*\\[\\s*["\\\']'+value+'["\\\']\\s*\\])',
     'ig'
