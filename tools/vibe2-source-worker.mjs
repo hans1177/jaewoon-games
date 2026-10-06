@@ -798,12 +798,18 @@ export function evaluateRobloxInternalAssetFamilyBindingCandidate({candidate={},
 }
 
 const ALL_GAME_INTERNAL_ASSET_SYSTEM_PATTERNS=Object.freeze({
-  ...ROBLOX_INTERNAL_ASSET_SYSTEM_PATTERNS,
   CHARACTER:/\b(?:character|avatar|npc|CharacterController|SkinnedMeshRenderer)\b/i,
-  ENVIRONMENT:/\b(?:Terrain|Lighting|Atmosphere|RenderSettings|Skybox|biome|forest|desert|environment|world)\b/i,
+  CREATURE:/\b(?:enemy|monster|boss|creature|mob|wildlife|beetle|spider|wolf|bear|golem|NavMeshAgent)\b/i,
+  BUILDING:/\b(?:building|house|shop|school|temple|castle|dungeon|interior|wall|roof|foundation|settlement|village|Prefab)\b/i,
+  ENVIRONMENT:/\b(?:Terrain|Lighting|Atmosphere|RenderSettings|Skybox|biome|forest|desert|snow|swamp|cave|environment|world)\b/i,
+  WEAPON:/\b(?:weapon|sword|blade|spear|axe|hammer|bow|gun|staff|shield|equip|loadout)\b/i,
+  SKILL:/\b(?:skill|ability|cast|projectile|beam|aoe|spell|ultimate|telegraph|summon|buff|debuff|ParticleSystem)\b/i,
+  MATERIAL:/\b(?:Material|Shader|Renderer|SurfaceAppearance|MaterialVariant|TextureID|fillStyle|strokeStyle|gradient|filter)\b/i,
   AUDIO:/\b(?:AudioSource|AudioClip|AudioMixer|AudioContext|HTMLAudioElement|bgm|music|sfx|audio)\b/i,
+  VFX:/\b(?:ParticleSystem|ParticleEmitter|VisualEffect|TrailRenderer|LineRenderer|Beam|Trail|vfx|effect|burst|flash|particle|telegraph)\b/i,
   UI:/\b(?:Canvas|Image|Button|TMP_Text|TextMeshPro|RectTransform|HTMLElement|hud|menu|inventory|quest|shop|button)\b/i,
-  MOTION:/\b(?:Animator|Animation|PlayableGraph|Tween|requestAnimationFrame|motion|locomotion)\b/i
+  MOTION:/\b(?:Animator|Animation|PlayableGraph|Tween|requestAnimationFrame|motion|locomotion)\b/i,
+  PROP:/\b(?:prop|chest|crate|barrel|lamp|workbench|furniture|sign|pickup|resource|tree|rock|item|Collider)\b/i
 });
 const ALL_GAME_INTERNAL_ASSET_NATIVE_PATTERNS=Object.freeze({
   unity:Object.freeze({
