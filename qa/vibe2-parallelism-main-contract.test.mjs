@@ -50,7 +50,8 @@ test('fan-in refill suppresses only exact pending same-lane duplicate before dis
   assert.doesNotMatch(micro,/states=new Set\([^\n]*in_progress/);
   const fallbackStart=core.indexOf('      - name: Event-driven fan-in refill fallback');
   assert.ok(fallbackStart>=0);
-  const fallback=core.slice(fallbackStart,core.indexOf('\n  ',fallbackStart+8)>fallbackStart?core.indexOf('\n  ',fallbackStart+8):core.length);
+  const fallbackNextStep=core.indexOf('\n      - name:',fallbackStart+1);
+  const fallback=core.slice(fallbackStart,fallbackNextStep>fallbackStart?fallbackNextStep:core.length);
   assert.match(fallback,/DEDUPED_PENDING_SAME_LANE/);
   assert.doesNotMatch(fallback,/states=new Set\([^\n]*in_progress/);
 });
