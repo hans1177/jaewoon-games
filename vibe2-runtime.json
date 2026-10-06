@@ -806,6 +806,18 @@
       "constitutionalEnforcementPreserved": true,
       "observationFailureAction": "RUN_TARGETED_QA",
       "qualityGateWeakening": false
+    },
+    "gamePrimaryMaxWorkMinutes": 60,
+    "gamePrimaryMinimumWorkMinutes": 0,
+    "gamePrimaryEarlyCompletionAllowed": true,
+    "gamePrimaryWorkBudgetMode": "MAXIMUM_NOT_MINIMUM",
+    "gamePrimaryWorkBudgetScope": "EXISTING_GAME_PRIMARY_BUILD_UP_WORKER_ONLY",
+    "gamePrimaryWorkBudgetPreserves": {
+      "modelTimeoutAndRetry": true,
+      "fixedLogicalSlots64": true,
+      "workLockSemantics": true,
+      "incrementalQa": true,
+      "canonicalF0ThroughF9": true
     }
   },
   "adaptiveBackpressure": {
