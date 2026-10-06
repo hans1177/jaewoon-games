@@ -3025,7 +3025,7 @@ test('focused replace recovery budget matches the central fast-path contract',()
   const focusedTimeout=Number(source.match(/const JSON_FOCUSED_REPLACE_TIMEOUT_MS=(\d+);/)?.[1]||0);
   const focusedContext=Number(source.match(/const JSON_FOCUSED_REPLACE_CONTEXT_WINDOW=(\d+);/)?.[1]||0);
   assert.equal(focusedPredict,384);
-  assert.match(source,/const JSON_FOCUSED_REPLACE_TIMEOUT_MS=Math\.max\(120000,DEFAULT_TIMEOUT_MS\);/);
+  assert.equal(focusedTimeout,90000);
   assert.equal(focusedContext,8192);
 });
 
@@ -3644,7 +3644,7 @@ test('second no-op receives one short focused third retry', async () => {
   assert.equal(result.generation.recoveryUsed,true);
   assert.equal(result.generation.focusedFinalRetry,true);
   assert.equal(result.generation.focusedReplaceOnly,true);
-  assert.equal(result.generation.timeoutMs,240000);
+  assert.equal(result.generation.timeoutMs,90000);
   assert.equal(result.generation.maxPredict,384);
   assert.equal(result.generation.temperature,0.08);
   assert.deepEqual(result.changedFiles,['index.html']);
@@ -4269,7 +4269,7 @@ test('Unity Studio timeout recovery pins one exact responsible file before anoth
   assert.match(source,/const UNITY_STUDIO_FOCUSED_TIMEOUT_MS=120000/);
   assert.match(source,/const unityStudioTimeoutFocusedRecovery=!allowFullRewrite[\s\S]*?target==='unity'[\s\S]*?studioExpansion[\s\S]*?priorFailureClass==='TIMEOUT'/);
   assert.match(source,/VIBE2_UNITY_STUDIO_TIMEOUT_FOCUSED_RECOVERY/);
-  assert.match(source,/unityStudioTimeoutFocusedRecovery\?UNITY_STUDIO_FOCUSED_TIMEOUT_MS/);
+  assert.match(source,/const focusedReplaceTimeoutMs=unityStudioTimeoutFocusedRecovery[\s\S]*?\?UNITY_STUDIO_FOCUSED_TIMEOUT_MS/);
 });
 
 test('Unity Studio timeout focused prompt cannot drift to a read-only UnityWebFloorGame path',()=>{
@@ -4353,7 +4353,7 @@ test('first edit-match failure fast-escalates attempt two to exact replace-only 
   assert.equal(result.generation.focusedReplaceOnly,true);
   assert.equal(result.generation.completionMode,'JSON_REPLACE_ONLY');
   assert.equal(result.generation.maxPredict,384);
-  assert.equal(result.generation.timeoutMs,240000);
+  assert.equal(result.generation.timeoutMs,90000);
   assert.deepEqual(result.changedFiles,['index.html']);
 });
 
@@ -5476,9 +5476,11 @@ test('failed source generation still performs post-work shared-context SHA valid
 
 test('focused replace Ollama requests keep canonical budget and enforce one-key schema',()=>{
   const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
-  assert.match(source,/JSON_FOCUSED_REPLACE_TIMEOUT_MS=Math\.max\(120000,DEFAULT_TIMEOUT_MS\)/);
+  assert.match(source,/JSON_FOCUSED_REPLACE_TIMEOUT_MS=90000/);
   assert.match(source,/JSON_FOCUSED_REPLACE_MAX_PREDICT=384/);
   assert.match(source,/JSON_FOCUSED_REPLACE_CONTEXT_WINDOW=8192/);
+  assert.match(source,/focusedReplaceOnly&&!systemAtomicPairCompletion[\s\S]*?focusedReplaceTimeoutMs/);
+  assert.match(source,/focusedReplaceOnly&&!systemAtomicPairCompletion[\s\S]*?JSON_FOCUSED_REPLACE_CONTEXT_WINDOW/);
   assert.ok(source.includes("focusedReplaceOnly?0.08"));
   assert.ok(source.includes("completionMode==='JSON_REPLACE_ONLY'?{type:'object',properties:{replace:{type:'string'}},required:['replace'],additionalProperties:false}"));
   assert.ok(source.includes("completionMode==='JSON_SINGLE_MOTION'?singleMotionResponseSchema():(/^JSON_/.test(completionMode)?'json':null)"));
@@ -5754,6 +5756,34 @@ test('Studio initial prompt compacts repeated directive prose within the base mo
   assert.equal((initial.match(/^sourceAnchors=/gm)||[]).length,3);
   assert.ok(Buffer.byteLength(initial,'utf8')<50000);
   assert.equal(sourcePromptContextWindow(initial,{baseContextWindow:16384,maxPredict:3072}),16384);
+});
+
+test('zero-output focused retry compacts oversized goal into the canonical 8K context budget',()=>{
+  const cwd=tempRoot();
+  const relative='index.html';
+  write(path.join(cwd,relative),[
+    '<main id="game"></main>',
+    '<script>',
+    'function draw(){ state.frames += 1; }',
+    '</script>'
+  ].join('\n')+'\n');
+  const prompt=[
+    'Engine: web',
+    'Goal: '+('preserve existing gameplay while improving the exact visible responsibility '.repeat(4000)),
+    'Allowed edit paths: '+relative,
+    '=== FILE '+relative+' [EDITABLE] ===',
+    fs.readFileSync(path.join(cwd,relative),'utf8')
+  ].join('\n');
+  const focused=buildFocusedReplaceOnlyPrompt(prompt,{
+    error:new Error('Ollama 첫 출력 시간 초과: 120000ms'),
+    responsibleFiles:[relative],
+    sourceRoot:cwd
+  });
+  assert.ok(focused);
+  assert.ok(Buffer.byteLength(focused.prompt,'utf8')<20000);
+  assert.equal(sourcePromptContextWindow(focused.prompt,{baseContextWindow:8192,maxPredict:384}),8192);
+  assert.match(focused.prompt,/^Goal: /m);
+  assert.match(focused.prompt,/COMPACTED_DUPLICATE_DETAIL/);
 });
 
 test('fan-in accepts only proven model-prompt or deterministic APK learning application',()=>{
@@ -6878,7 +6908,7 @@ test('oversized initial prompt compacts verified external learning without dropp
     'Allowed edit paths: '+file,
     learning,
     `=== FILE ${file} [EDITABLE] ===`,
-    ('public sealed class GameCore { public int Value = 1; }\n').repeat(500)
+    'public sealed class GameCore { public int FocusedLearningAnchor() { return 7; } }\n'
   ].join('\n');
   assert.ok(Buffer.byteLength(prompt,'utf8')>36000);
   const compactLearning=compactVerifiedExternalLearningBlockFromPrompt(prompt);
@@ -6888,6 +6918,18 @@ test('oversized initial prompt compacts verified external learning without dropp
   assertVerifiedExternalLearningPromptCoverage(compact,{required:true,ids:[id]});
   assert.match(compact,/principle-11:APPLIED_GAME_SOURCE/);
   assert.match(compact,/APPLY=principle-11/);
+
+  const focused=buildFocusedReplaceOnlyPrompt(prompt,{
+    error:new Error('Ollama 첫 출력 시간 초과: 120000ms'),
+    responsibleFiles:[file]
+  });
+  assert.ok(focused);
+  const focusedLearning=verifiedExternalLearningBlockFromPrompt(focused.prompt);
+  assert.ok(Buffer.byteLength(focusedLearning,'utf8')<=8000);
+  assertVerifiedExternalLearningPromptCoverage(focused.prompt,{required:true,ids:[id]});
+  assert.match(focused.prompt,/principle-11:APPLIED_GAME_SOURCE/);
+  assert.match(focused.prompt,/APPLY=principle-11/);
+  assert.ok(Buffer.byteLength(focused.prompt,'utf8')<19000);
 });
 
 

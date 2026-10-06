@@ -273,7 +273,7 @@ test('asset Web zero-output and first-output timers keep the normal long model b
   const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.match(source,/ASSET_DEVELOPMENT_WEB_TIMEOUT_MS=Math\.max\(240000,DEFAULT_TIMEOUT_MS\)/);
   assert.match(source,/assetDevelopmentLane&&target==='web'\?ASSET_DEVELOPMENT_WEB_TIMEOUT_MS:ZERO_OUTPUT_RETRY_TIMEOUT_MS/);
-  assert.match(source,/firstOutputTimeoutMs=assetDevelopmentLane&&target==='web'\?ASSET_DEVELOPMENT_WEB_TIMEOUT_MS:MODEL_FIRST_OUTPUT_TIMEOUT_MS/);
+  assert.match(source,/firstOutputTimeoutMs=assetDevelopmentLane&&target==='web'\?ASSET_DEVELOPMENT_WEB_TIMEOUT_MS:Math\.min\(MODEL_FIRST_OUTPUT_TIMEOUT_MS,timeoutMs\)/);
   assert.match(source,/Math\.min\(timeoutMs,firstOutputTimeoutMs\)/);
 });
 
