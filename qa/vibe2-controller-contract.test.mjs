@@ -1673,6 +1673,14 @@ test('game and asset-development workers bind verified learning-runtime playbook
   assert.ok(continuousRunnerSource.includes('VIBE2_COMMERCIAL_BLACK_BOX_INTERNAL_ASSET_DISTILLATION='));
   assert.ok(continuousRunnerSource.includes('VIBE2_COMMERCIAL_BLACK_BOX_REUSE_COUNT='));
   assert.ok(continuousRunnerSource.includes('VIBE2_INTERNAL_ASSET_EVOLUTION_MODE='));
+  assert.ok(continuousRunnerSource.includes("mandatoryVerifiedKnowledgeApplication=!assetDevelopmentLearning&&['roblox','unity','web'].includes(plan.target)"));
+  assert.ok(continuousRunnerSource.includes("verifiedExternalPlaybookRows=freeze(assetDevelopmentLearning?[]:[...(unifiedLearning?.playbookReuse||[])"));
+  assert.ok(continuousRunnerSource.includes("externalLearningMode:assetDevelopmentLearning?'OPTIONAL_ASSET_DEVELOPMENT':'REQUIRED_GAME_TARGET'"));
+  const assetPlanSource=fs.readFileSync('tools/vibe2-asset-production-plan.mjs','utf8');
+  assert.ok(assetPlanSource.includes("assetDevelopmentExecution=clean(executionLane).toLowerCase()==='asset-development'"));
+  assert.ok(assetPlanSource.includes("assetLearningRequired=!assetDevelopmentExecution&&['roblox','unity','web'].includes(resolvedTarget)"));
+  assert.ok(assetPlanSource.includes("externalLearningMode:assetDevelopmentExecution?'OPTIONAL_ASSET_DEVELOPMENT':'REQUIRED_GAME_PRODUCTION'"));
+  assert.ok(assetPlanSource.includes('mandatoryApplicationCoveragePct:assetLearningRequired?100:null'));
 });
 
 
