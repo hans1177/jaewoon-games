@@ -57,13 +57,19 @@ function studioAssetRefreshState({root='',assetLibrary={}}={}){
   const clientConfigBound=/[A-Za-z_][A-Za-z0-9_]*\.StudioAssets/.test(client);
   const clientVisibleBound=/StudioAssetFramePanel/.test(client)
     ||(/StudioAssetBindingVersion/.test(client)&&/StudioAssetAtoms/.test(client)&&/FRAME_PANEL/.test(client)&&/(hasStudioAssetAtom|hasStudioAtom)/.test(client));
+  const selectionTracePresent=/\bSTUDIO_ASSET_SELECTION\s*=\s*\{/.test(client);
+  const statusBlock=client.match(/\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{([\s\S]*?)\}/)?.[1]||'';
+  const requiredFamilies=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'];
+  const familyStatusComplete=requiredFamilies.every(family=>new RegExp('\\b'+family+'\\s*=\\s*["\\\'](?:APPLIED|NOT_APPLICABLE)["\\\']','i').test(statusBlock));
   const refreshRequired=!applied
     ||bindingVersion!==expectedBindingVersion
     ||libraryVersion!==Number(expected.libraryVersion||0)
     ||clientBindingVersion!==expectedBindingVersion
     ||!clientConfigBound
-    ||!clientVisibleBound;
-  return {required:true,refreshRequired,libraryVersion:Number(expected.libraryVersion||0),currentLibraryVersion:libraryVersion,bindingVersion,clientBindingVersion,expectedBindingVersion,applied,clientConfigBound,clientVisibleBound,reason:refreshRequired?'STALE_OR_MISSING_STUDIO_ASSET_BINDING':null};
+    ||!clientVisibleBound
+    ||!selectionTracePresent
+    ||!familyStatusComplete;
+  return {required:true,refreshRequired,libraryVersion:Number(expected.libraryVersion||0),currentLibraryVersion:libraryVersion,bindingVersion,clientBindingVersion,expectedBindingVersion,applied,clientConfigBound,clientVisibleBound,selectionTracePresent,familyStatusComplete,reason:refreshRequired?'STALE_OR_MISSING_STUDIO_ASSET_BINDING':null};
 }
 
 function verifiedExternalLearningRefreshState({root='',playbooks={},gameId='',profile=null}={}){
