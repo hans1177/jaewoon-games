@@ -10,7 +10,7 @@ import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,dete
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
-import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource} from '../tools/company-development-roblox-bootstrap.mjs';
+import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource,robloxStudioAssetFamilyBoundInText} from '../tools/company-development-roblox-bootstrap.mjs';
 
 test('Roblox internal asset selection is genre-agnostic for the same game and library',()=>{
   const assetLibrary=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
@@ -1444,6 +1444,36 @@ test('autonomous planner prioritizes holistic backfill before Studio asset backf
     assert.equal(holistic.studioQualityEvolution?.existingHolisticBackfillRequired,true);
     assert.equal(result.tasks.some(row=>row.id==='demo-roblox-studio-asset-backfill-v1'),false);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('priority Roblox games bind package asset families to actual native consumers in current game source',()=>{
+  const cases=[
+    {
+      gameId:'daechung-rpg',
+      file:'roblox-games/daechung-rpg/client/Game.client.luau',
+      families:['VFX']
+    },
+    {
+      gameId:'horror-escape-room',
+      file:'roblox-games/horror-escape-room/client/Game.client.luau',
+      families:['AUDIO','VFX','PROP']
+    },
+    {
+      gameId:'cozy-island',
+      file:'roblox-games/cozy-island/client/Game.client.luau',
+      families:['CREATURE','ENVIRONMENT','MATERIAL','AUDIO','VFX','MOTION','PROP']
+    }
+  ];
+  for(const row of cases){
+    const source=fs.readFileSync(row.file,'utf8');
+    for(const family of row.families){
+      assert.equal(
+        robloxStudioAssetFamilyBoundInText(source,family),
+        true,
+        row.gameId+':'+family+' must have an actual native source consumer instead of APPLIED/config-only evidence'
+      );
+    }
+  }
 });
 
 test('Roblox Studio asset auto apply requires all family accounting, map assets, selected atom trace, and real native binding',()=>{
