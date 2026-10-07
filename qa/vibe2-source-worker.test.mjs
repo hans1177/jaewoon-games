@@ -5310,7 +5310,55 @@ test('game-specific BUILD_UP directive survives compact generation retries',()=>
 });
 
 
-test('game-specific BUILD_UP worker guidance carries source current-to-intended behavior and player effect',()=>{
+test('game-specific BUILD_UP worker guidance carries detailed verified design into the actual implementation prompt',()=>{
+  const designContext={
+    uxAccessibilityPlan:{touchAndInput:'하단 우측 공격 버튼과 뒤로가기 버튼의 역할을 분리'},
+    narrativeDialoguePlan:{questStates:['퀘스트: 온실 단서 조사 -> 방어 -> 후속 지역 해금']},
+    implementationTraceability:[{designElement:'메뉴 버튼 상태',responsibleSystem:'HUD/Menu state',validationEvidence:'버튼 활성/잠금과 실제 상태 일치'}]
+  };
+  const prompt=buildPrompt({
+    target:'roblox',
+    gameId:'detail-lineage',
+    goal:'상세 설계를 실제 게임 소스에 구현',
+    selectedTask:{buildUpDirective:{
+      directiveId:'detail-lineage-build-up-g1-test',
+      generation:1,
+      developmentDepth:1,
+      escalationStage:'BUILD_UP',
+      primaryFocus:'USABILITY',
+      gameIdentityAndNonNegotiables:{identity:'정원 방어 상세 설계'},
+      designImplementationContext:designContext,
+      thisLoopPrimaryGoal:'메뉴와 퀘스트 상태를 실제 플레이 흐름에 연결',
+      primaryGoalReason:'검증된 상세 설계를 구현 책임까지 보존',
+      responsibleSystemsAndFiles:{sourceAnchors:[{
+        file:'client/Game.client.luau',
+        line:10,
+        kind:'FUNCTION',
+        symbol:'renderMenu',
+        currentBehavior:'메뉴 상태가 퀘스트 흐름과 분리됨',
+        intendedBehavior:'메뉴 상태와 퀘스트 흐름을 연결함',
+        observableAcceptance:'버튼 상태와 온실 퀘스트 진행이 일치함'
+      }]},
+      effectivenessMeasurement:{expectedPlayerEffect:'모바일에서 메뉴와 목표 흐름을 즉시 이해'},
+      nextActionDecision:{action:'CONTINUE_BUILD_UP_CURRENT_SYSTEM'},
+      autonomousContentExpansion:{},
+      gameplayImplementationDirectives:[],
+      progressionContentWorldDirectives:[],
+      visualBuildUpDirective:{domains:{}},
+      uxInputDirectives:[],
+      platformAdaptationDirectives:{ROBLOX:'Roblox 네이티브 입력과 UI 상태에서 구현'},
+      preserveConstraints:['GAMEPLAY_BALANCE','SAVE_MEANING'],
+      acceptanceEvidence:['REAL_SOURCE_AND_EFFECT_DELTA'],
+      nextEscalationCandidates:[]
+    }}
+  },{
+    files:[{path:'client/Game.client.luau',content:'return {}',editable:true}]
+  },['client/Game.client.luau']);
+  assert.match(prompt,/designContext=/);
+  assert.match(prompt,/하단 우측 공격 버튼과 뒤로가기 버튼의 역할을 분리/);
+  assert.match(prompt,/온실 단서 조사/);
+  assert.match(prompt,/메뉴 버튼 상태/);
+
   const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.match(source,/sourceAnchors=.*CURRENT=/);
   assert.match(source,/INTENDED=/);
@@ -5318,6 +5366,8 @@ test('game-specific BUILD_UP worker guidance carries source current-to-intended 
   assert.match(source,/expectedPlayerEffect=/);
   assert.match(source,/previousEffectiveness=/);
   assert.match(source,/nextVibeAction=/);
+  assert.match(source,/designContext=/);
+  assert.match(source,/'designContext='/);
   assert.match(source,/contentExpansionVersion=/);
   assert.match(source,/contentTheme=/);
   assert.match(source,/contentBreadth=/);
@@ -5336,6 +5386,7 @@ test('focused replace-only compacts build-up directive without losing exact goal
     '[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]',
     'directiveId=demo-g7 generation=7 developmentDepth=4 escalationStage=BUILD_UP primaryFocus=PRESENTATION',
     'gameIdentity=정원 방어 전투',
+    'designContext='+JSON.stringify({uxAccessibilityPlan:{touchAndInput:'하단 우측 공격 버튼과 뒤로가기 버튼의 역할을 분리'},narrativeDialoguePlan:{questStates:['온실 단서 조사 후 방어하고 후속 지역 해금']}}),
     'primaryGoal=벌 돌진 전조를 실제 렌더에서 더 분명하게 만든다.',
     'sourceAnchors=Assets/Scripts/Player.cs:12 SYMBOL Render CURRENT=weak INTENDED=clear ACCEPT=visible',
     'expectedPlayerEffect=공격 전조를 즉시 구분',
@@ -5373,6 +5424,8 @@ test('focused replace-only compacts build-up directive without losing exact goal
   assert.ok(focused);
   assert.match(focused.prompt,/directiveId=demo-g7/);
   assert.match(focused.prompt,/primaryGoal=벌 돌진 전조/);
+  assert.match(focused.prompt,/designContext=/);
+  assert.match(focused.prompt,/하단 우측 공격 버튼과 뒤로가기 버튼의 역할을 분리/);
   assert.match(focused.prompt,/sourceAnchors=Assets\/Scripts\/Player\.cs/);
   assert.match(focused.prompt,/expectedPlayerEffect=공격 전조를 즉시 구분/);
   assert.match(focused.prompt,/ACTUAL_RENDERED_CHANGE_REQUIRED/);

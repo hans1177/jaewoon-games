@@ -525,6 +525,7 @@ export function inspectGameSources({repoRoot=process.cwd(),sourceRoots=[]}={}){
 
 export function extractDesignContext(record={}){
   const d=record?.content&&typeof record.content==='object'?record.content:record;
+  const asObject=value=>value&&typeof value==='object'&&!Array.isArray(value)?value:{};
   const systems=(Array.isArray(d?.signatureSystems)?d.signatureSystems:[]).map(system=>({
     name:clean(system?.name),
     purpose:clean(system?.purpose),
@@ -540,10 +541,22 @@ export function extractDesignContext(record={}){
     coreLoop:uniq(d?.coreLoop).slice(0,10),
     signatureSystems:systems,
     systemInterconnections:(Array.isArray(d?.systemInterconnections)?d.systemInterconnections:[]).map(row=>({fromSystem:clean(row?.fromSystem),toSystem:clean(row?.toSystem),trigger:clean(row?.trigger),stateChange:clean(row?.stateChange)})).filter(row=>row.fromSystem||row.toSystem).slice(0,12),
+    progressionEconomyBalance:asObject(d?.progressionEconomyBalance),
     contentExpansionPlan:(Array.isArray(d?.contentExpansionPlan)?d.contentExpansionPlan:[]).map(row=>({milestone:clean(row?.milestone),newGameplay:clean(row?.newGameplay),systemImpact:clean(row?.systemImpact)})).slice(0,8),
+    failureRetryRisk:asObject(d?.failureRetryRisk),
+    platformFitPlan:asObject(d?.platformFitPlan),
+    visualDirection:clean(d?.visualDirection),
+    mobileUx:clean(d?.mobileUx),
+    uxAccessibilityPlan:asObject(d?.uxAccessibilityPlan),
+    artAudioDirection:asObject(d?.artAudioDirection),
+    selectedDesignPlan:asObject(d?.selectedDesignPlan),
+    contentVarietyPlan:asObject(d?.contentVarietyPlan),
+    narrativeDialoguePlan:asObject(d?.narrativeDialoguePlan),
     narrativeWorldRules:uniq(d?.narrativeDialoguePlan?.worldRules).slice(0,8),
     referenceCausalInspirations:(Array.isArray(d?.referenceHomagePlan?.inspirations)?d.referenceHomagePlan.inspirations:[]).map(row=>({titleOrTradition:clean(row?.titleOrTradition),rightsBasis:clean(row?.rightsBasis),borrowedTechnique:clean(row?.borrowedTechnique),transformation:clean(row?.transformation)})).slice(0,8),
     designIntegrityNotes:uniq(d?.designIntegrityPlan?.notes).slice(0,12),
+    implementationTraceability:(Array.isArray(d?.implementationTraceability)?d.implementationTraceability:[]).slice(0,8),
+    stabilityPriorityPlan:asObject(d?.stabilityPriorityPlan),
     progressionDirection:clean(d?.progressionDirection),
     multiplayerMode:clean(d?.multiplayerMode),
     platformProfiles:d?.platformProfiles&&typeof d.platformProfiles==='object'?d.platformProfiles:{}
@@ -584,9 +597,25 @@ function secondaryDesignAnchor(design={}){
 
 function domainState(domain,{design={},source={}}={}){
   const s=source?.signals||{};
+  const detailedDesignText=JSON.stringify({
+    progressionEconomyBalance:design.progressionEconomyBalance,
+    contentExpansionPlan:design.contentExpansionPlan,
+    failureRetryRisk:design.failureRetryRisk,
+    platformFitPlan:design.platformFitPlan,
+    platformProfiles:design.platformProfiles,
+    visualDirection:design.visualDirection,
+    mobileUx:design.mobileUx,
+    uxAccessibilityPlan:design.uxAccessibilityPlan,
+    artAudioDirection:design.artAudioDirection,
+    selectedDesignPlan:design.selectedDesignPlan,
+    contentVarietyPlan:design.contentVarietyPlan,
+    narrativeDialoguePlan:design.narrativeDialoguePlan,
+    implementationTraceability:design.implementationTraceability
+  });
   const relevantByText=qualitySignalText([
     design.identity,design.coreFun,design.progressionDirection,...(design.coreLoop||[]),
-    ...(design.signatureSystems||[]).flatMap(x=>[x.name,x.purpose,x.playerChoice])
+    ...(design.signatureSystems||[]).flatMap(x=>[x.name,x.purpose,x.playerChoice]),
+    detailedDesignText
   ]);
   const no=(reason)=>({domain,state:'NOT_APPLICABLE',reason});
   const gap=(reason)=>({domain,state:'GAP',reason});
@@ -1302,6 +1331,7 @@ export function directivePrompt(d={}){
     '[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]',
     `id=${d.directiveId}; generation=${d.generation}; depth=${d.developmentDepth}; stage=${d.escalationStage}; focus=${d.primaryFocus}`,
     `GAME_IDENTITY: ${d.gameIdentityAndNonNegotiables.identity}`,
+    `DESIGN_IMPLEMENTATION_CONTEXT: ${JSON.stringify(d.designImplementationContext||{})}`,
     `IDENTITY_ONE_LINE_FANTASY: ${d.identityReinforcement?.oneLineFantasy||d.gameIdentityAndNonNegotiables.identity}`,
     `IDENTITY_REPRESENTATIVE_ACTION: ${d.identityReinforcement?.representativeAction||'CURRENT_CORE_ACTION'}`,
     `IDENTITY_REPRESENTATIVE_CHOICE: ${d.identityReinforcement?.representativeChoice||'CURRENT_CORE_CHOICE'}`,
@@ -1699,6 +1729,23 @@ export function buildGameSpecificBuildUpDirective({
     sourceTreeFingerprint:source.sourceTreeFingerprint,
     designFingerprint:sha(JSON.stringify(design)),
     identityReinforcement,
+    designImplementationContext:Object.freeze({
+      source:'LATEST_VERIFIED_DESIGN_FIELDS',
+      progressionEconomyBalance:design.progressionEconomyBalance,
+      contentExpansionPlan:design.contentExpansionPlan,
+      failureRetryRisk:design.failureRetryRisk,
+      platformFitPlan:design.platformFitPlan,
+      platformProfiles:design.platformProfiles,
+      visualDirection:design.visualDirection,
+      mobileUx:design.mobileUx,
+      uxAccessibilityPlan:design.uxAccessibilityPlan,
+      artAudioDirection:design.artAudioDirection,
+      selectedDesignPlan:design.selectedDesignPlan,
+      contentVarietyPlan:design.contentVarietyPlan,
+      narrativeDialoguePlan:design.narrativeDialoguePlan,
+      implementationTraceability:design.implementationTraceability,
+      stabilityPriorityPlan:design.stabilityPriorityPlan
+    }),
     gameIdentityAndNonNegotiables:{
       identity,
       coreFun:design.coreFun,
