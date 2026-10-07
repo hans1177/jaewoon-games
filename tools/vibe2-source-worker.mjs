@@ -4750,7 +4750,7 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
     const contextWindow=focusedReplaceOnly&&!systemAtomicPairCompletion
       ?(robloxRebuildFocused
         ?sourcePromptContextWindow(attemptPrompt,{baseContextWindow:JSON_CONTEXT_WINDOW,maxPredict,model})
-        :(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW))
+        :(assetDevelopmentFocusedGraphics?sourcePromptContextWindow(attemptPrompt,{baseContextWindow:ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW,maxPredict,model}):JSON_FOCUSED_REPLACE_CONTEXT_WINDOW))
       :sourcePromptContextWindow(attemptPrompt,{baseContextWindow,maxPredict,model});
     const fake=responseFileForAttempt(responseFile,responseFiles,attempt);
     const attemptPromptBytes=Buffer.byteLength(attemptPrompt,'utf8');
