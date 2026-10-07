@@ -549,6 +549,11 @@ export function createVibeNpcCustomizationPopulation({count=64,seed='npc-populat
   const weights=recipes.map(row=>Number(row.body.weightKg)).filter(Number.isFinite);
   const unique=uniq(identityKeys).length;
   const bodyUnique=uniq(bodyKeys).length;
+  const heightRangeCm=Object.freeze([Math.min(...heights),Math.max(...heights)]);
+  const weightRangeKg=Object.freeze([Math.min(...weights),Math.max(...weights)]);
+  const scaleClasses=Object.freeze(uniq(recipes.map(row=>row.body.scaleClass)));
+  const visualMassClasses=Object.freeze(uniq(recipes.map(row=>row.body.visualMassClass)));
+  const frameFamilies=Object.freeze(uniq(recipes.map(row=>row.body.frame)));
   return Object.freeze({
     version:2,
     seed:String(seed),
@@ -558,15 +563,20 @@ export function createVibeNpcCustomizationPopulation({count=64,seed='npc-populat
     cloneRatePercent:Math.round((total-unique)/total*100),
     physicalDiversityPercent:Math.round(bodyUnique/total*100),
     physicalCloneRatePercent:Math.round((total-bodyUnique)/total*100),
+    heightRangeCm,
+    weightRangeKg,
+    scaleClassCoverage:scaleClasses,
+    visualMassCoverage:visualMassClasses,
+    frameCoverage:frameFamilies,
     bodyDiversity:Object.freeze({
       uniqueBodyProfileCount:bodyUnique,
       uniqueHeightCount:uniq(heights).length,
       uniqueWeightCount:uniq(weights).length,
-      heightRangeCm:Object.freeze([Math.min(...heights),Math.max(...heights)]),
-      weightRangeKg:Object.freeze([Math.min(...weights),Math.max(...weights)]),
-      scaleClasses:Object.freeze(uniq(recipes.map(row=>row.body.scaleClass))),
-      visualMassClasses:Object.freeze(uniq(recipes.map(row=>row.body.visualMassClass))),
-      frameFamilies:Object.freeze(uniq(recipes.map(row=>row.body.frame))),
+      heightRangeCm,
+      weightRangeKg,
+      scaleClasses,
+      visualMassClasses,
+      frameFamilies,
       scaleOnlyVariationForbidden:true
     }),
     appearanceDiversity:Object.freeze({
