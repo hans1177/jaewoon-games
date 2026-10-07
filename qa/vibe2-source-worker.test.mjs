@@ -6737,7 +6737,7 @@ test('localized asset repair evidence and identity locks survive compact model r
   assert.deepEqual(requests[1].format.required,['replace']);
   assert.match(requests[2].prompt,/SOURCE CONTENT REPAIR/);
   assert.ok(Buffer.byteLength(requests[1].prompt)<Buffer.byteLength(requests[0].prompt));
-  for(const request of requests.slice(1))assert.equal(request.options.num_ctx,sourcePromptContextWindow(request.prompt,{baseContextWindow:8192,maxPredict:request.options.num_predict}));
+  for(const request of requests.slice(1))assert.equal(request.options.num_ctx,sourcePromptContextWindow(request.prompt,{baseContextWindow:32768,maxPredict:request.options.num_predict}));
   assert.equal(fs.readFileSync(path.join(cwd,root,relative),'utf8'),source);
 });
 
