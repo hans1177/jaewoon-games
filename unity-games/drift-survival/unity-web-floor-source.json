@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "gameId": "drift-survival",
+  "gameName": "표류 생존",
+  "identity": "끝없는 바다 해류 속 작은 부유 거점을 키우며 표류 자원과 섬의 짧은 기회를 읽고 살아남는 2D 탑다운 생존 제작 게임.",
+  "coreLoop": [
+    "표류 자원을 갈고리로 회수한다.",
+    "자원을 생존 설비·무기·뗏목 바닥에 배분한다.",
+    "갈증·배고픔·뗏목 내구도와 상어 위협을 관리한다.",
+    "접근한 섬에 상륙해 제한 자원을 채집하고 복귀한다.",
+    "확장된 부유 거점으로 다음 생존 주기를 이어간다."
+  ],
+  "category": "OCEAN_SURVIVAL_2D",
+  "multiplayerMode": "SINGLE",
+  "canonicalSourceRoot": "unity-games/drift-survival",
+  "buildMethod": "UnityWebFloorBuild.BuildWeb",
+  "futureNativeBuildMethod": "UnityWebFloorBuild.Build",
+  "designBaseline": "design/drift-survival/2026-10-07/design-revised.json",
+  "unityPlatformProfile": {
+    "platform": "UNITY",
+    "inputModel": "터치 우선 화면 버튼과 키보드 보조 입력.",
+    "sessionModel": "싱글 플레이 생존 세션. 중단 후 로컬 저장 복구.",
+    "multiplayerRuntime": "SINGLE_LOCAL_AUTHORITY",
+    "performanceBudget": "모바일 60fps 목표, 소수 SpriteRenderer와 표류 오브젝트 16개 상한.",
+    "uiUx": "세이프에어리어 반응형 터치 컨트롤.",
+    "saveAndNetwork": "버전 1 로컬 JSON 저장. 네트워크 권한 없음.",
+    "platformContentAdaptation": "2D 탑다운 해상 생존 루프를 WebGL과 Android에서 동일한 규칙으로 유지.",
+    "internalReleaseTarget": "검증된 WebGL 개발층과 내부 Android 빌드.",
+    "validationEvidence": "정확한 소스 리비전의 WebGL 빌드, 실제 브라우저 터치, 저장 복구, 독립 QA, 회귀."
+  },
+  "purpose": "UNITY_WEB_DEVELOPMENT_FLOOR",
+  "developmentFloor": true,
+  "presentationState": "GAMEPLAY_AND_PROCEDURAL_2D_PRESENTATION_IMPLEMENTED_AWAITING_VERIFICATION",
+  "releaseOrDeploymentAuthority": false,
+  "generatedAt": "2026-10-07T10:20:00.000Z"
+}
