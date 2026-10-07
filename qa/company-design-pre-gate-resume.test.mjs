@@ -8,6 +8,7 @@ import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {runInNewContext} from 'node:vm';
 import {EventEmitter} from 'node:events';
+import {createHash} from 'node:crypto';
 
 const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
 
@@ -36,14 +37,13 @@ test('design canary games run concurrently without bypassing the verified-engine
 test('local authoring owns a bounded five-minute budget independently of external timeout',async()=>{
   const config=design.split('\n').filter(line=>/^const (?:modelCallTimeoutMs|localDesignerCallTimeoutMs)=/.test(line)).join('\n');
   for(const [value,expected] of [[undefined,300000],['300000',300000],['900000',300000],['1',30000],['invalid',300000]]){
-    const budgets=runInNewContext(config+'\n({external:modelCallTimeoutMs,local:localDesignerCallTimeoutMs})',{process:{env:{COMPANY_MODEL_CALL_TIMEOUT_MS:'90000',COMPANY_LOCAL_DESIGN_CALL_TIMEOUT_MS:value}}});
-    assert.equal(budgets.external,90000);
+    const budgets=runInNewContext(config+'\n({local:localDesignerCallTimeoutMs})',{process:{env:{COMPANY_MODEL_CALL_TIMEOUT_MS:'90000',COMPANY_LOCAL_DESIGN_CALL_TIMEOUT_MS:value}}});
     assert.equal(budgets.local,expected);
   }
   const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
   const calls=[],stats=[];
   const author=runInNewContext(source+'\ncallLocalDesignerModel',{
-    localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'local',
+    createHash,localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'local',
     designerRoute:{id:'external'},designCheckpoint:{},modelCallStats:stats,console:{log(){}},
     requestLocalDesignerRaw:async(prompt,options)=>{calls.push(options);return '{"identity":"4v4 infection"}';},
     parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,assertSchemaValue(){},recordModelHealth(){},persistDesignCheckpoint(){}
@@ -55,7 +55,8 @@ test('local authoring owns a bounded five-minute budget independently of externa
 
 test('local transport accepts a late completed response and rejects incomplete output without a false success',async()=>{
   const source=design.slice(design.indexOf('async function requestLocalDesignerRaw('),design.indexOf('async function callLocalDesignerModel('));
-  for(const mode of ['complete','incomplete','timeout']){
+  const schema={type:'object',required:['identity'],properties:{identity:{type:'string'}},additionalProperties:false};
+  for(const mode of ['complete','incomplete','timeout','truncated']){
     let timer,delay,requestBody,destroyed=false;
     const logs=[];
     const request=runInNewContext(source+'\nrequestLocalDesignerRaw',{
@@ -71,20 +72,49 @@ test('local transport accepts a late completed response and rejects incomplete o
           queueMicrotask(()=>{
             if(mode==='timeout'){timer();return;}
             const res=new EventEmitter();res.statusCode=200;res.setEncoding=()=>{};onResponse(res);
-            res.emit('data',JSON.stringify({done:mode==='complete',response:'{"identity":"4v4 infection"}',load_duration:1000000,prompt_eval_count:800,prompt_eval_duration:95000000000,eval_count:1000,eval_duration:65000000000}));
+            res.emit('data',JSON.stringify({done:mode==='complete'||mode==='truncated',done_reason:mode==='truncated'?'length':'stop',response:'{"identity":"4v4 infection"}',load_duration:1000000,prompt_eval_count:800,prompt_eval_duration:95000000000,eval_count:1000,eval_duration:65000000000}));
             res.emit('end');
           });
         };
         return req;
       }}
     });
-    if(mode==='complete')assert.equal(await request('private design input'),'{"identity":"4v4 infection"}');
-    else await assert.rejects(request('private design input'),mode==='timeout'?/OLLAMA_DESIGN_TIMEOUT 300000ms/:/OLLAMA_DESIGN_INCOMPLETE_RESPONSE/);
+    if(mode==='complete')assert.equal(await request('private design input',{schema}),'{"identity":"4v4 infection"}');
+    else await assert.rejects(request('private design input',{schema}),mode==='timeout'?/OLLAMA_DESIGN_TIMEOUT 300000ms/:mode==='truncated'?/OLLAMA_DESIGN_OUTPUT_TRUNCATED/:/OLLAMA_DESIGN_INCOMPLETE_RESPONSE/);
     assert.equal(delay,300000);assert.equal(destroyed,true);
     assert.equal(requestBody.keep_alive,'10m');assert.equal(requestBody.think,false);
+    assert.deepEqual(requestBody.format,schema);
     assert.equal(logs.some(row=>row.includes('private design input')),false);
-    assert.equal(logs.some(row=>row.includes('DESIGN_LOCAL_TIMING=')),mode==='complete');
+    assert.equal(logs.some(row=>row.includes('DESIGN_LOCAL_TIMING=')),mode==='complete'||mode==='truncated');
   }
+});
+
+test('truncated local output splits required fields and resumes only the unfinished part',async()=>{
+  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
+  const taskSource=design.slice(design.indexOf('async function runCheckpointTask('),design.indexOf('function isParallelPressure('));
+  const schema={type:'object',required:['a','b','c','d'],properties:Object.fromEntries(['a','b','c','d'].map(field=>[field,{type:'string'}])),additionalProperties:false};
+  const checkpoint={tasks:{}},calls=[],stats=[],health=[];
+  let secondPartFails=true;
+  const author=runInNewContext(taskSource+'\n'+source+'\ncallLocalDesignerModel',{
+    createHash,localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'local',
+    designerRoute:{id:'ollama:local'},designCheckpoint:checkpoint,modelCallStats:stats,console:{log(){}},
+    clean:String,parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,persistDesignCheckpoint(){},
+    recordModelHealth:(model,row)=>health.push(row),
+    assertSchemaValue:(value,contract)=>{for(const field of contract.required)assert.equal(typeof value[field],'string');},
+    requestLocalDesignerRaw:async(prompt,{schema:contract})=>{
+      const fields=Object.keys(contract.properties);calls.push(fields.join(','));
+      if(fields.length===4)throw new Error('OLLAMA_DESIGN_OUTPUT_TRUNCATED');
+      if(fields[0]==='c'&&secondPartFails){secondPartFails=false;throw new Error('OLLAMA_DESIGN_TIMEOUT 300000ms');}
+      return JSON.stringify(Object.fromEntries(fields.map(field=>[field,'authored '+field])));
+    }
+  });
+  await assert.rejects(author('system','owner brief',schema),/OLLAMA_DESIGN_TIMEOUT/);
+  assert.equal(Object.keys(checkpoint.tasks).length,1,'only the completed half may be saved');
+  const value=await author('system','owner brief',schema);
+  assert.deepEqual(JSON.parse(JSON.stringify(value)),{a:'authored a',b:'authored b',c:'authored c',d:'authored d'});
+  assert.deepEqual(calls,['a,b,c,d','a,b','c,d','c,d']);
+  assert.equal(stats.length,2,'assembling checkpointed parts is not another model call');
+  assert.equal(health.filter(row=>row.success===false).length,2);
 });
 
 test('workflow warms the same local context before declaring authoring ready and fails closed',async()=>{
@@ -146,7 +176,7 @@ test('PRE_GATE_BLOCKED resume regenerates only targeted repair checkpoints',()=>
 
 test('blocked resume preserves the current designer draft and gate threshold',()=>{
   const start=design.indexOf("if(priorCheckpointStatus==='PRE_GATE_BLOCKED'");
-  const end=design.indexOf("for(const [rawModel,row]",start);
+  const end=design.indexOf('const PROGRESS_STAGE_ORDER=',start);
   assert.ok(start>0&&end>start);
   const section=design.slice(start,end);
   assert.doesNotMatch(section,/delete designCheckpoint\.phases\.designer_draft/);
@@ -173,63 +203,27 @@ test('design runtime replaces stale push work while preserving manual and schedu
 });
 
 
-test('Gemini daily quota quarantine precedes minute-rate retry handling',()=>{
-  const dailyIndex=design.indexOf('if(status===429&&isDailyGeminiQuotaError(error))');
-  const retryIndex=design.indexOf('const minuteRetryMs=geminiMinuteRetryDelayMs(error,candidateModel)',dailyIndex);
-  const waitIndex=design.indexOf('GEMINI_RATE_LIMIT_WAIT=',retryIndex);
-  assert.ok(dailyIndex>0&&retryIndex>dailyIndex&&waitIndex>retryIndex);
-  assert.match(design,/GEMINI_DAILY_QUOTA_EXHAUSTED=.*retry=NO/);
-  assert.match(design,/minuteRateRetries<2/);
-  assert.match(design,/attempt-=1;\s*continue;/);
-  assert.match(design,/2ee13c831a912a1446b625b0b30f5e2fd64a6acf6fa19754420ecde80b0abc5f/);
-  assert.match(design,/84ba02b00c0f6c91c9731f1ecabc12b55accadd2f2673cabdf5badc742e64dbf/);
-  assert.match(design,/9aae351acc02880ef280b371a21ead70b013c820010af4eeb88e23fe059d71b3/);
+test('design authoring has no external model transport or secret injection',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  assert.doesNotMatch(design,/generativelanguage|googleapis|callExternalDesignerModel|externalAiEnabled|process\.env\.GEMINI_API_KEY|async function callModel\(/);
+  assert.doesNotMatch(workflow,/secrets\.GEMINI_API_KEY|COMPANY_EXTERNAL_AI_ENABLED:|COMPANY_GEMINI_/);
 });
 
-
-test('local design starts without external credentials or a five-model reviewer roster',async()=>{
-  const selection=design.slice(design.indexOf('const geminiApiKey='),design.indexOf('const geminiUnavailableModels='));
-  const routing=design.slice(design.indexOf('async function callDesignerModel('),design.indexOf('async function generateDesignerDraft('));
-  const cases=[
-    {env:{},external:false},
-    {env:{GEMINI_API_KEY:'test-only'},external:false},
-    {env:{COMPANY_EXTERNAL_AI_ENABLED:'true'},external:false},
-    {env:{COMPANY_EXTERNAL_AI_ENABLED:'true',GEMINI_API_KEY:'test-only'},external:true},
-    {env:{COMPANY_EXTERNAL_AI_ENABLED:'true',GEMINI_API_KEY:'test-only',COMPANY_GEMINI_DESIGNER_MODEL:'unapproved'},external:false}
-  ];
-  for(const scenario of cases){
-    const calls=[],checkpoint={};
-    const call=runInNewContext(selection+'\n'+routing+'\ncallDesignerModel',{
-      process:{env:scenario.env},ai:{gameDesigner:{geminiModel:'gemini-3.8-flash',geminiFallbackModels:[]}},
-      clean:value=>String(value??'').trim(),uniq:values=>[...new Set(values.filter(Boolean))],
-      clip:value=>String(value),console:{log(){}},designCheckpoint:checkpoint,
-      designerRoute:{id:'gemini:test',provider:'GEMINI'},activeDesignerRoute:null,persistDesignCheckpoint(){},
-      callExternalDesignerModel:async()=>{calls.push('external');return {draft:'external'};},
-      callLocalDesignerModel:async()=>{calls.push('local');return {draft:'local'};}
-    });
-    const value=await call('system','user',{});
-    assert.deepEqual(calls,[scenario.external?'external':'local']);
-    assert.equal(value.draft,scenario.external?'external':'local');
-    assert.equal(checkpoint.effectiveDesignerProvider,scenario.external?'GEMINI':'VIBE_LOCAL_OLLAMA');
-  }
-  assert.doesNotMatch(design,/GEMINI_(?:POLICY_LEAD|LEAD_MODEL_GATE|DISTINCT_LEAD_GATE|LEAD_FAILOVER_COLLISION)/);
-});
-
-test('optional external failure falls back locally while a real local authoring failure remains a failure',async()=>{
+test('design always uses the internal model even if external credentials and opt-in are present',async()=>{
   const routing=design.slice(design.indexOf('async function callDesignerModel('),design.indexOf('async function generateDesignerDraft('));
   for(const localFails of [false,true]){
     const calls=[],checkpoint={};
     const call=runInNewContext(routing+'\ncallDesignerModel',{
-      externalAiEnabled:true,geminiApiKey:'test-only',externalDesignerConfigured:true,
-      localDesignerModel:'local',designerRoute:{id:'gemini:test'},activeDesignerRoute:null,
-      designCheckpoint:checkpoint,persistDesignCheckpoint(){},clean:String,clip:String,console:{log(){}},
-      callExternalDesignerModel:async()=>{calls.push('external');throw new Error('HTTP_429');},
+      process:{env:{COMPANY_EXTERNAL_AI_ENABLED:'true',GEMINI_API_KEY:'test-only'}},
+      designerRoute:{id:'ollama:local'},designCheckpoint:checkpoint,persistDesignCheckpoint(){},
+      fetch:async()=>{throw new Error('external network forbidden');},
       callLocalDesignerModel:async()=>{calls.push('local');if(localFails)throw new Error('local unavailable');return {draft:'local'};}
     });
-    if(localFails)await assert.rejects(call('system','user',{}),/DESIGN_AUTHORING_PROVIDERS_FAILED.*local unavailable/);
+    if(localFails)await assert.rejects(call('system','user',{}),/local unavailable/);
     else assert.equal((await call('system','user',{})).draft,'local');
-    assert.deepEqual(calls,['external','local']);
+    assert.deepEqual(calls,['local']);
     assert.equal(checkpoint.effectiveDesignerProvider,localFails?undefined:'VIBE_LOCAL_OLLAMA');
+    assert.equal(checkpoint.effectiveDesignerModel,localFails?undefined:'ollama:local');
   }
 });
 
@@ -238,7 +232,7 @@ test('workflow authoring route ignores exhausted external reviewers and prepares
   const start=workflow.indexOf('      - name: Resolve local design authoring from the current checkpoint');
   const end=workflow.indexOf('      - name: Restore Vibe local design fallback cache',start);
   const step=workflow.slice(start,end);
-  const script=step.split("<<'NODE' | tee /tmp/gemini-quota-governor.txt\n")[1]?.split('          NODE')[0].replace(/^          /gm,'');
+  const script=step.split("<<'NODE' | tee /tmp/local-design-authoring.txt\n")[1]?.split('          NODE')[0].replace(/^          /gm,'');
   assert.ok(script);
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'optional-design-ai-'));
   try{
@@ -247,12 +241,12 @@ test('workflow authoring route ignores exhausted external reviewers and prepares
     const output=path.join(root,'output');
     const run=spawnSync(process.execPath,['--input-type=module','-e',script],{cwd:root,encoding:'utf8',env:{...process.env,ARTBOOK_GAME_ID:'demo',ARTBOOK_DATE:'2026-10-06',GITHUB_OUTPUT:output,COMPANY_GEMINI_LEAD_MODELS:''}});
     assert.equal(run.status,0,run.stderr);
-    assert.match(fs.readFileSync(output,'utf8'),/run_model_cycle=true\nquota_state=EXTERNAL_AI_OPTIONAL\nlocal_fallback_needed=true/);
+    assert.match(fs.readFileSync(output,'utf8'),/run_model_cycle=true\nquota_state=LOCAL_ONLY\nlocal_fallback_needed=true/);
     assert.equal(JSON.parse(fs.readFileSync(path.join(folder,'design-checkpoint.json'),'utf8')).phases.designer_draft.identity,'preserved');
     assert.match(run.stdout,/DESIGN_AI_REVIEW_LANES=NONE/);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
   assert.doesNotMatch(workflow,/WAITING_FOR_GEMINI_QUOTA|GEMINI_LEAD_MODELS|GEMINI_LEAD_FALLBACK_LANES|all_quota_blocked/);
-  assert.match(workflow,/COMPANY_EXTERNAL_AI_ENABLED:.*'false'/);
+  assert.match(workflow,/DESIGN_EXTERNAL_AI_ALLOWED=NO/);
 });
 
 test('design continuation dispatches canonical work without external quota or AI review approval',()=>{
