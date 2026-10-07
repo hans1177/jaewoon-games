@@ -1776,9 +1776,12 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
   const dccCapableTypes=unique(decisions
     .filter(row=>needsAuthoring(row)&&(row.directAuthoring||[]).some(kind=>NATIVE_DCC_AUTHORING.includes(kind)))
     .map(row=>clean(row.type).toLowerCase()));
+  const webRequestedActorDccTypes=webNativeTarget
+    ?dccCapableTypes.filter(type=>isCrossPlatform3dActorType(type)&&web3dActorRequested(task,type))
+    :[];
   const requestedDccScope=explicitRecipeHasUntyped
     ?dccCapableTypes
-    :unique([...(explicitRequestedTypes||[]),...explicitRecipeTypes].map(value=>clean(value).toLowerCase()).filter(Boolean));
+    :unique([...(explicitRequestedTypes||[]),...explicitRecipeTypes,...webRequestedActorDccTypes].map(value=>clean(value).toLowerCase()).filter(Boolean));
   const mandatoryActorGlbTypes=dccCapableTypes.filter(type=>isCrossPlatform3dActorType(type)&&requestedDccScope.includes(type));
   const automaticDccTypes=(engineNativeTarget||webNativeTarget)&&!internalMotion
     ?dccCapableTypes.filter(type=>requestedDccScope.includes(type))

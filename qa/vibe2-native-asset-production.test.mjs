@@ -646,7 +646,7 @@ test('Web 3D actor authoring requires exact Master GLB path and hash binding in 
       "const MASTER_GLB_SHA256 = '"+masterHash+"';",
       "// const loader = new GLTFLoader(); loader.load(MASTER_GLB); const mixer = new THREE.AnimationMixer(scene); requestAnimationFrame(render);",
       "document.body.dataset.asset = MASTER_GLB_SHA256;"
-    ].join('\\n')}]}
+    ].join('\n')}]}
   });
   assert.equal(commentOnly.generatedAssetBindingApplied,false);
   assert.ok(commentOnly.generatedAssetRuntimeBindingFailures.length>0);
