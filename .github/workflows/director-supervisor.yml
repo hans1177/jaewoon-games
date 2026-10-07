@@ -240,6 +240,7 @@ jobs:
           // Native runtime duplicates for the same title carry newer source/runtime state.
           // Never cancel active same-title work; when none is active, keep only the newest queued run.
           dedupeByTitle('.github/workflows/company-development-roblox-runtime.yml',true);
+          dedupeByTitle('.github/workflows/company-development-roblox-runtime-continuation.yml',true);
           dedupeByTitle('.github/workflows/company-development-unity-runtime.yml',true);
           dedupeByTitle('.github/workflows/company-development-roblox-release-promotion.yml',false);
           dedupeByTitle('.github/workflows/unity-android-independent-qa.yml',false);
@@ -250,6 +251,29 @@ jobs:
 
           const currentMain=String(process.env.CURRENT_MAIN_SHA||'').trim();
           if(currentMain){
+            const currentRobloxBatchReplacementActive=runs.some(r=>
+              r.path==='.github/workflows/company-development-roblox-runtime.yml'
+              &&active.has(String(r.status||'').toLowerCase())
+              &&String(r.head_branch||'')==='main'
+              &&String(r.head_sha||'')===currentMain
+              &&String(r.display_title||'')==='Roblox runtime · batch'
+            );
+            if(currentRobloxBatchReplacementActive){
+              for(const stale of runs.filter(r=>
+                [
+                  '.github/workflows/company-development-roblox-runtime.yml',
+                  '.github/workflows/company-development-roblox-runtime-continuation.yml',
+                ].includes(String(r.path||''))
+                &&queued.has(String(r.status||'').toLowerCase())
+                &&String(r.head_branch||'')==='main'
+                &&String(r.head_sha||'')!==currentMain
+                &&(
+                  String(r.display_title||'')==='Roblox runtime · batch'
+                  ||String(r.display_title||'').startsWith('Roblox shared preflight · ')
+                )
+              ))add(stale,'ROBLOX_STALE_UNSTARTED_NATIVE_WORK_REPLACED_BY_CURRENT_BATCH');
+            }
+
             const currentCentralReplacementActive=runs.some(r=>
               r.path==='.github/workflows/company-development-confirmed-runtime.yml'
               &&active.has(String(r.status||'').toLowerCase())
@@ -445,7 +469,7 @@ jobs:
               continue
             fi
             safe_force_cancel=false
-            if [[ "$reason" == 'DUPLICATE_TITLE_STALE_QUEUED' || "$reason" == 'ROBLOX_STALE_LEGACY_OR_BATCH' || "$reason" == 'CONTROL_PLANE_SUPERSEDED' || "$reason" == 'VIBE2_RECOVERY_FAST_SUPERSEDED_QUEUED' || "$reason" == 'CENTRAL_EXACT_GAME_STALE_HEAD_REPLACED_BY_CURRENT_GAME_RUN' || "$reason" == 'CENTRAL_EXACT_GAME_DUPLICATE_SAME_HEAD' || "$reason" == 'ROBLOX_LEGACY_STUDIO_MCP_DISABLED_BY_CLOUD_ONLY' ]]; then
+            if [[ "$reason" == 'DUPLICATE_TITLE_STALE_QUEUED' || "$reason" == 'ROBLOX_STALE_LEGACY_OR_BATCH' || "$reason" == 'ROBLOX_STALE_UNSTARTED_NATIVE_WORK_REPLACED_BY_CURRENT_BATCH' || "$reason" == 'CONTROL_PLANE_SUPERSEDED' || "$reason" == 'VIBE2_RECOVERY_FAST_SUPERSEDED_QUEUED' || "$reason" == 'CENTRAL_EXACT_GAME_STALE_HEAD_REPLACED_BY_CURRENT_GAME_RUN' || "$reason" == 'CENTRAL_EXACT_GAME_DUPLICATE_SAME_HEAD' || "$reason" == 'ROBLOX_LEGACY_STUDIO_MCP_DISABLED_BY_CLOUD_ONLY' ]]; then
               safe_force_cancel=true
             fi
             if gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/cancel" >/dev/null 2>&1; then
