@@ -251,6 +251,19 @@ test('material and creature teacher scope native craft, body plans and original 
   assert.equal(ordinary.surfaceCraft,null);assert.equal(ordinary.creatureCraft,null);
 });
 
+test('surface and style studies apply across engines while native craft APIs stay scoped',()=>{
+  for(const platform of ['WEB','UNITY','ROBLOX']){
+    const recipe=createAssetProductionTeachingRecipe({families:['MATERIAL'],platform,styleBible:{styleFamily:'COZY'}});
+    assert.equal(recipe.version,2);assert.equal(recipe.surfaceStudy.nativePlatform,platform);
+    assert.equal(recipe.surfaceStudy.runtimeVerified,false);
+    assert.match(recipe.surfaceStudy.materialIdentity,/substrate/);
+    assert.match(recipe.surfaceStudy.textureHierarchy,/grain\/weave/);
+    assert.equal(recipe.styleStudy.lockedProfile,'COZY');
+    if(platform!=='ROBLOX'){assert.equal(recipe.surfaceCraft,null);assert.deepEqual(recipe.applicationExamples,[]);assert.match(recipe.surfaceStudy.nativeBoundary,/not native APIs/);}
+  }
+  for(const family of ['MOTION','UI','AUDIO'])assert.equal(createAssetProductionTeachingRecipe({families:[family]}).surfaceStudy,null);
+});
+
 test('photo and world layout teacher separate pixel evidence from construction and reuse canonical layout APIs',async()=>{
   const photo=createAssetProductionTeachingRecipe({families:['CREATURE'],visualReference:true});
   assert.equal(photo.photoReferenceLessons.length,7);
@@ -5403,13 +5416,14 @@ test('source consumer summaries use a per-game aggregate instead of post-binding
 test('demand-bound asset supply uses five decisions and holds quantity-only library work',()=>{
   const registry={assets:[
     {id:'used-creature',family:'CREATURE',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',sourceBoundConsumerGameIds:['demo'],internalAuditScore:700},
-    {id:'common-motion',family:'MOTION',platform:'SHARED',status:'REPO_ASSET',license:'project-original',internalAuditScore:900},
+    {id:'common-motion',family:'MOTION',role:'locomotion',platform:'SHARED',status:'REPO_ASSET',license:'project-original',internalAuditScore:900},
     {id:'intended-only-creature',family:'CREATURE',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',intendedConsumerGameIds:['demo'],internalAuditScore:980}
   ]};
   const summary=buildAssetSupplyDecisionSummary({
     gameId:'demo',
     target:'roblox',
     request:'몬스터 부족',
+    requirements:[{family:'MOTION',role:'locomotion'},{family:'VFX',role:'infection'},{family:'AUDIO',role:'infection'}],
     registry,
     executionPlan:{
       nextQualityActions:[{assetId:'used-creature',family:'CREATURE',consumerGameIds:['demo'],sourceFiles:['assets/used-creature.luau']}],
@@ -5438,16 +5452,16 @@ test('asset supply summary preserves selection semantics with one-pass registry 
     {id:'z-current-creature',family:'CREATURE',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',sourceBoundConsumerGameIds:['demo'],internalAuditScore:700},
     {id:'a-current-creature',family:'CREATURE',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',sourceBoundConsumerGameIds:['demo'],internalAuditScore:650},
     {id:'material-current',family:'MATERIAL',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',sourceBoundConsumerGameIds:['demo'],internalAuditScore:500},
-    {id:'a-weapon',family:'WEAPON',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',internalAuditScore:900},
-    {id:'z-weapon',family:'WEAPON',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',internalAuditScore:900},
-    {id:'low-weapon',family:'WEAPON',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',internalAuditScore:100},
+    {id:'a-weapon',family:'WEAPON',role:'blade',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',internalAuditScore:900},
+    {id:'z-weapon',family:'WEAPON',role:'blade',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',internalAuditScore:900},
+    {id:'low-weapon',family:'WEAPON',role:'blade',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',internalAuditScore:100},
     {id:'intended-ui',family:'UI',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',intendedConsumerGameIds:['demo'],internalAuditScore:999}
   ]};
   const summary=buildAssetSupplyDecisionSummary({
     gameId:'demo',
     target:'roblox',
     request:'custom asset demand',
-    requirements:[{family:'CREATURE'},{family:'WEAPON'},{family:'MATERIAL'}],
+    requirements:[{family:'CREATURE'},{family:'WEAPON',role:'blade'},{family:'MATERIAL'}],
     registry,
     executionPlan:{
       nextQualityActions:[{assetId:'material-current',consumerGameIds:[],sourceFiles:['assets/material-current.luau']}],

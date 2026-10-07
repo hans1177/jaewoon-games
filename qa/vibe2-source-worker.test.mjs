@@ -160,6 +160,17 @@ test('craft teacher selects explicit production requests and excludes unrelated 
   }
 });
 
+test('material family enables native surface craft and motion receives actual form and clip',()=>{
+  const extract=(work,options={})=>JSON.parse(buildPrompt(work,{files:[]},[],options).split('[INTERNAL ASSET TEACHER PRACTICE BEGIN]\n')[1].split('\n[INTERNAL ASSET TEACHER PRACTICE END]')[0]);
+  const material=extract({target:'roblox',assetProductionLane:true,goal:'refine existing object',assetProduction:{decisions:[{type:'MATERIAL'}]}});
+  assert.ok(material.surfaceCraft);assert.equal(material.surfaceStudy.nativePlatform,'ROBLOX');
+  const motion=extract({target:'roblox',assetProductionLane:true,goal:'refine assigned attack',selectedTask:{clipId:'attack'},assetProduction:{decisions:[{type:'MOTION'}]}},{motionCoaching:{evidence:{form:'ARACHNID',targetId:'spider'}}});
+  assert.equal(motion.studioMotion.performanceStudy.bodyPlan,'ARACHNID');
+  assert.equal(motion.studioMotion.performanceStudy.archetype,'SPIDER');
+  assert.deepEqual(motion.studioMotion.lessons.map(row=>row.role),['LIGHT_COMBO']);
+  assert.equal(motion.surfaceStudy,null);
+});
+
 test('actor AI teacher reaches monster companion and NPC source prompts only for an assigned AI task',()=>{
   const extract=order=>JSON.parse(buildPrompt(order,{files:[]},[]).split('[INTERNAL ASSET TEACHER PRACTICE BEGIN]\n')[1].split('\n[INTERNAL ASSET TEACHER PRACTICE END]')[0]);
   for(const type of ['monster','companion','npc']){
@@ -175,7 +186,7 @@ test('asset teacher survives initial compaction and retries at the model request
   const root=tempRoot();t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
   const source='local sway = 0.025\nreturn sway';
   write(path.join(root,'init.luau'),source);
-  const work={target:'roblox',assetProductionLane:true,goal:'refine existing visual sway '+('detail '.repeat(20000)),assetProduction:{decisions:[{type:'creature'}],styleBible:{styleFamily:'COZY'}}};
+  const work={target:'roblox',assetProductionLane:true,goal:'refine existing visual sway '+('detail '.repeat(20000)),selectedTask:{goal:'기존 머리의 지연 동작을 다듬어라.\n눈과 몸의 색은 바꾸지 마라.\n고개가 멈춘 뒤 작은 잔동작을 유지하라.',focus:'목표는 기존 개체의 동작이다. 다른 개체를 추가하지 마라.'},assetProduction:{decisions:[{type:'creature'}],styleBible:{styleFamily:'COZY'}}};
   const prompt=buildPrompt(work,{files:[{path:'init.luau',editable:true,content:source}]},['init.luau']);
   const requests=[];
   const server=http.createServer((req,res)=>{
@@ -190,6 +201,11 @@ test('asset teacher survives initial compaction and retries at the model request
   await generateCandidateWithRecovery({prompt,target:'roblox',responsibleFiles:['init.luau'],sourceRoot:root,sourceRootRelative:'roblox-games/demo',allowFullRewrite:false});
   assert.equal(requests.length,2);
   for(const request of requests){
+    const requestMarker='[PRODUCTION REQUEST CONTRACT BEGIN]';
+    assert.equal(request.prompt.split(requestMarker).length-1,1);
+    const contract=JSON.parse(request.prompt.split(requestMarker+'\n')[1].split('\n')[0]);
+    assert.deepEqual(contract.requests,[work.selectedTask.goal,work.selectedTask.focus]);
+    assert.deepEqual(contract.allowedPaths,['init.luau']);
     const marker='[INTERNAL ASSET TEACHER PRACTICE BEGIN]';
     assert.equal(request.prompt.split(marker).length-1,1);
     const recipe=JSON.parse(request.prompt.split(marker+'\n')[1].split('\n[INTERNAL ASSET TEACHER PRACTICE END]')[0]);
