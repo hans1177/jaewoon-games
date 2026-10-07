@@ -102,5 +102,20 @@
       "PRODUCTION_RUNTIME_VERIFICATION_PENDING"
     ],
     "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS"
-  }
+  },
+  "masterAssetFormat": "GLB_2_0",
+  "masterGlbContractVersion": 1,
+  "masterGlbStaticQaRequired": true,
+  "masterGlbRequiredContents": [
+    "MESH",
+    "NORMALS",
+    "UV0",
+    "MATERIALS",
+    "SKELETON",
+    "SKIN_WEIGHTS",
+    "ANIMATION"
+  ],
+  "platformNativeDerivativeRequired": true,
+  "masterGlbPath": "assets/roblox/world-ghosts/native/spider/spider.glb",
+  "masterGlbSha256": "c37af6808a539f646eb77dac65bc339717700e932c25f2928fa5c54135a15525"
 }
