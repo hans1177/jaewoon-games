@@ -579,8 +579,8 @@ test('canonical graphics policy requires one GLB master before platform-native 3
   assert.equal(policy.rules.platformRuntimeEvidenceIndependent,true);
   assert.equal(policy.rules.skinSkeletonJointWeightsAndAnimationRequired,true);
 
-  const topology=architecture.assetProductionParallelism.companyGraphicsLibrary24h.studioAssetUniverse.articulated3DActorGlbMaster;
-  assert.equal(topology.masterFormat,'GLB');
+  const topology=architecture.assetProductionParallelism.companyGraphicsLibrary24h.studioAssetUniverse.crossPlatform3dMasterGlb;
+  assert.equal(topology.masterFormat,'GLB_2_0');
   assert.deepEqual(topology.platformConsumers,['ROBLOX','UNITY','WEB']);
   assert.equal(topology.primitiveOnlyFinalActorForbidden,true);
   assert.equal(topology.newWorkerQueueOrPipeline,false);
