@@ -141,25 +141,59 @@
         "riskPressure": "최대체력 +10, 공격력 +10, 15마리 파티 사냥 및 보상 획득, 플레이어 + 보스 동료 최대 3명 편성, 보스 동료 리더 레벨 자동 동기화, 보스 동료 기본공격1·고유스킬1·특성1",
         "recoveryRules": "마을 귀환 시 풀회복, 전투 중 귀환 금지, 퀘스트 보상, 레벨업 증가, 파티 사냥 및 보상 획득"
       }
+    },
+    "designer_draft_slices::platform-profiles": {
+      "platformFitPlan": {
+        "targetPlatform": "ROBLOX",
+        "inputModel": "모바일 이동·공격·회피·스킬, 키보드/게임패드 보조",
+        "performanceBudget": "전투구역별 AI/적 수 제한, 경로탐색/스킬평가 주기 분산",
+        "sessionConstraints": "마을 편성→포탈 전투→보스 격파/영입→귀환. 싱글은 플레이어1+보스동료 최대3, 멀티는 실제 플레이어와 각자 해금한 동료를 혼합"
+      },
+      "platformProfiles": {
+        "ROBLOX": {
+          "platform": "ROBLOX",
+          "inputModel": "모바일 이동·공격·회피·스킬, 키보드/게임패드 보조",
+          "sessionModel": "마을 편성→포탈 전투→보스 격파/영입→귀환. 싱글은 플레이어1+보스동료 최대3, 멀티는 실제 플레이어와 각자 해금한 동료를 혼합",
+          "multiplayerRuntime": "서버가 실제 플레이어 상태·보스 동료 해금·최대3 동료 편성·전투/보상 상태를 authoritative하게 관리",
+          "performanceBudget": "전투구역별 AI/적 수 제한, 경로탐색/스킬평가 주기 분산",
+          "uiUx": "전투 HUD와 파티/장비 화면 분리",
+          "saveAndNetwork": "직업·전직·장비·보스동료 해금·레벨/숙련·RoomCode를 DataStore 저장",
+          "platformContentAdaptation": "플레이어는 Roblox R15 직업형 캐릭터. AI 동료는 보스 모델의 고유 실루엣을 재사용하며 별도 인간형 캐릭터 로스터를 만들지 않고 원본 보스 외형을 읽기 쉽게 축소·정리해 사용한다",
+          "internalReleaseTarget": "OPEN_CLOUD_PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+          "validationEvidence": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract, Mobile input/UI contract, Save/rejoin contract when applicable, Multiplayer state-sync contract when applicable, Headless exact-artifact regression, Open Cloud private/restricted publish"
+        },
+        "UNITY": {
+          "platform": "UNITY",
+          "inputModel": "Unity Input System",
+          "sessionModel": "Unity Multiplayer",
+          "multiplayerRuntime": "Unity Multiplayer",
+          "performanceBudget": "Unity Performance Budget",
+          "uiUx": "Unity UI System",
+          "saveAndNetwork": "Unity Save System",
+          "platformContentAdaptation": "Unity Content Adaptation",
+          "internalReleaseTarget": "UNITY_PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+          "validationEvidence": "Unity Asset Bundle, Unity Build Log, Unity Player Session Data"
+        }
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 387034,
-      "lastMs": 213376,
+      "totalMs": 542298,
+      "lastMs": 155264,
       "lastError": null,
-      "updatedAt": "2026-10-07T22:55:46.629Z"
+      "updatedAt": "2026-10-07T22:58:21.897Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T22:49:19.585Z",
-  "updatedAt": "2026-10-07T22:55:46.633Z",
+  "updatedAt": "2026-10-07T22:58:21.899Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1576,11 +1610,12 @@
   },
   "sliceDependencies": {
     "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
-    "designer_draft_slices::systems-progression": "7929655494503413150badc9b86c630bd7a165e63b110c22558b213569036ee3"
+    "designer_draft_slices::systems-progression": "7929655494503413150badc9b86c630bd7a165e63b110c22558b213569036ee3",
+    "designer_draft_slices::platform-profiles": "e78164753ea4c818374322e25237dbf679e048fae515d988e96eded359fa22db"
   },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
-  "lastSuccessfulModelCallAt": "2026-10-07T22:55:46.629Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T22:58:21.897Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
