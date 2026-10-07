@@ -862,21 +862,19 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
   const requiredFamilySet=new Set(requiredFamilies);
   const currentAssets=[],currentAssetIds=new Set(),assetById=new Map(),currentFamilyCounts=new Map(),currentPrimaryByFamily=new Map(),bestReusableByFamily=new Map();
   let intendedOnlyCount=0;
-  const betterReusable=(candidate,current)=>{
-    if(!current)return true;
-    const candidateScore=Number(candidate?.internalAuditScore??candidate?.qualityScore??-1);
-    const currentScore=Number(current?.internalAuditScore??current?.qualityScore??-1);
-    return candidateScore>currentScore||(candidateScore===currentScore&&clean(candidate?.id).localeCompare(clean(current?.id))<0);
-  };
+  const compareReusable=(a,b)=>
+    Number(b?.internalAuditScore??b?.qualityScore??-1)-Number(a?.internalAuditScore??a?.qualityScore??-1)
+    ||clean(a?.id).localeCompare(clean(b?.id));
+  const betterReusable=(candidate,current)=>!current||compareReusable(candidate,current)<0;
   for(const asset of assets){
     const assetId=clean(asset?.id);
-    if(assetId&&!assetById.has(assetId))assetById.set(assetId,asset);
+    if(!assetById.has(assetId))assetById.set(assetId,asset);
     const family=clean(asset?.family||asset?.category).toUpperCase();
     const currentConsumerIds=currentAssetConsumerIds(asset);
     const current=currentConsumerIds.includes(id);
     if(current){
       currentAssets.push(asset);
-      if(assetId)currentAssetIds.add(assetId);
+      currentAssetIds.add(assetId);
       if(family){
         currentFamilyCounts.set(family,(currentFamilyCounts.get(family)||0)+1);
         const primary=currentPrimaryByFamily.get(family);
