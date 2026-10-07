@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {autoEnrollMissingDesignSeeds,latestUsableDesign,makeAutoMissingDesignSeed,HOMEPAGE_NOVEL_GRAMMAR_V4_SOURCE} from '../tools/company-all-games-design-reset.mjs';
+import {autoEnrollMissingDesignSeeds,latestUsableDesign,makeAutoMissingDesignSeed,CANONICAL_NOVEL_GRAMMAR_V4_SOURCE} from '../tools/company-all-games-design-reset.mjs';
 import {validateGameSeed} from '../tools/company-game-seed-contract.mjs';
 
 function tempRepo(){
@@ -78,51 +78,57 @@ test('active game without design receives one canonical GAME_SEED intake and is 
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('targeted auto intake skips games that already have a usable revised design',()=>{
+test('targeted canonical intake keeps usable design evidence and creates the required GAME_SEED when missing',()=>{
   const root=tempRepo();
   try{
     assert.ok(latestUsableDesign(root,'already-designed'));
     const result=autoEnrollMissingDesignSeeds({root,gameId:'already-designed'});
-    assert.deepEqual(result.created,[]);
+    assert.deepEqual(result.created,['already-designed']);
     assert.deepEqual(result.designPresent,['already-designed']);
+    const state=JSON.parse(fs.readFileSync(path.join(root,'game-seed-state.json'),'utf8'));
+    const seed=state.seeds.find(row=>row.gameId==='already-designed');
+    assert.equal(seed.GAMEPLAY_SKETCH.version,4);
+    assert.equal(validateGameSeed(seed).pass,true);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
 
-test('homepage games upgrade legacy GAMEPLAY_SKETCH to v4 while already-current v4 is excluded',()=>{
-  const root=fs.mkdtempSync(path.join(os.tmpdir(),'homepage-grammar-backfill-'));
+test('active canonical games upgrade legacy GAMEPLAY_SKETCH to v4 without homepage exposure input',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'canonical-grammar-backfill-'));
   try{
     const legacyGame={
-      id:'legacy-home',name:'Legacy Home',description:'적을 상대하고 보상으로 다음 지역을 여는 생존 액션 게임',
-      genre:['생존','액션'],lifecycleState:'ACTIVE',selectedPlatform:'ROBLOX',
-      webPath:'/web-games/legacy-home/',homepageWebPlayable:true,hasWebArchive:true,
-      canonical:{lifecycle:{state:'ACTIVE'},sources:{web:{path:'/web-games/legacy-home/',playable:true,archive:true,state:'CURRENT_OWNER_BASELINE'}}}
+      id:'legacy-active',name:'Legacy Active',description:'적을 상대하고 보상으로 다음 지역을 여는 생존 액션 게임',
+      genre:['생존','액션'],lifecycleState:'ACTIVE',selectedPlatform:'ROBLOX'
     };
     const currentGame={
-      id:'current-home',name:'Current Home',description:'보드 위 선택이 다음 판면 상태를 바꾸는 전략 게임',
-      genre:['보드','전략'],lifecycleState:'ACTIVE',selectedPlatform:'UNITY',
-      webPath:'/web-games/current-home/',homepageWebPlayable:true,hasWebArchive:true,
-      canonical:{lifecycle:{state:'ACTIVE'},sources:{web:{path:'/web-games/current-home/',playable:true,archive:true,state:'CURRENT_OWNER_BASELINE'}}}
+      id:'current-active',name:'Current Active',description:'보드 위 선택이 다음 판면 상태를 바꾸는 전략 게임',
+      genre:['보드','전략'],lifecycleState:'ACTIVE',selectedPlatform:'UNITY'
     };
     fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify({games:[legacyGame,currentGame],permanentRemovalPolicy:{ids:[]}},null,2));
-    const legacy=makeAutoMissingDesignSeed({...legacyGame,id:'legacy-home'},{timestamp:'2026-10-06T00:00:00Z'});
+    const legacy=makeAutoMissingDesignSeed(legacyGame,{timestamp:'2026-10-06T00:00:00Z'});
     legacy.GAMEPLAY_SKETCH={version:1,source:'LEGACY',worldModel:'기존 생존 월드',actors:['플레이어','적'],interactionChains:['입력 -> 상태 변화'],stateMachine:['START','INPUT','ACTION','CHANGE','GOAL'],firstPlayableCycle:['입장','입력','행동','변화','위험','목표'],expansionPlan:['적','지역','상호작용'],longGoalScenario:['초기','중기','장기'],validationRisks:['겉구현 금지','반복 금지']};
     const current=makeAutoMissingDesignSeed(currentGame,{timestamp:'2026-10-06T00:00:00Z'});
     fs.writeFileSync(path.join(root,'game-seed-state.json'),JSON.stringify({version:2,seeds:[legacy,current]},null,2));
 
     const result=autoEnrollMissingDesignSeeds({root,timestamp:'2026-10-07T07:00:00Z'});
-    assert.deepEqual(result.homepageTargets,['legacy-home','current-home']);
-    assert.deepEqual(result.grammarUpgraded,['legacy-home']);
-    assert.deepEqual(result.grammarAlreadyCurrent,['current-home']);
+    assert.deepEqual(result.canonicalTargets,['legacy-active','current-active']);
+    assert.deepEqual(result.grammarUpgraded,['legacy-active']);
+    assert.deepEqual(result.grammarAlreadyCurrent,['current-active']);
 
     const state=JSON.parse(fs.readFileSync(path.join(root,'game-seed-state.json'),'utf8'));
-    const upgraded=state.seeds.find(row=>row.gameId==='legacy-home');
-    const untouched=state.seeds.find(row=>row.gameId==='current-home');
+    const upgraded=state.seeds.find(row=>row.gameId==='legacy-active');
+    const untouched=state.seeds.find(row=>row.gameId==='current-active');
     assert.equal(upgraded.GAMEPLAY_SKETCH.version,4);
     assert.equal(upgraded.GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.formula,'MAIN × A × B × c');
     assert.equal(upgraded.GAMEPLAY_SKETCH.novelGameGrammar.delveLayer.formulaSuffix,'+ @');
-    assert.equal(upgraded.homepageNovelGrammarBackfill.source,HOMEPAGE_NOVEL_GRAMMAR_V4_SOURCE);
-    assert.equal(upgraded.designEvolutionSignals.at(-1).status,'OPEN');
-    assert.equal(untouched.homepageNovelGrammarBackfill,undefined);
+    assert.equal(upgraded.novelGrammarBackfill.source,CANONICAL_NOVEL_GRAMMAR_V4_SOURCE);
+    assert.equal(upgraded.designEvolutionSignals.at(-1).source,'CANONICAL_GAME_SEED');
+    assert.equal(untouched.novelGrammarBackfill,undefined);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('canonical design intake does not depend on homepage web exposure fields',()=>{
+  const source=fs.readFileSync(new URL('../tools/company-all-games-design-reset.mjs',import.meta.url),'utf8');
+  assert.doesNotMatch(source,/homepageWebPlayable|homepageWebDesignTarget|CURRENT_HOMEPAGE_WEB_GAME|HOMEPAGE_NOVEL_GRAMMAR/);
+  assert.match(source,/CANONICAL_GAME_SEED_NOVEL_GRAMMAR_V4_20261007/);
 });
