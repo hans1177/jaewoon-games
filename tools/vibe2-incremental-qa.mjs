@@ -629,6 +629,21 @@ function runPresentationStaticQa({root,data={},changed=[]}={}){
         ]);
         require('GAME_VISUAL_IDENTITY_DOMAINS',identityDomains>=3);
         require('NO_SINGLE_PRIMITIVE_PLACEHOLDER',!singlePrimitiveOnly);
+        const unity3dActorRequired=data?.assetProduction?.nativeAuthoringExecution?.dcc?.crossPlatform3dMasterGlbRequired===true;
+        if(unity3dActorRequired){
+          const primitiveActor=/(?:actor|character|player|npc|enemy|monster|boss|creature)\w*\s*=\s*GameObject\.CreatePrimitive\s*\(|GameObject\.CreatePrimitive\s*\([^)]*\)[\s\S]{0,180}(?:actor|character|player|npc|enemy|monster|boss|creature)/i.test(text);
+          const skinnedMesh=/\bSkinnedMeshRenderer\b/.test(text);
+          const animator=/\bAnimator\b/.test(text);
+          const animatorState=/(?:CrossFade|Play|SetTrigger|SetFloat|SetBool)\s*\(/.test(text);
+          const collider=/(?:\bCollider\b|CapsuleCollider|BoxCollider|SphereCollider|CharacterController)/.test(text);
+          const lod=/(?:\bLODGroup\b|SetLODs\s*\()/i.test(text);
+          require('UNITY_3D_ACTOR_SKINNED_MESH_RENDERER',skinnedMesh);
+          require('UNITY_3D_ACTOR_ANIMATOR',animator);
+          require('UNITY_3D_ACTOR_ANIMATOR_STATE_BINDING',animator&&animatorState);
+          require('UNITY_3D_ACTOR_COLLIDER_PROXY',collider);
+          require('UNITY_3D_ACTOR_LOD',lod);
+          require('PRIMITIVE_ONLY_FINAL_3D_ACTOR',!primitiveActor);
+        }
       }
     }
   }else if(pass==='LIVING_MOTION'){
