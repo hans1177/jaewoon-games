@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "village-dungeons-build-up-g28-c96787bf934f",
-  "directiveFingerprint": "c96787bf934f61f56bfbda191d43fc154f452dc773f8106ba57e1cabb21737ce",
-  "previousDirectiveFingerprint": "628de1f7e80a5642cd5d373af747ac72d43d1de785395579a024677c440724da",
-  "forbiddenRepeatFingerprint": "628de1f7e80a5642cd5d373af747ac72d43d1de785395579a024677c440724da",
+  "directiveId": "village-dungeons-build-up-g29-5686681445ae",
+  "directiveFingerprint": "5686681445ae3cd6cda1d74ff30183fec972bc244c2fdddce907f67284309985",
+  "previousDirectiveFingerprint": "c96787bf934f61f56bfbda191d43fc154f452dc773f8106ba57e1cabb21737ce",
+  "forbiddenRepeatFingerprint": "c96787bf934f61f56bfbda191d43fc154f452dc773f8106ba57e1cabb21737ce",
   "gameId": "village-dungeons",
   "gameName": "마을 던전 RPG",
-  "generation": 28,
+  "generation": 29,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/village-dungeons",
-  "sourceTreeFingerprint": "a3437a57e80f0c9d3f3105521d2924350d4cf3d39b8bfe1fba5aff72aa6a619f",
+  "sourceTreeFingerprint": "4747c29d5839b7211207b8e8cd3531b63de41e99952aa9be000631b664d4e92c",
   "designFingerprint": "193d30cfb80a8115c6d03fd6239fd3600a05c131577783234844b6bdff61223e",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -104,7 +104,7 @@
           "3단계: 무한의 미궁 시련 모드 및 고대 유물 연구소 콘텐츠 개방",
           "층마다 무작위 페널티와 버프가 부여되는 엔드게임 로그라이트형 연속 던전 돌파 콘텐츠가 도입된다."
         ],
-        "sourceTreeFingerprint": "a3437a57e80f0c9d3f3105521d2924350d4cf3d39b8bfe1fba5aff72aa6a619f",
+        "sourceTreeFingerprint": "4747c29d5839b7211207b8e8cd3531b63de41e99952aa9be000631b664d4e92c",
         "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -469,9 +469,9 @@
   "previousVersionDelta": {
     "previousGoal": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 27,
-    "previousSourceTreeFingerprint": "4747c29d5839b7211207b8e8cd3531b63de41e99952aa9be000631b664d4e92c",
-    "currentSourceTreeFingerprint": "a3437a57e80f0c9d3f3105521d2924350d4cf3d39b8bfe1fba5aff72aa6a619f",
+    "previousGeneration": 28,
+    "previousSourceTreeFingerprint": "a3437a57e80f0c9d3f3105521d2924350d4cf3d39b8bfe1fba5aff72aa6a619f",
+    "currentSourceTreeFingerprint": "4747c29d5839b7211207b8e8cd3531b63de41e99952aa9be000631b664d4e92c",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1649,9 +1649,9 @@
       ],
       "weakExistingContentMayPreemptNewContent": true
     },
-    "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 10,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=9; uncoveredBefore=4.",
+    "selectedTheme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+    "themeDepth": 1,
+    "selectedThemeReason": "0 explicit GAP(s) and 6 applicable domain(s); focus=STABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=4.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1659,7 +1659,7 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY": 10,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 1,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 12
       },
@@ -1667,7 +1667,6 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
@@ -1677,7 +1676,8 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "ENEMY_BOSS_COMBAT_ECOLOGY"
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM"
       ],
       "requiredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -1688,31 +1688,22 @@
         "MID_LATE_ENDGAME_COMPLETION",
         "PRESENTATION_WORLD_COHESION"
       ],
-      "distinctCovered": 3,
+      "distinctCovered": 4,
       "totalThemes": 7,
       "breadthCycleComplete": false,
       "missingThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
         "QUEST_STORY_PROGRESSION_CHAIN",
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "MID_LATE_ENDGAME_COMPLETION"
       ],
       "leastCoveredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
         "QUEST_STORY_PROGRESSION_CHAIN",
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "MID_LATE_ENDGAME_COMPLETION"
       ],
       "selectionPolicy": "SUCCESSFUL_ITERATIONS_PRIORITIZE_UNCOVERED_OR_LEAST_COVERED_COHERENT_THEMES; VERIFIED_FAILURE_MAY_DEEPEN_THE_SAME_CAUSAL_THEME"
     },
     "scoredThemes": [
-      {
-        "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 24,
-        "gapDomains": [
-          "ENEMY_VISUALS"
-        ]
-      },
       {
         "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "score": 20,
@@ -1734,6 +1725,13 @@
         "gapDomains": []
       },
       {
+        "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "score": 6,
+        "gapDomains": [
+          "ENEMY_VISUALS"
+        ]
+      },
+      {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "score": -122,
         "gapDomains": []
@@ -1750,13 +1748,13 @@
       }
     ],
     "coherentContentBundle": [
-      "ENEMY_ROLE_SET: 추격·견제·방어·지원·매복·지역 통제 등 서로 다른 전투 역할을 만든다.",
-      "BEHAVIOR_AND_COUNTERPLAY: 이름·HP·공격력만 다른 적이 아니라 이동·전조·공격·약점·대응 선택이 달라야 한다.",
-      "ENCOUNTER_COMPOSITION: 적 역할 조합과 지형·목표가 만나 새로운 판단을 만들게 한다.",
-      "ELITE_OR_BOSS_SIGNATURE: 보스·엘리트는 페이즈·공간 압박·전조·대응·보상 중 여러 축에서 일반 적과 구별한다.",
-      "ECOLOGICAL_WORLD_REASON: 적이 해당 지역·스토리·자원·세력 관계 안에 존재하는 이유를 연결한다.",
-      "DISTINCT_REWARD_PURPOSE: 처치 보상은 다음 장비·퀘스트·제작·지역 해금 중 실제 목적을 가진다.",
-      "VISUAL_TELEGRAPH: 실루엣·모션·VFX·음향·UI 전조가 행동 규칙과 일치해야 한다."
+      "DERIVED_GAMEPLAY_RULE: 승인된 기존 규칙을 깨지 않으면서 환경·적 관계·아이템 조합·퀘스트 상태·지역 접근 같은 새 상호작용 규칙을 만든다.",
+      "TRIGGER_CONDITION: 규칙이 언제 발동하고 언제 끝나는지 명확히 한다.",
+      "PLAYER_DECISION_EFFECT: 규칙이 실제 선택·위험·경로·장비·협동 방식 중 하나 이상을 바꾸게 한다.",
+      "EVENT_VARIATION: 랜덤 숫자만 바꾸지 말고 조우·목표·경로·보상 구조를 변주한다.",
+      "FAILURE_AND_RECOVERY: 실패 시 손실·복구·재도전이 이해 가능하고 진행을 무의미하게 되감지 않게 한다.",
+      "MULTIPLAYER_INTERACTION_WHEN_APPLICABLE: 협동·경쟁이면 역할 분담·권한·동기화·보상 규칙을 실제 2인 이상 상태와 연결한다.",
+      "SYSTEM_CONSEQUENCE: 규칙 결과가 퀘스트·지역·보상·NPC·다음 세션 중 관련 시스템에 남는다."
     ],
     "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
     "antiCloneContract": {
@@ -1822,11 +1820,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 28,
-    "previousGeneration": 27,
+    "generation": 29,
+    "previousGeneration": 28,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "a3437a57e80f0c9d3f3105521d2924350d4cf3d39b8bfe1fba5aff72aa6a619f",
-    "priorSourceFingerprint": "4747c29d5839b7211207b8e8cd3531b63de41e99952aa9be000631b664d4e92c",
+    "sourceFingerprint": "4747c29d5839b7211207b8e8cd3531b63de41e99952aa9be000631b664d4e92c",
+    "priorSourceFingerprint": "a3437a57e80f0c9d3f3105521d2924350d4cf3d39b8bfe1fba5aff72aa6a619f",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2288,7 +2286,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "a3437a57e80f0c9d3f3105521d2924350d4cf3d39b8bfe1fba5aff72aa6a619f",
+    "sourceTreeFingerprint": "4747c29d5839b7211207b8e8cd3531b63de41e99952aa9be000631b664d4e92c",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2380,7 +2378,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "a3437a57e80f0c9d3f3105521d2924350d4cf3d39b8bfe1fba5aff72aa6a619f",
+    "sourceTreeFingerprint": "4747c29d5839b7211207b8e8cd3531b63de41e99952aa9be000631b664d4e92c",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2638,7 +2636,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "a3437a57e80f0c9d3f3105521d2924350d4cf3d39b8bfe1fba5aff72aa6a619f",
+      "sourceTreeFingerprint": "4747c29d5839b7211207b8e8cd3531b63de41e99952aa9be000631b664d4e92c",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2693,7 +2691,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 29,
+    "nextGeneration": 30,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2759,5 +2757,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-07T03:47:56.902Z"
+  "generatedAt": "2026-10-07T03:51:57.780Z"
 }
