@@ -3501,7 +3501,7 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
   const productionRequestBlock=assetDevelopmentTask(order)&&taskRequests.length?[
     '[PRODUCTION REQUEST CONTRACT BEGIN]',
     JSON.stringify({requests:taskRequests,allowedPaths:responsibleFiles,target:order.target,objectId:motionUnit?.objectId||null,clipId:motionUnit?.clipId||null,styleLock:order.assetProduction?.styleBible||null}),
-    'Apply each requested change to the assigned existing subject. Preserve explicit exclusions, quantities, ordering and identity features verbatim. Teacher examples are advisory and cannot replace this request or widen editable scope. If a request conflicts with source locks or needs unsupported anatomy/material channels, state that exact unresolved item; do not silently substitute a generic asset or claim completion.',
+    'Apply these exact requests, exclusions, quantities, order and identity to the assigned subject. Teachers cannot replace them or widen allowedPaths. Report exact source-lock conflicts or unsupported channels; no generic substitution or false completion.',
     '[PRODUCTION REQUEST CONTRACT END]'
   ].join('\n'):'';
   const photoCraft=!motionUnit&&(order.assetProduction?.imageAssetCreation?.enabled===true||order.imageAssetObservation?.required===true);
@@ -4260,7 +4260,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
   const tightInitial=oversizedInitial&&initialPromptLimit<MAX_INITIAL_JSON_PROMPT_BYTES;
   const rawGoalLine=rawPrompt.split('\n').find(value=>value.startsWith('Goal:'))||'';
   const compactGoalLine=rawGoalLine
-    ?'Goal: '+boundedPromptText(rawGoalLine.slice(rawGoalLine.indexOf(':')+1).trimStart(),COMPACT_DIRECTIVE_LINE_BYTES)
+    ?'Goal: '+boundedPromptText(rawGoalLine.slice(rawGoalLine.indexOf(':')+1).trimStart(),rawPrompt.includes('[PRODUCTION REQUEST CONTRACT BEGIN]')?200:COMPACT_DIRECTIVE_LINE_BYTES)
     :'';
   const studioExpansion=/\[STUDIO[_ ]QUALITY[_ ]EVOLUTION\]/i.test(rawPrompt);
   const allowedLine=rawPrompt.split('\n').find(line=>line.trimStart().startsWith('Allowed edit paths:'))||'';

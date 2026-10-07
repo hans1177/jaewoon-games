@@ -2717,12 +2717,12 @@ export function createStudioMotionActionProfile({
     clipId:text(teachingClip),needsSpecificClipBrief:roles.length===0,
     performanceStudy:Object.freeze({
       actorClass:upper(actorClass),bodyPlan:upper(bodyPlan),archetype:upper(archetype),weaponFamily:upper(weaponFamily),weightClass:weight,
-      preparation:'Read the existing joint hierarchy, visible geometry, support contacts and exact event markers. Map intent to gaze/head lead, support/load shift, primary arc, distal response and settling only on real movable channels. Unknown anatomy stays unknown; do not default a floating or many-legged subject to a humanoid.',
-      timing:'For each existing phase mark its start/end, key pose, breakdown pose, speed peak and next support state. Fit unequal spacing inside the locked time window: held preparation, directed acceleration, readable contact, dissipating follow-through and recovery. A common sine on all joints loses this ordering.',
-      forcePath:'Trace support through the existing pelvis/body mass to torso/shoulder and effector; for other topologies use their actual load path. Counter-rotate compatible masses to preserve balance. Identify which joint leads, which follows, and which must remain stable; do not exaggerate all channels together.',
-      contact:'At the existing contact marker inspect palm/sole/weapon orientation, grip offset, penetration and the support change immediately before/after. Preserve impact/cancel/root authority. A pleasant local arc without world contact remains unverified.',
-      secondary:'Separate primary travel from delayed head, tail, cloth or equipment response only where those channels exist. Secondary amplitude decays after primary motion; keep a readable still point and preserve already sound channels.',
-      review:'Compare normal speed, quarter speed and frames around each speed peak, contact, reversal and seam. Name the exact joint, interval and visible defect. Measure position, velocity and acceleration; for declared loops compare endpoint position/velocity and contact state. Smooth curves alone do not prove weight, acting or appeal.'
+      preparation:"Read real joints, body mass, supports and event markers. Unknown anatomy stays unknown; never invent humanoid bones.",
+      timing:"Within locked phases mark key/breakdown poses, speed peaks and support changes. Hold, accelerate, contact, follow through, recover; do not synchronize all joints.",
+      forcePath:"Use the actual load path: support to body mass to torso/effector. Name leading, following and stable joints; counterbalance compatible masses.",
+      contact:"At locked contact inspect sole/palm/weapon orientation, grip and penetration. Preserve root, impact and cancel authority.",
+      secondary:"Delay existing head/tail/cloth/equipment channels behind primary motion; decay amplitude into a readable rest.",
+      review:"Inspect normal/quarter speed and exact joint intervals at contact, reversal and loop seams. Measure position, velocity and acceleration plus endpoint contact state. Smoothness is not weight or appeal."
     }),
     lessons:freezeList(roles.map(id=>Object.freeze({role:id,phases:freezeList((DUEL_COMBAT_AUTHORING_PHASES[id]||[]).map(row=>row.phase)),lesson:STUDIO_MOTION_TEACHER_LESSONS[id]}))),
     craft:'Inspect the exact rig/clip and weak axis first. Block silhouette and intent at the game camera, refine arcs and spacing, then contacts/grips, secondary overlap and transitions. Use compatible authored source and preserve strong axes. Hermite segments can match endpoint pose and velocity; C1 continuity alone does not prove contact or appeal.',
