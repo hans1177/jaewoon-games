@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "bug-defense-build-up-g18-e4eb68e65694",
-  "directiveFingerprint": "e4eb68e65694a50331a8d57354fb4fe91982b0d92f7b859ce4a9696b32bd835c",
-  "previousDirectiveFingerprint": "1c57577e8ab763690a1eaa3b2415d6f440a9f624d3b11d597b5d8a833839383a",
-  "forbiddenRepeatFingerprint": "1c57577e8ab763690a1eaa3b2415d6f440a9f624d3b11d597b5d8a833839383a",
+  "directiveId": "bug-defense-build-up-g17-1c57577e8ab7",
+  "directiveFingerprint": "1c57577e8ab763690a1eaa3b2415d6f440a9f624d3b11d597b5d8a833839383a",
+  "previousDirectiveFingerprint": "9df9a34db3aba78875a21c7f7baf9d8365aaa8f48574ec36d32dabb845346f5e",
+  "forbiddenRepeatFingerprint": "9df9a34db3aba78875a21c7f7baf9d8365aaa8f48574ec36d32dabb845346f5e",
   "gameId": "bug-defense",
   "gameName": "곤충 디펜스",
-  "generation": 18,
+  "generation": 17,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/bug-defense",
-  "sourceTreeFingerprint": "4318a2ad5ae1d0453da3d1f042fc992e06b58a5203b0d91e244eafeef6c55b72",
+  "sourceTreeFingerprint": "46a6adc50a443767b466ae0a89f7ee3bd3b800a3363b12656005d01a3067b208",
   "designFingerprint": "fe2af5d1ef828c7126edfb7a955e4c0688cd00e3cadd4e3b85bd620f54627ca9",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -104,7 +104,7 @@
           "거대 보스 곤충 레이드 및 패턴 대응 모드",
           "특수 패턴을 가진 거대 보스 곤충이 특정 웨이브에 등장하여 특정 라인을 집중 공격하거나 방어선을 무력화하는 패턴을 수행하며, 플레이어는 이를 저지하기 위해 집중 화력을 투사해야 합니다."
         ],
-        "sourceTreeFingerprint": "4318a2ad5ae1d0453da3d1f042fc992e06b58a5203b0d91e244eafeef6c55b72",
+        "sourceTreeFingerprint": "46a6adc50a443767b466ae0a89f7ee3bd3b800a3363b12656005d01a3067b208",
         "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -501,7 +501,7 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 802,
+        "line": 801,
         "kind": "FUNCTION",
         "symbol": "bindNativeFoundationPlayer",
         "context": "local function bindNativeFoundationPlayer(player)",
@@ -568,17 +568,17 @@
   "previousVersionDelta": {
     "previousGoal": "곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 17,
-    "previousSourceTreeFingerprint": "46a6adc50a443767b466ae0a89f7ee3bd3b800a3363b12656005d01a3067b208",
-    "currentSourceTreeFingerprint": "4318a2ad5ae1d0453da3d1f042fc992e06b58a5203b0d91e244eafeef6c55b72",
+    "previousGeneration": 16,
+    "previousSourceTreeFingerprint": "7ac6ab6108a13135ad52441b96f6f80b4ea329c03b16c1d03ae01761e815d501",
+    "currentSourceTreeFingerprint": "46a6adc50a443767b466ae0a89f7ee3bd3b800a3363b12656005d01a3067b208",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-    "failureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
+    "failureStage": "F0_SOURCE_INTEGRITY",
+    "failureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
     "blockers": [],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -1720,7 +1720,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 117742,
+        "sourceBytes": 117674,
         "largestFileBytes": 48575,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1753,8 +1753,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 7,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=6; uncoveredBefore=4.",
+    "themeDepth": 6,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=5; uncoveredBefore=4.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1764,9 +1764,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 7,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 7
+        "PRESENTATION_WORLD_COHESION": 6
       },
       "sequence": [
+        "WORLD_ECOLOGY_STORY_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1774,7 +1775,6 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1811,7 +1811,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 120,
+        "score": 138,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -1929,11 +1929,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 18,
-    "previousGeneration": 17,
+    "generation": 17,
+    "previousGeneration": 16,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "4318a2ad5ae1d0453da3d1f042fc992e06b58a5203b0d91e244eafeef6c55b72",
-    "priorSourceFingerprint": "46a6adc50a443767b466ae0a89f7ee3bd3b800a3363b12656005d01a3067b208",
+    "sourceFingerprint": "46a6adc50a443767b466ae0a89f7ee3bd3b800a3363b12656005d01a3067b208",
+    "priorSourceFingerprint": "7ac6ab6108a13135ad52441b96f6f80b4ea329c03b16c1d03ae01761e815d501",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2178,9 +2178,9 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/bug-defense/client/Game.client.luau",
-      "roblox-games/bug-defense/server/Game.server.luau",
       "roblox-games/bug-defense/shared/GameConfig.luau",
+      "roblox-games/bug-defense/server/Game.server.luau",
+      "roblox-games/bug-defense/client/Game.client.luau",
       "roblox-games/bug-defense/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -2394,7 +2394,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "4318a2ad5ae1d0453da3d1f042fc992e06b58a5203b0d91e244eafeef6c55b72",
+    "sourceTreeFingerprint": "46a6adc50a443767b466ae0a89f7ee3bd3b800a3363b12656005d01a3067b208",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2485,7 +2485,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "4318a2ad5ae1d0453da3d1f042fc992e06b58a5203b0d91e244eafeef6c55b72",
+    "sourceTreeFingerprint": "46a6adc50a443767b466ae0a89f7ee3bd3b800a3363b12656005d01a3067b208",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2522,9 +2522,9 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/bug-defense/client/Game.client.luau",
-      "roblox-games/bug-defense/server/Game.server.luau",
       "roblox-games/bug-defense/shared/GameConfig.luau",
+      "roblox-games/bug-defense/server/Game.server.luau",
+      "roblox-games/bug-defense/client/Game.client.luau",
       "roblox-games/bug-defense/default.project.json"
     ],
     "sourceAnchors": [
@@ -2666,9 +2666,9 @@
     "gameId": "bug-defense",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/bug-defense/client/Game.client.luau",
-      "roblox-games/bug-defense/server/Game.server.luau",
       "roblox-games/bug-defense/shared/GameConfig.luau",
+      "roblox-games/bug-defense/server/Game.server.luau",
+      "roblox-games/bug-defense/client/Game.client.luau",
       "roblox-games/bug-defense/default.project.json"
     ],
     "impact": {
@@ -2743,11 +2743,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "4318a2ad5ae1d0453da3d1f042fc992e06b58a5203b0d91e244eafeef6c55b72",
+      "sourceTreeFingerprint": "46a6adc50a443767b466ae0a89f7ee3bd3b800a3363b12656005d01a3067b208",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "failureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED"
+      "failureStage": "F0_SOURCE_INTEGRITY",
+      "failureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2798,7 +2798,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 19,
+    "nextGeneration": 18,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2864,5 +2864,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-07T05:31:50.066Z"
+  "generatedAt": "2026-10-07T05:18:36.981Z"
 }
