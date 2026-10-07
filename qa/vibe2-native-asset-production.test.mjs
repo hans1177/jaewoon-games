@@ -4,13 +4,100 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {assetProductionGuidance,buildAllGameDynamicLibraryBindingPlan,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType,crossPlatform3dActorFamilyForType,synchronizeCompanyCommonAssetRegistry} from '../tools/vibe2-asset-production-plan.mjs';
-import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate,buildInternalAssetSourceUsageContract,inspectRobloxNativeCandidateQuality,executeDeclaredNativeDccAuthoringVerification,evaluateNativeAssetAuthoringCandidate,collectNativeAssetRuntimePromotionCandidates,persistedGeneratedAssetBindings} from '../tools/vibe2-source-worker.mjs';
+import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate,buildInternalAssetSourceUsageContract,inspectRobloxNativeCandidateQuality,executeDeclaredNativeDccAuthoringVerification,evaluateNativeAssetAuthoringCandidate,collectNativeAssetRuntimePromotionCandidates,persistedGeneratedAssetBindings,verifyPersistedGeneratedAssetOutputs} from '../tools/vibe2-source-worker.mjs';
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
 import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource,robloxStudioAssetFamilyBoundInText} from '../tools/company-development-roblox-bootstrap.mjs';
+
+test('persisted DCC outputs are reverified against real files once before binding or promotion',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'dcc-output-verification-'));
+  try{
+    const asset='assets/generated/unity/demo/prop.bin';
+    const source='assets/generated/unity/demo/build.py';
+    const preview='assets/generated/unity/demo/preview.png';
+    const evidence='assets/generated/unity/demo/evidence.json';
+    for(const relative of [asset,source,preview,evidence])fs.mkdirSync(path.dirname(path.join(root,relative)),{recursive:true});
+    fs.writeFileSync(path.join(root,asset),'native-prop-v1');
+    fs.writeFileSync(path.join(root,source),'print("build prop")');
+    fs.writeFileSync(path.join(root,preview),'preview');
+    fs.writeFileSync(path.join(root,evidence),'{}');
+    const sha=relative=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,relative))).digest('hex');
+    const artifactHash=sha(asset),sourceHash=sha(source);
+    const evidenceRow={
+      executed:true,allRecipesPassed:true,candidateUsable:true,persistedForCandidate:true,
+      editableSource:source,nativeArtifact:asset,artifactHash,preview,
+      recipes:[{
+        id:'prop',assetId:'prop-a',family:'PROP',license:'project-original',types:['prop'],
+        editableSource:source,sourceHash,editableSourceHash:sourceHash,
+        nativeArtifact:asset,artifactHash,outputs:[{path:asset,sha256:artifactHash,size:14}],
+        preview,evidenceJson:evidence,persistedForCandidate:true
+      }]
+    };
+    const order={
+      target:'unity',assetProductionLane:true,
+      assetProduction:{nativeAuthoringExecution:{
+        enabled:true,dcc:{requiredTypes:['prop'],executionEvidence:evidenceRow},
+        nativeText:{requiredTypes:['prop']}
+      },decisions:[]}
+    };
+    const verified=verifyPersistedGeneratedAssetOutputs({cwd:root,order});
+    assert.equal(verified.required,true);
+    assert.equal(verified.pass,true,JSON.stringify(verified.failures));
+    assert.equal(verified.status,'PERSISTED_OUTPUT_VERIFIED');
+    assert.equal(verified.checkedFileCount,4);
+    assert.equal(verified.hashedFileCount,2);
+    assert.ok(verified.cacheHitCount>=1);
+    const verifiedOrder={
+      ...order,assetProduction:{...order.assetProduction,nativeAuthoringExecution:{
+        ...order.assetProduction.nativeAuthoringExecution,
+        dcc:{...order.assetProduction.nativeAuthoringExecution.dcc,executionEvidence:{...evidenceRow,outputVerification:verified}}
+      }}
+    };
+    const sourceText=[
+      'var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("'+asset+'");',
+      'const string ArtifactHash = "'+artifactHash+'";',
+      'var renderer = prefab.GetComponentInChildren<MeshRenderer>();'
+    ].join('\n');
+    const authored=evaluateNativeAssetAuthoringCandidate({order:verifiedOrder,candidate:{edits:[{path:'unity-games/demo/Assets/Game.cs',replace:sourceText}]}});
+    assert.equal(authored.dccOutputVerificationPass,true);
+    assert.equal(authored.generatedAssetBindingApplied,true);
+    assert.equal(authored.generatedRecipeBindingChecks[0].persistedOutputVerified,true);
+    assert.equal(persistedGeneratedAssetBindings(verifiedOrder).length,1);
+
+    fs.writeFileSync(path.join(root,asset),'corrupted-output');
+    const corrupted=verifyPersistedGeneratedAssetOutputs({cwd:root,order});
+    assert.equal(corrupted.pass,false);
+    assert.ok(corrupted.failures.some(row=>row.path===asset&&row.reason==='SHA256_MISMATCH'));
+    const corruptedOrder={
+      ...order,assetProduction:{...order.assetProduction,nativeAuthoringExecution:{
+        ...order.assetProduction.nativeAuthoringExecution,
+        dcc:{...order.assetProduction.nativeAuthoringExecution.dcc,executionEvidence:{...evidenceRow,outputVerification:corrupted}}
+      }}
+    };
+    const rejected=evaluateNativeAssetAuthoringCandidate({order:corruptedOrder,candidate:{edits:[{path:'unity-games/demo/Assets/Game.cs',replace:sourceText}]}});
+    assert.equal(rejected.dccOutputVerificationPass,false);
+    assert.equal(rejected.dccAuthored,false);
+    assert.equal(rejected.generatedRecipeBindingChecks[0].persistedOutputVerified,false);
+    assert.deepEqual([...persistedGeneratedAssetBindings(corruptedOrder)],[]);
+    assert.deepEqual([...collectNativeAssetRuntimePromotionCandidates({order:corruptedOrder,candidate:{edits:[{path:'unity-games/demo/Assets/Game.cs',replace:sourceText}]}})],[]);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('source worker verifies persisted DCC evidence before any generated binding reuse',()=>{
+  const source=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  const verificationAt=source.indexOf('dccOutputVerification=verifyPersistedGeneratedAssetOutputs({cwd,order})');
+  const generatedBindingAt=source.indexOf('const generatedAssetBindings=persistedGeneratedAssetBindings(order)');
+  assert.ok(verificationAt>0);
+  assert.ok(generatedBindingAt>verificationAt);
+  assert.match(source,/NATIVE_DCC_PERSISTED_OUTPUT_INVALID/);
+  assert.match(source,/const candidateText=candidateChangedText\(candidate\);/);
+  assert.match(source,/evaluateNativeAssetAuthoringCandidate\(\{order,candidate,candidateText\}\)/);
+  assert.match(source,/collectNativeAssetRuntimePromotionCandidates\(\{order,candidate,candidateText\}\)/);
+});
 
 test('asset registry change detection skips untouched top-level serialization and tracks catalog asset mutations',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-change-detection-'));
