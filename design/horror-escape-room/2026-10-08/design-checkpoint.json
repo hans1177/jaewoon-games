@@ -9,12 +9,50 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "designer_draft_slices::identity-core": {
+      "identity": "8인 4대4 감염 추격전",
+      "playerFantasy": "인간4/몬스터4 배정, 빈자리 AI 충원, 고유 도구·대시·정화로 생존/반격, 감염 공격으로 몬스터 전환, 고유 스킬로 옛 팀 추격, 정화로 몬스터 제거, 승패 결정",
+      "coreFun": "인간4/몬스터4 배정, 빈자리 AI 충원, 감염 공격으로 몬스터 전환, 고유 스킬로 옛 팀 추격, 정화로 몬스터 제거, 승패 결정",
+      "coreLoop": [
+        "인간4/몬스터4 배정",
+        "AI 충원",
+        "감염 공격으로 몬스터 전환",
+        "고유 스킬로 옛 팀 추격",
+        "정화로 몬스터 제거",
+        "승패 결정"
+      ],
+      "signatureSystems": [
+        {
+          "name": "4대4 AI 충원",
+          "purpose": "논리 인원 8명, 인간4/몬스터4를 실제 플레이어+AI로 항상 채운다.",
+          "playerChoice": "AI가 양팀 빈자리 충원"
+        },
+        {
+          "name": "감염 전환",
+          "purpose": "몬스터의 명시적 서버 권한 감염 공격이 적중한 인간이 탈락하지 않고 몬스터로 전환하며 인간 직업별 감염 스킬을 얻는다.",
+          "playerChoice": "감염 공격으로 몬스터 전환"
+        }
+      ]
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 265569,
+      "lastMs": 265569,
+      "lastError": null,
+      "updatedAt": "2026-10-07T22:09:25.043Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T22:04:59.348Z",
-  "updatedAt": "2026-10-07T22:04:59.374Z",
+  "updatedAt": "2026-10-07T22:09:25.046Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -726,5 +764,16 @@
       }
     },
     "assetFacts": {}
-  }
+  },
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "lastSuccessfulModelCallAt": "2026-10-07T22:09:25.043Z",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
