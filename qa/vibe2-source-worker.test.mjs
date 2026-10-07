@@ -3060,14 +3060,13 @@ test('primary focused Roblox repair uses the existing fourth attempt after repea
   assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates/primary-focused-fourth-attempt/files',relative),'utf8'),/local score = 1/);
 });
 
-test('focused replace recovery budget matches the central fast-path contract',()=>{
+test('focused replace recovery budget matches the raised shared source contract',()=>{
   const source=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
   const focusedPredict=Number(source.match(/const JSON_FOCUSED_REPLACE_MAX_PREDICT=(\d+);/)?.[1]||0);
-  const focusedTimeout=Number(source.match(/const JSON_FOCUSED_REPLACE_TIMEOUT_MS=(\d+);/)?.[1]||0);
-  const focusedContext=Number(source.match(/const JSON_FOCUSED_REPLACE_CONTEXT_WINDOW=(\d+);/)?.[1]||0);
   assert.equal(focusedPredict,384);
-  assert.equal(focusedTimeout,90000);
-  assert.equal(focusedContext,8192);
+  assert.match(source,/const STANDARD_GAME_SOURCE_CONTEXT_WINDOW=32768;/);
+  assert.match(source,/const JSON_FOCUSED_REPLACE_TIMEOUT_MS=DEFAULT_TIMEOUT_MS;/);
+  assert.match(source,/const JSON_FOCUSED_REPLACE_CONTEXT_WINDOW=STANDARD_GAME_SOURCE_CONTEXT_WINDOW;/);
 });
 
 test('focused Web repair malformed output fast-escalates to focused replace on the next attempt', async () => {
@@ -3685,7 +3684,7 @@ test('second no-op receives one short focused third retry', async () => {
   assert.equal(result.generation.recoveryUsed,true);
   assert.equal(result.generation.focusedFinalRetry,true);
   assert.equal(result.generation.focusedReplaceOnly,true);
-  assert.equal(result.generation.timeoutMs,90000);
+  assert.equal(result.generation.timeoutMs,240000);
   assert.equal(result.generation.maxPredict,384);
   assert.equal(result.generation.temperature,0.08);
   assert.deepEqual(result.changedFiles,['index.html']);
@@ -4397,7 +4396,7 @@ test('first edit-match failure fast-escalates attempt two to exact replace-only 
   assert.equal(result.generation.focusedReplaceOnly,true);
   assert.equal(result.generation.completionMode,'JSON_REPLACE_ONLY');
   assert.equal(result.generation.maxPredict,384);
-  assert.equal(result.generation.timeoutMs,90000);
+  assert.equal(result.generation.timeoutMs,240000);
   assert.deepEqual(result.changedFiles,['index.html']);
 });
 
@@ -5495,7 +5494,7 @@ test('asset-development Roblox graphics stays on bounded focused retries while g
   assert.match(source,/ASSET_DEVELOPMENT_ROBLOX_MAX_GENERATION_ATTEMPTS=3/);
   assert.match(source,/ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS=120000/);
   assert.match(source,/ASSET_DEVELOPMENT_ROBLOX_FOCUSED_MAX_PREDICT=768/);
-  assert.match(source,/ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW=8192/);
+  assert.match(source,/ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW=STANDARD_GAME_SOURCE_CONTEXT_WINDOW/);
   assert.match(source,/robloxTimeoutFocusedRecoveryNeedsPackage=robloxAssetAdaptationTask[\s\S]*?&&!assetDevelopmentLane/);
   assert.match(source,/robloxFullGraphicsPackageRecovery=robloxAssetAdaptationTask[\s\S]*?&&!assetDevelopmentLane/);
   assert.match(source,/const assetDevelopmentFocusedGraphics=assetDevelopmentLane&&robloxAssetAdaptationTask/);
