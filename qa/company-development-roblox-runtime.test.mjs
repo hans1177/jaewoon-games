@@ -1137,18 +1137,25 @@ test('Roblox control jobs use fixed 24.04 while heavy workers stay full',()=>{
 
 
 
-test('pre-F9 private validation stays per-game and dedupes active exact work',()=>{
+test('pre-F9 private validation stays per-game, parallel, and dedupes active exact work',()=>{
   const runtime=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const planStart=runtime.indexOf('\n  technical-plan:\n');
+  const workerStart=runtime.indexOf('\n  technical-worker:\n',planStart);
+  const plan=runtime.slice(planStart,workerStart);
   const persistStart=runtime.indexOf('\n  technical-persist:\n');
   const persist=runtime.slice(persistStart);
-  assert.ok(persistStart>=0);
+  assert.ok(planStart>=0);
+  assert.ok(workerStart>planStart);
   assert.match(persist,/group: roblox-private-runtime-dispatch-\$\{\{ inputs\.game_id \|\| github\.run_id \}\}/);
-  assert.match(persist,/Route F0-passed artifacts to private runtime validation without Studio/);
-  assert.match(persist,/ROBLOX_PRIVATE_RUNTIME_VALIDATION_DISPATCH=YES:/);
-  assert.match(persist,/String\(run\.head_sha\|\|''\)!==currentSha/);
-  assert.match(persist,/ROBLOX_PRIVATE_RUNTIME_VALIDATION_DISPATCH=DEDUPED_CURRENT_MAIN:/);
-  assert.match(persist,/publish_stage=validation/);
-  assert.match(persist,/ROBLOX_STUDIO_REQUIRED_FOR_DEVELOPMENT_CONTINUATION=NO/);
+  assert.match(plan,/Route F0-passed artifacts to private runtime validation without Studio/);
+  assert.doesNotMatch(persist,/Route F0-passed artifacts to private runtime validation without Studio/);
+  assert.match(plan,/ROBLOX_PRIVATE_RUNTIME_VALIDATION_DEFERRED_SOURCE_STAGE=/);
+  assert.match(plan,/ROBLOX_PRIVATE_RUNTIME_VALIDATION_DISPATCH=YES:/);
+  assert.match(plan,/String\(run\.head_sha\|\|''\)!==currentSha/);
+  assert.match(plan,/CURRENT_MAIN="\$current_main" node/);
+  assert.match(plan,/ROBLOX_PRIVATE_RUNTIME_VALIDATION_DISPATCH=DEDUPED_CURRENT_MAIN:/);
+  assert.match(plan,/publish_stage=validation/);
+  assert.match(plan,/ROBLOX_STUDIO_REQUIRED_FOR_DEVELOPMENT_CONTINUATION=NO/);
 });
 
 
