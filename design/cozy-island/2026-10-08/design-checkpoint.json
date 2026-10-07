@@ -161,25 +161,41 @@
         "multiplayerPersistence": "SERVER_AUTHORITY",
         "expansionSpace": "COZY_CHIBI_KINGDOM_EXPANSION_V2"
       }
+    },
+    "designer_draft_slices::platform-expansion": {
+      "platformExpansionPolicy": {
+        "mode": "SHARED_LARGE_FRAME_PLATFORM_NATIVE_EXPANSION",
+        "sharedLargeFrame": [
+          "CORE_FUN_AND_REPRESENTATIVE_LOOP",
+          "CORE_FUN_AND_REPRESENTATIVE_LOOP",
+          "CORE_FUN_AND_REPRESENTATIVE_LOOP",
+          "CORE_FUN_AND_REPRESENTATIVE_LOOP",
+          "CORE_FUN_AND_REPRESENTATIVE_LOOP"
+        ],
+        "expansionLimit": "NO_ARTIFICIAL_PARITY_LIMIT_WITHIN_SHARED_LARGE_FRAME",
+        "webRule": "WEB_2_5D_3D_4D_5D_6D_7D_8D_9D_10D",
+        "unityRule": "UNITY_3D_4D_5D_6D_7D_8D_9D_10D",
+        "robloxRule": "ROBLOX_3D_4D_5D_6D_7D_8D_9D_10D"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 4,
+      "calls": 7,
+      "successes": 5,
       "failures": 2,
       "timeouts": 1,
       "jsonFailures": 1,
-      "totalMs": 1004366,
-      "lastMs": 167327,
+      "totalMs": 1174629,
+      "lastMs": 170263,
       "lastError": "Expected ',' or ']' after array element in JSON at position 1654 (line 1 column 1655)",
-      "updatedAt": "2026-10-07T19:28:54.049Z"
+      "updatedAt": "2026-10-07T19:31:44.313Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T18:14:44.822Z",
-  "updatedAt": "2026-10-07T19:28:54.049Z",
+  "updatedAt": "2026-10-07T19:31:44.314Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
@@ -192,7 +208,7 @@
     "preservedTaskCount": 0,
     "migratedAt": "2026-10-07T19:17:03.220Z"
   },
-  "lastSuccessfulModelCallAt": "2026-10-07T19:28:54.049Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T19:31:44.313Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
