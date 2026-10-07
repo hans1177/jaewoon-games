@@ -5138,6 +5138,7 @@ test('dynamic source consumers stay outside registry identity and refresh on the
     assert.deepEqual(first.sourceConsumerRegistry.assets.find(row=>row.id==='shared-a').sourceBoundConsumerGameIds,['demo']);
     const staticAction=first.automationPlan.nextQualityActions.find(row=>row.assetId==='shared-a');
     const dynamicAction=first.executionAutomationPlan.nextQualityActions.find(row=>row.assetId==='shared-a');
+    assert.equal(first.executionAutomationPlan.executionOverlayReusedBasePlan,true);
     assert.equal(staticAction.consumerPriority,0);
     assert.equal(dynamicAction.consumerPriority,2);
 
@@ -5156,6 +5157,30 @@ test('dynamic source consumers stay outside registry identity and refresh on the
     assert.equal(second.sourceConsumerRegistry.assets.find(row=>row.id==='shared-a').sourceBoundConsumerGameIds,undefined);
     assert.deepEqual(second.sourceConsumerRegistry.assets.find(row=>row.id==='shared-b').sourceBoundConsumerGameIds,['demo']);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('consumer overlay reuse matches a full execution recompute while preserving structural planning',()=>{
+  const propAxes=scoreInternalAssetAudit1000({asset:{family:'PROP'}}).applicableAxes;
+  const evidence=value=>Object.fromEntries(propAxes.map(axis=>[axis,value]));
+  const consumerGames=[{id:'demo',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'}];
+  const staticAssets=[
+    {id:'prop-a',family:'PROP',subfamily:'DECOR',role:'DECOR',platform:'ROBLOX',companyCommonBase:true,sourceFiles:['assets/props-a.js'],internalAuditEvidence:{...evidence(90),DETAIL_FINISH:40}},
+    {id:'prop-b',family:'PROP',subfamily:'DECOR',role:'DECOR',platform:'ROBLOX',companyCommonBase:true,sourceFiles:['assets/props-b.js'],internalAuditEvidence:{...evidence(90),DETAIL_FINISH:60}}
+  ];
+  const dynamicAssets=staticAssets.map(asset=>asset.id==='prop-b'?{...asset,sourceBoundConsumerGameIds:['demo']}:asset);
+  const basePlan=buildInternalAssetLibraryAutomationPlan({assets:staticAssets,consumerGames});
+  const fullExecution=buildInternalAssetLibraryAutomationPlan({assets:dynamicAssets,consumerGames});
+  const reusedExecution=buildInternalAssetLibraryAutomationPlan({assets:dynamicAssets,consumerGames,basePlan});
+
+  assert.equal(reusedExecution.executionOverlayReusedBasePlan,true);
+  assert.deepEqual(reusedExecution.nextQualityActions,fullExecution.nextQualityActions);
+  assert.deepEqual(reusedExecution.nextVolumeActions,fullExecution.nextVolumeActions);
+  assert.deepEqual(reusedExecution.maintenance,fullExecution.maintenance);
+  assert.deepEqual(reusedExecution.autonomousNextAction,fullExecution.autonomousNextAction);
+  assert.deepEqual(reusedExecution.domains,fullExecution.domains);
+  assert.deepEqual(reusedExecution.uiSubsystems,fullExecution.uiSubsystems);
+  assert.equal(reusedExecution.nextQualityActions[0].assetId,'prop-b');
+  assert.equal(reusedExecution.nextQualityActions[0].consumerPriority,2);
 });
 
 test('real horror-escape-room source fixture resolves project pack identity and managed motion without verification promotion',()=>{
