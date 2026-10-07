@@ -431,7 +431,7 @@ test('F9 blocks exact engine execution without server boot actual play and real 
 });
 
 
-test('runtime keeps unrelated F0-to-private handoff parallel with source workers',()=>{
+test('runtime keeps unrelated F0-to-private handoff parallel with source and technical workers',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
   const technicalPlan=workflow.slice(workflow.indexOf('  technical-plan:'),workflow.indexOf('  technical-worker:'));
   assert.match(technicalPlan,/needs:\s*source-plan/);
@@ -440,9 +440,12 @@ test('runtime keeps unrelated F0-to-private handoff parallel with source workers
   assert.match(technicalPlan,/CURRENT_SOURCE_RECONCILIATION_JSON:\s*\$\{\{ needs\.source-plan\.outputs\.reconciliation_json/);
   assert.match(technicalPlan,/const sourceBusyIds=new Set/);
   assert.match(technicalPlan,/ROBLOX_TECHNICAL_DEFER_SOURCE_STAGE=/);
+  assert.match(technicalPlan,/Route F0-passed artifacts to private runtime validation without Studio/);
+  assert.match(technicalPlan,/ROBLOX_PRIVATE_RUNTIME_VALIDATION_DEFERRED_SOURCE_STAGE=/);
+  assert.match(technicalPlan,/CURRENT_MAIN="\$current_main" node/);
   const technicalPersist=workflow.slice(workflow.indexOf('  technical-persist:'),workflow.indexOf('      - name: Dispatch Roblox HEADLESS FAST_MVP continuation'));
   assert.match(technicalPersist,/needs:\s*\[technical-plan, technical-worker\]/);
-  assert.match(technicalPersist,/Route F0-passed artifacts to private runtime validation without Studio/);
+  assert.doesNotMatch(technicalPersist,/Route F0-passed artifacts to private runtime validation without Studio/);
 });
 
 
