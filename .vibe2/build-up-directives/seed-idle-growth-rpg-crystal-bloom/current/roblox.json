@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "seed-idle-growth-rpg-crystal-bloom-build-up-g22-823fe4a896c7",
-  "directiveFingerprint": "823fe4a896c7d2c54a6a3fed3f5d195c1f7558e9700a87573e4caa76ea0d5d42",
-  "previousDirectiveFingerprint": "fd360808fb6797a010661f12dc36041b336c20f57e3bc5371c7ccf349805a881",
-  "forbiddenRepeatFingerprint": "fd360808fb6797a010661f12dc36041b336c20f57e3bc5371c7ccf349805a881",
+  "directiveId": "seed-idle-growth-rpg-crystal-bloom-build-up-g23-7d338171b3e8",
+  "directiveFingerprint": "7d338171b3e8e80236bca3a4ed97394d8e6ebf9d0551ce9f686e23cd32100e4f",
+  "previousDirectiveFingerprint": "823fe4a896c7d2c54a6a3fed3f5d195c1f7558e9700a87573e4caa76ea0d5d42",
+  "forbiddenRepeatFingerprint": "823fe4a896c7d2c54a6a3fed3f5d195c1f7558e9700a87573e4caa76ea0d5d42",
   "gameId": "seed-idle-growth-rpg-crystal-bloom",
   "gameName": "수정의 개화",
-  "generation": 22,
+  "generation": 23,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "previousDirectiveOutcome": "running",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-idle-growth-rpg-crystal-bloom",
-  "sourceTreeFingerprint": "a2a4ea5dfe3552943de655f4ccfbe84934f98daca9feb8f248bd6bc499fae273",
+  "sourceTreeFingerprint": "7ac466bce2b7dd89a321e9fcbdba6915183ecdd3c877afda6922a737c95f5ea0",
   "designFingerprint": "90afbc7e4bee3b300a36f8c0673a426418cdbbf8075bfd5c9858a9a17f4bfb61",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -104,7 +104,7 @@
           "차원 정화 멀티 레이드 도입 (플레이 시간 50시간 시점)",
           "다른 플레이어의 수정 버프를 실시간으로 공유받아 거대한 차원수를 함께 토벌하는 비동기 협동 레이드 콘텐츠입니다."
         ],
-        "sourceTreeFingerprint": "a2a4ea5dfe3552943de655f4ccfbe84934f98daca9feb8f248bd6bc499fae273",
+        "sourceTreeFingerprint": "7ac466bce2b7dd89a321e9fcbdba6915183ecdd3c877afda6922a737c95f5ea0",
         "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -355,9 +355,9 @@
   "previousVersionDelta": {
     "previousGoal": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 21,
-    "previousSourceTreeFingerprint": "8369bf759a698fe7d7381ba3d7e1137336518a7d1cc2078087a3a4742805b5cb",
-    "currentSourceTreeFingerprint": "a2a4ea5dfe3552943de655f4ccfbe84934f98daca9feb8f248bd6bc499fae273",
+    "previousGeneration": 22,
+    "previousSourceTreeFingerprint": "a2a4ea5dfe3552943de655f4ccfbe84934f98daca9feb8f248bd6bc499fae273",
+    "currentSourceTreeFingerprint": "7ac466bce2b7dd89a321e9fcbdba6915183ecdd3c877afda6922a737c95f5ea0",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -367,8 +367,8 @@
       "sourceRevision": "8d94ac5c1d4a0aa30ae3713f9849ed9071dc37da",
       "artifactIdentity": "sha256:544ba4757d753185203459be91b3eddbca47249afdaf87308c2097d5cfa6ca52",
       "authority": "roblox-f0-gameplay-product-readiness-failure",
-      "workflowRunId": 37564998675,
-      "testedAt": "2026-10-07T03:21:56.630Z",
+      "workflowRunId": 37567282142,
+      "testedAt": "2026-10-07T03:39:25.625Z",
       "repairSurfaces": [
         "CORE_GAMEPLAY",
         "COMBAT_FEEL",
@@ -482,9 +482,25 @@
         }
       ]
     },
-    "failureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-    "failureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
-    "blockers": [],
+    "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+    "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
+    "blockers": [
+      "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+      "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+      "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+      "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+      "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+      "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+      "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+      "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+      "MISSING_GAMEPLAY_CAPABILITY:INFECTION",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+      "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+      "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+      "GENERIC_SCOPE_HANDLER_SKELETON"
+    ],
     "runtimeObserved": true,
     "runtimePassed": false,
     "independentQaPassed": false,
@@ -1569,7 +1585,7 @@
   ],
   "primaryFocus": "STABILITY",
   "thisLoopPrimaryGoal": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 STABILITY를 우선한다. 게임 고유 앵커는 \"수정 개화 시스템 (Crystal Bloom System)\", 현재 책임 소스는 roblox-games/seed-idle-growth-rpg-crystal-bloom/client/Game.client.luau::render, roblox-games/seed-idle-growth-rpg-crystal-bloom/server/Game.server.luau::scopeHandler1, roblox-games/seed-idle-growth-rpg-crystal-bloom/server/Game.server.luau::scopeHandler2, roblox-games/seed-idle-growth-rpg-crystal-bloom/server/Game.server.luau::scopeHandler3, roblox-games/seed-idle-growth-rpg-crystal-bloom/server/Game.server.luau::scopeHandler4, roblox-games/seed-idle-growth-rpg-crystal-bloom/server/Game.server.luau::scopeHandler5, roblox-games/seed-idle-growth-rpg-crystal-bloom/server/Game.server.luau::scopeHandler6, roblox-games/seed-idle-growth-rpg-crystal-bloom/client/Game.client.luau::reportNativeFoundationReady이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "실제 runtime 실패가 관찰됐다(F0_GAMEPLAY_PRODUCT_READINESS / ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED). 콘텐츠·그래픽 확장보다 기본 플레이 foundation의 원인 시스템 복구를 먼저 완료하고 같은 실패 시나리오를 다시 검증한다. 책임 소스는 roblox-games/seed-idle-growth-rpg-crystal-bloom/client/Game.client.luau::render, roblox-games/seed-idle-growth-rpg-crystal-bloom/server/Game.server.luau::scopeHandler1, roblox-games/seed-idle-growth-rpg-crystal-bloom/server/Game.server.luau::scopeHandler2, roblox-games/seed-idle-growth-rpg-crystal-bloom/server/Game.server.luau::scopeHandler3, roblox-games/seed-idle-growth-rpg-crystal-bloom/server/Game.server.luau::scopeHandler4, roblox-games/seed-idle-growth-rpg-crystal-bloom/server/Game.server.luau::scopeHandler5, roblox-games/seed-idle-growth-rpg-crystal-bloom/server/Game.server.luau::scopeHandler6, roblox-games/seed-idle-growth-rpg-crystal-bloom/client/Game.client.luau::reportNativeFoundationReady이다.",
   "gameplayImplementationDirectives": [
     "우선 책임 소스 앵커 roblox-games/seed-idle-growth-rpg-crystal-bloom/client/Game.client.luau::render, roblox-games/seed-idle-growth-rpg-crystal-bloom/server/Game.server.luau::scopeHandler1, roblox-games/seed-idle-growth-rpg-crystal-bloom/server/Game.server.luau::scopeHandler2, roblox-games/seed-idle-growth-rpg-crystal-bloom/server/Game.server.luau::scopeHandler3, roblox-games/seed-idle-growth-rpg-crystal-bloom/server/Game.server.luau::scopeHandler4, roblox-games/seed-idle-growth-rpg-crystal-bloom/server/Game.server.luau::scopeHandler5, roblox-games/seed-idle-growth-rpg-crystal-bloom/server/Game.server.luau::scopeHandler6, roblox-games/seed-idle-growth-rpg-crystal-bloom/client/Game.client.luau::reportNativeFoundationReady에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "수정 개화 시스템 (Crystal Bloom System)를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
@@ -1610,9 +1626,9 @@
       "UNITY"
     ],
     "requestedPlatform": "ROBLOX",
-    "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
-    "contentExpansionDeferredUntilRuntimeRepairPass": false,
-    "themeCoverageAdvanced": true,
+    "executionMode": "CAUSAL_REPAIR_FIRST_KEEP_EXPANSION_CONTEXT",
+    "contentExpansionDeferredUntilRuntimeRepairPass": true,
+    "themeCoverageAdvanced": false,
     "dataCapacityBudget": {
       "state": "NORMAL",
       "limits": {
@@ -1658,7 +1674,7 @@
     },
     "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
     "themeDepth": 3,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=4.",
+    "selectedThemeReason": "Observed runtime failure requires causal foundation repair first; selected theme is retained as context only and does not advance coverage until runtime repair passes.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1715,7 +1731,7 @@
     "scoredThemes": [
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 150,
+        "score": 132,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
@@ -1758,16 +1774,8 @@
         ]
       }
     ],
-    "coherentContentBundle": [
-      "ENEMY_ROLE_SET: 추격·견제·방어·지원·매복·지역 통제 등 서로 다른 전투 역할을 만든다.",
-      "BEHAVIOR_AND_COUNTERPLAY: 이름·HP·공격력만 다른 적이 아니라 이동·전조·공격·약점·대응 선택이 달라야 한다.",
-      "ENCOUNTER_COMPOSITION: 적 역할 조합과 지형·목표가 만나 새로운 판단을 만들게 한다.",
-      "ELITE_OR_BOSS_SIGNATURE: 보스·엘리트는 페이즈·공간 압박·전조·대응·보상 중 여러 축에서 일반 적과 구별한다.",
-      "ECOLOGICAL_WORLD_REASON: 적이 해당 지역·스토리·자원·세력 관계 안에 존재하는 이유를 연결한다.",
-      "DISTINCT_REWARD_PURPOSE: 처치 보상은 다음 장비·퀘스트·제작·지역 해금 중 실제 목적을 가진다.",
-      "VISUAL_TELEGRAPH: 실루엣·모션·VFX·음향·UI 전조가 행동 규칙과 일치해야 한다."
-    ],
-    "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
+    "coherentContentBundle": [],
+    "bundleRule": "OBSERVED_RUNTIME_FAILURE_CAUSAL_REPAIR_MUST_PASS_BEFORE_CONTENT_BUNDLE_EXECUTION",
     "antiCloneContract": {
       "compareAgainstExistingContentBeforeAdding": true,
       "nameColorOrStatOnlyCloneForbidden": true,
@@ -1800,17 +1808,9 @@
       ]
     },
     "derivedRuleEvolution": {
-      "allowed": true,
-      "rule": "MAY_ADD_DERIVED_GAMEPLAY_INTERACTION_RULES_WHEN_THEY_REINFORCE_APPROVED_IDENTITY_AND_DO_NOT_CONTRADICT_CANONICAL_RULES_OR_PROTECTED_VALUES",
-      "examples": [
-        "ENVIRONMENTAL_RULE",
-        "ENEMY_RELATIONSHIP_RULE",
-        "BOSS_PHASE_RULE",
-        "ITEM_SYNERGY_RULE",
-        "QUEST_STATE_RULE",
-        "REGION_ACCESS_RULE",
-        "MULTIPLAYER_INTERACTION_RULE"
-      ],
+      "allowed": false,
+      "rule": "DEFER_DERIVED_GAMEPLAY_RULE_EVOLUTION_UNTIL_OBSERVED_RUNTIME_FAILURE_CAUSAL_REPAIR_PASSES",
+      "examples": [],
       "protected": [
         "EXISTING_CANONICAL_RULE_SEMANTICS",
         "AUTHORIZED_BALANCE_VALUES",
@@ -1820,23 +1820,21 @@
       ]
     },
     "completionAcceptance": [
+      "RUNTIME_FAILURE_CAUSAL_REPAIR_PASS_REQUIRED_BEFORE_CONTENT_EXPANSION",
       "REAL_GAME_SOURCE_DELTA_REQUIRED",
       "PLAYER_FACING_OR_GAMEPLAY_SYSTEM_EFFECT_REQUIRED",
-      "DISTINCT_FROM_EXISTING_CONTENT_BY_MEANING_NOT_ONLY_NAME_OR_STATS",
-      "CONNECTED_TO_EXISTING_GAME_FLOW",
-      "CONTINUITY_AND_CAUSALITY_PRESERVED",
       "EXISTING_RELEVANT_INCREMENTAL_QA_PASSES",
       "DATA_CAPACITY_BUDGET_RESPECTED_WITHOUT_TERMINATING_BUILD_UP"
     ]
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 22,
-    "previousGeneration": 21,
+    "generation": 23,
+    "previousGeneration": 22,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "a2a4ea5dfe3552943de655f4ccfbe84934f98daca9feb8f248bd6bc499fae273",
-    "priorSourceFingerprint": "8369bf759a698fe7d7381ba3d7e1137336518a7d1cc2078087a3a4742805b5cb",
-    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
+    "sourceFingerprint": "7ac466bce2b7dd89a321e9fcbdba6915183ecdd3c877afda6922a737c95f5ea0",
+    "priorSourceFingerprint": "a2a4ea5dfe3552943de655f4ccfbe84934f98daca9feb8f248bd6bc499fae273",
+    "previousRuntimeEffect": "REGRESSION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -2295,7 +2293,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "a2a4ea5dfe3552943de655f4ccfbe84934f98daca9feb8f248bd6bc499fae273",
+    "sourceTreeFingerprint": "7ac466bce2b7dd89a321e9fcbdba6915183ecdd3c877afda6922a737c95f5ea0",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2385,7 +2383,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "a2a4ea5dfe3552943de655f4ccfbe84934f98daca9feb8f248bd6bc499fae273",
+    "sourceTreeFingerprint": "7ac466bce2b7dd89a321e9fcbdba6915183ecdd3c877afda6922a737c95f5ea0",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2648,11 +2646,11 @@
       "runtimeObserved": true
     },
     "baseline": {
-      "sourceTreeFingerprint": "a2a4ea5dfe3552943de655f4ccfbe84934f98daca9feb8f248bd6bc499fae273",
-      "runtimeObserved": false,
+      "sourceTreeFingerprint": "7ac466bce2b7dd89a321e9fcbdba6915183ecdd3c877afda6922a737c95f5ea0",
+      "runtimeObserved": true,
       "runtimePassed": false,
-      "failureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "failureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED"
+      "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+      "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2703,7 +2701,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 23,
+    "nextGeneration": 24,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2771,5 +2769,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-07T02:59:15.091Z"
+  "generatedAt": "2026-10-07T03:47:56.275Z"
 }

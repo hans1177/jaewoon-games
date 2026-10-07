@@ -1,24 +1,24 @@
 {
   "version": 2,
-  "directiveId": "monster-adventure-build-up-g11-aee5900b6531",
-  "directiveFingerprint": "aee5900b6531fd3ef4d3c5ad617ef94cf0304332d66102e487b055f54e80e0d1",
-  "previousDirectiveFingerprint": "db2c8858b4cbd111604a27910d32940476d8a5c024bcec433a220f52d1a09283",
-  "forbiddenRepeatFingerprint": "db2c8858b4cbd111604a27910d32940476d8a5c024bcec433a220f52d1a09283",
+  "directiveId": "monster-adventure-build-up-g12-6ce4fd40626c",
+  "directiveFingerprint": "6ce4fd40626cd1434a46bb48c99051c77646d28ead3bde3c85428c2b4a920671",
+  "previousDirectiveFingerprint": "aee5900b6531fd3ef4d3c5ad617ef94cf0304332d66102e487b055f54e80e0d1",
+  "forbiddenRepeatFingerprint": "aee5900b6531fd3ef4d3c5ad617ef94cf0304332d66102e487b055f54e80e0d1",
   "gameId": "monster-adventure",
   "gameName": "몬스터 어드벤처",
-  "generation": 11,
+  "generation": 12,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "running",
+  "previousDirectiveOutcome": "queued",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/monster-adventure",
-  "sourceTreeFingerprint": "1ac37366c61ace638d08b57acb3b35f7917911fc522cd4297beabbfacdd9fae4",
-  "designFingerprint": "2c1f0daa19cb7cb87497b1f87afff1f56048f908a15e06dfcfb29e1ee42afba8",
+  "sourceTreeFingerprint": "126d831fac3ecb56b4b164737188778b078b2ef2838b4011e9d8712a0d42b8e4",
+  "designFingerprint": "d17005113c78e7e10a461b5a3ca20c9e09a5a270dd7c2cc85b5fce0cec8bce4c",
   "identityReinforcement": {
     "appliesToAllGenres": true,
-    "genre": "GAME_SPECIFIC",
+    "genre": "Strategy",
     "oneLineFantasy": "플레이어는 전설적인 몬스터 조련사가 되어 미지의 대륙을 탐험하고, 희귀한 몬스터를 수집하며, 자신만의 최강 몬스터 팀을 구성하여 강력한 보스를 물리치는 영웅적인 여정을 경험합니다.",
     "representativeAction": "탐험 단계: 월드 맵에서 이동하며 몬스터를 조우하거나 자원을 수집하는 선택을 수행합니다.",
     "representativeChoice": "플레이어는 적의 속성을 파악하고 자신의 몬스터 팀 중 가장 유리한 속성을 가진 몬스터를 교체하거나 특정 스킬을 사용하여 전투의 흐름을 유리하게 바꿀 수 있습니다.",
@@ -104,7 +104,7 @@
           "Infinite Challenge Tower",
           "A procedurally generated vertical dungeon where difficulty scales infinitely, requiring players to manage limited resources like health and skill cooldowns between floors."
         ],
-        "sourceTreeFingerprint": "1ac37366c61ace638d08b57acb3b35f7917911fc522cd4297beabbfacdd9fae4",
+        "sourceTreeFingerprint": "126d831fac3ecb56b4b164737188778b078b2ef2838b4011e9d8712a0d42b8e4",
         "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -395,9 +395,9 @@
   "previousVersionDelta": {
     "previousGoal": "몬스터 어드벤처는 턴제 전략과 탐험이 결합된 모바일 어드벤처 게임으로, 플레이어는 몬스터를 포획하고 육성하며 미지의 세계를 탐험합니다. 핵심 루프는 몬스터의 속성과 스킬을 고려한 전략적 선택을 요구하며, 시그니처 시스템인 '속성 상성 전투'와 '몬스터 진화 트리'는 플레이어에게 매번 다른 전투 양상과 성장 경로를 제공하여 깊이 있는 선택과 상태 변화를 경험하게 합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 10,
-    "previousSourceTreeFingerprint": "0b0a036082e06d0ee1c347bf19445a06f6f7d1548568dfed687ebdfd70186a31",
-    "currentSourceTreeFingerprint": "1ac37366c61ace638d08b57acb3b35f7917911fc522cd4297beabbfacdd9fae4",
+    "previousGeneration": 11,
+    "previousSourceTreeFingerprint": "1ac37366c61ace638d08b57acb3b35f7917911fc522cd4297beabbfacdd9fae4",
+    "currentSourceTreeFingerprint": "126d831fac3ecb56b4b164737188778b078b2ef2838b4011e9d8712a0d42b8e4",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -530,9 +530,26 @@
         }
       ]
     },
-    "failureStage": "",
-    "failureSignature": "",
-    "blockers": [],
+    "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+    "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+    "blockers": [
+      "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+      "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+      "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+      "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+      "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+      "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+      "MISSING_GAMEPLAY_CAPABILITY:INVENTORY",
+      "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+      "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+      "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+      "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+      "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+      "GENERIC_SCOPE_HANDLER_SKELETON"
+    ],
     "runtimeObserved": true,
     "runtimePassed": false,
     "independentQaPassed": false,
@@ -1622,7 +1639,7 @@
   ],
   "primaryFocus": "STABILITY",
   "thisLoopPrimaryGoal": "몬스터 어드벤처는 턴제 전략과 탐험이 결합된 모바일 어드벤처 게임으로, 플레이어는 몬스터를 포획하고 육성하며 미지의 세계를 탐험합니다. 핵심 루프는 몬스터의 속성과 스킬을 고려한 전략적 선택을 요구하며, 시그니처 시스템인 '속성 상성 전투'와 '몬스터 진화 트리'는 플레이어에게 매번 다른 전투 양상과 성장 경로를 제공하여 깊이 있는 선택과 상태 변화를 경험하게 합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 STABILITY를 우선한다. 게임 고유 앵커는 \"속성 상성 전투 시스템\", 현재 책임 소스는 roblox-games/monster-adventure/client/Game.client.luau::render, roblox-games/monster-adventure/server/Game.server.luau::scopeHandler1, roblox-games/monster-adventure/server/Game.server.luau::scopeHandler2, roblox-games/monster-adventure/server/Game.server.luau::scopeHandler3, roblox-games/monster-adventure/server/Game.server.luau::scopeHandler4, roblox-games/monster-adventure/server/Game.server.luau::scopeHandler5, roblox-games/monster-adventure/server/Game.server.luau::scopeHandler6, roblox-games/monster-adventure/client/Game.client.luau::verifiedLearningMotionFailureReason이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "실제 runtime 실패가 관찰됐다(PRIVATE_RUNTIME_CANDIDATE_DEPLOY / ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING). 콘텐츠·그래픽 확장보다 기본 플레이 foundation의 원인 시스템 복구를 먼저 완료하고 같은 실패 시나리오를 다시 검증한다. 책임 소스는 roblox-games/monster-adventure/client/Game.client.luau::render, roblox-games/monster-adventure/server/Game.server.luau::scopeHandler1, roblox-games/monster-adventure/server/Game.server.luau::scopeHandler2, roblox-games/monster-adventure/server/Game.server.luau::scopeHandler3, roblox-games/monster-adventure/server/Game.server.luau::scopeHandler4, roblox-games/monster-adventure/server/Game.server.luau::scopeHandler5, roblox-games/monster-adventure/server/Game.server.luau::scopeHandler6, roblox-games/monster-adventure/client/Game.client.luau::verifiedLearningMotionFailureReason이다.",
   "gameplayImplementationDirectives": [
     "우선 책임 소스 앵커 roblox-games/monster-adventure/client/Game.client.luau::render, roblox-games/monster-adventure/server/Game.server.luau::scopeHandler1, roblox-games/monster-adventure/server/Game.server.luau::scopeHandler2, roblox-games/monster-adventure/server/Game.server.luau::scopeHandler3, roblox-games/monster-adventure/server/Game.server.luau::scopeHandler4, roblox-games/monster-adventure/server/Game.server.luau::scopeHandler5, roblox-games/monster-adventure/server/Game.server.luau::scopeHandler6, roblox-games/monster-adventure/client/Game.client.luau::verifiedLearningMotionFailureReason에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "속성 상성 전투 시스템를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
@@ -1663,9 +1680,9 @@
       "UNITY"
     ],
     "requestedPlatform": "ROBLOX",
-    "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
-    "contentExpansionDeferredUntilRuntimeRepairPass": false,
-    "themeCoverageAdvanced": true,
+    "executionMode": "CAUSAL_REPAIR_FIRST_KEEP_EXPANSION_CONTEXT",
+    "contentExpansionDeferredUntilRuntimeRepairPass": true,
+    "themeCoverageAdvanced": false,
     "dataCapacityBudget": {
       "state": "NORMAL",
       "limits": {
@@ -1711,7 +1728,7 @@
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
     "themeDepth": 7,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=6; uncoveredBefore=5.",
+    "selectedThemeReason": "Observed runtime failure requires causal foundation repair first; selected theme is retained as context only and does not advance coverage until runtime repair passes.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1769,7 +1786,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 120,
+        "score": 102,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -1815,16 +1832,8 @@
         "gapDomains": []
       }
     ],
-    "coherentContentBundle": [
-      "BACKGROUND_DEPTH: 전경·중경·후경·지형·랜드마크로 빈 무대 느낌을 줄이고 장소의 기능을 읽게 한다.",
-      "CHARACTER_AND_ENEMY_IDENTITY: 역할과 위험도가 실루엣·자세·모션·재질에서 구별되어야 한다.",
-      "ACTION_TIMELINE: anticipation→impact→recovery와 VFX·카메라·오디오·판정을 같은 사건에 동기화한다.",
-      "ENVIRONMENTAL_MOTION: 식생·물·빛·먼지·기계 등 세계에 맞는 움직임으로 정적인 배경을 줄인다.",
-      "STATE_READABILITY: 위험·보상·상호작용·퀘스트 상태를 UI와 월드 표현에서 같은 언어로 보여준다.",
-      "REGION_COHESION: 배경·몹·아이템·스토리·규칙의 시각적 이유가 같은 지역 정체성을 공유한다.",
-      "PERFORMANCE_BUDGET: 표현을 늘리면서 모바일·플랫폼별 객체·파티클·조명·메모리 비용을 같이 관리한다."
-    ],
-    "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
+    "coherentContentBundle": [],
+    "bundleRule": "OBSERVED_RUNTIME_FAILURE_CAUSAL_REPAIR_MUST_PASS_BEFORE_CONTENT_BUNDLE_EXECUTION",
     "antiCloneContract": {
       "compareAgainstExistingContentBeforeAdding": true,
       "nameColorOrStatOnlyCloneForbidden": true,
@@ -1857,17 +1866,9 @@
       ]
     },
     "derivedRuleEvolution": {
-      "allowed": true,
-      "rule": "MAY_ADD_DERIVED_GAMEPLAY_INTERACTION_RULES_WHEN_THEY_REINFORCE_APPROVED_IDENTITY_AND_DO_NOT_CONTRADICT_CANONICAL_RULES_OR_PROTECTED_VALUES",
-      "examples": [
-        "ENVIRONMENTAL_RULE",
-        "ENEMY_RELATIONSHIP_RULE",
-        "BOSS_PHASE_RULE",
-        "ITEM_SYNERGY_RULE",
-        "QUEST_STATE_RULE",
-        "REGION_ACCESS_RULE",
-        "MULTIPLAYER_INTERACTION_RULE"
-      ],
+      "allowed": false,
+      "rule": "DEFER_DERIVED_GAMEPLAY_RULE_EVOLUTION_UNTIL_OBSERVED_RUNTIME_FAILURE_CAUSAL_REPAIR_PASSES",
+      "examples": [],
       "protected": [
         "EXISTING_CANONICAL_RULE_SEMANTICS",
         "AUTHORIZED_BALANCE_VALUES",
@@ -1877,23 +1878,21 @@
       ]
     },
     "completionAcceptance": [
+      "RUNTIME_FAILURE_CAUSAL_REPAIR_PASS_REQUIRED_BEFORE_CONTENT_EXPANSION",
       "REAL_GAME_SOURCE_DELTA_REQUIRED",
       "PLAYER_FACING_OR_GAMEPLAY_SYSTEM_EFFECT_REQUIRED",
-      "DISTINCT_FROM_EXISTING_CONTENT_BY_MEANING_NOT_ONLY_NAME_OR_STATS",
-      "CONNECTED_TO_EXISTING_GAME_FLOW",
-      "CONTINUITY_AND_CAUSALITY_PRESERVED",
       "EXISTING_RELEVANT_INCREMENTAL_QA_PASSES",
       "DATA_CAPACITY_BUDGET_RESPECTED_WITHOUT_TERMINATING_BUILD_UP"
     ]
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 11,
-    "previousGeneration": 10,
+    "generation": 12,
+    "previousGeneration": 11,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "1ac37366c61ace638d08b57acb3b35f7917911fc522cd4297beabbfacdd9fae4",
-    "priorSourceFingerprint": "0b0a036082e06d0ee1c347bf19445a06f6f7d1548568dfed687ebdfd70186a31",
-    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
+    "sourceFingerprint": "126d831fac3ecb56b4b164737188778b078b2ef2838b4011e9d8712a0d42b8e4",
+    "priorSourceFingerprint": "1ac37366c61ace638d08b57acb3b35f7917911fc522cd4297beabbfacdd9fae4",
+    "previousRuntimeEffect": "REGRESSION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -2137,9 +2136,9 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/monster-adventure/client/Game.client.luau",
-      "roblox-games/monster-adventure/server/Game.server.luau",
       "roblox-games/monster-adventure/shared/GameConfig.luau",
+      "roblox-games/monster-adventure/server/Game.server.luau",
+      "roblox-games/monster-adventure/client/Game.client.luau",
       "roblox-games/monster-adventure/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -2352,7 +2351,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "1ac37366c61ace638d08b57acb3b35f7917911fc522cd4297beabbfacdd9fae4",
+    "sourceTreeFingerprint": "126d831fac3ecb56b4b164737188778b078b2ef2838b4011e9d8712a0d42b8e4",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2442,7 +2441,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "1ac37366c61ace638d08b57acb3b35f7917911fc522cd4297beabbfacdd9fae4",
+    "sourceTreeFingerprint": "126d831fac3ecb56b4b164737188778b078b2ef2838b4011e9d8712a0d42b8e4",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2479,9 +2478,9 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/monster-adventure/client/Game.client.luau",
-      "roblox-games/monster-adventure/server/Game.server.luau",
       "roblox-games/monster-adventure/shared/GameConfig.luau",
+      "roblox-games/monster-adventure/server/Game.server.luau",
+      "roblox-games/monster-adventure/client/Game.client.luau",
       "roblox-games/monster-adventure/default.project.json"
     ],
     "sourceAnchors": [
@@ -2625,9 +2624,9 @@
     "gameId": "monster-adventure",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/monster-adventure/client/Game.client.luau",
-      "roblox-games/monster-adventure/server/Game.server.luau",
       "roblox-games/monster-adventure/shared/GameConfig.luau",
+      "roblox-games/monster-adventure/server/Game.server.luau",
+      "roblox-games/monster-adventure/client/Game.client.luau",
       "roblox-games/monster-adventure/default.project.json"
     ],
     "impact": {
@@ -2705,11 +2704,11 @@
       "runtimeObserved": true
     },
     "baseline": {
-      "sourceTreeFingerprint": "1ac37366c61ace638d08b57acb3b35f7917911fc522cd4297beabbfacdd9fae4",
-      "runtimeObserved": false,
+      "sourceTreeFingerprint": "126d831fac3ecb56b4b164737188778b078b2ef2838b4011e9d8712a0d42b8e4",
+      "runtimeObserved": true,
       "runtimePassed": false,
-      "failureStage": null,
-      "failureSignature": null
+      "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2760,7 +2759,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 12,
+    "nextGeneration": 13,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2830,5 +2829,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-07T03:14:36.650Z"
+  "generatedAt": "2026-10-07T03:46:36.091Z"
 }

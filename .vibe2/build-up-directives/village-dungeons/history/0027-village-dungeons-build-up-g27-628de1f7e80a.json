@@ -1,76 +1,76 @@
 {
   "version": 2,
-  "directiveId": "line-defense-build-up-g25-59f59cfd4789",
-  "directiveFingerprint": "59f59cfd4789fbe0925b2ad8fd8379b1e9d202a53ee64b2a2d7a3fcdc28f086e",
-  "previousDirectiveFingerprint": "b725a999b6550799ee504c7a8d1543cdf439ec9160fcbf0611c49dd211720aaa",
-  "forbiddenRepeatFingerprint": "b725a999b6550799ee504c7a8d1543cdf439ec9160fcbf0611c49dd211720aaa",
-  "gameId": "line-defense",
-  "gameName": "골목 군단 대전",
-  "generation": 25,
+  "directiveId": "village-dungeons-build-up-g27-628de1f7e80a",
+  "directiveFingerprint": "628de1f7e80a5642cd5d373af747ac72d43d1de785395579a024677c440724da",
+  "previousDirectiveFingerprint": "553c32edc07507ebe4db589145459630e7cff15da8e7f91f85572666c3e36928",
+  "forbiddenRepeatFingerprint": "553c32edc07507ebe4db589145459630e7cff15da8e7f91f85572666c3e36928",
+  "gameId": "village-dungeons",
+  "gameName": "마을 던전 RPG",
+  "generation": 27,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
   "previousDirectiveOutcome": "running",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
-  "sourceRoot": "roblox-games/line-defense",
-  "sourceTreeFingerprint": "3cfb181b318e18d6882383f5fc277c54395d06c80e660562e3373c7d9635e49d",
-  "designFingerprint": "09a9ba9a6d4df0683e248b028189e6c7f1243088e3cf2300ced997eb0e09f879",
+  "sourceRoot": "roblox-games/village-dungeons",
+  "sourceTreeFingerprint": "4747c29d5839b7211207b8e8cd3531b63de41e99952aa9be000631b664d4e92c",
+  "designFingerprint": "193d30cfb80a8115c6d03fd6239fd3600a05c131577783234844b6bdff61223e",
   "identityReinforcement": {
     "appliesToAllGenres": true,
-    "genre": "Strategy",
-    "oneLineFantasy": "플레이어는 골목길의 대장이 되어 개성 넘치는 골목 군단을 지휘하고, 적들의 침공 경로를 예측하여 최적의 방어선을 구축함으로써 골목의 평화를 지켜내는 전략적 사령관의 역할을 수행합니다.",
-    "representativeAction": "적의 다음 침공 경로와 유닛 구성을 확인하고 아군 유닛을 골목길의 최적 위치에 배치하는 단계",
-    "representativeChoice": "단순히 강한 유닛을 배치할 것인지, 아니면 시너지 효과를 극대화하기 위해 특정 속성의 유닛들을 좁은 골목에 밀집 배치할 것인지 선택합니다.",
-    "signatureWorldRule": "적 처치 속도가 증가함에 따라 실시간 재화 획득 속도가 가속화되어 더 빠른 업그레이드가 가능해집니다.",
+    "genre": "GAME_SPECIFIC",
+    "oneLineFantasy": "플레이어는 몰락 직전의 개척 마을을 지키는 모험가가 되어 위험한 던전 심층부를 돌파하고 강력한 몬스터를 격퇴하며 회수한 고대 유물과 자원으로 마을 대장간과 연금술소를 재건해 전설적인 장비를 갖춘 수호자로 거듭나는 환상을 경험한다.",
+    "representativeAction": "마을 의뢰 게시판에서 자원 채취 및 특정 던전 몬스터 토벌 퀘스트를 수락하고 장비를 점검한다.",
+    "representativeChoice": "즉시 전투력을 높이는 무기 제련 시설을 우선 복구할 것인지, 소비 물약 효율과 던전 내 추가 부활 기회를 부여하는 연금소를 먼저 지을지 선택한다.",
+    "signatureWorldRule": "마을 대장간의 해금 레벨이 1단계 상승하며 기존 무기의 공격력 배율이 15% 영구 증가하고 화염 속성 인챈트가 활성화된다.",
     "signatureSystems": [
-      "골목길 시너지 배치 시스템",
-      "실시간 재화 순환 엔진"
+      "마을 재건 시설 연동 시스템",
+      "리스크 배낭 정밀 적재 시스템"
     ],
-    "growthIdentity": "플레이어는 스테이지를 클리어하며 골목 대장 레벨을 올리고, 새로운 유닛 카드를 해금하며, 영구적인 골목 아지트 연구를 통해 군단의 기본 능력치를 점진적으로 확장해 나갑니다.",
+    "growthIdentity": "초반 세션에서는 단순 타격과 짧은 3분 던전 탐색으로 기초 장비를 맞추게 하며, 중반에는 5대 던전의 상성 속성(화염, 냉기, 독, 암흑, 번개)에 맞춘 장비 세트 파밍과 마을 상위 시설 건설로 전략적 깊이를 확장하고, 종반에는 심층 보스 타임어택과 극한의 장비 옵션 튜닝을 통해 지속적인 육성 만족도를 제공한다.",
     "threeSentenceTest": {
-      "whatGame": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.",
-      "whatDifferent": "특정 골목 구역에 유닛을 인접하게 배치할 때 발생하는 시너지 효과를 통해 플레이어에게 공간 배치 기반의 깊이 있는 전략적 선택을 제공합니다.",
-      "whatGrowthUnlocks": "플레이어는 스테이지를 클리어하며 골목 대장 레벨을 올리고, 새로운 유닛 카드를 해금하며, 영구적인 골목 아지트 연구를 통해 군단의 기본 능력치를 점진적으로 확장해 나갑니다."
+      "whatGame": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.",
+      "whatDifferent": "던전에서 획득한 고유 건축 목재와 광석을 마을 대장간·주점·연금 공방에 투자하여 영구적인 스탯 버프와 신규 스킬 트리를 해금한다.",
+      "whatGrowthUnlocks": "초반 세션에서는 단순 타격과 짧은 3분 던전 탐색으로 기초 장비를 맞추게 하며, 중반에는 5대 던전의 상성 속성(화염, 냉기, 독, 암흑, 번개)에 맞춘 장비 세트 파밍과 마을 상위 시설 건설로 전략적 깊이를 확장하고, 종반에는 심층 보스 타임어택과 극한의 장비 옵션 튜닝을 통해 지속적인 육성 만족도를 제공한다."
     },
     "causalGrammarEvidence": {
       "worldRules": [],
       "causalInspirations": [],
       "systemInterconnections": [
         {
-          "fromSystem": "골목길 시너지 배치 시스템",
-          "toSystem": "실시간 재화 순환 엔진",
-          "trigger": "플레이어가 특정 골목 구역에 시너지 배치를 완성하여 적을 빠르게 처치할 때",
-          "stateChange": "적 처치 속도가 증가함에 따라 실시간 재화 획득 속도가 가속화되어 더 빠른 업그레이드가 가능해집니다."
+          "fromSystem": "던전 전리품 수확 및 배낭 관리 시스템",
+          "toSystem": "마을 대장간 시설 업그레이드 시스템",
+          "trigger": "던전에서 특정 몬스터를 격퇴하고 고급 주괴를 배낭에 보관한 채 안전하게 마을로 귀환할 때 발생한다.",
+          "stateChange": "마을 대장간의 해금 레벨이 1단계 상승하며 기존 무기의 공격력 배율이 15% 영구 증가하고 화염 속성 인챈트가 활성화된다."
         },
         {
-          "fromSystem": "실시간 재화 순환 엔진",
-          "toSystem": "골목길 시너지 배치 시스템",
-          "trigger": "플레이어가 저축한 자원을 일시에 소모하여 고성능 유닛을 소환할 때",
-          "stateChange": "새로운 고성능 유닛이 전장에 배치되면서 기존 유닛들과의 새로운 시너지 링크가 활성화되고 방어선 상태가 강화됩니다."
+          "fromSystem": "마을 주점 의뢰 완료 및 명성 관리 시스템",
+          "toSystem": "5개 던전 심층 게이트 개방 시스템",
+          "trigger": "주점 NPC가 제시한 던전 정찰 퀘스트 3종을 모두 클리어하여 마을 평판 수치가 임계치에 도달할 때 발생한다.",
+          "stateChange": "폐쇄되었던 지하 용암 동굴 던전의 제2계층 진입 잠금이 해제되고 해당 구역의 적 등장 테이블이 엘리트 등급으로 갱신된다."
         },
         {
-          "fromSystem": "골목길 시너지 배치 시스템",
-          "toSystem": "골목길 시너지 배치 시스템",
-          "trigger": "배치된 유닛이 적의 강력한 공격을 받아 파괴되거나 후퇴할 때",
-          "stateChange": "해당 구역의 시너지 링크가 즉시 끊어지며 주변 유닛들의 공격 속도와 방어력이 감소하는 상태 변화가 발생합니다."
+          "fromSystem": "전투 회피 성공 판정 및 콤보 시스템",
+          "toSystem": "던전 내 필살기 게이지 충전 시스템",
+          "trigger": "적의 붉은색 장판 공격 타이밍에 맞춰 플레이어가 회피 제스처를 성공적으로 수행할 때 발생한다.",
+          "stateChange": "플레이어의 회피 카운터가 1 누적되며 즉시 궁극기 분노 게이지가 25% 충전되고 다음 일반 타격 3회에 100% 치명타가 적용된다."
         }
       ],
       "expansionPlan": [
         {
-          "milestone": "신규 테마 '재개발 구역' 업데이트",
-          "newGameplay": "파괴 가능한 장애물과 무너지는 벽 등 지형 변화 요소가 추가된 신규 스테이지 20종을 선보입니다.",
-          "systemImpact": "기존의 고정된 골목길 시너지 배치 시스템에 지형 파괴라는 변수가 추가되어 플레이어가 실시간으로 배치 전략을 수정해야 합니다."
+          "milestone": "1단계: 5대 던전 기초 탐험 구역 및 마을 3대 기본 시설 오픈",
+          "newGameplay": "단일 무기 액션과 기본 회피, 슬라임 및 고블린 계열 몬스터와의 전투 패턴 학습 및 배낭 수납 규칙을 체험한다.",
+          "systemImpact": "대장간 무기 강화 시스템과 주점 퀘스트 리프레시 시스템의 기본 데이터베이스가 활성화된다."
         },
         {
-          "milestone": "신규 유닛 '골목 대장단' 추가",
-          "newGameplay": "고유한 액티브 스킬을 보유하여 전장의 판도를 단번에 바꿀 수 있는 영웅급 유닛 3종이 추가됩니다.",
-          "systemImpact": "실시간 재화 순환 엔진에서 영웅 유닛의 스킬 쿨타임 감소 및 마나 충전을 위한 새로운 자원 소모처가 신설됩니다."
+          "milestone": "2단계: 심층 보스 레이드 및 던전 속성 저항 장비 크래프팅 추가",
+          "newGameplay": "용암 지대와 얼음 계곡 던전이 열리며 장판 회피 기믹과 속성 스왑 공격 메커니즘이 새롭게 요구된다.",
+          "systemImpact": "연금술소 시설이 확장되어 속성 물약 제조와 무기 인챈트 슬롯 시스템이 메인 전투 루프에 편입된다."
         },
         {
-          "milestone": "무한의 골목길 디펜스 모드 오픈",
-          "newGameplay": "끝없이 밀려오는 적들을 막아내며 자신의 한계에 도전하고 글로벌 랭킹을 겨루는 무한 모드가 도입됩니다.",
-          "systemImpact": "장기적인 전투에 대응하기 위해 실시간 재화 순환 엔진의 이자율 제한이 해제되고 초고단계 시너지 효과가 추가됩니다."
+          "milestone": "3단계: 무한의 미궁 시련 모드 및 고대 유물 연구소 콘텐츠 개방",
+          "newGameplay": "층마다 무작위 페널티와 버프가 부여되는 엔드게임 로그라이트형 연속 던전 돌파 콘텐츠가 도입된다.",
+          "systemImpact": "마을 중앙 고대 제단 시스템이 작동하여 캐릭터의 특성 포인트를 자유롭게 재분배할 수 있게 된다."
         }
       ],
       "integrityNotes": [],
@@ -78,33 +78,33 @@
       "existingGameGrammarMap": {
         "mode": "EXISTING_GAME_RECONSTRUCTION_FROM_CURRENT_DESIGN_AND_INSPECTED_SOURCE",
         "formula": "MAIN × A × B × c + @",
-        "main": "적의 다음 침공 경로와 유닛 구성을 확인하고 아군 유닛을 골목길의 최적 위치에 배치하는 단계",
+        "main": "마을 의뢰 게시판에서 자원 채취 및 특정 던전 몬스터 토벌 퀘스트를 수락하고 장비를 점검한다.",
         "majorAxes": [
           {
             "key": "A",
-            "name": "골목길 시너지 배치 시스템",
+            "name": "마을 재건 시설 연동 시스템",
             "source": "CURRENT_DESIGN_SIGNATURE_SYSTEM"
           },
           {
             "key": "B",
-            "name": "실시간 재화 순환 엔진",
+            "name": "리스크 배낭 정밀 적재 시스템",
             "source": "CURRENT_DESIGN_SIGNATURE_SYSTEM_OR_LOOP"
           }
         ],
         "cSubElements": [
-          "플레이어가 특정 골목 구역에 시너지 배치를 완성하여 적을 빠르게 처치할 때",
-          "플레이어가 저축한 자원을 일시에 소모하여 고성능 유닛을 소환할 때",
-          "배치된 유닛이 적의 강력한 공격을 받아 파괴되거나 후퇴할 때"
+          "던전에서 특정 몬스터를 격퇴하고 고급 주괴를 배낭에 보관한 채 안전하게 마을로 귀환할 때 발생한다.",
+          "주점 NPC가 제시한 던전 정찰 퀘스트 3종을 모두 클리어하여 마을 평판 수치가 임계치에 도달할 때 발생한다.",
+          "적의 붉은색 장판 공격 타이밍에 맞춰 플레이어가 회피 제스처를 성공적으로 수행할 때 발생한다."
         ],
         "delveAtEvidence": [
-          "신규 테마 '재개발 구역' 업데이트",
-          "파괴 가능한 장애물과 무너지는 벽 등 지형 변화 요소가 추가된 신규 스테이지 20종을 선보입니다.",
-          "신규 유닛 '골목 대장단' 추가",
-          "고유한 액티브 스킬을 보유하여 전장의 판도를 단번에 바꿀 수 있는 영웅급 유닛 3종이 추가됩니다.",
-          "무한의 골목길 디펜스 모드 오픈",
-          "끝없이 밀려오는 적들을 막아내며 자신의 한계에 도전하고 글로벌 랭킹을 겨루는 무한 모드가 도입됩니다."
+          "1단계: 5대 던전 기초 탐험 구역 및 마을 3대 기본 시설 오픈",
+          "단일 무기 액션과 기본 회피, 슬라임 및 고블린 계열 몬스터와의 전투 패턴 학습 및 배낭 수납 규칙을 체험한다.",
+          "2단계: 심층 보스 레이드 및 던전 속성 저항 장비 크래프팅 추가",
+          "용암 지대와 얼음 계곡 던전이 열리며 장판 회피 기믹과 속성 스왑 공격 메커니즘이 새롭게 요구된다.",
+          "3단계: 무한의 미궁 시련 모드 및 고대 유물 연구소 콘텐츠 개방",
+          "층마다 무작위 페널티와 버프가 부여되는 엔드게임 로그라이트형 연속 던전 돌파 콘텐츠가 도입된다."
         ],
-        "sourceTreeFingerprint": "3cfb181b318e18d6882383f5fc277c54395d06c80e660562e3373c7d9635e49d",
+        "sourceTreeFingerprint": "4747c29d5839b7211207b8e8cd3531b63de41e99952aa9be000631b664d4e92c",
         "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -116,26 +116,28 @@
     "genreAdaptationRule": "PRESERVE_THE_GENRE_PRIMARY_ACTION; DO_NOT_FORCE_RPG_STYLE_SYSTEMS_ON_PUZZLE_RACING_TYCOON_DEFENSE_SURVIVAL_ACTION_CARD_BOARD_STRATEGY_CASUAL_OR_OTHER_GENRES"
   },
   "gameIdentityAndNonNegotiables": {
-    "identity": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.",
-    "coreFun": "매 웨이브마다 변화하는 적의 침공 경로를 관찰하고, 제한된 골목 자원을 활용하여 특정 유닛을 배치하거나 실시간으로 업그레이드 경로를 선택함으로써 즉각적인 전투력 변화와 방어 성공의 쾌감을 얻는 것입니다.",
+    "identity": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.",
+    "coreFun": "적의 공격 궤적을 직관적으로 회피하고 연타 공격을 적중시키는 순간의 즉각적인 손맛과 제한된 던전 인벤토리에 어떤 전리품을 챙길지 결정하여 마을 시설의 기술 트리로 환원할 때 일어나는 명확한 전투 스펙 향상의 쾌감이다.",
     "coreLoop": [
-      "적의 다음 침공 경로와 유닛 구성을 확인하고 아군 유닛을 골목길의 최적 위치에 배치하는 단계",
-      "전투 중 적을 처치하여 실시간으로 골목 자원을 획득하고 이를 유닛 업그레이드나 추가 배치에 투자하는 단계",
-      "웨이브를 클리어하고 획득한 전리품으로 군단 전체의 영구적 특성을 강화하여 더 높은 난이도에 도전하는 단계"
+      "마을 의뢰 게시판에서 자원 채취 및 특정 던전 몬스터 토벌 퀘스트를 수락하고 장비를 점검한다.",
+      "5개로 분기된 던전 중 하나를 선택 진입하여 한 손 조작 기반의 실시간 회피 및 평타/스킬 연계로 몬스터를 격퇴한다.",
+      "한정된 던전 배낭 슬롯에 귀환용 고가치 자원과 장비 강화 재료를 취사선택하여 보관한다.",
+      "포털을 통해 안전하게 마을로 귀환하여 의뢰를 완료하고 수집 자원으로 대장간과 주점을 업그레이드한다.",
+      "확장된 시설 버프와 신규 제작 무기를 바탕으로 더 깊은 던전 층계 및 보스전에 도전한다."
     ],
     "signatureSystems": [
       {
-        "name": "골목길 시너지 배치 시스템",
-        "purpose": "특정 골목 구역에 유닛을 인접하게 배치할 때 발생하는 시너지 효과를 통해 플레이어에게 공간 배치 기반의 깊이 있는 전략적 선택을 제공합니다.",
-        "playerChoice": "단순히 강한 유닛을 배치할 것인지, 아니면 시너지 효과를 극대화하기 위해 특정 속성의 유닛들을 좁은 골목에 밀집 배치할 것인지 선택합니다."
+        "name": "마을 재건 시설 연동 시스템",
+        "purpose": "던전에서 획득한 고유 건축 목재와 광석을 마을 대장간·주점·연금 공방에 투자하여 영구적인 스탯 버프와 신규 스킬 트리를 해금한다.",
+        "playerChoice": "즉시 전투력을 높이는 무기 제련 시설을 우선 복구할 것인지, 소비 물약 효율과 던전 내 추가 부활 기회를 부여하는 연금소를 먼저 지을지 선택한다."
       },
       {
-        "name": "실시간 재화 순환 엔진",
-        "purpose": "전투 중 획득하는 자원의 가치를 실시간으로 변동시켜 플레이어가 자원 수집과 소비의 타이밍을 극적으로 조율하도록 만듭니다.",
-        "playerChoice": "자원을 즉시 소모하여 하급 유닛을 다수 소환할 것인지, 아니면 이자를 받기 위해 자원을 저축한 후 고성능 유닛을 한 번에 소환할 것인지 결정합니다."
+        "name": "리스크 배낭 정밀 적재 시스템",
+        "purpose": "던전 내 인벤토리 슬롯을 극도로 제한하여 플레이어가 매 전투 승리 시마다 리스크와 리턴을 저울질하도록 유도한다.",
+        "playerChoice": "안전한 마을 귀환 주문서를 유지하기 위해 회복 물약을 버릴 것인지, 희귀 보스 드롭 재료를 위해 체력 회복 수단을 포기할 것인지 결정한다."
       }
     ],
-    "progressionDirection": "플레이어는 스테이지를 클리어하며 골목 대장 레벨을 올리고, 새로운 유닛 카드를 해금하며, 영구적인 골목 아지트 연구를 통해 군단의 기본 능력치를 점진적으로 확장해 나갑니다.",
+    "progressionDirection": "초반 세션에서는 단순 타격과 짧은 3분 던전 탐색으로 기초 장비를 맞추게 하며, 중반에는 5대 던전의 상성 속성(화염, 냉기, 독, 암흑, 번개)에 맞춘 장비 세트 파밍과 마을 상위 시설 건설로 전략적 깊이를 확장하고, 종반에는 심층 보스 타임어택과 극한의 장비 옵션 튜닝을 통해 지속적인 육성 만족도를 제공한다.",
     "multiplayerMode": "SINGLE",
     "preserve": [
       "CORE_IDENTITY",
@@ -153,318 +155,310 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 226,
-      "progression": 245,
-      "ai": 51,
-      "save": 57,
+      "combat": 184,
+      "progression": 246,
+      "ai": 27,
+      "save": 76,
       "multiplayer": 31,
       "animation": 29,
-      "motionStates": 190,
-      "gameFeel": 34,
-      "vfx": 27,
+      "motionStates": 221,
+      "gameFeel": 32,
+      "vfx": 25,
       "camera": 33,
       "audio": 4,
       "audioDynamics": 16,
       "ui": 62,
-      "uiFlow": 45,
+      "uiFlow": 46,
       "entryFlow": 6,
       "loadingFlow": 0,
-      "input": 62,
-      "map": 173,
-      "landmark": 65,
-      "interaction": 31,
-      "inventory": 33,
-      "equipment": 5,
+      "input": 60,
+      "map": 338,
+      "landmark": 9,
+      "interaction": 41,
+      "inventory": 65,
+      "equipment": 17,
       "settings": 2,
-      "feedback": 70,
-      "session": 112,
-      "content": 229,
-      "choice": 27,
+      "feedback": 74,
+      "session": 147,
+      "content": 303,
+      "choice": 32,
       "connection": 2,
       "performance": 23,
       "lighting": 39,
-      "primitive": 17,
+      "primitive": 19,
       "todo": 0,
-      "errorRecovery": 19
+      "errorRecovery": 22
     },
     "topFiles": [
       {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "score": 593
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "score": 738
       },
       {
-        "file": "roblox-games/line-defense/shared/GameConfig.luau",
-        "score": 283
+        "file": "roblox-games/village-dungeons/shared/GameConfig.luau",
+        "score": 300
       },
       {
-        "file": "roblox-games/line-defense/client/Game.client.luau",
-        "score": 183
+        "file": "roblox-games/village-dungeons/client/Game.client.luau",
+        "score": 178
       },
       {
-        "file": "roblox-games/line-defense/default.project.json",
+        "file": "roblox-games/village-dungeons/default.project.json",
         "score": 2
       }
     ],
     "sourceAnchors": [
       {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 328,
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 317,
         "kind": "FUNCTION",
-        "symbol": "damageEnemy",
-        "context": "local function damageEnemy(player, enemy, amount)",
+        "symbol": "addItemToInventory",
+        "context": "local function addItemToInventory(player, itemId, amount)",
         "score": 130
       },
       {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 445,
-        "kind": "FUNCTION",
-        "symbol": "spawnEnemy",
-        "context": "local function spawnEnemy(player, enemyKind, wave, index)",
-        "score": 114
-      },
-      {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 486,
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 565,
         "kind": "FUNCTION",
         "symbol": "spawnBoss",
-        "context": "local function spawnBoss(player, wave)",
+        "context": "local function spawnBoss(player)",
+        "score": 122
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 719,
+        "kind": "FUNCTION",
+        "symbol": "reviewDungeonState",
+        "context": "local function reviewDungeonState(player)",
+        "score": 122
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 461,
+        "kind": "FUNCTION",
+        "symbol": "damageMonster",
+        "context": "local function damageMonster(player, enemy, amount)",
         "score": 114
       },
       {
-        "file": "roblox-games/line-defense/client/Game.client.luau",
-        "line": 478,
+        "file": "roblox-games/village-dungeons/client/Game.client.luau",
+        "line": 458,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
         "score": 106
       },
       {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 556,
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 332,
         "kind": "FUNCTION",
-        "symbol": "startWave",
-        "context": "local function startWave(player)",
+        "symbol": "removeInventoryItem",
+        "context": "local function removeInventoryItem(player, itemId, amount)",
         "score": 106
       },
       {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 597,
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 371,
         "kind": "FUNCTION",
-        "symbol": "attackEnemy",
-        "context": "local function attackEnemy(player)",
+        "symbol": "equipWeapon",
+        "context": "local function equipWeapon(player, weaponId, power)",
         "score": 106
       },
       {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 642,
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 392,
         "kind": "FUNCTION",
-        "symbol": "reviewDefenseState",
-        "context": "local function reviewDefenseState(player)",
+        "symbol": "consumeFacilityMaterial",
+        "context": "local function consumeFacilityMaterial(player)",
         "score": 106
       },
       {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 209,
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 425,
         "kind": "FUNCTION",
-        "symbol": "addItemToInventory",
-        "context": "local function addItemToInventory(player, itemId, amount)",
+        "symbol": "completeQuest",
+        "context": "local function completeQuest(player)",
+        "score": 106
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 434,
+        "kind": "FUNCTION",
+        "symbol": "currentEnemy",
+        "context": "local function currentEnemy(player)",
+        "score": 106
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 678,
+        "kind": "FUNCTION",
+        "symbol": "manageDungeonBag",
+        "context": "local function manageDungeonBag(player)",
+        "score": 106
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 377,
+        "kind": "FUNCTION",
+        "symbol": "craftWeapon",
+        "context": "local function craftWeapon(player)",
         "score": 98
       },
       {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 397,
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 671,
         "kind": "FUNCTION",
-        "symbol": "runEnemyAI",
-        "context": "local function runEnemyAI(player, enemy)",
+        "symbol": "enterSelectedDungeon",
+        "context": "local function enterSelectedDungeon(player)",
         "score": 98
       },
       {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 609,
-        "kind": "FUNCTION",
-        "symbol": "combatResourceLoop",
-        "context": "local function combatResourceLoop(player)",
-        "score": 98
-      },
-      {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 176,
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 278,
         "kind": "FUNCTION",
         "symbol": "getSession",
         "context": "local function getSession(player)",
         "score": 90
       },
       {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 199,
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 347,
         "kind": "FUNCTION",
-        "symbol": "updateInventorySummary",
-        "context": "local function updateInventorySummary(player)",
+        "symbol": "preserveHalfDungeonInventory",
+        "context": "local function preserveHalfDungeonInventory(player)",
         "score": 90
       },
       {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 239,
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 416,
         "kind": "FUNCTION",
         "symbol": "startQuest",
         "context": "local function startQuest(player)",
         "score": 90
       },
       {
-        "file": "roblox-games/line-defense/client/Game.client.luau",
-        "line": 508,
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 493,
+        "kind": "FUNCTION",
+        "symbol": "runEnemyAI",
+        "context": "local function runEnemyAI(player, enemy)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 665,
+        "kind": "FUNCTION",
+        "symbol": "acceptVillageQuest",
+        "context": "local function acceptVillageQuest(player)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/village-dungeons/client/Game.client.luau",
+        "line": 487,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
         "score": 82
       },
       {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 264,
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 303,
         "kind": "FUNCTION",
-        "symbol": "settleInventory",
-        "context": "local function settleInventory(player)",
+        "symbol": "updateBagSummary",
+        "context": "local function updateBagSummary(player)",
         "score": 82
       },
       {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 586,
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 525,
         "kind": "FUNCTION",
-        "symbol": "inspectInvasionAndDeploy",
-        "context": "local function inspectInvasionAndDeploy(player)",
+        "symbol": "spawnMonster",
+        "context": "local function spawnMonster(player, monsterKind, index)",
         "score": 82
       },
       {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 625,
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 588,
         "kind": "FUNCTION",
-        "symbol": "settleLootAndProgress",
-        "context": "local function settleLootAndProgress(player)",
+        "symbol": "attackMonster",
+        "context": "local function attackMonster(player)",
         "score": 82
       },
       {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 44,
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 656,
+        "kind": "FUNCTION",
+        "symbol": "performCombatAction",
+        "context": "local function performCombatAction(player)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 705,
+        "kind": "FUNCTION",
+        "symbol": "challengeDeeperDungeon",
+        "context": "local function challengeDeeperDungeon(player)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 738,
+        "kind": "FUNCTION",
+        "symbol": "loadPlayer",
+        "context": "local function loadPlayer(player)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 52,
         "kind": "FUNCTION",
         "symbol": "initializeTransientState",
         "context": "local function initializeTransientState(player)",
         "score": 74
       },
       {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 81,
-        "kind": "FUNCTION",
-        "symbol": "recordAction",
-        "context": "local function recordAction(player, scopeId, learningPattern, scoreDelta, progressDelta)",
-        "score": 74
-      },
-      {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 224,
-        "kind": "FUNCTION",
-        "symbol": "clearEnemies",
-        "context": "local function clearEnemies(session)",
-        "score": 74
-      },
-      {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 251,
-        "kind": "FUNCTION",
-        "symbol": "awardProgress",
-        "context": "local function awardProgress(player, amount)",
-        "score": 74
-      },
-      {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 360,
-        "kind": "FUNCTION",
-        "symbol": "retryStage",
-        "context": "local function retryStage(player, reason)",
-        "score": 74
-      },
-      {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 496,
-        "kind": "FUNCTION",
-        "symbol": "createDefenseUnit",
-        "context": "local function createDefenseUnit(player)",
-        "score": 74
-      },
-      {
-        "file": "roblox-games/line-defense/client/Game.client.luau",
-        "line": 220,
+        "file": "roblox-games/village-dungeons/client/Game.client.luau",
+        "line": 210,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
         "context": "local function playVerifiedLearningActionFeedback(control)",
         "score": 66
       },
       {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 115,
-        "kind": "FUNCTION",
-        "symbol": "broadcastMultiplayerSync",
-        "context": "local function broadcastMultiplayerSync(changedPlayer)",
-        "score": 66
-      },
-      {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 301,
-        "kind": "FUNCTION",
-        "symbol": "collectAlleyResource",
-        "context": "local function collectAlleyResource(player, amount)",
-        "score": 66
-      },
-      {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 309,
-        "kind": "FUNCTION",
-        "symbol": "findTargetEnemy",
-        "context": "local function findTargetEnemy(player)",
-        "score": 66
-      },
-      {
-        "file": "roblox-games/line-defense/client/Game.client.luau",
-        "line": 357,
-        "kind": "FUNCTION",
-        "symbol": "applyCreaturePresentation",
-        "context": "local function applyCreaturePresentation(instance)",
-        "score": 58
-      },
-      {
-        "file": "roblox-games/line-defense/client/Game.client.luau",
-        "line": 297,
+        "file": "roblox-games/village-dungeons/client/Game.client.luau",
+        "line": 287,
         "kind": "FUNCTION",
         "symbol": "bindVerifiedLearningControl",
         "context": "local function bindVerifiedLearningControl(control)",
         "score": 50
       },
       {
-        "file": "roblox-games/line-defense/client/Game.client.luau",
-        "line": 342,
-        "kind": "FUNCTION",
-        "symbol": "hasStudioAtom",
-        "context": "local function hasStudioAtom(atom)",
-        "score": 50
-      },
-      {
-        "file": "roblox-games/line-defense/client/Game.client.luau",
-        "line": 150,
+        "file": "roblox-games/village-dungeons/client/Game.client.luau",
+        "line": 140,
         "kind": "FUNCTION",
         "symbol": "syncVerifiedLearningCharacterMotion",
         "context": "local function syncVerifiedLearningCharacterMotion(character)",
         "score": 42
       },
       {
-        "file": "roblox-games/line-defense/client/Game.client.luau",
-        "line": 28,
+        "file": "roblox-games/village-dungeons/client/Game.client.luau",
+        "line": 352,
+        "kind": "FUNCTION",
+        "symbol": "applyCreaturePresentation",
+        "context": "local function applyCreaturePresentation(instance)",
+        "score": 42
+      },
+      {
+        "file": "roblox-games/village-dungeons/client/Game.client.luau",
+        "line": 27,
         "kind": "FUNCTION",
         "symbol": "hasStudioAssetAtom",
         "context": "local function hasStudioAssetAtom(familyOrAtom, atom)",
         "score": 34
       },
       {
-        "file": "roblox-games/line-defense/client/Game.client.luau",
-        "line": 24,
+        "file": "roblox-games/village-dungeons/client/Game.client.luau",
+        "line": 23,
         "kind": "FUNCTION",
         "symbol": "studioAssetFamily",
         "context": "local function studioAssetFamily(family)",
@@ -473,19 +467,19 @@
     ]
   },
   "previousVersionDelta": {
-    "previousGoal": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
+    "previousGoal": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 24,
-    "previousSourceTreeFingerprint": "b75d79c5fcfa8104bd70fa88614457fdf57704d5986306cbf4a295e1cc1fc260",
-    "currentSourceTreeFingerprint": "3cfb181b318e18d6882383f5fc277c54395d06c80e660562e3373c7d9635e49d",
+    "previousGeneration": 26,
+    "previousSourceTreeFingerprint": "a3437a57e80f0c9d3f3105521d2924350d4cf3d39b8bfe1fba5aff72aa6a619f",
+    "currentSourceTreeFingerprint": "4747c29d5839b7211207b8e8cd3531b63de41e99952aa9be000631b664d4e92c",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-    "failureSignature": "ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED",
+    "failureStage": "",
+    "failureSignature": "",
     "blockers": [],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -550,8 +544,8 @@
     },
     {
       "domain": "QUESTS",
-      "state": "NOT_APPLICABLE",
-      "reason": "no quest/story objective signal in approved design"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "CONTENT_VARIETY",
@@ -635,8 +629,8 @@
     },
     {
       "domain": "CRAFTING",
-      "state": "NOT_APPLICABLE",
-      "reason": "no crafting signal in approved design"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "SYSTEM_CONNECTION",
@@ -745,8 +739,8 @@
     },
     {
       "domain": "NPC_SOCIAL_BEHAVIOR",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "NOT_APPLICABLE",
+      "reason": "no NPC or social behavior signal in approved design"
     },
     {
       "domain": "NARRATIVE_STORY",
@@ -760,8 +754,8 @@
     },
     {
       "domain": "REPLAYABILITY_VARIATION",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "NOT_APPLICABLE",
+      "reason": "no explicit replay variation signal in approved design"
     },
     {
       "domain": "CHARACTER_VISUALS",
@@ -870,7 +864,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "골목길 시너지 배치 시스템가 단순 반복 입력이 아니라 상황을 읽고 선택을 바꾸는 핵심 재미가 되게 한다. 같은 선택의 반복 이득을 줄이고 성공/실패 이유가 즉시 보이게 한다.",
+      "directive": "마을 재건 시설 연동 시스템가 단순 반복 입력이 아니라 상황을 읽고 선택을 바꾸는 핵심 재미가 되게 한다. 같은 선택의 반복 이득을 줄이고 성공/실패 이유가 즉시 보이게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -879,7 +873,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "골목길 시너지 배치 시스템의 입력→전조/준비→판정→결과→회복 흐름을 실제 상태 머신에 연결하고 타이밍·거리·위험/보상 중 게임에 맞는 최소 두 축에서 선택 차이를 만든다.",
+      "directive": "마을 재건 시설 연동 시스템의 입력→전조/준비→판정→결과→회복 흐름을 실제 상태 머신에 연결하고 타이밍·거리·위험/보상 중 게임에 맞는 최소 두 축에서 선택 차이를 만든다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -915,7 +909,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "적 역할이 이동·타이깃 선택·공격 전조·공격 패턴·후퇴/회복 또는 특수상태에서 구별되게 하고 골목길 시너지 배치 시스템에 대한 카운터플레이가 실제 플레이에서 가능하게 한다.",
+      "directive": "적 역할이 이동·타이깃 선택·공격 전조·공격 패턴·후퇴/회복 또는 특수상태에서 구별되게 하고 마을 재건 시설 연동 시스템에 대한 카운터플레이가 실제 플레이에서 가능하게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -924,7 +918,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 보스/시그니처 순간은 일반 적의 체력만 키운 형태를 금지하고 단계 변화, 공간 압박, 전조, 대응 선택, 보상 연출을 핵심 시스템 실시간 재화 순환 엔진와 연결한다.",
+      "directive": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 보스/시그니처 순간은 일반 적의 체력만 키운 형태를 금지하고 단계 변화, 공간 압박, 전조, 대응 선택, 보상 연출을 핵심 시스템 리스크 배낭 정밀 적재 시스템와 연결한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -933,7 +927,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "플레이어는 스테이지를 클리어하며 골목 대장 레벨을 올리고, 새로운 유닛 카드를 해금하며, 영구적인 골목 아지트 연구를 통해 군단의 기본 능력치를 점진적으로 확장해 나갑니다.을 짧은 목표→보상→해금→새 선택→다음 난도로 연결하고 성장 수치만 오르는 대신 플레이 방식이 실제로 넓어지게 한다.",
+      "directive": "초반 세션에서는 단순 타격과 짧은 3분 던전 탐색으로 기초 장비를 맞추게 하며, 중반에는 5대 던전의 상성 속성(화염, 냉기, 독, 암흑, 번개)에 맞춘 장비 세트 파밍과 마을 상위 시설 건설로 전략적 깊이를 확장하고, 종반에는 심층 보스 타임어택과 극한의 장비 옵션 튜닝을 통해 지속적인 육성 만족도를 제공한다.을 짧은 목표→보상→해금→새 선택→다음 난도로 연결하고 성장 수치만 오르는 대신 플레이 방식이 실제로 넓어지게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -942,7 +936,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "현재 목표·다음 목표·실패 조건을 플레이 중 확인 가능하게 하고, 목표가 골목길 시너지 배치 시스템와 직접 연결되어 플레이어가 왜 행동하는지 분명하게 한다.",
+      "directive": "현재 목표·다음 목표·실패 조건을 플레이 중 확인 가능하게 하고, 목표가 마을 재건 시설 연동 시스템와 직접 연결되어 플레이어가 왜 행동하는지 분명하게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -966,12 +960,12 @@
     },
     {
       "domain": "QUESTS",
-      "state": "NOT_APPLICABLE",
-      "priority": "NOT_APPLICABLE",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "현재 승인 설계상 no quest/story objective signal in approved design. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "directive": "퀘스트가 적용되는 게임이면 목표·진행 추적·완료 판정·보상·세계/캐릭터 반응까지 연결하고, 핵심 루프와 무관한 심부름 반복을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
-      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
     {
       "domain": "CONTENT_VARIETY",
@@ -1086,7 +1080,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "재화의 획득원·사용처·가격 단계·손실/회수 규칙을 플레이어는 스테이지를 클리어하며 골목 대장 레벨을 올리고, 새로운 유닛 카드를 해금하며, 영구적인 골목 아지트 연구를 통해 군단의 기본 능력치를 점진적으로 확장해 나갑니다.과 연결하고 무한 축적 또는 의미 없는 구매가 생기지 않게 한다. 승인 없는 기존 수치 변경은 금지한다.",
+      "directive": "재화의 획득원·사용처·가격 단계·손실/회수 규칙을 초반 세션에서는 단순 타격과 짧은 3분 던전 탐색으로 기초 장비를 맞추게 하며, 중반에는 5대 던전의 상성 속성(화염, 냉기, 독, 암흑, 번개)에 맞춘 장비 세트 파밍과 마을 상위 시설 건설로 전략적 깊이를 확장하고, 종반에는 심층 보스 타임어택과 극한의 장비 옵션 튜닝을 통해 지속적인 육성 만족도를 제공한다.과 연결하고 무한 축적 또는 의미 없는 구매가 생기지 않게 한다. 승인 없는 기존 수치 변경은 금지한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1119,12 +1113,12 @@
     },
     {
       "domain": "CRAFTING",
-      "state": "NOT_APPLICABLE",
-      "priority": "NOT_APPLICABLE",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "현재 승인 설계상 no crafting signal in approved design. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "directive": "제작이 적용되는 게임이면 재료 발견→레시피 이해→제작 조건→대기/완료→인벤토리 반영→실제 사용까지 끊김 없이 연결하고 중복 레시피를 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
-      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
     {
       "domain": "SYSTEM_CONNECTION",
@@ -1239,7 +1233,7 @@
       "state": "GAP",
       "priority": "FIX_NOW",
       "developmentDepth": 1,
-      "directive": "골목길 시너지 배치 시스템를 연습하는 로비/허브를 기존 UI에 연결한다. 승인된 장르에 맞게 퍼즐은 작은 연습판, 방어는 적 하나에 배치·회수, 생존은 안전한 채집·제작·장착을 활용한다. 연습은 건너뛸 수 있고 기존 재화·보상·저장에 영향을 주지 않는다. 로딩은 실제 월드·저장·참가 준비 단계와 실패 이유·재시도/안전 복귀를 표시한다. 시작은 준비 확인 후 한 번만 처리하고 스폰·카메라·목표까지 연결한다. 기존 메뉴의 뒤로가기·닫기·스크롤·팝업·선택 유지를 모바일에서 검수하며 중복 화면·가짜 진행률·장식용 버튼을 금지한다.",
+      "directive": "마을 재건 시설 연동 시스템를 연습하는 로비/허브를 기존 UI에 연결한다. 승인된 장르에 맞게 퍼즐은 작은 연습판, 방어는 적 하나에 배치·회수, 생존은 안전한 채집·제작·장착을 활용한다. 연습은 건너뛸 수 있고 기존 재화·보상·저장에 영향을 주지 않는다. 로딩은 실제 월드·저장·참가 준비 단계와 실패 이유·재시도/안전 복귀를 표시한다. 시작은 준비 확인 후 한 번만 처리하고 스폰·카메라·목표까지 연결한다. 기존 메뉴의 뒤로가기·닫기·스크롤·팝업·선택 유지를 모바일에서 검수하며 중복 화면·가짜 진행률·장식용 버튼을 금지한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1284,7 +1278,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "골목길 시너지 배치 시스템의 첫 입력·결과·목표를 필요한 순간 한 줄과 실습으로 안내한다. 같은 실패 반복 시 목표 확인→관련 위치→행동 예시의 선택형 힌트를 단계적으로 제공하되 정답 자동 처리·난이도 변경은 금지한다. 설명 닫기는 학습 완료가 아니며 건너뛰기·도움말 다시 열기를 제공한다. 재접속은 초기 설명 대신 현재 목표를 보여준다.",
+      "directive": "마을 재건 시설 연동 시스템의 첫 입력·결과·목표를 필요한 순간 한 줄과 실습으로 안내한다. 같은 실패 반복 시 목표 확인→관련 위치→행동 예시의 선택형 힌트를 단계적으로 제공하되 정답 자동 처리·난이도 변경은 금지한다. 설명 닫기는 학습 완료가 아니며 건너뛰기·도움말 다시 열기를 제공한다. 재접속은 초기 설명 대신 현재 목표를 보여준다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1302,7 +1296,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "핵심 입력의 반응 지연, anticipation, impact, hit-stop/반동/화면 반응, recovery를 장르와 골목길 시너지 배치 시스템에 맞춰 조정해 버튼 입력과 결과 사이의 손맛을 강화한다.",
+      "directive": "핵심 입력의 반응 지연, anticipation, impact, hit-stop/반동/화면 반응, recovery를 장르와 마을 재건 시설 연동 시스템에 맞춰 조정해 버튼 입력과 결과 사이의 손맛을 강화한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1317,12 +1311,12 @@
     },
     {
       "domain": "NPC_SOCIAL_BEHAVIOR",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "NOT_APPLICABLE",
+      "priority": "NOT_APPLICABLE",
       "developmentDepth": 1,
-      "directive": "NPC가 적용되는 게임이면 idle 순환뿐 아니라 이동 목적, 상호작용 반응, 시간/지역/퀘스트 상태에 따른 행동 변화가 세계 역할과 연결되게 한다.",
+      "directive": "현재 승인 설계상 no NPC or social behavior signal in approved design. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
-      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
     },
     {
       "domain": "NARRATIVE_STORY",
@@ -1344,19 +1338,19 @@
     },
     {
       "domain": "REPLAYABILITY_VARIATION",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "NOT_APPLICABLE",
+      "priority": "NOT_APPLICABLE",
       "developmentDepth": 1,
-      "directive": "반복 플레이가 적용되는 게임이면 조우 조합·지역 경로·보상 선택·빌드/전략·이벤트 중 게임에 맞는 변주를 제공해 같은 정답만 반복되지 않게 한다.",
+      "directive": "현재 승인 설계상 no explicit replay variation signal in approved design. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
-      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
     },
     {
       "domain": "CHARACTER_VISUALS",
       "state": "GAP",
       "priority": "FIX_NOW",
       "developmentDepth": 1,
-      "directive": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다. 플레이어/NPC의 역할·등급·장비가 실루엣, 비율, 자세, 재질에서 구별되고 핵심 행동 모션과 연결되게 한다.",
+      "directive": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다. 플레이어/NPC의 역할·등급·장비가 실루엣, 비율, 자세, 재질에서 구별되고 핵심 행동 모션과 연결되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1392,7 +1386,7 @@
       "state": "GAP",
       "priority": "FIX_NOW",
       "developmentDepth": 1,
-      "directive": "전경/중경/배경, 식생/소품, 위험/안전 신호, 환경 스토리텔링을 골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다. 아트 방향 안에서 통일하고 빈 장식면을 줄인다.",
+      "directive": "전경/중경/배경, 식생/소품, 위험/안전 신호, 환경 스토리텔링을 마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다. 아트 방향 안에서 통일하고 빈 장식면을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1565,22 +1559,24 @@
     }
   ],
   "primaryFocus": "STABILITY",
-  "thisLoopPrimaryGoal": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 STABILITY를 우선한다. 게임 고유 앵커는 \"골목길 시너지 배치 시스템\", 현재 책임 소스는 roblox-games/line-defense/server/Game.server.luau::damageEnemy, roblox-games/line-defense/server/Game.server.luau::spawnEnemy, roblox-games/line-defense/server/Game.server.luau::spawnBoss, roblox-games/line-defense/client/Game.client.luau::render, roblox-games/line-defense/server/Game.server.luau::startWave, roblox-games/line-defense/server/Game.server.luau::attackEnemy, roblox-games/line-defense/server/Game.server.luau::reviewDefenseState, roblox-games/line-defense/server/Game.server.luau::addItemToInventory이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "thisLoopPrimaryGoal": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 STABILITY를 우선한다. 게임 고유 앵커는 \"마을 재건 시설 연동 시스템\", 현재 책임 소스는 roblox-games/village-dungeons/server/Game.server.luau::addItemToInventory, roblox-games/village-dungeons/server/Game.server.luau::spawnBoss, roblox-games/village-dungeons/server/Game.server.luau::reviewDungeonState, roblox-games/village-dungeons/server/Game.server.luau::damageMonster, roblox-games/village-dungeons/client/Game.client.luau::render, roblox-games/village-dungeons/server/Game.server.luau::removeInventoryItem, roblox-games/village-dungeons/server/Game.server.luau::equipWeapon, roblox-games/village-dungeons/server/Game.server.luau::consumeFacilityMaterial이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 roblox-games/line-defense/server/Game.server.luau::damageEnemy, roblox-games/line-defense/server/Game.server.luau::spawnEnemy, roblox-games/line-defense/server/Game.server.luau::spawnBoss, roblox-games/line-defense/client/Game.client.luau::render, roblox-games/line-defense/server/Game.server.luau::startWave, roblox-games/line-defense/server/Game.server.luau::attackEnemy, roblox-games/line-defense/server/Game.server.luau::reviewDefenseState, roblox-games/line-defense/server/Game.server.luau::addItemToInventory에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
-    "골목길 시너지 배치 시스템를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
-    "실시간 재화 순환 엔진가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
-    "기획 루프 1 \"적의 다음 침공 경로와 유닛 구성을 확인하고 아군 유닛을 골목길의 최적 위치에 배치하는 단계\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
-    "기획 루프 2 \"전투 중 적을 처치하여 실시간으로 골목 자원을 획득하고 이를 유닛 업그레이드나 추가 배치에 투자하는 단계\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
-    "기획 루프 3 \"웨이브를 클리어하고 획득한 전리품으로 군단 전체의 영구적 특성을 강화하여 더 높은 난이도에 도전하는 단계\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
-    "고유 시스템 \"골목길 시너지 배치 시스템\": 플레이어 선택 \"단순히 강한 유닛을 배치할 것인지, 아니면 시너지 효과를 극대화하기 위해 특정 속성의 유닛들을 좁은 골목에 밀집 배치할 것인지 선택합니다.\"이 실제 결과를 달리 만드는지 두 선택의 결과를 비교한다. 코드 키워드·설명·자체 PASS 로그는 증거가 아니며, 실측하지 못하면 미확인으로 남기고 완료/효과 확인에 포함하지 않는다.",
-    "고유 시스템 \"실시간 재화 순환 엔진\": 플레이어 선택 \"자원을 즉시 소모하여 하급 유닛을 다수 소환할 것인지, 아니면 이자를 받기 위해 자원을 저축한 후 고성능 유닛을 한 번에 소환할 것인지 결정합니다.\"이 실제 결과를 달리 만드는지 두 선택의 결과를 비교한다. 코드 키워드·설명·자체 PASS 로그는 증거가 아니며, 실측하지 못하면 미확인으로 남기고 완료/효과 확인에 포함하지 않는다.",
-    "고유 시스템 골목길 시너지 배치 시스템, 실시간 재화 순환 엔진 중 이번 목표와 직접 연결된 시스템을 기존 책임 코드에서 심화한다.",
+    "우선 책임 소스 앵커 roblox-games/village-dungeons/server/Game.server.luau::addItemToInventory, roblox-games/village-dungeons/server/Game.server.luau::spawnBoss, roblox-games/village-dungeons/server/Game.server.luau::reviewDungeonState, roblox-games/village-dungeons/server/Game.server.luau::damageMonster, roblox-games/village-dungeons/client/Game.client.luau::render, roblox-games/village-dungeons/server/Game.server.luau::removeInventoryItem, roblox-games/village-dungeons/server/Game.server.luau::equipWeapon, roblox-games/village-dungeons/server/Game.server.luau::consumeFacilityMaterial에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "마을 재건 시설 연동 시스템를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
+    "리스크 배낭 정밀 적재 시스템가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
+    "기획 루프 1 \"마을 의뢰 게시판에서 자원 채취 및 특정 던전 몬스터 토벌 퀘스트를 수락하고 장비를 점검한다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
+    "기획 루프 2 \"5개로 분기된 던전 중 하나를 선택 진입하여 한 손 조작 기반의 실시간 회피 및 평타/스킬 연계로 몬스터를 격퇴한다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
+    "기획 루프 3 \"한정된 던전 배낭 슬롯에 귀환용 고가치 자원과 장비 강화 재료를 취사선택하여 보관한다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
+    "기획 루프 4 \"포털을 통해 안전하게 마을로 귀환하여 의뢰를 완료하고 수집 자원으로 대장간과 주점을 업그레이드한다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
+    "기획 루프 5 \"확장된 시설 버프와 신규 제작 무기를 바탕으로 더 깊은 던전 층계 및 보스전에 도전한다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
+    "고유 시스템 \"마을 재건 시설 연동 시스템\": 플레이어 선택 \"즉시 전투력을 높이는 무기 제련 시설을 우선 복구할 것인지, 소비 물약 효율과 던전 내 추가 부활 기회를 부여하는 연금소를 먼저 지을지 선택한다.\"이 실제 결과를 달리 만드는지 두 선택의 결과를 비교한다. 코드 키워드·설명·자체 PASS 로그는 증거가 아니며, 실측하지 못하면 미확인으로 남기고 완료/효과 확인에 포함하지 않는다.",
+    "고유 시스템 \"리스크 배낭 정밀 적재 시스템\": 플레이어 선택 \"안전한 마을 귀환 주문서를 유지하기 위해 회복 물약을 버릴 것인지, 희귀 보스 드롭 재료를 위해 체력 회복 수단을 포기할 것인지 결정한다.\"이 실제 결과를 달리 만드는지 두 선택의 결과를 비교한다. 코드 키워드·설명·자체 PASS 로그는 증거가 아니며, 실측하지 못하면 미확인으로 남기고 완료/효과 확인에 포함하지 않는다.",
+    "고유 시스템 마을 재건 시설 연동 시스템, 리스크 배낭 정밀 적재 시스템 중 이번 목표와 직접 연결된 시스템을 기존 책임 코드에서 심화한다.",
     "핵심 게임플레이 의미는 보존하면서 이번 품질축에 필요한 연결만 수정한다."
   ],
   "progressionContentWorldDirectives": [
-    "플레이어는 스테이지를 클리어하며 골목 대장 레벨을 올리고, 새로운 유닛 카드를 해금하며, 영구적인 골목 아지트 연구를 통해 군단의 기본 능력치를 점진적으로 확장해 나갑니다.을 현재 루프의 실제 목표·보상·해금·콘텐츠 연결로 구현/심화한다.",
+    "초반 세션에서는 단순 타격과 짧은 3분 던전 탐색으로 기초 장비를 맞추게 하며, 중반에는 5대 던전의 상성 속성(화염, 냉기, 독, 암흑, 번개)에 맞춘 장비 세트 파밍과 마을 상위 시설 건설로 전략적 깊이를 확장하고, 종반에는 심층 보스 타임어택과 극한의 장비 옵션 튜닝을 통해 지속적인 육성 만족도를 제공한다.을 현재 루프의 실제 목표·보상·해금·콘텐츠 연결로 구현/심화한다.",
     "새 콘텐츠는 기존 핵심 루프와 연결되어야 하며 단순 수량 복제나 색/수치만 다른 변형으로 채우지 않는다.",
     "맵/지역이 있는 게임은 면적만 늘리지 말고 새 지역 역할·연결 경로·잠금/해금·랜드마크·조우/자원 역할·발견 피드백이 구별되도록 확장한다.",
     "인벤토리/장비/제작/상점/퀘스트가 존재하면 서로 같은 authoritative 상태를 사용해 실제 플레이와 연결하고 고립된 메뉴 기능으로 남기지 않는다.",
@@ -1621,8 +1617,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 120347,
-        "largestFileBytes": 47952,
+        "sourceBytes": 121646,
+        "largestFileBytes": 48671,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1654,13 +1650,13 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 7,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=6; uncoveredBefore=4.",
+    "themeDepth": 9,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=8; uncoveredBefore=4.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 7,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 9,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -1673,8 +1669,8 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
@@ -1712,24 +1708,24 @@
     "scoredThemes": [
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 78,
+        "score": 42,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
       },
       {
         "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": 22,
+        "score": 20,
         "gapDomains": []
       },
       {
         "theme": "MID_LATE_ENDGAME_COMPLETION",
-        "score": 16,
+        "score": 14,
         "gapDomains": []
       },
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 14,
+        "score": 12,
         "gapDomains": []
       },
       {
@@ -1739,7 +1735,7 @@
       },
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": -124,
+        "score": -122,
         "gapDomains": []
       },
       {
@@ -1826,11 +1822,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 25,
-    "previousGeneration": 24,
+    "generation": 27,
+    "previousGeneration": 26,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "3cfb181b318e18d6882383f5fc277c54395d06c80e660562e3373c7d9635e49d",
-    "priorSourceFingerprint": "b75d79c5fcfa8104bd70fa88614457fdf57704d5986306cbf4a295e1cc1fc260",
+    "sourceFingerprint": "4747c29d5839b7211207b8e8cd3531b63de41e99952aa9be000631b664d4e92c",
+    "priorSourceFingerprint": "a3437a57e80f0c9d3f3105521d2924350d4cf3d39b8bfe1fba5aff72aa6a619f",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -1847,17 +1843,17 @@
   },
   "visualBuildUpDirective": {
     "artDirection": {
-      "identity": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.",
-      "visualPurpose": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 플레이 판단과 골목길 시너지 배치 시스템가 화면만 보고도 구별되도록 시각 언어를 통일한다.",
-      "distinctnessRule": "실시간 재화 순환 엔진와 연결되지 않는 장식 추가보다 실루엣·동작·환경 맥락으로 게임 고유성을 강화한다.",
+      "identity": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.",
+      "visualPurpose": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 플레이 판단과 마을 재건 시설 연동 시스템가 화면만 보고도 구별되도록 시각 언어를 통일한다.",
+      "distinctnessRule": "리스크 배낭 정밀 적재 시스템와 연결되지 않는 장식 추가보다 실루엣·동작·환경 맥락으로 게임 고유성을 강화한다.",
       "placeholderDebt": "HIGH"
     },
     "domains": {
-      "CHARACTER": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다. 플레이어의 역할이 실루엣·장비·자세에서 읽히게 만들고 idle/이동/핵심행동 사이 포즈 차이를 명확히 한다.",
-      "ENEMY_CREATURE": "골목길 시너지 배치 시스템의 상대 역할마다 색만 바꾸지 말고 크기·실루엣·이동 리듬·공격 전조·피격/사망 반응을 다르게 만든다.",
+      "CHARACTER": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다. 플레이어의 역할이 실루엣·장비·자세에서 읽히게 만들고 idle/이동/핵심행동 사이 포즈 차이를 명확히 한다.",
+      "ENEMY_CREATURE": "마을 재건 시설 연동 시스템의 상대 역할마다 색만 바꾸지 말고 크기·실루엣·이동 리듬·공격 전조·피격/사망 반응을 다르게 만든다.",
       "WEAPON_EQUIPMENT": "장비가 실제 기능과 연결되어 손에 쥔 형태, 공격 궤적, impact/recovery, 장착 피드백이 서로 일치하게 만든다.",
       "BUILDING_PROP": "상호작용 가능한 구조물과 장식물을 형태·배치·상태 변화로 구분하고 플레이 동선을 가리는 무의미한 소품 반복을 피한다.",
-      "ENVIRONMENT_TERRAIN": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 세계 역할을 지역별 지형·랜드마크·전경/중경/후경·높낮이·환경 움직임으로 구분한다.",
+      "ENVIRONMENT_TERRAIN": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 세계 역할을 지역별 지형·랜드마크·전경/중경/후경·높낮이·환경 움직임으로 구분한다.",
       "MATERIAL_SURFACE": "나무/돌/금속 등 이름 등록만 하지 말고 실제 표면 반응·거칠기·광택·마모·발광을 장면 조명과 맞춘다.",
       "PALETTE": "위험·안전·보상·상호작용 상태가 게임 팔레트 안에서 즉시 읽히게 하고 단순 색 교체를 정체성 개선으로 계산하지 않는다.",
       "LIGHTING": "핵심 동선·위험·랜드마크를 조명으로 유도하고 캐릭터와 적 실루엣이 배경에 묻히지 않게 한다.",
@@ -1865,7 +1861,7 @@
       "SECONDARY_MOTION": "무기·장비·머리·의상·식생 등 해당 오브젝트에 지연/흔들림을 추가하되 판정과 충돌 권한은 바꾸지 않는다.",
       "VFX": "일반 타격·강한 타격·위험 예고·상태이상·보상 VFX의 형태와 타이밍을 분리하고 실제 impact 이벤트에 동기화한다.",
       "CAMERA": "기본 시야와 모바일 가독성을 보존하면서 핵심행동·강공격·보스/시그니처 순간에 강도가 다른 짧은 카메라 반응을 준다.",
-      "UI_HUD": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 핵심 목표·자원·위험·다음 선택이 한눈에 보이게 하고 게임 세계관과 맞는 패널/아이콘/피드백 언어를 사용한다.",
+      "UI_HUD": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 핵심 목표·자원·위험·다음 선택이 한눈에 보이게 하고 게임 세계관과 맞는 패널/아이콘/피드백 언어를 사용한다.",
       "INVENTORY_EQUIPMENT_UI": "인벤토리와 장비 UI는 획득→비교→장착/교체→현재 장착 표시→실제 외형/행동 반영까지 같은 상태를 사용하고 모바일에서도 한 손 조작과 스크롤/닫기/선택 유지가 명확해야 한다.",
       "AUDIO_MUSIC": "BGM·환경음·행동 피드백은 현재 지역/상태/전투 강도와 연결하고, 소리가 의도적으로 비활성화된 카테고리는 되살리지 않는다. 여러 음악 맥락이 있으면 같은 한 곡 단순 반복 대신 전환·크로스페이드·믹스 변화로 상태가 들리게 한다.",
       "AUDIO_VISUAL_SYNC": "damage/VFX/animation/camera/audio가 같은 authoritative impact 순간을 공유하게 하며 소리만 먼저/늦게 나오는 불일치를 제거한다.",
@@ -2052,7 +2048,7 @@
       "gameplayBalanceSaveEconomyNetworkMeaningPreserved": true,
       "intentionallyDisabledAudioCategoriesPreserved": true
     },
-    "designIdentity": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다."
+    "designIdentity": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다."
   },
   "uxInputDirectives": [
     "핵심 행동, 위험, 현재 목표, 다음 선택을 모바일 화면에서 우선순위가 명확하게 보이게 한다.",
@@ -2062,149 +2058,149 @@
     "반복 조작은 편의 기능으로 줄이되 핵심 플레이 선택과 위험/보상 판단을 자동화하지 않는다."
   ],
   "platformAdaptationDirectives": {
-    "WEB": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.: 동일 공통 목표 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 현재 canonical Web 경로에 구현한다. 실제 터치 입력, DOM/Canvas 프레임 변화, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 함께 검수한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "ROBLOX": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.: 동일 공통 목표 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
-    "UNITY": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.: 동일 공통 목표 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 함께 검증한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
-    "FORTNITE_UEFN": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.: 동일 공통 목표 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UNITY_WEB": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.: 동일 공통 목표 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 현재 canonical Web 경로에 구현한다. 실제 터치 입력, DOM/Canvas 프레임 변화, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 함께 검수한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "UNITY_APP": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.: 동일 공통 목표 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 함께 검증한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
-    "UNREAL": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.: 동일 공통 목표 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UEFN": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.: 동일 공통 목표 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
+    "WEB": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.: 동일 공통 목표 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 현재 canonical Web 경로에 구현한다. 실제 터치 입력, DOM/Canvas 프레임 변화, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 함께 검수한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "ROBLOX": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.: 동일 공통 목표 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
+    "UNITY": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.: 동일 공통 목표 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 함께 검증한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
+    "FORTNITE_UEFN": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.: 동일 공통 목표 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
+    "UNITY_WEB": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.: 동일 공통 목표 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 현재 canonical Web 경로에 구현한다. 실제 터치 입력, DOM/Canvas 프레임 변화, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 함께 검수한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "UNITY_APP": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.: 동일 공통 목표 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 함께 검증한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
+    "UNREAL": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.: 동일 공통 목표 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
+    "UEFN": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.: 동일 공통 목표 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
   },
   "robloxNativeExecution": {
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/line-defense/shared/GameConfig.luau",
-      "roblox-games/line-defense/server/Game.server.luau",
-      "roblox-games/line-defense/client/Game.client.luau",
-      "roblox-games/line-defense/default.project.json"
+      "roblox-games/village-dungeons/shared/GameConfig.luau",
+      "roblox-games/village-dungeons/server/Game.server.luau",
+      "roblox-games/village-dungeons/client/Game.client.luau",
+      "roblox-games/village-dungeons/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
       {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 328,
-        "kind": "FUNCTION",
-        "symbol": "damageEnemy",
-        "currentBehavior": "local function damageEnemy(player, enemy, amount)",
-        "intendedBehavior": "STABILITY primary goal \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 damageEnemy의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/line-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 445,
-        "kind": "FUNCTION",
-        "symbol": "spawnEnemy",
-        "currentBehavior": "local function spawnEnemy(player, enemyKind, wave, index)",
-        "intendedBehavior": "STABILITY primary goal \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 spawnEnemy의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/line-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 486,
-        "kind": "FUNCTION",
-        "symbol": "spawnBoss",
-        "currentBehavior": "local function spawnBoss(player, wave)",
-        "intendedBehavior": "STABILITY primary goal \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 spawnBoss의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/line-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/line-defense/client/Game.client.luau",
-        "line": 478,
-        "kind": "FUNCTION",
-        "symbol": "render",
-        "currentBehavior": "local function render()",
-        "intendedBehavior": "STABILITY primary goal \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 render의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/line-defense/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 556,
-        "kind": "FUNCTION",
-        "symbol": "startWave",
-        "currentBehavior": "local function startWave(player)",
-        "intendedBehavior": "STABILITY primary goal \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 startWave의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/line-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 597,
-        "kind": "FUNCTION",
-        "symbol": "attackEnemy",
-        "currentBehavior": "local function attackEnemy(player)",
-        "intendedBehavior": "STABILITY primary goal \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 attackEnemy의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/line-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 642,
-        "kind": "FUNCTION",
-        "symbol": "reviewDefenseState",
-        "currentBehavior": "local function reviewDefenseState(player)",
-        "intendedBehavior": "STABILITY primary goal \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 reviewDefenseState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/line-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 209,
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 317,
         "kind": "FUNCTION",
         "symbol": "addItemToInventory",
         "currentBehavior": "local function addItemToInventory(player, itemId, amount)",
-        "intendedBehavior": "STABILITY primary goal \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 addItemToInventory의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/line-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 addItemToInventory의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 565,
+        "kind": "FUNCTION",
+        "symbol": "spawnBoss",
+        "currentBehavior": "local function spawnBoss(player)",
+        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 spawnBoss의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 719,
+        "kind": "FUNCTION",
+        "symbol": "reviewDungeonState",
+        "currentBehavior": "local function reviewDungeonState(player)",
+        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 reviewDungeonState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 461,
+        "kind": "FUNCTION",
+        "symbol": "damageMonster",
+        "currentBehavior": "local function damageMonster(player, enemy, amount)",
+        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 damageMonster의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/village-dungeons/client/Game.client.luau",
+        "line": 458,
+        "kind": "FUNCTION",
+        "symbol": "render",
+        "currentBehavior": "local function render()",
+        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 render의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/village-dungeons/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 332,
+        "kind": "FUNCTION",
+        "symbol": "removeInventoryItem",
+        "currentBehavior": "local function removeInventoryItem(player, itemId, amount)",
+        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 removeInventoryItem의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 371,
+        "kind": "FUNCTION",
+        "symbol": "equipWeapon",
+        "currentBehavior": "local function equipWeapon(player, weaponId, power)",
+        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 equipWeapon의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 392,
+        "kind": "FUNCTION",
+        "symbol": "consumeFacilityMaterial",
+        "currentBehavior": "local function consumeFacilityMaterial(player)",
+        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 consumeFacilityMaterial의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "serverClientResponsibility": [
       {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "symbol": "damageEnemy",
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "symbol": "addItemToInventory",
         "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "symbol": "spawnEnemy",
-        "role": "SERVER_AUTHORITY",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
         "symbol": "spawnBoss",
         "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "roblox-games/line-defense/client/Game.client.luau",
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "symbol": "reviewDungeonState",
+        "role": "SERVER_AUTHORITY",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "symbol": "damageMonster",
+        "role": "SERVER_AUTHORITY",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "roblox-games/village-dungeons/client/Game.client.luau",
         "symbol": "render",
         "role": "CLIENT_INPUT_OR_PRESENTATION",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "symbol": "startWave",
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "symbol": "removeInventoryItem",
         "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "symbol": "attackEnemy",
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "symbol": "equipWeapon",
         "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "symbol": "reviewDefenseState",
-        "role": "SERVER_AUTHORITY",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "symbol": "addItemToInventory",
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "symbol": "consumeFacilityMaterial",
         "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
     ],
-    "expectedPlayerEffect": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
+    "expectedPlayerEffect": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "observableAcceptanceScenario": "input/touch -> local handler -> RemoteEvent/RemoteFunction when required -> server validation -> authoritative state change -> client feedback",
     "sourceInspectionChecklist": [
       "SERVER_AUTHORITY",
@@ -2235,62 +2231,64 @@
     "platform": "ROBLOX",
     "executionSurface": "ROBLOX",
     "mode": "EXISTING_SOURCE_REPAIR",
-    "gameId": "line-defense",
-    "genreProfile": "STRATEGY",
-    "conceptIdentity": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.",
-    "coreAction": "자원·배치·순서 선택",
+    "gameId": "village-dungeons",
+    "genreProfile": "RPG",
+    "conceptIdentity": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.",
+    "coreAction": "전투·성장·역할 선택",
     "ownerFeatureChanges": [],
     "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
     "systemConnection": "현재 실패 원인 → 기존 행동 복구",
     "approvedCoreLoop": [
-      "적의 다음 침공 경로와 유닛 구성을 확인하고 아군 유닛을 골목길의 최적 위치에 배치하는 단계",
-      "전투 중 적을 처치하여 실시간으로 골목 자원을 획득하고 이를 유닛 업그레이드나 추가 배치에 투자하는 단계",
-      "웨이브를 클리어하고 획득한 전리품으로 군단 전체의 영구적 특성을 강화하여 더 높은 난이도에 도전하는 단계"
+      "마을 의뢰 게시판에서 자원 채취 및 특정 던전 몬스터 토벌 퀘스트를 수락하고 장비를 점검한다.",
+      "5개로 분기된 던전 중 하나를 선택 진입하여 한 손 조작 기반의 실시간 회피 및 평타/스킬 연계로 몬스터를 격퇴한다.",
+      "한정된 던전 배낭 슬롯에 귀환용 고가치 자원과 장비 강화 재료를 취사선택하여 보관한다.",
+      "포털을 통해 안전하게 마을로 귀환하여 의뢰를 완료하고 수집 자원으로 대장간과 주점을 업그레이드한다.",
+      "확장된 시설 버프와 신규 제작 무기를 바탕으로 더 깊은 던전 층계 및 보스전에 도전한다."
     ],
     "signatureSystems": [
-      "골목길 시너지 배치 시스템",
-      "실시간 재화 순환 엔진"
+      "마을 재건 시설 연동 시스템",
+      "리스크 배낭 정밀 적재 시스템"
     ],
-    "progressionDirection": "플레이어는 스테이지를 클리어하며 골목 대장 레벨을 올리고, 새로운 유닛 카드를 해금하며, 영구적인 골목 아지트 연구를 통해 군단의 기본 능력치를 점진적으로 확장해 나갑니다.",
+    "progressionDirection": "초반 세션에서는 단순 타격과 짧은 3분 던전 탐색으로 기초 장비를 맞추게 하며, 중반에는 5대 던전의 상성 속성(화염, 냉기, 독, 암흑, 번개)에 맞춘 장비 세트 파밍과 마을 상위 시설 건설로 전략적 깊이를 확장하고, 종반에는 심층 보스 타임어택과 극한의 장비 옵션 튜닝을 통해 지속적인 육성 만족도를 제공한다.",
     "ideas": [
       {
-        "id": "STRATEGY:SOURCE_REPAIR",
+        "id": "RPG:SOURCE_REPAIR",
         "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
         "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
       }
     ],
     "selectedIdea": {
-      "id": "STRATEGY:SOURCE_REPAIR",
+      "id": "RPG:SOURCE_REPAIR",
       "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
       "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
     },
     "ideaHistory": [
-      "STRATEGY:SOURCE_REPAIR"
+      "RPG:SOURCE_REPAIR"
     ],
     "implementationPackages": [
       {
         "role": "SERVER_AUTHORITY",
         "files": [
-          "roblox-games/line-defense/server/Game.server.luau"
+          "roblox-games/village-dungeons/server/Game.server.luau"
         ],
         "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다. 기존 행동·상태·보상·후속 목표 처리에 연결한다."
       },
       {
         "role": "CLIENT_PRESENTATION",
         "files": [
-          "roblox-games/line-defense/client/Game.client.luau"
+          "roblox-games/village-dungeons/client/Game.client.luau"
         ],
         "implementation": "기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다."
       },
       {
         "role": "SHARED_DEFINITION",
         "files": [
-          "roblox-games/line-defense/shared/GameConfig.luau"
+          "roblox-games/village-dungeons/shared/GameConfig.luau"
         ],
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "3cfb181b318e18d6882383f5fc277c54395d06c80e660562e3373c7d9635e49d",
+    "sourceTreeFingerprint": "4747c29d5839b7211207b8e8cd3531b63de41e99952aa9be000631b664d4e92c",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2325,62 +2323,64 @@
     "platform": "ROBLOX",
     "executionSurface": "ROBLOX",
     "mode": "EXISTING_SOURCE_REPAIR",
-    "gameId": "line-defense",
-    "genreProfile": "STRATEGY",
-    "conceptIdentity": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.",
-    "coreAction": "자원·배치·순서 선택",
+    "gameId": "village-dungeons",
+    "genreProfile": "RPG",
+    "conceptIdentity": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.",
+    "coreAction": "전투·성장·역할 선택",
     "ownerFeatureChanges": [],
     "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
     "systemConnection": "현재 실패 원인 → 기존 행동 복구",
     "approvedCoreLoop": [
-      "적의 다음 침공 경로와 유닛 구성을 확인하고 아군 유닛을 골목길의 최적 위치에 배치하는 단계",
-      "전투 중 적을 처치하여 실시간으로 골목 자원을 획득하고 이를 유닛 업그레이드나 추가 배치에 투자하는 단계",
-      "웨이브를 클리어하고 획득한 전리품으로 군단 전체의 영구적 특성을 강화하여 더 높은 난이도에 도전하는 단계"
+      "마을 의뢰 게시판에서 자원 채취 및 특정 던전 몬스터 토벌 퀘스트를 수락하고 장비를 점검한다.",
+      "5개로 분기된 던전 중 하나를 선택 진입하여 한 손 조작 기반의 실시간 회피 및 평타/스킬 연계로 몬스터를 격퇴한다.",
+      "한정된 던전 배낭 슬롯에 귀환용 고가치 자원과 장비 강화 재료를 취사선택하여 보관한다.",
+      "포털을 통해 안전하게 마을로 귀환하여 의뢰를 완료하고 수집 자원으로 대장간과 주점을 업그레이드한다.",
+      "확장된 시설 버프와 신규 제작 무기를 바탕으로 더 깊은 던전 층계 및 보스전에 도전한다."
     ],
     "signatureSystems": [
-      "골목길 시너지 배치 시스템",
-      "실시간 재화 순환 엔진"
+      "마을 재건 시설 연동 시스템",
+      "리스크 배낭 정밀 적재 시스템"
     ],
-    "progressionDirection": "플레이어는 스테이지를 클리어하며 골목 대장 레벨을 올리고, 새로운 유닛 카드를 해금하며, 영구적인 골목 아지트 연구를 통해 군단의 기본 능력치를 점진적으로 확장해 나갑니다.",
+    "progressionDirection": "초반 세션에서는 단순 타격과 짧은 3분 던전 탐색으로 기초 장비를 맞추게 하며, 중반에는 5대 던전의 상성 속성(화염, 냉기, 독, 암흑, 번개)에 맞춘 장비 세트 파밍과 마을 상위 시설 건설로 전략적 깊이를 확장하고, 종반에는 심층 보스 타임어택과 극한의 장비 옵션 튜닝을 통해 지속적인 육성 만족도를 제공한다.",
     "ideas": [
       {
-        "id": "STRATEGY:SOURCE_REPAIR",
+        "id": "RPG:SOURCE_REPAIR",
         "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
         "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
       }
     ],
     "selectedIdea": {
-      "id": "STRATEGY:SOURCE_REPAIR",
+      "id": "RPG:SOURCE_REPAIR",
       "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
       "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
     },
     "ideaHistory": [
-      "STRATEGY:SOURCE_REPAIR"
+      "RPG:SOURCE_REPAIR"
     ],
     "implementationPackages": [
       {
         "role": "SERVER_AUTHORITY",
         "files": [
-          "roblox-games/line-defense/server/Game.server.luau"
+          "roblox-games/village-dungeons/server/Game.server.luau"
         ],
         "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다. 기존 행동·상태·보상·후속 목표 처리에 연결한다."
       },
       {
         "role": "CLIENT_PRESENTATION",
         "files": [
-          "roblox-games/line-defense/client/Game.client.luau"
+          "roblox-games/village-dungeons/client/Game.client.luau"
         ],
         "implementation": "기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다."
       },
       {
         "role": "SHARED_DEFINITION",
         "files": [
-          "roblox-games/line-defense/shared/GameConfig.luau"
+          "roblox-games/village-dungeons/shared/GameConfig.luau"
         ],
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "3cfb181b318e18d6882383f5fc277c54395d06c80e660562e3373c7d9635e49d",
+    "sourceTreeFingerprint": "4747c29d5839b7211207b8e8cd3531b63de41e99952aa9be000631b664d4e92c",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2417,107 +2417,107 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/line-defense/shared/GameConfig.luau",
-      "roblox-games/line-defense/server/Game.server.luau",
-      "roblox-games/line-defense/client/Game.client.luau",
-      "roblox-games/line-defense/default.project.json"
+      "roblox-games/village-dungeons/shared/GameConfig.luau",
+      "roblox-games/village-dungeons/server/Game.server.luau",
+      "roblox-games/village-dungeons/client/Game.client.luau",
+      "roblox-games/village-dungeons/default.project.json"
     ],
     "sourceAnchors": [
       {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 328,
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 317,
         "kind": "FUNCTION",
-        "symbol": "damageEnemy",
-        "context": "local function damageEnemy(player, enemy, amount)",
+        "symbol": "addItemToInventory",
+        "context": "local function addItemToInventory(player, itemId, amount)",
         "score": 130,
-        "currentBehavior": "local function damageEnemy(player, enemy, amount)",
-        "intendedBehavior": "STABILITY primary goal \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 damageEnemy의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/line-defense/server/Game.server.luau::damageEnemy이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/line-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "currentBehavior": "local function addItemToInventory(player, itemId, amount)",
+        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 addItemToInventory의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/village-dungeons/server/Game.server.luau::addItemToInventory이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 445,
-        "kind": "FUNCTION",
-        "symbol": "spawnEnemy",
-        "context": "local function spawnEnemy(player, enemyKind, wave, index)",
-        "score": 114,
-        "currentBehavior": "local function spawnEnemy(player, enemyKind, wave, index)",
-        "intendedBehavior": "STABILITY primary goal \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 spawnEnemy의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/line-defense/server/Game.server.luau::spawnEnemy이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/line-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 486,
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 565,
         "kind": "FUNCTION",
         "symbol": "spawnBoss",
-        "context": "local function spawnBoss(player, wave)",
-        "score": 114,
-        "currentBehavior": "local function spawnBoss(player, wave)",
-        "intendedBehavior": "STABILITY primary goal \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 spawnBoss의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/line-defense/server/Game.server.luau::spawnBoss이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/line-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "context": "local function spawnBoss(player)",
+        "score": 122,
+        "currentBehavior": "local function spawnBoss(player)",
+        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 spawnBoss의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/village-dungeons/server/Game.server.luau::spawnBoss이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/line-defense/client/Game.client.luau",
-        "line": 478,
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 719,
+        "kind": "FUNCTION",
+        "symbol": "reviewDungeonState",
+        "context": "local function reviewDungeonState(player)",
+        "score": 122,
+        "currentBehavior": "local function reviewDungeonState(player)",
+        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 reviewDungeonState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/village-dungeons/server/Game.server.luau::reviewDungeonState이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 461,
+        "kind": "FUNCTION",
+        "symbol": "damageMonster",
+        "context": "local function damageMonster(player, enemy, amount)",
+        "score": 114,
+        "currentBehavior": "local function damageMonster(player, enemy, amount)",
+        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 damageMonster의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/village-dungeons/server/Game.server.luau::damageMonster이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/village-dungeons/client/Game.client.luau",
+        "line": 458,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
         "score": 106,
         "currentBehavior": "local function render()",
-        "intendedBehavior": "STABILITY primary goal \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 render의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/line-defense/client/Game.client.luau::render이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/line-defense/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 render의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/village-dungeons/client/Game.client.luau::render이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/village-dungeons/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 556,
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 332,
         "kind": "FUNCTION",
-        "symbol": "startWave",
-        "context": "local function startWave(player)",
+        "symbol": "removeInventoryItem",
+        "context": "local function removeInventoryItem(player, itemId, amount)",
         "score": 106,
-        "currentBehavior": "local function startWave(player)",
-        "intendedBehavior": "STABILITY primary goal \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 startWave의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/line-defense/server/Game.server.luau::startWave이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/line-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "currentBehavior": "local function removeInventoryItem(player, itemId, amount)",
+        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 removeInventoryItem의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/village-dungeons/server/Game.server.luau::removeInventoryItem이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 597,
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 371,
         "kind": "FUNCTION",
-        "symbol": "attackEnemy",
-        "context": "local function attackEnemy(player)",
+        "symbol": "equipWeapon",
+        "context": "local function equipWeapon(player, weaponId, power)",
         "score": 106,
-        "currentBehavior": "local function attackEnemy(player)",
-        "intendedBehavior": "STABILITY primary goal \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 attackEnemy의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/line-defense/server/Game.server.luau::attackEnemy이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/line-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "currentBehavior": "local function equipWeapon(player, weaponId, power)",
+        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 equipWeapon의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/village-dungeons/server/Game.server.luau::equipWeapon이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 642,
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 392,
         "kind": "FUNCTION",
-        "symbol": "reviewDefenseState",
-        "context": "local function reviewDefenseState(player)",
+        "symbol": "consumeFacilityMaterial",
+        "context": "local function consumeFacilityMaterial(player)",
         "score": 106,
-        "currentBehavior": "local function reviewDefenseState(player)",
-        "intendedBehavior": "STABILITY primary goal \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 reviewDefenseState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/line-defense/server/Game.server.luau::reviewDefenseState이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/line-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/line-defense/server/Game.server.luau",
-        "line": 209,
-        "kind": "FUNCTION",
-        "symbol": "addItemToInventory",
-        "context": "local function addItemToInventory(player, itemId, amount)",
-        "score": 98,
-        "currentBehavior": "local function addItemToInventory(player, itemId, amount)",
-        "intendedBehavior": "STABILITY primary goal \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 addItemToInventory의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/line-defense/server/Game.server.luau::addItemToInventory이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/line-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "currentBehavior": "local function consumeFacilityMaterial(player)",
+        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 consumeFacilityMaterial의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/village-dungeons/server/Game.server.luau::consumeFacilityMaterial이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "selectionRule": "DIRECT_GAME_RESPONSIBILITY_AND_DESIGN_INTENT_FIRST",
@@ -2558,13 +2558,13 @@
   "preMutationDryRun": {
     "version": 1,
     "mode": "DRY_RUN_NO_SOURCE_MUTATION",
-    "gameId": "line-defense",
+    "gameId": "village-dungeons",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/line-defense/shared/GameConfig.luau",
-      "roblox-games/line-defense/server/Game.server.luau",
-      "roblox-games/line-defense/client/Game.client.luau",
-      "roblox-games/line-defense/default.project.json"
+      "roblox-games/village-dungeons/shared/GameConfig.luau",
+      "roblox-games/village-dungeons/server/Game.server.luau",
+      "roblox-games/village-dungeons/client/Game.client.luau",
+      "roblox-games/village-dungeons/default.project.json"
     ],
     "impact": {
       "version": 1,
@@ -2631,18 +2631,18 @@
     "nextStep": "EXISTING_WORK_ORDER_EXECUTION"
   },
   "effectivenessMeasurement": {
-    "expectedPlayerEffect": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
+    "expectedPlayerEffect": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
       "classification": "UNKNOWN_RUNTIME_EFFECT",
       "reason": "previous generation lacks sufficient verified effect evidence",
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "3cfb181b318e18d6882383f5fc277c54395d06c80e660562e3373c7d9635e49d",
+      "sourceTreeFingerprint": "4747c29d5839b7211207b8e8cd3531b63de41e99952aa9be000631b664d4e92c",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "failureSignature": "ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED"
+      "failureStage": null,
+      "failureSignature": null
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2693,7 +2693,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 26,
+    "nextGeneration": 28,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2753,11 +2753,11 @@
       "MENU_FLOW"
     ],
     "notApplicable": [
-      "QUESTS",
-      "CRAFTING",
-      "NARRATIVE_STORY"
+      "NPC_SOCIAL_BEHAVIOR",
+      "NARRATIVE_STORY",
+      "REPLAYABILITY_VARIATION"
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-07T03:46:35.989Z"
+  "generatedAt": "2026-10-07T03:46:35.923Z"
 }

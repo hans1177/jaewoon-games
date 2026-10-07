@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-single-defense-strat-celestial-bastion-build-up-g22-e3d7e8af8100",
-  "directiveFingerprint": "e3d7e8af81005abbc92850ebca935815952157f7911633e51d6071e6b6d773df",
-  "previousDirectiveFingerprint": "50cbe3fe9983fe6fbc5c476875a88f327e0c5b98bac7c816b920df3c87b739db",
-  "forbiddenRepeatFingerprint": "50cbe3fe9983fe6fbc5c476875a88f327e0c5b98bac7c816b920df3c87b739db",
+  "directiveId": "seed-single-defense-strat-celestial-bastion-build-up-g23-2c88dbe327cd",
+  "directiveFingerprint": "2c88dbe327cd26ed0c0854d3547b504a4e9bceb01e754fb1c6f0c13b4c526359",
+  "previousDirectiveFingerprint": "e3d7e8af81005abbc92850ebca935815952157f7911633e51d6071e6b6d773df",
+  "forbiddenRepeatFingerprint": "e3d7e8af81005abbc92850ebca935815952157f7911633e51d6071e6b6d773df",
   "gameId": "seed-single-defense-strat-celestial-bastion",
   "gameName": "천상의 보루",
-  "generation": 22,
+  "generation": 23,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-single-defense-strat-celestial-bastion",
-  "sourceTreeFingerprint": "e7e9efe33be7250db012c5fa268468083b1cbc85ccfffb8c0335699131ffb608",
+  "sourceTreeFingerprint": "cc4ad7e5027b99715087e70395addf4dfae0915a5e5c17b19f245f2769bb61d9",
   "designFingerprint": "65224a8fccf2555f21ddc426aed04fa6f277cefb2005fa43fc0b047d3fc0232d",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -104,7 +104,7 @@
           "타워 각성 및 궁극기 시스템",
           "특정 타워를 최고 레벨까지 강화하면 고유한 궁극기 스킬을 해금하는 각성 시스템을 도입하여, 플레이어가 후반 웨이브에서 전황을 뒤집을 수 있는 강력한 한 방의 선택지를 제공합니다."
         ],
-        "sourceTreeFingerprint": "e7e9efe33be7250db012c5fa268468083b1cbc85ccfffb8c0335699131ffb608",
+        "sourceTreeFingerprint": "cc4ad7e5027b99715087e70395addf4dfae0915a5e5c17b19f245f2769bb61d9",
         "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -467,9 +467,9 @@
   "previousVersionDelta": {
     "previousGoal": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 21,
-    "previousSourceTreeFingerprint": "2e8757433f778c4dfd4388b91dec184774a61f2049e9554940056100f15f7fa9",
-    "currentSourceTreeFingerprint": "e7e9efe33be7250db012c5fa268468083b1cbc85ccfffb8c0335699131ffb608",
+    "previousGeneration": 22,
+    "previousSourceTreeFingerprint": "e7e9efe33be7250db012c5fa268468083b1cbc85ccfffb8c0335699131ffb608",
+    "currentSourceTreeFingerprint": "cc4ad7e5027b99715087e70395addf4dfae0915a5e5c17b19f245f2769bb61d9",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1651,15 +1651,15 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 8,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=7; uncoveredBefore=4.",
+    "themeDepth": 9,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=8; uncoveredBefore=4.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 6,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 9,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 10
@@ -1670,7 +1670,7 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1709,7 +1709,7 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 66,
+        "score": 48,
         "gapDomains": [
           "EQUIPMENT_LOADOUT"
         ]
@@ -1825,11 +1825,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 22,
-    "previousGeneration": 21,
+    "generation": 23,
+    "previousGeneration": 22,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "e7e9efe33be7250db012c5fa268468083b1cbc85ccfffb8c0335699131ffb608",
-    "priorSourceFingerprint": "2e8757433f778c4dfd4388b91dec184774a61f2049e9554940056100f15f7fa9",
+    "sourceFingerprint": "cc4ad7e5027b99715087e70395addf4dfae0915a5e5c17b19f245f2769bb61d9",
+    "priorSourceFingerprint": "e7e9efe33be7250db012c5fa268468083b1cbc85ccfffb8c0335699131ffb608",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2074,9 +2074,9 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-      "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -2289,7 +2289,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "e7e9efe33be7250db012c5fa268468083b1cbc85ccfffb8c0335699131ffb608",
+    "sourceTreeFingerprint": "cc4ad7e5027b99715087e70395addf4dfae0915a5e5c17b19f245f2769bb61d9",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2379,7 +2379,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "e7e9efe33be7250db012c5fa268468083b1cbc85ccfffb8c0335699131ffb608",
+    "sourceTreeFingerprint": "cc4ad7e5027b99715087e70395addf4dfae0915a5e5c17b19f245f2769bb61d9",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2416,9 +2416,9 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-      "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/default.project.json"
     ],
     "sourceAnchors": [
@@ -2562,9 +2562,9 @@
     "gameId": "seed-single-defense-strat-celestial-bastion",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-      "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/default.project.json"
     ],
     "impact": {
@@ -2642,7 +2642,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "e7e9efe33be7250db012c5fa268468083b1cbc85ccfffb8c0335699131ffb608",
+      "sourceTreeFingerprint": "cc4ad7e5027b99715087e70395addf4dfae0915a5e5c17b19f245f2769bb61d9",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
@@ -2697,7 +2697,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 23,
+    "nextGeneration": 24,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2764,5 +2764,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-07T02:59:15.181Z"
+  "generatedAt": "2026-10-07T03:46:36.149Z"
 }

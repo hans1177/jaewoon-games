@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-action-survival-rogu-echoes-of-the-lost-star-build-up-g24-661db9457182",
-  "directiveFingerprint": "661db94571820fb70dc1876eb91c488da1befafd8f02b44c88d12acc848a667e",
-  "previousDirectiveFingerprint": "4c0a54c8af2ab00b4e0e2f74db77388502bc2028a32788b477d12b1eb2213069",
-  "forbiddenRepeatFingerprint": "4c0a54c8af2ab00b4e0e2f74db77388502bc2028a32788b477d12b1eb2213069",
+  "directiveId": "seed-action-survival-rogu-echoes-of-the-lost-star-build-up-g25-174be2e112a2",
+  "directiveFingerprint": "174be2e112a2c5b5ab4ed33fcd902274c393540bf67a436985e95053edb04efc",
+  "previousDirectiveFingerprint": "661db94571820fb70dc1876eb91c488da1befafd8f02b44c88d12acc848a667e",
+  "forbiddenRepeatFingerprint": "661db94571820fb70dc1876eb91c488da1befafd8f02b44c88d12acc848a667e",
   "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
   "gameName": "잃어버린 별의 메아리",
-  "generation": 24,
+  "generation": 25,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star",
-  "sourceTreeFingerprint": "5fafb4969d4020ddac484ffa1f878c51efd6ece612f2bab8de7fee9b56f2b3a3",
+  "sourceTreeFingerprint": "e3b7b2217da7eb95e05d21569b66042114a7275723fdd19e39973b3065e05251",
   "designFingerprint": "4809823010a746e2a9612ae45b2b251261f8fb2db0814dbe83c39404ddff5942",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -104,7 +104,7 @@
           "메아리 시너지 조합 시스템",
           "특정 메아리들을 조합하여 강력한 궁극기를 발동할 수 있는 시너지 시스템을 추가하여 빌드 구성의 재미를 극대화합니다."
         ],
-        "sourceTreeFingerprint": "5fafb4969d4020ddac484ffa1f878c51efd6ece612f2bab8de7fee9b56f2b3a3",
+        "sourceTreeFingerprint": "e3b7b2217da7eb95e05d21569b66042114a7275723fdd19e39973b3065e05251",
         "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -355,9 +355,9 @@
   "previousVersionDelta": {
     "previousGoal": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 23,
-    "previousSourceTreeFingerprint": "35448da19e0612aacfd2a3b572b65495d80cbba0e4c191c225c9302836b4387f",
-    "currentSourceTreeFingerprint": "5fafb4969d4020ddac484ffa1f878c51efd6ece612f2bab8de7fee9b56f2b3a3",
+    "previousGeneration": 24,
+    "previousSourceTreeFingerprint": "5fafb4969d4020ddac484ffa1f878c51efd6ece612f2bab8de7fee9b56f2b3a3",
+    "currentSourceTreeFingerprint": "e3b7b2217da7eb95e05d21569b66042114a7275723fdd19e39973b3065e05251",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -367,8 +367,8 @@
       "sourceRevision": "8c4cfa25fb6352898175b5f83a3237647e7701ed",
       "artifactIdentity": "sha256:8d5230f2e6e74e6e364d73ce0cafd873afc218e7334d0aabc10ac3f714e86747",
       "authority": "roblox-f0-gameplay-product-readiness-failure",
-      "workflowRunId": 37566054905,
-      "testedAt": "2026-10-07T03:24:50.789Z",
+      "workflowRunId": 37567282142,
+      "testedAt": "2026-10-07T03:39:25.625Z",
       "repairSurfaces": [
         "CORE_GAMEPLAY",
         "WORLD_MAP",
@@ -490,9 +490,26 @@
         }
       ]
     },
-    "failureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-    "failureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
-    "blockers": [],
+    "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+    "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
+    "blockers": [
+      "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+      "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+      "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+      "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+      "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+      "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+      "MISSING_GAMEPLAY_CAPABILITY:WAVE",
+      "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+      "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+      "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+      "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+      "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+      "GENERIC_SCOPE_HANDLER_SKELETON"
+    ],
     "runtimeObserved": true,
     "runtimePassed": false,
     "independentQaPassed": false,
@@ -1577,7 +1594,7 @@
   ],
   "primaryFocus": "STABILITY",
   "thisLoopPrimaryGoal": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 STABILITY를 우선한다. 게임 고유 앵커는 \"메아리 공명 시스템\", 현재 책임 소스는 roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau::render, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler1, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler2, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler3, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler4, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler5, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler6, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau::reportNativeFoundationReady이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "실제 runtime 실패가 관찰됐다(F0_GAMEPLAY_PRODUCT_READINESS / ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED). 콘텐츠·그래픽 확장보다 기본 플레이 foundation의 원인 시스템 복구를 먼저 완료하고 같은 실패 시나리오를 다시 검증한다. 책임 소스는 roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau::render, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler1, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler2, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler3, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler4, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler5, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler6, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau::reportNativeFoundationReady이다.",
   "gameplayImplementationDirectives": [
     "우선 책임 소스 앵커 roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau::render, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler1, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler2, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler3, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler4, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler5, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler6, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau::reportNativeFoundationReady에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "메아리 공명 시스템를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
@@ -1618,9 +1635,9 @@
       "UNITY"
     ],
     "requestedPlatform": "ROBLOX",
-    "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
-    "contentExpansionDeferredUntilRuntimeRepairPass": false,
-    "themeCoverageAdvanced": true,
+    "executionMode": "CAUSAL_REPAIR_FIRST_KEEP_EXPANSION_CONTEXT",
+    "contentExpansionDeferredUntilRuntimeRepairPass": true,
+    "themeCoverageAdvanced": false,
     "dataCapacityBudget": {
       "state": "NORMAL",
       "limits": {
@@ -1666,7 +1683,7 @@
     },
     "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
     "themeDepth": 5,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=4; uncoveredBefore=4.",
+    "selectedThemeReason": "Observed runtime failure requires causal foundation repair first; selected theme is retained as context only and does not advance coverage until runtime repair passes.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1723,7 +1740,7 @@
     "scoredThemes": [
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 114,
+        "score": 96,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
@@ -1766,16 +1783,8 @@
         ]
       }
     ],
-    "coherentContentBundle": [
-      "ENEMY_ROLE_SET: 추격·견제·방어·지원·매복·지역 통제 등 서로 다른 전투 역할을 만든다.",
-      "BEHAVIOR_AND_COUNTERPLAY: 이름·HP·공격력만 다른 적이 아니라 이동·전조·공격·약점·대응 선택이 달라야 한다.",
-      "ENCOUNTER_COMPOSITION: 적 역할 조합과 지형·목표가 만나 새로운 판단을 만들게 한다.",
-      "ELITE_OR_BOSS_SIGNATURE: 보스·엘리트는 페이즈·공간 압박·전조·대응·보상 중 여러 축에서 일반 적과 구별한다.",
-      "ECOLOGICAL_WORLD_REASON: 적이 해당 지역·스토리·자원·세력 관계 안에 존재하는 이유를 연결한다.",
-      "DISTINCT_REWARD_PURPOSE: 처치 보상은 다음 장비·퀘스트·제작·지역 해금 중 실제 목적을 가진다.",
-      "VISUAL_TELEGRAPH: 실루엣·모션·VFX·음향·UI 전조가 행동 규칙과 일치해야 한다."
-    ],
-    "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
+    "coherentContentBundle": [],
+    "bundleRule": "OBSERVED_RUNTIME_FAILURE_CAUSAL_REPAIR_MUST_PASS_BEFORE_CONTENT_BUNDLE_EXECUTION",
     "antiCloneContract": {
       "compareAgainstExistingContentBeforeAdding": true,
       "nameColorOrStatOnlyCloneForbidden": true,
@@ -1808,17 +1817,9 @@
       ]
     },
     "derivedRuleEvolution": {
-      "allowed": true,
-      "rule": "MAY_ADD_DERIVED_GAMEPLAY_INTERACTION_RULES_WHEN_THEY_REINFORCE_APPROVED_IDENTITY_AND_DO_NOT_CONTRADICT_CANONICAL_RULES_OR_PROTECTED_VALUES",
-      "examples": [
-        "ENVIRONMENTAL_RULE",
-        "ENEMY_RELATIONSHIP_RULE",
-        "BOSS_PHASE_RULE",
-        "ITEM_SYNERGY_RULE",
-        "QUEST_STATE_RULE",
-        "REGION_ACCESS_RULE",
-        "MULTIPLAYER_INTERACTION_RULE"
-      ],
+      "allowed": false,
+      "rule": "DEFER_DERIVED_GAMEPLAY_RULE_EVOLUTION_UNTIL_OBSERVED_RUNTIME_FAILURE_CAUSAL_REPAIR_PASSES",
+      "examples": [],
       "protected": [
         "EXISTING_CANONICAL_RULE_SEMANTICS",
         "AUTHORIZED_BALANCE_VALUES",
@@ -1828,23 +1829,21 @@
       ]
     },
     "completionAcceptance": [
+      "RUNTIME_FAILURE_CAUSAL_REPAIR_PASS_REQUIRED_BEFORE_CONTENT_EXPANSION",
       "REAL_GAME_SOURCE_DELTA_REQUIRED",
       "PLAYER_FACING_OR_GAMEPLAY_SYSTEM_EFFECT_REQUIRED",
-      "DISTINCT_FROM_EXISTING_CONTENT_BY_MEANING_NOT_ONLY_NAME_OR_STATS",
-      "CONNECTED_TO_EXISTING_GAME_FLOW",
-      "CONTINUITY_AND_CAUSALITY_PRESERVED",
       "EXISTING_RELEVANT_INCREMENTAL_QA_PASSES",
       "DATA_CAPACITY_BUDGET_RESPECTED_WITHOUT_TERMINATING_BUILD_UP"
     ]
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 24,
-    "previousGeneration": 23,
+    "generation": 25,
+    "previousGeneration": 24,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "5fafb4969d4020ddac484ffa1f878c51efd6ece612f2bab8de7fee9b56f2b3a3",
-    "priorSourceFingerprint": "35448da19e0612aacfd2a3b572b65495d80cbba0e4c191c225c9302836b4387f",
-    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
+    "sourceFingerprint": "e3b7b2217da7eb95e05d21569b66042114a7275723fdd19e39973b3065e05251",
+    "priorSourceFingerprint": "5fafb4969d4020ddac484ffa1f878c51efd6ece612f2bab8de7fee9b56f2b3a3",
+    "previousRuntimeEffect": "REGRESSION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -2303,7 +2302,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "5fafb4969d4020ddac484ffa1f878c51efd6ece612f2bab8de7fee9b56f2b3a3",
+    "sourceTreeFingerprint": "e3b7b2217da7eb95e05d21569b66042114a7275723fdd19e39973b3065e05251",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2393,7 +2392,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "5fafb4969d4020ddac484ffa1f878c51efd6ece612f2bab8de7fee9b56f2b3a3",
+    "sourceTreeFingerprint": "e3b7b2217da7eb95e05d21569b66042114a7275723fdd19e39973b3065e05251",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2656,11 +2655,11 @@
       "runtimeObserved": true
     },
     "baseline": {
-      "sourceTreeFingerprint": "5fafb4969d4020ddac484ffa1f878c51efd6ece612f2bab8de7fee9b56f2b3a3",
-      "runtimeObserved": false,
+      "sourceTreeFingerprint": "e3b7b2217da7eb95e05d21569b66042114a7275723fdd19e39973b3065e05251",
+      "runtimeObserved": true,
       "runtimePassed": false,
-      "failureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "failureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED"
+      "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+      "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2711,7 +2710,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 25,
+    "nextGeneration": 26,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2779,5 +2778,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-07T03:04:07.836Z"
+  "generatedAt": "2026-10-07T03:43:32.667Z"
 }
