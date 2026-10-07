@@ -2040,7 +2040,6 @@ function studioQualityWorkerGuidance(order = {}) {
       ?'그래픽은 실제 화면 변화가 있어야 한다. 캐릭터/적 실루엣, 환경 깊이·랜드마크, 애니메이션 상태, 공격·피격·사망 반응, VFX, 조명, UI 계층, 카메라·오디오 타이밍 중 약한 요소를 최소 2개 이상 실제 렌더 책임 코드에서 함께 개선한다. 마커/상수/주석만 추가하는 작업은 실패다.'
       :'',
     '한 파일에 여러 독립적인 정확한 edit가 필요하면 여러 edits[] 항목을 사용할 수 있다. 관련 책임 파일 여러 개를 함께 수정해도 된다.',
-    target==='ROBLOX'&&['CORE_FUN','PROGRESSION','STABILITY'].includes(clean(d.primaryFocus).toUpperCase())?'Roblox gameplay BUILD_UP은 실제 server/shared 게임 상태 책임 또는 input→server→state 체인을 수정해야 한다. UI/VFX/색상/마커만 바꾸고 설계 구현 완료로 처리하지 않는다.':'',
     '새 핵심 규칙, 밸런스 수치, 경제/진행 의미, 세이브 스키마, 네트워크 권한은 승인 없이 바꾸지 않는다.',
     '작업 결과는 이전 verified baseline보다 최소 하나의 실제 품질 gap을 닫거나 체감 가능한 품질 축을 개선해야 한다. 단순 PASS나 코드 이동만으로 evolution 완료를 주장하지 않는다.'
   ].filter(Boolean).join('\n');
@@ -2096,6 +2095,7 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     ...production,
     `implementationUnit=${clean(ownedAnchors[0]?.intendedBehavior)||clean(d.thisLoopPrimaryGoal)}; observableResult=${clean(ownedAnchors[0]?.observableAcceptance)||clean(d?.effectivenessMeasurement?.expectedPlayerEffect)}`,
     'Complete one coherent player action-to-state-to-feedback/result chain inside this goal. Include every required dependency and atomic file pair. Defer unrelated expansion, not required connected improvements or acceptance gates.',
+    target==='ROBLOX'&&['CORE_FUN','PROGRESSION','STABILITY'].includes(clean(d.primaryFocus).toUpperCase())?'Roblox gameplay BUILD_UP은 실제 server/shared 게임 상태 책임 또는 input→server→state 체인을 수정해야 한다. UI/VFX/색상/마커만 바꾸고 설계 구현 완료로 처리하지 않는다.':'',
     `whyNow=${clean(d.primaryGoalReason)}`,
     ...(sourceAnchors.length?sourceAnchors.map(anchor=>`sourceAnchors=${anchor}`):['sourceAnchors=EXACT_SYMBOL_UNAVAILABLE_USE_RESPONSIBLE_FILE_AND_STATE_ANCHOR']),
     `expectedPlayerEffect=${clean(d?.effectivenessMeasurement?.expectedPlayerEffect)||'UNKNOWN'}`,
