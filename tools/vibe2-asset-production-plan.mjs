@@ -3476,8 +3476,20 @@ export function buildVibeAssetProductionPlan({
   const activeDemand=Object.fromEntries(Object.entries(DEFAULT_COVERAGE_BASELINES).map(([family,subs])=>[
     family,Object.fromEntries(Object.keys(subs).map(sub=>[sub,familyRegex[family]?.test(request)?1:0]))
   ]));
+  const qualityEvidenceAxes=new Map();
+  const selectionAssets=(selectionRegistry?.assets||[]).map(asset=>{
+    const evidenceRef=clean(asset?.internalAuditEvidenceRef).replace(/^\//,'');
+    if(!evidenceRef||!evidenceRef.startsWith('assets/')||evidenceRef.split('/').includes('..')||!evidenceRef.endsWith('.json'))return asset;
+    if(!qualityEvidenceAxes.has(evidenceRef)){
+      const evidence=readJson(path.join(repoRoot,evidenceRef),{});
+      const axes=evidence?.sourceAudit?.axes;
+      qualityEvidenceAxes.set(evidenceRef,axes&&typeof axes==='object'&&!Array.isArray(axes)?axes:null);
+    }
+    const axes=qualityEvidenceAxes.get(evidenceRef);
+    return axes?{...asset,internalAuditEvidence:{...(asset?.internalAuditEvidence||{}),...axes},internalAuditEvidenceResolved:true}:asset;
+  });
   const universeRepositoryAssets=[
-    ...(selectionRegistry?.assets||[]).filter(row=>clean(row.status).toUpperCase()==='REPO_ASSET'),
+    ...selectionAssets.filter(row=>clean(row.status).toUpperCase()==='REPO_ASSET'),
     ...(manifestBase?.assets||[]).map(row=>({...row,family:inferUniverseFamily(row),subfamily:clean(row.subfamily||row.type||(row.types||[])[0]).toUpperCase(),status:'REPO_ASSET'}))
   ].filter(row=>clean(row.family||row.category));
   const universeSignals={};
@@ -3489,7 +3501,7 @@ export function buildVibeAssetProductionPlan({
     if(categories.some(category=>['ENVIRONMENT','PROP'].includes(category)))externalReadyFamilies.add('BUILDING');
     if(categories.some(category=>['VFX','ENVIRONMENT'].includes(category)))externalReadyFamilies.add('MATERIAL');
   }
-  const verifiedReuseFamilies=new Set((selectionRegistry?.assets||[])
+  const verifiedReuseFamilies=new Set(selectionAssets
     .filter(row=>row.verifiedCompanyReusable===true)
     .map(row=>clean(row.category||row.family).toUpperCase())
     .filter(Boolean));
@@ -3510,8 +3522,12 @@ export function buildVibeAssetProductionPlan({
   const sourceHashes=new Map();
   let repoRootReal='';
   try{repoRootReal=fs.realpathSync(repoRoot);}catch{}
-  const sourceBoundAssets=(selectionRegistry?.assets||[]).map(asset=>{
-    const files=unique(asset.sourceFiles?.length?asset.sourceFiles:[asset.path])
+  const sourceBoundAssets=selectionAssets.map(asset=>{
+    const evidenceRef=clean(asset?.internalAuditEvidenceRef).replace(/^\//,'');
+    const files=unique([
+      ...(asset.sourceFiles?.length?asset.sourceFiles:[asset.path]),
+      ...(evidenceRef&&evidenceRef.startsWith('assets/')&&evidenceRef.endsWith('.json')&&!evidenceRef.split('/').includes('..')?[evidenceRef]:[])
+    ])
       .map(file=>file.replace(/^\//,''))
       .filter(file=>file.startsWith('assets/')&&!file.split('/').includes('..')).sort();
     for(const file of files){
@@ -3524,8 +3540,10 @@ export function buildVibeAssetProductionPlan({
       sourceHashes.set(file,hash);
     }
     return {...asset,
+      sourceFiles:freezeList(files),
       sourceContentFingerprint:files.length?crypto.createHash('sha256').update(JSON.stringify(files.map(file=>[file,sourceHashes.get(file)]))).digest('hex'):null,
-      sourceFilesPresent:files.length?files.every(file=>sourceHashes.get(file)!==null):null
+      sourceFilesPresent:files.length?files.every(file=>sourceHashes.get(file)!==null):null,
+      internalAuditEvidenceResolved:asset?.internalAuditEvidenceResolved===true
     };
   });
   const studioUniversePlan=universeActive?createStudioAssetUniversePlan({
