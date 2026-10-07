@@ -102,14 +102,23 @@ const JSON_FINAL_CONTEXT_WINDOW=STANDARD_GAME_SOURCE_CONTEXT_WINDOW;
 const JSON_FOCUSED_REPLACE_CONTEXT_WINDOW=STANDARD_GAME_SOURCE_CONTEXT_WINDOW;
 const FULL_WEB_CONTEXT_WINDOW=32768;
 const DEFAULT_LOCAL_MODEL_CONTEXT_LIMIT=40960;
-export function sourcePromptContextWindow(prompt='',{baseContextWindow=JSON_CONTEXT_WINDOW,maxPredict=DEFAULT_MAX_PREDICT}={}){
-  const base=Math.min(DEFAULT_LOCAL_MODEL_CONTEXT_LIMIT,Math.max(8192,Number(baseContextWindow)||JSON_CONTEXT_WINDOW));
+const EXTENDED_LOCAL_MODEL_CONTEXT_LIMIT=262144;
+export function localModelContextLimit(model=DEFAULT_MODEL){
+  const normalized=clean(model).toLowerCase();
+  return /^qwen3:(?:4b|30b|235b)(?:$|-)/.test(normalized)
+    ?EXTENDED_LOCAL_MODEL_CONTEXT_LIMIT
+    :DEFAULT_LOCAL_MODEL_CONTEXT_LIMIT;
+}
+export function sourcePromptContextWindow(prompt='',{baseContextWindow=JSON_CONTEXT_WINDOW,maxPredict=DEFAULT_MAX_PREDICT,model=DEFAULT_MODEL}={}){
+  const limit=localModelContextLimit(model);
+  const base=Math.min(limit,Math.max(8192,Number(baseContextWindow)||JSON_CONTEXT_WINDOW));
   const estimatedPromptTokens=Math.ceil(Buffer.byteLength(String(prompt??''),'utf8')/3);
   const required=estimatedPromptTokens+Math.max(512,Number(maxPredict)||DEFAULT_MAX_PREDICT)+1024;
   if(required<=base)return base;
-  if(required<=24576)return Math.max(base,24576);
-  if(required<=32768)return Math.max(base,32768);
-  return DEFAULT_LOCAL_MODEL_CONTEXT_LIMIT;
+  for(const tier of [24576,32768,40960,65536,131072,262144]){
+    if(tier>=base&&required<=tier)return Math.min(limit,tier);
+  }
+  return limit;
 }
 const MAX_GENERATION_ATTEMPTS=4;
 const SPECULATIVE_FULL_WEB_MAX_GENERATION_ATTEMPTS=3;
@@ -4739,11 +4748,14 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
       attemptPrompt+='\n'+retryBlock;
       if(retry&&retryBlock!==block)console.log(`VIBE2_RETRY_OBSERVATION_COMPACTED=${label}:${Buffer.byteLength(block,'utf8')}->${Buffer.byteLength(retryBlock,'utf8')}`);
     }
-    const contextWindow=focusedReplaceOnly&&!systemAtomicPairCompletion
-      ?(robloxRebuildFocused
-        ?sourcePromptContextWindow(attemptPrompt,{baseContextWindow:JSON_CONTEXT_WINDOW,maxPredict})
-        :(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW))
-      :sourcePromptContextWindow(attemptPrompt,{baseContextWindow,maxPredict});
+    const focusedBaseContextWindow=robloxRebuildFocused
+      ?JSON_CONTEXT_WINDOW
+      :(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW);
+    const contextWindow=sourcePromptContextWindow(attemptPrompt,{
+      baseContextWindow:focusedReplaceOnly&&!systemAtomicPairCompletion?focusedBaseContextWindow:baseContextWindow,
+      maxPredict,
+      model
+    });
     const fake=responseFileForAttempt(responseFile,responseFiles,attempt);
     const attemptPromptBytes=Buffer.byteLength(attemptPrompt,'utf8');
     const firstOutputTimeoutMs=assetDevelopmentLane&&target==='web'?ASSET_DEVELOPMENT_WEB_TIMEOUT_MS:Math.min(MODEL_FIRST_OUTPUT_TIMEOUT_MS,timeoutMs);
