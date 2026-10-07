@@ -388,20 +388,27 @@ test('Open Cloud engine probe retries transient HTTP throttling without weakenin
  assert.equal(result.exactVersion,true);
 
  let persistentCalls=0;
- await assert.rejects(()=>probeRobloxOpenCloudEngine({
+ const throttled=await probeRobloxOpenCloudEngine({
   universeId:'1',placeId:'2',versionNumber:20,apiKey:'k',pollIntervalMs:0,maxPolls:1,
   networkRetryAttempts:3,networkRetryDelayMs:0,
   fetchImpl:async()=>{
    persistentCalls++;
    return {ok:false,status:429,text:async()=>JSON.stringify({errors:[{code:0,message:'rate limited'}]})};
   },
- }),/ROBLOX_OPEN_CLOUD_ENGINE_CREATE_HTTP_429/);
+ });
  assert.equal(persistentCalls,3);
+ assert.equal(throttled.persistentFailure,true);
+ assert.equal(throttled.externalCapacityDeferred,true);
+ assert.equal(throttled.status,429);
+ assert.equal(throttled.failureStage,'CREATE');
+ assert.ok(Number(throttled.retryAfterSeconds)>=60);
+ assert.ok(Number.isFinite(Date.parse(throttled.retryNotBefore)));
 });
 
-test('Open Cloud long Retry-After defers without holding the current runner',async()=>{
+test('Open Cloud long Retry-After becomes exact deferred-capacity evidence without holding the current runner',async()=>{
  let calls=0;
- await assert.rejects(()=>probeRobloxOpenCloudEngine({
+ const before=Date.now();
+ const result=await probeRobloxOpenCloudEngine({
   universeId:'1',placeId:'2',versionNumber:20,apiKey:'k',pollIntervalMs:0,maxPolls:1,
   networkRetryAttempts:3,networkRetryDelayMs:1000,
   fetchImpl:async()=>{
@@ -410,11 +417,18 @@ test('Open Cloud long Retry-After defers without holding the current runner',asy
     ok:false,
     status:429,
     headers:{get:name=>String(name).toLowerCase()==='retry-after'?'1200':null},
-    text:async()=>JSON.stringify({errors:[{code:0,message:'rate limited'}]}),
+    text:async()=>JSON.stringify({code:'RESOURCE_EXHAUSTED',message:'rate limited'}),
    };
   },
- }),/ROBLOX_OPEN_CLOUD_ENGINE_CREATE_HTTP_429/);
+ });
  assert.equal(calls,1,'long provider capacity wait is deferred instead of sleeping inside this run');
+ assert.equal(result.persistentFailure,true);
+ assert.equal(result.externalCapacityDeferred,true);
+ assert.equal(result.status,429);
+ assert.equal(result.failureStage,'CREATE');
+ assert.equal(result.retryAfterSeconds,1200);
+ assert.ok(Date.parse(result.retryNotBefore)>=before+1199000);
+ assert.match(result.error,/ROBLOX_OPEN_CLOUD_ENGINE_CREATE_HTTP_429/);
 });
 
 test('Open Cloud engine probe binds exact place version without granting runtime acceptance',async()=>{
@@ -703,6 +717,14 @@ test('post-runtime Open Cloud engine probes keep bounded cross-game parallelism 
  assert.match(workflow,/networkRetryAttempts:3,networkRetryDelayMs:1000/);
  assert.match(workflow,/networkRetryAttempts:2,networkRetryDelayMs:750/);
  assert.match(foundation,/const exponentialDelay=Math\.min\(30000,baseDelayMs\*Math\.max\(1,2\*\*Math\.max\(0,attempt-1\)\)\)/);
+ assert.match(foundation,/openCloudEngineCreateAdmissionTail=Promise\.resolve\(\)/);
+ assert.match(foundation,/createAdmissionIntervalMs=12500/);
+ assert.match(foundation,/ROBLOX_OPEN_CLOUD_ENGINE_CREATE_ADMISSION_WAIT=/);
+ assert.match(foundation,/ROBLOX_OPEN_CLOUD_ENGINE_CREATE_CAPACITY_BLOCKED/);
+ assert.match(workflow,/ROBLOX_OPEN_CLOUD_RATE_LIMIT_WAIT=/);
+ assert.match(workflow,/retryNotBefore/);
+ assert.match(workflow,/externalCapacityDeferred/);
+ assert.match(workflow,/ROBLOX_OPEN_CLOUD_EXACT_GATE_RETRY_DEFERRED=/);
  assert.match(workflow,/ROBLOX_OPEN_CLOUD_ENGINE_PROBE_FAILURE=/);
  assert.match(workflow,/probes\[index\]=probe/);
  assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_PROBE_COUNT=/);
