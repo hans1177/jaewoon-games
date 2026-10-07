@@ -995,8 +995,14 @@ function sourceConsumerRoots({repoRoot,game}={}){
     if(resolved.startsWith('../'))continue;
     try{if(fs.statSync(absolute).isDirectory())out.push({relative:resolved,absolute});}catch{}
   }
-  return out.filter((row,index,list)=>list.findIndex(other=>other.relative===row.relative)===index)
-    .sort((a,b)=>a.relative.localeCompare(b.relative));
+  const uniqueRoots=out.filter((row,index,list)=>list.findIndex(other=>other.relative===row.relative)===index)
+    .sort((a,b)=>a.relative.length-b.relative.length||a.relative.localeCompare(b.relative));
+  const minimalRoots=[];
+  for(const row of uniqueRoots){
+    if(minimalRoots.some(parent=>row.relative.startsWith(parent.relative+'/')))continue;
+    minimalRoots.push(row);
+  }
+  return minimalRoots.sort((a,b)=>a.relative.localeCompare(b.relative));
 }
 function sourceConsumerAssetReference({repoRoot,file,raw}={}){
   const value=clean(raw).replaceAll('\\','/');
