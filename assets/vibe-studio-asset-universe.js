@@ -1590,7 +1590,7 @@ export const INTERNAL_ASSET_STUDIO_VARIATION_AXES=Object.freeze({
 });
 
 export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
-  version:16,
+  version:17,
   scope:'ALL_INTERNAL_COMMON_LIBRARIES',
   catalogDiscovery:'assets/roblox/common-*/catalog.json',
   seedDiscovery:'artbook-submissions/seed-*/current.json',
@@ -1833,13 +1833,8 @@ function internalAssetMaintenanceRoleTokens(asset={}){
 }
 function internalAssetMaintenanceQuality(asset={}){
   const audit=scoreInternalAssetAudit1000({asset});
-  if(audit.applicableAxes.some(axis=>{
-    const value=internalAssetAuditEvidenceValue(asset.internalAuditEvidence||{},axis);
-    return typeof value==='number'&&Number.isFinite(value);
-  }))return Number(audit.score);
-  const declared=asset?.internalAuditScore;
-  return typeof declared==='number'&&Number.isFinite(declared)
-    ?Math.round(clamp(declared,0,INTERNAL_ASSET_AUDIT_MAX)*10)/10:null;
+  if(audit.measuredAxisCount>0&&!audit.blockers.includes('INSUFFICIENT_AUDIT_EVIDENCE'))return Number(audit.score);
+  return null;
 }
 // 자산 관리: 세부 개선은 기존 원본 책임 파일과 현재 감사 축에만 연결한다.
 const INTERNAL_ASSET_DETAIL_REPAIR_STEPS=Object.freeze({
@@ -1865,7 +1860,14 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
   const rows=(assets||[]).map(asset=>{
     const family=upper(asset?.family||asset?.category);
     const roles=internalAssetMaintenanceRoleTokens(asset);
+    const audit=scoreInternalAssetAudit1000({asset});
+    const measuredAuditAxes=audit.applicableAxes.filter(axis=>{
+      const value=internalAssetAuditEvidenceValue(asset.internalAuditEvidence||{},axis);
+      return typeof value==='number'&&Number.isFinite(value);
+    });
     const quality=internalAssetMaintenanceQuality(asset);
+    const declaredQuality=typeof asset?.internalAuditScore==='number'&&Number.isFinite(asset.internalAuditScore)
+      ?Math.round(clamp(asset.internalAuditScore,0,INTERNAL_ASSET_AUDIT_MAX)*10)/10:null;
     const currentConsumers=currentAssetConsumerGameIds(asset);
     return Object.freeze({
       id:text(asset?.id||asset?.assetId||asset?.atomId),
@@ -1881,12 +1883,11 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
         return roblox&&state==='RELEASE_CONFIRMED'?3:roblox&&state==='DEVELOPMENT_CONFIRMED'?2:1;
       })),
       quality,
-      qualityGrade:text(asset?.internalAuditGrade)||null,
-      auditAxes:scoreInternalAssetAudit1000({asset}).axes,
-      measuredAuditAxes:scoreInternalAssetAudit1000({asset}).applicableAxes.filter(axis=>{
-        const value=internalAssetAuditEvidenceValue(asset.internalAuditEvidence||{},axis);
-        return typeof value==='number'&&Number.isFinite(value);
-      }),
+      declaredQuality,
+      qualityEvidenceGrounded:quality!==null,
+      qualityGrade:quality!==null?(text(asset?.internalAuditGrade)||internalAssetAuditGrade(quality)):null,
+      auditAxes:audit.axes,
+      measuredAuditAxes:Object.freeze(measuredAuditAxes),
       sourceHash:text(asset?.sourceHash||asset?.sourceSha256)||null,
       sourceFiles:Object.freeze(uniq(asset?.sourceFiles||[asset?.path]).sort()),
       catalogVersion:asset?.catalogVersion??null,
@@ -1991,6 +1992,8 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
     familyCount:new Set(rows.map(row=>row.family).filter(Boolean)).size,
     typeRoleTokenCount:sortedTypeRoleTokens.length,
     scoredAssetCount:qualityRows.length,
+    declaredOnlyQualityCount:rows.filter(row=>row.declaredQuality!==null&&row.qualityEvidenceGrounded!==true).length,
+    ungroundedDeclaredScoresAreInformationalOnly:true,
     typeRoleTokens:Object.freeze(sortedTypeRoleTokens),
     newTypeRoleTokens:Object.freeze(newTypeRoleTokens.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maintenanceListLimits.deltaTokens)),
     removedTypeRoleTokens:Object.freeze(removedTypeRoleTokens.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maintenanceListLimits.deltaTokens)),
@@ -2479,7 +2482,7 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
 }
 
 export const INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT=Object.freeze({
-  version:4,
+  version:5,
   scope:'INTERNAL_ASSETS_ONLY',
   documentationMode:'MACHINE_READABLE_ONLY',
   mode:'EVENT_DRIVEN_ASSET_REVIEW_NOT_SCHEDULER',
@@ -2530,9 +2533,9 @@ export const INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT=Object.freeze({
     'REMOVE_GAPS_ALREADY_COVERED_BY_OTHER_COMMON_PACKS',
     'KEEP_ONLY_REAL_COMPANY_WIDE_GAPS',
     'REPRIORITIZE_FROM_COMPANY_COMMON_SEED_DEMAND',
-    'VOLUME_UP_BEFORE_QUALITY_UP',
+    'QUALITY_FIRST_EXISTING_ASSET_REPAIR_BEFORE_DEMAND_BOUND_VOLUME',
     'CONSUME_NEXT_VOLUME_ACTIONS_IN_PRIORITY_ORDER',
-    'QUALITY_UP_WEAKEST_AXIS_980_TO_1000_AFTER_VOLUME_READY',
+    'QUALITY_UP_WEAKEST_AXIS_CONTINUOUSLY_WHEN_CURRENT_CONSUMER_EVIDENCE_EXISTS',
     'KEEP_COMMON_ASSET_STYLE_ADAPTIVE_NOT_GAME_STYLE_PINNED',
     'UPDATE_PRIORITY_GAPS',
     'UPDATE_CATALOG_AND_LIBRARY',
@@ -2651,9 +2654,9 @@ export function evaluateInternalAssetReuse({asset={},gameDna={},requirement={},u
     asset?.internalAuditScore!==undefined?asset.internalAuditScore:
     Number.NaN
   );
-  const baseQuality=Number.isFinite(declared)
-    ?clamp(declared,0,INTERNAL_ASSET_AUDIT_MAX)
-    :audit.measuredAxisCount>0?audit.score:0;
+  const declaredQuality=Number.isFinite(declared)?clamp(declared,0,INTERNAL_ASSET_AUDIT_MAX):null;
+  const qualityEvidenceGrounded=audit.measuredAxisCount>0&&!audit.blockers.includes('INSUFFICIENT_AUDIT_EVIDENCE');
+  const baseQuality=qualityEvidenceGrounded?audit.score:0;
 
   const axes=INTERNAL_ASSET_ADAPTATION_AXES[row.family]||Object.freeze([]);
   const declaredAxes=uniq(asset?.adaptationAxes||asset?.adaptationCapabilities||[]);
@@ -2713,6 +2716,8 @@ export function evaluateInternalAssetReuse({asset={},gameDna={},requirement={},u
     requestedFamily:family||null,
     requestedSubfamily:requestedSubfamily||null,
     baseQuality,
+    declaredQuality,
+    qualityEvidenceGrounded,
     effectiveQuality,
     internalAudit:audit,
     mode,
@@ -3271,7 +3276,10 @@ export function scoreInternalAssetAudit1000({asset={},evidence={}}={}){
   for(const [axis,min] of Object.entries({...globalCritical,...familyCritical})){
     if(normalized[axis]!==undefined&&normalized[axis]*100<min)blockers.push('HARD_GATE:'+axis+':'+Math.round(normalized[axis]*100)+'<'+min);
   }
-  const measuredAxisCount=Object.values(normalized).filter(value=>value>0).length;
+  const measuredAxisCount=applicableAxes.filter(axis=>{
+    const value=internalAssetAuditEvidenceValue(source,axis);
+    return typeof value==='number'&&Number.isFinite(value);
+  }).length;
   if(measuredAxisCount<Math.max(5,Math.ceil(applicableAxes.length*.8)))blockers.push('INSUFFICIENT_AUDIT_EVIDENCE');
   const pass=score>=INTERNAL_ASSET_AUDIT_PASS&&blockers.length===0;
   return Object.freeze({

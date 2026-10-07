@@ -386,7 +386,7 @@ export function persistedGeneratedAssetBindings(order={}){
     if(masterGlbRequired&&(!masterGlbHash||derivedFromMasterGlbHash!==masterGlbHash))return null;
     return Object.freeze({
       index:index+1,path:assetPath,artifactHash,nativeArtifactHash:artifactHash,
-      assetId:clean(row?.assetId||row?.id)||null,family:clean(row?.family).toUpperCase()||null,
+      assetId:clean(row?.assetId||row?.id)||null,family:clean(row?.family).toUpperCase()||null,role:clean(row?.role).toUpperCase()||null,
       sourceHash:clean(row?.sourceHash)||null,editableSourceHash:clean(row?.editableSourceHash||row?.sourceHash)||null,
       license:clean(row?.license)||null,masterGlbRequired,masterGlb:masterGlb||null,masterGlbHash:masterGlbHash||null,
       derivedFromMasterGlbHash:derivedFromMasterGlbHash||null,masterGlbStaticQaPass:row?.masterGlbStaticQaPass===true,
@@ -500,11 +500,12 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
           ||generated.find(row=>/\.(?:gltf|fbx|blend)$/i.test(row.path))
           ||generated[0];
         const family=clean(recipe?.family).toUpperCase()||null;
+        const role=clean(recipe?.role||(Array.isArray(recipe?.types)?recipe.types.find(type=>isCrossPlatform3dActorType(type)):'')).toUpperCase().replace(/[\\s-]+/g,'_')||null;
         const masterGlbRequired=recipe?.masterGlbRequired===true||['CHARACTER','CREATURE'].includes(family);
         let masterGlbQa=null;
         if(masterGlbRequired){
           if(!/\.glb$/i.test(nativeArtifact.path))throw new Error('CROSS_PLATFORM_MASTER_GLB_REQUIRED:'+clean(recipe?.id));
-          masterGlbQa=evaluateCrossPlatform3dMasterGlb({repoRoot:cwd,source:{path:nativeArtifact.path},family});
+          masterGlbQa=evaluateCrossPlatform3dMasterGlb({repoRoot:cwd,source:{path:nativeArtifact.path},family,role});
           if(masterGlbQa.pass!==true)throw new Error('CROSS_PLATFORM_MASTER_GLB_QA_FAILED:'+clean(recipe?.id)+':'+(masterGlbQa.blockers||[]).join(','));
         }
         const priorNative=preOutput.get(nativeArtifact.path);
@@ -514,7 +515,7 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
         const masterGlbHash=masterGlbRequired?clean(masterGlbQa?.sourceHash):null;
         recipeSucceeded=true;
         results.push(Object.freeze({
-          id:clean(recipe?.id)||path.basename(script,'.py'),assetId:clean(recipe?.assetId)||null,family,license:clean(recipe?.license)||null,executor:'BLENDER_PYTHON',script,editableSource:dccRepoPath(recipe?.editableSource||script),
+          id:clean(recipe?.id)||path.basename(script,'.py'),assetId:clean(recipe?.assetId)||null,family,role,license:clean(recipe?.license)||null,executor:'BLENDER_PYTHON',script,editableSource:dccRepoPath(recipe?.editableSource||script),
           types:Object.freeze([...(Array.isArray(recipe?.types)?recipe.types:[])]),targetPlatforms:Object.freeze([...(Array.isArray(recipe?.targetPlatforms)?recipe.targetPlatforms:[])]),
           outputs:Object.freeze(generated),evidenceJson,preview,nativeArtifact:nativeArtifact.path,artifactHash:nativeArtifact.sha256,sourceHash:editableSourceHash,editableSourceHash,
           evidenceState:evidence?.runtimeVerificationState||null,productionVerified:evidence?.productionVerified===true,

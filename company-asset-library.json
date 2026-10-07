@@ -1,8 +1,8 @@
 {
-  "version": 119,
+  "version": 120,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
-  "updatedAt": "2026-10-07",
+  "updatedAt": "2026-10-07T12:05:00+09:00",
   "publicInspectionSurface": true,
   "productionPassAuthority": false,
   "rules": {
@@ -68083,13 +68083,14 @@
       "vfxCount": 27,
       "materialCount": 25,
       "source": "CATALOG_DRIVEN_INTERNAL_ASSET_AUTOMATION",
-      "volumeBeforeQuality": true,
+      "volumeBeforeQuality": false,
       "productionVerificationUnchanged": true,
       "skillCount": 20,
       "characterGearCount": 18,
       "foliageCount": 18,
       "uiCount": 204,
-      "presentationComponentCount": 14
+      "presentationComponentCount": 14,
+      "policy": "QUALITY_FIRST_WITH_DEMAND_BOUND_VOLUME_ONLY"
     }
   },
   "commonGenreSystemExpectations": {
@@ -68367,7 +68368,7 @@
     "compositionContract": "company-asset-library.json#internalAssetCompositionContract"
   },
   "internalAssetRoutineReview": {
-    "version": 4,
+    "version": 5,
     "mode": "EVENT_DRIVEN_ASSET_REVIEW_NOT_SCHEDULER",
     "scheduleCreated": false,
     "workflowCreated": false,
@@ -68436,11 +68437,11 @@
       "UPDATE_CATALOG_AND_LIBRARY",
       "UPDATE_ASSET_QA",
       "REPRIORITIZE_FROM_COMPANY_COMMON_SEED_DEMAND",
-      "VOLUME_UP_BEFORE_QUALITY_UP",
+      "QUALITY_FIRST_EXISTING_ASSET_REPAIR_BEFORE_DEMAND_BOUND_VOLUME",
       "AUTO_SYNC_CATALOG_TO_REGISTRY",
       "REBUILD_LOOSE_VOLUME_PLAN",
       "CONSUME_NEXT_VOLUME_ACTIONS_IN_PRIORITY_ORDER",
-      "QUALITY_UP_WEAKEST_AXIS_980_TO_1000_AFTER_VOLUME_READY",
+      "QUALITY_UP_WEAKEST_AXIS_CONTINUOUSLY_WHEN_CURRENT_CONSUMER_EVIDENCE_EXISTS",
       "KEEP_COMMON_ASSET_STYLE_ADAPTIVE_NOT_GAME_STYLE_PINNED"
     ],
     "completionEvidence": [
@@ -68465,7 +68466,8 @@
     "seedIdeationContractRef": "company-asset-library.json#companyCommonSeedAssetIdeation",
     "createsQueue": false,
     "createsPipeline": false,
-    "automationContractRef": "company-asset-library.json#internalAssetLibraryAutomation"
+    "automationContractRef": "company-asset-library.json#internalAssetLibraryAutomation",
+    "declaredScoreWithoutSufficientAxisEvidenceIsInformationalOnly": true
   },
   "internalAssetCompositionContract": {
     "version": 1,
@@ -68890,7 +68892,7 @@
     }
   },
   "internalAssetLibraryAutomation": {
-    "version": 15,
+    "version": 17,
     "status": "ACTIVE_CATALOG_DRIVEN_INTERNAL_ASSET_AUTOMATION",
     "contract": "assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT",
     "syncFunction": "tools/vibe2-asset-production-plan.mjs#synchronizeCompanyCommonAssetRegistry",
@@ -69564,7 +69566,7 @@
     "pipelineCreated": false,
     "wrapperCreated": false,
     "shadowSystemCreated": false,
-    "lastCatalogSynchronizedVersion": 119,
+    "lastCatalogSynchronizedVersion": 120,
     "focusPhase": "QUALITY_UP_1000",
     "qualityTarget": 1000,
     "volumeReady": false,
@@ -80007,7 +80009,7 @@
       "lastChangeFingerprint": "243b46f8",
       "catalogFingerprint": "139e07054babbef4db627f2709a6a89c4ecb218e8ad6093aef0a633275afd2c5",
       "catalogChanged": false,
-      "synchronizedRegistryVersion": 118
+      "synchronizedRegistryVersion": 120
     },
     "studioVariationAxes": {
       "BUILDING": [
@@ -84697,7 +84699,9 @@
       "deltaTokens": 16384,
       "qualityActions": 8192
     },
-    "supplyDecisionSummaryActionLimit": 8192
+    "supplyDecisionSummaryActionLimit": 8192,
+    "declaredScoreWithoutSufficientAxisEvidenceIsInformationalOnly": true,
+    "qualityRankingRequiresSufficientMeasuredAxisEvidence": true
   },
   "characterNpcCustomization": {
     "version": 1,
