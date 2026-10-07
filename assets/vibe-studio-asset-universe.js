@@ -1809,6 +1809,7 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
   wrapperCreated:false,
   shadowSystemCreated:false
 });
+const INTERNAL_ASSET_LIBRARY_PLAN_INDEX_CACHE=new WeakMap();
 
 function stableAssetMaintenanceHash(value=''){
   let hash=2166136261;
@@ -2093,55 +2094,11 @@ function uiSubsystemCount(ids=[],spec={}){
 
 export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null,uiAtomIds=[],audioRoleIds=[],externalSources=[],previousMaintenance=null,consumerGames=[],basePlan=null}={}){
   const inventoryAssets=assets;
-  assets=(assets||[]).filter(asset=>asset?.catalogActive!==false
-    &&!/(STALE|QUARANTIN|RETIRED|REJECTED)/.test(upper(asset?.catalogState)+' '+upper(asset?.status))
-    &&asset?.rightsPass!==false);
-  const seedIdeas=seedPlan?.ideas||[];
-  const audioRoles=uniq(audioRoleIds).map(upper);
-  const audioRoleTokens=new Set(audioRoles);
-  const actualVerifiedAudioAssetCount=verifiedAudioFileCount(assets);
   const auditCache=new WeakMap();
   const maintenance=buildInternalAssetMaintenanceSnapshot({assets:inventoryAssets,uiAtomIds,audioRoleIds,previous:previousMaintenance,consumerGames,auditCache});
-  const volumeDomains=Object.keys(COMMON_LIBRARY_LOOSE_VOLUME_BANDS);
-  const depthDomains=Object.keys(COMMON_LIBRARY_SYSTEM_DEPTH_EXPECTATIONS);
-  const indexedDomains=uniq([...volumeDomains,...depthDomains]);
-  const domainAssetsByDomain=new Map(volumeDomains.map(domain=>[domain,[]]));
-  const commonDepthAssetsByDomain=new Map(depthDomains.map(domain=>[domain,[]]));
-  const candidatesByDomain=new Map(volumeDomains.map(domain=>[domain,[]]));
-  const domainsByAsset=new WeakMap();
-  const rolesByAsset=new WeakMap();
-  for(const asset of assets){
-    const roles=internalAssetMaintenanceRoleTokens(asset);
-    rolesByAsset.set(asset,roles);
-    const candidate={
-      id:text(asset.id||asset.assetId||asset.atomId),packId:text(asset.packId)||null,
-      family:upper(asset.family||asset.category)||null,platform:upper(asset.platform)||null,
-      roles,quality:internalAssetMaintenanceQuality(asset,auditCache.get(asset)),
-      grade:text(asset.internalAuditGrade)||null
-    };
-    const commonDepthEligible=asset?.companyCommonBase===true||String(asset?.reuseScope||'').includes('COMPANY');
-    const matchedDomains=[];
-    for(const domain of indexedDomains){
-      if(!commonDepthDomainMatch(domain,asset))continue;
-      matchedDomains.push(domain);
-      domainAssetsByDomain.get(domain)?.push(asset);
-      if(candidate.id)candidatesByDomain.get(domain)?.push(candidate);
-      if(commonDepthEligible)commonDepthAssetsByDomain.get(domain)?.push(asset);
-    }
-    domainsByAsset.set(asset,Object.freeze(matchedDomains));
-  }
-  // 실행용 consumer overlay는 같은 inventory의 구조 플랜을 재사용하고 동적 소비자 우선순위만 다시 계산한다.
-  const rankedCandidateCache=new Map();
-  const internalReuseCandidatesForAction=(domain,role='')=>{
-    const requested=upper(role).replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'');
-    const key=upper(domain)+'|'+requested;
-    if(!rankedCandidateCache.has(key))rankedCandidateCache.set(key,(candidatesByDomain.get(upper(domain))||[])
-      .map(row=>({...row,roleMatch:requested&&row.roles.includes(requested)?1:0}))
-      .sort((a,b)=>b.roleMatch-a.roleMatch||Number(b.quality??-1)-Number(a.quality??-1)||a.id.localeCompare(b.id)));
-    return rankedCandidateCache.get(key);
-  };
+  const cachedCandidatesByDomain=basePlan&&INTERNAL_ASSET_LIBRARY_PLAN_INDEX_CACHE.get(basePlan);
   const basePlanReusable=Boolean(
-    basePlan
+    cachedCandidatesByDomain instanceof Map
     &&Number(basePlan.version)===Number(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version)
     &&basePlan.maintenance?.qualityFingerprint===maintenance.qualityFingerprint
     &&basePlan.maintenance?.typeRoleFingerprint===maintenance.typeRoleFingerprint
@@ -2151,6 +2108,17 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     &&Array.isArray(basePlan.nextVolumeActions)
   );
   if(basePlanReusable){
+    // 같은 planning cycle의 ephemeral index만 재사용한다. 직렬화/저장된 plan은 cache miss로 기존 전체 계산 경로를 탄다.
+    const candidatesByDomain=cachedCandidatesByDomain;
+    const rankedCandidateCache=new Map();
+    const internalReuseCandidatesForAction=(domain,role='')=>{
+      const requested=upper(role).replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+      const key=upper(domain)+'|'+requested;
+      if(!rankedCandidateCache.has(key))rankedCandidateCache.set(key,(candidatesByDomain.get(upper(domain))||[])
+        .map(row=>({...row,roleMatch:requested&&row.roles.includes(requested)?1:0}))
+        .sort((a,b)=>b.roleMatch-a.roleMatch||Number(b.quality??-1)-Number(a.quality??-1)||a.id.localeCompare(b.id)));
+      return rankedCandidateCache.get(key);
+    };
     const qualityActionRankByAssetId=new Map((maintenance.nextQualityActions||[]).map((action,index)=>[text(action.assetId),index]));
     const nextVolumeActions=(basePlan.nextVolumeActions||[]).map((row,index)=>{
       const allInternalReuseCandidates=internalReuseCandidatesForAction(row.domain,row.role);
@@ -2206,9 +2174,54 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
       nextQualityActions:maintenance.nextQualityActions,
       maintenance,
       autonomousNextAction,
-      executionOverlayReusedBasePlan:true
+      executionOverlayReusedBasePlan:true,
+      executionOverlayReusedDomainIndex:true
     });
   }
+  assets=(assets||[]).filter(asset=>asset?.catalogActive!==false
+    &&!/(STALE|QUARANTIN|RETIRED|REJECTED)/.test(upper(asset?.catalogState)+' '+upper(asset?.status))
+    &&asset?.rightsPass!==false);
+  const seedIdeas=seedPlan?.ideas||[];
+  const audioRoles=uniq(audioRoleIds).map(upper);
+  const audioRoleTokens=new Set(audioRoles);
+  const actualVerifiedAudioAssetCount=verifiedAudioFileCount(assets);
+  const volumeDomains=Object.keys(COMMON_LIBRARY_LOOSE_VOLUME_BANDS);
+  const depthDomains=Object.keys(COMMON_LIBRARY_SYSTEM_DEPTH_EXPECTATIONS);
+  const indexedDomains=uniq([...volumeDomains,...depthDomains]);
+  const domainAssetsByDomain=new Map(volumeDomains.map(domain=>[domain,[]]));
+  const commonDepthAssetsByDomain=new Map(depthDomains.map(domain=>[domain,[]]));
+  const candidatesByDomain=new Map(volumeDomains.map(domain=>[domain,[]]));
+  const domainsByAsset=new WeakMap();
+  const rolesByAsset=new WeakMap();
+  for(const asset of assets){
+    const roles=internalAssetMaintenanceRoleTokens(asset);
+    rolesByAsset.set(asset,roles);
+    const candidate={
+      id:text(asset.id||asset.assetId||asset.atomId),packId:text(asset.packId)||null,
+      family:upper(asset.family||asset.category)||null,platform:upper(asset.platform)||null,
+      roles,quality:internalAssetMaintenanceQuality(asset,auditCache.get(asset)),
+      grade:text(asset.internalAuditGrade)||null
+    };
+    const commonDepthEligible=asset?.companyCommonBase===true||String(asset?.reuseScope||'').includes('COMPANY');
+    const matchedDomains=[];
+    for(const domain of indexedDomains){
+      if(!commonDepthDomainMatch(domain,asset))continue;
+      matchedDomains.push(domain);
+      domainAssetsByDomain.get(domain)?.push(asset);
+      if(candidate.id)candidatesByDomain.get(domain)?.push(candidate);
+      if(commonDepthEligible)commonDepthAssetsByDomain.get(domain)?.push(asset);
+    }
+    domainsByAsset.set(asset,Object.freeze(matchedDomains));
+  }
+  const rankedCandidateCache=new Map();
+  const internalReuseCandidatesForAction=(domain,role='')=>{
+    const requested=upper(role).replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+    const key=upper(domain)+'|'+requested;
+    if(!rankedCandidateCache.has(key))rankedCandidateCache.set(key,(candidatesByDomain.get(upper(domain))||[])
+      .map(row=>({...row,roleMatch:requested&&row.roles.includes(requested)?1:0}))
+      .sort((a,b)=>b.roleMatch-a.roleMatch||Number(b.quality??-1)-Number(a.quality??-1)||a.id.localeCompare(b.id)));
+    return rankedCandidateCache.get(key);
+  };
   const depth=auditCommonLibrarySystemDepth({assets,domainCandidatesByDomain:commonDepthAssetsByDomain});
   const depthByDomain=new Map(depth.rows.map(row=>[row.domain,row]));
   const seedIdeasByDomain=new Map(volumeDomains.map(domain=>[domain,[]]));
@@ -2519,7 +2532,7 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
         phase:'VOLUME_UP',
         continueWithoutHuman:true
       });
-  return Object.freeze({
+  const plan=Object.freeze({
     version:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,
     countPolicy:'LOOSE_TARGET_BANDS_NOT_HARD_CAPS',
     hardMaximum:null,
@@ -2595,6 +2608,8 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     productionPromotionAutomatic:false,
     runtimeVerificationRequired:true
   });
+  INTERNAL_ASSET_LIBRARY_PLAN_INDEX_CACHE.set(plan,candidatesByDomain);
+  return plan;
 }
 
 export const INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT=Object.freeze({
