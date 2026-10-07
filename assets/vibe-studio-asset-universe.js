@@ -1833,7 +1833,7 @@ function internalAssetMaintenanceRoleTokens(asset={}){
   }
   return uniq(out).sort();
 }
-function internalAssetMaintenanceStaticFingerprint({assets=[],uiAtomIds=[],audioRoleIds=[]}={}){
+function internalAssetMaintenanceStaticSignature({assets=[],uiAtomIds=[],audioRoleIds=[]}={}){
   const rows=(assets||[]).map(asset=>({
     id:text(asset?.id||asset?.assetId||asset?.atomId),
     family:asset?.family??asset?.category??null,
@@ -1855,11 +1855,11 @@ function internalAssetMaintenanceStaticFingerprint({assets=[],uiAtomIds=[],audio
     productionVerified:asset?.productionVerified??null,
     runtimeVerificationState:asset?.runtimeVerificationState??null
   })).filter(row=>row.id).sort((a,b)=>a.id.localeCompare(b.id));
-  return stableAssetMaintenanceHash(JSON.stringify({
+  return JSON.stringify({
     rows,
     uiAtomIds:uniq(uiAtomIds).map(upper).sort(),
     audioRoleIds:uniq(audioRoleIds).map(upper).sort()
-  }));
+  });
 }
 function internalAssetMaintenanceQuality(asset={},audit=null){
   const currentAudit=audit&&typeof audit==='object'?audit:scoreInternalAssetAudit1000({asset});
@@ -1887,10 +1887,10 @@ const INTERNAL_ASSET_DETAIL_REPAIR_STEPS=Object.freeze({
 });
 export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],audioRoleIds=[],previous=null,consumerGames=[],auditCache=null,baseSnapshot=null}={}){
   const gamesById=new Map(consumerGames.filter(game=>upper(game.lifecycleState||game.canonical?.lifecycle?.state||'ACTIVE')==='ACTIVE').map(game=>[text(game.id||game.gameId),game]));
-  const staticFingerprint=internalAssetMaintenanceStaticFingerprint({assets,uiAtomIds,audioRoleIds});
+  const staticSignature=internalAssetMaintenanceStaticSignature({assets,uiAtomIds,audioRoleIds});
   const cachedStatic=baseSnapshot&&INTERNAL_ASSET_MAINTENANCE_ROW_CACHE.get(baseSnapshot);
   const assetIds=(assets||[]).map(asset=>text(asset?.id||asset?.assetId||asset?.atomId)).filter(Boolean);
-  const staticRowsById=cachedStatic?.fingerprint===staticFingerprint
+  const staticRowsById=cachedStatic?.signature===staticSignature
     &&cachedStatic?.rowsById instanceof Map
     &&cachedStatic.rowsById.size===assetIds.length
     &&new Set(assetIds).size===assetIds.length
@@ -2090,7 +2090,7 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
     continueWithoutChatgpt:true
   });
   if(staticRowsById.size===assetIds.length&&new Set(assetIds).size===assetIds.length){
-    INTERNAL_ASSET_MAINTENANCE_ROW_CACHE.set(snapshot,Object.freeze({fingerprint:staticFingerprint,rowsById:staticRowsById}));
+    INTERNAL_ASSET_MAINTENANCE_ROW_CACHE.set(snapshot,Object.freeze({signature:staticSignature,rowsById:staticRowsById}));
   }
   return snapshot;
 }
