@@ -8,24 +8,24 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 0,
-  "lastSuccessfulModelCallAt": null,
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=OPTIONAL_EXTERNAL_AI_DISABLED local=schema required missing: root.signatureSystems[0].playerChoice",
+  "cachedTaskCount": 1,
+  "lastSuccessfulModelCallAt": "2026-10-07T19:19:45.205Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 0,
+      "calls": 4,
+      "successes": 1,
       "failures": 3,
       "timeouts": 1,
       "jsonFailures": 1,
-      "totalMs": 482109,
-      "lastMs": 201709,
+      "totalMs": 508616,
+      "lastMs": 26507,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-07T19:19:18.697Z"
+      "updatedAt": "2026-10-07T19:19:45.205Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-07T19:19:18.697Z"
+  "updatedAt": "2026-10-07T19:19:45.206Z"
 }
