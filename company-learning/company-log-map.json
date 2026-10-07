@@ -1,5 +1,5 @@
 {
-  "version": 176,
+  "version": 177,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -831,7 +831,47 @@
         "EXACT_RUNTIME_CONSUMER_RESULT"
       ],
       "primitiveOnlyFinalActorCannotPass": true,
-      "sharedMasterDoesNotProvePlatformRuntime": true
+      "sharedMasterDoesNotProvePlatformRuntime": true,
+      "requiredForRoles": [
+        "PLAYER",
+        "NPC",
+        "COMPANION",
+        "ALLY",
+        "CIVILIAN",
+        "VENDOR",
+        "QUEST_GIVER",
+        "TRAINER",
+        "ENEMY",
+        "ELITE",
+        "CREATURE",
+        "PET",
+        "MOUNT",
+        "SUMMON",
+        "BOSS"
+      ],
+      "roleFamilies": {
+        "CHARACTER": [
+          "PLAYER",
+          "NPC",
+          "COMPANION",
+          "ALLY",
+          "CIVILIAN",
+          "VENDOR",
+          "QUEST_GIVER",
+          "TRAINER"
+        ],
+        "CREATURE": [
+          "ENEMY",
+          "ELITE",
+          "CREATURE",
+          "PET",
+          "MOUNT",
+          "SUMMON",
+          "BOSS"
+        ]
+      },
+      "roleSpecificVisualAndMotionEvidenceRequired": true,
+      "colorOnlyRoleCloneCannotCountAsDistinctActor": true
     }
   },
   "universalAssetCoverageEvidenceContract": {
