@@ -8,7 +8,7 @@ import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import { planAssetApplication } from '../assets/asset-selector.js';
 import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation,createMotionDirectorPlan,createDuelCombatAuthoringRecipe,createSurvivalPlayerMotionProfile,createSurvivalWildlifeMotionProfile,deriveMotionStyleVariant,auditMotionContinuityTrace} from '../assets/vibe-motion-director.js';
-import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile,synchronizeAssetCustomization,createAssetDetailReviewPlan,createAssetRuntimeVisualReviewPlan,auditCommonLibrarySystemDepth,createCompanySeedAssetIdeationPlan,buildInternalAssetLibraryAutomationPlan,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT,INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES,INTERNAL_PROGRESSION_COMPLEXITY_PROFILES,resolveInternalAssetStyleExpressionProfile,INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS} from '../assets/vibe-studio-asset-universe.js';
+import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile,synchronizeAssetCustomization,createAssetDetailReviewPlan,createAssetRuntimeVisualReviewPlan,auditCommonLibrarySystemDepth,createCompanySeedAssetIdeationPlan,buildInternalAssetLibraryAutomationPlan,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT,INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES,INTERNAL_PROGRESSION_COMPLEXITY_PROFILES,resolveInternalAssetStyleExpressionProfile,INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS,STUDIO_GLTF_MASTER_ASSET_STANDARD} from '../assets/vibe-studio-asset-universe.js';
 import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {auditVibeRuntimeVisualEvidence,auditVibeRuntimeBeforeAfterComparison} from '../assets/vibe-visual-quality-gate.js';
 import {VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,createVibeNpcCustomizationPopulation} from '../assets/vibe-character-identity-director.js';
@@ -1380,6 +1380,7 @@ const NATIVE_DCC_AUTHORING=freeze([
   'blender-uv-material-texture-and-detail-pass',
   'blender-review-render-and-evidence'
 ]);
+const GLB_MASTER_DCC_TYPES=freezeList(['character','player','npc','enemy','boss','creature']);
 
 const ASSET_MODEL_ROUTING=freeze({
   version:2,
@@ -1443,12 +1444,16 @@ function normalizeNativeDccAuthoringRecipe(recipe={},asset={},target='',required
   const typeMatch=!types.length||types.some(type=>requiredTypes.includes(type));
   const targetMatch=!targets.length||targets.includes(targetName)||targets.includes(targetName.toUpperCase().toLowerCase());
   const safePath=value=>Boolean(value&&!path.isAbsolute(value)&&!value.split('/').includes('..'));
-  const safe=executor==='BLENDER_PYTHON'&&/\.py$/i.test(script)&&safePath(script)&&outputs.length>0&&outputs.every(safePath)&&(!evidenceJson||safePath(evidenceJson))&&(!preview||safePath(preview));
   const family=clean(recipe?.family||asset?.family||asset?.category).toUpperCase()||nativeDccFamilyForTypes(types);
+  const gltfMasterRequired=recipe?.gltfMasterRequired===true||['CHARACTER','CREATURE'].includes(family)||types.some(type=>GLB_MASTER_DCC_TYPES.includes(type));
+  const gltfMasterOutput=outputs.find(value=>/\.glb$/i.test(value))||null;
+  const gltfMasterCompliant=!gltfMasterRequired||Boolean(gltfMasterOutput);
+  const safe=executor==='BLENDER_PYTHON'&&/\.py$/i.test(script)&&safePath(script)&&outputs.length>0&&outputs.every(safePath)&&(!evidenceJson||safePath(evidenceJson))&&(!preview||safePath(preview))&&gltfMasterCompliant;
   const license=clean(recipe?.license||asset?.license)||null;
   return freeze({
     id,assetId:clean(asset?.id)||clean(recipe?.assetId)||null,family:family||null,license,executor,script,types:freezeList(types),targetPlatforms:freezeList(targets),args,outputs,evidenceJson,preview,editableSource,
     typeMatch,targetMatch,safe,runMode:clean(recipe?.runMode||'VERIFY_ONLY').toUpperCase(),
+    gltfMasterRequired,gltfMasterOutput,gltfMasterCompliant,gltfMasterFormat:gltfMasterRequired?'GLB':null,
     runtimeVerificationRequired:true,companyPromotionAllowed:false
   });
 }
@@ -1506,6 +1511,7 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
   const nativeTextKinds=targetName==='roblox'?ROBLOX_DIRECT_AUTHORING:targetName==='unity'?UNITY_DIRECT_AUTHORING:webNativeTarget?WEB_DIRECT_AUTHORING:[];
   const nativeTextTypes=internalMotion?['motion']:decisions.filter(row=>needsAuthoring(row)&&(row.directAuthoring||[]).some(kind=>nativeTextKinds.includes(kind))).map(row=>row.type);
   const uniqueDccTypes=unique([...automaticDccTypes,...declaredDccTypes]);
+  const gltfMasterRequiredTypes=uniqueDccTypes.filter(type=>GLB_MASTER_DCC_TYPES.includes(type));
   const uniqueNativeTextTypes=unique(nativeTextTypes);
   const selectedCandidateIds=new Set(decisions.flatMap(row=>[
     ...(row?.reuseCandidates||[]),
@@ -1548,6 +1554,8 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
   const recipeCovers=type=>executionRecipeRows.some(row=>!row.types.length||row.types.includes(type));
   const coveredDccTypes=uniqueDccTypes.filter(recipeCovers);
   const uncoveredDccTypes=uniqueDccTypes.filter(type=>!recipeCovers(type));
+  const gltfMasterCoveredTypes=gltfMasterRequiredTypes.filter(type=>executionRecipeRows.some(row=>(!row.types.length||row.types.includes(type))&&row.gltfMasterCompliant===true));
+  const gltfMasterMissingTypes=gltfMasterRequiredTypes.filter(type=>!gltfMasterCoveredTypes.includes(type));
   const explicitRecipes=freezeList(explicitRecipeRows);
   const availableExistingRecipes=unique(decisions.flatMap(row=>
     [...(row?.reuseCandidates||[]),...(row?.externalCandidates||[])]
@@ -1565,6 +1573,13 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
     dcc:freeze({
       requiredTypes:freezeList(uniqueDccTypes),
       universalAuditTypes:freezeList(dccCapableTypes),
+      gltfMasterRequired:gltfMasterRequiredTypes.length>0,
+      gltfMasterStandard:STUDIO_GLTF_MASTER_ASSET_STANDARD,
+      gltfMasterRequiredTypes:freezeList(gltfMasterRequiredTypes),
+      gltfMasterCoveredTypes:freezeList(gltfMasterCoveredTypes),
+      gltfMasterMissingTypes:freezeList(gltfMasterMissingTypes),
+      gltfMasterFormat:'GLB',
+      masterBeforePlatformVariants:true,
       explicitRequestedTypes:freezeList(unique((explicitRequestedTypes||[]).map(value=>clean(value).toLowerCase()))),
       authoringScopeMode:'EXPLICIT_TASK_REQUEST_PLUS_DECLARED_RECIPES',
       preferredExecutor:'BLENDER_PYTHON',
@@ -1588,8 +1603,9 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
       exportedNativeArtifactRequired:true,
       previewRenderRequired:true,
       artifactHashesRequired:true,
-      requiredEvidenceFields:freezeList(['recipe','editableSource','nativeArtifact','artifactHash','preview','runtimeVerificationState']),
+      requiredEvidenceFields:freezeList(['recipe','editableSource','nativeArtifact','artifactHash','preview','runtimeVerificationState','gltfMasterCompliant']),
       nativeSourceMayNotMaskDccRequirement:true,
+      primitiveActorFallbackMayNotSatisfyGltfMaster:true,
       textWorkerMayClaimDccCompletion:false
     }),
     nativeText:freeze({
@@ -2022,8 +2038,8 @@ function buildComposableBaseMaterialLoadout({companyRegistry={},studioUniversePl
 }
 function directAuthoringFor(target='',type=''){
   const resolvedTarget=clean(target).toLowerCase();
-  const actor=/character|player|enemy|boss|npc|animation/i.test(clean(type));
-  const dcc=/character|player|enemy|boss|npc|animation|background|environment|item|weapon|prop/i.test(clean(type));
+  const actor=/character|player|enemy|boss|npc|creature|animation/i.test(clean(type));
+  const dcc=/character|player|enemy|boss|npc|creature|animation|background|environment|item|weapon|prop/i.test(clean(type));
   const audio=/audio|sound|music|bgm|sfx/i.test(clean(type));
   if(resolvedTarget==='web'){
     if(audio) return freezeList(['web-audio-sfx']);
@@ -3881,7 +3897,7 @@ export function assetProductionGuidance(plan={}){
     plan.applyFirstSummary?.enabled?`[APPLY USABLE ASSETS FIRST] ${JSON.stringify(plan.applyFirstSummary)}. 먼저 현재 게임/회사/저장소에서 target-compatible하고 실제 경로 또는 native binding이 있는 자산을 게임에 적용한다. 적용 후 실제 게임 카메라에서 품질을 확인하고 부족한 부위만 derived variant로 조형·재질·리그·LOD를 보강해 재적용한다. 사용 가능한 자산이 목표 품질에 도달할 수 있는데 새 자산부터 만들지 않는다. 품질이 부족하면 SILHOUETTE/PROPORTION/STRUCTURE/FACE_HANDS_FEET/MATERIAL/RIG/SOCKET/MOTION/LOD/UI_STATE 같은 축으로 분해하고 강한 축은 유지한다. 다른 호환 자산은 전체 대체뿐 아니라 파츠·리그·재질·모션 기증자로 사용해 derived variant를 재조립한다. GAME_CAMERA→MID_RANGE→CLOSEUP→CONTACT 디테일 바닥을 채우고, 랜덤 소품/노이즈/텍스처 과밀로 디테일을 가장하지 않는다. 핵심 형태나 구조 품질이 부분 보강으로 회복 불가능할 때만 전체 신규 제작으로 넘어간다.`:'' ,
     plan.generatedAssetOutputContract?`[GENERATED NATIVE ASSET CONTRACT] ${JSON.stringify(plan.generatedAssetOutputContract)}. Roblox/Unity에서 기존 자산이 목표 품질을 못 채우면 Blender/Python 또는 엔진 네이티브 authoring으로 실제 원본 자산을 만든다. 생성 소스 레시피와 원본/파생 파일, 동일 조건 미리보기, evidence.json, 회사 자산 장부 등록을 남긴다. GLB/이미지 파일이 생겼다는 사실만으로 VERIFIED 처리하지 말고 대상 native 런타임에서 실제 바인딩·표현·성능 검증 뒤 승격한다.`:'',
     plan.modelRouting?`[ASSET MODEL ROUTING] ${JSON.stringify(plan.modelRouting)}. Hero 자산일 때만 선택된 강한 로컬 모델을 사용하고 일반 자산은 baseline을 유지한다. 모델 상향은 중앙 생성 횟수·timeout·context 예산을 늘리는 권한이 아니며, 준비 실패 시 baseline으로 복귀한다.`:'',
-    plan.nativeAuthoringExecution?`[NATIVE AUTHORING EXECUTION LOOP] ${JSON.stringify(plan.nativeAuthoringExecution)}. AUTHORING_GENERATOR_REQUEST나 텍스트 계획은 제작 완료가 아니다. Roblox/Unity DCC 대상은 candidate 브랜치 안에 실제 editable source/export/hash/preview/evidence 산출물을 남기고 기존 책임 소스가 생성 native artifact의 정확한 repository path와 artifact SHA256을 엔진 네이티브 표현과 함께 실제 소비하도록 바인딩한다. Web은 SVG/CSS/Canvas/JS/WebAudio/motion-engine 같은 기존 웹 네이티브 authoring을 실제 게임 책임 소스에서 강화한다. Web 산출물을 Roblox/Unity에 그대로 복사하지 말고 같은 게임 정체성과 요구를 플랫폼별 네이티브 형태로 다시 제작한다. 게임 규칙·밸런스·저장·진행·멀티 권한은 바꾸지 않는다. 실제 런타임 캡처와 mobile QA 전에는 VERIFIED나 회사 공용 승격을 주장하지 않는다.`:'',
+    plan.nativeAuthoringExecution?`[NATIVE AUTHORING EXECUTION LOOP] ${JSON.stringify(plan.nativeAuthoringExecution)}. AUTHORING_GENERATOR_REQUEST나 텍스트 계획은 제작 완료가 아니다. 3D CHARACTER/CREATURE/ENEMY/BOSS는 플랫폼별 구현 전에 repository에 hash-bound GLB master를 먼저 제작해야 하며 Part/primitive 조립이나 Luau/C# 모델 생성만으로 최종 캐릭터·몬스터 자산을 대체할 수 없다. Roblox/Unity DCC 대상은 candidate 브랜치 안에 실제 editable source/export/hash/preview/evidence 산출물을 남기고 기존 책임 소스가 생성 native artifact의 정확한 repository path와 artifact SHA256을 엔진 네이티브 표현과 함께 실제 소비하도록 바인딩한다. Web/Unity/Roblox 최종 표현은 같은 GLB master lineage에서 플랫폼별로 최적화·재저작하며 최종 바이너리 직접 공용은 금지한다. Web은 SVG/CSS/Canvas/JS/WebAudio/motion-engine 같은 기존 웹 네이티브 authoring을 실제 게임 책임 소스에서 강화한다. 게임 규칙·밸런스·저장·진행·멀티 권한은 바꾸지 않는다. 실제 런타임 캡처와 mobile QA 전에는 VERIFIED나 회사 공용 승격을 주장하지 않는다.`:'',
     plan.detailReview?`[STYLE COMPARISON AND LOCAL REPAIR] ${JSON.stringify(plan.detailReview)}. 같은 원형·카메라·조명·동작·표본 시점으로 카툰/실사/다크를 비교한다. repairs의 현재 소스/캡처 근거가 있는 부위·프레임·editableParameters만 수정하고 previousParameters와 잠긴 특징은 유지한다. 수정 뒤 동일 조건 재촬영으로 재검토하며 캡처 등록이나 파라미터 변경만으로 문제를 닫지 않는다.`:'',
     plan.runtimeVisualReview?`[RUNTIME VISUAL PIXEL REVIEW] ${JSON.stringify(plan.runtimeVisualReview)}. Roblox Studio·Unity Editor/Android APK·Web Browser의 실제 캡처를 현재 sourceRevision에 묶어 픽셀로 검수한다. expectedSubjects 중 해당 view에서 required인 대상만 누락 판정 대상으로 삼고, 가림·화면 밖·판독 불확실은 누락으로 확정하지 않는다. 실제 픽셀에서 확인된 누락 오브젝트·약한 디테일·겹침·잘림·가독성 문제를 APPLY_FIRST 후보와 precisionProduction의 약한 축 입력으로 사용한다. 먼저 사용 가능 자산을 적용하고 부족 축만 파생 제작·재적용하며 게임 규칙·밸런스·저장·네트워크 권한은 바꾸지 않는다. 수정 후 같은 surface/view에서 재캡처해야 하며 캡처 메타데이터만으로 품질 PASS를 주장하지 않는다.`:'',
     plan.motionContinuityAudit?`[MEASURED CONTINUOUS MOTION] ${JSON.stringify(plan.motionContinuityAudit)}. 루트·접촉점·손/무기 목표점=월드 미터, 관절=루트 로컬 미터, 지지물 접촉=동일 supportId의 로컬 미터, 회전/시선 오차=라디안, 표정=0~1 가중치다. violations의 region/frameRange/normalizedTimeRange에서 발 고정·손/무기 접촉·의상 관통·시선 추적·표정 튐을 수정한다. attachments는 active와 effectorWorldPosition/targetWorldPosition, penetrations는 depthMeters, gaze는 tracking과 forwardWorld/targetDirectionWorld, expressions는 morph별 가중치를 모든 프레임에 계측한다. 레지스트리 motionQA.requiredDetailChannels/limits를 작업 입력이 약화할 수 없다. 현재 소스 해시와 클립 전체 표본 및 선언된 채널이 없으면 UNVERIFIED다. 판정 시점·클립 길이·게임 이동 권한을 바꾸지 말고 재측정한다. unmeasuredGroups는 미검수이며 수치 PASS는 전체 시각 품질이나 런타임 승격 PASS가 아니다.`:'',
