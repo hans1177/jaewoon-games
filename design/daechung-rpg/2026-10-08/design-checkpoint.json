@@ -268,25 +268,39 @@
         "multiplayerPersistence": "AI 유저와 파티를 구성하고, 보스를 공략하며, 보스 동료 해금을 수행하고, 파티 조합을 확장하여 보상을 얻는다",
         "expansionSpace": "5포탈 지역 전투로 돌파, 10명 AI 유저 파티 사냥, 기여도 보상, 보스 공략, 보스 동료 해금, 파티 조합 확장, 마을 귀환/회복/강화, 레벨 성장, 15킬 파티사냥, 보스 첫 처치 AI 동료 해금, 플레이어 + 보스 동료 최대 3명 편성, 보스 동료 리더 레벨 자동 동기화, 보스 동료 기본공격1·고유스킬1·특성1"
       }
+    },
+    "local_authoring_parts::1bda22c459a9d685f34696ec9a08eb707eb6bd88aabcd1079929a2de263c3024:platformExpansionPolicy": {
+      "mode": "SHARED_LARGE_FRAME_PLATFORM_NATIVE_EXPANSION",
+      "sharedLargeFrame": [
+        "SAVE_PERSISTENCE_MEANING",
+        "SAVE_PERSISTENCE_MEANING",
+        "SAVE_PERSISTENCE_MEANING",
+        "SAVE_PERSISTENCE_MEANING",
+        "SAVE_PERSISTENCE_MEANING"
+      ],
+      "expansionLimit": "NO_ARTIFICIAL_PARITY_LIMIT_WITHIN_SHARED_LARGE_FRAME",
+      "webRule": "WEB_2_5D_AND_UP",
+      "unityRule": "UNITY_2_5D_AND_UP",
+      "robloxRule": "ROBLOX_2_5D_AND_UP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 7,
+      "calls": 9,
+      "successes": 8,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1165393,
-      "lastMs": 124840,
+      "totalMs": 1274476,
+      "lastMs": 109083,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-07T23:08:45.002Z"
+      "updatedAt": "2026-10-07T23:10:34.091Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T22:49:19.585Z",
-  "updatedAt": "2026-10-07T23:08:45.006Z",
+  "updatedAt": "2026-10-07T23:10:34.094Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1707,14 +1721,92 @@
     "designer_draft_slices::platform-profiles": "e78164753ea4c818374322e25237dbf679e048fae515d988e96eded359fa22db",
     "designer_draft_slices::web-canonical": "e78164753ea4c818374322e25237dbf679e048fae515d988e96eded359fa22db"
   },
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "lastSuccessfulModelCallAt": "2026-10-07T23:08:45.004Z",
+  "sliceRepairFeedback": {
+    "designer_draft_slices::platform-expansion": [
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "platformExpansionPolicy.webRule",
+          "value": "WEB_2_5D_AND_UP"
+        },
+        "requiredAction": "platformExpansionPolicy.webRule의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "platformExpansionPolicy"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "platformExpansionPolicy.unityRule",
+          "value": "UNITY_2_5D_AND_UP"
+        },
+        "requiredAction": "platformExpansionPolicy.unityRule의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "platformExpansionPolicy"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "platformExpansionPolicy.robloxRule",
+          "value": "ROBLOX_2_5D_AND_UP"
+        },
+        "requiredAction": "platformExpansionPolicy.robloxRule의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "platformExpansionPolicy"
+        ]
+      },
+      {
+        "code": "DESIGN_SHARED_FRAME_INCOMPLETE",
+        "kind": "HARD_GATE",
+        "axis": "PLATFORM_FIT_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "shared": [
+            "SAVE_PERSISTENCE_MEANING",
+            "SAVE_PERSISTENCE_MEANING",
+            "SAVE_PERSISTENCE_MEANING",
+            "SAVE_PERSISTENCE_MEANING",
+            "SAVE_PERSISTENCE_MEANING"
+          ]
+        },
+        "requiredAction": "공통 정체성·핵심 루프·세계/성장·저장 의미·멀티 의도를 각각 보존한다. 같은 항목을 반복하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "platformExpansionPolicy"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::platform-expansion": 1
+  },
+  "lastSuccessfulModelCallAt": "2026-10-07T23:10:34.092Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "platform-expansion",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_SHARED_FRAME_INCOMPLETE",
   "localAuthoringSplits": {
     "2f0e971375e5a6ec61d1bed9f9d0993daeedb5076dc33a4e756a41c6262a2b09": true
   }
