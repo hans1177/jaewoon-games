@@ -1,5 +1,5 @@
 {
-  "version": 78,
+  "version": 79,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -472,7 +472,7 @@
     "failureAction": "QUARANTINE_AFFECTED_ASSET_OR_SCOPE_AND_ROUTE_ASSET_REPAIR_REQUIRED",
     "wholeCompanyStopDefault": false
   },
-  "updatedAt": "2026-10-05",
+  "updatedAt": "2026-10-07",
   "graphicsProductionUnificationSecurity": {
     "version": 1,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -1297,5 +1297,26 @@
       "storyEngineMustPreserveMainABcAtRoleSeparation": true,
       "gameSeedGrammarMayConstrainStoryGenerationButCannotBypassNarrativeQa": true
     }
+  },
+  "gltfMasterAssetSecurity": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.studioAssetUniverse.gltfMasterAssetStandard",
+    "protections": {
+      "binaryAssetTextForgeryForbidden": true,
+      "repositoryPersistedMasterRequired": true,
+      "exactMasterArtifactHashRequired": true,
+      "editableSourceRecipeAndSourceHashRequired": true,
+      "licenseAndProvenanceGateUnchanged": true,
+      "unverifiedExternalMasterForbidden": true,
+      "originalAssetImmutableWhenDerived": true,
+      "platformVariantMustPreserveMasterLineage": true,
+      "directCrossPlatformFinalBinaryReuseForbidden": true,
+      "primitivePrototypeMayNotSelfPromote": true,
+      "glbPresenceMayNotBypassNativeRuntimeQa": true,
+      "glbPresenceMayNotExpandGameplayAuthority": true,
+      "gameBalanceSaveProgressionEconomyNetworkAuthorityImmutableForAssetReasons": true,
+      "existingSecurityScanQaAndF0F9RemainRequired": true
+    },
+    "failureAction": "QUARANTINE_OR_REPAIR_AFFECTED_ASSET_SCOPE_WITHOUT_CREATING_SHADOW_PIPELINE"
   }
 }
