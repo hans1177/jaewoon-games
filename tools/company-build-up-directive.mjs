@@ -1735,6 +1735,11 @@ export function buildGameSpecificBuildUpDirective({
     identityReinforcement,
     designImplementationContext:Object.freeze({
       source:'LATEST_VERIFIED_DESIGN_FIELDS',
+      coreFun:design.coreFun,
+      coreLoop:design.coreLoop,
+      signatureSystems:design.signatureSystems,
+      systemInterconnections:design.systemInterconnections,
+      progressionDirection:design.progressionDirection,
       progressionEconomyBalance:design.progressionEconomyBalance,
       contentExpansionPlan:design.contentExpansionPlan,
       failureRetryRisk:design.failureRetryRisk,
