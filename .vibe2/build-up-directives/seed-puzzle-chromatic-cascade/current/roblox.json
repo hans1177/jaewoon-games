@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-puzzle-chromatic-cascade-build-up-g27-d7e3143d4559",
-  "directiveFingerprint": "d7e3143d45591df5ad35fdf476b52b0d49a41e8826492649c409e62a162c8eb3",
-  "previousDirectiveFingerprint": "a332291963b4eee53d9ae095e16adcb90b84b7be73ea565783a11a8df41d78ec",
-  "forbiddenRepeatFingerprint": "a332291963b4eee53d9ae095e16adcb90b84b7be73ea565783a11a8df41d78ec",
+  "directiveId": "seed-puzzle-chromatic-cascade-build-up-g28-a540ff52ed14",
+  "directiveFingerprint": "a540ff52ed144774e3d3908d1e6d8bb8fbb6ada2c4d8675d08d86244ae90460e",
+  "previousDirectiveFingerprint": "d7e3143d45591df5ad35fdf476b52b0d49a41e8826492649c409e62a162c8eb3",
+  "forbiddenRepeatFingerprint": "d7e3143d45591df5ad35fdf476b52b0d49a41e8826492649c409e62a162c8eb3",
   "gameId": "seed-puzzle-chromatic-cascade",
   "gameName": "색채의 연쇄",
-  "generation": 27,
+  "generation": 28,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-puzzle-chromatic-cascade",
-  "sourceTreeFingerprint": "cedd61149432de7e377205064cc0132d3faa4863bebbc98b17de3c6646333af9",
+  "sourceTreeFingerprint": "167cbd0a3a61c8956f1bb95393f3755d2ba1e6147d5a9404926da43122b92de0",
   "designFingerprint": "dfcbc26bcb6613761dc7ece265f8c1b3a37bc9a42e5f44c2e3803aa92a880098",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -104,7 +104,7 @@
           "제4구역: 공명하는 차원문 (Resonant Portal)",
           "보드의 양 끝을 연결하여 한쪽 끝에서 일어난 연쇄 폭발이 반대편으로 전이되는 '차원 포탈' 노드가 등장합니다."
         ],
-        "sourceTreeFingerprint": "cedd61149432de7e377205064cc0132d3faa4863bebbc98b17de3c6646333af9",
+        "sourceTreeFingerprint": "167cbd0a3a61c8956f1bb95393f3755d2ba1e6147d5a9404926da43122b92de0",
         "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -355,20 +355,20 @@
   "previousVersionDelta": {
     "previousGoal": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 26,
-    "previousSourceTreeFingerprint": "06b9fe3c05efb3bb7d1fc21b435db2cace92e3eaf26fbd5c80f992828f17323d",
-    "currentSourceTreeFingerprint": "cedd61149432de7e377205064cc0132d3faa4863bebbc98b17de3c6646333af9",
+    "previousGeneration": 27,
+    "previousSourceTreeFingerprint": "cedd61149432de7e377205064cc0132d3faa4863bebbc98b17de3c6646333af9",
+    "currentSourceTreeFingerprint": "167cbd0a3a61c8956f1bb95393f3755d2ba1e6147d5a9404926da43122b92de0",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": {
-      "sourceRevision": "cbb09049ce7bcd9948e9d08dbed8885a75fdf691",
-      "artifactIdentity": "sha256:d110a32537cb185513f57cc3d4311cfcd47262378935ec8878551359488a0c85",
+      "sourceRevision": "770199ca8eee69e5255efe016459e166fd9e07b3",
+      "artifactIdentity": "sha256:e6dd0fca206526ad6a6b8f58f24213e68ec3d62a12dc1d49aa6d00de677ba19d",
       "authority": "roblox-f0-gameplay-product-readiness-failure",
-      "workflowRunId": 37568280649,
-      "testedAt": "2026-10-07T04:10:14.340Z",
+      "workflowRunId": 37571886480,
+      "testedAt": "2026-10-07T04:44:51.354Z",
       "repairSurfaces": [
         "CORE_GAMEPLAY",
         "WORLD_MAP",
@@ -454,8 +454,8 @@
         }
       ]
     },
-    "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-    "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+    "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+    "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
     "blockers": [
       "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
       "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
@@ -1553,7 +1553,7 @@
   ],
   "primaryFocus": "STABILITY",
   "thisLoopPrimaryGoal": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
-  "primaryGoalReason": "실제 runtime 실패가 관찰됐다(PRIVATE_RUNTIME_CANDIDATE_DEPLOY / ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING). 콘텐츠·그래픽 확장보다 기본 플레이 foundation의 원인 시스템 복구를 먼저 완료하고 같은 실패 시나리오를 다시 검증한다. 책임 소스는 roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau::render, roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau::scopeHandler2, roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau::scopeHandler3, roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau::scopeHandler4, roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau::scopeHandler5, roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau::scopeHandler6, roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau::reportNativeFoundationReady, roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau::initializePlayer이다.",
+  "primaryGoalReason": "실제 runtime 실패가 관찰됐다(F0_GAMEPLAY_PRODUCT_READINESS / ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED). 콘텐츠·그래픽 확장보다 기본 플레이 foundation의 원인 시스템 복구를 먼저 완료하고 같은 실패 시나리오를 다시 검증한다. 책임 소스는 roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau::render, roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau::scopeHandler2, roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau::scopeHandler3, roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau::scopeHandler4, roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau::scopeHandler5, roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau::scopeHandler6, roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau::reportNativeFoundationReady, roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau::initializePlayer이다.",
   "gameplayImplementationDirectives": [
     "우선 책임 소스 앵커 roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau::render, roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau::scopeHandler2, roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau::scopeHandler3, roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau::scopeHandler4, roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau::scopeHandler5, roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau::scopeHandler6, roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau::reportNativeFoundationReady, roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau::initializePlayer에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "색채 주파수 튜너 (Chromatic Frequency Tuner)를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
@@ -1608,8 +1608,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 96855,
-        "largestFileBytes": 47908,
+        "sourceBytes": 97362,
+        "largestFileBytes": 48042,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1795,11 +1795,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 27,
-    "previousGeneration": 26,
+    "generation": 28,
+    "previousGeneration": 27,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "cedd61149432de7e377205064cc0132d3faa4863bebbc98b17de3c6646333af9",
-    "priorSourceFingerprint": "06b9fe3c05efb3bb7d1fc21b435db2cace92e3eaf26fbd5c80f992828f17323d",
+    "sourceFingerprint": "167cbd0a3a61c8956f1bb95393f3755d2ba1e6147d5a9404926da43122b92de0",
+    "priorSourceFingerprint": "cedd61149432de7e377205064cc0132d3faa4863bebbc98b17de3c6646333af9",
     "previousRuntimeEffect": "REGRESSION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2259,7 +2259,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "cedd61149432de7e377205064cc0132d3faa4863bebbc98b17de3c6646333af9",
+    "sourceTreeFingerprint": "167cbd0a3a61c8956f1bb95393f3755d2ba1e6147d5a9404926da43122b92de0",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2349,7 +2349,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "cedd61149432de7e377205064cc0132d3faa4863bebbc98b17de3c6646333af9",
+    "sourceTreeFingerprint": "167cbd0a3a61c8956f1bb95393f3755d2ba1e6147d5a9404926da43122b92de0",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2612,11 +2612,11 @@
       "runtimeObserved": true
     },
     "baseline": {
-      "sourceTreeFingerprint": "cedd61149432de7e377205064cc0132d3faa4863bebbc98b17de3c6646333af9",
+      "sourceTreeFingerprint": "167cbd0a3a61c8956f1bb95393f3755d2ba1e6147d5a9404926da43122b92de0",
       "runtimeObserved": true,
       "runtimePassed": false,
-      "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING"
+      "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+      "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2667,7 +2667,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 28,
+    "nextGeneration": 29,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2735,5 +2735,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-07T03:46:36.037Z"
+  "generatedAt": "2026-10-07T04:46:41.142Z"
 }

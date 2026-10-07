@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "fantasy-survival-build-up-g24-d7f408ac7a65",
-  "directiveFingerprint": "d7f408ac7a65bd22f1576962cd4f6ce2fb4510374c20d261f115b94f4869bc1d",
-  "previousDirectiveFingerprint": "6d445ca504763ececdc074cd72d1d0f2a717bce588f603b5d62123cf200acf76",
-  "forbiddenRepeatFingerprint": "6d445ca504763ececdc074cd72d1d0f2a717bce588f603b5d62123cf200acf76",
+  "directiveId": "fantasy-survival-build-up-g25-5b1529569742",
+  "directiveFingerprint": "5b1529569742115bcd65087a6301f940be4392488ff27446cd67f2281b6a6ba3",
+  "previousDirectiveFingerprint": "d7f408ac7a65bd22f1576962cd4f6ce2fb4510374c20d261f115b94f4869bc1d",
+  "forbiddenRepeatFingerprint": "d7f408ac7a65bd22f1576962cd4f6ce2fb4510374c20d261f115b94f4869bc1d",
   "gameId": "fantasy-survival",
   "gameName": "마력숲 생존기",
-  "generation": 24,
+  "generation": 25,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/fantasy-survival",
-  "sourceTreeFingerprint": "01d51a765cc916c5f10445732beb99d8677729f4bcaeee7ecd837faac2242513",
+  "sourceTreeFingerprint": "bc2675aa78cd1b316c17f98ea6665bf91604070637aa7fad202f998ba910a13e",
   "designFingerprint": "47629f899ccd0e25f5db0d9b2975635bfa0961ed7a791c2ef9f93fc87e59aada",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -104,7 +104,7 @@
           "VFX_AUDIO_CAMERA_POLISH_MOBILE",
           "새 규칙을 추가하지 않는다. 기존 적중·위험·보상·스토리 이벤트에 VFX·오디오·카메라·UI 폴리시를 동기화한다."
         ],
-        "sourceTreeFingerprint": "01d51a765cc916c5f10445732beb99d8677729f4bcaeee7ecd837faac2242513",
+        "sourceTreeFingerprint": "bc2675aa78cd1b316c17f98ea6665bf91604070637aa7fad202f998ba910a13e",
         "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -355,20 +355,20 @@
   "previousVersionDelta": {
     "previousGoal": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 23,
-    "previousSourceTreeFingerprint": "ab501530fb2567a0b192ceeaaee09025caca6897e258f5c10ac85c0f90aad56c",
-    "currentSourceTreeFingerprint": "01d51a765cc916c5f10445732beb99d8677729f4bcaeee7ecd837faac2242513",
+    "previousGeneration": 24,
+    "previousSourceTreeFingerprint": "01d51a765cc916c5f10445732beb99d8677729f4bcaeee7ecd837faac2242513",
+    "currentSourceTreeFingerprint": "bc2675aa78cd1b316c17f98ea6665bf91604070637aa7fad202f998ba910a13e",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": {
-      "sourceRevision": "2904f826d2220c02830851247173eda6f4b3f86a",
-      "artifactIdentity": "sha256:6cf6e642c3365e25df7043b8da6fc02825702223e16042a2ef74c2a673c75051",
+      "sourceRevision": "770199ca8eee69e5255efe016459e166fd9e07b3",
+      "artifactIdentity": "sha256:96c709af740117023f1cf96f6d2a3f8906135b9d10cdc77afef6d9cab7d99cdd",
       "authority": "roblox-f0-gameplay-product-readiness-failure",
-      "workflowRunId": 37568280649,
-      "testedAt": "2026-10-07T04:10:14.340Z",
+      "workflowRunId": 37571886480,
+      "testedAt": "2026-10-07T04:44:51.354Z",
       "repairSurfaces": [
         "CORE_GAMEPLAY",
         "WORLD_MAP",
@@ -497,8 +497,8 @@
         }
       ]
     },
-    "failureStage": "F0_SOURCE_INTEGRITY",
-    "failureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
+    "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+    "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
     "blockers": [
       "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
       "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
@@ -1602,7 +1602,7 @@
   ],
   "primaryFocus": "STABILITY",
   "thisLoopPrimaryGoal": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
-  "primaryGoalReason": "실제 runtime 실패가 관찰됐다(F0_SOURCE_INTEGRITY / ROBLOX_F0_SOURCE_PREFLIGHT_FAILED). 콘텐츠·그래픽 확장보다 기본 플레이 foundation의 원인 시스템 복구를 먼저 완료하고 같은 실패 시나리오를 다시 검증한다. 책임 소스는 roblox-games/fantasy-survival/client/Game.client.luau::render, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler1, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler2, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler3, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler4, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler5, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler6, roblox-games/fantasy-survival/server/Game.server.luau::bindNativeFoundationPlayer이다.",
+  "primaryGoalReason": "실제 runtime 실패가 관찰됐다(F0_GAMEPLAY_PRODUCT_READINESS / ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED). 콘텐츠·그래픽 확장보다 기본 플레이 foundation의 원인 시스템 복구를 먼저 완료하고 같은 실패 시나리오를 다시 검증한다. 책임 소스는 roblox-games/fantasy-survival/client/Game.client.luau::render, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler1, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler2, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler3, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler4, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler5, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler6, roblox-games/fantasy-survival/server/Game.server.luau::bindNativeFoundationPlayer이다.",
   "gameplayImplementationDirectives": [
     "우선 책임 소스 앵커 roblox-games/fantasy-survival/client/Game.client.luau::render, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler1, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler2, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler3, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler4, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler5, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler6, roblox-games/fantasy-survival/server/Game.server.luau::bindNativeFoundationPlayer에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "기존 게임플레이 의미 보존를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
@@ -1657,8 +1657,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 100258,
-        "largestFileBytes": 47539,
+        "sourceBytes": 100765,
+        "largestFileBytes": 47673,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1846,11 +1846,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 24,
-    "previousGeneration": 23,
+    "generation": 25,
+    "previousGeneration": 24,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "01d51a765cc916c5f10445732beb99d8677729f4bcaeee7ecd837faac2242513",
-    "priorSourceFingerprint": "ab501530fb2567a0b192ceeaaee09025caca6897e258f5c10ac85c0f90aad56c",
+    "sourceFingerprint": "bc2675aa78cd1b316c17f98ea6665bf91604070637aa7fad202f998ba910a13e",
+    "priorSourceFingerprint": "01d51a765cc916c5f10445732beb99d8677729f4bcaeee7ecd837faac2242513",
     "previousRuntimeEffect": "REGRESSION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2310,7 +2310,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "01d51a765cc916c5f10445732beb99d8677729f4bcaeee7ecd837faac2242513",
+    "sourceTreeFingerprint": "bc2675aa78cd1b316c17f98ea6665bf91604070637aa7fad202f998ba910a13e",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2400,7 +2400,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "01d51a765cc916c5f10445732beb99d8677729f4bcaeee7ecd837faac2242513",
+    "sourceTreeFingerprint": "bc2675aa78cd1b316c17f98ea6665bf91604070637aa7fad202f998ba910a13e",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2663,11 +2663,11 @@
       "runtimeObserved": true
     },
     "baseline": {
-      "sourceTreeFingerprint": "01d51a765cc916c5f10445732beb99d8677729f4bcaeee7ecd837faac2242513",
+      "sourceTreeFingerprint": "bc2675aa78cd1b316c17f98ea6665bf91604070637aa7fad202f998ba910a13e",
       "runtimeObserved": true,
       "runtimePassed": false,
-      "failureStage": "F0_SOURCE_INTEGRITY",
-      "failureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED"
+      "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+      "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2718,7 +2718,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 25,
+    "nextGeneration": 26,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2783,5 +2783,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-07T03:43:32.230Z"
+  "generatedAt": "2026-10-07T04:46:40.848Z"
 }

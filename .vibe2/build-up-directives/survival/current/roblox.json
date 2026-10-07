@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "survival-build-up-g13-30607a80fde5",
-  "directiveFingerprint": "30607a80fde5cd4b87efe20a99b041e25d50155bb1997d5c3829f2734237ce29",
-  "previousDirectiveFingerprint": "e6fc0bededa8e7706d759aff3226caca67305fd86df1ed07a6f3eba8d615b3ed",
-  "forbiddenRepeatFingerprint": "e6fc0bededa8e7706d759aff3226caca67305fd86df1ed07a6f3eba8d615b3ed",
+  "directiveId": "survival-build-up-g14-e6c487a4ff6d",
+  "directiveFingerprint": "e6c487a4ff6d97342fe53ce9f908eeb054c621d9107f8f03f78d12cec169e138",
+  "previousDirectiveFingerprint": "30607a80fde5cd4b87efe20a99b041e25d50155bb1997d5c3829f2734237ce29",
+  "forbiddenRepeatFingerprint": "30607a80fde5cd4b87efe20a99b041e25d50155bb1997d5c3829f2734237ce29",
   "gameId": "survival",
   "gameName": "나의 생존기",
-  "generation": 13,
+  "generation": 14,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/survival",
-  "sourceTreeFingerprint": "3605beb42a65701271de5ace3718328e2088d826be4f5090badc46ae25c657c0",
+  "sourceTreeFingerprint": "cbb8ec1e288f0ffe58d75e96e8f6742664c684b128d6c0b9cae849e5dc87e9fc",
   "designFingerprint": "8c608ffabccf721a1726defb16a9a5313a6b3ca0dfac195606f9d3e1cee4d028",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -104,7 +104,7 @@
           "Late-Game Challenge (Days 21+)",
           "Boss waves, complex environmental hazards, and advanced skill trees."
         ],
-        "sourceTreeFingerprint": "3605beb42a65701271de5ace3718328e2088d826be4f5090badc46ae25c657c0",
+        "sourceTreeFingerprint": "cbb8ec1e288f0ffe58d75e96e8f6742664c684b128d6c0b9cae849e5dc87e9fc",
         "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -508,9 +508,9 @@
   "previousVersionDelta": {
     "previousGoal": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 12,
-    "previousSourceTreeFingerprint": "72041e6c1ac4e13e74eef2671a43d655b52d0da76937e377a3d24af04b75506d",
-    "currentSourceTreeFingerprint": "3605beb42a65701271de5ace3718328e2088d826be4f5090badc46ae25c657c0",
+    "previousGeneration": 13,
+    "previousSourceTreeFingerprint": "3605beb42a65701271de5ace3718328e2088d826be4f5090badc46ae25c657c0",
+    "currentSourceTreeFingerprint": "cbb8ec1e288f0ffe58d75e96e8f6742664c684b128d6c0b9cae849e5dc87e9fc",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1655,8 +1655,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 116625,
-        "largestFileBytes": 48403,
+        "sourceBytes": 117132,
+        "largestFileBytes": 48537,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1688,8 +1688,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 7,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=6; uncoveredBefore=5.",
+    "themeDepth": 8,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=7; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1699,7 +1699,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 7
+        "PRESENTATION_WORLD_COHESION": 8
       },
       "sequence": [
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1708,7 +1708,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1748,7 +1748,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 120,
+        "score": 102,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -1862,11 +1862,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 13,
-    "previousGeneration": 12,
+    "generation": 14,
+    "previousGeneration": 13,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "3605beb42a65701271de5ace3718328e2088d826be4f5090badc46ae25c657c0",
-    "priorSourceFingerprint": "72041e6c1ac4e13e74eef2671a43d655b52d0da76937e377a3d24af04b75506d",
+    "sourceFingerprint": "cbb8ec1e288f0ffe58d75e96e8f6742664c684b128d6c0b9cae849e5dc87e9fc",
+    "priorSourceFingerprint": "3605beb42a65701271de5ace3718328e2088d826be4f5090badc46ae25c657c0",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2111,9 +2111,9 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/survival/shared/GameConfig.luau",
-      "roblox-games/survival/server/Game.server.luau",
       "roblox-games/survival/client/Game.client.luau",
+      "roblox-games/survival/server/Game.server.luau",
+      "roblox-games/survival/shared/GameConfig.luau",
       "roblox-games/survival/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -2327,7 +2327,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "3605beb42a65701271de5ace3718328e2088d826be4f5090badc46ae25c657c0",
+    "sourceTreeFingerprint": "cbb8ec1e288f0ffe58d75e96e8f6742664c684b128d6c0b9cae849e5dc87e9fc",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2418,7 +2418,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "3605beb42a65701271de5ace3718328e2088d826be4f5090badc46ae25c657c0",
+    "sourceTreeFingerprint": "cbb8ec1e288f0ffe58d75e96e8f6742664c684b128d6c0b9cae849e5dc87e9fc",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2455,9 +2455,9 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/survival/shared/GameConfig.luau",
-      "roblox-games/survival/server/Game.server.luau",
       "roblox-games/survival/client/Game.client.luau",
+      "roblox-games/survival/server/Game.server.luau",
+      "roblox-games/survival/shared/GameConfig.luau",
       "roblox-games/survival/default.project.json"
     ],
     "sourceAnchors": [
@@ -2599,9 +2599,9 @@
     "gameId": "survival",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/survival/shared/GameConfig.luau",
-      "roblox-games/survival/server/Game.server.luau",
       "roblox-games/survival/client/Game.client.luau",
+      "roblox-games/survival/server/Game.server.luau",
+      "roblox-games/survival/shared/GameConfig.luau",
       "roblox-games/survival/default.project.json"
     ],
     "impact": {
@@ -2676,7 +2676,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "3605beb42a65701271de5ace3718328e2088d826be4f5090badc46ae25c657c0",
+      "sourceTreeFingerprint": "cbb8ec1e288f0ffe58d75e96e8f6742664c684b128d6c0b9cae849e5dc87e9fc",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2731,7 +2731,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 14,
+    "nextGeneration": 15,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2798,5 +2798,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-07T03:46:36.235Z"
+  "generatedAt": "2026-10-07T04:46:40.708Z"
 }

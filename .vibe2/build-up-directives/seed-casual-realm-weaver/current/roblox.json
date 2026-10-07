@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "seed-casual-realm-weaver-build-up-g23-eab3878fc666",
-  "directiveFingerprint": "eab3878fc666f39fa39b3d738f15e163bcee00831cb8a160418aeb819196f945",
-  "previousDirectiveFingerprint": "7502daf0359a19b2c67e1c92b31619ee024103447bec458caab094cd7fbe9055",
-  "forbiddenRepeatFingerprint": "7502daf0359a19b2c67e1c92b31619ee024103447bec458caab094cd7fbe9055",
+  "directiveId": "seed-casual-realm-weaver-build-up-g24-6ba214517298",
+  "directiveFingerprint": "6ba2145172983b60e0634b88928184d534f10a0891b6e4c90ad624b94d519d65",
+  "previousDirectiveFingerprint": "eab3878fc666f39fa39b3d738f15e163bcee00831cb8a160418aeb819196f945",
+  "forbiddenRepeatFingerprint": "eab3878fc666f39fa39b3d738f15e163bcee00831cb8a160418aeb819196f945",
   "gameId": "seed-casual-realm-weaver",
   "gameName": "세계의 직조자",
-  "generation": 23,
+  "generation": 24,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "running",
+  "previousDirectiveOutcome": "queued",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-casual-realm-weaver",
-  "sourceTreeFingerprint": "810eb6bb6c76c22074500da97eba9973e14513e0c1994e884fe0068b0abb8344",
+  "sourceTreeFingerprint": "21b9e1dd963780cfa9d6a9fc125823c95ce4a69eb994fa7dcaa9fc5e5d03d08a",
   "designFingerprint": "8d2a4ae52d671b1912974b9f0a29d9e19323731153e212a6e3bc32e55b4d8d4b",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -104,7 +104,7 @@
           "장기 업데이트: 하늘의 정원",
           "비동기식 소셜 협동 모드 및 커스텀 맵 공유 기능"
         ],
-        "sourceTreeFingerprint": "810eb6bb6c76c22074500da97eba9973e14513e0c1994e884fe0068b0abb8344",
+        "sourceTreeFingerprint": "21b9e1dd963780cfa9d6a9fc125823c95ce4a69eb994fa7dcaa9fc5e5d03d08a",
         "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -364,20 +364,20 @@
   "previousVersionDelta": {
     "previousGoal": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 22,
-    "previousSourceTreeFingerprint": "a34cea4ff418d3cd35fe25c02956940bdb74c633d6e199b8b61a4ae5efc0d66e",
-    "currentSourceTreeFingerprint": "810eb6bb6c76c22074500da97eba9973e14513e0c1994e884fe0068b0abb8344",
+    "previousGeneration": 23,
+    "previousSourceTreeFingerprint": "810eb6bb6c76c22074500da97eba9973e14513e0c1994e884fe0068b0abb8344",
+    "currentSourceTreeFingerprint": "21b9e1dd963780cfa9d6a9fc125823c95ce4a69eb994fa7dcaa9fc5e5d03d08a",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": {
-      "sourceRevision": "cbb09049ce7bcd9948e9d08dbed8885a75fdf691",
-      "artifactIdentity": "sha256:585b9e61843753a9450cce4d3ed38cb54724c9f365b8f1b49c2c46ae2f9f04df",
+      "sourceRevision": "770199ca8eee69e5255efe016459e166fd9e07b3",
+      "artifactIdentity": "sha256:eaef04793a45c3e18fdf7ca5c325b14c6ad810728279520f075648dfd2d4f9d8",
       "authority": "roblox-f0-gameplay-product-readiness-failure",
-      "workflowRunId": 37568280649,
-      "testedAt": "2026-10-07T04:10:14.340Z",
+      "workflowRunId": 37571886480,
+      "testedAt": "2026-10-07T04:44:51.354Z",
       "repairSurfaces": [
         "CORE_GAMEPLAY",
         "WORLD_MAP",
@@ -470,8 +470,8 @@
         }
       ]
     },
-    "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-    "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+    "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+    "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
     "blockers": [
       "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
       "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
@@ -1570,7 +1570,7 @@
   ],
   "primaryFocus": "STABILITY",
   "thisLoopPrimaryGoal": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
-  "primaryGoalReason": "실제 runtime 실패가 관찰됐다(PRIVATE_RUNTIME_CANDIDATE_DEPLOY / ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING). 콘텐츠·그래픽 확장보다 기본 플레이 foundation의 원인 시스템 복구를 먼저 완료하고 같은 실패 시나리오를 다시 검증한다. 책임 소스는 roblox-games/seed-casual-realm-weaver/client/Game.client.luau::render, roblox-games/seed-casual-realm-weaver/server/Game.server.luau::scopeHandler2, roblox-games/seed-casual-realm-weaver/server/Game.server.luau::scopeHandler3, roblox-games/seed-casual-realm-weaver/server/Game.server.luau::scopeHandler4, roblox-games/seed-casual-realm-weaver/server/Game.server.luau::scopeHandler5, roblox-games/seed-casual-realm-weaver/server/Game.server.luau::scopeHandler6, roblox-games/seed-casual-realm-weaver/server/Game.server.luau::scopeHandler7, roblox-games/seed-casual-realm-weaver/client/Game.client.luau::reportNativeFoundationReady이다.",
+  "primaryGoalReason": "실제 runtime 실패가 관찰됐다(F0_GAMEPLAY_PRODUCT_READINESS / ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED). 콘텐츠·그래픽 확장보다 기본 플레이 foundation의 원인 시스템 복구를 먼저 완료하고 같은 실패 시나리오를 다시 검증한다. 책임 소스는 roblox-games/seed-casual-realm-weaver/client/Game.client.luau::render, roblox-games/seed-casual-realm-weaver/server/Game.server.luau::scopeHandler2, roblox-games/seed-casual-realm-weaver/server/Game.server.luau::scopeHandler3, roblox-games/seed-casual-realm-weaver/server/Game.server.luau::scopeHandler4, roblox-games/seed-casual-realm-weaver/server/Game.server.luau::scopeHandler5, roblox-games/seed-casual-realm-weaver/server/Game.server.luau::scopeHandler6, roblox-games/seed-casual-realm-weaver/server/Game.server.luau::scopeHandler7, roblox-games/seed-casual-realm-weaver/client/Game.client.luau::reportNativeFoundationReady이다.",
   "gameplayImplementationDirectives": [
     "우선 책임 소스 앵커 roblox-games/seed-casual-realm-weaver/client/Game.client.luau::render, roblox-games/seed-casual-realm-weaver/server/Game.server.luau::scopeHandler2, roblox-games/seed-casual-realm-weaver/server/Game.server.luau::scopeHandler3, roblox-games/seed-casual-realm-weaver/server/Game.server.luau::scopeHandler4, roblox-games/seed-casual-realm-weaver/server/Game.server.luau::scopeHandler5, roblox-games/seed-casual-realm-weaver/server/Game.server.luau::scopeHandler6, roblox-games/seed-casual-realm-weaver/server/Game.server.luau::scopeHandler7, roblox-games/seed-casual-realm-weaver/client/Game.client.luau::reportNativeFoundationReady에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "직조 연결 시스템를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
@@ -1626,8 +1626,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 97287,
-        "largestFileBytes": 48227,
+        "sourceBytes": 97794,
+        "largestFileBytes": 48361,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1815,11 +1815,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 23,
-    "previousGeneration": 22,
+    "generation": 24,
+    "previousGeneration": 23,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "810eb6bb6c76c22074500da97eba9973e14513e0c1994e884fe0068b0abb8344",
-    "priorSourceFingerprint": "a34cea4ff418d3cd35fe25c02956940bdb74c633d6e199b8b61a4ae5efc0d66e",
+    "sourceFingerprint": "21b9e1dd963780cfa9d6a9fc125823c95ce4a69eb994fa7dcaa9fc5e5d03d08a",
+    "priorSourceFingerprint": "810eb6bb6c76c22074500da97eba9973e14513e0c1994e884fe0068b0abb8344",
     "previousRuntimeEffect": "REGRESSION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2280,7 +2280,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "810eb6bb6c76c22074500da97eba9973e14513e0c1994e884fe0068b0abb8344",
+    "sourceTreeFingerprint": "21b9e1dd963780cfa9d6a9fc125823c95ce4a69eb994fa7dcaa9fc5e5d03d08a",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2371,7 +2371,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "810eb6bb6c76c22074500da97eba9973e14513e0c1994e884fe0068b0abb8344",
+    "sourceTreeFingerprint": "21b9e1dd963780cfa9d6a9fc125823c95ce4a69eb994fa7dcaa9fc5e5d03d08a",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2634,11 +2634,11 @@
       "runtimeObserved": true
     },
     "baseline": {
-      "sourceTreeFingerprint": "810eb6bb6c76c22074500da97eba9973e14513e0c1994e884fe0068b0abb8344",
+      "sourceTreeFingerprint": "21b9e1dd963780cfa9d6a9fc125823c95ce4a69eb994fa7dcaa9fc5e5d03d08a",
       "runtimeObserved": true,
       "runtimePassed": false,
-      "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING"
+      "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+      "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2689,7 +2689,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 24,
+    "nextGeneration": 25,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2758,5 +2758,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-07T03:47:57.040Z"
+  "generatedAt": "2026-10-07T04:46:41.238Z"
 }

@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-story-complete-rpg-chronicles-of-eldoria-build-up-g22-a2aeb945b845",
-  "directiveFingerprint": "a2aeb945b845c06ecfd5a340af1157e0558c441bb0f993361ee1ab05823b7b78",
-  "previousDirectiveFingerprint": "6fbc7afb5405937367c068d898bc3ad39c47d7c3f6c525b8a95f7499e3a49e36",
-  "forbiddenRepeatFingerprint": "6fbc7afb5405937367c068d898bc3ad39c47d7c3f6c525b8a95f7499e3a49e36",
+  "directiveId": "seed-story-complete-rpg-chronicles-of-eldoria-build-up-g23-b45885c4a663",
+  "directiveFingerprint": "b45885c4a66375cca262803f0f95b69755090324a91be1c1b1011513115e9c16",
+  "previousDirectiveFingerprint": "a2aeb945b845c06ecfd5a340af1157e0558c441bb0f993361ee1ab05823b7b78",
+  "forbiddenRepeatFingerprint": "a2aeb945b845c06ecfd5a340af1157e0558c441bb0f993361ee1ab05823b7b78",
   "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
   "gameName": "엘도리아 연대기",
-  "generation": 22,
+  "generation": 23,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,11 +14,11 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria",
-  "sourceTreeFingerprint": "a31632d757aecf4f197979859f23dd34a61ad1d4b1be0280558f5675f999c881",
-  "designFingerprint": "98f3aa3ea609a96c88afd987a94cdef8fe4eb9fa8abebc185ebaccb7d908e188",
+  "sourceTreeFingerprint": "71711be828429e6915c40ec005280c599ee258eb82cf4baaef3aeb13fc951913",
+  "designFingerprint": "daa0eb49313b00bae65989b9d00420ed30dc558372093ed1b36b664d42fa671c",
   "identityReinforcement": {
     "appliesToAllGenres": true,
-    "genre": "Strategy",
+    "genre": "GAME_SPECIFIC",
     "oneLineFantasy": "플레이어는 멸망해가는 세계 엘도리아의 마지막 수호자가 되어, 잃어버린 고대 유물을 복구하고 동료들과 함께 운명을 개척하는 영웅적 여정을 경험합니다. 자신의 결정에 따라 세계의 지형이 바뀌고 동료들의 신뢰도가 변하는 결과를 직접 목격합니다.",
     "representativeAction": "월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.",
     "representativeChoice": "플레이어는 매 턴마다 어떤 속성의 스킬을 우선 사용할지, 혹은 동료와 어떤 속성 연계를 발동시킬지 결정하며, 이 선택이 전투의 템포와 피해량을 즉각적으로 변화시킵니다.",
@@ -104,7 +104,7 @@
           "최종 결전 및 플레이어 선택 반영 엔딩",
           "지금까지의 모든 탐험 경로와 캐릭터 선택이 반영된 최종 보스전이 진행됩니다. 플레이어는 자신이 개척한 지형과 동료와의 유대 관계를 활용하여 보스의 약점을 공략하는 총력전을 수행합니다."
         ],
-        "sourceTreeFingerprint": "a31632d757aecf4f197979859f23dd34a61ad1d4b1be0280558f5675f999c881",
+        "sourceTreeFingerprint": "71711be828429e6915c40ec005280c599ee258eb82cf4baaef3aeb13fc951913",
         "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -355,146 +355,19 @@
   "previousVersionDelta": {
     "previousGoal": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 21,
-    "previousSourceTreeFingerprint": "ee6d08b79a8dd3ee28db76952f2d75f9ab245c5f781c28a8de025bf61312a9b8",
-    "currentSourceTreeFingerprint": "a31632d757aecf4f197979859f23dd34a61ad1d4b1be0280558f5675f999c881",
+    "previousGeneration": 22,
+    "previousSourceTreeFingerprint": "a31632d757aecf4f197979859f23dd34a61ad1d4b1be0280558f5675f999c881",
+    "currentSourceTreeFingerprint": "71711be828429e6915c40ec005280c599ee258eb82cf4baaef3aeb13fc951913",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": {
-      "sourceRevision": "cbb09049ce7bcd9948e9d08dbed8885a75fdf691",
-      "artifactIdentity": "sha256:7ed06ac376b067f8e21ebe2f482904dc531c787d0e93dfcad2cffc283ea764f5",
-      "authority": "roblox-f0-gameplay-product-readiness-failure",
-      "workflowRunId": 37568280649,
-      "testedAt": "2026-10-07T04:10:14.340Z",
-      "repairSurfaces": [
-        "CORE_GAMEPLAY",
-        "WORLD_MAP",
-        "COMBAT_FEEL",
-        "PROGRESSION_CONTENT"
-      ],
-      "qualityFailureDetails": [
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P0",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"seed-story-complete-rpg-chronicles-of-eldoria\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"PROGRESSION\",\"BOSS\",\"MOBILE_UI\",\"SAVE\",\"SESSION_FLOW\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"PROGRESSION\":false,\"BOSS\":false,\"MOBILE_UI\":true,\"SAVE\":true,\"SESSION_FLOW\":false},\"coreLoopTrace\":[{\"index\":0,\"step\":\"월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"턴제 전투 시스템에서 적의 속성을 파악하고 스킬 콤보를 설계하여 승리한 뒤, 경험치와 고대 유물 파편을 획득하여 캐릭터를 강화합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"획득한 유물 파편을 사용하여 스킬 트리를 커스터마이징하고, 강화된 능력으로 이전에는 도달할 수 없었던 고난도 지역에 도전하여 서사를 완결합니다.\",\"capabilities\":[\"WORLD\",\"COMBAT\",\"PROGRESSION\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"속성 공명 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false},{\"index\":1,\"name\":\"운명 개척 탐험 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P0",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"seed-story-complete-rpg-chronicles-of-eldoria\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"PROGRESSION\",\"BOSS\",\"MOBILE_UI\",\"SAVE\",\"SESSION_FLOW\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"PROGRESSION\":false,\"BOSS\":false,\"MOBILE_UI\":true,\"SAVE\":true,\"SESSION_FLOW\":false},\"coreLoopTrace\":[{\"index\":0,\"step\":\"월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"턴제 전투 시스템에서 적의 속성을 파악하고 스킬 콤보를 설계하여 승리한 뒤, 경험치와 고대 유물 파편을 획득하여 캐릭터를 강화합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"획득한 유물 파편을 사용하여 스킬 트리를 커스터마이징하고, 강화된 능력으로 이전에는 도달할 수 없었던 고난도 지역에 도전하여 서사를 완결합니다.\",\"capabilities\":[\"WORLD\",\"COMBAT\",\"PROGRESSION\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"속성 공명 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false},{\"index\":1,\"name\":\"운명 개척 탐험 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P0",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"seed-story-complete-rpg-chronicles-of-eldoria\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"PROGRESSION\",\"BOSS\",\"MOBILE_UI\",\"SAVE\",\"SESSION_FLOW\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"PROGRESSION\":false,\"BOSS\":false,\"MOBILE_UI\":true,\"SAVE\":true,\"SESSION_FLOW\":false},\"coreLoopTrace\":[{\"index\":0,\"step\":\"월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"턴제 전투 시스템에서 적의 속성을 파악하고 스킬 콤보를 설계하여 승리한 뒤, 경험치와 고대 유물 파편을 획득하여 캐릭터를 강화합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"획득한 유물 파편을 사용하여 스킬 트리를 커스터마이징하고, 강화된 능력으로 이전에는 도달할 수 없었던 고난도 지역에 도전하여 서사를 완결합니다.\",\"capabilities\":[\"WORLD\",\"COMBAT\",\"PROGRESSION\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"속성 공명 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false},{\"index\":1,\"name\":\"운명 개척 탐험 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"seed-story-complete-rpg-chronicles-of-eldoria\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"PROGRESSION\",\"BOSS\",\"MOBILE_UI\",\"SAVE\",\"SESSION_FLOW\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"PROGRESSION\":false,\"BOSS\":false,\"MOBILE_UI\":true,\"SAVE\":true,\"SESSION_FLOW\":false},\"coreLoopTrace\":[{\"index\":0,\"step\":\"월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"턴제 전투 시스템에서 적의 속성을 파악하고 스킬 콤보를 설계하여 승리한 뒤, 경험치와 고대 유물 파편을 획득하여 캐릭터를 강화합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"획득한 유물 파편을 사용하여 스킬 트리를 커스터마이징하고, 강화된 능력으로 이전에는 도달할 수 없었던 고난도 지역에 도전하여 서사를 완결합니다.\",\"capabilities\":[\"WORLD\",\"COMBAT\",\"PROGRESSION\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"속성 공명 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false},{\"index\":1,\"name\":\"운명 개척 탐험 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"seed-story-complete-rpg-chronicles-of-eldoria\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"PROGRESSION\",\"BOSS\",\"MOBILE_UI\",\"SAVE\",\"SESSION_FLOW\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"PROGRESSION\":false,\"BOSS\":false,\"MOBILE_UI\":true,\"SAVE\":true,\"SESSION_FLOW\":false},\"coreLoopTrace\":[{\"index\":0,\"step\":\"월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"턴제 전투 시스템에서 적의 속성을 파악하고 스킬 콤보를 설계하여 승리한 뒤, 경험치와 고대 유물 파편을 획득하여 캐릭터를 강화합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"획득한 유물 파편을 사용하여 스킬 트리를 커스터마이징하고, 강화된 능력으로 이전에는 도달할 수 없었던 고난도 지역에 도전하여 서사를 완결합니다.\",\"capabilities\":[\"WORLD\",\"COMBAT\",\"PROGRESSION\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"속성 공명 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false},{\"index\":1,\"name\":\"운명 개척 탐험 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"seed-story-complete-rpg-chronicles-of-eldoria\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"PROGRESSION\",\"BOSS\",\"MOBILE_UI\",\"SAVE\",\"SESSION_FLOW\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"PROGRESSION\":false,\"BOSS\":false,\"MOBILE_UI\":true,\"SAVE\":true,\"SESSION_FLOW\":false},\"coreLoopTrace\":[{\"index\":0,\"step\":\"월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"턴제 전투 시스템에서 적의 속성을 파악하고 스킬 콤보를 설계하여 승리한 뒤, 경험치와 고대 유물 파편을 획득하여 캐릭터를 강화합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"획득한 유물 파편을 사용하여 스킬 트리를 커스터마이징하고, 강화된 능력으로 이전에는 도달할 수 없었던 고난도 지역에 도전하여 서사를 완결합니다.\",\"capabilities\":[\"WORLD\",\"COMBAT\",\"PROGRESSION\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"속성 공명 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false},{\"index\":1,\"name\":\"운명 개척 탐험 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"seed-story-complete-rpg-chronicles-of-eldoria\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"PROGRESSION\",\"BOSS\",\"MOBILE_UI\",\"SAVE\",\"SESSION_FLOW\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"PROGRESSION\":false,\"BOSS\":false,\"MOBILE_UI\":true,\"SAVE\":true,\"SESSION_FLOW\":false},\"coreLoopTrace\":[{\"index\":0,\"step\":\"월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"턴제 전투 시스템에서 적의 속성을 파악하고 스킬 콤보를 설계하여 승리한 뒤, 경험치와 고대 유물 파편을 획득하여 캐릭터를 강화합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"획득한 유물 파편을 사용하여 스킬 트리를 커스터마이징하고, 강화된 능력으로 이전에는 도달할 수 없었던 고난도 지역에 도전하여 서사를 완결합니다.\",\"capabilities\":[\"WORLD\",\"COMBAT\",\"PROGRESSION\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"속성 공명 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false},{\"index\":1,\"name\":\"운명 개척 탐험 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"seed-story-complete-rpg-chronicles-of-eldoria\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"PROGRESSION\",\"BOSS\",\"MOBILE_UI\",\"SAVE\",\"SESSION_FLOW\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"PROGRESSION\":false,\"BOSS\":false,\"MOBILE_UI\":true,\"SAVE\":true,\"SESSION_FLOW\":false},\"coreLoopTrace\":[{\"index\":0,\"step\":\"월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"턴제 전투 시스템에서 적의 속성을 파악하고 스킬 콤보를 설계하여 승리한 뒤, 경험치와 고대 유물 파편을 획득하여 캐릭터를 강화합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"획득한 유물 파편을 사용하여 스킬 트리를 커스터마이징하고, 강화된 능력으로 이전에는 도달할 수 없었던 고난도 지역에 도전하여 서사를 완결합니다.\",\"capabilities\":[\"WORLD\",\"COMBAT\",\"PROGRESSION\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"속성 공명 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false},{\"index\":1,\"name\":\"운명 개척 탐험 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"seed-story-complete-rpg-chronicles-of-eldoria\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"PROGRESSION\",\"BOSS\",\"MOBILE_UI\",\"SAVE\",\"SESSION_FLOW\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"PROGRESSION\":false,\"BOSS\":false,\"MOBILE_UI\":true,\"SAVE\":true,\"SESSION_FLOW\":false},\"coreLoopTrace\":[{\"index\":0,\"step\":\"월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"턴제 전투 시스템에서 적의 속성을 파악하고 스킬 콤보를 설계하여 승리한 뒤, 경험치와 고대 유물 파편을 획득하여 캐릭터를 강화합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"획득한 유물 파편을 사용하여 스킬 트리를 커스터마이징하고, 강화된 능력으로 이전에는 도달할 수 없었던 고난도 지역에 도전하여 서사를 완결합니다.\",\"capabilities\":[\"WORLD\",\"COMBAT\",\"PROGRESSION\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"속성 공명 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false},{\"index\":1,\"name\":\"운명 개척 탐험 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"seed-story-complete-rpg-chronicles-of-eldoria\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"PROGRESSION\",\"BOSS\",\"MOBILE_UI\",\"SAVE\",\"SESSION_FLOW\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"PROGRESSION\":false,\"BOSS\":false,\"MOBILE_UI\":true,\"SAVE\":true,\"SESSION_FLOW\":false},\"coreLoopTrace\":[{\"index\":0,\"step\":\"월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"턴제 전투 시스템에서 적의 속성을 파악하고 스킬 콤보를 설계하여 승리한 뒤, 경험치와 고대 유물 파편을 획득하여 캐릭터를 강화합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"획득한 유물 파편을 사용하여 스킬 트리를 커스터마이징하고, 강화된 능력으로 이전에는 도달할 수 없었던 고난도 지역에 도전하여 서사를 완결합니다.\",\"capabilities\":[\"WORLD\",\"COMBAT\",\"PROGRESSION\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"속성 공명 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false},{\"index\":1,\"name\":\"운명 개척 탐험 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"seed-story-complete-rpg-chronicles-of-eldoria\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"PROGRESSION\",\"BOSS\",\"MOBILE_UI\",\"SAVE\",\"SESSION_FLOW\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"PROGRESSION\":false,\"BOSS\":false,\"MOBILE_UI\":true,\"SAVE\":true,\"SESSION_FLOW\":false},\"coreLoopTrace\":[{\"index\":0,\"step\":\"월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"턴제 전투 시스템에서 적의 속성을 파악하고 스킬 콤보를 설계하여 승리한 뒤, 경험치와 고대 유물 파편을 획득하여 캐릭터를 강화합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"획득한 유물 파편을 사용하여 스킬 트리를 커스터마이징하고, 강화된 능력으로 이전에는 도달할 수 없었던 고난도 지역에 도전하여 서사를 완결합니다.\",\"capabilities\":[\"WORLD\",\"COMBAT\",\"PROGRESSION\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"속성 공명 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false},{\"index\":1,\"name\":\"운명 개척 탐험 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"seed-story-complete-rpg-chronicles-of-eldoria\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"PROGRESSION\",\"BOSS\",\"MOBILE_UI\",\"SAVE\",\"SESSION_FLOW\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"PROGRESSION\":false,\"BOSS\":false,\"MOBILE_UI\":true,\"SAVE\":true,\"SESSION_FLOW\":false},\"coreLoopTrace\":[{\"index\":0,\"step\":\"월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"턴제 전투 시스템에서 적의 속성을 파악하고 스킬 콤보를 설계하여 승리한 뒤, 경험치와 고대 유물 파편을 획득하여 캐릭터를 강화합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"획득한 유물 파편을 사용하여 스킬 트리를 커스터마이징하고, 강화된 능력으로 이전에는 도달할 수 없었던 고난도 지역에 도전하여 서사를 완결합니다.\",\"capabilities\":[\"WORLD\",\"COMBAT\",\"PROGRESSION\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"속성 공명 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false},{\"index\":1,\"name\":\"운명 개척 탐험 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"seed-story-complete-rpg-chronicles-of-eldoria\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"PROGRESSION\",\"BOSS\",\"MOBILE_UI\",\"SAVE\",\"SESSION_FLOW\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"PROGRESSION\":false,\"BOSS\":false,\"MOBILE_UI\":true,\"SAVE\":true,\"SESSION_FLOW\":false},\"coreLoopTrace\":[{\"index\":0,\"step\":\"월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"턴제 전투 시스템에서 적의 속성을 파악하고 스킬 콤보를 설계하여 승리한 뒤, 경험치와 고대 유물 파편을 획득하여 캐릭터를 강화합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"획득한 유물 파편을 사용하여 스킬 트리를 커스터마이징하고, 강화된 능력으로 이전에는 도달할 수 없었던 고난도 지역에 도전하여 서사를 완결합니다.\",\"capabilities\":[\"WORLD\",\"COMBAT\",\"PROGRESSION\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"속성 공명 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false},{\"index\":1,\"name\":\"운명 개척 탐험 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "GENERIC_SCOPE_HANDLER_SKELETON",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"seed-story-complete-rpg-chronicles-of-eldoria\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"PROGRESSION\",\"BOSS\",\"MOBILE_UI\",\"SAVE\",\"SESSION_FLOW\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"PROGRESSION\":false,\"BOSS\":false,\"MOBILE_UI\":true,\"SAVE\":true,\"SESSION_FLOW\":false},\"coreLoopTrace\":[{\"index\":0,\"step\":\"월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"턴제 전투 시스템에서 적의 속성을 파악하고 스킬 콤보를 설계하여 승리한 뒤, 경험치와 고대 유물 파편을 획득하여 캐릭터를 강화합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"획득한 유물 파편을 사용하여 스킬 트리를 커스터마이징하고, 강화된 능력으로 이전에는 도달할 수 없었던 고난도 지역에 도전하여 서사를 완결합니다.\",\"capabilities\":[\"WORLD\",\"COMBAT\",\"PROGRESSION\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"속성 공명 시스템\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false},{\"index\":1,\"name\":\"운명 개척 탐험 시스템\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        }
-      ]
-    },
-    "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-    "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
-    "blockers": [
-      "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-      "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-      "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-      "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-      "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-      "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-      "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-      "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-      "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-      "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-      "GENERIC_SCOPE_HANDLER_SKELETON"
-    ],
-    "runtimeObserved": true,
+    "studioQualityFailure": null,
+    "failureStage": "",
+    "failureSignature": "",
+    "blockers": [],
+    "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -1578,7 +1451,7 @@
   ],
   "primaryFocus": "STABILITY",
   "thisLoopPrimaryGoal": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
-  "primaryGoalReason": "실제 runtime 실패가 관찰됐다(PRIVATE_RUNTIME_CANDIDATE_DEPLOY / ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING). 콘텐츠·그래픽 확장보다 기본 플레이 foundation의 원인 시스템 복구를 먼저 완료하고 같은 실패 시나리오를 다시 검증한다. 책임 소스는 roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau::render, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::scopeHandler1, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::scopeHandler2, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::scopeHandler4, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::scopeHandler5, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::scopeHandler6, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau::reportNativeFoundationReady, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::initializePlayer이다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 STABILITY를 우선한다. 게임 고유 앵커는 \"속성 공명 시스템\", 현재 책임 소스는 roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau::render, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::scopeHandler1, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::scopeHandler2, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::scopeHandler4, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::scopeHandler5, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::scopeHandler6, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau::reportNativeFoundationReady, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::initializePlayer이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
     "우선 책임 소스 앵커 roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau::render, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::scopeHandler1, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::scopeHandler2, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::scopeHandler4, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::scopeHandler5, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::scopeHandler6, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau::reportNativeFoundationReady, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::initializePlayer에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "속성 공명 시스템를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
@@ -1619,9 +1492,9 @@
       "UNITY"
     ],
     "requestedPlatform": "ROBLOX",
-    "executionMode": "CAUSAL_REPAIR_FIRST_KEEP_EXPANSION_CONTEXT",
-    "contentExpansionDeferredUntilRuntimeRepairPass": true,
-    "themeCoverageAdvanced": false,
+    "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
+    "contentExpansionDeferredUntilRuntimeRepairPass": false,
+    "themeCoverageAdvanced": true,
     "dataCapacityBudget": {
       "state": "NORMAL",
       "limits": {
@@ -1633,8 +1506,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 97873,
-        "largestFileBytes": 48300,
+        "sourceBytes": 98380,
+        "largestFileBytes": 48434,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1666,15 +1539,15 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 6,
-    "selectedThemeReason": "Observed runtime failure requires causal foundation repair first; selected theme is retained as context only and does not advance coverage until runtime repair passes.",
+    "themeDepth": 7,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=6; uncoveredBefore=4.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 6,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 6,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 7,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 11
@@ -1687,7 +1560,7 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1767,8 +1640,16 @@
         ]
       }
     ],
-    "coherentContentBundle": [],
-    "bundleRule": "OBSERVED_RUNTIME_FAILURE_CAUSAL_REPAIR_MUST_PASS_BEFORE_CONTENT_BUNDLE_EXECUTION",
+    "coherentContentBundle": [
+      "SOURCE_AND_DISCOVERY: 아이템이 어디서 왜 나오는지 지역·몹·퀘스트·제작과 연결한다.",
+      "DISTINCT_USE_CASE: 데미지 숫자만 다른 복제 장비가 아니라 사거리·타이밍·상태·위험·보상·조합 역할이 달라야 한다.",
+      "INVENTORY_AND_EQUIP_FLOW: 획득→비교→장착·사용→교체→피드백이 같은 authoritative 상태를 사용한다.",
+      "CRAFT_OR_UPGRADE_CONNECTION: 재료·레시피·제작·강화 결과가 실제 플레이 선택을 바꾼다.",
+      "PROGRESSION_PURPOSE: 아이템이 특정 지역·적·빌드·퀘스트·해금과 연결되어 성장 경로에 의미를 가진다.",
+      "SYNERGY_AND_TRADEOFF: 장비·스킬·소모품 사이에 조합 또는 선택 비용이 있어 하나의 정답만 반복되지 않게 한다.",
+      "WORLD_PRESENTATION: 외형·이름·설명·획득 연출이 실제 기능과 세계 설정을 일치시킨다."
+    ],
+    "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
     "antiCloneContract": {
       "compareAgainstExistingContentBeforeAdding": true,
       "nameColorOrStatOnlyCloneForbidden": true,
@@ -1801,9 +1682,17 @@
       ]
     },
     "derivedRuleEvolution": {
-      "allowed": false,
-      "rule": "DEFER_DERIVED_GAMEPLAY_RULE_EVOLUTION_UNTIL_OBSERVED_RUNTIME_FAILURE_CAUSAL_REPAIR_PASSES",
-      "examples": [],
+      "allowed": true,
+      "rule": "MAY_ADD_DERIVED_GAMEPLAY_INTERACTION_RULES_WHEN_THEY_REINFORCE_APPROVED_IDENTITY_AND_DO_NOT_CONTRADICT_CANONICAL_RULES_OR_PROTECTED_VALUES",
+      "examples": [
+        "ENVIRONMENTAL_RULE",
+        "ENEMY_RELATIONSHIP_RULE",
+        "BOSS_PHASE_RULE",
+        "ITEM_SYNERGY_RULE",
+        "QUEST_STATE_RULE",
+        "REGION_ACCESS_RULE",
+        "MULTIPLAYER_INTERACTION_RULE"
+      ],
       "protected": [
         "EXISTING_CANONICAL_RULE_SEMANTICS",
         "AUTHORIZED_BALANCE_VALUES",
@@ -1813,21 +1702,23 @@
       ]
     },
     "completionAcceptance": [
-      "RUNTIME_FAILURE_CAUSAL_REPAIR_PASS_REQUIRED_BEFORE_CONTENT_EXPANSION",
       "REAL_GAME_SOURCE_DELTA_REQUIRED",
       "PLAYER_FACING_OR_GAMEPLAY_SYSTEM_EFFECT_REQUIRED",
+      "DISTINCT_FROM_EXISTING_CONTENT_BY_MEANING_NOT_ONLY_NAME_OR_STATS",
+      "CONNECTED_TO_EXISTING_GAME_FLOW",
+      "CONTINUITY_AND_CAUSALITY_PRESERVED",
       "EXISTING_RELEVANT_INCREMENTAL_QA_PASSES",
       "DATA_CAPACITY_BUDGET_RESPECTED_WITHOUT_TERMINATING_BUILD_UP"
     ]
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 22,
-    "previousGeneration": 21,
+    "generation": 23,
+    "previousGeneration": 22,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "a31632d757aecf4f197979859f23dd34a61ad1d4b1be0280558f5675f999c881",
-    "priorSourceFingerprint": "ee6d08b79a8dd3ee28db76952f2d75f9ab245c5f781c28a8de025bf61312a9b8",
-    "previousRuntimeEffect": "REGRESSION",
+    "sourceFingerprint": "71711be828429e6915c40ec005280c599ee258eb82cf4baaef3aeb13fc951913",
+    "priorSourceFingerprint": "a31632d757aecf4f197979859f23dd34a61ad1d4b1be0280558f5675f999c881",
+    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -2286,7 +2177,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "a31632d757aecf4f197979859f23dd34a61ad1d4b1be0280558f5675f999c881",
+    "sourceTreeFingerprint": "71711be828429e6915c40ec005280c599ee258eb82cf4baaef3aeb13fc951913",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2376,7 +2267,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "a31632d757aecf4f197979859f23dd34a61ad1d4b1be0280558f5675f999c881",
+    "sourceTreeFingerprint": "71711be828429e6915c40ec005280c599ee258eb82cf4baaef3aeb13fc951913",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2634,16 +2525,16 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "current source Studio product-quality failure requires source repair before another observation",
-      "runtimeObserved": true
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
+      "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "a31632d757aecf4f197979859f23dd34a61ad1d4b1be0280558f5675f999c881",
-      "runtimeObserved": true,
+      "sourceTreeFingerprint": "71711be828429e6915c40ec005280c599ee258eb82cf4baaef3aeb13fc951913",
+      "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING"
+      "failureStage": null,
+      "failureSignature": null
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2654,8 +2545,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "current source Studio product-quality failure requires source repair before another observation"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -2694,7 +2585,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 23,
+    "nextGeneration": 24,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2762,5 +2653,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-07T03:46:36.190Z"
+  "generatedAt": "2026-10-07T04:46:41.294Z"
 }
