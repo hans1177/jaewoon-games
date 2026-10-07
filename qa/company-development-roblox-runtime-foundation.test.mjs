@@ -176,7 +176,13 @@ test('local F0 artifact never enters runtime or cloud-image validation before pr
   assert.match(guard,/item\.robloxFailureSignature='ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING'/);
   assert.match(guard,/item\.routingBlockers=\['roblox-runtime-candidate-deploy-pending'\]/);
   assert.match(guard,/item\.robloxCloudImageEvidence=null/);
+  assert.match(guard,/localF0PrivateDeployIds\.push\(item\.gameId\)/);
   assert.match(guard,/pending\+\+;\s*continue;/);
+  assert.match(workflow,/roblox-local-f0-private-deploy-ids/);
+  assert.match(workflow,/Resume repaired local F0 candidates through canonical Roblox runtime/);
+  assert.match(workflow,/gh workflow run company-development-roblox-runtime\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id"/);
+  assert.match(workflow,/ROBLOX_LOCAL_F0_RUNTIME_RESUME=DEDUPED_CURRENT_MAIN:/);
+  assert.match(workflow,/String\(run\.head_sha\|\|''\)===currentMain/);
   assert.ok(workflow.indexOf('if(localPreF9Candidate){')<workflow.indexOf("if(engineProbe?.persistentFailure===true){"));
 });
 
