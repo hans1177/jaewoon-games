@@ -37,6 +37,15 @@ const server='local Players=game:GetService("Players") local DSS=game:GetService
 const client='local UIS=game:GetService("UserInputService") local touchEnabled=UIS.TouchEnabled local gui=Instance.new("ScreenGui") local foundationRemote=game:GetService("ReplicatedStorage"):WaitForChild("RuntimeFoundationReport") local camera=workspace.CurrentCamera local h=game.Players.LocalPlayer.Character:WaitForChild("Humanoid") if camera.CameraSubject==h then foundationRemote:FireServer("CAMERA_READY") end foundationRemote:FireServer("INPUT_READY") button.Activated:Connect(function() remote:FireServer("ATTACK") end) remote.OnClientEvent:Connect(function(kind,payload) if kind~="MULTIPLAYER_SYNC" or typeof(payload)~="table" then return end local synced=payload.ParticipantCount end)';
 const project='{"tree":{"$className":"DataModel","ServerScriptService":{"GameServer":{"$path":"server"}},"StarterPlayer":{"StarterPlayerScripts":{"GameClient":{"$path":"client"}}}}}';
 
+test('bug-defense and fantasy-survival derive F0 ground contact from the actual raycast result',()=>{
+  for(const gameId of ['bug-defense','fantasy-survival']){
+    const source=fs.readFileSync(`roblox-games/${gameId}/server/Game.server.luau`,'utf8');
+    assert.match(source,/local groundContact\s*=\s*groundHit\s*~=\s*nil\s*and\s*groundHit\.Instance\s*~=\s*nil/);
+    assert.match(source,/SetAttribute\("GROUND_CONTACT",\s*groundContact\)/);
+    assert.doesNotMatch(source,/SetAttribute\("GROUND_CONTACT",\s*groundHit\s*~=\s*nil\)/);
+  }
+});
+
 test('headless FAST_MVP passes complete release checklist without Studio',()=>{
  const r=inspectHeadlessSourceTexts({gameId:'g',sourcePath:'roblox-games/g',sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'b'.repeat(64),artifactRunId:123,nativeLanguageCompilePassed:true,nativeCompilerVersion:'0.739',config,server,client,project});
  assert.equal(r.pass,true);
