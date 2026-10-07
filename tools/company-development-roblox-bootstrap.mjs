@@ -350,6 +350,22 @@ function selectBootstrapAtoms(values=[],preferred=[],key=''){
   }
   return Object.freeze(out);
 }
+export function robloxStudioAssetSourceUsageIdentity({assetLibrary={}}={}){
+  const source='company-asset-library.json#baseMaterialLibrary';
+  const libraryVersion=Math.max(0,Math.floor(Number(assetLibrary?.version)||0));
+  const sourceSha256=crypto.createHash('sha256')
+    .update(JSON.stringify(assetLibrary?.baseMaterialLibrary||{}))
+    .digest('hex');
+  const selectedSourceContentHashes=Object.freeze([
+    Object.freeze({source,sha256:sourceSha256})
+  ]);
+  const fingerprint=crypto.createHash('sha256').update(JSON.stringify({
+    version:1,libraryVersion,selectedSourceContentHashes
+  })).digest('hex');
+  return Object.freeze({
+    version:1,source,libraryVersion,selectedSourceContentHashes,fingerprint
+  });
+}
 export function buildRobloxStudioAssetBootstrapPlan({gameId='',profile={},assetLibrary={}}={}){
   const families=assetLibrary?.baseMaterialLibrary?.families||{};
   const selected={};
@@ -367,6 +383,7 @@ export function buildRobloxStudioAssetBootstrapPlan({gameId='',profile={},assetL
   const selectionFingerprint=studioAssetSelectionFingerprint({
     gameId,profile,libraryVersion:Number(assetLibrary?.version||0),families:selected
   });
+  const sourceUsage=robloxStudioAssetSourceUsageIdentity({assetLibrary});
   return Object.freeze({
     version:3,
     bindingVersion:2,
@@ -374,6 +391,9 @@ export function buildRobloxStudioAssetBootstrapPlan({gameId='',profile={},assetL
     source:'company-asset-library.json#baseMaterialLibrary',
     libraryVersion:Number(assetLibrary?.version||0),
     selectionFingerprint,
+    buildUpAssetSourceUsageFingerprint:sourceUsage.fingerprint,
+    buildUpAssetSourceUsageLibraryVersion:sourceUsage.libraryVersion,
+    selectedSourceContentHashes:sourceUsage.selectedSourceContentHashes,
     synchronization:Object.freeze({
       mode:'VERSION_AND_SELECTION_FINGERPRINT_INCREMENTAL',
       fullLibraryReplicationForbidden:true,
@@ -891,6 +911,8 @@ function studioAssetConfigBlock(studioAssets={}){
     BindingVersion = 2,
     LibraryVersion = ${Number(studioAssets.libraryVersion||0)},
     SelectionFingerprint = ${luauString(studioAssets.selectionFingerprint||'')},
+    SourceUsageFingerprint = ${luauString(studioAssets.buildUpAssetSourceUsageFingerprint||'')},
+    SourceUsageLibraryVersion = ${Number(studioAssets.buildUpAssetSourceUsageLibraryVersion||studioAssets.libraryVersion||0)},
     Source = ${luauString(studioAssets.source||'company-asset-library.json#baseMaterialLibrary')},
     AtomState = ${luauString(studioAssets.atomState||'')},
     RecipeId = ${luauString(studioAssets.recipeId||'NORMAL_VARIANT')},
@@ -1373,7 +1395,7 @@ function sharedConfigSource({gameId,gameName,saveRequired,actions,profile,platfo
   const validationRows=(learning.verifiedExternalValidationOnlyPrinciples||[]).map(value=>`      ${luauString(value)},`).join('\n');
   const notApplicableRows=(learning.verifiedExternalNotApplicablePrinciples||[]).map(value=>`      ${luauString(value)},`).join('\n');
   const studioFamilyRows=Object.entries(studioAssets?.families||{}).map(([family,atoms])=>`    ${family} = { ${(atoms||[]).map(value=>luauString(value)).join(', ')} },`).join('\n');
-  return `local Config = {\n  PolicySource = "company-learning/platform-release-roadmap.json",\n  Platform = "ROBLOX",\n  MobileFirst = true,\n  SaveEnabled = ${saveRequired?'true':'false'},\n  GameId = ${luauString(gameId)},\n  GameName = ${luauString(gameName)},\n  Genre = ${luauString(profile.genre)},\n  Subgenre = ${luauString(profile.subgenre||'')},\n  PlayMode = ${luauString(profile.playMode)},\n  MultiplayerRequired = ${profile.multiplayerRequired?'true':'false'},\n  CoopRequired = ${profile.coopImplementationRequired?'true':'false'},\n  CompetitiveRequired = ${profile.competitiveImplementationRequired?'true':'false'},\n  MinimumParticipants = ${profile.minimumParticipantsForRequiredQa},\n  RemoteName = "GameAction",\n  RateLimitSeconds = 0.10,\n  DesignBaseline = {\n    Required = true,\n    AdmissionGate = "MINIMUM_DUAL_PLATFORM_DESIGN_READY",\n    StrictScoreRequiredForAdmission = false,\n  },\n  PlatformProfile = {\n    Platform = "ROBLOX",\n    InputModel = ${luauString(platformProfile.inputModel)},\n    SessionModel = ${luauString(platformProfile.sessionModel)},\n    MultiplayerRuntime = ${luauString(platformProfile.multiplayerRuntime)},\n    PerformanceBudget = ${luauString(platformProfile.performanceBudget)},\n    UiUx = ${luauString(platformProfile.uiUx)},\n    SaveAndNetwork = ${luauString(platformProfile.saveAndNetwork)},\n    ContentAdaptation = ${luauString(platformProfile.platformContentAdaptation)},\n    InternalReleaseTarget = ${luauString(platformProfile.internalReleaseTarget)},\n    ValidationEvidence = ${luauString(platformProfile.validationEvidence)},\n  },\n  -- STUDIO_ASSET_BINDING_BEGIN\n  StudioAssets = {\n    Applied = ${studioAssets.applied?'true':'false'},\n    BindingVersion = 2,\n    LibraryVersion = ${Number(studioAssets.libraryVersion||0)},\n    SelectionFingerprint = ${luauString(studioAssets.selectionFingerprint||'')},\n    Source = ${luauString(studioAssets.source||'company-asset-library.json#baseMaterialLibrary')},\n    AtomState = ${luauString(studioAssets.atomState||'')},\n    RecipeId = ${luauString(studioAssets.recipeId||'NORMAL_VARIANT')},\n    ProductionVerified = false,\n    RuntimeVerificationRequired = true,\n    Families = {\n${studioFamilyRows}\n    },\n    MotionQuality = {\n      Contract = "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality",\n      LibraryFirst = true,\n      ArticulatedRigRequired = true,\n      AnimatorRequired = true,\n      BlendAndSpeedSyncRequired = true,\n      RuntimeVerificationRequired = true,\n      MannequinHardFailure = "CHARACTER_MOTION_MANNEQUIN",\n    },\n  },\n  -- STUDIO_ASSET_BINDING_END\n  LearningContext = {\n    Applied = ${learning.applied?'true':'false'},\n    Authority = ${luauString(learning.authority||'roblox-baseline-only')},\n    RecipeId = ${luauString(learning.recipeId||'')},\n    Operator = ${luauString(learning.transformationOperator||'')},\n    OriginalModifierRequired = ${learning.originalModifierRequired?'true':'false'},\n    PlaybookChecklist = {\n${checklistRows}\n    },\n    FeatureBlend = {\n${featureRows}\n    },\n    SourceProjects = {\n${sourceRows}\n    },\n    VerifiedExternalLearningFirst = ${learning.verifiedExternalLearningFirst?'true':'false'},\n    MemoryFingerprint = ${luauString(learning.verifiedExternalLearningFingerprint||'')},\n    NativeBindingVersion = ${ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION},\n    CoveragePct = ${Number(learning.verifiedExternalLearningCoveragePct||0)},\n    ContentComplete = ${learning.verifiedExternalDistilledContentComplete?'true':'false'},\n    RetrievedCount = ${Number(learning.verifiedExternalLearningRetrievedCount||0)},\n    AppliedCount = ${Number(learning.verifiedExternalLearningAppliedCount||0)},\n    TruncationForbidden = ${learning.verifiedExternalLearningTruncationForbidden?'true':'false'},
+  return `local Config = {\n  PolicySource = "company-learning/platform-release-roadmap.json",\n  Platform = "ROBLOX",\n  MobileFirst = true,\n  SaveEnabled = ${saveRequired?'true':'false'},\n  GameId = ${luauString(gameId)},\n  GameName = ${luauString(gameName)},\n  Genre = ${luauString(profile.genre)},\n  Subgenre = ${luauString(profile.subgenre||'')},\n  PlayMode = ${luauString(profile.playMode)},\n  MultiplayerRequired = ${profile.multiplayerRequired?'true':'false'},\n  CoopRequired = ${profile.coopImplementationRequired?'true':'false'},\n  CompetitiveRequired = ${profile.competitiveImplementationRequired?'true':'false'},\n  MinimumParticipants = ${profile.minimumParticipantsForRequiredQa},\n  RemoteName = "GameAction",\n  RateLimitSeconds = 0.10,\n  DesignBaseline = {\n    Required = true,\n    AdmissionGate = "MINIMUM_DUAL_PLATFORM_DESIGN_READY",\n    StrictScoreRequiredForAdmission = false,\n  },\n  PlatformProfile = {\n    Platform = "ROBLOX",\n    InputModel = ${luauString(platformProfile.inputModel)},\n    SessionModel = ${luauString(platformProfile.sessionModel)},\n    MultiplayerRuntime = ${luauString(platformProfile.multiplayerRuntime)},\n    PerformanceBudget = ${luauString(platformProfile.performanceBudget)},\n    UiUx = ${luauString(platformProfile.uiUx)},\n    SaveAndNetwork = ${luauString(platformProfile.saveAndNetwork)},\n    ContentAdaptation = ${luauString(platformProfile.platformContentAdaptation)},\n    InternalReleaseTarget = ${luauString(platformProfile.internalReleaseTarget)},\n    ValidationEvidence = ${luauString(platformProfile.validationEvidence)},\n  },\n  -- STUDIO_ASSET_BINDING_BEGIN\n  StudioAssets = {\n    Applied = ${studioAssets.applied?'true':'false'},\n    BindingVersion = 2,\n    LibraryVersion = ${Number(studioAssets.libraryVersion||0)},\n    SelectionFingerprint = ${luauString(studioAssets.selectionFingerprint||'')},\n    SourceUsageFingerprint = ${luauString(studioAssets.buildUpAssetSourceUsageFingerprint||'')},\n    SourceUsageLibraryVersion = ${Number(studioAssets.buildUpAssetSourceUsageLibraryVersion||studioAssets.libraryVersion||0)},\n    Source = ${luauString(studioAssets.source||'company-asset-library.json#baseMaterialLibrary')},\n    AtomState = ${luauString(studioAssets.atomState||'')},\n    RecipeId = ${luauString(studioAssets.recipeId||'NORMAL_VARIANT')},\n    ProductionVerified = false,\n    RuntimeVerificationRequired = true,\n    Families = {\n${studioFamilyRows}\n    },\n    MotionQuality = {\n      Contract = "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality",\n      LibraryFirst = true,\n      ArticulatedRigRequired = true,\n      AnimatorRequired = true,\n      BlendAndSpeedSyncRequired = true,\n      RuntimeVerificationRequired = true,\n      MannequinHardFailure = "CHARACTER_MOTION_MANNEQUIN",\n    },\n  },\n  -- STUDIO_ASSET_BINDING_END\n  LearningContext = {\n    Applied = ${learning.applied?'true':'false'},\n    Authority = ${luauString(learning.authority||'roblox-baseline-only')},\n    RecipeId = ${luauString(learning.recipeId||'')},\n    Operator = ${luauString(learning.transformationOperator||'')},\n    OriginalModifierRequired = ${learning.originalModifierRequired?'true':'false'},\n    PlaybookChecklist = {\n${checklistRows}\n    },\n    FeatureBlend = {\n${featureRows}\n    },\n    SourceProjects = {\n${sourceRows}\n    },\n    VerifiedExternalLearningFirst = ${learning.verifiedExternalLearningFirst?'true':'false'},\n    MemoryFingerprint = ${luauString(learning.verifiedExternalLearningFingerprint||'')},\n    NativeBindingVersion = ${ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION},\n    CoveragePct = ${Number(learning.verifiedExternalLearningCoveragePct||0)},\n    ContentComplete = ${learning.verifiedExternalDistilledContentComplete?'true':'false'},\n    RetrievedCount = ${Number(learning.verifiedExternalLearningRetrievedCount||0)},\n    AppliedCount = ${Number(learning.verifiedExternalLearningAppliedCount||0)},\n    TruncationForbidden = ${learning.verifiedExternalLearningTruncationForbidden?'true':'false'},
     SemanticMappingVersion = ${Number(learning.semanticMappingVersion||0)},
     SemanticMappingFingerprint = ${luauString(learning.semanticMappingFingerprint||'')},
     SemanticVariant = ${luauString(learning.semanticVariant||'')},
