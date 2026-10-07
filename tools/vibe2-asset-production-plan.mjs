@@ -1068,7 +1068,7 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
   const original=registry&&typeof registry==='object'?registry:{};
   const catalog=gameCatalog||readJson(path.join(repoRoot,'game-catalog.json'),{games:[]});
   const games=(catalog.games||[]).filter(sourceConsumerEligibleGame).sort((a,b)=>clean(a.id||a.gameId).localeCompare(clean(b.id||b.gameId)));
-  const next=JSON.parse(JSON.stringify(original));next.assets=Array.isArray(next.assets)?next.assets:[];
+  const next={...original,assets:(Array.isArray(original.assets)?original.assets:[]).map(asset=>({...asset}))};
   const previousDynamicByAsset=new Map((original.assets||[]).map(asset=>[clean(asset.id),unique(asset.sourceBoundConsumerGameIds||[])]));
   // 한 planning cycle에서 게임 소스는 게임당 한 번만 읽고 모든 자산 매핑이 같은 snapshot을 공유한다.
   const snapshots=games.map(game=>({game,snapshot:sourceConsumerSnapshot({repoRoot,game})}));
@@ -3449,29 +3449,35 @@ export function buildVibeAssetProductionPlan({
     ...(manifestBase?.assets||[]).map(row=>({...row,family:inferUniverseFamily(row),subfamily:clean(row.subfamily||row.type||(row.types||[])[0]).toUpperCase(),status:'REPO_ASSET'}))
   ].filter(row=>clean(row.family||row.category));
   const universeSignals={};
+  const externalReadyFamilies=new Set();
+  for(const row of selectionRegistry?.externalSources||[]){
+    if(!/LICENSE_VERIFIED/.test(clean(row?.status).toUpperCase()))continue;
+    const categories=unique([row?.category,...(Array.isArray(row?.categories)?row.categories:[])]).map(value=>clean(value).toUpperCase());
+    for(const category of categories)externalReadyFamilies.add(category);
+    if(categories.some(category=>['ENVIRONMENT','PROP'].includes(category)))externalReadyFamilies.add('BUILDING');
+    if(categories.some(category=>['VFX','ENVIRONMENT'].includes(category)))externalReadyFamilies.add('MATERIAL');
+  }
+  const verifiedReuseFamilies=new Set((selectionRegistry?.assets||[])
+    .filter(row=>row.verifiedCompanyReusable===true)
+    .map(row=>clean(row.category||row.family).toUpperCase())
+    .filter(Boolean));
   for(const [family,subs] of Object.entries(DEFAULT_COVERAGE_BASELINES)){
     for(const subfamily of Object.keys(subs)){
       const key=family+':'+subfamily;
-      const externalReady=(selectionRegistry?.externalSources||[]).some(row=>{
-        const categories=unique([row?.category,...(Array.isArray(row?.categories)?row.categories:[])]).map(value=>clean(value).toUpperCase());
-        const categoryMatch=categories.includes(family)
-          ||(family==='BUILDING'&&categories.some(category=>['ENVIRONMENT','PROP'].includes(category)))
-          ||(family==='MATERIAL'&&categories.some(category=>['VFX','ENVIRONMENT'].includes(category)));
-        return /LICENSE_VERIFIED/.test(clean(row?.status).toUpperCase())&&categoryMatch;
-      });
-      const verifiedReuse=(selectionRegistry?.assets||[]).some(row=>row.verifiedCompanyReusable===true&&clean(row.category||row.family).toUpperCase()===family);
       universeSignals[key]={
         activeGameDemand:activeDemand[family]?.[subfamily]>0,
         gameConsumerCount:activeDemand[family]?.[subfamily]>0?1:0,
         playerVisibleFrequencyHigh:['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','VFX','UI'].includes(family)&&activeDemand[family]?.[subfamily]>0,
         heroBossLandmark:/보스|BOSS|주인공|HERO|랜드마크|LANDMARK/i.test(request)&&['CHARACTER','CREATURE','BUILDING','ENVIRONMENT'].includes(family),
-        externalSourceReady:externalReady,
-        verifiedReuseAvailable:verifiedReuse
+        externalSourceReady:externalReadyFamilies.has(family),
+        verifiedReuseAvailable:verifiedReuseFamilies.has(family)
       };
     }
   }
   // 동적 연결: 같은 파일은 한 번만 읽고 현재 바이트 지문을 선택 스냅샷에 함께 묶는다.
   const sourceHashes=new Map();
+  let repoRootReal='';
+  try{repoRootReal=fs.realpathSync(repoRoot);}catch{}
   const sourceBoundAssets=(selectionRegistry?.assets||[]).map(asset=>{
     const files=unique(asset.sourceFiles?.length?asset.sourceFiles:[asset.path])
       .map(file=>file.replace(/^\//,''))
@@ -3481,7 +3487,7 @@ export function buildVibeAssetProductionPlan({
       let hash=null;
       try{
         const real=fs.realpathSync(path.resolve(repoRoot,file));
-        if(real.startsWith(fs.realpathSync(repoRoot)+path.sep))hash=crypto.createHash('sha256').update(fs.readFileSync(real)).digest('hex');
+        if(repoRootReal&&real.startsWith(repoRootReal+path.sep))hash=crypto.createHash('sha256').update(fs.readFileSync(real)).digest('hex');
       }catch{}
       sourceHashes.set(file,hash);
     }
