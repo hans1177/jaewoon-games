@@ -21,25 +21,74 @@
       "identity": "8인 4대4 감염 추격전 - 인간4/몬스터4 배정, 빈자리 AI 충원, 감염 전환, 정화, 인간 5종, 몬스터 5종, 학교/폐병원/폐놀이공원, 맵 이벤트, 대시/몬스터 능력, 모바일 UI, 저장",
       "playerFantasy": "인간은 고유 도구·대시·정화로 생존/반격, 몬스터는 명시적 감염 공격으로 인간을 감염, 감염된 인간은 몬스터로 전환하고 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격, 인간 정화 공격은 몬스터를 라운드에서 제거, 한 진영이 0명이 되면 즉시 승패, 240초까지 양팀이 남으면 무승부, 4대4 감염전, AI 양팀 충원, 감염 전환, 정화, 인간 5종, 몬스터 5종, 학교/폐병원/폐놀이공원, 맵 이벤트, 대시/몬스터 능력, 모바일 UI, 저장",
       "coreFun": "감염 전환, 정화, 인간 5종, 몬스터 5종, 학교/폐병원/폐놀이공원, 맵 이벤트, 대시/몬스터 능력, 모바일 UI, 저장"
+    },
+    "local_authoring_parts::49f1514db76fae55de9fcb06d1f658b591c08e5abcf7bfe16c3ac299987c1be4:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "인간4/몬스터4 배정, 빈자리 AI 충원",
+        "인간은 고유 도구·대시·정화로 생존/반격",
+        "몬스터는 명시적 감염 공격으로 인간을 감염",
+        "감염된 인간은 몬스터로 전환하고 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격",
+        "인간 정화 공격은 몬스터를 라운드에서 제거",
+        "한 진영이 0명이 되면 즉시 승패",
+        "240초까지 양팀이 남으면 무승부"
+      ],
+      "signatureSystems": [
+        {
+          "name": "감염 전환",
+          "purpose": "몬스터의 명시적 서버 권한 감염 공격이 적중한 인간이 탈락하지 않고 몬스터로 전환하며 인간 직업별 감염 스킬을 얻는다.",
+          "playerChoice": "감염 공격 적중 시 몬스터로 전환, 직업별 고유 스킬 획득"
+        },
+        {
+          "name": "인간 정화",
+          "purpose": "인간이 정화 공격으로 몬스터를 라운드에서 제거한다.",
+          "playerChoice": "정화 공격 시 몬스터 제거"
+        }
+      ]
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "8인 4대4 감염 추격전 - 인간4/몬스터4 배정, 빈자리 AI 충원, 감염 전환, 정화, 인간 5종, 몬스터 5종, 학교/폐병원/폐놀이공원, 맵 이벤트, 대시/몬스터 능력, 모바일 UI, 저장",
+      "playerFantasy": "인간은 고유 도구·대시·정화로 생존/반격, 몬스터는 명시적 감염 공격으로 인간을 감염, 감염된 인간은 몬스터로 전환하고 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격, 인간 정화 공격은 몬스터를 라운드에서 제거, 한 진영이 0명이 되면 즉시 승패, 240초까지 양팀이 남으면 무승부, 4대4 감염전, AI 양팀 충원, 감염 전환, 정화, 인간 5종, 몬스터 5종, 학교/폐병원/폐놀이공원, 맵 이벤트, 대시/몬스터 능력, 모바일 UI, 저장",
+      "coreFun": "감염 전환, 정화, 인간 5종, 몬스터 5종, 학교/폐병원/폐놀이공원, 맵 이벤트, 대시/몬스터 능력, 모바일 UI, 저장",
+      "coreLoop": [
+        "인간4/몬스터4 배정, 빈자리 AI 충원",
+        "인간은 고유 도구·대시·정화로 생존/반격",
+        "몬스터는 명시적 감염 공격으로 인간을 감염",
+        "감염된 인간은 몬스터로 전환하고 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격",
+        "인간 정화 공격은 몬스터를 라운드에서 제거",
+        "한 진영이 0명이 되면 즉시 승패",
+        "240초까지 양팀이 남으면 무승부"
+      ],
+      "signatureSystems": [
+        {
+          "name": "감염 전환",
+          "purpose": "몬스터의 명시적 서버 권한 감염 공격이 적중한 인간이 탈락하지 않고 몬스터로 전환하며 인간 직업별 감염 스킬을 얻는다.",
+          "playerChoice": "감염 공격 적중 시 몬스터로 전환, 직업별 고유 스킬 획득"
+        },
+        {
+          "name": "인간 정화",
+          "purpose": "인간이 정화 공격으로 몬스터를 라운드에서 제거한다.",
+          "playerChoice": "정화 공격 시 몬스터 제거"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 2,
+      "calls": 5,
+      "successes": 3,
       "failures": 2,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 818798,
-      "lastMs": 22171,
+      "totalMs": 871672,
+      "lastMs": 52874,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-07T23:03:36.083Z"
+      "updatedAt": "2026-10-07T23:04:28.959Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T22:49:57.276Z",
-  "updatedAt": "2026-10-07T23:03:36.085Z",
+  "updatedAt": "2026-10-07T23:04:28.963Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -752,15 +801,19 @@
     },
     "assetFacts": {}
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "localAuthoringSplits": {
     "49f1514db76fae55de9fcb06d1f658b591c08e5abcf7bfe16c3ac299987c1be4": true,
     "15ea3c6684012894904262e5f5fe04407eb9b9068c739c8d8aeb1c86cbd5a80b": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-07T23:03:36.084Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T23:04:28.959Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
