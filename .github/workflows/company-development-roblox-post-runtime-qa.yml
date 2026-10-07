@@ -2035,6 +2035,7 @@ jobs:
           echo 'ROBLOX_FOUNDATION_RUNTIME_STATE_CHANGE=YES_OR_ALREADY_MERGED'
 
       - name: Resume repaired local F0 candidates through canonical Roblox runtime
+        working-directory: main
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
