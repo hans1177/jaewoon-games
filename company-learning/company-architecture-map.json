@@ -1,5 +1,5 @@
 {
-  "version": 323,
+  "version": 324,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2961,7 +2961,29 @@
           "GENRE_WORLD_GRAMMAR"
         ],
         "learningUsesExistingCanonicalChainOnly": true,
-        "platformNativeRuntimeVerificationRequired": true
+        "platformNativeRuntimeVerificationRequired": true,
+        "articulated3DActorGlbMaster": {
+          "policy": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.studioAssetUniverse.articulated3DActorGlbMaster",
+          "registry": "company-asset-library.json",
+          "studioUniverse": "assets/vibe-studio-asset-universe.js",
+          "planner": "tools/vibe2-asset-production-plan.mjs",
+          "sourceWorker": "tools/vibe2-source-worker.mjs",
+          "masterFormat": "GLB",
+          "appliesToFamilies": [
+            "CHARACTER",
+            "CREATURE"
+          ],
+          "bossRoleIncluded": true,
+          "platformConsumers": [
+            "ROBLOX",
+            "UNITY",
+            "WEB"
+          ],
+          "sharedMasterSourceOnly": true,
+          "platformNativeVariantAndRuntimeEvidenceStillRequired": true,
+          "primitiveOnlyFinalActorForbidden": true,
+          "newWorkerQueueOrPipeline": false
+        }
       },
       "conceptDirector": {
         "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.studioAssetUniverse.conceptDirector",
@@ -5445,7 +5467,8 @@
       "selectionPlannerMayNotMutateGameSource": true,
       "vibe2Vibe3OwnActualGameSourceBinding": true,
       "actualBindingMustUseExistingResponsibleFiles": true,
-      "markerOnlyBindingForbidden": true
+      "markerOnlyBindingForbidden": true,
+      "articulated3DActorMasterGlbRequiredBeforeFinalBinding": true
     },
     "automaticDynamicBinding": {
       "registry": "company-asset-library.json",
