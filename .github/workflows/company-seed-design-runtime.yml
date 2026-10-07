@@ -144,6 +144,7 @@ jobs:
             git fetch origin "$COMPANY_RUNTIME_BRANCH"
             git show "origin/$COMPANY_RUNTIME_BRANCH:game-seed-state.json" > /tmp/company-runtime-seed-state-before.json
             cp /tmp/company-runtime-seed-state-before.json game-seed-state.json
+            node --input-type=module -e "import {loadSeedState,saveSeedState} from './tools/game-seed-state.mjs'; import {materializeOwnerDesignResetSeeds} from './tools/owner-design-reset.mjs'; const state=loadSeedState(); const result=materializeOwnerDesignResetSeeds(state); if(result.changed.length)saveSeedState(state); console.log('OWNER_REQUESTS_REAPPLIED_AFTER_RUNTIME_REFRESH='+result.changed.join(','));"
             node tools/company-all-games-design-reset.mjs --auto-missing-design-intake | tee /tmp/canonical-novel-grammar-intake.txt
             if cmp -s /tmp/company-runtime-seed-state-before.json game-seed-state.json; then
               persisted=1
@@ -335,6 +336,7 @@ jobs:
             : active;
           const pending=eligible.filter(seed=>designEvolutionDueFor(seed).due).sort((a,b)=>
             ownerResetPriority(a)-ownerResetPriority(b)||
+            (Date.parse(activeOwnerRequestFor(b)?.requestedAt||'')||0)-(Date.parse(activeOwnerRequestFor(a)?.requestedAt||'')||0)||
             Number(strictPassFor(a))-Number(strictPassFor(b))||
             platformPriority(a)-platformPriority(b)||
             deterministicCheckpointPriority(a)-deterministicCheckpointPriority(b)||
