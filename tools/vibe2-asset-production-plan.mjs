@@ -187,7 +187,10 @@ export function evaluateCrossPlatform3dMasterGlb({repoRoot=process.cwd(),source=
   const resolvedRole=clean(role||source?.role||source?.subfamily).toUpperCase();
   const required=['CHARACTER','CREATURE'].includes(resolvedFamily)||isCrossPlatform3dActorType(resolvedRole);
   if(!required)return freeze({required:false,pass:true,status:'NOT_REQUIRED',blockers:freezeList([]),inspection:null});
-  const inspection=inspectVibeSourceGlb({repoRoot,source:{...source,path:clean(source?.masterGlb||source?.meshArtifact||source?.path)}});
+  const masterPath=clean(source?.masterGlb||source?.meshArtifact||source?.path);
+  const sourcePath=clean(source?.path);
+  const masterHash=clean(source?.masterGlbHash||source?.masterGlbSha256||source?.masterSourceHash||(sourcePath&&sourcePath===masterPath?source?.sourceHash:''));
+  const inspection=inspectVibeSourceGlb({repoRoot,source:{path:masterPath,...(masterHash?{sourceHash:masterHash}:{})}});
   const blockers=[];
   const inv=inspection?.inventory||{};
   const primitives=Array.isArray(inv.primitives)?inv.primitives:[];
@@ -1544,9 +1547,9 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
   const requestedDccScope=explicitRecipeHasUntyped
     ?dccCapableTypes
     :unique([...(explicitRequestedTypes||[]),...explicitRecipeTypes].map(value=>clean(value).toLowerCase()).filter(Boolean));
-  const mandatoryActorGlbTypes=dccCapableTypes.filter(isCrossPlatform3dActorType);
+  const mandatoryActorGlbTypes=dccCapableTypes.filter(type=>isCrossPlatform3dActorType(type)&&requestedDccScope.includes(type));
   const automaticDccTypes=engineNativeTarget&&!internalMotion
-    ?dccCapableTypes.filter(type=>requestedDccScope.includes(type)||mandatoryActorGlbTypes.includes(type))
+    ?dccCapableTypes.filter(type=>requestedDccScope.includes(type))
     :[];
   const declaredDccTypes=engineNativeTarget?explicitRecipeTypes:[];
   const nativeTextKinds=targetName==='roblox'?ROBLOX_DIRECT_AUTHORING:targetName==='unity'?UNITY_DIRECT_AUTHORING:webNativeTarget?WEB_DIRECT_AUTHORING:[];
