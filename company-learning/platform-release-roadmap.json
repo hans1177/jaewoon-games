@@ -19730,7 +19730,9 @@
             "GLB_MASTER_ATTACHMENT_BINDING_REQUIRED",
             "GLB_MASTER_LOD_PLAN_REQUIRED",
             "GLB_MASTER_ACTOR_ROLE_REQUIRED",
-            "GLB_MASTER_ACTOR_ROLE_FAMILY_MISMATCH"
+            "GLB_MASTER_ACTOR_ROLE_FAMILY_MISMATCH",
+            "GLB_MASTER_MORPHOLOGY_PROFILE_REQUIRED",
+            "GLB_MASTER_NPC_DIVERSITY_REQUIRED"
           ],
           "runtimePromotionStillRequiresNativeConsumerEvidence": true,
           "gameplayAuthorityExpansionForbidden": true,
@@ -20025,6 +20027,91 @@
               "socialOrSupportReadabilityRequired": true,
               "ownerOrPartyIdentityReadable": true
             }
+          },
+          "npcMorphologyStandard": {
+            "version": 1,
+            "status": "ACTIVE_EXECUTABLE_CONTRACT",
+            "source": "assets/vibe-character-identity-director.js#VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT",
+            "appliesToFamily": "CHARACTER",
+            "requiredForNpcCompanionHumanoidEnemyAndBoss": true,
+            "physicalAxes": [
+              "HEIGHT_CM_PRESENTATION",
+              "WEIGHT_KG_PRESENTATION",
+              "VISUAL_MASS",
+              "BODY_ARCHETYPE",
+              "SHOULDER_WIDTH",
+              "TORSO_LENGTH",
+              "TORSO_DEPTH",
+              "PELVIS_WIDTH",
+              "ARM_LENGTH",
+              "LEG_LENGTH",
+              "HAND_FOOT_SCALE",
+              "HEAD_BODY_RATIO",
+              "POSTURE",
+              "ASYMMETRY"
+            ],
+            "appearanceAxes": [
+              "HEAD_BASE",
+              "FACE_WIDTH",
+              "FACE_LENGTH",
+              "FOREHEAD",
+              "BROW_HEIGHT",
+              "BROW_ANGLE",
+              "EYE_SPACING",
+              "EYE_SIZE",
+              "EYE_TILT",
+              "NOSE_BRIDGE",
+              "NOSE_LENGTH",
+              "NOSE_WIDTH",
+              "CHEEKBONE",
+              "CHEEK_FULLNESS",
+              "MOUTH_WIDTH",
+              "LIP_VOLUME",
+              "JAW_WIDTH",
+              "JAW_DEPTH",
+              "CHIN_PROJECTION",
+              "EAR_SCALE",
+              "SKIN_TONE",
+              "SKIN_DETAIL",
+              "AGE_PRESENTATION",
+              "HAIR_STYLE",
+              "HAIR_TEXTURE",
+              "HAIR_COLOR",
+              "HAIR_HIGHLIGHT",
+              "HAIR_GRAYING",
+              "FACIAL_HAIR",
+              "SCAR_OR_MARK",
+              "ACCESSORY",
+              "OUTFIT_FIT_AND_WEAR"
+            ],
+            "motionAxes": [
+              "GAIT_CADENCE",
+              "STRIDE_LENGTH",
+              "FOOTFALL_MASS",
+              "VERTICAL_BOB",
+              "ARM_SWING",
+              "TORSO_COUNTER_MOTION",
+              "TURN_STYLE",
+              "START_STOP_WEIGHT"
+            ],
+            "productionRules": {
+              "actualMeshOrBoneProportionVariationRequired": true,
+              "wholeModelScaleOnlyForbidden": true,
+              "colorOnlyIdentityForbidden": true,
+              "bodyMassPresentationOnly": true,
+              "heightMayNotSilentlyChangeAuthoritativeHitbox": true,
+              "weightMayNotChangeDamageSpeedPhysics": true,
+              "clothingEquipmentRefitRequired": true,
+              "faceHairOutfitCloneSuppressionRequired": true,
+              "nearbyNpcMinimumDistinctIdentityAxes": 5,
+              "backgroundNpcMayUseLodButMustKeepDistinctSilhouette": true,
+              "companionBossCloseupDetailPriority": true
+            },
+            "populationTargets": {
+              "physicalDiversityPercentMinimum": 80,
+              "sameHeadHairOutfitReuseLimitPerLocalCrowd": 1
+            },
+            "gameplayAuthority": false
           }
         }
       },
