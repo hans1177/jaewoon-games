@@ -18697,7 +18697,7 @@
           ],
           "speciesSignatureRequired": true
         },
-        "articulated3DActorGlbMaster": {
+        "crossPlatform3dMasterGlb": {
           "version": 1,
           "status": "ACTIVE_EXECUTABLE_CONTRACT",
           "appliesToFamilies": [
@@ -18705,7 +18705,7 @@
             "CREATURE"
           ],
           "bossRoleIncluded": true,
-          "masterFormat": "GLB",
+          "format": "GLB_2_0",
           "purpose": "REQUIRE_ONE_PLATFORM_NEUTRAL_GLTF_BINARY_MASTER_FOR_EVERY_FINAL_3D_CHARACTER_CREATURE_OR_BOSS_BEFORE_PLATFORM_NATIVE_VARIANTS",
           "requiredForFinal3DActorAsset": true,
           "sharedMasterSourceMayFeed": [
@@ -18713,23 +18713,20 @@
             "UNITY",
             "WEB"
           ],
-          "requiredMasterEvidence": [
-            "MASTER_GLB_PATH",
-            "MASTER_GLB_SHA256",
-            "MESH_GEOMETRY",
-            "UV_OR_EXPLICIT_PROCEDURAL_UV",
-            "MATERIAL_SLOTS",
-            "ARMATURE_OR_BONES_WHEN_ARTICULATED",
-            "SKIN_WEIGHTS_WHEN_ARTICULATED",
-            "MOTION_CLIPS_WHEN_MOTION_APPLICABLE",
-            "SOURCE_PROVENANCE"
+          "requiredContents": [
+            "MESH",
+            "NORMALS",
+            "UV0",
+            "MATERIALS",
+            "SKELETON",
+            "SKIN_WEIGHTS",
+            "ANIMATION"
           ],
           "rules": {
             "missingCompliantGlbRoutesToExistingDccAuthoring": true,
             "primitivePartAssemblyPrototypeOnly": true,
             "primitivePartAssemblyCannotClaimFinalCharacterCreatureOrBoss": true,
-            "rigidBodyDesignExceptionStillRequiresGlb": true,
-            "articulatedActorRequiresRigSkinWeightsAndAnimatorCompatibleSkeleton": true,
+            "skinSkeletonJointWeightsAndAnimationRequired": true,
             "colorOnlyVariantDoesNotCreateNewMaster": true,
             "sharedGlbIsAuthoringMasterNotCrossPlatformRuntimePass": true,
             "platformNativeImportAdaptationRequired": true,
@@ -18744,9 +18741,9 @@
             "tools/vibe2-source-worker.mjs"
           ],
           "hardFailures": [
-            "ARTICULATED_3D_ACTOR_MASTER_GLB_MISSING",
-            "ARTICULATED_3D_ACTOR_MASTER_GLB_HASH_MISSING",
-            "ARTICULATED_3D_ACTOR_RIG_OR_SKIN_EVIDENCE_MISSING",
+            "CROSS_PLATFORM_MASTER_GLB_REQUIRED",
+            "CROSS_PLATFORM_MASTER_GLB_HASH_REQUIRED",
+            "CROSS_PLATFORM_MASTER_GLB_STATIC_QA_REQUIRED",
             "PRIMITIVE_ONLY_FINAL_3D_ACTOR"
           ]
         },
