@@ -3,281 +3,174 @@
   "gameId": "cozy-island",
   "date": "2026-10-08",
   "seedId": "OWNER-DESIGN-COZY-ISLAND",
-  "fingerprint": "10c9f74027b61367be27123675d4508a165e8f0622e70ac43358a7975f5148f1",
+  "fingerprint": "e8e455212782429dea6f35e4eba84ce8608fd424a182633c6b4cd547c0c80ce2",
   "policyDigest": "223f74bb658bbab4921a06b74e652d4e7fc27d174188c3b4b3488e9b3d026f6f",
-  "engineDigest": "723e2687bc264a6d89930fd69e4069aea7c3de0c3a1ac1cd73a5392ee9cc5971",
+  "engineDigest": "cc088ad7a8676ded2864387d1c00a39b024f9e9a4e72f50308346406aea805a9",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "designer_draft_slices::identity-core": {
-      "identity": "작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임.",
-      "playerFantasy": "플레이어는 작은 섬의 주민을 직접 키우고, 나무와 식량을 수집해 왕국을 확장하는 협동 전략가입니다. 주민은 자동화를 통해 생산을 촉진하고, 병사들은 전투력으로 왕국을 확장합니다.",
-      "coreFun": "직접 나무와 식량을 채집, 주민을 고용하여 자동화, 병사들을 모집하여 전투력 확장, 5개 거점을 점령하며 보상과 성장 상태를 관리합니다.",
-      "coreLoop": [
-        "나무·식량 직접 채집",
-        "주민 고용과 벌목/농업 자동화",
-        "병영 강화와 병사 모집",
-        "다음 자원 거점 선택",
-        "보이는 자동전투와 점령 보상",
-        "협동 지원으로 강한 거점 공략"
-      ],
-      "signatureSystems": [
-        {
-          "name": "직접 채집",
-          "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득한다.",
-          "playerChoice": "나무와 식량을 직접 수집하거나, 월드 노드에서 자동 획득할 수 있다."
-        },
-        {
-          "name": "주민 자동화",
-          "purpose": "고용한 주민을 생산 직업에 배치해 반복 노동을 자동화한다.",
-          "playerChoice": "주민을 특정 직업에 고용하거나, 자동화된 생산을 선택할 수 있다."
-        },
-        {
-          "name": "병영/병사",
-          "purpose": "자원을 병력으로 전환하고 병영 레벨로 전투력을 확장한다.",
-          "playerChoice": "자원을 병력으로 전환하거나, 병영 레벨을 강화할 수 있다."
-        },
-        {
-          "name": "5개 자원 거점",
-          "purpose": "서로 다른 적과 보상을 가진 5개 거점을 순차 점령한다.",
-          "playerChoice": "5개 거점을 선택하거나, 점령 순서를 조정할 수 있다."
-        },
-        {
-          "name": "협동 지원",
-          "purpose": "다른 플레이어의 준비 병력을 서버가 지원 전력으로 합산한다.",
-          "playerChoice": "다른 플레이어의 병력을 지원하거나, 지원 전력이 반영된다."
-        }
-      ]
-    },
-    "designer_draft_slices::systems-progression": {
-      "systemInterconnections": [
-        {
-          "fromSystem": "직접 채집",
-          "toSystem": "주민 자동화",
-          "trigger": "나무·식량 수집 완료",
-          "stateChange": "주민 고용 및 자동화 기능 활성화"
-        },
-        {
-          "fromSystem": "주민 자동화",
-          "toSystem": "병영/병사",
-          "trigger": "주민 생산 직업 완료",
-          "stateChange": "병력 모집 및 전투력 확장"
-        },
-        {
-          "fromSystem": "병영/병사",
-          "toSystem": "5개 자원 거점",
-          "trigger": "자원 거점 선택 완료",
-          "stateChange": "5개 거점 점령 및 보상 발동"
-        }
-      ],
-      "progressionDirection": "초반 직접 노동 → 주민 자동화 → 병영/병사 → 지역 기지 점령 → 특수자원 확보 → 고급 병종/무역 → 해전·공성 → 대형 섬/왕국 정복 순서로 확장한다. 낚시는 포함하지 않는다",
-      "progressionEconomyBalance": {
-        "progressionLoop": "직접 채집 → 주민 자동화 → 병영/병사 → 거점 점령 → 보상 발동",
-        "resourceFlow": "나무·식량 → 주민 고용 → 병력 전환 → 거점 확보 → 보상 확장",
-        "balanceRules": "자원 수집 속도와 병력 확장 속도의 균형 유지, 거점 점령 순서의 다양화, 보상의 질과 양의 조절"
-      },
-      "contentExpansionPlan": [
-        {
-          "milestone": "직접 채집 기능 추가",
-          "newGameplay": "나무·식량 수집 시 월드 노드 상호작용 기능 추가",
-          "systemImpact": "직접 채집 시스템 확장 및 월드 노드 통합"
-        },
-        {
-          "milestone": "주민 자동화 기능 추가",
-          "newGameplay": "주민 고용 및 생산 직업 자동화 기능 추가",
-          "systemImpact": "주민 자동화 시스템 확장 및 생산 효율성 향상"
-        },
-        {
-          "milestone": "병영/병사 기능 추가",
-          "newGameplay": "자원 전환 및 병영 레벨 강화 기능 추가",
-          "systemImpact": "병력 확장 및 전투력 증대 기능 추가"
-        }
-      ],
-      "failureRetryRisk": {
-        "failureStates": [
-          "자원 수집 속도 부족",
-          "병력 확장 속도 부족",
-          "거점 점령 순서 불일치",
-          "보상 발동 불가"
-        ],
-        "retryFlow": "자원 수집 속도 조절 → 병력 확장 속도 조절 → 거점 점령 순서 조정 → 보상 발동 조정",
-        "riskPressure": "자원 수집 속도와 병력 확장 속도의 균형 유지, 거점 점령 순서의 다양화, 보상의 질과 양의 조절",
-        "recoveryRules": "자원 수집 속도 조절, 병력 확장 속도 조절, 거점 점령 순서 조정, 보상 발동 조정"
-      }
-    },
-    "designer_draft_slices::platform-profiles": {
-      "platformFitPlan": {
-        "targetPlatform": "ROBLOX",
-        "inputModel": "모바일 큰 버튼과 터치 상호작용을 우선하고 키보드와 게임패드를 같은 행동에 매핑한다",
-        "performanceBudget": "모바일 Roblox에서 낮은 파트 수와 제한된 이펙트, 짧은 네트워크 이벤트를 유지한다",
-        "sessionConstraints": "솔로 플레이를 허용하고 2명 이상에서는 멀티 기능이 활성화되는 Roblox 세션을 사용한다"
-      },
-      "platformProfiles": {
-        "ROBLOX": {
-          "platform": "ROBLOX",
-          "inputModel": "모바일 큰 버튼과 터치 상호작용을 우선하고 키보드와 게임패드를 같은 행동에 매핑한다",
-          "sessionModel": "솔로 플레이를 허용하고 2명 이상에서는 멀티 기능이 활성화되는 Roblox 세션",
-          "multiplayerRuntime": "서버 권한으로 참가자별 병사와 병영 보너스를 집계해 공동 적 웨이브와 자동전투를 처리하고 RemoteEvent로 모든 참가자에게 결과를 동기화한다",
-          "performanceBudget": "모바일 Roblox에서 낮은 파트 수와 제한된 이펙트, 짧은 네트워크 이벤트를 유지한다",
-          "uiUx": "상단에 기본자원·특수자원·주민·병력·점령 상태를 표시하고 하단에 벌목·식량수급·주민영입·병영·모집·전투 버튼을 모바일 큰 버튼으로 제공한다",
-          "saveAndNetwork": "DataStore에 개인 자원·주민·병영·병사·점령 기지·특수자원 해금을 저장한다. 자동전투와 협동 지원 계산은 서버 권한으로 처리한다",
-          "platformContentAdaptation": "Roblox 3D 섬 지형에서 지역 기지를 선택하고, 서버 권한 자동전투와 점령 상태를 시각적으로 표시한다. 기본섬 노동과 주민 자동화는 실제 성장 상태로 연결한다",
-          "internalReleaseTarget": "OPEN_CLOUD_PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
-          "validationEvidence": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract, Mobile input/UI contract, Save/rejoin contract when applicable, Multiplayer state-sync contract when applicable"
-        },
-        "UNITY": {
-          "platform": "UNITY",
-          "inputModel": "모바일 큰 버튼과 터치 상호작용을 우선하고 키보드와 게임패드를 같은 행동에 매핑한다",
-          "sessionModel": "솔로 플레이를 허용하고 2명 이상에서는 멀티 기능이 활성화되는 Unity 세션",
-          "multiplayerRuntime": "서버 권한으로 참가자별 병사와 병영 보너스를 집계해 공동 적 웨이브와 자동전투를 처리하고 RemoteEvent로 모든 참가자에게 결과를 동기화한다",
-          "performanceBudget": "모바일 Unity에서 낮은 파트 수와 제한된 이펙트, 짧은 네트워크 이벤트를 유지한다",
-          "uiUx": "상단에 기본자원·특수자원·주민·병력·점령 상태를 표시하고 하단에 벌목·식량수급·주민영입·병영·모집·전투 버튼을 모바일 큰 버튼으로 제공한다",
-          "saveAndNetwork": "DataStore에 개인 자원·주민·병영·병사·점령 기지·특수자원 해금을 저장한다. 자동전투와 협동 지원 계산은 서버 권한으로 처리한다",
-          "platformContentAdaptation": "Unity 3D 섬 지형에서 지역 기지를 선택하고, 서버 권한 자동전투와 점령 상태를 시각적으로 표시한다. 기본섬 노동과 주민 자동화는 실제 성장 상태로 연결한다",
-          "internalReleaseTarget": "OPEN_CLOUD_PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
-          "validationEvidence": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract, Mobile input/UI contract, Save/rejoin contract when applicable, Multiplayer state-sync contract when applicable"
-        }
-      }
-    },
-    "designer_draft_slices::web-canonical": {
-      "webCanonicalDesign": {
-        "role": "WEB_DETAILED_GAME_ORIGINAL",
-        "designAuthority": "GAME_DESIGN_REFERENCE_NOT_SOURCE_CODE_AUTHORITY",
-        "playerFlow": [
-          "직접 채집",
-          "주민 자동화",
-          "병영/병사",
-          "5개 거점 점령",
-          "보상 발동",
-          "협동 지원"
-        ],
-        "worldAndTraversal": "COZY_CHIBI_STORYBOOK",
-        "systemsAndContent": "COZY_CHIBI_KINGDOM_WORLD_V8",
-        "combatAndInteraction": "COZY_CHIBI_KINGDOM",
-        "progressionAndEconomy": "COZY_CHIBI_KINGDOM_PROGRESSION_V2",
-        "sessionFailureRecovery": "OPEN_CLOUD_PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
-        "uiMenuAndOnboarding": "COZY_CHIBI_KINGDOM_UI_V2",
-        "inputCameraAccessibility": "COZY_CHIBI_KINGDOM_INPUT_V2",
-        "presentationAndAudio": "COZY_CHIBI_KINGDOM_PRESENTATION_V2",
-        "multiplayerPersistence": "COZY_CHIBI_KINGDOM_MULTIPLAYER_V2",
-        "expansionSpace": "COZY_CHIBI_KINGDOM_EXPANSION_V2"
-      }
-    },
-    "designer_draft_slices::platform-expansion": {
-      "platformExpansionPolicy": {
-        "mode": "SHARED_LARGE_FRAME_PLATFORM_NATIVE_EXPANSION",
-        "sharedLargeFrame": [
-          "CORE_FUN_AND_REPRESENTATIVE_LOOP",
-          "CORE_FUN_AND_REPRESENTATIVE_LOOP",
-          "CORE_FUN_AND_REPRESENTATIVE_LOOP",
-          "CORE_FUN_AND_REPRESENTATIVE_LOOP",
-          "CORE_FUN_AND_REPRESENTATIVE_LOOP"
-        ],
-        "expansionLimit": "NO_ARTIFICIAL_PARITY_LIMIT_WITHIN_SHARED_LARGE_FRAME",
-        "webRule": "WEB_2_5D_3D_4D_5D",
-        "unityRule": "UNITY_3D_4D_5D",
-        "robloxRule": "ROBLOX_3D_4D_5D"
-      }
-    },
-    "designer_draft_slices::ux-presentation": {
-      "visualDirection": "밝고 따뜻한 동화책 미니어처 왕국. 큰 머리와 둥근 얼굴, 짧고 굵은 팔다리의 치비 주민과 하나의 연결된 실루엣으로 보이는 야생동물을 사용한다.",
-      "mobileUx": "모바일 큰 버튼과 터치 상호작용을 우선하고 키보드와 게임패드를 같은 행동에 매핑한다.",
-      "uxAccessibilityPlan": {
-        "hudPriorities": "상단에 기본자원·특수자원·주민·병력·점령 상태를 표시하고 하단에 벌목·식량수급·주민영입·병영·모집·전투 버튼을 모바일 큰 버튼으로 제공한다.",
-        "touchAndInput": "모바일 큰 버튼과 터치 상호작용을 우선하고 키보드와 게임패드를 같은 행동에 매핑한다.",
-        "readability": "서버 권한으로 자동전투와 협동 지원 계산을 처리하고, 사용자에게 보상과 성장 상태를 동기화한다.",
-        "accessibility": "모바일 Roblox에서 낮은 파트 수와 제한된 이펙트, 짧은 네트워크 이벤트를 유지한다."
-      },
-      "artAudioDirection": {
-        "visualIdentity": "COZY_CHIBI_KINGDOM",
-        "audioIdentity": "COZY_CHIBI_KINGDOM",
-        "gameplayFeedbackSync": "서버 권한으로 자동전투와 협동 지원 계산을 처리하고, 사용자에게 보상과 성장 상태를 동기화한다."
-      }
-    },
-    "designer_draft_slices::market-multiplayer": {
-      "marketTargetDirection": "주력 3개 게임을 기존 Game Designer AI로 새로 설계해 실제 문법 결과와 점수를 보고한다. 로블 설계가 원본이다. 별도 시드 설계 단계 없이 사용자 요청과 기존 원본을 입력으로 사용한다. A/B/c/@와 상세 설계는 디자이너 AI가 직접 생성한다. 요청 전달자는 설계안을 대신 작성하지 않는다. 설계가 없거나 부족하면 현재 플로우 단계와 관계없이 기존 디자이너가 작성·보완하고 기존 제작 흐름으로 복귀한다.",
-      "steamExpansionDecision": "기존 설계 필드에 기반하여 Steam 플랫폼에 최적화된 게임 패키지 형태로 확장한다. 기존 게임의 기능과 시스템을 유지하면서, Steam의 특성(예: 클라우드 게임, 키보드/마우스 지원, 다양한 플레이어 대상)을 반영한다.",
-      "multiplayerMode": "COOP",
-      "multiplayerExpansionDecision": "기존 설계 필드에 기반하여 멀티플레이어 확장 계획을 설계한다. 기존 게임의 기능과 시스템을 유지하면서, 멀티플레이어의 특성(예: 서버 권한, RemoteEvent, 병력 지원)을 반영한다."
-    },
-    "designer_draft_slices::alternatives": {
-      "designAlternatives": [
-        {
-          "label": "PLAN_A",
-          "concept": "기본 설계 방향",
-          "playerFantasy": "플레이어는 작은 섬의 주민을 직접 키우고, 나무와 식량을 수집해 왕국을 확장하는 협동 전략가입니다. 주민은 자동화를 통해 생산을 촉진하고, 병사들은 전투력으로 왕국을 확장합니다.",
-          "genreDirection": "힐링, 생활, 낚시",
-          "coreLoopShift": "직접 채집 → 주민 자동화 → 병영/병사 → 거점 점령 → 보상 발동",
-          "mapTopologyRegionRoles": "직접 노동 → 자동화 → 전투력 확장 → 거점 점령 → 보상 발동",
-          "landmarksTraversal": "5개 거점 순차 점령",
-          "enemyEcosystemCounterplay": "다른 플레이어의 병력 지원",
-          "bossSignatureMoments": "자동전투와 점령 보상",
-          "progressionEconomy": "자원 수집 속도와 병력 확장 속도의 균형 유지, 거점 점령 순서의 다양화, 보상의 질과 양의 조절",
-          "questStoryEventFlow": "직접 채집 기능 추가 → 주민 자동화 기능 추가 → 병영/병사 기능 추가",
-          "failureRetryRecovery": "자원 수집 속도 조절 → 병력 확장 속도 조절 → 거점 점령 순서 조정 → 보상 발동 조정",
-          "platformAdaptation": "Roblox 3D 섬 지형에서 지역 기지를 선택하고, 서버 권한 자동전투와 점령 상태를 시각적으로 표시한다.",
-          "implementationScope": "ROBLOX",
-          "validationPlan": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract"
-        },
-        {
-          "label": "PLAN_B",
-          "concept": "다양한 설계 방향",
-          "playerFantasy": "플레이어는 작은 섬의 주민을 직접 키우고, 나무와 식량을 수집해 왕국을 확장하는 협동 전략가입니다. 주민은 자동화를 통해 생산을 촉진하고, 병사들은 전투력으로 왕국을 확장합니다.",
-          "genreDirection": "힐링, 생활, 낚시",
-          "coreLoopShift": "직접 채집 → 주민 자동화 → 병영/병사 → 거점 점령 → 보상 발동",
-          "mapTopologyRegionRoles": "직접 노동 → 자동화 → 전투력 확장 → 거점 점령 → 보상 발동",
-          "landmarksTraversal": "5개 거점 순차 점령",
-          "enemyEcosystemCounterplay": "다른 플레이어의 병력 지원",
-          "bossSignatureMoments": "자동전투와 점령 보상",
-          "progressionEconomy": "자원 수집 속도와 병력 확장 속도의 균형 유지, 거점 점령 순서의 다양화, 보상의 질과 양의 조절",
-          "questStoryEventFlow": "직접 채집 기능 추가 → 주민 자동화 기능 추가 → 병영/병사 기능 추가",
-          "failureRetryRecovery": "자원 수집 속도 조절 → 병력 확장 속도 조절 → 거점 점령 순서 조정 → 보상 발동 조정",
-          "platformAdaptation": "Roblox 3D 섬 지형에서 지역 기지를 선택하고, 서버 권한 자동전투와 점령 상태를 시각적으로 표시한다.",
-          "implementationScope": "ROBLOX",
-          "validationPlan": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract"
-        },
-        {
-          "label": "PLAN_C",
-          "concept": "고급 설계 방향",
-          "playerFantasy": "플레이어는 작은 섬의 주민을 직접 키우고, 나무와 식량을 수집해 왕국을 확장하는 협동 전략가입니다. 주민은 자동화를 통해 생산을 촉진하고, 병사들은 전투력으로 왕국을 확장합니다.",
-          "genreDirection": "힐링, 생활, 낚시",
-          "coreLoopShift": "직접 채집 → 주민 자동화 → 병영/병사 → 거점 점령 → 보상 발동",
-          "mapTopologyRegionRoles": "직접 노동 → 자동화 → 전투력 확장 → 거점 점령 → 보상 발동",
-          "landmarksTraversal": "5개 거점 순차 점령",
-          "enemyEcosystemCounterplay": "다른 플레이어의 병력 지원",
-          "bossSignatureMoments": "자동전투와 점령 보상",
-          "progressionEconomy": "자원 수집 속도와 병력 확장 속도의 균형 유지, 거점 점령 순서의 다양화, 보상의 질과 양의 조절",
-          "questStoryEventFlow": "직접 채집 기능 추가 → 주민 자동화 기능 추가 → 병영/병사 기능 추가",
-          "failureRetryRecovery": "자원 수집 속도 조절 → 병력 확장 속도 조절 → 거점 점령 순서 조정 → 보상 발동 조정",
-          "platformAdaptation": "Roblox 3D 섬 지형에서 지역 기지를 선택하고, 서버 권한 자동전투와 점령 상태를 시각적으로 표시한다.",
-          "implementationScope": "ROBLOX",
-          "validationPlan": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract"
-        }
-      ]
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
-      "failures": 0,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 821546,
-      "lastMs": 175168,
-      "lastError": null,
-      "updatedAt": "2026-10-07T20:14:51.551Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-07T20:01:09.902Z",
-  "updatedAt": "2026-10-07T20:14:51.552Z",
-  "lastSuccessfulModelCallAt": "2026-10-07T20:14:51.551Z",
-  "effectiveDesignerModel": "ollama:qwen3:1.7b",
-  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "createdAt": "2026-10-07T20:24:30.415Z",
+  "updatedAt": "2026-10-07T20:24:30.421Z",
+  "assetLibraryContext": {
+    "source": "company-asset-library.json",
+    "status": "AVAILABLE",
+    "version": 121,
+    "sha256": "5b9e5a2facc4d7a8bf5cc66605645f9355eb102fd7af1f09d98206ade99d2f9c",
+    "inventoryCount": 717,
+    "candidateSummaryOnly": true,
+    "auditScoreIsNotRuntimeQuality": true,
+    "productionVerificationGranted": false,
+    "platforms": {
+      "WEB": {
+        "evaluatedAssetCount": 717,
+        "eligibleAssetCount": 713,
+        "requiredFamilies": [
+          "AUDIO",
+          "MOTION",
+          "VFX",
+          "WEAPON"
+        ],
+        "candidates": [
+          {
+            "family": "AUDIO",
+            "action": "AUTHOR",
+            "assetId": null
+          },
+          {
+            "family": "MOTION",
+            "action": "ADAPT",
+            "assetId": "roblox-common-motion-bed-lie-down",
+            "applicationMode": "STYLE_ADAPT"
+          },
+          {
+            "family": "VFX",
+            "action": "ADAPT",
+            "assetId": "roblox-common-vfx-attack-telegraph-pulse",
+            "applicationMode": "STYLE_ADAPT"
+          },
+          {
+            "family": "WEAPON",
+            "action": "ADAPT",
+            "assetId": "roblox-common-tool-axe",
+            "applicationMode": "STYLE_ADAPT"
+          }
+        ]
+      },
+      "UNITY": {
+        "evaluatedAssetCount": 717,
+        "eligibleAssetCount": 713,
+        "requiredFamilies": [
+          "AUDIO",
+          "MOTION",
+          "VFX",
+          "WEAPON"
+        ],
+        "candidates": [
+          {
+            "family": "AUDIO",
+            "action": "AUTHOR",
+            "assetId": null
+          },
+          {
+            "family": "MOTION",
+            "action": "ADAPT",
+            "assetId": "roblox-common-motion-bed-lie-down",
+            "applicationMode": "STYLE_ADAPT"
+          },
+          {
+            "family": "VFX",
+            "action": "ADAPT",
+            "assetId": "roblox-common-vfx-attack-telegraph-pulse",
+            "applicationMode": "STYLE_ADAPT"
+          },
+          {
+            "family": "WEAPON",
+            "action": "ADAPT",
+            "assetId": "roblox-common-tool-axe",
+            "applicationMode": "STYLE_ADAPT"
+          }
+        ]
+      },
+      "ROBLOX": {
+        "evaluatedAssetCount": 717,
+        "eligibleAssetCount": 713,
+        "requiredFamilies": [
+          "AUDIO",
+          "MOTION",
+          "VFX",
+          "WEAPON"
+        ],
+        "candidates": [
+          {
+            "family": "AUDIO",
+            "action": "AUTHOR",
+            "assetId": null
+          },
+          {
+            "family": "MOTION",
+            "action": "USE",
+            "assetId": "roblox-common-motion-bed-lie-down",
+            "applicationMode": "USE_AS_IS"
+          },
+          {
+            "family": "VFX",
+            "action": "USE",
+            "assetId": "roblox-common-vfx-attack-telegraph-pulse",
+            "applicationMode": "USE_AS_IS"
+          },
+          {
+            "family": "WEAPON",
+            "action": "USE",
+            "assetId": "roblox-common-tool-axe",
+            "applicationMode": "USE_AS_IS"
+          }
+        ]
+      }
+    },
+    "assetFacts": {
+      "roblox-common-motion-bed-lie-down": {
+        "family": "MOTION",
+        "role": "BED_LIE_DOWN",
+        "sourcePath": "/assets/roblox/common-motion-v1/RobloxCommonMotion.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 917.1,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
+      },
+      "roblox-common-vfx-attack-telegraph-pulse": {
+        "family": "VFX",
+        "role": "ATTACK_TELEGRAPH_PRESENTATION",
+        "sourcePath": "/assets/roblox/common-vfx-v1/RobloxCommonVFX.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 913.1,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
+      },
+      "roblox-common-tool-axe": {
+        "family": "WEAPON",
+        "role": "AXE",
+        "sourcePath": "/assets/roblox/common-tools-v1/RobloxCommonTools.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 888,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
+      }
+    }
+  }
 }
