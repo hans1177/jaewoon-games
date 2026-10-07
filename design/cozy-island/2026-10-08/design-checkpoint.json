@@ -49,26 +49,82 @@
           "playerChoice": "다른 플레이어의 병력을 지원하거나, 지원 전력이 반영된다."
         }
       ]
+    },
+    "designer_draft_slices::systems-progression": {
+      "systemInterconnections": [
+        {
+          "fromSystem": "직접 채집",
+          "toSystem": "주민 자동화",
+          "trigger": "나무·식량 수집 완료",
+          "stateChange": "주민 고용 및 자동화 기능 활성화"
+        },
+        {
+          "fromSystem": "주민 자동화",
+          "toSystem": "병영/병사",
+          "trigger": "주민 생산 직업 완료",
+          "stateChange": "병력 모집 및 전투력 확장"
+        },
+        {
+          "fromSystem": "병영/병사",
+          "toSystem": "5개 자원 거점",
+          "trigger": "자원 거점 선택 완료",
+          "stateChange": "5개 거점 점령 및 보상 발동"
+        }
+      ],
+      "progressionDirection": "초반 직접 노동 → 주민 자동화 → 병영/병사 → 지역 기지 점령 → 특수자원 확보 → 고급 병종/무역 → 해전·공성 → 대형 섬/왕국 정복 순서로 확장한다. 낚시는 포함하지 않는다",
+      "progressionEconomyBalance": {
+        "progressionLoop": "직접 채집 → 주민 자동화 → 병영/병사 → 거점 점령 → 보상 발동",
+        "resourceFlow": "나무·식량 → 주민 고용 → 병력 전환 → 거점 확보 → 보상 확장",
+        "balanceRules": "자원 수집 속도와 병력 확장 속도의 균형 유지, 거점 점령 순서의 다양화, 보상의 질과 양의 조절"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "직접 채집 기능 추가",
+          "newGameplay": "나무·식량 수집 시 월드 노드 상호작용 기능 추가",
+          "systemImpact": "직접 채집 시스템 확장 및 월드 노드 통합"
+        },
+        {
+          "milestone": "주민 자동화 기능 추가",
+          "newGameplay": "주민 고용 및 생산 직업 자동화 기능 추가",
+          "systemImpact": "주민 자동화 시스템 확장 및 생산 효율성 향상"
+        },
+        {
+          "milestone": "병영/병사 기능 추가",
+          "newGameplay": "자원 전환 및 병영 레벨 강화 기능 추가",
+          "systemImpact": "병력 확장 및 전투력 증대 기능 추가"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "자원 수집 속도 부족",
+          "병력 확장 속도 부족",
+          "거점 점령 순서 불일치",
+          "보상 발동 불가"
+        ],
+        "retryFlow": "자원 수집 속도 조절 → 병력 확장 속도 조절 → 거점 점령 순서 조정 → 보상 발동 조정",
+        "riskPressure": "자원 수집 속도와 병력 확장 속도의 균형 유지, 거점 점령 순서의 다양화, 보상의 질과 양의 조절",
+        "recoveryRules": "자원 수집 속도 조절, 병력 확장 속도 조절, 거점 점령 순서 조정, 보상 발동 조정"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 72346,
-      "lastMs": 72346,
+      "totalMs": 166672,
+      "lastMs": 94326,
       "lastError": null,
-      "updatedAt": "2026-10-07T20:02:22.340Z"
+      "updatedAt": "2026-10-07T20:03:56.668Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T20:01:09.902Z",
-  "updatedAt": "2026-10-07T20:02:22.341Z",
-  "lastSuccessfulModelCallAt": "2026-10-07T20:02:22.340Z",
+  "updatedAt": "2026-10-07T20:03:56.669Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T20:03:56.668Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
