@@ -1311,7 +1311,8 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     audioRoleIds,
     externalSources:next.externalSources||[],
     consumerGames:gameCatalog.games||[],
-    previousMaintenance
+    previousMaintenance,
+    basePlan:libraryPlan
   });
   const transientMaintenanceReasons=new Set(['INVENTORY_CHANGED','TYPE_OR_ROLE_CHANGED','QUALITY_METADATA_CHANGED']);
   const maintenanceChanged=Boolean(previousMaintenance?.inventoryFingerprint)
