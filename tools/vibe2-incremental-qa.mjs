@@ -578,6 +578,10 @@ function runPresentationStaticQa({root,data={},changed=[]}={}){
         for(const [domain,present] of Object.entries(requiredVisualDomains))require('ROBLOX_VISUAL_DOMAIN_'+domain,present);
         require('GAME_VISUAL_IDENTITY_DOMAINS',Object.values(requiredVisualDomains).every(Boolean));
         require('NO_SINGLE_PRIMITIVE_PLACEHOLDER',!singlePrimitiveOnly);
+        const npcFactorySignal=/(?:create|build|spawn|make)\w*(?:Npc|NPC|Villager|Resident|Merchant|Vendor|QuestGiver|Guard|Companion|Ally|HumanoidBoss)\s*\(|Name\s*=\s*["'](?:NPC|Npc|Villager|Resident|Merchant|Vendor|QuestGiver|Guard|Companion|Ally|HumanoidBoss)["']/i.test(text);
+        const npcPrimitivePartCount=(text.match(/Instance\.new\s*\(\s*["'](?:Part|WedgePart|CornerWedgePart|TrussPart)["']\s*\)/gi)||[]).length;
+        const npcNativeActorBinding=/(?:Instance\.new\s*\(\s*["']MeshPart["']\s*\)|\bSpecialMesh\b|\bSurfaceAppearance\b|\bClone\s*\(|GeneratedNativeAssetPath|MasterGlb|\.glb\b|MeshId\s*=|WaitForChild\s*\(\s*["'][^"']*(?:Npc|NPC|Character|Companion|Boss|Rig|Model)[^"']*["']\s*\))/i.test(text);
+        require('ROBLOX_NPC_NO_PRIMITIVE_DOLL_FINAL',!npcFactorySignal||npcPrimitivePartCount<3||npcNativeActorBinding);
         const motionDriver=/(?:TweenService|RenderStepped|Heartbeat|Animator|AnimationTrack|Motor6D|Bone)/i.test(text);
         const motionMutation=/(?:TweenService[\s\S]{0,1200}(?:CFrame|Transform|Position|Orientation)\s*=|(?:RenderStepped|Heartbeat)[\s\S]{0,1200}\.(?:CFrame|Transform|Position|Orientation)\s*=|(?:Motor6D|Bone)[\s\S]{0,800}\.Transform\s*=|\.(?:CFrame|Transform|Position|Orientation)\s*=\s*(?:CFrame|Vector3|UDim2|[^\n;]+[+*\-]))/i.test(text);
         require('ROBLOX_NATIVE_MOTION_DRIVER',motionDriver);
