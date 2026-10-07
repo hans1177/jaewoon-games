@@ -372,7 +372,7 @@ function worldLobbySourceWorkRequired(order={}){
   const evidence=[...(order.evidence||[]),...(order.selectedTask?.evidence||[])];
   return evidence.includes('world-lobby-first:v1')||[order.goal,order.originalGoal,order.selectedTask?.goal].some(value=>clean(value).includes('[WORLD_LOBBY_FIRST]'));
 }
-function assetDevelopmentTask(order={}){
+export function assetDevelopmentTask(order={}){
   const selected=order.selectedTask||{};
   const evidence=[...(order.evidence||[]),...(selected.evidence||[])];
   return order.assetProductionLane===true
