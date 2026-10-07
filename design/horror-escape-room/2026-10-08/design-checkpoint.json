@@ -170,25 +170,41 @@
         "multiplayerPersistence": "서버가 Role, Infected, HumanCount, MonsterCount, Energy, cooldown, conversion, purification, winner와 역할선정 공정 상태를 authoritative하게 관리한다",
         "expansionSpace": "새 적·위협 또는 행동 패턴, 새 공간·경로 또는 목표, 새 상호작용 또는 전략 결과"
       }
+    },
+    "designer_draft_slices::platform-expansion": {
+      "platformExpansionPolicy": {
+        "mode": "SHARED_LARGE_FRAME_PLATFORM_NATIVE_EXPANSION",
+        "sharedLargeFrame": [
+          "CORE_FUN_AND_REPRESENTATIVE_LOOP",
+          "CORE_FUN_AND_REPRESENTATIVE_LOOP",
+          "CORE_FUN_AND_REPRESENTATIVE_LOOP",
+          "CORE_FUN_AND_REPRESENTATIVE_LOOP",
+          "CORE_FUN_AND_REPRESENTATIVE_LOOP"
+        ],
+        "expansionLimit": "NO_ARTIFICIAL_PARITY_LIMIT_WITHIN_SHARED_LARGE_FRAME",
+        "webRule": "WEB_2_5D_3D_RENDERING_WITH_4D_HUMAN_MONSTER_ABERRATION",
+        "unityRule": "UNITY_4D_HUMAN_MONSTER_ABERRATION_WITH_2_5D_WEB_RENDERING",
+        "robloxRule": "ROBLOX_4D_HUMAN_MONSTER_ABERRATION_WITH_2_5D_WEB_RENDERING"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 5,
+      "calls": 9,
+      "successes": 6,
       "failures": 3,
       "timeouts": 1,
       "jsonFailures": 1,
-      "totalMs": 1253973,
-      "lastMs": 202132,
+      "totalMs": 1408200,
+      "lastMs": 154227,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-07T19:32:10.568Z"
+      "updatedAt": "2026-10-07T19:34:44.797Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T17:55:35.632Z",
-  "updatedAt": "2026-10-07T19:32:10.569Z",
+  "updatedAt": "2026-10-07T19:34:44.797Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
@@ -204,7 +220,7 @@
   "localAuthoringSplits": {
     "b0562ba8bb121c6f29db549cd378dd345fb1669cdccd5e5f6382f3175e914676": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-07T19:32:10.568Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T19:34:44.797Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
