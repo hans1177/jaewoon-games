@@ -179,21 +179,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
+      "calls": 4,
       "successes": 3,
-      "failures": 0,
+      "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 542298,
-      "lastMs": 155264,
-      "lastError": null,
-      "updatedAt": "2026-10-07T22:58:21.897Z"
+      "totalMs": 681539,
+      "lastMs": 139241,
+      "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
+      "updatedAt": "2026-10-07T23:00:41.142Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T22:49:19.585Z",
-  "updatedAt": "2026-10-07T22:58:21.899Z",
+  "updatedAt": "2026-10-07T23:00:41.142Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1620,5 +1620,8 @@
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "localAuthoringSplits": {
+    "2f0e971375e5a6ec61d1bed9f9d0993daeedb5076dc33a4e756a41c6262a2b09": true
+  }
 }
