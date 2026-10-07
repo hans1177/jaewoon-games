@@ -1,3 +1,6 @@
+// 파일명: tools/company-design-cycle.mjs
+// 역할: 기존 디자이너의 분할 작성·체크포인트·결정론적 설계 검증을 수행한다.
+// 임포트
 import fs from 'node:fs';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
@@ -81,6 +84,8 @@ const reviewModelCount=0,modelPhaseConcurrency=1,maxLoadedModelLanes=1;
 const phaseConcurrency={};
 const modelKeepAlive='PROVIDER_SPECIFIC';
 const modelCallTimeoutMs=Math.min(120000,Math.max(30000,Number(process.env.COMPANY_MODEL_CALL_TIMEOUT_MS||90000)));
+// 내부 모델 작성 예산: 외부 공급자 제한과 분리하고 준비 단계의 모델 로딩 시간은 제외한다.
+const localDesignerCallTimeoutMs=Math.min(300000,Math.max(30000,Number(process.env.COMPANY_LOCAL_DESIGN_CALL_TIMEOUT_MS)||300000));
 
 const gameId=clean(process.env.ARTBOOK_GAME_ID||process.env.GAME_ID||process.argv.find(x=>x.startsWith('--game='))?.split('=')[1]);
 const date=clean(process.env.ARTBOOK_DATE||process.env.DESIGN_DATE||kstDate());
@@ -247,7 +252,8 @@ const checkpointCompatibleEngineDigests=new Set([
   '24c3c41118092b683ffd377cd948df67544a935d6871fa290e985263cf5f3c03',
   '2ee13c831a912a1446b625b0b30f5e2fd64a6acf6fa19754420ecde80b0abc5f',
   '84ba02b00c0f6c91c9731f1ecabc12b55accadd2f2673cabdf5badc742e64dbf',
-  '9aae351acc02880ef280b371a21ead70b013c820010af4eeb88e23fe059d71b3'
+  '9aae351acc02880ef280b371a21ead70b013c820010af4eeb88e23fe059d71b3',
+  '81b77ec5e350f8737109235df27ddb3a375a99cf53bfce58e356fcdea285920b'
 ]);
 const checkpointV3CompatibleEngineMigrationEligible=designCheckpoint?.contractVersion===DESIGN_CHECKPOINT_CONTRACT_VERSION
   &&clean(designCheckpoint?.gameId)===gameId
@@ -982,12 +988,14 @@ async function callExternalDesignerModel(route,system,user,schema,options={}){
   if(!geminiApiKey)throw new Error('GEMINI_API_KEY_UNAVAILABLE');
   return callModel(route.model,system,user,schema,options);
 }
-async function requestLocalDesignerRaw(prompt,{predict=1600,temperature=0.1,numCtx=8192,timeoutMs=120000}={}){
+// 내부 디자이너 요청·실행 시간 로그
+async function requestLocalDesignerRaw(prompt,{predict=1600,temperature=0.1,numCtx=8192,timeoutMs=localDesignerCallTimeoutMs}={}){
   const body=JSON.stringify({
     model:localDesignerModel,
     prompt,
     stream:false,
     think:false,
+    keep_alive:'10m',
     format:'json',
     options:{
       num_predict:Math.min(8192,Math.max(512,Number(predict||1600))),
@@ -1004,7 +1012,7 @@ async function requestLocalDesignerRaw(prompt,{predict=1600,temperature=0.1,numC
       if(req&&!req.destroyed)req.destroy();
       if(error)reject(error);else resolve(value);
     };
-    const timer=setTimeout(()=>finish(new Error(`OLLAMA_DESIGN_TIMEOUT ${timeoutMs}ms`)),Math.max(30000,Number(timeoutMs)||120000));
+    const timer=setTimeout(()=>finish(new Error(`OLLAMA_DESIGN_TIMEOUT ${timeoutMs}ms`)),Math.max(30000,Number(timeoutMs)||localDesignerCallTimeoutMs));
     const req=http.request({hostname:'127.0.0.1',port:11434,path:'/api/generate',method:'POST',headers:{'content-type':'application/json','content-length':Buffer.byteLength(body)}},res=>{
       let data='';
       res.setEncoding('utf8');
@@ -1014,8 +1022,10 @@ async function requestLocalDesignerRaw(prompt,{predict=1600,temperature=0.1,numC
           if((res.statusCode||0)<200||(res.statusCode||0)>=300)throw new Error(`OLLAMA_DESIGN_HTTP_${res.statusCode} ${clip(data,800)}`);
           const row=JSON.parse(data);
           if(row?.error)throw new Error(`OLLAMA_DESIGN_ERROR ${clean(row.error)}`);
+          if(row?.done!==true)throw new Error('OLLAMA_DESIGN_INCOMPLETE_RESPONSE');
           const raw=clean(row?.response);
           if(!raw)throw new Error('OLLAMA_DESIGN_EMPTY_RESPONSE');
+          console.log(`DESIGN_LOCAL_TIMING=loadMs:${Math.round(Number(row.load_duration||0)/1e6)}|promptTokens:${Number(row.prompt_eval_count||0)}|promptMs:${Math.round(Number(row.prompt_eval_duration||0)/1e6)}|generatedTokens:${Number(row.eval_count||0)}|generationMs:${Math.round(Number(row.eval_duration||0)/1e6)}`);
           finish(null,raw);
         }catch(error){finish(error);}
       });
@@ -1025,10 +1035,12 @@ async function requestLocalDesignerRaw(prompt,{predict=1600,temperature=0.1,numC
     req.end(body);
   });
 }
-async function callLocalDesignerModel(system,user,schema,{predict=1600,temperature=0.1,repairRequired=null,numCtx=8192,timeoutMs=120000}={}){
+async function callLocalDesignerModel(system,user,schema,{predict=1600,temperature=0.1,repairRequired=null,numCtx=8192}={}){
   if(!localDesignerFallbackReady)throw new Error('VIBE_LOCAL_DESIGN_FALLBACK_NOT_READY');
+  const timeoutMs=localDesignerCallTimeoutMs;
   const started=Date.now();
   const prompt=`${system}\n\n${user}\n\nLOCAL_AUTHORING_RULES=JSON_OBJECT_ONLY;DO_NOT_DECIDE_GATE_PASS_FAIL;PRESERVE_OWNER_INTENT;REPAIR_ONLY_REQUESTED_SCOPE`;
+  console.log(`DESIGN_LOCAL_AUTHORING_BUDGET_MS=${timeoutMs}|predict=${predict}|context=${numCtx}|promptChars=${prompt.length}`);
   try{
     const raw=await requestLocalDesignerRaw(prompt,{predict,temperature,numCtx,timeoutMs});
     const parsed=parseJsonObject(raw);

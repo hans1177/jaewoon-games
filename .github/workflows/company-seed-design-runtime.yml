@@ -1,3 +1,4 @@
+# 파일명: .github/workflows/company-seed-design-runtime.yml
 name: Company Seed DESIGN_ONLY Runtime
 
 on:
@@ -36,6 +37,7 @@ env:
   COMPANY_RUNTIME_BRANCH: company-runtime
   COMPANY_MODEL_PHASE_CONCURRENCY: '2'
   COMPANY_MODEL_CALL_TIMEOUT_MS: '90000'
+  COMPANY_LOCAL_DESIGN_CALL_TIMEOUT_MS: '300000'
   # Model identity is remappable by central policy. Prefer models with remaining free-tier quota before exhausted daily lanes.
   COMPANY_GEMINI_DESIGNER_MODEL: 'gemini-3.5-flash-lite'
   COMPANY_GEMINI_FALLBACK_MODELS: 'gemini-3.8-flash,gemini-3.7-flash,gemini-3.6-flash,gemini-3.5-flash,gemini-3.5-flash-lite,gemini-3.1-pro-preview,gemini-2.5-pro,gemini-2.5-flash,gemini-2.5-flash-lite,gemini-3.1-flash-lite'
@@ -616,6 +618,20 @@ jobs:
             "$cached" pull "$COMPANY_VIBE_LOCAL_MODEL"
             echo 'DESIGN_LOCAL_MODEL_SOURCE=FALLBACK_PULL'
           fi
+          # 모델 로딩은 설계 작성 시간과 분리한다. 준비 응답은 설계 결과로 사용하지 않는다.
+          node --input-type=module <<'NODE'
+          const started=Date.now();
+          const response=await fetch('http://127.0.0.1:11434/api/generate',{
+            method:'POST',
+            headers:{'content-type':'application/json'},
+            body:JSON.stringify({model:process.env.COMPANY_VIBE_LOCAL_MODEL,prompt:'',stream:false,think:false,keep_alive:'10m',options:{num_ctx:8192,num_predict:0}}),
+            signal:AbortSignal.timeout(120000)
+          });
+          if(!response.ok)throw new Error(`DESIGN_LOCAL_WARMUP_HTTP_${response.status}`);
+          const result=await response.json();
+          if(result.error||result.done!==true)throw new Error('DESIGN_LOCAL_WARMUP_FAILED');
+          console.log(`DESIGN_LOCAL_WARMUP=READY|elapsedMs=${Date.now()-started}|loadMs=${Math.round(Number(result.load_duration||0)/1e6)}`);
+          NODE
           echo 'ready=true' >> "$GITHUB_OUTPUT"
           echo 'DESIGN_LOCAL_AUTHORING_FALLBACK=READY'
 
