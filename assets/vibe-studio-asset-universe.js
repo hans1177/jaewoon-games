@@ -2524,6 +2524,7 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     countPolicy:'LOOSE_TARGET_BANDS_NOT_HARD_CAPS',
     hardMaximum:null,
     domains:Object.freeze(sortedDomains),
+    systemDepthAudit:depth,
     uiSubsystems:Object.freeze(uiSubsystems),
     uiCompositionGraph:COMMON_UI_SYSTEM_COMPOSITION_GRAPH,
     referenceBreadthProfiles:INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES,
