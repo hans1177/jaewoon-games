@@ -3,392 +3,18 @@
   "gameId": "cozy-island",
   "date": "2026-10-08",
   "seedId": "OWNER-DESIGN-COZY-ISLAND",
-  "fingerprint": "234d6789ab36e8f980bdc0d4669a94d1ca90e5a4817c8681f11d0476bed05a4a",
-  "policyDigest": "223f74bb658bbab4921a06b74e652d4e7fc27d174188c3b4b3488e9b3d026f6f",
-  "engineDigest": "635ecb0d21a9a5a7334acf530359981b48cfa98aabec8a331b74dde6b9b610e8",
+  "fingerprint": "9f41727c9baa3985d4be8a78ed647dcb37e157a013333f47fb199a836457a40b",
+  "policyDigest": "aeaa6bc4a0a63214afbd971d20e292165286bd9fc150bd87a134529dc53a3dea",
+  "engineDigest": "d985f7aaf22b24468b2601492050d9ada4963d118de46d78b5ac12cd5c97d032",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "designer_draft_slices::identity-core": {
-      "identity": "작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임",
-      "playerFantasy": "작은 섬의 주민은 직접 나무와 식량을 모으며, 병사와 병영을 통해 왕국을 확장하는 협동 생존 게임. 각 플레이어는 자원을 수집하고, 전략적 거점에 점령하며, 왕국의 지배를 확보하는 전략적 역할을 수행한다.",
-      "coreFun": "직접 채집, 주민 고용, 병영 강화, 자원 거점 선택, 자동전투, 협동 지원. 각 단계는 실제 자원 수집과 전략적 전투를 통해 확장된다.",
-      "coreLoop": [
-        "직접 채집 -> 자원 수집 -> 주민 고용 -> 병영 강화 -> 자원 거점 선택 -> 자동전투 -> 협동 지원",
-        "자원 거점 점령 -> 전략적 전투 -> 병력 확장 -> 왕국 확장 -> 새로운 거점 확보",
-        "보상 획득 -> 전략적 선택 -> 자원 확보 -> 병력 증가 -> 왕국 확장"
-      ],
-      "signatureSystems": [
-        {
-          "name": "직접 채집",
-          "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득한다.",
-          "playerChoice": "나무와 식량을 직접 모으는 선택"
-        },
-        {
-          "name": "주민 자동화",
-          "purpose": "고용한 주민을 생산 직업에 배치해 반복 노동을 자동화한다.",
-          "playerChoice": "주민을 고용하고, 생산 직업에 배치하는 선택"
-        },
-        {
-          "name": "병영/병사",
-          "purpose": "자원을 병력으로 전환하고 병영 레벨로 전투력을 확장한다.",
-          "playerChoice": "자원을 병력으로 전환하고, 병영 레벨을 강화하는 선택"
-        },
-        {
-          "name": "5개 자원 거점",
-          "purpose": "서로 다른 적과 보상을 가진 5개 거점을 순차 점령한다.",
-          "playerChoice": "5개 거점을 순차적으로 점령하는 선택"
-        },
-        {
-          "name": "협동 지원",
-          "purpose": "다른 플레이어의 준비 병력을 서버가 지원 전력으로 합산한다.",
-          "playerChoice": "다른 플레이어의 병력을 지원하는 선택"
-        }
-      ]
-    },
-    "designer_draft_slices::systems-progression": {
-      "systemInterconnections": [
-        {
-          "fromSystem": "직접 채집",
-          "toSystem": "주민 자동화",
-          "trigger": "나무와 식량을 직접 모으는 선택",
-          "stateChange": "주민 고용 및 생산 직업 배치"
-        },
-        {
-          "fromSystem": "주민 자동화",
-          "toSystem": "병영 강화",
-          "trigger": "주민 고용 및 생산 직업 배치",
-          "stateChange": "병력 확장 및 전투력 강화"
-        },
-        {
-          "fromSystem": "병영 강화",
-          "toSystem": "자원 거점 선택",
-          "trigger": "자원을 병력으로 전환하고 병영 레벨 강화",
-          "stateChange": "자원 거점 선택 및 전략적 전투"
-        }
-      ],
-      "progressionDirection": "초반 직접 노동 → 주민 자동화 → 병영/병사 → 지역 기지 점령 → 특수자원 확보 → 고급 병종/무역 → 해전·공성 → 대형 섬/왕국 정복 순서로 확장한다.",
-      "progressionEconomyBalance": {
-        "progressionLoop": "직접 채집 → 주민 고용 → 병영 강화 → 자원 거점 선택 → 자동전투 → 협동 지원",
-        "resourceFlow": "나무·식량 직접 수집 → 주민 고용 → 병력 확장 → 자원 거점 확보 → 전략적 전투 → 왕국 확장",
-        "balanceRules": "자원 수집과 전략적 전투의 균형 유지, 병력 확장과 전투력의 상호작용, 협동 지원의 효율성 조절"
-      },
-      "contentExpansionPlan": [
-        {
-          "milestone": "직접 채집",
-          "newGameplay": "나무와 식량은 월드 노드에서 직접 상호작용해 획득한다.",
-          "systemImpact": "자원 수집의 직접성 강화"
-        },
-        {
-          "milestone": "주민 자동화",
-          "newGameplay": "고용한 주민을 생산 직업에 배치해 반복 노동을 자동화한다.",
-          "systemImpact": "반복 노동의 자동화 및 효율성 증대"
-        },
-        {
-          "milestone": "병영 강화",
-          "newGameplay": "자원을 병력으로 전환하고 병영 레벨을 강화한다.",
-          "systemImpact": "병력 확장 및 전투력의 증대"
-        }
-      ],
-      "failureRetryRisk": {
-        "failureStates": [
-          "자원 수집의 부족",
-          "병력 확장의 부족",
-          "전략적 전투의 부족"
-        ],
-        "retryFlow": "자원 수집 → 병력 확장 → 전략적 전투",
-        "riskPressure": "자원 수집과 전략적 전투의 균형 유지, 병력 확장과 전투력의 상호작용, 협동 지원의 효율성 조절",
-        "recoveryRules": "자원 수집의 부족을 보상으로 대체, 병력 확장의 부족을 전투력으로 대체, 전략적 전투의 부족을 협동 지원으로 대체"
-      }
-    },
-    "designer_draft_slices::platform-profiles": {
-      "platformFitPlan": {
-        "targetPlatform": "ROBLOX",
-        "inputModel": "모바일 큰 버튼과 터치 상호작용을 우선하고 키보드와 게임패드를 같은 행동에 매핑한다.",
-        "performanceBudget": "모바일 Roblox에서 낮은 파트 수와 제한된 이펙트, 짧은 네트워크 이벤트를 유지한다.",
-        "sessionConstraints": "솔로 플레이를 허용하고 2명 이상에서는 멀티 기능이 활성화되는 Roblox 세션."
-      },
-      "platformProfiles": {
-        "ROBLOX": {
-          "platform": "ROBLOX",
-          "inputModel": "모바일 큰 버튼과 터치 상호작용을 우선하고 키보드와 게임패드를 같은 행동에 매핑한다.",
-          "sessionModel": "솔로 플레이를 허용하고 2명 이상에서는 멀티 기능이 활성화되는 Roblox 세션.",
-          "multiplayerRuntime": "서버 권한으로 참가자별 병사와 병영 보너스를 집계해 공동 적 웨이브와 자동전투를 처리하고 RemoteEvent로 모든 참가자에게 결과를 동기화한다.",
-          "performanceBudget": "모바일 Roblox에서 낮은 파트 수와 제한된 이펙트, 짧은 네트워크 이벤트를 유지한다.",
-          "uiUx": "상단에 기본자원·특수자원·주민·병력·점령 상태를 표시하고 하단에 벌목·식량수급·주민영입·병영·모집·전투 버튼을 모바일 큰 버튼으로 제공한다.",
-          "saveAndNetwork": "DataStore에 개인 자원·주민·병영·병사·점령 기지·특수자원 해금을 저장한다. 자동전투와 협동 지원 계산은 서버 권한으로 처리한다.",
-          "platformContentAdaptation": "Roblox 3D 섬 지형에서 지역 기지를 선택하고, 서버 권한 자동전투와 점령 상태를 시각적으로 표시한다. 기본섬 노동과 주민 자동화는 실제 성장 상태로 연결한다.",
-          "internalReleaseTarget": "OPEN_CLOUD_PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
-          "validationEvidence": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract, Mobile input/UI contract, Save/rejoin contract when applicable, Multiplayer state-sync contract when applicable"
-        },
-        "UNITY": {
-          "platform": "UNITY",
-          "inputModel": "모바일 큰 버튼과 터치 상호작용을 우선하고 키보드와 게임패드를 같은 행동에 매핑한다.",
-          "sessionModel": "솔로 플레이를 허용하고 2명 이상에서는 멀티 기능이 활성화되는 Unity 세션.",
-          "multiplayerRuntime": "서버 권한으로 참가자별 병사와 병영 보너스를 집계해 공동 적 웨이브와 자동전투를 처리하고 RemoteEvent로 모든 참가자에게 결과를 동기화한다.",
-          "performanceBudget": "모바일 Unity에서 낮은 파트 수와 제한된 이펙트, 짧은 네트워크 이벤트를 유지한다.",
-          "uiUx": "상단에 기본자원·특수자원·주민·병력·점령 상태를 표시하고 하단에 벌목·식량수급·주민영입·병영·모집·전투 버튼을 Unity 큰 버튼으로 제공한다.",
-          "saveAndNetwork": "DataStore에 개인 자원·주민·병영·병사·점령 기지·특수자원 해금을 저장한다. 자동전투와 협동 지원 계산은 서버 권한으로 처리한다.",
-          "platformContentAdaptation": "Unity 3D 섬 지형에서 지역 기지를 선택하고, 서버 권한 자동전투와 점령 상태를 시각적으로 표시한다. 기본섬 노동과 주민 자동화는 실제 성장 상태로 연결한다.",
-          "internalReleaseTarget": "OPEN_CLOUD_PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
-          "validationEvidence": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract, Mobile input/UI contract, Save/rejoin contract when applicable, Multiplayer state-sync contract when applicable"
-        }
-      }
-    },
-    "designer_draft_slices::web-canonical": {
-      "webCanonicalDesign": {
-        "role": "WEB_DETAILED_GAME_ORIGINAL",
-        "designAuthority": "GAME_DESIGN_REFERENCE_NOT_SOURCE_CODE_AUTHORITY",
-        "playerFlow": [
-          "직접 채집",
-          "주민 고용",
-          "병력 확장",
-          "자원 거점 선택",
-          "자동전투",
-          "협동 지원"
-        ],
-        "worldAndTraversal": "COZY_CHIBI_STORYBOOK",
-        "systemsAndContent": "COZY_CHIBI_KINGDOM_WORLD_V8",
-        "combatAndInteraction": "COOP",
-        "progressionAndEconomy": "COZY_CHIBI_KINGDOM_PROGRESSION_V2",
-        "sessionFailureRecovery": "COZY_CHIBI_KINGDOM_SESSION_V2",
-        "uiMenuAndOnboarding": "COZY_CHIBI_KINGDOM_UI_V2",
-        "inputCameraAccessibility": "COZY_CHIBI_KINGDOM_INPUT_V2",
-        "presentationAndAudio": "COZY_CHIBI_KINGDOM_PRESENTATION_V2",
-        "multiplayerPersistence": "COZY_CHIBI_KINGDOM_MULTIPLAYER_V2",
-        "expansionSpace": "COZY_CHIBI_KINGDOM_EXPANSION_V2"
-      }
-    },
-    "designer_draft_slices::platform-expansion": {
-      "platformExpansionPolicy": {
-        "mode": "SHARED_LARGE_FRAME_PLATFORM_NATIVE_EXPANSION",
-        "sharedLargeFrame": [
-          "CORE_FUN_AND_REPRESENTATIVE_LOOP",
-          "CORE_FUN_AND_REPRESENTATIVE_LOOP",
-          "CORE_FUN_AND_REPRESENTATIVE_LOOP",
-          "CORE_FUN_AND_REPRESENTATIVE_LOOP",
-          "CORE_FUN_AND_REPRESENTATIVE_LOOP"
-        ],
-        "expansionLimit": "NO_ARTIFICIAL_PARITY_LIMIT_WITHIN_SHARED_LARGE_FRAME",
-        "webRule": "WEB_2_5D_AND_UP",
-        "unityRule": "UNITY_2_5D_AND_UP",
-        "robloxRule": "ROBLOX_3D_AND_UP"
-      }
-    },
-    "designer_draft_slices::ux-presentation": {
-      "visualDirection": "밝고 따뜻한 동화책 미니어처 왕국. 큰 머리와 둥근 얼굴, 짧고 굵은 팔다리의 치비 주민과 하나의 연결된 실루엣으로 보이는 야생동물을 사용한다.",
-      "mobileUx": "모바일 큰 버튼과 터치 상호작용을 우선하고 키보드와 게임패드를 같은 행동에 매핑한다.",
-      "uxAccessibilityPlan": {
-        "hudPriorities": "상단에 기본자원·특수자원·주민·병력·점령 상태를 표시하고 하단에 벌목·식량수급·주민영입·병영·모집·전투 버튼을 모바일 큰 버튼으로 제공한다.",
-        "touchAndInput": "모바일 큰 버튼과 터치 상호작용을 우선하고 키보드와 게임패드를 같은 행동에 매핑한다.",
-        "readability": "서버 권한으로 참가자별 병사와 병영 보너스를 집계해 공동 적 웨이브와 자동전투를 처리하고 RemoteEvent로 모든 참가자에게 결과를 동기화한다.",
-        "accessibility": "DataStore에 개인 자원·주민·병영·병사·점령 기지·특수자원 해금을 저장한다. 자동전투와 협동 지원 계산은 서버 권한으로 처리한다."
-      },
-      "artAudioDirection": {
-        "visualIdentity": "COZY_CHIBI_KINGDOM",
-        "audioIdentity": "COZY_CHIBI_KINGDOM_AUDIO",
-        "gameplayFeedbackSync": "COZY_CHIBI_KINGDOM_GAMEPLAY_SYNC_V2"
-      }
-    },
-    "designer_draft_slices::market-multiplayer": {
-      "marketTargetDirection": "COZY_CHIBI_KINGDOM",
-      "steamExpansionDecision": "COZY_CHIBI_KINGDOM_EXPANSION_V2",
-      "multiplayerMode": "COOP",
-      "multiplayerExpansionDecision": "COZY_CHIBI_KINGDOM_MULTIPLAYER_V2"
-    },
-    "local_authoring_parts::92ebe7803df6e46521d9be20e81f31d3eea45d9909c2fdc824be51f638e3a3cd:label,concept,playerFantasy,genreDirection": {
-      "label": "PLAN_A",
-      "concept": "직접 채집, 주민 고용, 병영 강화, 자원 거점 선택, 자동전투, 협동 지원",
-      "playerFantasy": "작은 섬의 주민은 직접 나무와 식량을 모으며, 병사와 병영을 통해 왕국을 확장하는 협동 생존 게임. 각 플레이어는 자원을 수집하고, 전략적 거점에 점령하며, 왕국의 지배를 확보하는 전략적 역할을 수행한다.",
-      "genreDirection": "힐링,생활,낚시"
-    },
-    "local_authoring_parts::92ebe7803df6e46521d9be20e81f31d3eea45d9909c2fdc824be51f638e3a3cd:coreLoopShift,mapTopologyRegionRoles,landmarksTraversal,enemyEcosystemCounterplay": {
-      "coreLoopShift": "직접 채집 → 자원 수집 → 주민 고용 → 병력 확장 → 자원 거점 선택 → 자동전투 → 협동 지원",
-      "mapTopologyRegionRoles": "서로 다른 적과 보상을 가진 5개 거점을 순차적으로 점령하는 역할",
-      "landmarksTraversal": "직접 채집 → 주민 고용 → 병영 강화 → 자원 거점 선택 → 자동전투 → 협동 지원",
-      "enemyEcosystemCounterplay": "자원 거점 점령 → 전략적 전투 → 병력 확장 → 왕국 확장 → 새로운 거점 확보"
-    },
-    "local_authoring_parts::0ead8e69937f42fb788fb05132338825c752875b312a8bf82874a4a7cdca7a38:label,concept,playerFantasy,genreDirection,coreLoopShift,mapTopologyRegionRoles,landmarksTraversal,enemyEcosystemCounterplay": {
-      "label": "PLAN_A",
-      "concept": "직접 채집, 주민 고용, 병영 강화, 자원 거점 선택, 자동전투, 협동 지원",
-      "playerFantasy": "작은 섬의 주민은 직접 나무와 식량을 모으며, 병사와 병영을 통해 왕국을 확장하는 협동 생존 게임. 각 플레이어는 자원을 수집하고, 전략적 거점에 점령하며, 왕국의 지배를 확보하는 전략적 역할을 수행한다.",
-      "genreDirection": "힐링,생활,낚시",
-      "coreLoopShift": "직접 채집 → 자원 수집 → 주민 고용 → 병력 확장 → 자원 거점 선택 → 자동전투 → 협동 지원",
-      "mapTopologyRegionRoles": "서로 다른 적과 보상을 가진 5개 거점을 순차적으로 점령하는 역할",
-      "landmarksTraversal": "직접 채집 → 주민 고용 → 병영 강화 → 자원 거점 선택 → 자동전투 → 협동 지원",
-      "enemyEcosystemCounterplay": "자원 거점 점령 → 전략적 전투 → 병력 확장 → 왕국 확장 → 새로운 거점 확보"
-    },
-    "local_authoring_parts::0b5e63b100f952c69c2a93973751ad54f5ba0eee24b3cf198c5197d98e1845b0:bossSignatureMoments,progressionEconomy,questStoryEventFlow,failureRetryRecovery": {
-      "bossSignatureMoments": "직접 채집, 주민 고용, 병영 강화, 자원 거점 선택, 자동전투, 협동 지원",
-      "progressionEconomy": "직접 채집 → 주민 고용 → 병력 확장 → 자원 거점 확보 → 전략적 전투 → 왕국 확장",
-      "questStoryEventFlow": "직접 채집 → 주민 고용 → 병력 확장 → 자원 거점 선택 → 자동전투 → 협동 지원 → 왕국 확장",
-      "failureRetryRecovery": "자원 수집 부족 → 병력 확장 부족 → 전략적 전투 부족"
-    },
-    "local_authoring_parts::0b5e63b100f952c69c2a93973751ad54f5ba0eee24b3cf198c5197d98e1845b0:platformAdaptation,implementationScope,validationPlan": {
-      "platformAdaptation": "모바일 Roblox에서 낮은 파트 수와 제한된 이펙트, 짧은 네트워크 이벤트를 유지하며, 모바일 큰 버튼과 터치 상호작용을 우선하고 키보드와 게임패드를 같은 행동에 매핑한다.",
-      "implementationScope": "직접 채집, 주민 고용, 병영 강화, 자원 거점 선택, 자동전투, 협동 지원 기능의 구현 및 시스템 연결.",
-      "validationPlan": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract, Mobile input/UI contract, Save/rejoin contract when applicable, Multiplayer state-sync contract when applicable"
-    },
-    "local_authoring_parts::0ead8e69937f42fb788fb05132338825c752875b312a8bf82874a4a7cdca7a38:bossSignatureMoments,progressionEconomy,questStoryEventFlow,failureRetryRecovery,platformAdaptation,implementationScope,validationPlan": {
-      "bossSignatureMoments": "직접 채집, 주민 고용, 병영 강화, 자원 거점 선택, 자동전투, 협동 지원",
-      "progressionEconomy": "직접 채집 → 주민 고용 → 병력 확장 → 자원 거점 확보 → 전략적 전투 → 왕국 확장",
-      "questStoryEventFlow": "직접 채집 → 주민 고용 → 병력 확장 → 자원 거점 선택 → 자동전투 → 협동 지원 → 왕국 확장",
-      "failureRetryRecovery": "자원 수집 부족 → 병력 확장 부족 → 전략적 전투 부족",
-      "platformAdaptation": "모바일 Roblox에서 낮은 파트 수와 제한된 이펙트, 짧은 네트워크 이벤트를 유지하며, 모바일 큰 버튼과 터치 상호작용을 우선하고 키보드와 게임패드를 같은 행동에 매핑한다.",
-      "implementationScope": "직접 채집, 주민 고용, 병영 강화, 자원 거점 선택, 자동전투, 협동 지원 기능의 구현 및 시스템 연결.",
-      "validationPlan": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract, Mobile input/UI contract, Save/rejoin contract when applicable, Multiplayer state-sync contract when applicable"
-    },
-    "local_authoring_parts::0d1631accd288b8540fe4513ee2b8307c0a4e4b02bd4b179d65ab7df923cfde9:designAlternatives:0": {
-      "label": "PLAN_A",
-      "concept": "직접 채집, 주민 고용, 병영 강화, 자원 거점 선택, 자동전투, 협동 지원",
-      "playerFantasy": "작은 섬의 주민은 직접 나무와 식량을 모으며, 병사와 병영을 통해 왕국을 확장하는 협동 생존 게임. 각 플레이어는 자원을 수집하고, 전략적 거점에 점령하며, 왕국의 지배를 확보하는 전략적 역할을 수행한다.",
-      "genreDirection": "힐링,생활,낚시",
-      "coreLoopShift": "직접 채집 → 자원 수집 → 주민 고용 → 병력 확장 → 자원 거점 선택 → 자동전투 → 협동 지원",
-      "mapTopologyRegionRoles": "서로 다른 적과 보상을 가진 5개 거점을 순차적으로 점령하는 역할",
-      "landmarksTraversal": "직접 채집 → 주민 고용 → 병영 강화 → 자원 거점 선택 → 자동전투 → 협동 지원",
-      "enemyEcosystemCounterplay": "자원 거점 점령 → 전략적 전투 → 병력 확장 → 왕국 확장 → 새로운 거점 확보",
-      "bossSignatureMoments": "직접 채집, 주민 고용, 병영 강화, 자원 거점 선택, 자동전투, 협동 지원",
-      "progressionEconomy": "직접 채집 → 주민 고용 → 병력 확장 → 자원 거점 확보 → 전략적 전투 → 왕국 확장",
-      "questStoryEventFlow": "직접 채집 → 주민 고용 → 병력 확장 → 자원 거점 선택 → 자동전투 → 협동 지원 → 왕국 확장",
-      "failureRetryRecovery": "자원 수집 부족 → 병력 확장 부족 → 전략적 전투 부족",
-      "platformAdaptation": "모바일 Roblox에서 낮은 파트 수와 제한된 이펙트, 짧은 네트워크 이벤트를 유지하며, 모바일 큰 버튼과 터치 상호작용을 우선하고 키보드와 게임패드를 같은 행동에 매핑한다.",
-      "implementationScope": "직접 채집, 주민 고용, 병영 강화, 자원 거점 선택, 자동전투, 협동 지원 기능의 구현 및 시스템 연결.",
-      "validationPlan": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract, Mobile input/UI contract, Save/rejoin contract when applicable, Multiplayer state-sync contract when applicable"
-    },
-    "local_authoring_parts::076c2f7f18524533c67620cd13038637f1e1f1dd5964d182191b691cf39c43c4:label,concept,playerFantasy,genreDirection": {
-      "label": "PLAN_B",
-      "concept": "직접 채집, 주민 고용, 병영 강화, 자원 거점 선택, 자동전투, 협동 지원",
-      "playerFantasy": "작은 섬의 주민은 직접 나무와 식량을 모으며, 병사와 병영을 통해 왕국을 확장하는 협동 생존 게임. 각 플레이어는 자원을 수집하고, 전략적 거점에 점령하며, 왕국의 지배를 확보하는 전략적 역할을 수행한다.",
-      "genreDirection": "힐링,생활,낚시"
-    },
-    "local_authoring_parts::076c2f7f18524533c67620cd13038637f1e1f1dd5964d182191b691cf39c43c4:coreLoopShift,mapTopologyRegionRoles,landmarksTraversal,enemyEcosystemCounterplay": {
-      "coreLoopShift": "직접 채집 → 자원 수집 → 주민 고용 → 병력 확장 → 자원 거점 선택 → 자동전투 → 협동 지원",
-      "mapTopologyRegionRoles": "서로 다른 적과 보상을 가진 5개 거점을 순차적으로 점령하는 역할",
-      "landmarksTraversal": "직접 채집 → 주민 고용 → 병영 강화 → 자원 거점 선택 → 자동전투 → 협동 지원",
-      "enemyEcosystemCounterplay": "자원 거점 점령 → 전략적 전투 → 병력 확장 → 왕국 확장 → 새로운 거점 확보"
-    },
-    "local_authoring_parts::4b330c450e31aea6e1726bdcd71ded52d1230e77308655e813770dfaab7ac4f3:label,concept,playerFantasy,genreDirection,coreLoopShift,mapTopologyRegionRoles,landmarksTraversal,enemyEcosystemCounterplay": {
-      "label": "PLAN_B",
-      "concept": "직접 채집, 주민 고용, 병영 강화, 자원 거점 선택, 자동전투, 협동 지원",
-      "playerFantasy": "작은 섬의 주민은 직접 나무와 식량을 모으며, 병사와 병영을 통해 왕국을 확장하는 협동 생존 게임. 각 플레이어는 자원을 수집하고, 전략적 거점에 점령하며, 왕국의 지배를 확보하는 전략적 역할을 수행한다.",
-      "genreDirection": "힐링,생활,낚시",
-      "coreLoopShift": "직접 채집 → 자원 수집 → 주민 고용 → 병력 확장 → 자원 거점 선택 → 자동전투 → 협동 지원",
-      "mapTopologyRegionRoles": "서로 다른 적과 보상을 가진 5개 거점을 순차적으로 점령하는 역할",
-      "landmarksTraversal": "직접 채집 → 주민 고용 → 병영 강화 → 자원 거점 선택 → 자동전투 → 협동 지원",
-      "enemyEcosystemCounterplay": "자원 거점 점령 → 전략적 전투 → 병력 확장 → 왕국 확장 → 새로운 거점 확보"
-    },
-    "local_authoring_parts::282c62a5f7d4dc8082bfb8964d27ade3a2fe8ba565bf06e30a1d7d1363d587eb:bossSignatureMoments,progressionEconomy,questStoryEventFlow,failureRetryRecovery": {
-      "bossSignatureMoments": "직접 채집, 주민 고용, 병영 강화, 자원 거점 선택, 자동전투, 협동 지원",
-      "progressionEconomy": "직접 채집 → 주민 고용 → 병력 확장 → 자원 거점 확보 → 전략적 전투 → 왕국 확장",
-      "questStoryEventFlow": "직접 채집 → 주민 고용 → 병력 확장 → 자원 거점 선택 → 자동전투 → 협동 지원 → 왕국 확장",
-      "failureRetryRecovery": "자원 수집 부족 → 병력 확장 부족 → 전략적 전투 부족"
-    },
-    "local_authoring_parts::282c62a5f7d4dc8082bfb8964d27ade3a2fe8ba565bf06e30a1d7d1363d587eb:platformAdaptation,implementationScope,validationPlan": {
-      "platformAdaptation": "모바일 Roblox에서 낮은 파트 수와 제한된 이펙트, 짧은 네트워크 이벤트를 유지하며, 모바일 큰 버튼과 터치 상호작용을 우선하고 키보드와 게임패드를 같은 행동에 매핑한다.",
-      "implementationScope": "직접 채집, 주민 고용, 병영 강화, 자원 거점 선택, 자동전투, 협동 지원 기능의 구현 및 시스템 연결.",
-      "validationPlan": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract, Mobile input/UI contract, Save/rejoin contract when applicable, Multiplayer state-sync contract when applicable"
-    },
-    "local_authoring_parts::4b330c450e31aea6e1726bdcd71ded52d1230e77308655e813770dfaab7ac4f3:bossSignatureMoments,progressionEconomy,questStoryEventFlow,failureRetryRecovery,platformAdaptation,implementationScope,validationPlan": {
-      "bossSignatureMoments": "직접 채집, 주민 고용, 병영 강화, 자원 거점 선택, 자동전투, 협동 지원",
-      "progressionEconomy": "직접 채집 → 주민 고용 → 병력 확장 → 자원 거점 확보 → 전략적 전투 → 왕국 확장",
-      "questStoryEventFlow": "직접 채집 → 주민 고용 → 병력 확장 → 자원 거점 선택 → 자동전투 → 협동 지원 → 왕국 확장",
-      "failureRetryRecovery": "자원 수집 부족 → 병력 확장 부족 → 전략적 전투 부족",
-      "platformAdaptation": "모바일 Roblox에서 낮은 파트 수와 제한된 이펙트, 짧은 네트워크 이벤트를 유지하며, 모바일 큰 버튼과 터치 상호작용을 우선하고 키보드와 게임패드를 같은 행동에 매핑한다.",
-      "implementationScope": "직접 채집, 주민 고용, 병영 강화, 자원 거점 선택, 자동전투, 협동 지원 기능의 구현 및 시스템 연결.",
-      "validationPlan": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract, Mobile input/UI contract, Save/rejoin contract when applicable, Multiplayer state-sync contract when applicable"
-    },
-    "local_authoring_parts::0d1631accd288b8540fe4513ee2b8307c0a4e4b02bd4b179d65ab7df923cfde9:designAlternatives:1": {
-      "label": "PLAN_B",
-      "concept": "직접 채집, 주민 고용, 병영 강화, 자원 거점 선택, 자동전투, 협동 지원",
-      "playerFantasy": "작은 섬의 주민은 직접 나무와 식량을 모으며, 병사와 병영을 통해 왕국을 확장하는 협동 생존 게임. 각 플레이어는 자원을 수집하고, 전략적 거점에 점령하며, 왕국의 지배를 확보하는 전략적 역할을 수행한다.",
-      "genreDirection": "힐링,생활,낚시",
-      "coreLoopShift": "직접 채집 → 자원 수집 → 주민 고용 → 병력 확장 → 자원 거점 선택 → 자동전투 → 협동 지원",
-      "mapTopologyRegionRoles": "서로 다른 적과 보상을 가진 5개 거점을 순차적으로 점령하는 역할",
-      "landmarksTraversal": "직접 채집 → 주민 고용 → 병영 강화 → 자원 거점 선택 → 자동전투 → 협동 지원",
-      "enemyEcosystemCounterplay": "자원 거점 점령 → 전략적 전투 → 병력 확장 → 왕국 확장 → 새로운 거점 확보",
-      "bossSignatureMoments": "직접 채집, 주민 고용, 병영 강화, 자원 거점 선택, 자동전투, 협동 지원",
-      "progressionEconomy": "직접 채집 → 주민 고용 → 병력 확장 → 자원 거점 확보 → 전략적 전투 → 왕국 확장",
-      "questStoryEventFlow": "직접 채집 → 주민 고용 → 병력 확장 → 자원 거점 선택 → 자동전투 → 협동 지원 → 왕국 확장",
-      "failureRetryRecovery": "자원 수집 부족 → 병력 확장 부족 → 전략적 전투 부족",
-      "platformAdaptation": "모바일 Roblox에서 낮은 파트 수와 제한된 이펙트, 짧은 네트워크 이벤트를 유지하며, 모바일 큰 버튼과 터치 상호작용을 우선하고 키보드와 게임패드를 같은 행동에 매핑한다.",
-      "implementationScope": "직접 채집, 주민 고용, 병영 강화, 자원 거점 선택, 자동전투, 협동 지원 기능의 구현 및 시스템 연결.",
-      "validationPlan": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract, Mobile input/UI contract, Save/rejoin contract when applicable, Multiplayer state-sync contract when applicable"
-    },
-    "designer_draft_slices::alternatives": {
-      "designAlternatives": [
-        {
-          "label": "PLAN_A",
-          "concept": "직접 채집, 주민 고용, 병영 강화, 자원 거점 선택, 자동전투, 협동 지원",
-          "playerFantasy": "작은 섬의 주민은 직접 나무와 식량을 모으며, 병사와 병영을 통해 왕국을 확장하는 협동 생존 게임. 각 플레이어는 자원을 수집하고, 전략적 거점에 점령하며, 왕국의 지배를 확보하는 전략적 역할을 수행한다.",
-          "genreDirection": "힐링,생활,낚시",
-          "coreLoopShift": "직접 채집 → 자원 수집 → 주민 고용 → 병력 확장 → 자원 거점 선택 → 자동전투 → 협동 지원",
-          "mapTopologyRegionRoles": "서로 다른 적과 보상을 가진 5개 거점을 순차적으로 점령하는 역할",
-          "landmarksTraversal": "직접 채집 → 주민 고용 → 병영 강화 → 자원 거점 선택 → 자동전투 → 협동 지원",
-          "enemyEcosystemCounterplay": "자원 거점 점령 → 전략적 전투 → 병력 확장 → 왕국 확장 → 새로운 거점 확보",
-          "bossSignatureMoments": "직접 채집, 주민 고용, 병영 강화, 자원 거점 선택, 자동전투, 협동 지원",
-          "progressionEconomy": "직접 채집 → 주민 고용 → 병력 확장 → 자원 거점 확보 → 전략적 전투 → 왕국 확장",
-          "questStoryEventFlow": "직접 채집 → 주민 고용 → 병력 확장 → 자원 거점 선택 → 자동전투 → 협동 지원 → 왕국 확장",
-          "failureRetryRecovery": "자원 수집 부족 → 병력 확장 부족 → 전략적 전투 부족",
-          "platformAdaptation": "모바일 Roblox에서 낮은 파트 수와 제한된 이펙트, 짧은 네트워크 이벤트를 유지하며, 모바일 큰 버튼과 터치 상호작용을 우선하고 키보드와 게임패드를 같은 행동에 매핑한다.",
-          "implementationScope": "직접 채집, 주민 고용, 병영 강화, 자원 거점 선택, 자동전투, 협동 지원 기능의 구현 및 시스템 연결.",
-          "validationPlan": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract, Mobile input/UI contract, Save/rejoin contract when applicable, Multiplayer state-sync contract when applicable"
-        },
-        {
-          "label": "PLAN_B",
-          "concept": "직접 채집, 주민 고용, 병영 강화, 자원 거점 선택, 자동전투, 협동 지원",
-          "playerFantasy": "작은 섬의 주민은 직접 나무와 식량을 모으며, 병사와 병영을 통해 왕국을 확장하는 협동 생존 게임. 각 플레이어는 자원을 수집하고, 전략적 거점에 점령하며, 왕국의 지배를 확보하는 전략적 역할을 수행한다.",
-          "genreDirection": "힐링,생활,낚시",
-          "coreLoopShift": "직접 채집 → 자원 수집 → 주민 고용 → 병력 확장 → 자원 거점 선택 → 자동전투 → 협동 지원",
-          "mapTopologyRegionRoles": "서로 다른 적과 보상을 가진 5개 거점을 순차적으로 점령하는 역할",
-          "landmarksTraversal": "직접 채집 → 주민 고용 → 병영 강화 → 자원 거점 선택 → 자동전투 → 협동 지원",
-          "enemyEcosystemCounterplay": "자원 거점 점령 → 전략적 전투 → 병력 확장 → 왕국 확장 → 새로운 거점 확보",
-          "bossSignatureMoments": "직접 채집, 주민 고용, 병영 강화, 자원 거점 선택, 자동전투, 협동 지원",
-          "progressionEconomy": "직접 채집 → 주민 고용 → 병력 확장 → 자원 거점 확보 → 전략적 전투 → 왕국 확장",
-          "questStoryEventFlow": "직접 채집 → 주민 고용 → 병력 확장 → 자원 거점 선택 → 자동전투 → 협동 지원 → 왕국 확장",
-          "failureRetryRecovery": "자원 수집 부족 → 병력 확장 부족 → 전략적 전투 부족",
-          "platformAdaptation": "모바일 Roblox에서 낮은 파트 수와 제한된 이펙트, 짧은 네트워크 이벤트를 유지하며, 모바일 큰 버튼과 터치 상호작용을 우선하고 키보드와 게임패드를 같은 행동에 매핑한다.",
-          "implementationScope": "직접 채집, 주민 고용, 병영 강화, 자원 거점 선택, 자동전투, 협동 지원 기능의 구현 및 시스템 연결.",
-          "validationPlan": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract, Mobile input/UI contract, Save/rejoin contract when applicable, Multiplayer state-sync contract when applicable"
-        }
-      ]
-    },
-    "local_authoring_parts::725869b63b9f1501baddbf049787689ae17067c25ee2c3903bfb458b5e0f3c85:selectedDesignPlan": {
-      "label": "PLAN_A",
-      "rationale": "기본적인 자원 수집과 주민 고용을 통해 왕국의 초기 확장",
-      "identityPreserved": "작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임",
-      "creativeDeviation": "자원 수집과 주민 고용의 직접적 참여를 강조",
-      "genreChange": true,
-      "reversibility": "자원 수집과 주민 고용의 직접적 참여를 통해 왕국 확장이 가능하다"
-    },
-    "local_authoring_parts::2275e5ef3197155005dd906b853205f324bb398ef6f5c872c1a3cf83e716c594:selectedDesignPlan": {
-      "selectedDesignPlan": {
-        "label": "PLAN_A",
-        "rationale": "기본적인 자원 수집과 주민 고용을 통해 왕국의 초기 확장",
-        "identityPreserved": "작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임",
-        "creativeDeviation": "자원 수집과 주민 고용의 직접적 참여를 강조",
-        "genreChange": true,
-        "reversibility": "자원 수집과 주민 고용의 직접적 참여를 통해 왕국 확장이 가능하다"
-      }
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 21,
-      "successes": 16,
-      "failures": 5,
-      "timeouts": 3,
-      "jsonFailures": 0,
-      "totalMs": 3764658,
-      "lastMs": 167877,
-      "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-07T21:42:40.764Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-07T20:24:30.415Z",
-  "updatedAt": "2026-10-07T21:42:40.769Z",
+  "createdAt": "2026-10-07T22:01:10.399Z",
+  "updatedAt": "2026-10-07T22:01:10.401Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -408,29 +34,173 @@
           "VFX",
           "WEAPON"
         ],
+        "availableRoles": {
+          "AUDIO": [],
+          "MOTION": [
+            "BED_LIE_DOWN",
+            "BLEND_NEUTRAL",
+            "BLOCK_HOLD",
+            "BLOCK_RAISE",
+            "CARRY_IDLE",
+            "CAST_BURST",
+            "CHANNEL_LOOP",
+            "CLIMB_LOOP",
+            "COOK_LOOP",
+            "COUNTER_READY",
+            "CRAFT_LOOP",
+            "CROUCH_IDLE",
+            "DEATH_FRONT",
+            "DODGE_LEFT",
+            "DODGE_RIGHT",
+            "DOWNED_IDLE",
+            "EMOTE_WAVE",
+            "EQUIP_DRAW",
+            "FARM_TEND",
+            "FATIGUED_IDLE",
+            "FISH_CAST",
+            "GATHER_SWING",
+            "GUARD_BREAK",
+            "HEAVY_ATTACK_1",
+            "HIT_BACK",
+            "HIT_FRONT",
+            "IDLE_RELAXED",
+            "INJURED_WALK",
+            "INTERACT_USE",
+            "JOG",
+            "JUMP_START",
+            "LADDER_ENTER",
+            "LADDER_EXIT",
+            "LAND",
+            "LEAN_WALL_IDLE",
+            "LIGHT_ATTACK_1",
+            "MOTION_PACK",
+            "NPC_WORK_LOOP",
+            "OPEN_CONTAINER",
+            "OPEN_DOOR",
+            "PARRY_PERFECT",
+            "PICKUP_GROUND",
+            "PLACE_GROUND",
+            "PULL_OBJECT",
+            "PUSH_OBJECT",
+            "RANGED_DRAW_SHOT",
+            "REVIVE_HELP",
+            "ROLL_FORWARD",
+            "RUN",
+            "SIT_DOWN",
+            "SLOPE_ASCEND",
+            "SLOPE_DESCEND",
+            "SPRINT",
+            "STAND_UP",
+            "START",
+            "STOP",
+            "SWIM_FORWARD",
+            "TALK_GESTURE",
+            "TURN_90",
+            "UNEQUIP_STOW",
+            "USE_CONSUMABLE",
+            "WALK"
+          ],
+          "VFX": [
+            "ATTACK_TELEGRAPH_PRESENTATION",
+            "BLOCK_CONTACT",
+            "BOSS",
+            "BUFF",
+            "BURST_FEEDBACK",
+            "COUNTER_WINDOW_PRESENTATION",
+            "CRAFT",
+            "CRITICAL",
+            "DEBUFF",
+            "DESTRUCTION",
+            "DISMANTLE",
+            "DODGE",
+            "ENVIRONMENT",
+            "FAST_MOTION_TRAIL",
+            "GUARD_BREAK_WARNING",
+            "HEAL",
+            "IMPACT_CONFIRMATION",
+            "INTERACTION",
+            "LOOT_COMMON",
+            "LOOT_LEGENDARY",
+            "LOOT_RARE",
+            "MOBILE_DENSITY",
+            "PERFECT_PARRY_CONFIRMATION",
+            "QUEST_UPDATE",
+            "STATUS",
+            "UPGRADE",
+            "VFX_PACK",
+            "WEATHER"
+          ],
+          "WEAPON": [
+            "AXE",
+            "BOW",
+            "CLUB",
+            "CROSSBOW",
+            "CROSS_GUARD_MODULE",
+            "DAGGER",
+            "DUAL_WIELD_PAIR",
+            "GREAT_AXE",
+            "HAMMER",
+            "HAMMER_MACE",
+            "LONG_BLADE_MODULE",
+            "LONG_GRIP_MODULE",
+            "MAGIC_FOCUS",
+            "MODULAR_COMBAT_PARTS_PACK",
+            "PICKAXE",
+            "SCYTHE",
+            "SHIELD",
+            "SPEAR",
+            "STAFF",
+            "SWORD",
+            "THROWN",
+            "TOOL_PACK",
+            "TWO_HAND_BLADE",
+            "WARHAMMER"
+          ]
+        },
         "candidates": [
           {
             "family": "AUDIO",
-            "action": "AUTHOR",
-            "assetId": null
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
           },
           {
             "family": "MOTION",
-            "action": "ADAPT",
-            "assetId": "roblox-common-motion-bed-lie-down",
-            "applicationMode": "STYLE_ADAPT"
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
           },
           {
             "family": "VFX",
-            "action": "ADAPT",
-            "assetId": "roblox-common-vfx-attack-telegraph-pulse",
-            "applicationMode": "STYLE_ADAPT"
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
           },
           {
             "family": "WEAPON",
-            "action": "ADAPT",
-            "assetId": "roblox-common-tool-axe",
-            "applicationMode": "STYLE_ADAPT"
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
           }
         ]
       },
@@ -443,29 +213,173 @@
           "VFX",
           "WEAPON"
         ],
+        "availableRoles": {
+          "AUDIO": [],
+          "MOTION": [
+            "BED_LIE_DOWN",
+            "BLEND_NEUTRAL",
+            "BLOCK_HOLD",
+            "BLOCK_RAISE",
+            "CARRY_IDLE",
+            "CAST_BURST",
+            "CHANNEL_LOOP",
+            "CLIMB_LOOP",
+            "COOK_LOOP",
+            "COUNTER_READY",
+            "CRAFT_LOOP",
+            "CROUCH_IDLE",
+            "DEATH_FRONT",
+            "DODGE_LEFT",
+            "DODGE_RIGHT",
+            "DOWNED_IDLE",
+            "EMOTE_WAVE",
+            "EQUIP_DRAW",
+            "FARM_TEND",
+            "FATIGUED_IDLE",
+            "FISH_CAST",
+            "GATHER_SWING",
+            "GUARD_BREAK",
+            "HEAVY_ATTACK_1",
+            "HIT_BACK",
+            "HIT_FRONT",
+            "IDLE_RELAXED",
+            "INJURED_WALK",
+            "INTERACT_USE",
+            "JOG",
+            "JUMP_START",
+            "LADDER_ENTER",
+            "LADDER_EXIT",
+            "LAND",
+            "LEAN_WALL_IDLE",
+            "LIGHT_ATTACK_1",
+            "MOTION_PACK",
+            "NPC_WORK_LOOP",
+            "OPEN_CONTAINER",
+            "OPEN_DOOR",
+            "PARRY_PERFECT",
+            "PICKUP_GROUND",
+            "PLACE_GROUND",
+            "PULL_OBJECT",
+            "PUSH_OBJECT",
+            "RANGED_DRAW_SHOT",
+            "REVIVE_HELP",
+            "ROLL_FORWARD",
+            "RUN",
+            "SIT_DOWN",
+            "SLOPE_ASCEND",
+            "SLOPE_DESCEND",
+            "SPRINT",
+            "STAND_UP",
+            "START",
+            "STOP",
+            "SWIM_FORWARD",
+            "TALK_GESTURE",
+            "TURN_90",
+            "UNEQUIP_STOW",
+            "USE_CONSUMABLE",
+            "WALK"
+          ],
+          "VFX": [
+            "ATTACK_TELEGRAPH_PRESENTATION",
+            "BLOCK_CONTACT",
+            "BOSS",
+            "BUFF",
+            "BURST_FEEDBACK",
+            "COUNTER_WINDOW_PRESENTATION",
+            "CRAFT",
+            "CRITICAL",
+            "DEBUFF",
+            "DESTRUCTION",
+            "DISMANTLE",
+            "DODGE",
+            "ENVIRONMENT",
+            "FAST_MOTION_TRAIL",
+            "GUARD_BREAK_WARNING",
+            "HEAL",
+            "IMPACT_CONFIRMATION",
+            "INTERACTION",
+            "LOOT_COMMON",
+            "LOOT_LEGENDARY",
+            "LOOT_RARE",
+            "MOBILE_DENSITY",
+            "PERFECT_PARRY_CONFIRMATION",
+            "QUEST_UPDATE",
+            "STATUS",
+            "UPGRADE",
+            "VFX_PACK",
+            "WEATHER"
+          ],
+          "WEAPON": [
+            "AXE",
+            "BOW",
+            "CLUB",
+            "CROSSBOW",
+            "CROSS_GUARD_MODULE",
+            "DAGGER",
+            "DUAL_WIELD_PAIR",
+            "GREAT_AXE",
+            "HAMMER",
+            "HAMMER_MACE",
+            "LONG_BLADE_MODULE",
+            "LONG_GRIP_MODULE",
+            "MAGIC_FOCUS",
+            "MODULAR_COMBAT_PARTS_PACK",
+            "PICKAXE",
+            "SCYTHE",
+            "SHIELD",
+            "SPEAR",
+            "STAFF",
+            "SWORD",
+            "THROWN",
+            "TOOL_PACK",
+            "TWO_HAND_BLADE",
+            "WARHAMMER"
+          ]
+        },
         "candidates": [
           {
             "family": "AUDIO",
-            "action": "AUTHOR",
-            "assetId": null
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
           },
           {
             "family": "MOTION",
-            "action": "ADAPT",
-            "assetId": "roblox-common-motion-bed-lie-down",
-            "applicationMode": "STYLE_ADAPT"
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
           },
           {
             "family": "VFX",
-            "action": "ADAPT",
-            "assetId": "roblox-common-vfx-attack-telegraph-pulse",
-            "applicationMode": "STYLE_ADAPT"
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
           },
           {
             "family": "WEAPON",
-            "action": "ADAPT",
-            "assetId": "roblox-common-tool-axe",
-            "applicationMode": "STYLE_ADAPT"
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
           }
         ]
       },
@@ -478,93 +392,177 @@
           "VFX",
           "WEAPON"
         ],
+        "availableRoles": {
+          "AUDIO": [],
+          "MOTION": [
+            "BED_LIE_DOWN",
+            "BLEND_NEUTRAL",
+            "BLOCK_HOLD",
+            "BLOCK_RAISE",
+            "CARRY_IDLE",
+            "CAST_BURST",
+            "CHANNEL_LOOP",
+            "CLIMB_LOOP",
+            "COOK_LOOP",
+            "COUNTER_READY",
+            "CRAFT_LOOP",
+            "CROUCH_IDLE",
+            "DEATH_FRONT",
+            "DODGE_LEFT",
+            "DODGE_RIGHT",
+            "DOWNED_IDLE",
+            "EMOTE_WAVE",
+            "EQUIP_DRAW",
+            "FARM_TEND",
+            "FATIGUED_IDLE",
+            "FISH_CAST",
+            "GATHER_SWING",
+            "GUARD_BREAK",
+            "HEAVY_ATTACK_1",
+            "HIT_BACK",
+            "HIT_FRONT",
+            "IDLE_RELAXED",
+            "INJURED_WALK",
+            "INTERACT_USE",
+            "JOG",
+            "JUMP_START",
+            "LADDER_ENTER",
+            "LADDER_EXIT",
+            "LAND",
+            "LEAN_WALL_IDLE",
+            "LIGHT_ATTACK_1",
+            "MOTION_PACK",
+            "NPC_WORK_LOOP",
+            "OPEN_CONTAINER",
+            "OPEN_DOOR",
+            "PARRY_PERFECT",
+            "PICKUP_GROUND",
+            "PLACE_GROUND",
+            "PULL_OBJECT",
+            "PUSH_OBJECT",
+            "RANGED_DRAW_SHOT",
+            "REVIVE_HELP",
+            "ROLL_FORWARD",
+            "RUN",
+            "SIT_DOWN",
+            "SLOPE_ASCEND",
+            "SLOPE_DESCEND",
+            "SPRINT",
+            "STAND_UP",
+            "START",
+            "STOP",
+            "SWIM_FORWARD",
+            "TALK_GESTURE",
+            "TURN_90",
+            "UNEQUIP_STOW",
+            "USE_CONSUMABLE",
+            "WALK"
+          ],
+          "VFX": [
+            "ATTACK_TELEGRAPH_PRESENTATION",
+            "BLOCK_CONTACT",
+            "BOSS",
+            "BUFF",
+            "BURST_FEEDBACK",
+            "COUNTER_WINDOW_PRESENTATION",
+            "CRAFT",
+            "CRITICAL",
+            "DEBUFF",
+            "DESTRUCTION",
+            "DISMANTLE",
+            "DODGE",
+            "ENVIRONMENT",
+            "FAST_MOTION_TRAIL",
+            "GUARD_BREAK_WARNING",
+            "HEAL",
+            "IMPACT_CONFIRMATION",
+            "INTERACTION",
+            "LOOT_COMMON",
+            "LOOT_LEGENDARY",
+            "LOOT_RARE",
+            "MOBILE_DENSITY",
+            "PERFECT_PARRY_CONFIRMATION",
+            "QUEST_UPDATE",
+            "STATUS",
+            "UPGRADE",
+            "VFX_PACK",
+            "WEATHER"
+          ],
+          "WEAPON": [
+            "AXE",
+            "BOW",
+            "CLUB",
+            "CROSSBOW",
+            "CROSS_GUARD_MODULE",
+            "DAGGER",
+            "DUAL_WIELD_PAIR",
+            "GREAT_AXE",
+            "HAMMER",
+            "HAMMER_MACE",
+            "LONG_BLADE_MODULE",
+            "LONG_GRIP_MODULE",
+            "MAGIC_FOCUS",
+            "MODULAR_COMBAT_PARTS_PACK",
+            "PICKAXE",
+            "SCYTHE",
+            "SHIELD",
+            "SPEAR",
+            "STAFF",
+            "SWORD",
+            "THROWN",
+            "TOOL_PACK",
+            "TWO_HAND_BLADE",
+            "WARHAMMER"
+          ]
+        },
         "candidates": [
           {
             "family": "AUDIO",
-            "action": "AUTHOR",
-            "assetId": null
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
           },
           {
             "family": "MOTION",
-            "action": "USE",
-            "assetId": "roblox-common-motion-bed-lie-down",
-            "applicationMode": "USE_AS_IS"
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
           },
           {
             "family": "VFX",
-            "action": "USE",
-            "assetId": "roblox-common-vfx-attack-telegraph-pulse",
-            "applicationMode": "USE_AS_IS"
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
           },
           {
             "family": "WEAPON",
-            "action": "USE",
-            "assetId": "roblox-common-tool-axe",
-            "applicationMode": "USE_AS_IS"
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
           }
         ]
       }
     },
-    "assetFacts": {
-      "roblox-common-motion-bed-lie-down": {
-        "family": "MOTION",
-        "role": "BED_LIE_DOWN",
-        "sourcePath": "/assets/roblox/common-motion-v1/RobloxCommonMotion.luau",
-        "platform": "ROBLOX",
-        "license": "project-original",
-        "referenceOnly": false,
-        "auditScore": 917.1,
-        "auditState": "UNKNOWN",
-        "qualityGap": null,
-        "runtimeState": "PENDING_STUDIO",
-        "productionVerified": false
-      },
-      "roblox-common-vfx-attack-telegraph-pulse": {
-        "family": "VFX",
-        "role": "ATTACK_TELEGRAPH_PRESENTATION",
-        "sourcePath": "/assets/roblox/common-vfx-v1/RobloxCommonVFX.luau",
-        "platform": "ROBLOX",
-        "license": "project-original",
-        "referenceOnly": false,
-        "auditScore": 913.1,
-        "auditState": "UNKNOWN",
-        "qualityGap": null,
-        "runtimeState": "PENDING_STUDIO",
-        "productionVerified": false
-      },
-      "roblox-common-tool-axe": {
-        "family": "WEAPON",
-        "role": "AXE",
-        "sourcePath": "/assets/roblox/common-tools-v1/RobloxCommonTools.luau",
-        "platform": "ROBLOX",
-        "license": "project-original",
-        "referenceOnly": false,
-        "auditScore": 888,
-        "auditState": "UNKNOWN",
-        "qualityGap": null,
-        "runtimeState": "PENDING_STUDIO",
-        "productionVerified": false
-      }
-    }
-  },
-  "lastSuccessfulModelCallAt": "2026-10-07T21:31:05.101Z",
-  "effectiveDesignerModel": "ollama:qwen3:1.7b",
-  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
-  "failedPhase": "designer_draft",
-  "failedTask": "selection-variety",
-  "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-  "checkpointMigration": {
-    "fromContractVersion": 4,
-    "toContractVersion": 4,
-    "reason": "QUOTA_VIBE_REPAIR_COMPATIBLE_ENGINE_CHANGE_NO_REPLAY",
-    "previousEngineDigest": "cc088ad7a8676ded2864387d1c00a39b024f9e9a4e72f50308346406aea805a9",
-    "preservedPhaseCount": 0,
-    "preservedTaskCount": 7,
-    "migratedAt": "2026-10-07T21:06:48.549Z"
-  },
-  "localAuthoringSplits": {
-    "2275e5ef3197155005dd906b853205f324bb398ef6f5c872c1a3cf83e716c594": true,
-    "0204cb829e9d011d364c76136be1745218c035bc0f22e65a67d947103b4ca28b": true,
-    "9d74504586e872d85182233b3de5a63215dd6fa97785c1af7eceb82ac93f5c0b": true
+    "assetFacts": {}
   }
 }
