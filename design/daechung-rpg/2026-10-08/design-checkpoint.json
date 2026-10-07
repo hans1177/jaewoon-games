@@ -56,26 +56,81 @@
           "playerChoice": "파티사냥 조작"
         }
       ]
+    },
+    "designer_draft_slices::systems-progression": {
+      "systemInterconnections": [
+        {
+          "fromSystem": "마을",
+          "toSystem": "5포탈 지역",
+          "trigger": "포탈 선택 및 전투 전략",
+          "stateChange": "포탈 선택 후 전투 전략 조정"
+        },
+        {
+          "fromSystem": "레벨 성장",
+          "toSystem": "5단계 장비",
+          "trigger": "레벨업 선택 및 보상 수령",
+          "stateChange": "레벨업 후 장비 업그레이드"
+        },
+        {
+          "fromSystem": "5단계 장비",
+          "toSystem": "1차 전직",
+          "trigger": "1차 전직 분기 선택",
+          "stateChange": "1차 전직 분기 선택 후 직업 선택"
+        }
+      ],
+      "progressionDirection": "마을 준비 → 포탈 전투 → Lv.15 1차 전직 → 보스 격파/동료 해금 → 동료 3명 조합 → Lv.40 2차 완성형 → Lv.60 만렙/숙련",
+      "progressionEconomyBalance": {
+        "progressionLoop": "마을 → 포탈 → Lv.15 → 보스 → 동료 → Lv.40 → Lv.60",
+        "resourceFlow": "퀘스트/장비/보상/기여도/레벨/직업",
+        "balanceRules": "레벨업 최대체력+10/공격력+10, 15킬 파티사냥, 보스 첫 처치 동료 해금 저장, 플레이어+보스 동료 최대3명 파티"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "초원 시드형 로그라이크 런",
+          "newGameplay": "1번 포탈 초원은 빈 런 시작 시 Seed로 방/길/전투/이벤트/보물/정예 구성을 다시 조합한다.",
+          "systemImpact": "플레이어는 동일 런을 공유한다."
+        },
+        {
+          "milestone": "초원 10종 몬스터·히든 보스",
+          "newGameplay": "초원 기본 몬스터 10종은 서로 다른 전조·사거리·패링 가능 여부·특수공격을 가진다.",
+          "systemImpact": "비밀 숲에서 백색 송곳니 또는 고목의 심장 히든 보스가 확률 출현한다."
+        },
+        {
+          "milestone": "초원 런 보스 봉인",
+          "newGameplay": "금빛 큰뿔은 런 시작부터 존재하지만 봉인 상태로 전투에 참여하지 않는다.",
+          "systemImpact": " 일반/정예 전투 몬스터를 모두 처치하면 봉인이 해제되어 보스전을 시작한다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "전투 중 마을 귀환 금지",
+          "보스 동료는 리더 레벨 자동 동기화",
+          "동료 단순 스킬셋"
+        ],
+        "retryFlow": "AI를 두 번 클릭해 즉시 파티 초대/제외",
+        "riskPressure": "15마리 처치 시 종료하고 기여도에 따라 XP/골드 보상",
+        "recoveryRules": "마을 귀환 시 풀회복, 전투 중 귀환 금지"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 195894,
-      "lastMs": 195894,
+      "totalMs": 399024,
+      "lastMs": 203130,
       "lastError": null,
-      "updatedAt": "2026-10-07T20:02:42.676Z"
+      "updatedAt": "2026-10-07T20:06:05.808Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T19:59:26.643Z",
-  "updatedAt": "2026-10-07T20:02:42.677Z",
-  "lastSuccessfulModelCallAt": "2026-10-07T20:02:42.676Z",
+  "updatedAt": "2026-10-07T20:06:05.809Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T20:06:05.808Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
