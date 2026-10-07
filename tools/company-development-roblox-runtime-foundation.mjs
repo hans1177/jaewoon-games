@@ -194,17 +194,22 @@ export async function probeRobloxOpenCloudImageEvidence({
   const thumbnailCount=largestArray.length;
   const metadataAvailable=thumbnailCount>0||imageUrls.length>0;
   const urls=[...new Set(imageUrls)];
-  const imageContent=[];
+  const imageContent=new Array(urls.length);
   const maxImageBytes=8*1024*1024;
+  const imageWorkerCount=Math.max(1,Math.min(8,urls.length||1));
+  let imageCursor=0;
   // Only URLs returned by the official API are fetched, without forwarding the API key.
   // Payload signatures prove transport integrity, never visual quality or a version-bound screenshot.
-  for(let start=0;start<urls.length;start+=4){
-    imageContent.push(...await Promise.all(urls.slice(start,start+4).map(async imageUrl=>{
+  const runImageWorker=async()=>{
+    while(true){
+      const index=imageCursor++;
+      if(index>=urls.length)return;
+      const imageUrl=urls[index];
       try{
         const parsed=new URL(imageUrl);
         if(parsed.protocol!=='https:'||parsed.username||parsed.password||parsed.port
           ||!(parsed.hostname==='rbxcdn.com'||parsed.hostname.endsWith('.rbxcdn.com')))throw Error('UNTRUSTED_IMAGE_URL');
-        const response=await fetchWithNetworkRetry(fetchImpl,imageUrl,{redirect:'error',signal:AbortSignal.timeout(20000)},{
+        const response=await fetchWithNetworkRetry(fetchImpl,imageUrl,{redirect:'error',signal:AbortSignal.timeout(12000)},{
           attempts:networkRetryAttempts,delayMs:networkRetryDelayMs,label:'ROBLOX_OPEN_CLOUD_IMAGE_CONTENT'
         });
         if(!response.ok)throw Error('IMAGE_HTTP_'+response.status);
@@ -228,10 +233,13 @@ export async function probeRobloxOpenCloudImageEvidence({
           ||(contentType==='image/webp'&&data.length>20&&data.toString('ascii',0,4)==='RIFF'&&data.toString('ascii',8,12)==='WEBP')
           ||(contentType==='image/gif'&&data.length>13&&/^GIF8[79]a$/.test(data.toString('ascii',0,6)));
         if(!signatureMatched)throw Error('IMAGE_SIGNATURE_INVALID');
-        return Object.freeze({imageUrl,contentType,bytes,sha256:createHash('sha256').update(data).digest('hex'),contentSignatureMatched:true});
-      }catch(error){return Object.freeze({imageUrl,contentSignatureMatched:false,error:clean(error?.message||error)});}
-    })));
-  }
+        imageContent[index]=Object.freeze({imageUrl,contentType,bytes,sha256:createHash('sha256').update(data).digest('hex'),contentSignatureMatched:true});
+      }catch(error){
+        imageContent[index]=Object.freeze({imageUrl,contentSignatureMatched:false,error:clean(error?.message||error)});
+      }
+    }
+  };
+  await Promise.all(Array.from({length:imageWorkerCount},()=>runImageWorker()));
   const imageContentPassed=imageContent.length>0&&imageContent.every(row=>row.contentSignatureMatched===true);
   return Object.freeze({
     available:true,permissionDenied:false,status:response.status,
