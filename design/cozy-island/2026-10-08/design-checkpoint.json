@@ -105,26 +105,60 @@
         "riskPressure": "자원 수집 속도와 병력 확장 속도의 균형 유지, 거점 점령 순서의 다양화, 보상의 질과 양의 조절",
         "recoveryRules": "자원 수집 속도 조절, 병력 확장 속도 조절, 거점 점령 순서 조정, 보상 발동 조정"
       }
+    },
+    "designer_draft_slices::platform-profiles": {
+      "platformFitPlan": {
+        "targetPlatform": "ROBLOX",
+        "inputModel": "모바일 큰 버튼과 터치 상호작용을 우선하고 키보드와 게임패드를 같은 행동에 매핑한다",
+        "performanceBudget": "모바일 Roblox에서 낮은 파트 수와 제한된 이펙트, 짧은 네트워크 이벤트를 유지한다",
+        "sessionConstraints": "솔로 플레이를 허용하고 2명 이상에서는 멀티 기능이 활성화되는 Roblox 세션을 사용한다"
+      },
+      "platformProfiles": {
+        "ROBLOX": {
+          "platform": "ROBLOX",
+          "inputModel": "모바일 큰 버튼과 터치 상호작용을 우선하고 키보드와 게임패드를 같은 행동에 매핑한다",
+          "sessionModel": "솔로 플레이를 허용하고 2명 이상에서는 멀티 기능이 활성화되는 Roblox 세션",
+          "multiplayerRuntime": "서버 권한으로 참가자별 병사와 병영 보너스를 집계해 공동 적 웨이브와 자동전투를 처리하고 RemoteEvent로 모든 참가자에게 결과를 동기화한다",
+          "performanceBudget": "모바일 Roblox에서 낮은 파트 수와 제한된 이펙트, 짧은 네트워크 이벤트를 유지한다",
+          "uiUx": "상단에 기본자원·특수자원·주민·병력·점령 상태를 표시하고 하단에 벌목·식량수급·주민영입·병영·모집·전투 버튼을 모바일 큰 버튼으로 제공한다",
+          "saveAndNetwork": "DataStore에 개인 자원·주민·병영·병사·점령 기지·특수자원 해금을 저장한다. 자동전투와 협동 지원 계산은 서버 권한으로 처리한다",
+          "platformContentAdaptation": "Roblox 3D 섬 지형에서 지역 기지를 선택하고, 서버 권한 자동전투와 점령 상태를 시각적으로 표시한다. 기본섬 노동과 주민 자동화는 실제 성장 상태로 연결한다",
+          "internalReleaseTarget": "OPEN_CLOUD_PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+          "validationEvidence": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract, Mobile input/UI contract, Save/rejoin contract when applicable, Multiplayer state-sync contract when applicable"
+        },
+        "UNITY": {
+          "platform": "UNITY",
+          "inputModel": "모바일 큰 버튼과 터치 상호작용을 우선하고 키보드와 게임패드를 같은 행동에 매핑한다",
+          "sessionModel": "솔로 플레이를 허용하고 2명 이상에서는 멀티 기능이 활성화되는 Unity 세션",
+          "multiplayerRuntime": "서버 권한으로 참가자별 병사와 병영 보너스를 집계해 공동 적 웨이브와 자동전투를 처리하고 RemoteEvent로 모든 참가자에게 결과를 동기화한다",
+          "performanceBudget": "모바일 Unity에서 낮은 파트 수와 제한된 이펙트, 짧은 네트워크 이벤트를 유지한다",
+          "uiUx": "상단에 기본자원·특수자원·주민·병력·점령 상태를 표시하고 하단에 벌목·식량수급·주민영입·병영·모집·전투 버튼을 모바일 큰 버튼으로 제공한다",
+          "saveAndNetwork": "DataStore에 개인 자원·주민·병영·병사·점령 기지·특수자원 해금을 저장한다. 자동전투와 협동 지원 계산은 서버 권한으로 처리한다",
+          "platformContentAdaptation": "Unity 3D 섬 지형에서 지역 기지를 선택하고, 서버 권한 자동전투와 점령 상태를 시각적으로 표시한다. 기본섬 노동과 주민 자동화는 실제 성장 상태로 연결한다",
+          "internalReleaseTarget": "OPEN_CLOUD_PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+          "validationEvidence": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract, Mobile input/UI contract, Save/rejoin contract when applicable, Multiplayer state-sync contract when applicable"
+        }
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 166672,
-      "lastMs": 94326,
+      "totalMs": 298141,
+      "lastMs": 131469,
       "lastError": null,
-      "updatedAt": "2026-10-07T20:03:56.668Z"
+      "updatedAt": "2026-10-07T20:06:08.138Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T20:01:09.902Z",
-  "updatedAt": "2026-10-07T20:03:56.669Z",
-  "lastSuccessfulModelCallAt": "2026-10-07T20:03:56.668Z",
+  "updatedAt": "2026-10-07T20:06:08.140Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T20:06:08.138Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
