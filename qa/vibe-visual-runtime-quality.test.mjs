@@ -50,7 +50,7 @@ test('asset acquisition prefers existing verified company assets and forbids vis
   assert.equal(plan.selectedSource,'VERIFIED_COMPANY_ASSET_AND_RIG_LIBRARY');
   assert.equal(plan.candidates[0].id,'verified-cartoon-rig');
   assert.equal(plan.primitiveFallbackAllowed,false);
-  assert.equal(plan.primitiveFallbackCreatesVisualDebt,false);
+  assert.equal(plan.primitiveFallbackCreatesVisualDebt,true);
   assert.equal(plan.visibleGameplayPrimitiveFallbackForbidden,true);
 });
 
