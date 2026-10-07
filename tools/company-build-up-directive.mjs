@@ -964,10 +964,14 @@ function buildExperienceBuildupContract({platform='COMMON',design={},source={},f
     })
   }):null;
   const webExtra=platformKey==='WEB'?Object.freeze({
-    runtimeEvidence:'REAL_BROWSER_TOUCH_AND_RENDER_DELTA',
-    audio:'WEBAUDIO_OR_NATIVE_MEDIA_STATE_TRANSITION_WHEN_APPLICABLE',
-    ui:'SAFE_AREA_SCROLL_MODAL_AND_TOUCH_FLOW',
-    motion:'VISIBLE_FRAME_DELTA_NOT_ONLY_INTERNAL_STATE'
+    developmentPolicy:'UNITY_WEBGL_CSHARP_CANONICAL_ONLY',
+    canonicalSourceRoot:'unity-games/<gameId>/',
+    outputRole:'UNITY_WEBGL_BUILD_OUTPUT_AND_RUNTIME_VALIDATION_EVIDENCE_ONLY',
+    runtimeEvidence:'UNITY_WEBGL_ACTUAL_BROWSER_TOUCH_AND_RENDER_DELTA',
+    audio:'UNITY_AUDIOMIXER_OR_AUDIOSOURCE_STATE_TRANSITION_WHEN_APPLICABLE',
+    ui:'UNITY_CANVAS_OR_UITOOLKIT_SAFE_AREA_SCROLL_MODAL_AND_TOUCH_FLOW',
+    motion:'UNITY_ANIMATOR_OR_EQUIVALENT_VISIBLE_FRAME_DELTA_NOT_ONLY_INTERNAL_STATE',
+    separateHtmlCssJsGameplaySourceForbidden:true
   }):null;
   const unityExtra=platformKey==='UNITY'?Object.freeze({
     runtimeEvidence:'UNITY_EDITOR_PLUS_ANDROID_WHEN_MOBILE_TARGET',
@@ -1306,9 +1310,9 @@ function buildAutonomousContentExpansion({
 }
 
 function platformDirectives({identity,goal}){
-  const web=`${identity}: WEB 상세 게임 원본과 공통 큰틀을 기준으로 "${goal}"를 구현한다. WEB 자체 시스템·콘텐츠·지역·세션·UI·카메라·연출 확장에는 다른 플랫폼과의 세부 parity 제한을 두지 않는다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.`;
+  const web=`${identity}: WEB 개발 요청은 독립 브라우저 게임 소스가 아니라 UNITY_WEB 실행면으로 처리한다. "${goal}"는 반드시 unity-games/<gameId>/의 실제 Unity C#·Scene·Prefab·Asset 책임에서 구현하고 Unity WebGL로 빌드한다. web-games/<gameId>/는 생성된 WebGL 빌드 산출물과 런타임 검증 증거만 보관하며 HTML/CSS/JS가 게임플레이 규칙·진행·저장·경제·멀티플레이 권한을 소유하면 안 된다. 터치·safe-area·모바일 UI·오디오·렌더 최적화도 같은 canonical Unity 프로젝트 안에서 WebGL 호환 조정으로 수행한다.`;
   const roblox=`${identity}: 동일 공통 목표 "${goal}"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.`;
-  const unity=`${identity}: WEB 상세 게임 원본에서 공통 큰틀만 이어받아 "${goal}"를 Unity 네이티브 경험으로 재해석한다. Unity 전용 시스템·콘텐츠·지역·물리·카메라·애니메이션·세션 구조·UX·연출 확장에는 인위적 parity 제한을 두지 않는다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.`;
+  const unity=`${identity}: "${goal}"는 unity-games/<gameId>/의 canonical Unity C# 프로젝트에서 구현한다. Unity App과 Unity WebGL은 같은 핵심 게임플레이·UI·저장 의미를 공유하고 빌드 타깃 차이는 같은 프로젝트 안의 플랫폼 적응으로 처리한다. Animator/BlendTree 또는 동등 상태 모션, Canvas/UIToolkit safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android/WebGL 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.`;
   const fortnite=`${identity}: 동일 공통 목표 "${goal}"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.`;
   return{
     WEB:web,
@@ -1706,9 +1710,21 @@ export function buildGameSpecificBuildUpDirective({
   const preMutationDryRun=buildDevelopmentDryRun({
     gameId:id,platform,responsibleSystemsAndFiles:{files:topFiles},qualityGapMap:states,developmentImpact
   });
-  const productionPlatform=clean(platform).toUpperCase()==='WEB'&&sourceRoot.split('|').some(root=>posix(root)==='unity-games/'+id)?'UNITY_WEB':platform;
+  const requestedProductionPlatform=clean(platform).toUpperCase();
+  const productionPlatform=requestedProductionPlatform==='WEB'?'UNITY_WEB':platform;
+  const unityWebProduction=clean(productionPlatform).toUpperCase()==='UNITY_WEB';
+  const canonicalUnityWebRoot='unity-games/'+id;
+  const productionSource=unityWebProduction&&posix(sourceRoot)!==canonicalUnityWebRoot
+    ?inspectGameSource({repoRoot,sourceRoot:canonicalUnityWebRoot})
+    :source;
+  const productionResponsibleFiles=unityWebProduction
+    ?uniq([
+      ...(responsibleFiles||[]).map(posix).filter(file=>file.startsWith(canonicalUnityWebRoot+'/')),
+      ...(productionSource?.topFiles||[]).map(row=>row.file)
+    ]).slice(0,16)
+    :topFiles;
   const productionPlan=buildRobloxProductionPlan({
-    gameId:id,platform:productionPlatform,design,source,sourceRoot,responsibleFiles:topFiles,
+    gameId:id,platform:productionPlatform,design,source:productionSource,sourceRoot:unityWebProduction?canonicalUnityWebRoot:sourceRoot,responsibleFiles:productionResponsibleFiles,
     previousPlan:previousDirective?.productionPlan||previousDirective?.robloxProductionPlan,focus,
     repair:['CAUSAL_REPAIR'].includes(clean(nextActionDecision?.action).toUpperCase())||keepPriorFocus,
     safeDesignlessMode,
@@ -1804,6 +1820,16 @@ export function buildGameSpecificBuildUpDirective({
     platformAdaptationDirectives:platformDirectives({identity,goal}),
     robloxNativeExecution,
     productionPlan,
+    webDevelopmentPolicy:unityWebProduction?Object.freeze({
+      policy:'UNITY_WEBGL_CSHARP_CANONICAL_ONLY',
+      requestedPlatform:requestedProductionPlatform,
+      executionSurface:'UNITY_WEB',
+      canonicalSourceRoot:canonicalUnityWebRoot,
+      outputRoot:'web-games/'+id+'/',
+      canonicalSourcePresent:Number(productionSource?.fileCount||0)>0,
+      browserGameplaySourceAllowed:false,
+      missingCanonicalSourceAction:Number(productionSource?.fileCount||0)>0?null:'BOOTSTRAP_OR_REPAIR_CANONICAL_UNITY_PROJECT'
+    }):null,
     robloxProductionPlan:productionPlan?.platform==='ROBLOX'?productionPlan:null,
     preserveConstraints:[
       '기존 세이브 키와 의미를 명시적 마이그레이션 없이 변경하지 않는다.',

@@ -11,19 +11,21 @@ const source={sourceTreeFingerprint:'fixture-source',signals:{},observations:[],
 const design={identity:'정원 생태와 서식지 선택',genre:'DEFENSE',coreLoop:['침입 경로 관찰','서식지 배치','웨이브 대응','새 서식지 선택'],signatureSystems:[{name:'서식지 상성',purpose:'공간별 역할',playerChoice:'배치 선택'}],progressionDirection:'기존 정원에서 다음 서식지 해금'};
 const make=overrides=>buildRobloxProductionPlan({gameId:'garden',platform:'ROBLOX',design,source,responsibleFiles:files,focus:'CORE_FUN',policy,...overrides});
 
-// 유니티·웹도 같은 장르 품질을 각 플랫폼의 실제 소스에 연결한다.
-test('Unity and Web production plans preserve genre, owner intent and native source responsibility',()=>{
+// WEB 요청도 별도 브라우저 소스가 아니라 같은 Unity C# 정본의 WebGL 실행면으로 연결한다.
+test('Unity and Web production plans preserve genre, owner intent and canonical Unity source responsibility',()=>{
   for(const platform of ['UNITY','UNITY_WEB','WEB']){
-    const target=platform==='WEB'?'WEB':'UNITY';
-    const root=target.toLowerCase()+'-games/garden';
-    const own=target==='UNITY'?[root+'/Assets/Scripts/GameCore.cs',root+'/Assets/Scripts/RuntimeBootstrap.cs',root+'/Assets/Prefabs/Garden.prefab']:[root+'/index.html',root+'/game.js',root+'/style.css'];
+    const root='unity-games/garden';
+    const own=[root+'/Assets/Scripts/GameCore.cs',root+'/Assets/Scripts/RuntimeBootstrap.cs',root+'/Assets/Prefabs/Garden.prefab'];
     const observed={...source,sourceRoot:root,topFiles:own.map(file=>({file,score:10}))};
     const plan=make({platform,source:observed,responsibleFiles:[...own,...files],design:{...design,ownerFeatureChanges:[{requestId:'owner-x',featureId:'shop',action:'REMOVE',requirement:'상점 제거'}]}});
-    assert.equal(plan.platform,target);assert.equal(plan.genreProfile,'DEFENSE');
+    assert.equal(plan.platform,'UNITY');assert.equal(plan.genreProfile,'DEFENSE');
+    assert.equal(plan.executionSurface,platform==='UNITY'?'UNITY':'UNITY_WEB');
     assert.deepEqual(plan.implementationPackages.flatMap(x=>x.files).sort(),own.sort());
     assert.equal(plan.qualityContract.runtimeVerified,false);
     assert.equal(plan.qualityContract.markerOnlyCompletionAllowed,false);
-    assert.match(plan.qualityContract.runtimeSurface,platform==='UNITY_WEB'?/UNITY_WEBGL/:platform==='UNITY'?/UNITY_NATIVE/:/ACTUAL_BROWSER/);
+    assert.equal(plan.qualityContract.canonicalGameplaySource,'UNITY_CSHARP_SCENE_PREFAB_AND_ASSET_BINDINGS');
+    assert.equal(plan.qualityContract.browserGameplaySourceAllowed,false);
+    assert.match(plan.qualityContract.runtimeSurface,platform==='UNITY'?/UNITY_NATIVE/:/UNITY_WEBGL/);
     const presentation=make({platform,source:observed,responsibleFiles:own,focus:'PRESENTATION'});
     assert.equal(presentation.contentRule,'PRESENT_EXISTING_BEHAVIOR_ONLY');
     assert.ok(presentation.implementationPackages.every(x=>x.implementation.includes('게임 상태·보상·저장 의미는 유지')));
@@ -31,14 +33,28 @@ test('Unity and Web production plans preserve genre, owner intent and native sou
     assert.equal(safe.contentRule,'REPAIR_EXISTING_BEHAVIOR_ONLY');
     assert.match(robloxProductionPromptLines(plan).join('\n'),/OWNER=.*owner-x/);
   }
+
+  const browserRoot='web-games/garden';
+  const browserFiles=[browserRoot+'/index.html',browserRoot+'/game.js',browserRoot+'/style.css'];
+  const browserOnly=make({
+    platform:'WEB',
+    source:{...source,sourceRoot:browserRoot,topFiles:browserFiles.map(file=>({file,score:10}))},
+    responsibleFiles:browserFiles
+  });
+  assert.equal(browserOnly,null);
 });
 
 test('Unity Web directive uses the real canonical C# project instead of browser source instructions',()=>{
   const root='unity-games/garden',own=[root+'/Assets/Scripts/GameCore.cs',root+'/Assets/Scripts/RuntimeBootstrap.cs'];
   const d=buildGameSpecificBuildUpDirective({gameId:'garden',platform:'WEB',sourceRoot:root,designRecord:{content:design},sourceObservation:{...source,topFiles:own.map(file=>({file,score:10}))},responsibleFiles:own});
   assert.equal(d.productionPlan.platform,'UNITY');assert.equal(d.productionPlan.executionSurface,'UNITY_WEB');
+  assert.equal(d.webDevelopmentPolicy.policy,'UNITY_WEBGL_CSHARP_CANONICAL_ONLY');
+  assert.equal(d.webDevelopmentPolicy.canonicalSourceRoot,'unity-games/garden');
+  assert.equal(d.webDevelopmentPolicy.browserGameplaySourceAllowed,false);
   assert.equal(d.robloxProductionPlan,null);
   assert.match(directivePrompt(d),/UNITY_PRODUCTION_QUALITY=.*EXISTING_CSHARP/);
+  assert.match(d.platformAdaptationDirectives.WEB,/unity-games\/<gameId>\/.*Unity C#/);
+  assert.doesNotMatch(d.platformAdaptationDirectives.WEB,/DOM\/Canvas|WebAudio/);
   assert.doesNotMatch(directivePrompt(d),/WEB_PRODUCTION_FILES=/);
 });
 
@@ -106,6 +122,11 @@ test('central policy enables the real BUILD_UP directive and prompt with no new 
   assert.equal(central.finalDevelopmentLock.status,'LOCKED');
   assert.equal(policy.newQaStage,false);
   assert.equal(policy.newApprovalStage,false);
+  assert.equal(central.directNativeDualPlatformDevelopment.unityWebDevelopmentLane.webGameDevelopmentPolicy,'UNITY_WEBGL_CSHARP_CANONICAL_ONLY');
+  assert.equal(central.directNativeDualPlatformDevelopment.unityWebDevelopmentLane.htmlCssJsGameplaySourceForbidden,true);
+  assert.equal(central.webCompanion.webDevelopmentUsesCanonicalUnityCSharp,true);
+  assert.equal(policy.platformAliasPolicy.WEB,'UNITY_WEB');
+  assert.equal(policy.platformAliasPolicy.WEB_IS_SEPARATE_GAMEPLAY_SOURCE,false);
   assert.equal(make({platform:'WEB'}),null);
   assert.equal(make({platform:'UNITY'}),null);
   assert.equal(make({policy:{}}),null);

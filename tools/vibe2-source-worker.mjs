@@ -5228,6 +5228,101 @@ function createCandidateSnapshot(sourceRoot,candidateRoot,candidate,{scaffoldFil
   }
   return[...new Set(changed)];
 }
+
+function buildExpectedCandidateOutputEvidence({sourceRoot,candidate,scaffoldFiles=null,preserveExistingScaffold=false}={}){
+  const tempRoot=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-candidate-output-'));
+  try{
+    let effectiveScaffold=scaffoldFiles;
+    if(scaffoldFiles&&preserveExistingScaffold){
+      effectiveScaffold={};
+      for(const [relative,content] of Object.entries(scaffoldFiles)){
+        const live=path.join(sourceRoot,relative);
+        effectiveScaffold[relative]=fs.existsSync(live)&&fs.statSync(live).isFile()?fs.readFileSync(live,'utf8'):content;
+      }
+    }
+    const expectedChangedFiles=createCandidateSnapshot(sourceRoot,tempRoot,candidate,{scaffoldFiles:effectiveScaffold});
+    const filesRoot=path.join(tempRoot,'files');
+    const files=unique(expectedChangedFiles).map(relative=>{
+      const file=path.join(filesRoot,relative);
+      if(!fs.existsSync(file)||!fs.statSync(file).isFile())throw new Error('CANDIDATE_EXPECTED_OUTPUT_MISSING:'+relative);
+      const stat=fs.statSync(file);
+      return Object.freeze({path:relative,bytes:stat.size,sha256:sha256File(file)});
+    });
+    return Object.freeze({files:Object.freeze(files),expectedChangedFiles:Object.freeze(unique(expectedChangedFiles))});
+  }finally{
+    fs.rmSync(tempRoot,{recursive:true,force:true});
+  }
+}
+
+export function verifyMaterializedCandidateOutputs({root,expectedFiles=[],changedFiles=[],cwd=process.cwd(),dccEvidence=null}={}){
+  const outputRoot=path.resolve(root||cwd),repoRoot=path.resolve(cwd),failures=[],candidateFiles=[],dccFiles=[];
+  const expectedByPath=new Map((expectedFiles||[]).map(row=>[posix(row?.path),row]).filter(([relative])=>relative));
+  for(const relative of unique(changedFiles)){
+    if(!expectedByPath.has(relative))failures.push('UNEXPECTED_CHANGED_FILE:'+relative);
+  }
+  for(const [relative,expected] of expectedByPath){
+    const file=path.resolve(outputRoot,relative);
+    if(file!==outputRoot&&!file.startsWith(outputRoot+path.sep)){
+      failures.push('OUTPUT_PATH_ESCAPE:'+relative);
+      continue;
+    }
+    if(!fs.existsSync(file)||!fs.statSync(file).isFile()){
+      failures.push('OUTPUT_MISSING:'+relative);
+      candidateFiles.push(Object.freeze({path:relative,pass:false,reason:'MISSING'}));
+      continue;
+    }
+    const stat=fs.statSync(file),sha256=sha256File(file);
+    const pass=sha256===clean(expected?.sha256)&&stat.size===Number(expected?.bytes);
+    if(!pass)failures.push('OUTPUT_HASH_OR_SIZE_MISMATCH:'+relative);
+    candidateFiles.push(Object.freeze({
+      path:relative,bytes:stat.size,sha256,
+      expectedBytes:Number(expected?.bytes||0),expectedSha256:clean(expected?.sha256)||null,pass
+    }));
+  }
+
+  if(dccEvidence?.persistedForCandidate===true){
+    const recordedOutputs=new Map();
+    for(const recipe of Array.isArray(dccEvidence?.recipes)?dccEvidence.recipes:[]){
+      for(const output of Array.isArray(recipe?.outputs)?recipe.outputs:[]){
+        const relative=posix(output?.path);
+        if(relative)recordedOutputs.set(relative,{sha256:clean(output?.sha256),bytes:Number(output?.size||0)});
+      }
+    }
+    for(const relative of unique(dccEvidence?.generatedFiles||[])){
+      const file=path.resolve(repoRoot,relative);
+      if(file!==repoRoot&&!file.startsWith(repoRoot+path.sep)){
+        failures.push('DCC_OUTPUT_PATH_ESCAPE:'+relative);
+        continue;
+      }
+      if(!fs.existsSync(file)||!fs.statSync(file).isFile()||fs.statSync(file).size<=0){
+        failures.push('DCC_OUTPUT_MISSING:'+relative);
+        dccFiles.push(Object.freeze({path:relative,pass:false,reason:'MISSING'}));
+        continue;
+      }
+      const stat=fs.statSync(file),sha256=sha256File(file),recorded=recordedOutputs.get(relative)||null;
+      const recordedHashPass=!recorded?.sha256||recorded.sha256===sha256;
+      const recordedSizePass=!recorded?.bytes||recorded.bytes===stat.size;
+      const pass=recordedHashPass&&recordedSizePass;
+      if(!pass)failures.push('DCC_OUTPUT_HASH_OR_SIZE_MISMATCH:'+relative);
+      dccFiles.push(Object.freeze({
+        path:relative,bytes:stat.size,sha256,
+        expectedBytes:recorded?.bytes||null,expectedSha256:recorded?.sha256||null,pass
+      }));
+    }
+  }
+
+  return Object.freeze({
+    required:expectedByPath.size>0||dccEvidence?.persistedForCandidate===true,
+    pass:failures.length===0,
+    phase:'POST_MATERIALIZATION_PRE_MANIFEST',
+    changedFilesCovered:unique(changedFiles).every(relative=>expectedByPath.has(relative)),
+    candidateFileCount:candidateFiles.length,
+    dccFileCount:dccFiles.length,
+    candidateFiles:Object.freeze(candidateFiles),
+    dccFiles:Object.freeze(dccFiles),
+    failures:Object.freeze(failures)
+  });
+}
 export function validateCandidateSyntax({candidate,sourceRoot,target='system',luauCompiler='',internalMotionUnit=null}={}){
   const roblox=target==='roblox';
   const failurePrefix=roblox?'ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:LUAU_SYNTAX':'SYSTEM_CANDIDATE_SYNTAX_INVALID';
@@ -5834,6 +5929,11 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const taskId=safeId(order.taskId);
   const candidateRoot=path.resolve(cwd,outputRoot,taskId);
   const candidateManifestPath=posix(path.relative(cwd,path.join(candidateRoot,'manifest.json')));
+  const expectedCandidateOutput=buildExpectedCandidateOutputEvidence({
+    sourceRoot,candidate,
+    scaffoldFiles:bootstrap&&target==='unity'?unityBootstrapFiles:null,
+    preserveExistingScaffold:applySource
+  });
   fs.rmSync(candidateRoot,{recursive:true,force:true});
   fs.mkdirSync(candidateRoot,{recursive:true});
   let changedFiles,branch=null;
@@ -5844,6 +5944,16 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   }else{
     const scaffoldFiles=bootstrap&&target==='unity'?unityBootstrapFiles:null;
     changedFiles=createCandidateSnapshot(sourceRoot,candidateRoot,candidate,{scaffoldFiles});
+  }
+  const candidateOutputVerification=verifyMaterializedCandidateOutputs({
+    root:applySource?sourceRoot:path.join(candidateRoot,'files'),
+    expectedFiles:expectedCandidateOutput.files,
+    changedFiles,
+    cwd,
+    dccEvidence:order?.assetProduction?.nativeAuthoringExecution?.dcc?.executionEvidence||null
+  });
+  if(candidateOutputVerification.pass!==true){
+    throw new Error('CANDIDATE_OUTPUT_VERIFICATION_FAILED:'+candidateOutputVerification.failures.join('|'));
   }
   const codingMethod={
     version:2,
@@ -6004,6 +6114,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       ||(nativeAssetAuthoring.generatedAssetBindingRequired===true&&nativeAssetAuthoring.generatedAssetBindingApplied!==true)
     ),
     changedFiles,
+    candidateOutputVerification,
     summary:candidate.summary,
     expectedEffect:candidate.expectedEffect,
     tests:candidate.tests,
@@ -6012,7 +6123,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     robloxNativeSourceInspection,
     robloxNativeCandidateQuality,
     robloxDesignGrounding:semanticDiffEnforcement?.robloxDesignGrounding||null,
-    roleResults:{exploration:'PASS',implementation:'PASS',test:'WAITING_INCREMENTAL_QA',performance:'WAITING_SANITY',regression:'WAITING_FAN_IN',review:'WAITING_FAN_IN'},
+    roleResults:{exploration:'PASS',implementation:'PASS',materializedOutput:'PASS',test:'WAITING_INCREMENTAL_QA',performance:'WAITING_SANITY',regression:'WAITING_FAN_IN',review:'WAITING_FAN_IN'},
     designIntelligence:designManifestContract(order),
     designEvidence:waitingDesignEvidence(),
     specializedVerificationRequest:buildSpecializedVerificationRequest(order),
@@ -6058,6 +6169,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     console.log(`VIBE2_NATIVE_ASSET_RUNTIME_PROMOTION_CANDIDATES=${result.runtimePromotionCandidates?.map(row=>row.assetId).join(',')||'NONE'}`);
     console.log(`VIBE2_NATIVE_ASSET_GENERATED_FILES=${result.generatedAssetFiles?.join(',')||'NONE'}`);
     console.log(`VIBE2_CHANGED_FILES=${result.changedFiles.join(',')}`);
+    console.log(`VIBE2_CANDIDATE_OUTPUT_VERIFICATION=${result.candidateOutputVerification?.pass===true?'PASS':'FAIL'}:files=${result.candidateOutputVerification?.candidateFileCount||0}:dcc=${result.candidateOutputVerification?.dccFileCount||0}`);
     console.log(`VIBE2_CANDIDATE_MANIFEST=${result.candidateManifestPath}`);
     console.log(`VIBE2_GENERATION_ATTEMPTS=${result.generation?.attempts||1}`);
     console.log(`VIBE2_GENERATION_RECOVERY=${result.generation?.recoveryUsed?'YES':'NO'}`);

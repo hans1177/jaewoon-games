@@ -13,7 +13,7 @@ import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { learningGuidance } from '../tools/vibe2-learning-motor.mjs';
 import { buildInternalMotionCoaching, singleMotionResponseSchema } from '../tools/vibe2-motion-coaching.mjs';
-import { validateCandidateSyntax } from '../tools/vibe2-source-worker.mjs';
+import { validateCandidateSyntax, verifyMaterializedCandidateOutputs } from '../tools/vibe2-source-worker.mjs';
 import { evaluateSingleMotionWorkUnit, SINGLE_MOTION_DEPTH_AXES, generateCandidateWithRecovery, runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateRobloxDesignAnchorGrounding, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, attachSelectedInternalAssetApiContext, evaluateRobloxInternalAssetFamilyBindingCandidate, evaluateAllGameDynamicAssetBindingCandidate, assertAllGameDynamicAssetBindingContract, ROBLOX_INTERNAL_ASSET_FAMILIES } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { buildVibeAssetProductionPlan, assetProductionGuidance } from '../tools/vibe2-asset-production-plan.mjs';
@@ -2720,6 +2720,13 @@ test('Unity text source produces isolated candidate without touching source', as
   assert.equal(result.exploration.sourceWrite,false);
   assert.ok(result.exploration.reuseKey.length>=16);
   assert.equal(result.roleResults.exploration,'PASS');
+  assert.equal(result.roleResults.materializedOutput,'PASS');
+  assert.equal(result.candidateOutputVerification.pass,true);
+  assert.equal(result.candidateOutputVerification.phase,'POST_MATERIALIZATION_PRE_MANIFEST');
+  assert.equal(result.candidateOutputVerification.changedFilesCovered,true);
+  assert.equal(result.candidateOutputVerification.candidateFileCount,1);
+  assert.equal(result.candidateOutputVerification.dccFileCount,0);
+  assert.match(result.candidateOutputVerification.candidateFiles[0].sha256,/^[a-f0-9]{64}$/);
   assert.equal(result.codingMethod.version,2);
   assert.equal(result.codingMethod.generationAttempts,1);
   assert.equal(result.codingMethod.generationAttemptBudget,4);
@@ -2733,6 +2740,40 @@ test('Unity text source produces isolated candidate without touching source', as
   assert.equal(result.developmentAuthority.paidOpenAiApiAllowed,false);
   assert.match(fs.readFileSync(path.join(cwd, 'unity-games/demo/Assets/Player.cs'), 'utf8'), /1 \+ 1/);
   assert.match(fs.readFileSync(path.join(cwd, '.vibe2/candidates/task-1/files/Assets/Player.cs'), 'utf8'), /return 2/);
+});
+
+test('materialized output verification rejects candidate hash drift and stale persisted DCC output',()=>{
+  const cwd=tempRoot();
+  const outputRoot=path.join(cwd,'candidate-files');
+  write(path.join(outputRoot,'Assets/Player.cs'),'actual output\n');
+  const expectedText='expected output\n';
+  const expectedHash=crypto.createHash('sha256').update(expectedText).digest('hex');
+  const candidateCheck=verifyMaterializedCandidateOutputs({
+    root:outputRoot,cwd,
+    expectedFiles:[{path:'Assets/Player.cs',bytes:Buffer.byteLength(expectedText),sha256:expectedHash}],
+    changedFiles:['Assets/Player.cs']
+  });
+  assert.equal(candidateCheck.pass,false);
+  assert.ok(candidateCheck.failures.includes('OUTPUT_HASH_OR_SIZE_MISMATCH:Assets/Player.cs'));
+
+  const dccRelative='assets/generated/roblox/demo/actor.glb';
+  const dccFile=path.join(cwd,dccRelative);
+  write(dccFile,'mutated-glb');
+  const recorded='original-glb';
+  const dccCheck=verifyMaterializedCandidateOutputs({
+    root:outputRoot,cwd,expectedFiles:[],changedFiles:[],
+    dccEvidence:{
+      persistedForCandidate:true,
+      generatedFiles:[dccRelative],
+      recipes:[{outputs:[{
+        path:dccRelative,
+        size:Buffer.byteLength(recorded),
+        sha256:crypto.createHash('sha256').update(recorded).digest('hex')
+      }]}]
+    }
+  });
+  assert.equal(dccCheck.pass,false);
+  assert.ok(dccCheck.failures.includes('DCC_OUTPUT_HASH_OR_SIZE_MISMATCH:'+dccRelative));
 });
 
 
@@ -3165,6 +3206,9 @@ test('candidate manifest persists design intelligence requirements and starts ev
   assert.equal(persisted.codingMethod.verifiedFailureLocalMemoryCount,1);
   assert.deepEqual(persisted.codingMethod.verifiedFailureLocalMemoryIds,['verified-edit-match']);
   assert.equal(persisted.roleResults.implementation,'PASS');
+  assert.equal(persisted.roleResults.materializedOutput,'PASS');
+  assert.equal(persisted.candidateOutputVerification.pass,true);
+  assert.equal(persisted.verifiedBeforePromotion,false);
   for (const key of ['autoPlayer', 'telemetry', 'designReview', 'qa']) {
     assert.equal(result.designEvidence[key].verified, false);
     assert.equal(result.designEvidence[key].status, 'WAITING_EVIDENCE');
