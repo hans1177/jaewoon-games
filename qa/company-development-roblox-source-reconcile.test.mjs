@@ -361,6 +361,11 @@ test('current Roblox Studio asset binding version does not re-enter refresh fore
     writeCompiledTree(root);
     const applied=applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning});
     assert.equal(applied.studioAssets.bindingVersion,2);
+    assert.match(applied.studioAssets.buildUpAssetSourceUsageFingerprint,/^[0-9a-f]{64}$/i);
+    assert.equal(applied.studioAssets.buildUpAssetSourceUsageLibraryVersion,companyAssetLibrary.version);
+    const reboundConfig=fs.readFileSync(path.join(root,'shared','GameConfig.luau'),'utf8');
+    assert.match(reboundConfig,/SourceUsageFingerprint\s*=\s*"[0-9a-f]{64}"/i);
+    assert.match(reboundConfig,new RegExp('SourceUsageLibraryVersion\\s*=\\s*'+companyAssetLibrary.version));
     const reboundClient=fs.readFileSync(path.join(root,'client','Game.client.luau'),'utf8');
     assert.match(reboundClient,/STUDIO_ASSET_SELECTION\s*=\s*\{/);
     assert.match(reboundClient,/STUDIO_ASSET_FAMILY_STATUS\s*=\s*\{/);
@@ -380,6 +385,35 @@ test('current Roblox Studio asset binding version does not re-enter refresh fore
     assert.equal(rows.length,1);
     assert.equal(rows[0].failure,null,rows[0].blockers.join(','));
     assert.equal(rows[0].pass,true,rows[0].blockers.join(','));
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+test('existing Roblox source re-enters rebind when asset source usage lineage is missing',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-library-source-usage-lineage-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning});
+    const configFile=path.join(root,'shared','GameConfig.luau');
+    const stale=fs.readFileSync(configFile,'utf8')
+      .replace(/^\s*SourceUsageFingerprint\s*=.*\n/m,'')
+      .replace(/^\s*SourceUsageLibraryVersion\s*=.*\n/m,'');
+    fs.writeFileSync(configFile,stale);
+    initGitRepo(tmp);
+    const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const rows=evaluateExistingRobloxSources({
+      queue:{items:[staleItem()]},
+      repoRoot:tmp,
+      sourceRevision:revision,
+      assetLibrary:companyAssetLibrary,
+      loadBaseline:()=>baseline,
+    });
+    assert.equal(rows.length,1);
+    assert.equal(rows[0].pass,false);
+    assert.equal(rows[0].failure,'existing-source-studio-asset-binding-required');
+    assert.equal(rows[0].studioAssetBindingRefreshReason,'SOURCE_USAGE_LINEAGE_MISMATCH');
   }finally{
     fs.rmSync(tmp,{recursive:true,force:true});
   }
