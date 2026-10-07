@@ -23,7 +23,7 @@ import {bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} fro
 import {createRobloxWalkTeachingRecipe,createStudioMotionActionProfile} from '../assets/vibe-motion-director.js';
 import {createAssetProductionTeachingRecipe} from '../assets/vibe-studio-asset-universe.js';
 import {detectRobloxStudioAssetSystems,robloxStudioAssetFamilyBoundInText,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from './company-development-roblox-bootstrap.mjs';
-import {evaluateCrossPlatform3dMasterGlb} from './vibe2-asset-production-plan.mjs';
+import {evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType} from './vibe2-asset-production-plan.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -590,7 +590,7 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
     return types.length?types:requiredDccTypes;
   }));
   const dccTypeCoveragePass=!dccRequired||requiredDccTypes.every(type=>dccCoveredTypes.includes(clean(type).toLowerCase()));
-  const masterGlbRequiredTypes=requiredDccTypes.filter(type=>/^(?:character|player|npc|enemy|boss|creature|monster)$/.test(clean(type).toLowerCase()));
+  const masterGlbRequiredTypes=requiredDccTypes.filter(isCrossPlatform3dActorType);
   const masterGlbRequired=masterGlbRequiredTypes.length>0;
   const masterGlbEvidencePass=!masterGlbRequired||(dccEvidence?.recipes||[]).filter(row=>{
     const types=Array.isArray(row?.types)?row.types.map(value=>clean(value).toLowerCase()):[];
@@ -2207,7 +2207,7 @@ function robloxNativeWorkerGuidance(order={},context={},responsibleFiles=[]) {
     directive.observableAcceptanceScenario?`END_TO_END_ACCEPTANCE=${clean(directive.observableAcceptanceScenario)}`:'END_TO_END_ACCEPTANCE=input/touch -> local handler -> Remote when required -> server validation -> authoritative state change -> client feedback',
     'Use Roblox-native Luau and the existing server/client/module responsibility. Do not translate Unity/Web implementation literally.',
     'Read the existing RemoteEvent/RemoteFunction, touch input, character/respawn, rig/animation, DataStore/save, UI state, and multiplayer sync flow before changing behavior.',
-    '3D MASTER ASSET: CHARACTER/CREATURE/ENEMY/BOSS must originate from a repository-bound GLB 2.0 master with mesh, normals, UV0, materials, skeleton/skin weights and animation. Part/Wedge/Ball/Cylinder assembly is prototype-only and cannot be claimed as a finished 3D actor. Roblox must bind a native derivative/import from that master and preserve the master path/hash lineage.',
+    '3D MASTER ASSET: PLAYER/NPC/COMPANION/ALLY/VENDOR/QUEST_GIVER/TRAINER/PET/MOUNT/SUMMON/ENEMY/ELITE/CREATURE/BOSS must originate from a repository-bound GLB 2.0 master with mesh, normals, UV0, materials, skeleton/skin weights and animation. Part/Wedge/Ball/Cylinder assembly is prototype-only and cannot be claimed as a finished 3D actor. Roblox must bind a native derivative/import from that master and preserve the master path/hash lineage.',
     'CHARACTER MOTION QUALITY: for PLAYER/HUMANOID_NPC/CREATURE, inspect the existing rig before motion changes. An articulated actor must use R15 or a compatible Motor6D/Bone rig plus Humanoid or AnimationController and Animator. WeldConstraint-only articulated bodies and single rigid Parts are not a finished character motion solution.',
     'MOTION SOURCE ORDER: reuse verified same-game/same-archetype motion first, then compatible verified company motion, then license-verified repository/external motion with retarget cleanup. Author new keyframes only for the remaining verified coverage gap.',
     'SMOOTHNESS: use AnimationTrack cross-fade/weight blending, speed-synchronized Walk/Jog/Run playback, start/stop/turn continuity, and upper/lower-body layering when supported. Do not snap Attack back to Idle.',
