@@ -534,8 +534,8 @@ export function extractDesignContext(record={}){
   return Object.freeze({
     identity:clean(d?.identity),
     playerFantasy:clean(d?.playerFantasy),
-    genre:clean(d?.robloxBuildProfile?.genre||d?.genre),
-    subgenre:clean(d?.robloxBuildProfile?.subgenre||d?.subgenre),
+    genre:clean(d?.genre||d?.robloxBuildProfile?.genre),
+    subgenre:clean(d?.subgenre||d?.robloxBuildProfile?.subgenre),
     ownerFeatureChanges:Array.isArray(d?.ownerFeatureChanges)?d.ownerFeatureChanges:[],
     coreFun:clean(d?.coreFun),
     coreLoop:uniq(d?.coreLoop).slice(0,10),
@@ -560,6 +560,28 @@ export function extractDesignContext(record={}){
     progressionDirection:clean(d?.progressionDirection),
     multiplayerMode:clean(d?.multiplayerMode),
     platformProfiles:d?.platformProfiles&&typeof d.platformProfiles==='object'?d.platformProfiles:{}
+  });
+}
+
+function sharedGameDesignCore(design={}){
+  const {platformProfiles:_platformProfiles,...commonCore}=design&&typeof design==='object'?design:{};
+  return Object.freeze(commonCore);
+}
+
+function selectedPlatformDesignProfile(design={},platform='COMMON',sourceRoot=''){
+  const requested=clean(platform).toUpperCase()||'COMMON';
+  const roots=clean(sourceRoot).split('|').map(posix).filter(Boolean);
+  const key=requested==='ROBLOX'?'ROBLOX'
+    :['UNITY','UNITY_APP','UNITY_WEB'].includes(requested)?'UNITY'
+    :requested==='WEB'&&roots.some(root=>root.startsWith('unity-games/'))?'UNITY'
+    :requested==='WEB'?'WEB'
+    :requested;
+  const profiles=design?.platformProfiles&&typeof design.platformProfiles==='object'?design.platformProfiles:{};
+  const profile=profiles?.[key]&&typeof profiles[key]==='object'?profiles[key]:{};
+  return Object.freeze({
+    key,
+    source:key&&key!=='COMMON'?'design-revised.json#content.platformProfiles.'+key:null,
+    profile:Object.freeze({...profile})
   });
 }
 
@@ -1398,6 +1420,10 @@ export function buildGameSpecificBuildUpDirective({
   const id=clean(gameId);if(!id)throw new Error('BUILD_UP_GAME_ID_REQUIRED');
   const design=extractDesignContext(designRecord||{});
   sourceRoot=posix(sourceRoot)||posix(sourceObservation?.sourceRoot);
+  const sharedDesign=sharedGameDesignCore(design);
+  const sharedDesignFingerprint=sha(JSON.stringify(sharedDesign));
+  const platformDesignProfile=selectedPlatformDesignProfile(design,platform,sourceRoot);
+  const platformDesignProfileFingerprint=sha(JSON.stringify(platformDesignProfile.profile));
   const source=sourceObservation||inspectGameSource({repoRoot,sourceRoot});
   const signals=uniq([
     ...qualitySignals,
@@ -1728,9 +1754,29 @@ export function buildGameSpecificBuildUpDirective({
     sourceRoot:posix(sourceRoot),
     sourceTreeFingerprint:source.sourceTreeFingerprint,
     designFingerprint:sha(JSON.stringify(design)),
+    sharedDesignFingerprint,
+    platformDesignProfileFingerprint,
+    crossPlatformDesignContract:Object.freeze({
+      version:1,
+      oneSharedGameDesign:true,
+      commonCoreAuthority:'design-revised.json#content',
+      commonCoreFingerprint:sharedDesignFingerprint,
+      selectedPlatformProfile:platformDesignProfile.key,
+      selectedPlatformProfileSource:platformDesignProfile.source,
+      platformProfileMayAdaptImplementationOnly:true,
+      platformProfileMayChangeCoreRulesBalanceProgressionEconomySaveOrMultiplayerMeaning:false,
+      webUnityRobloxCommonCoreMustMatch:true,
+      unityWebUsesUnityProfileWhenCanonicalSourceIsUnity:true
+    }),
     identityReinforcement,
     designImplementationContext:Object.freeze({
       source:'LATEST_VERIFIED_DESIGN_FIELDS',
+      sharedGameDesign:sharedDesign,
+      sharedDesignFingerprint,
+      selectedPlatformProfile:platformDesignProfile.key,
+      selectedPlatformProfileSource:platformDesignProfile.source,
+      platformDesignProfile:platformDesignProfile.profile,
+      platformDesignProfileFingerprint,
       progressionEconomyBalance:design.progressionEconomyBalance,
       contentExpansionPlan:design.contentExpansionPlan,
       failureRetryRisk:design.failureRetryRisk,
