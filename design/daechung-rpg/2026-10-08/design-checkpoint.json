@@ -212,25 +212,25 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
+      "calls": 8,
       "successes": 7,
-      "failures": 0,
-      "timeouts": 0,
+      "failures": 1,
+      "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1671665,
-      "lastMs": 221728,
-      "lastError": null,
-      "updatedAt": "2026-10-07T19:44:08.868Z"
+      "totalMs": 1971766,
+      "lastMs": 300101,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
+      "updatedAt": "2026-10-07T19:49:08.970Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T19:16:17.192Z",
-  "updatedAt": "2026-10-07T19:44:08.869Z",
+  "updatedAt": "2026-10-07T19:49:08.971Z",
   "lastSuccessfulModelCallAt": "2026-10-07T19:44:08.868Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "failedPhase": "designer_draft",
+  "failedTask": "alternatives",
+  "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms"
 }
