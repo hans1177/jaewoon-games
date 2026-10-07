@@ -14,12 +14,12 @@
   "existingSourcePreserved": true,
   "gameplayAuthorityChanged": false,
   "serverSourceChanged": false,
-  "foundationRepairApplied": false,
+  "foundationRepairApplied": true,
   "generatedFiles": [
     "shared/GameConfig.luau",
     "client/Game.client.luau"
   ],
-  "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
+  "generationMode": "EXISTING_SOURCE_FOUNDATION_REPAIR",
   "modelUsed": false,
   "modelAttempts": 0,
   "modelContractFailures": [],
@@ -565,7 +565,7 @@
   "studioAssetPromotionEligible": false,
   "implementationNotes": [
     "existing Roblox gameplay source preserved",
-    "company library Studio asset binding updated in existing config and client presentation",
+    "native foundation/input/runtime readiness scaffolding repaired without changing gameplay balance save schema or network authority",
     "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
   ],
   "buildUpDirectiveId": null,
@@ -575,5 +575,5 @@
   "buildUpDirectiveConsumed": false,
   "buildUpDirectiveCompletionClaim": false,
   "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
-  "createdAt": "2026-10-07T04:15:26.523Z"
+  "createdAt": "2026-10-07T04:20:18.741Z"
 }
