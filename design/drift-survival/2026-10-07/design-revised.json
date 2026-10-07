@@ -1,0 +1,84 @@
+{
+  "version": 4,
+  "gameId": "drift-survival",
+  "date": "2026-10-07",
+  "productionClass": "DEVELOPMENT_CONFIRMED",
+  "status": "OWNER_REQUEST_MINIMUM_DESIGN_BASELINE",
+  "authorRole": "CHATGPT_DIRECT_GAME_DEVELOPMENT",
+  "strictDesignPassClaimed": false,
+  "content": {
+    "identity": "끝없는 바다 해류 속 작은 부유 거점을 키우며 표류 자원과 섬의 짧은 기회를 읽고 살아남는 2D 탑다운 생존 제작 게임.",
+    "playerFantasy": "아무것도 없는 작은 부유판에서 시작해 자원을 끌어오고 구조물을 만들어 움직이는 해상 거점을 키우는 생존자.",
+    "coreFun": "흘러가는 자원을 놓치기 전에 갈고리로 확보하고, 당장의 생존과 장기적인 뗏목 확장 사이에서 자원을 배분하는 판단.",
+    "coreLoop": [
+      "해류를 따라 지나가는 나무·플라스틱·섬유를 갈고리로 끌어온다.",
+      "수집 자원으로 밧줄·정수기·화로·창을 제작하고 부유 바닥을 확장한다.",
+      "갈증·배고픔·뗏목 내구도와 상어 위협을 관리한다.",
+      "접근한 작은 섬에 제한 시간 동안 상륙해 고밀도 자원을 회수한다.",
+      "더 넓어진 뗏목과 제작 설비로 다음 생존 주기의 선택 폭을 늘린다."
+    ],
+    "signatureSystems": [
+      {
+        "name": "Drift Hook",
+        "purpose": "지나가는 자원을 실제 타이밍 자원으로 만든다.",
+        "playerChoice": "어떤 표류물을 먼저 당길지 선택한다."
+      },
+      {
+        "name": "Floating Base",
+        "purpose": "수집 자원이 플레이 공간 자체의 성장으로 연결된다.",
+        "playerChoice": "생존 설비와 바닥 확장 중 우선순위를 정한다."
+      },
+      {
+        "name": "Island Window",
+        "purpose": "안전한 뗏목을 잠시 떠나 고밀도 자원을 얻는 위험·보상 변주를 만든다.",
+        "playerChoice": "섬에 상륙할지 해류를 계속 탈지 결정한다."
+      }
+    ],
+    "progressionDirection": "부유 바닥 면적 확대 → 생존 설비 확보 → 위협 대응 도구 확보 → 섬 탐색 효율 증가.",
+    "failureRetryRisk": "체력이 0이 되면 일부 기본 자원을 잃고 뗏목에서 회복한다. 저장된 뗏목 구조와 제작 설비는 유지해 소프트락을 방지한다.",
+    "multiplayerMode": "SINGLE",
+    "saveMeaning": "버전 1 로컬 저장으로 자원, 생존 수치, 뗏목 셀, 제작 설비, 생존 시간을 보존한다.",
+    "visualDirection": "원작 표현을 복제하지 않는 단순한 2D 탑다운 컬러 실루엣. 바다·목재 뗏목·표류물·작은 섬·상어를 즉시 구분한다.",
+    "mobileUx": "세이프에어리어 기반 화면 버튼. 왼쪽 이동 패드, 오른쪽 주 행동·확장·방어, 중앙 제작 버튼을 엄지 터치로 조작한다.",
+    "technicalAssumptions": [
+      "Unity 6.0",
+      "WebGL 검증층",
+      "Android ARM64 후속 빌드",
+      "런타임 생성 2D SpriteRenderer",
+      "PlayerPrefs + JsonUtility 버전 저장"
+    ],
+    "validationQuestions": [
+      "모바일 390x844에서 주 행동과 이동 버튼이 잘리지 않는가",
+      "실제 터치로 갈고리가 표류 자원의 상태를 변경하는가",
+      "수집→제작→뗏목 확장 상태가 저장 후 복구되는가",
+      "섬 상륙·채집·복귀가 진행을 막지 않는가",
+      "상어 공격과 방어가 뗏목 내구도에 일관되게 반영되는가"
+    ],
+    "platformProfiles": {
+      "UNITY": {
+        "platform": "UNITY",
+        "inputModel": "터치 우선 화면 버튼과 키보드 보조 입력.",
+        "sessionModel": "싱글 플레이 생존 세션. 중단 후 로컬 저장 복구.",
+        "multiplayerRuntime": "SINGLE_LOCAL_AUTHORITY",
+        "performanceBudget": "모바일 60fps 목표, 소수 SpriteRenderer와 표류 오브젝트 16개 상한.",
+        "uiUx": "세이프에어리어 반응형 터치 컨트롤.",
+        "saveAndNetwork": "버전 1 로컬 JSON 저장. 네트워크 권한 없음.",
+        "platformContentAdaptation": "2D 탑다운 해상 생존 루프를 WebGL과 Android에서 동일한 규칙으로 유지.",
+        "internalReleaseTarget": "검증된 WebGL 개발층과 내부 Android 빌드.",
+        "validationEvidence": "정확한 소스 리비전의 WebGL 빌드, 실제 브라우저 터치, 저장 복구, 독립 QA, 회귀."
+      },
+      "ROBLOX": {
+        "platform": "ROBLOX",
+        "inputModel": "모바일 엄지 이동 + 주 행동/제작 버튼, PC 키보드 보조.",
+        "sessionModel": "같은 싱글 생존 의미를 Roblox 세션에 맞게 유지.",
+        "multiplayerRuntime": "초기 SINGLE. 별도 설계 승인 전 멀티 규칙 추가 없음.",
+        "performanceBudget": "모바일 파트/이펙트 상한과 스트리밍 친화 월드.",
+        "uiUx": "Unity와 같은 주 행동 우선순위와 터치 의미 유지.",
+        "saveAndNetwork": "DataStore 사용 시 현재 로컬 저장 의미를 마이그레이션하고 서버 권한으로 검증.",
+        "platformContentAdaptation": "부유 거점·해류 자원·섬 기회·상어 위협의 인과관계를 Roblox 네이티브 구현으로 옮김.",
+        "internalReleaseTarget": "비공개 Roblox 테스트 Place.",
+        "validationEvidence": "실제 Place 실행, 모바일 터치, 저장/재접속, 서버 권한 상태, 독립 QA."
+      }
+    }
+  }
+}
