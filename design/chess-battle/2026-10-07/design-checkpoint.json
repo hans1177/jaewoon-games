@@ -3,30 +3,16 @@
   "gameId": "chess-battle",
   "date": "2026-10-07",
   "seedId": "OWNER-ENROLL-CHESS-BATTLE-20260913",
-  "fingerprint": "6cac77801f95819bf61009b15db49a4829dd6a034bfe8d5984724def1905e327",
+  "fingerprint": "c040444a624b87796781df388d1cad94e4b14fb56506e3dc4b598bb758296648",
   "policyDigest": "aad7bd8d6356c32ef9901c564bd28988a1baeaa71fef1cc4092f0bae1fadd6d4",
-  "engineDigest": "582dffc82fea152c4f7727b3746e071c6a180d2cb0c90806d0caefc464532baa",
+  "engineDigest": "d0ba564fc28ff4aa5a5ae0497133e805935fe6bd00ac4d2e4582ce01737641b4",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
   "tasks": {},
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 0,
-      "failures": 14,
-      "timeouts": 13,
-      "jsonFailures": 1,
-      "totalMs": 1402117,
-      "lastMs": 90085,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 90000ms",
-      "updatedAt": "2026-10-07T04:11:23.217Z"
-    }
-  },
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-07T02:58:05.294Z",
-  "updatedAt": "2026-10-07T04:11:23.218Z",
-  "failedPhase": "designer_draft",
-  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=OPTIONAL_EXTERNAL_AI_DISABLED local=OLLAMA_DESIGN_TIMEOUT 90000ms"
+  "createdAt": "2026-10-07T04:27:12.362Z",
+  "updatedAt": "2026-10-07T04:27:12.370Z"
 }

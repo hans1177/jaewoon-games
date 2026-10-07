@@ -2,7 +2,7 @@
   "version": 2,
   "gameId": "chess-battle",
   "date": "2026-10-07",
-  "engineDigest": "582dffc82fea152c4f7727b3746e071c6a180d2cb0c90806d0caefc464532baa",
+  "engineDigest": "d0ba564fc28ff4aa5a5ae0497133e805935fe6bd00ac4d2e4582ce01737641b4",
   "status": "IN_PROGRESS",
   "currentStage": "DESIGNER_DRAFT",
   "percent": 17,
@@ -10,22 +10,10 @@
   "completedPhaseCount": 0,
   "cachedTaskCount": 0,
   "lastSuccessfulModelCallAt": null,
-  "failedPhase": "designer_draft",
+  "failedPhase": null,
   "failedTask": null,
-  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=OPTIONAL_EXTERNAL_AI_DISABLED local=OLLAMA_DESIGN_TIMEOUT 90000ms",
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 0,
-      "failures": 14,
-      "timeouts": 13,
-      "jsonFailures": 1,
-      "totalMs": 1402117,
-      "lastMs": 90085,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 90000ms",
-      "updatedAt": "2026-10-07T04:11:23.217Z"
-    }
-  },
+  "lastError": null,
+  "modelHealth": {},
   "slowPhases": {},
-  "updatedAt": "2026-10-07T04:11:23.218Z"
+  "updatedAt": "2026-10-07T04:27:12.511Z"
 }
