@@ -4383,6 +4383,55 @@ test('library synchronization reuses the automation plan system depth audit',()=
   assert.equal((syncSource.match(/auditCommonLibrarySystemDepth\s*\(/g)||[]).length,1);
 });
 
+test('catalog synchronization indexes registry ids and pack rows once per sync',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const source=fs.readFileSync(path.resolve(here,'../tools/vibe2-asset-production-plan.mjs'),'utf8');
+  const catalogStart=source.indexOf('function synchronizeCatalogRows');
+  const catalogEnd=source.indexOf('function catalogFingerprint',catalogStart);
+  const catalogSource=source.slice(catalogStart,catalogEnd);
+  const syncStart=source.indexOf('export function synchronizeCompanyCommonAssetRegistry');
+  const syncEnd=source.indexOf('const inferUniverseFamily',syncStart);
+  const syncSource=source.slice(syncStart,syncEnd);
+
+  assert.match(syncSource,/const registryAssetById=new Map\(\)/);
+  assert.match(syncSource,/const registryAssetsByPackId=new Map\(\)/);
+  assert.match(syncSource,/assetById:registryAssetById/);
+  assert.match(syncSource,/assetsByPackId:registryAssetsByPackId/);
+  assert.match(catalogSource,/assetById instanceof Map\?assetById\.get\(packId\)/);
+  assert.match(catalogSource,/assetById instanceof Map\?assetById\.get\(id\)/);
+  assert.match(catalogSource,/assetsByPackId instanceof Map/);
+});
+
+test('catalog row pack migration keeps the shared indexes coherent and idempotent',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-catalog-index-'));
+  try{
+    fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify({games:[]}));
+    const dir=path.join(root,'assets','roblox','common-items-v1');
+    fs.mkdirSync(dir,{recursive:true});
+    fs.writeFileSync(path.join(dir,'catalog.json'),JSON.stringify({
+      packId:'roblox-common-items-v1',
+      version:1,
+      family:'PROP',
+      platform:'ROBLOX',
+      items:[{assetId:'APPLE',name:'Apple',itemRole:'FOOD'}]
+    }));
+    const registry={version:1,assets:[
+      {id:'roblox-common-items-v1',packId:'roblox-common-items-v1',family:'PROP',platform:'ROBLOX',license:'project-original',companyCommonBase:true},
+      {id:'roblox-common-items-apple',packId:'legacy-pack',family:'PROP',platform:'ROBLOX',license:'project-original',assetId:'APPLE'}
+    ],externalSources:[]};
+    const first=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry,persist:false});
+    const apple=first.registry.assets.find(row=>row.id==='roblox-common-items-apple');
+    assert.equal(apple.packId,'roblox-common-items-v1');
+    assert.equal(first.registry.assets.filter(row=>row.id==='roblox-common-items-apple').length,1);
+    assert.equal(first.changed,true);
+    assert.ok(first.changedSections.includes('assets'));
+
+    const second=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry:first.registry,persist:false});
+    assert.equal(second.changed,false,JSON.stringify(second.changedSections));
+    assert.equal(second.registry.assets.filter(row=>row.id==='roblox-common-items-apple').length,1);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('catalog synchronization cannot inherit or manufacture production verification',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-proof-'));
   try{

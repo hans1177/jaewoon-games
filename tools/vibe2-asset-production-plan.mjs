@@ -623,14 +623,16 @@ function registryRowTags(row={},catalogRow={}){
   ]);
 }
 
-function synchronizeCatalogRows({registry,catalog}){
+function synchronizeCatalogRows({registry,catalog,assetById=null,assetsByPackId=null}){
   const packId=clean(catalog.packId);
-  const pack=registry.assets.find(row=>row.id===packId);
+  const pack=assetById instanceof Map?assetById.get(packId):registry.assets.find(row=>row.id===packId);
   if(!pack)return{packId,changed:false,count:0,rowIds:[]};
   const packBefore=JSON.stringify(pack);
   let changed=false;
   const {key,rows}=commonCatalogRows(catalog);
-  const currentRows=registry.assets.filter(row=>row.packId===packId&&row.id!==packId);
+  const currentRows=assetsByPackId instanceof Map
+    ?(assetsByPackId.get(packId)||[]).filter(row=>row.id!==packId)
+    :registry.assets.filter(row=>row.packId===packId&&row.id!==packId);
   const prefix=inferRegistryIdPrefix(packId,currentRows);
   const template=currentRows.find(row=>catalogIdentity(row))||currentRows[0]||pack;
   const activeIds=new Set();
@@ -642,7 +644,8 @@ function synchronizeCatalogRows({registry,catalog}){
     const slug=catalogSlug(identity);
     const id=prefix+slug;
     activeIds.add(id);rowIds.push(id);
-    let row=registry.assets.find(asset=>asset.id===id);
+    let row=assetById instanceof Map?assetById.get(id):registry.assets.find(asset=>asset.id===id);
+    const previousPackId=row?.packId;
     const rowBefore=row?JSON.stringify(row):null;
     const verifiedState=row?{
       productionVerified:row.productionVerified===true,
@@ -655,9 +658,25 @@ function synchronizeCatalogRows({registry,catalog}){
       for(const field of ['internalAuditScore','internalAuditGrade','internalAuditEvidence','sourceHash','sourceSha256','runtimeEvidence','verificationEvidence'])delete row[field];
       row.consumerGameIds=[];
       registry.assets.push(row);
+      if(assetById instanceof Map&&!assetById.has(id))assetById.set(id,row);
+      if(assetsByPackId instanceof Map){
+        let packRows=assetsByPackId.get(packId);
+        if(!packRows){packRows=[];assetsByPackId.set(packId,packRows);}
+        packRows.push(row);
+      }
       changed=true;
     }
     row.packId=packId;
+    if(rowBefore!==null&&assetsByPackId instanceof Map&&previousPackId!==packId){
+      const previousRows=assetsByPackId.get(previousPackId);
+      if(previousRows){
+        const index=previousRows.indexOf(row);
+        if(index>=0)previousRows.splice(index,1);
+      }
+      let packRows=assetsByPackId.get(packId);
+      if(!packRows){packRows=[];assetsByPackId.set(packId,packRows);}
+      if(!packRows.includes(row))packRows.push(row);
+    }
     row.catalogActive=true;
     row.catalogState='ACTIVE';
     row.catalogVersion=catalog.version;
@@ -1267,7 +1286,24 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     :gameCatalog;
   const catalogs=commonCatalogFiles(repoRoot).map(file=>({path:path.relative(repoRoot,file).replaceAll('\\','/'),catalog:readJson(file,{})})).filter(row=>row.catalog?.packId);
   const fingerprint=catalogFingerprint(catalogs);
-  const syncRows=catalogs.map(row=>synchronizeCatalogRows({registry:next,catalog:row.catalog}));
+  // 한 동기화 사이클에서 registry ID/pack 탐색을 한 번만 색인한다.
+  const registryAssetById=new Map();
+  const registryAssetsByPackId=new Map();
+  for(const asset of next.assets){
+    if(asset?.id!==undefined&&asset?.id!==null&&!registryAssetById.has(asset.id))registryAssetById.set(asset.id,asset);
+    const packId=asset?.packId;
+    if(packId!==undefined&&packId!==null){
+      let rows=registryAssetsByPackId.get(packId);
+      if(!rows){rows=[];registryAssetsByPackId.set(packId,rows);}
+      rows.push(asset);
+    }
+  }
+  const syncRows=catalogs.map(row=>synchronizeCatalogRows({
+    registry:next,
+    catalog:row.catalog,
+    assetById:registryAssetById,
+    assetsByPackId:registryAssetsByPackId
+  }));
   const consumerSync=synchronizeSourceBoundAssetConsumers({repoRoot,registry:next,gameCatalog:consumerScanCatalog});
   const sourceConsumerSync=Object.freeze({
     ...consumerSync.summary,
