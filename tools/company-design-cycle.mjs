@@ -495,7 +495,7 @@ const designSliceSchema=fields=>({type:'object',required:[...fields],properties:
 const DESIGN_BASE=designSliceSchema(DESIGN_BASE_FIELDS);
 const DESIGN_GATE=designSliceSchema(DESIGN_GATE_FIELDS);
 const DESIGN_AUTHORING_SLICES=Object.freeze([
-  {id:'identity-core',fields:['identity','playerFantasy','coreFun','coreLoop','signatureSystems'],predict:1200},
+  {id:'identity-core',fields:['identity','playerFantasy','coreFun','coreLoop','signatureSystems','multiplayerMode'],predict:1200},
   {id:'systems-progression',fields:['systemInterconnections','progressionDirection','progressionEconomyBalance','contentExpansionPlan','failureRetryRisk'],predict:1500},
   {id:'content-rules',fields:['contentVarietyPlan'],predict:1800},
   {id:'alternatives',fields:['designAlternatives'],predict:1600},
@@ -504,7 +504,7 @@ const DESIGN_AUTHORING_SLICES=Object.freeze([
   {id:'web-canonical',fields:['webCanonicalDesign'],predict:1500},
   {id:'platform-expansion',fields:['platformExpansionPolicy'],predict:900},
   {id:'ux-presentation',fields:['visualDirection','mobileUx','uxAccessibilityPlan','artAudioDirection'],predict:1200},
-  {id:'market-multiplayer',fields:['marketTargetDirection','steamExpansionDecision','multiplayerMode','multiplayerExpansionDecision'],predict:900},
+  {id:'market-multiplayer',fields:['marketTargetDirection','steamExpansionDecision','multiplayerExpansionDecision'],predict:900},
   {id:'narrative-homage',fields:['narrativeDialoguePlan','referenceHomagePlan'],predict:1300},
   {id:'integrity-stability',fields:['designIntegrityPlan','stabilityPriorityPlan'],predict:1300},
   {id:'traceability',fields:['technicalAssumptions','validationQuestions','implementationTraceability','openQuestions'],predict:1100}
@@ -683,6 +683,7 @@ function repairStructureContract(fields){
   if(fields.includes('systemInterconnections'))rules.push('fromId의 stateOutputs와 toId의 stateInputs에 실제로 존재하는 같은 stateKeys를 연결한다. A/B는 양방향으로 값을 주고받고 MAIN/c/DELVE도 연결돼야 한다. fromSystem/toSystem 설명만 같은 것으로 대체하지 않는다.');
   if(fields.includes('contentVarietyPlan'))rules.push('abilities에는 원본의 모든 인간 능력·감염 후 능력·몬스터 능력·기본 감염/정화를 각각 작성한다. id/kind/ownerId/ruleId, trigger, range/rangeUnit, resource/cost, cooldownSeconds, telegraph/avoidance/effect, stateInputs/stateOutputs/source가 필수다. 자원이나 재사용이 없으면 0과 이유를 적는다. 원본 수치가 있는 능력은 rangeKey/costKey/cooldownKey를 원본 technicalAssumptions 키에 연결한다. roleTransitions는 원본 humanRoster 각 id마다 인간 도구와 능력→원본 이름 그대로의 감염 능력, 유지/제거 상태, 바뀌는 선택을 연결한다. regions는 공통 id와 ruleIds로 뒤의 전략 비교에 사용한다.');
   if(fields.includes('designAlternatives'))rules.push('strategy는 이미 작성한 구역/상태/규칙/능력 ID만 사용한다. routeEdges(from,to), resourceSites(stateKey,regionId), cooperation(ruleId,regionId,abilityId)의 관계 중 두 항목 이상이 실제로 달라야 한다. 수식어·설명·ID 이름 바꾸기는 차이로 인정하지 않는다. advantage/cost/bestSituation에 얻는 것·포기하는 것·선택 상황을 적는다.');
+  if(fields.includes('selectedDesignPlan'))rules.push('before/after는 같은 key/value 상태 목록이며 앞 장면의 after와 다음 before를 동일하게 잇는다. startSeconds/endSeconds를 0부터 연속 배치하고 actions에 실제 능력 ID, actorId/targetId, 시각·거리·사용 전후 자원·성공 여부·대응을 적는다. timeReason은 장면의 실제 행동에 필요한 시간을 설명한다. 마지막 장면은 다음 라운드가 아닌 현재 한 판의 결판이다.');
   if(fields.includes('selectedDesignPlan')&&playableRequirements.infection)rules.push('participants에 시작 인원 전원의 고정 id/role/classId를 적는다. 감염되면 같은 id의 진영과 사용 능력이 바뀌고 정화되면 이후 행동할 수 없다. 각 장면의 before/after는 같은 key/value 수치 목록이다. 앞 after를 다음 before로 정확히 이어라. startSeconds/endSeconds는 0부터 연속되고 timeReason은 이동·접촉·재사용 대기 등 필요한 시간의 근거다. actions는 능력 ID, actorId/targetId, atSeconds, distance, energyBefore/energyAfter, hit, response를 기록한다. 모든 입력은 비용과 재사용 시간을 지킨다. 감염 적중은 인간 -1/몬스터 +1, 정화 적중은 몬스터 -1/탈락 +1이다. 첫 접촉에서 감염하지 않고 첫 감염 장면에서 정확히 1회 전환, 인원 불균형, 정화 역전 기회, 결판까지 작성한다. 한 진영 0명 즉시 승패 또는 원본 제한시간 무승부로 끝낸다. roundSeconds와 sessionSeconds를 구분하고 기존 제한시간은 유지한다.');
   if(fields.includes('artAudioDirection'))rules.push('assetBindings마다 필요한 family/role/bodyPlan/behavior/presentation부터 정한 뒤 사용 위치와 ruleIds, 실제 assetId, USE/ADAPT/AUTHOR, selectionReason/improvement/platformAdaptation/validation을 작성한다. 체형이 해당 없는 배경/소리도 공간 형태 또는 음색을 구체화한다. 같은 역할의 재사용 후보가 있으면 기존 자산부터 검토한다. 실제 없는 ID를 만들거나 몬스터 분류만으로 거미를 고르지 않는다. 점수는 역할 적합성 근거가 아니다. AUTHOR는 assetId를 비우고 현재 목록의 정확한 역할 공백과 필요한 제작을 적는다.');
   if(fields.includes('designIntegrityPlan'))rules.push('authoringVersion=2. flowAudit에서 한 판의 모든 phase를 같은 순서로 재생한다. 각 reachableBy는 실제 능력 ID이며 blockedCase/recovery와 nextPhase(마지막 END)를 적는다. 능력 도달·자원 부족·길 막힘·감염 전환·탈락·종료를 확인하고 미해결 모순을 true 선언으로 숨기지 않는다.');
@@ -1123,7 +1124,7 @@ async function generateDesignerDraft(){
     identity:original.identity,coreFun:original.coreFun,coreLoop:original.coreLoop,
     signatureSystems:original.signatureSystems,progressionDirection:original.progressionDirection,
     technicalAssumptions:original.technicalAssumptions,
-    humanRoster:original.humanRoster,monsterRoster:original.monsterRoster,implementationSync:original.implementationSync,
+    implementationSync:original.implementationSync,
     playabilityRequirements:playableRequirements,
     platformProfile:seed.originalDesignContext?.platformProfile,
     humanRoster:original.humanRoster,monsterRoster:original.monsterRoster,

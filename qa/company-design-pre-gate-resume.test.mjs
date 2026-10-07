@@ -607,4 +607,10 @@ test('cooldown reuse, missing required asset family and unused matching assets f
   assert.ok(validateDesignAuthoringContent(fixture).some(row=>row.code==='DESIGN_ASSET_REUSE_NOT_EVALUATED'));
 });
 
+test('platform copy and embedded temporary prose are rejected where written',()=>{
+  const reasons=validateDesignAuthoringContent({design:{platformProfiles:{UNITY:{inputModel:'ScreenGui 버튼으로 모바일 조작을 구성한다'}},webCanonicalDesign:{combatAndInteraction:'공격 대응 방식은 추후 작성하고 일단 이름만 표시한다'}}});
+  assert.ok(reasons.some(row=>row.code==='DESIGN_PLATFORM_NATIVE_CONTRADICTION'));
+  assert.ok(reasons.some(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT'));
+});
+
 
