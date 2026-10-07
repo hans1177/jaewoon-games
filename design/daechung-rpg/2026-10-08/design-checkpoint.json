@@ -41,25 +41,80 @@
           "playerChoice": "플레이어는 15마리의 몬스터를 처치하여 보상을 얻는다."
         }
       ]
+    },
+    "designer_draft_slices::systems-progression": {
+      "systemInterconnections": [
+        {
+          "fromSystem": "마을",
+          "toSystem": "포탈",
+          "trigger": "플레이어가 5개의 포탈 지역을 선택하여 전투를 수행한다.",
+          "stateChange": "포탈 지역이 선택되고, AI 유저와 파티를 구성하여 보스 공략 시작."
+        },
+        {
+          "fromSystem": "포탈",
+          "toSystem": "보스 공략",
+          "trigger": "플레이어가 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성한다.",
+          "stateChange": "보스 공략이 시작되고, 보스 동료 해금 및 파티 조합 확장이 이루어진다."
+        },
+        {
+          "fromSystem": "보스 공략",
+          "toSystem": "보스 동료 해금",
+          "trigger": "보스 첫 처치로 AI 동료를 해금하고, 파티 조합 확장이 이루어진다.",
+          "stateChange": "보스 동료가 영구 해금되고, 파티 구성이 확장된다."
+        }
+      ],
+      "progressionDirection": "마을 준비 → 포탈 전투 → Lv.15 1차 전직 → 보스 격파/동료 해금 → 동료 3명 조합 → Lv.40 2차 완성형 → Lv.60 만렙/숙련",
+      "progressionEconomyBalance": {
+        "progressionLoop": "마을 준비 → 포탈 전투 → Lv.15 1차 전직 → 보스 격파/동료 해금 → 동료 3명 조합 → Lv.40 2차 완성형 → Lv.60 만렙/숙련",
+        "resourceFlow": "플레이어의 레벨업마다 최대체력 +10, 공격력 +10",
+        "balanceRules": "보스 동료는 리더 레벨 자동 동기화, 플레이어 + 동료 최대 3명, 보스 동료는 별도 인간형 캐릭터로 다시 만들지 않고 원본 보스 외형을 읽기 쉽게 축소·정리해 사용한다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "5포탈 지역",
+          "newGameplay": "5개의 대형 지역을 직접 전투로 돌파하고, 10명의 AI 유저 중 원하는 역할을 골라 파티를 구성하며 기여도로 더 큰 보상을 얻는 성장 재미.",
+          "systemImpact": "5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG."
+        },
+        {
+          "milestone": "레벨 성장",
+          "newGameplay": "레벨업마다 최대체력 +10, 공격력 +10",
+          "systemImpact": "레벨업마다 최대체력 +10, 공격력 +10"
+        },
+        {
+          "milestone": "15킬 파티사냥",
+          "newGameplay": "15마리 처치 시 종료하고 기여도에 따라 XP/골드 보상",
+          "systemImpact": "15마리 처치 시 종료하고 기여도에 따라 XP/골드 보상"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "플레이어가 5개의 포탈 지역을 선택하지 않음",
+          "보스 첫 처치가 실패하여 동료 해금이 이루어지지 않음",
+          "파티 구성이 3명 이상 초과됨"
+        ],
+        "retryFlow": "플레이어는 5개의 포탈 지역을 선택하여 전투를 수행하고, 보스 첫 처치를 성공적으로 수행하여 동료 해금을 완료하고, 파티 구성이 3명 이하로 이루어진다.",
+        "riskPressure": "플레이어가 5개의 포탈 지역을 선택하지 않거나, 보스 첫 처치가 실패하거나, 파티 구성이 3명 이상 초과하면, 보상이 줄어들거나, 파티 구성이 불가능해진다.",
+        "recoveryRules": "플레이어는 5개의 포탈 지역을 선택하여 전투를 수행하고, 보스 첫 처치를 성공적으로 수행하여 동료 해금을 완료하고, 파티 구성이 3명 이하로 이루어진다."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 140268,
-      "lastMs": 140268,
+      "totalMs": 329713,
+      "lastMs": 189445,
       "lastError": null,
-      "updatedAt": "2026-10-07T22:03:43.771Z"
+      "updatedAt": "2026-10-07T22:06:53.221Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T22:01:23.499Z",
-  "updatedAt": "2026-10-07T22:03:43.775Z",
+  "updatedAt": "2026-10-07T22:06:53.224Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1475,11 +1530,12 @@
     "assetFacts": {}
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "bff71795096fec6e2d779920e0b6bd66fe33f6424b6f27bcafbea9751a1a8878"
   },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
-  "lastSuccessfulModelCallAt": "2026-10-07T22:03:43.772Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T22:06:53.221Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
