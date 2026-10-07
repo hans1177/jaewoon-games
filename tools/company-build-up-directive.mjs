@@ -531,6 +531,10 @@ export function extractDesignContext(record={}){
     purpose:clean(system?.purpose),
     playerChoice:clean(system?.playerChoice)
   })).filter(x=>x.name||x.purpose||x.playerChoice).slice(0,12);
+  const platformModes=uniq(['WEB','UNITY','ROBLOX']
+    .map(key=>clean(d?.platformProfiles?.[key]?.playMode||d?.platformProfiles?.[key]?.multiplayerMode))
+    .filter(Boolean));
+  const canonicalMultiplayerMode=clean(d?.multiplayerMode)||(platformModes.length===1?platformModes[0]:'');
   return Object.freeze({
     identity:clean(d?.identity),
     playerFantasy:clean(d?.playerFantasy),
@@ -558,7 +562,7 @@ export function extractDesignContext(record={}){
     implementationTraceability:(Array.isArray(d?.implementationTraceability)?d.implementationTraceability:[]).slice(0,8),
     stabilityPriorityPlan:asObject(d?.stabilityPriorityPlan),
     progressionDirection:clean(d?.progressionDirection),
-    multiplayerMode:clean(d?.multiplayerMode),
+    multiplayerMode:canonicalMultiplayerMode,
     platformProfiles:d?.platformProfiles&&typeof d.platformProfiles==='object'?d.platformProfiles:{}
   });
 }
@@ -1354,6 +1358,7 @@ export function directivePrompt(d={}){
     `id=${d.directiveId}; generation=${d.generation}; depth=${d.developmentDepth}; stage=${d.escalationStage}; focus=${d.primaryFocus}`,
     `GAME_IDENTITY: ${d.gameIdentityAndNonNegotiables.identity}`,
     `DESIGN_IMPLEMENTATION_CONTEXT: ${JSON.stringify(d.designImplementationContext||{})}`,
+    `CROSS_PLATFORM_GAME_DESIGN_CONTRACT: ${JSON.stringify(d.crossPlatformDesignContract||{})}`,
     `IDENTITY_ONE_LINE_FANTASY: ${d.identityReinforcement?.oneLineFantasy||d.gameIdentityAndNonNegotiables.identity}`,
     `IDENTITY_REPRESENTATIVE_ACTION: ${d.identityReinforcement?.representativeAction||'CURRENT_CORE_ACTION'}`,
     `IDENTITY_REPRESENTATIVE_CHOICE: ${d.identityReinforcement?.representativeChoice||'CURRENT_CORE_CHOICE'}`,
