@@ -144,25 +144,51 @@
           "validationEvidence": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract, Mobile input/UI contract, Save/rejoin contract when applicable, Multiplayer state-sync contract when applicable, Headless exact-artifact regression, Open Cloud private/restricted publish"
         }
       }
+    },
+    "designer_draft_slices::web-canonical": {
+      "webCanonicalDesign": {
+        "role": "WEB_DETAILED_GAME_ORIGINAL",
+        "designAuthority": "GAME_DESIGN_REFERENCE_NOT_SOURCE_CODE_AUTHORITY",
+        "playerFlow": [
+          "인간4/몬스터4 배정",
+          "AI 양팀 충원",
+          "감염 전환",
+          "정화",
+          "인간 5종",
+          "몬스터 5종",
+          "학교/병원/놀이공원",
+          "맵 이벤트"
+        ],
+        "worldAndTraversal": "세 게임 중 가장 현실적인 인간 비율과 가장 비정상적인 몬스터 체형을 강하게 대비시키는 가독성 중심 공포 3D",
+        "systemsAndContent": "4대4 AI 충원, 감염 전환, 인간 정화, 확장형 인간 로스터",
+        "combatAndInteraction": "감염 스킬 선택, 정화 공격, 몬스터 감염 공격, 인간 정화",
+        "progressionAndEconomy": "새 인간 직업과 몬스터를 동일한 데이터 구조에 계속 추가하고, 각 캐릭터는 플레이 방식이 달라지게 확장한다",
+        "sessionFailureRecovery": "감염 공격은 AI가 실시간으로 조절하며, 정화는 AI가 빈 자리에 채운다",
+        "uiMenuAndOnboarding": "로비에서는 역할 선호·인간 직업·몬스터 폼을 선택하고, 라운드에서는 인간 정화/대시 또는 몬스터 감염 공격/고유 스킬만 노출한다",
+        "inputCameraAccessibility": "모바일 이동과 큰 상호작용 버튼, PC 키보드·게임패드 보조 입력을 사용한다",
+        "presentationAndAudio": "로비에서는 역할 선호·인간 직업·몬스터 폼을 선택하고, 라운드에서는 인간 정화/대시 또는 몬스터 감염 공격/고유 스킬만 노출한다",
+        "multiplayerPersistence": "서버가 Role, Infected, HumanCount, MonsterCount, Energy, cooldown, conversion, purification, winner와 역할선정 공정 상태를 authoritative하게 관리한다",
+        "expansionSpace": "새 적·위협 또는 행동 패턴, 새 공간·경로 또는 목표, 새 상호작용 또는 전략 결과"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 4,
+      "calls": 8,
+      "successes": 5,
       "failures": 3,
       "timeouts": 1,
       "jsonFailures": 1,
-      "totalMs": 1051841,
-      "lastMs": 245035,
+      "totalMs": 1253973,
+      "lastMs": 202132,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-07T19:28:48.435Z"
+      "updatedAt": "2026-10-07T19:32:10.568Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T17:55:35.632Z",
-  "updatedAt": "2026-10-07T19:28:48.436Z",
+  "updatedAt": "2026-10-07T19:32:10.569Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
@@ -178,7 +204,7 @@
   "localAuthoringSplits": {
     "b0562ba8bb121c6f29db549cd378dd345fb1669cdccd5e5f6382f3175e914676": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-07T19:28:48.435Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T19:32:10.568Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
