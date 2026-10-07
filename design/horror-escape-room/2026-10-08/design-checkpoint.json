@@ -175,25 +175,40 @@
         "unityRule": "UNITY_4_3D_HORROR_ESCAPE_ROOM",
         "robloxRule": "ROBLOX_3_2D_HORROR_ESCAPE_ROOM"
       }
+    },
+    "designer_draft_slices::ux-presentation": {
+      "visualDirection": "세 게임 중 가장 현실적인 인간 비율과 가장 비정상적인 몬스터 체형을 강하게 대비시키는 가독성 중심 공포 3D",
+      "mobileUx": "모바일 이동과 큰 상호작용 버튼, PC 키보드·게임패드 보조 입력을 사용한다",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "인간4/몬스터4 배정, AI 충원, 감염 공격, 정화 공격, 승패 판정",
+        "touchAndInput": "모바일 이동과 큰 상호작용 버튼, PC 키보드·게임패드 보조 입력을 사용한다",
+        "readability": "로비에서는 역할 선호·인간 직업·몬스터 폼을 선택하고, 라운드에서는 인간 정화/대시 또는 몬스터 감염 공격/고유 스킬만 노출한다",
+        "accessibility": "로비에서는 역할 선호·인간 직업·몬스터 폼을 선택하고, 라운드에서는 인간 정화/대시 또는 몬스터 감염 공격/고유 스킬만 노출한다"
+      },
+      "artAudioDirection": {
+        "visualIdentity": "가독성 중심 공포 3D",
+        "audioIdentity": "감염 전환, 정화, 대시, 고유 능력 세트 추가",
+        "gameplayFeedbackSync": "감염 공격, 정화 공격, 대시, 몬스터 능력, 저장"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1106324,
-      "lastMs": 203533,
+      "totalMs": 1229293,
+      "lastMs": 122969,
       "lastError": null,
-      "updatedAt": "2026-10-07T20:43:33.857Z"
+      "updatedAt": "2026-10-07T20:45:36.828Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T20:25:07.525Z",
-  "updatedAt": "2026-10-07T20:43:33.858Z",
+  "updatedAt": "2026-10-07T20:45:36.829Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -386,7 +401,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-07T20:43:33.857Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T20:45:36.828Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
