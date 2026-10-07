@@ -5645,17 +5645,17 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-07T03:46:00.801Z",
+      "updatedAt": "2026-10-07T03:59:54.834Z",
       "robloxSourceCommit": "1ab8ec0afb2d544ffcee91b5d01ebec02a499491",
       "robloxSourceBootstrapPassedAt": "2026-10-07T03:46:00.801Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": "8595a31a4af56005afe73ab932d2e0e50f9dd6e8",
+      "robloxBuildSourceRevision": "1ab8ec0afb2d544ffcee91b5d01ebec02a499491",
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
-      "robloxBuildFailedAt": "2026-10-07T03:21:56.630Z",
+      "robloxBuildFailedAt": "2026-10-07T03:59:54.834Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -5700,7 +5700,7 @@
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
       "robloxFailureSignature": "roblox-package-asset-binding-failed",
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-build-package:roblox-package-asset-binding-failed"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -5744,16 +5744,16 @@
       "robloxReleaseStabilityEvidence": null,
       "robloxPublicReleaseFinalEvidence": null,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "8595a31a4af56005afe73ab932d2e0e50f9dd6e8",
+      "robloxQualityBuildUpSourceRevision": "1ab8ec0afb2d544ffcee91b5d01ebec02a499491",
       "robloxQualityFailureClass": "INTERNAL_ASSET_SOURCE_BINDING",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "village-dungeons",
-        "sourceRevision": "8595a31a4af56005afe73ab932d2e0e50f9dd6e8",
+        "sourceRevision": "1ab8ec0afb2d544ffcee91b5d01ebec02a499491",
         "artifactIdentity": null,
         "authority": "roblox-package-asset-binding-failure",
-        "workflowRunId": 37564998675,
-        "testedAt": "2026-10-07T03:21:56.630Z",
+        "workflowRunId": 37567716477,
+        "testedAt": "2026-10-07T03:59:54.834Z",
         "qualityFailureKinds": [
           "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:VFX"
         ],
@@ -5779,8 +5779,8 @@
           "familyCoverageCount": 12,
           "requiredFamilyCount": 12,
           "selectedAtomCount": 360,
-          "libraryVersion": 119,
-          "selectionFingerprint": "d2feb423f08bccf43f0482ed9bc9713d8996cdeb9617994b04a8aab2eb68d6f5",
+          "libraryVersion": 120,
+          "selectionFingerprint": "e568ea5a372d665c351d0f14aeabd5229ff0ce8a4f1b24f8db998093351fc024",
           "allFamiliesAutoSelected": true,
           "primitiveOnlyOrColorOnlyForbidden": true,
           "visibleAssetBindingPass": true,
@@ -6277,9 +6277,9 @@
           "systemDetectionAuthority": "company-development-roblox-bootstrap-dynamic-source-sync",
           "authority": "roblox-package-universal-asset-threshold"
         },
-        "sourceTreeSha": "47474497548aeb5c09e9c12fe066176c15c51eb8",
+        "sourceTreeSha": "50634208289542d3eb5c3efb2b30668ca7fd9a49",
         "assetRepairContext": {
-          "libraryFingerprint": "acea46a0bbf03ae9e7ecfa0830c7b040cf3906b0cec579a18b7f8a0c28e5b070",
+          "libraryFingerprint": "dc550b56f5fa12290a6e463b1df6daf5048a4dd65e44cec929e69d84181ad9d9",
           "baselineFingerprint": "838045e95bffd406106710dc8088fcc5ad4cce93d16acd1aa78bbef9bd6c2bf6",
           "validatorFingerprint": "037cdfa626a799087d33307f2f96a97fc09f6844cc17ee2c49d621a3c1b552d5"
         },
@@ -6300,8 +6300,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 119,
-              "selectionFingerprint": "d2feb423f08bccf43f0482ed9bc9713d8996cdeb9617994b04a8aab2eb68d6f5",
+              "libraryVersion": 120,
+              "selectionFingerprint": "e568ea5a372d665c351d0f14aeabd5229ff0ce8a4f1b24f8db998093351fc024",
               "familyResult": {
                 "family": "VFX",
                 "status": "APPLIED",
@@ -37981,7 +37981,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-07T03:58:52.284Z",
+  "updatedAt": "2026-10-07T03:59:54.834Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -38048,5 +38048,6 @@
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
   "executionContractVersion": 1,
-  "robloxSourceParallelism": null
+  "robloxSourceParallelism": null,
+  "robloxTechnicalParallelism": null
 }
