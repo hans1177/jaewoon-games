@@ -1,5 +1,5 @@
 {
-  "version": 542,
+  "version": 543,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-07",
@@ -18787,6 +18787,104 @@
               "BOSS"
             ]
           }
+        },
+        "npcRoleProduction": {
+          "version": 1,
+          "status": "ACTIVE_EXECUTABLE_CONTRACT",
+          "implementation": "assets/vibe-character-identity-director.js",
+          "appliesToRoles": [
+            "GENERAL_NPC",
+            "COMPANION",
+            "ALLY",
+            "STORY_CHARACTER",
+            "CIVILIAN",
+            "MERCHANT",
+            "QUEST_GIVER",
+            "GUARD",
+            "WORKER",
+            "ARTISAN",
+            "FARMER",
+            "HEALER",
+            "TRAINER",
+            "RIVAL",
+            "HOSTILE_HUMANOID",
+            "NAMED_ELITE",
+            "HUMANOID_BOSS"
+          ],
+          "physicalDiversity": {
+            "required": true,
+            "presentationOnlyByDefault": true,
+            "requiredAxes": [
+              "HEIGHT_CM",
+              "WEIGHT_KG",
+              "FRAME",
+              "SHOULDER_WIDTH",
+              "PELVIS_WIDTH",
+              "TORSO_LENGTH",
+              "TORSO_DEPTH",
+              "ARM_LENGTH",
+              "LEG_LENGTH",
+              "HAND_FOOT_SCALE",
+              "HEAD_BODY_RATIO",
+              "POSTURE",
+              "ASYMMETRY"
+            ],
+            "nearbyDistinctAxisMinimum": 5,
+            "heroCompanionEliteBossDistinctAxisTarget": 8,
+            "heightWeightOnlyCannotProveDistinctIdentity": true,
+            "roleMayBiasBodyDistributionButCannotCollapsePopulation": true
+          },
+          "appearanceDiversity": {
+            "required": true,
+            "axes": [
+              "HEAD_BASE",
+              "FACE_PROPORTION",
+              "EYE_SHAPE_AND_COLOR",
+              "HAIR_STYLE_TEXTURE_COLOR",
+              "SKIN_OR_SPECIES_SURFACE",
+              "AGE_CUE",
+              "SCAR_MARK_TATTOO",
+              "OUTFIT_LAYERING",
+              "ROLE_EQUIPMENT",
+              "ACCESSORY",
+              "WEAR_HISTORY"
+            ],
+            "colorOnlyFaceOnlyOrSizeOnlyCloneForbidden": true,
+            "nearbyHeadHairOutfitCombinationReuseForbidden": true
+          },
+          "rolePresentation": {
+            "companionRequiresPartyReadableSilhouette": true,
+            "serviceNpcRequiresOccupationPropGestureLanguage": true,
+            "hostileHumanoidRequiresThreatCombatLanguage": true,
+            "namedEliteRequiresSignatureSilhouetteGearAndMotion": true,
+            "humanoidBossRequiresDedicatedIntroAttackSpecialPhaseBreakRecoveryAndDeathPresentation": true
+          },
+          "production": {
+            "crossPlatformMasterGlbRequired": true,
+            "skinnedRigRequired": true,
+            "activeJointMotionRequired": true,
+            "primitivePartOrWeldOnlyFinalNpcForbidden": true,
+            "platformNativeBindingRequired": true,
+            "runtimeVerificationRequired": true
+          },
+          "authority": {
+            "collisionHitboxMovementSpeedStatsRemainGameOwned": true,
+            "visualHeightWeightDoNotGrantHiddenGameplayAdvantages": true,
+            "bossVisualScaleDoesNotAuthorizeBossBalanceChanges": true,
+            "gameplayAiDamageRewardProgressionSaveNetworkAuthorityUnchanged": true
+          },
+          "implementationBindings": [
+            "assets/vibe-character-identity-director.js",
+            "tools/vibe2-asset-production-plan.mjs",
+            "tools/vibe2-source-worker.mjs",
+            "tools/vibe2-incremental-qa.mjs"
+          ],
+          "hardFailures": [
+            "NPC_PHYSICAL_CLONE",
+            "NPC_ROLE_PRESENTATION_CLONE",
+            "NPC_PRIMITIVE_FINAL_ACTOR",
+            "NPC_MASTER_GLB_MISSING"
+          ]
         },
         "clothingAndArmor": {
           "layerSlots": [
