@@ -222,6 +222,8 @@ export function validateRobloxPackageAssetThreshold({root='',gameId='',baseline=
   if(!/BindingVersion\s*=\s*2/.test(config))blockers.push('ROBLOX_PACKAGE_INTERNAL_ASSET_BINDING_VERSION_REQUIRED');
   if(!config.includes(`LibraryVersion = ${Number(expected?.libraryVersion||0)}`))blockers.push('ROBLOX_PACKAGE_INTERNAL_ASSET_LIBRARY_VERSION_MISMATCH');
   if(!config.includes(`SelectionFingerprint = "${clean(expected?.selectionFingerprint)}"`))blockers.push('ROBLOX_PACKAGE_INTERNAL_ASSET_SELECTION_FINGERPRINT_MISMATCH');
+  if(!config.includes(`SourceUsageFingerprint = "${clean(expected?.buildUpAssetSourceUsageFingerprint)}"`))blockers.push('ROBLOX_PACKAGE_INTERNAL_ASSET_SOURCE_USAGE_FINGERPRINT_MISMATCH');
+  if(!config.includes(`SourceUsageLibraryVersion = ${Number(expected?.buildUpAssetSourceUsageLibraryVersion||expected?.libraryVersion||0)}`))blockers.push('ROBLOX_PACKAGE_INTERNAL_ASSET_SOURCE_USAGE_LIBRARY_VERSION_MISMATCH');
 
   let familyCoverageCount=0;
   for(const family of ROBLOX_PACKAGE_REQUIRED_ASSET_FAMILIES){
@@ -282,6 +284,9 @@ export function validateRobloxPackageAssetThreshold({root='',gameId='',baseline=
     selectedAtomCount:Number(expected?.selectedAtomCount||0),
     libraryVersion:Number(expected?.libraryVersion||0),
     selectionFingerprint:clean(expected?.selectionFingerprint)||null,
+    buildUpAssetSourceUsageFingerprint:clean(expected?.buildUpAssetSourceUsageFingerprint)||null,
+    buildUpAssetSourceUsageLibraryVersion:Number(expected?.buildUpAssetSourceUsageLibraryVersion||expected?.libraryVersion||0)||null,
+    selectedSourceContentHashes:Object.freeze([...(expected?.selectedSourceContentHashes||[])]),
     allFamiliesAutoSelected:familyCoverageCount===ROBLOX_PACKAGE_REQUIRED_ASSET_FAMILIES.length,
     primitiveOnlyOrColorOnlyForbidden:true,
     visibleAssetBindingPass,
@@ -436,6 +441,9 @@ export function packageRobloxSource({repoRoot='.',gameId='',sourcePath='',source
     if(expectedLibraryVersion>0&&Number(assetThreshold.libraryVersion||0)!==expectedLibraryVersion){
       throw new Error('ROBLOX_PACKAGE_BUILD_UP_SELECTION_LIBRARY_VERSION_MISMATCH');
     }
+    const effectiveBuildUpFingerprint=buildUpFingerprint||clean(assetThreshold.buildUpAssetSourceUsageFingerprint);
+    const effectiveBuildUpLibraryVersion=buildUpLibraryVersion||Math.max(0,Math.floor(Number(assetThreshold.buildUpAssetSourceUsageLibraryVersion)||0));
+    if(!/^[0-9a-f]{64}$/i.test(effectiveBuildUpFingerprint)||effectiveBuildUpLibraryVersion<=0)throw new Error('ROBLOX_PACKAGE_BUILD_UP_ASSET_SOURCE_USAGE_IDENTITY_REQUIRED');
     const expectedScripts=collectRobloxSourceScriptInventory(root);
     if(expectedScripts.total<=0)throw new Error('Roblox source contains no executable Luau scripts');
     const artifact=path.join(outDir,`${safeName(id)}.rbxlx`);
@@ -459,8 +467,8 @@ export function packageRobloxSource({repoRoot='.',gameId='',sourcePath='',source
       sourceValidationPassed:true,
       saveRequired:validation.saveRequired,
       assetThreshold,
-      buildUpAssetSourceUsageFingerprint:buildUpFingerprint,
-      buildUpAssetSourceUsageLibraryVersion:buildUpLibraryVersion,
+      buildUpAssetSourceUsageFingerprint:effectiveBuildUpFingerprint,
+      buildUpAssetSourceUsageLibraryVersion:effectiveBuildUpLibraryVersion,
     });
   }finally{
     try{execFileSync('git',['-C',path.resolve(repoRoot),'worktree','remove','--force',worktree],{stdio:'ignore'});}catch{}
