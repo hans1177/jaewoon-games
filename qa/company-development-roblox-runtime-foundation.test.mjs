@@ -163,6 +163,24 @@ test('foundation sentinel rejects checkpoints carried over from an older publish
 });
 
 
+test('local F0 artifact never enters runtime or cloud-image validation before private candidate deployment',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+  const start=workflow.indexOf('            if(localPreF9Candidate){');
+  const cloudImage=workflow.indexOf("            if(engineProbe?.imageEvidence?.imageContentPassed!==true){",start);
+  assert.ok(start>0&&cloudImage>start);
+  const guard=workflow.slice(start,cloudImage);
+  assert.match(guard,/ROBLOX_LOCAL_F0_STATE_REPAIRED_TO_PRIVATE_DEPLOY=/);
+  assert.match(guard,/ROBLOX_LOCAL_F0_WAITING_PRIVATE_DEPLOY=/);
+  assert.match(guard,/item\.currentStep='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'/);
+  assert.match(guard,/item\.robloxFailureStage='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'/);
+  assert.match(guard,/item\.robloxFailureSignature='ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING'/);
+  assert.match(guard,/item\.routingBlockers=\['roblox-runtime-candidate-deploy-pending'\]/);
+  assert.match(guard,/item\.robloxCloudImageEvidence=null/);
+  assert.match(guard,/pending\+\+;\s*continue;/);
+  assert.ok(workflow.indexOf('if(localPreF9Candidate){')<workflow.indexOf("if(engineProbe?.persistentFailure===true){"));
+});
+
+
 test('Open Cloud image check records thumbnail metadata as visual sanity without claiming runtime screenshot proof',async()=>{
  const ok=await probeRobloxOpenCloudImageEvidence({
   universeId:'1',apiKey:'k',networkRetryAttempts:1,networkRetryDelayMs:0,
