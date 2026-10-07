@@ -753,6 +753,59 @@ jobs:
               continue;
             }
 
+            if(localPreF9Candidate){
+              const alreadyPendingPrivateDeploy=
+                item.currentStep==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'
+                &&item.canonicalState==='F0_SOURCE_PREFLIGHT_PASSED'
+                &&item.robloxFailureStage==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'
+                &&item.robloxFailureSignature==='ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING'
+                &&Array.isArray(item.routingBlockers)
+                &&item.routingBlockers.length===1
+                &&item.routingBlockers[0]==='roblox-runtime-candidate-deploy-pending'
+                &&item.robloxRuntimeCandidateEvidence==null
+                &&item.robloxRuntimeFoundationEvidence==null
+                &&item.robloxRuntimeEvidence==null
+                &&item.robloxPostRuntimeQaEvidence==null
+                &&item.robloxCloudImageEvidence==null;
+              if(!alreadyPendingPrivateDeploy){
+                item.robloxRuntimeCandidateEvidence=null;
+                item.robloxRuntimeFoundationPassed=false;
+                item.robloxRuntimeFoundationEvidence=null;
+                item.robloxRuntimePassed=false;
+                item.robloxRuntimePassedAt=null;
+                item.robloxRuntimeFailedAt=null;
+                item.robloxRuntimeEvidence=null;
+                item.robloxIndependentQaPassed=false;
+                item.robloxIndependentQaPassedAt=null;
+                item.robloxRegressionPassed=false;
+                item.robloxRegressionPassedAt=null;
+                item.robloxPostRuntimeQaEvidence=null;
+                item.robloxCloudImageEvidence=null;
+                item.robloxF9PendingInParallel=false;
+                item.currentStep='PRIVATE_RUNTIME_CANDIDATE_DEPLOY';
+                item.canonicalState='F0_SOURCE_PREFLIGHT_PASSED';
+                item.robloxLastSuccessfulStage='F0_SOURCE_PREFLIGHT';
+                item.robloxFailureStage='PRIVATE_RUNTIME_CANDIDATE_DEPLOY';
+                item.robloxFailureSignature='ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING';
+                item.routingBlockers=['roblox-runtime-candidate-deploy-pending'];
+                if(item.executionEvidence){
+                  item.executionEvidence.runtimePassed=false;
+                  item.executionEvidence.independentQaPassed=false;
+                  item.executionEvidence.regressionPassed=false;
+                  item.executionEvidence.lastSuccessfulStage='F0_SOURCE_PREFLIGHT';
+                  item.executionEvidence.failureStage='PRIVATE_RUNTIME_CANDIDATE_DEPLOY';
+                  item.executionEvidence.failureSignature='ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING';
+                }
+                item.updatedAt=stamp;
+                changed=true;
+                console.log('ROBLOX_LOCAL_F0_STATE_REPAIRED_TO_PRIVATE_DEPLOY='+item.gameId);
+              }else{
+                console.log('ROBLOX_LOCAL_F0_WAITING_PRIVATE_DEPLOY='+item.gameId);
+              }
+              pending++;
+              continue;
+            }
+
             const priorRuntime=item.robloxRuntimeFoundationEvidence||{};
             const priorPost=item.robloxPostRuntimeQaEvidence||{};
             const priorMultiplayer=item.robloxMultiplayerQaEvidence||{};
