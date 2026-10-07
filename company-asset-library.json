@@ -68901,11 +68901,11 @@
     "hardMaximum": null,
     "overSoftLimitAction": "DEDUPLICATION_REVIEW_ONLY",
     "overSoftLimitBlocksUse": false,
-    "perDomainIdeaBudgetPerCycle": 4096,
-    "domainVolumeActionLimitPerDomain": 512,
-    "uiSubsystemVolumeActionLimitPerSubsystem": 256,
-    "maxVolumeWorklistActions": 16384,
-    "taskReferenceOverlayWorklistLimit": 8192,
+    "perDomainIdeaBudgetPerCycle": 16384,
+    "domainVolumeActionLimitPerDomain": 2048,
+    "uiSubsystemVolumeActionLimitPerSubsystem": 1024,
+    "maxVolumeWorklistActions": 65536,
+    "taskReferenceOverlayWorklistLimit": 32768,
     "volumeBeforeQuality": false,
     "reuseAdaptRecombineBeforeNewAuthoring": true,
     "newAuthoringPolicy": {
@@ -77287,7 +77287,7 @@
       "runtimeVerificationRequiredBeforeProductionPromotion": true
     },
     "eligibleFreeSourceCount": 22,
-    "freeSourceCandidateLimitPerAction": 512,
+    "freeSourceCandidateLimitPerAction": 2048,
     "freeSourceCatalogSufficiencyCount": 12,
     "freeSourceCatalogReady": true,
     "freeSourceCatalogExpansionMode": "PAUSED_UNTIL_REAL_COVERAGE_GAP",
@@ -84692,12 +84692,12 @@
       }
     ],
     "maintenanceListLimits": {
-      "semanticDuplicateReviewGroups": 512,
-      "donorCandidates": 1024,
-      "deltaTokens": 4096,
-      "qualityActions": 2048
+      "semanticDuplicateReviewGroups": 2048,
+      "donorCandidates": 4096,
+      "deltaTokens": 16384,
+      "qualityActions": 8192
     },
-    "supplyDecisionSummaryActionLimit": 2048
+    "supplyDecisionSummaryActionLimit": 8192
   },
   "characterNpcCustomization": {
     "version": 1,

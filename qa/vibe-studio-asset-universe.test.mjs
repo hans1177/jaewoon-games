@@ -4737,18 +4737,18 @@ test('catalog-driven company asset registry synchronization is persistent only w
     assert.deepEqual(first.registry.internalAssetLibraryAutomation.nextVolumeActions,first.automationPlan.nextVolumeActions);
     assert.equal(first.registry.internalAssetLibraryAutomation.persistentWorklistField,'internalAssetLibraryAutomation.nextVolumeActions');
     assert.equal(first.registry.internalAssetLibraryAutomation.volumeActionConsumption,'PERSISTED_PRIORITY_WORKLIST_FIRST');
-    assert.equal(first.registry.internalAssetLibraryAutomation.perDomainIdeaBudgetPerCycle,4096);
-    assert.equal(first.registry.internalAssetLibraryAutomation.domainVolumeActionLimitPerDomain,512);
-    assert.equal(first.registry.internalAssetLibraryAutomation.uiSubsystemVolumeActionLimitPerSubsystem,256);
-    assert.equal(first.registry.internalAssetLibraryAutomation.maxVolumeWorklistActions,16384);
-    assert.equal(first.registry.internalAssetLibraryAutomation.taskReferenceOverlayWorklistLimit,8192);
-    assert.equal(first.registry.internalAssetLibraryAutomation.supplyDecisionSummaryActionLimit,2048);
-    assert.equal(first.registry.internalAssetLibraryAutomation.freeSourceCandidateLimitPerAction,512);
+    assert.equal(first.registry.internalAssetLibraryAutomation.perDomainIdeaBudgetPerCycle,16384);
+    assert.equal(first.registry.internalAssetLibraryAutomation.domainVolumeActionLimitPerDomain,2048);
+    assert.equal(first.registry.internalAssetLibraryAutomation.uiSubsystemVolumeActionLimitPerSubsystem,1024);
+    assert.equal(first.registry.internalAssetLibraryAutomation.maxVolumeWorklistActions,65536);
+    assert.equal(first.registry.internalAssetLibraryAutomation.taskReferenceOverlayWorklistLimit,32768);
+    assert.equal(first.registry.internalAssetLibraryAutomation.supplyDecisionSummaryActionLimit,8192);
+    assert.equal(first.registry.internalAssetLibraryAutomation.freeSourceCandidateLimitPerAction,2048);
     assert.deepEqual(first.registry.internalAssetLibraryAutomation.maintenanceListLimits,{
-      semanticDuplicateReviewGroups:512,
-      donorCandidates:1024,
-      deltaTokens:4096,
-      qualityActions:2048
+      semanticDuplicateReviewGroups:2048,
+      donorCandidates:4096,
+      deltaTokens:16384,
+      qualityActions:8192
     });
     assert.deepEqual(first.registry.internalAssetLibraryAutomation.reuseResolutionOrder,['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','LICENSE_VERIFIED_FREE_SOURCE_ADAPT','NEW_AUTHORING']);
     assert.equal(first.registry.internalAssetLibraryAutomation.qualityUpPolicy.workingBandMin,980);
