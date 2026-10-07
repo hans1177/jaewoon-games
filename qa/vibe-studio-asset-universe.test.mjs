@@ -3474,9 +3474,11 @@ test('flexible internal asset reuse keeps low-score assets usable and adapts goo
 });
 
 test('internal replacement respects locks and treats observed failure as priority penalty instead of automatic ban',()=>{
-  const current={id:'current',family:'WEAPON',subfamily:'MELEE',platform:'ROBLOX',license:'project-original',status:'REPO_ASSET',internalAuditScore:700,sourceFiles:['a']};
-  const better={id:'better',family:'WEAPON',subfamily:'MELEE',platform:'ROBLOX',license:'project-original',status:'REPO_ASSET',internalAuditScore:930,sourceFiles:['b']};
-  const failed={id:'failed-high',family:'WEAPON',subfamily:'MELEE',platform:'ROBLOX',license:'project-original',status:'REPO_ASSET',internalAuditScore:980,sourceFiles:['c']};
+  const weaponAuditAxes=scoreInternalAssetAudit1000({asset:{family:'WEAPON'}}).applicableAxes;
+  const weaponEvidence=value=>Object.fromEntries(weaponAuditAxes.map(axis=>[axis,value]));
+  const current={id:'current',family:'WEAPON',subfamily:'MELEE',platform:'ROBLOX',license:'project-original',status:'REPO_ASSET',internalAuditScore:700,internalAuditEvidence:weaponEvidence(70),sourceFiles:['a']};
+  const better={id:'better',family:'WEAPON',subfamily:'MELEE',platform:'ROBLOX',license:'project-original',status:'REPO_ASSET',internalAuditScore:930,internalAuditEvidence:weaponEvidence(93),sourceFiles:['b']};
+  const failed={id:'failed-high',family:'WEAPON',subfamily:'MELEE',platform:'ROBLOX',license:'project-original',status:'REPO_ASSET',internalAuditScore:980,internalAuditEvidence:weaponEvidence(98),sourceFiles:['c']};
   const gameDna={targetPlatform:'ROBLOX',concept:createConceptProfile({styleFamily:'STYLIZED_FANTASY'})};
 
   const failedReuse=evaluateInternalAssetReuse({
