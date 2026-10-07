@@ -645,6 +645,7 @@ function synchronizeCatalogRows({registry,catalog,assetById=null,assetsByPackId=
     const id=prefix+slug;
     activeIds.add(id);rowIds.push(id);
     let row=assetById instanceof Map?assetById.get(id):registry.assets.find(asset=>asset.id===id);
+    const previousPackId=row?.packId;
     const rowBefore=row?JSON.stringify(row):null;
     const verifiedState=row?{
       productionVerified:row.productionVerified===true,
@@ -666,6 +667,16 @@ function synchronizeCatalogRows({registry,catalog,assetById=null,assetsByPackId=
       changed=true;
     }
     row.packId=packId;
+    if(rowBefore!==null&&assetsByPackId instanceof Map&&previousPackId!==packId){
+      const previousRows=assetsByPackId.get(previousPackId);
+      if(previousRows){
+        const index=previousRows.indexOf(row);
+        if(index>=0)previousRows.splice(index,1);
+      }
+      let packRows=assetsByPackId.get(packId);
+      if(!packRows){packRows=[];assetsByPackId.set(packId,packRows);}
+      if(!packRows.includes(row))packRows.push(row);
+    }
     row.catalogActive=true;
     row.catalogState='ACTIVE';
     row.catalogVersion=catalog.version;
@@ -1279,7 +1290,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   const registryAssetById=new Map();
   const registryAssetsByPackId=new Map();
   for(const asset of next.assets){
-    if(!registryAssetById.has(asset?.id))registryAssetById.set(asset?.id,asset);
+    if(asset?.id!==undefined&&asset?.id!==null&&!registryAssetById.has(asset.id))registryAssetById.set(asset.id,asset);
     const packId=asset?.packId;
     if(packId!==undefined&&packId!==null){
       let rows=registryAssetsByPackId.get(packId);
