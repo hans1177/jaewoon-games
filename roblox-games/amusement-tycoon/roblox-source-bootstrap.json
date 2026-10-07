@@ -14,12 +14,12 @@
   "existingSourcePreserved": true,
   "gameplayAuthorityChanged": false,
   "serverSourceChanged": false,
-  "foundationRepairApplied": true,
+  "foundationRepairApplied": false,
   "generatedFiles": [
     "shared/GameConfig.luau",
     "client/Game.client.luau"
   ],
-  "generationMode": "EXISTING_SOURCE_FOUNDATION_REPAIR",
+  "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
   "modelUsed": false,
   "modelAttempts": 0,
   "modelContractFailures": [],
@@ -59,8 +59,8 @@
     "bindingVersion": 2,
     "applied": true,
     "source": "company-asset-library.json#baseMaterialLibrary",
-    "libraryVersion": 113,
-    "selectionFingerprint": "640728c9d89224a2b88318f347e115f710bdbf7b05529d4f7232a28459bee3ae",
+    "libraryVersion": 119,
+    "selectionFingerprint": "2f2c7a9383d4916e68c3f167adf2af7d3f3fb375258fc73e034a1352d358f0ad",
     "synchronization": {
       "mode": "VERSION_AND_SELECTION_FINGERPRINT_INCREMENTAL",
       "fullLibraryReplicationForbidden": true,
@@ -565,15 +565,15 @@
   "studioAssetPromotionEligible": false,
   "implementationNotes": [
     "existing Roblox gameplay source preserved",
-    "native foundation/input/runtime readiness scaffolding repaired without changing gameplay balance save schema or network authority",
+    "company library Studio asset binding updated in existing config and client presentation",
     "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
   ],
-  "buildUpDirectiveId": "amusement-tycoon-build-up-g26-bd1621bf6f8c",
-  "buildUpGeneration": 26,
+  "buildUpDirectiveId": "amusement-tycoon-build-up-g28-5c2db54a2dfb",
+  "buildUpGeneration": 28,
   "buildUpGoal": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
-  "buildUpDirectiveFingerprint": "bd1621bf6f8c207c8e5898a198a422fd1b6b9f8a52c088e3f52d3424774c0013",
+  "buildUpDirectiveFingerprint": "5c2db54a2dfbbf989bf6a9d611811e591bbbcd165bd55f405f0c418dee9c11a0",
   "buildUpDirectiveConsumed": true,
   "buildUpDirectiveCompletionClaim": false,
   "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
-  "createdAt": "2026-10-06T08:31:54.399Z"
+  "createdAt": "2026-10-07T02:56:09.284Z"
 }
