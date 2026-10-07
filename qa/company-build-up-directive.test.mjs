@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import {repairDesignRequiredFields} from '../tools/company-design-prepromotion-repair.mjs';
 import {
   BUILD_UP_DOMAINS,
   HOLISTIC_CORE_DOMAINS,
@@ -13,6 +14,71 @@ import {
   directivePrompt,
   inspectGameSources
 } from '../tools/company-build-up-directive.mjs';
+
+
+test('web detailed original backfill preserves existing Roblox detailed platform design',()=>{
+  const robloxProfile={
+    platform:'ROBLOX',
+    inputModel:'ROBLOX_SENTINEL_INPUT',
+    sessionModel:'ROBLOX_SENTINEL_SESSION',
+    multiplayerRuntime:'ROBLOX_SENTINEL_RUNTIME',
+    performanceBudget:'ROBLOX_SENTINEL_PERFORMANCE',
+    uiUx:'ROBLOX_SENTINEL_UI',
+    saveAndNetwork:'ROBLOX_SENTINEL_SAVE',
+    platformContentAdaptation:'ROBLOX_SENTINEL_CONTENT',
+    internalReleaseTarget:'ROBLOX_SENTINEL_RELEASE',
+    validationEvidence:'ROBLOX_SENTINEL_EVIDENCE'
+  };
+  const robloxBuildProfile={version:77,targetPlatform:'ROBLOX',marker:'ROBLOX_BUILD_PROFILE_SENTINEL'};
+  const source={
+    identity:'정원 방어',
+    playerFantasy:'정원을 지키는 관리자',
+    coreFun:'곤충 상성을 읽고 배치한다',
+    coreLoop:['적 조합 확인','곤충 배치','전투 관찰','보상 선택'],
+    signatureSystems:[{name:'서식지 상성',purpose:'배치 위치에 의미를 만든다',playerChoice:'곤충과 위치 선택'}],
+    progressionDirection:'새 곤충과 지역을 열어 더 복잡한 조합을 상대한다',
+    multiplayerMode:'SINGLE',
+    platformProfiles:{
+      ROBLOX:robloxProfile,
+      UNITY:{
+        platform:'UNITY',
+        inputModel:'UNITY_INPUT',
+        sessionModel:'UNITY_SESSION',
+        multiplayerRuntime:'UNITY_RUNTIME',
+        performanceBudget:'UNITY_PERFORMANCE',
+        uiUx:'UNITY_UI',
+        saveAndNetwork:'UNITY_SAVE',
+        platformContentAdaptation:'UNITY_CONTENT',
+        internalReleaseTarget:'UNITY_RELEASE',
+        validationEvidence:'UNITY_EVIDENCE'
+      }
+    },
+    robloxBuildProfile
+  };
+  const repaired=repairDesignRequiredFields(source,{
+    seed:{
+      DISTINCT_IDENTITY:'정원 방어',
+      CORE_FUN_TO_LEARN:'곤충 상성을 읽고 배치한다',
+      CORE_LOOP:['적 조합 확인','곤충 배치','전투 관찰','보상 선택'],
+      MULTIPLAYER_DESIGN_MODE:'SINGLE',
+      INITIAL_TARGET_PLATFORM:'ROBLOX',
+      TARGET_SESSION_DIRECTION:'반복 웨이브 세션'
+    },
+    phase:'DRAFT'
+  });
+  assert.deepEqual(repaired.value.platformProfiles.ROBLOX,robloxProfile);
+  assert.deepEqual(repaired.value.robloxBuildProfile,robloxBuildProfile);
+  assert.equal(repaired.value.webCanonicalDesign.role,'WEB_DETAILED_GAME_ORIGINAL');
+  assert.equal(repaired.value.webCanonicalDesign.playerFlow.length>=4,true);
+  assert.deepEqual(repaired.value.platformExpansionPolicy.sharedLargeFrame,[
+    'CORE_IDENTITY',
+    'CORE_FUN_AND_REPRESENTATIVE_LOOP',
+    'WORLD_AND_PROGRESSION_DIRECTION',
+    'SAVE_PERSISTENCE_MEANING',
+    'MULTIPLAYER_INTENT'
+  ]);
+  assert.equal(repaired.value.platformExpansionPolicy.expansionLimit,'NO_ARTIFICIAL_PARITY_LIMIT_WITHIN_SHARED_LARGE_FRAME');
+});
 
 function design(){
   return {
