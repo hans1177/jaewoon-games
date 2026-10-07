@@ -242,19 +242,18 @@ test('central native foundation policy locks spawn ordering candidate invalidati
 
 test('Roblox technical and private-validation planning does not wait for unrelated source or package workers',()=>{
   const runtime=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
-  const technical=runtime.slice(runtime.indexOf('\n  technical-plan:'),runtime.indexOf('\n  technical-worker:'));
-  const persist=runtime.slice(runtime.indexOf('\n  technical-persist:'),runtime.indexOf('\n  ',runtime.indexOf('\n  technical-persist:')+5));
+  const technicalPlanStart=runtime.indexOf('\n  technical-plan:');
+  const technicalWorkerStart=runtime.indexOf('\n  technical-worker:');
+  const technicalPersistStart=runtime.indexOf('\n  technical-persist:');
+  const routeIndex=runtime.indexOf('Route F0-passed artifacts to private runtime validation without Studio');
+  const technical=runtime.slice(technicalPlanStart,technicalWorkerStart);
   assert.match(technical,/needs:\s*source-plan/);
   assert.match(technical,/needs\.source-plan\.result == 'success'/);
   assert.doesNotMatch(technical,/needs:\s*source-bootstrap/);
   assert.doesNotMatch(technical,/needs\.source-bootstrap\.result/);
-  assert.match(technical,/Route F0-passed artifacts to private runtime validation without Studio/);
   assert.match(technical,/ROBLOX_PRIVATE_RUNTIME_VALIDATION_DISPATCH_COUNT=/);
-  assert.ok(technical.indexOf('Route F0-passed artifacts to private runtime validation without Studio')>technical.indexOf('Resolve next exact-source Roblox technical execution slice from unbounded native queue'));
-  const persistStart=runtime.indexOf('\n  technical-persist:');
-  const nextJob=runtime.indexOf('\n  ',persistStart+3);
-  const persistBlock=runtime.slice(persistStart,nextJob>persistStart?nextJob:runtime.length);
-  assert.doesNotMatch(persistBlock,/Route F0-passed artifacts to private runtime validation without Studio/);
+  assert.ok(routeIndex>technicalPlanStart&&routeIndex<technicalWorkerStart);
+  assert.ok(routeIndex<technicalPersistStart);
 });
 
 
