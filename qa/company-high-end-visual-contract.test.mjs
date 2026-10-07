@@ -566,9 +566,9 @@ test('owner presentation changes replace conflicting same-scope intent instead o
 });
 
 test('canonical graphics policy requires one GLB master before platform-native 3D actor variants',()=>{
-  const policy=roadmap.assetProductionParallelContract.companyGraphicsLibrary24h.studioAssetUniverse.articulated3DActorGlbMaster;
+  const policy=roadmap.assetProductionParallelContract.companyGraphicsLibrary24h.studioAssetUniverse.crossPlatform3dMasterGlb;
   assert.equal(policy.status,'ACTIVE_EXECUTABLE_CONTRACT');
-  assert.equal(policy.masterFormat,'GLB');
+  assert.equal(policy.format,'GLB_2_0');
   assert.deepEqual(policy.appliesToFamilies,['CHARACTER','CREATURE']);
   assert.equal(policy.bossRoleIncluded,true);
   assert.equal(policy.requiredForFinal3DActorAsset,true);
@@ -577,6 +577,7 @@ test('canonical graphics policy requires one GLB master before platform-native 3
   assert.equal(policy.rules.sharedGlbIsAuthoringMasterNotCrossPlatformRuntimePass,true);
   assert.equal(policy.rules.platformNativeImportAdaptationRequired,true);
   assert.equal(policy.rules.platformRuntimeEvidenceIndependent,true);
+  assert.equal(policy.rules.skinSkeletonJointWeightsAndAnimationRequired,true);
 
   const topology=architecture.assetProductionParallelism.companyGraphicsLibrary24h.studioAssetUniverse.articulated3DActorGlbMaster;
   assert.equal(topology.masterFormat,'GLB');
