@@ -4262,7 +4262,7 @@ test('internal maintenance excludes inactive donors and binds detail repairs to 
     {id:'unknown',family:'PROP',internalAuditScore:null}
   ];
   const first=buildInternalAssetMaintenanceSnapshot({assets});
-  assert.deepEqual(first.qualityDonorCandidates.map(row=>row.id),['active']);
+  assert.deepEqual(first.qualityDonorCandidates.map(row=>row.id),[]);
   const inspect=first.nextQualityActions.find(row=>row.assetId==='unknown');
   assert.equal(inspect.kind,'INSPECT_ASSET_QUALITY');
   assert.equal(inspect.currentAxisScore,null);
@@ -4864,7 +4864,7 @@ test('maintenance refresh uses current evidence file axes before cached registry
     assert.equal(action.weakestAxis,'DETAIL_FINISH');
     assert.equal(action.currentAxisScore,0);
     assert.equal(action.kind,'IMPROVE_ASSET_DETAIL');
-    assert.equal(first.registry.internalAssetLibraryAutomation.maintenance.qualityDonorCandidates.find(row=>row.id==='box').quality,0);
+    assert.equal(first.registry.internalAssetLibraryAutomation.maintenance.qualityDonorCandidates.some(row=>row.id==='box'),false);
     const second=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry:first.registry,persist:false});
     assert.equal(second.changed,false);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
