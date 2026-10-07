@@ -50,6 +50,7 @@ test('persisted DCC outputs are reverified against real files once before bindin
     assert.equal(verified.status,'PERSISTED_OUTPUT_VERIFIED');
     assert.equal(verified.checkedFileCount,4);
     assert.equal(verified.hashedFileCount,2);
+    assert.ok(verified.cacheHitCount>=1);
     const verifiedOrder={
       ...order,assetProduction:{...order.assetProduction,nativeAuthoringExecution:{
         ...order.assetProduction.nativeAuthoringExecution,
