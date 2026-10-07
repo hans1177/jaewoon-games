@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Canonical shared Roblox/homepage marketing thumbnail.
+  Game: seed-single-defense-strat-celestial-bastion
+  Source artwork: ../homepage-covers/seed-single-defense-strat-celestial-bastion.webp
+  Policy: company-learning/platform-release-roadmap.json#robloxHomepageThumbnailSyncContract
+  This wrapper intentionally reuses the existing 960x540 game-specific homepage cover.
+  It does not create independent Roblox-only art and does not alter gameplay, balance, save data,
+  publication identity, or runtime authority. The 1920x1080 viewBox supplies the canonical 16:9
+  upload surface while preserveAspectRatio keeps the source artwork composition intact.
+-->
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1920"
+     height="1080"
+     viewBox="0 0 1920 1080"
+     role="img"
+     aria-labelledby="title description">
+  <title id="title">CELESTIAL BASTION · 천상의 보루</title>
+  <desc id="description">천상의 보루를 방어하는 싱글 디펜스 전략 게임. 기존 동일 마케팅 커버를 Roblox와 홈페이지에서 함께 사용하는 canonical 래퍼.</desc>
+  <metadata>
+    gameId=seed-single-defense-strat-celestial-bastion;
+    authority=CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET;
+    source=../homepage-covers/seed-single-defense-strat-celestial-bastion.webp;
+    sourceKind=EXISTING_GAME_SPECIFIC_MARKETING_ARTWORK;
+    aspectRatio=16:9;
+    uploadRender=PNG_1920x1080;
+    independentRobloxArtwork=false;
+    gameplayMutation=false;
+    publicationTargetMutation=false;
+    generatedFor=ROBLOX_THUMBNAIL_PERSONALIZATION_AND_HOMEPAGE_CARD;
+  </metadata>
+  <rect x="0" y="0" width="1920" height="1080" fill="#111111"/>
+  <image href="../homepage-covers/seed-single-defense-strat-celestial-bastion.webp"
+         x="0"
+         y="0"
+         width="1920"
+         height="1080"
+         preserveAspectRatio="xMidYMid slice"/>
+</svg>
