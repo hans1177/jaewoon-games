@@ -171,26 +171,23 @@
         "distinctFamilies": [
           "SURVIVAL",
           "DEFENSE",
-          "RPG",
           "TURN_BASED",
+          "RPG",
           "STRATEGY"
         ]
       },
       "counts": {
         "releaseConfirmed": 0,
-        "developmentConfirmed": 16,
-        "designOnly": 8
+        "developmentConfirmed": 13,
+        "designOnly": 9
       },
       "releaseConfirmedGameIds": [],
       "developmentConfirmedGameIds": [
         "P0001",
         "P0004",
-        "P0006",
         "P0009",
         "RUNTIME-amusement-tycoon",
-        "RUNTIME-cozy-island",
         "RUNTIME-fantasy-survival",
-        "RUNTIME-horror-escape-room",
         "RUNTIME-line-defense",
         "RUNTIME-seed-action-survival-rogu-echoes-of-the-lost-star",
         "RUNTIME-seed-casual-realm-weaver",
@@ -204,6 +201,7 @@
         "P0002",
         "P0003",
         "P0005",
+        "P0006",
         "P0007",
         "P0008",
         "P0101",
@@ -224,7 +222,6 @@
           "P0101",
           "P0102",
           "P0103",
-          "RUNTIME-cozy-island",
           "RUNTIME-seed-action-survival-rogu-echoes-of-the-lost-star",
           "RUNTIME-seed-single-defense-strat-celestial-bastion",
           "RUNTIME-seed-puzzle-chromatic-cascade",
@@ -234,8 +231,7 @@
           "RUNTIME-village-dungeons",
           "RUNTIME-amusement-tycoon",
           "RUNTIME-line-defense",
-          "RUNTIME-fantasy-survival",
-          "RUNTIME-horror-escape-room"
+          "RUNTIME-fantasy-survival"
         ],
         "paused": [],
         "rebuild": [],
@@ -244,11 +240,11 @@
       },
       "pipeline": {
         "target": 60,
-        "count": 24,
+        "count": 22,
         "activeDevelopmentWipMax": null,
         "capacityOnly": true,
         "noArtificialGlobalGameCountCap": true,
-        "deficit": 36
+        "deficit": 38
       },
       "ranking": [
         {
@@ -272,7 +268,7 @@
           "gameId": "P0006",
           "slug": "daechung-rpg",
           "lifecycleState": "ACTIVE",
-          "productionClass": "DEVELOPMENT_CONFIRMED",
+          "productionClass": "DESIGN_ONLY",
           "gameplayFamily": "RPG",
           "evidenceScore": 811,
           "developmentFocus": 8,
@@ -449,36 +445,6 @@
         {
           "rank": 14,
           "rawEvidenceRank": 14,
-          "gameId": "RUNTIME-cozy-island",
-          "slug": "cozy-island",
-          "lifecycleState": "ACTIVE",
-          "productionClass": "DEVELOPMENT_CONFIRMED",
-          "gameplayFamily": "UNCLASSIFIED",
-          "evidenceScore": 6,
-          "developmentFocus": 0,
-          "artbookBaselineRank": 0,
-          "targetPlatform": "ROBLOX",
-          "targetPlatformReady": true,
-          "sourceReady": true
-        },
-        {
-          "rank": 15,
-          "rawEvidenceRank": 15,
-          "gameId": "RUNTIME-horror-escape-room",
-          "slug": "horror-escape-room",
-          "lifecycleState": "ACTIVE",
-          "productionClass": "DEVELOPMENT_CONFIRMED",
-          "gameplayFamily": "UNCLASSIFIED",
-          "evidenceScore": 6,
-          "developmentFocus": 0,
-          "artbookBaselineRank": 0,
-          "targetPlatform": "ROBLOX",
-          "targetPlatformReady": true,
-          "sourceReady": true
-        },
-        {
-          "rank": 16,
-          "rawEvidenceRank": 16,
           "gameId": "RUNTIME-amusement-tycoon",
           "slug": "amusement-tycoon",
           "lifecycleState": "ACTIVE",
@@ -492,8 +458,8 @@
           "sourceReady": true
         },
         {
-          "rank": 17,
-          "rawEvidenceRank": 17,
+          "rank": 15,
+          "rawEvidenceRank": 15,
           "gameId": "RUNTIME-fantasy-survival",
           "slug": "fantasy-survival",
           "lifecycleState": "ACTIVE",
@@ -507,8 +473,8 @@
           "sourceReady": true
         },
         {
-          "rank": 18,
-          "rawEvidenceRank": 18,
+          "rank": 16,
+          "rawEvidenceRank": 16,
           "gameId": "RUNTIME-line-defense",
           "slug": "line-defense",
           "lifecycleState": "ACTIVE",
@@ -522,8 +488,8 @@
           "sourceReady": true
         },
         {
-          "rank": 19,
-          "rawEvidenceRank": 19,
+          "rank": 17,
+          "rawEvidenceRank": 17,
           "gameId": "RUNTIME-village-dungeons",
           "slug": "village-dungeons",
           "lifecycleState": "ACTIVE",
@@ -537,8 +503,8 @@
           "sourceReady": true
         },
         {
-          "rank": 20,
-          "rawEvidenceRank": 20,
+          "rank": 18,
+          "rawEvidenceRank": 18,
           "gameId": "P0101",
           "slug": "chess-battle",
           "lifecycleState": "ACTIVE",
@@ -552,8 +518,8 @@
           "sourceReady": true
         },
         {
-          "rank": 21,
-          "rawEvidenceRank": 21,
+          "rank": 19,
+          "rawEvidenceRank": 19,
           "gameId": "P0102",
           "slug": "survival2",
           "lifecycleState": "ACTIVE",
