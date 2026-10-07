@@ -14,12 +14,12 @@
   "existingSourcePreserved": true,
   "gameplayAuthorityChanged": false,
   "serverSourceChanged": false,
-  "foundationRepairApplied": true,
+  "foundationRepairApplied": false,
   "generatedFiles": [
     "shared/GameConfig.luau",
     "client/Game.client.luau"
   ],
-  "generationMode": "EXISTING_SOURCE_FOUNDATION_REPAIR",
+  "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
   "modelUsed": false,
   "modelAttempts": 0,
   "modelContractFailures": [],
@@ -61,6 +61,14 @@
     "source": "company-asset-library.json#baseMaterialLibrary",
     "libraryVersion": 120,
     "selectionFingerprint": "93c0a9d6106e7f331c4771f576a8ea28483edc02d8d27826b15980a94e54e1c9",
+    "buildUpAssetSourceUsageFingerprint": "4f0543c310db57078a15f00852b38911a2d30c4f7e241a646d398cbc2dc7e806",
+    "buildUpAssetSourceUsageLibraryVersion": 120,
+    "selectedSourceContentHashes": [
+      {
+        "source": "company-asset-library.json#baseMaterialLibrary",
+        "sha256": "89d1a975e5b1b6fc99d34ad033502980e7f63692739de3d6f649f3be03181f8c"
+      }
+    ],
     "synchronization": {
       "mode": "VERSION_AND_SELECTION_FINGERPRINT_INCREMENTAL",
       "fullLibraryReplicationForbidden": true,
@@ -565,7 +573,7 @@
   "studioAssetPromotionEligible": false,
   "implementationNotes": [
     "existing Roblox gameplay source preserved",
-    "native foundation/input/runtime readiness scaffolding repaired without changing gameplay balance save schema or network authority",
+    "company library Studio asset binding updated in existing config and client presentation",
     "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
   ],
   "buildUpDirectiveId": null,
@@ -575,5 +583,5 @@
   "buildUpDirectiveConsumed": false,
   "buildUpDirectiveCompletionClaim": false,
   "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
-  "createdAt": "2026-10-07T04:20:18.741Z"
+  "createdAt": "2026-10-07T04:35:12.476Z"
 }
