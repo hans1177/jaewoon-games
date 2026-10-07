@@ -1810,6 +1810,7 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
   shadowSystemCreated:false
 });
 const INTERNAL_ASSET_LIBRARY_PLAN_INDEX_CACHE=new WeakMap();
+const INTERNAL_ASSET_MAINTENANCE_ROW_CACHE=new WeakMap();
 
 function stableAssetMaintenanceHash(value=''){
   let hash=2166136261;
@@ -1831,6 +1832,34 @@ function internalAssetMaintenanceRoleTokens(asset={}){
     }
   }
   return uniq(out).sort();
+}
+function internalAssetMaintenanceStaticSignature({assets=[],uiAtomIds=[],audioRoleIds=[]}={}){
+  const rows=(assets||[]).map(asset=>({
+    id:text(asset?.id||asset?.assetId||asset?.atomId),
+    family:upper(asset?.family||asset?.category)||null,
+    packId:asset?.packId??null,
+    roleFields:Object.fromEntries(INTERNAL_ASSET_MAINTENANCE_ROLE_FIELDS.map(field=>[field,asset?.[field]??null])),
+    internalAuditEvidence:asset?.internalAuditEvidence??null,
+    internalAuditAxes:asset?.internalAuditAxes??null,
+    internalAuditNotApplicableAxes:asset?.internalAuditNotApplicableAxes??null,
+    internalAuditScore:asset?.internalAuditScore??null,
+    internalAuditGrade:asset?.internalAuditGrade??null,
+    sourceHash:text(asset?.sourceHash||asset?.sourceSha256)||null,
+    sourceFiles:asset?.sourceFiles??null,
+    path:asset?.path??null,
+    catalogVersion:asset?.catalogVersion??null,
+    catalogActive:asset?.catalogActive??null,
+    catalogState:asset?.catalogState??null,
+    status:asset?.status??null,
+    rightsPass:asset?.rightsPass??null,
+    productionVerified:asset?.productionVerified??null,
+    runtimeVerificationState:asset?.runtimeVerificationState??null
+  })).filter(row=>row.id).sort((a,b)=>a.id.localeCompare(b.id));
+  return JSON.stringify({
+    rows,
+    uiAtomIds:uniq(uiAtomIds).map(upper).sort(),
+    audioRoleIds:uniq(audioRoleIds).map(upper).sort()
+  });
 }
 function internalAssetMaintenanceQuality(asset={},audit=null){
   const currentAudit=audit&&typeof audit==='object'?audit:scoreInternalAssetAudit1000({asset});
@@ -1856,52 +1885,89 @@ const INTERNAL_ASSET_DETAIL_REPAIR_STEPS=Object.freeze({
   PROVENANCE_MAINTAINABILITY:['CHECK_SOURCE_LICENSE_HASH_AND_DERIVATIVE_LINEAGE','KEEP_REPRODUCIBLE_AUTHORING_RECIPE'],
   INTEGRATION_READINESS:['CHECK_NATIVE_IMPORT_MATERIAL_RIG_AND_SOCKET_BINDINGS','KEEP_RUNTIME_VERIFICATION_SEPARATE_FROM_INTERNAL_AUDIT']
 });
-export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],audioRoleIds=[],previous=null,consumerGames=[],auditCache=null}={}){
+export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],audioRoleIds=[],previous=null,consumerGames=[],auditCache=null,baseSnapshot=null}={}){
   const gamesById=new Map(consumerGames.filter(game=>upper(game.lifecycleState||game.canonical?.lifecycle?.state||'ACTIVE')==='ACTIVE').map(game=>[text(game.id||game.gameId),game]));
+  const staticSignature=internalAssetMaintenanceStaticSignature({assets,uiAtomIds,audioRoleIds});
+  const cachedStatic=baseSnapshot&&INTERNAL_ASSET_MAINTENANCE_ROW_CACHE.get(baseSnapshot);
+  const assetIds=(assets||[]).map(asset=>text(asset?.id||asset?.assetId||asset?.atomId)).filter(Boolean);
+  const staticRowsById=cachedStatic?.signature===staticSignature
+    &&cachedStatic?.rowsById instanceof Map
+    &&cachedStatic.rowsById.size===assetIds.length
+    &&new Set(assetIds).size===assetIds.length
+      ?cachedStatic.rowsById
+      :new Map();
+  const reuseStaticRows=staticRowsById.size===assetIds.length&&assetIds.length>0;
   const rows=(assets||[]).map(asset=>{
-    const family=upper(asset?.family||asset?.category);
-    const roles=internalAssetMaintenanceRoleTokens(asset);
-    const cachedAudit=auditCache&&typeof auditCache.get==='function'?auditCache.get(asset):null;
-    const audit=cachedAudit||scoreInternalAssetAudit1000({asset});
-    if(!cachedAudit&&auditCache&&typeof auditCache.set==='function')auditCache.set(asset,audit);
-    const measuredAuditAxes=audit.applicableAxes.filter(axis=>{
-      const value=internalAssetAuditEvidenceValue(asset.internalAuditEvidence||{},axis);
-      return typeof value==='number'&&Number.isFinite(value);
-    });
-    const quality=internalAssetMaintenanceQuality(asset,audit);
-    const declaredQuality=typeof asset?.internalAuditScore==='number'&&Number.isFinite(asset.internalAuditScore)
-      ?Math.round(clamp(asset.internalAuditScore,0,INTERNAL_ASSET_AUDIT_MAX)*10)/10:null;
+    const id=text(asset?.id||asset?.assetId||asset?.atomId);
+    let staticRow=reuseStaticRows?staticRowsById.get(id):null;
+    if(!staticRow){
+      const family=upper(asset?.family||asset?.category);
+      const roles=internalAssetMaintenanceRoleTokens(asset);
+      const cachedAudit=auditCache&&typeof auditCache.get==='function'?auditCache.get(asset):null;
+      const audit=cachedAudit||scoreInternalAssetAudit1000({asset});
+      if(!cachedAudit&&auditCache&&typeof auditCache.set==='function')auditCache.set(asset,audit);
+      const measuredAuditAxes=audit.applicableAxes.filter(axis=>{
+        const value=internalAssetAuditEvidenceValue(asset.internalAuditEvidence||{},axis);
+        return typeof value==='number'&&Number.isFinite(value);
+      });
+      const quality=internalAssetMaintenanceQuality(asset,audit);
+      const declaredQuality=typeof asset?.internalAuditScore==='number'&&Number.isFinite(asset.internalAuditScore)
+        ?Math.round(clamp(asset.internalAuditScore,0,INTERNAL_ASSET_AUDIT_MAX)*10)/10:null;
+      staticRow=Object.freeze({
+        id,
+        packId:text(asset?.packId),
+        family,
+        subfamily:upper(asset?.subfamily||asset?.type),
+        roles:Object.freeze(roles),
+        quality,
+        declaredQuality,
+        qualityEvidenceGrounded:quality!==null,
+        qualityGrade:quality!==null?(text(asset?.internalAuditGrade)||internalAssetAuditGrade(quality)):null,
+        auditAxes:audit.axes,
+        measuredAuditAxes:Object.freeze(measuredAuditAxes),
+        sourceHash:text(asset?.sourceHash||asset?.sourceSha256)||null,
+        sourceFiles:Object.freeze(uniq(asset?.sourceFiles||[asset?.path]).sort()),
+        catalogVersion:asset?.catalogVersion??null,
+        reuseEligible:asset?.catalogActive!==false
+          &&!/(STALE|QUARANTIN|RETIRED|REJECTED)/.test(upper(asset?.catalogState)+' '+upper(asset?.status))
+          &&asset?.rightsPass!==false,
+        catalogState:upper(asset?.catalogState),
+        catalogActive:asset?.catalogActive!==false,
+        status:upper(asset?.status),
+        productionVerified:asset?.productionVerified===true,
+        runtimeVerificationState:upper(asset?.runtimeVerificationState)
+      });
+      if(id&&!reuseStaticRows)staticRowsById.set(id,staticRow);
+    }
     const currentConsumers=currentAssetConsumerGameIds(asset);
     return Object.freeze({
-      id:text(asset?.id||asset?.assetId||asset?.atomId),
-      packId:text(asset?.packId),
-      family,
-      subfamily:upper(asset?.subfamily||asset?.type),
-      roles:Object.freeze(roles),
+      id:staticRow.id,
+      packId:staticRow.packId,
+      family:staticRow.family,
+      subfamily:staticRow.subfamily,
+      roles:staticRow.roles,
       consumerGameIds:Object.freeze(currentConsumers),
-      consumerPriority:Math.max(0,...currentConsumers.map(id=>{
-        const game=gamesById.get(text(id));if(!game)return 0;
+      consumerPriority:Math.max(0,...currentConsumers.map(consumerId=>{
+        const game=gamesById.get(text(consumerId));if(!game)return 0;
         const state=upper(game.productionClass||game.canonical?.production?.class);
         const roblox=upper(asset.platform)==='ROBLOX'||(asset.platforms||[]).some(p=>upper(p)==='ROBLOX');
         return roblox&&state==='RELEASE_CONFIRMED'?3:roblox&&state==='DEVELOPMENT_CONFIRMED'?2:1;
       })),
-      quality,
-      declaredQuality,
-      qualityEvidenceGrounded:quality!==null,
-      qualityGrade:quality!==null?(text(asset?.internalAuditGrade)||internalAssetAuditGrade(quality)):null,
-      auditAxes:audit.axes,
-      measuredAuditAxes:Object.freeze(measuredAuditAxes),
-      sourceHash:text(asset?.sourceHash||asset?.sourceSha256)||null,
-      sourceFiles:Object.freeze(uniq(asset?.sourceFiles||[asset?.path]).sort()),
-      catalogVersion:asset?.catalogVersion??null,
-      reuseEligible:asset?.catalogActive!==false
-        &&!/(STALE|QUARANTIN|RETIRED|REJECTED)/.test(upper(asset?.catalogState)+' '+upper(asset?.status))
-        &&asset?.rightsPass!==false,
-      catalogState:upper(asset?.catalogState),
-      catalogActive:asset?.catalogActive!==false,
-      status:upper(asset?.status),
-      productionVerified:asset?.productionVerified===true,
-      runtimeVerificationState:upper(asset?.runtimeVerificationState)
+      quality:staticRow.quality,
+      declaredQuality:staticRow.declaredQuality,
+      qualityEvidenceGrounded:staticRow.qualityEvidenceGrounded,
+      qualityGrade:staticRow.qualityGrade,
+      auditAxes:staticRow.auditAxes,
+      measuredAuditAxes:staticRow.measuredAuditAxes,
+      sourceHash:staticRow.sourceHash,
+      sourceFiles:staticRow.sourceFiles,
+      catalogVersion:staticRow.catalogVersion,
+      reuseEligible:staticRow.reuseEligible,
+      catalogState:staticRow.catalogState,
+      catalogActive:staticRow.catalogActive,
+      status:staticRow.status,
+      productionVerified:staticRow.productionVerified,
+      runtimeVerificationState:staticRow.runtimeVerificationState
     });
   }).filter(row=>row.id).sort((a,b)=>a.id.localeCompare(b.id));
   const typeRoleTokens=new Set();
@@ -1993,7 +2059,7 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
   }
   if(staleRowIds.length)refreshReasons.push('STALE_ROWS_PRESENT');
   if(semanticDuplicateReviewGroups.length)refreshReasons.push('SEMANTIC_DUPLICATE_REVIEW_AVAILABLE');
-  return Object.freeze({
+  const snapshot=Object.freeze({
     version:1,
     status:'SELF_MAINTENANCE_READY',
     inventoryFingerprint,
@@ -2023,6 +2089,10 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
     continueWithoutHuman:true,
     continueWithoutChatgpt:true
   });
+  if(staticRowsById.size===assetIds.length&&new Set(assetIds).size===assetIds.length){
+    INTERNAL_ASSET_MAINTENANCE_ROW_CACHE.set(snapshot,Object.freeze({signature:staticSignature,rowsById:staticRowsById}));
+  }
+  return snapshot;
 }
 
 function looseVolumeState(count,band={}){
@@ -2095,7 +2165,10 @@ function uiSubsystemCount(ids=[],spec={}){
 export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null,uiAtomIds=[],audioRoleIds=[],externalSources=[],previousMaintenance=null,consumerGames=[],basePlan=null}={}){
   const inventoryAssets=assets;
   const auditCache=new WeakMap();
-  const maintenance=buildInternalAssetMaintenanceSnapshot({assets:inventoryAssets,uiAtomIds,audioRoleIds,previous:previousMaintenance,consumerGames,auditCache});
+  const maintenance=buildInternalAssetMaintenanceSnapshot({
+    assets:inventoryAssets,uiAtomIds,audioRoleIds,previous:previousMaintenance,consumerGames,auditCache,
+    baseSnapshot:basePlan?.maintenance||null
+  });
   const cachedCandidatesByDomain=basePlan&&INTERNAL_ASSET_LIBRARY_PLAN_INDEX_CACHE.get(basePlan);
   const basePlanReusable=Boolean(
     cachedCandidatesByDomain instanceof Map
