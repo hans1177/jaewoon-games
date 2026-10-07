@@ -146,26 +146,51 @@
           "validationEvidence": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract, Mobile input/UI contract, Save/rejoin contract when applicable, Multiplayer state-sync contract when applicable, Headless exact-artifact regression, Open Cloud private/restricted publish"
         }
       }
+    },
+    "designer_draft_slices::web-canonical": {
+      "webCanonicalDesign": {
+        "role": "WEB_DETAILED_GAME_ORIGINAL",
+        "designAuthority": "GAME_DESIGN_REFERENCE_NOT_SOURCE_CODE_AUTHORITY",
+        "playerFlow": [
+          "마을 준비",
+          "포탈 전투",
+          "Lv.15 1차 전직",
+          "보스 격파/동료 해금",
+          "동료 3명 조합",
+          "Lv.40 2차 완성형",
+          "Lv.60 만렙/숙련"
+        ],
+        "worldAndTraversal": "ROBLOX_R15_2_5D_FANTASY",
+        "systemsAndContent": "GAME_DESIGN_2_5D_FANTASY",
+        "combatAndInteraction": "GAME_COMBAT_2_5D_FANTASY",
+        "progressionAndEconomy": "GAME_PROGRESSION_2_5D_FANTASY",
+        "sessionFailureRecovery": "GAME_SESSION_FAILURE_RECOVERY_2_5D_FANTASY",
+        "uiMenuAndOnboarding": "GAME_UI_MENU_2_5D_FANTASY",
+        "inputCameraAccessibility": "GAME_INPUT_ACCESSIBILITY_2_5D_FANTASY",
+        "presentationAndAudio": "GAME_PRESENTATION_AUDIO_2_5D_FANTASY",
+        "multiplayerPersistence": "GAME_MULTIPLAYER_PERSISTENCE_2_5D_FANTASY",
+        "expansionSpace": "GAME_EXPANSION_SPACE_2_5D_FANTASY"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 743044,
-      "lastMs": 290556,
+      "totalMs": 970326,
+      "lastMs": 227282,
       "lastError": null,
-      "updatedAt": "2026-10-07T19:28:40.242Z"
+      "updatedAt": "2026-10-07T19:32:27.525Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T19:16:17.192Z",
-  "updatedAt": "2026-10-07T19:28:40.243Z",
-  "lastSuccessfulModelCallAt": "2026-10-07T19:28:40.242Z",
+  "updatedAt": "2026-10-07T19:32:27.526Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T19:32:27.525Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
