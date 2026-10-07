@@ -1831,9 +1831,9 @@ function internalAssetMaintenanceRoleTokens(asset={}){
   }
   return uniq(out).sort();
 }
-function internalAssetMaintenanceQuality(asset={}){
-  const audit=scoreInternalAssetAudit1000({asset});
-  if(audit.measuredAxisCount>0&&!audit.blockers.includes('INSUFFICIENT_AUDIT_EVIDENCE'))return Number(audit.score);
+function internalAssetMaintenanceQuality(asset={},audit=null){
+  const currentAudit=audit&&typeof audit==='object'?audit:scoreInternalAssetAudit1000({asset});
+  if(currentAudit.measuredAxisCount>0&&!currentAudit.blockers.includes('INSUFFICIENT_AUDIT_EVIDENCE'))return Number(currentAudit.score);
   return null;
 }
 // 자산 관리: 세부 개선은 기존 원본 책임 파일과 현재 감사 축에만 연결한다.
@@ -1855,17 +1855,19 @@ const INTERNAL_ASSET_DETAIL_REPAIR_STEPS=Object.freeze({
   PROVENANCE_MAINTAINABILITY:['CHECK_SOURCE_LICENSE_HASH_AND_DERIVATIVE_LINEAGE','KEEP_REPRODUCIBLE_AUTHORING_RECIPE'],
   INTEGRATION_READINESS:['CHECK_NATIVE_IMPORT_MATERIAL_RIG_AND_SOCKET_BINDINGS','KEEP_RUNTIME_VERIFICATION_SEPARATE_FROM_INTERNAL_AUDIT']
 });
-export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],audioRoleIds=[],previous=null,consumerGames=[]}={}){
+export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],audioRoleIds=[],previous=null,consumerGames=[],auditCache=null}={}){
   const gamesById=new Map(consumerGames.filter(game=>upper(game.lifecycleState||game.canonical?.lifecycle?.state||'ACTIVE')==='ACTIVE').map(game=>[text(game.id||game.gameId),game]));
   const rows=(assets||[]).map(asset=>{
     const family=upper(asset?.family||asset?.category);
     const roles=internalAssetMaintenanceRoleTokens(asset);
-    const audit=scoreInternalAssetAudit1000({asset});
+    const cachedAudit=auditCache&&typeof auditCache.get==='function'?auditCache.get(asset):null;
+    const audit=cachedAudit||scoreInternalAssetAudit1000({asset});
+    if(!cachedAudit&&auditCache&&typeof auditCache.set==='function')auditCache.set(asset,audit);
     const measuredAuditAxes=audit.applicableAxes.filter(axis=>{
       const value=internalAssetAuditEvidenceValue(asset.internalAuditEvidence||{},axis);
       return typeof value==='number'&&Number.isFinite(value);
     });
-    const quality=internalAssetMaintenanceQuality(asset);
+    const quality=internalAssetMaintenanceQuality(asset,audit);
     const declaredQuality=typeof asset?.internalAuditScore==='number'&&Number.isFinite(asset.internalAuditScore)
       ?Math.round(clamp(asset.internalAuditScore,0,INTERNAL_ASSET_AUDIT_MAX)*10)/10:null;
     const currentConsumers=currentAssetConsumerGameIds(asset);
@@ -1932,19 +1934,28 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
     .map(([key,ids])=>Object.freeze({key,assetIds:Object.freeze([...ids].sort()),count:ids.length}))
     .sort((a,b)=>b.count-a.count||a.key.localeCompare(b.key))
     .slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maintenanceListLimits.semanticDuplicateReviewGroups);
+  const reuseEligibleIds=new Set(rows.filter(row=>row.reuseEligible).map(row=>row.id));
   const donorCandidates=qualityRows
-    .filter(row=>rows.some(asset=>asset.id===row.id&&asset.reuseEligible))
+    .filter(row=>reuseEligibleIds.has(row.id))
     .sort((a,b)=>Number(b.quality)-Number(a.quality)||a.id.localeCompare(b.id))
     .slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maintenanceListLimits.donorCandidates)
     .map(row=>Object.freeze({...row}));
   const qualityRepairActions=[],repairKeys=new Set();
-  for(const row of rows.filter(row=>row.reuseEligible).sort((a,b)=>b.consumerPriority-a.consumerPriority)){
+  const qualityRepairCandidates=rows.filter(row=>row.reuseEligible).map(row=>{
     const axes=Object.entries(row.auditAxes).sort(([a,av],[b,bv])=>av-bv||INTERNAL_ASSET_AUDIT_WEIGHTS[b]-INTERNAL_ASSET_AUDIT_WEIGHTS[a]||a.localeCompare(b));
     const weakest=axes[0];
     const measured=row.measuredAuditAxes.includes(weakest?.[0]);
     const sourceFiles=row.sourceFiles.map(file=>file.replace(/^\//,''))
       .filter(file=>file.startsWith('assets/')&&!file.split('/').includes('..')&&!/(^|\/)quality-evidence\.json$/.test(file));
     const kind=!measured?'INSPECT_ASSET_QUALITY':weakest?.[1]<1?'IMPROVE_ASSET_DETAIL':'REAUDIT_ASSET_QUALITY';
+    const currentAxisScore=measured?Math.round((weakest?.[1]||0)*100):null;
+    return{row,axes,weakest,measured,sourceFiles,kind,currentAxisScore};
+  }).sort((a,b)=>b.row.consumerPriority-a.row.consumerPriority
+    ||(a.kind==='REAUDIT_ASSET_QUALITY')-(b.kind==='REAUDIT_ASSET_QUALITY')
+    ||Number(a.currentAxisScore??-1)-Number(b.currentAxisScore??-1)
+    ||a.row.id.localeCompare(b.row.id));
+  for(const candidate of qualityRepairCandidates){
+    const {row,axes,weakest,measured,sourceFiles,kind,currentAxisScore}=candidate;
     const repairKey=[sourceFiles.join('|')||row.id,kind,weakest?.[0]||'UNMEASURED'].join(':');
     if(repairKeys.has(repairKey))continue;
     repairKeys.add(repairKey);
@@ -1953,7 +1964,7 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
       sourceFiles:Object.freeze(sourceFiles),sourceHash:row.sourceHash,
       sourceInspectionRequired:sourceFiles.length===0,
       weakestAxis:measured?weakest?.[0]||null:null,
-      currentAxisScore:measured?Math.round((weakest?.[1]||0)*100):null,
+      currentAxisScore,
       targetAxisScore:100,
       detailSteps:Object.freeze(measured?[...(INTERNAL_ASSET_DETAIL_REPAIR_STEPS[weakest?.[0]]||[])]:['INSPECT_CURRENT_SOURCE_AND_SAME_CONDITION_CAPTURES','RECORD_APPLICABLE_AXIS_MEASUREMENTS_WITHOUT_INVENTING_SCORES']),
       preserveAxes:Object.freeze(axes.filter(([,value])=>value>=.9).map(([axis])=>axis)),
@@ -2091,7 +2102,8 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
   const audioRoles=uniq(audioRoleIds).map(upper);
   const audioRoleTokens=new Set(audioRoles);
   const actualVerifiedAudioAssetCount=verifiedAudioFileCount(assets);
-  const maintenance=buildInternalAssetMaintenanceSnapshot({assets:inventoryAssets,uiAtomIds,audioRoleIds,previous:previousMaintenance,consumerGames});
+  const auditCache=new WeakMap();
+  const maintenance=buildInternalAssetMaintenanceSnapshot({assets:inventoryAssets,uiAtomIds,audioRoleIds,previous:previousMaintenance,consumerGames,auditCache});
   const domains=[];
   const freeSourceCategoriesByDomain=Object.freeze({
     BUILDING:Object.freeze(['BUILDING','PROP','ENVIRONMENT']),
@@ -2130,7 +2142,7 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     const candidate={
       id:text(asset.id||asset.assetId||asset.atomId),packId:text(asset.packId)||null,
       family:upper(asset.family||asset.category)||null,platform:upper(asset.platform)||null,
-      roles:internalAssetMaintenanceRoleTokens(asset),quality:internalAssetMaintenanceQuality(asset),
+      roles:internalAssetMaintenanceRoleTokens(asset),quality:internalAssetMaintenanceQuality(asset,auditCache.get(asset)),
       grade:text(asset.internalAuditGrade)||null
     };
     if(!candidate.id)continue;
@@ -2347,6 +2359,7 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     return scoreB-scoreA||Number(b.priority||0)-Number(a.priority||0)||String(a.domain).localeCompare(String(b.domain))||String(a.ideaId).localeCompare(String(b.ideaId));
   });
   const freeSourceCatalogReady=eligibleFreeSources.length>=INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCatalogSufficiencyCount;
+  const qualityActionRankByAssetId=new Map((maintenance.nextQualityActions||[]).map((action,index)=>[text(action.assetId),index]));
   const nextVolumeActions=nextVolumeActionRows.map((row,index)=>{
     const freeSourcePool=freeSourceCandidatePools[row.freeSourceCandidatePoolKey]||[];
     const freeSourceCandidateIds=freeSourcePool.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidatePreviewLimitPerAction);
@@ -2355,6 +2368,14 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     const internalReuseCandidatePreview=allInternalReuseCandidates.slice(0,4).map(candidate=>Object.freeze({
       id:candidate.id,quality:candidate.quality,grade:candidate.grade
     }));
+    let detailImprovementAssetId=null,detailImprovementRank=Infinity;
+    for(const candidate of allInternalReuseCandidates){
+      const rank=qualityActionRankByAssetId.get(candidate.id);
+      if(rank!==undefined&&rank<detailImprovementRank){
+        detailImprovementAssetId=candidate.id;detailImprovementRank=rank;
+        if(rank===0)break;
+      }
+    }
     return Object.freeze({
       ...row,
       freeSourceAvailable,
@@ -2363,7 +2384,7 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
       internalReusePreviewLimit:4,
       allCompatibleInternalAssetsRemainEligible:true,
       internalReusePreviewIsNotEligibilityCap:true,
-      detailImprovementAssetId:maintenance.nextQualityActions.find(action=>allInternalReuseCandidates.some(candidate=>candidate.id===action.assetId))?.assetId||null,
+      detailImprovementAssetId,
       studioVariationAxes:Object.freeze([...(INTERNAL_ASSET_STUDIO_VARIATION_AXES[row.domain]||[])]),
       libraryFreshnessFingerprint:maintenance.inventoryFingerprint,
       qualityFreshnessFingerprint:maintenance.qualityFingerprint,

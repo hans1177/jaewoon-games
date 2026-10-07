@@ -4311,19 +4311,33 @@ test('internal role coverage cannot be satisfied by a different family or stale 
   assert.ok(plan.nextVolumeActions.every(row=>!row.internalReuseCandidatePreview.some(candidate=>candidate.id==='old-weather')));
 });
 
-test('internal quality detail repair dedupes shared source and reaudits perfect axes',()=>{
+test('internal quality detail repair dedupes shared source after selecting the weakest current asset',()=>{
   const allAxes=scoreInternalAssetAudit1000({asset:{family:'PROP'}}).applicableAxes;
   const complete=Object.fromEntries(allAxes.map(axis=>[axis,100]));
   const assets=[
-    {id:'a',family:'PROP',sourceFiles:['assets/props.js'],internalAuditEvidence:{...complete,DETAIL_FINISH:30}},
+    {id:'a',family:'PROP',sourceFiles:['assets/props.js'],internalAuditEvidence:{...complete,DETAIL_FINISH:60}},
     {id:'b',family:'PROP',sourceFiles:['assets/props.js'],internalAuditEvidence:{...complete,DETAIL_FINISH:30}},
     {id:'perfect',family:'PROP',sourceFiles:['assets/perfect.js'],internalAuditEvidence:complete}
   ];
   const plan=buildInternalAssetMaintenanceSnapshot({assets});
   assert.equal(plan.nextQualityActions.length,2);
+  assert.equal(plan.nextQualityActions[0].assetId,'b');
   assert.equal(plan.nextQualityActions[0].weakestAxis,'DETAIL_FINISH');
+  assert.equal(plan.nextQualityActions[0].currentAxisScore,30);
   assert.ok(plan.nextQualityActions[0].detailSteps.includes('SEAMS_FASTENERS_EDGE_PROFILES_AND_CONTACT_DETAIL'));
   assert.equal(plan.nextQualityActions[1].kind,'REAUDIT_ASSET_QUALITY');
+});
+
+test('asset library automation indexes audit and quality lookups instead of nested rescoring',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const source=fs.readFileSync(path.resolve(here,'../assets/vibe-studio-asset-universe.js'),'utf8');
+  const start=source.indexOf('export function buildInternalAssetLibraryAutomationPlan');
+  const end=source.indexOf('export const INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT',start);
+  const plannerSource=source.slice(start,end);
+  assert.match(plannerSource,/const auditCache=new WeakMap\(\)/);
+  assert.match(plannerSource,/qualityActionRankByAssetId=new Map/);
+  assert.match(plannerSource,/internalAssetMaintenanceQuality\(asset,auditCache\.get\(asset\)\)/);
+  assert.doesNotMatch(plannerSource,/maintenance\.nextQualityActions\.find\(action=>allInternalReuseCandidates\.some/);
 });
 
 test('catalog synchronization cannot inherit or manufacture production verification',()=>{
