@@ -201,25 +201,31 @@
         "audioIdentity": "HORROR_3D_AUDIO_LAYOUT",
         "gameplayFeedbackSync": "감염 스킬 선택, 정화 공격, 몬스터 감염 공격, 인간 정화"
       }
+    },
+    "designer_draft_slices::market-multiplayer": {
+      "marketTargetDirection": "ROBLOX_MULTIPLAYER",
+      "steamExpansionDecision": "NO",
+      "multiplayerMode": "COMPETITIVE",
+      "multiplayerExpansionDecision": "YES"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 7,
+      "calls": 11,
+      "successes": 8,
       "failures": 3,
       "timeouts": 1,
       "jsonFailures": 1,
-      "totalMs": 1577613,
-      "lastMs": 169413,
+      "totalMs": 1710602,
+      "lastMs": 132989,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-07T19:37:34.211Z"
+      "updatedAt": "2026-10-07T19:39:47.202Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T17:55:35.632Z",
-  "updatedAt": "2026-10-07T19:37:34.212Z",
+  "updatedAt": "2026-10-07T19:39:47.203Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
@@ -235,7 +241,7 @@
   "localAuthoringSplits": {
     "b0562ba8bb121c6f29db549cd378dd345fb1669cdccd5e5f6382f3175e914676": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-07T19:37:34.211Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T19:39:47.202Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
