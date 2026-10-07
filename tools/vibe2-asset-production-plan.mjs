@@ -8,7 +8,7 @@ import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import { planAssetApplication } from '../assets/asset-selector.js';
 import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation,createMotionDirectorPlan,createDuelCombatAuthoringRecipe,createSurvivalPlayerMotionProfile,createSurvivalWildlifeMotionProfile,deriveMotionStyleVariant,auditMotionContinuityTrace} from '../assets/vibe-motion-director.js';
-import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile,synchronizeAssetCustomization,createAssetDetailReviewPlan,createAssetRuntimeVisualReviewPlan,auditCommonLibrarySystemDepth,createCompanySeedAssetIdeationPlan,buildInternalAssetLibraryAutomationPlan,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT,INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES,INTERNAL_PROGRESSION_COMPLEXITY_PROFILES,resolveInternalAssetStyleExpressionProfile,INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS,STUDIO_GLTF_MASTER_ASSET_STANDARD} from '../assets/vibe-studio-asset-universe.js';
+import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile,synchronizeAssetCustomization,createAssetDetailReviewPlan,createAssetRuntimeVisualReviewPlan,auditCommonLibrarySystemDepth,createCompanySeedAssetIdeationPlan,buildInternalAssetLibraryAutomationPlan,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT,INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES,INTERNAL_PROGRESSION_COMPLEXITY_PROFILES,resolveInternalAssetStyleExpressionProfile,INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS,STUDIO_GLTF_MASTER_ASSET_STANDARD,evaluateGltfMasterAssetStandard} from '../assets/vibe-studio-asset-universe.js';
 import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {auditVibeRuntimeVisualEvidence,auditVibeRuntimeBeforeAfterComparison} from '../assets/vibe-visual-quality-gate.js';
 import {VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,createVibeNpcCustomizationPopulation} from '../assets/vibe-character-identity-director.js';
@@ -1756,6 +1756,7 @@ function matchedForType(selector={},type='',manifest={},target=''){
       tags:freezeList(unique([...(Array.isArray(asset.tags)?asset.tags:[]),clean(asset.family),clean(asset.category),clean(asset.subfamily)].map(clean).filter(Boolean))),
       family:clean(asset.family||asset.category)||null,
       subfamily:clean(asset.subfamily)||null,
+      gltfMaster:freeze(asset.gltfMaster&&typeof asset.gltfMaster==='object'?asset.gltfMaster:{}),
       platformVariants:freeze(asset.platformVariants&&typeof asset.platformVariants==='object'?asset.platformVariants:{}),
       productionVerified:asset.productionVerified===true||asset.verifiedCompanyReusable===true,
       retargetable:asset.retargetable===true,
@@ -2121,12 +2122,19 @@ function assetApplyFirstCandidate(asset={},target='',binding={}){
   const platform=clean(target).toLowerCase();
   const variant=asset?.platformVariants?.[platform.toUpperCase()]||asset?.platformVariants?.[platform]||null;
   const sameGame=asset.sameGameExistingRoblox===true&&platform==='roblox';
+  const requestedType=clean(binding?.type).toLowerCase();
+  const actor3d=['roblox','unity'].includes(platform)&&GLB_MASTER_DCC_TYPES.includes(requestedType);
+  const gltfMaster=actor3d?evaluateGltfMasterAssetStandard({
+    asset,
+    family:asset?.family||nativeDccFamilyForTypes([requestedType]),
+    platform:platform.toUpperCase(),
+    required:true
+  }):Object.freeze({required:false,pass:true,blockers:Object.freeze([])});
   const hasNativeReference=Boolean(sameGame&&(asset.path||asset.robloxAssetId)||variant?.path||asset.path||asset.robloxAssetId);
-  const nativeReady=Boolean(sameGame||variant?.path||asset.productionVerified===true);
-  const adaptable=Boolean(!nativeReady&&hasNativeReference&&(asset.retargetable===true||asset.rigType||asset.sourceHash));
+  const nativeReady=Boolean((sameGame||variant?.path||asset.productionVerified===true)&&gltfMaster.pass);
+  const adaptable=Boolean(!actor3d&& !nativeReady&&hasNativeReference&&(asset.retargetable===true||asset.rigType||asset.sourceHash));
   const lane=nativeReady?(sameGame?'A_SAME_GAME_BOUND':'B_NATIVE_READY'):adaptable?'C_MINIMAL_ADAPT':'D_AUTHORING_REQUIRED';
   const bindingCost=lane==='A_SAME_GAME_BOUND'?0:lane==='B_NATIVE_READY'?1:lane==='C_MINIMAL_ADAPT'?2:3;
-  const requestedType=clean(binding?.type).toLowerCase();
   const roleTokens=unique([requestedType,...(binding?.targetStates||[]).map(clean)]).map(value=>value.toLowerCase()).filter(Boolean);
   const tags=(asset.tags||[]).map(value=>clean(value).toLowerCase());
   const roleMatches=roleTokens.filter(token=>tags.some(tag=>tag.includes(token)||token.includes(tag))).length;
@@ -2161,8 +2169,11 @@ function assetApplyFirstCandidate(asset={},target='',binding={}){
     acquiredExternal:asset.acquiredExternal===true,
     acquisitionOrigin:asset.acquisitionOrigin||null,
     productionVerified:asset.productionVerified===true,
+    gltfMasterRequired:actor3d,
+    gltfMasterPass:gltfMaster.pass,
+    gltfMasterBlockers:freezeList(gltfMaster.blockers||[]),
     ready:Boolean(hasNativeReference&&asset.downloaded!==false&&lane!=='D_AUTHORING_REQUIRED'),
-    adaptationAllowed:true,
+    adaptationAllowed:!actor3d||gltfMaster.pass,
     adaptationAxes:freezeList(lane==='C_MINIMAL_ADAPT'?['RIG_RETARGET','MATERIAL_REMAP','SOCKET_REBIND','SCALE_AXIS_PIVOT_NORMALIZE','LOD_GENERATION']:[]),
     qualityPassRequiredBeforeKeep:true,
     runtimeCheckRequiredAfterApply:true,
