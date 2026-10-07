@@ -3210,6 +3210,44 @@ test('backlog gate binds queued existing game work to platform-lane-specific BUI
 });
 
 
+
+test('queued platform directive refreshes when the shared canonical game design changes',()=>{
+  const root=tempRepo();
+  const gameId='shared-design-refresh';
+  const sourceDir=path.join(root,'roblox-games',gameId,'server');
+  fs.mkdirSync(sourceDir,{recursive:true});
+  fs.writeFileSync(path.join(sourceDir,'Game.server.luau'),'local function resolveAttack(enemy) return enemy ~= nil end\n','utf8');
+  writeStudioDesign(root,gameId,{
+    identity:'하나의 공통 설계를 쓰는 전투 게임',
+    coreFun:'위협을 읽고 공격 타이밍을 선택한다',
+    coreLoop:['위협 확인','공격 선택','결과 확인'],
+    multiplayerMode:'SINGLE'
+  });
+  const project={gameId,name:'Shared Design Refresh',engine:'roblox',target:'roblox',releaseState:'development-confirmed',projectPath:`roblox-games/${gameId}`,existing:true,playMode:'SINGLE'};
+  const first=findStudioContinuousImprovementTask(project,root,{tasks:[]},'CORE_FUN');
+  assert.ok(first?.buildUpDirective?.sharedDesignFingerprint);
+  const firstFingerprint=first.buildUpDirective.sharedDesignFingerprint;
+
+  writeStudioDesign(root,gameId,{
+    identity:'하나의 공통 설계를 쓰는 전투 게임',
+    coreFun:'위협을 읽고 공격과 회피 타이밍을 선택한다',
+    coreLoop:['위협 확인','공격 또는 회피 선택','결과 확인','다음 위협 준비'],
+    multiplayerMode:'SINGLE'
+  });
+
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[{gameId,ownerDecision:'PASS',target:'roblox',projectPath:`roblox-games/${gameId}`,progress:80}]},
+    catalog:{games:[{id:gameId,name:project.name,productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]},
+    queue:{maxConcurrentTasks:20,tasks:[{...first,status:'queued'}]},
+    repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:1,planningBacklogMinimum:0
+  });
+  const refreshed=result.queue.tasks.find(row=>row.gameId===gameId);
+  assert.ok(refreshed);
+  assert.notEqual(refreshed.buildUpDirective.sharedDesignFingerprint,firstFingerprint);
+  assert.ok((refreshed.evidence||[]).includes('build-up-directive-design-refresh:CANONICAL_SHARED_DESIGN'));
+  assert.equal(refreshed.buildUpDirective.gameIdentityAndNonNegotiables.multiplayerMode,'SINGLE');
+});
+
 test('queue normalization preserves BUILD_UP directive payload and aliases for workers',()=>{
   const directive={
     directiveId:'build-up-demo-g1',
@@ -4440,7 +4478,7 @@ test('queued Web assessment with PRESENTATION generation is repaired into graphi
 });
 
 
-test('Roblox build-up directive preserves competitive multiplayer platform semantics',()=>{
+test('Roblox project metadata cannot silently overwrite the shared canonical multiplayer design',()=>{
   const root=tempRepo();
   try{
     const gameId='roblox-competitive-directive';
@@ -4475,7 +4513,8 @@ test('Roblox build-up directive preserves competitive multiplayer platform seman
     assert.ok(planned);
     assert.equal(planned.buildUpDirective.platform,'ROBLOX');
     assert.equal(planned.buildUpDirective.sourceRoot,`roblox-games/${gameId}`);
-    assert.equal(planned.buildUpDirective.gameIdentityAndNonNegotiables.multiplayerMode,'COMPETITIVE');
+    assert.equal(planned.buildUpDirective.gameIdentityAndNonNegotiables.multiplayerMode,'SINGLE');
+    assert.ok((planned.evidence||[]).includes('build-up-platform-metadata-design-mismatch:ROBLOX_PLAY_MODE'));
     const multiplayer=planned.buildUpDirective.qualityGapMap.find(row=>row.domain==='MULTIPLAYER_AND_SYNC');
     assert.ok(multiplayer);
     assert.notEqual(multiplayer.state,'NOT_APPLICABLE');
