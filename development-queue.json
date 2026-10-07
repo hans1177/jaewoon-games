@@ -6134,7 +6134,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-07T05:26:28.268Z",
+      "updatedAt": "2026-10-07T05:38:32.329Z",
       "robloxSourceCommit": "2cc4a7b31a540925a89d10880b1a17e82e3ede2c",
       "robloxSourceBootstrapPassedAt": "2026-10-07T05:22:52.107Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -6143,17 +6143,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "2cc4a7b31a540925a89d10880b1a17e82e3ede2c",
       "robloxBuildArtifactIdentity": "sha256:1e9b01b125f1206b8d33d22740d79212253c3adc1c70d44a0527e4f6eb18c9e0",
-      "robloxBuildPassedAt": "2026-10-07T05:26:28.268Z",
+      "robloxBuildPassedAt": "2026-10-07T05:38:32.329Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-07T05:26:28.268Z",
+      "robloxBuildPreflightFailedAt": "2026-10-07T05:38:32.329Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "bug-defense",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-07T05:25:26.839Z",
+        "checkedAt": "2026-10-07T05:32:35.074Z",
         "facts": {
           "pass": false,
           "blockers": [
@@ -7050,21 +7050,62 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-07T05:26:47.380Z",
+      "updatedAt": "2026-10-07T05:38:32.329Z",
       "robloxSourceCommit": "2cc4a7b31a540925a89d10880b1a17e82e3ede2c",
       "robloxSourceBootstrapPassedAt": "2026-10-07T05:26:47.380Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
-      "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": null,
-      "robloxBuildArtifactIdentity": null,
-      "robloxBuildPassedAt": null,
+      "robloxBuildOrPackagePassed": true,
+      "robloxBuildSourceRevision": "2cc4a7b31a540925a89d10880b1a17e82e3ede2c",
+      "robloxBuildArtifactIdentity": "sha256:ac87be827c25ddb9c9d01f006c156301bdc102cb5c4be0a267f7ff8e6bafdf62",
+      "robloxBuildPassedAt": "2026-10-07T05:38:32.329Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": null,
-      "robloxBuildPreflightEvidence": null,
+      "robloxBuildPreflightFailedAt": "2026-10-07T05:38:32.329Z",
+      "robloxBuildPreflightEvidence": {
+        "version": 2,
+        "gameId": "line-defense",
+        "pass": false,
+        "state": "BLOCKED",
+        "checkedAt": "2026-10-07T05:35:19.805Z",
+        "facts": {
+          "pass": false,
+          "blockers": [
+            "roblox-platform-required"
+          ],
+          "leads": {
+            "planning": "llama3.2:1b",
+            "graphics": "llama3.2:1b",
+            "development": "llama3.2:1b",
+            "qa": "llama3.2:1b",
+            "balance": "llama3.2:1b"
+          },
+          "sharedModel": "llama3.2:1b",
+          "distinctLeadCount": 1,
+          "secondaryOwnerFocus": false,
+          "robloxLaneEligible": false,
+          "directRoblox": false,
+          "concurrentRoblox": false,
+          "build": {
+            "sourceRevision": "2cc4a7b31a540925a89d10880b1a17e82e3ede2c",
+            "artifactIdentity": "sha256:ac87be827c25ddb9c9d01f006c156301bdc102cb5c4be0a267f7ff8e6bafdf62",
+            "webValidationPassed": false,
+            "musicValidationPassed": false,
+            "nativeWebValidationPassed": false,
+            "nativeMusicValidationPassed": false,
+            "sourceEligibilityAuthority": "exact-immutable-roblox-package",
+            "sourceValidationPassed": true,
+            "buildOrPackagePassed": true
+          }
+        },
+        "leadReviews": [],
+        "blockers": [
+          "roblox-platform-required"
+        ],
+        "authority": "roblox-vibe-shared-model-build-preflight"
+      },
       "robloxFoundationF0Passed": false,
       "robloxFoundationF0PassedAt": null,
       "robloxFoundationF0Evidence": null,
@@ -7101,11 +7142,11 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
       "routingBlockers": [
-        "roblox-build-package-pending"
+        "roblox-build-preflight-blocked"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -7118,7 +7159,7 @@
       "strictDesignReviewRefreshRequired": true,
       "ownerPreservationPresentationUpgrade": false,
       "presentationFirstPass": null,
-      "robloxExactRevisionPassed": true,
+      "robloxExactRevisionPassed": false,
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": "development/unity-tech-line-defense-37327263262",
       "unitySourceCommit": "bea4efc11fd50717316a9cc19354753136b3874f",
@@ -7939,7 +7980,11 @@
         "scanCapped": false,
         "worldGeometryPresent": true,
         "sameLuauExecutionSession": true
-      }
+      },
+      "robloxBuildUpAssetSourceUsageFingerprint": "4f0543c310db57078a15f00852b38911a2d30c4f7e241a646d398cbc2dc7e806",
+      "robloxBuildUpAssetSourceUsageLibraryVersion": 120,
+      "robloxBuildAssetSelectionFingerprint": "dfe325226fbbbcb59eb90a63104ed387130b532ec6586cbd2bdbf3f820595fb0",
+      "robloxBuildAssetLibraryVersion": 120
     },
     {
       "gameId": "village-dungeons",
@@ -8010,7 +8055,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-07T05:26:28.268Z",
+      "updatedAt": "2026-10-07T05:38:32.329Z",
       "robloxSourceCommit": "2cc4a7b31a540925a89d10880b1a17e82e3ede2c",
       "robloxSourceBootstrapPassedAt": "2026-10-07T05:22:52.107Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -8019,17 +8064,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "2cc4a7b31a540925a89d10880b1a17e82e3ede2c",
       "robloxBuildArtifactIdentity": "sha256:1f6c4de97b608eed38ad651c177cf5dd063f1f74404340b738bb2495d8f65cd6",
-      "robloxBuildPassedAt": "2026-10-07T05:26:28.268Z",
+      "robloxBuildPassedAt": "2026-10-07T05:38:32.329Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-07T05:26:28.268Z",
+      "robloxBuildPreflightFailedAt": "2026-10-07T05:38:32.329Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "village-dungeons",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-07T05:25:27.914Z",
+        "checkedAt": "2026-10-07T05:34:26.872Z",
         "facts": {
           "pass": false,
           "blockers": [
@@ -11342,7 +11387,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-07T05:26:28.268Z",
+      "updatedAt": "2026-10-07T05:38:32.329Z",
       "robloxSourceCommit": "2cc4a7b31a540925a89d10880b1a17e82e3ede2c",
       "robloxSourceBootstrapPassedAt": "2026-10-07T05:22:52.107Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -11351,17 +11396,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "2cc4a7b31a540925a89d10880b1a17e82e3ede2c",
       "robloxBuildArtifactIdentity": "sha256:698489c0b178f9f5ea25b9a2ea2a76aa877660b1e1153951597a7abe487812c4",
-      "robloxBuildPassedAt": "2026-10-07T05:26:28.268Z",
+      "robloxBuildPassedAt": "2026-10-07T05:38:32.329Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-07T05:26:28.268Z",
+      "robloxBuildPreflightFailedAt": "2026-10-07T05:38:32.329Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "fantasy-survival",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-07T05:24:46.958Z",
+        "checkedAt": "2026-10-07T05:35:57.307Z",
         "facts": {
           "pass": false,
           "blockers": [
@@ -21716,7 +21761,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-07T05:26:28.268Z",
+      "updatedAt": "2026-10-07T05:38:32.329Z",
       "robloxSourceCommit": "770199ca8eee69e5255efe016459e166fd9e07b3",
       "robloxSourceBootstrapPassedAt": "2026-10-07T04:41:50.723Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -21725,17 +21770,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "770199ca8eee69e5255efe016459e166fd9e07b3",
       "robloxBuildArtifactIdentity": "sha256:eaef04793a45c3e18fdf7ca5c325b14c6ad810728279520f075648dfd2d4f9d8",
-      "robloxBuildPassedAt": "2026-10-07T05:26:28.268Z",
+      "robloxBuildPassedAt": "2026-10-07T05:38:32.329Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-07T05:26:28.268Z",
+      "robloxBuildPreflightFailedAt": "2026-10-07T05:38:32.329Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "seed-casual-realm-weaver",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-07T05:23:45.947Z",
+        "checkedAt": "2026-10-07T05:35:03.878Z",
         "facts": {
           "pass": false,
           "blockers": [
@@ -22648,14 +22693,14 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-07T05:23:49.874Z",
+      "updatedAt": "2026-10-07T05:38:32.329Z",
       "robloxSourceCommit": "770199ca8eee69e5255efe016459e166fd9e07b3",
       "robloxSourceBootstrapPassedAt": "2026-10-07T04:41:50.723Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -22664,23 +22709,22 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "770199ca8eee69e5255efe016459e166fd9e07b3",
       "robloxBuildArtifactIdentity": "sha256:3a8e7f4cf3c360ed0b08cf6ca499b82e427c5cf6b1575f5bd99baeead0adcce8",
-      "robloxBuildPassedAt": "2026-10-07T05:08:23.794Z",
+      "robloxBuildPassedAt": "2026-10-07T05:38:32.329Z",
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-07T05:08:23.794Z",
-      "robloxBuildPreflightFailedAt": null,
+      "robloxBuildPreflightPassed": false,
+      "robloxBuildPreflightPassedAt": null,
+      "robloxBuildPreflightFailedAt": "2026-10-07T05:38:32.329Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "seed-idle-growth-rpg-crystal-bloom",
-        "pass": true,
-        "state": "PASS",
-        "checkedAt": "2026-10-07T05:05:37.542Z",
-        "sourceRevision": "770199ca8eee69e5255efe016459e166fd9e07b3",
-        "artifactIdentity": "sha256:3a8e7f4cf3c360ed0b08cf6ca499b82e427c5cf6b1575f5bd99baeead0adcce8",
-        "secondaryOwnerFocus": false,
+        "pass": false,
+        "state": "BLOCKED",
+        "checkedAt": "2026-10-07T05:36:30.190Z",
         "facts": {
-          "pass": true,
-          "blockers": [],
+          "pass": false,
+          "blockers": [
+            "roblox-platform-required"
+          ],
           "leads": {
             "planning": "llama3.2:1b",
             "graphics": "llama3.2:1b",
@@ -22691,9 +22735,9 @@
           "sharedModel": "llama3.2:1b",
           "distinctLeadCount": 1,
           "secondaryOwnerFocus": false,
-          "robloxLaneEligible": true,
+          "robloxLaneEligible": false,
           "directRoblox": false,
-          "concurrentRoblox": true,
+          "concurrentRoblox": false,
           "build": {
             "sourceRevision": "770199ca8eee69e5255efe016459e166fd9e07b3",
             "artifactIdentity": "sha256:3a8e7f4cf3c360ed0b08cf6ca499b82e427c5cf6b1575f5bd99baeead0adcce8",
@@ -22706,395 +22750,17 @@
             "buildOrPackagePassed": true
           }
         },
-        "leadReviews": [
-          {
-            "role": "shared-review",
-            "model": "llama3.2:1b",
-            "decision": "PASS",
-            "blockers": [],
-            "note": "No concrete build-stage blockers found in BUILD_EVIDENCE."
-          }
+        "leadReviews": [],
+        "blockers": [
+          "roblox-platform-required"
         ],
-        "blockers": [],
         "authority": "roblox-vibe-shared-model-build-preflight"
       },
-      "robloxFoundationF0Passed": true,
-      "robloxFoundationF0PassedAt": "2026-10-07T05:23:49.874Z",
-      "robloxFoundationF0Evidence": {
-        "version": 5,
-        "gameId": "seed-idle-growth-rpg-crystal-bloom",
-        "platform": "ROBLOX",
-        "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-07T05:23:47.188Z",
-        "sourcePath": "roblox-games/seed-idle-growth-rpg-crystal-bloom",
-        "sourceRevision": "770199ca8eee69e5255efe016459e166fd9e07b3",
-        "artifactIdentity": "sha256:3a8e7f4cf3c360ed0b08cf6ca499b82e427c5cf6b1575f5bd99baeead0adcce8",
-        "rebuiltArtifactIdentity": "sha256:3a8e7f4cf3c360ed0b08cf6ca499b82e427c5cf6b1575f5bd99baeead0adcce8",
-        "artifactRunId": 37575748817,
-        "buildUpAssetSourceUsageFingerprint": null,
-        "assetSelectionFingerprint": null,
-        "observedAssetSelectionFingerprint": "992d55a7d68ba1a8d13655329a3587f8cf8777b39e06657eb77a5131e1ca0a7d",
-        "assetLibraryVersion": null,
-        "observedAssetLibraryVersion": 120,
-        "nativeLanguageCompilePassed": true,
-        "nativeCompilerVersion": "0.739",
-        "playMode": "SINGLE",
-        "saveExists": true,
-        "multiplayerApplicable": false,
-        "sourcePreflightPassed": true,
-        "f0SourceIntegrityPassed": true,
-        "sourceStartupMarkersPassed": true,
-        "gameStartPassed": false,
-        "serverBootPassed": false,
-        "worldFoundationPassed": false,
-        "characterFoundationPassed": false,
-        "physicsAndMovementPassed": false,
-        "runtimeFoundationPassed": false,
-        "actualRuntimeEvidence": false,
-        "internalReleaseReady": false,
-        "serverClientBoundaryPreflightPassed": true,
-        "remoteSecurityPreflightPassed": true,
-        "mobileControlUiPreflightPassed": true,
-        "coreProgressionMarkersPassed": true,
-        "combatOrRoundMarkersPassed": true,
-        "datastoreContractPassed": true,
-        "multiplayerSyncContractPassed": true,
-        "protectedStatePreserved": true,
-        "exactRevision": true,
-        "gameplayProductReadinessRequired": false,
-        "gameplayProductReadiness": {
-          "version": 1,
-          "gameId": "seed-idle-growth-rpg-crystal-bloom",
-          "pass": false,
-          "blockers": [
-            "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-            "GENERIC_SCOPE_HANDLER_SKELETON"
-          ],
-          "requiredCapabilities": [
-            "CORE_GAMEPLAY_STATE",
-            "MOBILE_UI"
-          ],
-          "implementedCapabilities": {
-            "CORE_GAMEPLAY_STATE": false,
-            "MOBILE_UI": true
-          },
-          "coreLoopTrace": [],
-          "signatureSystemTrace": [],
-          "placeholderDebt": {
-            "primitiveConstructionCount": 0,
-            "meshConstructionCount": 0,
-            "likelyPrimitiveHeavy": false,
-            "genericScopeHandlerCount": 6,
-            "meaningfulGameplayFunctionCount": 0
-          },
-          "studioQualitySheet": {
-            "Core": "MISSING",
-            "Content": "N/A",
-            "World": "N/A",
-            "Combat": "N/A",
-            "AI": "N/A",
-            "Progression": "N/A",
-            "UI": "POLISHED",
-            "Graphics": "ROUGH",
-            "Motion": "POLISHED",
-            "Audio": "MISSING",
-            "Mobile": "POLISHED",
-            "Performance": "MISSING",
-            "Runtime": "N/A"
-          },
-          "studioReadiness": {
-            "ai": {
-              "applicable": false,
-              "signalCount": 0,
-              "pass": true
-            },
-            "combatFeel": {
-              "applicable": false,
-              "signalCount": 1,
-              "pass": true
-            },
-            "worldTopology": {
-              "applicable": false,
-              "signalCount": 1,
-              "pass": true
-            },
-            "firstTenMinutes": {
-              "signalCount": 3,
-              "pass": false
-            },
-            "midLateGame": {
-              "applicable": false,
-              "signalCount": 2,
-              "pass": true
-            },
-            "systemConnections": {
-              "rows": [],
-              "pass": true
-            },
-            "placeholder": {
-              "pass": true,
-              "primitiveConstructionCount": 0,
-              "meshConstructionCount": 0,
-              "likelyPrimitiveHeavy": false,
-              "genericScopeHandlerCount": 6,
-              "meaningfulGameplayFunctionCount": 0
-            },
-            "criticalGaps": [
-              "FIRST_10_MINUTES_FLOW"
-            ],
-            "f9SourceQualityReady": false
-          },
-          "runtimeRequirements": {
-            "worldRequired": false,
-            "minimumBasePartCount": 1,
-            "spawnRequired": false,
-            "landmarkRequired": false,
-            "objectiveRequired": false,
-            "serverBootRequired": true,
-            "simulationRequired": true,
-            "actualPlayRequired": true
-          },
-          "designFingerprint": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
-          "antiSkeletonPassed": false,
-          "designGenre": null,
-          "sourceGenre": "Strategy",
-          "designPlayMode": "SINGLE",
-          "sourcePlayMode": "SINGLE"
-        },
-        "studioQualitySheet": {
-          "Core": "MISSING",
-          "Content": "N/A",
-          "World": "N/A",
-          "Combat": "N/A",
-          "AI": "N/A",
-          "Progression": "N/A",
-          "UI": "POLISHED",
-          "Graphics": "ROUGH",
-          "Motion": "POLISHED",
-          "Audio": "MISSING",
-          "Mobile": "POLISHED",
-          "Performance": "MISSING",
-          "Runtime": "N/A"
-        },
-        "checks": {
-          "exactSourceRevision": true,
-          "nativeLanguageCompilePassed": true,
-          "exactArtifact": true,
-          "buildUpAssetSourceUsageFingerprint": true,
-          "assetSelectionFingerprint": true,
-          "assetLibraryVersion": true,
-          "projectContract": true,
-          "robloxPolicy": true,
-          "duplicateDeclarationGuard": true,
-          "sourceStartupMarkers": true,
-          "foundationSentinelContract": true,
-          "characterPhysicsGuard": true,
-          "groundContactNotSynthetic": true,
-          "mobileFirst": true,
-          "serverClientBoundary": true,
-          "remoteSecurity": true,
-          "coreProgression": true,
-          "combatOrRound": true,
-          "saveRejoin": true,
-          "multiplayerSync": true,
-          "sessionEndRestart": true,
-          "errorGuards": true,
-          "gameplayProductReadiness": true,
-          "f0SourceIntegrity": true
-        },
-        "pass": true,
-        "state": "PASS",
-        "blockers": [],
-        "authority": "roblox-headless-source-preflight-f0"
-      },
-      "robloxHeadlessFastMvpPassed": true,
-      "robloxHeadlessFastMvpEvidence": {
-        "version": 5,
-        "gameId": "seed-idle-growth-rpg-crystal-bloom",
-        "platform": "ROBLOX",
-        "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-07T05:23:47.188Z",
-        "sourcePath": "roblox-games/seed-idle-growth-rpg-crystal-bloom",
-        "sourceRevision": "770199ca8eee69e5255efe016459e166fd9e07b3",
-        "artifactIdentity": "sha256:3a8e7f4cf3c360ed0b08cf6ca499b82e427c5cf6b1575f5bd99baeead0adcce8",
-        "rebuiltArtifactIdentity": "sha256:3a8e7f4cf3c360ed0b08cf6ca499b82e427c5cf6b1575f5bd99baeead0adcce8",
-        "artifactRunId": 37575748817,
-        "buildUpAssetSourceUsageFingerprint": null,
-        "assetSelectionFingerprint": null,
-        "observedAssetSelectionFingerprint": "992d55a7d68ba1a8d13655329a3587f8cf8777b39e06657eb77a5131e1ca0a7d",
-        "assetLibraryVersion": null,
-        "observedAssetLibraryVersion": 120,
-        "nativeLanguageCompilePassed": true,
-        "nativeCompilerVersion": "0.739",
-        "playMode": "SINGLE",
-        "saveExists": true,
-        "multiplayerApplicable": false,
-        "sourcePreflightPassed": true,
-        "f0SourceIntegrityPassed": true,
-        "sourceStartupMarkersPassed": true,
-        "gameStartPassed": false,
-        "serverBootPassed": false,
-        "worldFoundationPassed": false,
-        "characterFoundationPassed": false,
-        "physicsAndMovementPassed": false,
-        "runtimeFoundationPassed": false,
-        "actualRuntimeEvidence": false,
-        "internalReleaseReady": false,
-        "serverClientBoundaryPreflightPassed": true,
-        "remoteSecurityPreflightPassed": true,
-        "mobileControlUiPreflightPassed": true,
-        "coreProgressionMarkersPassed": true,
-        "combatOrRoundMarkersPassed": true,
-        "datastoreContractPassed": true,
-        "multiplayerSyncContractPassed": true,
-        "protectedStatePreserved": true,
-        "exactRevision": true,
-        "gameplayProductReadinessRequired": false,
-        "gameplayProductReadiness": {
-          "version": 1,
-          "gameId": "seed-idle-growth-rpg-crystal-bloom",
-          "pass": false,
-          "blockers": [
-            "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-            "GENERIC_SCOPE_HANDLER_SKELETON"
-          ],
-          "requiredCapabilities": [
-            "CORE_GAMEPLAY_STATE",
-            "MOBILE_UI"
-          ],
-          "implementedCapabilities": {
-            "CORE_GAMEPLAY_STATE": false,
-            "MOBILE_UI": true
-          },
-          "coreLoopTrace": [],
-          "signatureSystemTrace": [],
-          "placeholderDebt": {
-            "primitiveConstructionCount": 0,
-            "meshConstructionCount": 0,
-            "likelyPrimitiveHeavy": false,
-            "genericScopeHandlerCount": 6,
-            "meaningfulGameplayFunctionCount": 0
-          },
-          "studioQualitySheet": {
-            "Core": "MISSING",
-            "Content": "N/A",
-            "World": "N/A",
-            "Combat": "N/A",
-            "AI": "N/A",
-            "Progression": "N/A",
-            "UI": "POLISHED",
-            "Graphics": "ROUGH",
-            "Motion": "POLISHED",
-            "Audio": "MISSING",
-            "Mobile": "POLISHED",
-            "Performance": "MISSING",
-            "Runtime": "N/A"
-          },
-          "studioReadiness": {
-            "ai": {
-              "applicable": false,
-              "signalCount": 0,
-              "pass": true
-            },
-            "combatFeel": {
-              "applicable": false,
-              "signalCount": 1,
-              "pass": true
-            },
-            "worldTopology": {
-              "applicable": false,
-              "signalCount": 1,
-              "pass": true
-            },
-            "firstTenMinutes": {
-              "signalCount": 3,
-              "pass": false
-            },
-            "midLateGame": {
-              "applicable": false,
-              "signalCount": 2,
-              "pass": true
-            },
-            "systemConnections": {
-              "rows": [],
-              "pass": true
-            },
-            "placeholder": {
-              "pass": true,
-              "primitiveConstructionCount": 0,
-              "meshConstructionCount": 0,
-              "likelyPrimitiveHeavy": false,
-              "genericScopeHandlerCount": 6,
-              "meaningfulGameplayFunctionCount": 0
-            },
-            "criticalGaps": [
-              "FIRST_10_MINUTES_FLOW"
-            ],
-            "f9SourceQualityReady": false
-          },
-          "runtimeRequirements": {
-            "worldRequired": false,
-            "minimumBasePartCount": 1,
-            "spawnRequired": false,
-            "landmarkRequired": false,
-            "objectiveRequired": false,
-            "serverBootRequired": true,
-            "simulationRequired": true,
-            "actualPlayRequired": true
-          },
-          "designFingerprint": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
-          "antiSkeletonPassed": false,
-          "designGenre": null,
-          "sourceGenre": "Strategy",
-          "designPlayMode": "SINGLE",
-          "sourcePlayMode": "SINGLE"
-        },
-        "studioQualitySheet": {
-          "Core": "MISSING",
-          "Content": "N/A",
-          "World": "N/A",
-          "Combat": "N/A",
-          "AI": "N/A",
-          "Progression": "N/A",
-          "UI": "POLISHED",
-          "Graphics": "ROUGH",
-          "Motion": "POLISHED",
-          "Audio": "MISSING",
-          "Mobile": "POLISHED",
-          "Performance": "MISSING",
-          "Runtime": "N/A"
-        },
-        "checks": {
-          "exactSourceRevision": true,
-          "nativeLanguageCompilePassed": true,
-          "exactArtifact": true,
-          "buildUpAssetSourceUsageFingerprint": true,
-          "assetSelectionFingerprint": true,
-          "assetLibraryVersion": true,
-          "projectContract": true,
-          "robloxPolicy": true,
-          "duplicateDeclarationGuard": true,
-          "sourceStartupMarkers": true,
-          "foundationSentinelContract": true,
-          "characterPhysicsGuard": true,
-          "groundContactNotSynthetic": true,
-          "mobileFirst": true,
-          "serverClientBoundary": true,
-          "remoteSecurity": true,
-          "coreProgression": true,
-          "combatOrRound": true,
-          "saveRejoin": true,
-          "multiplayerSync": true,
-          "sessionEndRestart": true,
-          "errorGuards": true,
-          "gameplayProductReadiness": true,
-          "f0SourceIntegrity": true
-        },
-        "pass": true,
-        "state": "PASS",
-        "blockers": [],
-        "authority": "roblox-headless-source-preflight-f0"
-      },
+      "robloxFoundationF0Passed": false,
+      "robloxFoundationF0PassedAt": null,
+      "robloxFoundationF0Evidence": null,
+      "robloxHeadlessFastMvpPassed": false,
+      "robloxHeadlessFastMvpEvidence": null,
       "robloxHeadlessFinalReviewPassed": false,
       "robloxRuntimeCandidateEvidence": null,
       "robloxRuntimeFoundationPassed": false,
@@ -23126,11 +22792,11 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
       "routingBlockers": [
-        "roblox-runtime-candidate-deploy-pending"
+        "roblox-build-preflight-blocked"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -23143,7 +22809,7 @@
       "strictDesignReviewRefreshRequired": true,
       "ownerPreservationPresentationUpgrade": false,
       "presentationFirstPass": null,
-      "robloxExactRevisionPassed": true,
+      "robloxExactRevisionPassed": false,
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": "development/unity-tech-seed-idle-growth-rpg-crystal-bloom-37327263262",
       "unitySourceCommit": "28461dc420de8411e586980f1691780e6e21bf33",
@@ -23349,2952 +23015,10 @@
       "robloxPresentationCompletionEvidence": null,
       "robloxReleaseStabilityEvidence": null,
       "robloxPublicReleaseFinalEvidence": null,
-      "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "770199ca8eee69e5255efe016459e166fd9e07b3",
-      "robloxQualityFailureClass": "GAMEPLAY_PRODUCT_READINESS",
-      "robloxQualityBuildUpEvidence": {
-        "version": 1,
-        "gameId": "seed-idle-growth-rpg-crystal-bloom",
-        "sourceRevision": "770199ca8eee69e5255efe016459e166fd9e07b3",
-        "artifactIdentity": "sha256:3a8e7f4cf3c360ed0b08cf6ca499b82e427c5cf6b1575f5bd99baeead0adcce8",
-        "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 37574149791,
-        "testedAt": "2026-10-07T05:08:23.794Z",
-        "qualityFailureKinds": [
-          "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-          "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-          "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-          "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-          "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-          "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-          "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-          "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-          "MISSING_GAMEPLAY_CAPABILITY:INFECTION",
-          "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-          "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-          "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-          "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-          "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-          "GENERIC_SCOPE_HANDLER_SKELETON"
-        ],
-        "repairSurfaces": [
-          "CORE_GAMEPLAY",
-          "COMBAT_FEEL",
-          "PROGRESSION_CONTENT"
-        ],
-        "qualityFailureDetails": [
-          {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P0",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "seed-idle-growth-rpg-crystal-bloom",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:INFECTION",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "EQUIPMENT",
-                "PROGRESSION",
-                "BOSS",
-                "INFECTION",
-                "SAVE",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "EQUIPMENT": false,
-                "PROGRESSION": false,
-                "BOSS": false,
-                "INFECTION": false,
-                "SAVE": true,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "자동 전투를 통해 오염된 마력 파편과 영웅 성장 재화를 지속적으로 획득합니다.",
-                  "capabilities": [
-                    "COMBAT",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "획득한 재화로 수정의 원소 노드를 개화하고 영웅의 장비와 스킬을 업그레이드합니다.",
-                  "capabilities": [
-                    "COMBAT",
-                    "EQUIPMENT"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "강화된 영웅 진형과 수정 버프를 활용해 더 높은 단계의 보스 스테이지에 도전하여 새로운 원소를 해금합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "PROGRESSION",
-                    "BOSS"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "수정 개화 시스템 (Crystal Bloom System)",
-                  "capabilities": [
-                    "CORE_GAMEPLAY_STATE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "원소 공명 진형 (Elemental Resonance Formation)",
-                  "capabilities": [
-                    "COMBAT"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "MISSING",
-                "World": "N/A",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": false,
-                  "signalCount": 1,
-                  "pass": true
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "EQUIPMENT_TO_COMBAT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": false,
-                "minimumBasePartCount": 1,
-                "spawnRequired": false,
-                "landmarkRequired": false,
-                "objectiveRequired": false,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "a99e69858cd4a078ccc223c6d5871c02dee1035467939efe6ea215bb98442e8a",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
-            }
-          },
-          {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P0",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "seed-idle-growth-rpg-crystal-bloom",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:INFECTION",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "EQUIPMENT",
-                "PROGRESSION",
-                "BOSS",
-                "INFECTION",
-                "SAVE",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "EQUIPMENT": false,
-                "PROGRESSION": false,
-                "BOSS": false,
-                "INFECTION": false,
-                "SAVE": true,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "자동 전투를 통해 오염된 마력 파편과 영웅 성장 재화를 지속적으로 획득합니다.",
-                  "capabilities": [
-                    "COMBAT",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "획득한 재화로 수정의 원소 노드를 개화하고 영웅의 장비와 스킬을 업그레이드합니다.",
-                  "capabilities": [
-                    "COMBAT",
-                    "EQUIPMENT"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "강화된 영웅 진형과 수정 버프를 활용해 더 높은 단계의 보스 스테이지에 도전하여 새로운 원소를 해금합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "PROGRESSION",
-                    "BOSS"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "수정 개화 시스템 (Crystal Bloom System)",
-                  "capabilities": [
-                    "CORE_GAMEPLAY_STATE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "원소 공명 진형 (Elemental Resonance Formation)",
-                  "capabilities": [
-                    "COMBAT"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "MISSING",
-                "World": "N/A",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": false,
-                  "signalCount": 1,
-                  "pass": true
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "EQUIPMENT_TO_COMBAT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": false,
-                "minimumBasePartCount": 1,
-                "spawnRequired": false,
-                "landmarkRequired": false,
-                "objectiveRequired": false,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "a99e69858cd4a078ccc223c6d5871c02dee1035467939efe6ea215bb98442e8a",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
-            }
-          },
-          {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P0",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "seed-idle-growth-rpg-crystal-bloom",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:INFECTION",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "EQUIPMENT",
-                "PROGRESSION",
-                "BOSS",
-                "INFECTION",
-                "SAVE",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "EQUIPMENT": false,
-                "PROGRESSION": false,
-                "BOSS": false,
-                "INFECTION": false,
-                "SAVE": true,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "자동 전투를 통해 오염된 마력 파편과 영웅 성장 재화를 지속적으로 획득합니다.",
-                  "capabilities": [
-                    "COMBAT",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "획득한 재화로 수정의 원소 노드를 개화하고 영웅의 장비와 스킬을 업그레이드합니다.",
-                  "capabilities": [
-                    "COMBAT",
-                    "EQUIPMENT"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "강화된 영웅 진형과 수정 버프를 활용해 더 높은 단계의 보스 스테이지에 도전하여 새로운 원소를 해금합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "PROGRESSION",
-                    "BOSS"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "수정 개화 시스템 (Crystal Bloom System)",
-                  "capabilities": [
-                    "CORE_GAMEPLAY_STATE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "원소 공명 진형 (Elemental Resonance Formation)",
-                  "capabilities": [
-                    "COMBAT"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "MISSING",
-                "World": "N/A",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": false,
-                  "signalCount": 1,
-                  "pass": true
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "EQUIPMENT_TO_COMBAT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": false,
-                "minimumBasePartCount": 1,
-                "spawnRequired": false,
-                "landmarkRequired": false,
-                "objectiveRequired": false,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "a99e69858cd4a078ccc223c6d5871c02dee1035467939efe6ea215bb98442e8a",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
-            }
-          },
-          {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "seed-idle-growth-rpg-crystal-bloom",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:INFECTION",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "EQUIPMENT",
-                "PROGRESSION",
-                "BOSS",
-                "INFECTION",
-                "SAVE",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "EQUIPMENT": false,
-                "PROGRESSION": false,
-                "BOSS": false,
-                "INFECTION": false,
-                "SAVE": true,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "자동 전투를 통해 오염된 마력 파편과 영웅 성장 재화를 지속적으로 획득합니다.",
-                  "capabilities": [
-                    "COMBAT",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "획득한 재화로 수정의 원소 노드를 개화하고 영웅의 장비와 스킬을 업그레이드합니다.",
-                  "capabilities": [
-                    "COMBAT",
-                    "EQUIPMENT"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "강화된 영웅 진형과 수정 버프를 활용해 더 높은 단계의 보스 스테이지에 도전하여 새로운 원소를 해금합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "PROGRESSION",
-                    "BOSS"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "수정 개화 시스템 (Crystal Bloom System)",
-                  "capabilities": [
-                    "CORE_GAMEPLAY_STATE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "원소 공명 진형 (Elemental Resonance Formation)",
-                  "capabilities": [
-                    "COMBAT"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "MISSING",
-                "World": "N/A",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": false,
-                  "signalCount": 1,
-                  "pass": true
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "EQUIPMENT_TO_COMBAT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": false,
-                "minimumBasePartCount": 1,
-                "spawnRequired": false,
-                "landmarkRequired": false,
-                "objectiveRequired": false,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "a99e69858cd4a078ccc223c6d5871c02dee1035467939efe6ea215bb98442e8a",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
-            }
-          },
-          {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "seed-idle-growth-rpg-crystal-bloom",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:INFECTION",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "EQUIPMENT",
-                "PROGRESSION",
-                "BOSS",
-                "INFECTION",
-                "SAVE",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "EQUIPMENT": false,
-                "PROGRESSION": false,
-                "BOSS": false,
-                "INFECTION": false,
-                "SAVE": true,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "자동 전투를 통해 오염된 마력 파편과 영웅 성장 재화를 지속적으로 획득합니다.",
-                  "capabilities": [
-                    "COMBAT",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "획득한 재화로 수정의 원소 노드를 개화하고 영웅의 장비와 스킬을 업그레이드합니다.",
-                  "capabilities": [
-                    "COMBAT",
-                    "EQUIPMENT"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "강화된 영웅 진형과 수정 버프를 활용해 더 높은 단계의 보스 스테이지에 도전하여 새로운 원소를 해금합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "PROGRESSION",
-                    "BOSS"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "수정 개화 시스템 (Crystal Bloom System)",
-                  "capabilities": [
-                    "CORE_GAMEPLAY_STATE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "원소 공명 진형 (Elemental Resonance Formation)",
-                  "capabilities": [
-                    "COMBAT"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "MISSING",
-                "World": "N/A",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": false,
-                  "signalCount": 1,
-                  "pass": true
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "EQUIPMENT_TO_COMBAT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": false,
-                "minimumBasePartCount": 1,
-                "spawnRequired": false,
-                "landmarkRequired": false,
-                "objectiveRequired": false,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "a99e69858cd4a078ccc223c6d5871c02dee1035467939efe6ea215bb98442e8a",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
-            }
-          },
-          {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "seed-idle-growth-rpg-crystal-bloom",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:INFECTION",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "EQUIPMENT",
-                "PROGRESSION",
-                "BOSS",
-                "INFECTION",
-                "SAVE",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "EQUIPMENT": false,
-                "PROGRESSION": false,
-                "BOSS": false,
-                "INFECTION": false,
-                "SAVE": true,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "자동 전투를 통해 오염된 마력 파편과 영웅 성장 재화를 지속적으로 획득합니다.",
-                  "capabilities": [
-                    "COMBAT",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "획득한 재화로 수정의 원소 노드를 개화하고 영웅의 장비와 스킬을 업그레이드합니다.",
-                  "capabilities": [
-                    "COMBAT",
-                    "EQUIPMENT"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "강화된 영웅 진형과 수정 버프를 활용해 더 높은 단계의 보스 스테이지에 도전하여 새로운 원소를 해금합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "PROGRESSION",
-                    "BOSS"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "수정 개화 시스템 (Crystal Bloom System)",
-                  "capabilities": [
-                    "CORE_GAMEPLAY_STATE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "원소 공명 진형 (Elemental Resonance Formation)",
-                  "capabilities": [
-                    "COMBAT"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "MISSING",
-                "World": "N/A",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": false,
-                  "signalCount": 1,
-                  "pass": true
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "EQUIPMENT_TO_COMBAT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": false,
-                "minimumBasePartCount": 1,
-                "spawnRequired": false,
-                "landmarkRequired": false,
-                "objectiveRequired": false,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "a99e69858cd4a078ccc223c6d5871c02dee1035467939efe6ea215bb98442e8a",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
-            }
-          },
-          {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "seed-idle-growth-rpg-crystal-bloom",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:INFECTION",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "EQUIPMENT",
-                "PROGRESSION",
-                "BOSS",
-                "INFECTION",
-                "SAVE",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "EQUIPMENT": false,
-                "PROGRESSION": false,
-                "BOSS": false,
-                "INFECTION": false,
-                "SAVE": true,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "자동 전투를 통해 오염된 마력 파편과 영웅 성장 재화를 지속적으로 획득합니다.",
-                  "capabilities": [
-                    "COMBAT",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "획득한 재화로 수정의 원소 노드를 개화하고 영웅의 장비와 스킬을 업그레이드합니다.",
-                  "capabilities": [
-                    "COMBAT",
-                    "EQUIPMENT"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "강화된 영웅 진형과 수정 버프를 활용해 더 높은 단계의 보스 스테이지에 도전하여 새로운 원소를 해금합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "PROGRESSION",
-                    "BOSS"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "수정 개화 시스템 (Crystal Bloom System)",
-                  "capabilities": [
-                    "CORE_GAMEPLAY_STATE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "원소 공명 진형 (Elemental Resonance Formation)",
-                  "capabilities": [
-                    "COMBAT"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "MISSING",
-                "World": "N/A",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": false,
-                  "signalCount": 1,
-                  "pass": true
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "EQUIPMENT_TO_COMBAT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": false,
-                "minimumBasePartCount": 1,
-                "spawnRequired": false,
-                "landmarkRequired": false,
-                "objectiveRequired": false,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "a99e69858cd4a078ccc223c6d5871c02dee1035467939efe6ea215bb98442e8a",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
-            }
-          },
-          {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "seed-idle-growth-rpg-crystal-bloom",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:INFECTION",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "EQUIPMENT",
-                "PROGRESSION",
-                "BOSS",
-                "INFECTION",
-                "SAVE",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "EQUIPMENT": false,
-                "PROGRESSION": false,
-                "BOSS": false,
-                "INFECTION": false,
-                "SAVE": true,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "자동 전투를 통해 오염된 마력 파편과 영웅 성장 재화를 지속적으로 획득합니다.",
-                  "capabilities": [
-                    "COMBAT",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "획득한 재화로 수정의 원소 노드를 개화하고 영웅의 장비와 스킬을 업그레이드합니다.",
-                  "capabilities": [
-                    "COMBAT",
-                    "EQUIPMENT"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "강화된 영웅 진형과 수정 버프를 활용해 더 높은 단계의 보스 스테이지에 도전하여 새로운 원소를 해금합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "PROGRESSION",
-                    "BOSS"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "수정 개화 시스템 (Crystal Bloom System)",
-                  "capabilities": [
-                    "CORE_GAMEPLAY_STATE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "원소 공명 진형 (Elemental Resonance Formation)",
-                  "capabilities": [
-                    "COMBAT"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "MISSING",
-                "World": "N/A",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": false,
-                  "signalCount": 1,
-                  "pass": true
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "EQUIPMENT_TO_COMBAT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": false,
-                "minimumBasePartCount": 1,
-                "spawnRequired": false,
-                "landmarkRequired": false,
-                "objectiveRequired": false,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "a99e69858cd4a078ccc223c6d5871c02dee1035467939efe6ea215bb98442e8a",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
-            }
-          },
-          {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:INFECTION",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "seed-idle-growth-rpg-crystal-bloom",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:INFECTION",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "EQUIPMENT",
-                "PROGRESSION",
-                "BOSS",
-                "INFECTION",
-                "SAVE",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "EQUIPMENT": false,
-                "PROGRESSION": false,
-                "BOSS": false,
-                "INFECTION": false,
-                "SAVE": true,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "자동 전투를 통해 오염된 마력 파편과 영웅 성장 재화를 지속적으로 획득합니다.",
-                  "capabilities": [
-                    "COMBAT",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "획득한 재화로 수정의 원소 노드를 개화하고 영웅의 장비와 스킬을 업그레이드합니다.",
-                  "capabilities": [
-                    "COMBAT",
-                    "EQUIPMENT"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "강화된 영웅 진형과 수정 버프를 활용해 더 높은 단계의 보스 스테이지에 도전하여 새로운 원소를 해금합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "PROGRESSION",
-                    "BOSS"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "수정 개화 시스템 (Crystal Bloom System)",
-                  "capabilities": [
-                    "CORE_GAMEPLAY_STATE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "원소 공명 진형 (Elemental Resonance Formation)",
-                  "capabilities": [
-                    "COMBAT"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "MISSING",
-                "World": "N/A",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": false,
-                  "signalCount": 1,
-                  "pass": true
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "EQUIPMENT_TO_COMBAT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": false,
-                "minimumBasePartCount": 1,
-                "spawnRequired": false,
-                "landmarkRequired": false,
-                "objectiveRequired": false,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "a99e69858cd4a078ccc223c6d5871c02dee1035467939efe6ea215bb98442e8a",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
-            }
-          },
-          {
-            "id": "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "seed-idle-growth-rpg-crystal-bloom",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:INFECTION",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "EQUIPMENT",
-                "PROGRESSION",
-                "BOSS",
-                "INFECTION",
-                "SAVE",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "EQUIPMENT": false,
-                "PROGRESSION": false,
-                "BOSS": false,
-                "INFECTION": false,
-                "SAVE": true,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "자동 전투를 통해 오염된 마력 파편과 영웅 성장 재화를 지속적으로 획득합니다.",
-                  "capabilities": [
-                    "COMBAT",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "획득한 재화로 수정의 원소 노드를 개화하고 영웅의 장비와 스킬을 업그레이드합니다.",
-                  "capabilities": [
-                    "COMBAT",
-                    "EQUIPMENT"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "강화된 영웅 진형과 수정 버프를 활용해 더 높은 단계의 보스 스테이지에 도전하여 새로운 원소를 해금합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "PROGRESSION",
-                    "BOSS"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "수정 개화 시스템 (Crystal Bloom System)",
-                  "capabilities": [
-                    "CORE_GAMEPLAY_STATE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "원소 공명 진형 (Elemental Resonance Formation)",
-                  "capabilities": [
-                    "COMBAT"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "MISSING",
-                "World": "N/A",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": false,
-                  "signalCount": 1,
-                  "pass": true
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "EQUIPMENT_TO_COMBAT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": false,
-                "minimumBasePartCount": 1,
-                "spawnRequired": false,
-                "landmarkRequired": false,
-                "objectiveRequired": false,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "a99e69858cd4a078ccc223c6d5871c02dee1035467939efe6ea215bb98442e8a",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
-            }
-          },
-          {
-            "id": "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "seed-idle-growth-rpg-crystal-bloom",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:INFECTION",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "EQUIPMENT",
-                "PROGRESSION",
-                "BOSS",
-                "INFECTION",
-                "SAVE",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "EQUIPMENT": false,
-                "PROGRESSION": false,
-                "BOSS": false,
-                "INFECTION": false,
-                "SAVE": true,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "자동 전투를 통해 오염된 마력 파편과 영웅 성장 재화를 지속적으로 획득합니다.",
-                  "capabilities": [
-                    "COMBAT",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "획득한 재화로 수정의 원소 노드를 개화하고 영웅의 장비와 스킬을 업그레이드합니다.",
-                  "capabilities": [
-                    "COMBAT",
-                    "EQUIPMENT"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "강화된 영웅 진형과 수정 버프를 활용해 더 높은 단계의 보스 스테이지에 도전하여 새로운 원소를 해금합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "PROGRESSION",
-                    "BOSS"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "수정 개화 시스템 (Crystal Bloom System)",
-                  "capabilities": [
-                    "CORE_GAMEPLAY_STATE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "원소 공명 진형 (Elemental Resonance Formation)",
-                  "capabilities": [
-                    "COMBAT"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "MISSING",
-                "World": "N/A",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": false,
-                  "signalCount": 1,
-                  "pass": true
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "EQUIPMENT_TO_COMBAT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": false,
-                "minimumBasePartCount": 1,
-                "spawnRequired": false,
-                "landmarkRequired": false,
-                "objectiveRequired": false,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "a99e69858cd4a078ccc223c6d5871c02dee1035467939efe6ea215bb98442e8a",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
-            }
-          },
-          {
-            "id": "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "seed-idle-growth-rpg-crystal-bloom",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:INFECTION",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "EQUIPMENT",
-                "PROGRESSION",
-                "BOSS",
-                "INFECTION",
-                "SAVE",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "EQUIPMENT": false,
-                "PROGRESSION": false,
-                "BOSS": false,
-                "INFECTION": false,
-                "SAVE": true,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "자동 전투를 통해 오염된 마력 파편과 영웅 성장 재화를 지속적으로 획득합니다.",
-                  "capabilities": [
-                    "COMBAT",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "획득한 재화로 수정의 원소 노드를 개화하고 영웅의 장비와 스킬을 업그레이드합니다.",
-                  "capabilities": [
-                    "COMBAT",
-                    "EQUIPMENT"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "강화된 영웅 진형과 수정 버프를 활용해 더 높은 단계의 보스 스테이지에 도전하여 새로운 원소를 해금합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "PROGRESSION",
-                    "BOSS"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "수정 개화 시스템 (Crystal Bloom System)",
-                  "capabilities": [
-                    "CORE_GAMEPLAY_STATE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "원소 공명 진형 (Elemental Resonance Formation)",
-                  "capabilities": [
-                    "COMBAT"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "MISSING",
-                "World": "N/A",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": false,
-                  "signalCount": 1,
-                  "pass": true
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "EQUIPMENT_TO_COMBAT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": false,
-                "minimumBasePartCount": 1,
-                "spawnRequired": false,
-                "landmarkRequired": false,
-                "objectiveRequired": false,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "a99e69858cd4a078ccc223c6d5871c02dee1035467939efe6ea215bb98442e8a",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
-            }
-          },
-          {
-            "id": "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "seed-idle-growth-rpg-crystal-bloom",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:INFECTION",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "EQUIPMENT",
-                "PROGRESSION",
-                "BOSS",
-                "INFECTION",
-                "SAVE",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "EQUIPMENT": false,
-                "PROGRESSION": false,
-                "BOSS": false,
-                "INFECTION": false,
-                "SAVE": true,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "자동 전투를 통해 오염된 마력 파편과 영웅 성장 재화를 지속적으로 획득합니다.",
-                  "capabilities": [
-                    "COMBAT",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "획득한 재화로 수정의 원소 노드를 개화하고 영웅의 장비와 스킬을 업그레이드합니다.",
-                  "capabilities": [
-                    "COMBAT",
-                    "EQUIPMENT"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "강화된 영웅 진형과 수정 버프를 활용해 더 높은 단계의 보스 스테이지에 도전하여 새로운 원소를 해금합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "PROGRESSION",
-                    "BOSS"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "수정 개화 시스템 (Crystal Bloom System)",
-                  "capabilities": [
-                    "CORE_GAMEPLAY_STATE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "원소 공명 진형 (Elemental Resonance Formation)",
-                  "capabilities": [
-                    "COMBAT"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "MISSING",
-                "World": "N/A",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": false,
-                  "signalCount": 1,
-                  "pass": true
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "EQUIPMENT_TO_COMBAT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": false,
-                "minimumBasePartCount": 1,
-                "spawnRequired": false,
-                "landmarkRequired": false,
-                "objectiveRequired": false,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "a99e69858cd4a078ccc223c6d5871c02dee1035467939efe6ea215bb98442e8a",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
-            }
-          },
-          {
-            "id": "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "seed-idle-growth-rpg-crystal-bloom",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:INFECTION",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "EQUIPMENT",
-                "PROGRESSION",
-                "BOSS",
-                "INFECTION",
-                "SAVE",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "EQUIPMENT": false,
-                "PROGRESSION": false,
-                "BOSS": false,
-                "INFECTION": false,
-                "SAVE": true,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "자동 전투를 통해 오염된 마력 파편과 영웅 성장 재화를 지속적으로 획득합니다.",
-                  "capabilities": [
-                    "COMBAT",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "획득한 재화로 수정의 원소 노드를 개화하고 영웅의 장비와 스킬을 업그레이드합니다.",
-                  "capabilities": [
-                    "COMBAT",
-                    "EQUIPMENT"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "강화된 영웅 진형과 수정 버프를 활용해 더 높은 단계의 보스 스테이지에 도전하여 새로운 원소를 해금합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "PROGRESSION",
-                    "BOSS"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "수정 개화 시스템 (Crystal Bloom System)",
-                  "capabilities": [
-                    "CORE_GAMEPLAY_STATE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "원소 공명 진형 (Elemental Resonance Formation)",
-                  "capabilities": [
-                    "COMBAT"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "MISSING",
-                "World": "N/A",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": false,
-                  "signalCount": 1,
-                  "pass": true
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "EQUIPMENT_TO_COMBAT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": false,
-                "minimumBasePartCount": 1,
-                "spawnRequired": false,
-                "landmarkRequired": false,
-                "objectiveRequired": false,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "a99e69858cd4a078ccc223c6d5871c02dee1035467939efe6ea215bb98442e8a",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
-            }
-          },
-          {
-            "id": "GENERIC_SCOPE_HANDLER_SKELETON",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "seed-idle-growth-rpg-crystal-bloom",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:INFECTION",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "EQUIPMENT",
-                "PROGRESSION",
-                "BOSS",
-                "INFECTION",
-                "SAVE",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "EQUIPMENT": false,
-                "PROGRESSION": false,
-                "BOSS": false,
-                "INFECTION": false,
-                "SAVE": true,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "자동 전투를 통해 오염된 마력 파편과 영웅 성장 재화를 지속적으로 획득합니다.",
-                  "capabilities": [
-                    "COMBAT",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "획득한 재화로 수정의 원소 노드를 개화하고 영웅의 장비와 스킬을 업그레이드합니다.",
-                  "capabilities": [
-                    "COMBAT",
-                    "EQUIPMENT"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "강화된 영웅 진형과 수정 버프를 활용해 더 높은 단계의 보스 스테이지에 도전하여 새로운 원소를 해금합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "PROGRESSION",
-                    "BOSS"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "수정 개화 시스템 (Crystal Bloom System)",
-                  "capabilities": [
-                    "CORE_GAMEPLAY_STATE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "원소 공명 진형 (Elemental Resonance Formation)",
-                  "capabilities": [
-                    "COMBAT"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "MISSING",
-                "World": "N/A",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": false,
-                  "signalCount": 1,
-                  "pass": true
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "EQUIPMENT_TO_COMBAT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": false,
-                "minimumBasePartCount": 1,
-                "spawnRequired": false,
-                "landmarkRequired": false,
-                "objectiveRequired": false,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "a99e69858cd4a078ccc223c6d5871c02dee1035467939efe6ea215bb98442e8a",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
-            }
-          }
-        ]
-      },
+      "robloxQualityBuildUpRequired": false,
+      "robloxQualityBuildUpSourceRevision": null,
+      "robloxQualityFailureClass": null,
+      "robloxQualityBuildUpEvidence": null,
       "unityMobilePerformancePassed": true,
       "unityMobilePerformanceEvidence": {
         "state": "PASS",
@@ -30075,21 +26799,62 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-07T05:26:47.380Z",
+      "updatedAt": "2026-10-07T05:38:32.329Z",
       "robloxSourceCommit": "2cc4a7b31a540925a89d10880b1a17e82e3ede2c",
       "robloxSourceBootstrapPassedAt": "2026-10-07T05:26:47.380Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
-      "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": null,
-      "robloxBuildArtifactIdentity": null,
-      "robloxBuildPassedAt": null,
+      "robloxBuildOrPackagePassed": true,
+      "robloxBuildSourceRevision": "2cc4a7b31a540925a89d10880b1a17e82e3ede2c",
+      "robloxBuildArtifactIdentity": "sha256:96212f83c82207e3898365549f0bf6599603b7c788b065f0b7975c13db5e8e63",
+      "robloxBuildPassedAt": "2026-10-07T05:38:32.329Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": null,
-      "robloxBuildPreflightEvidence": null,
+      "robloxBuildPreflightFailedAt": "2026-10-07T05:38:32.329Z",
+      "robloxBuildPreflightEvidence": {
+        "version": 2,
+        "gameId": "seed-single-defense-strat-celestial-bastion",
+        "pass": false,
+        "state": "BLOCKED",
+        "checkedAt": "2026-10-07T05:30:34.503Z",
+        "facts": {
+          "pass": false,
+          "blockers": [
+            "roblox-platform-required"
+          ],
+          "leads": {
+            "planning": "llama3.2:1b",
+            "graphics": "llama3.2:1b",
+            "development": "llama3.2:1b",
+            "qa": "llama3.2:1b",
+            "balance": "llama3.2:1b"
+          },
+          "sharedModel": "llama3.2:1b",
+          "distinctLeadCount": 1,
+          "secondaryOwnerFocus": false,
+          "robloxLaneEligible": false,
+          "directRoblox": false,
+          "concurrentRoblox": false,
+          "build": {
+            "sourceRevision": "2cc4a7b31a540925a89d10880b1a17e82e3ede2c",
+            "artifactIdentity": "sha256:96212f83c82207e3898365549f0bf6599603b7c788b065f0b7975c13db5e8e63",
+            "webValidationPassed": false,
+            "musicValidationPassed": false,
+            "nativeWebValidationPassed": false,
+            "nativeMusicValidationPassed": false,
+            "sourceEligibilityAuthority": "exact-immutable-roblox-package",
+            "sourceValidationPassed": true,
+            "buildOrPackagePassed": true
+          }
+        },
+        "leadReviews": [],
+        "blockers": [
+          "roblox-platform-required"
+        ],
+        "authority": "roblox-vibe-shared-model-build-preflight"
+      },
       "robloxFoundationF0Passed": false,
       "robloxFoundationF0PassedAt": null,
       "robloxFoundationF0Evidence": null,
@@ -30126,11 +26891,11 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
       "routingBlockers": [
-        "roblox-build-package-pending"
+        "roblox-build-preflight-blocked"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -30143,7 +26908,7 @@
       "strictDesignReviewRefreshRequired": true,
       "ownerPreservationPresentationUpgrade": false,
       "presentationFirstPass": null,
-      "robloxExactRevisionPassed": true,
+      "robloxExactRevisionPassed": false,
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": "development/unity-tech-seed-single-defense-strat-celestial-bastion-37327263262",
       "unitySourceCommit": "01aad774cfdb73616c746a711dac18ee00e290b7",
@@ -30935,7 +27700,11 @@
         "scanCapped": false,
         "worldGeometryPresent": true,
         "sameLuauExecutionSession": true
-      }
+      },
+      "robloxBuildUpAssetSourceUsageFingerprint": "4f0543c310db57078a15f00852b38911a2d30c4f7e241a646d398cbc2dc7e806",
+      "robloxBuildUpAssetSourceUsageLibraryVersion": 120,
+      "robloxBuildAssetSelectionFingerprint": "d3e6f20d151d54d0b71f46fa2a219cb699405f23175d25861c7fc1d7ddc739cb",
+      "robloxBuildAssetLibraryVersion": 120
     },
     {
       "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
@@ -35270,7 +32039,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-07T05:26:28.268Z",
+      "updatedAt": "2026-10-07T05:38:32.329Z",
       "robloxSourceCommit": "69374015436e4e9822d1ece6ebcefd3e5803d23d",
       "robloxSourceBootstrapPassedAt": "2026-10-07T04:40:53.964Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -35279,17 +32048,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "69374015436e4e9822d1ece6ebcefd3e5803d23d",
       "robloxBuildArtifactIdentity": "sha256:7b143c7cd251f4f578e2e242420cad37a9ac3729cea40169d4604e438ffbf9f2",
-      "robloxBuildPassedAt": "2026-10-07T05:26:28.268Z",
+      "robloxBuildPassedAt": "2026-10-07T05:38:32.329Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-07T05:26:28.268Z",
+      "robloxBuildPreflightFailedAt": "2026-10-07T05:38:32.329Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "survival",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-07T05:24:57.815Z",
+        "checkedAt": "2026-10-07T05:36:31.084Z",
         "facts": {
           "pass": false,
           "blockers": [
@@ -36087,7 +32856,7 @@
       "robloxBuildAssetLibraryVersion": 120
     }
   ],
-  "updatedAt": "2026-10-07T05:35:51.426Z",
+  "updatedAt": "2026-10-07T05:38:32.329Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
