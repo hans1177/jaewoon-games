@@ -601,3 +601,32 @@ test('canonical graphics policy requires one GLB master before platform-native 3
   assert.equal(CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.requiredBeforePlatformNativeVariant,true);
   assert.equal(CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.primitivePartAssemblyPrototypeOnly,true);
 });
+
+
+test('canonical NPC production contract requires physical appearance and role diversity without gameplay authority changes',()=>{
+  const policy=roadmap.assetProductionParallelContract.companyGraphicsLibrary24h.studioAssetUniverse.npcRoleProduction;
+  assert.equal(policy.status,'ACTIVE_EXECUTABLE_CONTRACT');
+  assert.ok(policy.appliesToRoles.includes('COMPANION'));
+  assert.ok(policy.appliesToRoles.includes('HUMANOID_BOSS'));
+  assert.ok(policy.physicalDiversity.requiredAxes.includes('HEIGHT_CM'));
+  assert.ok(policy.physicalDiversity.requiredAxes.includes('WEIGHT_KG'));
+  assert.equal(policy.physicalDiversity.nearbyDistinctAxisMinimum,5);
+  assert.equal(policy.physicalDiversity.heightWeightOnlyCannotProveDistinctIdentity,true);
+  assert.equal(policy.appearanceDiversity.colorOnlyFaceOnlyOrSizeOnlyCloneForbidden,true);
+  assert.equal(policy.production.crossPlatformMasterGlbRequired,true);
+  assert.equal(policy.production.primitivePartOrWeldOnlyFinalNpcForbidden,true);
+  assert.equal(policy.authority.collisionHitboxMovementSpeedStatsRemainGameOwned,true);
+  assert.equal(policy.authority.visualHeightWeightDoNotGrantHiddenGameplayAdvantages,true);
+
+  const topology=architecture.assetProductionParallelism.companyGraphicsLibrary24h.studioAssetUniverse.npcRoleProduction;
+  assert.equal(topology.identityDirector,'assets/vibe-character-identity-director.js');
+  assert.equal(topology.physicalAxesReachCustomizationRecipe,true);
+  assert.equal(topology.roleProfileReceivesPerNpcPhysicalIdentity,true);
+  assert.equal(topology.newWorkerQueueOrPipeline,false);
+
+  assert.equal(logMap.npcRoleProductionEvidenceContract.nearbyDistinctAxisMinimum,5);
+  assert.equal(logMap.npcRoleProductionEvidenceContract.physicalIdentityMustReachRoleProfileAndCustomizationRecipe,true);
+  assert.equal(security.npcRoleProductionSecurity.protections.visualHeightWeightCannotMutateAuthoritativeGameplayScale,true);
+  assert.equal(security.npcRoleProductionSecurity.protections.visualBodyMassCannotMutateCollisionOrHitbox,true);
+  assert.equal(security.npcRoleProductionSecurity.protections.bossAppearanceCannotAuthorizeBalancePhaseRewardOrDamageChanges,true);
+});
