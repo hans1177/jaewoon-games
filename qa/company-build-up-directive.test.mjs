@@ -34,6 +34,28 @@ function design(){
   };
 }
 
+test('detailed verified design fields survive into build-up and implementation prompt',()=>{
+  const sourceObservation={
+    sourceRoot:'roblox-games/detail-lineage',sourceTreeFingerprint:'d'.repeat(64),fileCount:1,topFiles:[],sourceAnchors:[],observations:[],
+    signals:{combat:1,progression:1,ai:1,save:1,multiplayer:0,animation:1,vfx:1,camera:1,ui:1,uiFlow:1,input:1,map:1,landmark:1,interaction:1,inventory:0,equipment:0,settings:1,feedback:1,session:1,content:1,choice:1,connection:1,performance:1,lighting:1,primitive:0,todo:0,errorRecovery:1}
+  };
+  const detailed=design();
+  detailed.content.mobileUx='모바일 전투 중 엄지 영역과 메뉴 복귀 흐름을 분리한다.';
+  detailed.content.uxAccessibilityPlan={hudPriorities:'체력과 현재 목표 우선',touchAndInput:'하단 우측 공격 버튼과 뒤로가기 버튼의 역할을 분리',readability:'작은 화면에서도 목표와 버튼 상태를 읽게 한다',accessibility:'진동과 음량을 분리 설정'};
+  detailed.content.platformFitPlan={targetPlatform:'ROBLOX',inputModel:'터치/패드/키보드 동일 상태를 사용',performanceBudget:'모바일 전투 프레임 예산',sessionConstraints:'중단 후 복귀 가능'};
+  detailed.content.contentVarietyPlan={regions:[{name:'정원 북쪽',traversal:'우회 경로',riskReward:'위험한 지름길',landmark:'온실',encounterPattern:'매복 해충',resourcePressure:'회복 자원 부족',storyContext:'침입 원인 추적'}],enemiesOrChallenges:[],objectives:[],antiMonotonyRule:'같은 처치 수치 복제를 금지'};
+  detailed.content.narrativeDialoguePlan={applicable:true,worldRules:['포식 관계가 지역 질서를 바꾼다'],characterGoals:['관리인은 정원을 지키려 한다'],plotBeats:['침입 원인을 발견한다'],questStates:['퀘스트: 온실 단서 조사 -> 방어 -> 후속 지역 해금'],foreshadowing:[],payoffs:[],twists:[],dialogueRules:[],characterVoiceProfiles:[],sceneBeats:[]};
+  detailed.content.selectedDesignPlan={label:'PLAN_A',rationale:'메뉴와 전투 상태를 하나의 진행 흐름으로 연결',identityPreserved:'정원 방어 정체성 유지',creativeDeviation:'온실 조사와 방어 연결',genreChange:false,reversibility:'기존 상태로 복귀 가능'};
+  detailed.content.implementationTraceability=[{designElement:'메뉴 버튼 상태',responsibleSystem:'HUD/Menu state',validationEvidence:'버튼 활성/잠금과 실제 상태 일치'}];
+  const directive=buildGameSpecificBuildUpDirective({gameId:'detail-lineage',gameName:'상세 설계',designRecord:detailed,sourceObservation,responsibleFiles:['roblox-games/detail-lineage/Game.luau']});
+  assert.equal(directive.designImplementationContext.uxAccessibilityPlan.touchAndInput,detailed.content.uxAccessibilityPlan.touchAndInput);
+  assert.equal(directive.designImplementationContext.narrativeDialoguePlan.questStates[0],detailed.content.narrativeDialoguePlan.questStates[0]);
+  assert.notEqual(directive.qualityGapMap.find(row=>row.domain==='QUESTS').state,'NOT_APPLICABLE');
+  assert.match(directivePrompt(directive),/DESIGN_IMPLEMENTATION_CONTEXT:/);
+  assert.match(directivePrompt(directive),/하단 우측 공격 버튼/);
+  assert.match(directivePrompt(directive),/온실 단서 조사/);
+});
+
 test('existing UI without entry or loading flow becomes a cross-platform build-up gap',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'entry-flow-directive-'));
   const sourcePath=path.join(root,'roblox-games','puzzle','client','Game.client.luau');
