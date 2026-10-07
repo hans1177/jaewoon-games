@@ -1,5 +1,5 @@
 {
-  "version": 547,
+  "version": 548,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-07",
@@ -24559,7 +24559,7 @@
           ],
           "eachAlternativeMustCoverRequiredAxes": true,
           "authoringIntegrity": {
-            "version": 1,
+            "version": 2,
             "authority": "OWNER_DIRECTIVE_2026-10-08",
             "status": "REQUIRES_REMOTE_QA_AND_RUNTIME_EVIDENCE",
             "singleCommonOriginal": true,
@@ -24574,7 +24574,15 @@
               "STRATEGICALLY_DISTINCT_ALTERNATIVES",
               "OWNER_MULTIPLAYER_INTENT_PRESERVED",
               "NATIVE_PLATFORM_DEPLOYMENT_AND_VALIDATION",
-              "ROLE_GROUNDED_ASSET_SELECTION"
+              "ROLE_GROUNDED_ASSET_SELECTION",
+              "MAIN_A_B_c_DELVE_STATE_GRAPH",
+              "ABILITY_TRIGGER_RANGE_COST_COOLDOWN_TELEGRAPH_AVOIDANCE",
+              "ORIGINAL_HUMAN_TO_INFECTED_ROSTER_BINDING",
+              "INFECTION_SIX_BEAT_NUMERIC_TRACE",
+              "PARTICIPANT_ROLE_CONVERSION_AND_ELIMINATION_REPLAY",
+              "STRATEGY_RELATIONSHIPS_NOT_PROSE_DIFFERENCE",
+              "ASSET_BODY_BEHAVIOR_PRESENTATION_LOCATION_REASON_IMPROVEMENT",
+              "FINAL_PHASE_REACHABILITY_AND_RECOVERY_AUDIT"
             ],
             "invalidContent": [
               "PLACEHOLDER_PROSE",
@@ -24592,7 +24600,17 @@
             "existingGameplayNumbersMayNotBeChangedByThisContract": true,
             "externalModelRequired": false,
             "newPipeline": false,
-            "runtimePassGrantedByDesignValidation": false
+            "runtimePassGrantedByDesignValidation": false,
+            "priority": [
+              "PLAY_FLOW",
+              "CONTRADICTION_CHECK",
+              "ASSET_FIT"
+            ],
+            "invalidation": "EXACT_FAILED_FIELD_AND_DOWNSTREAM_RULE_DEPENDENCIES",
+            "originalNumericRulesPreserved": true,
+            "designTraceIsNotGameplayRuntimeEvidence": true,
+            "qa": "qa/company-design-pre-gate-resume.test.mjs",
+            "remoteQa": ".github/workflows/vibe2-core-qa.yml"
           }
         },
         "antiMonotony": {

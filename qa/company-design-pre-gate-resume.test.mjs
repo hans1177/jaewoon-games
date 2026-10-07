@@ -10,7 +10,7 @@ import {runInNewContext} from 'node:vm';
 import {EventEmitter} from 'node:events';
 import {createHash} from 'node:crypto';
 import {buildAllGameDynamicLibraryBindingPlan,buildAssetSupplyDecisionSummary} from '../tools/vibe2-asset-production-plan.mjs';
-import {validateDesignAuthoringContent,scoreDesignGateV2} from '../tools/company-design-gate-scoring-v2.mjs';
+import {validateDesignAuthoringContent,scoreDesignGateV2,designPlayabilityRequirements} from '../tools/company-design-gate-scoring-v2.mjs';
 
 const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
 const assertDesignSchema=runInNewContext(design.slice(design.indexOf('function assertSchemaValue('),design.indexOf('function normalizeSchemaValue('))+'\nassertSchemaValue');
@@ -400,6 +400,7 @@ test('slice input keeps the owner original in a stable prefix and omits compatib
   const source=design.slice(design.indexOf('async function authorDesignInCheckpointedSlices('),design.indexOf('function mergeDesignerDesign('));
   const calls=[];
   const author=runInNewContext(source+'\nauthorDesignInCheckpointedSlices',{
+    ownerPreservationDesign:false,designAssetLibrary:null,playableRequirements:designPlayabilityRequirements({}),currentRuleSourceContext:{},currentRuleSource:"",designAssetFamilies:[],
     seed:{designInputMode:'OWNER_BRIEF_AND_ORIGINAL_ONLY'},seedDesignDepthContext:{duplicate:'x'.repeat(9000)},
     clip:(value,n)=>{const s=typeof value==='string'?value:JSON.stringify(value);return s.slice(0,n);},
     DESIGN_AUTHORING_SLICES:[{id:'first',fields:['identity'],predict:1200},{id:'second',fields:['coreFun'],predict:1200}],
@@ -472,6 +473,7 @@ test('bad cached slices refresh nested identities across retries and valid resul
   let calls=0;
   const localParts=new Map();
   const author=runInNewContext(source+'\nauthorDesignInCheckpointedSlices',{
+    ownerPreservationDesign:false,designAssetLibrary:null,playableRequirements:designPlayabilityRequirements({}),currentRuleSourceContext:{},currentRuleSource:"",designAssetFamilies:[],
     seed:{MULTIPLAYER_DESIGN_MODE:'COMPETITIVE'},seedDesignDepthContext:{},createHash,validateDesignAuthoringContent,
     clip:(value,n)=>JSON.stringify(value).slice(0,n),clean:value=>String(value),
     DESIGN_AUTHORING_SLICES:[{id:'mode',fields:['multiplayerMode'],predict:900}],designSliceSchema:()=>({type:'object',required:['multiplayerMode'],properties:{multiplayerMode:{type:'string'}},additionalProperties:false}),
@@ -501,4 +503,108 @@ test('transport repair reuses previous drafts only when every original input sti
   assert.equal(Boolean(eligible({...checkpointInputContext,evidence:{librarySha:'changed'}})),false);
   assert.equal(Boolean(eligible({...checkpointInputContext,seed:{seedId:'s',newOwnerRequest:'changed'}})),false);
 });
+
+// 플레이 계약 회귀: 아래 데이터는 검사기 전용 합성 사례이며 실제 게임 설계/런타임 증거가 아니다.
+function playableFixture(){
+  const seed={INITIAL_PLAY_MODE:'FOUR_VS_FOUR_INFECTION_WITH_AI_FILL',originalDesignContext:{content:{technicalAssumptions:['TargetPopulation=8','SurvivorSlots=4','MonsterSlots=4','RoundSeconds=240','InfectRange=8','InfectAttackCost=30','InfectAttackCooldown=1.2','PurifyDistance=8','PurifyCooldown=5']}}};
+  const keys=['HumanCount','MonsterCount','EliminatedCount','Energy'];
+  const signatureSystems=['MAIN','A','B','c','DELVE'].map(grammarRole=>({id:grammarRole,grammarRole,name:`상태 규칙 ${grammarRole}`,purpose:'장면의 선택이 다음 장면의 인원과 자원 상태를 바꾼다',playerChoice:'상대 위치를 확인하고 소비와 이동의 순서를 선택한다',stateInputs:keys,stateOutputs:keys}));
+  const ability=(id,kind,cost,cooldownSeconds)=>({id,name:id,kind,ownerId:'BASE',ruleId:'MAIN',trigger:'현재 진영과 자원 조건을 만족할 때 명시적으로 입력한다',range:8,rangeUnit:'stud',resource:'Energy',cost,cooldownSeconds,telegraph:'공격 방향을 먼저 보고 옆 복도로 진입해 피한다',avoidance:'전조가 보이면 사거리 밖으로 이동하고 대기한다',effect:'서버 적중 판정이 나면 해당 상대의 진영 상태를 바꾼다',stateInputs:keys,stateOutputs:keys,source:'검사 전용 원본 technicalAssumptions의 수치를 사용한다',rangeKey:kind==='INFECTION'?'InfectRange':'PurifyDistance',costKey:kind==='INFECTION'?'InfectAttackCost':'',cooldownKey:kind==='INFECTION'?'InfectAttackCooldown':'PurifyCooldown'});
+  const abilities=[ability('infect','INFECTION',30,1.2),ability('purify','PURIFICATION',35,5)];
+  const participants=[...Array.from({length:4},(_,i)=>({id:`h${i+1}`,role:'HUMAN',classId:'HUMAN'})),...Array.from({length:4},(_,i)=>({id:`m${i+1}`,role:'MONSTER',classId:'MONSTER'}))];
+  const action=(abilityId,actorId,targetId,atSeconds,hit=true)=>({abilityId,actorId,targetId,atSeconds,distance:7,energyBefore:100,energyAfter:abilityId==='infect'?70:65,hit,response:'상대는 복도 모퉁이를 돌아 사거리 밖으로 이탈하려 한다'});
+  const values=[[4,4,0],[4,4,0],[4,4,0],[3,5,0],[2,6,0],[2,5,1],[0,7,1]];
+  const times=[0,10,30,50,80,120,200],texts=values.map((x,i)=>`장면 ${i}에서 인간 ${x[0]}명과 몬스터 ${x[1]}명이 남아 다음 선택을 준비한다`);
+  const actions=[[],[action('infect','m1','h1',20,false)],[action('infect','m1','h1',40)],[action('infect','m2','h2',70)],[action('purify','h3','m1',100)],[action('infect','m2','h3',170),action('infect','m3','h4',180)]];
+  const playthrough=designPlayabilityRequirements(seed).phases.map((phase,i)=>({phase,entryState:texts[i],playerChoice:'상대의 진영과 남은 능력을 확인하고 이동한다',actionAndResponse:'발동 조건과 사거리를 확인하고 상대의 회피에 대응한다',exitState:texts[i+1],nextDecision:'다음 장면에서 바뀐 진영과 남은 경로를 다시 확인한다',startSeconds:times[i],endSeconds:times[i+1],timeReason:'이동과 조우 뒤 재사용 대기를 포함한 검사 전용 장면 시간이다',before:values[i].map((value,j)=>({key:keys[j],value})),after:values[i+1].map((value,j)=>({key:keys[j],value})),actions:actions[i],ruleIds:['MAIN'],outcome:i===5?'MONSTER_WIN':'ONGOING'}));
+  const strategy={routeEdges:[{from:'north',to:'south'}],resourceSites:[{stateKey:'Energy',regionId:'north'}],cooperation:[{ruleId:'A',regionId:'north',abilityId:'infect'}],advantage:'북쪽 자원에서 시작하여 합류 전에 충전을 확보한다',cost:'반대쪽 경로에 있는 동료의 합류를 기다려야 한다',bestSituation:'상대가 반대쪽에 집중돼 북쪽 자원이 비어 있을 때'};
+  const design={signatureSystems,systemInterconnections:signatureSystems.map((row,i)=>({fromId:row.id,toId:signatureSystems[(i+1)%5].id,stateKeys:keys,fromSystem:'앞 장면을 처리하는 역할 상태 책임 시스템',toSystem:'다음 장면의 선택을 처리하는 역할 상태 시스템',trigger:'참가자의 현재 상태가 바뀌었을 때 다음 역할이 읽는다',stateChange:'인원과 자원 값이 다음 시스템의 유효 선택에 반영된다'})),contentVarietyPlan:{regions:[{id:'north',ruleIds:['A']},{id:'south',ruleIds:['B']}],abilities,roleTransitions:[]},designAlternatives:[{label:'PLAN_A',strategy,coreLoopShift:'북쪽 진입',mapTopologyRegionRoles:'북쪽 회전'},{label:'PLAN_B',strategy:{...strategy,routeEdges:[{from:'south',to:'north'}],resourceSites:[{stateKey:'Energy',regionId:'south'}]},coreLoopShift:'남쪽 진입',mapTopologyRegionRoles:'남쪽 회전'}],selectedDesignPlan:{label:'PLAN_A',participants,roundSeconds:240,sessionSeconds:1200,durationRationale:'원본의 240초 제한을 유지하고 여러 라운드로 구성한 전체 세션 시간과 구분한다',playthrough},artAudioDirection:{assetBindings:[{family:'CREATURE',role:'WEREWOLF',bodyPlan:'두 발로 추격하는 긴 팔의 늑대 체형',behavior:'복도에서 방향을 바꾸며 추격하는 행동',presentation:'돌진 방향과 종료를 읽을 수 있는 전조',ruleIds:['MAIN'],useLocation:'첫 접촉과 역전 장면의 북쪽 복도',assetId:'wolf',decision:'ADAPT',selectionReason:'추격 동작과 늑대 체형을 모두 제공하는 후보',improvement:'복도 조명에서 공격 전조를 더 구분되게 개선',platformAdaptation:'각 플랫폼의 원본 권한 이벤트에 표현만 연결',validation:'같은 사건에서 체형과 공격 전조가 읽히는지 확인'}]},designIntegrityPlan:{authoringVersion:2,flowAudit:playthrough.map((step,i)=>({phase:step.phase,reachableBy:['infect','purify'],blockedCase:'자원이 모자라면 즉시 공격을 사용할 수 없다',recovery:'엄폐 뒤 자원 회복을 기다리고 다른 경로로 합류한다',nextPhase:playthrough[i+1]?.phase||'END'}))}};
+  return {seed,design,requirePlayableContract:true,assetLibrary:{assets:[{id:'wolf',family:'CREATURE',role:'WEREWOLF'}]}};
+}
+
+test('playable contract replays one infection round without changing original numbers',()=>{
+  const fixture=playableFixture();
+  assert.deepEqual(validateDesignAuthoringContent(fixture),[]);
+  for(const [change,code] of [
+    [d=>d.selectedDesignPlan.playthrough[3].before[0].value=4,'DESIGN_STATE_TRACE_BROKEN'],
+    [d=>d.selectedDesignPlan.playthrough[2].actions[0].energyBefore=10,'DESIGN_ACTION_INFEASIBLE'],
+    [d=>d.selectedDesignPlan.playthrough[2].actions[0].distance=20,'DESIGN_ACTION_INFEASIBLE'],
+    [d=>d.selectedDesignPlan.playthrough[3].actions[0].targetId='h1','DESIGN_ROLE_ACTION_INVALID'],
+    [d=>d.selectedDesignPlan.playthrough[5].actions[0].actorId='m1','DESIGN_ROLE_ACTION_INVALID'],
+    [d=>d.selectedDesignPlan.playthrough[5].outcome='DRAW','DESIGN_ROUND_END_INVALID'],
+    [d=>d.selectedDesignPlan.roundSeconds=200,'DESIGN_DURATION_UNGROUNDED'],
+    [d=>d.contentVarietyPlan.abilities[0].cost=1,'DESIGN_ORIGINAL_NUMBER_CHANGED'],
+    [d=>d.contentVarietyPlan.abilities[0].telegraph='','DESIGN_ABILITY_CONTRACT_MISSING'],
+    [d=>d.systemInterconnections[0].stateKeys=['invented'],'DESIGN_STATE_EXCHANGE_BROKEN'],
+    [d=>d.artAudioDirection.assetBindings[0].assetId='spider','DESIGN_ASSET_ROLE_MISMATCH'],
+    [d=>d.designIntegrityPlan.flowAudit[2].recovery='','DESIGN_FULL_FLOW_AUDIT_MISSING']
+  ]){
+    const changed=structuredClone(fixture);change(changed.design);
+    assert.ok(validateDesignAuthoringContent(changed).some(row=>row.code===code),code);
+  }
+});
+
+test('paraphrased alternatives remain the same strategy and unknown identifiers cannot create novelty',()=>{
+  const fixture=playableFixture(),plans=fixture.design.designAlternatives;
+  plans[1].strategy=structuredClone(plans[0].strategy);
+  plans[1].strategy.advantage='표현을 완전히 새롭게 써도 같은 관계를 반복한 전략이다';
+  assert.ok(validateDesignAuthoringContent(fixture).some(row=>row.code==='DESIGN_STRATEGY_EQUIVALENT'));
+  plans[1].strategy.routeEdges[0].to='invented-region';
+  assert.ok(validateDesignAuthoringContent(fixture).some(row=>row.code==='DESIGN_STRATEGY_UNGROUNDED'));
+});
+
+test('every original human class needs its own human to infected ability connection',()=>{
+  const fixture=playableFixture();
+  fixture.seed.originalDesignContext.content.humanRoster=[{id:'BROADCAST',tool:'신호 송신기',infectedAbility:'가짜 경보'}];
+  assert.ok(validateDesignAuthoringContent(fixture).some(row=>row.code==='DESIGN_ROLE_TRANSITION_MISSING'));
+  const base=fixture.design.contentVarietyPlan.abilities[0];
+  fixture.design.contentVarietyPlan.abilities.push({...base,id:'signal',name:'교란 송신',kind:'HUMAN',ownerId:'BROADCAST'},{...base,id:'alarm',name:'가짜 경보',kind:'INFECTED',ownerId:'BROADCAST'});
+  fixture.design.contentVarietyPlan.roleTransitions=[{humanId:'BROADCAST',humanTool:'신호 송신기',humanAbilityId:'signal',infectedAbilityId:'alarm',retainedState:'같은 참가자 식별자와 직업 유래를 유지한다',removedState:'인간 전용 정화와 도구 입력은 더 이상 사용하지 않는다',changedChoice:'옛 동료의 이동 방향에 거짓 경보를 보내 추격한다'}];
+  assert.equal(validateDesignAuthoringContent(fixture).some(row=>row.code==='DESIGN_ROLE_TRANSITION_MISSING'),false);
+});
+
+test('schema refuses string numbers and negative ability costs instead of treating them as valid',()=>{
+  assert.throws(()=>assertDesignSchema('30',{type:'number',minimum:0}),/number mismatch/);
+  assert.throws(()=>assertDesignSchema(-1,{type:'number',minimum:0}),/minimum mismatch/);
+  assert.throws(()=>assertDesignSchema('true',{type:'boolean'}),/boolean mismatch/);
+  assertDesignSchema(30,{type:'number',minimum:0});
+});
+
+test('current source fixes human and infected ability values without letting the writer rebalance them',()=>{
+  const seed={INITIAL_PLAY_MODE:'INFECTION',originalDesignContext:{content:{humanRoster:[{id:'BROADCAST',tool:'신호 송신기',infectedAbility:'가짜 경보'}],monsterRoster:[{id:'MUMMY'}]}}};
+  const source=`MonsterAbilityCooldown=7,AbilityCost=45,
+HumanForms={
+ {Id="BROADCAST",ActiveAbility="SIGNAL_JAM",InfectedAbility="FALSE_ALARM"},
+},
+MonsterForms={
+ {Id="MUMMY",Ability="CURSE_SLOW"},
+},
+HumanAbilities={
+ SIGNAL_JAM={Name="교란 송신",Cost=30,Cooldown=8,Radius=24},
+},
+InfectedAbilities={
+ FALSE_ALARM={Name="가짜 경보",Radius=30,Duration=3},
+},
+MonsterAbilities={
+ CURSE_SLOW={Name="저주의 모래",Radius=22,Duration=3},
+},`;
+  const facts=designPlayabilityRequirements(seed,source).abilityFacts;
+  assert.deepEqual(facts.find(row=>row.id==='SIGNAL_JAM'),{id:'SIGNAL_JAM',kind:'HUMAN',ownerId:'BROADCAST',name:'교란 송신',range:24,cost:30,cooldownSeconds:8});
+  assert.deepEqual(facts.find(row=>row.id==='FALSE_ALARM'),{id:'FALSE_ALARM',kind:'INFECTED',ownerId:'BROADCAST',name:'가짜 경보',range:30,cost:45,cooldownSeconds:7});
+  assert.equal(facts.find(row=>row.id==='CURSE_SLOW').ownerId,'MUMMY');
+  const fixture=playableFixture();fixture.sourceText=source;fixture.seed=seed;
+  assert.ok(validateDesignAuthoringContent({...fixture,fields:['contentVarietyPlan']}).some(row=>row.code==='DESIGN_SOURCE_ABILITY_CHANGED'));
+});
+
+test('cooldown reuse, missing required asset family and unused matching assets fail closed',()=>{
+  const fixture=playableFixture();
+  fixture.design.selectedDesignPlan.playthrough[5].actions[1]={...fixture.design.selectedDesignPlan.playthrough[5].actions[1],actorId:'m2',atSeconds:170.5};
+  assert.ok(validateDesignAuthoringContent(fixture).some(row=>row.code==='DESIGN_ACTION_INFEASIBLE'));
+  fixture.assetFamilies=['CREATURE','MOTION'];
+  assert.ok(validateDesignAuthoringContent(fixture).some(row=>row.code==='DESIGN_ASSET_FAMILY_MISSING'));
+  fixture.design.artAudioDirection.assetBindings[0].decision='AUTHOR';
+  fixture.design.artAudioDirection.assetBindings[0].assetId='';
+  assert.ok(validateDesignAuthoringContent(fixture).some(row=>row.code==='DESIGN_ASSET_REUSE_NOT_EVALUATED'));
+});
+
 
