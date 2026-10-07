@@ -1,5 +1,5 @@
 {
-  "version": 178,
+  "version": 179,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -835,6 +835,7 @@
       "requiredForRoles": [
         "PLAYER",
         "GENERAL_NPC",
+        "NPC",
         "COMPANION",
         "ALLY",
         "STORY_CHARACTER",
@@ -859,41 +860,59 @@
         "MOUNT",
         "SUMMON",
         "BOSS"
-          ],
+      ],
       "roleFamilies": {
         "CHARACTER": [
-        "PLAYER",
-        "GENERAL_NPC",
-        "COMPANION",
-        "ALLY",
-        "STORY_CHARACTER",
-        "CIVILIAN",
-        "MERCHANT",
-        "VENDOR",
-        "QUEST_GIVER",
-        "GUARD",
-        "WORKER",
-        "ARTISAN",
-        "FARMER",
-        "HEALER",
-        "TRAINER",
-        "RIVAL",
-        "HOSTILE_HUMANOID",
-        "NAMED_ELITE",
-        "HUMANOID_BOSS"
-          ],
+          "PLAYER",
+          "GENERAL_NPC",
+          "NPC",
+          "COMPANION",
+          "ALLY",
+          "STORY_CHARACTER",
+          "CIVILIAN",
+          "MERCHANT",
+          "VENDOR",
+          "QUEST_GIVER",
+          "GUARD",
+          "WORKER",
+          "ARTISAN",
+          "FARMER",
+          "HEALER",
+          "TRAINER",
+          "RIVAL",
+          "HOSTILE_HUMANOID",
+          "NAMED_ELITE",
+          "HUMANOID_BOSS"
+        ],
         "CREATURE": [
-        "ENEMY",
-        "ELITE",
-        "CREATURE",
-        "PET",
-        "MOUNT",
-        "SUMMON",
-        "BOSS"
-          ]
+          "ENEMY",
+          "ELITE",
+          "CREATURE",
+          "PET",
+          "MOUNT",
+          "SUMMON",
+          "BOSS"
+        ]
       },
       "roleSpecificVisualAndMotionEvidenceRequired": true,
-      "colorOnlyRoleCloneCannotCountAsDistinctActor": true
+      "colorOnlyRoleCloneCannotCountAsDistinctActor": true,
+      "npcDiversityEvidence": {
+        "required": true,
+        "requiredFields": [
+          "ROLE",
+          "HEIGHT_CM",
+          "WEIGHT_KG",
+          "BODY_PROPORTION_PROFILE",
+          "FACE_HAIR_SURFACE_IDENTITY",
+          "OUTFIT_EQUIPMENT_IDENTITY",
+          "STANCE_GAIT_MOTION_IDENTITY",
+          "DISTINCT_IDENTITY_AXIS_COUNT",
+          "MASTER_GLB_LINEAGE"
+        ],
+        "nearbyPairMinimumDistinctAxes": 5,
+        "heroCompanionEliteBossTargetDistinctAxes": 8,
+        "colorOnlySizeOnlyOrFaceOnlyCloneCannotPass": true
+      }
     }
   },
   "npcRoleProductionEvidenceContract": {
