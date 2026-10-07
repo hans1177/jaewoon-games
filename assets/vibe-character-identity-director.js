@@ -300,7 +300,24 @@ export function createVibeBodyIdentity(character={},index=0){
 }
 export function createVibeAppearanceIdentity(character={},index=0){const seed=hash(`${character.name}|appearance|${index}`),body=createVibeBodyIdentity(character,index);return Object.freeze({body,face:Object.freeze({shape:pick(seed,['angular','round','long','square','soft','sharp'],2),featureBalance:pick(seed,['eyes-led','brow-led','nose-led','jaw-led','balanced'],4),asymmetry:pick(seed,['subtle-left','subtle-right','near-symmetric'],6)}),surface:Object.freeze({skinOrShell:character.skinOrShell||pick(seed,['smooth','weathered','scarred','freckled-or-patterned','rough','patched'],8),hairOrCrest:character.hairOrCrest||pick(seed,['short','long','tied','messy','layered','none-or-species-specific'],10),ageCue:character.ageCue||pick(seed,['young','mature','weathered','elder'],12)}),individualMarks:Object.freeze(uniq(character.marks||[pick(seed,['scar','mole-or-spot','brow-shape','ear-or-horn-detail','shell-pattern','tattoo-or-cultural-mark'],14)])),rule:'avoid face-swap clones; silhouette proportion surface and marks combine into identity'})}
 export function createVibeEquipmentFitIdentity(character={},index=0){const body=createVibeBodyIdentity(character,index),seed=hash(`${character.name}|equipment|${index}`);return Object.freeze({fit:body.frame==='broad'?'reinforced-wide-fit':body.frame==='slender'?'close-light-fit':'role-fit',carry:pick(seed,['hip-biased','back-carried','cross-body','hand-ready','balanced'],3),wear:pick(seed,['new','maintained','patched','weathered','heavily-used'],5),personalization:pick(seed,['minimal','utility-charms','faction-mark','personal-token','field-repair'],7),rule:'equipment follows body occupation history and culture rather than floating as identical costume'})}
-export function createVibeGaitIdentity(character={},index=0){const body=createVibeBodyIdentity(character,index),seed=hash(`${character.name}|gait|${index}`),mass=body.visualMass,baseCadence=mass==='very-heavy'?'slow':mass==='heavy'?'measured':mass==='light'?'quick':'medium';return Object.freeze({cadence:character.gaitCadence||baseCadence,stride:body.proportions.limbs==='long'?'long':body.proportions.limbs==='short'?'short':'medium',footfall:mass==='very-heavy'||mass==='heavy'?'planted':'light-to-medium',verticalBob:mass==='heavy'?'low':pick(seed,['low','medium'],3),armSwing:character.armSwing||pick(seed,['restrained','balanced','loose','asymmetric'],5),torsoMotion:body.posture==='forward'?'forward-drive':body.posture==='guarded'?'contained':'counter-rotation',headBehavior:pick(seed,['stable','scanning','slight-bob','goal-locked'],7),turnStyle:mass==='heavy'?'hips-then-torso':'head-torso-hips',startStop:mass==='heavy'?'visible-acceleration-and-settle':'quick-anticipation-and-settle',rule:'different gait appearance must preserve authoritative movement distance and speed'})}
+export function createVibeGaitIdentity(character={},index=0){
+  const body=createVibeBodyIdentity(character,index),seed=hash(`${character.name}|gait|${index}`),mass=body.visualMass;
+  const baseCadence=mass==='colossal'||mass==='very-heavy'?'slow':mass==='heavy'?'measured':mass==='light'?'quick':'medium';
+  const legLanguage=body.proportions.legs;
+  return Object.freeze({
+    cadence:character.gaitCadence||baseCadence,
+    stride:legLanguage==='long'?'long':legLanguage==='short'?'short':'medium',
+    footfall:mass==='colossal'||mass==='very-heavy'||mass==='heavy'?'planted':'light-to-medium',
+    verticalBob:mass==='heavy'||mass==='very-heavy'||mass==='colossal'?'low':pick(seed,['low','medium'],3),
+    armSwing:character.armSwing||pick(seed,['restrained','balanced','loose','asymmetric'],5),
+    torsoMotion:body.posture==='forward'?'forward-drive':body.posture==='guarded'?'contained':'counter-rotation',
+    headBehavior:pick(seed,['stable','scanning','slight-bob','goal-locked'],7),
+    turnStyle:mass==='heavy'||mass==='very-heavy'||mass==='colossal'?'hips-then-torso':'head-torso-hips',
+    startStop:mass==='heavy'||mass==='very-heavy'||mass==='colossal'?'visible-acceleration-and-settle':'quick-anticipation-and-settle',
+    bodyScaleLanguage:body.scaleClass,
+    rule:'different gait appearance follows authored height weight and limb proportions while preserving authoritative movement distance and speed'
+  });
+}
 export function createVibePhysicalActionLanguage(character={},index=0){const body=createVibeBodyIdentity(character,index),gait=createVibeGaitIdentity(character,index),seed=hash(`${character.name}|physical-action|${index}`);return Object.freeze({idle:Object.freeze([body.posture,pick(seed,['weight-shift','small-fidget','equipment-check','environment-scan','breath-led'],2)]),walk:gait,run:Object.freeze({lean:body.visualMass.includes('heavy')?'mass-forward':'adaptive-forward',recovery:body.visualMass.includes('heavy')?'delayed-settle':'quick-settle',secondary:pick(seed,['hair-or-cloth-lag','equipment-lag','limb-spring','body-stabilize'],4)}),interaction:Object.freeze({reach:body.proportions.limbs==='long'?'long-arc':'compact-arc',handedness:body.dominantSide,personalSpace:pick(seed,['close','normal','wide'],6)}),impact:Object.freeze({recoil:body.visualMass.includes('heavy')?'small-body-large-secondary':'body-readable',balanceRecovery:body.frame==='slender'?'step-correct':'center-correct'}),rule:'physical traits influence presentation without granting hidden gameplay advantages'})}
 export function createVibeMotionIdentity(character={},index=0){const archetypes=inferVibeCharacterArchetypes(character),sources=archetypes.map(a=>ARCHETYPES[a]).filter(Boolean),body=createVibeBodyIdentity(character,index),physical=createVibePhysicalActionLanguage(character,index),signature=Object.freeze({stance:uniq([...sources.map(x=>x.stance),body.posture]),move:uniq([...sources.flatMap(x=>x.move),physical.walk.torsoMotion,physical.walk.turnStyle]),attack:uniq(sources.flatMap(x=>x.attack)),idle:Object.freeze(['breathing-or-life-cycle','role-awareness','environment-awareness',...physical.idle]),hit:Object.freeze(['directional-recoil','identity-preserving-recover',physical.impact.balanceRecovery]),death:Object.freeze(['mass-aware-collapse','role-prop-settle'])});return Object.freeze({name:character.name||'character',archetypes,body,appearance:createVibeAppearanceIdentity(character,index),equipment:createVibeEquipmentFitIdentity(character,index),physical,signature,personality:Object.freeze(character.traits||[]),preserve:Object.freeze(['movement-speed','collision','hitbox','attack-result','cooldown','game-position','game-scale'])})}
 export function createVibeCharacterPersona(character={},index=0){const seed=hash(`${character.name||'character'}|persona|${index}`),traits=uniq(character.traits||[]),values=uniq(character.values||[pick(seed,['duty','freedom','family','knowledge','honor','survival','compassion','ambition'],2)]),desire=character.desire||character.goal||pick(seed,['protect-someone','prove-self','restore-home','discover-truth','gain-freedom','earn-respect'],4),need=character.need||pick(seed,['trust-others','accept-loss','take-responsibility','learn-restraint','face-fear','choose-own-path'],6),fear=character.fear||pick(seed,['betrayal','failure','loss-of-control','abandonment','powerlessness','being-forgotten'],8),secret=character.secret||pick(seed,['hidden-debt','past-failure','forbidden-loyalty','unknown-origin','concealed-promise','private-guilt'],10),temperament=character.temperament||pick(seed,['calm','warm','guarded','proud','impulsive','skeptical','playful','stern'],12),formality=character.formality||pick(seed,['casual','neutral','formal','ceremonial'],14),rhythm=character.speechRhythm||pick(seed,['short-direct','measured','ornate','hesitant','rapid','dry'],16),risk=character.riskTolerance||pick(seed,['low','medium','high'],18),social=character.socialTendency||pick(seed,['supportive','reserved','challenging','protective','opportunistic'],20),combat=character.combatTendency||pick(seed,['protect-ally','hold-position','flank','pressure-target','avoid-risk','counterattack'],22);return Object.freeze({name:character.name||'character',role:character.role||'',background:character.background||'',values:Object.freeze(values),traits:Object.freeze(traits),desire,need,fear,secret,taboo:Object.freeze(uniq(character.taboo||[])),loyalty:character.loyalty||'',temperament,voice:Object.freeze({formality,vocabulary:character.vocabulary||'background-appropriate',sentenceRhythm:rhythm,relationshipShift:true,emotionSensitive:true,knowledgeBoundary:true,subtext:true}),behaviorIntent:Object.freeze({riskTolerance:risk,socialTendency:social,combatTendency:combat,protectWhen:character.protectWhen||'relationship-and-role-context',retreatWhen:character.retreatWhen||'gameplay-ai-authorized-condition'}),memoryContract:Object.freeze({tracks:['trust','fear','respect','debt','betrayal','promise','known-fact','witnessed-event'],sourceEventRequired:true,persistentWhenGameOwnsSave:true}),gameplayAuthority:false,rule:'persona and voice guide presentation and declared AI intent only; authoritative actions resolve through game-owned APIs'})}
@@ -498,21 +515,37 @@ export function createVibeNpcCustomizationPopulation({count=64,seed='npc-populat
       region:regionPool[Math.floor(index/rolePool.length)%regionPool.length],
       species:speciesPool[index%speciesPool.length]
     },index);
-    return Object.freeze({...base,npcRoleProfile:createVibeNpcRoleProfile({role})});
+    return Object.freeze({...base,npcRoleProfile:createVibeNpcRoleProfile({role,character:{
+      name:base.character,role,region:base.region,species:base.species,
+      heightCm:base.body.heightCm,weightKg:base.body.weightKg,frame:base.body.archetype,posture:base.body.posture
+    },index})});
   });
   const identityKeys=recipes.map(row=>JSON.stringify([
-    row.body.archetype,row.head.baseFamily,row.eyes.leftColor,row.eyes.rightColor,row.hair.style,row.hair.primaryColor,
+    row.body.heightCm,row.body.weightKg,row.body.scaleClass,row.body.visualMassClass,row.body.archetype,
+    row.body.shoulderWidth,row.body.torsoLength,row.body.torsoDepth,row.body.pelvisWidth,row.body.armLength,row.body.legLength,row.body.handFootScale,row.body.headBodyRatio,row.body.posture,
+    row.head.baseFamily,row.head.faceWidth,row.head.jawWidth,row.eyes.leftColor,row.eyes.rightColor,row.hair.style,row.hair.texture,row.hair.primaryColor,
     row.surface.detail,row.surface.agePresentation,row.speciesParts.ear,row.speciesParts.horn,row.accessory,row.outfit.layerTheme,
     row.presentation.expressionFamily,row.presentation.gestureFamily
   ]));
+  const physicalKeys=recipes.map(row=>JSON.stringify([
+    row.body.heightCm,row.body.weightKg,row.body.scaleClass,row.body.visualMassClass,row.body.archetype,
+    row.body.shoulderWidth,row.body.torsoLength,row.body.torsoDepth,row.body.pelvisWidth,row.body.armLength,row.body.legLength,row.body.handFootScale,row.body.headBodyRatio,row.body.posture
+  ]));
   const unique=uniq(identityKeys).length;
+  const physicalUnique=uniq(physicalKeys).length;
   return Object.freeze({
     version:1,
     seed:String(seed),
     total,
     unique,
     diversityPercent:Math.round(unique/total*100),
+    physicalDiversityPercent:Math.round(physicalUnique/total*100),
     cloneRatePercent:Math.round((total-unique)/total*100),
+    physicalCloneRatePercent:Math.round((total-physicalUnique)/total*100),
+    heightRangeCm:Object.freeze([Math.min(...recipes.map(row=>row.body.heightCm)),Math.max(...recipes.map(row=>row.body.heightCm))]),
+    weightRangeKg:Object.freeze([Math.min(...recipes.map(row=>row.body.weightKg)),Math.max(...recipes.map(row=>row.body.weightKg))]),
+    scaleClassCoverage:Object.freeze(uniq(recipes.map(row=>row.body.scaleClass))),
+    visualMassCoverage:Object.freeze(uniq(recipes.map(row=>row.body.visualMassClass))),
     recipes:Object.freeze(recipes),
     target:VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.target,
     sameAssetPoolAsPlayerCustomization:true,
@@ -525,7 +558,37 @@ export function createVibeNpcCustomizationPopulation({count=64,seed='npc-populat
 }
 
 export function createVibePopulationPhysicalDiversity(characters=[]){const rows=characters.map((c,i)=>createVibeMotionIdentity(c,i)),keys=rows.map(x=>JSON.stringify([x.body.heightCm,x.body.weightKg,x.body.frame,x.body.proportions,x.body.posture,x.physical.walk.cadence,x.physical.walk.armSwing,x.appearance.face.shape,x.appearance.surface])),unique=uniq(keys).length,score=Math.round(unique/Math.max(1,rows.length)*100);return Object.freeze({score,unique,total:rows.length,cloneRate:Math.round((rows.length-unique)/Math.max(1,rows.length)*100),pass:score>=80})}
-export function createVibePhysicalDiversityGate({characters=[]}={}){const rows=characters.map((c,i)=>createVibeMotionIdentity(c,i)),issues=[];for(let i=0;i<rows.length;i++)for(let j=i+1;j<rows.length;j++){const a=rows[i],b=rows[j],same=[a.body.frame===b.body.frame,a.body.proportions.limbs===b.body.proportions.limbs,a.body.posture===b.body.posture,a.physical.walk.cadence===b.physical.walk.cadence,a.physical.walk.armSwing===b.physical.walk.armSwing,a.appearance.face.shape===b.appearance.face.shape].filter(Boolean).length;if(same>=5)issues.push(`${a.name}:${b.name}:physical-clone`)}return Object.freeze({pass:!issues.length,issues:Object.freeze(issues),rule:'major characters must differ across several body appearance and gait axes, not only palette'})}
+export function createVibePhysicalDiversityGate({characters=[]}={}){
+  const rows=characters.map((c,i)=>createVibeMotionIdentity(c,i)),issues=[];
+  for(let i=0;i<rows.length;i++)for(let j=i+1;j<rows.length;j++){
+    const a=rows[i],b=rows[j];
+    const axes=[
+      Math.abs(a.body.heightCm-b.body.heightCm)>=6,
+      Math.abs(a.body.weightKg-b.body.weightKg)>=8,
+      a.body.frame!==b.body.frame,
+      a.body.proportions.shoulders!==b.body.proportions.shoulders,
+      a.body.proportions.torso!==b.body.proportions.torso,
+      a.body.proportions.torsoDepth!==b.body.proportions.torsoDepth,
+      a.body.proportions.pelvis!==b.body.proportions.pelvis,
+      a.body.proportions.arms!==b.body.proportions.arms,
+      a.body.proportions.legs!==b.body.proportions.legs,
+      a.body.proportions.handFootScale!==b.body.proportions.handFootScale,
+      a.body.proportions.headBodyRatio!==b.body.proportions.headBodyRatio,
+      a.body.posture!==b.body.posture,
+      a.physical.walk.cadence!==b.physical.walk.cadence,
+      a.physical.walk.armSwing!==b.physical.walk.armSwing,
+      a.appearance.face.shape!==b.appearance.face.shape,
+      a.appearance.surface.skinOrShell!==b.appearance.surface.skinOrShell
+    ];
+    const distinct=axes.filter(Boolean).length;
+    if(distinct<VIBE_NPC_ROLE_PRODUCTION_CONTRACT.physicalDiversity.nearbyDistinctAxisMinimum)issues.push(`${a.name}:${b.name}:physical-clone:${distinct}`);
+  }
+  return Object.freeze({
+    pass:!issues.length,issues:Object.freeze(issues),
+    minimumDistinctAxes:VIBE_NPC_ROLE_PRODUCTION_CONTRACT.physicalDiversity.nearbyDistinctAxisMinimum,
+    rule:'major and nearby NPCs must differ across height weight body proportion appearance and gait axes, not only palette'
+  });
+}
 export function scoreVibeMotionOriginality(characters=[]){const signatures=characters.map((c,i)=>createVibeMotionIdentity(c,i)),keys=signatures.map(s=>JSON.stringify([s.archetypes,s.body,s.signature.move,s.signature.attack,s.physical.walk])),unique=uniq(keys).length,score=Math.round((unique/Math.max(1,characters.length))*100);return Object.freeze({score,unique,total:characters.length,duplicates:characters.length-unique,needsDiversification:score<80})}
 export function planVibeCharacterIdentityAutopilot({characters=[],eventMap={}}={}){const plans=characters.map((c,i)=>{const identity=createVibeMotionIdentity(c,i),events=eventMap[c.name]||['idle','move','attack','hit','death'];return Object.freeze({character:c.name,identity,persona:createVibeCharacterPersona(c,i),npcRoleProfile:createVibeNpcRoleProfile({role:c.role||'GENERAL_NPC'}),assetMorph:createVibeCharacterAssetMorphPlan(c,i),customization:createVibeCharacterCustomizationRecipe(c,i),signatureMove:createVibeSignatureMove(c,i),gameplayLinks:createVibeGameplayMotionLinks({events,character:c,index:i})})});return Object.freeze({version:5,customizationBreadth:VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,plans:Object.freeze(plans.map(row=>Object.freeze({...row,behaviorBrain:resolveVibeCharacterBehaviorIntent({persona:row.persona,context:{}})}))),physicalDiversity:createVibePopulationPhysicalDiversity(characters),personaDiversity:createVibePopulationPersonaDiversity(characters),diversityGate:createVibePhysicalDiversityGate({characters}),originality:scoreVibeMotionOriginality(characters),policy:Object.freeze({developmentAI:false,serverAI:'game-runtime-only',deterministic:true,eventDriven:true,gameplayLinked:true,noRuleMutation:true,avoidGenericMotion:true,variationMustPreserveTiming:true,noWholeSpriteScaleHack:true,playerAndNpcShareCustomizationAssetPool:true,colorOnlyNpcCloneForbidden:true})})}
 if(typeof window!=='undefined'){Object.assign(window,{VIBE_NPC_ROLE_PRODUCTION_CONTRACT,createJaewoonVibeNpcRoleProfile:createVibeNpcRoleProfile,inferJaewoonVibeCharacterArchetypes:inferVibeCharacterArchetypes,createJaewoonVibeBodyIdentity:createVibeBodyIdentity,createJaewoonVibeAppearanceIdentity:createVibeAppearanceIdentity,createJaewoonVibeEquipmentFitIdentity:createVibeEquipmentFitIdentity,createJaewoonVibeGaitIdentity:createVibeGaitIdentity,createJaewoonVibePhysicalActionLanguage:createVibePhysicalActionLanguage,createJaewoonVibeMotionIdentity:createVibeMotionIdentity,createJaewoonVibeGameplayMotionLinks:createVibeGameplayMotionLinks,createJaewoonVibeSignatureMove:createVibeSignatureMove,createJaewoonVibeCharacterAssetMorphPlan:createVibeCharacterAssetMorphPlan,createJaewoonVibeCharacterCustomizationRecipe:createVibeCharacterCustomizationRecipe,createJaewoonVibeNpcCustomizationPopulation:createVibeNpcCustomizationPopulation,createJaewoonVibePopulationPhysicalDiversity:createVibePopulationPhysicalDiversity,createJaewoonVibePhysicalDiversityGate:createVibePhysicalDiversityGate,scoreJaewoonVibeMotionOriginality:scoreVibeMotionOriginality,createJaewoonVibeCharacterPersona:createVibeCharacterPersona,resolveJaewoonVibeCharacterBehaviorIntent:resolveVibeCharacterBehaviorIntent,createJaewoonVibePopulationPersonaDiversity:createVibePopulationPersonaDiversity,planJaewoonVibeCharacterIdentityAutopilot:planVibeCharacterIdentityAutopilot})}
