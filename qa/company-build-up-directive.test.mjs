@@ -56,6 +56,36 @@ test('detailed verified design fields survive into build-up and implementation p
   assert.match(directivePrompt(directive),/온실 단서 조사/);
 });
 
+test('WEB Unity Roblox keep one shared game design core and only adapt the platform profile',()=>{
+  const shared=design();
+  shared.content.genre='Defense';
+  shared.content.subgenre='Garden Strategy';
+  shared.content.multiplayerMode='COOP';
+  shared.content.platformProfiles={
+    ROBLOX:{platform:'ROBLOX',inputModel:'touch-gamepad',sessionModel:'server-session'},
+    UNITY:{platform:'UNITY',inputModel:'touch-keyboard',sessionModel:'unity-runtime'}
+  };
+  const observation=root=>({
+    sourceRoot:root,sourceTreeFingerprint:'a'.repeat(64),fileCount:1,topFiles:[],sourceAnchors:[],observations:[],
+    signals:{combat:1,progression:1,ai:1,save:1,multiplayer:1,animation:1,vfx:1,camera:1,ui:1,uiFlow:1,input:1,map:1,landmark:1,interaction:1,inventory:0,equipment:0,settings:1,feedback:1,session:1,content:1,choice:1,connection:1,performance:1,lighting:1,primitive:0,todo:0,errorRecovery:1}
+  });
+  const web=buildGameSpecificBuildUpDirective({gameId:'shared-design',platform:'WEB',designRecord:shared,sourceObservation:observation('unity-games/shared-design')});
+  const unity=buildGameSpecificBuildUpDirective({gameId:'shared-design',platform:'UNITY',designRecord:shared,sourceObservation:observation('unity-games/shared-design')});
+  const roblox=buildGameSpecificBuildUpDirective({gameId:'shared-design',platform:'ROBLOX',designRecord:shared,sourceObservation:observation('roblox-games/shared-design')});
+  assert.equal(web.sharedDesignFingerprint,unity.sharedDesignFingerprint);
+  assert.equal(unity.sharedDesignFingerprint,roblox.sharedDesignFingerprint);
+  assert.deepEqual(web.designImplementationContext.sharedGameDesign,unity.designImplementationContext.sharedGameDesign);
+  assert.deepEqual(unity.designImplementationContext.sharedGameDesign,roblox.designImplementationContext.sharedGameDesign);
+  assert.equal(web.designImplementationContext.selectedPlatformProfile,'UNITY');
+  assert.equal(unity.designImplementationContext.selectedPlatformProfile,'UNITY');
+  assert.equal(roblox.designImplementationContext.selectedPlatformProfile,'ROBLOX');
+  assert.equal(web.crossPlatformDesignContract.webUnityRobloxCommonCoreMustMatch,true);
+  assert.equal(roblox.crossPlatformDesignContract.platformProfileMayChangeCoreRulesBalanceProgressionEconomySaveOrMultiplayerMeaning,false);
+  assert.equal(web.gameIdentityAndNonNegotiables.multiplayerMode,'COOP');
+  assert.equal(unity.gameIdentityAndNonNegotiables.multiplayerMode,'COOP');
+  assert.equal(roblox.gameIdentityAndNonNegotiables.multiplayerMode,'COOP');
+});
+
 test('existing UI without entry or loading flow becomes a cross-platform build-up gap',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'entry-flow-directive-'));
   const sourcePath=path.join(root,'roblox-games','puzzle','client','Game.client.luau');
