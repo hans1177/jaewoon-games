@@ -2078,6 +2078,7 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     '[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]',
     `directiveId=${clean(d.directiveId)} generation=${Number(d.generation||0)} developmentDepth=${Number(d.developmentDepth||1)} escalationStage=${clean(d.escalationStage)} primaryFocus=${clean(d.primaryFocus)}`,
     `gameIdentity=${clean(d?.gameIdentityAndNonNegotiables?.identity)}`,
+    `designContext=${JSON.stringify(d?.designImplementationContext||{})}`,
     `primaryGoal=${clean(d.thisLoopPrimaryGoal)}`,
     ...production,
     `implementationUnit=${clean(ownedAnchors[0]?.intendedBehavior)||clean(d.thisLoopPrimaryGoal)}; observableResult=${clean(ownedAnchors[0]?.observableAcceptance)||clean(d?.effectivenessMeasurement?.expectedPlayerEffect)}`,
@@ -2125,11 +2126,11 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   if(!compact&&!responsiblePaths.length)return block;
   const keepPrefixes=focusedRobloxVisual?[
     'robloxProduction','gameProduction',
-    'directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','gameIdentity=','designContext=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'visual=','platform=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
   ]:[
     'robloxProduction','gameProduction',
-    'directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','gameIdentity=','designContext=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'nextVibeAction=','contentExpansionVersion=','contentTheme=','contentBreadth=','existingCompletenessReview=','contentBundle=',
     'antiClone=','continuity=','derivedRuleEvolution=','contentCompletionAcceptance=','contentRule=',
     ...(focusedPresentation?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
