@@ -2952,14 +2952,28 @@ function internalAssetSourceUsageGuidance(order={}){
   const flowRows=contract.flowSelections.map(row=>[row.requirementId,row.assetId,row.family,row.role].filter(Boolean).join(':')).join('; ');
   const sourceRows=contract.sourceCandidates
     .filter(row=>row.sourceFiles.length||row.path)
-    .map(row=>row.assetId+'@'+([...(row.sourceFiles||[]),row.path].filter(Boolean).join('|'))+'; fileRoles='+JSON.stringify(row.fileRoles||{})+'; nativeArtifacts='+(row.nativeArtifacts||[]).join('|'))
+    .map(row=>row.assetId+'@'+([...(row.sourceFiles||[]),row.path].filter(Boolean).join('|')))
     .join('; ');
+  // 공유 파일의 역할은 자산마다 반복하지 않고 경로별 한 번만 전달한다.
+  const roleFiles=new Map();
+  for(const row of [...contract.sourceCandidates,...contract.flowSelections]){
+    for(const [role,files] of Object.entries(row.fileRoles||{})){
+      if(!roleFiles.has(role))roleFiles.set(role,new Set());
+      for(const file of files)roleFiles.get(role).add(file);
+    }
+    if((row.nativeArtifacts||[]).length){
+      if(!roleFiles.has('nativeArtifacts'))roleFiles.set('nativeArtifacts',new Set());
+      for(const file of row.nativeArtifacts)roleFiles.get('nativeArtifacts').add(file);
+    }
+  }
+  const fileRows=[...roleFiles].sort(([a],[b])=>a.localeCompare(b)).map(([role,files])=>role+'='+[...files].sort().join('|')).join('; ');
   return [
     '[INTERNAL ASSET SOURCE CONSUMPTION CONTRACT]',
     'syncFingerprint='+contract.fingerprint+'; libraryVersion='+contract.libraryVersion+'; selectionFingerprint='+(contract.selectionFingerprint||'NONE')+'; syncMode='+contract.synchronization.mode,
     'Exact selected family IDs only: '+(exactRows||'NONE'),
     'Exact flow selections: '+(flowRows||'NONE'),
     'Selected source/API references: '+(sourceRows||'NONE'),
+    'Selected file roles (each shared path once per role): '+(fileRows||'LEGACY_SOURCE_FIELDS'),
     'All registry assets are shared by family. Legacy pack IDs and directories describe source lineage, not game-exclusive ownership. Consumer game IDs are usage history only. Preserve role/style/license/platform compatibility.',
     'File application: authoring files rebuild assets; runtimeCode files expose factories; models are importable artifacts; previews/references are visual guidance; textures are material inputs; catalogs/support are metadata; quality is displayed by internalAuditScore rather than a separate evidence asset category. Never substitute a preview image for a required native model. Import only applicable compatible models through the existing target pipeline, keep gameplay responsibility unchanged, and do not claim runtime pass from file classification.',
     'Source consumption sequence: '+contract.sourceConsumptionSequence.join(' -> ')+'.',

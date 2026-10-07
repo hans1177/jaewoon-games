@@ -1366,7 +1366,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
         :/\.(?:lua|luau|js|mjs|cs)$/i.test(file)?'runtimeCode':'support';
       fileRoles[role].push(file);
     }
-    const metadata={family,companyCommonBase:true,reuseScope:'COMPANY_COMMON_BASE',gameExclusive:false,fileRoles};
+    const metadata={family,companyCommonBase:true,reuseScope:'COMPANY_COMMON_BASE',gameExclusive:false,fileRoles:Object.fromEntries(Object.entries(fileRoles).filter(([,files])=>files.length))};
     if(Object.entries(metadata).some(([key,value])=>JSON.stringify(asset[key])!==JSON.stringify(value))){
       Object.assign(asset,metadata);
       organizationAssetsChanged=true;
