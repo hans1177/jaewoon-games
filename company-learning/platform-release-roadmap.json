@@ -1,5 +1,5 @@
 {
-  "version": 545,
+  "version": 546,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-07",
@@ -32,7 +32,8 @@
     "ownerHoldOnlyOnExplicitDirection": true,
     "ownerHoldStopsNewAssignmentsWithoutDeletingGame": true,
     "existingRunningSafeWorkNotCancelledSolelyForPriority": true,
-    "platformF0F9QualityGatesUnchanged": true
+    "platformF0F9QualityGatesUnchanged": true,
+    "webWeightMeaning": "UNITY_WEBGL_CSHARP_DEVELOPMENT_LANE_COMPATIBILITY_LABEL_NOT_SEPARATE_WEB_GAMEPLAY_SOURCE"
   },
   "currentPhase": "UNITY_WEB_DEVELOPMENT_FLOOR_THEN_ROBLOX_UNITY_UPPER_PLATFORM_DEVELOPMENT",
   "priorityMeaning": "UNITY_WEB_UPPER_PLATFORM_READINESS_PASS_STARTS_ROBLOX_AND_UNITY_NATIVE_IMPLEMENTATIONS_FOR_THE_SAME_GAME",
@@ -76,7 +77,11 @@
     "f0ThroughF9RequiredEveryCycle": true,
     "usesCommonFoundationFloorDefinitions": true,
     "publicationOutcomeBlocksNextCycle": false,
-    "internalOrExternalExposureStateBlocksNextCycle": false
+    "internalOrExternalExposureStateBlocksNextCycle": false,
+    "requestedWebDevelopmentRoutesTo": "UNITY_WEB",
+    "webDevelopmentUsesCanonicalUnityCSharp": true,
+    "separateHtmlCssJsGameplayDevelopmentForbidden": true,
+    "webGamesDirectoryRole": "UNITY_WEBGL_BUILD_OUTPUT_AND_RUNTIME_VALIDATION_EVIDENCE_ONLY"
   },
   "livingMotionVisualQualityContract": {
     "version": 6,
@@ -25029,9 +25034,9 @@
       "authority": "OWNER_DIRECTIVE_2026-09-25"
     },
     "unityWebDevelopmentLane": {
-      "version": 1,
+      "version": 2,
       "status": "OWNER_DIRECT_LOCKED",
-      "authority": "OWNER_DIRECTIVE_2026-09-25",
+      "authority": "OWNER_DIRECTIVE_2026-10-07",
       "enabled": true,
       "role": "UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR",
       "eligibility": "DEVELOPMENT_CONFIRMED_GAMES_WITH_WEBGL_BUILDABLE_CANONICAL_UNITY_PROJECT",
@@ -25082,7 +25087,7 @@
       "upperPlatformReadinessGate": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.upperPlatformDevelopmentReadinessGate",
       "oneLaneFailureMigrationMeaning": "DOES_NOT_CANCEL_ALREADY_STARTED_GRANDFATHERED_NATIVE_DEVELOPMENT; DOES_BLOCK_NEW_UPPER_PLATFORM_ENTRY",
       "menuUiSourceIdentity": {
-        "version": 1,
+        "version": 2,
         "mode": "UNITY_APP_AND_WEBGL_SAME_CANONICAL_UI_SOURCE",
         "canonicalSourceRoot": "unity-games/<gameId>/",
         "sameCanonicalUnityProjectAsUnityAppRequired": true,
@@ -25094,8 +25099,22 @@
         "compatibilityAdjustmentsMayNotForkGameplayUiMeaning": true,
         "genericLegacyWebUiCannotSatisfyUnityWebRequirement": true,
         "plannerActiveBindingProfileRequired": true,
-        "requiredPlannerProfile": "UNITY_WEBGL_SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE"
-      }
+        "requiredPlannerProfile": "UNITY_WEBGL_SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE",
+        "htmlCssJsGameplayImplementationForbidden": true,
+        "webBuildOutputMayContainGeneratedLoaderFilesButTheyAreNotAuthoritativeGameplaySource": true
+      },
+      "webGameDevelopmentPolicy": "UNITY_WEBGL_CSHARP_CANONICAL_ONLY",
+      "webRequestRoutesTo": "UNITY_WEB",
+      "webRequestedDevelopmentTargetIsCompatibilityAliasOnly": true,
+      "canonicalGameplaySource": "UNITY_CSHARP_SCENE_PREFAB_AND_ASSET_BINDINGS",
+      "canonicalGameplaySourceLanguages": [
+        "CSHARP"
+      ],
+      "webOutputRole": "UNITY_WEBGL_BUILD_OUTPUT_AND_RUNTIME_VALIDATION_EVIDENCE_ONLY",
+      "htmlCssJsGameplaySourceForbidden": true,
+      "webGamesDirectoryMayNotOwnGameplayRules": true,
+      "webGamesDirectoryMayNotOwnProgressionSaveEconomyOrMultiplayerAuthority": true,
+      "missingCanonicalUnityProjectAction": "BOOTSTRAP_OR_REPAIR_CANONICAL_UNITY_PROJECT_BEFORE_WEB_DEVELOPMENT"
     },
     "upperPlatformAdmission": "UPPER_PLATFORM_DEVELOPMENT_READY",
     "upperPlatformDevelopmentReadinessGate": {
@@ -28036,12 +28055,21 @@
       "unityWebUsesCanonicalUnityProject": true,
       "nativeRuntimeEvidenceRequiredForNativePass": true,
       "webOrRobloxPassMayNotSubstituteUnityPass": true,
-      "markerOnlyOrPrimitiveOnlyCompletionForbidden": true
+      "markerOnlyOrPrimitiveOnlyCompletionForbidden": true,
+      "webDevelopmentAlias": "UNITY_WEB",
+      "webDevelopmentUsesUnityCSharpOnly": true,
+      "separateBrowserGameplaySourceForbidden": true,
+      "webGamesDirectoryIsBuildAndValidationOutputOnly": true
     },
     "platforms": [
       "ROBLOX",
       "UNITY",
       "WEB"
-    ]
+    ],
+    "platformAliasPolicy": {
+      "WEB": "UNITY_WEB",
+      "UNITY_WEB": "UNITY_CSHARP_CANONICAL_PROJECT_WEBGL_EXECUTION",
+      "WEB_IS_SEPARATE_GAMEPLAY_SOURCE": false
+    }
   }
 }

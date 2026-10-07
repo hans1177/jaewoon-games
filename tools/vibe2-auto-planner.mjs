@@ -2434,7 +2434,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
   const activeDirectivePlatformCompatible=platformLane!=='roblox'||clean(activeDirectiveTask?.buildUpDirective?.platform).toUpperCase()==='ROBLOX';
   const activeDirectiveSemanticCompatible=!projectRequiresMultiplayer||activeDirectiveMultiplayerState!=='NOT_APPLICABLE';
   const productionPolicy=readJson(sourceFile(repoRoot,'company-learning/platform-release-roadmap.json'),{})?.robloxStudioProductionFlowContract||{};
-  const productionTarget=platformLane.startsWith('unity')||posix(project.projectPath).startsWith('unity-games/')?'UNITY':platformLane.toUpperCase();
+  const productionTarget=platformLane==='web'||platformLane.startsWith('unity')||posix(project.projectPath).startsWith('unity-games/')?'UNITY':platformLane.toUpperCase();
   const productionRequired=productionPolicy.status==='ACTIVE_EXECUTABLE_CONTRACT'&&(productionPolicy.platforms||[]).includes(productionTarget);
   const priorProduction=activeDirectiveTask?.buildUpDirective?.productionPlan||activeDirectiveTask?.buildUpDirective?.robloxProductionPlan;
   const activeProductionCompatible=!productionRequired||(Number(priorProduction?.version)>=2&&priorProduction?.platform===productionTarget);
@@ -3053,7 +3053,7 @@ function hasCurrentAutonomousContentExpansionDirective(directive={},productionPo
   const expansion=directive?.autonomousContentExpansion;
   const ledger=expansion?.themeCoverageLedger;
   const platform=clean(directive?.platform).toUpperCase();
-  const target=platform.startsWith('UNITY')||clean(directive?.sourceRoot).split('|').some(root=>posix(root).startsWith('unity-games/'))?'UNITY':platform;
+  const target=platform==='WEB'||platform.startsWith('UNITY')||clean(directive?.sourceRoot).split('|').some(root=>posix(root).startsWith('unity-games/'))?'UNITY':platform;
   const productionRequired=productionPolicy.status==='ACTIVE_EXECUTABLE_CONTRACT'&&(productionPolicy.platforms||[]).includes(target);
   const plan=directive?.productionPlan||directive?.robloxProductionPlan;
   return Boolean(

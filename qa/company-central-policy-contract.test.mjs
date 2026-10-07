@@ -199,7 +199,14 @@ test('Unity Web gates upper-platform development without deployment or release',
   assert.equal(lane?.canonicalSourceRoot,'unity-games/<gameId>/');
   assert.equal(lane?.outputRoot,'web-games/<gameId>/');
   assert.equal(lane?.sameCanonicalUnityProjectRequired,true);
+  assert.equal(lane?.webGameDevelopmentPolicy,'UNITY_WEBGL_CSHARP_CANONICAL_ONLY');
+  assert.equal(lane?.webRequestRoutesTo,'UNITY_WEB');
+  assert.deepEqual(lane?.canonicalGameplaySourceLanguages,['CSHARP']);
+  assert.equal(lane?.webOutputRole,'UNITY_WEBGL_BUILD_OUTPUT_AND_RUNTIME_VALIDATION_EVIDENCE_ONLY');
   assert.equal(lane?.separateWebGameplayCodebaseForbidden,true);
+  assert.equal(lane?.htmlCssJsGameplaySourceForbidden,true);
+  assert.equal(lane?.webGamesDirectoryMayNotOwnGameplayRules,true);
+  assert.equal(lane?.webGamesDirectoryMayNotOwnProgressionSaveEconomyOrMultiplayerAuthority,true);
   assert.deepEqual(lane?.developmentFlow,expectedFlow);
   assert.equal(lane?.actualBrowserPlayRequired,true);
   assert.equal(lane?.independentQaRequired,true);
@@ -232,6 +239,10 @@ test('Unity Web gates upper-platform development without deployment or release',
   assert.equal(roadmap.unityWebFirstStage?.nativeDevelopmentMayRunWithoutWebBuild,false);
   assert.equal(roadmap.webCompanion?.developmentAdmissionGate,true);
   assert.equal(roadmap.webCompanion?.releaseGate,false);
+  assert.equal(roadmap.webCompanion?.requestedWebDevelopmentRoutesTo,'UNITY_WEB');
+  assert.equal(roadmap.webCompanion?.webDevelopmentUsesCanonicalUnityCSharp,true);
+  assert.equal(roadmap.webCompanion?.separateHtmlCssJsGameplayDevelopmentForbidden,true);
+  assert.equal(roadmap.webCompanion?.webGamesDirectoryRole,'UNITY_WEBGL_BUILD_OUTPUT_AND_RUNTIME_VALIDATION_EVIDENCE_ONLY');
   assert.equal(roadmap.directNativeDualPlatformDevelopment?.unityWebMode,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
   assert.equal(roadmap.departmentDrivenPortfolioDevelopmentControl?.runtimeExecution?.unityWebValidationSurface?.role,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
   assert.equal(roadmap.departmentDrivenPortfolioDevelopmentControl?.runtimeExecution?.unityWebValidationSurface?.developmentAdmissionGate,true);
@@ -1715,6 +1726,8 @@ test('menu experience diversity stays inside existing Vibe presentation buildup'
   assert.equal(unityWebMenu.sameUiSourceAsUnityAppByDefault,true);
   assert.equal(unityWebMenu.webBuildTarget,'UNITY_WEBGL');
   assert.equal(unityWebMenu.separateHtmlCssJsGameplayUiForbidden,true);
+  assert.equal(unityWebMenu.htmlCssJsGameplayImplementationForbidden,true);
+  assert.equal(unityWebMenu.webBuildOutputMayContainGeneratedLoaderFilesButTheyAreNotAuthoritativeGameplaySource,true);
   assert.equal(unityWebMenu.genericLegacyWebUiCannotSatisfyUnityWebRequirement,true);
   assert.equal(unityWebMenu.plannerActiveBindingProfileRequired,true);
   assert.equal(unityWebMenu.requiredPlannerProfile,'UNITY_WEBGL_SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE');

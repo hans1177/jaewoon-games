@@ -86,8 +86,10 @@ function sourceRole(file,platform){
 // 메인: 같은 장르 계획을 플랫폼별 실제 책임 파일에 연결한다.
 export function buildRobloxProductionPlan({gameId='',platform='',design={},source={},sourceRoot='',responsibleFiles=[],previousPlan=null,focus='',repair=false,safeDesignlessMode=false,policy={}}={}){
   const requested=clean(platform).toUpperCase();
-  const target=['UNITY_WEB','UNITY_APP'].includes(requested)?'UNITY':requested;
-  if(!list(policy.platforms||['ROBLOX']).includes(target)||policy.status!=='ACTIVE_EXECUTABLE_CONTRACT')return null;
+  const executionSurface=requested==='WEB'?'UNITY_WEB':requested;
+  const target=['WEB','UNITY_WEB','UNITY_APP'].includes(requested)?'UNITY':requested;
+  if(!list(policy.platforms||['ROBLOX']).includes(target)&&!(target==='UNITY'&&list(policy.platforms||[]).includes('WEB')))return null;
+  if(policy.status!=='ACTIVE_EXECUTABLE_CONTRACT')return null;
   const id=clean(gameId),root=(target==='ROBLOX'?'roblox-games/':target==='UNITY'?'unity-games/':'web-games/')+id+'/';
   if(!/^[a-z0-9][a-z0-9-]*$/i.test(id))return null;
   const observedRoot=clean(sourceRoot||source.sourceRoot).replaceAll('\\','/').replace(/\/$/,'');
@@ -129,7 +131,7 @@ export function buildRobloxProductionPlan({gameId='',platform='',design={},sourc
     implementation:presentationOnly?'이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다.':role==='SERVER_AUTHORITY'||role==='GAMEPLAY_STATE'||role==='GAMEPLAY_AND_PRESENTATION'?chosen.implementation+' 기존 행동·상태·보상·후속 목표 처리에 연결한다.':role==='CLIENT_PRESENTATION'?'기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다.':'기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다.'}))
     .filter(row=>row.files.length);
   return {
-    version:2,executionBoundary:'EXISTING_BUILD_UP_ONLY',platform:target,executionSurface:requested,mode,gameId:id,genreProfile,
+    version:2,executionBoundary:'EXISTING_BUILD_UP_ONLY',platform:target,executionSurface,mode,gameId:id,genreProfile,
     conceptIdentity:identity,coreAction:selected?.action||coreLoop[0]||'승인된 핵심 행동',
     ownerFeatureChanges,ownerChangeFingerprint,
     systemConnection:sourceOnly?'현재 실패 원인 → 기존 행동 복구':presentationOnly?'기존 행동 → 상태별 표현/입력 피드백':selected?.connection||coreLoop.join(' → '),
@@ -140,7 +142,9 @@ export function buildRobloxProductionPlan({gameId='',platform='',design={},sourc
       reference:'SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX',
       implementation:target==='UNITY'?'EXISTING_CSHARP_SCENE_PREFAB_AND_ASSET_BINDINGS':target==='WEB'?'EXISTING_BROWSER_GAME_SOURCE_AND_RESOURCE_BINDINGS':'EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS',
       required:['CONNECTED_PLAYER_ACTION_STATE_FEEDBACK_AND_NEXT_GOAL','COMPATIBLE_INTERNAL_ASSETS_ACTUALLY_BOUND','MOTION_AUDIO_VFX_LINKED_TO_EXISTING_GAME_STATE_WHEN_APPLICABLE','MOBILE_TOUCH_AND_SCREEN_READABILITY','EXACT_CHANGED_BUILD_RUNTIME_AND_SAVE_REGRESSION'],
-      runtimeSurface:target==='UNITY'?(requested==='UNITY_WEB'?'UNITY_WEBGL_ACTUAL_BROWSER_PLAY':'UNITY_NATIVE_AND_ANDROID_WHEN_TARGETED'):target==='WEB'?'ACTUAL_BROWSER_PLAY':'ROBLOX_OPEN_CLOUD_EXACT_CANDIDATE',
+      runtimeSurface:target==='UNITY'?(executionSurface==='UNITY_WEB'?'UNITY_WEBGL_ACTUAL_BROWSER_PLAY':'UNITY_NATIVE_AND_ANDROID_WHEN_TARGETED'):'ROBLOX_OPEN_CLOUD_EXACT_CANDIDATE',
+      canonicalGameplaySource:target==='UNITY'?'UNITY_CSHARP_SCENE_PREFAB_AND_ASSET_BINDINGS':'ROBLOX_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS',
+      browserGameplaySourceAllowed:false,
       markerOnlyCompletionAllowed:false,runtimeVerified:false
     },
     handoffRule:'Use the observed files and symbols within the existing allowed write scope. Reuse existing event/data contracts; missing context is not permission to invent an API or edit another file.',
