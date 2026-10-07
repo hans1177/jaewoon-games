@@ -276,6 +276,18 @@ test('F0 planner dedupes duplicate dispatches while validation matrix remains pa
 });
 
 
+test('F0 validate coalesces only exact game source and artifact duplicates without serializing unrelated work',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
+  const validateStart=workflow.indexOf('\n  validate:\n');
+  const validateEnd=workflow.indexOf('\n  ',validateStart+4);
+  assert.ok(validateStart>=0);
+  const block=workflow.slice(validateStart,workflow.indexOf('\n    steps:\n',validateStart));
+  assert.match(block,/concurrency:\n\s+group: roblox-f0-validate-\$\{\{ matrix\.gameId \}\}-\$\{\{ matrix\.sourceRevision \}\}-\$\{\{ matrix\.artifactIdentity \}\}/);
+  assert.match(block,/cancel-in-progress:\s*false/);
+  assert.doesNotMatch(block,/max-parallel:/);
+  assert.doesNotMatch(workflow.slice(0,workflow.indexOf('\njobs:\n')),/^concurrency:\s*$/m);
+});
+
 test('F0 hands exact game ids directly to private validation without Studio dependency',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
   assert.match(workflow,/name: Dispatch exact private Roblox validation directly after this game's F0 persist/);
