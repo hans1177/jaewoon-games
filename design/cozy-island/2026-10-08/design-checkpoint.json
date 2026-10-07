@@ -163,26 +163,42 @@
         "multiplayerPersistence": "COZY_CHIBI_KINGDOM_MULTIPLAYER_V2",
         "expansionSpace": "COZY_CHIBI_KINGDOM_EXPANSION_V2"
       }
+    },
+    "designer_draft_slices::platform-expansion": {
+      "platformExpansionPolicy": {
+        "mode": "SHARED_LARGE_FRAME_PLATFORM_NATIVE_EXPANSION",
+        "sharedLargeFrame": [
+          "CORE_FUN_AND_REPRESENTATIVE_LOOP",
+          "CORE_FUN_AND_REPRESENTATIVE_LOOP",
+          "CORE_FUN_AND_REPRESENTATIVE_LOOP",
+          "CORE_FUN_AND_REPRESENTATIVE_LOOP",
+          "CORE_FUN_AND_REPRESENTATIVE_LOOP"
+        ],
+        "expansionLimit": "NO_ARTIFICIAL_PARITY_LIMIT_WITHIN_SHARED_LARGE_FRAME",
+        "webRule": "WEB_2_5D_3D_4D_5D",
+        "unityRule": "UNITY_3D_4D_5D",
+        "robloxRule": "ROBLOX_3D_4D_5D"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 388909,
-      "lastMs": 90768,
+      "totalMs": 468508,
+      "lastMs": 79599,
       "lastError": null,
-      "updatedAt": "2026-10-07T20:07:38.909Z"
+      "updatedAt": "2026-10-07T20:08:58.509Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T20:01:09.902Z",
-  "updatedAt": "2026-10-07T20:07:38.909Z",
-  "lastSuccessfulModelCallAt": "2026-10-07T20:07:38.909Z",
+  "updatedAt": "2026-10-07T20:08:58.510Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T20:08:58.509Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
