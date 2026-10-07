@@ -10,9 +10,24 @@
   "completedPhases": [],
   "phases": {},
   "tasks": {},
-  "modelHealth": {},
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 218097,
+      "lastMs": 218097,
+      "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
+      "updatedAt": "2026-10-07T20:09:37.814Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T20:05:59.714Z",
-  "updatedAt": "2026-10-07T20:05:59.716Z"
+  "updatedAt": "2026-10-07T20:09:37.814Z",
+  "localAuthoringSplits": {
+    "b0562ba8bb121c6f29db549cd378dd345fb1669cdccd5e5f6382f3175e914676": true
+  }
 }
