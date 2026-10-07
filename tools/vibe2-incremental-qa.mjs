@@ -526,24 +526,39 @@ function runPresentationStaticQa({root,data={},changed=[]}={}){
     require('STYLE_SURFACE',/(?:fillStyle|strokeStyle|classList|style\.|--[\w-]+\s*:|background|linear-gradient|radial-gradient|material|texture|sprite)/i.test(text));
     require('RENDER_OR_VISUAL_OWNER',/(?:canvas|getContext\(|render|draw|sprite|mesh|visual|style)/i.test(text));
     if(target==='web'){
-      const realAssetBindings=patternHits(text,[
-        /drawImage\s*\(/i,
-        /new\s+Image\s*\(/i,
-        /<img\b/i,
-        /background(?:-image)?\s*:\s*url\s*\(/i,
-        /(?:src|href)\s*=\s*["'][^"']+\.(?:png|webp|jpg|jpeg|svg)/i,
-        /\b(?:sprite|spritesheet|texture|atlas)\b/i
-      ]);
-      const webIdentityDomains=patternHits(text,[
-        /\b(?:player|character|hero|npc|enemy|monster|boss|creature|avatar)\b/i,
-        /\b(?:weapon|sword|blade|spear|axe|hammer|bow|staff|shield|tool|item|equipment|armor)\b/i,
-        /\b(?:background|terrain|ground|tree|rock|plant|building|environment|sky|fog|biome|forest|village|dungeon|island)\b/i,
-        /\b(?:palette|style.?lock|outline|shadow|lighting|gradient|material|theme|visual.?language)\b/i
-      ]);
-      const primitiveCalls=(text.match(/ctx\.(?:arc|fillRect|strokeRect|ellipse)\s*\(/gi)||[]).length;
-      require('WEB_REAL_ASSET_BINDING',realAssetBindings>=2);
-      require('WEB_GAME_VISUAL_IDENTITY_DOMAINS',webIdentityDomains>=3);
-      require('WEB_NO_PRIMITIVE_ONLY_SCENE',primitiveCalls===0||realAssetBindings>=2);
+      const web3dActorRequired=data?.assetProduction?.nativeAuthoringExecution?.dcc?.web3dActorMasterAuthoringRequired===true;
+      if(web3dActorRequired){
+        const glbRuntimeBinding=/(?:GLTFLoader|loadAsync\s*\(|\.load\s*\(|useGLTF|\.glb\b|\.gltf\b)/i.test(text);
+        const animationMixer=/(?:AnimationMixer|clipAction\s*\(|AnimationAction|mixer\.update\s*\()/i.test(text);
+        const actorStates=patternHits(text,[
+          /\b(?:idle|IDLE)\b/,/\b(?:walk|WALK)\b/,/\b(?:run|RUN|jog|JOG)\b/,
+          /\b(?:attack|ATTACK)\b/,/\b(?:hit|HIT|stagger|STAGGER)\b/,/\b(?:death|DEATH|dead|DEAD)\b/
+        ]);
+        const stateMotionBinding=animationMixer&&actorStates>=3&&/(?:clipAction|actions?\s*\[|animationMap|motionMap|state.*animation|animation.*state)/i.test(text);
+        require('WEB_3D_ACTOR_MASTER_GLB_RUNTIME_BINDING',glbRuntimeBinding);
+        require('WEB_3D_ACTOR_ANIMATION_MIXER',animationMixer);
+        require('WEB_3D_ACTOR_STATE_MOTION_BINDING',stateMotionBinding);
+        require('WEB_3D_ACTOR_CANVAS_SPRITE_NOT_FINAL',!/(?:new\s+Image\s*\(|drawImage\s*\()[\s\S]{0,600}(?:player|character|npc|enemy|monster|boss|creature)/i.test(text));
+      }else{
+        const realAssetBindings=patternHits(text,[
+          /drawImage\s*\(/i,
+          /new\s+Image\s*\(/i,
+          /<img\b/i,
+          /background(?:-image)?\s*:\s*url\s*\(/i,
+          /(?:src|href)\s*=\s*["'][^"']+\.(?:png|webp|jpg|jpeg|svg)/i,
+          /\b(?:sprite|spritesheet|texture|atlas)\b/i
+        ]);
+        const webIdentityDomains=patternHits(text,[
+          /\b(?:player|character|hero|npc|enemy|monster|boss|creature|avatar)\b/i,
+          /\b(?:weapon|sword|blade|spear|axe|hammer|bow|staff|shield|tool|item|equipment|armor)\b/i,
+          /\b(?:background|terrain|ground|tree|rock|plant|building|environment|sky|fog|biome|forest|village|dungeon|island)\b/i,
+          /\b(?:palette|style.?lock|outline|shadow|lighting|gradient|material|theme|visual.?language)\b/i
+        ]);
+        const primitiveCalls=(text.match(/ctx\.(?:arc|fillRect|strokeRect|ellipse)\s*\(/gi)||[]).length;
+        require('WEB_REAL_ASSET_BINDING',realAssetBindings>=2);
+        require('WEB_GAME_VISUAL_IDENTITY_DOMAINS',webIdentityDomains>=3);
+        require('WEB_NO_PRIMITIVE_ONLY_SCENE',primitiveCalls===0||realAssetBindings>=2);
+      }
     }
     if(target==='unity'||target==='roblox'){
       const nativeComposition=target==='unity'
