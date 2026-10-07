@@ -1246,16 +1246,27 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
   return Object.freeze({registry:next,bindings:Object.freeze(bindings),relations:Object.freeze(relations),summary});
 }
 
-export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),registry=null,persist=true}={}){
+export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),registry=null,persist=true,consumerGameIds=null}={}){
   const registryPath=path.join(repoRoot,'company-asset-library.json');
   const original=registry||readJson(registryPath,{version:0,assets:[],externalSources:[]});
   // 동기화는 asset top-level 필드만 직접 수정하고 중첩 계약은 교체/읽기만 한다. 3MB registry 전체 JSON deep-copy를 피한다.
   const next={...original,assets:(Array.isArray(original.assets)?original.assets:[]).map(asset=>({...asset}))};
   const gameCatalog=readJson(path.join(repoRoot,'game-catalog.json'),{games:[]});
+  const consumerGameScope=Array.isArray(consumerGameIds)
+    ?new Set(consumerGameIds.map(clean).filter(Boolean))
+    :null;
+  const consumerScanCatalog=consumerGameScope
+    ?{...gameCatalog,games:(gameCatalog.games||[]).filter(game=>consumerGameScope.has(clean(game.id||game.gameId)))}
+    :gameCatalog;
   const catalogs=commonCatalogFiles(repoRoot).map(file=>({path:path.relative(repoRoot,file).replaceAll('\\','/'),catalog:readJson(file,{})})).filter(row=>row.catalog?.packId);
   const fingerprint=catalogFingerprint(catalogs);
   const syncRows=catalogs.map(row=>synchronizeCatalogRows({registry:next,catalog:row.catalog}));
-  const consumerSync=synchronizeSourceBoundAssetConsumers({repoRoot,registry:next,gameCatalog});
+  const consumerSync=synchronizeSourceBoundAssetConsumers({repoRoot,registry:next,gameCatalog:consumerScanCatalog});
+  const sourceConsumerSync=Object.freeze({
+    ...consumerSync.summary,
+    scanScope:consumerGameScope?'REQUESTED_GAME_IDS':'ALL_ELIGIBLE_GAMES',
+    requestedGameIds:freezeList(consumerGameScope?[...consumerGameScope].sort():[])
+  });
   // source-bound 소비자는 현재 소스의 동적 overlay다. canonical library version/fingerprint는 바꾸지 않는다.
   const qualityInputs=new Map();
   const planningAssets=next.assets.map(asset=>{
@@ -1557,7 +1568,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     maintenance:next.internalAssetLibraryAutomation?.maintenance||null,
     discoveredCatalogCount:catalogs.length,
     synchronizedPackIds:freezeList(syncRows.map(row=>row.packId)),
-    sourceConsumerSync:consumerSync.summary,
+    sourceConsumerSync,
     sourceConsumerBindings:consumerSync.bindings,
     sourceConsumerRelations:consumerSync.relations,
     sourceConsumerRegistry:consumerSync.registry,
@@ -3031,8 +3042,14 @@ export function buildVibeAssetProductionPlan({
   const flowAssetRequirements=normalizeFlowAssetRequirements(task.assetRequirements);
   const currentDemandFamilies=requiredAssetFamilies({request,requirements:flowAssetRequirements});
   const manifestBase=manifest||readJson(path.join(repoRoot,'assets','asset-manifest.json'),{version:0,assets:[]});
+  const currentGameId=clean(task.gameId);
   const persistedCompanyRegistry=readJson(path.join(repoRoot,'company-asset-library.json'),{version:0,assets:[],externalSources:[]});
-  const librarySync=synchronizeCompanyCommonAssetRegistry({repoRoot,registry:persistedCompanyRegistry,persist:!process.env.NODE_TEST_CONTEXT});
+  const librarySync=synchronizeCompanyCommonAssetRegistry({
+    repoRoot,
+    registry:persistedCompanyRegistry,
+    persist:!process.env.NODE_TEST_CONTEXT,
+    consumerGameIds:currentGameId?[currentGameId]:null
+  });
   const companyRegistry=librarySync.registry;
   // 선택 identity는 실제 저장된 snapshot만 사용한다. dry-run 동기화 결과가 canonical version/hash를 선행하지 못한다.
   const selectionRegistry=librarySync.changed&&!librarySync.persisted?persistedCompanyRegistry:companyRegistry;
@@ -3050,7 +3067,6 @@ export function buildVibeAssetProductionPlan({
   const activeNextVolumeActions=referenceVolumeActions.filter(row=>
     assetDomainFamilies(row?.domain).some(family=>currentDemandFamilies.includes(family))
   );
-  const currentGameId=clean(task.gameId);
   const activeQualityActions=(executionLibraryPlan.nextQualityActions||[]).filter(row=>
     Number(row?.consumerPriority||0)>0
     &&(!currentGameId||(row?.consumerGameIds||[]).map(clean).includes(currentGameId))
@@ -3770,6 +3786,18 @@ export function buildVibeAssetProductionPlan({
     internalLibraryEvolution:effectiveInternalLibraryEvolution,
     flowAssetRequirements,
     assetSupplySummary,
+    registrySync:freeze({
+      changed:librarySync.changed===true,
+      persisted:librarySync.persisted===true,
+      persistError:librarySync.persistError||null,
+      discoveredCatalogCount:Number(librarySync.discoveredCatalogCount||0),
+      seedCount:Number(librarySync.seedCount||0),
+      sourceConsumerScanScope:clean(librarySync.sourceConsumerSync?.scanScope)||null,
+      sourceConsumerRequestedGameIds:freezeList(librarySync.sourceConsumerSync?.requestedGameIds||[]),
+      sourceConsumerScannedGameCount:Number(librarySync.sourceConsumerSync?.scannedGameCount||0),
+      sourceConsumerScannedFileCount:Number(librarySync.sourceConsumerSync?.scannedFileCount||0),
+      sourceConsumerScannedBytes:Number(librarySync.sourceConsumerSync?.scannedBytes||0)
+    }),
     flowAssetLoadout:freeze({
       libraryVersion:studioUniversePlan?.loadout?.libraryVersion||0,
       librarySnapshotId:studioUniversePlan?.loadout?.librarySnapshotId||null,
@@ -4427,8 +4455,7 @@ export function assetProductionGuidance(plan={}){
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const args=Object.fromEntries(process.argv.slice(2).filter(x=>x.startsWith('--')&&x.includes('=')).map(x=>{const [k,...v]=x.slice(2).split('=');return[k,v.join('=')]}));
   const repoRoot=clean(args.root)||process.cwd();
-  const sync=synchronizeCompanyCommonAssetRegistry({repoRoot,persist:true});
   const task={gameId:clean(args.game),goal:clean(args.goal),target:clean(args.target)||'web'};
   const result=buildVibeAssetProductionPlan({task,target:task.target,repoRoot});
-  console.log(JSON.stringify({registrySync:{changed:sync.changed,persisted:sync.persisted,persistError:sync.persistError,discoveredCatalogCount:sync.discoveredCatalogCount,seedCount:sync.seedCount},plan:result},null,2));
+  console.log(JSON.stringify({registrySync:result.registrySync,plan:result},null,2));
 }
