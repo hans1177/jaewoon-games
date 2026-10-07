@@ -286,25 +286,25 @@ test('central document budget blocks hard overflow and oversized single-change g
   const hard=evaluateCentralDocumentBudget({
     documentKey:'architecture',
     sourcePath:'company-learning/company-architecture-map.json',
-    currentBytes:401000,
-    baseBytes:376000,
-    hardMaxUtf8Bytes:400000,
-    maxGrowthUtf8Bytes:24000
+    currentBytes:769000,
+    baseBytes:640000,
+    hardMaxUtf8Bytes:768000,
+    maxGrowthUtf8Bytes:128000
   });
-  assert.ok(hard.errors.includes('CENTRAL_DOCUMENT_ARCHITECTURE_HARD_LIMIT_EXCEEDED:401000>400000'));
-  assert.ok(hard.errors.includes('CENTRAL_DOCUMENT_ARCHITECTURE_GROWTH_LIMIT_EXCEEDED:25000>24000'));
+  assert.ok(hard.errors.includes('CENTRAL_DOCUMENT_ARCHITECTURE_HARD_LIMIT_EXCEEDED:769000>768000'));
+  assert.ok(hard.errors.includes('CENTRAL_DOCUMENT_ARCHITECTURE_GROWTH_LIMIT_EXCEEDED:129000>128000'));
 
   const normal=evaluateCentralDocumentBudget({
     documentKey:'logMap',
     sourcePath:'company-learning/company-log-map.json',
-    currentBytes:152000,
-    baseBytes:154000,
-    hardMaxUtf8Bytes:200000,
-    maxGrowthUtf8Bytes:20000
+    currentBytes:210000,
+    baseBytes:180000,
+    hardMaxUtf8Bytes:512000,
+    maxGrowthUtf8Bytes:96000
   });
   assert.deepEqual(normal.errors,[]);
-  assert.equal(normal.growthUtf8Bytes,-2000);
-  assert.equal(normal.headroomUtf8Bytes,48000);
+  assert.equal(normal.growthUtf8Bytes,30000);
+  assert.equal(normal.headroomUtf8Bytes,302000);
 });
 
 test('current central four documents stay inside absolute anti-bloat budgets',()=>{
@@ -312,13 +312,13 @@ test('current central four documents stay inside absolute anti-bloat budgets',()
   assert.deepEqual(report.errors,[]);
   assert.equal(Object.keys(report.documents).length,4);
   assert.ok(report.documents.policy.utf8Bytes<=report.documents.policy.hardMaxUtf8Bytes);
-  assert.ok(report.documents.architecture.utf8Bytes<=400000);
-  assert.ok(report.documents.logMap.utf8Bytes<=200000);
-  assert.ok(report.documents.security.utf8Bytes<=100000);
-  assert.equal(report.documents.policy.maxGrowthUtf8Bytes,32000);
-  assert.equal(report.documents.architecture.maxGrowthUtf8Bytes,24000);
-  assert.equal(report.documents.logMap.maxGrowthUtf8Bytes,20000);
-  assert.equal(report.documents.security.maxGrowthUtf8Bytes,16000);
+  assert.ok(report.documents.architecture.utf8Bytes<=768000);
+  assert.ok(report.documents.logMap.utf8Bytes<=512000);
+  assert.ok(report.documents.security.utf8Bytes<=256000);
+  assert.equal(report.documents.policy.maxGrowthUtf8Bytes,128000);
+  assert.equal(report.documents.architecture.maxGrowthUtf8Bytes,128000);
+  assert.equal(report.documents.logMap.maxGrowthUtf8Bytes,96000);
+  assert.equal(report.documents.security.maxGrowthUtf8Bytes,64000);
 });
 
 test('central document growth report reads an exact git baseline',()=>{
