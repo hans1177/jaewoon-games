@@ -104,25 +104,59 @@
         "riskPressure": "자원 거점 점령 기능의 실패로 인해 보상 획득 기능의 감소 및 전략적 선택의 제한이 발생할 수 있음",
         "recoveryRules": "자원 거점 점령 기능의 재설정은 병력 강화 및 전투력 확장 기능의 재활용을 통해 회복 가능"
       }
+    },
+    "designer_draft_slices::platform-profiles": {
+      "platformFitPlan": {
+        "targetPlatform": "ROBLOX",
+        "inputModel": "모바일 큰 버튼과 터치 상호작용을 우선하고 키보드와 게임패드를 같은 행동에 매핑한다",
+        "performanceBudget": "모바일 Roblox에서 낮은 파트 수와 제한된 이펙트, 짧은 네트워크 이벤트를 유지한다",
+        "sessionConstraints": "솔로 플레이를 허용하고 2명 이상에서는 멀티 기능이 활성화되는 Roblox 세션을 사용한다"
+      },
+      "platformProfiles": {
+        "ROBLOX": {
+          "platform": "ROBLOX",
+          "inputModel": "모바일 큰 버튼과 터치 상호작용을 우선하고 키보드와 게임패드를 같은 행동에 매핑한다",
+          "sessionModel": "솔로 플레이를 허용하고 2명 이상에서는 멀티 기능이 활성화되는 Roblox 세션",
+          "multiplayerRuntime": "서버 권한으로 참가자별 병사와 병영 보너스를 집계해 공동 적 웨이브와 자동전투를 처리하고 RemoteEvent로 모든 참가자에게 결과를 동기화한다",
+          "performanceBudget": "모바일 Roblox에서 낮은 파트 수와 제한된 이펙트, 짧은 네트워크 이벤트를 유지한다",
+          "uiUx": "상단에 기본자원·특수자원·주민·병력·점령 상태를 표시하고 하단에 벌목·식량수급·주민영입·병영·모집·전투 버튼을 모바일 큰 버튼으로 제공한다",
+          "saveAndNetwork": "DataStore에 개인 자원·주민·병영·병사·점령 기지·특수자원 해금을 저장한다. 자동전투와 협동 지원 계산은 서버 권한으로 처리한다",
+          "platformContentAdaptation": "Roblox 3D 섬 지형에서 지역 기지를 선택하고, 서버 권한 자동전투와 점령 상태를 시각적으로 표시한다. 기본섬 노동과 주민 자동화는 실제 성장 상태로 연결한다",
+          "internalReleaseTarget": "OPEN_CLOUD_PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+          "validationEvidence": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract, Mobile input/UI contract, Save/rejoin contract when applicable, Multiplayer state-sync contract when applicable, Headless exact-artifact regression, Open Cloud private/restricted publish"
+        },
+        "UNITY": {
+          "platform": "UNITY",
+          "inputModel": "PC 키보드와 마우스 입력을 기본으로 하며, 모바일 터치 상호작용을 보조 입력으로 사용한다",
+          "sessionModel": "사용자 선택에 따라 멀티플레이어 세션을 활성화한다",
+          "multiplayerRuntime": "서버 권한으로 참가자별 병사와 병영 보너스를 집계해 공동 적 웨이브와 자동전투를 처리하고 RemoteEvent로 모든 참가자에게 결과를 동기화한다",
+          "performanceBudget": "고급 이펙트와 복잡한 네트워크 이벤트를 포함한 PC 기반 시스템을 사용한다",
+          "uiUx": "상단에 기본자원·특수자원·주민·병력·점령 상태를 표시하고 하단에 벌목·식량수급·주민영입·병영·모집·전투 버튼을 PC 키보드와 마우스로 제공한다",
+          "saveAndNetwork": "DataStore에 개인 자원·주민·병영·병사·점령 기지·특수자원 해금을 저장한다. 자동전투와 협동 지원 계산은 서버 권한으로 처리한다",
+          "platformContentAdaptation": "PC 기반의 3D 지형에서 지역 기지를 선택하고, 서버 권한 자동전투와 점령 상태를 시각적으로 표시한다. 기본섬 노동과 주민 자동화는 실제 성장 상태로 연결한다",
+          "internalReleaseTarget": "OPEN_CLOUD_PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+          "validationEvidence": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract, Mobile input/UI contract, Save/rejoin contract when applicable, Multiplayer state-sync contract when applicable, Headless exact-artifact regression, Open Cloud private/restricted publish"
+        }
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 2,
+      "calls": 5,
+      "successes": 3,
       "failures": 2,
       "timeouts": 1,
       "jsonFailures": 1,
-      "totalMs": 618644,
-      "lastMs": 176634,
+      "totalMs": 837039,
+      "lastMs": 218395,
       "lastError": "Expected ',' or ']' after array element in JSON at position 1654 (line 1 column 1655)",
-      "updatedAt": "2026-10-07T19:22:28.325Z"
+      "updatedAt": "2026-10-07T19:26:06.721Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T18:14:44.822Z",
-  "updatedAt": "2026-10-07T19:22:28.326Z",
+  "updatedAt": "2026-10-07T19:26:06.722Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
@@ -135,7 +169,7 @@
     "preservedTaskCount": 0,
     "migratedAt": "2026-10-07T19:17:03.220Z"
   },
-  "lastSuccessfulModelCallAt": "2026-10-07T19:22:28.325Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T19:26:06.721Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
