@@ -5,12 +5,63 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
-import {assetProductionGuidance,buildAllGameDynamicLibraryBindingPlan,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType,crossPlatform3dActorFamilyForType} from '../tools/vibe2-asset-production-plan.mjs';
+import {assetProductionGuidance,buildAllGameDynamicLibraryBindingPlan,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType,crossPlatform3dActorFamilyForType,synchronizeCompanyCommonAssetRegistry} from '../tools/vibe2-asset-production-plan.mjs';
 import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate,buildInternalAssetSourceUsageContract,inspectRobloxNativeCandidateQuality,executeDeclaredNativeDccAuthoringVerification,evaluateNativeAssetAuthoringCandidate,collectNativeAssetRuntimePromotionCandidates,persistedGeneratedAssetBindings} from '../tools/vibe2-source-worker.mjs';
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
 import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource,robloxStudioAssetFamilyBoundInText} from '../tools/company-development-roblox-bootstrap.mjs';
+
+test('asset registry change detection skips untouched top-level serialization and tracks catalog asset mutations',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-change-detection-'));
+  try{
+    fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify({games:[]}));
+    const catalogDir=path.join(root,'assets','roblox','common-items-v1');
+    fs.mkdirSync(catalogDir,{recursive:true});
+    fs.writeFileSync(path.join(catalogDir,'catalog.json'),JSON.stringify({
+      packId:'roblox-common-items-v1',version:1,family:'PROP',platform:'ROBLOX',
+      items:[{assetId:'APPLE',name:'Apple',itemRole:'FOOD'}]
+    }));
+    let untouchedSerializationCount=0;
+    const untouchedLargeSection={
+      marker:'UNCHANGED',
+      toJSON(){untouchedSerializationCount+=1;return{marker:this.marker};}
+    };
+    const registry={
+      version:1,
+      assets:[{
+        id:'roblox-common-items-v1',packId:'roblox-common-items-v1',family:'PROP',platform:'ROBLOX',
+        license:'project-original',companyCommonBase:true,productionVerified:false,verifiedCompanyReusable:false,
+        runtimeVerificationState:'PENDING_STUDIO'
+      }],
+      externalSources:[],
+      untouchedLargeSection
+    };
+    const first=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry,persist:false});
+    assert.equal(untouchedSerializationCount,0);
+    assert.equal(first.changed,true);
+    assert.ok(first.changedSections.includes('assets'));
+    assert.deepEqual(first.changedSections,[...first.changedSections].sort());
+    assert.ok(first.registry.assets.some(row=>row.assetId==='APPLE'));
+    const second=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry:first.registry,persist:false});
+    assert.equal(untouchedSerializationCount,0);
+    assert.equal(second.changed,false,JSON.stringify(second.changedSections));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('registry sync change detection is limited to sections it can mutate',()=>{
+  const source=fs.readFileSync('tools/vibe2-asset-production-plan.mjs','utf8');
+  const start=source.indexOf('export function synchronizeCompanyCommonAssetRegistry');
+  const end=source.indexOf('const inferUniverseFamily',start);
+  const syncSource=source.slice(start,end);
+  assert.match(syncSource,/const mutableSections=\[/);
+  for(const section of ['assets','internalAssetCompositionContract','companyCommonSeedAssetIdeation','commonLibrarySystemDepthAudit','internalAssetLibraryAutomation','characterNpcCustomization','npcRoleProduction']){
+    assert.match(syncSource,new RegExp("'"+section+"'"));
+  }
+  assert.match(syncSource,/catalogAssetsChanged=syncRows\.some\(row=>row\.changed===true\)/);
+  assert.doesNotMatch(syncSource,/Object\.keys\(original\)/);
+  assert.doesNotMatch(syncSource,/Object\.keys\(next\)/);
+});
 
 test('Roblox internal asset selection is genre-agnostic for the same game and library',()=>{
   const assetLibrary=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
