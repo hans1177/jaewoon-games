@@ -4,8 +4,11 @@
 
 const TYPES = Object.freeze({
   character: ['주인공', '캐릭터', '영웅', '플레이어', '기사', '궁수', '사마귀'],
-  enemy: ['적', '몬스터', '고블린', '오크', '좀비', '거미', '전갈', '벌'],
-  boss: ['보스', '중간보스', '대형'],
+  npc: ['NPC', 'npc', '주민', '마을사람', '상인', '판매원', '퀘스트 NPC', '의뢰인', '훈련관', '교관'],
+  companion: ['동료', '동료 캐릭터', '아군', '파티원', 'companion', 'ally'],
+  creature: ['크리처', '생물', '동물', '야생동물', '펫', '애완동물', '탈것', '마운트', '소환수', 'pet', 'mount', 'summon'],
+  enemy: ['적', '몬스터', '엘리트', '고블린', '오크', '좀비', '거미', '전갈', '벌'],
+  boss: ['보스', '중간보스', '레이드 보스', '대형'],
   background: ['배경', '환경', '지형', '랜드마크', '숲', '사막', '황무지', '동굴', '광산', '성', '마을', '기지'],
   item: ['아이템', '검', '칼', '활', '방패', '갑옷', '물약', '장비', '도구'],
   prop: ['소품', '가구', '장식', '사물', '나무', '바위', '풀', '버섯', '상자', '건물', '집', '벽', '문', '자원'],
@@ -16,7 +19,7 @@ const TYPES = Object.freeze({
 });
 
 const REQUIRED_VISUAL_TYPES = Object.freeze(['character', 'enemy', 'boss', 'background', 'item', 'prop', 'effect', 'ui', 'animation']);
-const ACTOR_TYPES = Object.freeze(['character', 'enemy', 'boss']);
+const ACTOR_TYPES = Object.freeze(['character', 'npc', 'companion', 'creature', 'enemy', 'boss']);
 const DEFAULT_MOTION_STATES = Object.freeze(['idle', 'move', 'attack', 'hit', 'skill', 'death']);
 const LOCOMOTION_STATES = Object.freeze(['move', 'walk', 'run', 'jump', 'fly', 'swim', 'crawl']);
 const BLOCKED_LICENSE_WORDS = Object.freeze(['NC', 'unknown', '출처 불명', '재배포 제한']);
@@ -279,6 +282,9 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
       allowRetargetableRigWithLinkedVerifiedMotion:true,
       studioMotionCandidatePreferred:true,
       requireAnimatedCharacter:true,
+      requireAnimatedNpc:true,
+      requireAnimatedCompanion:true,
+      requireAnimatedCreature:true,
       requireAnimatedEnemy:true,
       requireAnimatedBoss:true,
       allowRawStaticActor:false,
@@ -304,7 +310,7 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
       '휴머노이드 리그와 외부/회사 모션을 조합할 때는 리타겟·발접지·루트/골반·손/무기 접촉·전환 클린업을 거쳐 플랫폼 네이티브 런타임으로 검증',
       '정지 원본은 Motion Engine 프로필·런타임 증거·모바일 성능 통과 없이는 배우 후보에서 제외',
       '프리셋의 검증 배우 에셋을 우선 적용하고 미다운로드 에셋은 최초 사용 시 확보·캐시',
-      '캐릭터/적/NPC/배경/지형/사물/자원/건물/UI/VFX 목록 작성',
+      '플레이어/일반 NPC/동료/아군/상인·퀘스트 NPC/펫·탈것·소환수/적·엘리트/보스와 배경·지형·사물·자원·건물·UI·VFX 목록 작성',
       '누락 에셋은 승인 소스에서 상업/수정 라이선스 확인 후 확보',
       'LICENSES/에셋 장부에 출처·제작자·라이선스·수정 여부 기록',
       '모든 월드 객체를 실제 이미지/스프라이트/타일 에셋에 연결',
