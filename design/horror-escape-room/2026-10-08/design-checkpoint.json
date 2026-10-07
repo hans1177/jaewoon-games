@@ -102,25 +102,59 @@
         "riskPressure": "감염 공격, 정화 공격, 대시, 몬스터 능력, 저장",
         "recoveryRules": "감염 전환, 정화, 대시, 몬스터 능력, 저장"
       }
+    },
+    "designer_draft_slices::platform-profiles": {
+      "platformFitPlan": {
+        "targetPlatform": "ROBLOX",
+        "inputModel": "모바일 이동과 큰 상호작용 버튼, PC 키보드·게임패드 보조 입력을 사용한다.",
+        "performanceBudget": "모바일에서 조명·괴물·파티클을 제한하고 방 단위 활성화로 인스턴스 수를 관리한다.",
+        "sessionConstraints": "1인은 역할 선호 선택 + AI 충원, 2명 이상은 실제 플레이어를 공정 배정하고 AI가 빈 인간/몬스터 슬롯을 채워 논리 4대4로 시작한다."
+      },
+      "platformProfiles": {
+        "ROBLOX": {
+          "platform": "ROBLOX",
+          "inputModel": "모바일 이동과 큰 상호작용 버튼, PC 키보드·게임패드 보조 입력을 사용한다.",
+          "sessionModel": "1인은 역할 선호 선택 + AI 충원, 2명 이상은 실제 플레이어를 공정 배정하고 AI가 빈 인간/몬스터 슬롯을 채워 논리 4대4로 시작한다.",
+          "multiplayerRuntime": "서버가 Role, Infected, HumanCount, MonsterCount, Energy, cooldown, conversion, purification, winner와 역할선정 공정 상태를 authoritative하게 관리한다.",
+          "performanceBudget": "모바일에서 조명·괴물·파티클을 제한하고 방 단위 활성화로 인스턴스 수를 관리한다.",
+          "uiUx": "로비에서는 역할 선호·인간 직업·몬스터 폼을 선택하고, 라운드에서는 인간 정화/대시 또는 몬스터 감염 공격/고유 스킬만 노출한다.",
+          "saveAndNetwork": "MonsterXP·MonsterForm·HumanForm·코스메틱·괴담/로어 진행과 역할 공정 가중치에 필요한 최소 기록을 저장하고 라운드 판정은 서버가 관리한다.",
+          "platformContentAdaptation": "학교·폐병원·폐놀이공원에서 인간은 정화와 대시로 몬스터를 제거하고, 몬스터는 명시적 감염 공격으로 인간을 전환한다. 감염된 인간은 직업별 고유 감염 스킬을 사용한다.",
+          "internalReleaseTarget": "OPEN_CLOUD_PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+          "validationEvidence": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract, Mobile input/UI contract, Save/rejoin contract when applicable, Multiplayer state-sync contract when applicable, Headless exact-artifact regression, Open Cloud private/restricted publish"
+        },
+        "UNITY": {
+          "platform": "UNITY",
+          "inputModel": "모바일 이동과 큰 상호작용 버튼, PC 키보드·게임패드 보조 입력을 사용한다.",
+          "sessionModel": "1인은 역할 선호 선택 + AI 충원, 2명 이상은 실제 플레이어를 공정 배정하고 AI가 빈 인간/몬스터 슬롯을 채워 논리 4대4로 시작한다.",
+          "multiplayerRuntime": "서버가 Role, Infected, HumanCount, MonsterCount, Energy, cooldown, conversion, purification, winner와 역할선정 공정 상태를 authoritative하게 관리한다.",
+          "performanceBudget": "모바일에서 조명·괴물·파티클을 제한하고 방 단위 활성화로 인스턴스 수를 관리한다.",
+          "uiUx": "로비에서는 역할 선호·인간 직업·몬스터 폼을 선택하고, 라운드에서는 인간 정화/대시 또는 몬스터 감염 공격/고유 스킬만 노출한다.",
+          "saveAndNetwork": "MonsterXP·MonsterForm·HumanForm·코스메틱·괴담/로어 진행과 역할 공정 가중치에 필요한 최소 기록을 저장하고 라운드 판정은 서버가 관리한다.",
+          "platformContentAdaptation": "학교·폐병원·폐놀이공원에서 인간은 정화와 대시로 몬스터를 제거하고, 몬스터는 명시적 감염 공격으로 인간을 전환한다. 감염된 인간은 직업별 고유 감염 스킬을 사용한다.",
+          "internalReleaseTarget": "OPEN_CLOUD_PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+          "validationEvidence": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract, Mobile input/UI contract, Save/rejoin contract when applicable, Multiplayer state-sync contract when applicable, Headless exact-artifact regression, Open Cloud private/restricted publish"
+        }
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 421892,
-      "lastMs": 202215,
+      "totalMs": 688864,
+      "lastMs": 266972,
       "lastError": null,
-      "updatedAt": "2026-10-07T20:32:09.422Z"
+      "updatedAt": "2026-10-07T20:36:36.395Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T20:25:07.525Z",
-  "updatedAt": "2026-10-07T20:32:09.423Z",
+  "updatedAt": "2026-10-07T20:36:36.395Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -313,7 +347,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-07T20:32:09.422Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T20:36:36.395Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
