@@ -1981,6 +1981,79 @@ public class PrototypeAnimatedVisuals:MonoBehaviour {
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('Unity Master GLB actor incremental QA requires skinned mesh Animator collider LOD and state binding',()=>{
+  const root=tempRoot();
+  try{
+    const relative='unity-games/actor-demo/Assets/Scripts/ActorVisual.cs';
+    const file=path.join(root,...relative.split('/'));
+    fs.mkdirSync(path.dirname(file),{recursive:true});
+    fs.writeFileSync(file,`using UnityEngine;
+public class ActorVisual:MonoBehaviour {
+  [SerializeField] GameObject actorPrefab;
+  [SerializeField] Material heroMaterial;
+  void Build(){
+    var character=Instantiate(actorPrefab);
+    var skin=character.GetComponentInChildren<SkinnedMeshRenderer>();
+    var animator=character.GetComponentInChildren<Animator>();
+    var collider=character.GetComponentInChildren<CapsuleCollider>();
+    var lod=character.GetComponentInChildren<LODGroup>();
+    skin.sharedMaterial=heroMaterial;
+    animator.CrossFade("Idle",0.15f);
+    var weapon=new GameObject("weapon sword blade"); weapon.AddComponent<MeshRenderer>();
+    var environment=new GameObject("forest environment terrain"); environment.AddComponent<MeshRenderer>();
+  }
+}
+`);
+    const manifestPath=path.join(root,'manifest-unity-actor.json');
+    fs.writeFileSync(manifestPath,JSON.stringify({
+      target:'unity',
+      changedFiles:[relative],
+      assetProduction:{nativeAuthoringExecution:{dcc:{crossPlatform3dMasterGlbRequired:true}}},
+      presentationQuality:{required:true,target:'unity',pass:'ASSET_ADAPTATION'}
+    },null,2));
+    const result=runIncrementalQa({
+      root,manifest:manifestPath,files:[relative],namespace:'unity-master-actor',force:true
+    });
+    assert.equal(result.outcome,'PASS');
+    for(const check of [
+      'UNITY_3D_ACTOR_SKINNED_MESH_RENDERER','UNITY_3D_ACTOR_ANIMATOR','UNITY_3D_ACTOR_ANIMATOR_STATE_BINDING',
+      'UNITY_3D_ACTOR_COLLIDER_PROXY','UNITY_3D_ACTOR_LOD'
+    ])assert.ok(result.presentationQa.checks.some(row=>row.name===check&&row.pass),check);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('Unity Master GLB actor incremental QA rejects a primitive mannequin',()=>{
+  const root=tempRoot();
+  try{
+    const relative='unity-games/actor-demo-bad/Assets/Scripts/ActorVisual.cs';
+    const file=path.join(root,...relative.split('/'));
+    fs.mkdirSync(path.dirname(file),{recursive:true});
+    fs.writeFileSync(file,`using UnityEngine;
+public class ActorVisual:MonoBehaviour {
+  void Build(){
+    var character=GameObject.CreatePrimitive(PrimitiveType.Capsule);
+    character.AddComponent<Animator>().Play("Idle");
+    character.AddComponent<CapsuleCollider>();
+    character.AddComponent<LODGroup>();
+    var weapon=new GameObject("weapon sword blade"); weapon.AddComponent<MeshRenderer>();
+    var environment=new GameObject("forest environment terrain"); environment.AddComponent<MeshRenderer>();
+    var material=new Material(Shader.Find("Standard")); character.GetComponent<Renderer>().material=material;
+  }
+}
+`);
+    const manifestPath=path.join(root,'manifest-unity-actor-bad.json');
+    fs.writeFileSync(manifestPath,JSON.stringify({
+      target:'unity',
+      changedFiles:[relative],
+      assetProduction:{nativeAuthoringExecution:{dcc:{crossPlatform3dMasterGlbRequired:true}}},
+      presentationQuality:{required:true,target:'unity',pass:'ASSET_ADAPTATION'}
+    },null,2));
+    assert.throws(()=>runIncrementalQa({
+      root,manifest:manifestPath,files:[relative],namespace:'unity-master-actor-bad',force:true
+    }),/PRESENTATION_STATIC_QA_FAILED:ASSET_ADAPTATION:.*(?:UNITY_3D_ACTOR_SKINNED_MESH_RENDERER|PRIMITIVE_ONLY_FINAL_3D_ACTOR)/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('native living motion rejects generic movement without actor secondary motion',()=>{
   const root=tempRoot();
   try{
