@@ -7,12 +7,13 @@ import {createVibeHighEndVisualDirection,HIGH_END_VISUAL_TARGET_FRAMES} from '..
 import {MOTION_DIRECTOR_TARGET,MOTION_COMPOSITION_CHANNELS,MOTION_DNA_FIELDS,MOTION_LIBRARY_GRAPH_NODES} from '../assets/vibe-motion-director.js';
 import {STUDIO_ASSET_UNIVERSE_TARGET,STUDIO_ASSET_FAMILIES,CREATURE_BODY_PLANS,CREATURE_SPECIES,CLOTHING_LAYER_SLOTS,BIOME_FAMILIES,BUILDING_THEMES,CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT} from '../assets/vibe-studio-asset-universe.js';
 import {createVibeHighEndPresentationStack} from '../assets/vibe-presentation-director.js';
-import {auditVibeRuntimeVisualEvidence,HIGH_END_GOLDEN_SCENE_ROLES} from '../assets/vibe-visual-quality-gate.js';
+import {auditVibeRuntimeVisualEvidence,auditVibeWeb25D,HIGH_END_GOLDEN_SCENE_ROLES} from '../assets/vibe-visual-quality-gate.js';
 
 const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
 const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
 const logMap=JSON.parse(fs.readFileSync('company-learning/company-log-map.json','utf8'));
 const security=JSON.parse(fs.readFileSync('company-learning/security-immune-system.json','utf8'));
+const companyAssetLibrary=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
 const plannerSource=fs.readFileSync('tools/vibe2-auto-planner.mjs','utf8');
 const learningMotorSource=fs.readFileSync('tools/vibe2-learning-motor.mjs','utf8');
 
@@ -60,6 +61,12 @@ test('canonical high-end visual contract reuses existing graphics and asset pipe
   assert.equal(spatial.status,'ACTIVE_EXECUTABLE_CONTRACT');
   assert.equal(spatial.minimumFinalGameplayDimension,'2.5D');
   assert.equal(spatial.flat2DFinalGameplayForbidden,true);
+  assert.equal(spatial.minimumPlayableGameplayDimension,'2.5D');
+  assert.equal(spatial.firstPlayable2_5DOr3DRequired,true);
+  assert.equal(spatial.flat2DGameplayForbiddenFromFirstPlayable,true);
+  assert.equal(spatial.prototype2DAllowedTemporarily,false);
+  assert.equal(spatial.visiblePrimitiveGameplayPrototypeAllowed,false);
+  assert.equal(spatial.backgroundDepthCompositionRequiredFromFirstPlayable,true);
   assert.equal(spatial.uiOverlayMayRemain2D,true);
   assert.equal(spatial.runtimeEvidenceRequired,true);
   assert.equal(c.minimumFinalGameplayDimension,'2.5D');
@@ -83,6 +90,19 @@ test('canonical high-end visual contract reuses existing graphics and asset pipe
   assert.equal(logMap.highEndVisualEvidenceContract.standaloneReleaseAuthority,false);
   assert.equal(security.highEndAssetTransformationSecurity.protections.unverifiedExternalAssetUseForbidden,true);
   const library=roadmap.assetProductionParallelContract.companyGraphicsLibrary24h;
+  assert.equal(library.minimumSpatialAssetContract.minimumWorldRenderableDimension,'2.5D');
+  assert.equal(library.minimumSpatialAssetContract.appliesToAllGraphicsLibraries,true);
+  assert.equal(library.minimumSpatialAssetContract.firstPlayableConsumerMustMeetMinimum,true);
+  assert.equal(library.minimumSpatialAssetContract.flat2DWorldRenderablePromotionForbidden,true);
+  assert.equal(library.minimumSpatialAssetContract.primitiveOrGeometricPlaceholderPromotionForbidden,true);
+  assert.deepEqual(library.minimumSpatialAssetContract.backgroundAndEnvironment.minimumDepthLayers,['FOREGROUND','MIDGROUND','BACKGROUND']);
+  assert.equal(architecture.assetProductionParallelism.webQualityTarget,'POLISHED_COMMERCIAL_MOBILE_WEB_2_5D_OR_3D');
+  assert.equal(architecture.assetProductionParallelism.companyGraphicsLibrary24h.minimumSpatialAssetContract.minimumWorldRenderableDimension,'2.5D');
+  assert.equal(security.studioAssetUniverseSecurity.protections.flat2DWorldRenderableLibraryAssetCannotPromote,true);
+  assert.equal(security.webSpatialPresentationSecurity.protections.flat2DGameplayForbiddenFromFirstPlayable,true);
+  assert.equal(logMap.graphicsLibrarySpatialEvidenceContract.actualRuntimeConsumerEvidenceRequired,true);
+  assert.equal(companyAssetLibrary.spatialPresentationContract.minimumWorldRenderableDimension,'2.5D');
+  assert.equal(companyAssetLibrary.rules.flat2DWorldRenderableLibraryPromotionForbidden,true);
   assert.equal(library.status,'ACTIVE_EXECUTABLE_CONTRACT');
   assert.equal(library.graphicsProductionRoot,'GRAPHICS_PRODUCTION');
   assert.equal(library.idleGeneration.continuous24h,true);
@@ -227,6 +247,7 @@ test('asset and direction planners consume one high-end profile without Web-firs
   assert.equal(plan.policy.highEndPresentationCompletionIsReleaseGate,false);
   assert.equal(plan.companyGraphicsLibrary.enabled,true);
   assert.equal(plan.companyGraphicsLibrary.platformProfile,'UNITY');
+  assert.equal(plan.companyGraphicsLibrary.minimumSpatialAssetContract.minimumWorldRenderableDimension,'2.5D');
   assert.equal(plan.companyGraphicsLibrary.platformSpecificReauthoringRequired,true);
   assert.equal(plan.companyGraphicsLibrary.mandatoryConsumer,true);
   assert.equal(plan.companyGraphicsLibrary.lookupBeforeAssetChoice,true);
@@ -239,6 +260,11 @@ test('asset and direction planners consume one high-end profile without Web-firs
   assert.equal(plan.companyGraphicsLibrary.motionMinimums.idleVariants>=4,true);
   assert.ok(plan.companyGraphicsLibrary.weaponPacks.includes('HAMMER'));
   assert.equal(plan.policy.companyGraphicsLibrary24h,true);
+  assert.equal(plan.policy.companyGraphicsLibraryMinimumWorldRenderableDimension,'2.5D');
+  assert.equal(plan.policy.companyGraphicsLibraryFirstPlayableSpatialFloorRequired,true);
+  assert.equal(plan.policy.companyGraphicsLibraryFlat2DWorldRenderableForbidden,true);
+  assert.equal(plan.policy.companyGraphicsLibraryPrimitivePlaceholderForbidden,true);
+  assert.equal(plan.policy.companyGraphicsLibraryBackgroundDepthRequired,true);
   assert.equal(plan.policy.unityRobloxLibraryVariantsSeparated,true);
   assert.equal(plan.policy.actionReadyMotionVarietyRequired,true);
   assert.equal(plan.policy.companyLibraryLookupRequiredBeforeNativeAssetChoice,true);
@@ -318,11 +344,15 @@ test('asset and direction planners consume one high-end profile without Web-firs
   assert.equal(plan.policy.semanticAssetSeedCannotSelfPromote,true);
 
   const art=createVibeArtPipeline({request:'하이엔드 캐릭터 배경 보스 애니메이션 VFX',target:'roblox',quality:3});
-  assert.equal(art.version,12);
+  assert.equal(art.version,13);
   assert.deepEqual([...art.highEndVisual.targetFrames],[...VIBE_HIGH_END_TARGET_FRAME_ROLES]);
   assert.ok(art.art.transforms.includes('kitbash'));
   assert.equal(art.policy.highEndVisualProduction,true);
   assert.equal(art.minimumSpatialPresentation.minimumFinalGameplayDimension,'2.5D');
+  assert.equal(art.minimumSpatialPresentation.minimumPlayableGameplayDimension,'2.5D');
+  assert.equal(art.minimumSpatialPresentation.firstPlayable2_5DOr3DRequired,true);
+  assert.equal(art.minimumSpatialPresentation.prototype2DAllowed,false);
+  assert.equal(art.minimumSpatialPresentation.backgroundDepthCompositionRequired,true);
   assert.equal(art.minimumSpatialPresentation.flat2DFinalGameplayForbidden,true);
   assert.equal(art.minimumSpatialPresentation.ui2DOverlayAllowed,true);
   assert.equal(art.policy.minimumFinalGameplayDimension,'2.5D');
@@ -642,4 +672,16 @@ test('canonical NPC production contract requires physical appearance and role di
   assert.equal(security.npcRoleProductionSecurity.protections.visualHeightWeightCannotMutateAuthoritativeGameplayScale,true);
   assert.equal(security.npcRoleProductionSecurity.protections.visualBodyMassCannotMutateCollisionOrHitbox,true);
   assert.equal(security.npcRoleProductionSecurity.protections.bossAppearanceCannotAuthorizeBalancePhaseRewardOrDamageChanges,true);
+});
+
+
+test('Web 2.5D audit rejects marker-only primitive circles and requires layered world background',()=>{
+  const flat=auditVibeWeb25D({files:[{path:'web-games/demo/index.html',text:'<body data-spatial-dimension="2.5d" style="perspective:900px"><canvas></canvas><script>const foreground={},midground={},background={},terrain={},landmark={},groundShadow=1,depthSort=()=>{};ctx.arc(0,0,12,0,6.28);</script></body>'}]});
+  assert.equal(flat.pass,false);
+  assert.equal(flat.primitiveDominated,true);
+  assert.ok(flat.reasons.some(reason=>/단순 도형/.test(reason)));
+  const spatial=auditVibeWeb25D({files:[{path:'web-games/demo/index.html',text:'<body data-spatial-dimension="2.5d" style="perspective:900px"><canvas></canvas><script>const foreground={},midground={},background={},terrain={},landmark={},groundShadow=1,depthSort=()=>{};const hero=new Image();ctx.drawImage(hero,0,0);</script></body>'}]});
+  assert.equal(spatial.pass,true);
+  assert.equal(spatial.backgroundLayers,true);
+  assert.equal(spatial.worldDetail,true);
 });

@@ -1,12 +1,17 @@
+// 파일명: assets/vibe-visual-quality-gate.js
 // Vibe2 mandatory visual quality + Web 2.5D gate
-// Web games are 2.5D by default: projected world coordinates, depth sorting, elevation/shadows and real coherent assets.
+// Web games are 2.5D from the first playable: projected world coordinates, depth sorting, layered backgrounds, terrain/landmarks, elevation/shadows and real coherent assets.
 const IMAGE_EXT=/\.(png|webp|jpg|jpeg|gif|svg)$/i;
 const VISUAL_HINT=/(player|character|hero|companion|npc|enemy|boss|monster|background|terrain|tile|tree|rock|plant|resource|building|house|door|chest|weapon|armor|item|projectile|effect|vfx|icon|ui)/i;
 const PLACEHOLDER_CODE=/(ctx\.(?:arc|fillRect|strokeRect|ellipse)\s*\(|[😀-🙏🌀-🫿])/u;
 const REAL_RENDER=/(drawImage\s*\(|<img\b|background(?:-image)?\s*:\s*url\(|Sprite2D|AnimatedSprite2D|TextureRect|TextureButton|texture\s*=)/i;
 const WEB_25D_PROJECTION=/(iso(?:metric)?|dimetric|project(?:World|Iso|25D|3D)|worldToScreen|tileToScreen|screenToWorld|perspective\s*\(|rotateX\s*\(|matrix3d\s*\()/i;
 const WEB_25D_DEPTH=/(depthSort|depth\s*[=:]|sort\s*\(\s*\([^)]*\)\s*=>[^\n]*(?:x\s*\+\s*y|screenY|depth|zIndex)|z-index|zIndex)/i;
-const WEB_25D_HEIGHT=/(elevation|heightScale|worldZ|\bz\s*[=:]|shadow(?:Offset|Scale)?|groundShadow|castShadow)/i;
+const WEB_25D_HEIGHT=/(elevation|heightScale|worldZ|\bz\s*[=:]|shadow(?:Offset|Scale)?|groundShadow|contactShadow|castShadow|directionalLight|lightDirection)/i;
+const WEB_3D_RUNTIME=/(WebGLRenderingContext|WebGL2RenderingContext|THREE\.|BABYLON\.|PerspectiveCamera|OrthographicCamera|scene\.add\s*\(|Mesh\s*\()/i;
+const WEB_25D_BACKGROUND_LAYERS=/(foreground[\s\S]{0,240}midground[\s\S]{0,240}background|background[\s\S]{0,240}midground[\s\S]{0,240}foreground|parallax(?:Layers?|Depth)?)/i;
+const WEB_25D_WORLD_DETAIL=/(terrain|worldSurface|groundLayer|landmark|region|biome|setDressing|building|house|tree|rock|vegetation|environment)/i;
+const WEB_REAL_ASSET_DRAW=/(drawImage\s*\(|new\s+Image\s*\(|createImageBitmap\s*\(|<img\b|background(?:-image)?\s*:\s*url\()/i;
 export const REQUIRED_VISUAL_TYPES=['character','enemy','boss','background','item','prop','effect','ui','animation'];
 export const GOLDEN_SCENE_ROLES=Object.freeze([
   'PLAYER_OR_PRIMARY_CHARACTER_CLOSEUP',
@@ -318,9 +323,17 @@ export function auditVibeWeb25D(summary={}){
   const files=Array.isArray(summary.files)?summary.files:[];
   const web=files.filter(f=>/\.(?:js|mjs|html|css)$/i.test(f.path||'')&&typeof f.text==='string');
   const joined=web.map(f=>f.text).join('\n');
-  const projection=WEB_25D_PROJECTION.test(joined),depthSorting=WEB_25D_DEPTH.test(joined),heightOrShadow=WEB_25D_HEIGHT.test(joined);
-  const pass=projection&&depthSorting&&heightOrShadow;
-  return {pass,projection,depthSorting,heightOrShadow,reasons:[...(projection?[]:['2.5D 투영/카메라 변환 없음']),...(depthSorting?[]:['2.5D 깊이 정렬 없음']),...(heightOrShadow?[]:['높이/그림자 표현 없음'])]};
+  const detected3D=WEB_3D_RUNTIME.test(joined);
+  const projection=detected3D||WEB_25D_PROJECTION.test(joined);
+  const depthSorting=detected3D||WEB_25D_DEPTH.test(joined);
+  const heightOrShadow=detected3D||WEB_25D_HEIGHT.test(joined);
+  const backgroundLayers=detected3D||WEB_25D_BACKGROUND_LAYERS.test(joined);
+  const worldDetail=detected3D||WEB_25D_WORLD_DETAIL.test(joined);
+  const primitiveDrawCount=(joined.match(/ctx\.(?:arc|ellipse|fillRect|strokeRect)\s*\(/gi)||[]).length;
+  const realAssetDrawCount=(joined.match(/drawImage\s*\(|new\s+Image\s*\(|createImageBitmap\s*\(|<img\b|background(?:-image)?\s*:\s*url\(/gi)||[]).length;
+  const primitiveDominated=!detected3D&&primitiveDrawCount>0&&realAssetDrawCount===0;
+  const pass=projection&&depthSorting&&heightOrShadow&&backgroundLayers&&worldDetail&&!primitiveDominated;
+  return {pass,detected3D,projection,depthSorting,heightOrShadow,backgroundLayers,worldDetail,primitiveDrawCount,realAssetDrawCount,primitiveDominated,reasons:[...(projection?[]:['2.5D 투영/카메라 변환 없음']),...(depthSorting?[]:['2.5D 깊이 정렬 없음']),...(heightOrShadow?[]:['높이/그림자·조명 표현 없음']),...(backgroundLayers?[]:['전경/중경/후경 배경 깊이 구성 없음']),...(worldDetail?[]:['지형/랜드마크/지역 디테일 없음']),...(!primitiveDominated?[]:['원형/사각형 등 단순 도형 중심 visible gameplay 금지'])]};
 }
 export function assertVibeVisualQuality(summary={}){const audit=auditVibeVisualAssets(summary);if(!audit.pass)throw new Error(`Vibe2 그래픽 품질 게이트 차단 · ${audit.reasons.join(' · ')}`);return audit;}
 export function assertVibeWeb25D(summary={}){const audit=auditVibeWeb25D(summary);if(!audit.pass)throw new Error(`Vibe2 Web 2.5D 게이트 차단 · ${audit.reasons.join(' · ')}`);return audit;}

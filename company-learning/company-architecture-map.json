@@ -1,5 +1,5 @@
 {
-  "version": 327,
+  "version": 328,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2675,7 +2675,7 @@
     "authorityExpansion": false,
     "webNativeDirectAssetReuseForbidden": true,
     "sharedStyleIdentityAcrossPlatforms": true,
-    "webQualityTarget": "POLISHED_COMMERCIAL_MOBILE_WEB_2D_OR_2_5D",
+    "webQualityTarget": "POLISHED_COMMERCIAL_MOBILE_WEB_2_5D_OR_3D",
     "companyGraphicsLibrary24h": {
       "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
@@ -3263,7 +3263,17 @@
         "ADVENTURE",
         "TYCOON"
       ],
-      "runnerLabel": "ubuntu-24.04-arm"
+      "runnerLabel": "ubuntu-24.04-arm",
+      "minimumSpatialAssetContract": {
+        "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.minimumSpatialAssetContract",
+        "minimumWorldRenderableDimension": "2.5D",
+        "firstPlayableConsumerMustMeetMinimum": true,
+        "flat2DWorldRenderablePromotionForbidden": true,
+        "primitiveOrGeometricPlaceholderPromotionForbidden": true,
+        "backgroundDepthCompositionRequired": true,
+        "uiOverlay2DOnlyException": true,
+        "audioDimensionNotApplicable": true
+      }
     },
     "dedicatedExecution": {
       "lane": "ASSET_DEVELOPMENT",
@@ -3722,7 +3732,12 @@
       "flat2DFinalGameplayForbidden": true,
       "ui2DOverlayAllowed": true,
       "existing2DGamesRequireSpatialPresentationRebuild": true,
-      "minimumSpatialPresentationAuthority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation"
+      "minimumSpatialPresentationAuthority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation",
+      "minimumPlayableGameplayDimension": "2.5D",
+      "firstPlayableSpatialFloorRequired": true,
+      "flat2DGameplayFromFirstPlayableForbidden": true,
+      "visiblePrimitiveGameplayPrototypeForbidden": true,
+      "backgroundDepthCompositionRequired": true
     }
   },
   "recordsGovernance": {

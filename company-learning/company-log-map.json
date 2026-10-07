@@ -1,5 +1,5 @@
 {
-  "version": 181,
+  "version": 182,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3491,5 +3491,31 @@
     "gamePrimaryWorkBudgetAppliesTo": "ALL_GAME_PRIMARY_GAME_BUILD_UP_WORKERS_PRE_AND_POST_RELEASE",
     "modelCallTimeoutAndRetryUnchanged": true,
     "canonicalF0ThroughF9SequenceUnchanged": true
+  },
+  "graphicsLibrarySpatialEvidenceContract": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.minimumSpatialAssetContract",
+    "recordKind": "graphics-library-spatial-evidence",
+    "requiredMarkers": [
+      "GRAPHICS_LIBRARY_MINIMUM_DIMENSION=2.5D",
+      "GRAPHICS_LIBRARY_FIRST_PLAYABLE_SPATIAL_FLOOR=PASS",
+      "GRAPHICS_LIBRARY_FLAT_2D_WORLD_RENDERABLE=FORBIDDEN",
+      "GRAPHICS_LIBRARY_PRIMITIVE_PLACEHOLDER=FORBIDDEN",
+      "GRAPHICS_LIBRARY_BACKGROUND_DEPTH=FOREGROUND_MIDGROUND_BACKGROUND",
+      "GRAPHICS_LIBRARY_RUNTIME_CONSUMER_SPATIAL_PASS=PASS"
+    ],
+    "backgroundEvidenceRequired": [
+      "FOREGROUND_MIDGROUND_BACKGROUND_DEPTH",
+      "TERRAIN_OR_WORLD_SURFACE",
+      "LANDMARK_OR_HUB",
+      "SET_DRESSING_OR_REGION_DETAIL",
+      "DIRECTIONAL_LIGHT_OR_CONTACT_SHADOW",
+      "DEPTH_SORT_OCCLUSION_OR_NATIVE_3D_DEPTH"
+    ],
+    "uiOverlay2DMayNotSatisfyWorldSpatialPass": true,
+    "audioDimensionNotApplicable": true,
+    "markerOnlyCannotProvePass": true,
+    "actualRuntimeConsumerEvidenceRequired": true,
+    "failureState": "ASSET_REPAIR_REQUIRED_OR_LIBRARY_QUARANTINE_BY_SCOPE"
   }
 }

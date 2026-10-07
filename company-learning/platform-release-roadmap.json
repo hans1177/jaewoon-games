@@ -1,5 +1,5 @@
 {
-  "version": 545,
+  "version": 546,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-07",
@@ -426,10 +426,13 @@
         "sourceMarkersOrConfigNamesCannotSubstituteCapture": true
       },
       "primitiveLifecycle": {
-        "prototype": "PRIMITIVE_PARTS_ALLOWED_FOR_FAST_FUNCTIONAL_PROTOTYPE",
+        "prototype": "VISIBLE_GAMEPLAY_PRIMITIVE_PLACEHOLDER_FORBIDDEN; HIDDEN_DEBUG_COLLISION_OR_NON_RENDERED_AUTHORING_GIZMOS_ONLY",
         "internalPlaytest": "PRIMARY_ACTOR_PLACEHOLDER_REMAINS_TRACKED_HIGH_PRIORITY_VISUAL_DEBT_AND_PRESENTATION_QUALITY_ALONE_DOES_NOT_CREATE_A_STANDALONE_NATIVE_RELEASE_GATE",
         "final": "PUBLIC_OR_POST_RELEASE_PRIMARY_PLACEHOLDER_IS_HIGH_PRIORITY_VISUAL_DEBT_FOR_CONTINUOUS_REPLACEMENT_NOT_AN_INDEPENDENT_RELEASE_AUTHORITY",
-        "fallbackMustCreateVisualDebt": true
+        "fallbackMustCreateVisualDebt": true,
+        "firstPlayable": "MINIMUM_2_5D_OR_3D_WITH_REAL_OR_DEPTH_AWARE_STYLIZED_ASSETS",
+        "visibleGameplayPrimitiveFallbackAllowed": false,
+        "backgroundPrimitiveOrFlatGradientOnlyAllowed": false
       },
       "visualDebt": {
         "requiredForTemporaryPlaceholders": true,
@@ -442,8 +445,8 @@
     "highEndEvolutionAuthority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.highEndVisualProductionContract",
     "highEndEvolutionRole": "MOTION_AND_PRESENTATION_FOUNDATION_CONSUMED_BY_EXISTING_GRAPHICS_PRODUCTION",
     "minimumSpatialPresentation": {
-      "version": 1,
-      "authority": "OWNER_DIRECTIVE_2026-09-24",
+      "version": 2,
+      "authority": "OWNER_DIRECTIVE_2026-10-07_WEB_25D_FIRST_PLAYABLE",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
       "minimumFinalGameplayDimension": "2.5D",
       "preferred": "3D_WHEN_GENRE_AND_PLATFORM_SUPPORT",
@@ -454,8 +457,8 @@
       ],
       "flat2DFinalGameplayForbidden": true,
       "uiOverlayMayRemain2D": true,
-      "prototype2DAllowedTemporarily": true,
-      "prototype2DMustCreateVisualDebt": true,
+      "prototype2DAllowedTemporarily": false,
+      "prototype2DMustCreateVisualDebt": false,
       "existing2DGamesAction": "SPATIAL_PRESENTATION_REBUILD_REQUIRED",
       "preserveGameplaySaveProgressionBalanceEconomyAndHitSemantics": true,
       "accepted2_5DTechniques": [
@@ -484,7 +487,27 @@
       "runtimeEvidenceRequired": true,
       "beforeAfterVisualComparisonRequired": true,
       "mobileReadabilityAndPerformanceRequired": true,
-      "failureState": "ASSET_REPAIR_REQUIRED"
+      "failureState": "ASSET_REPAIR_REQUIRED",
+      "minimumPlayableGameplayDimension": "2.5D",
+      "firstPlayableImplementationMinimumDimension": "2.5D",
+      "firstPlayable2_5DOr3DRequired": true,
+      "flat2DGameplayForbiddenFromFirstPlayable": true,
+      "legacyFlat2DDetectionCreatesVisualRepairDebt": true,
+      "visiblePrimitiveGameplayPrototypeAllowed": false,
+      "primitiveAllowedScope": [
+        "HIDDEN_DEBUG_COLLISION",
+        "NON_RENDERED_AUTHORING_GIZMO"
+      ],
+      "backgroundDepthCompositionRequiredFromFirstPlayable": true,
+      "backgroundRequirements": [
+        "FOREGROUND_MIDGROUND_BACKGROUND_DEPTH",
+        "TERRAIN_OR_WORLD_SURFACE",
+        "LANDMARK_OR_HUB",
+        "SET_DRESSING_OR_REGION_DETAIL",
+        "DIRECTIONAL_LIGHT_OR_CONTACT_SHADOW",
+        "DEPTH_SORT_OCCLUSION_OR_EQUIVALENT_3D_DEPTH"
+      ],
+      "flatSpriteUseRule": "DEPTH_AWARE_BILLBOARD_OR_LAYER_INSIDE_2_5D_OR_3D_COMPOSITION_ONLY"
     },
     "robloxCharacterMotionQuality": {
       "version": 1,
@@ -16115,7 +16138,10 @@
         "originalAssetImmutable": true,
         "derivedAssetProvenanceRequired": true,
         "directCrossPlatformBinaryReuseForbidden": true,
-        "platformSpecificReauthoringRequired": true
+        "platformSpecificReauthoringRequired": true,
+        "minimumSpatialAssetContractRequired": true,
+        "flat2DWorldRenderablePromotionForbidden": true,
+        "primitiveOrGeometricPlaceholderPromotionForbidden": true
       },
       "characterPreparation": {
         "sharedDesignIdentity": [
@@ -16322,7 +16348,9 @@
         "directCrossPlatformBinaryReuseForbidden": true,
         "platformNativeVariantRequired": true,
         "requiredForEveryGameDevelopment": true,
-        "automaticDynamicBindingContract": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.allGameDynamicInternalAssetBindingContract.dynamicBinding"
+        "automaticDynamicBindingContract": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.allGameDynamicInternalAssetBindingContract.dynamicBinding",
+        "firstPlayableMinimum2_5DRequired": true,
+        "backgroundDepthCompositionRequired": true
       },
       "gapFill": {
         "enabled": true,
@@ -20605,7 +20633,57 @@
         ],
         "qualityIntent": "HIGH_DENSITY_STYLIZED_FANTASY_RPG_VISUAL_BAR_WITH_CROSS_GENRE_REUSE"
       },
-      "runnerLabel": "ubuntu-24.04-arm"
+      "runnerLabel": "ubuntu-24.04-arm",
+      "minimumSpatialAssetContract": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-10-07_ALL_GRAPHICS_LIBRARIES_2_5D_PLUS",
+        "status": "ACTIVE_EXECUTABLE_CONTRACT",
+        "appliesToAllGraphicsLibraries": true,
+        "minimumWorldRenderableDimension": "2.5D",
+        "productionConsumptionRequires2_5DOr3D": true,
+        "firstPlayableConsumerMustMeetMinimum": true,
+        "flat2DWorldRenderablePromotionForbidden": true,
+        "primitiveOrGeometricPlaceholderPromotionForbidden": true,
+        "flatSpriteAllowedOnlyInsideDepthAware2_5DOr3DComposition": true,
+        "spatiallyBoundLibraries": [
+          "CHARACTER_ARCHETYPE_LIBRARY",
+          "CREATURE_RIG_LIBRARY",
+          "ACTION_MOTION_LIBRARY",
+          "WEAPON_MOTION_LIBRARY",
+          "VFX_LIBRARY",
+          "ENVIRONMENT_KIT_LIBRARY",
+          "SKILL_MOTION_LIBRARY",
+          "REACTION_MOTION_LIBRARY",
+          "PAIR_MOTION_LIBRARY",
+          "CLOTHING_LIBRARY",
+          "ARMOR_LIBRARY",
+          "BUILDING_MODULAR_LIBRARY",
+          "INTERIOR_KIT_LIBRARY",
+          "PROP_LIBRARY",
+          "MATERIAL_LIBRARY",
+          "SKILL_PRESENTATION_LIBRARY",
+          "DAMAGE_PRESENTATION_LIBRARY",
+          "DESTRUCTION_LIBRARY"
+        ],
+        "backgroundAndEnvironment": {
+          "minimumDepthLayers": [
+            "FOREGROUND",
+            "MIDGROUND",
+            "BACKGROUND"
+          ],
+          "terrainOrWorldSurfaceRequired": true,
+          "landmarkOrHubRequired": true,
+          "setDressingOrRegionDetailRequired": true,
+          "directionalLightOrContactShadowRequired": true,
+          "depthSortOcclusionOrNative3DDepthRequired": true,
+          "flatColorGradientOrSinglePlaneBackgroundCannotPromote": true
+        },
+        "exceptions": {
+          "UI_PRESENTATION_LIBRARY": "2D_OVERLAY_ONLY; MAY_NOT_SATISFY_WORLD_SPATIAL_REQUIREMENT",
+          "AUDIO_LIBRARY": "NON_VISUAL_DIMENSION_NOT_APPLICABLE"
+        },
+        "failureState": "ASSET_REPAIR_REQUIRED_OR_LIBRARY_QUARANTINE_BY_SCOPE"
+      }
     },
     "buildUpRuntimeClosure": {
       "version": 2,

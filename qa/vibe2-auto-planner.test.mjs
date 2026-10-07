@@ -2175,12 +2175,30 @@ test('flat or unstartable Web games enter 2.5D repair after canonical existing-W
   assert.equal(task.productionMode,'SUPERVISED_VIBE_COAUTHORING');
   assert.equal(task.supervisionContract?.required,true);
   assert.ok(task.evidence.includes('owner-directive:all-web-games-must-start'));
-  assert.ok(task.evidence.includes('owner-directive:minimum-2.5d-final-gameplay'));
+  assert.ok(task.evidence.includes('owner-directive:minimum-2.5d-first-playable'));
   assert.ok(task.evidence.some(value=>value.includes('MINIMUM_2_5D_PRESENTATION_REQUIRED')));
   assert.match(task.goal,/최소 2\.5D/);
   assert.equal(task.maxRetries,null);
 });
 
+
+test('declared 2.5D Web with primitive-only actors still enters spatial graphics repair',()=>{
+  const root=tempRepo();
+  const gameId='primitive-25d-game';
+  const dir=path.join(root,'web-games',gameId);
+  fs.mkdirSync(dir,{recursive:true});
+  fs.writeFileSync(path.join(dir,'index.html'),`<!doctype html><html><body data-spatial-dimension="2.5d" style="perspective:900px"><canvas id="game"></canvas><script>
+  const foreground={},midground={},background={},terrain={},landmark={},groundShadow=1; const depthSort=()=>{};
+  const ctx=document.querySelector('#game').getContext('2d'); ctx.arc(20,20,12,0,Math.PI*2); ctx.fill();
+  </script></body></html>`,'utf8');
+  const assessment={id:`${gameId}-existing-web-assessment-v1`,gameId,target:'web',department:'development',type:'implementation',sourceRoot:`web-games/${gameId}`,responsibleFiles:[`web-games/${gameId}/index.html`],goal:'assessment',releaseState:'development-confirmed',status:'verified',retries:0,maxRetries:2,blocker:null,evidence:['existing-web-assessment-required']};
+  const result=planVibe2AutonomousTasks({status:{projects:[]},catalog:{games:[{id:gameId,name:'Primitive 25D',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',homepageWebPlayable:false,hasWebArchive:true,webPath:`/web-games/${gameId}/`}]},developmentQueue:{items:[]},queue:{maxConcurrentTasks:4,tasks:[assessment]},repoRoot:root,maxConcurrentTasks:4});
+  const task=result.tasks.find(row=>row.gameId===gameId&&/web-startup-spatial-repair-v1$/.test(row.id));
+  assert.ok(task);
+  assert.ok(task.evidence.some(value=>value.includes('PRIMITIVE_ONLY_GAMEPLAY_PRESENTATION_FORBIDDEN')));
+  assert.match(task.goal,/첫 playable/);
+  assert.match(task.goal,/전경\/중경\/후경/);
+});
 
 test('existing Roblox games automatically receive a Studio asset selection handoff backfill task',()=>{
   const root=tempRepo();
