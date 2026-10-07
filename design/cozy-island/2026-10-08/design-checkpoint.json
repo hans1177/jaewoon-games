@@ -255,25 +255,31 @@
       "platformAdaptation": "모바일 Roblox에서 낮은 파트 수와 제한된 이펙트, 짧은 네트워크 이벤트를 유지하며, 모바일 큰 버튼과 터치 상호작용을 우선하고 키보드와 게임패드를 같은 행동에 매핑한다.",
       "implementationScope": "직접 채집, 주민 고용, 병영 강화, 자원 거점 선택, 자동전투, 협동 지원 기능의 구현 및 시스템 연결.",
       "validationPlan": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract, Mobile input/UI contract, Save/rejoin contract when applicable, Multiplayer state-sync contract when applicable"
+    },
+    "local_authoring_parts::076c2f7f18524533c67620cd13038637f1e1f1dd5964d182191b691cf39c43c4:label,concept,playerFantasy,genreDirection": {
+      "label": "PLAN_B",
+      "concept": "직접 채집, 주민 고용, 병영 강화, 자원 거점 선택, 자동전투, 협동 지원",
+      "playerFantasy": "작은 섬의 주민은 직접 나무와 식량을 모으며, 병사와 병영을 통해 왕국을 확장하는 협동 생존 게임. 각 플레이어는 자원을 수집하고, 전략적 거점에 점령하며, 왕국의 지배를 확보하는 전략적 역할을 수행한다.",
+      "genreDirection": "힐링,생활,낚시"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 11,
+      "calls": 13,
+      "successes": 12,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2143828,
-      "lastMs": 102084,
+      "totalMs": 2241554,
+      "lastMs": 97726,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-07T21:15:39.919Z"
+      "updatedAt": "2026-10-07T21:17:17.647Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T20:24:30.415Z",
-  "updatedAt": "2026-10-07T21:15:39.920Z",
+  "updatedAt": "2026-10-07T21:17:17.647Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -432,7 +438,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-07T21:15:39.920Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T21:17:17.647Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
