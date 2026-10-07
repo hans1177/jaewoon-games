@@ -1519,6 +1519,26 @@ test('natural language concept inference covers full preset families and concept
   assert.ok(concept.axes.PRESENTATION.includes('HAND_PAINTED'));
 });
 
+test('asset production selection hydrates referenced audit evidence before quality ranking',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const plan=buildVibeAssetProductionPlan({
+    target:'roblox',
+    repoRoot:path.resolve(here,'..'),
+    task:{
+      gameId:'quality-evidence-lineage-test',
+      goal:'공용 UI 자산 품질 근거를 유지한 채 현재 라이브러리에서 선택',
+      assetRequirements:[{requirementId:'ui-pack',family:'UI',subfamily:'UI_PACK',required:true}]
+    }
+  });
+  const selection=plan.companyGraphicsLibrary.studioAssetUniverse.loadout.selections.find(row=>row.requirementId==='ui-pack');
+  assert.ok(selection);
+  assert.equal(selection.assetId,'roblox-common-ui-v1');
+  assert.equal(selection.internalAuditScore,956.4);
+  assert.equal(selection.internalAuditPass,true);
+  assert.ok(selection.sourceFiles.includes('assets/roblox/common-ui-v1/quality-evidence.json'));
+  assert.match(selection.sourceContentFingerprint,/^[a-f0-9]{64}$/);
+});
+
 test('asset production planner consumes the studio universe contract',async()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const {buildVibeAssetProductionPlan}=await import('../tools/vibe2-asset-production-plan.mjs');
