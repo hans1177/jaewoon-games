@@ -2868,6 +2868,11 @@ test('studio evolution emits all five quality pillars for one game',()=>{
   assert.equal(new Set(tasks.map(row=>row.buildUpDirective?.directiveFingerprint)).size,1);
   assert.equal(new Set(tasks.map(row=>JSON.stringify(row.buildUpDirective))).size,1);
   assert.ok(tasks.every(row=>(row.evidence||[]).includes('build-up-shared-generation-exact-object:YES')));
+  for(const row of tasks){
+    assert.match(row.goal,/APPROVED_DESIGN=/,row.studioQualityEvolution.focusPillar);
+    assert.match(row.goal,/적 웨이브를 읽고 전투 행동을 선택해 방어 상태를 바꾸는 재미/,row.studioQualityEvolution.focusPillar);
+    assert.match(row.goal,/웨이브 보상으로 다음 방어 선택과 해금을 확장한다/,row.studioQualityEvolution.focusPillar);
+  }
 
   const core=tasks.find(row=>row.studioQualityEvolution.focusPillar==='CORE_FUN');
   const progression=tasks.find(row=>row.studioQualityEvolution.focusPillar==='PROGRESSION');
