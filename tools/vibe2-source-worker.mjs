@@ -1989,6 +1989,35 @@ export function evaluateStudioQualityCandidateDelta({candidate={},sourceRoot='',
   };
 }
 
+export function evaluateRobloxDesignAnchorGrounding({candidate={},directive=null,sourceRootRelative='',required=false}={}){
+  if(required!==true)return{required:false,pass:true,reason:'NOT_REQUIRED',anchorPaths:[],changedPaths:[]};
+  const normalize=value=>{
+    let relative=posix(clean(value));
+    const root=posix(clean(sourceRootRelative));
+    if(root&&relative.startsWith(root+'/'))relative=relative.slice(root.length+1);
+    return relative;
+  };
+  const anchors=(directive?.responsibleSystemsAndFiles?.sourceAnchors||[])
+    .map(row=>normalize(row?.file))
+    .filter(Boolean);
+  const changed=unique([
+    ...(candidate?.edits||[]).map(row=>normalize(row?.path)),
+    ...(candidate?.newFiles||[]).map(row=>normalize(row?.path)),
+    ...(candidate?.replaceFiles||[]).map(row=>normalize(row?.path))
+  ].filter(Boolean));
+  if(!anchors.length)return{required:true,pass:true,reason:'NO_EXACT_DESIGN_ANCHOR_FALLBACK_TO_RESPONSIBLE_SCOPE',anchorPaths:[],changedPaths:changed};
+  const matched=changed.filter(file=>anchors.includes(file));
+  return{
+    required:true,
+    pass:matched.length>0,
+    reason:matched.length?'ROBLOX_DESIGN_SOURCE_ANCHOR_TOUCHED':'ROBLOX_DESIGN_SOURCE_ANCHOR_NOT_TOUCHED',
+    anchorPaths:unique(anchors),
+    changedPaths:changed,
+    matchedPaths:matched
+  };
+}
+
+
 function presentationWorkerGuidance(order = {}) {
   const contract=order?.presentationQuality||{};
   if(contract?.required!==true)return'';
@@ -5681,6 +5710,16 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     if(studioQualityDelta.required&&!studioQualityDelta.pass){
       throw new Error(`STUDIO_QUALITY_DELTA_REQUIRED:${studioQualityDelta.phase}:${studioQualityDelta.sourceDeltaUnits}/${studioQualityDelta.requiredSourceDeltaUnits}:VISUAL:${studioQualityDelta.visualUnits}/${studioQualityDelta.requiredVisualUnits}:GAMEPLAY:${studioQualityDelta.gameplayUnits||0}/${studioQualityDelta.requiredGameplayUnits||0}:${studioQualityDelta.reason}`);
     }
+    const buildUpDirective=order?.selectedTask?.buildUpDirective||order?.buildUpDirective||null;
+    const robloxDesignGrounding=evaluateRobloxDesignAnchorGrounding({
+      candidate,
+      directive:buildUpDirective,
+      sourceRootRelative,
+      required:target==='roblox'&&studioQualityContract?.gameplaySourceDeltaRequired===true
+    });
+    if(robloxDesignGrounding.required&&!robloxDesignGrounding.pass){
+      throw new Error('ROBLOX_DESIGN_IMPLEMENTATION_GROUNDING_REQUIRED:'+robloxDesignGrounding.reason);
+    }
     const robloxInternalAssetFamilyBinding=robloxInternalAssetApplicationRequired
       ?evaluateRobloxInternalAssetFamilyBindingCandidate({
         candidate,sourceRoot,
@@ -5689,7 +5728,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
         expectedLibraryVersion:order?.assetProduction?.baseMaterialLoadout?.robloxSelectionLibraryVersion||0
       })
       :null;
-    return{...result,sourceSyntax,candidateSelfReview,diagnosticPostcondition,presentationDelta,graphicsReplacementReport,studioQualityDelta,studioAssetQualityAxes,allGameDynamicFamilyBinding,robloxInternalAssetFamilyBinding,singleMotionCheck};
+    return{...result,sourceSyntax,candidateSelfReview,diagnosticPostcondition,presentationDelta,graphicsReplacementReport,studioQualityDelta,robloxDesignGrounding,studioAssetQualityAxes,allGameDynamicFamilyBinding,robloxInternalAssetFamilyBinding,singleMotionCheck};
   };
   const candidateVariant=clean(order?.candidateStrategyRole?.variant)||clean(process.env.VIBE2_SPECULATIVE_VARIANT)||'primary';
   const generatedAssetBindings=persistedGeneratedAssetBindings(order);
@@ -5969,6 +6008,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     codingMethod,
     robloxNativeSourceInspection,
     robloxNativeCandidateQuality,
+    robloxDesignGrounding:semanticDiffEnforcement?.robloxDesignGrounding||null,
     roleResults:{exploration:'PASS',implementation:'PASS',test:'WAITING_INCREMENTAL_QA',performance:'WAITING_SANITY',regression:'WAITING_FAN_IN',review:'WAITING_FAN_IN'},
     designIntelligence:designManifestContract(order),
     designEvidence:waitingDesignEvidence(),
