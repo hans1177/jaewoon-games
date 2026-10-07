@@ -14,17 +14,63 @@ export const ROBLOX_LUAU_EXECUTION_WRITE_SCOPE='universe.place.luau-execution-se
 const transientNetworkCodes=new Set(['EAI_AGAIN','ENOTFOUND','ECONNRESET','ETIMEDOUT','ECONNREFUSED','UND_ERR_CONNECT_TIMEOUT','UND_ERR_SOCKET','ABORT_ERR']);
 const transientHttpStatuses=new Set([408,429,500,502,503,504]);
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,Math.max(0,Number(ms)||0)));
+let openCloudEngineCreateAdmissionTail=Promise.resolve();
+let openCloudEngineCreateLastAtMs=0;
+let openCloudEngineCreateBlockedUntilMs=0;
+
+function retryAfterDelayMs(response,nowMs=Date.now()){
+  const raw=clean(response?.headers?.get?.('retry-after'));
+  if(!raw)return 0;
+  const seconds=Number(raw);
+  if(Number.isFinite(seconds)&&seconds>=0)return seconds*1000;
+  const timestamp=Date.parse(raw);
+  return Number.isFinite(timestamp)?Math.max(0,timestamp-nowMs):0;
+}
+async function withOpenCloudEngineCreateAdmission(request,{enabled=true,minimumIntervalMs=12500}={}){
+  if(!enabled)return Object.freeze({response:await request(),deferred:false,retryAfterMs:0,retryNotBefore:null});
+  let release;
+  const previous=openCloudEngineCreateAdmissionTail;
+  openCloudEngineCreateAdmissionTail=new Promise(resolve=>{release=resolve;});
+  await previous;
+  try{
+    const now=Date.now();
+    if(openCloudEngineCreateBlockedUntilMs>now){
+      const retryAfterMs=openCloudEngineCreateBlockedUntilMs-now;
+      const retryNotBefore=new Date(openCloudEngineCreateBlockedUntilMs).toISOString();
+      console.warn('ROBLOX_OPEN_CLOUD_ENGINE_CREATE_CAPACITY_BLOCKED:WAIT_MS='+retryAfterMs+':RETRY_NOT_BEFORE='+retryNotBefore);
+      return Object.freeze({response:null,deferred:true,retryAfterMs,retryNotBefore});
+    }
+    const intervalMs=Math.max(0,Math.min(60000,Number(minimumIntervalMs)||0));
+    const admissionWaitMs=Math.max(0,openCloudEngineCreateLastAtMs+intervalMs-Date.now());
+    if(admissionWaitMs>0){
+      console.warn('ROBLOX_OPEN_CLOUD_ENGINE_CREATE_ADMISSION_WAIT=WAIT_MS='+admissionWaitMs);
+      await sleep(admissionWaitMs);
+    }
+    const response=await request();
+    openCloudEngineCreateLastAtMs=Date.now();
+    if(Number(response?.status||0)===429){
+      const retryAfterMs=Math.max(retryAfterDelayMs(response),60000);
+      openCloudEngineCreateBlockedUntilMs=Math.max(openCloudEngineCreateBlockedUntilMs,Date.now()+retryAfterMs);
+    }
+    return Object.freeze({
+      response,
+      deferred:false,
+      retryAfterMs:Math.max(0,openCloudEngineCreateBlockedUntilMs-Date.now()),
+      retryNotBefore:openCloudEngineCreateBlockedUntilMs>Date.now()?new Date(openCloudEngineCreateBlockedUntilMs).toISOString():null,
+    });
+  }finally{
+    release();
+  }
+}
 function isTransientNetworkError(error){
   const code=clean(error?.cause?.code||error?.code).toUpperCase();
   const name=clean(error?.name).toUpperCase();
   return transientNetworkCodes.has(code)||name==='TIMEOUTERROR'||name==='ABORTERROR';
 }
 function transientHttpDelayMs(response,baseDelayMs,attempt){
-  const retryAfter=clean(response?.headers?.get?.('retry-after'));
-  const retryAfterSeconds=Number(retryAfter);
+  const retryAfterMs=retryAfterDelayMs(response);
   const exponentialDelay=Math.min(30000,baseDelayMs*Math.max(1,2**Math.max(0,attempt-1)));
-  if(Number.isFinite(retryAfterSeconds)&&retryAfterSeconds>=0)return Math.max(exponentialDelay,retryAfterSeconds*1000);
-  return exponentialDelay;
+  return retryAfterMs>0?Math.max(exponentialDelay,retryAfterMs):exponentialDelay;
 }
 async function fetchWithNetworkRetry(fetchImpl,url,init={},options={}){
   const attempts=Math.max(1,Math.min(6,Number(options.attempts)||4));
@@ -264,7 +310,7 @@ export async function probeRobloxOpenCloudImageEvidence({
 
 export async function probeRobloxOpenCloudEngine({
   universeId='',placeId='',versionNumber=0,apiKey='',fetchImpl=globalThis.fetch,pollIntervalMs=1000,maxPolls=30,expectedStudioAssetBinding=null,
-  networkRetryAttempts=4,networkRetryDelayMs=500,
+  networkRetryAttempts=4,networkRetryDelayMs=500,createAdmissionIntervalMs=12500,
 }={}){
   const universe=clean(universeId),place=clean(placeId),version=Number(versionNumber),key=clean(apiKey);
   if(!/^[1-9][0-9]*$/.test(universe))throw new Error('valid universeId required');
@@ -365,15 +411,41 @@ export async function probeRobloxOpenCloudEngine({
     let body={};try{body=text?JSON.parse(text):{};}catch{throw new Error(`ROBLOX_OPEN_CLOUD_ENGINE_${label}_INVALID_JSON`);}
     return{body,text};
   };
-  const created=await fetchWithNetworkRetry(fetchImpl,`${base}/luau-execution-session-tasks`,{
+  const createAdmission=await withOpenCloudEngineCreateAdmission(()=>fetchWithNetworkRetry(fetchImpl,`${base}/luau-execution-session-tasks`,{
     method:'POST',
     headers:{'content-type':'application/json','x-api-key':key},
     body:JSON.stringify({script,timeout:'20s'}),
-  },{attempts:networkRetryAttempts,delayMs:networkRetryDelayMs,label:'ROBLOX_OPEN_CLOUD_ENGINE_CREATE'});
+  },{attempts:networkRetryAttempts,delayMs:networkRetryDelayMs,label:'ROBLOX_OPEN_CLOUD_ENGINE_CREATE'}),{
+    enabled:fetchImpl===globalThis.fetch,
+    minimumIntervalMs:createAdmissionIntervalMs,
+  });
+  if(createAdmission.deferred===true){
+    return Object.freeze({
+      available:false,permissionDenied:false,persistentFailure:true,externalCapacityDeferred:true,status:429,
+      engineExecuted:false,exactPlace:false,exactVersion:false,state:'EXTERNAL_CAPACITY_DEFERRED',failureStage:'CREATE',
+      retryAfterSeconds:Math.max(1,Math.ceil(Number(createAdmission.retryAfterMs||0)/1000)),
+      retryNotBefore:createAdmission.retryNotBefore,
+      error:'ROBLOX_OPEN_CLOUD_ENGINE_CREATE_DEFERRED_EXTERNAL_CAPACITY',
+    });
+  }
+  const created=createAdmission.response;
   const createdDecoded=await decode(created,'CREATE');
   const createdErrorMessage=clean(createdDecoded.body?.message);
   const createdRequiredScope=createdErrorMessage.match(/required scope <([^>]+)>/i)?.[1]||ROBLOX_LUAU_EXECUTION_WRITE_SCOPE;
   if(created.status===401||created.status===403)return Object.freeze({available:false,permissionDenied:true,status:created.status,engineExecuted:false,exactPlace:false,exactVersion:false,state:'UNAVAILABLE_PERMISSION',failureStage:'CREATE',requiredScope:createdRequiredScope,errorCode:clean(createdDecoded.body?.code)||null,errorMessage:createdErrorMessage||null});
+  if(created.status===429){
+    const retryAfterMs=Math.max(retryAfterDelayMs(created),Number(createAdmission.retryAfterMs||0),60000);
+    const retryNotBefore=createAdmission.retryNotBefore||new Date(Date.now()+retryAfterMs).toISOString();
+    return Object.freeze({
+      available:false,permissionDenied:false,persistentFailure:true,externalCapacityDeferred:true,status:429,
+      engineExecuted:false,exactPlace:false,exactVersion:false,state:'EXTERNAL_CAPACITY_DEFERRED',failureStage:'CREATE',
+      retryAfterSeconds:Math.max(1,Math.ceil(retryAfterMs/1000)),
+      retryNotBefore,
+      errorCode:clean(createdDecoded.body?.code)||'RESOURCE_EXHAUSTED',
+      errorMessage:createdErrorMessage||null,
+      error:`ROBLOX_OPEN_CLOUD_ENGINE_CREATE_HTTP_429:${createdDecoded.text.slice(0,300)}`,
+    });
+  }
   if(!created.ok)throw new Error(`ROBLOX_OPEN_CLOUD_ENGINE_CREATE_HTTP_${created.status}:${createdDecoded.text.slice(0,300)}`);
   const rawPath=clean(createdDecoded.body?.path).replace(/^\/+/, '').replace(/^cloud\/v2\//,'');
   if(!rawPath)throw new Error('ROBLOX_OPEN_CLOUD_ENGINE_TASK_PATH_MISSING');
