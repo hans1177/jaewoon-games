@@ -639,10 +639,11 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
       ||clean(row?.masterGlbHash)&&clean(row?.derivedFromMasterGlbHash)===clean(row?.masterGlbHash);
     const artifactReady=Boolean(assetPath&&artifactHash&&lineageReady);
     const identityBound=artifactReady&&bindingText.includes(assetPath)&&bindingText.includes(artifactHash);
-    const runtimeBindingSignalPass=!masterRequired
-      ||target==='unity'?(unityActorLoaderSignal&&unityActorBindingSignal)
+    const runtimeBindingSignalPass=!masterRequired||(
+      target==='unity'?(unityActorLoaderSignal&&unityActorBindingSignal)
       :target==='web'?(webActorLoaderSignal&&webActorBindingSignal)
-      :true;
+      :true
+    );
     return Object.freeze({
       index,assetId:clean(row?.assetId||row?.id)||null,masterRequired,webUsesMaster,path:assetPath||null,artifactHash:artifactHash||null,
       lineageReady,artifactReady,identityBound,runtimeBindingSignalPass,bound:artifactReady&&identityBound&&runtimeBindingSignalPass,
