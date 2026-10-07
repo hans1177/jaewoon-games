@@ -2501,9 +2501,9 @@ test('different failure signatures do not falsely trigger root cause saturation'
 test('JSON source generation uses bounded context and structured output mode',()=>{
   const source=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
   assert.match(source,/const MAX_CONTEXT_BYTES=96000;/);
-  assert.match(source,/const JSON_CONTEXT_WINDOW=16384;/);
+  assert.match(source,/const JSON_CONTEXT_WINDOW=STANDARD_GAME_SOURCE_CONTEXT_WINDOW;/);
   assert.match(source,/const format=completionMode==='JSON_REPLACE_ONLY'[\s\S]*?\(\/\^JSON_\/\.test\(completionMode\)\?'json':null\)/);
-  assert.match(source,/const FOCUSED_WEB_REPAIR_CONTEXT_BYTES=28000;/);
+  assert.match(source,/const FOCUSED_WEB_REPAIR_CONTEXT_BYTES=48000;/);
   assert.match(source,/const FULL_WEB_CONTEXT_WINDOW=32768;/);
 });
 
