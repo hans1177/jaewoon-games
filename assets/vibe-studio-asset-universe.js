@@ -1836,7 +1836,7 @@ function internalAssetMaintenanceRoleTokens(asset={}){
 function internalAssetMaintenanceStaticSignature({assets=[],uiAtomIds=[],audioRoleIds=[]}={}){
   const rows=(assets||[]).map(asset=>({
     id:text(asset?.id||asset?.assetId||asset?.atomId),
-    family:asset?.family??asset?.category??null,
+    family:upper(asset?.family||asset?.category)||null,
     packId:asset?.packId??null,
     roleFields:Object.fromEntries(INTERNAL_ASSET_MAINTENANCE_ROLE_FIELDS.map(field=>[field,asset?.[field]??null])),
     internalAuditEvidence:asset?.internalAuditEvidence??null,
@@ -1844,7 +1844,7 @@ function internalAssetMaintenanceStaticSignature({assets=[],uiAtomIds=[],audioRo
     internalAuditNotApplicableAxes:asset?.internalAuditNotApplicableAxes??null,
     internalAuditScore:asset?.internalAuditScore??null,
     internalAuditGrade:asset?.internalAuditGrade??null,
-    sourceHash:asset?.sourceHash??asset?.sourceSha256??null,
+    sourceHash:text(asset?.sourceHash||asset?.sourceSha256)||null,
     sourceFiles:asset?.sourceFiles??null,
     path:asset?.path??null,
     catalogVersion:asset?.catalogVersion??null,
