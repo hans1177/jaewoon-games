@@ -1171,6 +1171,10 @@ test('Open Cloud engine reuses the same Luau session to capture map and world ev
   assert.equal(result.worldEvidence.streamingEnabled,true);
   const body=JSON.parse(calls[0].init.body);
   assert.match(body.script,/JAEWOON_OPEN_CLOUD_WORLD_BOUNDS_SIZE/);
+  assert.match(body.script,/startupWaitDeadline=startupWaitStarted\+8/);
+  assert.match(body.script,/while not runtimeWorldReady\(\) and os\.clock\(\)<startupWaitDeadline do task\.wait\(0\.25\) end/);
+  assert.match(body.script,/JAEWOON_OPEN_CLOUD_WORLD_RUNTIME_READY/);
+  assert.match(body.script,/JAEWOON_OPEN_CLOUD_WORLD_STARTUP_WAIT_SECONDS/);
   assert.match(body.script,/workspace:GetDescendants\(\)/);
   assert.match(body.script,/item:IsA\("SpawnLocation"\) or item:GetAttribute\("SpawnMarkerOnly"\)==true/);
   assert.match(body.script,/not isSpawn and item.CanCollide/);
