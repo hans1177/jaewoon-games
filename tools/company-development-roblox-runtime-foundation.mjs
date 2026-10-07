@@ -258,7 +258,7 @@ export async function probeRobloxOpenCloudImageEvidence({
 }
 
 export async function probeRobloxOpenCloudEngine({
-  universeId='',placeId='',versionNumber=0,apiKey='',fetchImpl=globalThis.fetch,pollIntervalMs=1000,maxPolls=30,expectedStudioAssetBinding=null,
+  universeId='',placeId='',versionNumber=0,apiKey='',fetchImpl=globalThis.fetch,pollIntervalMs=1000,maxPolls=30,pollWallTimeoutMs=90000,expectedStudioAssetBinding=null,
   networkRetryAttempts=4,networkRetryDelayMs=500,
 }={}){
   const universe=clean(universeId),place=clean(placeId),version=Number(versionNumber),key=clean(apiKey);
@@ -376,20 +376,35 @@ export async function probeRobloxOpenCloudEngine({
   let task=createdDecoded.body;
   const polls=Math.max(1,Math.min(120,Number(maxPolls)||30));
   const delay=Math.max(0,Number(pollIntervalMs)||0);
-  for(let i=0;i<polls&&!['COMPLETE','FAILED'].includes(clean(task?.state).toUpperCase());i++){
-    if(delay>0)await new Promise(resolve=>setTimeout(resolve,delay));
+  const pollWallMs=Math.max(50,Math.min(180000,Number(pollWallTimeoutMs)||90000));
+  const pollStartedAt=Date.now();
+  const pollDeadlineAt=pollStartedAt+pollWallMs;
+  const taskPollRetryAttempts=Math.max(1,Math.min(2,Number(networkRetryAttempts)||4));
+  const taskPollRequestTimeoutMs=8000;
+  let pollCount=0;
+  for(let i=0;i<polls&&!['COMPLETE','FAILED'].includes(clean(task?.state).toUpperCase())&&Date.now()<pollDeadlineAt;i++){
+    const remainingBeforeDelay=pollDeadlineAt-Date.now();
+    if(remainingBeforeDelay<=0)break;
+    if(delay>0)await new Promise(resolve=>setTimeout(resolve,Math.min(delay,remainingBeforeDelay)));
+    if(Date.now()>=pollDeadlineAt)break;
+    pollCount++;
     const response=await fetchWithNetworkRetry(fetchImpl,taskUrl,{headers:{'x-api-key':key}},{
-      attempts:networkRetryAttempts,delayMs:networkRetryDelayMs,label:'ROBLOX_OPEN_CLOUD_ENGINE_TASK'
+      attempts:taskPollRetryAttempts,
+      delayMs:networkRetryDelayMs,
+      requestTimeoutMs:Math.min(taskPollRequestTimeoutMs,Math.max(1000,pollDeadlineAt-Date.now())),
+      label:'ROBLOX_OPEN_CLOUD_ENGINE_TASK'
     });
     const decoded=await decode(response,'TASK');
     const taskErrorMessage=clean(decoded.body?.message);
     const taskRequiredScope=taskErrorMessage.match(/required scope <([^>]+)>/i)?.[1]||ROBLOX_LUAU_EXECUTION_WRITE_SCOPE;
-    if(response.status===401||response.status===403)return Object.freeze({available:false,permissionDenied:true,status:response.status,engineExecuted:false,exactPlace:false,exactVersion:false,state:'UNAVAILABLE_PERMISSION',failureStage:'TASK_POLL',requiredScope:taskRequiredScope,errorCode:clean(decoded.body?.code)||null,errorMessage:taskErrorMessage||null});
+    if(response.status===401||response.status===403)return Object.freeze({available:false,permissionDenied:true,status:response.status,engineExecuted:false,exactPlace:false,exactVersion:false,state:'UNAVAILABLE_PERMISSION',failureStage:'TASK_POLL',requiredScope:taskRequiredScope,errorCode:clean(decoded.body?.code)||null,errorMessage:taskErrorMessage||null,pollCount,pollWallTimeoutMs:pollWallMs});
     if(!response.ok)throw new Error(`ROBLOX_OPEN_CLOUD_ENGINE_TASK_HTTP_${response.status}:${decoded.text.slice(0,300)}`);
     task=decoded.body;
   }
+  const pollElapsedMs=Math.max(0,Date.now()-pollStartedAt);
   const state=clean(task?.state).toUpperCase()||'UNKNOWN';
-  if(state!=='COMPLETE')return Object.freeze({available:true,permissionDenied:false,status:200,engineExecuted:false,exactPlace:false,exactVersion:false,state,error:task?.error?.message||null,taskPath:rawPath});
+  const pollWallTimedOut=state!=='COMPLETE'&&state!=='FAILED'&&Date.now()>=pollDeadlineAt;
+  if(state!=='COMPLETE')return Object.freeze({available:true,permissionDenied:false,status:200,engineExecuted:false,exactPlace:false,exactVersion:false,state,error:task?.error?.message||null,taskPath:rawPath,pollCount,pollElapsedMs,pollWallTimeoutMs:pollWallMs,pollWallTimedOut});
   const logsResponse=await fetchWithNetworkRetry(fetchImpl,`${taskUrl}/logs?view=STRUCTURED&maxPageSize=100`,{headers:{'x-api-key':key}},{
     attempts:networkRetryAttempts,delayMs:networkRetryDelayMs,label:'ROBLOX_OPEN_CLOUD_ENGINE_LOGS'
   });
@@ -487,7 +502,7 @@ export async function probeRobloxOpenCloudEngine({
     expectedBuildUpAssetSourceUsageFingerprint:expectedBuildUpAssetSourceUsageFingerprint||null,
     expectedStudioAssetAtoms:Object.freeze(expectedStudioAssetAtoms),observedStudioAssetAtoms:Object.freeze(observedStudioAssetAtoms),
     expectedStudioAssetAtomCsv,observedStudioAssetAtomCsv,studioAssetAtomMatch:atomMatch,studioAssetFingerprintMatch:fingerprintMatch,studioAssetLibraryVersionMatch:libraryVersionMatch,studioAssetSelectionMatched,
-    state,taskPath:rawPath,messages:Object.freeze(messages.slice(0,50)),
+    state,taskPath:rawPath,pollCount,pollElapsedMs,pollWallTimeoutMs:pollWallMs,pollWallTimedOut:false,messages:Object.freeze(messages.slice(0,50)),
   });
 }
 
