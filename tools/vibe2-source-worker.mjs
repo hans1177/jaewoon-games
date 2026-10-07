@@ -2295,7 +2295,13 @@ export function inspectRobloxNativeCandidateQuality({candidate={},sourceRoot=''}
     const nativeActorAssetSignal=(meshActorInstanceSignal&&meshIdentitySignal)||importedActorReuseSignal;
     const masterGlbPathSignal=/(?:GeneratedNativeAssetPath|MasterGlb|\.glb\b)/i.test(row.text);
     const primitiveNpcDoll=npcFactorySignal&&primitiveBodyPartCount>=2;
+    const bossFactorySignal=/(?:create|build|spawn|make)\w*(?:MiniBoss|RaidBoss|HumanoidBoss|Boss)\s*\(|Name\s*=\s*["'](?:MiniBoss|RaidBoss|HumanoidBoss|Boss)["']/i.test(row.text);
+    const bossFromGenericEnemyClone=/(?:local\s+)?\w*boss\w*\s*=\s*\w*(?:enemy|monster|mob|npc)\w*\s*:\s*Clone\s*\(|\w*(?:enemy|monster|mob|npc)\w*\s*:\s*Clone\s*\(\s*\)[\s\S]{0,300}\b(?:Boss|MiniBoss|RaidBoss)\b/i.test(row.text);
+    const bossScaleMutation=/(?:\w*boss\w*\s*:\s*ScaleTo\s*\(|\w*boss\w*[\s\S]{0,220}(?:\.Size\s*=|\.Scale\s*=|CFrame\.new\s*\([^)]*\)\s*\*\s*CFrame\.new))/i.test(row.text);
+    const bossDedicatedPresentation=/(?:Boss|MiniBoss|RaidBoss)[\s\S]{0,900}(?:MeshId|SurfaceAppearance|Attachment|Accessory|armor|weapon|Animator|AnimationTrack|LoadAnimation|intro|special|enrage|stun|guard.?break|finisher|ParticleEmitter|Trail|Beam)|(?:MeshId|SurfaceAppearance|Attachment|Accessory|armor|weapon|Animator|AnimationTrack|LoadAnimation|intro|special|enrage|stun|guard.?break|finisher|ParticleEmitter|Trail|Beam)[\s\S]{0,900}(?:Boss|MiniBoss|RaidBoss)/i.test(row.text);
+    const bossScaleOnly=bossFactorySignal&&bossFromGenericEnemyClone&&bossScaleMutation&&!bossDedicatedPresentation;
     if(primitiveNpcDoll)findings.push({file:row.path,class:'NPC_PRIMITIVE_FINAL_ACTOR_RISK'});
+    if(bossScaleOnly)findings.push({file:row.path,class:'BOSS_SCALE_ONLY_FINAL_ACTOR_RISK'});
     if(npcFactorySignal&&masterGlbPathSignal&&!nativeActorAssetSignal)findings.push({file:row.path,class:'MASTER_GLB_PATH_ONLY_ACTOR_BINDING_RISK'});
     if(npcFactorySignal&&!primitiveNpcDoll&&!nativeActorAssetSignal)findings.push({file:row.path,class:'NPC_NATIVE_ACTOR_BINDING_MISSING_RISK'});
     if(actorSignal&&customActorSignal&&rootMotionSignal&&!articulationSignal)findings.push({file:row.path,class:'ROOT_ONLY_ARTICULATED_MOTION_RISK'});
@@ -2316,10 +2322,12 @@ export function inspectRobloxNativeCandidateQuality({candidate={},sourceRoot=''}
     npcFinalActorFindings:Object.freeze(findings.filter(row=>row.class==='NPC_PRIMITIVE_FINAL_ACTOR_RISK')),
     masterGlbPathOnlyFindings:Object.freeze(findings.filter(row=>row.class==='MASTER_GLB_PATH_ONLY_ACTOR_BINDING_RISK')),
     nativeActorBindingFindings:Object.freeze(findings.filter(row=>row.class==='NPC_NATIVE_ACTOR_BINDING_MISSING_RISK')),
+    bossScaleOnlyFindings:Object.freeze(findings.filter(row=>row.class==='BOSS_SCALE_ONLY_FINAL_ACTOR_RISK')),
     motionQualityHardFailure:'ROBLOX_CHARACTER_MOTION_MANNEQUIN',
     npcFinalActorHardFailure:'PRIMITIVE_ONLY_FINAL_3D_ACTOR',
     masterGlbBindingHardFailure:'CROSS_PLATFORM_MASTER_GLB_STATIC_QA_REQUIRED',
     nativeActorBindingHardFailure:'NATIVE_3D_ACTOR_BINDING_REQUIRED',
+    bossScaleOnlyHardFailure:'BOSS_SCALE_ONLY_FINAL_3D_ACTOR',
     sourceRoot:clean(sourceRoot)||null
   });
 }
@@ -5717,6 +5725,9 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   }
   if(target==='roblox'&&assetDevelopmentTask(order)&&robloxNativeCandidateQuality.nativeActorBindingFindings?.length){
     throw new Error('NATIVE_3D_ACTOR_BINDING_REQUIRED:'+robloxNativeCandidateQuality.nativeActorBindingFindings.map(row=>row.file).join(','));
+  }
+  if(target==='roblox'&&assetDevelopmentTask(order)&&robloxNativeCandidateQuality.bossScaleOnlyFindings?.length){
+    throw new Error('BOSS_SCALE_ONLY_FINAL_3D_ACTOR:'+robloxNativeCandidateQuality.bossScaleOnlyFindings.map(row=>row.file).join(','));
   }
   const mannequinFindings=(robloxNativeCandidateQuality.motionQualityFindings||[]).filter(row=>[
     'ROOT_ONLY_ARTICULATED_MOTION_RISK','WELD_CONSTRAINT_ONLY_CHARACTER_RISK','MISSING_ANIMATOR_BINDING_RISK'
