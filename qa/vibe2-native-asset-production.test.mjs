@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {assetProductionGuidance,buildAllGameDynamicLibraryBindingPlan,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceGlb} from '../tools/vibe2-asset-production-plan.mjs';
-import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate,buildInternalAssetSourceUsageContract} from '../tools/vibe2-source-worker.mjs';
+import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate,buildInternalAssetSourceUsageContract,evaluateNativeAssetAuthoringCandidate} from '../tools/vibe2-source-worker.mjs';
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
@@ -616,10 +616,15 @@ test('hero asset planning upgrades only hero requests to the stronger local mode
   assert.ok(hero.nativeAuthoringExecution.dcc.requiredTypes.length>0);
   assert.equal(hero.nativeAuthoringExecution.dcc.executionRequired,true);
   assert.equal(hero.nativeAuthoringExecution.dcc.nativeSourceMayNotMaskDccRequirement,true);
+  assert.equal(hero.nativeAuthoringExecution.dcc.gltfMasterRequired,true);
+  assert.ok(hero.nativeAuthoringExecution.dcc.gltfMasterRequiredTypes.includes('boss'));
+  assert.ok(hero.nativeAuthoringExecution.dcc.gltfMasterMissingTypes.includes('boss'));
+  assert.equal(hero.nativeAuthoringExecution.dcc.gltfMasterFormat,'GLB');
   assert.equal(hero.nativeAuthoringExecution.dcc.executionStatus,'AUTHORING_RECIPE_REQUIRED');
   const guidance=assetProductionGuidance(hero);
   assert.match(guidance,/ASSET MODEL ROUTING/);
   assert.match(guidance,/NATIVE AUTHORING EXECUTION LOOP/);
+  assert.match(guidance,/GLB master/);
 
   const ordinary=buildVibeAssetProductionPlan({
     target:'roblox',
@@ -674,6 +679,9 @@ test('native asset production defaults to Roblox and exposes reproducible Blende
     assert.ok(plan.nativeAuthoringExecution.dcc.genericRecipeCount>=1);
     assert.ok(plan.nativeAuthoringExecution.dcc.genericRecipeTypes.some(type=>['background','item','weapon','prop','environment'].includes(type)));
     assert.ok(plan.nativeAuthoringExecution.dcc.uncoveredTypes.some(type=>['character','enemy','boss','animation'].includes(type)));
+    assert.equal(plan.nativeAuthoringExecution.dcc.gltfMasterRequired,true);
+    assert.ok(plan.nativeAuthoringExecution.dcc.gltfMasterRequiredTypes.some(type=>['character','enemy','boss','creature'].includes(type)));
+    assert.ok(plan.nativeAuthoringExecution.dcc.gltfMasterMissingTypes.length>0);
     assert.ok(plan.decisions.every(row=>row.generatorFallback.outputContract===plan.generatedAssetOutputContract));
     assert.match(assetProductionGuidance(plan),/GENERATED NATIVE ASSET CONTRACT/);
 
@@ -683,6 +691,23 @@ test('native asset production defaults to Roblox and exposes reproducible Blende
     assert.equal(unity.targetResolution.explicit,true);
     assert.ok(unity.decisions.some(row=>row.directAuthoring.includes('blender-python-original-mesh-rig-and-glb')));
   }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('3D actor DCC cannot be replaced by native primitive source when the GLB master is missing',()=>{
+  const plan=buildVibeAssetProductionPlan({
+    target:'roblox',
+    task:{gameId:'missing-glb-demo',goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] enemy creature 몬스터를 실제 3D 모델로 개선'},
+    manifest:{assets:[]},presetCatalog:{presets:[]}
+  });
+  assert.equal(plan.nativeAuthoringExecution.dcc.gltfMasterRequired,true);
+  assert.ok(plan.nativeAuthoringExecution.dcc.gltfMasterRequiredTypes.some(type=>['enemy','creature'].includes(type)));
+  const result=evaluateNativeAssetAuthoringCandidate({
+    order:{target:'roblox',assetProduction:plan},
+    candidate:{edits:[{path:'server/Game.server.luau',replace:'local p = Instance.new("Part")\np.Material = Enum.Material.SmoothPlastic\np.CFrame = CFrame.new()'}],newFiles:[],replaceFiles:[]}
+  });
+  assert.equal(result.gltfMasterRequired,true);
+  assert.equal(result.gltfMasterReady,false);
+  assert.equal(result.nativeSourceMayNotMaskDccRequirement,true);
 });
 
 test('canonical generic Blender visual recipe is syntax-valid and emits GLB preview evidence outputs',()=>{
@@ -814,6 +839,10 @@ test('native planner preserves an existing Blender recipe as the DCC execution p
   assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].family,'CREATURE');
   assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].license,'project-original');
   assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].safe,true);
+  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].gltfMasterRequired,true);
+  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].gltfMasterCompliant,true);
+  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].gltfMasterOutput,'assets/roblox/demo/native/boss/boss.glb');
+  assert.deepEqual([...plan.nativeAuthoringExecution.dcc.gltfMasterMissingTypes],[]);
   assert.deepEqual([...plan.nativeAuthoringExecution.dcc.availableExistingRecipes],['assets/roblox/demo/build-boss.py']);
   assert.equal(plan.nativeAuthoringExecution.dcc.availableExistingRecipeCount,1);
 });
