@@ -21,11 +21,16 @@ test('asset homepage automatically publishes new entries, preserves selection, e
   {id:'monster-a',title:'시험 몬스터',category:'CREATURE',internalAuditScore:0,path:'/assets/monster.png'},
   {id:'forest',title:'숲',category:'ENVIRONMENT',path:'/assets/forest.webp'}
  ]};
- let offline=false;
+ let offline=false,registryRevision=1,registryBodyReads=0;
  const context=vm.createContext({document,Option:function(text,value){return {textContent:text,value};},matchMedia:()=>({matches:false}),AbortSignal,Date,Set,Map,console,
-  setInterval:fn=>intervals.push(fn),fetch:async url=>{
-   requests.push(url);if(offline)throw Error('연결 끊김');
-   return {ok:true,headers:{get:()=>null},json:async()=>url.includes('company-asset-library')?structuredClone(registry):{schemaVersion:1,sampledBy:'OFFICIAL_LUAU',sourceFingerprint:'test',monsters:[],environments:[],commonMotions:[]}};
+  setInterval:fn=>intervals.push(fn),fetch:async (url,options={})=>{
+   const request={url,method:options.method||'GET',headers:options.headers||{}};requests.push(request);if(offline)throw Error('연결 끊김');
+   if(url.includes('company-asset-library')){
+    const etag='"registry-'+registryRevision+'"';
+    if(request.headers['If-None-Match']===etag)return {ok:false,status:304,headers:{get:name=>String(name).toLowerCase()==='etag'?etag:null},json:async()=>{throw Error('304 body must not be read');}};
+    return {ok:true,status:200,headers:{get:name=>String(name).toLowerCase()==='etag'?etag:null},json:async()=>{registryBodyReads++;return structuredClone(registry);}};
+   }
+   return {ok:true,status:200,headers:{get:()=>null},json:async()=>({schemaVersion:1,sampledBy:'OFFICIAL_LUAU',sourceFingerprint:'test',monsters:[],environments:[],commonMotions:[]})};
   }});
  vm.runInContext(fs.readFileSync('assets/asset-library.js','utf8'),context);
  const settle=async()=>{for(let n=0;n<6;n++)await new Promise(resolve=>setImmediate(resolve));};
@@ -34,12 +39,19 @@ test('asset homepage automatically publishes new entries, preserves selection, e
  assert.equal(e('assetCount').textContent,'5');assert.equal(e('allCount').textContent,5);assert.equal(e('monsterCount').textContent,1);
  assert.equal(e('assetList').children.length,1);assert.equal(e('selectedTitle').textContent,'시험 몬스터');
  assert.equal(e('assetImage').src,'/assets/monster.png');assert.equal(intervals.length,1);
+ const registryRequests=()=>requests.filter(row=>row.url.includes('company-asset-library'));
+ assert.equal(registryRequests().length,1);assert.equal(registryBodyReads,1);assert.equal(registryRequests()[0].method,'GET');
  e('assetList').scrollTop=73;e('assetList').children[0].focus();
+ registryRevision=2;
  registry.assets.push({id:'monster-b',title:'자동 추가 몬스터',category:'CREATURE',path:'https://untrusted.invalid/image.png'});
  registry.assets.push({id:'ui-a',title:'시험 UI',category:'UI',platform:'ROBLOX',status:'REPO_ASSET',path:'/assets/ui.svg',productionVerified:false,runtimeVerificationState:'PENDING_STUDIO',internalAuditScore:882.2,internalAuditGrade:'COMMERCIAL_READY',consumerGameIds:['game-a']});
  await intervals[0]();await settle();
  assert.equal(e('allCount').textContent,7);assert.equal(e('monsterCount').textContent,2);assert.equal(e('assetList').children.length,2);
  assert.equal(e('selectedTitle').textContent,'시험 몬스터');assert.equal(e('assetList').scrollTop,73);assert.equal(document.activeElement.dataset.id,'monster-a');
+ assert.equal(registryBodyReads,2);assert.equal(registryRequests().at(-1).method,'GET');assert.equal(registryRequests().at(-1).headers['If-None-Match'],'"registry-1"');
+ assert.equal(registryRequests().some(row=>row.method==='HEAD'),false);
+ const registryRequestsBefore304=registryRequests().length;await intervals[0]();await settle();
+ assert.equal(registryRequests().length,registryRequestsBefore304+1);assert.equal(registryBodyReads,2);assert.equal(registryRequests().at(-1).headers['If-None-Match'],'"registry-2"');
  await e('assetList').children[1].listeners.click();await settle();
  assert.equal(e('assetImage').hidden,true);assert.equal(e('previewBadge').textContent,'준비 중');
  e('allTab').listeners.click();await settle();
