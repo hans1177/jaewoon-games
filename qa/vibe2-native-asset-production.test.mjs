@@ -1876,6 +1876,23 @@ test('Roblox source quality blocks multi-part doll NPCs even when they have join
   assert.equal(nativeQuality.nativeActorBindingFindings.length,0);
 });
 
+test('Roblox source quality rejects a generic enemy clone that becomes a boss only by scaling',()=>{
+  const quality=inspectRobloxNativeCandidateQuality({
+    candidate:{edits:[{path:'server/Boss.server.luau',replace:[
+      'local enemyTemplate = ReplicatedStorage:WaitForChild("EnemyRig")',
+      'local function createBoss()',
+      '  local boss = enemyTemplate:Clone()',
+      '  boss.Name = "Boss"',
+      '  boss:ScaleTo(2.5)',
+      '  return boss',
+      'end'
+    ].join("\n")}]},
+    sourceRoot:'roblox-games/demo'
+  });
+  assert.ok(quality.bossScaleOnlyFindings.some(row=>row.class==='BOSS_SCALE_ONLY_FINAL_ACTOR_RISK'));
+  assert.equal(quality.bossScaleOnlyHardFailure,'BOSS_SCALE_ONLY_FINAL_3D_ACTOR');
+});
+
 test('Roblox asset adaptation rejects a composed Part doll NPC as a final presentation',()=>{
   const root=tempRoot();
   try{
@@ -2051,6 +2068,43 @@ public class ActorVisual:MonoBehaviour {
     assert.throws(()=>runIncrementalQa({
       root,manifest:manifestPath,files:[relative],namespace:'unity-master-actor-bad',force:true
     }),/PRESENTATION_STATIC_QA_FAILED:ASSET_ADAPTATION:.*(?:UNITY_3D_ACTOR_SKINNED_MESH_RENDERER|PRIMITIVE_ONLY_FINAL_3D_ACTOR)/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('Unity Master GLB actor QA rejects an enemy prefab reused as a scale-only boss',()=>{
+  const root=tempRoot();
+  try{
+    const relative='unity-games/boss-scale-only/Assets/Scripts/BossVisual.cs';
+    const file=path.join(root,...relative.split('/'));
+    fs.mkdirSync(path.dirname(file),{recursive:true});
+    fs.writeFileSync(file,`using UnityEngine;
+public class BossVisual:MonoBehaviour {
+  [SerializeField] GameObject enemyPrefab;
+  [SerializeField] Material bossMaterial;
+  void Build(){
+    var boss=Instantiate(enemyPrefab);
+    var skin=boss.GetComponentInChildren<SkinnedMeshRenderer>();
+    var animator=boss.GetComponentInChildren<Animator>();
+    var collider=boss.GetComponentInChildren<CapsuleCollider>();
+    var lod=boss.GetComponentInChildren<LODGroup>();
+    skin.sharedMaterial=bossMaterial;
+    animator.Play("Idle");
+    boss.transform.localScale = Vector3.one * 2.5f;
+    var weapon=new GameObject("weapon sword blade"); weapon.AddComponent<MeshRenderer>();
+    var environment=new GameObject("forest environment terrain"); environment.AddComponent<MeshRenderer>();
+  }
+}
+`);
+    const manifestPath=path.join(root,'manifest-boss-scale-only.json');
+    fs.writeFileSync(manifestPath,JSON.stringify({
+      target:'unity',
+      changedFiles:[relative],
+      assetProduction:{nativeAuthoringExecution:{dcc:{crossPlatform3dMasterGlbRequired:true}}},
+      presentationQuality:{required:true,target:'unity',pass:'ASSET_ADAPTATION'}
+    },null,2));
+    assert.throws(()=>runIncrementalQa({
+      root,manifest:manifestPath,files:[relative],namespace:'unity-boss-scale-only',force:true
+    }),/PRESENTATION_STATIC_QA_FAILED:ASSET_ADAPTATION:.*BOSS_SCALE_ONLY_FINAL_3D_ACTOR/);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
