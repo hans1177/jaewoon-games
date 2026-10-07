@@ -590,6 +590,7 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
           /(?:getContext\s*\(\s*["']2d["']|CanvasRenderingContext2D|fillRect\s*\(|drawImage\s*\(|\barc\s*\()/i,
           /(?:@keyframes|animation\s*:|transform\s*:|filter\s*:|box-shadow\s*:|background\s*:)/i,
           /(?:requestAnimationFrame\s*\(|Path2D\s*\(|OffscreenCanvas\b|ImageData\b)/i,
+          /(?:GLTFLoader|AnimationMixer|clipAction\s*\(|\.glb\b|\.gltf\b)/i,
           /(?:AudioContext|webkitAudioContext|createOscillator\s*\(|createGain\s*\(|OscillatorNode|GainNode)/i
         ].filter(re=>re.test(text)).length
         :0;
@@ -625,23 +626,30 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
   );
   const generatedNativeArtifacts=unique((dccEvidence?.recipes||[]).map(row=>{
     const masterRequired=row?.masterGlbRequired===true||['CHARACTER','CREATURE'].includes(clean(row?.family).toUpperCase());
-    return masterRequired?posix(row?.platformNativeArtifact):posix(row?.nativeArtifact);
+    const webUsesMaster=target==='web'&&masterRequired;
+    return webUsesMaster?posix(row?.masterGlb||row?.nativeArtifact):masterRequired?posix(row?.platformNativeArtifact):posix(row?.nativeArtifact);
   }).filter(Boolean));
   const generatedAssetIdentityBindings=(dccEvidence?.recipes||[]).filter(row=>{
     const masterRequired=row?.masterGlbRequired===true||['CHARACTER','CREATURE'].includes(clean(row?.family).toUpperCase());
-    const assetPath=masterRequired?posix(row?.platformNativeArtifact):posix(row?.nativeArtifact);
-    const artifactHash=masterRequired?clean(row?.platformNativeArtifactHash):clean(row?.artifactHash);
-    const lineageReady=!masterRequired||(clean(row?.masterGlbHash)&&clean(row?.derivedFromMasterGlbHash)===clean(row?.masterGlbHash));
+    const webUsesMaster=target==='web'&&masterRequired;
+    const assetPath=webUsesMaster?posix(row?.masterGlb||row?.nativeArtifact):masterRequired?posix(row?.platformNativeArtifact):posix(row?.nativeArtifact);
+    const artifactHash=webUsesMaster?clean(row?.masterGlbHash||row?.artifactHash):masterRequired?clean(row?.platformNativeArtifactHash):clean(row?.artifactHash);
+    const lineageReady=!masterRequired
+      ||webUsesMaster&&row?.masterGlbStaticQaPass===true&&Boolean(clean(row?.masterGlbHash||row?.artifactHash))
+      ||clean(row?.masterGlbHash)&&clean(row?.derivedFromMasterGlbHash)===clean(row?.masterGlbHash);
     return lineageReady&&assetPath&&artifactHash&&text.includes(assetPath)&&text.includes(artifactHash);
   }).map(row=>{
     const masterRequired=row?.masterGlbRequired===true||['CHARACTER','CREATURE'].includes(clean(row?.family).toUpperCase());
+    const webUsesMaster=target==='web'&&masterRequired;
     return Object.freeze({
-      path:masterRequired?posix(row.platformNativeArtifact):posix(row.nativeArtifact),
-      artifactHash:masterRequired?clean(row.platformNativeArtifactHash):clean(row.artifactHash)
+      path:webUsesMaster?posix(row.masterGlb||row.nativeArtifact):masterRequired?posix(row.platformNativeArtifact):posix(row.nativeArtifact),
+      artifactHash:webUsesMaster?clean(row.masterGlbHash||row.artifactHash):masterRequired?clean(row.platformNativeArtifactHash):clean(row.artifactHash),
+      runtimeSource:webUsesMaster?'MASTER_GLB':'PLATFORM_NATIVE_DERIVATIVE'
     });
   });
   const boundGeneratedArtifacts=generatedAssetIdentityBindings.map(row=>row.path);
-  const generatedAssetBindingRequired=dccRequired&&dccAuthored&&['roblox','unity'].includes(target);
+  const webMasterGlbRuntimeBindingRequired=dccRequired&&dccAuthored&&target==='web'&&masterGlbRequired;
+  const generatedAssetBindingRequired=dccRequired&&dccAuthored&&(['roblox','unity'].includes(target)||webMasterGlbRuntimeBindingRequired);
   const generatedAssetBindingApplied=!generatedAssetBindingRequired||(
     nativeTextAuthored
     &&generatedAssetIdentityBindings.length===generatedNativeArtifacts.length
@@ -672,6 +680,7 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
     boundGeneratedArtifacts:Object.freeze(boundGeneratedArtifacts),
     generatedAssetBindingRequired,
     generatedAssetBindingApplied,
+    webMasterGlbRuntimeBindingRequired,
     platformNativeReauthoringRequired:contract?.platformReauthoringRequired!==false,
     webArtifactCopyIntoRobloxOrUnityForbidden:contract?.webAssetDirectReuseIntoRobloxOrUnityForbidden!==false,
     nativeSourceMayNotMaskDccRequirement:contract?.dcc?.nativeSourceMayNotMaskDccRequirement!==false,
