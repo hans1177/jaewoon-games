@@ -240,6 +240,16 @@ test('central native foundation policy locks spawn ordering candidate invalidati
 });
 
 
+test('Roblox technical and private-validation planning does not wait for unrelated source workers',()=>{
+  const runtime=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  const technical=runtime.slice(runtime.indexOf('\n  technical-plan:'),runtime.indexOf('\n  technical-worker:'));
+  assert.match(technical,/needs:\s*source-plan/);
+  assert.match(technical,/needs\.source-plan\.result == 'success'/);
+  assert.doesNotMatch(technical,/needs:\s*source-bootstrap/);
+  assert.doesNotMatch(technical,/needs\.source-bootstrap\.result/);
+});
+
+
 test('Roblox runtime batch wakes when private candidate routing implementation changes',()=>{
   const runtime=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
   assert.match(runtime,/- '\.github\/workflows\/company-development-roblox-release-promotion\.yml'/);
