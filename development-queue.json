@@ -4990,34 +4990,34 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-07T01:42:26.137Z",
+      "updatedAt": "2026-10-07T01:47:40.915Z",
       "robloxSourceCommit": "243f96f05ba51af6c24cb67265a6e37ae3ac4874",
       "robloxSourceBootstrapPassedAt": "2026-10-07T01:42:26.137Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": true,
-      "robloxBuildSourceRevision": "a419bd7c449e23c0bab18ad476ab742d78353d69",
+      "robloxBuildSourceRevision": "243f96f05ba51af6c24cb67265a6e37ae3ac4874",
       "robloxBuildArtifactIdentity": "sha256:27e465086f391702c2d120174bb7de9725b2a070dea1a02d2ac1503063f8e930",
-      "robloxBuildPassedAt": "2026-10-07T01:41:59.796Z",
+      "robloxBuildPassedAt": "2026-10-07T01:47:40.915Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-07T01:41:59.796Z",
+      "robloxBuildPreflightPassedAt": "2026-10-07T01:47:40.915Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "bug-defense",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-07T01:39:02.311Z",
-        "sourceRevision": "a419bd7c449e23c0bab18ad476ab742d78353d69",
+        "checkedAt": "2026-10-07T01:44:34.533Z",
+        "sourceRevision": "243f96f05ba51af6c24cb67265a6e37ae3ac4874",
         "artifactIdentity": "sha256:27e465086f391702c2d120174bb7de9725b2a070dea1a02d2ac1503063f8e930",
         "secondaryOwnerFocus": false,
         "facts": {
@@ -5037,7 +5037,7 @@
           "directRoblox": false,
           "concurrentRoblox": true,
           "build": {
-            "sourceRevision": "a419bd7c449e23c0bab18ad476ab742d78353d69",
+            "sourceRevision": "243f96f05ba51af6c24cb67265a6e37ae3ac4874",
             "artifactIdentity": "sha256:27e465086f391702c2d120174bb7de9725b2a070dea1a02d2ac1503063f8e930",
             "webValidationPassed": false,
             "musicValidationPassed": false,
@@ -5100,7 +5100,7 @@
       "robloxFailureStage": "F0_SOURCE_INTEGRITY",
       "robloxFailureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-f0-source-preflight-failed"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -34239,14 +34239,14 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-07T01:38:42.692Z",
+      "updatedAt": "2026-10-07T01:47:40.915Z",
       "robloxSourceCommit": "37c227ed3e737e74760f8e53e883743520716017",
       "robloxSourceBootstrapPassedAt": "2026-10-06T06:57:31.563Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -34255,17 +34255,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "37c227ed3e737e74760f8e53e883743520716017",
       "robloxBuildArtifactIdentity": "sha256:b63b0a3bc930cc1f950471499b432b205e45e14273b8093255ff52cbb365b627",
-      "robloxBuildPassedAt": "2026-10-07T01:05:57.084Z",
+      "robloxBuildPassedAt": "2026-10-07T01:47:40.915Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-07T01:05:57.084Z",
+      "robloxBuildPreflightPassedAt": "2026-10-07T01:47:40.915Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "seed-puzzle-chromatic-cascade",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-07T01:04:53.947Z",
+        "checkedAt": "2026-10-07T01:46:57.387Z",
         "sourceRevision": "37c227ed3e737e74760f8e53e883743520716017",
         "artifactIdentity": "sha256:b63b0a3bc930cc1f950471499b432b205e45e14273b8093255ff52cbb365b627",
         "secondaryOwnerFocus": false,
@@ -34309,19 +34309,19 @@
         "blockers": [],
         "authority": "roblox-vibe-shared-model-build-preflight"
       },
-      "robloxFoundationF0Passed": true,
-      "robloxFoundationF0PassedAt": "2026-10-07T01:38:42.692Z",
+      "robloxFoundationF0Passed": false,
+      "robloxFoundationF0PassedAt": null,
       "robloxFoundationF0Evidence": {
         "version": 5,
         "gameId": "seed-puzzle-chromatic-cascade",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-07T01:38:40.323Z",
+        "checkedAt": "2026-10-07T01:46:58.121Z",
         "sourcePath": "roblox-games/seed-puzzle-chromatic-cascade",
         "sourceRevision": "37c227ed3e737e74760f8e53e883743520716017",
         "artifactIdentity": "sha256:b63b0a3bc930cc1f950471499b432b205e45e14273b8093255ff52cbb365b627",
         "rebuiltArtifactIdentity": "sha256:b63b0a3bc930cc1f950471499b432b205e45e14273b8093255ff52cbb365b627",
-        "artifactRunId": 37557135504,
+        "artifactRunId": 37557664124,
         "buildUpAssetSourceUsageFingerprint": null,
         "assetSelectionFingerprint": null,
         "observedAssetSelectionFingerprint": "611516b8351c2978c45bb7e546346730fa286f948409042a083e94f2148102e4",
@@ -34332,7 +34332,7 @@
         "playMode": "SINGLE",
         "saveExists": true,
         "multiplayerApplicable": false,
-        "sourcePreflightPassed": true,
+        "sourcePreflightPassed": false,
         "f0SourceIntegrityPassed": true,
         "sourceStartupMarkersPassed": true,
         "gameStartPassed": false,
@@ -34350,27 +34350,88 @@
         "combatOrRoundMarkersPassed": true,
         "datastoreContractPassed": true,
         "multiplayerSyncContractPassed": true,
-        "protectedStatePreserved": true,
+        "protectedStatePreserved": false,
         "exactRevision": true,
-        "gameplayProductReadinessRequired": false,
+        "gameplayProductReadinessRequired": true,
         "gameplayProductReadiness": {
           "version": 1,
           "gameId": "seed-puzzle-chromatic-cascade",
           "pass": false,
           "blockers": [
             "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+            "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+            "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+            "MISSING_GAMEPLAY_CAPABILITY:INFECTION",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
             "GENERIC_SCOPE_HANDLER_SKELETON"
           ],
           "requiredCapabilities": [
             "CORE_GAMEPLAY_STATE",
-            "MOBILE_UI"
+            "SESSION_FLOW",
+            "WORLD",
+            "PROGRESSION",
+            "INFECTION",
+            "MOBILE_UI",
+            "SAVE"
           ],
           "implementedCapabilities": {
             "CORE_GAMEPLAY_STATE": false,
-            "MOBILE_UI": true
+            "SESSION_FLOW": false,
+            "WORLD": false,
+            "PROGRESSION": false,
+            "INFECTION": false,
+            "MOBILE_UI": true,
+            "SAVE": true
           },
-          "coreLoopTrace": [],
-          "signatureSystemTrace": [],
+          "coreLoopTrace": [
+            {
+              "index": 0,
+              "step": "보드의 제한된 이동 횟수와 색채 장애물 배치를 분석하여 목표를 확인합니다.",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "step": "색채 주파수 튜너를 사용해 인접 노드의 색상을 변경하고 동기화 체인을 형성합니다.",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "step": "연쇄 기폭 장치로 체인을 활성화하여 대규모 연쇄 폭발을 일으키고 보상을 획득합니다.",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            }
+          ],
+          "signatureSystemTrace": [
+            {
+              "index": 0,
+              "name": "색채 주파수 튜너 (Chromatic Frequency Tuner)",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "name": "연쇄 기폭 장치 (Cascade Detonator)",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            }
+          ],
           "placeholderDebt": {
             "primitiveConstructionCount": 0,
             "meshConstructionCount": 0,
@@ -34381,10 +34442,10 @@
           "studioQualitySheet": {
             "Core": "MISSING",
             "Content": "N/A",
-            "World": "N/A",
+            "World": "MISSING",
             "Combat": "N/A",
             "AI": "N/A",
-            "Progression": "N/A",
+            "Progression": "MISSING",
             "UI": "POLISHED",
             "Graphics": "ROUGH",
             "Motion": "POLISHED",
@@ -34405,18 +34466,18 @@
               "pass": true
             },
             "worldTopology": {
-              "applicable": false,
+              "applicable": true,
               "signalCount": 1,
-              "pass": true
+              "pass": false
             },
             "firstTenMinutes": {
               "signalCount": 3,
               "pass": false
             },
             "midLateGame": {
-              "applicable": false,
+              "applicable": true,
               "signalCount": 2,
-              "pass": true
+              "pass": false
             },
             "systemConnections": {
               "rows": [],
@@ -34431,23 +34492,25 @@
               "meaningfulGameplayFunctionCount": 0
             },
             "criticalGaps": [
-              "FIRST_10_MINUTES_FLOW"
+              "WORLD_TOPOLOGY_AND_LANDMARKS",
+              "FIRST_10_MINUTES_FLOW",
+              "MID_LATE_GAME_DEPTH"
             ],
             "f9SourceQualityReady": false
           },
           "runtimeRequirements": {
-            "worldRequired": false,
-            "minimumBasePartCount": 1,
-            "spawnRequired": false,
-            "landmarkRequired": false,
+            "worldRequired": true,
+            "minimumBasePartCount": 5,
+            "spawnRequired": true,
+            "landmarkRequired": true,
             "objectiveRequired": false,
             "serverBootRequired": true,
             "simulationRequired": true,
             "actualPlayRequired": true
           },
-          "designFingerprint": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "designFingerprint": "c2297e1b6c4ef59fb0d0dd7ff452eb4f99a6515ce86e6334cdf317312f2d6297",
           "antiSkeletonPassed": false,
-          "designGenre": null,
+          "designGenre": "Puzzle",
           "sourceGenre": "Puzzle",
           "designPlayMode": "SINGLE",
           "sourcePlayMode": "SINGLE"
@@ -34455,10 +34518,10 @@
         "studioQualitySheet": {
           "Core": "MISSING",
           "Content": "N/A",
-          "World": "N/A",
+          "World": "MISSING",
           "Combat": "N/A",
           "AI": "N/A",
-          "Progression": "N/A",
+          "Progression": "MISSING",
           "UI": "POLISHED",
           "Graphics": "ROUGH",
           "Motion": "POLISHED",
@@ -34490,26 +34553,28 @@
           "multiplayerSync": true,
           "sessionEndRestart": true,
           "errorGuards": true,
-          "gameplayProductReadiness": true,
+          "gameplayProductReadiness": false,
           "f0SourceIntegrity": true
         },
-        "pass": true,
-        "state": "PASS",
-        "blockers": [],
+        "pass": false,
+        "state": "BLOCKED",
+        "blockers": [
+          "gameplayProductReadiness"
+        ],
         "authority": "roblox-headless-source-preflight-f0"
       },
-      "robloxHeadlessFastMvpPassed": true,
+      "robloxHeadlessFastMvpPassed": false,
       "robloxHeadlessFastMvpEvidence": {
         "version": 5,
         "gameId": "seed-puzzle-chromatic-cascade",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-07T01:38:40.323Z",
+        "checkedAt": "2026-10-07T01:46:58.121Z",
         "sourcePath": "roblox-games/seed-puzzle-chromatic-cascade",
         "sourceRevision": "37c227ed3e737e74760f8e53e883743520716017",
         "artifactIdentity": "sha256:b63b0a3bc930cc1f950471499b432b205e45e14273b8093255ff52cbb365b627",
         "rebuiltArtifactIdentity": "sha256:b63b0a3bc930cc1f950471499b432b205e45e14273b8093255ff52cbb365b627",
-        "artifactRunId": 37557135504,
+        "artifactRunId": 37557664124,
         "buildUpAssetSourceUsageFingerprint": null,
         "assetSelectionFingerprint": null,
         "observedAssetSelectionFingerprint": "611516b8351c2978c45bb7e546346730fa286f948409042a083e94f2148102e4",
@@ -34520,7 +34585,7 @@
         "playMode": "SINGLE",
         "saveExists": true,
         "multiplayerApplicable": false,
-        "sourcePreflightPassed": true,
+        "sourcePreflightPassed": false,
         "f0SourceIntegrityPassed": true,
         "sourceStartupMarkersPassed": true,
         "gameStartPassed": false,
@@ -34538,27 +34603,88 @@
         "combatOrRoundMarkersPassed": true,
         "datastoreContractPassed": true,
         "multiplayerSyncContractPassed": true,
-        "protectedStatePreserved": true,
+        "protectedStatePreserved": false,
         "exactRevision": true,
-        "gameplayProductReadinessRequired": false,
+        "gameplayProductReadinessRequired": true,
         "gameplayProductReadiness": {
           "version": 1,
           "gameId": "seed-puzzle-chromatic-cascade",
           "pass": false,
           "blockers": [
             "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+            "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+            "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+            "MISSING_GAMEPLAY_CAPABILITY:INFECTION",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
             "GENERIC_SCOPE_HANDLER_SKELETON"
           ],
           "requiredCapabilities": [
             "CORE_GAMEPLAY_STATE",
-            "MOBILE_UI"
+            "SESSION_FLOW",
+            "WORLD",
+            "PROGRESSION",
+            "INFECTION",
+            "MOBILE_UI",
+            "SAVE"
           ],
           "implementedCapabilities": {
             "CORE_GAMEPLAY_STATE": false,
-            "MOBILE_UI": true
+            "SESSION_FLOW": false,
+            "WORLD": false,
+            "PROGRESSION": false,
+            "INFECTION": false,
+            "MOBILE_UI": true,
+            "SAVE": true
           },
-          "coreLoopTrace": [],
-          "signatureSystemTrace": [],
+          "coreLoopTrace": [
+            {
+              "index": 0,
+              "step": "보드의 제한된 이동 횟수와 색채 장애물 배치를 분석하여 목표를 확인합니다.",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "step": "색채 주파수 튜너를 사용해 인접 노드의 색상을 변경하고 동기화 체인을 형성합니다.",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "step": "연쇄 기폭 장치로 체인을 활성화하여 대규모 연쇄 폭발을 일으키고 보상을 획득합니다.",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            }
+          ],
+          "signatureSystemTrace": [
+            {
+              "index": 0,
+              "name": "색채 주파수 튜너 (Chromatic Frequency Tuner)",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "name": "연쇄 기폭 장치 (Cascade Detonator)",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            }
+          ],
           "placeholderDebt": {
             "primitiveConstructionCount": 0,
             "meshConstructionCount": 0,
@@ -34569,10 +34695,10 @@
           "studioQualitySheet": {
             "Core": "MISSING",
             "Content": "N/A",
-            "World": "N/A",
+            "World": "MISSING",
             "Combat": "N/A",
             "AI": "N/A",
-            "Progression": "N/A",
+            "Progression": "MISSING",
             "UI": "POLISHED",
             "Graphics": "ROUGH",
             "Motion": "POLISHED",
@@ -34593,18 +34719,18 @@
               "pass": true
             },
             "worldTopology": {
-              "applicable": false,
+              "applicable": true,
               "signalCount": 1,
-              "pass": true
+              "pass": false
             },
             "firstTenMinutes": {
               "signalCount": 3,
               "pass": false
             },
             "midLateGame": {
-              "applicable": false,
+              "applicable": true,
               "signalCount": 2,
-              "pass": true
+              "pass": false
             },
             "systemConnections": {
               "rows": [],
@@ -34619,23 +34745,25 @@
               "meaningfulGameplayFunctionCount": 0
             },
             "criticalGaps": [
-              "FIRST_10_MINUTES_FLOW"
+              "WORLD_TOPOLOGY_AND_LANDMARKS",
+              "FIRST_10_MINUTES_FLOW",
+              "MID_LATE_GAME_DEPTH"
             ],
             "f9SourceQualityReady": false
           },
           "runtimeRequirements": {
-            "worldRequired": false,
-            "minimumBasePartCount": 1,
-            "spawnRequired": false,
-            "landmarkRequired": false,
+            "worldRequired": true,
+            "minimumBasePartCount": 5,
+            "spawnRequired": true,
+            "landmarkRequired": true,
             "objectiveRequired": false,
             "serverBootRequired": true,
             "simulationRequired": true,
             "actualPlayRequired": true
           },
-          "designFingerprint": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "designFingerprint": "c2297e1b6c4ef59fb0d0dd7ff452eb4f99a6515ce86e6334cdf317312f2d6297",
           "antiSkeletonPassed": false,
-          "designGenre": null,
+          "designGenre": "Puzzle",
           "sourceGenre": "Puzzle",
           "designPlayMode": "SINGLE",
           "sourcePlayMode": "SINGLE"
@@ -34643,10 +34771,10 @@
         "studioQualitySheet": {
           "Core": "MISSING",
           "Content": "N/A",
-          "World": "N/A",
+          "World": "MISSING",
           "Combat": "N/A",
           "AI": "N/A",
-          "Progression": "N/A",
+          "Progression": "MISSING",
           "UI": "POLISHED",
           "Graphics": "ROUGH",
           "Motion": "POLISHED",
@@ -34678,12 +34806,14 @@
           "multiplayerSync": true,
           "sessionEndRestart": true,
           "errorGuards": true,
-          "gameplayProductReadiness": true,
+          "gameplayProductReadiness": false,
           "f0SourceIntegrity": true
         },
-        "pass": true,
-        "state": "PASS",
-        "blockers": [],
+        "pass": false,
+        "state": "BLOCKED",
+        "blockers": [
+          "gameplayProductReadiness"
+        ],
         "authority": "roblox-headless-source-preflight-f0"
       },
       "robloxHeadlessFinalReviewPassed": false,
@@ -34718,10 +34848,10 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "robloxFailureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+      "robloxFailureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
       "routingBlockers": [
-        "roblox-runtime-candidate-deploy-pending"
+        "roblox-f0-gameplay-product-readiness-failed"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -34734,7 +34864,7 @@
       "strictDesignReviewRefreshRequired": true,
       "ownerPreservationPresentationUpgrade": false,
       "presentationFirstPass": null,
-      "robloxExactRevisionPassed": true,
+      "robloxExactRevisionPassed": false,
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": "development/unity-tech-seed-puzzle-chromatic-cascade-37327263262",
       "unitySourceCommit": "d5234db09c7fbd7802f1d2b46e0d71177cb06b02",
@@ -34983,8 +35113,8 @@
         "sourceRevision": "37c227ed3e737e74760f8e53e883743520716017",
         "artifactIdentity": "sha256:b63b0a3bc930cc1f950471499b432b205e45e14273b8093255ff52cbb365b627",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 37554534781,
-        "testedAt": "2026-10-07T01:05:57.084Z",
+        "workflowRunId": 37557664124,
+        "testedAt": "2026-10-07T01:47:40.915Z",
         "qualityFailureKinds": [
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
           "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
@@ -38948,14 +39078,14 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-07T01:39:24.017Z",
+      "updatedAt": "2026-10-07T01:47:40.915Z",
       "robloxSourceCommit": "07c5e572028b5a35b7781f4c697e533feed8cd31",
       "robloxSourceBootstrapPassedAt": "2026-10-06T06:57:31.563Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -38964,17 +39094,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "07c5e572028b5a35b7781f4c697e533feed8cd31",
       "robloxBuildArtifactIdentity": "sha256:f098086d4388590a3f2297c82f899c1a9ed4d611ac7f34bbeffce43df6b176ff",
-      "robloxBuildPassedAt": "2026-10-07T01:12:47.581Z",
+      "robloxBuildPassedAt": "2026-10-07T01:47:40.915Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-07T01:12:47.581Z",
+      "robloxBuildPreflightPassedAt": "2026-10-07T01:47:40.915Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-07T01:08:37.053Z",
+        "checkedAt": "2026-10-07T01:45:45.581Z",
         "sourceRevision": "07c5e572028b5a35b7781f4c697e533feed8cd31",
         "artifactIdentity": "sha256:f098086d4388590a3f2297c82f899c1a9ed4d611ac7f34bbeffce43df6b176ff",
         "secondaryOwnerFocus": false,
@@ -39018,19 +39148,19 @@
         "blockers": [],
         "authority": "roblox-vibe-shared-model-build-preflight"
       },
-      "robloxFoundationF0Passed": true,
-      "robloxFoundationF0PassedAt": "2026-10-07T01:39:24.017Z",
+      "robloxFoundationF0Passed": false,
+      "robloxFoundationF0PassedAt": null,
       "robloxFoundationF0Evidence": {
         "version": 5,
         "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-07T01:39:21.716Z",
+        "checkedAt": "2026-10-07T01:45:46.243Z",
         "sourcePath": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria",
         "sourceRevision": "07c5e572028b5a35b7781f4c697e533feed8cd31",
         "artifactIdentity": "sha256:f098086d4388590a3f2297c82f899c1a9ed4d611ac7f34bbeffce43df6b176ff",
         "rebuiltArtifactIdentity": "sha256:f098086d4388590a3f2297c82f899c1a9ed4d611ac7f34bbeffce43df6b176ff",
-        "artifactRunId": 37557546437,
+        "artifactRunId": 37557664124,
         "buildUpAssetSourceUsageFingerprint": null,
         "assetSelectionFingerprint": null,
         "observedAssetSelectionFingerprint": "d970b44e2a8620b5bf8f42a1d6ae700ce406bf72870b8db7f3c9df607a654d85",
@@ -39041,7 +39171,7 @@
         "playMode": "SINGLE",
         "saveExists": true,
         "multiplayerApplicable": false,
-        "sourcePreflightPassed": true,
+        "sourcePreflightPassed": false,
         "f0SourceIntegrityPassed": true,
         "sourceStartupMarkersPassed": true,
         "gameStartPassed": false,
@@ -39059,27 +39189,107 @@
         "combatOrRoundMarkersPassed": true,
         "datastoreContractPassed": true,
         "multiplayerSyncContractPassed": true,
-        "protectedStatePreserved": true,
+        "protectedStatePreserved": false,
         "exactRevision": true,
-        "gameplayProductReadinessRequired": false,
+        "gameplayProductReadinessRequired": true,
         "gameplayProductReadiness": {
           "version": 1,
           "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
           "pass": false,
           "blockers": [
             "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+            "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+            "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+            "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+            "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+            "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+            "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
             "GENERIC_SCOPE_HANDLER_SKELETON"
           ],
           "requiredCapabilities": [
             "CORE_GAMEPLAY_STATE",
-            "MOBILE_UI"
+            "WORLD",
+            "CONTENT_ENTITY",
+            "COMBAT",
+            "ENEMY_AI",
+            "PROGRESSION",
+            "BOSS",
+            "MOBILE_UI",
+            "SAVE",
+            "SESSION_FLOW"
           ],
           "implementedCapabilities": {
             "CORE_GAMEPLAY_STATE": false,
-            "MOBILE_UI": true
+            "WORLD": false,
+            "CONTENT_ENTITY": false,
+            "COMBAT": false,
+            "ENEMY_AI": false,
+            "PROGRESSION": false,
+            "BOSS": false,
+            "MOBILE_UI": true,
+            "SAVE": true,
+            "SESSION_FLOW": false
           },
-          "coreLoopTrace": [],
-          "signatureSystemTrace": [],
+          "coreLoopTrace": [
+            {
+              "index": 0,
+              "step": "월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "step": "턴제 전투 시스템에서 적의 속성을 파악하고 스킬 콤보를 설계하여 승리한 뒤, 경험치와 고대 유물 파편을 획득하여 캐릭터를 강화합니다.",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "PROGRESSION"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "step": "획득한 유물 파편을 사용하여 스킬 트리를 커스터마이징하고, 강화된 능력으로 이전에는 도달할 수 없었던 고난도 지역에 도전하여 서사를 완결합니다.",
+              "capabilities": [
+                "WORLD",
+                "COMBAT",
+                "PROGRESSION"
+              ],
+              "pass": false
+            }
+          ],
+          "signatureSystemTrace": [
+            {
+              "index": 0,
+              "name": "속성 공명 시스템",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "name": "운명 개척 탐험 시스템",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT"
+              ],
+              "pass": false
+            }
+          ],
           "placeholderDebt": {
             "primitiveConstructionCount": 0,
             "meshConstructionCount": 0,
@@ -39089,11 +39299,11 @@
           },
           "studioQualitySheet": {
             "Core": "MISSING",
-            "Content": "N/A",
-            "World": "N/A",
-            "Combat": "N/A",
-            "AI": "N/A",
-            "Progression": "N/A",
+            "Content": "MISSING",
+            "World": "MISSING",
+            "Combat": "MISSING",
+            "AI": "MISSING",
+            "Progression": "MISSING",
             "UI": "POLISHED",
             "Graphics": "ROUGH",
             "Motion": "POLISHED",
@@ -39104,32 +39314,37 @@
           },
           "studioReadiness": {
             "ai": {
-              "applicable": false,
+              "applicable": true,
               "signalCount": 0,
-              "pass": true
+              "pass": false
             },
             "combatFeel": {
-              "applicable": false,
+              "applicable": true,
               "signalCount": 1,
-              "pass": true
+              "pass": false
             },
             "worldTopology": {
-              "applicable": false,
+              "applicable": true,
               "signalCount": 1,
-              "pass": true
+              "pass": false
             },
             "firstTenMinutes": {
               "signalCount": 3,
               "pass": false
             },
             "midLateGame": {
-              "applicable": false,
+              "applicable": true,
               "signalCount": 2,
-              "pass": true
+              "pass": false
             },
             "systemConnections": {
-              "rows": [],
-              "pass": true
+              "rows": [
+                {
+                  "id": "WORLD_TO_CONTENT",
+                  "pass": false
+                }
+              ],
+              "pass": false
             },
             "placeholder": {
               "pass": true,
@@ -39140,34 +39355,39 @@
               "meaningfulGameplayFunctionCount": 0
             },
             "criticalGaps": [
-              "FIRST_10_MINUTES_FLOW"
+              "AI_STATE_DEPTH",
+              "COMBAT_FEEL_CHAIN",
+              "WORLD_TOPOLOGY_AND_LANDMARKS",
+              "FIRST_10_MINUTES_FLOW",
+              "MID_LATE_GAME_DEPTH",
+              "SYSTEM_CONNECTION_CHAIN"
             ],
             "f9SourceQualityReady": false
           },
           "runtimeRequirements": {
-            "worldRequired": false,
-            "minimumBasePartCount": 1,
-            "spawnRequired": false,
-            "landmarkRequired": false,
+            "worldRequired": true,
+            "minimumBasePartCount": 5,
+            "spawnRequired": true,
+            "landmarkRequired": true,
             "objectiveRequired": false,
             "serverBootRequired": true,
             "simulationRequired": true,
             "actualPlayRequired": true
           },
-          "designFingerprint": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "designFingerprint": "5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab",
           "antiSkeletonPassed": false,
-          "designGenre": null,
+          "designGenre": "Strategy",
           "sourceGenre": "Strategy",
           "designPlayMode": "SINGLE",
           "sourcePlayMode": "SINGLE"
         },
         "studioQualitySheet": {
           "Core": "MISSING",
-          "Content": "N/A",
-          "World": "N/A",
-          "Combat": "N/A",
-          "AI": "N/A",
-          "Progression": "N/A",
+          "Content": "MISSING",
+          "World": "MISSING",
+          "Combat": "MISSING",
+          "AI": "MISSING",
+          "Progression": "MISSING",
           "UI": "POLISHED",
           "Graphics": "ROUGH",
           "Motion": "POLISHED",
@@ -39199,26 +39419,28 @@
           "multiplayerSync": true,
           "sessionEndRestart": true,
           "errorGuards": true,
-          "gameplayProductReadiness": true,
+          "gameplayProductReadiness": false,
           "f0SourceIntegrity": true
         },
-        "pass": true,
-        "state": "PASS",
-        "blockers": [],
+        "pass": false,
+        "state": "BLOCKED",
+        "blockers": [
+          "gameplayProductReadiness"
+        ],
         "authority": "roblox-headless-source-preflight-f0"
       },
-      "robloxHeadlessFastMvpPassed": true,
+      "robloxHeadlessFastMvpPassed": false,
       "robloxHeadlessFastMvpEvidence": {
         "version": 5,
         "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-07T01:39:21.716Z",
+        "checkedAt": "2026-10-07T01:45:46.243Z",
         "sourcePath": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria",
         "sourceRevision": "07c5e572028b5a35b7781f4c697e533feed8cd31",
         "artifactIdentity": "sha256:f098086d4388590a3f2297c82f899c1a9ed4d611ac7f34bbeffce43df6b176ff",
         "rebuiltArtifactIdentity": "sha256:f098086d4388590a3f2297c82f899c1a9ed4d611ac7f34bbeffce43df6b176ff",
-        "artifactRunId": 37557546437,
+        "artifactRunId": 37557664124,
         "buildUpAssetSourceUsageFingerprint": null,
         "assetSelectionFingerprint": null,
         "observedAssetSelectionFingerprint": "d970b44e2a8620b5bf8f42a1d6ae700ce406bf72870b8db7f3c9df607a654d85",
@@ -39229,7 +39451,7 @@
         "playMode": "SINGLE",
         "saveExists": true,
         "multiplayerApplicable": false,
-        "sourcePreflightPassed": true,
+        "sourcePreflightPassed": false,
         "f0SourceIntegrityPassed": true,
         "sourceStartupMarkersPassed": true,
         "gameStartPassed": false,
@@ -39247,27 +39469,107 @@
         "combatOrRoundMarkersPassed": true,
         "datastoreContractPassed": true,
         "multiplayerSyncContractPassed": true,
-        "protectedStatePreserved": true,
+        "protectedStatePreserved": false,
         "exactRevision": true,
-        "gameplayProductReadinessRequired": false,
+        "gameplayProductReadinessRequired": true,
         "gameplayProductReadiness": {
           "version": 1,
           "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
           "pass": false,
           "blockers": [
             "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+            "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+            "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+            "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+            "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+            "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+            "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
             "GENERIC_SCOPE_HANDLER_SKELETON"
           ],
           "requiredCapabilities": [
             "CORE_GAMEPLAY_STATE",
-            "MOBILE_UI"
+            "WORLD",
+            "CONTENT_ENTITY",
+            "COMBAT",
+            "ENEMY_AI",
+            "PROGRESSION",
+            "BOSS",
+            "MOBILE_UI",
+            "SAVE",
+            "SESSION_FLOW"
           ],
           "implementedCapabilities": {
             "CORE_GAMEPLAY_STATE": false,
-            "MOBILE_UI": true
+            "WORLD": false,
+            "CONTENT_ENTITY": false,
+            "COMBAT": false,
+            "ENEMY_AI": false,
+            "PROGRESSION": false,
+            "BOSS": false,
+            "MOBILE_UI": true,
+            "SAVE": true,
+            "SESSION_FLOW": false
           },
-          "coreLoopTrace": [],
-          "signatureSystemTrace": [],
+          "coreLoopTrace": [
+            {
+              "index": 0,
+              "step": "월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "step": "턴제 전투 시스템에서 적의 속성을 파악하고 스킬 콤보를 설계하여 승리한 뒤, 경험치와 고대 유물 파편을 획득하여 캐릭터를 강화합니다.",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "PROGRESSION"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "step": "획득한 유물 파편을 사용하여 스킬 트리를 커스터마이징하고, 강화된 능력으로 이전에는 도달할 수 없었던 고난도 지역에 도전하여 서사를 완결합니다.",
+              "capabilities": [
+                "WORLD",
+                "COMBAT",
+                "PROGRESSION"
+              ],
+              "pass": false
+            }
+          ],
+          "signatureSystemTrace": [
+            {
+              "index": 0,
+              "name": "속성 공명 시스템",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "name": "운명 개척 탐험 시스템",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT"
+              ],
+              "pass": false
+            }
+          ],
           "placeholderDebt": {
             "primitiveConstructionCount": 0,
             "meshConstructionCount": 0,
@@ -39277,11 +39579,11 @@
           },
           "studioQualitySheet": {
             "Core": "MISSING",
-            "Content": "N/A",
-            "World": "N/A",
-            "Combat": "N/A",
-            "AI": "N/A",
-            "Progression": "N/A",
+            "Content": "MISSING",
+            "World": "MISSING",
+            "Combat": "MISSING",
+            "AI": "MISSING",
+            "Progression": "MISSING",
             "UI": "POLISHED",
             "Graphics": "ROUGH",
             "Motion": "POLISHED",
@@ -39292,32 +39594,37 @@
           },
           "studioReadiness": {
             "ai": {
-              "applicable": false,
+              "applicable": true,
               "signalCount": 0,
-              "pass": true
+              "pass": false
             },
             "combatFeel": {
-              "applicable": false,
+              "applicable": true,
               "signalCount": 1,
-              "pass": true
+              "pass": false
             },
             "worldTopology": {
-              "applicable": false,
+              "applicable": true,
               "signalCount": 1,
-              "pass": true
+              "pass": false
             },
             "firstTenMinutes": {
               "signalCount": 3,
               "pass": false
             },
             "midLateGame": {
-              "applicable": false,
+              "applicable": true,
               "signalCount": 2,
-              "pass": true
+              "pass": false
             },
             "systemConnections": {
-              "rows": [],
-              "pass": true
+              "rows": [
+                {
+                  "id": "WORLD_TO_CONTENT",
+                  "pass": false
+                }
+              ],
+              "pass": false
             },
             "placeholder": {
               "pass": true,
@@ -39328,34 +39635,39 @@
               "meaningfulGameplayFunctionCount": 0
             },
             "criticalGaps": [
-              "FIRST_10_MINUTES_FLOW"
+              "AI_STATE_DEPTH",
+              "COMBAT_FEEL_CHAIN",
+              "WORLD_TOPOLOGY_AND_LANDMARKS",
+              "FIRST_10_MINUTES_FLOW",
+              "MID_LATE_GAME_DEPTH",
+              "SYSTEM_CONNECTION_CHAIN"
             ],
             "f9SourceQualityReady": false
           },
           "runtimeRequirements": {
-            "worldRequired": false,
-            "minimumBasePartCount": 1,
-            "spawnRequired": false,
-            "landmarkRequired": false,
+            "worldRequired": true,
+            "minimumBasePartCount": 5,
+            "spawnRequired": true,
+            "landmarkRequired": true,
             "objectiveRequired": false,
             "serverBootRequired": true,
             "simulationRequired": true,
             "actualPlayRequired": true
           },
-          "designFingerprint": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "designFingerprint": "5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab",
           "antiSkeletonPassed": false,
-          "designGenre": null,
+          "designGenre": "Strategy",
           "sourceGenre": "Strategy",
           "designPlayMode": "SINGLE",
           "sourcePlayMode": "SINGLE"
         },
         "studioQualitySheet": {
           "Core": "MISSING",
-          "Content": "N/A",
-          "World": "N/A",
-          "Combat": "N/A",
-          "AI": "N/A",
-          "Progression": "N/A",
+          "Content": "MISSING",
+          "World": "MISSING",
+          "Combat": "MISSING",
+          "AI": "MISSING",
+          "Progression": "MISSING",
           "UI": "POLISHED",
           "Graphics": "ROUGH",
           "Motion": "POLISHED",
@@ -39387,12 +39699,14 @@
           "multiplayerSync": true,
           "sessionEndRestart": true,
           "errorGuards": true,
-          "gameplayProductReadiness": true,
+          "gameplayProductReadiness": false,
           "f0SourceIntegrity": true
         },
-        "pass": true,
-        "state": "PASS",
-        "blockers": [],
+        "pass": false,
+        "state": "BLOCKED",
+        "blockers": [
+          "gameplayProductReadiness"
+        ],
         "authority": "roblox-headless-source-preflight-f0"
       },
       "robloxHeadlessFinalReviewPassed": false,
@@ -39427,10 +39741,10 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "robloxFailureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+      "robloxFailureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
       "routingBlockers": [
-        "roblox-runtime-candidate-deploy-pending"
+        "roblox-f0-gameplay-product-readiness-failed"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -39443,7 +39757,7 @@
       "strictDesignReviewRefreshRequired": true,
       "ownerPreservationPresentationUpgrade": false,
       "presentationFirstPass": null,
-      "robloxExactRevisionPassed": true,
+      "robloxExactRevisionPassed": false,
       "robloxValidationTarget": {
         "version": 3,
         "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
@@ -39516,8 +39830,8 @@
         "sourceRevision": "07c5e572028b5a35b7781f4c697e533feed8cd31",
         "artifactIdentity": "sha256:f098086d4388590a3f2297c82f899c1a9ed4d611ac7f34bbeffce43df6b176ff",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 37554822348,
-        "testedAt": "2026-10-07T01:12:47.581Z",
+        "workflowRunId": 37557664124,
+        "testedAt": "2026-10-07T01:47:40.915Z",
         "qualityFailureKinds": [
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
           "MISSING_GAMEPLAY_CAPABILITY:WORLD",
@@ -44372,7 +44686,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-07T01:44:05.039Z",
+  "updatedAt": "2026-10-07T01:47:40.915Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
