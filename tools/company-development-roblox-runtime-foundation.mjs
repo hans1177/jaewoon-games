@@ -292,6 +292,11 @@ export async function probeRobloxOpenCloudEngine({
     'print("JAEWOON_OPEN_CLOUD_ENGINE_SERVER_CONTEXT=true")',
     'print("JAEWOON_OPEN_CLOUD_ENGINE_PLAYERS="..tostring(#Players:GetPlayers()))',
     'local RunService=game:GetService("RunService")',
+    'local simulationRunningBefore=RunService:IsRunning()',
+    'local simulationStartAttempted=not simulationRunningBefore',
+    'local simulationStartSucceeded=simulationRunningBefore',
+    'local simulationStartError=""',
+    'if simulationStartAttempted then local ok,err=pcall(function() RunService:Run() end); simulationStartSucceeded=ok; if not ok then simulationStartError=tostring(err) end end',
     'local simulationRunning=RunService:IsRunning()',
     'local startupWaitStarted=os.clock()',
     'local startupWaitDeadline=startupWaitStarted+8',
@@ -321,6 +326,10 @@ export async function probeRobloxOpenCloudEngine({
     'local terrainPresent=workspace:FindFirstChildOfClass("Terrain")~=nil',
     'local atmospherePresent=Lighting:FindFirstChildOfClass("Atmosphere")~=nil',
     'local streamingEnabled=workspace.StreamingEnabled==true',
+    'print("JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_RUNNING_BEFORE="..tostring(simulationRunningBefore))',
+    'print("JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_START_ATTEMPTED="..tostring(simulationStartAttempted))',
+    'print("JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_START_SUCCEEDED="..tostring(simulationStartSucceeded))',
+    'print("JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_START_ERROR="..simulationStartError)',
     'print("JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_RUNNING="..tostring(simulationRunning))',
     'print("JAEWOON_OPEN_CLOUD_WORLD_RUNTIME_READY="..tostring(runtimeWorldReadyObserved))',
     'print("JAEWOON_OPEN_CLOUD_WORLD_STARTUP_WAIT_SECONDS="..string.format("%.2f",startupWaitSeconds))',
@@ -390,6 +399,10 @@ export async function probeRobloxOpenCloudEngine({
   const joined=messages.join('\n');
   const exactPlace=clean(joined.match(/^JAEWOON_OPEN_CLOUD_ENGINE_PLACE=([0-9]+)$/m)?.[1])===place;
   const exactVersion=Number(joined.match(/^JAEWOON_OPEN_CLOUD_ENGINE_VERSION=([0-9]+)$/m)?.[1]||0)===version;
+  const simulationRunningBefore=joined.includes('JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_RUNNING_BEFORE=true');
+  const simulationStartAttempted=joined.includes('JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_START_ATTEMPTED=true');
+  const simulationStartSucceeded=joined.includes('JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_START_SUCCEEDED=true');
+  const simulationStartError=clean(joined.match(/^JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_START_ERROR=(.*)$/m)?.[1]||'');
   const simulationRunning=joined.includes('JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_RUNNING=true');
   const legacyFoundationServerBootMarkerObserved=joined.includes('JAEWOON_OPEN_CLOUD_ENGINE_FOUNDATION_SERVER_BOOT=true');
   const serverContextExecuted=joined.includes('JAEWOON_OPEN_CLOUD_ENGINE_SERVER_CONTEXT=true');
@@ -405,6 +418,11 @@ export async function probeRobloxOpenCloudEngine({
     scriptExecuted:serverContextExecuted,
     headlessServerExecution:true,
     livePlayerSimulationClaimed:false,
+    simulationRunningBefore,
+    simulationStartAttempted,
+    simulationStartSucceeded,
+    simulationStartError:simulationStartError||null,
+    simulationRunningAfter:simulationRunning,
     legacyFoundationServerBootMarkerObserved,
     authority:'roblox-open-cloud-luau-execution-session-task',
   });
@@ -451,7 +469,7 @@ export async function probeRobloxOpenCloudEngine({
     sameLuauExecutionSession:true
   });
   return Object.freeze({
-    available:true,permissionDenied:false,status:200,engineExecuted:true,exactPlace,exactVersion,simulationRunning,serverBootObserved,serverContextExecuted,serverBootEvidence,legacyFoundationServerBootMarkerObserved,worldEvidence,
+    available:true,permissionDenied:false,status:200,engineExecuted:true,exactPlace,exactVersion,simulationRunningBefore,simulationStartAttempted,simulationStartSucceeded,simulationStartError:simulationStartError||null,simulationRunning,serverBootObserved,serverContextExecuted,serverBootEvidence,legacyFoundationServerBootMarkerObserved,worldEvidence,
     playerCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_ENGINE_PLAYERS=(\d+)/)?.[1]||0),
     studioAssetBindingRequired,studioAssetApplied,studioAssetBindingVersion,expectedStudioAssetBindingVersion,
     expectedStudioAssetSelectionFingerprint:expectedStudioAssetSelectionFingerprint||null,
