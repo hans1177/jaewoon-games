@@ -507,6 +507,9 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
         const meshCount=Number(evidence?.meshObjects||evidence?.meshObjectCount||0);
         const boneCount=Number(evidence?.bones||evidence?.boneCount||0);
         const motionCount=Number(evidence?.motionCount||evidence?.clipCount||Object.keys(evidence?.clips||{}).length||0);
+        const masterContent=evidence?.gltfMaster?.contentEvidence&&typeof evidence.gltfMaster.contentEvidence==='object'
+          ?evidence.gltfMaster.contentEvidence
+          :evidence?.contentEvidence&&typeof evidence.contentEvidence==='object'?evidence.contentEvidence:{};
         if(gltfMasterRequired&&meshCount<=0)throw new Error('GLB_MASTER_MESH_EVIDENCE_REQUIRED:'+clean(recipe?.id));
         if(gltfMasterRequired&&boneCount<=0)throw new Error('GLB_MASTER_RIG_EVIDENCE_REQUIRED:'+clean(recipe?.id));
         const gltfMasterCompliant=!gltfMasterRequired||(/\.glb$/i.test(nativeArtifact.path)&&meshCount>0&&boneCount>0);
@@ -519,7 +522,12 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
           reproducesExistingNativeArtifact,persistedForCandidate:persist,candidateUsable:persist||reproducesExistingNativeArtifact,
           gltfMasterRequired,gltfMasterCompliant,gltfMasterPath:gltfMasterRequired?nativeArtifact.path:null,
           gltfMasterArtifactHash:gltfMasterRequired?nativeArtifact.sha256:null,
-          gltfMasterEvidence:gltfMasterRequired?Object.freeze({meshCount,boneCount,motionCount,evidenceArtifactHash:evidenceArtifactHash||null}):null,
+          gltfMasterEvidence:gltfMasterRequired?Object.freeze({
+            meshCount,boneCount,motionCount,evidenceArtifactHash:evidenceArtifactHash||null,
+            uv:masterContent.uv===true,materialSlots:masterContent.materialSlots===true||masterContent.materials===true,
+            skin:masterContent.skin===true,stableScaleOriginAxis:masterContent.stableScaleOriginAxis===true,
+            attachmentOrBindingMap:masterContent.attachmentOrBindingMap===true,lodDerivationPlan:masterContent.lodDerivationPlan===true
+          }):null,
           stdoutTail:String(stdout||'').slice(-2000),runtimeVerified:false,companyPromotionEligible:false
         }));
       }finally{
@@ -726,10 +734,16 @@ export function collectNativeAssetRuntimePromotionCandidates({order={},candidate
         artifactHash:clean(recipe?.gltfMasterArtifactHash||artifactHash),sourceRecipe:posix(recipe?.script||''),
         sourceHash,evidencePath:posix(recipe?.evidenceJson||''),previewPath:posix(recipe?.preview||''),
         contentEvidence:Object.freeze({
-          mesh:true,uv:true,materialSlots:true,rig:true,skin:true,
+          mesh:Number(recipe?.gltfMasterEvidence?.meshCount||0)>0,
+          uv:recipe?.gltfMasterEvidence?.uv===true,
+          materialSlots:recipe?.gltfMasterEvidence?.materialSlots===true,
+          rig:Number(recipe?.gltfMasterEvidence?.boneCount||0)>0,
+          skin:recipe?.gltfMasterEvidence?.skin===true,
           animationClips:Number(recipe?.gltfMasterEvidence?.motionCount||0)>0,
           motionCount:Number(recipe?.gltfMasterEvidence?.motionCount||0),
-          stableScaleOriginAxis:true,attachmentOrBindingMap:true,lodDerivationPlan:true
+          stableScaleOriginAxis:recipe?.gltfMasterEvidence?.stableScaleOriginAxis===true,
+          attachmentOrBindingMap:recipe?.gltfMasterEvidence?.attachmentOrBindingMap===true,
+          lodDerivationPlan:recipe?.gltfMasterEvidence?.lodDerivationPlan===true
         }),
         platformVariantsRequireExactMasterHash:true,productionVerified:false,nativeRuntimeVerificationRequired:true
       })}:{}),
