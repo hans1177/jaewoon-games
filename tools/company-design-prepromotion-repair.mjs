@@ -164,7 +164,7 @@ const SHARED_PLATFORM_LARGE_FRAME=Object.freeze([
 ]);
 
 function joined(values,fallback){
-  const text=(values||[]).map(clean).filter(Boolean).join(' | ');
+  const text=(Array.isArray(values)?values:[]).map(clean).filter(Boolean).join(' | ');
   return text||fallback;
 }
 function webCanonicalFallback(out,seed,mode){
