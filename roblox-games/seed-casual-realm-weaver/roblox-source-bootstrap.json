@@ -14,12 +14,12 @@
   "existingSourcePreserved": true,
   "gameplayAuthorityChanged": false,
   "serverSourceChanged": false,
-  "foundationRepairApplied": true,
+  "foundationRepairApplied": false,
   "generatedFiles": [
     "shared/GameConfig.luau",
     "client/Game.client.luau"
   ],
-  "generationMode": "EXISTING_SOURCE_FOUNDATION_REPAIR",
+  "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
   "modelUsed": false,
   "modelAttempts": 0,
   "modelContractFailures": [],
@@ -59,8 +59,8 @@
     "bindingVersion": 2,
     "applied": true,
     "source": "company-asset-library.json#baseMaterialLibrary",
-    "libraryVersion": 113,
-    "selectionFingerprint": "36af7c84fe9d6ce828e613c0bf5b51af268e1993e52231578c641222638ea589",
+    "libraryVersion": 119,
+    "selectionFingerprint": "8513c324758aa11e671a62ada9196a8690eff1997efcd0e9feaaf137eb7f6994",
     "synchronization": {
       "mode": "VERSION_AND_SELECTION_FINGERPRINT_INCREMENTAL",
       "fullLibraryReplicationForbidden": true,
@@ -565,15 +565,15 @@
   "studioAssetPromotionEligible": false,
   "implementationNotes": [
     "existing Roblox gameplay source preserved",
-    "native foundation/input/runtime readiness scaffolding repaired without changing gameplay balance save schema or network authority",
+    "company library Studio asset binding updated in existing config and client presentation",
     "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
   ],
-  "buildUpDirectiveId": "seed-casual-realm-weaver-build-up-g20-8aaa1e916fc5",
-  "buildUpGeneration": 20,
+  "buildUpDirectiveId": "seed-casual-realm-weaver-build-up-g21-d344c6b7a440",
+  "buildUpGeneration": 21,
   "buildUpGoal": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
-  "buildUpDirectiveFingerprint": "8aaa1e916fc5525a64ba3a02835ac303248fe9d4cf2e64b6cb2bea108bc3e6e1",
+  "buildUpDirectiveFingerprint": "d344c6b7a4404f4d4afa5edb26e6d95f32863005fb527df8a1519fd5eaa99883",
   "buildUpDirectiveConsumed": true,
   "buildUpDirectiveCompletionClaim": false,
   "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
-  "createdAt": "2026-10-06T07:31:16.046Z"
+  "createdAt": "2026-10-07T02:58:09.258Z"
 }
