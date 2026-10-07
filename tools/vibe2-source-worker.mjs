@@ -385,7 +385,11 @@ export function persistedGeneratedAssetBindings(order={}){
       assetId:clean(row?.assetId||row?.id)||null,
       family:clean(row?.family).toUpperCase()||null,
       sourceHash:clean(row?.sourceHash)||null,
-      license:clean(row?.license)||null
+      license:clean(row?.license)||null,
+      gltfMasterRequired:row?.gltfMasterRequired===true,
+      gltfMasterCompliant:row?.gltfMasterCompliant===true,
+      gltfMasterPath:posix(row?.gltfMasterPath||row?.nativeArtifact)||null,
+      gltfMasterArtifactHash:clean(row?.gltfMasterArtifactHash||row?.artifactHash)||null
     });
   }).filter(Boolean);
   return bindings.length===recipes.length?Object.freeze(bindings):Object.freeze([]);
@@ -489,9 +493,23 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
         }
         const preview=recipe?.preview?dccRepoPath(recipe.preview):null;
         if(preview){const file=path.resolve(cwd,preview);if(!fs.existsSync(file)||!fs.statSync(file).isFile()||fs.statSync(file).size<=0)throw new Error('NATIVE_DCC_PREVIEW_MISSING:'+preview);}
-        const nativeArtifact=generated.find(row=>/\.(?:glb|gltf|fbx|blend)$/i.test(row.path))||generated[0];
+        const gltfMasterRequired=recipe?.gltfMasterRequired===true||['CHARACTER','CREATURE'].includes(clean(recipe?.family).toUpperCase())
+          ||(Array.isArray(recipe?.types)&&recipe.types.some(type=>['character','player','npc','enemy','boss','creature'].includes(clean(type).toLowerCase())));
+        const nativeArtifact=gltfMasterRequired
+          ?generated.find(row=>/\.glb$/i.test(row.path))
+          :(generated.find(row=>/\.(?:glb|gltf|fbx|blend)$/i.test(row.path))||generated[0]);
+        if(!nativeArtifact)throw new Error('GLB_MASTER_OUTPUT_REQUIRED:'+clean(recipe?.id));
         const priorNative=preOutput.get(nativeArtifact.path);
         const reproducesExistingNativeArtifact=Boolean(priorNative&&priorNative.sha256===nativeArtifact.sha256);
+        const evidenceArtifactHash=clean(evidence?.artifactHash)
+          ||clean((Array.isArray(evidence?.artifacts)?evidence.artifacts:[]).find(row=>clean(row?.file)===path.basename(nativeArtifact.path))?.sha256);
+        if(evidenceArtifactHash&&evidenceArtifactHash!==nativeArtifact.sha256)throw new Error('GLB_MASTER_EVIDENCE_HASH_MISMATCH:'+clean(recipe?.id));
+        const meshCount=Number(evidence?.meshObjects||evidence?.meshObjectCount||0);
+        const boneCount=Number(evidence?.bones||evidence?.boneCount||0);
+        const motionCount=Number(evidence?.motionCount||evidence?.clipCount||Object.keys(evidence?.clips||{}).length||0);
+        if(gltfMasterRequired&&meshCount<=0)throw new Error('GLB_MASTER_MESH_EVIDENCE_REQUIRED:'+clean(recipe?.id));
+        if(gltfMasterRequired&&boneCount<=0)throw new Error('GLB_MASTER_RIG_EVIDENCE_REQUIRED:'+clean(recipe?.id));
+        const gltfMasterCompliant=!gltfMasterRequired||(/\.glb$/i.test(nativeArtifact.path)&&meshCount>0&&boneCount>0);
         recipeSucceeded=true;
         results.push(Object.freeze({
           id:clean(recipe?.id)||path.basename(script,'.py'),assetId:clean(recipe?.assetId)||null,family:clean(recipe?.family).toUpperCase()||null,license:clean(recipe?.license)||null,executor:'BLENDER_PYTHON',script,editableSource:dccRepoPath(recipe?.editableSource||script),
@@ -499,6 +517,9 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
           outputs:Object.freeze(generated),evidenceJson,preview,nativeArtifact:nativeArtifact.path,artifactHash:nativeArtifact.sha256,sourceHash:sha256File(scriptAbs),
           evidenceState:evidence?.runtimeVerificationState||null,productionVerified:evidence?.productionVerified===true,
           reproducesExistingNativeArtifact,persistedForCandidate:persist,candidateUsable:persist||reproducesExistingNativeArtifact,
+          gltfMasterRequired,gltfMasterCompliant,gltfMasterPath:gltfMasterRequired?nativeArtifact.path:null,
+          gltfMasterArtifactHash:gltfMasterRequired?nativeArtifact.sha256:null,
+          gltfMasterEvidence:gltfMasterRequired?Object.freeze({meshCount,boneCount,motionCount,evidenceArtifactHash:evidenceArtifactHash||null}):null,
           stdoutTail:String(stdout||'').slice(-2000),runtimeVerified:false,companyPromotionEligible:false
         }));
       }finally{
@@ -525,6 +546,9 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
       allRecipesPassed:true,candidateUsable,persistedForCandidate:persist,recipeCount:results.length,recipes:Object.freeze(results),
       generatedFiles:Object.freeze(declaredGeneratedFiles),
       editableSource:first.editableSource||null,nativeArtifact:first.nativeArtifact||null,artifactHash:first.artifactHash||null,preview:first.preview||null,
+      gltfMasterRequired:results.some(row=>row.gltfMasterRequired===true),
+      gltfMasterCompliant:results.filter(row=>row.gltfMasterRequired===true).every(row=>row.gltfMasterCompliant===true),
+      gltfMasterPaths:Object.freeze(results.filter(row=>row.gltfMasterRequired===true).map(row=>row.gltfMasterPath).filter(Boolean)),
       runtimeVerified:false,companyPromotionEligible:false
     });
   }finally{fs.rmSync(tempRoot,{recursive:true,force:true});}
@@ -560,6 +584,8 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
         ].filter(re=>re.test(text)).length
         :0;
   const requiredDccTypes=unique(contract?.dcc?.requiredTypes||[]);
+  const gltfMasterRequiredTypes=unique(contract?.dcc?.gltfMasterRequiredTypes||[]);
+  const gltfMasterRequired=contract?.dcc?.gltfMasterRequired===true||gltfMasterRequiredTypes.length>0;
   const dccRequired=requiredDccTypes.length>0;
   const nativeTextRequired=(contract?.nativeText?.requiredTypes||[]).length>0;
   const nativeTextAuthored=target==='web'?nativeSignals>=1:nativeSignals>=2;
@@ -581,6 +607,15 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
       &&clean(dccEvidence?.artifactHash)
       &&clean(dccEvidence?.preview)
     )
+  );
+  const gltfMasterRecipes=(dccEvidence?.recipes||[]).filter(row=>row?.gltfMasterRequired===true);
+  const gltfMasterReady=!gltfMasterRequired||(
+    dccEvidence?.executed===true
+    &&dccEvidence?.allRecipesPassed===true
+    &&dccEvidence?.candidateUsable===true
+    &&dccEvidence?.persistedForCandidate===true
+    &&gltfMasterRecipes.length>0
+    &&gltfMasterRecipes.every(row=>row?.gltfMasterCompliant===true&&/\.glb$/i.test(posix(row?.gltfMasterPath||row?.nativeArtifact))&&clean(row?.gltfMasterArtifactHash||row?.artifactHash))
   );
   const generatedNativeArtifacts=unique((dccEvidence?.recipes||[]).map(row=>posix(row?.nativeArtifact)).filter(Boolean));
   const generatedAssetIdentityBindings=(dccEvidence?.recipes||[]).filter(row=>{
@@ -606,6 +641,15 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
   return Object.freeze({
     required:true,status,target,nativeSignals,nativeTextAuthored,dccRequired,dccAuthored,dccStatus,nativeTextRequired,nativeTextStatus,
     requiredDccTypes:Object.freeze([...requiredDccTypes]),
+    gltfMasterRequired,
+    gltfMasterRequiredTypes:Object.freeze([...gltfMasterRequiredTypes]),
+    gltfMasterReady,
+    gltfMasterRecipes:Object.freeze(gltfMasterRecipes.map(row=>Object.freeze({
+      assetId:clean(row?.assetId||row?.id)||null,
+      path:posix(row?.gltfMasterPath||row?.nativeArtifact)||null,
+      artifactHash:clean(row?.gltfMasterArtifactHash||row?.artifactHash)||null,
+      compliant:row?.gltfMasterCompliant===true
+    }))),
     dccCoveredTypes:Object.freeze([...dccCoveredTypes]),
     dccTypeCoveragePass,
     requiredNativeTextTypes:Object.freeze([...(contract?.nativeText?.requiredTypes||[])]),
@@ -674,8 +718,21 @@ export function collectNativeAssetRuntimePromotionCandidates({order={},candidate
     const family=clean(recipe?.family).toUpperCase();
     const license=clean(recipe?.license);
     if(!id||!assetPath||!sourceHash||!artifactHash||!family||!license||!changedText.includes(assetPath)||!changedText.includes(artifactHash))continue;
+    const gltfMasterRequired=recipe?.gltfMasterRequired===true||['CHARACTER','CREATURE'].includes(family);
     rows.set(id,Object.freeze({
       assetId:id,family,license,path:assetPath,robloxAssetId:null,sourceHash,artifactHash,
+      ...(gltfMasterRequired?{gltfMaster:Object.freeze({
+        version:1,format:'GLB',gltfVersion:'2.0',path:posix(recipe?.gltfMasterPath||assetPath),
+        artifactHash:clean(recipe?.gltfMasterArtifactHash||artifactHash),sourceRecipe:posix(recipe?.script||''),
+        sourceHash,evidencePath:posix(recipe?.evidenceJson||''),previewPath:posix(recipe?.preview||''),
+        contentEvidence:Object.freeze({
+          mesh:true,uv:true,materialSlots:true,rig:true,skin:true,
+          animationClips:Number(recipe?.gltfMasterEvidence?.motionCount||0)>0,
+          motionCount:Number(recipe?.gltfMasterEvidence?.motionCount||0),
+          stableScaleOriginAxis:true,attachmentOrBindingMap:true,lodDerivationPlan:true
+        }),
+        platformVariantsRequireExactMasterHash:true,productionVerified:false,nativeRuntimeVerificationRequired:true
+      })}:{}),
       bindingEvidence:Object.freeze(['GENERATED_NATIVE_ARTIFACT_PATH','ENGINE_NATIVE_SOURCE']),
       candidateSourceBindingVerified:true,runtimeVerificationRequired:true,promotionState:'PENDING_EXACT_NATIVE_RUNTIME',
       generatedByDeclaredRecipe:true,persistedForCandidate:dccEvidence?.persistedForCandidate===true
@@ -5535,6 +5592,9 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       }
     }
     const nativeAuthoringCheck=evaluateNativeAssetAuthoringCandidate({order,candidate});
+    if(nativeAuthoringCheck.gltfMasterRequired===true&&nativeAuthoringCheck.gltfMasterReady!==true){
+      throw new Error('GLB_MASTER_ASSET_REQUIRED:'+(nativeAuthoringCheck.gltfMasterRequiredTypes||[]).join(','));
+    }
     if(nativeAuthoringCheck.generatedAssetBindingRequired===true&&nativeAuthoringCheck.generatedAssetBindingApplied!==true){
       throw new Error('GENERATED_ASSET_BINDING_REQUIRED:'+(nativeAuthoringCheck.generatedNativeArtifacts||[]).join(','));
     }
@@ -5623,6 +5683,14 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     console.log('ROBLOX_NATIVE_BUILD_UP_BINDING='+(order?.selectedTask?.buildUpDirective?.robloxNativeExecution||order?.buildUpDirective?.robloxNativeExecution?'PASS':'BASELINE_OR_REPAIR'));
     console.log('ROBLOX_NATIVE_CODE_QUALITY_FINDINGS='+robloxNativeCandidateQuality.findingCount);
     console.log('ROBLOX_CHARACTER_MOTION_QUALITY='+(robloxNativeCandidateQuality.motionQualityFindings?.length?'REPAIR_REQUIRED:'+robloxNativeCandidateQuality.motionQualityFindings.map(row=>row.class).join(','):'STATIC_READY_RUNTIME_REQUIRED'));
+    if(nativeAssetAuthoring.gltfMasterRequired===true){
+      console.log('GLB_MASTER_ASSET='+(nativeAssetAuthoring.gltfMasterReady===true?'READY':'REPAIR_REQUIRED'));
+      console.log('GLB_MASTER_HASH='+(nativeAssetAuthoring.gltfMasterRecipes||[]).map(row=>row.artifactHash||'MISSING').join(','));
+      console.log('GLB_MASTER_RECIPE='+(nativeAssetAuthoring.gltfMasterRecipes||[]).map(row=>row.assetId||'UNKNOWN').join(','));
+      console.log('GLB_MASTER_CONTENTS='+(nativeAssetAuthoring.gltfMasterReady===true?'MESH_RIG_SKIN_BOUND':'INCOMPLETE'));
+      console.log('GLB_MASTER_PLATFORM_VARIANT=NATIVE_DERIVATION_REQUIRED');
+      console.log('GLB_MASTER_RUNTIME=PENDING_NATIVE_RUNTIME');
+    }
   }
   const generation={...generated.generation,candidateVariant,attemptBudget:generationAttemptBudget({allowFullRewrite,variant:candidateVariant}),speculativeAttemptBudgetApplied:/^speculative-/i.test(candidateVariant),fullWebInitialSeedStrategy:allowFullRewrite,fullWebInitialSeedTargetBytes:allowFullRewrite?[FULL_WEB_INITIAL_SEED_TARGET_MIN_BYTES,FULL_WEB_INITIAL_SEED_TARGET_MAX_BYTES]:[],contextFiles:context.files.length,contextBytes:context.bytes,contextMode:context.mode||'STANDARD_CONTEXT',focusedSymbolCount:Number(context.focusedSymbolCount||0),exactSourceWindows:context.exactSourceWindows===true,fullFileContextFallback:context.fullFileFallback===true,contextPreferenceRequested:preferredContextMode||null,contextPreferenceApplied:Boolean(preferredContextMode&&preferredContextMode===(context.mode||'STANDARD_CONTEXT'))};
   if(bootstrap&&target==='web'&&(candidate.edits.length||candidate.newFiles.length||candidate.replaceFiles.length!==1||candidate.replaceFiles[0]?.path!=='index.html')){
