@@ -9,27 +9,68 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
+  "tasks": {
+    "designer_draft_slices::identity-core": {
+      "identity": "작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임",
+      "playerFantasy": "작은 섬의 주민은 직접 나무와 식량을 모으며, 병사와 병영을 통해 왕국을 확장하고, 5개 거점을 점령하여 왕국을 지배하는 협동 전략을 펼치는 게임입니다.",
+      "coreFun": "직접 나무와 식량을 채집하고, 주민을 고용하여 자동화를 통해 생산을 증대시키며, 병사와 병영을 강화하고, 5개 거점을 점령하여 왕국을 확장하는 게임입니다.",
+      "coreLoop": [
+        "직접 나무와 식량을 채집",
+        "주민 고용과 벌목/농업 자동화",
+        "병영 강화와 병사 모집",
+        "다음 자원 거점 선택",
+        "보이는 자동전투와 점령 보상",
+        "협동 지원으로 강한 거점 공략"
+      ],
+      "signatureSystems": [
+        {
+          "name": "직접 채집",
+          "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득한다.",
+          "playerChoice": "나무와 식량을 직접 모으는 선택"
+        },
+        {
+          "name": "주민 자동화",
+          "purpose": "고용한 주민을 생산 직업에 배치해 반복 노동을 자동화한다.",
+          "playerChoice": "주민을 고용하여 자동화를 선택"
+        },
+        {
+          "name": "병영/병사",
+          "purpose": "자원을 병력으로 전환하고 병영 레벨로 전투력을 확장한다.",
+          "playerChoice": "병사와 병영을 선택하여 전투력을 강화"
+        },
+        {
+          "name": "5개 자원 거점",
+          "purpose": "서로 다른 적과 보상을 가진 5개 거점을 순차 점령한다.",
+          "playerChoice": "5개 거점을 점령하는 선택"
+        },
+        {
+          "name": "협동 지원",
+          "purpose": "다른 플레이어의 준비 병력을 서버가 지원 전력으로 합산한다.",
+          "playerChoice": "협동 지원을 선택"
+        }
+      ]
+    }
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 0,
+      "calls": 3,
+      "successes": 1,
       "failures": 2,
       "timeouts": 1,
       "jsonFailures": 1,
-      "totalMs": 293544,
-      "lastMs": 203470,
+      "totalMs": 442010,
+      "lastMs": 148466,
       "lastError": "Expected ',' or ']' after array element in JSON at position 1654 (line 1 column 1655)",
-      "updatedAt": "2026-10-07T18:27:13.334Z"
+      "updatedAt": "2026-10-07T19:19:31.690Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T18:14:44.822Z",
-  "updatedAt": "2026-10-07T19:17:03.222Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=OPTIONAL_EXTERNAL_AI_DISABLED local=Expected ',' or ']' after array element in JSON at position 1654 (line 1 column 1655)",
+  "updatedAt": "2026-10-07T19:19:31.691Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "checkpointMigration": {
     "fromContractVersion": 4,
     "toContractVersion": 4,
@@ -38,5 +79,8 @@
     "preservedPhaseCount": 0,
     "preservedTaskCount": 0,
     "migratedAt": "2026-10-07T19:17:03.220Z"
-  }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-07T19:19:31.690Z",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
