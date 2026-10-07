@@ -11956,7 +11956,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-07T05:52:43.390Z",
+      "updatedAt": "2026-10-07T05:55:24.088Z",
       "robloxSourceCommit": "2cc4a7b31a540925a89d10880b1a17e82e3ede2c",
       "robloxSourceBootstrapPassedAt": "2026-10-07T05:22:52.107Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -11967,20 +11967,21 @@
       "robloxBuildArtifactIdentity": "sha256:698489c0b178f9f5ea25b9a2ea2a76aa877660b1e1153951597a7abe487812c4",
       "robloxBuildPassedAt": "2026-10-07T05:44:13.270Z",
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": false,
-      "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-07T05:44:13.270Z",
+      "robloxBuildPreflightPassed": true,
+      "robloxBuildPreflightPassedAt": "2026-10-07T05:55:24.088Z",
+      "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "fantasy-survival",
-        "pass": false,
-        "state": "BLOCKED",
-        "checkedAt": "2026-10-07T05:40:01.151Z",
+        "pass": true,
+        "state": "PASS",
+        "checkedAt": "2026-10-07T05:53:34.080Z",
+        "sourceRevision": "2cc4a7b31a540925a89d10880b1a17e82e3ede2c",
+        "artifactIdentity": "sha256:698489c0b178f9f5ea25b9a2ea2a76aa877660b1e1153951597a7abe487812c4",
+        "secondaryOwnerFocus": false,
         "facts": {
-          "pass": false,
-          "blockers": [
-            "roblox-platform-required"
-          ],
+          "pass": true,
+          "blockers": [],
           "leads": {
             "planning": "llama3.2:1b",
             "graphics": "llama3.2:1b",
@@ -11991,9 +11992,9 @@
           "sharedModel": "llama3.2:1b",
           "distinctLeadCount": 1,
           "secondaryOwnerFocus": false,
-          "robloxLaneEligible": false,
+          "robloxLaneEligible": true,
           "directRoblox": false,
-          "concurrentRoblox": false,
+          "concurrentRoblox": true,
           "build": {
             "sourceRevision": "2cc4a7b31a540925a89d10880b1a17e82e3ede2c",
             "artifactIdentity": "sha256:698489c0b178f9f5ea25b9a2ea2a76aa877660b1e1153951597a7abe487812c4",
@@ -12006,10 +12007,16 @@
             "buildOrPackagePassed": true
           }
         },
-        "leadReviews": [],
-        "blockers": [
-          "roblox-platform-required"
+        "leadReviews": [
+          {
+            "role": "shared-review",
+            "model": "llama3.2:1b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": "No concrete build-stage blocker found in BUILD_EVIDENCE."
+          }
         ],
+        "blockers": [],
         "authority": "roblox-vibe-shared-model-build-preflight"
       },
       "robloxFoundationF0Passed": false,
@@ -12048,11 +12055,11 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
+      "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+      "robloxFailureStage": "F0_SOURCE_INTEGRITY",
+      "robloxFailureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_PENDING",
       "routingBlockers": [
-        "roblox-build-preflight-blocked"
+        "roblox-f0-source-preflight-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -34199,7 +34206,7 @@
       "robloxBuildAssetLibraryVersion": 120
     }
   ],
-  "updatedAt": "2026-10-07T05:54:14.263Z",
+  "updatedAt": "2026-10-07T05:55:24.088Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
