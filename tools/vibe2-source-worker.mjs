@@ -1951,9 +1951,8 @@ export function evaluateStudioQualityCandidateDelta({candidate={},sourceRoot='',
     const oldRelevant=presentationRelevantLines(oldText,visualPattern);
     const newRelevant=presentationRelevantLines(newText,visualPattern);
     if(newRelevant&&oldRelevant!==newRelevant)visualRows.push(row);
-    const serverOwner=/(?:^|\/)server\/|\.server\.lua[u]?$/i.test(row.path);
     const executableGameplay=gameplayPattern.test(newText)&&gameplayPattern.test(newText.replace(/^\s*(?:--|\/\/).*$/gm,''));
-    if(serverOwner||executableGameplay)gameplayRows.push(row);
+    if(executableGameplay)gameplayRows.push(row);
   };
   for(const edit of candidate?.edits||[])inspect(edit.path,edit.find,edit.replace,'edit');
   for(const file of candidate?.replaceFiles||[]){
