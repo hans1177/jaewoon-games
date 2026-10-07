@@ -166,10 +166,10 @@ const CENTRAL_COMPANION_DOCUMENTS=Object.freeze({
 });
 const CENTRAL_TEXT_EXTENSIONS=new Set(['.js','.mjs','.cjs','.json','.yml','.yaml','.md']);
 const CENTRAL_DOCUMENT_BUDGETS=Object.freeze({
-  policy:Object.freeze({sourcePath:CENTRAL_POLICY_REL,hardMaxUtf8Bytes:null,maxGrowthUtf8Bytes:128000}),
-  architecture:Object.freeze({sourcePath:CENTRAL_ARCHITECTURE_REL,hardMaxUtf8Bytes:768000,maxGrowthUtf8Bytes:128000}),
-  logMap:Object.freeze({sourcePath:CENTRAL_LOG_MAP_REL,hardMaxUtf8Bytes:512000,maxGrowthUtf8Bytes:96000}),
-  security:Object.freeze({sourcePath:CENTRAL_SECURITY_REL,hardMaxUtf8Bytes:256000,maxGrowthUtf8Bytes:64000})
+  policy:Object.freeze({sourcePath:CENTRAL_POLICY_REL,hardMaxUtf8Bytes:null,maxGrowthUtf8Bytes:12000}),
+  architecture:Object.freeze({sourcePath:CENTRAL_ARCHITECTURE_REL,hardMaxUtf8Bytes:320000,maxGrowthUtf8Bytes:8000}),
+  logMap:Object.freeze({sourcePath:CENTRAL_LOG_MAP_REL,hardMaxUtf8Bytes:140000,maxGrowthUtf8Bytes:4000}),
+  security:Object.freeze({sourcePath:CENTRAL_SECURITY_REL,hardMaxUtf8Bytes:70000,maxGrowthUtf8Bytes:4000})
 });
 const cloneJson=value=>JSON.parse(JSON.stringify(value));
 const utf8Bytes=value=>Buffer.byteLength(typeof value==='string'?value:JSON.stringify(value,null,2)+'\n','utf8');
