@@ -4475,23 +4475,13 @@ export function scoreStudioAssetCandidate({asset={},gameDna={},usage={},requirem
   });
 }
 
-export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},usageByAsset={},libraryVersion=0,librarySnapshotId='',expectedSnapshotId=''}={}){
-  // 원자적 검색: 한 장부 스냅샷의 종류/파츠 색인만 사용하며 조회 도중 다른 버전을 합치지 않는다.
-  assets=JSON.parse(JSON.stringify(assets||[]));
+export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},usageByAsset={},libraryVersion=0,librarySnapshotId='',expectedSnapshotId='',registryIndex=null}={}){
+  // 원자적 검색: 한 장부 스냅샷을 한 번 색인하고 같은 동기 planning cycle에서 재사용한다.
+  const index=registryIndex||buildStudioAssetRegistryIndex(assets);
+  assets=index.assets;
   const snapshotId=text(librarySnapshotId)||'inventory:'+stableAssetMaintenanceHash(JSON.stringify(assets));
   const snapshotMatches=!text(expectedSnapshotId)||text(expectedSnapshotId)===snapshotId;
-  const byFamily=new Map(),byAtom=new Map();
-  for(const asset of assets||[]){
-    if(asset?.catalogActive===false||/(STALE|QUARANTIN|RETIRED|REJECTED)/.test(upper(asset?.catalogState)+' '+upper(asset?.status))||asset?.rightsPass===false)continue;
-    const entry={asset,row:normalizeRegistryAsset(asset)},family=entry.row.family;
-    if(!byFamily.has(family))byFamily.set(family,[]);
-    byFamily.get(family).push(entry);
-    for(const atom of uniq([asset.id,asset.atomId,asset.assetId].map(upper))){
-      const key=family+'|'+atom;
-      if(!byAtom.has(key))byAtom.set(key,[]);
-      byAtom.get(key).push(entry);
-    }
-  }
+  const byFamily=index.eligibleByFamily,byAtom=index.eligibleByAtom;
   const selections=[];
   let candidateVisits=0;
   for(const requirement of requirements||[]){
@@ -4580,7 +4570,7 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
       usageContract:row.usageContract
     })):[]),
     bindingAction:!snapshotMatches?'RESELECT_CURRENT_LIBRARY_SNAPSHOT':bindingReady?'APPLY_THROUGH_EXISTING_SOURCE_WORKER':'RESOLVE_REQUIRED_ASSETS_BEFORE_BINDING',
-    searchStats:Object.freeze({assetCount:assets.length,familyBucketCount:byFamily.size,atomBucketCount:byAtom.size,candidateVisits}),
+    searchStats:Object.freeze({assetCount:assets.length,familyBucketCount:byFamily.size,atomBucketCount:byAtom.size,candidateVisits,normalizationVisits:index.normalizationVisits,indexReused:Boolean(registryIndex)}),
     bindingBatchIsRuntimeProof:false,
     lowQualityFallbackCount:selections.filter(row=>row.lowQualityFallback).length,
     lowQualityBindingAllowed:true,
@@ -5121,6 +5111,47 @@ function normalizeRegistryAsset(asset={}){
   };
 }
 
+function pushStudioAssetIndex(map,key,entry){
+  if(!key)return;
+  if(!map.has(key))map.set(key,[]);
+  map.get(key).push(entry);
+}
+
+function studioAssetRegistryEligible(asset={},row={}){
+  return asset?.catalogActive!==false
+    &&!/(STALE|QUARANTIN|RETIRED|REJECTED)/.test(upper(asset?.catalogState)+' '+upper(row.status))
+    &&asset?.rightsPass!==false;
+}
+
+function buildStudioAssetRegistryIndex(assets=[]){
+  // 실행 중 동기 읽기 전용 스냅샷이다. 객체를 수정하지 않으므로 전체 JSON deep-copy가 필요하지 않다.
+  const snapshot=Array.isArray(assets)?assets.slice():[];
+  const entries=[],allByFamily=new Map(),allBySlot=new Map(),verifiedBySlot=new Map(),eligibleByFamily=new Map(),eligibleByAtom=new Map();
+  const verifiedAssets=[];
+  for(const asset of snapshot){
+    const row=normalizeRegistryAsset(asset);
+    const entry={asset,row};
+    entries.push(entry);
+    pushStudioAssetIndex(allByFamily,row.family,entry);
+    for(const token of uniq([row.subfamily,...row.tags].map(upper))){
+      const key=row.family+'|'+token;
+      pushStudioAssetIndex(allBySlot,key,entry);
+      if(row.verified)pushStudioAssetIndex(verifiedBySlot,key,entry);
+    }
+    if(row.verified)verifiedAssets.push(asset);
+    if(!studioAssetRegistryEligible(asset,row))continue;
+    pushStudioAssetIndex(eligibleByFamily,row.family,entry);
+    for(const atom of uniq([asset.id,asset.atomId,asset.assetId].map(upper))){
+      pushStudioAssetIndex(eligibleByAtom,row.family+'|'+atom,entry);
+    }
+  }
+  return {
+    assets:snapshot,entries,verifiedAssets,
+    allByFamily,allBySlot,verifiedBySlot,eligibleByFamily,eligibleByAtom,
+    normalizationVisits:entries.length
+  };
+}
+
 function commonDepthDomainMatch(domain,asset={}){
   const family=upper(asset.family||asset.category);
   const packId=text(asset.packId);
@@ -5212,24 +5243,35 @@ export function scanUniversalAssetCoverage({
   baselines=DEFAULT_COVERAGE_BASELINES,
   activeDemand={},
   platform='',
-  styleFamily=''
+  styleFamily='',
+  registryIndex=null
 }={}){
-  const normalized=(assets||[]).map(normalizeRegistryAsset);
+  const index=registryIndex||buildStudioAssetRegistryIndex(assets);
   const rows=[];
+  let candidateVisits=0,bucketLookupCount=0;
+  const targetStyle=upper(styleFamily),targetPlatform=upper(platform);
   for(const family of Object.keys(baselines)){
     for(const [subfamily,required] of Object.entries(baselines[family]||{})){
-      const matches=normalized.filter(row=>row.family===family&&(row.subfamily===subfamily||row.tags.includes(subfamily)));
-      const verified=matches.filter(row=>row.verified).length;
-      const prepared=matches.filter(row=>row.prepared&&!row.verified).length;
-      const missing=Math.max(0,Number(required)-verified);
+      const matches=index.allBySlot.get(upper(family)+'|'+upper(subfamily))||[];
+      bucketLookupCount+=1;
+      candidateVisits+=matches.length;
+      let verified=0,prepared=0,styleVerified=0,platformVerified=0;
+      for(const entry of matches){
+        const row=entry.row;
+        if(row.verified){
+          verified+=1;
+          if(!targetStyle||!row.styleFamily||row.styleFamily===targetStyle)styleVerified+=1;
+          if(!targetPlatform||!row.platform||row.platform===targetPlatform||row.platform==='SHARED_REFERENCE')platformVerified+=1;
+        }else if(row.prepared)prepared+=1;
+      }
+      const requiredCount=Number(required);
+      const missing=Math.max(0,requiredCount-verified);
       const demand=Number(activeDemand[family]?.[subfamily]||0);
-      const styleVerified=styleFamily?matches.filter(row=>row.verified&&(!row.styleFamily||row.styleFamily===upper(styleFamily))).length:verified;
-      const platformVerified=platform?matches.filter(row=>row.verified&&(!row.platform||row.platform===upper(platform)||row.platform==='SHARED_REFERENCE')).length:verified;
-      const coveragePercent=Number(required)>0?Math.min(100,Math.round(verified/Number(required)*100)):100;
+      const coveragePercent=requiredCount>0?Math.min(100,Math.round(verified/requiredCount*100)):100;
       rows.push(Object.freeze({
-        family,subfamily,required:Number(required),availableVerified:verified,availablePrepared:prepared,missingSlots:missing,
-        coveragePercent,activeDemand:demand,styleCoveragePercent:styleFamily?Math.min(100,Math.round(styleVerified/Number(required)*100)):coveragePercent,
-        platformCoveragePercent:platform?Math.min(100,Math.round(platformVerified/Number(required)*100)):coveragePercent
+        family,subfamily,required:requiredCount,availableVerified:verified,availablePrepared:prepared,missingSlots:missing,
+        coveragePercent,activeDemand:demand,styleCoveragePercent:targetStyle&&requiredCount>0?Math.min(100,Math.round(styleVerified/requiredCount*100)):coveragePercent,
+        platformCoveragePercent:targetPlatform&&requiredCount>0?Math.min(100,Math.round(platformVerified/requiredCount*100)):coveragePercent
       }));
     }
   }
@@ -5238,7 +5280,8 @@ export function scanUniversalAssetCoverage({
     rows:Object.freeze(rows),
     overallCoveragePercent:rows.length?Math.round(rows.reduce((sum,row)=>sum+row.coveragePercent,0)/rows.length):100,
     missingSlotCount:rows.reduce((sum,row)=>sum+row.missingSlots,0),
-    incomplete:Object.freeze(rows.filter(row=>row.missingSlots>0))
+    incomplete:Object.freeze(rows.filter(row=>row.missingSlots>0)),
+    scanStats:Object.freeze({assetCount:index.assets.length,normalizationVisits:index.normalizationVisits,bucketLookupCount,candidateVisits,indexReused:Boolean(registryIndex)})
   });
 }
 
@@ -5266,20 +5309,29 @@ export function buildLibraryHeatmap({coverageReport={},signalsByKey={}}={}){
   return Object.freeze({rows:Object.freeze(rows),highestPriorityGap:rows.find(row=>row.missingSlots>0)||null});
 }
 
-function externalCandidatesForGap(gap={},externalSources=[]){
-  const family=upper(gap.family);
-  return (externalSources||[]).filter(src=>{
-    const categories=uniq([src?.category,...(Array.isArray(src?.categories)?src.categories:[])]).map(upper);
-    const status=upper(src?.status);
-    const categoryMatch=categories.includes(family)
-      ||(family==='BUILDING'&&categories.some(category=>['ENVIRONMENT','PROP'].includes(category)))
-      ||(family==='MATERIAL'&&categories.some(category=>['VFX','ENVIRONMENT'].includes(category)));
-    return /LICENSE_VERIFIED/.test(status)&&categoryMatch;
-  }).sort((a,b)=>
-    Number(b?.volumeAdaptationEligible===true)-Number(a?.volumeAdaptationEligible===true)
+function compareExternalGapSource(a,b){
+  return Number(b?.volumeAdaptationEligible===true)-Number(a?.volumeAdaptationEligible===true)
     ||Number(b?.sourcePriority||0)-Number(a?.sourcePriority||0)
-    ||text(a?.id).localeCompare(text(b?.id))
-  );
+    ||text(a?.id).localeCompare(text(b?.id));
+}
+
+function buildExternalAssetGapIndex(externalSources=[]){
+  const byFamily=new Map();
+  for(const src of externalSources||[]){
+    if(!/LICENSE_VERIFIED/.test(upper(src?.status)))continue;
+    const categories=uniq([src?.category,...(Array.isArray(src?.categories)?src.categories:[])]).map(upper);
+    const families=new Set(categories);
+    if(categories.some(category=>['ENVIRONMENT','PROP'].includes(category)))families.add('BUILDING');
+    if(categories.some(category=>['VFX','ENVIRONMENT'].includes(category)))families.add('MATERIAL');
+    for(const family of families)pushStudioAssetIndex(byFamily,family,src);
+  }
+  for(const rows of byFamily.values())rows.sort(compareExternalGapSource);
+  return {byFamily,sourceCount:(externalSources||[]).length};
+}
+
+function externalCandidatesForGap(gap={},externalSources=[],externalIndex=null){
+  const index=externalIndex||buildExternalAssetGapIndex(externalSources);
+  return index.byFamily.get(upper(gap.family))||[];
 }
 
 function semanticSeedId(gap={},index=0){
@@ -5292,16 +5344,23 @@ export function buildAutonomousAssetGapFillPlan({
   repositoryAssets=[],
   externalSources=[],
   signalsByKey={},
-  qualityProgram={}
+  qualityProgram={},
+  verifiedIndex=null,
+  repositoryIndex=null,
+  externalIndex=null
 }={}){
-  const verified=(verifiedAssets||[]).map(normalizeRegistryAsset);
-  const repo=(repositoryAssets||[]).map(normalizeRegistryAsset);
+  const verifiedRegistryIndex=verifiedIndex||buildStudioAssetRegistryIndex(verifiedAssets);
+  const repositoryRegistryIndex=repositoryIndex||buildStudioAssetRegistryIndex(repositoryAssets);
+  const resolvedExternalIndex=externalIndex||buildExternalAssetGapIndex(externalSources);
   const heatmap=buildLibraryHeatmap({coverageReport,signalsByKey});
   const actions=[];
+  let candidateVisits=0;
   for(const gap of heatmap.rows.filter(row=>row.missingSlots>0)){
-    const verifiedMatches=verified.filter(row=>row.family===gap.family&&(row.subfamily===gap.subfamily||row.tags.includes(gap.subfamily)));
-    const repoMatches=repo.filter(row=>row.family===gap.family&&(row.subfamily===gap.subfamily||row.tags.includes(gap.subfamily)));
-    const external=externalCandidatesForGap(gap,externalSources);
+    const key=upper(gap.family)+'|'+upper(gap.subfamily);
+    const verifiedMatches=(verifiedRegistryIndex.verifiedBySlot.get(key)||[]).map(entry=>entry.row);
+    const repoMatches=(repositoryRegistryIndex.allBySlot.get(key)||[]).map(entry=>entry.row);
+    const external=externalCandidatesForGap(gap,externalSources,resolvedExternalIndex);
+    candidateVisits+=verifiedMatches.length+repoMatches.length+external.length;
     let route='PREPARE_SEMANTIC_ASSET_SEED';
     let sourceIds=[];
     if(verifiedMatches.length){route='REUSE_VERIFIED_COMPANY_ASSET';sourceIds=verifiedMatches.map(x=>x.id);}
@@ -5368,7 +5427,16 @@ export function buildAutonomousAssetGapFillPlan({
     lowScoreAssetMayRemainBoundDuringImprovement:true,
     noArtificialCategoryCap:true,
     unityRobloxNativeVariantsRequired:true,
-    runtimeVerificationRequired:true
+    runtimeVerificationRequired:true,
+    searchStats:Object.freeze({
+      verifiedAssetCount:verifiedRegistryIndex.verifiedAssets.length,
+      repositoryAssetCount:repositoryRegistryIndex.assets.length,
+      externalSourceCount:resolvedExternalIndex.sourceCount,
+      candidateVisits,
+      verifiedIndexReused:Boolean(verifiedIndex),
+      repositoryIndexReused:Boolean(repositoryIndex),
+      externalIndexReused:Boolean(externalIndex)
+    })
   });
 }
 
@@ -5466,8 +5534,12 @@ export function createStudioAssetUniversePlan({
     combinedById.set(id,existing?{...asset,...existing}:asset);
   }
   const combinedAssets=[...combinedById.values()];
-  const coverage=scanUniversalAssetCoverage({assets,activeDemand,platform,styleFamily:resolvedStyle});
-  const verified=assets.filter(asset=>normalizeRegistryAsset(asset).verified);
+  const assetIndex=buildStudioAssetRegistryIndex(assets);
+  const repositoryIndex=buildStudioAssetRegistryIndex(repositoryAssets);
+  const combinedIndex=buildStudioAssetRegistryIndex(combinedAssets);
+  const externalIndex=buildExternalAssetGapIndex(externalSources);
+  const coverage=scanUniversalAssetCoverage({assets,activeDemand,platform,styleFamily:resolvedStyle,registryIndex:assetIndex});
+  const verified=assetIndex.verifiedAssets;
   const quality120=buildStudioAssetQuality120Program({
     assets:combinedAssets,
     qualityEvidenceByAsset,
@@ -5475,7 +5547,8 @@ export function createStudioAssetUniversePlan({
     familyOutputsByAsset
   });
   const gapFill=buildAutonomousAssetGapFillPlan({
-    coverageReport:coverage,verifiedAssets:verified,repositoryAssets,externalSources,signalsByKey,qualityProgram:quality120
+    coverageReport:coverage,verifiedAssets:verified,repositoryAssets,externalSources,signalsByKey,qualityProgram:quality120,
+    verifiedIndex:assetIndex,repositoryIndex,externalIndex
   });
   const resolvedBible=createStyleBible({styleFamily:resolvedStyle,styles:conceptProfile.weightedStyles,artTone:conceptProfile.axes?.ART_TONE||[],styleExpressionOverrides:conceptProfile.styleExpression?.axes||{},...styleBible});
   const conceptCoherence=evaluateConceptCoherence({concept:conceptProfile,styleBible:resolvedBible,lockedStyle:styleFamily});
@@ -5484,11 +5557,10 @@ export function createStudioAssetUniversePlan({
   const effectiveRequirements=inferredRequirements.map(requirement=>{
     if(text(requirement.currentAssetId))return requirement;
     const family=upper(requirement.family),subfamily=upper(requirement.subfamily);
-    const current=combinedAssets.find(asset=>{
-      const row=normalizeRegistryAsset(asset);
+    const current=(combinedIndex.allByFamily.get(family)||[]).find(({asset,row})=>{
       const currentConsumer=asset?.sameGameExistingRoblox===true||currentAssetConsumerGameIds(asset).map(text).includes(text(gameId));
-      return currentConsumer&&row.family===family&&(!subfamily||row.subfamily===subfamily||row.tags.includes(subfamily));
-    });
+      return currentConsumer&&(!subfamily||row.subfamily===subfamily||row.tags.includes(subfamily));
+    })?.asset||null;
     return current?{...requirement,currentAssetId:text(current.id)}:requirement;
   });
   const loadout=buildStudioAssetLoadout({
@@ -5496,7 +5568,8 @@ export function createStudioAssetUniversePlan({
     requirements:effectiveRequirements,
     assets:combinedAssets,
     gameDna:{...visualDna,targetPlatform:upper(platform)},
-    usageByAsset
+    usageByAsset,
+    registryIndex:combinedIndex
   });
   const futureDemand=buildFutureAssetDemandForecast({gameDemands:futureGameDemands,coverageReport:coverage});
   const usageFeedback=summarizeVerifiedAssetUsage({events:usageEvents});
