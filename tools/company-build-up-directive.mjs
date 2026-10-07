@@ -1173,13 +1173,20 @@ function buildAutonomousContentExpansion({
   }).sort((a,b)=>b.score-a.score||a.index-b.index);
   const selected=scored[0]||{theme:AUTONOMOUS_EXPANSION_THEMES[0],score:0,gapDomains:[],applicableDomains:[]};
   const selectedTheme=selected.theme;
-  const sameThemeDepth=previousTheme===selectedTheme.id?Math.max(1,Number(previousExpansion?.themeDepth||1)+1):1;
-  const nextCounts={...previousCounts,[selectedTheme.id]:Number(previousCounts[selectedTheme.id]||0)+1};
-  const nextSequence=[...previousSequence,selectedTheme.id].slice(-Math.max(14,themeIds.length*2));
+  const repairFirst=clean(nextActionDecision?.action).toUpperCase()==='CAUSAL_REPAIR';
+  const runtimeRepairFirst=repairFirst&&runtimeEvidence?.runtimeObserved===true&&runtimeEvidence?.runtimePassed!==true;
+  const sameThemeDepth=runtimeRepairFirst
+    ?Math.max(1,Number(previousExpansion?.themeDepth||1))
+    :previousTheme===selectedTheme.id?Math.max(1,Number(previousExpansion?.themeDepth||1)+1):1;
+  const nextCounts=runtimeRepairFirst
+    ?{...previousCounts}
+    :{...previousCounts,[selectedTheme.id]:Number(previousCounts[selectedTheme.id]||0)+1};
+  const nextSequence=runtimeRepairFirst
+    ?[...previousSequence]
+    :[...previousSequence,selectedTheme.id].slice(-Math.max(14,themeIds.length*2));
   const missingAfterSelection=themeIds.filter(id=>Number(nextCounts[id]||0)===0);
   const minCoverageCount=Math.min(...themeIds.map(id=>Number(nextCounts[id]||0)));
   const leastCoveredThemes=themeIds.filter(id=>Number(nextCounts[id]||0)===minCoverageCount);
-  const repairFirst=clean(nextActionDecision?.action).toUpperCase()==='CAUSAL_REPAIR';
   return Object.freeze({
     version:2,
     policySource:AUTONOMOUS_CONTENT_EXPANSION_POLICY_PATH,
@@ -1193,6 +1200,8 @@ function buildAutonomousContentExpansion({
     platformScope:Object.freeze([...(policy?.scope?.platforms||['WEB','ROBLOX','UNITY'])]),
     requestedPlatform:clean(platform).toUpperCase()||'COMMON',
     executionMode:repairFirst?'CAUSAL_REPAIR_FIRST_KEEP_EXPANSION_CONTEXT':'AUTONOMOUS_CONTENT_BUILD_UP',
+    contentExpansionDeferredUntilRuntimeRepairPass:runtimeRepairFirst,
+    themeCoverageAdvanced:!runtimeRepairFirst,
     dataCapacityBudget:capacity,
     existingCompletenessReview:Object.freeze({
       requiredEveryBuildUp:true,
@@ -1206,7 +1215,9 @@ function buildAutonomousContentExpansion({
     }),
     selectedTheme:selectedTheme.id,
     themeDepth:sameThemeDepth,
-    selectedThemeReason:String(selected.gapDomains.length)+' explicit GAP(s) and '+String(selected.applicableDomains.length)+' applicable domain(s); focus='+focus+'; previousTheme='+(previousTheme||'NONE')+'; previousEffect='+(effectClass||'NONE')+'; previousCoverage='+String(previousCounts[selectedTheme.id]||0)+'; uncoveredBefore='+String(uncoveredThemes.length)+'.',
+    selectedThemeReason:runtimeRepairFirst
+      ?'Observed runtime failure requires causal foundation repair first; selected theme is retained as context only and does not advance coverage until runtime repair passes.'
+      :String(selected.gapDomains.length)+' explicit GAP(s) and '+String(selected.applicableDomains.length)+' applicable domain(s); focus='+focus+'; previousTheme='+(previousTheme||'NONE')+'; previousEffect='+(effectClass||'NONE')+'; previousCoverage='+String(previousCounts[selectedTheme.id]||0)+'; uncoveredBefore='+String(uncoveredThemes.length)+'.',
     themeCoverageLedger:Object.freeze({
       version:1,
       counts:Object.freeze({...nextCounts}),
@@ -1220,8 +1231,10 @@ function buildAutonomousContentExpansion({
       selectionPolicy:'SUCCESSFUL_ITERATIONS_PRIORITIZE_UNCOVERED_OR_LEAST_COVERED_COHERENT_THEMES; VERIFIED_FAILURE_MAY_DEEPEN_THE_SAME_CAUSAL_THEME'
     }),
     scoredThemes:Object.freeze(scored.map(row=>Object.freeze({theme:row.theme.id,score:row.score,gapDomains:Object.freeze(row.gapDomains)}))),
-    coherentContentBundle:Object.freeze(selectedTheme.bundle),
-    bundleRule:'MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT',
+    coherentContentBundle:Object.freeze(runtimeRepairFirst?[]:selectedTheme.bundle),
+    bundleRule:runtimeRepairFirst
+      ?'OBSERVED_RUNTIME_FAILURE_CAUSAL_REPAIR_MUST_PASS_BEFORE_CONTENT_BUNDLE_EXECUTION'
+      :'MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT',
     antiCloneContract:Object.freeze({
       compareAgainstExistingContentBeforeAdding:true,
       nameColorOrStatOnlyCloneForbidden:true,
@@ -1242,15 +1255,18 @@ function buildAutonomousContentExpansion({
       ])
     }),
     derivedRuleEvolution:Object.freeze({
-      allowed:true,
-      rule:'MAY_ADD_DERIVED_GAMEPLAY_INTERACTION_RULES_WHEN_THEY_REINFORCE_APPROVED_IDENTITY_AND_DO_NOT_CONTRADICT_CANONICAL_RULES_OR_PROTECTED_VALUES',
-      examples:Object.freeze(['ENVIRONMENTAL_RULE','ENEMY_RELATIONSHIP_RULE','BOSS_PHASE_RULE','ITEM_SYNERGY_RULE','QUEST_STATE_RULE','REGION_ACCESS_RULE','MULTIPLAYER_INTERACTION_RULE']),
+      allowed:!runtimeRepairFirst,
+      rule:runtimeRepairFirst
+        ?'DEFER_DERIVED_GAMEPLAY_RULE_EVOLUTION_UNTIL_OBSERVED_RUNTIME_FAILURE_CAUSAL_REPAIR_PASSES'
+        :'MAY_ADD_DERIVED_GAMEPLAY_INTERACTION_RULES_WHEN_THEY_REINFORCE_APPROVED_IDENTITY_AND_DO_NOT_CONTRADICT_CANONICAL_RULES_OR_PROTECTED_VALUES',
+      examples:Object.freeze(runtimeRepairFirst?[]:['ENVIRONMENTAL_RULE','ENEMY_RELATIONSHIP_RULE','BOSS_PHASE_RULE','ITEM_SYNERGY_RULE','QUEST_STATE_RULE','REGION_ACCESS_RULE','MULTIPLAYER_INTERACTION_RULE']),
       protected:Object.freeze(['EXISTING_CANONICAL_RULE_SEMANTICS','AUTHORIZED_BALANCE_VALUES','ECONOMY_MEANING','SAVE_MEANING','NETWORK_AUTHORITY'])
     }),
     completionAcceptance:Object.freeze([
+      ...(runtimeRepairFirst?['RUNTIME_FAILURE_CAUSAL_REPAIR_PASS_REQUIRED_BEFORE_CONTENT_EXPANSION']:[]),
       'REAL_GAME_SOURCE_DELTA_REQUIRED','PLAYER_FACING_OR_GAMEPLAY_SYSTEM_EFFECT_REQUIRED',
-      'DISTINCT_FROM_EXISTING_CONTENT_BY_MEANING_NOT_ONLY_NAME_OR_STATS','CONNECTED_TO_EXISTING_GAME_FLOW',
-      'CONTINUITY_AND_CAUSALITY_PRESERVED','EXISTING_RELEVANT_INCREMENTAL_QA_PASSES',
+      ...(runtimeRepairFirst?[]:['DISTINCT_FROM_EXISTING_CONTENT_BY_MEANING_NOT_ONLY_NAME_OR_STATS','CONNECTED_TO_EXISTING_GAME_FLOW','CONTINUITY_AND_CAUSALITY_PRESERVED']),
+      'EXISTING_RELEVANT_INCREMENTAL_QA_PASSES',
       'DATA_CAPACITY_BUDGET_RESPECTED_WITHOUT_TERMINATING_BUILD_UP'
     ])
   });
@@ -1380,10 +1396,15 @@ export function buildGameSpecificBuildUpDirective({
   });
   const priorFocus=clean(previousDirective?.primaryFocus).toUpperCase();
   const previousEffectClass=clean(previousEffectiveness?.classification).toUpperCase();
+  const foundationRepairRequired=previousEffectClass==='REGRESSION'
+    &&runtimeEvidence?.runtimeObserved===true
+    &&runtimeEvidence?.runtimePassed!==true;
   const keepPriorFocus=Boolean(previousDirective&&priorFocus&&['NO_MEANINGFUL_EFFECT','PARTIAL_EFFECT','REGRESSION','UNKNOWN_RUNTIME_EFFECT'].includes(previousEffectClass));
-  const focus=safeDesignlessMode
-    ?requested
-    :keepPriorFocus?priorFocus:previousDirective&&!depthInfo.advanceAllowed&&priorFocus?priorFocus:nextFocus({preferred,previous:previousDirective||{}});
+  const focus=foundationRepairRequired
+    ?'STABILITY'
+    :safeDesignlessMode
+      ?requested
+      :keepPriorFocus?priorFocus:previousDirective&&!depthInfo.advanceAllowed&&priorFocus?priorFocus:nextFocus({preferred,previous:previousDirective||{}});
   const anchor=primaryDesignAnchor(design),secondary=secondaryDesignAnchor(design);
   const identity=design.identity||clean(gameName)||id;
   const firstSignature=design.signatureSystems?.[0]||{};
@@ -1695,9 +1716,11 @@ export function buildGameSpecificBuildUpDirective({
     detectedGaps:gaps,
     primaryFocus:focus,
     thisLoopPrimaryGoal:goal,
-    primaryGoalReason:safeDesignlessMode
-      ?`검증된/최소 디자인이 아직 없어 ${focus}만 기존 실제 소스에서 안전하게 개선한다. 새 게임 규칙·진행·밸런스 의미는 만들지 않으며 책임 소스 ${exactAnchorLabel}의 전후 품질 차이만 검증한다.`
-      :depthInfo.escalationMode==='VERIFIED_STATUS_WITHOUT_GAME_SOURCE_DELTA_RETRY'?`직전 루프가 verified 상태를 기록했지만 실제 게임 source tree가 바뀌지 않았다. ${focus} 목표를 완료로 계산하지 않고 "${anchor}" 책임 소스 ${exactAnchorLabel}에서 실제 플레이 가치 변화가 생기는 구현으로 다시 지시한다.`:`현재 검증 신호와 소스에서 ${focus}를 우선한다. 게임 고유 앵커는 "${anchor}", 현재 책임 소스는 ${exactAnchorLabel}이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.`,
+    primaryGoalReason:foundationRepairRequired
+      ?`실제 runtime 실패가 관찰됐다(${clean(runtimeEvidence?.failureStage)||'RUNTIME'} / ${clean(runtimeEvidence?.failureSignature)||'UNKNOWN_FAILURE'}). 콘텐츠·그래픽 확장보다 기본 플레이 foundation의 원인 시스템 복구를 먼저 완료하고 같은 실패 시나리오를 다시 검증한다. 책임 소스는 ${exactAnchorLabel}이다.`
+      :safeDesignlessMode
+        ?`검증된/최소 디자인이 아직 없어 ${focus}만 기존 실제 소스에서 안전하게 개선한다. 새 게임 규칙·진행·밸런스 의미는 만들지 않으며 책임 소스 ${exactAnchorLabel}의 전후 품질 차이만 검증한다.`
+        :depthInfo.escalationMode==='VERIFIED_STATUS_WITHOUT_GAME_SOURCE_DELTA_RETRY'?`직전 루프가 verified 상태를 기록했지만 실제 게임 source tree가 바뀌지 않았다. ${focus} 목표를 완료로 계산하지 않고 "${anchor}" 책임 소스 ${exactAnchorLabel}에서 실제 플레이 가치 변화가 생기는 구현으로 다시 지시한다.`:`현재 검증 신호와 소스에서 ${focus}를 우선한다. 게임 고유 앵커는 "${anchor}", 현재 책임 소스는 ${exactAnchorLabel}이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.`,
     gameplayImplementationDirectives:effectiveGameplay,
     progressionContentWorldDirectives:effectiveProgression,
     autonomousContentExpansion,
