@@ -1590,7 +1590,7 @@ export const INTERNAL_ASSET_STUDIO_VARIATION_AXES=Object.freeze({
 });
 
 export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
-  version:13,
+  version:15,
   scope:'ALL_INTERNAL_COMMON_LIBRARIES',
   catalogDiscovery:'assets/roblox/common-*/catalog.json',
   seedDiscovery:'artbook-submissions/seed-*/current.json',
@@ -1629,7 +1629,18 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
   hardMaximum:null,
   overSoftLimitAction:'DEDUPLICATION_REVIEW_ONLY',
   overSoftLimitBlocksUse:false,
-  perDomainIdeaBudgetPerCycle:24,
+  perDomainIdeaBudgetPerCycle:16384,
+  domainVolumeActionLimitPerDomain:2048,
+  uiSubsystemVolumeActionLimitPerSubsystem:1024,
+  maxVolumeWorklistActions:65536,
+  taskReferenceOverlayWorklistLimit:32768,
+  supplyDecisionSummaryActionLimit:8192,
+  maintenanceListLimits:Object.freeze({
+    semanticDuplicateReviewGroups:2048,
+    donorCandidates:4096,
+    deltaTokens:16384,
+    qualityActions:8192
+  }),
   preferDistinctRoleStateGenreCombination:true,
   ideaDeduplicationFields:Object.freeze(['id','assetId','atomId','role','roles','sourceIdeaId','ideaId']),
   repeatedDistinctVariationProposalForbidden:true,
@@ -1640,7 +1651,7 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
   qualityUpSelection:'WEAKEST_INTERNAL_AUDIT_AXIS_FIRST',
   focusPhases:Object.freeze(['VOLUME_UP','QUALITY_UP_1000']),
   volumeActionConsumption:'PERSISTED_PRIORITY_WORKLIST_FIRST',
-  freeSourceCandidateLimitPerAction:8,
+  freeSourceCandidateLimitPerAction:2048,
   freeSourceCatalogSufficiencyCount:12,
   styleExpressionRequiredForAllDomains:true,
   styleExpressionContractRef:'assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_STYLE_EXPRESSION_AXES',
@@ -1918,11 +1929,11 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
     .filter(([,ids])=>ids.length>1)
     .map(([key,ids])=>Object.freeze({key,assetIds:Object.freeze([...ids].sort()),count:ids.length}))
     .sort((a,b)=>b.count-a.count||a.key.localeCompare(b.key))
-    .slice(0,48);
+    .slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maintenanceListLimits.semanticDuplicateReviewGroups);
   const donorCandidates=qualityRows
     .filter(row=>rows.some(asset=>asset.id===row.id&&asset.reuseEligible))
     .sort((a,b)=>Number(b.quality)-Number(a.quality)||a.id.localeCompare(b.id))
-    .slice(0,64)
+    .slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maintenanceListLimits.donorCandidates)
     .map(row=>Object.freeze({...row}));
   const qualityRepairActions=[],repairKeys=new Set();
   for(const row of rows.filter(row=>row.reuseEligible).sort((a,b)=>b.consumerPriority-a.consumerPriority)){
@@ -1980,12 +1991,12 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
     typeRoleTokenCount:sortedTypeRoleTokens.length,
     scoredAssetCount:qualityRows.length,
     typeRoleTokens:Object.freeze(sortedTypeRoleTokens),
-    newTypeRoleTokens:Object.freeze(newTypeRoleTokens.slice(0,192)),
-    removedTypeRoleTokens:Object.freeze(removedTypeRoleTokens.slice(0,192)),
-    staleRowIds:Object.freeze(staleRowIds.slice(0,192)),
+    newTypeRoleTokens:Object.freeze(newTypeRoleTokens.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maintenanceListLimits.deltaTokens)),
+    removedTypeRoleTokens:Object.freeze(removedTypeRoleTokens.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maintenanceListLimits.deltaTokens)),
+    staleRowIds:Object.freeze(staleRowIds.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maintenanceListLimits.deltaTokens)),
     semanticDuplicateReviewGroups:Object.freeze(semanticDuplicateReviewGroups),
     qualityDonorCandidates:Object.freeze(donorCandidates),
-    nextQualityActions:Object.freeze(qualityRepairActions.slice(0,96)),
+    nextQualityActions:Object.freeze(qualityRepairActions.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maintenanceListLimits.qualityActions)),
     refreshRequired:refreshReasons.length>0,
     refreshReasons:Object.freeze(refreshReasons),
     currentLibraryAlwaysWins:true,
@@ -2262,7 +2273,7 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     const state=currentCount<band.targetMin?'EXPAND_TOWARD_RECOMMENDED_RANGE':
       currentCount<=band.targetMax?'HEALTHY_VOLUME':
       currentCount<band.softReviewAt?'BROAD_LIBRARY_KEEP_IF_DISTINCT':'SOFT_DEDUP_REVIEW_ONLY';
-    const suggestedCount=Math.min(12,Math.max(0,band.targetMin-currentCount));
+    const suggestedCount=Math.min(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.uiSubsystemVolumeActionLimitPerSubsystem,Math.max(0,band.targetMin-currentCount));
     const pool=COMMON_UI_SUBSYSTEM_IDEA_POOLS[id]||[];
     const suggestedIdeas=[],candidateKeys=new Set();
     const pushUiIdea=(ideaId,source,priority)=>{
@@ -2317,9 +2328,9 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     .map(row=>Object.freeze({subsystem:row.subsystem,currentCount:row.currentCount,targetMin:row.targetMin}));
   const volumeReady=volumeBlockingDomains.length===0&&uiBlockingSubsystems.length===0;
   const nextVolumeActionRows=volumeReady?[]:[
-    ...sortedDomains.flatMap(row=>(row.suggestedIdeas||[]).slice(0,4).map(idea=>({kind:'DOMAIN_VOLUME',domain:row.domain,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount,freeSourceCandidateIds:freeSourceIdsForDomain(row.domain).slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction)}))),
-    ...uiSubsystems.flatMap(row=>(row.suggestedIdeas||[]).slice(0,3).map(idea=>({kind:'UI_SUBSYSTEM_VOLUME',domain:'UI',subsystem:row.subsystem,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount,freeSourceCandidateIds:freeSourceIdsForDomain('UI').slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction)})))
-  ].sort((a,b)=>b.priority-a.priority||String(a.domain).localeCompare(String(b.domain))||String(a.ideaId).localeCompare(String(b.ideaId))).slice(0,96).sort((a,b)=>{
+    ...sortedDomains.flatMap(row=>(row.suggestedIdeas||[]).slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.domainVolumeActionLimitPerDomain).map(idea=>({kind:'DOMAIN_VOLUME',domain:row.domain,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount,freeSourceCandidateIds:freeSourceIdsForDomain(row.domain).slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction)}))),
+    ...uiSubsystems.flatMap(row=>(row.suggestedIdeas||[]).slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.uiSubsystemVolumeActionLimitPerSubsystem).map(idea=>({kind:'UI_SUBSYSTEM_VOLUME',domain:'UI',subsystem:row.subsystem,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount,freeSourceCandidateIds:freeSourceIdsForDomain('UI').slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction)})))
+  ].sort((a,b)=>b.priority-a.priority||String(a.domain).localeCompare(String(b.domain))||String(a.ideaId).localeCompare(String(b.ideaId))).slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maxVolumeWorklistActions).sort((a,b)=>{
     const deficitA=Math.max(0,Number(a.targetMin||0)-Number(a.currentCount||0));
     const deficitB=Math.max(0,Number(b.targetMin||0)-Number(b.currentCount||0));
     const scoreA=Number(a.priority||0)+deficitA;
@@ -2409,6 +2420,13 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     volumeActionConsumption:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.volumeActionConsumption,
     reuseResolutionOrder:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.reuseResolutionOrder,
     freeOriginalVolumePolicy:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeOriginalVolumePolicy,
+    perDomainIdeaBudgetPerCycle:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.perDomainIdeaBudgetPerCycle,
+    domainVolumeActionLimitPerDomain:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.domainVolumeActionLimitPerDomain,
+    uiSubsystemVolumeActionLimitPerSubsystem:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.uiSubsystemVolumeActionLimitPerSubsystem,
+    maxVolumeWorklistActions:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maxVolumeWorklistActions,
+    taskReferenceOverlayWorklistLimit:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.taskReferenceOverlayWorklistLimit,
+    supplyDecisionSummaryActionLimit:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.supplyDecisionSummaryActionLimit,
+    maintenanceListLimits:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maintenanceListLimits,
     eligibleFreeSourceCount:eligibleFreeSources.length,
     freeSourceCandidateLimitPerAction:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction,
     freeSourceCatalogSufficiencyCount:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCatalogSufficiencyCount,
@@ -2778,8 +2796,8 @@ export const STUDIO_ASSET_QUALITY_AXIS_APPLICABILITY=Object.freeze({
   PROP:Object.freeze(['SILHOUETTE_FORM','MODELING_STRUCTURE','MATERIAL_TEXTURE','COLOR_LIGHTING','WORLD_STYLE_COHERENCE','DETAIL_DENSITY','GAME_CAMERA_READABILITY','ORIGINALITY_IDENTITY','MOBILE_PERFORMANCE','ACTUAL_GAME_BINDING','PRODUCTION_VERIFICATION'])
 });
 export const STUDIO_ASSET_FAMILY_OUTPUTS=Object.freeze({
-  CHARACTER:Object.freeze(['WORLD_MODEL','RIG','MATERIAL_SET','MOTION_SET','PORTRAIT_OR_ICON','LOD0','LOD1','LOD2']),
-  CREATURE:Object.freeze(['WORLD_MODEL','BODY_PLAN_RIG','MATERIAL_SET','SPECIES_MOTION_SET','ICON','LOD0','LOD1','LOD2']),
+  CHARACTER:Object.freeze(['MASTER_GLB_SOURCE','WORLD_MODEL','RIG','MATERIAL_SET','MOTION_SET','PORTRAIT_OR_ICON','LOD0','LOD1','LOD2']),
+  CREATURE:Object.freeze(['MASTER_GLB_SOURCE','WORLD_MODEL','BODY_PLAN_RIG','MATERIAL_SET','SPECIES_MOTION_SET','ICON','LOD0','LOD1','LOD2']),
   BUILDING:Object.freeze(['WORLD_MODEL','MODULAR_PARTS','INTERIOR_WHEN_APPLICABLE','MATERIAL_SET','COLLISION_NAV_PROXY','LOD0','LOD1','LOD2']),
   ENVIRONMENT:Object.freeze(['TERRAIN_OR_KIT','LANDMARK','SET_DRESSING','MATERIAL_SET','PLACEMENT_RULES','LOD_OR_STREAMING_VARIANTS']),
   WEAPON:Object.freeze(['EQUIPPED_MODEL','WORLD_DROP_MODEL','INVENTORY_ICON','CRAFTING_ICON_WHEN_CRAFTABLE','MATERIAL_SET','GRIP_SOCKET_MAP','LOD0','LOD1','LOD2']),
@@ -2790,6 +2808,75 @@ export const STUDIO_ASSET_FAMILY_OUTPUTS=Object.freeze({
   UI:Object.freeze(['HUD_COMPONENT','MENU_COMPONENT','INVENTORY_COMPONENT','CHARACTER_SHEET','EQUIPMENT_COMPONENT','MINIMAP_COMPONENT','DIALOGUE_COMPONENT','AI_DIALOGUE_HELPER','NPC_INTERACTION_COMPONENT','QUEST_COMPONENT','PARTY_COMPONENT','CRAFTING_COMPONENT','SHOP_COMPONENT','NOTIFICATION_COMPONENT','STATUS_EFFECT_COMPONENT','HOTBAR_COMPONENT','INTERACTION_PROMPT','ICON_SET','STATE_VARIANTS','TOUCH_FEEDBACK']),
   MOTION:Object.freeze(['SOURCE_MOTION','PLATFORM_RETARGET','CONTACT_MAP','BLEND_VARIANTS','MOTION_LOD']),
   PROP:Object.freeze(['WORLD_MODEL','INTERACTION_VARIANT','INVENTORY_ICON_WHEN_ITEM','CRAFTING_ICON_WHEN_CRAFTABLE','DROP_MODEL_WHEN_COLLECTIBLE','COLLISION_PROXY','LOD0','LOD1','LOD2'])
+});
+
+export const STUDIO_3D_ACTOR_ROLE_FAMILIES=Object.freeze({
+  CHARACTER:Object.freeze([
+    'PLAYER','GENERAL_NPC','VILLAGER','COMPANION','ALLY','FRIENDLY_CHARACTER','STORY_CHARACTER','CIVILIAN',
+    'MERCHANT','VENDOR','SERVICE_NPC','QUEST_GIVER','GUARD','WORKER','ARTISAN','FARMER','HEALER','TRAINER',
+    'RIVAL','HOSTILE_HUMANOID','NAMED_ELITE','HUMANOID_BOSS'
+  ]),
+  CREATURE:Object.freeze(['ENEMY','ELITE','MINI_BOSS','CREATURE','PET','MOUNT','SUMMON','BOSS','RAID_BOSS'])
+});
+export const STUDIO_3D_ACTOR_ROLES=Object.freeze([
+  ...STUDIO_3D_ACTOR_ROLE_FAMILIES.CHARACTER,
+  ...STUDIO_3D_ACTOR_ROLE_FAMILIES.CREATURE
+]);
+
+export const CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT=Object.freeze({
+  version:1,
+  status:'ACTIVE_EXECUTABLE_CONTRACT',
+  format:'GLB_2_0',
+  appliesToFamilies:Object.freeze(['CHARACTER','CREATURE']),
+  appliesToRoles:STUDIO_3D_ACTOR_ROLES,
+  roleFamilies:STUDIO_3D_ACTOR_ROLE_FAMILIES,
+  purpose:'ONE_AUTHORED_SKINNED_3D_MASTER_SOURCE_FOR_PLAYERS_NPCS_COMPANIONS_ALLIES_SERVICE_NPCS_PETS_MOUNTS_SUMMONS_ENEMIES_ELITES_CREATURES_AND_BOSSES_BEFORE_ROBLOX_UNITY_WEB_PLATFORM_BINDING',
+  requiredBeforePlatformNativeVariant:true,
+  roleSpecificAppearanceAndMotionVariantsAllowed:true,
+  sameRoleColorOnlyCloneDoesNotCountAsDistinctActor:true,
+  npcRoleDifferentiationRequired:true,
+  npcRoleDifferentiationAxes:Object.freeze(['SILHOUETTE','BODY_PROPORTION','OUTFIT_EQUIPMENT','STANCE_GAIT','IDLE_INTERACTION_MOTION','FACE_GESTURE','WEAR_HISTORY']),
+  minimumDistinctNpcRoleAxes:3,
+  humanoidBossMayUseCharacterFamilyWithBossRole:true,
+  requiredContents:Object.freeze(['MESH','NORMALS','UV0','MATERIALS','SKELETON','SKIN_WEIGHTS','JOINT_WEIGHTS','ANIMATION']),
+  roleMotionContractRef:'assets/vibe-character-identity-director.js#VIBE_NPC_ROLE_MOTION_REQUIREMENTS',
+  structuralChecks:Object.freeze({
+    glbVersion2:true,
+    meshRequired:true,
+    normalsRequired:true,
+    uv0Required:true,
+    materialRequired:true,
+    skinAndSkeletonRequired:true,
+    jointWeightsRequired:true,
+    animationRequired:true,
+    jointAnimationChannelRequired:true,
+    accessorBufferRangeRequired:true,
+    nonzeroJointWeightDataRequired:true,
+    everyActorMeshMustBindSkinOrJoint:true,
+    animationSamplerAccessorShapeRequired:true
+  }),
+  actorPackageRequirements:Object.freeze({
+    attachmentSocketBasisRequired:true,
+    attachmentSocketBasis:Object.freeze(['HAND','BACK','HIP','SHIELD','TOOL']),
+    lodAuthoringReadyRequired:true,
+    mobilePlatformLodRequired:true,
+    roleStateMotionBindingRequired:true,
+    masterStaticQaIsNotPlatformRuntimeQa:true,
+    masterGlbCannotBePromotedAsPlatformNativeArtifact:true,
+    exactMasterToNativeHashLineageRequired:true,
+    productionVerifiedRequiresPlatformNativeRuntime:true
+  }),
+  platformUse:Object.freeze({
+    ROBLOX:'IMPORT_OR_REAUTHOR_FROM_MASTER_GLB_THEN_BIND_MESHPART_BONES_ANIMATOR',
+    UNITY:'IMPORT_OR_REAUTHOR_FROM_MASTER_GLB_THEN_BIND_SKINNED_MESH_RENDERER_ANIMATOR_MATERIAL',
+    WEB:'LOAD_MASTER_GLB_OR_DERIVED_GLTF_WITH_WEB_RUNTIME_BINDING'
+  }),
+  directCrossPlatformFinalBinaryReuseForbidden:true,
+  platformNativeBindingAndRuntimeVerificationRequired:true,
+  primitivePartAssemblyPrototypeOnly:true,
+  primitiveOrColorOnlyMayNotClaimFinal3dActor:true,
+  previewImageSemanticAtomOrMarkerMayNotSubstituteForGlb:true,
+  gameplayBalanceSaveProgressionEconomyNetworkAuthorityImmutable:true
 });
 
 export const CREATURE_BODY_PLANS=Object.freeze([
@@ -2923,6 +3010,9 @@ export function createSurvivalWildlifeAssetProfile({species='BEAR',platform='ROB
       lodRequired:true,
       groundContactShadowRequired:true
     }),
+    masterGlbRequired:true,
+    masterAssetFormat:'GLB_2_0',
+    masterGlbContractVersion:CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.version,
     productionVerified:false,
     runtimeVerificationRequired:true,
     exactThirdPartyAssetCopy:false
@@ -4545,7 +4635,8 @@ export function createCreatureSpeciesBlueprint({
       signatureSkill:text(signatureSkill),audioIdentity:text(audioIdentity),hitDeathIdentity:text(hitDeathIdentity)
     }),
     platform:upper(platform),complete:missing.length===0,missing:Object.freeze(missing),
-    colorOnlySpeciesVariantAllowed:false,gameplayStatsAuthority:false
+    masterGlbRequired:true,masterAssetFormat:'GLB_2_0',masterGlbContractVersion:CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.version,
+    primitiveFallbackPrototypeOnly:true,colorOnlySpeciesVariantAllowed:false,gameplayStatsAuthority:false
   });
 }
 
@@ -4580,13 +4671,22 @@ export function createStudioTestbedPlan({assetIds=[],platform='UNITY',mobile=tru
 export function evaluateCompanyAssetPromotion({asset={},consumer={},runtimeEvidence={}}={}){
   const id=text(asset?.id),family=upper(asset?.family||asset?.category),platform=upper(runtimeEvidence?.platform||consumer?.platform||asset?.platformVariant||asset?.platform);
   const license=text(asset?.license);
-  const sourceHash=text(asset?.sourceHash||asset?.sourceSha256||asset?.contentHash||asset?.sha256);
-  const artifactHash=text(asset?.artifactHash||asset?.derivedSha256||asset?.contentHash||asset?.sha256);
-  const artifactPath=text(asset?.path||runtimeEvidence?.artifactPath);
+  const masterGlbRequired=['CHARACTER','CREATURE'].includes(family);
+  const sourceHash=text(asset?.editableSourceHash||asset?.sourceHash||asset?.sourceSha256||asset?.masterGlbSourceHash||(!masterGlbRequired?(asset?.contentHash||asset?.sha256):''));
+  const artifactHash=text(asset?.nativeArtifactHash||asset?.artifactHash||asset?.derivedSha256||(!masterGlbRequired?(asset?.contentHash||asset?.sha256):''));
+  const artifactPath=text(runtimeEvidence?.artifactPath||asset?.path);
+  const masterGlb=text(asset?.masterGlb||asset?.meshArtifact||asset?.masterSourcePath);
+  const masterGlbHash=text(asset?.masterGlbHash||asset?.masterSourceHash||asset?.masterGlbSha256);
+  const declaredDerivedFromMasterGlbHash=text(asset?.derivedFromMasterGlbHash);
+  const masterGlbStaticQaPass=asset?.masterGlbStaticQaPass===true;
+  const masterGlbQaAuthority=text(asset?.masterGlbQaAuthority);
   const consumerGameId=text(consumer?.gameId||runtimeEvidence?.gameId);
   const runtimeAssetId=text(runtimeEvidence?.assetId);
-  const runtimeSourceHash=text(runtimeEvidence?.sourceHash);
-  const runtimeArtifactHash=text(runtimeEvidence?.artifactHash);
+  const runtimeSourceHash=text(runtimeEvidence?.editableSourceHash||runtimeEvidence?.sourceHash);
+  const runtimeMasterGlbHash=text(runtimeEvidence?.masterGlbHash);
+  const runtimeDerivedFromMasterGlbHash=text(runtimeEvidence?.derivedFromMasterGlbHash);
+  const runtimeArtifactHash=text(runtimeEvidence?.nativeArtifactHash||runtimeEvidence?.artifactHash);
+  const promotedArtifactHash=artifactHash||runtimeArtifactHash;
   const blockers=[];
   if(!id)blockers.push('ASSET_ID_REQUIRED');
   if(!STUDIO_ASSET_FAMILIES.includes(family))blockers.push('SUPPORTED_ASSET_FAMILY_REQUIRED');
@@ -4594,6 +4694,22 @@ export function evaluateCompanyAssetPromotion({asset={},consumer={},runtimeEvide
   if(!license||/^unknown$/i.test(license)||/(?:CC-BY-NC|NONCOMMERCIAL|NO-COMMERCIAL|NC\b)/i.test(license))blockers.push('COMMERCIAL_MODIFIABLE_LICENSE_REQUIRED');
   if(!sourceHash)blockers.push('SOURCE_HASH_REQUIRED');
   if(!artifactPath)blockers.push('NATIVE_ARTIFACT_OR_SOURCE_PATH_REQUIRED');
+  if(masterGlbRequired){
+    if(!/\.glb$/i.test(masterGlb))blockers.push('CROSS_PLATFORM_MASTER_GLB_REQUIRED');
+    if(!masterGlbHash)blockers.push('CROSS_PLATFORM_MASTER_GLB_HASH_REQUIRED');
+    if(!masterGlbStaticQaPass)blockers.push('CROSS_PLATFORM_MASTER_GLB_STATIC_QA_REQUIRED');
+    if(masterGlbQaAuthority!=='tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb')blockers.push('CROSS_PLATFORM_MASTER_GLB_QA_AUTHORITY_REQUIRED');
+    if(!artifactHash)blockers.push('PLATFORM_NATIVE_ARTIFACT_HASH_REQUIRED');
+    if(artifactPath&&masterGlb&&artifactPath===masterGlb)blockers.push('PLATFORM_NATIVE_DERIVATIVE_REQUIRED');
+    if(!declaredDerivedFromMasterGlbHash)blockers.push('PLATFORM_NATIVE_DERIVATION_HASH_REQUIRED');
+    else if(masterGlbHash&&declaredDerivedFromMasterGlbHash!==masterGlbHash)blockers.push('PLATFORM_NATIVE_DERIVATION_HASH_MISMATCH');
+    if(!runtimeSourceHash)blockers.push('RUNTIME_EDITABLE_SOURCE_HASH_REQUIRED');
+    if(!runtimeMasterGlbHash)blockers.push('RUNTIME_MASTER_GLB_HASH_REQUIRED');
+    else if(masterGlbHash&&runtimeMasterGlbHash!==masterGlbHash)blockers.push('RUNTIME_MASTER_GLB_HASH_MISMATCH');
+    if(!runtimeDerivedFromMasterGlbHash)blockers.push('RUNTIME_MASTER_GLB_LINEAGE_REQUIRED');
+    else if(masterGlbHash&&runtimeDerivedFromMasterGlbHash!==masterGlbHash)blockers.push('RUNTIME_MASTER_GLB_LINEAGE_MISMATCH');
+    if(!runtimeArtifactHash)blockers.push('RUNTIME_NATIVE_ARTIFACT_HASH_REQUIRED');
+  }
   if(!consumerGameId)blockers.push('RUNTIME_CONSUMER_GAME_REQUIRED');
   if(runtimeEvidence?.nativeBindingPass!==true)blockers.push('NATIVE_BINDING_PASS_REQUIRED');
   if(runtimeEvidence?.visualRuntimePass!==true)blockers.push('VISUAL_RUNTIME_PASS_REQUIRED');
@@ -4607,18 +4723,23 @@ export function evaluateCompanyAssetPromotion({asset={},consumer={},runtimeEvide
   if(runtimeArtifactHash&&artifactHash&&runtimeArtifactHash!==artifactHash)blockers.push('RUNTIME_ARTIFACT_HASH_MISMATCH');
   const eligible=blockers.length===0;
   return Object.freeze({
-    version:1,eligible,blockers:Object.freeze(blockers),assetId:id||null,family:family||null,platform:platform||null,consumerGameId:consumerGameId||null,
+    version:2,eligible,blockers:Object.freeze(blockers),assetId:id||null,family:family||null,platform:platform||null,consumerGameId:consumerGameId||null,
     promotion:eligible?Object.freeze({
       id,family,category:family,platform,status:'VERIFIED_COMPANY_ASSET',path:artifactPath,license,
-      sourceHash,artifactHash:artifactHash||null,productionVerified:true,verifiedCompanyReusable:true,runtimeVerificationState:'VERIFIED_NATIVE_RUNTIME',
+      sourceHash,editableSourceHash:sourceHash,artifactHash:promotedArtifactHash||null,nativeArtifactHash:promotedArtifactHash||null,
+      ...(masterGlbRequired?{masterGlb,masterGlbHash,derivedFromMasterGlbHash:declaredDerivedFromMasterGlbHash,masterGlbStaticQaPass:true,masterGlbQaAuthority,masterGlbContractVersion:CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.version}:{}),
+      productionVerified:true,verifiedCompanyReusable:true,runtimeVerificationState:'VERIFIED_NATIVE_RUNTIME',
       artReviewState:'RUNTIME_VERIFIED',consumerGameIds:Object.freeze([consumerGameId]),
       promotionEvidence:Object.freeze({
         assetId:id,nativeBindingPass:true,visualRuntimePass:true,mobilePerformancePass:true,regressionPass:true,licenseProvenancePass:true,
-        sourceHash,artifactHash:artifactHash||null,runtimeEvidenceId:text(runtimeEvidence?.id||runtimeEvidence?.runId)||null
+        sourceHash,editableSourceHash:sourceHash,masterGlbHash:masterGlbHash||null,derivedFromMasterGlbHash:masterGlbRequired?declaredDerivedFromMasterGlbHash:null,
+        masterGlbQaAuthority:masterGlbRequired?masterGlbQaAuthority:null,
+        artifactHash:promotedArtifactHash||null,nativeArtifactHash:promotedArtifactHash||null,runtimeEvidenceId:text(runtimeEvidence?.id||runtimeEvidence?.runId)||null
       })
     }):null,
     preparedArtifactMayNotSelfPromote:true,
     runtimeConsumerRequired:true,
+    exactEditableMasterNativeRuntimeLineageRequired:masterGlbRequired,
     gameplayAuthority:false
   });
 }
@@ -4656,8 +4777,15 @@ export function promoteVerifiedCompanyAssetsFromRuntimeEvidence({registry={},con
       platform:upper(runtimeEvidence?.platform||consumer?.platform),
       path:text(descriptor?.path),
       license:text(descriptor?.license),
-      sourceHash:text(descriptor?.sourceHash),
-      artifactHash:text(descriptor?.artifactHash),
+      sourceHash:text(descriptor?.editableSourceHash||descriptor?.sourceHash),
+      editableSourceHash:text(descriptor?.editableSourceHash||descriptor?.sourceHash),
+      artifactHash:text(descriptor?.nativeArtifactHash||descriptor?.artifactHash),
+      nativeArtifactHash:text(descriptor?.nativeArtifactHash||descriptor?.artifactHash),
+      masterGlb:text(descriptor?.masterGlb),
+      masterGlbHash:text(descriptor?.masterGlbHash),
+      derivedFromMasterGlbHash:text(descriptor?.derivedFromMasterGlbHash),
+      masterGlbStaticQaPass:descriptor?.masterGlbStaticQaPass===true,
+      masterGlbQaAuthority:text(descriptor?.masterGlbQaAuthority),
       status:'PREPARED_DECLARED_GENERATED_ASSET',
       productionVerified:false,
       verifiedCompanyReusable:false,
@@ -5389,6 +5517,7 @@ export function createStudioAssetUniversePlan({
     coverage,
     heatmap:gapFill.heatmap,
     gapFill,
+    crossPlatform3dMasterGlb:CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT,
     creatureUniverse:Object.freeze({
       bodyPlanCount:CREATURE_BODY_PLANS.length,
       speciesCount:CREATURE_SPECIES.length,

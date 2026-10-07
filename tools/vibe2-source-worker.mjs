@@ -23,6 +23,7 @@ import {bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} fro
 import {createRobloxWalkTeachingRecipe,createStudioMotionActionProfile} from '../assets/vibe-motion-director.js';
 import {createAssetProductionTeachingRecipe} from '../assets/vibe-studio-asset-universe.js';
 import {detectRobloxStudioAssetSystems,robloxStudioAssetFamilyBoundInText,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from './company-development-roblox-bootstrap.mjs';
+import {evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType} from './vibe2-asset-production-plan.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -375,17 +376,21 @@ export function persistedGeneratedAssetBindings(order={}){
     ||dcc?.candidateUsable!==true||dcc?.persistedForCandidate!==true
     ||!recipes.length)return Object.freeze([]);
   const bindings=recipes.map((row,index)=>{
-    const assetPath=posix(row?.nativeArtifact);
-    const artifactHash=clean(row?.artifactHash);
+    const masterGlbRequired=row?.masterGlbRequired===true||['CHARACTER','CREATURE'].includes(clean(row?.family).toUpperCase());
+    const masterGlb=posix(row?.masterGlb||(masterGlbRequired?row?.nativeArtifact:''));
+    const masterGlbHash=clean(row?.masterGlbHash||row?.masterGlbInspection?.sourceHash);
+    const derivedFromMasterGlbHash=clean(row?.derivedFromMasterGlbHash);
+    const assetPath=masterGlbRequired?posix(row?.platformNativeArtifact):posix(row?.nativeArtifact);
+    const artifactHash=masterGlbRequired?clean(row?.platformNativeArtifactHash):clean(row?.artifactHash);
     if(!assetPath||!artifactHash||row?.persistedForCandidate!==true)return null;
+    if(masterGlbRequired&&(!masterGlbHash||derivedFromMasterGlbHash!==masterGlbHash))return null;
     return Object.freeze({
-      index:index+1,
-      path:assetPath,
-      artifactHash,
-      assetId:clean(row?.assetId||row?.id)||null,
-      family:clean(row?.family).toUpperCase()||null,
-      sourceHash:clean(row?.sourceHash)||null,
-      license:clean(row?.license)||null
+      index:index+1,path:assetPath,artifactHash,nativeArtifactHash:artifactHash,
+      assetId:clean(row?.assetId||row?.id)||null,family:clean(row?.family).toUpperCase()||null,
+      sourceHash:clean(row?.sourceHash)||null,editableSourceHash:clean(row?.editableSourceHash||row?.sourceHash)||null,
+      license:clean(row?.license)||null,masterGlbRequired,masterGlb:masterGlb||null,masterGlbHash:masterGlbHash||null,
+      derivedFromMasterGlbHash:derivedFromMasterGlbHash||null,masterGlbStaticQaPass:row?.masterGlbStaticQaPass===true,
+      masterGlbQaAuthority:clean(row?.masterGlbQaAuthority)||null
     });
   }).filter(Boolean);
   return bindings.length===recipes.length?Object.freeze(bindings):Object.freeze([]);
@@ -489,15 +494,44 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
         }
         const preview=recipe?.preview?dccRepoPath(recipe.preview):null;
         if(preview){const file=path.resolve(cwd,preview);if(!fs.existsSync(file)||!fs.statSync(file).isFile()||fs.statSync(file).size<=0)throw new Error('NATIVE_DCC_PREVIEW_MISSING:'+preview);}
-        const nativeArtifact=generated.find(row=>/\.(?:glb|gltf|fbx|blend)$/i.test(row.path))||generated[0];
+        const declaredMasterGlb=recipe?.masterGlbOutput?dccRepoPath(recipe.masterGlbOutput):null;
+        const nativeArtifact=(declaredMasterGlb?generated.find(row=>row.path===declaredMasterGlb):null)
+          ||generated.find(row=>/\.glb$/i.test(row.path))
+          ||generated.find(row=>/\.(?:gltf|fbx|blend)$/i.test(row.path))
+          ||generated[0];
+        const family=clean(recipe?.family).toUpperCase()||null;
+        const masterGlbRequired=recipe?.masterGlbRequired===true||['CHARACTER','CREATURE'].includes(family);
+        let masterGlbQa=null;
+        if(masterGlbRequired){
+          if(!/\.glb$/i.test(nativeArtifact.path))throw new Error('CROSS_PLATFORM_MASTER_GLB_REQUIRED:'+clean(recipe?.id));
+          masterGlbQa=evaluateCrossPlatform3dMasterGlb({repoRoot:cwd,source:{path:nativeArtifact.path},family});
+          if(masterGlbQa.pass!==true)throw new Error('CROSS_PLATFORM_MASTER_GLB_QA_FAILED:'+clean(recipe?.id)+':'+(masterGlbQa.blockers||[]).join(','));
+        }
         const priorNative=preOutput.get(nativeArtifact.path);
         const reproducesExistingNativeArtifact=Boolean(priorNative&&priorNative.sha256===nativeArtifact.sha256);
+        const editableSourceHash=sha256File(scriptAbs);
+        const masterGlb=masterGlbRequired?nativeArtifact.path:null;
+        const masterGlbHash=masterGlbRequired?clean(masterGlbQa?.sourceHash):null;
         recipeSucceeded=true;
         results.push(Object.freeze({
-          id:clean(recipe?.id)||path.basename(script,'.py'),assetId:clean(recipe?.assetId)||null,family:clean(recipe?.family).toUpperCase()||null,license:clean(recipe?.license)||null,executor:'BLENDER_PYTHON',script,editableSource:dccRepoPath(recipe?.editableSource||script),
+          id:clean(recipe?.id)||path.basename(script,'.py'),assetId:clean(recipe?.assetId)||null,family,license:clean(recipe?.license)||null,executor:'BLENDER_PYTHON',script,editableSource:dccRepoPath(recipe?.editableSource||script),
           types:Object.freeze([...(Array.isArray(recipe?.types)?recipe.types:[])]),targetPlatforms:Object.freeze([...(Array.isArray(recipe?.targetPlatforms)?recipe.targetPlatforms:[])]),
-          outputs:Object.freeze(generated),evidenceJson,preview,nativeArtifact:nativeArtifact.path,artifactHash:nativeArtifact.sha256,sourceHash:sha256File(scriptAbs),
+          outputs:Object.freeze(generated),evidenceJson,preview,nativeArtifact:nativeArtifact.path,artifactHash:nativeArtifact.sha256,sourceHash:editableSourceHash,editableSourceHash,
           evidenceState:evidence?.runtimeVerificationState||null,productionVerified:evidence?.productionVerified===true,
+          masterGlbRequired,masterGlb,masterGlbHash,derivedFromMasterGlbHash:null,platformNativeDerivativeRequired:masterGlbRequired,masterGlbStaticQaPass:masterGlbRequired?masterGlbQa?.pass===true:null,
+          masterGlbQaAuthority:masterGlbRequired?'tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb':null,
+          masterGlbContractVersion:masterGlbRequired?1:null,
+          masterGlbInspection:masterGlbRequired?Object.freeze({
+            status:masterGlbQa?.status||null,
+            meshCount:Number(masterGlbQa?.inspection?.inventory?.meshCount||0),
+            materialCount:Number(masterGlbQa?.inspection?.inventory?.materials?.length||0),
+            skinCount:Number(masterGlbQa?.inspection?.inventory?.skins?.length||0),
+            meshSkinBindingCount:Number(masterGlbQa?.inspection?.inventory?.meshSkinBindingCount||0),
+            animationCount:Number(masterGlbQa?.inspection?.inventory?.animations?.length||0),
+            jointAnimationChannelCount:Number(masterGlbQa?.inspection?.inventory?.jointAnimationChannelCount||0),
+            animatedJointCount:Number(masterGlbQa?.inspection?.inventory?.animatedJointCount||0),
+            sourceHash:masterGlbQa?.sourceHash||null
+          }):null,
           reproducesExistingNativeArtifact,persistedForCandidate:persist,candidateUsable:persist||reproducesExistingNativeArtifact,
           stdoutTail:String(stdout||'').slice(-2000),runtimeVerified:false,companyPromotionEligible:false
         }));
@@ -556,6 +590,7 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
           /(?:getContext\s*\(\s*["']2d["']|CanvasRenderingContext2D|fillRect\s*\(|drawImage\s*\(|\barc\s*\()/i,
           /(?:@keyframes|animation\s*:|transform\s*:|filter\s*:|box-shadow\s*:|background\s*:)/i,
           /(?:requestAnimationFrame\s*\(|Path2D\s*\(|OffscreenCanvas\b|ImageData\b)/i,
+          /(?:GLTFLoader|AnimationMixer|clipAction\s*\(|\.glb\b|\.gltf\b)/i,
           /(?:AudioContext|webkitAudioContext|createOscillator\s*\(|createGain\s*\(|OscillatorNode|GainNode)/i
         ].filter(re=>re.test(text)).length
         :0;
@@ -569,9 +604,16 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
     return types.length?types:requiredDccTypes;
   }));
   const dccTypeCoveragePass=!dccRequired||requiredDccTypes.every(type=>dccCoveredTypes.includes(clean(type).toLowerCase()));
+  const masterGlbRequiredTypes=requiredDccTypes.filter(isCrossPlatform3dActorType);
+  const masterGlbRequired=masterGlbRequiredTypes.length>0;
+  const masterGlbEvidencePass=!masterGlbRequired||(dccEvidence?.recipes||[]).filter(row=>{
+    const types=Array.isArray(row?.types)?row.types.map(value=>clean(value).toLowerCase()):[];
+    return row?.masterGlbRequired===true||['CHARACTER','CREATURE'].includes(clean(row?.family).toUpperCase())||types.some(type=>masterGlbRequiredTypes.includes(type));
+  }).every(row=>row?.masterGlbStaticQaPass===true&&/\.glb$/i.test(posix(row?.nativeArtifact)));
   const dccAuthored=Boolean(
     !dccRequired||(
       dccTypeCoveragePass
+      &&masterGlbEvidencePass
       &&dccEvidence?.executed===true
       &&dccEvidence?.allRecipesPassed===true
       &&dccEvidence?.candidateUsable===true
@@ -582,14 +624,32 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
       &&clean(dccEvidence?.preview)
     )
   );
-  const generatedNativeArtifacts=unique((dccEvidence?.recipes||[]).map(row=>posix(row?.nativeArtifact)).filter(Boolean));
+  const generatedNativeArtifacts=unique((dccEvidence?.recipes||[]).map(row=>{
+    const masterRequired=row?.masterGlbRequired===true||['CHARACTER','CREATURE'].includes(clean(row?.family).toUpperCase());
+    const webUsesMaster=target==='web'&&masterRequired;
+    return webUsesMaster?posix(row?.masterGlb||row?.nativeArtifact):masterRequired?posix(row?.platformNativeArtifact):posix(row?.nativeArtifact);
+  }).filter(Boolean));
   const generatedAssetIdentityBindings=(dccEvidence?.recipes||[]).filter(row=>{
-    const assetPath=posix(row?.nativeArtifact);
-    const artifactHash=clean(row?.artifactHash);
-    return assetPath&&artifactHash&&text.includes(assetPath)&&text.includes(artifactHash);
-  }).map(row=>Object.freeze({path:posix(row.nativeArtifact),artifactHash:clean(row.artifactHash)}));
+    const masterRequired=row?.masterGlbRequired===true||['CHARACTER','CREATURE'].includes(clean(row?.family).toUpperCase());
+    const webUsesMaster=target==='web'&&masterRequired;
+    const assetPath=webUsesMaster?posix(row?.masterGlb||row?.nativeArtifact):masterRequired?posix(row?.platformNativeArtifact):posix(row?.nativeArtifact);
+    const artifactHash=webUsesMaster?clean(row?.masterGlbHash||row?.artifactHash):masterRequired?clean(row?.platformNativeArtifactHash):clean(row?.artifactHash);
+    const lineageReady=!masterRequired
+      ||webUsesMaster&&row?.masterGlbStaticQaPass===true&&Boolean(clean(row?.masterGlbHash||row?.artifactHash))
+      ||clean(row?.masterGlbHash)&&clean(row?.derivedFromMasterGlbHash)===clean(row?.masterGlbHash);
+    return lineageReady&&assetPath&&artifactHash&&text.includes(assetPath)&&text.includes(artifactHash);
+  }).map(row=>{
+    const masterRequired=row?.masterGlbRequired===true||['CHARACTER','CREATURE'].includes(clean(row?.family).toUpperCase());
+    const webUsesMaster=target==='web'&&masterRequired;
+    return Object.freeze({
+      path:webUsesMaster?posix(row.masterGlb||row.nativeArtifact):masterRequired?posix(row.platformNativeArtifact):posix(row.nativeArtifact),
+      artifactHash:webUsesMaster?clean(row.masterGlbHash||row.artifactHash):masterRequired?clean(row.platformNativeArtifactHash):clean(row.artifactHash),
+      runtimeSource:webUsesMaster?'MASTER_GLB':'PLATFORM_NATIVE_DERIVATIVE'
+    });
+  });
   const boundGeneratedArtifacts=generatedAssetIdentityBindings.map(row=>row.path);
-  const generatedAssetBindingRequired=dccRequired&&dccAuthored&&['roblox','unity'].includes(target);
+  const webMasterGlbRuntimeBindingRequired=dccRequired&&dccAuthored&&target==='web'&&masterGlbRequired;
+  const generatedAssetBindingRequired=dccRequired&&dccAuthored&&(['roblox','unity'].includes(target)||webMasterGlbRuntimeBindingRequired);
   const generatedAssetBindingApplied=!generatedAssetBindingRequired||(
     nativeTextAuthored
     &&generatedAssetIdentityBindings.length===generatedNativeArtifacts.length
@@ -608,6 +668,10 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
     requiredDccTypes:Object.freeze([...requiredDccTypes]),
     dccCoveredTypes:Object.freeze([...dccCoveredTypes]),
     dccTypeCoveragePass,
+    masterGlbRequired,
+    masterGlbRequiredTypes:Object.freeze([...masterGlbRequiredTypes]),
+    masterGlbEvidencePass,
+    masterGlbFormat:masterGlbRequired?'GLB_2_0':null,
     requiredNativeTextTypes:Object.freeze([...(contract?.nativeText?.requiredTypes||[])]),
     dccExecutionEvidencePresent:Boolean(dccEvidence),
     dccExecutionEvidence:dccEvidence?Object.freeze({...dccEvidence}):null,
@@ -616,6 +680,7 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
     boundGeneratedArtifacts:Object.freeze(boundGeneratedArtifacts),
     generatedAssetBindingRequired,
     generatedAssetBindingApplied,
+    webMasterGlbRuntimeBindingRequired,
     platformNativeReauthoringRequired:contract?.platformReauthoringRequired!==false,
     webArtifactCopyIntoRobloxOrUnityForbidden:contract?.webAssetDirectReuseIntoRobloxOrUnityForbidden!==false,
     nativeSourceMayNotMaskDccRequirement:contract?.dcc?.nativeSourceMayNotMaskDccRequirement!==false,
@@ -649,9 +714,13 @@ export function collectNativeAssetRuntimePromotionCandidates({order={},candidate
       const id=clean(asset?.id);
       const family=clean(asset?.family||decision?.qualityDNA?.profile||decision?.type).toUpperCase();
       const license=clean(asset?.license);
-      const sourceHash=clean(asset?.sourceHash||asset?.sourceSha256||asset?.contentHash||asset?.sha256);
-      const artifactHash=clean(asset?.artifactHash||asset?.derivedSha256||asset?.contentHash||asset?.sha256);
+      const actorLineageRequired=['CHARACTER','CREATURE'].includes(family);
+      const sourceHash=clean(asset?.editableSourceHash||asset?.sourceHash||asset?.sourceSha256||asset?.masterGlbSourceHash||(!actorLineageRequired?(asset?.contentHash||asset?.sha256):''));
+      const artifactHash=clean(asset?.nativeArtifactHash||asset?.artifactHash||asset?.derivedSha256||(!actorLineageRequired?(asset?.contentHash||asset?.sha256):''));
       const assetPath=posix(asset?.path);
+      const masterGlb=posix(asset?.masterGlb||asset?.meshArtifact||asset?.masterSourcePath);
+      const masterGlbHash=clean(asset?.masterGlbHash||asset?.masterGlbSha256||asset?.masterSourceHash);
+      const derivedFromMasterGlbHash=clean(asset?.derivedFromMasterGlbHash);
       const robloxAssetId=clean(asset?.robloxAssetId);
       if(!id||asset?.productionVerified===true||asset?.verifiedCompanyReusable===true||!license||!sourceHash)continue;
       const evidence=[];
@@ -660,7 +729,9 @@ export function collectNativeAssetRuntimePromotionCandidates({order={},candidate
       if(changedText.includes('"'+id+'"')||changedText.includes("'"+id+"'"))evidence.push('ASSET_ID');
       if(!evidence.length)continue;
       rows.set(id,Object.freeze({
-        assetId:id,family:family||null,license,path:assetPath||null,robloxAssetId:robloxAssetId||null,sourceHash,artifactHash:artifactHash||null,
+        assetId:id,family:family||null,license,path:assetPath||null,robloxAssetId:robloxAssetId||null,sourceHash,editableSourceHash:sourceHash,artifactHash:artifactHash||null,
+        masterGlb:masterGlb||null,masterGlbHash:masterGlbHash||null,derivedFromMasterGlbHash:derivedFromMasterGlbHash||null,masterGlbStaticQaPass:asset?.masterGlbStaticQaPass===true,
+        masterGlbQaAuthority:clean(asset?.masterGlbQaAuthority)||null,
         bindingEvidence:Object.freeze(evidence),candidateSourceBindingVerified:true,runtimeVerificationRequired:true,promotionState:'PENDING_EXACT_NATIVE_RUNTIME'
       }));
     }
@@ -673,10 +744,19 @@ export function collectNativeAssetRuntimePromotionCandidates({order={},candidate
     const artifactHash=clean(recipe?.artifactHash);
     const family=clean(recipe?.family).toUpperCase();
     const license=clean(recipe?.license);
-    if(!id||!assetPath||!sourceHash||!artifactHash||!family||!license||!changedText.includes(assetPath)||!changedText.includes(artifactHash))continue;
+    const masterGlbRequired=recipe?.masterGlbRequired===true||['CHARACTER','CREATURE'].includes(family);
+    const masterGlb=posix(recipe?.masterGlb||(masterGlbRequired?recipe?.nativeArtifact:''));
+    const masterGlbHash=clean(recipe?.masterGlbHash||recipe?.masterGlbInspection?.sourceHash);
+    const derivedFromMasterGlbHash=clean(recipe?.derivedFromMasterGlbHash);
+    const platformNativeArtifact=posix(recipe?.platformNativeArtifact),platformNativeArtifactHash=clean(recipe?.platformNativeArtifactHash);
+    if(masterGlbRequired&&(!platformNativeArtifact||!platformNativeArtifactHash||!masterGlbHash||derivedFromMasterGlbHash!==masterGlbHash))continue;
+    const promotionPath=masterGlbRequired?platformNativeArtifact:assetPath,promotionHash=masterGlbRequired?platformNativeArtifactHash:artifactHash;
+    if(!id||!promotionPath||!sourceHash||!promotionHash||!family||!license||!changedText.includes(promotionPath)||!changedText.includes(promotionHash))continue;
     rows.set(id,Object.freeze({
-      assetId:id,family,license,path:assetPath,robloxAssetId:null,sourceHash,artifactHash,
-      bindingEvidence:Object.freeze(['GENERATED_NATIVE_ARTIFACT_PATH','ENGINE_NATIVE_SOURCE']),
+      assetId:id,family,license,path:promotionPath,robloxAssetId:null,sourceHash,editableSourceHash:clean(recipe?.editableSourceHash||sourceHash),artifactHash:promotionHash,nativeArtifactHash:promotionHash,
+      masterGlb:masterGlb||null,masterGlbHash:masterGlbHash||null,derivedFromMasterGlbHash:derivedFromMasterGlbHash||null,masterGlbStaticQaPass:recipe?.masterGlbStaticQaPass===true,
+      masterGlbQaAuthority:clean(recipe?.masterGlbQaAuthority)||null,
+      bindingEvidence:Object.freeze(['GENERATED_PLATFORM_NATIVE_ARTIFACT_PATH','ENGINE_NATIVE_SOURCE']),
       candidateSourceBindingVerified:true,runtimeVerificationRequired:true,promotionState:'PENDING_EXACT_NATIVE_RUNTIME',
       generatedByDeclaredRecipe:true,persistedForCandidate:dccEvidence?.persistedForCandidate===true
     }));
@@ -2175,7 +2255,10 @@ function robloxNativeWorkerGuidance(order={},context={},responsibleFiles=[]) {
     directive.observableAcceptanceScenario?`END_TO_END_ACCEPTANCE=${clean(directive.observableAcceptanceScenario)}`:'END_TO_END_ACCEPTANCE=input/touch -> local handler -> Remote when required -> server validation -> authoritative state change -> client feedback',
     'Use Roblox-native Luau and the existing server/client/module responsibility. Do not translate Unity/Web implementation literally.',
     'Read the existing RemoteEvent/RemoteFunction, touch input, character/respawn, rig/animation, DataStore/save, UI state, and multiplayer sync flow before changing behavior.',
+    '3D MASTER ASSET: PLAYER/NPC/COMPANION/ALLY/VENDOR/QUEST_GIVER/TRAINER/PET/MOUNT/SUMMON/ENEMY/ELITE/CREATURE/BOSS must originate from a repository-bound GLB 2.0 master with mesh, normals, UV0, materials, skeleton/skin weights and animation. Part/Wedge/Ball/Cylinder assembly is prototype-only and cannot be claimed as a finished 3D actor. Roblox must bind a native derivative/import from that master and preserve the master path/hash lineage.',
     'CHARACTER MOTION QUALITY: for PLAYER/HUMANOID_NPC/CREATURE, inspect the existing rig before motion changes. An articulated actor must use R15 or a compatible Motor6D/Bone rig plus Humanoid or AnimationController and Animator. WeldConstraint-only articulated bodies and single rigid Parts are not a finished character motion solution.',
+    'NPC ROLE QUALITY: companion, ally, story character, civilian, merchant/vendor, quest giver, guard, worker, artisan, farmer, healer, trainer, rival, hostile humanoid, named elite and humanoid boss are distinct presentation roles. Reusing a compatible master rig is allowed, but color-only clones are not finished NPCs. Different roles must read through silhouette/body proportion, outfit/equipment or carried prop, stance/gait, idle/interaction motion, face/gesture or wear history. Humanoid bosses use the same GLB master rule plus dedicated boss presentation; gameplay AI, damage, rewards and phase authority remain game-owned.',
+    'NPC PHYSICAL DIVERSITY: authored NPC identity must carry heightCm, weightKg, frame, shoulder/pelvis width, torso length/depth, arm/leg length, hand-foot scale, head-body ratio, posture and asymmetry into the actual mesh/rig customization path. Nearby or important NPCs must differ across several of these physical axes plus head/face/hair/surface/outfit/gait; height-only, weight-only, face-only or palette-only clones are invalid. These values are presentation inputs only and must not silently change authoritative collision, hitbox, movement speed, damage, health, rewards, cooldowns, save or network state.',
     'MOTION SOURCE ORDER: reuse verified same-game/same-archetype motion first, then compatible verified company motion, then license-verified repository/external motion with retarget cleanup. Author new keyframes only for the remaining verified coverage gap.',
     'SMOOTHNESS: use AnimationTrack cross-fade/weight blending, speed-synchronized Walk/Jog/Run playback, start/stop/turn continuity, and upper/lower-body layering when supported. Do not snap Attack back to Idle.',
     'PROCEDURAL CORRECTION: use budgeted IKControl/foot contact, pelvis height, spine lean, head gaze, slope adaptation, landing compression, and hit recoil when supported. These are visual corrections only and may not own movement, collider, hit, cooldown, or damage authority.',
@@ -2213,6 +2296,23 @@ export function inspectRobloxNativeCandidateQuality({candidate={},sourceRoot=''}
     const articulationSignal=/(?:Motor6D|\bBone\b|UpperTorso|LowerTorso|LeftUpperArm|RightUpperArm|LeftUpperLeg|RightUpperLeg)/.test(row.text);
     const animatorSignal=/(?:Animator|AnimationController|AnimationTrack|LoadAnimation|\bAnimate\b|IKControl)/.test(row.text);
     const weldSignal=/WeldConstraint/.test(row.text);
+    const npcFactorySignal=/(?:create|build|spawn|make)\w*(?:Npc|NPC|Villager|Resident|Merchant|Vendor|QuestGiver|Guard|Worker|Civilian|Companion|Ally|Elite|MiniBoss|HumanoidBoss|Boss)\s*\(|Name\s*=\s*["'](?:NPC|Npc|Villager|Resident|Merchant|Vendor|QuestGiver|Guard|Worker|Civilian|Companion|Ally|Elite|MiniBoss|HumanoidBoss|Boss)["']/i.test(row.text);
+    const primitiveBodyPartCount=(row.text.match(/(?:local\s+)?\w*(?:head|torso|chest|body|pelvis|arm|leg|hand|foot)\w*\s*=\s*Instance\.new\s*\(\s*["'](?:Part|WedgePart|CornerWedgePart|TrussPart)["']\s*\)/gi)||[]).length;
+    const meshActorInstanceSignal=/(?:Instance\.new\s*\(\s*["']MeshPart["']\s*\)|\bSpecialMesh\b)/i.test(row.text);
+    const meshIdentitySignal=/(?:MeshId\s*=|TextureID\s*=|ApplyMesh\s*\(|SurfaceAppearance)/i.test(row.text);
+    const importedActorReuseSignal=/(?:\bClone\s*\(|WaitForChild\s*\(\s*["'][^"']*(?:Npc|NPC|Character|Companion|Elite|Boss|Rig|Model)[^"']*["']\s*\)|FindFirstChild\s*\(\s*["'][^"']*(?:Npc|NPC|Character|Companion|Elite|Boss|Rig|Model)[^"']*["']\s*\)|LoadAsset\w*\s*\()/i.test(row.text);
+    const nativeActorAssetSignal=(meshActorInstanceSignal&&meshIdentitySignal)||importedActorReuseSignal;
+    const masterGlbPathSignal=/(?:GeneratedNativeAssetPath|MasterGlb|\.glb\b)/i.test(row.text);
+    const primitiveNpcDoll=npcFactorySignal&&primitiveBodyPartCount>=2;
+    const bossFactorySignal=/(?:create|build|spawn|make)\w*(?:MiniBoss|RaidBoss|HumanoidBoss|Boss)\s*\(|Name\s*=\s*["'](?:MiniBoss|RaidBoss|HumanoidBoss|Boss)["']/i.test(row.text);
+    const bossFromGenericEnemyClone=/(?:local\s+)?\w*boss\w*\s*=\s*\w*(?:enemy|monster|mob|npc)\w*\s*:\s*Clone\s*\(|\w*(?:enemy|monster|mob|npc)\w*\s*:\s*Clone\s*\(\s*\)[\s\S]{0,300}\b(?:Boss|MiniBoss|RaidBoss)\b/i.test(row.text);
+    const bossScaleMutation=/(?:\w*boss\w*\s*:\s*ScaleTo\s*\(|\w*boss\w*[\s\S]{0,220}(?:\.Size\s*=|\.Scale\s*=|CFrame\.new\s*\([^)]*\)\s*\*\s*CFrame\.new))/i.test(row.text);
+    const bossDedicatedPresentation=/(?:Boss|MiniBoss|RaidBoss)[\s\S]{0,900}(?:MeshId|SurfaceAppearance|Accessory|boss.?weapon|boss.?armor|intro|special|phase.?change|enrage|stun|guard.?break|finisher|death.?sequence|boss.?aura|boss.?vfx|ParticleEmitter|Trail|Beam)|(?:MeshId|SurfaceAppearance|Accessory|boss.?weapon|boss.?armor|intro|special|phase.?change|enrage|stun|guard.?break|finisher|death.?sequence|boss.?aura|boss.?vfx|ParticleEmitter|Trail|Beam)[\s\S]{0,900}(?:Boss|MiniBoss|RaidBoss)/i.test(row.text);
+    const bossScaleOnly=bossFactorySignal&&bossFromGenericEnemyClone&&bossScaleMutation&&!bossDedicatedPresentation;
+    if(primitiveNpcDoll)findings.push({file:row.path,class:'NPC_PRIMITIVE_FINAL_ACTOR_RISK'});
+    if(bossScaleOnly)findings.push({file:row.path,class:'BOSS_SCALE_ONLY_FINAL_ACTOR_RISK'});
+    if(npcFactorySignal&&masterGlbPathSignal&&!nativeActorAssetSignal)findings.push({file:row.path,class:'MASTER_GLB_PATH_ONLY_ACTOR_BINDING_RISK'});
+    if(npcFactorySignal&&!primitiveNpcDoll&&!nativeActorAssetSignal)findings.push({file:row.path,class:'NPC_NATIVE_ACTOR_BINDING_MISSING_RISK'});
     if(actorSignal&&customActorSignal&&rootMotionSignal&&!articulationSignal)findings.push({file:row.path,class:'ROOT_ONLY_ARTICULATED_MOTION_RISK'});
     if(actorSignal&&customActorSignal&&weldSignal&&!articulationSignal)findings.push({file:row.path,class:'WELD_CONSTRAINT_ONLY_CHARACTER_RISK'});
     if(actorSignal&&customActorSignal&&/(?:Humanoid|AnimationController|Motor6D|\bBone\b)/.test(row.text)&&!animatorSignal)findings.push({file:row.path,class:'MISSING_ANIMATOR_BINDING_RISK'});
@@ -2228,7 +2328,15 @@ export function inspectRobloxNativeCandidateQuality({candidate={},sourceRoot=''}
     automaticGameWideBlock:false,
     securityRelevantFindings:Object.freeze(findings.filter(row=>['CLIENT_DATASTORE_AUTHORITY','CLIENT_AUTHORITATIVE_GAMEPLAY_MUTATION','REMOTE_INPUT_VALIDATION_WEAK','UNBOUNDED_DATASTORE_RETRY'].includes(row.class))),
     motionQualityFindings:Object.freeze(findings.filter(row=>['ROOT_ONLY_ARTICULATED_MOTION_RISK','WELD_CONSTRAINT_ONLY_CHARACTER_RISK','MISSING_ANIMATOR_BINDING_RISK','LOCOMOTION_BLEND_SPEED_SYNC_MISSING_RISK'].includes(row.class))),
+    npcFinalActorFindings:Object.freeze(findings.filter(row=>row.class==='NPC_PRIMITIVE_FINAL_ACTOR_RISK')),
+    masterGlbPathOnlyFindings:Object.freeze(findings.filter(row=>row.class==='MASTER_GLB_PATH_ONLY_ACTOR_BINDING_RISK')),
+    nativeActorBindingFindings:Object.freeze(findings.filter(row=>row.class==='NPC_NATIVE_ACTOR_BINDING_MISSING_RISK')),
+    bossScaleOnlyFindings:Object.freeze(findings.filter(row=>row.class==='BOSS_SCALE_ONLY_FINAL_ACTOR_RISK')),
     motionQualityHardFailure:'ROBLOX_CHARACTER_MOTION_MANNEQUIN',
+    npcFinalActorHardFailure:'PRIMITIVE_ONLY_FINAL_3D_ACTOR',
+    masterGlbBindingHardFailure:'CROSS_PLATFORM_MASTER_GLB_STATIC_QA_REQUIRED',
+    nativeActorBindingHardFailure:'NATIVE_3D_ACTOR_BINDING_REQUIRED',
+    bossScaleOnlyHardFailure:'BOSS_SCALE_ONLY_FINAL_3D_ACTOR',
     sourceRoot:clean(sourceRoot)||null
   });
 }
@@ -5618,6 +5726,24 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const studioQualityCandidateDelta=semanticDiffEnforcement?.studioQualityDelta||evaluateStudioQualityCandidateDelta({candidate,sourceRoot,contract:order?.selectedTask?.studioQualityEvolution||order?.workPackage?.sharedContext?.studioQualityEvolution||null});
   const robloxNativeSourceInspection=buildRobloxNativeSourceInspection({order,context,responsibleFiles});
   const robloxNativeCandidateQuality=target==='roblox'?inspectRobloxNativeCandidateQuality({candidate,sourceRoot}):{required:false,findingCount:0,findings:[],securityRelevantFindings:[],automaticGameWideBlock:false};
+  if(target==='roblox'&&assetDevelopmentTask(order)&&robloxNativeCandidateQuality.npcFinalActorFindings?.length){
+    throw new Error('PRIMITIVE_ONLY_FINAL_3D_ACTOR:NPC_PRIMITIVE_FINAL_ACTOR:'+robloxNativeCandidateQuality.npcFinalActorFindings.map(row=>row.file).join(','));
+  }
+  if(target==='roblox'&&assetDevelopmentTask(order)&&robloxNativeCandidateQuality.masterGlbPathOnlyFindings?.length){
+    throw new Error('CROSS_PLATFORM_MASTER_GLB_STATIC_QA_REQUIRED:MASTER_GLB_PATH_ONLY_ACTOR_BINDING:'+robloxNativeCandidateQuality.masterGlbPathOnlyFindings.map(row=>row.file).join(','));
+  }
+  if(target==='roblox'&&assetDevelopmentTask(order)&&robloxNativeCandidateQuality.nativeActorBindingFindings?.length){
+    throw new Error('NATIVE_3D_ACTOR_BINDING_REQUIRED:'+robloxNativeCandidateQuality.nativeActorBindingFindings.map(row=>row.file).join(','));
+  }
+  if(target==='roblox'&&assetDevelopmentTask(order)&&robloxNativeCandidateQuality.bossScaleOnlyFindings?.length){
+    throw new Error('BOSS_SCALE_ONLY_FINAL_3D_ACTOR:'+robloxNativeCandidateQuality.bossScaleOnlyFindings.map(row=>row.file).join(','));
+  }
+  const mannequinFindings=(robloxNativeCandidateQuality.motionQualityFindings||[]).filter(row=>[
+    'ROOT_ONLY_ARTICULATED_MOTION_RISK','WELD_CONSTRAINT_ONLY_CHARACTER_RISK','MISSING_ANIMATOR_BINDING_RISK'
+  ].includes(row.class));
+  if(target==='roblox'&&assetDevelopmentTask(order)&&mannequinFindings.length){
+    throw new Error('CHARACTER_MOTION_MANNEQUIN:'+mannequinFindings.map(row=>row.file+':'+row.class).join(','));
+  }
   if(target==='roblox'){
     console.log('ROBLOX_NATIVE_SOURCE_INSPECTION=PASS:files='+robloxNativeSourceInspection.files.length+':systems='+(robloxNativeSourceInspection.systems.join(',')||'NONE'));
     console.log('ROBLOX_NATIVE_BUILD_UP_BINDING='+(order?.selectedTask?.buildUpDirective?.robloxNativeExecution||order?.buildUpDirective?.robloxNativeExecution?'PASS':'BASELINE_OR_REPAIR'));

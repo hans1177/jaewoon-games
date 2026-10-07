@@ -472,7 +472,7 @@ function runSpecializedFocusedQa({root,data={},changed=[]}={}){
 }
 function robloxCharacterMotionStaticEvidence(text=''){
   const source=String(text||'');
-  const customActorFactory=/(?:humanoidFigure|figure|create\w*(?:Npc|NPC|Enemy|Monster|Creature|Character)|build\w*(?:Npc|NPC|Enemy|Monster|Creature|Character))\s*\(/i.test(source);
+  const customActorFactory=/(?:humanoidFigure|figure|create\w*(?:Npc|NPC|Villager|Merchant|QuestGiver|Guard|Worker|Companion|Ally|Enemy|Elite|MiniBoss|Boss|Monster|Creature|Character)|build\w*(?:Npc|NPC|Villager|Merchant|QuestGiver|Guard|Worker|Companion|Ally|Enemy|Elite|MiniBoss|Boss|Monster|Creature|Character))\s*\(/i.test(source);
   const customModel=/Instance\.new\s*\(\s*["']Model["']\s*\)/i.test(source);
   const humanoidCreated=/Instance\.new\s*\(\s*["']Humanoid["']\s*\)|Instance\.new\s*\(\s*["']AnimationController["']\s*\)/i.test(source);
   const namedLimbs={
@@ -482,7 +482,7 @@ function robloxCharacterMotionStaticEvidence(text=''){
     head:/(?:\bHead\b|RPGHead|NpcHead|EnemyHead|MonsterHead)/i.test(source)
   };
   const limbFamilies=Object.values(namedLimbs).filter(Boolean).length;
-  const characterTerms=/(?:character|player|npc|enemy|monster|boss|creature|humanoid|villager|resident)/i.test(source);
+  const characterTerms=/(?:character|player|npc|enemy|elite|mini.?boss|boss|monster|creature|humanoid|villager|resident|merchant|quest.?giver|guard|worker|companion|ally)/i.test(source);
   const customArticulatedIntent=humanoidCreated||customActorFactory||(customModel&&characterTerms&&limbFamilies>=2);
   const nativePlayerRigIntent=!customArticulatedIntent&&/(?:CharacterAdded|LocalPlayer|player\.Character|HumanoidRootPart)/.test(source)&&/Humanoid/.test(source);
   const articulation=/(?:Motor6D|\bBone\b|UpperTorso|LowerTorso|LeftUpperArm|RightUpperArm|LeftUpperLeg|RightUpperLeg)/.test(source);
@@ -526,24 +526,39 @@ function runPresentationStaticQa({root,data={},changed=[]}={}){
     require('STYLE_SURFACE',/(?:fillStyle|strokeStyle|classList|style\.|--[\w-]+\s*:|background|linear-gradient|radial-gradient|material|texture|sprite)/i.test(text));
     require('RENDER_OR_VISUAL_OWNER',/(?:canvas|getContext\(|render|draw|sprite|mesh|visual|style)/i.test(text));
     if(target==='web'){
-      const realAssetBindings=patternHits(text,[
-        /drawImage\s*\(/i,
-        /new\s+Image\s*\(/i,
-        /<img\b/i,
-        /background(?:-image)?\s*:\s*url\s*\(/i,
-        /(?:src|href)\s*=\s*["'][^"']+\.(?:png|webp|jpg|jpeg|svg)/i,
-        /\b(?:sprite|spritesheet|texture|atlas)\b/i
-      ]);
-      const webIdentityDomains=patternHits(text,[
-        /\b(?:player|character|hero|npc|enemy|monster|boss|creature|avatar)\b/i,
-        /\b(?:weapon|sword|blade|spear|axe|hammer|bow|staff|shield|tool|item|equipment|armor)\b/i,
-        /\b(?:background|terrain|ground|tree|rock|plant|building|environment|sky|fog|biome|forest|village|dungeon|island)\b/i,
-        /\b(?:palette|style.?lock|outline|shadow|lighting|gradient|material|theme|visual.?language)\b/i
-      ]);
-      const primitiveCalls=(text.match(/ctx\.(?:arc|fillRect|strokeRect|ellipse)\s*\(/gi)||[]).length;
-      require('WEB_REAL_ASSET_BINDING',realAssetBindings>=2);
-      require('WEB_GAME_VISUAL_IDENTITY_DOMAINS',webIdentityDomains>=3);
-      require('WEB_NO_PRIMITIVE_ONLY_SCENE',primitiveCalls===0||realAssetBindings>=2);
+      const web3dActorRequired=data?.assetProduction?.nativeAuthoringExecution?.dcc?.web3dActorMasterAuthoringRequired===true;
+      if(web3dActorRequired){
+        const glbRuntimeBinding=/(?:GLTFLoader|loadAsync\s*\(|\.load\s*\(|useGLTF|\.glb\b|\.gltf\b)/i.test(text);
+        const animationMixer=/(?:AnimationMixer|clipAction\s*\(|AnimationAction|mixer\.update\s*\()/i.test(text);
+        const actorStates=patternHits(text,[
+          /\b(?:idle|IDLE)\b/,/\b(?:walk|WALK)\b/,/\b(?:run|RUN|jog|JOG)\b/,
+          /\b(?:attack|ATTACK)\b/,/\b(?:hit|HIT|stagger|STAGGER)\b/,/\b(?:death|DEATH|dead|DEAD)\b/
+        ]);
+        const stateMotionBinding=animationMixer&&actorStates>=3&&/(?:clipAction|actions?\s*\[|animationMap|motionMap|state.*animation|animation.*state)/i.test(text);
+        require('WEB_3D_ACTOR_MASTER_GLB_RUNTIME_BINDING',glbRuntimeBinding);
+        require('WEB_3D_ACTOR_ANIMATION_MIXER',animationMixer);
+        require('WEB_3D_ACTOR_STATE_MOTION_BINDING',stateMotionBinding);
+        require('WEB_3D_ACTOR_CANVAS_SPRITE_NOT_FINAL',!/(?:new\s+Image\s*\(|drawImage\s*\()[\s\S]{0,600}(?:player|character|npc|enemy|monster|boss|creature)/i.test(text));
+      }else{
+        const realAssetBindings=patternHits(text,[
+          /drawImage\s*\(/i,
+          /new\s+Image\s*\(/i,
+          /<img\b/i,
+          /background(?:-image)?\s*:\s*url\s*\(/i,
+          /(?:src|href)\s*=\s*["'][^"']+\.(?:png|webp|jpg|jpeg|svg)/i,
+          /\b(?:sprite|spritesheet|texture|atlas)\b/i
+        ]);
+        const webIdentityDomains=patternHits(text,[
+          /\b(?:player|character|hero|npc|enemy|monster|boss|creature|avatar)\b/i,
+          /\b(?:weapon|sword|blade|spear|axe|hammer|bow|staff|shield|tool|item|equipment|armor)\b/i,
+          /\b(?:background|terrain|ground|tree|rock|plant|building|environment|sky|fog|biome|forest|village|dungeon|island)\b/i,
+          /\b(?:palette|style.?lock|outline|shadow|lighting|gradient|material|theme|visual.?language)\b/i
+        ]);
+        const primitiveCalls=(text.match(/ctx\.(?:arc|fillRect|strokeRect|ellipse)\s*\(/gi)||[]).length;
+        require('WEB_REAL_ASSET_BINDING',realAssetBindings>=2);
+        require('WEB_GAME_VISUAL_IDENTITY_DOMAINS',webIdentityDomains>=3);
+        require('WEB_NO_PRIMITIVE_ONLY_SCENE',primitiveCalls===0||realAssetBindings>=2);
+      }
     }
     if(target==='unity'||target==='roblox'){
       const nativeComposition=target==='unity'
@@ -578,6 +593,21 @@ function runPresentationStaticQa({root,data={},changed=[]}={}){
         for(const [domain,present] of Object.entries(requiredVisualDomains))require('ROBLOX_VISUAL_DOMAIN_'+domain,present);
         require('GAME_VISUAL_IDENTITY_DOMAINS',Object.values(requiredVisualDomains).every(Boolean));
         require('NO_SINGLE_PRIMITIVE_PLACEHOLDER',!singlePrimitiveOnly);
+        const npcFactorySignal=/(?:create|build|spawn|make)\w*(?:Npc|NPC|Villager|Resident|Merchant|Vendor|QuestGiver|Guard|Worker|Civilian|Companion|Ally|Elite|MiniBoss|HumanoidBoss|Boss)\s*\(|Name\s*=\s*["'](?:NPC|Npc|Villager|Resident|Merchant|Vendor|QuestGiver|Guard|Worker|Civilian|Companion|Ally|Elite|MiniBoss|HumanoidBoss|Boss)["']/i.test(text);
+        const npcPrimitiveBodyPartCount=(text.match(/(?:local\s+)?\w*(?:head|torso|chest|body|pelvis|arm|leg|hand|foot)\w*\s*=\s*Instance\.new\s*\(\s*["'](?:Part|WedgePart|CornerWedgePart|TrussPart)["']\s*\)/gi)||[]).length;
+        const npcMeshInstance=/(?:Instance\.new\s*\(\s*["']MeshPart["']\s*\)|\bSpecialMesh\b)/i.test(text);
+        const npcMeshIdentity=/(?:MeshId\s*=|TextureID\s*=|ApplyMesh\s*\(|SurfaceAppearance)/i.test(text);
+        const npcImportedActorReuse=/(?:\bClone\s*\(|WaitForChild\s*\(\s*["'][^"']*(?:Npc|NPC|Character|Companion|Elite|Boss|Rig|Model)[^"']*["']\s*\)|FindFirstChild\s*\(\s*["'][^"']*(?:Npc|NPC|Character|Companion|Elite|Boss|Rig|Model)[^"']*["']\s*\)|LoadAsset\w*\s*\()/i.test(text);
+        const npcNativeActorBinding=(npcMeshInstance&&npcMeshIdentity)||npcImportedActorReuse;
+        const primitiveFinalActor=npcFactorySignal&&npcPrimitiveBodyPartCount>=2;
+        const bossFromGenericEnemyClone=/(?:local\s+)?\w*boss\w*\s*=\s*\w*(?:enemy|monster|mob|npc)\w*\s*:\s*Clone\s*\(|\w*(?:enemy|monster|mob|npc)\w*\s*:\s*Clone\s*\(\s*\)[\s\S]{0,300}\b(?:Boss|MiniBoss|RaidBoss)\b/i.test(text);
+        const bossScaleMutation=/(?:\w*boss\w*\s*:\s*ScaleTo\s*\(|\w*boss\w*[\s\S]{0,220}(?:\.Size\s*=|\.Scale\s*=))/i.test(text);
+        const bossDedicatedPresentation=/(?:Boss|MiniBoss|RaidBoss)[\s\S]{0,900}(?:MeshId|SurfaceAppearance|Accessory|boss.?weapon|boss.?armor|intro|special|phase.?change|enrage|stun|guard.?break|finisher|death.?sequence|boss.?aura|boss.?vfx|ParticleEmitter|Trail|Beam)|(?:MeshId|SurfaceAppearance|Accessory|boss.?weapon|boss.?armor|intro|special|phase.?change|enrage|stun|guard.?break|finisher|death.?sequence|boss.?aura|boss.?vfx|ParticleEmitter|Trail|Beam)[\s\S]{0,900}(?:Boss|MiniBoss|RaidBoss)/i.test(text);
+        const bossScaleOnly=bossFromGenericEnemyClone&&bossScaleMutation&&!bossDedicatedPresentation;
+        require('ROBLOX_NPC_NO_PRIMITIVE_DOLL_FINAL',!primitiveFinalActor);
+        require('PRIMITIVE_ONLY_FINAL_3D_ACTOR',!primitiveFinalActor);
+        require('BOSS_SCALE_ONLY_FINAL_3D_ACTOR',!bossScaleOnly);
+        if(npcFactorySignal&&!primitiveFinalActor)require('ROBLOX_NPC_NATIVE_ACTOR_BINDING',npcNativeActorBinding);
         const motionDriver=/(?:TweenService|RenderStepped|Heartbeat|Animator|AnimationTrack|Motor6D|Bone)/i.test(text);
         const motionMutation=/(?:TweenService[\s\S]{0,1200}(?:CFrame|Transform|Position|Orientation)\s*=|(?:RenderStepped|Heartbeat)[\s\S]{0,1200}\.(?:CFrame|Transform|Position|Orientation)\s*=|(?:Motor6D|Bone)[\s\S]{0,800}\.Transform\s*=|\.(?:CFrame|Transform|Position|Orientation)\s*=\s*(?:CFrame|Vector3|UDim2|[^\n;]+[+*\-]))/i.test(text);
         require('ROBLOX_NATIVE_MOTION_DRIVER',motionDriver);
@@ -604,6 +634,26 @@ function runPresentationStaticQa({root,data={},changed=[]}={}){
         ]);
         require('GAME_VISUAL_IDENTITY_DOMAINS',identityDomains>=3);
         require('NO_SINGLE_PRIMITIVE_PLACEHOLDER',!singlePrimitiveOnly);
+        const unity3dActorRequired=data?.assetProduction?.nativeAuthoringExecution?.dcc?.crossPlatform3dMasterGlbRequired===true;
+        if(unity3dActorRequired){
+          const primitiveActor=/(?:actor|character|player|npc|enemy|monster|boss|creature)\w*\s*=\s*GameObject\.CreatePrimitive\s*\(|GameObject\.CreatePrimitive\s*\([^)]*\)[\s\S]{0,180}(?:actor|character|player|npc|enemy|monster|boss|creature)/i.test(text);
+          const skinnedMesh=/\bSkinnedMeshRenderer\b/.test(text);
+          const animator=/\bAnimator\b/.test(text);
+          const animatorState=/(?:CrossFade|Play|SetTrigger|SetFloat|SetBool)\s*\(/.test(text);
+          const collider=/(?:\bCollider\b|CapsuleCollider|BoxCollider|SphereCollider|CharacterController)/.test(text);
+          const lod=/(?:\bLODGroup\b|SetLODs\s*\()/i.test(text);
+          const bossFromGenericEnemyPrefab=/(?:var|GameObject)\s+\w*boss\w*\s*=\s*Instantiate\s*\(\s*\w*(?:enemy|monster|mob|npc)\w*/i.test(text);
+          const bossScaleMutation=/\w*boss\w*\.transform\.localScale\s*=|\w*boss\w*\.transform\.localScale\s*\*=|\w*boss\w*\.transform\.localScale\s*\+=/i.test(text);
+          const bossDedicatedPresentation=/(?:boss|miniBoss|raidBoss)[\s\S]{0,900}(?:boss.?mesh|boss.?controller|RuntimeAnimatorController|boss.?weapon|boss.?armor|intro|special|phase.?change|enrage|stun|guard.?break|finisher|death.?sequence|boss.?vfx|ParticleSystem|TrailRenderer|VisualEffect)|(?:boss.?mesh|boss.?controller|RuntimeAnimatorController|boss.?weapon|boss.?armor|intro|special|phase.?change|enrage|stun|guard.?break|finisher|death.?sequence|boss.?vfx|ParticleSystem|TrailRenderer|VisualEffect)[\s\S]{0,900}(?:boss|miniBoss|raidBoss)/i.test(text);
+          const bossScaleOnly=bossFromGenericEnemyPrefab&&bossScaleMutation&&!bossDedicatedPresentation;
+          require('UNITY_3D_ACTOR_SKINNED_MESH_RENDERER',skinnedMesh);
+          require('UNITY_3D_ACTOR_ANIMATOR',animator);
+          require('UNITY_3D_ACTOR_ANIMATOR_STATE_BINDING',animator&&animatorState);
+          require('UNITY_3D_ACTOR_COLLIDER_PROXY',collider);
+          require('UNITY_3D_ACTOR_LOD',lod);
+          require('PRIMITIVE_ONLY_FINAL_3D_ACTOR',!primitiveActor);
+          require('BOSS_SCALE_ONLY_FINAL_3D_ACTOR',!bossScaleOnly);
+        }
       }
     }
   }else if(pass==='LIVING_MOTION'){

@@ -9,6 +9,7 @@ import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {
   STUDIO_ASSET_UNIVERSE_TARGET,
+  CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT,
   createAssetProductionTeachingRecipe,
   STUDIO_ASSET_FAMILIES,
   ASSET_STYLE_FAMILIES,
@@ -105,7 +106,7 @@ import {
   buildBaseMaterialRotationPlan,
   createStudioAssetUniversePlan
 } from '../assets/vibe-studio-asset-universe.js';
-import {createVibeCharacterPersona,resolveVibeCharacterBehaviorIntent,createVibePopulationPersonaDiversity,VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,createVibeCharacterCustomizationRecipe,createVibeNpcCustomizationPopulation} from '../assets/vibe-character-identity-director.js';
+import {createVibeCharacterPersona,resolveVibeCharacterBehaviorIntent,createVibePopulationPersonaDiversity,VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,VIBE_NPC_ROLE_PRODUCTION_CONTRACT,VIBE_NPC_ROLE_MOTION_REQUIREMENTS,createVibeNpcRoleMotionRequirement,createVibeNpcPhysicalProfile,createVibeNpcRoleProfile,createVibeCharacterCustomizationRecipe,createVibeNpcCustomizationPopulation,createVibePhysicalDiversityGate} from '../assets/vibe-character-identity-director.js';
 import {synchronizeCompanyCommonAssetRegistry,synchronizeSourceBoundAssetConsumers,buildAssetSupplyDecisionSummary,buildVibeAssetProductionPlan} from '../tools/vibe2-asset-production-plan.mjs';
 
 const fullQualityEvidence=Object.freeze({
@@ -522,6 +523,14 @@ test('deep RPG character customization breadth drives player and NPC variety wit
   assert.ok(contract.targetMinimums.CLOTHING_LAYER_VARIANT>=60);
   assert.equal(contract.npcPopulationRules.colorOnlyDuplicateForbidden,true);
   assert.equal(contract.npcPopulationRules.speciesPartCompatibilityRequired,true);
+  assert.equal(VIBE_NPC_ROLE_PRODUCTION_CONTRACT.version,2);
+  assert.equal(VIBE_NPC_ROLE_PRODUCTION_CONTRACT.physicalDiversity.required,true);
+  assert.equal(VIBE_NPC_ROLE_PRODUCTION_CONTRACT.physicalDiversity.appearanceOnlyByDefault,true);
+  assert.equal(VIBE_NPC_ROLE_PRODUCTION_CONTRACT.physicalDiversity.collisionHitboxMovementStatsRemainGameOwned,true);
+  assert.ok(VIBE_NPC_ROLE_PRODUCTION_CONTRACT.physicalDiversity.axes.includes('HEIGHT_CM'));
+  assert.ok(VIBE_NPC_ROLE_PRODUCTION_CONTRACT.physicalDiversity.axes.includes('WEIGHT_KG'));
+  assert.ok(VIBE_NPC_ROLE_PRODUCTION_CONTRACT.appearanceDiversity.axes.includes('HAIR_STYLE'));
+  assert.ok(VIBE_NPC_ROLE_PRODUCTION_CONTRACT.appearanceDiversity.axes.includes('OUTFIT_LAYERING'));
   assert.equal(contract.production.photoObservationMaySeedVisibleFormAndSurfaceIdeas,true);
   assert.equal(contract.production.runtimeVerificationRequiredBeforeProductionPromotion,true);
   assert.equal(contract.gameplayAuthority,false);
@@ -554,7 +563,83 @@ test('deep RPG character customization breadth drives player and NPC variety wit
   assert.equal(population.cloneRatePercent,0);
   assert.equal(population.sameAssetPoolAsPlayerCustomization,true);
   assert.equal(population.productionVerified,false);
+  assert.equal(population.physicalDiversityPercent,100);
+  assert.ok(population.heightRangeCm[1]-population.heightRangeCm[0]>=20);
+  assert.ok(population.weightRangeKg[1]-population.weightRangeKg[0]>=30);
+  assert.ok(population.scaleClassCoverage.length>=3);
+  assert.ok(population.visualMassCoverage.length>=3);
   assert.ok(population.recipes.every(row=>row.speciesParts.compatibilityChecked===true));
+  assert.ok(population.recipes.every(row=>row.npcRoleProfile.physical.heightCm===row.body.heightCm));
+  assert.ok(population.recipes.every(row=>row.npcRoleProfile.physical.weightKg===row.body.weightKg));
+  assert.ok(population.recipes.every(row=>row.presentation.gait.bodyScaleLanguage===row.body.scaleClass));
+  assert.ok(new Set(population.recipes.map(row=>row.head.baseFamily)).size>=6);
+  assert.ok(new Set(population.recipes.map(row=>row.hair.style)).size>=8);
+});
+
+test('NPC physical and role profiles support companions service roles elites and humanoid bosses without gameplay stat mutation',()=>{
+  const companion=createVibeNpcRoleProfile({role:'COMPANION',character:{name:'party-a',species:'humanoid'},index:3});
+  assert.equal(companion.role,'COMPANION');
+  assert.equal(companion.masterGlbRequired,true);
+  assert.ok(companion.motion.includes('FOLLOW'));
+  assert.ok(companion.motion.includes('ASSIST'));
+  assert.equal(companion.physical.appearanceOnly,true);
+  assert.equal(companion.physical.authoritativeHitboxOwnedByGame,true);
+  assert.equal(companion.physical.movementSpeedUnchanged,true);
+
+  const boss=createVibeNpcPhysicalProfile({name:'named-boss',role:'HUMANOID_BOSS',heightCm:248,weightKg:210,frame:'heavy'},7);
+  assert.equal(boss.role,'HUMANOID_BOSS');
+  assert.equal(boss.heightCm,248);
+  assert.equal(boss.weightKg,210);
+  assert.equal(boss.scaleClass,'GIANT');
+  assert.equal(boss.statsUnchanged,true);
+  assert.equal(boss.authoritativeCollisionScaleOwnedByGame,true);
+
+  const diversityGate=createVibePhysicalDiversityGate({characters:[
+    {name:'small-merchant',role:'MERCHANT',heightCm:148,weightKg:48,frame:'compact',posture:'relaxed'},
+    {name:'tall-guard',role:'GUARD',heightCm:202,weightKg:118,frame:'broad',posture:'upright'},
+    {name:'boss',role:'HUMANOID_BOSS',heightCm:248,weightKg:210,frame:'heavy',posture:'forward'}
+  ]});
+  assert.equal(diversityGate.pass,true,diversityGate.issues.join(','));
+  assert.equal(diversityGate.minimumDistinctAxes,VIBE_NPC_ROLE_PRODUCTION_CONTRACT.physicalDiversity.nearbyDistinctAxisMinimum);
+
+  for(const role of ['GENERAL_NPC','MERCHANT','QUEST_GIVER','GUARD','WORKER','HEALER','RIVAL','NAMED_ELITE','HUMANOID_BOSS']){
+    const row=createVibeNpcRoleProfile({role,character:{name:'qa-'+role,species:'humanoid'},index:2});
+    assert.equal(row.role,role);
+    assert.equal(row.masterFormat,'GLB_2_0');
+    assert.equal(row.primitivePartOrWeldOnlyFinalNpcForbidden,true);
+    assert.ok(row.identity.length>=3);
+    assert.ok(row.motion.length>=5);
+  }
+});
+
+test('NPC role motion contract binds presentation states to real role motion without taking gameplay authority',()=>{
+  assert.equal(VIBE_NPC_ROLE_MOTION_REQUIREMENTS.status,'ACTIVE_MACHINE_READABLE_NPC_ROLE_MOTION');
+  assert.equal(VIBE_NPC_ROLE_MOTION_REQUIREMENTS.masterActor.masterStaticQaDoesNotGrantProductionVerified,true);
+  const merchant=createVibeNpcRoleMotionRequirement({role:'MERCHANT'});
+  assert.ok(merchant.requiredClips.includes('TRADE_INTERACTION'));
+  assert.ok(merchant.stateBindings.INTERACT.includes('GREET'));
+  const companion=createVibeNpcRoleMotionRequirement({role:'COMPANION'});
+  assert.ok(companion.stateBindings.FOLLOW.includes('JOG_OR_RUN'));
+  assert.ok(companion.requiredClips.includes('REVIVE_HELP'));
+  const guard=createVibeNpcRoleMotionRequirement({role:'GUARD'});
+  assert.ok(guard.stateBindings.ALERT.includes('DRAW_WEAPON'));
+  const boss=createVibeNpcRoleProfile({role:'HUMANOID_BOSS',character:{name:'boss'}});
+  assert.ok(boss.motionRequirements.requiredClips.includes('PHASE_CHANGE'));
+  assert.ok(boss.stateMotionBindings.COMBAT.includes('SPECIAL_ATTACK_SET'));
+  assert.equal(boss.masterActorPackage.jointAnimationChannelsRequired,true);
+  assert.equal(boss.productionVerified,false);
+  assert.equal(boss.runtimeVerificationState,'PENDING_PLATFORM_NATIVE_RUNTIME');
+
+  const recipe=createVibeCharacterCustomizationRecipe({name:'merchant-a',role:'MERCHANT',species:'humanoid'},1);
+  assert.equal(recipe.final3dActorPackage.masterGlbRequired,true);
+  assert.equal(recipe.final3dActorPackage.masterAssetFormat,'GLB_2_0');
+  assert.ok(recipe.final3dActorPackage.requiredStaticContents.includes('JOINT_WEIGHTS'));
+  assert.ok(recipe.final3dActorPackage.motionRequirements.stateBindings.INTERACT.includes('TRADE_INTERACTION'));
+
+  const persona=createVibeCharacterPersona({name:'guard-a',role:'GUARD'},1);
+  assert.equal(persona.final3dActorPresentation.masterGlbRequired,true);
+  assert.equal(persona.final3dActorPresentation.actualJointMotionRequired,true);
+  assert.equal(persona.gameplayAuthority,false);
 });
 
 test('reference image observations become task-local character customization ideas without persistent copy claims',async()=>{
@@ -848,8 +933,42 @@ test('game visual DNA keeps mixed concept identity stable across asset selection
   assert.equal(adaptableMismatch.applicationMode,'STYLE_ADAPT');
 });
 
+test('studio asset universe requires GLB 2.0 masters for final 3D character and creature assets',()=>{
+  assert.equal(CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.status,'ACTIVE_EXECUTABLE_CONTRACT');
+  assert.equal(CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.format,'GLB_2_0');
+  assert.deepEqual([...CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.appliesToFamilies],['CHARACTER','CREATURE']);
+  assert.equal(CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.requiredBeforePlatformNativeVariant,true);
+  assert.ok(CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.requiredContents.includes('JOINT_WEIGHTS'));
+  assert.equal(CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.structuralChecks.jointAnimationChannelRequired,true);
+  assert.equal(CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.actorPackageRequirements.attachmentSocketBasisRequired,true);
+  assert.equal(CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.actorPackageRequirements.productionVerifiedRequiresPlatformNativeRuntime,true);
+  assert.equal(CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.primitivePartAssemblyPrototypeOnly,true);
+  assert.equal(CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.primitiveOrColorOnlyMayNotClaimFinal3dActor,true);
+
+  const blocked=evaluateCompanyAssetPromotion({
+    asset:{id:'missing-master',family:'CREATURE',platform:'ROBLOX',path:'assets/wolf.rbxm',license:'project-original',sourceHash:'wolf-v1'},
+    consumer:{gameId:'survival',platform:'ROBLOX'},
+    runtimeEvidence:{
+      assetId:'missing-master',platform:'ROBLOX',gameId:'survival',sourceHash:'wolf-v1',
+      nativeBindingPass:true,visualRuntimePass:true,mobilePerformancePass:true,regressionPass:true,licenseProvenancePass:true
+    }
+  });
+  assert.equal(blocked.eligible,false);
+  assert.ok(blocked.blockers.includes('CROSS_PLATFORM_MASTER_GLB_REQUIRED'));
+  assert.ok(blocked.blockers.includes('CROSS_PLATFORM_MASTER_GLB_HASH_REQUIRED'));
+  assert.ok(blocked.blockers.includes('CROSS_PLATFORM_MASTER_GLB_STATIC_QA_REQUIRED'));
+
+  const library=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  assert.deepEqual(library.universalCoverage.crossPlatform3dMasterGlbContract.appliesToRoles,library.rules.crossPlatform3dMasterGlbRoles);
+  assert.deepEqual(library.universalCoverage.crossPlatform3dMasterGlbContract.roleFamilies,library.rules.crossPlatform3dMasterGlbRoleFamilies);
+
+  const wildlife=createSurvivalWildlifeAssetProfile({species:'WOLF',platform:'ROBLOX'});
+  assert.equal(wildlife.masterGlbRequired,true);
+  assert.equal(wildlife.masterAssetFormat,'GLB_2_0');
+});
+
 test('company asset promotion is impossible without actual native runtime consumer evidence',()=>{
-  const asset={id:'wolf-runtime',family:'CREATURE',platform:'ROBLOX',path:'assets/wolf.glb',license:'project-original',sourceHash:'wolf-v1'};
+  const asset={id:'wolf-runtime',family:'CREATURE',platform:'ROBLOX',path:'assets/wolf.roblox',license:'project-original',sourceHash:'wolf-v1',artifactHash:'wolf-native-v1',masterGlb:'assets/wolf.glb',masterGlbHash:'wolf-master-v1',derivedFromMasterGlbHash:'wolf-master-v1',masterGlbStaticQaPass:true,masterGlbQaAuthority:'tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb'};
   const blocked=evaluateCompanyAssetPromotion({
     asset,consumer:{gameId:'survival',platform:'ROBLOX'},
     runtimeEvidence:{platform:'ROBLOX',sourceHash:'wolf-v1',nativeBindingPass:true,visualRuntimePass:true}
@@ -859,7 +978,8 @@ test('company asset promotion is impossible without actual native runtime consum
   assert.equal(blocked.promotion,null);
 
   const evidence={
-    id:'studio-run-1',assetId:'wolf-runtime',platform:'ROBLOX',gameId:'survival',sourceHash:'wolf-v1',
+    id:'studio-run-1',assetId:'wolf-runtime',platform:'ROBLOX',gameId:'survival',sourceHash:'wolf-v1',artifactHash:'wolf-native-v1',
+    masterGlbHash:'wolf-master-v1',derivedFromMasterGlbHash:'wolf-master-v1',
     nativeBindingPass:true,visualRuntimePass:true,mobilePerformancePass:true,regressionPass:true,licenseProvenancePass:true
   };
   const hashless=evaluateCompanyAssetPromotion({
@@ -868,12 +988,32 @@ test('company asset promotion is impossible without actual native runtime consum
   });
   assert.equal(hashless.eligible,false);
   assert.ok(hashless.blockers.includes('RUNTIME_ASSET_HASH_REQUIRED'));
+  assert.ok(hashless.blockers.includes('RUNTIME_MASTER_GLB_HASH_REQUIRED'));
+  assert.ok(hashless.blockers.includes('RUNTIME_MASTER_GLB_LINEAGE_REQUIRED'));
+  assert.ok(hashless.blockers.includes('RUNTIME_NATIVE_ARTIFACT_HASH_REQUIRED'));
+
+  const wrongLineage=evaluateCompanyAssetPromotion({asset,consumer:{gameId:'survival'},runtimeEvidence:{...evidence,derivedFromMasterGlbHash:'other-master'}});
+  assert.equal(wrongLineage.eligible,false);
+  assert.ok(wrongLineage.blockers.includes('RUNTIME_MASTER_GLB_LINEAGE_MISMATCH'));
+
+  const missingQaAuthority=evaluateCompanyAssetPromotion({asset:{...asset,masterGlbQaAuthority:''},consumer:{gameId:'survival'},runtimeEvidence:evidence});
+  assert.equal(missingQaAuthority.eligible,false);
+  assert.ok(missingQaAuthority.blockers.includes('CROSS_PLATFORM_MASTER_GLB_QA_AUTHORITY_REQUIRED'));
+
+  const missingDeclaredLineage=evaluateCompanyAssetPromotion({asset:{...asset,derivedFromMasterGlbHash:null},consumer:{gameId:'survival'},runtimeEvidence:evidence});
+  assert.equal(missingDeclaredLineage.eligible,false);
+  assert.ok(missingDeclaredLineage.blockers.includes('PLATFORM_NATIVE_DERIVATION_HASH_REQUIRED'));
+
+  const masterAsNative=evaluateCompanyAssetPromotion({asset:{...asset,path:'assets/wolf.glb'},consumer:{gameId:'survival'},runtimeEvidence:{...evidence,artifactPath:'assets/wolf.glb'}});
+  assert.equal(masterAsNative.eligible,false);
+  assert.ok(masterAsNative.blockers.includes('PLATFORM_NATIVE_DERIVATIVE_REQUIRED'));
 
   const ready=evaluateCompanyAssetPromotion({asset,consumer:{gameId:'survival'},runtimeEvidence:evidence});
   assert.equal(ready.eligible,true);
   assert.equal(ready.promotion.verifiedCompanyReusable,true);
   assert.equal(ready.promotion.productionVerified,true);
   assert.equal(ready.promotion.runtimeVerificationState,'VERIFIED_NATIVE_RUNTIME');
+  assert.equal(ready.promotion.masterGlbQaAuthority,'tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb');
 
   const promoted=promoteVerifiedCompanyAssetRegistry({registry:{version:28,assets:[]},asset,consumer:{gameId:'survival'},runtimeEvidence:evidence});
   assert.equal(promoted.updated,true);
@@ -881,13 +1021,13 @@ test('company asset promotion is impossible without actual native runtime consum
   assert.equal(promoted.registry.assets.length,1);
   assert.equal(promoted.registry.assets[0].status,'VERIFIED_COMPANY_ASSET');
 
-  const derivedAsset={id:'wolf-derived',family:'CREATURE',platform:'ROBLOX',path:'assets/wolf-derived.glb',license:'project-original-derivative',sourceSha256:'source-v1',derivedSha256:'artifact-v2'};
+  const derivedAsset={id:'wolf-derived',family:'CREATURE',platform:'ROBLOX',path:'assets/wolf-derived.roblox',license:'project-original-derivative',sourceSha256:'source-v1',derivedSha256:'artifact-v2',masterGlb:'assets/wolf-derived.glb',masterGlbHash:'wolf-derived-master-v1',derivedFromMasterGlbHash:'wolf-derived-master-v1',masterGlbStaticQaPass:true,masterGlbQaAuthority:'tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb'};
   const exactBatch=promoteVerifiedCompanyAssetsFromRuntimeEvidence({
     registry:{version:28,assets:[derivedAsset]},
     consumer:{gameId:'survival',platform:'ROBLOX'},
     runtimeEvidence:{
       id:'studio-run-2',platform:'ROBLOX',gameId:'survival',assetIds:['wolf-derived'],
-      assets:[{assetId:'wolf-derived',sourceHash:'source-v1',artifactHash:'artifact-v2'}],
+      assets:[{assetId:'wolf-derived',sourceHash:'source-v1',artifactHash:'artifact-v2',masterGlbHash:'wolf-derived-master-v1',derivedFromMasterGlbHash:'wolf-derived-master-v1'}],
       nativeBindingPass:true,visualRuntimePass:true,mobilePerformancePass:true,regressionPass:true,licenseProvenancePass:true
     }
   });
@@ -900,8 +1040,9 @@ test('company asset promotion is impossible without actual native runtime consum
     runtimeEvidence:{
       id:'studio-run-generated',platform:'ROBLOX',gameId:'survival',assetIds:['generated-boss'],
       assets:[{
-        assetId:'generated-boss',family:'CREATURE',path:'assets/roblox/survival/native/boss.glb',
+        assetId:'generated-boss',family:'CREATURE',path:'assets/roblox/survival/native/boss.rbxm',
         license:'project-original',sourceHash:'generated-source',artifactHash:'generated-artifact',
+        masterGlb:'assets/roblox/survival/master/boss.glb',masterGlbHash:'generated-boss-master',derivedFromMasterGlbHash:'generated-boss-master',masterGlbStaticQaPass:true,masterGlbQaAuthority:'tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb',
         generatedByDeclaredRecipe:true,persistedForCandidate:true
       }],
       nativeBindingPass:true,visualRuntimePass:true,mobilePerformancePass:true,regressionPass:true,licenseProvenancePass:true
@@ -911,7 +1052,9 @@ test('company asset promotion is impossible without actual native runtime consum
   assert.deepEqual([...generatedBatch.promotedAssetIds],['generated-boss']);
   assert.equal(generatedBatch.registry.assets[0].status,'VERIFIED_COMPANY_ASSET');
   assert.equal(generatedBatch.registry.assets[0].verifiedCompanyReusable,true);
-  assert.equal(generatedBatch.registry.assets[0].path,'assets/roblox/survival/native/boss.glb');
+  assert.equal(generatedBatch.registry.assets[0].path,'assets/roblox/survival/native/boss.rbxm');
+  assert.equal(generatedBatch.registry.assets[0].masterGlb,'assets/roblox/survival/master/boss.glb');
+  assert.equal(generatedBatch.registry.assets[0].masterGlbQaAuthority,'tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb');
 
   const noIdentity=promoteVerifiedCompanyAssetsFromRuntimeEvidence({
     registry:{version:28,assets:[derivedAsset]},
@@ -944,6 +1087,9 @@ test('future demand creature blueprint platform optimizer testbed and usage feed
     signatureSkill:'shadow-pounce',audioIdentity:'dry-growl',hitDeathIdentity:'collapse-and-kick'
   });
   assert.equal(creature.complete,true);
+  assert.equal(creature.masterGlbRequired,true);
+  assert.equal(creature.masterAssetFormat,'GLB_2_0');
+  assert.equal(creature.primitiveFallbackPrototypeOnly,true);
   assert.equal(creature.gameplayStatsAuthority,false);
 
   const variant=createPlatformAssetVariantPlan({platform:'ROBLOX',deviceClass:'MOBILE',sourceAssetId:'wolf'});
@@ -4269,11 +4415,24 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
   const seedPlan=createCompanySeedAssetIdeationPlan({seeds,assets:registry.assets});
   const plan=buildInternalAssetLibraryAutomationPlan({assets:registry.assets,seedPlan,uiAtomIds:ui.atoms.map(row=>row.atomId),externalSources:registry.externalSources});
 
-  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,13);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,15);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.countPolicy,'LOOSE_TARGET_BANDS_NOT_HARD_CAPS');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.persistentWorklistField,'internalAssetLibraryAutomation.nextVolumeActions');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.volumeActionConsumption,'PERSISTED_PRIORITY_WORKLIST_FIRST');
-  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction,8);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.perDomainIdeaBudgetPerCycle,16384);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.domainVolumeActionLimitPerDomain,2048);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.uiSubsystemVolumeActionLimitPerSubsystem,1024);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maxVolumeWorklistActions,65536);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.taskReferenceOverlayWorklistLimit,32768);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.supplyDecisionSummaryActionLimit,8192);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction,2048);
+  assert.deepEqual(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maintenanceListLimits,{
+    semanticDuplicateReviewGroups:2048,
+    donorCandidates:4096,
+    deltaTokens:16384,
+    qualityActions:8192
+  });
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.hardMaximum,null);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.referenceImageIdeaOverlay.enabled,true);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.referenceImageIdeaOverlay.taskLocalOnly,true);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.referenceImageIdeaOverlay.persistentRegistryStorageForbidden,true);
@@ -4497,7 +4656,7 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
 });
 
 test('internal asset breadth profiles support simple-to-deep progression and quality-before-volume',()=>{
-  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,13);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,15);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityTargetInternalAuditScore,1000);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpStartsOnlyAfterRecommendedVolume,false);
 
@@ -4571,13 +4730,26 @@ test('catalog-driven company asset registry synchronization is persistent only w
     assert.ok(stale);
     assert.equal(stale.catalogState,'STALE_CATALOG_ROW_REVIEW');
     assert.equal(stale.automaticDeletionForbidden,true);
-    assert.equal(first.registry.internalAssetLibraryAutomation.version,13);
+    assert.equal(first.registry.internalAssetLibraryAutomation.version,15);
     assert.equal(first.registry.internalAssetLibraryAutomation.autoRegistrySync,true);
     assert.ok(Array.isArray(first.registry.internalAssetLibraryAutomation.nextVolumeActions));
     assert.ok(first.registry.internalAssetLibraryAutomation.nextVolumeActions.length>0);
     assert.deepEqual(first.registry.internalAssetLibraryAutomation.nextVolumeActions,first.automationPlan.nextVolumeActions);
     assert.equal(first.registry.internalAssetLibraryAutomation.persistentWorklistField,'internalAssetLibraryAutomation.nextVolumeActions');
     assert.equal(first.registry.internalAssetLibraryAutomation.volumeActionConsumption,'PERSISTED_PRIORITY_WORKLIST_FIRST');
+    assert.equal(first.registry.internalAssetLibraryAutomation.perDomainIdeaBudgetPerCycle,16384);
+    assert.equal(first.registry.internalAssetLibraryAutomation.domainVolumeActionLimitPerDomain,2048);
+    assert.equal(first.registry.internalAssetLibraryAutomation.uiSubsystemVolumeActionLimitPerSubsystem,1024);
+    assert.equal(first.registry.internalAssetLibraryAutomation.maxVolumeWorklistActions,65536);
+    assert.equal(first.registry.internalAssetLibraryAutomation.taskReferenceOverlayWorklistLimit,32768);
+    assert.equal(first.registry.internalAssetLibraryAutomation.supplyDecisionSummaryActionLimit,8192);
+    assert.equal(first.registry.internalAssetLibraryAutomation.freeSourceCandidateLimitPerAction,2048);
+    assert.deepEqual(first.registry.internalAssetLibraryAutomation.maintenanceListLimits,{
+      semanticDuplicateReviewGroups:2048,
+      donorCandidates:4096,
+      deltaTokens:16384,
+      qualityActions:8192
+    });
     assert.deepEqual(first.registry.internalAssetLibraryAutomation.reuseResolutionOrder,['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','LICENSE_VERIFIED_FREE_SOURCE_ADAPT','NEW_AUTHORING']);
     assert.equal(first.registry.internalAssetLibraryAutomation.qualityUpPolicy.workingBandMin,980);
     assert.equal(first.registry.internalAssetLibraryAutomation.qualityUpPolicy.target,1000);
@@ -4648,7 +4820,7 @@ test('canonical company asset registry becomes dry-run idempotent after current 
   assert.equal(result.persisted,false);
   assert.equal(result.persistError,null);
   assert.equal(result.registry.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion,result.registry.version);
-  assert.equal(result.registry.internalAssetLibraryAutomation.version,13);
+  assert.equal(result.registry.internalAssetLibraryAutomation.version,15);
   assert.ok(Array.isArray(result.registry.internalAssetLibraryAutomation.nextVolumeActions));
   assert.deepEqual(result.registry.internalAssetLibraryAutomation.nextVolumeActions,result.automationPlan.nextVolumeActions);
   assert.equal(result.registry.internalAssetLibraryAutomation.audioStudioBreadth.status,'ACTIVE_STUDIO_AUDIO_BREADTH');

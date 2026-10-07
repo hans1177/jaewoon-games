@@ -1,5 +1,5 @@
 {
-  "version": 175,
+  "version": 181,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -815,7 +815,145 @@
     ],
     "preparedSemanticMayNotClaimVerified": true,
     "actualNativeRuntimeEvidenceRequiredForPromotion": true,
-    "unresolvedRequiredCompatibilityEdgeBlocksPromotion": true
+    "unresolvedRequiredCompatibilityEdgeBlocksPromotion": true,
+    "articulated3DActorGlbEvidence": {
+      "requiredForFamilies": [
+        "CHARACTER",
+        "CREATURE"
+      ],
+      "requiredFields": [
+        "MASTER_GLB_PATH",
+        "MASTER_GLB_SHA256",
+        "MASTER_GLB_STRUCTURE_RESULT",
+        "RIG_AND_SKIN_RESULT_WHEN_ARTICULATED",
+        "PLATFORM_NATIVE_VARIANT_RESULT",
+        "EXACT_RUNTIME_CONSUMER_RESULT",
+        "MASTER_GLB_STATIC_QA_RESULT",
+        "JOINT_ANIMATION_CHANNEL_RESULT",
+        "ROLE_STATE_MOTION_BINDING_RESULT",
+        "PLATFORM_ANIMATOR_BINDING_RESULT"
+      ],
+      "primitiveOnlyFinalActorCannotPass": true,
+      "sharedMasterDoesNotProvePlatformRuntime": true,
+      "requiredForRoles": [
+        "PLAYER",
+        "GENERAL_NPC",
+        "NPC",
+        "VILLAGER",
+        "COMPANION",
+        "PARTY_MEMBER",
+        "ALLY",
+        "FRIENDLY_CHARACTER",
+        "STORY_CHARACTER",
+        "CIVILIAN",
+        "MERCHANT",
+        "VENDOR",
+        "SERVICE_NPC",
+        "QUEST_GIVER",
+        "GUARD",
+        "WORKER",
+        "ARTISAN",
+        "FARMER",
+        "HEALER",
+        "TRAINER",
+        "RIVAL",
+        "HOSTILE_HUMANOID",
+        "NAMED_ELITE",
+        "HUMANOID_BOSS",
+        "ENEMY",
+        "ELITE",
+        "MINI_BOSS",
+        "CREATURE",
+        "PET",
+        "MOUNT",
+        "SUMMON",
+        "BOSS",
+        "RAID_BOSS"
+      ],
+      "roleFamilies": {
+        "CHARACTER": [
+          "PLAYER",
+          "GENERAL_NPC",
+          "NPC",
+          "VILLAGER",
+          "COMPANION",
+          "PARTY_MEMBER",
+          "ALLY",
+          "FRIENDLY_CHARACTER",
+          "STORY_CHARACTER",
+          "CIVILIAN",
+          "MERCHANT",
+          "VENDOR",
+          "SERVICE_NPC",
+          "QUEST_GIVER",
+          "GUARD",
+          "WORKER",
+          "ARTISAN",
+          "FARMER",
+          "HEALER",
+          "TRAINER",
+          "RIVAL",
+          "HOSTILE_HUMANOID",
+          "NAMED_ELITE",
+          "HUMANOID_BOSS"
+        ],
+        "CREATURE": [
+          "ENEMY",
+          "ELITE",
+          "MINI_BOSS",
+          "CREATURE",
+          "PET",
+          "MOUNT",
+          "SUMMON",
+          "BOSS",
+          "RAID_BOSS"
+        ]
+      },
+      "roleSpecificVisualAndMotionEvidenceRequired": true,
+      "npcDiversityEvidence": {
+        "required": true,
+        "requiredFields": [
+          "ROLE",
+          "HEIGHT_CM",
+          "WEIGHT_KG",
+          "BODY_PROPORTION_PROFILE",
+          "FACE_HAIR_SURFACE_IDENTITY",
+          "OUTFIT_EQUIPMENT_IDENTITY",
+          "STANCE_GAIT_MOTION_IDENTITY",
+          "DISTINCT_IDENTITY_AXIS_COUNT",
+          "MASTER_GLB_LINEAGE"
+        ],
+        "nearbyPairMinimumDistinctAxes": 5,
+        "heroCompanionEliteBossTargetDistinctAxes": 8,
+        "colorOnlySizeOnlyOrFaceOnlyCloneCannotPass": true
+      }
+    }
+  },
+  "npcRoleProductionEvidenceContract": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.studioAssetUniverse.npcRoleProduction",
+    "requiredFields": [
+      "NPC_ROLE",
+      "HEIGHT_CM",
+      "WEIGHT_KG",
+      "BODY_PROPORTION_SIGNATURE",
+      "HEAD_FACE_HAIR_SURFACE_SIGNATURE",
+      "OUTFIT_EQUIPMENT_WEAR_SIGNATURE",
+      "GAIT_IDLE_INTERACTION_SIGNATURE",
+      "MASTER_GLB_PATH",
+      "MASTER_GLB_SHA256",
+      "PLATFORM_NATIVE_BINDING_RESULT",
+      "RUNTIME_VISUAL_MOTION_RESULT",
+      "ROLE_MOTION_REQUIREMENTS",
+      "ROLE_STATE_MOTION_BINDINGS",
+      "ACTIVE_JOINT_MOTION_RESULT",
+      "ANIMATOR_BINDING_RESULT"
+    ],
+    "nearbyDistinctAxisMinimum": 5,
+    "heroCompanionEliteBossDistinctAxisTarget": 8,
+    "colorOnlySizeOnlyOrFaceOnlyCloneCannotPass": true,
+    "physicalIdentityMustReachRoleProfileAndCustomizationRecipe": true,
+    "gameplayScaleCollisionHitboxMovementStatsEvidenceMustRemainUnchanged": true
   },
   "universalAssetCoverageEvidenceContract": {
     "version": 1,
@@ -1678,14 +1816,16 @@
       "staleIdentityCannotProveSynchronized": true,
       "allRegisteredLibrariesAccountedFor": true,
       "sourceAndRuntimeAndDeploymentEvidenceRequiredForConversionCompletion": true,
-      "platformEvidenceCannotSubstituteForAnotherPlatform": true
+      "platformEvidenceCannotSubstituteForAnotherPlatform": true,
+      "articulated3DActorMasterGlbEvidenceRequired": true
     },
     "hardFailureClasses": [
       "UNIVERSAL_ASSET_LOOKUP_MISSING",
       "APPLICABLE_ASSET_FAMILY_NOT_BOUND",
       "ASSET_MARKER_ONLY_NO_VISIBLE_USE",
       "PRIMITIVE_ONLY_VISUAL_UPGRADE",
-      "MAP_ENVIRONMENT_ASSET_COVERAGE_MISSING"
+      "MAP_ENVIRONMENT_ASSET_COVERAGE_MISSING",
+      "CROSS_PLATFORM_MASTER_GLB_REQUIRED"
     ]
   },
   "existingGameHolisticBackfillEvidenceContract": {

@@ -1,5 +1,5 @@
 {
-  "version": 78,
+  "version": 82,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -616,10 +616,48 @@
       "externalAssetRequiresLicenseAndProvenanceGate": true,
       "styleLockDeviationMayRequireRepair": true,
       "directCrossPlatformBinaryReuseForbidden": true,
+      "articulated3DActorFinalAssetRequiresMasterGlb": true,
+      "masterGlbPathHashAndProvenanceRequired": true,
+      "primitiveOnlyCharacterCreatureOrBossCannotPromote": true,
+      "sharedMasterGlbCannotSubstitutePlatformNativeRuntimeVerification": true,
+      "platformNativeVariantMustRemainSeparateFromSharedMaster": true,
+      "npcCompanionEliteAndBossRoleProfilesRequireDistinctVisualAndMotionEvidence": true,
+      "colorOnlyNpcRoleCloneCannotPromote": true,
+      "roleSpecificActorPresentationCannotMutateGameplayStatsAiAuthorityOrHitRules": true,
       "positiveLearningRequiresVerifiedRuntimePass": true,
-      "rawTelemetryDirectTrainingForbidden": true
+      "rawTelemetryDirectTrainingForbidden": true,
+      "npcPhysicalAppearanceDiversityCannotMutateGameplayStats": true,
+      "npcVisualHeightWeightCannotImplicitlyChangeHitboxOrCollision": true,
+      "npcColorOnlySizeOnlyOrFaceOnlyCloneCannotPromote": true,
+      "npcRoleVariationMustPreserveMasterGlbProvenance": true,
+      "companionEliteBossVisualVariationCannotGrantUndeclaredGameplayAdvantages": true,
+      "masterGlbJointWeightsAndJointAnimationChannelsRequired": true,
+      "masterGlbPathStringAloneCannotClaimNativeBinding": true,
+      "rootOnlyActorMotionCannotPromote": true,
+      "characterMotionMannequinCannotPromote": true,
+      "bossScaleOnlyCannotPromote": true,
+      "platformRuntimeEvidenceIndependentPerTarget": true
     },
     "failureAction": "ASSET_REPAIR_REQUIRED_OR_LIBRARY_QUARANTINE_BY_SCOPE"
+  },
+  "npcRoleProductionSecurity": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.studioAssetUniverse.npcRoleProduction",
+    "protections": {
+      "visualHeightWeightCannotMutateAuthoritativeGameplayScale": true,
+      "visualBodyMassCannotMutateCollisionOrHitbox": true,
+      "visualBodyTypeCannotMutateMovementSpeedDamageHealthRewardsOrCooldown": true,
+      "roleProfileCannotExpandAiTargetSelectionOrCombatAuthority": true,
+      "bossAppearanceCannotAuthorizeBalancePhaseRewardOrDamageChanges": true,
+      "colorOnlySizeOnlyOrFaceOnlyCloneCannotClaimDistinctNpc": true,
+      "primitivePartOrWeldOnlyNpcCannotPromoteAsFinalActor": true,
+      "masterGlbAndPlatformRuntimeVerificationRemainRequired": true,
+      "roleStateMotionBindingMustUseExistingGameState": true,
+      "animatorAndActiveJointMotionRequired": true,
+      "rootTransformOnlyNpcCannotPromote": true,
+      "masterGlbPathOnlyNpcCannotPromote": true
+    },
+    "failureAction": "NPC_ASSET_REPAIR_REQUIRED_WITH_GAMEPLAY_AUTHORITY_UNCHANGED"
   },
   "referenceImageWorldObservationSecurity": {
     "version": 1,
@@ -987,7 +1025,9 @@
       "conversionCompletionRequiresExactSourceRuntimeAndDeploymentEvidence": true,
       "lowQualityScoreMayNotOverrideSafetyOrCompatibility": true,
       "randomSwapOrCountOnlyCannotClaimEvolution": true,
-      "contentExpansionCannotBreakGameIdentityBalanceSaveOrAuthority": true
+      "contentExpansionCannotBreakGameIdentityBalanceSaveOrAuthority": true,
+      "articulated3DActorMasterGlbRequirementCannotBeSatisfiedByMarkersOrPrimitiveAssembly": true,
+      "sharedGlbMasterCannotBypassPlatformNativeRuntimeQa": true
     }
   },
   "existingGameHolisticBackfillSecurity": {
