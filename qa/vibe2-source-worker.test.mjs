@@ -5857,9 +5857,9 @@ test('Studio initial prompt compacts repeated directive prose within the base mo
   assert.equal(sourcePromptContextWindow(initial,{baseContextWindow:16384,maxPredict:3072}),16384);
 });
 
-test('source prompt context grows to 64K only when the prompt actually exceeds the standard 32K budget',()=>{
+test('large source prompts keep the model context at the canonical 32K floor so no larger-context model becomes mandatory',()=>{
   const huge='x'.repeat(120000);
-  assert.equal(sourcePromptContextWindow(huge,{baseContextWindow:32768,maxPredict:3072}),65536);
+  assert.equal(sourcePromptContextWindow(huge,{baseContextWindow:32768,maxPredict:3072}),32768);
 });
 
 test('zero-output focused retry compacts oversized goal into the canonical 8K context budget',()=>{

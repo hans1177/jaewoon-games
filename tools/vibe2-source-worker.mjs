@@ -107,8 +107,7 @@ export function sourcePromptContextWindow(prompt='',{baseContextWindow=JSON_CONT
   const required=estimatedPromptTokens+Math.max(512,Number(maxPredict)||DEFAULT_MAX_PREDICT)+1024;
   if(required<=base)return base;
   if(required<=24576)return Math.max(base,24576);
-  if(required<=32768)return Math.max(base,32768);
-  return Math.max(base,65536);
+  return Math.max(base,STANDARD_GAME_SOURCE_CONTEXT_WINDOW);
 }
 const MAX_GENERATION_ATTEMPTS=4;
 const SPECULATIVE_FULL_WEB_MAX_GENERATION_ATTEMPTS=3;
