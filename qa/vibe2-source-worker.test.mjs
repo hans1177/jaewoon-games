@@ -5318,6 +5318,8 @@ test('game-specific BUILD_UP worker guidance carries source current-to-intended 
   assert.match(source,/expectedPlayerEffect=/);
   assert.match(source,/previousEffectiveness=/);
   assert.match(source,/nextVibeAction=/);
+  assert.match(source,/designContext=/);
+  assert.match(source,/'designContext='/);
   assert.match(source,/contentExpansionVersion=/);
   assert.match(source,/contentTheme=/);
   assert.match(source,/contentBreadth=/);
