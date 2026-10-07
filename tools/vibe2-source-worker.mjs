@@ -1929,24 +1929,31 @@ export function evaluateSingleMotionWorkUnit({order={},sourceRoot='',responsible
 }
 
 export function evaluateStudioQualityCandidateDelta({candidate={},sourceRoot='',contract={},singleMotionCheck=null}={}){
-  if(!contract||typeof contract!=='object')return{required:false,pass:true,phase:null,focusPillar:null,requiredSourceDeltaUnits:0,sourceDeltaUnits:0,requiredVisualUnits:0,visualUnits:0,reason:'NOT_REQUIRED'};
+  if(!contract||typeof contract!=='object')return{required:false,pass:true,phase:null,focusPillar:null,requiredSourceDeltaUnits:0,sourceDeltaUnits:0,requiredVisualUnits:0,visualUnits:0,requiredGameplayUnits:0,gameplayUnits:0,reason:'NOT_REQUIRED'};
   const phase=clean(contract.phase).toUpperCase()||'BUILD_UP';
   const focusPillar=clean(contract.focusPillar).toUpperCase()||'STABILITY';
   const minConnected=Math.max(1,Math.floor(Number(contract?.requiredConnectedImprovements?.min||3)||3));
   const singleMotion=singleMotionCheck?.required===true&&singleMotionCheck?.pass===true&&singleMotionCheck?.reason==='SINGLE_MOTION_SOURCE_SCOPE_AND_DEPTH_EVIDENCE_PASS';
   const requiredSourceDeltaUnits=singleMotion?1:(phase==='BUILD_UP'?minConnected:(contract.realSourceDeltaRequired===true?1:0));
   const requiredVisualUnits=focusPillar==='PRESENTATION'?(singleMotion?1:2):0;
+  const requiredGameplayUnits=singleMotion?0:(contract.gameplaySourceDeltaRequired===true?1:0);
   const sourceRows=[];
   const visualRows=[];
+  const gameplayRows=[];
   const visualPattern=/(?:drawImage|fillStyle|strokeStyle|background|gradient|border|shadow|filter|opacity|font|transform|sprite|texture|mesh|material|shader|lighting|light\b|Color3|BrickColor|SurfaceAppearance|MeshPart|SpecialMesh|ImageLabel|ImageButton|Instance\.new|GameObject(?:\.CreatePrimitive)?|MeshRenderer|SpriteRenderer|Renderer\b|CFrame|Vector3|\.Size\b|\.Position\b|localScale|localPosition|idle|walk|run|motion|animation|Animator|Motor6D|Bone|attack|hit|death|impact|recoil|trail|ParticleEmitter|ParticleSystem|Beam\b|AudioSource|SoundService|Sound\b|AudioContext|camera|Camera\b|shake|zoom|touch|pointer|joystick|safe.?area|mobile)/i;
+  const gameplayPattern=/(?:OnServerEvent|OnServerInvoke|FireServer\s*\(|RemoteEvent|RemoteFunction|DataStoreService|GetDataStore\s*\(|SetAttribute\s*\(|GetAttribute\s*\(|GetAttributeChangedSignal|ContextActionService|BindAction\s*\(|UserInputService|Activated:Connect|Humanoid|MoveTo\s*\(|PathfindingService|damage|health|enemy|combat|weapon|cooldown|hitbox|quest|objective|reward|inventory|economy|currency|coins?|gold|progress|level|unlock|wave|save|load|spawn|aggro|state)/i;
   const inspect=(relative,before,after,kind)=>{
     const oldText=String(before??'');
     const newText=String(after??'');
     if(meaningfulReviewSource(oldText,relative)===meaningfulReviewSource(newText,relative))return;
-    sourceRows.push({path:clean(relative),kind});
+    const row={path:clean(relative),kind};
+    sourceRows.push(row);
     const oldRelevant=presentationRelevantLines(oldText,visualPattern);
     const newRelevant=presentationRelevantLines(newText,visualPattern);
-    if(newRelevant&&oldRelevant!==newRelevant)visualRows.push({path:clean(relative),kind});
+    if(newRelevant&&oldRelevant!==newRelevant)visualRows.push(row);
+    const serverOwner=/(?:^|\/)server\/|\.server\.lua[u]?$/i.test(row.path);
+    const executableGameplay=gameplayPattern.test(newText)&&gameplayPattern.test(newText.replace(/^\s*(?:--|\/\/).*$/gm,''));
+    if(serverOwner||executableGameplay)gameplayRows.push(row);
   };
   for(const edit of candidate?.edits||[])inspect(edit.path,edit.find,edit.replace,'edit');
   for(const file of candidate?.replaceFiles||[]){
@@ -1960,20 +1967,25 @@ export function evaluateStudioQualityCandidateDelta({candidate={},sourceRoot='',
   for(const file of candidate?.newFiles||[])inspect(file.path,'',file.content,'new');
   const sourceDeltaUnits=sourceRows.length;
   const visualUnits=visualRows.length;
+  const gameplayUnits=gameplayRows.length;
   const sourcePass=sourceDeltaUnits>=requiredSourceDeltaUnits;
   const visualPass=visualUnits>=requiredVisualUnits;
+  const gameplayPass=gameplayUnits>=requiredGameplayUnits;
   return{
-    required:requiredSourceDeltaUnits>0||requiredVisualUnits>0,
-    pass:sourcePass&&visualPass,
+    required:requiredSourceDeltaUnits>0||requiredVisualUnits>0||requiredGameplayUnits>0,
+    pass:sourcePass&&visualPass&&gameplayPass,
     phase,
     focusPillar,
     requiredSourceDeltaUnits,
     sourceDeltaUnits,
     requiredVisualUnits,
     visualUnits,
+    requiredGameplayUnits,
+    gameplayUnits,
     files:unique(sourceRows.map(row=>row.path)),
     visualFiles:unique(visualRows.map(row=>row.path)),
-    reason:!sourcePass?'INSUFFICIENT_CONNECTED_SOURCE_DELTAS':!visualPass?'INSUFFICIENT_PRESENTATION_DELTAS':'STUDIO_QUALITY_DELTA_PRESENT'
+    gameplayFiles:unique(gameplayRows.map(row=>row.path)),
+    reason:!sourcePass?'INSUFFICIENT_CONNECTED_SOURCE_DELTAS':!visualPass?'INSUFFICIENT_PRESENTATION_DELTAS':!gameplayPass?'GAMEPLAY_SOURCE_DELTA_REQUIRED':'STUDIO_QUALITY_DELTA_PRESENT'
   };
 }
 
@@ -2083,6 +2095,7 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     ...production,
     `implementationUnit=${clean(ownedAnchors[0]?.intendedBehavior)||clean(d.thisLoopPrimaryGoal)}; observableResult=${clean(ownedAnchors[0]?.observableAcceptance)||clean(d?.effectivenessMeasurement?.expectedPlayerEffect)}`,
     'Complete one coherent player action-to-state-to-feedback/result chain inside this goal. Include every required dependency and atomic file pair. Defer unrelated expansion, not required connected improvements or acceptance gates.',
+    target==='ROBLOX'&&['CORE_FUN','PROGRESSION','STABILITY'].includes(clean(d.primaryFocus).toUpperCase())?'Roblox gameplay BUILD_UP은 실제 server/shared 게임 상태 책임 또는 input→server→state 체인을 수정해야 한다. UI/VFX/색상/마커만 바꾸고 설계 구현 완료로 처리하지 않는다.':'',
     `whyNow=${clean(d.primaryGoalReason)}`,
     ...(sourceAnchors.length?sourceAnchors.map(anchor=>`sourceAnchors=${anchor}`):['sourceAnchors=EXACT_SYMBOL_UNAVAILABLE_USE_RESPONSIBLE_FILE_AND_STATE_ANCHOR']),
     `expectedPlayerEffect=${clean(d?.effectivenessMeasurement?.expectedPlayerEffect)||'UNKNOWN'}`,
@@ -5666,7 +5679,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     const studioQualityContract=order?.selectedTask?.studioQualityEvolution||order?.workPackage?.sharedContext?.studioQualityEvolution||null;
     const studioQualityDelta=evaluateStudioQualityCandidateDelta({candidate,sourceRoot,contract:studioQualityContract,singleMotionCheck});
     if(studioQualityDelta.required&&!studioQualityDelta.pass){
-      throw new Error(`STUDIO_QUALITY_DELTA_REQUIRED:${studioQualityDelta.phase}:${studioQualityDelta.sourceDeltaUnits}/${studioQualityDelta.requiredSourceDeltaUnits}:VISUAL:${studioQualityDelta.visualUnits}/${studioQualityDelta.requiredVisualUnits}:${studioQualityDelta.reason}`);
+      throw new Error(`STUDIO_QUALITY_DELTA_REQUIRED:${studioQualityDelta.phase}:${studioQualityDelta.sourceDeltaUnits}/${studioQualityDelta.requiredSourceDeltaUnits}:VISUAL:${studioQualityDelta.visualUnits}/${studioQualityDelta.requiredVisualUnits}:GAMEPLAY:${studioQualityDelta.gameplayUnits||0}/${studioQualityDelta.requiredGameplayUnits||0}:${studioQualityDelta.reason}`);
     }
     const robloxInternalAssetFamilyBinding=robloxInternalAssetApplicationRequired
       ?evaluateRobloxInternalAssetFamilyBindingCandidate({

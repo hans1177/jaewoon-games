@@ -1308,6 +1308,29 @@ test('verified BUILD_UP cycles escalate from completeness to system depth to coh
   assert.ok(third.evidence.includes('studio-quality-studio-required:NO'));
 });
 
+test('Roblox gameplay design focus prioritizes server and shared responsibility files',()=>{
+  const root=tempRepo();
+  const gameId='roblox-design-code-owner';
+  const gameRoot=path.join(root,'roblox-games',gameId);
+  fs.mkdirSync(path.join(gameRoot,'server'),{recursive:true});
+  fs.mkdirSync(path.join(gameRoot,'shared'),{recursive:true});
+  fs.mkdirSync(path.join(gameRoot,'client'),{recursive:true});
+  fs.writeFileSync(path.join(gameRoot,'server','Game.server.luau'),'local function attack(player) player:SetAttribute("Progress", 1) end\nreturn attack\n','utf8');
+  fs.writeFileSync(path.join(gameRoot,'shared','GameConfig.luau'),'return { Damage = 10, Progression = true }\n','utf8');
+  fs.writeFileSync(path.join(gameRoot,'client','Game.client.luau'),'local root = Instance.new("Frame")\nroot.Parent = game.Players.LocalPlayer.PlayerGui\n','utf8');
+  writeStudioDesign(root,gameId);
+  const project={gameId,name:'Roblox Design Code Owner',engine:'roblox',releaseState:'development-confirmed',projectPath:`roblox-games/${gameId}`,playMode:'SINGLE',genre:'RPG'};
+  const task=findStudioContinuousImprovementTask(project,root,{tasks:[]},'CORE_FUN');
+  assert.ok(task);
+  assert.equal(task.studioQualityEvolution.focusPillar,'CORE_FUN');
+  assert.equal(task.studioQualityEvolution.gameplaySourceDeltaRequired,true);
+  const primaryOwners=task.responsibleFiles.slice(0,2);
+  assert.ok(primaryOwners.some(file=>file.endsWith('/server/Game.server.luau')));
+  assert.ok(primaryOwners.some(file=>file.endsWith('/shared/GameConfig.luau')));
+  assert.equal(primaryOwners.some(file=>file.endsWith('/client/Game.client.luau')),false);
+  assert.ok(task.responsibleFiles.some(file=>file.endsWith('/client/Game.client.luau')));
+});
+
 test('first studio build-up cycle establishes presentation baseline even when noisy nonvisual signals exist',()=>{
   const root=tempRepo();
   const gameId='studio-first-cycle';

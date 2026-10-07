@@ -2781,13 +2781,17 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
   const relevance=file=>{
     const value=file.toLowerCase();
     let score=0;
+    const roblox=clean(project.engine).toLowerCase()==='roblox';
+    const robloxGameplayFocus=roblox&&['CORE_FUN','PROGRESSION','STABILITY'].includes(focusPillar);
     if(/game|core|runtime|main|controller|player|client|server/.test(value))score+=10;
     if(focusPillar==='PRESENTATION'&&/visual|render|ui|hud|effect|vfx|camera|audio|anim|style|scene/.test(value))score+=18;
-    if(project.engine==='roblox'&&focusPillar==='PRESENTATION'&&file.includes('/client/')&&(file.endsWith('.client.luau')||file.endsWith('.lua')))score+=30;
+    if(roblox&&focusPillar==='PRESENTATION'&&file.includes('/client/')&&(file.endsWith('.client.luau')||file.endsWith('.lua')))score+=30;
     if(focusPillar==='USABILITY'&&/ui|hud|input|controller|client|menu/.test(value))score+=18;
     if(focusPillar==='PROGRESSION'&&/progress|quest|reward|inventory|economy|save|unlock|goal|wave|content/.test(value))score+=18;
     if(focusPillar==='CORE_FUN'&&/game|combat|enemy|player|world|core|controller|interaction|ability|weapon/.test(value))score+=18;
     if(focusPillar==='STABILITY'&&/game|core|runtime|server|save|network|state/.test(value))score+=18;
+    if(robloxGameplayFocus&&/(?:^|\/)server\//.test(value))score+=40;
+    if(robloxGameplayFocus&&/(?:^|\/)shared\//.test(value))score+=24;
     return score;
   };
   const responsibleFileLimit=requestedFocus?2:6;
