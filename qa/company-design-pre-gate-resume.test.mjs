@@ -613,4 +613,14 @@ test('platform copy and embedded temporary prose are rejected where written',()=
   assert.ok(reasons.some(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT'));
 });
 
+test('ability authoring applies infection-only instructions to infection games',()=>{
+  const source=design.slice(design.indexOf('function repairStructureContract('),design.indexOf('function impactedRolesFromScores('));
+  const requirementsFor=infection=>runInNewContext(source+'\nrepairStructureContract',{
+    playableRequirements:{infection},seedGameplaySketchVersion:0
+  })(['contentVarietyPlan']).join('\n');
+  assert.doesNotMatch(requirementsFor(false),/기본 감염\/정화|roleTransitions|원본 이름 그대로의 감염 능력/);
+  assert.match(requirementsFor(true),/기본 감염\/정화/);
+  assert.match(requirementsFor(true),/roleTransitions/);
+});
+
 
