@@ -399,6 +399,24 @@ test('Open Cloud engine probe retries transient HTTP throttling without weakenin
  assert.equal(persistentCalls,3);
 });
 
+test('Open Cloud long Retry-After defers without holding the current runner',async()=>{
+ let calls=0;
+ await assert.rejects(()=>probeRobloxOpenCloudEngine({
+  universeId:'1',placeId:'2',versionNumber:20,apiKey:'k',pollIntervalMs:0,maxPolls:1,
+  networkRetryAttempts:3,networkRetryDelayMs:1000,
+  fetchImpl:async()=>{
+   calls++;
+   return {
+    ok:false,
+    status:429,
+    headers:{get:name=>String(name).toLowerCase()==='retry-after'?'1200':null},
+    text:async()=>JSON.stringify({errors:[{code:0,message:'rate limited'}]}),
+   };
+  },
+ }),/ROBLOX_OPEN_CLOUD_ENGINE_CREATE_HTTP_429/);
+ assert.equal(calls,1,'long provider capacity wait is deferred instead of sleeping inside this run');
+});
+
 test('Open Cloud engine probe binds exact place version without granting runtime acceptance',async()=>{
  const calls=[];
  const responses=[
