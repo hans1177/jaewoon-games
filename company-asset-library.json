@@ -1,8 +1,8 @@
 {
-  "version": 113,
+  "version": 114,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
-  "updatedAt": "2026-10-05",
+  "updatedAt": "2026-10-07",
   "publicInspectionSurface": true,
   "productionPassAuthority": false,
   "rules": {
@@ -102,7 +102,34 @@
     "volumeExpansionNewAuthoringAllowed": true,
     "volumeTargetBandsAreGuidanceNotHardCreationCaps": true,
     "newAuthoringMustAddDistinctCoverageOrQualityValue": true,
-    "colorOnlyOrDuplicateSpamDoesNotCountAsNewVolume": true
+    "colorOnlyOrDuplicateSpamDoesNotCountAsNewVolume": true,
+    "crossPlatform3dMasterGlbRequired": true,
+    "crossPlatform3dMasterGlbFormat": "GLB_2_0",
+    "crossPlatform3dMasterGlbFamilies": [
+      "CHARACTER",
+      "CREATURE"
+    ],
+    "crossPlatform3dMasterGlbRoles": [
+      "PLAYER",
+      "NPC",
+      "ENEMY",
+      "CREATURE",
+      "BOSS"
+    ],
+    "crossPlatform3dMasterGlbRequiredContents": [
+      "MESH",
+      "NORMALS",
+      "UV0",
+      "MATERIALS",
+      "SKELETON",
+      "SKIN_WEIGHTS",
+      "ANIMATION"
+    ],
+    "masterGlbRequiredBeforePlatformNativeVariant": true,
+    "primitivePartAssemblyPrototypeOnlyFor3dActors": true,
+    "primitiveOrColorOnly3dActorCannotClaimFinalAsset": true,
+    "previewImageSemanticAtomOrMarkerCannotSubstituteMasterGlb": true,
+    "masterGlbPlatformDerivativeBindingRequired": true
   },
   "platformPacks": [
     {
@@ -1076,7 +1103,52 @@
       "internalUseAllowed": true,
       "lowScoreWouldStillBeUsable": true,
       "higherCompatibleInternalScoreAutoPreferred": true,
-      "productionVerificationSeparate": true
+      "productionVerificationSeparate": true,
+      "masterAssetFormat": "GLB_2_0",
+      "masterGlb": "assets/roblox/world-ghosts/native/spider/spider.glb",
+      "masterGlbHash": "c37af6808a539f646eb77dac65bc339717700e932c25f2928fa5c54135a15525",
+      "masterGlbSourceHash": "643f695ffc87c4e6e1bc84db8b96b475fa222f6276efc3ce24e748277c092633",
+      "masterGlbContractVersion": 1,
+      "masterGlbStaticQaPass": true,
+      "masterGlbQaAuthority": "tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb",
+      "masterGlbEvidenceRef": "assets/roblox/world-ghosts/native/spider/evidence.json",
+      "crossPlatformMasterSource": true,
+      "platformNativeDerivativeRequired": true,
+      "primitiveFallbackFinalUseForbidden": true,
+      "authoringRecipes": [
+        {
+          "id": "insect-spider-hd-master-glb-v1",
+          "assetId": "roblox-insect-spider-hd-v1",
+          "family": "CREATURE",
+          "license": "project-original",
+          "executor": "BLENDER_PYTHON",
+          "script": "assets/roblox/world-ghosts/build-spider.py",
+          "editableSource": "assets/roblox/world-ghosts/build-spider.py",
+          "types": [
+            "enemy",
+            "boss",
+            "creature"
+          ],
+          "targetPlatforms": [
+            "roblox",
+            "unity"
+          ],
+          "args": [
+            "--output",
+            "assets/roblox/world-ghosts/native/spider",
+            "--render"
+          ],
+          "outputs": [
+            "assets/roblox/world-ghosts/native/spider/spider.glb",
+            "assets/roblox/world-ghosts/native/spider/spider.png",
+            "assets/roblox/world-ghosts/native/spider/evidence.json"
+          ],
+          "evidenceJson": "assets/roblox/world-ghosts/native/spider/evidence.json",
+          "preview": "assets/roblox/world-ghosts/native/spider/spider.png",
+          "runMode": "VERIFY_ONLY",
+          "masterGlbRequired": true
+        }
+      ]
     },
     {
       "id": "ladybug-sprite",
@@ -66310,6 +66382,40 @@
         "combatVfxCameraUiFeedback": true
       },
       "nativeRuntimePassRequiredForVerifiedCount": true
+    },
+    "crossPlatform3dMasterGlbContract": {
+      "version": 1,
+      "status": "ACTIVE_EXECUTABLE_CONTRACT",
+      "format": "GLB_2_0",
+      "appliesToFamilies": [
+        "CHARACTER",
+        "CREATURE"
+      ],
+      "appliesToRoles": [
+        "PLAYER",
+        "NPC",
+        "ENEMY",
+        "CREATURE",
+        "BOSS"
+      ],
+      "requiredBeforePlatformNativeVariant": true,
+      "structuralQa": [
+        "GLB_VERSION_2",
+        "MESH",
+        "NORMALS",
+        "UV0",
+        "MATERIALS",
+        "SKIN_SKELETON",
+        "JOINT_WEIGHTS",
+        "ANIMATION"
+      ],
+      "platformBindings": {
+        "ROBLOX": "NATIVE_IMPORT_OR_REAUTHOR_FROM_MASTER_GLB",
+        "UNITY": "NATIVE_IMPORT_OR_REAUTHOR_FROM_MASTER_GLB",
+        "WEB": "MASTER_GLB_OR_DERIVED_GLTF_RUNTIME_BINDING"
+      },
+      "primitivePartAssemblyPrototypeOnly": true,
+      "platformNativeRuntimeVerificationStillRequired": true
     }
   },
   "baseMaterialLibrary": {
