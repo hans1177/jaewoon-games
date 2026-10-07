@@ -280,6 +280,14 @@ test('Roblox source workflow persists Studio selection handoff for downstream ru
   assert.match(workflow,/studioAssetBindingApplied:bootstrapEvidence\.studioAssetBindingApplied===true/);
   assert.match(workflow,/studioAssetBinding:bootstrapEvidence\.studioAssetBinding\|\|null/);
   assert.match(workflow,/robloxStudioAssetBindingApplied:result\.studioAssetBindingApplied===true/);
+  assert.match(workflow,/build_up_asset_fingerprint=.*buildUpAssetSourceUsageFingerprint/);
+  assert.match(workflow,/asset_selection_fingerprint=.*assetSelectionFingerprint/);
+  assert.match(workflow,/asset_library_version=.*assetLibraryVersion/);
+  assert.match(workflow,/--build-up-asset-fingerprint="\$build_up_asset_fingerprint"/);
+  assert.match(workflow,/--asset-selection-fingerprint="\$asset_selection_fingerprint"/);
+  assert.match(workflow,/--asset-library-version="\$asset_library_version"/);
+  assert.match(workflow,/robloxBuildUpAssetSourceUsageFingerprint:result\.buildUpAssetSourceUsageFingerprint/);
+  assert.match(workflow,/robloxBuildAssetSelectionFingerprint:result\.assetSelectionFingerprint/);
   assert.match(workflow,/robloxStudioAssetRuntimeBindingPassed:false/);
   assert.match(workflow,/robloxStudioAssetRuntimeBindingEvidence:null/);
 });
