@@ -106,7 +106,7 @@ import {
   buildBaseMaterialRotationPlan,
   createStudioAssetUniversePlan
 } from '../assets/vibe-studio-asset-universe.js';
-import {createVibeCharacterPersona,resolveVibeCharacterBehaviorIntent,createVibePopulationPersonaDiversity,VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,VIBE_NPC_ROLE_PRODUCTION_CONTRACT,createVibeNpcPhysicalProfile,createVibeNpcRoleProfile,createVibeCharacterCustomizationRecipe,createVibeNpcCustomizationPopulation} from '../assets/vibe-character-identity-director.js';
+import {createVibeCharacterPersona,resolveVibeCharacterBehaviorIntent,createVibePopulationPersonaDiversity,VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,VIBE_NPC_ROLE_PRODUCTION_CONTRACT,createVibeNpcPhysicalProfile,createVibeNpcRoleProfile,createVibeCharacterCustomizationRecipe,createVibeNpcCustomizationPopulation,createVibePhysicalDiversityGate} from '../assets/vibe-character-identity-director.js';
 import {synchronizeCompanyCommonAssetRegistry,synchronizeSourceBoundAssetConsumers,buildAssetSupplyDecisionSummary,buildVibeAssetProductionPlan} from '../tools/vibe2-asset-production-plan.mjs';
 
 const fullQualityEvidence=Object.freeze({
@@ -570,6 +570,8 @@ test('deep RPG character customization breadth drives player and NPC variety wit
   assert.ok(population.visualMassCoverage.length>=3);
   assert.ok(population.recipes.every(row=>row.speciesParts.compatibilityChecked===true));
   assert.ok(population.recipes.every(row=>row.npcRoleProfile.physical.heightCm===row.body.heightCm));
+  assert.ok(population.recipes.every(row=>row.npcRoleProfile.physical.weightKg===row.body.weightKg));
+  assert.ok(population.recipes.every(row=>row.presentation.gait.bodyScaleLanguage===row.body.scaleClass));
   assert.ok(new Set(population.recipes.map(row=>row.head.baseFamily)).size>=6);
   assert.ok(new Set(population.recipes.map(row=>row.hair.style)).size>=8);
 });
@@ -591,6 +593,14 @@ test('NPC physical and role profiles support companions service roles elites and
   assert.equal(boss.scaleClass,'GIANT');
   assert.equal(boss.statsUnchanged,true);
   assert.equal(boss.authoritativeCollisionScaleOwnedByGame,true);
+
+  const diversityGate=createVibePhysicalDiversityGate({characters:[
+    {name:'small-merchant',role:'MERCHANT',heightCm:148,weightKg:48,frame:'compact',posture:'relaxed'},
+    {name:'tall-guard',role:'GUARD',heightCm:202,weightKg:118,frame:'broad',posture:'upright'},
+    {name:'boss',role:'HUMANOID_BOSS',heightCm:248,weightKg:210,frame:'heavy',posture:'forward'}
+  ]});
+  assert.equal(diversityGate.pass,true,diversityGate.issues.join(','));
+  assert.equal(diversityGate.minimumDistinctAxes,VIBE_NPC_ROLE_PRODUCTION_CONTRACT.physicalDiversity.nearbyDistinctAxisMinimum);
 
   for(const role of ['GENERAL_NPC','MERCHANT','QUEST_GIVER','GUARD','WORKER','HEALER','RIVAL','NAMED_ELITE','HUMANOID_BOSS']){
     const row=createVibeNpcRoleProfile({role,character:{name:'qa-'+role,species:'humanoid'},index:2});
