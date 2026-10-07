@@ -5,7 +5,6 @@ on:
   push:
     paths:
       - 'game-catalog.json'
-      - 'tools/company-all-games-design-reset.mjs'
       - 'tools/company-game-seed-contract.mjs'
       - '.github/workflows/owner-all-games-design-reset.yml'
 
@@ -22,6 +21,7 @@ env:
 
 jobs:
   reset-to-design:
+    if: github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[owner-reset-trigger-scope-only]')
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -37,6 +37,10 @@ jobs:
           set -euo pipefail
           cp tools/company-all-games-design-reset.mjs /tmp/company-all-games-design-reset.mjs
           cp tools/company-game-seed-contract.mjs /tmp/company-game-seed-contract.mjs
+          cp tools/company-game-seed-bootstrap.mjs /tmp/company-game-seed-bootstrap.mjs
+          cp tools/game-seed-state.mjs /tmp/game-seed-state.mjs
+          cp tools/game-seed-platform-profile.mjs /tmp/game-seed-platform-profile.mjs
+          cp tools/company-vibe2-game-flow-architect.mjs /tmp/company-vibe2-game-flow-architect.mjs
           git config user.name 'jaewoon-owner-design-reset'
           git config user.email 'owner-design-reset@users.noreply.github.com'
           pushed=0
