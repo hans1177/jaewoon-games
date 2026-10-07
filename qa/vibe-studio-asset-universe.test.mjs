@@ -1254,6 +1254,43 @@ test('universal coverage separates verified assets from prepared semantic work',
   assert.equal(coverage.overallCoveragePercent,33);
 });
 
+test('studio asset universe reuses one registry index instead of rescanning the growing library per slot',()=>{
+  const irrelevant=Array.from({length:600},(_,index)=>({
+    id:`prop-${index}`,family:'PROP',subfamily:'DECORATION',status:'REPO_ASSET',sourceFiles:[`assets/props/${index}.glb`]
+  }));
+  const assets=[
+    ...irrelevant,
+    {id:'character-body',family:'CHARACTER',subfamily:'BODY',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,sourceFiles:['assets/body.glb']},
+    {id:'character-hair',family:'CHARACTER',subfamily:'HAIR',status:'PREPARED_SEMANTIC',sourceFiles:['assets/hair.glb']},
+    {id:'weapon-melee',family:'WEAPON',subfamily:'MELEE',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,sourceFiles:['assets/sword.glb']}
+  ];
+  const coverage=scanUniversalAssetCoverage({
+    assets,
+    baselines:{CHARACTER:{BODY:1,HAIR:1},WEAPON:{MELEE:1}},
+    activeDemand:{CHARACTER:{BODY:1,HAIR:1},WEAPON:{MELEE:1}},
+    platform:'UNITY'
+  });
+  assert.equal(coverage.scanStats.normalizationVisits,assets.length);
+  assert.equal(coverage.scanStats.bucketLookupCount,3);
+  assert.equal(coverage.scanStats.candidateVisits,3);
+  assert.equal(coverage.rows.find(row=>row.family==='CHARACTER'&&row.subfamily==='BODY').availableVerified,1);
+  assert.equal(coverage.rows.find(row=>row.family==='CHARACTER'&&row.subfamily==='HAIR').availablePrepared,1);
+
+  const plan=createStudioAssetUniversePlan({
+    assets,
+    requirements:[{family:'CHARACTER',subfamily:'BODY',required:true},{family:'WEAPON',subfamily:'MELEE',required:true}],
+    activeDemand:{CHARACTER:{BODY:1},WEAPON:{MELEE:1}},
+    platform:'UNITY',
+    gameId:'index-bottleneck-qa'
+  });
+  assert.equal(plan.coverage.scanStats.indexReused,true);
+  assert.equal(plan.loadout.searchStats.indexReused,true);
+  assert.equal(plan.gapFill.searchStats.verifiedIndexReused,true);
+  assert.equal(plan.gapFill.searchStats.repositoryIndexReused,true);
+  assert.equal(plan.gapFill.searchStats.externalIndexReused,true);
+  assert.ok(plan.loadout.searchStats.candidateVisits<20);
+});
+
 test('heatmap and autonomous gap fill prioritize real gaps without false promotion',()=>{
   const coverage=scanUniversalAssetCoverage({
     assets:[],
