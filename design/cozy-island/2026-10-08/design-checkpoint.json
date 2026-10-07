@@ -177,25 +177,40 @@
         "unityRule": "UNITY_3D_4D_5D_6D_7D_8D_9D_10D",
         "robloxRule": "ROBLOX_3D_4D_5D_6D_7D_8D_9D_10D"
       }
+    },
+    "designer_draft_slices::ux-presentation": {
+      "visualDirection": "밝고 따뜻한 동화책 미니어처 왕국. 큰 머리와 둥근 얼굴, 짧고 굵은 팔다리의 치비 주민과 하나의 연결된 실루엣으로 보이는 야생동물을 사용한다.",
+      "mobileUx": "모바일 큰 버튼과 터치 상호작용을 우선하고 키보드와 게임패드를 같은 행동에 매핑한다.",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "상단에 기본자원·특수자원·주민·병력·점령 상태를 표시하고 하단에 벌목·식량수급·주민영입·병영·모집·전투 버튼을 모바일 큰 버튼으로 제공한다.",
+        "touchAndInput": "모바일 큰 버튼과 터치 상호작용을 우선하고 키보드와 게임패드를 같은 행동에 매핑한다.",
+        "readability": "서버 권한으로 자동전투와 협동 지원 계산을 처리하고, 키보드와 게임패드 입력을 지원한다.",
+        "accessibility": "모바일 터치 상호작용과 키보드 입력을 모두 지원하며, 터치 버튼의 크기와 위치를 조절할 수 있다."
+      },
+      "artAudioDirection": {
+        "visualIdentity": "COZY_CHIBI_STORYBOOK",
+        "audioIdentity": "COZY_CHIBI_KINGDOM",
+        "gameplayFeedbackSync": "COZY_CHIBI_KINGDOM_WORLD_V8"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 5,
+      "calls": 8,
+      "successes": 6,
       "failures": 2,
       "timeouts": 1,
       "jsonFailures": 1,
-      "totalMs": 1174629,
-      "lastMs": 170263,
+      "totalMs": 1366224,
+      "lastMs": 191595,
       "lastError": "Expected ',' or ']' after array element in JSON at position 1654 (line 1 column 1655)",
-      "updatedAt": "2026-10-07T19:31:44.313Z"
+      "updatedAt": "2026-10-07T19:34:55.909Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T18:14:44.822Z",
-  "updatedAt": "2026-10-07T19:31:44.314Z",
+  "updatedAt": "2026-10-07T19:34:55.910Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
@@ -208,7 +223,7 @@
     "preservedTaskCount": 0,
     "migratedAt": "2026-10-07T19:17:03.220Z"
   },
-  "lastSuccessfulModelCallAt": "2026-10-07T19:31:44.313Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T19:34:55.909Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
