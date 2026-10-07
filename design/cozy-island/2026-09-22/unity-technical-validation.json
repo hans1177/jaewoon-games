@@ -5,12 +5,12 @@
   "pass": true,
   "validated": true,
   "target": "UNITY_ANDROID_TECHNICAL_VALIDATION",
-  "checkedAt": "2026-10-06T01:15:11.422Z",
+  "checkedAt": "2026-10-07T05:43:07.052Z",
   "sourceBinding": {
-    "upstreamBuildRunId": 37327842090,
-    "sourceCommit": "9987786cd7543757ed4893bb5d8fc2ab43a9f370",
-    "sourceTreeSha": "d2e87813bf9189a02fc18487ee8142bf73eb7bf4",
-    "apkSha256": "2d0880a7f30d82bdfbd21fa5743680d1b9176af0f98538ef770637ba7661c4ec",
+    "upstreamBuildRunId": 37575604303,
+    "sourceCommit": "48a351631ac3be22e3c9bac0d1f1ef502233879e",
+    "sourceTreeSha": "49c4dde2a5a466fbc7a764b79c2539219e53d5b0",
+    "apkSha256": "4fc3b4ac9d3e12086317af9202986fb9f15175c394a48be8b7c1ad643fd74ba4",
     "sameBinding": true
   },
   "foundationAdapter": {
@@ -125,7 +125,7 @@
     "MEMORY_HEAT_LOADING": {
       "state": "PASS_WITH_LIMITATION",
       "provider": "ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO",
-      "maxAllocatedMemoryBytes": 52615479,
+      "maxAllocatedMemoryBytes": 51558214,
       "loading": "PASS",
       "heat": "EMULATOR_ONLY_NOT_PHYSICAL_DEVICE",
       "limitation": "Physical-device thermal behavior remains a RELEASE_CONFIRMED device-validation concern."
@@ -177,9 +177,9 @@
     "Physical-device thermal behavior is not inferred from emulator evidence."
   ],
   "provenance": {
-    "buildInfo": "/tmp/unity-build/cozy-island-android-cloud-37327842090-1/build-info.json",
-    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-37327842090/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
-    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-37327842090/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
+    "buildInfo": "/tmp/unity-build/cozy-island-android-cloud-37575604303-1/build-info.json",
+    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-37575604303/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
+    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-37575604303/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
     "projectPath": "unity-games/cozy-island"
   }
 }
