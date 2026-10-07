@@ -2269,6 +2269,8 @@ function assetApplyFirstCandidate(asset={},target='',binding={}){
     ready:Boolean(masterGlbReady&&hasNativeReference&&asset.downloaded!==false&&lane!=='D_AUTHORING_REQUIRED'),
     masterGlbRequired,
     masterGlbReady,
+    masterGlbStaticQaPass:masterGlbRequired?asset.masterGlbStaticQaPass===true:null,
+    masterGlbBlockers:freezeList(asset.masterGlbBlockers||[]),
     masterGlb:asset.masterGlb||null,
     masterGlbHash:asset.masterGlbHash||null,
     crossPlatformMasterSource:asset.crossPlatformMasterSource===true,
