@@ -747,12 +747,17 @@ if not nativeFoundationSpawn then
   nativeFoundationSpawn = Instance.new("SpawnLocation")
   nativeFoundationSpawn.Name = "NativeFoundationSpawn"
   nativeFoundationSpawn.Size = Vector3.new(8, 1, 8)
-  nativeFoundationSpawn.Position = Vector3.new(0, 3, 0)
   nativeFoundationSpawn.Neutral = true
   nativeFoundationSpawn.Parent = workspace
 end
 nativeFoundationSpawn.Anchored = true
 nativeFoundationSpawn.CanCollide = true
+-- 첫 헤드리스 프레임에서도 플레이어 접속 없이 실제 경로 지면에 스폰을 고정한다.
+nativeFoundationSpawn.Position = Vector3.new(
+  0,
+  worldState.path.Position.Y + worldState.path.Size.Y * 0.5 + nativeFoundationSpawn.Size.Y * 0.5 + 0.05,
+  0
+)
 
 local function bindNativeFoundationCharacter(character)
   local humanoid = character:WaitForChild("Humanoid", 10)
