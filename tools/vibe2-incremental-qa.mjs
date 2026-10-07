@@ -600,8 +600,13 @@ function runPresentationStaticQa({root,data={},changed=[]}={}){
         const npcImportedActorReuse=/(?:\bClone\s*\(|WaitForChild\s*\(\s*["'][^"']*(?:Npc|NPC|Character|Companion|Elite|Boss|Rig|Model)[^"']*["']\s*\)|FindFirstChild\s*\(\s*["'][^"']*(?:Npc|NPC|Character|Companion|Elite|Boss|Rig|Model)[^"']*["']\s*\)|LoadAsset\w*\s*\()/i.test(text);
         const npcNativeActorBinding=(npcMeshInstance&&npcMeshIdentity)||npcImportedActorReuse;
         const primitiveFinalActor=npcFactorySignal&&npcPrimitiveBodyPartCount>=2;
+        const bossFromGenericEnemyClone=/(?:local\s+)?\w*boss\w*\s*=\s*\w*(?:enemy|monster|mob|npc)\w*\s*:\s*Clone\s*\(|\w*(?:enemy|monster|mob|npc)\w*\s*:\s*Clone\s*\(\s*\)[\s\S]{0,300}\b(?:Boss|MiniBoss|RaidBoss)\b/i.test(text);
+        const bossScaleMutation=/(?:\w*boss\w*\s*:\s*ScaleTo\s*\(|\w*boss\w*[\s\S]{0,220}(?:\.Size\s*=|\.Scale\s*=))/i.test(text);
+        const bossDedicatedPresentation=/(?:Boss|MiniBoss|RaidBoss)[\s\S]{0,900}(?:MeshId|SurfaceAppearance|Attachment|Accessory|armor|weapon|Animator|AnimationTrack|LoadAnimation|intro|special|enrage|stun|guard.?break|finisher|ParticleEmitter|Trail|Beam)|(?:MeshId|SurfaceAppearance|Attachment|Accessory|armor|weapon|Animator|AnimationTrack|LoadAnimation|intro|special|enrage|stun|guard.?break|finisher|ParticleEmitter|Trail|Beam)[\s\S]{0,900}(?:Boss|MiniBoss|RaidBoss)/i.test(text);
+        const bossScaleOnly=bossFromGenericEnemyClone&&bossScaleMutation&&!bossDedicatedPresentation;
         require('ROBLOX_NPC_NO_PRIMITIVE_DOLL_FINAL',!primitiveFinalActor);
         require('PRIMITIVE_ONLY_FINAL_3D_ACTOR',!primitiveFinalActor);
+        require('BOSS_SCALE_ONLY_FINAL_3D_ACTOR',!bossScaleOnly);
         if(npcFactorySignal&&!primitiveFinalActor)require('ROBLOX_NPC_NATIVE_ACTOR_BINDING',npcNativeActorBinding);
         const motionDriver=/(?:TweenService|RenderStepped|Heartbeat|Animator|AnimationTrack|Motor6D|Bone)/i.test(text);
         const motionMutation=/(?:TweenService[\s\S]{0,1200}(?:CFrame|Transform|Position|Orientation)\s*=|(?:RenderStepped|Heartbeat)[\s\S]{0,1200}\.(?:CFrame|Transform|Position|Orientation)\s*=|(?:Motor6D|Bone)[\s\S]{0,800}\.Transform\s*=|\.(?:CFrame|Transform|Position|Orientation)\s*=\s*(?:CFrame|Vector3|UDim2|[^\n;]+[+*\-]))/i.test(text);
@@ -637,12 +642,17 @@ function runPresentationStaticQa({root,data={},changed=[]}={}){
           const animatorState=/(?:CrossFade|Play|SetTrigger|SetFloat|SetBool)\s*\(/.test(text);
           const collider=/(?:\bCollider\b|CapsuleCollider|BoxCollider|SphereCollider|CharacterController)/.test(text);
           const lod=/(?:\bLODGroup\b|SetLODs\s*\()/i.test(text);
+          const bossFromGenericEnemyPrefab=/(?:var|GameObject)\s+\w*boss\w*\s*=\s*Instantiate\s*\(\s*\w*(?:enemy|monster|mob|npc)\w*/i.test(text);
+          const bossScaleMutation=/\w*boss\w*\.transform\.localScale\s*=|\w*boss\w*\.transform\.localScale\s*\*=|\w*boss\w*\.transform\.localScale\s*\+=/i.test(text);
+          const bossDedicatedPresentation=/(?:boss|miniBoss|raidBoss)[\s\S]{0,900}(?:SkinnedMeshRenderer|RuntimeAnimatorController|AnimationClip|CrossFade|SetTrigger|weapon|armor|special|enrage|stun|guard.?break|finisher|ParticleSystem|TrailRenderer|VisualEffect)|(?:SkinnedMeshRenderer|RuntimeAnimatorController|AnimationClip|CrossFade|SetTrigger|weapon|armor|special|enrage|stun|guard.?break|finisher|ParticleSystem|TrailRenderer|VisualEffect)[\s\S]{0,900}(?:boss|miniBoss|raidBoss)/i.test(text);
+          const bossScaleOnly=bossFromGenericEnemyPrefab&&bossScaleMutation&&!bossDedicatedPresentation;
           require('UNITY_3D_ACTOR_SKINNED_MESH_RENDERER',skinnedMesh);
           require('UNITY_3D_ACTOR_ANIMATOR',animator);
           require('UNITY_3D_ACTOR_ANIMATOR_STATE_BINDING',animator&&animatorState);
           require('UNITY_3D_ACTOR_COLLIDER_PROXY',collider);
           require('UNITY_3D_ACTOR_LOD',lod);
           require('PRIMITIVE_ONLY_FINAL_3D_ACTOR',!primitiveActor);
+          require('BOSS_SCALE_ONLY_FINAL_3D_ACTOR',!bossScaleOnly);
         }
       }
     }
