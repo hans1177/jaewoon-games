@@ -4363,6 +4363,19 @@ test('consumer overlay checks ephemeral domain index before full domain classifi
   assert.match(plannerSource,/executionOverlayReusedDomainIndex:true/);
 });
 
+test('consumer overlay reuses quality audits only when exact audit inputs match',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const source=fs.readFileSync(path.resolve(here,'../assets/vibe-studio-asset-universe.js'),'utf8');
+  const start=source.indexOf('export function buildInternalAssetLibraryAutomationPlan');
+  const end=source.indexOf('export const INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT',start);
+  const plannerSource=source.slice(start,end);
+  assert.match(source,/const INTERNAL_ASSET_LIBRARY_PLAN_AUDIT_CACHE=new WeakMap\(\)/);
+  assert.match(plannerSource,/INTERNAL_ASSET_LIBRARY_PLAN_AUDIT_CACHE\.get\(basePlan\)/);
+  assert.match(plannerSource,/cached\?\.inputKey===internalAssetAuditInputKey\(asset\)/);
+  assert.match(plannerSource,/auditByAssetId:reusableAuditByAssetId/);
+  assert.match(plannerSource,/INTERNAL_ASSET_LIBRARY_PLAN_AUDIT_CACHE\.set\(plan,planAuditIndex\)/);
+});
+
 test('library synchronization reuses the automation plan system depth audit',()=>{
   const assets=[
     {id:'prop-depth',family:'PROP',subfamily:'CONTAINER',role:'CONTAINER',companyCommonBase:true,catalogActive:true,license:'project-original'},
@@ -5205,6 +5218,11 @@ test('consumer overlay reuse matches a full execution recompute while preserving
   const fullExecution=buildInternalAssetLibraryAutomationPlan({assets:dynamicAssets,consumerGames});
   const reusedExecution=buildInternalAssetLibraryAutomationPlan({assets:dynamicAssets,consumerGames,basePlan});
   const detachedExecution=buildInternalAssetLibraryAutomationPlan({assets:dynamicAssets,consumerGames,basePlan:{...basePlan}});
+  const changedAuditAssets=dynamicAssets.map(asset=>asset.id==='prop-b'
+    ?{...asset,internalAuditEvidence:{...asset.internalAuditEvidence,DETAIL_FINISH:10}}
+    :asset);
+  const changedFullExecution=buildInternalAssetLibraryAutomationPlan({assets:changedAuditAssets,consumerGames});
+  const changedReuseExecution=buildInternalAssetLibraryAutomationPlan({assets:changedAuditAssets,consumerGames,basePlan});
 
   assert.equal(reusedExecution.executionOverlayReusedBasePlan,true);
   assert.equal(reusedExecution.executionOverlayReusedDomainIndex,true);
@@ -5220,6 +5238,11 @@ test('consumer overlay reuse matches a full execution recompute while preserving
   assert.deepEqual(detachedExecution.nextVolumeActions,fullExecution.nextVolumeActions);
   assert.equal(reusedExecution.nextQualityActions[0].assetId,'prop-b');
   assert.equal(reusedExecution.nextQualityActions[0].consumerPriority,2);
+  assert.equal(changedReuseExecution.executionOverlayReusedBasePlan,undefined);
+  assert.deepEqual(changedReuseExecution.nextQualityActions,changedFullExecution.nextQualityActions);
+  assert.deepEqual(changedReuseExecution.maintenance,changedFullExecution.maintenance);
+  assert.equal(changedReuseExecution.nextQualityActions[0].assetId,'prop-b');
+  assert.equal(changedReuseExecution.nextQualityActions[0].currentAxisScore,10);
 });
 
 test('real horror-escape-room source fixture resolves project pack identity and managed motion without verification promotion',()=>{

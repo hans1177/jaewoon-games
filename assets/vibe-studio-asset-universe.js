@@ -1810,6 +1810,7 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
   shadowSystemCreated:false
 });
 const INTERNAL_ASSET_LIBRARY_PLAN_INDEX_CACHE=new WeakMap();
+const INTERNAL_ASSET_LIBRARY_PLAN_AUDIT_CACHE=new WeakMap();
 
 function stableAssetMaintenanceHash(value=''){
   let hash=2166136261;
@@ -1837,6 +1838,14 @@ function internalAssetMaintenanceQuality(asset={},audit=null){
   if(currentAudit.measuredAxisCount>0&&!currentAudit.blockers.includes('INSUFFICIENT_AUDIT_EVIDENCE'))return Number(currentAudit.score);
   return null;
 }
+function internalAssetAuditInputKey(asset={}){
+  return JSON.stringify({
+    family:upper(asset?.family||asset?.category),
+    internalAuditAxes:Array.isArray(asset?.internalAuditAxes)?asset.internalAuditAxes:null,
+    internalAuditNotApplicableAxes:Array.isArray(asset?.internalAuditNotApplicableAxes)?asset.internalAuditNotApplicableAxes:null,
+    internalAuditEvidence:asset?.internalAuditEvidence&&typeof asset.internalAuditEvidence==='object'?asset.internalAuditEvidence:{}
+  });
+}
 // 자산 관리: 세부 개선은 기존 원본 책임 파일과 현재 감사 축에만 연결한다.
 const INTERNAL_ASSET_DETAIL_REPAIR_STEPS=Object.freeze({
   IDENTITY_SILHOUETTE:['PRIMARY_SECONDARY_SHAPE_HIERARCHY','GAME_CAMERA_SILHOUETTE_COMPARISON'],
@@ -1856,14 +1865,17 @@ const INTERNAL_ASSET_DETAIL_REPAIR_STEPS=Object.freeze({
   PROVENANCE_MAINTAINABILITY:['CHECK_SOURCE_LICENSE_HASH_AND_DERIVATIVE_LINEAGE','KEEP_REPRODUCIBLE_AUTHORING_RECIPE'],
   INTEGRATION_READINESS:['CHECK_NATIVE_IMPORT_MATERIAL_RIG_AND_SOCKET_BINDINGS','KEEP_RUNTIME_VERIFICATION_SEPARATE_FROM_INTERNAL_AUDIT']
 });
-export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],audioRoleIds=[],previous=null,consumerGames=[],auditCache=null}={}){
+export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],audioRoleIds=[],previous=null,consumerGames=[],auditCache=null,auditByAssetId=null}={}){
   const gamesById=new Map(consumerGames.filter(game=>upper(game.lifecycleState||game.canonical?.lifecycle?.state||'ACTIVE')==='ACTIVE').map(game=>[text(game.id||game.gameId),game]));
   const rows=(assets||[]).map(asset=>{
+    const assetId=text(asset?.id||asset?.assetId||asset?.atomId);
     const family=upper(asset?.family||asset?.category);
     const roles=internalAssetMaintenanceRoleTokens(asset);
-    const cachedAudit=auditCache&&typeof auditCache.get==='function'?auditCache.get(asset):null;
+    const cachedObjectAudit=auditCache&&typeof auditCache.get==='function'?auditCache.get(asset):null;
+    const cachedIdAudit=auditByAssetId instanceof Map?auditByAssetId.get(assetId):null;
+    const cachedAudit=cachedObjectAudit||cachedIdAudit||null;
     const audit=cachedAudit||scoreInternalAssetAudit1000({asset});
-    if(!cachedAudit&&auditCache&&typeof auditCache.set==='function')auditCache.set(asset,audit);
+    if(!cachedObjectAudit&&auditCache&&typeof auditCache.set==='function')auditCache.set(asset,audit);
     const measuredAuditAxes=audit.applicableAxes.filter(axis=>{
       const value=internalAssetAuditEvidenceValue(asset.internalAuditEvidence||{},axis);
       return typeof value==='number'&&Number.isFinite(value);
@@ -2095,7 +2107,19 @@ function uiSubsystemCount(ids=[],spec={}){
 export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null,uiAtomIds=[],audioRoleIds=[],externalSources=[],previousMaintenance=null,consumerGames=[],basePlan=null}={}){
   const inventoryAssets=assets;
   const auditCache=new WeakMap();
-  const maintenance=buildInternalAssetMaintenanceSnapshot({assets:inventoryAssets,uiAtomIds,audioRoleIds,previous:previousMaintenance,consumerGames,auditCache});
+  const cachedAuditIndex=basePlan&&INTERNAL_ASSET_LIBRARY_PLAN_AUDIT_CACHE.get(basePlan);
+  const reusableAuditByAssetId=new Map();
+  if(cachedAuditIndex instanceof Map){
+    for(const asset of inventoryAssets||[]){
+      const assetId=text(asset?.id||asset?.assetId||asset?.atomId);
+      const cached=cachedAuditIndex.get(assetId);
+      if(cached?.inputKey===internalAssetAuditInputKey(asset)&&cached?.audit)reusableAuditByAssetId.set(assetId,cached.audit);
+    }
+  }
+  const maintenance=buildInternalAssetMaintenanceSnapshot({
+    assets:inventoryAssets,uiAtomIds,audioRoleIds,previous:previousMaintenance,consumerGames,auditCache,
+    auditByAssetId:reusableAuditByAssetId
+  });
   const cachedCandidatesByDomain=basePlan&&INTERNAL_ASSET_LIBRARY_PLAN_INDEX_CACHE.get(basePlan);
   const basePlanReusable=Boolean(
     cachedCandidatesByDomain instanceof Map
@@ -2608,7 +2632,14 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     productionPromotionAutomatic:false,
     runtimeVerificationRequired:true
   });
+  const planAuditIndex=new Map();
+  for(const asset of inventoryAssets||[]){
+    const assetId=text(asset?.id||asset?.assetId||asset?.atomId);
+    const audit=auditCache.get(asset);
+    if(assetId&&audit)planAuditIndex.set(assetId,Object.freeze({inputKey:internalAssetAuditInputKey(asset),audit}));
+  }
   INTERNAL_ASSET_LIBRARY_PLAN_INDEX_CACHE.set(plan,candidatesByDomain);
+  INTERNAL_ASSET_LIBRARY_PLAN_AUDIT_CACHE.set(plan,planAuditIndex);
   return plan;
 }
 
