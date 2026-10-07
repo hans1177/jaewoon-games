@@ -4984,6 +4984,60 @@ test('current-consumer RPG menu is byte-identical with the reusable source and r
 });
 
 
+test('game-scoped asset planning limits source-consumer scan without shrinking full library eligibility',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-game-scoped-sync-'));
+  try{
+    fs.mkdirSync(path.join(root,'assets'),{recursive:true});
+    fs.mkdirSync(path.join(root,'roblox-games','game-a'),{recursive:true});
+    fs.mkdirSync(path.join(root,'roblox-games','game-b'),{recursive:true});
+    fs.writeFileSync(path.join(root,'assets','shared-a.luau'),'return {id="a"}');
+    fs.writeFileSync(path.join(root,'assets','shared-b.luau'),'return {id="b"}');
+    fs.writeFileSync(path.join(root,'roblox-games','game-a','default.project.json'),JSON.stringify({
+      tree:{ReplicatedStorage:{SharedA:{$path:'../../assets/shared-a.luau'}}}
+    }));
+    fs.writeFileSync(path.join(root,'roblox-games','game-b','default.project.json'),JSON.stringify({
+      tree:{ReplicatedStorage:{SharedB:{$path:'../../assets/shared-b.luau'}}}
+    }));
+    fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify({games:[
+      {id:'game-a',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',robloxProjectPath:'roblox-games/game-a'},
+      {id:'game-b',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',robloxProjectPath:'roblox-games/game-b'}
+    ]}));
+    const registry={version:4,assets:[
+      {id:'shared-a',family:'PROP',platform:'ROBLOX',path:'assets/shared-a.luau',sourceFiles:['assets/shared-a.luau'],license:'project-original',internalAuditScore:700},
+      {id:'shared-b',family:'PROP',platform:'ROBLOX',path:'assets/shared-b.luau',sourceFiles:['assets/shared-b.luau'],license:'project-original',internalAuditScore:700}
+    ]};
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify(registry));
+
+    const scoped=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry,persist:false,consumerGameIds:['game-a']});
+    assert.equal(scoped.sourceConsumerSync.scanScope,'REQUESTED_GAME_IDS');
+    assert.deepEqual(scoped.sourceConsumerSync.requestedGameIds,['game-a']);
+    assert.equal(scoped.sourceConsumerSync.scannedGameCount,1);
+    assert.deepEqual(scoped.sourceConsumerRegistry.assets.find(row=>row.id==='shared-a').sourceBoundConsumerGameIds,['game-a']);
+    assert.equal(scoped.sourceConsumerRegistry.assets.find(row=>row.id==='shared-b').sourceBoundConsumerGameIds,undefined);
+    assert.equal(scoped.registry.assets.find(row=>row.id==='shared-a').sourceBoundConsumerGameIds,undefined);
+
+    const full=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry,persist:false});
+    assert.equal(full.sourceConsumerSync.scanScope,'ALL_ELIGIBLE_GAMES');
+    assert.equal(full.sourceConsumerSync.scannedGameCount,2);
+    assert.deepEqual(full.sourceConsumerRegistry.assets.find(row=>row.id==='shared-b').sourceBoundConsumerGameIds,['game-b']);
+
+    const plan=buildVibeAssetProductionPlan({repoRoot:root,target:'roblox',task:{gameId:'game-a',goal:'게임 A 자산 동기화'}});
+    assert.equal(plan.registrySync.sourceConsumerScanScope,'REQUESTED_GAME_IDS');
+    assert.deepEqual(plan.registrySync.sourceConsumerRequestedGameIds,['game-a']);
+    assert.equal(plan.registrySync.sourceConsumerScannedGameCount,1);
+    assert.equal(plan.allGameDynamicLibraryBinding.registryAssetCount,2);
+    assert.equal(plan.allGameDynamicLibraryBinding.evaluatedAssetCount,2);
+    assert.equal(plan.allGameDynamicLibraryBinding.allRegistryAssetsScanned,true);
+    assert.equal(plan.allGameDynamicLibraryBinding.allTwelveFamiliesEvaluated,true);
+
+    const here=path.dirname(fileURLToPath(import.meta.url));
+    const plannerSource=fs.readFileSync(path.resolve(here,'../tools/vibe2-asset-production-plan.mjs'),'utf8');
+    const cli=plannerSource.slice(plannerSource.indexOf('if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href)'));
+    assert.equal((cli.match(/synchronizeCompanyCommonAssetRegistry\\s*\\(/g)||[]).length,0);
+    assert.match(cli,/registrySync:result\\.registrySync/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('source-bound consumer sync maps project paths exact asset ids and managed StudioAssets without runtime promotion',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-consumer-sync-'));
   try{
