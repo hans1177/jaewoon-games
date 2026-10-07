@@ -239,12 +239,19 @@ test('design engine expires checkpointed 429 quarantine at provider retry window
 });
 
 
-test('missing designs are automatically enrolled into the existing GAME_SEED design runtime',()=>{
+test('missing designs are automatically enrolled and homepage v4 intake is persisted before fanout',()=>{
   const triggerSection=workflow.slice(0,workflow.indexOf('\npermissions:'));
   assert.ok(triggerSection.includes("- 'tools/company-all-games-design-reset.mjs'"));
   assert.ok(triggerSection.includes("- 'game-catalog.json'"));
-  assert.match(workflow,/Auto-enroll active games missing design into canonical GAME_SEED intake/);
+  assert.match(workflow,/Auto-enroll and persist active GAME_SEED intake/);
   assert.match(workflow,/node tools\/company-all-games-design-reset\.mjs --auto-missing-design-intake/);
+  assert.match(workflow,/GAME_SEED_RUNTIME_PERSIST_ATTEMPT=\$attempt\/4/);
+  assert.match(workflow,/git show "origin\/\$COMPANY_RUNTIME_BRANCH:game-seed-state\.json" > \/tmp\/company-runtime-seed-state-before\.json/);
+  assert.match(workflow,/git hash-object -w game-seed-state\.json/);
+  assert.match(workflow,/GIT_INDEX_FILE="\$runtime_index" git read-tree "origin\/\$COMPANY_RUNTIME_BRANCH\^\{tree\}"/);
+  assert.match(workflow,/git commit-tree "\$runtime_tree" -p "\$runtime_parent"/);
+  assert.match(workflow,/git push origin "\$runtime_commit:refs\/heads\/\$COMPANY_RUNTIME_BRANCH"/);
+  assert.match(workflow,/HOMEPAGE_NOVEL_GRAMMAR_RUNTIME_PERSIST=YES/);
   assert.match(workflow,/Ensure target missing-design GAME_SEED exists/);
   assert.match(workflow,/--auto-missing-design-intake --game-id="\$GAME_ID"/);
   assert.match(workflow,/MISSING_DESIGN_AUTO_CREATE=CANONICAL_GAME_SEED_PIPELINE/);
