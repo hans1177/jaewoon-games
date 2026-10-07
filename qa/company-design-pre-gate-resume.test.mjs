@@ -9,6 +9,7 @@ import {spawnSync} from 'node:child_process';
 import {runInNewContext} from 'node:vm';
 import {EventEmitter} from 'node:events';
 import {createHash} from 'node:crypto';
+import {buildAllGameDynamicLibraryBindingPlan,buildAssetSupplyDecisionSummary} from '../tools/vibe2-asset-production-plan.mjs';
 
 const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
 
@@ -46,7 +47,7 @@ test('local authoring owns a bounded five-minute budget independently of externa
   const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
   const calls=[],stats=[];
   const author=runInNewContext(source+'\ncallLocalDesignerModel',{
-    createHash,localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'local',
+    createHash,designAssetLibraryContext:{status:'UNAVAILABLE'},localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'local',
     designerRoute:{id:'external'},designCheckpoint:{},modelCallStats:stats,console:{log(){}},
     requestLocalDesignerRaw:async(prompt,options)=>{calls.push(options);return '{"identity":"4v4 infection"}';},
     parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,assertSchemaValue(){},recordModelHealth(){},persistDesignCheckpoint(){}
@@ -99,7 +100,7 @@ test('truncated local output splits required fields and resumes only the unfinis
   const checkpoint={tasks:{}},calls=[],stats=[],health=[];
   let secondPartFails=true;
   const author=runInNewContext(taskSource+'\n'+source+'\ncallLocalDesignerModel',{
-    createHash,localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'local',
+    createHash,designAssetLibraryContext:{status:'UNAVAILABLE'},localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'local',
     designerRoute:{id:'ollama:local'},designCheckpoint:checkpoint,modelCallStats:stats,console:{log(){}},
     clean:String,parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,persistDesignCheckpoint(){},
     recordModelHealth:(model,row)=>health.push(row),
@@ -291,4 +292,48 @@ test('seed scheduler prioritizes valid resumable checkpoints within the existing
   assert.match(sort,/Number\(strictPassFor\(a\)\)-Number\(strictPassFor\(b\)\)[\s\S]*platformPriority\(a\)-platformPriority\(b\)[\s\S]*checkpointResumePriority\(a\)-checkpointResumePriority\(b\)/);
   assert.match(workflow,/designEvolutionDueFor/);
   assert.match(workflow,/PERIODIC_DEEP_HEALTH_REVIEW/);
+});
+
+
+// 실제 라이브러리 사실이 컨셉 단계와 모델 요청에 전달되는지 검증한다.
+test('design library facts preserve compatibility and separate audit scores from runtime verification',async()=>{
+  const source=design.slice(design.indexOf("const designAssetLibraryPath="),design.indexOf('const designLearningEvents='));
+  const library={version:1,assets:[
+    {id:'web-character',family:'CHARACTER',platform:'WEB',targetPlatforms:['WEB'],license:'project-original',internalAuditScore:900},
+    {id:'reference-environment',family:'ENVIRONMENT',platform:'SHARED_REFERENCE',license:'project-original',referenceVisualAudit:{referenceUseOnly:true}},
+    {id:'blocked-creature',family:'CREATURE',platform:'WEB',license:'project-original',securityBlocked:true,internalAuditScore:1000,consumerGameIds:['g']}
+  ]};
+  const build=registry=>runInNewContext(source+'\ndesignAssetLibraryContext',{
+    readJson:()=>registry,fs:{existsSync:()=>Boolean(registry),readFileSync:()=>JSON.stringify(registry)},createHash,
+    gameId:'g',seed:{DISTINCT_IDENTITY:'concept'},seedFlowAssetRequirements:['CHARACTER','ENVIRONMENT','CREATURE'].map(family=>({family})),
+    clean:value=>String(value??'').trim(),buildAllGameDynamicLibraryBindingPlan,buildAssetSupplyDecisionSummary
+  });
+  const before=JSON.stringify(library),context=build(library);
+  const web=context.platforms.WEB.candidates.find(row=>row.assetId==='web-character');
+  assert.equal(web.applicationMode,'USE_AS_IS');
+  assert.equal(context.assetFacts[web.assetId].auditScore,900);assert.equal(context.assetFacts[web.assetId].productionVerified,false);assert.equal(context.assetFacts[web.assetId].runtimeState,'UNVERIFIED');
+  assert.equal(context.platforms.ROBLOX.candidates.find(row=>row.assetId==='web-character').applicationMode,'NATIVE_REAUTHOR_BASE');
+  assert.equal(context.assetFacts['reference-environment'].referenceOnly,true);
+  assert.equal(context.platforms.WEB.candidates.find(row=>row.family==='CREATURE').action,'AUTHOR');
+  assert.equal(context.platforms.WEB.evaluatedAssetCount,3);assert.equal(context.platforms.WEB.eligibleAssetCount,2);
+  assert.equal(JSON.stringify(library),before,'design reads must not synchronize or mutate the registry');
+  library.version=2;library.assets[0].internalAuditScore=700;
+  const refreshed=build(library);
+  assert.notEqual(refreshed.sha256,context.sha256);assert.equal(refreshed.version,2);
+  assert.equal(build(null).status,'UNAVAILABLE');assert.equal(build(null).platforms.WEB.candidates.length,0);
+  assert.equal(build({assets:{}}).status,'UNAVAILABLE');
+
+  const authorSource=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
+  let sent='';
+  const author=runInNewContext(authorSource+'\ncallLocalDesignerModel',{
+    createHash,designAssetLibraryContext:context,localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'local',
+    designerRoute:{id:'ollama:local'},designCheckpoint:{},modelCallStats:[],console:{log(){}},
+    requestLocalDesignerRaw:async prompt=>{sent=prompt;return '{"identity":"authored"}';},
+    parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,assertSchemaValue(){},recordModelHealth(){},persistDesignCheckpoint(){}
+  });
+  await author('system','x'.repeat(30000),{});
+  const payload=JSON.parse(sent.split('DESIGN_ASSET_LIBRARY=')[1].split('\n')[0]);
+  assert.deepEqual(payload,JSON.parse(JSON.stringify(context)),'library evidence must not be clipped by shared context');
+  assert.match(sent,/점수는 내부 평가이며 런타임 품질 통과가 아니다/);
+  assert.match(sent,/게임당 설계 원본은 하나/);
 });

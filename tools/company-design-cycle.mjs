@@ -10,6 +10,7 @@ import {repairDesignRequiredFields} from './company-design-prepromotion-repair.m
 import {scoreDesignGateV2,DESIGN_GATE_PASS_MINIMUM} from './company-design-gate-scoring-v2.mjs';
 import {classifyRobloxGenre} from './roblox-genre-profile.mjs';
 import {buildVibeDesignIntelligence,buildDesignEvolutionBrief} from './vibe2-design-intelligence.mjs';
+import {buildAllGameDynamicLibraryBindingPlan,buildAssetSupplyDecisionSummary} from './vibe2-asset-production-plan.mjs';
 
 const ROLES=['planning','graphics','development','qa','audio'];
 const CANONICAL_POLICY_PATH='company-learning/platform-release-roadmap.json';
@@ -119,6 +120,54 @@ console.log('DESIGN_AI_REVIEW_LANES=NONE');
 const base=path.join('design',gameId,date);fs.mkdirSync(base,{recursive:true});
 const submissionBase=path.join('artbook-submissions',gameId,date);
 const factPack=readJson(path.join(submissionBase,'fact-pack.json'),{});
+// 컨셉 단계에서 현재 보유 자산을 읽는다. 후보 요약은 설계 근거이며 최종 선택/품질 통과가 아니다.
+const designAssetLibraryPath='company-asset-library.json';
+const designAssetLibrary=readJson(designAssetLibraryPath,null);
+const designAssetLibraryContext={
+  source:designAssetLibraryPath,
+  status:Array.isArray(designAssetLibrary?.assets)?'AVAILABLE':'UNAVAILABLE',
+  version:designAssetLibrary?.version??null,
+  sha256:fs.existsSync(designAssetLibraryPath)?createHash('sha256').update(fs.readFileSync(designAssetLibraryPath)).digest('hex'):null,
+  inventoryCount:Array.isArray(designAssetLibrary?.assets)?designAssetLibrary.assets.length:0,
+  candidateSummaryOnly:true,
+  auditScoreIsNotRuntimeQuality:true,
+  productionVerificationGranted:false,
+  platforms:Object.fromEntries(['WEB','UNITY','ROBLOX'].map(target=>{
+    const binding=buildAllGameDynamicLibraryBindingPlan({companyRegistry:designAssetLibrary||{},gameId,target});
+    const eligibleIds=new Set(binding.evaluatedAssets.filter(row=>row.eligibleForRoleEvaluation).map(row=>row.assetId));
+    const assets=(Array.isArray(designAssetLibrary?.assets)?designAssetLibrary.assets:[]).filter(row=>eligibleIds.has(row.id)&&row.catalogActive!==false&&row.rightsPass!==false&&!/STALE|RETIRED|REJECTED/.test((clean(row.catalogState)+' '+clean(row.status)).toUpperCase()));
+    const summary=buildAssetSupplyDecisionSummary({
+      gameId,target,registry:{assets},requirements:seedFlowAssetRequirements,
+      request:[seed.DISTINCT_IDENTITY,seed.CORE_FUN_TO_LEARN,...(Array.isArray(seed.CORE_LOOP)?seed.CORE_LOOP:[])].map(clean).join(' ')
+    });
+    const byId=new Map(assets.map(row=>[row.id,row]));
+    return [target,{
+      evaluatedAssetCount:binding.evaluatedAssetCount,
+      eligibleAssetCount:assets.length,
+      requiredFamilies:summary.requiredFamilies,
+      candidates:(Array.isArray(designAssetLibrary?.assets)?summary.nextActions:[]).map(action=>{
+        const asset=byId.get(action.assetId);
+        return {...action,...(asset?{
+          role:clean(asset.role||asset.subfamily)||null,
+          sourcePath:clean(asset.path||asset.sourceFiles?.[0])||null,
+          platform:clean(asset.platform)||null,
+          license:clean(asset.license)||null,
+          referenceOnly:asset.referenceVisualAudit?.referenceUseOnly===true||asset.platform==='SHARED_REFERENCE',
+          auditScore:Number.isFinite(asset.internalAuditScore)?asset.internalAuditScore:null,
+          auditState:clean(asset.internalAuditState)||'UNKNOWN',
+          qualityGap:clean(asset.internalAuditNextAction)||null,
+          runtimeState:clean(asset.runtimeVerificationState)||'UNVERIFIED',
+          productionVerified:asset.productionVerified===true
+        }:{})};
+      })
+    }];
+  }))
+};
+// 세 플랫폼의 동일 자산 사실은 한 번만 전달하고 적용 방식만 각각 유지한다.
+designAssetLibraryContext.assetFacts=Object.fromEntries(Object.values(designAssetLibraryContext.platforms).flatMap(platform=>platform.candidates.filter(row=>row.assetId).map(({assetId,action,reason,applicationMode,family,...facts})=>[assetId,{family,...facts}])));
+for(const platform of Object.values(designAssetLibraryContext.platforms)){
+  platform.candidates=platform.candidates.map(({family,action,assetId,applicationMode})=>({family,action,assetId,applicationMode}));
+}
 const designLearningEvents=(Array.isArray(seedState?.seedMaterialLearning?.events)?seedState.seedMaterialLearning.events:[])
   .filter(event=>clean(event?.gameId)===gameId&&clean(event?.reviewStage)==='DESIGN_STRICT_REVIEW')
   .slice(-8);
@@ -158,7 +207,7 @@ const designEvolutionBrief=buildDesignEvolutionBrief({
   }
 });
 const unityWebValidationSurfaceContract={role:'UNITY_WEB_VALIDATION_SURFACE_ONLY',separateGameTarget:false,canonicalSource:'SAME_UNITY_PROJECT',outputRoot:'web-games/<gameId>/',nativeGateAuthority:false,designRequirements:['UNITY_PROFILE_MUST_REMAIN_WEBGL_COMPATIBLE_WHEN_BUILDABLE','TOUCH_INPUT_AND_MOBILE_UI_MUST_WORK_IN_BROWSER_VALIDATION','BROWSER_PERFORMANCE_BUDGET_MUST_NOT_REQUIRE_SEPARATE_GAMEPLAY_RULES','WEB_VALIDATION_MAY_NOT_CHANGE_CORE_GAME_RULES_OR_BALANCE']};
-const evidence={game,gameSeed:seed,seedDesignDepth:seedDesignDepthContext,factPack,designLearningContext,designEvolutionBrief,unityWebValidationSurfaceContract,centralPolicy:CANONICAL_POLICY_PATH};
+const evidence={game,gameSeed:seed,seedDesignDepth:seedDesignDepthContext,factPack,designAssetLibraryContext,designLearningContext,designEvolutionBrief,unityWebValidationSurfaceContract,centralPolicy:CANONICAL_POLICY_PATH};
 const DESIGN_CHECKPOINT_CONTRACT_VERSION=4;
 const checkpointPath=path.join(base,'design-checkpoint.json');
 const progressPath=path.join(base,'design-progress.json');
@@ -296,6 +345,7 @@ function writeProgress(stage=designCheckpoint.currentPhase||'BOOTSTRAP',extra={}
   });
 }
 function persistDesignCheckpoint(){
+  designCheckpoint.assetLibraryContext=designAssetLibraryContext;
   designCheckpoint.updatedAt=new Date().toISOString();
   writeJson(checkpointPath,designCheckpoint);
   writeProgress();
@@ -858,7 +908,7 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
   if(!localDesignerFallbackReady)throw new Error('VIBE_LOCAL_DESIGN_FALLBACK_NOT_READY');
   const timeoutMs=localDesignerCallTimeoutMs;
   const started=Date.now();
-  const prompt=`${system}\n\n${user}\n\nLOCAL_AUTHORING_RULES=JSON_OBJECT_ONLY;DO_NOT_DECIDE_GATE_PASS_FAIL;PRESERVE_OWNER_INTENT;REPAIR_ONLY_REQUESTED_SCOPE`;
+  const prompt=`${system}\n\nDESIGN_ASSET_LIBRARY=${JSON.stringify(designAssetLibraryContext)}\n자산 목록은 사실 근거다. 게임당 설계 원본은 하나이며 플랫폼별 적용만 구분한다. 후보의 역할 적합성을 컨셉과 대조하고 기존 technicalAssumptions/implementationTraceability/artAudioDirection/platformProfiles에 재사용 ID, 개선·추가 제작 필요, 플랫폼 적응을 명시하라. 점수는 내부 평가이며 런타임 품질 통과가 아니다. USE_AS_IS도 실제 게임 검증을 뜻하지 않는다. NATIVE_REAUTHOR_BASE는 네이티브 재제작이며 바이너리 직접 재사용이 아니다. referenceOnly는 참고용이다. UNAVAILABLE은 미확인이며 자산이 없다는 뜻이 아니다. 후보 요약 밖의 호환 자산도 자격을 유지한다. 자산 사정으로 원본 게임 규칙을 바꾸지 마라.\n\n${user}\n\nLOCAL_AUTHORING_RULES=JSON_OBJECT_ONLY;DO_NOT_DECIDE_GATE_PASS_FAIL;PRESERVE_OWNER_INTENT;REPAIR_ONLY_REQUESTED_SCOPE`;
   console.log(`DESIGN_LOCAL_AUTHORING_BUDGET_MS=${timeoutMs}|predict=${predict}|context=${numCtx}|promptChars=${prompt.length}`);
   const identity=createHash('sha256').update(JSON.stringify({system,user,schema})).digest('hex');
   let directCall=true;
@@ -1026,7 +1076,7 @@ const intelligenceTask={
   authorityExpanded:false
 };
 const designIntelligence=buildVibeDesignIntelligence({task:intelligenceTask,plan:{target:clean(seed.INITIAL_TARGET_PLATFORM)},experience:{records:designLearningContext.recent}});
-writeJson(path.join(base,'design-intelligence.json'),{version:2,gameId,date,source:'tools/vibe2-design-intelligence.mjs',brief:designEvolutionBrief,report:designIntelligence});
+writeJson(path.join(base,'design-intelligence.json'),{version:2,gameId,date,source:'tools/vibe2-design-intelligence.mjs',brief:designEvolutionBrief,assetLibraryContext:designAssetLibraryContext,report:designIntelligence});
 if(!designIntelligence.implementationGate.allowed){
   designCheckpoint.status='DESIGN_INTELLIGENCE_BLOCKED';
   designCheckpoint.lastError=`DESIGN_INTELLIGENCE_BLOCKED ${designIntelligence.implementationGate.blockers.join(',')}`;
@@ -1213,3 +1263,4 @@ console.log('DESIGN_LEARNING_POSITIVE_TRAINING_ELIGIBLE=NO_UNTIL_VALIDATED_RUNTI
 console.log('PAID_AI_ALLOWED=NO');
 console.log(`AI_PROVIDER=${designCheckpoint.effectiveDesignerProvider||'VIBE_LOCAL_OLLAMA'}`);
 console.log('DESIGN_GATE_PROVIDER=DETERMINISTIC_EVIDENCE_ENGINE');
+
