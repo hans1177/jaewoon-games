@@ -1810,6 +1810,7 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
   shadowSystemCreated:false
 });
 const INTERNAL_ASSET_LIBRARY_PLAN_INDEX_CACHE=new WeakMap();
+const INTERNAL_ASSET_LIBRARY_PLAN_AUDIT_CACHE=new WeakMap();
 
 function stableAssetMaintenanceHash(value=''){
   let hash=2166136261;
@@ -1831,6 +1832,14 @@ function internalAssetMaintenanceRoleTokens(asset={}){
     }
   }
   return uniq(out).sort();
+}
+function internalAssetAuditInputKey(asset={}){
+  return JSON.stringify([
+    upper(asset?.family||asset?.category),
+    asset?.internalAuditAxes||null,
+    asset?.internalAuditNotApplicableAxes||null,
+    asset?.internalAuditEvidence||null
+  ]);
 }
 function internalAssetMaintenanceQuality(asset={},audit=null){
   const currentAudit=audit&&typeof audit==='object'?audit:scoreInternalAssetAudit1000({asset});
@@ -2094,7 +2103,21 @@ function uiSubsystemCount(ids=[],spec={}){
 
 export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null,uiAtomIds=[],audioRoleIds=[],externalSources=[],previousMaintenance=null,consumerGames=[],basePlan=null}={}){
   const inventoryAssets=assets;
-  const auditCache=new WeakMap();
+  const cachedAuditByAssetId=basePlan&&INTERNAL_ASSET_LIBRARY_PLAN_AUDIT_CACHE.get(basePlan);
+  const localAuditCache=new WeakMap();
+  let reusedAuditCount=0;
+  const auditCache={
+    get(asset){
+      const id=text(asset?.id||asset?.assetId||asset?.atomId);
+      const cached=cachedAuditByAssetId instanceof Map?cachedAuditByAssetId.get(id):null;
+      if(cached&&cached.key===internalAssetAuditInputKey(asset)){
+        reusedAuditCount+=1;
+        return cached.audit;
+      }
+      return localAuditCache.get(asset);
+    },
+    set(asset,audit){localAuditCache.set(asset,audit);}
+  };
   const maintenance=buildInternalAssetMaintenanceSnapshot({assets:inventoryAssets,uiAtomIds,audioRoleIds,previous:previousMaintenance,consumerGames,auditCache});
   const cachedCandidatesByDomain=basePlan&&INTERNAL_ASSET_LIBRARY_PLAN_INDEX_CACHE.get(basePlan);
   const basePlanReusable=Boolean(
@@ -2175,7 +2198,9 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
       maintenance,
       autonomousNextAction,
       executionOverlayReusedBasePlan:true,
-      executionOverlayReusedDomainIndex:true
+      executionOverlayReusedDomainIndex:true,
+      executionOverlayReusedAuditCache:reusedAuditCount>0,
+      executionOverlayReusedAuditCount:reusedAuditCount
     });
   }
   assets=(assets||[]).filter(asset=>asset?.catalogActive!==false
@@ -2608,7 +2633,14 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     productionPromotionAutomatic:false,
     runtimeVerificationRequired:true
   });
+  const auditByAssetId=new Map();
+  for(const asset of inventoryAssets||[]){
+    const id=text(asset?.id||asset?.assetId||asset?.atomId);
+    const audit=auditCache.get(asset);
+    if(id&&audit)auditByAssetId.set(id,Object.freeze({key:internalAssetAuditInputKey(asset),audit}));
+  }
   INTERNAL_ASSET_LIBRARY_PLAN_INDEX_CACHE.set(plan,candidatesByDomain);
+  INTERNAL_ASSET_LIBRARY_PLAN_AUDIT_CACHE.set(plan,auditByAssetId);
   return plan;
 }
 

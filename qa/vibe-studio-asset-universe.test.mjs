@@ -4334,7 +4334,9 @@ test('asset library automation indexes audit domain seed and quality lookups ins
   const start=source.indexOf('export function buildInternalAssetLibraryAutomationPlan');
   const end=source.indexOf('export const INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT',start);
   const plannerSource=source.slice(start,end);
-  assert.match(plannerSource,/const auditCache=new WeakMap\(\)/);
+  assert.match(plannerSource,/const localAuditCache=new WeakMap\(\)/);
+  assert.match(plannerSource,/INTERNAL_ASSET_LIBRARY_PLAN_AUDIT_CACHE\.get\(basePlan\)/);
+  assert.match(plannerSource,/cached\.key===internalAssetAuditInputKey\(asset\)/);
   assert.match(plannerSource,/domainAssetsByDomain=new Map/);
   assert.match(plannerSource,/commonDepthAssetsByDomain=new Map/);
   assert.match(plannerSource,/domainsByAsset=new WeakMap/);
@@ -5205,11 +5207,19 @@ test('consumer overlay reuse matches a full execution recompute while preserving
   const fullExecution=buildInternalAssetLibraryAutomationPlan({assets:dynamicAssets,consumerGames});
   const reusedExecution=buildInternalAssetLibraryAutomationPlan({assets:dynamicAssets,consumerGames,basePlan});
   const detachedExecution=buildInternalAssetLibraryAutomationPlan({assets:dynamicAssets,consumerGames,basePlan:{...basePlan}});
+  const changedAuditAssets=dynamicAssets.map(asset=>asset.id==='prop-b'
+    ?{...asset,internalAuditEvidence:{...asset.internalAuditEvidence,DETAIL_FINISH:20}}
+    :asset);
+  const changedAuditFull=buildInternalAssetLibraryAutomationPlan({assets:changedAuditAssets,consumerGames});
+  const changedAuditCached=buildInternalAssetLibraryAutomationPlan({assets:changedAuditAssets,consumerGames,basePlan});
 
   assert.equal(reusedExecution.executionOverlayReusedBasePlan,true);
   assert.equal(reusedExecution.executionOverlayReusedDomainIndex,true);
+  assert.equal(reusedExecution.executionOverlayReusedAuditCache,true);
+  assert.equal(reusedExecution.executionOverlayReusedAuditCount,dynamicAssets.length);
   assert.equal(detachedExecution.executionOverlayReusedBasePlan,undefined);
   assert.equal(detachedExecution.executionOverlayReusedDomainIndex,undefined);
+  assert.equal(detachedExecution.executionOverlayReusedAuditCache,undefined);
   assert.deepEqual(reusedExecution.nextQualityActions,fullExecution.nextQualityActions);
   assert.deepEqual(reusedExecution.nextVolumeActions,fullExecution.nextVolumeActions);
   assert.deepEqual(reusedExecution.maintenance,fullExecution.maintenance);
@@ -5218,6 +5228,10 @@ test('consumer overlay reuse matches a full execution recompute while preserving
   assert.deepEqual(reusedExecution.uiSubsystems,fullExecution.uiSubsystems);
   assert.deepEqual(detachedExecution.nextQualityActions,fullExecution.nextQualityActions);
   assert.deepEqual(detachedExecution.nextVolumeActions,fullExecution.nextVolumeActions);
+  assert.deepEqual(changedAuditCached.nextQualityActions,changedAuditFull.nextQualityActions);
+  assert.deepEqual(changedAuditCached.maintenance,changedAuditFull.maintenance);
+  assert.equal(changedAuditCached.nextQualityActions[0].assetId,'prop-b');
+  assert.equal(changedAuditCached.nextQualityActions[0].currentAxisScore,20);
   assert.equal(reusedExecution.nextQualityActions[0].assetId,'prop-b');
   assert.equal(reusedExecution.nextQualityActions[0].consumerPriority,2);
 });
