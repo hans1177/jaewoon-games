@@ -2207,7 +2207,7 @@
         }
       },
       "catalogOrder": 9,
-      "selectedPlatform": "ROBLOX",
+      "selectedPlatform": "UNITY",
       "nameEnglish": "Cozy Island: Build a Tiny Kingdom",
       "internationalTitle": "Cozy Island: Build a Tiny Kingdom",
       "updatedAt": "2026-09-22T19:15:00+09:00",
@@ -2445,7 +2445,11 @@
             "purpose": "MARKETING_CAPTURE_ONLY_NOT_F0_F9_ACCEPTANCE"
           }
         }
-      }
+      },
+      "targetPlatform": "UNITY",
+      "unityProjectPath": "unity-games/cozy-island",
+      "homepagePublicationApproved": false,
+      "publishTestBuildWhenReady": false
     },
     {
       "id": "fantasy-survival",
@@ -3606,8 +3610,8 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-10-07T03:58:52.284Z",
-        "status": "PRE_F9_VALIDATION_CANDIDATE_DEPLOYED",
+        "updatedAt": "2026-10-07T04:00:18.232Z",
+        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -3724,8 +3728,8 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-10-07T03:58:52.284Z",
-            "status": "PRE_F9_VALIDATION_CANDIDATE_DEPLOYED",
+            "updatedAt": "2026-10-07T04:00:18.232Z",
+            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -9136,6 +9140,22 @@
         "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
         "typography": "rough condensed survival stencil with horizontal chipped ink"
       }
+    },
+    {
+      "id": "card-grid-duel",
+      "name": "card-grid-duel",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "EXISTING_ROBLOX_SOURCE_INTAKE",
+      "lifecycleState": "ACTIVE",
+      "selectedPlatform": "ROBLOX",
+      "robloxProjectPath": "roblox-games/card-grid-duel",
+      "developmentHandling": "PRESERVE_EXISTING_SOURCE_AND_CONTINUE",
+      "sourceIntake": {
+        "kind": "EXISTING_ROJO_PROJECT",
+        "designVerified": false,
+        "runtimeVerified": false,
+        "externalReleaseApproved": false
+      }
     }
   ],
   "runtimeAuthority": "company-runtime",
@@ -9149,8 +9169,10 @@
     "homepageInfo": 45,
     "normalizedGames": 45,
     "ownerWebAdded": 0,
-    "ownerWebUpdated": 0,
-    "ownerWebDisabled": 0
+    "ownerWebUpdated": 30,
+    "ownerWebDisabled": 15,
+    "runtimeCatalogAdded": 0,
+    "actualWebPlayableReconciled": 30
   },
   "catalogSchemaVersion": 2,
   "normalization": {
