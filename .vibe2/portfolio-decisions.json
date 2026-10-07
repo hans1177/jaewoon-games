@@ -1,7 +1,7 @@
 {
   "version": 1,
   "authority": "PRIMARY_AI_AND_VIBE_JOINT",
-  "generatedAt": "2026-10-07T04:56:00.701Z",
+  "generatedAt": "2026-10-07T05:17:17.655Z",
   "decisions": [
     {
       "gameId": "ant-simulator",
@@ -529,6 +529,36 @@
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 22
+        },
+        "qa": {
+          "criticalRuntimeOrGateBlocker": true
+        },
+        "balance": {
+          "structuralCoreFailure": false
+        },
+        "graphicsAudio": {
+          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
+        }
+      },
+      "jointAuthority": "PRIMARY_AI_AND_VIBE",
+      "ownerApprovalGate": false
+    },
+    {
+      "gameId": "card-grid-duel",
+      "decision": "FOCUSED_REPAIR",
+      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "evidence": {
+        "planningGrowthMarketing": {
+          "packagePresent": false,
+          "state": "UNVERIFIED_NOT_NEGATIVE"
+        },
+        "development": {
+          "activeTasks": 1,
+          "doneTasks": 0,
+          "failedTasks": 0,
+          "repeatedFailureSignal": 53
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": true
