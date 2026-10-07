@@ -12,21 +12,21 @@
   "tasks": {},
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
+      "calls": 3,
       "successes": 0,
-      "failures": 2,
+      "failures": 3,
       "timeouts": 1,
       "jsonFailures": 1,
-      "totalMs": 280400,
-      "lastMs": 190326,
-      "lastError": "schema required missing: root.signatureSystems[0].playerChoice",
-      "updatedAt": "2026-10-07T18:31:46.214Z"
+      "totalMs": 482109,
+      "lastMs": 201709,
+      "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
+      "updatedAt": "2026-10-07T19:19:18.697Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T17:55:35.632Z",
-  "updatedAt": "2026-10-07T19:15:56.901Z",
+  "updatedAt": "2026-10-07T19:19:18.697Z",
   "failedPhase": "designer_draft",
   "failedTask": "identity-core",
   "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=OPTIONAL_EXTERNAL_AI_DISABLED local=schema required missing: root.signatureSystems[0].playerChoice",
@@ -38,5 +38,8 @@
     "preservedPhaseCount": 0,
     "preservedTaskCount": 0,
     "migratedAt": "2026-10-07T19:15:56.872Z"
+  },
+  "localAuthoringSplits": {
+    "b0562ba8bb121c6f29db549cd378dd345fb1669cdccd5e5f6382f3175e914676": true
   }
 }

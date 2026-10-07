@@ -15,17 +15,17 @@
   "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=OPTIONAL_EXTERNAL_AI_DISABLED local=schema required missing: root.signatureSystems[0].playerChoice",
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
+      "calls": 3,
       "successes": 0,
-      "failures": 2,
+      "failures": 3,
       "timeouts": 1,
       "jsonFailures": 1,
-      "totalMs": 280400,
-      "lastMs": 190326,
-      "lastError": "schema required missing: root.signatureSystems[0].playerChoice",
-      "updatedAt": "2026-10-07T18:31:46.214Z"
+      "totalMs": 482109,
+      "lastMs": 201709,
+      "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
+      "updatedAt": "2026-10-07T19:19:18.697Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-07T19:15:56.940Z"
+  "updatedAt": "2026-10-07T19:19:18.697Z"
 }
