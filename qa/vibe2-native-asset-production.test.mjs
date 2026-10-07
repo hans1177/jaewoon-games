@@ -2078,6 +2078,70 @@ render();
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('Web 3D actor incremental QA requires GLB runtime loader AnimationMixer and state motion binding',()=>{
+  const root=tempRoot();
+  try{
+    const relative='web-games/web-3d-actor/index.html';
+    const file=path.join(root,...relative.split('/'));
+    fs.mkdirSync(path.dirname(file),{recursive:true});
+    fs.writeFileSync(file,`<!doctype html><style>#game{background:#111}</style><canvas id="game"></canvas><script type="module">
+const renderer = new THREE.WebGLRenderer({canvas:document.getElementById('game')});
+const material = new THREE.MeshStandardMaterial({roughness:.6});
+const loader = new GLTFLoader();
+const actorState = {IDLE:'Idle',WALK:'Walk',ATTACK:'Attack',HIT:'Hit',DEATH:'Death'};
+loader.load('./actors/npc-master.glb', gltf => {
+  const mixer = new THREE.AnimationMixer(gltf.scene);
+  const actions = {};
+  for (const clip of gltf.animations) actions[clip.name] = mixer.clipAction(clip);
+  function bindState(state){ const action=actions[actorState[state]]; if(action) action.play(); }
+  bindState('IDLE'); bindState('WALK'); bindState('ATTACK'); bindState('HIT'); bindState('DEATH');
+  function render(){ mixer.update(1/60); renderer.render(gltf.scene, camera); requestAnimationFrame(render); }
+  render();
+});
+</script>`);
+    const manifestPath=path.join(root,'manifest-web-3d-actor.json');
+    fs.writeFileSync(manifestPath,JSON.stringify({
+      target:'web',
+      changedFiles:[relative],
+      assetProduction:{nativeAuthoringExecution:{dcc:{web3dActorMasterAuthoringRequired:true}}},
+      presentationQuality:{required:true,target:'web',pass:'ASSET_ADAPTATION'}
+    },null,2));
+    const result=runIncrementalQa({
+      root,manifest:manifestPath,files:[relative],namespace:'web-3d-actor',force:true
+    });
+    assert.equal(result.outcome,'PASS');
+    assert.ok(result.presentationQa.checks.some(row=>row.name==='WEB_3D_ACTOR_MASTER_GLB_RUNTIME_BINDING'&&row.pass));
+    assert.ok(result.presentationQa.checks.some(row=>row.name==='WEB_3D_ACTOR_ANIMATION_MIXER'&&row.pass));
+    assert.ok(result.presentationQa.checks.some(row=>row.name==='WEB_3D_ACTOR_STATE_MOTION_BINDING'&&row.pass));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('Web 3D actor incremental QA rejects a GLB path with no AnimationMixer state binding',()=>{
+  const root=tempRoot();
+  try{
+    const relative='web-games/web-3d-actor-bad/index.html';
+    const file=path.join(root,...relative.split('/'));
+    fs.mkdirSync(path.dirname(file),{recursive:true});
+    fs.writeFileSync(file,`<!doctype html><style>#game{background:#111}</style><canvas id="game"></canvas><script type="module">
+const renderer = new THREE.WebGLRenderer({canvas:document.getElementById('game')});
+const material = new THREE.MeshStandardMaterial({roughness:.6});
+const loader = new GLTFLoader();
+const states=['IDLE','WALK','ATTACK','HIT','DEATH'];
+loader.load('./actors/npc-master.glb', gltf => renderer.render(gltf.scene, camera));
+</script>`);
+    const manifestPath=path.join(root,'manifest-web-3d-actor-bad.json');
+    fs.writeFileSync(manifestPath,JSON.stringify({
+      target:'web',
+      changedFiles:[relative],
+      assetProduction:{nativeAuthoringExecution:{dcc:{web3dActorMasterAuthoringRequired:true}}},
+      presentationQuality:{required:true,target:'web',pass:'ASSET_ADAPTATION'}
+    },null,2));
+    assert.throws(()=>runIncrementalQa({
+      root,manifest:manifestPath,files:[relative],namespace:'web-3d-actor-bad',force:true
+    }),/PRESENTATION_STATIC_QA_FAILED:ASSET_ADAPTATION:.*WEB_3D_ACTOR_ANIMATION_MIXER/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('web weather marker prevents duplicate weather task creation',()=>{
   const root=tempRoot();
   try{
