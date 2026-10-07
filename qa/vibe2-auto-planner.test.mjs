@@ -4440,7 +4440,7 @@ test('queued Web assessment with PRESENTATION generation is repaired into graphi
 });
 
 
-test('Roblox build-up directive preserves competitive multiplayer platform semantics',()=>{
+test('Roblox project metadata cannot silently overwrite the shared canonical multiplayer design',()=>{
   const root=tempRepo();
   try{
     const gameId='roblox-competitive-directive';
@@ -4475,7 +4475,8 @@ test('Roblox build-up directive preserves competitive multiplayer platform seman
     assert.ok(planned);
     assert.equal(planned.buildUpDirective.platform,'ROBLOX');
     assert.equal(planned.buildUpDirective.sourceRoot,`roblox-games/${gameId}`);
-    assert.equal(planned.buildUpDirective.gameIdentityAndNonNegotiables.multiplayerMode,'COMPETITIVE');
+    assert.equal(planned.buildUpDirective.gameIdentityAndNonNegotiables.multiplayerMode,'SINGLE');
+    assert.ok((planned.evidence||[]).includes('build-up-platform-metadata-design-mismatch:ROBLOX_PLAY_MODE'));
     const multiplayer=planned.buildUpDirective.qualityGapMap.find(row=>row.domain==='MULTIPLAYER_AND_SYNC');
     assert.ok(multiplayer);
     assert.notEqual(multiplayer.state,'NOT_APPLICABLE');
