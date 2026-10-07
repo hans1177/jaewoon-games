@@ -9191,34 +9191,34 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-07T06:12:16.192Z",
+      "updatedAt": "2026-10-07T06:25:22.331Z",
       "robloxSourceCommit": "1d2c46b76ea28ff3aa8d011375b74c02fe9909bf",
       "robloxSourceBootstrapPassedAt": "2026-10-07T06:12:16.192Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": true,
-      "robloxBuildSourceRevision": "fe44ffac7a25a6f8f0b90f0898def9cca50717f0",
+      "robloxBuildSourceRevision": "1d2c46b76ea28ff3aa8d011375b74c02fe9909bf",
       "robloxBuildArtifactIdentity": "sha256:1f6c4de97b608eed38ad651c177cf5dd063f1f74404340b738bb2495d8f65cd6",
-      "robloxBuildPassedAt": "2026-10-07T06:09:08.159Z",
+      "robloxBuildPassedAt": "2026-10-07T06:25:22.331Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-07T06:09:08.159Z",
+      "robloxBuildPreflightPassedAt": "2026-10-07T06:25:22.331Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "village-dungeons",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-07T06:05:58.356Z",
-        "sourceRevision": "fe44ffac7a25a6f8f0b90f0898def9cca50717f0",
+        "checkedAt": "2026-10-07T06:21:32.383Z",
+        "sourceRevision": "1d2c46b76ea28ff3aa8d011375b74c02fe9909bf",
         "artifactIdentity": "sha256:1f6c4de97b608eed38ad651c177cf5dd063f1f74404340b738bb2495d8f65cd6",
         "secondaryOwnerFocus": false,
         "facts": {
@@ -9238,7 +9238,7 @@
           "directRoblox": false,
           "concurrentRoblox": true,
           "build": {
-            "sourceRevision": "fe44ffac7a25a6f8f0b90f0898def9cca50717f0",
+            "sourceRevision": "1d2c46b76ea28ff3aa8d011375b74c02fe9909bf",
             "artifactIdentity": "sha256:1f6c4de97b608eed38ad651c177cf5dd063f1f74404340b738bb2495d8f65cd6",
             "webValidationPassed": false,
             "musicValidationPassed": false,
@@ -9301,7 +9301,7 @@
       "robloxFailureStage": "F0_SOURCE_INTEGRITY",
       "robloxFailureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-f0-source-preflight-failed"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -45675,7 +45675,7 @@
       "robloxValidationPublishRepairAt": "2026-10-07T05:57:26.888Z"
     }
   ],
-  "updatedAt": "2026-10-07T06:24:56.617Z",
+  "updatedAt": "2026-10-07T06:25:22.331Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
