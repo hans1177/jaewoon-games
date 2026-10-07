@@ -314,6 +314,26 @@ test('Open Cloud runtime reads retry transient DNS failures without weakening AP
  assert.equal(result.exactVersion,true);
 });
 
+test('Open Cloud requests bound each attempt and retry request timeouts',async()=>{
+ let calls=0;
+ const result=await probeRobloxOpenCloudImageEvidence({
+  universeId:'1',apiKey:'k',networkRetryAttempts:2,networkRetryDelayMs:0,
+  fetchImpl:async(_url,init={})=>{
+   calls++;
+   assert.ok(init.signal,'Open Cloud request must carry a bounded abort signal');
+   if(calls===1){
+    const error=new Error('request timed out');
+    error.name='TimeoutError';
+    throw error;
+   }
+   return new Response(JSON.stringify({thumbnails:[]}));
+  },
+ });
+ assert.equal(calls,2);
+ assert.equal(result.available,true);
+ assert.equal(result.state,'NO_IMAGE_METADATA');
+});
+
 test('Open Cloud engine probe retries transient HTTP throttling without weakening persistent API failures',async()=>{
  let calls=0;
  const responses=[
