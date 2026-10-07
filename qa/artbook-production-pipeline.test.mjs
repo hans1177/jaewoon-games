@@ -26,6 +26,7 @@ test('DESIGN_ONLY pipeline is GAME_SEED-backed design -> baseline and stops befo
   assert.match(source,/const schemaOrJsonFailure=/);
   assert.match(source,/const transientModelFailure=/);
   assert.match(source,/return schemaOrJsonFailure\|\|transientModelFailure/);
+  assert.match(source,/OLLAMA_DESIGN_TIMEOUT/);
   assert.match(source,/aborted due to timeout/);
   assert.match(source,/unterminated string/);
   assert.match(source,/expected \['\\\",\]/);

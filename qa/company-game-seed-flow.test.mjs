@@ -314,8 +314,9 @@ test('autonomous runtime pins verified design engines, canaries two games, then 
   assert.match(design,/function scoreCurrentDesign/);
   assert.match(design,/Deterministic scoring is intentionally never served from checkpoint cache/);
   assert.match(design,/DESIGN_PRE_GATE_BLOCKED/);
-  assert.match(design,/DESIGNER_DRAFT_GENERATION=ONE_CALL/);
-  assert.match(design,/DESIGNER_DRAFT_ONE_CALL_FALLBACK=SPLIT/);
+  assert.match(design,/DESIGN_AUTHORING_SLICES=Object\.freeze/);
+  assert.match(design,/authorDesignInCheckpointedSlices/);
+  assert.match(design,/DESIGN_CHECKPOINTED_SLICES_COMPLETE=/);
   assert.match(design,/DESIGN_ONLY_REVIEW_MODE=DETERMINISTIC_DEPARTMENT_EVIDENCE/);
   assert.match(design,/PRESERVATION_PRESENTATION_UPGRADE/);
   assert.match(design,/NO_GAMEPLAY_MECHANIC_ADDITION_REMOVAL_OR_REBALANCE/);

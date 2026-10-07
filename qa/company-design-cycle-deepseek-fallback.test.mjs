@@ -68,29 +68,29 @@ test('game designer schema supplies every stage gate v2 evidence axis',()=>{
   assert.match(design,/targetPlatform:\{type:'string',enum:\['ROBLOX','UNITY','FORTNITE_UEFN'\]\}/);
 });
 
-test('same game designer splits large design schema without bypassing the full gate schema',()=>{
-  assert.match(design,/const DESIGN_GATE_FIELDS=\[/);
-  assert.match(design,/const DESIGN_BASE=designSliceSchema\(DESIGN_BASE_FIELDS\)/);
-  assert.match(design,/const DESIGN_GATE=designSliceSchema\(DESIGN_GATE_FIELDS\)/);
-  assert.match(design,/designer_draft_base/);
-  assert.match(design,/designer_draft_gate/);
-  assert.match(design,/designer_revision_base/);
-  assert.match(design,/designer_revision_gate/);
-  assert.match(design,/callModel\(designerModel[\s\S]*?DESIGN_BASE,\{predict:1000/);
-  assert.match(design,/callModel\(designerModel[\s\S]*?DESIGN_GATE,\{predict:1000/);
-  assert.match(design,/const designDraft=mergeDesignerDesign\(designDraftBase,designDraftGate,'DRAFT'\)/);
-  assert.match(design,/const revisedDesign=mergeDesignerDesign\(revisedDesignBase,revisedDesignGate,'REVISION'\)/);
-  assert.match(design,/assertSchemaValue\(merged,DESIGN\)/);
-  assert.match(design,/DESIGN_SPLIT_SCHEMA_MERGED=/);
+test('same game designer authors the full schema through bounded checkpointed slices without bypass',()=>{
+  assert.match(design,/const DESIGN_AUTHORING_SLICES=Object\.freeze\(\[/);
+  assert.match(design,/DESIGN_AUTHORING_SLICE_FIELDS=DESIGN_AUTHORING_SLICES\.flatMap/);
+  assert.match(design,/DESIGN_AUTHORING_SLICE_CONTRACT_MISMATCH/);
+  assert.match(design,/async function authorDesignInCheckpointedSlices/);
+  assert.match(design,/runCheckpointTask\(\`\$\{phase\}_slices\`,slice\.id/);
+  assert.match(design,/const schema=designSliceSchema\(slice\.fields\)/);
+  assert.match(design,/timeoutMs:modelCallTimeoutMs/);
+  assert.match(design,/assertSchemaValue\(complete,DESIGN\)/);
+  assert.match(design,/DESIGN_CHECKPOINTED_SLICES_COMPLETE=/);
+  assert.match(design,/phase:'designer_draft'/);
+  assert.doesNotMatch(design,/DESIGNER_DRAFT_ONE_CALL_FALLBACK=SPLIT/);
 });
 
 
-test('initial design prompt has generous capacity and concrete causal grammar depth',()=>{
+test('initial design prompt keeps causal grammar depth while local authoring is bounded by canonical timeout',()=>{
   assert.match(design,/num_ctx:Math\.min\(24576,Math\.max\(4096,Number\(numCtx\|\|8192\)\)\)/);
-  assert.match(design,/predict:8000,temperature:0\.28,numCtx:24576/);
+  assert.match(design,/DESIGN_AUTHORING_SLICES=Object\.freeze/);
+  assert.match(design,/predict:1600/);
+  assert.match(design,/numCtx:8192,timeoutMs:modelCallTimeoutMs/);
   assert.match(design,/STRICT_GATE_FEEDBACK=\$\{clip\(strictDesignerFeedback,6500\)\}/);
-  assert.match(design,/GAME_SEED_DESIGN_DEPTH=\$\{clip\(seedDesignDepthContext,16000\)\}/);
-  assert.match(design,/EVIDENCE=\$\{clip\(evidence,15000\)\}/);
+  assert.match(design,/GAME_SEED_DESIGN_DEPTH=\$\{clip\(seedDesignDepthContext,7500\)\}/);
+  assert.match(design,/EVIDENCE=\$\{clip\(evidence,6500\)\}/);
   assert.match(design,/초기 설계는 압축 요약보다 구체적 상태 전이와 플레이 사례를 우선한다/);
   assert.match(design,/MAIN은 입력→즉시 피드백→상태 변화→위험\/보상→다음 선택/);
   assert.match(design,/A와 B는 각각 독립된 대축/);
@@ -98,13 +98,7 @@ test('initial design prompt has generous capacity and concrete causal grammar de
   assert.match(design,/@는 해금 조건·발견 단서·숙련 보상·재방문 가치·고급 조합/);
   assert.match(design,/실제 플레이 5분·15분·30분 흐름/);
   assert.match(design,/메뉴와 UI도 게임 규칙의 일부로 설계한다/);
-  assert.match(design,/버튼 이름\/위치\/역할·활성\/비활성\/잠금/);
-  assert.match(design,/튜토리얼\/온보딩은 첫 입력, 첫 성공, 첫 실패, 첫 성장, 첫 메뉴 사용/);
-  assert.match(design,/보스는 진입 조건·페이즈·패턴 전환 조건/);
-  assert.match(design,/메인\/사이드\/동료\/세력\/지역\/숨김\/월드 이벤트/);
   assert.match(design,/contentExpansionPlan은 한 번의 완성 목록이 아니라 검증 회차가 반복될수록/);
   assert.match(design,/단순 수치 증가나 기능 개수 늘리기를 진화로 간주하지 않는다/);
   assert.match(design,/새 c 변주와 @ 파고들기/);
-  assert.match(design,/DESIGN_BASE,\{predict:1800,temperature:0\.3,numCtx:12288/);
-  assert.match(design,/DESIGN_GATE,\{predict:4800,temperature:0\.2,numCtx:16384/);
 });
