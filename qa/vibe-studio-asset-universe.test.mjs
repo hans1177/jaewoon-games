@@ -11,6 +11,8 @@ import {
   STUDIO_ASSET_UNIVERSE_TARGET,
   createAssetProductionTeachingRecipe,
   STUDIO_ASSET_FAMILIES,
+  STUDIO_GLTF_MASTER_ASSET_STANDARD,
+  evaluateGltfMasterAssetStandard,
   ASSET_STYLE_FAMILIES,
   STUDIO_ASSET_QUALITY_MAX,
   STUDIO_ASSET_QUALITY_WEIGHTS,
@@ -107,6 +109,18 @@ import {
 } from '../assets/vibe-studio-asset-universe.js';
 import {createVibeCharacterPersona,resolveVibeCharacterBehaviorIntent,createVibePopulationPersonaDiversity,VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,createVibeCharacterCustomizationRecipe,createVibeNpcCustomizationPopulation} from '../assets/vibe-character-identity-director.js';
 import {synchronizeCompanyCommonAssetRegistry,synchronizeSourceBoundAssetConsumers,buildAssetSupplyDecisionSummary,buildVibeAssetProductionPlan} from '../tools/vibe2-asset-production-plan.mjs';
+
+const actorGltfMaster=(masterPath='assets/actor.glb',sourceRecipe='assets/build-actor.py')=>Object.freeze({
+  version:1,format:'GLB',gltfVersion:'2.0',path:masterPath,
+  artifactHash:'b'.repeat(64),sourceRecipe,sourceHash:'a'.repeat(64),
+  evidencePath:masterPath.replace(/\.glb$/i,'-evidence.json'),
+  previewPath:masterPath.replace(/\.glb$/i,'-preview.png'),
+  contentEvidence:Object.freeze({
+    mesh:true,uv:true,materialSlots:true,rig:true,skin:true,animationClips:true,
+    stableScaleOriginAxis:true,attachmentOrBindingMap:true,lodDerivationPlan:true,motionCount:6
+  }),
+  platformVariantsRequireExactMasterHash:true
+});
 
 const fullQualityEvidence=Object.freeze({
   SILHOUETTE_FORM:100,
@@ -747,6 +761,23 @@ test('survival wildlife catalog includes forest animals with distinct visual pro
   assert.equal(bear.productionVerified,false);
 });
 
+test('3D character and creature library assets require a hash-bound GLB master before native promotion',()=>{
+  assert.equal(STUDIO_GLTF_MASTER_ASSET_STANDARD.masterFormat,'GLB');
+  assert.deepEqual([...STUDIO_GLTF_MASTER_ASSET_STANDARD.appliesToFamilies],['CHARACTER','CREATURE']);
+  assert.equal(STUDIO_GLTF_MASTER_ASSET_STANDARD.primitivePartActorCannotClaimFinalAsset,true);
+  const registry=readJson('company-asset-library.json');
+  const spider=registry.assets.find(row=>row.id==='roblox-insect-spider-hd-v1');
+  const spiderCheck=evaluateGltfMasterAssetStandard({asset:spider,family:'CREATURE',platform:'ROBLOX'});
+  assert.equal(spiderCheck.required,true);
+  assert.equal(spiderCheck.pass,true);
+  assert.equal(spiderCheck.master.path,'assets/roblox/world-ghosts/native/spider/spider.glb');
+  assert.match(spiderCheck.master.artifactHash,/^[a-f0-9]{64}$/);
+  const primitiveOnly=evaluateGltfMasterAssetStandard({asset:{id:'part-monster',family:'CREATURE'},platform:'ROBLOX'});
+  assert.equal(primitiveOnly.pass,false);
+  assert.ok(primitiveOnly.blockers.includes('GLB_MASTER_REQUIRED'));
+  assert.ok(primitiveOnly.blockers.includes('GLB_MASTER_ARTIFACT_HASH_REQUIRED'));
+});
+
 test('wildlife skins require meaningful anatomy or material variation beyond recolor',()=>{
   const wolf=createSurvivalWildlifeAssetProfile({species:'WOLF',skinVariant:'DARK_GREY',platform:'ROBLOX'});
   const deer=createSurvivalWildlifeAssetProfile({species:'DEER',platform:'UNITY'});
@@ -849,7 +880,7 @@ test('game visual DNA keeps mixed concept identity stable across asset selection
 });
 
 test('company asset promotion is impossible without actual native runtime consumer evidence',()=>{
-  const asset={id:'wolf-runtime',family:'CREATURE',platform:'ROBLOX',path:'assets/wolf.glb',license:'project-original',sourceHash:'wolf-v1'};
+  const asset={id:'wolf-runtime',family:'CREATURE',platform:'ROBLOX',path:'assets/wolf.glb',license:'project-original',sourceHash:'wolf-v1',gltfMaster:actorGltfMaster('assets/wolf.glb')};
   const blocked=evaluateCompanyAssetPromotion({
     asset,consumer:{gameId:'survival',platform:'ROBLOX'},
     runtimeEvidence:{platform:'ROBLOX',sourceHash:'wolf-v1',nativeBindingPass:true,visualRuntimePass:true}
@@ -881,7 +912,7 @@ test('company asset promotion is impossible without actual native runtime consum
   assert.equal(promoted.registry.assets.length,1);
   assert.equal(promoted.registry.assets[0].status,'VERIFIED_COMPANY_ASSET');
 
-  const derivedAsset={id:'wolf-derived',family:'CREATURE',platform:'ROBLOX',path:'assets/wolf-derived.glb',license:'project-original-derivative',sourceSha256:'source-v1',derivedSha256:'artifact-v2'};
+  const derivedAsset={id:'wolf-derived',family:'CREATURE',platform:'ROBLOX',path:'assets/wolf-derived.glb',license:'project-original-derivative',sourceSha256:'source-v1',derivedSha256:'artifact-v2',gltfMaster:actorGltfMaster('assets/wolf-derived.glb')};
   const exactBatch=promoteVerifiedCompanyAssetsFromRuntimeEvidence({
     registry:{version:28,assets:[derivedAsset]},
     consumer:{gameId:'survival',platform:'ROBLOX'},
@@ -902,6 +933,7 @@ test('company asset promotion is impossible without actual native runtime consum
       assets:[{
         assetId:'generated-boss',family:'CREATURE',path:'assets/roblox/survival/native/boss.glb',
         license:'project-original',sourceHash:'generated-source',artifactHash:'generated-artifact',
+        gltfMaster:actorGltfMaster('assets/roblox/survival/native/boss.glb','assets/roblox/survival/build-boss.py'),
         generatedByDeclaredRecipe:true,persistedForCandidate:true
       }],
       nativeBindingPass:true,visualRuntimePass:true,mobilePerformancePass:true,regressionPass:true,licenseProvenancePass:true
@@ -1528,6 +1560,7 @@ test('120 quality never substitutes for native runtime promotion evidence',()=>{
     sourceHash:'source-hash',
     artifactHash:'artifact-hash',
     path:'assets/perfect.glb',
+    gltfMaster:actorGltfMaster('assets/perfect.glb'),
     qualityEvidence:fullQualityEvidence
   };
   const decision=evaluateCompanyAssetPromotion({
