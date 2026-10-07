@@ -1219,8 +1219,9 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
     }
     const currentConsumerIds=currentAssetConsumerIds(asset);
     const currentConsumerSet=new Set(currentConsumerIds);
-    const intendedConsumerIds=unique(asset.intendedConsumerGameIds||[]);
-    if(intendedConsumerIds.length&&currentConsumerIds.length===0)intendedOnlyAssetCount+=1;
+    const intendedConsumerRows=asset.intendedConsumerGameIds||[];
+    const intendedConsumerIds=unique(intendedConsumerRows);
+    if(intendedConsumerRows.length&&currentConsumerIds.length===0)intendedOnlyAssetCount+=1;
     for(const gameId of currentConsumerIds){
       const stats=gameSummaryStats.get(gameId);if(!stats)continue;
       stats.currentConsumers+=1;
