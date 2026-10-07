@@ -8,16 +8,32 @@ import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import { planAssetApplication } from '../assets/asset-selector.js';
 import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation,createMotionDirectorPlan,createDuelCombatAuthoringRecipe,createSurvivalPlayerMotionProfile,createSurvivalWildlifeMotionProfile,deriveMotionStyleVariant,auditMotionContinuityTrace} from '../assets/vibe-motion-director.js';
-import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile,synchronizeAssetCustomization,createAssetDetailReviewPlan,createAssetRuntimeVisualReviewPlan,auditCommonLibrarySystemDepth,createCompanySeedAssetIdeationPlan,buildInternalAssetLibraryAutomationPlan,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT,INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES,INTERNAL_PROGRESSION_COMPLEXITY_PROFILES,resolveInternalAssetStyleExpressionProfile,INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS} from '../assets/vibe-studio-asset-universe.js';
+import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile,synchronizeAssetCustomization,createAssetDetailReviewPlan,createAssetRuntimeVisualReviewPlan,auditCommonLibrarySystemDepth,createCompanySeedAssetIdeationPlan,buildInternalAssetLibraryAutomationPlan,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT,INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES,INTERNAL_PROGRESSION_COMPLEXITY_PROFILES,resolveInternalAssetStyleExpressionProfile,INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS,STUDIO_3D_ACTOR_ROLE_FAMILIES} from '../assets/vibe-studio-asset-universe.js';
 import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {auditVibeRuntimeVisualEvidence,auditVibeRuntimeBeforeAfterComparison} from '../assets/vibe-visual-quality-gate.js';
-import {VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,createVibeNpcCustomizationPopulation} from '../assets/vibe-character-identity-director.js';
+import {VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,VIBE_NPC_ROLE_PRODUCTION_CONTRACT,VIBE_NPC_ROLE_MOTION_REQUIREMENTS,createVibeNpcRoleMotionRequirement,createVibeNpcCustomizationPopulation} from '../assets/vibe-character-identity-director.js';
 import {buildRobloxStudioAssetBootstrapPlan} from './company-development-roblox-bootstrap.mjs';
 
 const clean=value=>String(value??'').trim();
 const freeze=value=>Object.freeze(value);
 const freezeList=value=>freeze([...(value||[])]);
 const unique=value=>[...new Set((value||[]).map(clean).filter(Boolean))];
+const normalizeActorType=value=>clean(value).toLowerCase().replace(/[\s-]+/g,'_');
+const CROSS_PLATFORM_3D_CHARACTER_TYPES=freezeList(unique([
+  'character','npc','villager','service_npc','friendly_character','party_member',
+  ...(STUDIO_3D_ACTOR_ROLE_FAMILIES.CHARACTER||[]).map(normalizeActorType)
+]));
+const CROSS_PLATFORM_3D_CREATURE_TYPES=freezeList(unique([
+  'monster','mini_boss','raid_boss',
+  ...(STUDIO_3D_ACTOR_ROLE_FAMILIES.CREATURE||[]).map(normalizeActorType)
+]));
+export function crossPlatform3dActorFamilyForType(type=''){
+  const key=normalizeActorType(type);
+  if(CROSS_PLATFORM_3D_CHARACTER_TYPES.includes(key))return'CHARACTER';
+  if(CROSS_PLATFORM_3D_CREATURE_TYPES.includes(key))return'CREATURE';
+  return null;
+}
+export function isCrossPlatform3dActorType(type=''){return Boolean(crossPlatform3dActorFamilyForType(type));}
 
 
 function robloxCurrentAssetSelectionProfile({repoRoot=process.cwd(),gameId=''}={}){
@@ -129,7 +145,7 @@ export function discoverRuntimeVisualEvidence({task={},target='',evidenceRoot=pr
 export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
   const relative=clean(source.path),issues=[];
   if(!relative||path.isAbsolute(relative)||relative.split(/[\\/]/).includes('..')||/^[a-z]+:/i.test(relative))return freeze({status:'SOURCE_GLB_REQUIRED',issues:['REPOSITORY_LOCAL_GLB_PATH_REQUIRED'],sourceMutationPerformed:false});
-  let bytes,document,sourceHash;
+  let bytes,document,sourceHash,binaryChunk;
   try{
     const root=fs.realpathSync(repoRoot),file=fs.realpathSync(path.resolve(root,relative));
     if(!file.startsWith(root+path.sep))throw new Error('SOURCE_OUTSIDE_REPOSITORY');
@@ -142,34 +158,276 @@ export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
       const length=bytes.readUInt32LE(offset),type=bytes.readUInt32LE(offset+4);offset+=8;
       if(length%4!==0||offset+length>bytes.length)throw new Error('GLB_CHUNK_LENGTH_INVALID');
       if(type===0x4e4f534a){jsonCount++;document=JSON.parse(bytes.subarray(offset,offset+length).toString('utf8'));}
-      else if(!jsonCount)throw new Error('GLB_JSON_MUST_BE_FIRST');
+      else if(type===0x004e4942){
+        if(!jsonCount)throw new Error('GLB_JSON_MUST_BE_FIRST');
+        if(binaryChunk)throw new Error('GLB_MULTIPLE_BIN_CHUNKS');
+        binaryChunk=bytes.subarray(offset,offset+length);
+      }else if(!jsonCount)throw new Error('GLB_JSON_MUST_BE_FIRST');
       offset+=length;
     }
     if(jsonCount!==1||document?.asset?.version!=='2.0')throw new Error('GLB_JSON_INVALID');
-    for(const key of ['meshes','materials','skins','animations','buffers','images','extensionsRequired'])if(document[key]!==undefined&&!Array.isArray(document[key]))throw new Error('GLB_COLLECTION_INVALID:'+key);
+    for(const key of ['meshes','materials','skins','animations','nodes','accessors','bufferViews','buffers','images','extensionsRequired'])if(document[key]!==undefined&&!Array.isArray(document[key]))throw new Error('GLB_COLLECTION_INVALID:'+key);
     if((document.meshes||[]).some(mesh=>!mesh||!Array.isArray(mesh.primitives)||mesh.primitives.some(primitive=>!primitive||typeof primitive.attributes!=='object'||primitive.attributes===null)))throw new Error('GLB_PRIMITIVE_INVALID');
-    for(const key of ['materials','skins','animations','buffers','images'])if((document[key]||[]).some(row=>!row||typeof row!=='object'))throw new Error('GLB_ENTRY_INVALID:'+key);
+    for(const key of ['materials','skins','animations','nodes','accessors','bufferViews','buffers','images'])if((document[key]||[]).some(row=>!row||typeof row!=='object'))throw new Error('GLB_ENTRY_INVALID:'+key);
     if(source.sourceHash&&source.sourceHash!==sourceHash)throw new Error('GLB_SOURCE_HASH_MISMATCH');
   }catch(error){return freeze({status:'SOURCE_GLB_REQUIRED',path:relative,issues:[error.code==='ENOENT'?'GLB_MATERIALIZATION_REQUIRED':error.message],sourceMutationPerformed:false});}
-  const primitives=(document.meshes||[]).flatMap((mesh,meshIndex)=>(mesh.primitives||[]).map((primitive,primitiveIndex)=>({
-    meshIndex,primitiveIndex,name:clean(mesh.name)||`mesh-${meshIndex}`,materialIndex:primitive.material??null,
-    hasNormals:Number.isInteger(primitive.attributes?.NORMAL),hasUv:Number.isInteger(primitive.attributes?.TEXCOORD_0),
-    hasJointWeights:Number.isInteger(primitive.attributes?.JOINTS_0)&&Number.isInteger(primitive.attributes?.WEIGHTS_0),
-    morphTargetCount:Array.isArray(primitive.targets)?primitive.targets.length:0,
-    declaredMorphNames:Array.isArray(mesh.extras?.targetNames)?mesh.extras.targetNames:[]
-  })));
+  const materials=document.materials||[];
+  const nodes=document.nodes||[];
+  const skins=document.skins||[];
+  const accessors=document.accessors||[],bufferViews=document.bufferViews||[],buffers=document.buffers||[];
+  const componentBytes=Object.freeze({5120:1,5121:1,5122:2,5123:2,5125:4,5126:4});
+  const componentCounts=Object.freeze({SCALAR:1,VEC2:2,VEC3:3,VEC4:4,MAT2:4,MAT3:9,MAT4:16});
+  const bufferPayload=index=>{
+    if(index===0&&binaryChunk)return binaryChunk;
+    const uri=clean(buffers[index]?.uri),match=uri.match(/^data:[^,]*;base64,(.+)$/i);
+    return match?Buffer.from(match[1],'base64'):null;
+  };
+  const accessorInfo=index=>{
+    if(!Number.isInteger(index)||index<0||index>=accessors.length)return{valid:false,index};
+    const accessor=accessors[index]||{},viewIndex=accessor.bufferView,view=bufferViews[viewIndex];
+    const componentByteSize=componentBytes[accessor.componentType],componentCount=componentCounts[accessor.type],count=Number(accessor.count||0);
+    if(!Number.isInteger(viewIndex)||!view||!componentByteSize||!componentCount||!Number.isInteger(count)||count<=0)return{valid:false,index};
+    const bufferIndex=Number(view.buffer),payload=bufferPayload(bufferIndex),elementBytes=componentByteSize*componentCount,stride=Number(view.byteStride||elementBytes);
+    const viewByteOffset=Number(view.byteOffset||0),viewByteLength=Number(view.byteLength||0),accessorByteOffset=Number(accessor.byteOffset||0);
+    const byteOffset=viewByteOffset+accessorByteOffset,end=byteOffset+(count-1)*stride+elementBytes,viewEnd=viewByteOffset+viewByteLength;
+    const bufferViewRangeValid=Number.isInteger(viewByteLength)&&viewByteLength>0&&viewByteOffset>=0&&accessorByteOffset>=0&&viewEnd<=Number(payload?.length||0)&&end<=viewEnd;
+    return{valid:Boolean(payload)&&stride>=elementBytes&&bufferViewRangeValid,index,count,type:accessor.type,componentType:accessor.componentType,normalized:accessor.normalized===true,componentByteSize,componentCount,elementBytes,stride,byteOffset,end,viewByteOffset,viewByteLength,viewEnd,bufferViewRangeValid,payload};
+  };
+  const validAccessor=index=>accessorInfo(index).valid;
+  const accessorCount=index=>validAccessor(index)?Number(accessors[index].count):0;
+  const readAccessorComponent=(info,elementIndex,componentIndex)=>{
+    const at=info.byteOffset+elementIndex*info.stride+componentIndex*info.componentByteSize,b=info.payload;
+    switch(info.componentType){
+      case 5120:return b.readInt8(at);
+      case 5121:return b.readUInt8(at);
+      case 5122:return b.readInt16LE(at);
+      case 5123:return b.readUInt16LE(at);
+      case 5125:return b.readUInt32LE(at);
+      case 5126:return b.readFloatLE(at);
+      default:return NaN;
+    }
+  };
+  const normalizedWeightValue=(info,value)=>{
+    if(info.componentType===5126)return value;
+    if(info.componentType===5121&&info.normalized)return value/255;
+    if(info.componentType===5123&&info.normalized)return value/65535;
+    return NaN;
+  };
+  const accessorStrictlyIncreasing=info=>{
+    if(!info?.valid||info.type!=='SCALAR'||info.componentType!==5126||info.count<=0)return false;
+    let previous=-Infinity;
+    for(let i=0;i<info.count;i++){
+      const value=readAccessorComponent(info,i,0);
+      if(!Number.isFinite(value)||value<=previous)return false;
+      previous=value;
+    }
+    return true;
+  };
+  const jointNodeIndices=new Set(skins.flatMap(skin=>(skin.joints||[]).filter(index=>Number.isInteger(index)&&index>=0&&index<nodes.length)));
+  const parents=new Map();
+  nodes.forEach((node,parentIndex)=>{
+    for(const child of Array.isArray(node?.children)?node.children:[])if(Number.isInteger(child)&&child>=0&&child<nodes.length&&!parents.has(child))parents.set(child,parentIndex);
+  });
+  const nodeAttachedToJoint=nodeIndex=>{
+    let current=nodeIndex,guard=0;
+    while(Number.isInteger(current)&&guard++<=nodes.length){
+      if(jointNodeIndices.has(current))return true;
+      current=parents.get(current);
+    }
+    return false;
+  };
+  const meshNodeBindings=nodes.map((node,nodeIndex)=>({
+    nodeIndex,
+    meshIndex:Number.isInteger(node?.mesh)&&node.mesh>=0&&node.mesh<(document.meshes||[]).length?node.mesh:null,
+    skinIndex:Number.isInteger(node?.skin)&&node.skin>=0&&node.skin<skins.length?node.skin:null,
+    rigidJointAttached:nodeAttachedToJoint(nodeIndex)
+  })).filter(row=>row.meshIndex!==null);
+  const meshSkinBindings=meshNodeBindings.filter(row=>row.skinIndex!==null);
+  const skinBoundMeshIndices=new Set(meshSkinBindings.map(row=>row.meshIndex));
+  const primitives=(document.meshes||[]).flatMap((mesh,meshIndex)=>(mesh.primitives||[]).map((primitive,primitiveIndex)=>{
+    const position=primitive.attributes?.POSITION,normal=primitive.attributes?.NORMAL,uv=primitive.attributes?.TEXCOORD_0,joints=primitive.attributes?.JOINTS_0,weights=primitive.attributes?.WEIGHTS_0;
+    const positionInfo=accessorInfo(position),normalInfo=accessorInfo(normal),uvInfo=accessorInfo(uv),jointInfo=accessorInfo(joints),weightInfo=accessorInfo(weights);
+    const positionCount=positionInfo.count||0,normalCount=normalInfo.count||0,uvCount=uvInfo.count||0,jointCount=jointInfo.count||0,weightCount=weightInfo.count||0;
+    const jointWeightPairPresent=Number.isInteger(joints)&&Number.isInteger(weights);
+    const attributeShapesValid=positionInfo.type==='VEC3'&&normalInfo.type==='VEC3'&&uvInfo.type==='VEC2';
+    const jointWeightPairValid=jointWeightPairPresent&&jointInfo.valid&&weightInfo.valid&&jointCount===positionCount&&weightCount===positionCount
+      &&jointInfo.type==='VEC4'&&weightInfo.type==='VEC4'&&[5121,5123].includes(jointInfo.componentType)
+      &&(weightInfo.componentType===5126||([5121,5123].includes(weightInfo.componentType)&&weightInfo.normalized===true));
+    const bindings=meshNodeBindings.filter(row=>row.meshIndex===meshIndex),skinBindings=bindings.filter(row=>row.skinIndex!==null);
+    const skinBound=skinBoundMeshIndices.has(meshIndex),rigidJointAttached=!skinBound&&bindings.some(row=>row.rigidJointAttached===true);
+    let zeroWeightVertexCount=0,weightSumOutOfRangeVertexCount=0,invalidJointValueCount=0,invalidJointBindingCount=0;
+    if(jointWeightPairValid&&skinBound){
+      for(let vertex=0;vertex<weightInfo.count;vertex++){
+        let sum=0;
+        for(let component=0;component<4;component++){
+          const weight=normalizedWeightValue(weightInfo,readAccessorComponent(weightInfo,vertex,component)),joint=readAccessorComponent(jointInfo,vertex,component);
+          if(Number.isFinite(weight))sum+=Math.max(0,weight);
+          if(weight>1e-6){
+            if(!Number.isInteger(joint)||joint<0)invalidJointValueCount++;
+            for(const binding of skinBindings){
+              const skinJointCount=(skins[binding.skinIndex]?.joints||[]).length;
+              if(!Number.isInteger(joint)||joint<0||joint>=skinJointCount)invalidJointBindingCount++;
+            }
+          }
+        }
+        if(!(sum>1e-6))zeroWeightVertexCount++;
+        else if(sum<0.98||sum>1.02)weightSumOutOfRangeVertexCount++;
+      }
+    }
+    const jointWeightDataValid=!skinBound||(jointWeightPairValid&&zeroWeightVertexCount===0&&weightSumOutOfRangeVertexCount===0&&invalidJointValueCount===0&&invalidJointBindingCount===0);
+    const actorBindingValid=(skinBound&&jointWeightDataValid)||rigidJointAttached;
+    return{
+      meshIndex,primitiveIndex,name:clean(mesh.name)||`mesh-${meshIndex}`,materialIndex:primitive.material??null,
+      hasMaterial:Number.isInteger(primitive.material)&&primitive.material>=0&&primitive.material<materials.length,
+      hasPosition:positionInfo.valid,
+      hasNormals:normalInfo.valid&&normalCount===positionCount,
+      hasUv:uvInfo.valid&&uvCount===positionCount,
+      hasJointWeights:jointWeightPairValid,
+      skinBound,rigidJointAttached,actorBindingValid,jointWeightDataValid,zeroWeightVertexCount,weightSumOutOfRangeVertexCount,invalidJointValueCount,invalidJointBindingCount,
+      attributeAccessorReferencesValid:positionInfo.valid&&normalInfo.valid&&uvInfo.valid&&attributeShapesValid&&(!jointWeightPairPresent||jointWeightPairValid),
+      attributeCountsConsistent:positionCount>0&&normalCount===positionCount&&uvCount===positionCount&&(!jointWeightPairPresent||(jointCount===positionCount&&weightCount===positionCount)),
+      positionCount,normalCount,uvCount,jointCount,weightCount,
+      morphTargetCount:Array.isArray(primitive.targets)?primitive.targets.length:0,
+      declaredMorphNames:Array.isArray(mesh.extras?.targetNames)?mesh.extras.targetNames:[]
+    };
+  }));
   if(!primitives.length)issues.push('MESH_AUTHORING_REQUIRED');
+  if(primitives.some(row=>row.hasPosition!==true||row.attributeAccessorReferencesValid!==true||row.attributeCountsConsistent!==true))issues.push('GLB_ACCESSOR_BINDING_INVALID');
   if([...document.buffers||[],...document.images||[]].some(row=>row.uri&&!String(row.uri).startsWith('data:')))issues.push('EXTERNAL_RESOURCE_MATERIALIZATION_REQUIRED');
-  const inventory={meshCount:(document.meshes||[]).length,primitives,materials:(document.materials||[]).map((material,index)=>({index,name:material.name||`material-${index}`,hasBaseColorTexture:Boolean(material.pbrMetallicRoughness?.baseColorTexture),hasNormalTexture:Boolean(material.normalTexture)})),skins:(document.skins||[]).map((skin,index)=>({index,name:skin.name||`skin-${index}`,jointCount:(skin.joints||[]).length})),animations:(document.animations||[]).map((animation,index)=>({index,name:animation.name||`animation-${index}`,channelCount:(animation.channels||[]).length})),requiredExtensions:document.extensionsRequired||[]};
+  const skinRows=skins.map((skin,index)=>{
+    const joints=Array.isArray(skin.joints)?skin.joints:[];
+    const validJointCount=joints.filter(joint=>Number.isInteger(joint)&&joint>=0&&joint<nodes.length).length;
+    const inverseBindMatrices=skin.inverseBindMatrices,ibmInfo=accessorInfo(inverseBindMatrices);
+    const inverseBindMatricesValid=inverseBindMatrices===undefined||(ibmInfo.valid&&ibmInfo.type==='MAT4'&&ibmInfo.componentType===5126&&ibmInfo.count===joints.length);
+    return {index,name:skin.name||`skin-${index}`,jointCount:joints.length,validJointCount,invalidJointCount:joints.length-validJointCount,inverseBindMatricesValid,inverseBindMatricesType:inverseBindMatrices===undefined?null:ibmInfo.type||null,inverseBindMatricesComponentType:inverseBindMatrices===undefined?null:ibmInfo.componentType||null};
+  });
+  if(skinRows.some(row=>row.jointCount<=0||row.invalidJointCount>0||row.inverseBindMatricesValid!==true))issues.push('GLB_SKIN_BINDING_INVALID');
+  if(skins.length&&!meshSkinBindings.length)issues.push('GLB_MESH_SKIN_NODE_BINDING_REQUIRED');
+  if(primitives.some(row=>row.skinBound&&row.jointWeightDataValid!==true))issues.push('GLB_SKIN_WEIGHT_DATA_INVALID');
+  if(primitives.some(row=>row.actorBindingValid!==true))issues.push('GLB_ACTOR_MESH_BINDING_INVALID');
+  const animations=(document.animations||[]).map((animation,index)=>{
+    const channels=Array.isArray(animation.channels)?animation.channels:[];
+    const samplers=Array.isArray(animation.samplers)?animation.samplers:[];
+    const channelRows=channels.map((channel,channelIndex)=>{
+      const samplerIndex=channel?.sampler;
+      const sampler=Number.isInteger(samplerIndex)&&samplerIndex>=0&&samplerIndex<samplers.length?samplers[samplerIndex]:null;
+      const inputAccessor=sampler?.input;
+      const outputAccessor=sampler?.output;
+      const inputInfo=accessorInfo(inputAccessor),outputInfo=accessorInfo(outputAccessor);
+      const inputCount=accessorCount(inputAccessor);
+      const outputCount=accessorCount(outputAccessor);
+      const targetNode=channel?.target?.node;
+      const targetPath=clean(channel?.target?.path).toLowerCase();
+      const transformPath=['rotation','translation','scale'].includes(targetPath);
+      const interpolation=clean(sampler?.interpolation||'LINEAR').toUpperCase();
+      const outputMultiplier=interpolation==='CUBICSPLINE'?3:1;
+      const sampleCountsCompatible=!transformPath||(inputCount>0&&outputCount===inputCount*outputMultiplier);
+      const expectedOutputType=targetPath==='rotation'?'VEC4':targetPath==='translation'||targetPath==='scale'?'VEC3':null;
+      const timeAccessorValid=Boolean(inputInfo.valid&&inputInfo.type==='SCALAR'&&inputInfo.componentType===5126&&accessorStrictlyIncreasing(inputInfo));
+      const samplerValid=Boolean(sampler&&timeAccessorValid&&outputInfo.valid&&sampleCountsCompatible&&(!transformPath||outputInfo.type===expectedOutputType));
+      const targetValid=Number.isInteger(targetNode)&&targetNode>=0&&targetNode<nodes.length&&['rotation','translation','scale','weights'].includes(targetPath);
+      const jointTarget=targetValid&&jointNodeIndices.has(targetNode)&&transformPath;
+      return {channelIndex,samplerIndex,targetNode,targetPath,inputCount,outputCount,interpolation,timeAccessorValid,samplerValid,targetValid,jointTarget,valid:samplerValid&&targetValid};
+    });
+    const validChannels=channelRows.filter(row=>row.valid);
+    const jointChannels=validChannels.filter(row=>row.jointTarget);
+    const animatedJoints=unique(jointChannels.map(row=>String(row.targetNode)));
+    return {
+      index,name:animation.name||`animation-${index}`,channelCount:channels.length,samplerCount:samplers.length,
+      validChannelCount:validChannels.length,invalidChannelCount:channelRows.length-validChannels.length,
+      jointChannelCount:jointChannels.length,animatedJointCount:animatedJoints.length,
+      jointMotionPaths:unique(jointChannels.map(row=>row.targetPath)),
+      valid:channels.length>0&&samplers.length>0&&validChannels.length===channels.length,
+      channels:channelRows
+    };
+  });
+  if(animations.some(row=>row.valid!==true))issues.push('GLB_ANIMATION_SAMPLER_BINDING_INVALID');
+  if(animations.some(row=>row.channels.some(channel=>channel.timeAccessorValid!==true)))issues.push('GLB_ANIMATION_TIME_ACCESSOR_INVALID');
+  const inventory={
+    meshCount:(document.meshes||[]).length,nodeCount:nodes.length,jointNodeCount:jointNodeIndices.size,meshNodeBindingCount:meshNodeBindings.length,meshSkinBindingCount:meshSkinBindings.length,rigidJointAttachedMeshNodeCount:meshNodeBindings.filter(row=>row.skinIndex===null&&row.rigidJointAttached===true).length,binaryChunkBytes:Number(binaryChunk?.length||0),primitives,
+    nodes:nodes.map((node,index)=>({index,name:clean(node?.name)||`node-${index}`,joint:jointNodeIndices.has(index)})),
+    materials:materials.map((material,index)=>({index,name:material.name||`material-${index}`,hasBaseColorTexture:Boolean(material.pbrMetallicRoughness?.baseColorTexture),hasNormalTexture:Boolean(material.normalTexture)})),
+    skins:skinRows,
+    animations,
+    invalidAnimationCount:animations.filter(row=>row.valid!==true).length,
+    jointAnimationChannelCount:animations.reduce((sum,row)=>sum+row.jointChannelCount,0),
+    animatedJointCount:new Set(animations.flatMap(animation=>animation.channels.filter(channel=>channel.valid&&channel.jointTarget).map(channel=>channel.targetNode))).size,
+    requiredExtensions:document.extensionsRequired||[]
+  };
   const requiredAuthoring=[];
   if(primitives.some(row=>!row.hasUv))requiredAuthoring.push('UV_UNWRAP_AND_TEXTURE_AUTHORING');
   if(primitives.some(row=>!row.hasNormals))requiredAuthoring.push('NORMALS_AND_SMOOTHING_REVIEW');
   if(!primitives.some(row=>row.morphTargetCount))requiredAuthoring.push('AUTHOR_MORPHS_WHEN_SHAPE_CUSTOMIZATION_NEEDED');
   if(!inventory.skins.length)requiredAuthoring.push('RIG_WHEN_ARTICULATION_NEEDED');
-  if(!inventory.animations.length)requiredAuthoring.push('AUTHOR_ACTIONS_WHEN_MOTION_NEEDED');
+  if(!inventory.animations.length||inventory.jointAnimationChannelCount<=0)requiredAuthoring.push('AUTHOR_JOINT_ACTIONS_WHEN_MOTION_NEEDED');
   return freeze({status:issues.length?'AUTHORING_REQUIRED':'INSPECTED_RECONSTRUCTION_INPUT',path:relative,sourceHash,bytes:bytes.length,issues,inventory,requiredAuthoring,
     workflow:['PRESERVE_HASHED_ORIGINAL','INSPECT_SILHOUETTE_TOPOLOGY_AND_MATERIAL_BOUNDARIES','REUSE_BASE_AND_REBUILD_WEAK_FORMS','SCULPT_SECONDARY_ANATOMY_OR_CONSTRUCTION','CONFORM_PARTS_CLOTHING_AND_JOINTS','UV_BAKE_MATERIAL_SEPARATION_AND_CAUSAL_WEAR','RIG_MORPHS_EXPRESSIONS_AND_ACTION_POLISH','LOD_PLATFORM_VARIANTS_AND_REFERENCE_COMPARISON'],
     topologyAndDeformationStillNeedRenderedInspection:true,customizationBindingsMustUseActualNames:true,sourceMutationPerformed:false,generatedAsset:false,runtimeVerified:false});
+}
+
+export function evaluateCrossPlatform3dMasterGlb({repoRoot=process.cwd(),source={},family='',role=''}={}){
+  const resolvedFamily=clean(family||source?.family||source?.category).toUpperCase();
+  const resolvedRole=clean(role||source?.role||source?.subfamily).toUpperCase();
+  const required=['CHARACTER','CREATURE'].includes(resolvedFamily)||isCrossPlatform3dActorType(resolvedRole);
+  if(!required)return freeze({required:false,pass:true,status:'NOT_REQUIRED',blockers:freezeList([]),inspection:null});
+  const masterPath=clean(source?.masterGlb||source?.meshArtifact||source?.path);
+  const sourcePath=clean(source?.path);
+  const masterHash=clean(source?.masterGlbHash||source?.masterGlbSha256||source?.masterSourceHash||(sourcePath&&sourcePath===masterPath?source?.sourceHash:''));
+  const inspection=inspectVibeSourceGlb({repoRoot,source:{path:masterPath,...(masterHash?{sourceHash:masterHash}:{})}});
+  const blockers=[];
+  const inv=inspection?.inventory||{};
+  const primitives=Array.isArray(inv.primitives)?inv.primitives:[];
+  const normalizedRole=clean(source?.role||resolvedRole).toUpperCase().replace(/[\\s-]+/g,'_');
+  const explicitCharacterRole=resolvedFamily==='CHARACTER'&&normalizedRole&&!['CHARACTER','HUMANOID','ACTOR'].includes(normalizedRole);
+  const roleMotionRequirement=explicitCharacterRole?createVibeNpcRoleMotionRequirement({role:normalizedRole}):null;
+  const resolvedNpcRole=clean(roleMotionRequirement?.role).toUpperCase();
+  const requiredRoleMotionClips=explicitCharacterRole?freezeList(VIBE_NPC_ROLE_MOTION_REQUIREMENTS.roleRequiredClips?.[resolvedNpcRole]||[]):freezeList([]);
+  const animationNames=(inv.animations||[]).map(row=>clean(row?.name).toUpperCase().replace(/[^A-Z0-9]+/g,'_')).filter(Boolean);
+  const clipAliases=clip=>{
+    const key=clean(clip).toUpperCase();
+    const map={
+      JOG_OR_RUN:['JOG','RUN','MOVE'],LOOK_AROUND:['LOOK','SCAN'],HIT:['HIT','HURT','STAGGER','DAMAGE'],DEATH:['DEATH','DEAD','DIE'],
+      DEATH_SEQUENCE:['DEATH','DEAD','DIE'],ATTACK_LIGHT:['ATTACK','LIGHT_ATTACK'],ATTACK_HEAVY:['ATTACK','HEAVY_ATTACK'],ATTACK_ANTICIPATION:['ATTACK'],
+      BASIC_ATTACK_SET:['ATTACK','BASIC_ATTACK'],SPECIAL_ATTACK_SET:['SPECIAL','SKILL','CAST','ABILITY'],GUARD_BREAK:['BREAK','STAGGER','GUARD_BREAK'],
+      WORK_IDLE:['IDLE','WORK'],WORK_LOOP:['WORK'],FARM_WORK_LOOP:['WORK','FARM'],TRADE_INTERACTION:['TRADE','INTERACT'],PRESENT_ITEM:['PRESENT','INTERACT'],
+      REWARD_HANDOFF:['REWARD','INTERACT'],REACT_TO_PLAYER:['REACT','INTERACT'],REVIVE_HELP:['REVIVE','HELP'],COMBAT_READY:['COMBAT','READY','IDLE'],
+      FAILED_ATTACK_RECOVERY:['RECOVERY','ATTACK'],RETURN_IDLE:['IDLE'],FACE_PLAYER:['TURN','INTERACT'],HEAD_GAZE:['LOOK','TURN']
+    };
+    return unique([key,...(map[key]||[])]).map(value=>value.replace(/[^A-Z0-9]+/g,'_'));
+  };
+  const missingRoleMotionClips=requiredRoleMotionClips.filter(clip=>!clipAliases(clip).some(alias=>animationNames.some(name=>name===alias||name.includes(alias)||alias.includes(name))));
+  const socketMatchers={
+    HAND:[/(?:^|_)(?:RIGHT_)?HAND(?:_|$)/i,/(?:GRIP|WRIST)/i],BACK:[/(?:BACK|SPINE|CHEST)/i],HIP:[/(?:HIP|PELVIS|WAIST)/i],
+    SHIELD:[/(?:SHIELD|OFFHAND|LEFT_HAND|HAND_L)/i],TOOL:[/(?:TOOL|WEAPON|GRIP|RIGHT_HAND|HAND_R)/i]
+  };
+  const nodeNames=(inv.nodes||[]).map(row=>clean(row?.name));
+  const attachmentSocketCoverage=Object.fromEntries(Object.entries(socketMatchers).map(([socket,matchers])=>[socket,nodeNames.some(name=>matchers.some(re=>re.test(name)))]));
+  const missingAttachmentSocketBasis=explicitCharacterRole?Object.entries(attachmentSocketCoverage).filter(([,present])=>!present).map(([socket])=>socket):[];
+  if(!/\.glb$/i.test(clean(inspection?.path)))blockers.push('MASTER_GLB_PATH_REQUIRED');
+  if(inspection?.status!=='INSPECTED_RECONSTRUCTION_INPUT')blockers.push(...(inspection?.issues||['MASTER_GLB_INSPECTION_REQUIRED']));
+  if(!Number(inv.meshCount||0)||!primitives.length)blockers.push('MASTER_GLB_MESH_REQUIRED');
+  if(primitives.some(row=>row.hasNormals!==true))blockers.push('MASTER_GLB_NORMALS_REQUIRED');
+  if(primitives.some(row=>row.hasUv!==true))blockers.push('MASTER_GLB_UV0_REQUIRED');
+  if(!(inv.materials||[]).length||primitives.some(row=>row.hasMaterial!==true))blockers.push('MASTER_GLB_MATERIAL_REQUIRED');
+  if(primitives.some(row=>row.hasPosition!==true||row.attributeAccessorReferencesValid!==true||row.attributeCountsConsistent!==true))blockers.push('MASTER_GLB_ACCESSOR_BINDING_REQUIRED');
+  if(!(inv.skins||[]).length||Number(inv.jointNodeCount||0)<=0||(inv.skins||[]).some(row=>Number(row.jointCount||0)<=0||Number(row.invalidJointCount||0)>0||row.inverseBindMatricesValid!==true))blockers.push('MASTER_GLB_SKIN_SKELETON_REQUIRED');
+  if(Number(inv.meshSkinBindingCount||0)<=0||!primitives.some(row=>row.skinBound===true&&row.hasJointWeights===true))blockers.push('MASTER_GLB_SKIN_BINDING_REQUIRED');
+  if(primitives.some(row=>row.actorBindingValid!==true))blockers.push('MASTER_GLB_ACTOR_MESH_BINDING_REQUIRED');
+  if(primitives.some(row=>row.skinBound===true&&row.jointWeightDataValid!==true))blockers.push('MASTER_GLB_JOINT_WEIGHTS_REQUIRED');
+  if(!(inv.animations||[]).length||Number(inv.invalidAnimationCount||0)>0||Number(inv.jointAnimationChannelCount||0)<=0||Number(inv.animatedJointCount||0)<=0)blockers.push('MASTER_GLB_ANIMATION_REQUIRED');
+  if(explicitCharacterRole&&missingRoleMotionClips.length)blockers.push('MASTER_GLB_ROLE_MOTION_REQUIRED');
+  if(explicitCharacterRole&&missingAttachmentSocketBasis.length)blockers.push('MASTER_GLB_ATTACHMENT_SOCKET_BASIS_REQUIRED');
+  const uniqueBlockers=unique(blockers);
+  return freeze({
+    version:1,required:true,pass:uniqueBlockers.length===0,
+    status:uniqueBlockers.length?'MASTER_GLB_REPAIR_REQUIRED':'MASTER_GLB_STATIC_QA_PASS',
+    family:resolvedFamily||null,role:resolvedRole||null,path:inspection?.path||null,sourceHash:inspection?.sourceHash||null,
+    blockers:freezeList(uniqueBlockers),inspection,
+    roleMotionContractRequired:explicitCharacterRole,roleMotionRole:resolvedNpcRole||null,requiredRoleMotionClips,missingRoleMotionClips:freezeList(missingRoleMotionClips),
+    attachmentSocketBasisRequired:explicitCharacterRole,attachmentSocketCoverage:freeze(attachmentSocketCoverage),missingAttachmentSocketBasis:freezeList(missingAttachmentSocketBasis),
+    platformNativeBindingStillRequired:true,runtimeVerificationStillRequired:true,
+    primitivePartAssemblyPrototypeOnly:true
+  });
 }
 
 const ROBLOX_EXISTING_ASSET_TYPE_RULES=Object.freeze([
@@ -642,8 +900,8 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     intendedOnly:intendedOnlyAssets.length,
     requiredFamilies:Object.freeze(requiredFamilies),
     families:Object.freeze(families),
-    nextActions:Object.freeze(actions.slice(0,24)),
-    heldActions:Object.freeze(heldVolumeActions.slice(0,24)),
+    nextActions:Object.freeze(actions.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.supplyDecisionSummaryActionLimit)),
+    heldActions:Object.freeze(heldVolumeActions.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.supplyDecisionSummaryActionLimit)),
     heldVolumeActionCount:heldVolumeActions.length,
     decisionVocabulary:ASSET_SUPPLY_DECISIONS,
     currentConsumerFields:Object.freeze(['consumerGameIds','sourceBoundConsumerGameIds']),
@@ -1125,8 +1383,17 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     reuseResolutionOrder:libraryPlan.reuseResolutionOrder,
     freeOriginalVolumePolicy:libraryPlan.freeOriginalVolumePolicy,
     referenceImageIdeaOverlay:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.referenceImageIdeaOverlay,
+    perDomainIdeaBudgetPerCycle:libraryPlan.perDomainIdeaBudgetPerCycle,
+    domainVolumeActionLimitPerDomain:libraryPlan.domainVolumeActionLimitPerDomain,
+    uiSubsystemVolumeActionLimitPerSubsystem:libraryPlan.uiSubsystemVolumeActionLimitPerSubsystem,
+    maxVolumeWorklistActions:libraryPlan.maxVolumeWorklistActions,
+    taskReferenceOverlayWorklistLimit:libraryPlan.taskReferenceOverlayWorklistLimit,
+    supplyDecisionSummaryActionLimit:libraryPlan.supplyDecisionSummaryActionLimit,
+    maintenanceListLimits:libraryPlan.maintenanceListLimits,
     eligibleFreeSourceCount:libraryPlan.eligibleFreeSourceCount,
+    freeSourceCandidatePools:libraryPlan.freeSourceCandidatePools,
     freeSourceCandidateLimitPerAction:libraryPlan.freeSourceCandidateLimitPerAction,
+    freeSourceCandidatePreviewLimitPerAction:libraryPlan.freeSourceCandidatePreviewLimitPerAction,
     freeSourceCatalogSufficiencyCount:libraryPlan.freeSourceCatalogSufficiencyCount,
     freeSourceCatalogReady:libraryPlan.freeSourceCatalogReady,
     freeSourceCatalogExpansionMode:libraryPlan.freeSourceCatalogExpansionMode,
@@ -1217,6 +1484,13 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     balanceAuthority:false,
     saveAuthority:false,
     networkAuthority:false
+  };
+
+  next.npcRoleProduction={
+    ...JSON.parse(JSON.stringify(VIBE_NPC_ROLE_PRODUCTION_CONTRACT)),
+    contract:'assets/vibe-character-identity-director.js#VIBE_NPC_ROLE_PRODUCTION_CONTRACT',
+    productionVerified:false,
+    runtimeVerificationRequired:true
   };
 
 
@@ -1416,9 +1690,11 @@ function buildAssetModelRouting({task={},request='',decisions=[],highEndActive=f
   });
 }
 function nativeDccFamilyForTypes(types=[]){
+  const actorFamilies=unique((types||[]).map(crossPlatform3dActorFamilyForType).filter(Boolean));
+  if(actorFamilies.length===1)return actorFamilies[0];
   const joined=(types||[]).map(value=>clean(value).toLowerCase()).join(' ');
-  if(/character|player|npc/.test(joined))return'CHARACTER';
-  if(/boss|enemy|creature|monster/.test(joined))return'CREATURE';
+  if(/character|player|npc|companion|ally|civilian|vendor|quest[ _-]?giver|trainer/.test(joined))return'CHARACTER';
+  if(/boss|enemy|elite|creature|monster|pet|mount|summon/.test(joined))return'CREATURE';
   if(/background|environment/.test(joined))return'ENVIRONMENT';
   if(/item|weapon|equipment/.test(joined))return'WEAPON';
   if(/animation|motion/.test(joined))return'MOTION';
@@ -1443,12 +1719,16 @@ function normalizeNativeDccAuthoringRecipe(recipe={},asset={},target='',required
   const typeMatch=!types.length||types.some(type=>requiredTypes.includes(type));
   const targetMatch=!targets.length||targets.includes(targetName)||targets.includes(targetName.toUpperCase().toLowerCase());
   const safePath=value=>Boolean(value&&!path.isAbsolute(value)&&!value.split('/').includes('..'));
-  const safe=executor==='BLENDER_PYTHON'&&/\.py$/i.test(script)&&safePath(script)&&outputs.length>0&&outputs.every(safePath)&&(!evidenceJson||safePath(evidenceJson))&&(!preview||safePath(preview));
   const family=clean(recipe?.family||asset?.family||asset?.category).toUpperCase()||nativeDccFamilyForTypes(types);
+  const masterGlbRequired=['CHARACTER','CREATURE'].includes(family)||types.some(isCrossPlatform3dActorType);
+  const masterGlbOutput=outputs.find(value=>/\.glb$/i.test(value))||null;
+  const safe=executor==='BLENDER_PYTHON'&&/\.py$/i.test(script)&&safePath(script)&&outputs.length>0&&outputs.every(safePath)&&(!evidenceJson||safePath(evidenceJson))&&(!preview||safePath(preview))&&(!masterGlbRequired||Boolean(masterGlbOutput));
   const license=clean(recipe?.license||asset?.license)||null;
   return freeze({
     id,assetId:clean(asset?.id)||clean(recipe?.assetId)||null,family:family||null,license,executor,script,types:freezeList(types),targetPlatforms:freezeList(targets),args,outputs,evidenceJson,preview,editableSource,
     typeMatch,targetMatch,safe,runMode:clean(recipe?.runMode||'VERIFY_ONLY').toUpperCase(),
+    masterGlbRequired,masterGlbOutput,masterGlbFormat:masterGlbRequired?'GLB_2_0':null,
+    primitivePartAssemblyPrototypeOnly:masterGlbRequired,
     runtimeVerificationRequired:true,companyPromotionAllowed:false
   });
 }
@@ -1496,13 +1776,17 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
   const dccCapableTypes=unique(decisions
     .filter(row=>needsAuthoring(row)&&(row.directAuthoring||[]).some(kind=>NATIVE_DCC_AUTHORING.includes(kind)))
     .map(row=>clean(row.type).toLowerCase()));
+  const webRequestedActorDccTypes=webNativeTarget
+    ?dccCapableTypes.filter(type=>isCrossPlatform3dActorType(type)&&web3dActorRequested(task,type))
+    :[];
   const requestedDccScope=explicitRecipeHasUntyped
     ?dccCapableTypes
-    :unique([...(explicitRequestedTypes||[]),...explicitRecipeTypes].map(value=>clean(value).toLowerCase()).filter(Boolean));
-  const automaticDccTypes=engineNativeTarget&&!internalMotion
+    :unique([...(explicitRequestedTypes||[]),...explicitRecipeTypes,...webRequestedActorDccTypes].map(value=>clean(value).toLowerCase()).filter(Boolean));
+  const mandatoryActorGlbTypes=dccCapableTypes.filter(type=>isCrossPlatform3dActorType(type)&&requestedDccScope.includes(type));
+  const automaticDccTypes=(engineNativeTarget||webNativeTarget)&&!internalMotion
     ?dccCapableTypes.filter(type=>requestedDccScope.includes(type))
     :[];
-  const declaredDccTypes=engineNativeTarget?explicitRecipeTypes:[];
+  const declaredDccTypes=(engineNativeTarget||webNativeTarget)?explicitRecipeTypes:[];
   const nativeTextKinds=targetName==='roblox'?ROBLOX_DIRECT_AUTHORING:targetName==='unity'?UNITY_DIRECT_AUTHORING:webNativeTarget?WEB_DIRECT_AUTHORING:[];
   const nativeTextTypes=internalMotion?['motion']:decisions.filter(row=>needsAuthoring(row)&&(row.directAuthoring||[]).some(kind=>nativeTextKinds.includes(kind))).map(row=>row.type);
   const uniqueDccTypes=unique([...automaticDccTypes,...declaredDccTypes]);
@@ -1558,7 +1842,7 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
     version:3,
     enabled:supportedAuthoringTarget&&(uniqueDccTypes.length>0||uniqueNativeTextTypes.length>0),
     target:targetName,
-    authoringSurface:internalMotion?'INTERNAL_LUAU_MOTION_SOURCE':webNativeTarget?'WEB_NATIVE_SOURCE':'ENGINE_NATIVE_SOURCE',
+    authoringSurface:internalMotion?'INTERNAL_LUAU_MOTION_SOURCE':webNativeTarget&&uniqueDccTypes.some(isCrossPlatform3dActorType)?'WEB_NATIVE_SOURCE_WITH_SHARED_DCC_MASTER':webNativeTarget?'WEB_NATIVE_SOURCE':'ENGINE_NATIVE_SOURCE',
     platformReauthoringRequired:true,
     webAssetDirectReuseIntoRobloxOrUnityForbidden:true,
     stages:freezeList(['INSPECT','REUSE_OR_DERIVE','AUTHOR_EDITABLE_SOURCE','EXPORT_NATIVE_DERIVATIVE','APPLY_TO_EXISTING_RESPONSIBILITY','CAPTURE','VERIFY_NATIVE_RUNTIME','PROMOTE_IF_VERIFIED']),
@@ -1589,6 +1873,12 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
       previewRenderRequired:true,
       artifactHashesRequired:true,
       requiredEvidenceFields:freezeList(['recipe','editableSource','nativeArtifact','artifactHash','preview','runtimeVerificationState']),
+      crossPlatform3dMasterGlbRequired:uniqueDccTypes.some(isCrossPlatform3dActorType),
+      crossPlatform3dMasterGlbRequiredTypes:freezeList(uniqueDccTypes.filter(isCrossPlatform3dActorType)),
+      web3dActorMasterAuthoringRequired:webNativeTarget&&uniqueDccTypes.some(isCrossPlatform3dActorType),
+      crossPlatform3dMasterGlbFormat:'GLB_2_0',
+      crossPlatform3dMasterGlbRequiredContents:freezeList(['MESH','NORMALS','UV0','MATERIALS','SKELETON','SKIN_WEIGHTS','JOINT_WEIGHTS','ANIMATION']),
+      primitivePartAssemblyPrototypeOnly:true,
       nativeSourceMayNotMaskDccRequirement:true,
       textWorkerMayClaimDccCompletion:false
     }),
@@ -1631,8 +1921,8 @@ const GENERATED_ASSET_OUTPUT_CONTRACT=freeze({
 });
 
 const COMPANY_CATEGORY_TYPES=freeze({
-  CHARACTER:freeze(['character']),
-  CREATURE:freeze(['enemy','boss']),
+  CHARACTER:freeze([...CROSS_PLATFORM_3D_CHARACTER_TYPES]),
+  CREATURE:freeze([...CROSS_PLATFORM_3D_CREATURE_TYPES]),
   MOTION:freeze(['animation']),
   ENVIRONMENT:freeze(['background','prop']),
   VFX:freeze(['effect']),
@@ -1642,7 +1932,7 @@ const COMPANY_CATEGORY_TYPES=freeze({
 
 function verifiedCompanyManifestAssets(registry={}){
   return (Array.isArray(registry?.assets)?registry.assets:[])
-    .filter(asset=>asset?.verifiedCompanyReusable===true||/^VERIFIED_COMPANY_/.test(clean(asset?.status).toUpperCase()))
+    .filter(asset=>asset?.verifiedCompanyReusable===true||/^VERIFIED_COMPANY_/.test(clean(asset?.status).toUpperCase())||asset?.crossPlatformMasterSource===true)
     .map(asset=>({
       ...asset,
       id:clean(asset.id),
@@ -1651,7 +1941,8 @@ function verifiedCompanyManifestAssets(registry={}){
       tags:Array.isArray(asset.tags)?asset.tags:[clean(asset.title),clean(asset.category)].filter(Boolean),
       platforms:Array.isArray(asset.platforms)?asset.platforms:(clean(asset.platform)&&!/^SHARED|WEB_/i.test(clean(asset.platform))?[clean(asset.platform).toLowerCase()]:[]),
       downloaded:true,
-      companyVerified:true,
+      companyVerified:asset?.verifiedCompanyReusable===true||/^VERIFIED_COMPANY_/.test(clean(asset?.status).toUpperCase()),
+      crossPlatformMasterSource:asset?.crossPlatformMasterSource===true,
       source:clean(asset.source)||'COMPANY_ASSET_LIBRARY'
     }))
     .filter(asset=>asset.id);
@@ -1665,6 +1956,7 @@ function mergeManifestWithCompanyLibrary(manifest={},registry={}){
 }
 
 function sourceTierFor(asset={}){
+  if(asset?.crossPlatformMasterSource===true)return 'SHARED_GLB_MASTER_SOURCE';
   if(asset?.sameGameExistingRoblox===true)return 'SAME_GAME_EXISTING_ROBLOX_ASSET';
   if(asset?.companyVerified===true)return 'VERIFIED_COMPANY_ASSET';
   const assetPath=clean(asset.path);
@@ -1677,6 +1969,8 @@ function sourceTierFor(asset={}){
 function assetTargetCompatible(asset={},target=''){
   const resolvedTarget=clean(target).toLowerCase();
   const assetPath=clean(asset.path).replaceAll('\\\\','/');
+  const masterGlb=clean(asset?.masterGlb||asset?.meshArtifact||asset?.masterSourcePath).replaceAll('\\\\','/');
+  if(asset?.crossPlatformMasterSource===true&&/\.glb$/i.test(masterGlb))return ['roblox','unity','web'].includes(resolvedTarget);
   const platforms=(Array.isArray(asset.platforms)?asset.platforms:[]).map(value=>clean(value).toLowerCase()).filter(Boolean);
   const researchTargets=(Array.isArray(asset.platformResearchTargets)?asset.platformResearchTargets:[]).map(value=>clean(value).toLowerCase()).filter(Boolean);
   if(resolvedTarget==='web'){
@@ -1700,7 +1994,7 @@ function assetTargetCompatible(asset={},target=''){
   return false;
 }
 
-function matchedForType(selector={},type='',manifest={},target=''){
+function matchedForType(selector={},type='',manifest={},target='',repoRoot=process.cwd()){
   const assets=Array.isArray(manifest?.assets)?manifest.assets:[];
   const byId=new Map(assets.map(asset=>[clean(asset?.id),asset]));
   const selectedRows=(selector.matched||[]).filter(row=>clean(row.type)===clean(type));
@@ -1716,9 +2010,16 @@ function matchedForType(selector={},type='',manifest={},target=''){
   };
   const normalize=(row,adaptationBaseOnly=false)=>{
     const asset=byId.get(clean(row.id))||row;
+    const actorFamily=clean(asset?.family||asset?.category).toUpperCase();
+    const masterGlbQa=evaluateCrossPlatform3dMasterGlb({repoRoot,source:asset,family:actorFamily,role:asset?.role||asset?.subfamily||type});
+    const crossPlatformMasterSource=asset?.crossPlatformMasterSource===true;
+    const resolvedPath=crossPlatformMasterSource&&masterGlbQa.pass===true?clean(masterGlbQa.path):clean(row.path||asset.path);
+    const actorLineageRequired=masterGlbQa.required===true;
+    const editableSourceHash=clean(asset.editableSourceHash||asset.sourceHash||asset.sourceSha256||asset.masterGlbSourceHash||(!actorLineageRequired?(asset.contentHash||asset.sha256):''));
+    const nativeArtifactHash=clean(asset.nativeArtifactHash||asset.artifactHash||asset.derivedSha256||(!actorLineageRequired?(asset.contentHash||asset.sha256):''));
     return freeze({
       id:clean(row.id||asset.id),
-      path:clean(row.path||asset.path)||null,
+      path:resolvedPath||null,
       license:clean(row.license||asset.license)||null,
       source:clean(row.source||asset.source)||null,
       sourceUrl:clean(asset.sourceUrl)||null,
@@ -1733,8 +2034,10 @@ function matchedForType(selector={},type='',manifest={},target=''){
       companyVerified:asset.companyVerified===true,
       sameGameExistingRoblox:asset.sameGameExistingRoblox===true,
       robloxAssetId:clean(asset.robloxAssetId)||null,
-      sourceHash:clean(asset.sourceHash||asset.sourceSha256||asset.contentHash||asset.sha256)||null,
-      artifactHash:clean(asset.artifactHash||asset.derivedSha256||asset.contentHash||asset.sha256)||null,
+      sourceHash:editableSourceHash||null,
+      editableSourceHash:editableSourceHash||null,
+      artifactHash:nativeArtifactHash||null,
+      nativeArtifactHash:nativeArtifactHash||null,
       sourceFiles:freezeList(unique(Array.isArray(asset.sourceFiles)?asset.sourceFiles:[])),
       nativeArtifacts:freezeList(unique(Array.isArray(asset.nativeArtifacts)?asset.nativeArtifacts:[])),
       tags:freezeList(unique([...(Array.isArray(asset.tags)?asset.tags:[]),clean(asset.family),clean(asset.category),clean(asset.subfamily)].map(clean).filter(Boolean))),
@@ -1746,17 +2049,30 @@ function matchedForType(selector={},type='',manifest={},target=''){
       studioMotionCandidate:asset.studioMotionCandidate===true,
       creatureFamily:clean(asset.creatureFamily)||null,
       compatibleMotionSourceIds:freezeList(asset.compatibleMotionSourceIds||[]),
+      masterGlb:clean(asset.masterGlb||asset.meshArtifact||masterGlbQa.path)||null,
+      masterGlbHash:clean(asset.masterGlbHash||asset.masterGlbSha256||masterGlbQa.sourceHash)||null,
+      masterGlbStaticQaPass:masterGlbQa.required?masterGlbQa.pass:null,
+      masterGlbQaAuthority:masterGlbQa.required?'tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb':null,
+      masterGlbBlockers:freezeList(masterGlbQa.blockers||[]),
+      crossPlatformMasterSource,
       adaptationBaseOnly,
       finalUseStillRequiresOriginalSelectorContract:adaptationBaseOnly,
       targetCompatible:true
     });
   };
 
+  const selectedMasterBases=selectedRows
+    .filter(row=>{
+      const asset=byId.get(clean(row.id))||row;
+      return asset?.crossPlatformMasterSource===true&&assetTargetCompatible(asset,target);
+    })
+    .map(row=>normalize(row,true));
+
   const finalCandidates=selectedRows
     .filter(row=>assetTargetCompatible(byId.get(clean(row.id))||row,target))
     .filter(row=>{
       const asset=byId.get(clean(row.id))||row;
-      return asset.referenceOnly!==true&&!/_REFERENCE(?:_ONLY)?$/.test(clean(asset.platform).toUpperCase());
+      return asset?.crossPlatformMasterSource!==true&&asset.referenceOnly!==true&&!/_REFERENCE(?:_ONLY)?$/.test(clean(asset.platform).toUpperCase());
     })
     .map(row=>normalize(row,false));
 
@@ -1765,11 +2081,11 @@ function matchedForType(selector={},type='',manifest={},target=''){
     .filter(asset=>declaredFor(asset).includes(clean(type).toLowerCase()))
     .filter(asset=>!licenseBlocked(asset))
     .filter(asset=>assetTargetCompatible(asset,target))
-    .filter(asset=>asset.referenceOnly!==true&&!/_REFERENCE(?:_ONLY)?$/.test(clean(asset.platform).toUpperCase()))
+    .filter(asset=>asset?.crossPlatformMasterSource===true||(asset.referenceOnly!==true&&!/_REFERENCE(?:_ONLY)?$/.test(clean(asset.platform).toUpperCase())))
     .map(asset=>normalize(asset,true));
 
   const deduped=new Map();
-  for(const row of [...finalCandidates,...authoringBases])if(row.id&&!deduped.has(row.id))deduped.set(row.id,row);
+  for(const row of [...selectedMasterBases,...finalCandidates,...authoringBases])if(row.id&&!deduped.has(row.id))deduped.set(row.id,row);
   return freezeList([...deduped.values()]);
 }
 const BASE_MATERIAL_FAMILIES_BY_ASSET_TYPE=Object.freeze({
@@ -2020,13 +2336,34 @@ function buildComposableBaseMaterialLoadout({companyRegistry={},studioUniversePl
     })
   });
 }
-function directAuthoringFor(target='',type=''){
+function web3dActorRequested(task={},type=''){
+  if(!isCrossPlatform3dActorType(type))return false;
+  if(task?.masterGlbRequired===true||task?.final3dActor===true||task?.web3dActor===true||task?.assetAuthoring?.masterGlbRequired===true)return true;
+  const dimension=clean(
+    task?.minimumFinalGameplayDimension
+    ||task?.minimumSpatialPresentation?.minimumFinalGameplayDimension
+    ||task?.assetDimension
+    ||task?.presentationDimension
+  ).toUpperCase();
+  if(['3D','THREE_D','FULL_3D'].includes(dimension))return true;
+  const raw=[
+    clean(task?.goal),clean(task?.request),
+    ...(Array.isArray(task?.acceptanceCriteria)?task.acceptanceCriteria.map(clean):[])
+  ].filter(Boolean).join(' ');
+  const actor='(?:character|player|hero|npc|companion|ally|villager|merchant|quest[ _-]?giver|guard|worker|enemy|monster|creature|elite|boss|캐릭터|플레이어|주인공|npc|동료|주민|상인|퀘스트|경비|적|몬스터|크리처|엘리트|보스)';
+  const threeD='(?:\\b3d\\b|3차원|glb|gltf|skinned|rigged|armature|webgl|three\\.?js)';
+  return new RegExp(threeD+'[\\s\\S]{0,120}'+actor+'|'+actor+'[\\s\\S]{0,120}'+threeD,'i').test(raw);
+}
+function directAuthoringFor(target='',type='',task={}){
   const resolvedTarget=clean(target).toLowerCase();
-  const actor=/character|player|enemy|boss|npc|animation/i.test(clean(type));
-  const dcc=/character|player|enemy|boss|npc|animation|background|environment|item|weapon|prop/i.test(clean(type));
+  const actor=isCrossPlatform3dActorType(type)||/animation/i.test(clean(type));
+  const dcc=isCrossPlatform3dActorType(type)||/animation|background|environment|item|weapon|prop/i.test(clean(type));
   const audio=/audio|sound|music|bgm|sfx/i.test(clean(type));
   if(resolvedTarget==='web'){
     if(audio) return freezeList(['web-audio-sfx']);
+    if(isCrossPlatform3dActorType(type)&&web3dActorRequested(task,type)){
+      return freezeList([...NATIVE_DCC_AUTHORING,'procedural-javascript-visuals','motion-engine-animation']);
+    }
     if(actor) return freezeList(['svg-final-art','canvas-art-and-effects','motion-engine-animation']);
     return WEB_DIRECT_AUTHORING;
   }
@@ -2042,20 +2379,21 @@ function directAuthoringFor(target='',type=''){
 }
 
 function qualityDnaForType(type=''){
-  const kind=clean(type).toLowerCase();
-  const profile=/character|player|npc/.test(kind)?'HERO_CHARACTER'
-    :/boss/.test(kind)?'HERO_BOSS'
-    :/enemy|creature/.test(kind)?'FOREGROUND_CREATURE'
+  const kind=normalizeActorType(type);
+  const actorFamily=crossPlatform3dActorFamilyForType(kind);
+  const profile=kind==='boss'?'HERO_BOSS'
+    :actorFamily==='CHARACTER'?'HERO_CHARACTER'
+    :actorFamily==='CREATURE'?'FOREGROUND_CREATURE'
     :/background|environment/.test(kind)?'REGION_WORLD'
     :/item|weapon/.test(kind)?'INTERACTIVE_EQUIPMENT'
     :/prop/.test(kind)?'FUNCTIONAL_PROP'
     :/ui/.test(kind)?'INTERFACE'
     :/animation|motion/.test(kind)?'MOTION'
     :'GENERAL_VISUAL';
-  const axes=/character|player|npc/.test(kind)
-    ?['SILHOUETTE','PROPORTION','ANATOMY','FACE_HANDS_FEET','CLOTHING_EQUIPMENT_FIT','MATERIAL','RIG','SOCKET','MOTION','SECONDARY_MOTION','LOD']
-    :/boss|enemy|creature/.test(kind)
-      ?['SPECIES_SILHOUETTE','BODY_PLAN','HEAD_MOUTH_EYES','LIMB_APPENDAGE_STRUCTURE','SURFACE_MATERIAL','RIG','ATTACK_CONTACT','LOCOMOTION','HIT_DEATH_MOTION','LOD']
+  const axes=actorFamily==='CHARACTER'
+    ?['SILHOUETTE','PROPORTION','ANATOMY','FACE_HANDS_FEET','CLOTHING_EQUIPMENT_FIT','MATERIAL','RIG','SOCKET','ROLE_READABILITY','MOTION','SECONDARY_MOTION','LOD']
+    :actorFamily==='CREATURE'
+      ?['SPECIES_SILHOUETTE','BODY_PLAN','HEAD_MOUTH_EYES','LIMB_APPENDAGE_STRUCTURE','SURFACE_MATERIAL','RIG','ROLE_READABILITY','ATTACK_CONTACT','LOCOMOTION','HIT_DEATH_MOTION','LOD']
       :/background|environment/.test(kind)
         ?['MACRO_FORM','LANDMARK','ROUTE_READABILITY','STRUCTURAL_DENSITY','VEGETATION','FUNCTIONAL_PROPS','MATERIAL_HISTORY','AMBIENT_MOTION','STREAMING_LOD']
         :/item|weapon|prop/.test(kind)
@@ -2105,12 +2443,14 @@ function assetApplyFirstCandidate(asset={},target='',binding={}){
   const platform=clean(target).toLowerCase();
   const variant=asset?.platformVariants?.[platform.toUpperCase()]||asset?.platformVariants?.[platform]||null;
   const sameGame=asset.sameGameExistingRoblox===true&&platform==='roblox';
+  const requestedType=normalizeActorType(binding?.type);
+  const masterGlbRequired=isCrossPlatform3dActorType(requestedType);
+  const masterGlbReady=!masterGlbRequired||asset.masterGlbStaticQaPass===true;
   const hasNativeReference=Boolean(sameGame&&(asset.path||asset.robloxAssetId)||variant?.path||asset.path||asset.robloxAssetId);
-  const nativeReady=Boolean(sameGame||variant?.path||asset.productionVerified===true);
-  const adaptable=Boolean(!nativeReady&&hasNativeReference&&(asset.retargetable===true||asset.rigType||asset.sourceHash));
+  const nativeReady=Boolean(masterGlbReady&&asset.crossPlatformMasterSource!==true&&(sameGame||variant?.path||asset.productionVerified===true));
+  const adaptable=Boolean(masterGlbReady&&!nativeReady&&hasNativeReference&&(asset.retargetable===true||asset.rigType||asset.sourceHash));
   const lane=nativeReady?(sameGame?'A_SAME_GAME_BOUND':'B_NATIVE_READY'):adaptable?'C_MINIMAL_ADAPT':'D_AUTHORING_REQUIRED';
   const bindingCost=lane==='A_SAME_GAME_BOUND'?0:lane==='B_NATIVE_READY'?1:lane==='C_MINIMAL_ADAPT'?2:3;
-  const requestedType=clean(binding?.type).toLowerCase();
   const roleTokens=unique([requestedType,...(binding?.targetStates||[]).map(clean)]).map(value=>value.toLowerCase()).filter(Boolean);
   const tags=(asset.tags||[]).map(value=>clean(value).toLowerCase());
   const roleMatches=roleTokens.filter(token=>tags.some(tag=>tag.includes(token)||token.includes(tag))).length;
@@ -2142,10 +2482,21 @@ function assetApplyFirstCandidate(asset={},target='',binding={}){
     path:asset.path||variant?.path||null,
     robloxAssetId:asset.robloxAssetId||null,
     sourceHash:asset.sourceHash||null,
+    editableSourceHash:asset.editableSourceHash||asset.sourceHash||null,
+    artifactHash:asset.artifactHash||null,
+    nativeArtifactHash:asset.nativeArtifactHash||asset.artifactHash||null,
     acquiredExternal:asset.acquiredExternal===true,
     acquisitionOrigin:asset.acquisitionOrigin||null,
     productionVerified:asset.productionVerified===true,
-    ready:Boolean(hasNativeReference&&asset.downloaded!==false&&lane!=='D_AUTHORING_REQUIRED'),
+    ready:Boolean(masterGlbReady&&hasNativeReference&&asset.downloaded!==false&&lane!=='D_AUTHORING_REQUIRED'),
+    masterGlbRequired,
+    masterGlbReady,
+    masterGlbStaticQaPass:masterGlbRequired?asset.masterGlbStaticQaPass===true:null,
+    masterGlbQaAuthority:masterGlbRequired?clean(asset.masterGlbQaAuthority)||null:null,
+    masterGlbBlockers:freezeList(asset.masterGlbBlockers||[]),
+    masterGlb:asset.masterGlb||null,
+    masterGlbHash:asset.masterGlbHash||null,
+    crossPlatformMasterSource:asset.crossPlatformMasterSource===true,
     adaptationAllowed:true,
     adaptationAxes:freezeList(lane==='C_MINIMAL_ADAPT'?['RIG_RETARGET','MATERIAL_REMAP','SOCKET_REBIND','SCALE_AXIS_PIVOT_NORMALIZE','LOD_GENERATION']:[]),
     qualityPassRequiredBeforeKeep:true,
@@ -2331,13 +2682,13 @@ function createPostDownloadInternalComparison({matched=[],target='',binding={},c
 function decisionFor(selector={},target='',binding={},manifest={},conceptContext={}){
   const type=clean(binding.type);
   const qualityDNA=qualityDnaForType(type);
-  const matched=matchedForType(selector,type,manifest,target);
+  const matched=matchedForType(selector,type,manifest,target,conceptContext.repoRoot||process.cwd());
   const sameGameCandidates=freezeList(matched.filter(asset=>asset.sourceTier==='SAME_GAME_EXISTING_ROBLOX_ASSET'));
   const companyCandidates=freezeList(matched.filter(asset=>asset.sourceTier==='VERIFIED_COMPANY_ASSET'));
   const repositoryCandidates=freezeList(matched.filter(asset=>asset.sourceTier==='LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET'));
   const externalCandidates=freezeList(matched.filter(asset=>asset.sourceTier==='LICENSE_VERIFIED_EXTERNAL_ASSET'));
   const reuseCandidates=freezeList([...companyCandidates,...sameGameCandidates,...repositoryCandidates]);
-  const directAuthoring=directAuthoringFor(target,type);
+  const directAuthoring=directAuthoringFor(target,type,conceptContext.task||{});
   const candidateRows=freezeList([...reuseCandidates,...externalCandidates].map(asset=>assetApplyFirstCandidate(asset,target,binding)));
   const applyFirstCandidates=freezeList(candidateRows.filter(row=>row.ready).sort((a,b)=>b.compatibilityScore-a.compatibilityScore||a.bindingCost-b.bindingCost||a.id.localeCompare(b.id)));
   const donorCandidates=freezeList(candidateRows.filter(row=>row.sourceHash&&row.donorCapabilities.length).sort((a,b)=>b.compatibilityScore-a.compatibilityScore||a.bindingCost-b.bindingCost||a.id.localeCompare(b.id)));
@@ -2629,7 +2980,8 @@ function buildReferenceDrivenAssetIdeaWorklist({studies=[],request='',characterC
       }
     }
   }
-  return freezeList(rows.filter((row,index,list)=>list.findIndex(other=>other.ideaId===row.ideaId)===index).slice(0,96));
+  return freezeList(rows.filter((row,index,list)=>list.findIndex(other=>other.ideaId===row.ideaId)===index)
+    .slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.taskReferenceOverlayWorklistLimit));
 }
 
 export function buildVibeAssetProductionPlan({
@@ -2647,8 +2999,11 @@ export function buildVibeAssetProductionPlan({
   const flowAssetRequirements=normalizeFlowAssetRequirements(task.assetRequirements);
   const currentDemandFamilies=requiredAssetFamilies({request,requirements:flowAssetRequirements});
   const manifestBase=manifest||readJson(path.join(repoRoot,'assets','asset-manifest.json'),{version:0,assets:[]});
-  const librarySync=synchronizeCompanyCommonAssetRegistry({repoRoot,persist:!process.env.NODE_TEST_CONTEXT});
+  const persistedCompanyRegistry=readJson(path.join(repoRoot,'company-asset-library.json'),{version:0,assets:[],externalSources:[]});
+  const librarySync=synchronizeCompanyCommonAssetRegistry({repoRoot,registry:persistedCompanyRegistry,persist:!process.env.NODE_TEST_CONTEXT});
   const companyRegistry=librarySync.registry;
+  // 선택 identity는 실제 저장된 snapshot만 사용한다. dry-run 동기화 결과가 canonical version/hash를 선행하지 못한다.
+  const selectionRegistry=librarySync.changed&&!librarySync.persisted?persistedCompanyRegistry:companyRegistry;
   const libraryAutomation=companyRegistry?.internalAssetLibraryAutomation||{};
   const executionLibraryPlan=librarySync.executionAutomationPlan||librarySync.automationPlan;
   const persistedWorklistFresh=
@@ -2691,7 +3046,9 @@ export function buildVibeAssetProductionPlan({
     reuseResolutionOrder:freezeList(executionLibraryPlan.reuseResolutionOrder||libraryAutomation.reuseResolutionOrder||['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','LICENSE_VERIFIED_FREE_SOURCE_ADAPT','NEW_AUTHORING']),
     freeOriginalVolumePolicy:freeze({...libraryAutomation.freeOriginalVolumePolicy,...executionLibraryPlan.freeOriginalVolumePolicy}),
     eligibleFreeSourceCount:Number(executionLibraryPlan.eligibleFreeSourceCount||0),
-    freeSourceCandidateLimitPerAction:Number(executionLibraryPlan.freeSourceCandidateLimitPerAction||libraryAutomation.freeSourceCandidateLimitPerAction||8),
+    freeSourceCandidatePools:freeze({...((executionLibraryPlan.freeSourceCandidatePools||libraryAutomation.freeSourceCandidatePools)||{})}),
+    freeSourceCandidateLimitPerAction:Number(executionLibraryPlan.freeSourceCandidateLimitPerAction||libraryAutomation.freeSourceCandidateLimitPerAction||512),
+    freeSourceCandidatePreviewLimitPerAction:Number(executionLibraryPlan.freeSourceCandidatePreviewLimitPerAction||libraryAutomation.freeSourceCandidatePreviewLimitPerAction||8),
     freeSourceCatalogSufficiencyCount:Number(executionLibraryPlan.freeSourceCatalogSufficiencyCount||libraryAutomation.freeSourceCatalogSufficiencyCount||12),
     freeSourceCatalogReady:executionLibraryPlan.freeSourceCatalogReady===true,
     freeSourceCatalogExpansionMode:clean(executionLibraryPlan.freeSourceCatalogExpansionMode||libraryAutomation.freeSourceCatalogExpansionMode)||'TARGETED_GAP_ONLY',
@@ -2730,12 +3087,12 @@ export function buildVibeAssetProductionPlan({
     newWrapper:false,
     newShadowSystem:false
   });
-  const currentCustomizationDocument=(companyRegistry?.baseMaterialLibrary?.customization?.documents||[]).find(row=>row.gameId===clean(task.gameId))||null;
+  const currentCustomizationDocument=(selectionRegistry?.baseMaterialLibrary?.customization?.documents||[]).find(row=>row.gameId===clean(task.gameId))||null;
   const sharedCustomizationDocument=task.assetCustomization?.sharedDocument||(!task.assetCustomization?.recipes?.length?currentCustomizationDocument:null);
   if(sharedCustomizationDocument)task={...task,styleFamily:sharedCustomizationDocument.styleBible?.profileKey,styleBible:sharedCustomizationDocument.styleBible,concept:{...task.concept,styles:[{family:sharedCustomizationDocument.styleBible?.profileKey,weight:1}]},motionStyleModifiers:sharedCustomizationDocument.motionStyle?.modifiers};
   const sameGameRobloxAssets=resolvedTarget==='roblox'?discoverExistingRobloxGameAssets({repoRoot,gameId:task.gameId}):[];
   const manifestWithSameGameAssets={...manifestBase,assets:[...(Array.isArray(manifestBase?.assets)?manifestBase.assets:[]),...sameGameRobloxAssets]};
-  const manifestInput=mergeManifestWithCompanyLibrary(manifestWithSameGameAssets,companyRegistry);
+  const manifestInput=mergeManifestWithCompanyLibrary(manifestWithSameGameAssets,selectionRegistry);
   const presetInput=presetCatalog||readJson(path.join(repoRoot,'assets','prototype-asset-presets.json'),{version:0,presets:[]});
   const characterCustomizationRequested=Boolean(task.characterCustomization||task.npcCustomization)||/(?:CHARACTER|NPC|AVATAR|CUSTOMI[ZS]|캐릭터|케릭터|커마|커스터마이징|NPC|주민|시민|동료)/i.test(request);
   const duelCombatRequested=/(?:duel|dueling|결투|대전|격투|맨손|무기.?전투|combat|fight|fighter|카타나|katana|검술|쌍검|대검|창술|boxing|복싱|kickboxing|킥복싱|muay|무에타이|karate|가라테|taekwondo|태권도|mma|레슬링|wrestling|judo|유도|jiu.?jitsu|주짓수)/i.test(request);
@@ -2922,11 +3279,13 @@ export function buildVibeAssetProductionPlan({
   });
   const taskLocalReferenceVolumeActions=freezeList(referenceDrivenAssetIdeas.map((idea,index)=>{
     const domain=idea.domain==='PROP'?'WORLD_PROP':idea.domain;
-    const freeSourceCandidateIds=unique(
-      (executionLibraryPlan.nextVolumeActions||[])
-        .filter(row=>clean(row?.domain).toUpperCase()===clean(domain).toUpperCase())
-        .flatMap(row=>row?.freeSourceCandidateIds||[])
-    ).slice(0,Number(executionLibraryPlan.freeSourceCandidateLimitPerAction||libraryAutomation.freeSourceCandidateLimitPerAction||8));
+    const poolKey=clean(domain).toUpperCase();
+    const pooledCandidates=executionLibraryPlan.freeSourceCandidatePools?.[poolKey]
+      ||libraryAutomation.freeSourceCandidatePools?.[poolKey]
+      ||unique((executionLibraryPlan.nextVolumeActions||[])
+        .filter(row=>clean(row?.domain).toUpperCase()===poolKey)
+        .flatMap(row=>row?.freeSourceCandidateIds||[]));
+    const freeSourceCandidateIds=unique(pooledCandidates).slice(0,Number(executionLibraryPlan.freeSourceCandidateLimitPerAction||libraryAutomation.freeSourceCandidateLimitPerAction||96));
     return freeze({
       kind:'REFERENCE_IMAGE_VOLUME',
       domain,
@@ -2964,7 +3323,7 @@ export function buildVibeAssetProductionPlan({
       ?[
         ...taskLocalReferenceVolumeActions,
         ...activeNextVolumeActions.filter(row=>!referenceDrivenAssetIdeas.some(idea=>idea.ideaId===row?.ideaId))
-      ].slice(0,96).map((row,index)=>{
+      ].slice(0,Number(executionLibraryPlan.taskReferenceOverlayWorklistLimit||libraryAutomation.taskReferenceOverlayWorklistLimit||8192)).map((row,index)=>{
         const domain=clean(row?.domain).toUpperCase();
         return freeze({
           ...row,
@@ -3044,7 +3403,7 @@ export function buildVibeAssetProductionPlan({
     presetCatalog:presetInput,
     rebuild:/FULL_WEB_GAME_REBUILD/i.test(request)
   });
-  const decisions=freezeList((selector.binding||[]).map(binding=>decisionFor(selector,resolvedTarget,binding,manifestInput,{task,requestedConcept})));
+  const decisions=freezeList((selector.binding||[]).map(binding=>decisionFor(selector,resolvedTarget,binding,manifestInput,{task,requestedConcept,repoRoot})));
   const highEnd=highEndVisualContract(repoRoot);
   const highEndActive=highEnd?.status==='ACTIVE_EXECUTABLE_CONTRACT';
   const modelRouting=buildAssetModelRouting({task,request,decisions,highEndActive});
@@ -3063,7 +3422,7 @@ export function buildVibeAssetProductionPlan({
   const companyCount=decisions.filter(row=>row.companyCandidates.length>0).length;
   const repositoryCount=decisions.filter(row=>row.repositoryCandidates.length>0).length;
   const externalCount=decisions.filter(row=>row.externalCandidates.length>0).length;
-  const bootstrapSets=(companyRegistry?.motionBootstrap?.sets||[]).map(row=>createCreatureMotionSetProfile({...row,verificationState:companyRegistry?.motionBootstrap?.productionVerified===true?'VERIFIED_RUNTIME':'PREPARED_SEMANTIC'}));
+  const bootstrapSets=(selectionRegistry?.motionBootstrap?.sets||[]).map(row=>createCreatureMotionSetProfile({...row,verificationState:selectionRegistry?.motionBootstrap?.productionVerified===true?'VERIFIED_RUNTIME':'PREPARED_SEMANTIC'}));
   const motionAutoGapActive=companyLibrary?.autoMotionCoverageGapFill?.status==='ACTIVE_EXECUTABLE_CONTRACT';
   const requestUpper=request.toUpperCase();
   const universeContract=companyLibrary?.studioAssetUniverse||{};
@@ -3086,21 +3445,21 @@ export function buildVibeAssetProductionPlan({
     family,Object.fromEntries(Object.keys(subs).map(sub=>[sub,familyRegex[family]?.test(request)?1:0]))
   ]));
   const universeRepositoryAssets=[
-    ...(companyRegistry?.assets||[]).filter(row=>clean(row.status).toUpperCase()==='REPO_ASSET'),
+    ...(selectionRegistry?.assets||[]).filter(row=>clean(row.status).toUpperCase()==='REPO_ASSET'),
     ...(manifestBase?.assets||[]).map(row=>({...row,family:inferUniverseFamily(row),subfamily:clean(row.subfamily||row.type||(row.types||[])[0]).toUpperCase(),status:'REPO_ASSET'}))
   ].filter(row=>clean(row.family||row.category));
   const universeSignals={};
   for(const [family,subs] of Object.entries(DEFAULT_COVERAGE_BASELINES)){
     for(const subfamily of Object.keys(subs)){
       const key=family+':'+subfamily;
-      const externalReady=(companyRegistry?.externalSources||[]).some(row=>{
+      const externalReady=(selectionRegistry?.externalSources||[]).some(row=>{
         const categories=unique([row?.category,...(Array.isArray(row?.categories)?row.categories:[])]).map(value=>clean(value).toUpperCase());
         const categoryMatch=categories.includes(family)
           ||(family==='BUILDING'&&categories.some(category=>['ENVIRONMENT','PROP'].includes(category)))
           ||(family==='MATERIAL'&&categories.some(category=>['VFX','ENVIRONMENT'].includes(category)));
         return /LICENSE_VERIFIED/.test(clean(row?.status).toUpperCase())&&categoryMatch;
       });
-      const verifiedReuse=(companyRegistry?.assets||[]).some(row=>row.verifiedCompanyReusable===true&&clean(row.category||row.family).toUpperCase()===family);
+      const verifiedReuse=(selectionRegistry?.assets||[]).some(row=>row.verifiedCompanyReusable===true&&clean(row.category||row.family).toUpperCase()===family);
       universeSignals[key]={
         activeGameDemand:activeDemand[family]?.[subfamily]>0,
         gameConsumerCount:activeDemand[family]?.[subfamily]>0?1:0,
@@ -3113,7 +3472,7 @@ export function buildVibeAssetProductionPlan({
   }
   // 동적 연결: 같은 파일은 한 번만 읽고 현재 바이트 지문을 선택 스냅샷에 함께 묶는다.
   const sourceHashes=new Map();
-  const sourceBoundAssets=(companyRegistry?.assets||[]).map(asset=>{
+  const sourceBoundAssets=(selectionRegistry?.assets||[]).map(asset=>{
     const files=unique(asset.sourceFiles?.length?asset.sourceFiles:[asset.path])
       .map(file=>file.replace(/^\//,''))
       .filter(file=>file.startsWith('assets/')&&!file.split('/').includes('..')).sort();
@@ -3132,12 +3491,12 @@ export function buildVibeAssetProductionPlan({
     };
   });
   const studioUniversePlan=universeActive?createStudioAssetUniversePlan({
-    libraryVersion:Number(companyRegistry?.version)||0,
-    librarySnapshotId:'sha256:'+crypto.createHash('sha256').update(JSON.stringify({registry:companyRegistry,sourceBoundAssets,repositoryAssets:universeRepositoryAssets})).digest('hex'),
+    libraryVersion:Number(selectionRegistry?.version)||0,
+    librarySnapshotId:'sha256:'+crypto.createHash('sha256').update(JSON.stringify({registry:selectionRegistry,sourceBoundAssets,repositoryAssets:universeRepositoryAssets})).digest('hex'),
     expectedSnapshotId:clean(task.expectedAssetLibrarySnapshotId),
     assets:sourceBoundAssets,
     repositoryAssets:universeRepositoryAssets,
-    externalSources:companyRegistry?.externalSources||[],
+    externalSources:selectionRegistry?.externalSources||[],
     activeDemand,
     signalsByKey:universeSignals,
     platform:resolvedTarget.toUpperCase(),
@@ -3150,7 +3509,7 @@ export function buildVibeAssetProductionPlan({
     usageByAsset:task.assetUsageById||{},
     futureGameDemands:Array.isArray(task.futureGameDemands)?task.futureGameDemands:[],
     usageEvents:Array.isArray(task.assetUsageEvents)?task.assetUsageEvents:[],
-    baseMaterialFamilies:companyRegistry?.baseMaterialLibrary?.families||{},
+    baseMaterialFamilies:selectionRegistry?.baseMaterialLibrary?.families||{},
     baseMaterialUsageByAtom:task.baseMaterialUsageByAtom||{},
     styleBible:task.styleBible||{},
     customizationRecipes:Array.isArray(task.assetCustomization?.recipes)?task.assetCustomization.recipes:[],
@@ -3163,11 +3522,11 @@ export function buildVibeAssetProductionPlan({
     ?robloxCurrentAssetSelectionProfile({repoRoot,gameId:task.gameId})
     :Object.freeze({genre:'',subgenre:''});
   const baseMaterialLoadout=buildComposableBaseMaterialLoadout({
-    companyRegistry,studioUniversePlan,decisions,gameId:clean(task.gameId),target:resolvedTarget,request,
+    companyRegistry:selectionRegistry,studioUniversePlan,decisions,gameId:clean(task.gameId),target:resolvedTarget,request,
     robloxProfile:robloxAssetSelectionProfile
   });
   const allGameDynamicLibraryBinding=buildAllGameDynamicLibraryBindingPlan({
-    companyRegistry,target:resolvedTarget,gameId:task.gameId,baseMaterialLoadout
+    companyRegistry:selectionRegistry,target:resolvedTarget,gameId:task.gameId,baseMaterialLoadout
   });
   const motionStyle=deriveMotionStyleVariant({
     style:studioUniversePlan?.styleBible?.profileKey||requestedConcept.styles?.[0]?.family||'STYLIZED_FANTASY',
@@ -3178,7 +3537,7 @@ export function buildVibeAssetProductionPlan({
     currentDocument:currentCustomizationDocument,
     baseRevision:task.assetCustomization?.baseRevision??0,
     gameId:clean(task.gameId),platform:resolvedTarget,
-    assets:[...universeRepositoryAssets,...(companyRegistry?.assets||[])],
+    assets:[...universeRepositoryAssets,...(selectionRegistry?.assets||[])],
     customization:studioUniversePlan.customization,styleBible:studioUniversePlan.styleBible,motionStyle,
     motionBindings:task.assetCustomization?.motionBindings||[]
   }):null;
@@ -3189,12 +3548,12 @@ export function buildVibeAssetProductionPlan({
       gameConsumerCount:Boolean(profile.archetype&&requestUpper.includes(profile.archetype))?1:0,
       playerVisibleFrequencyHigh:Boolean(profile.archetype&&requestUpper.includes(profile.archetype)),
       combatCritical:true,
-      externalSourceReady:(companyRegistry?.externalSources||[]).some(row=>clean(row.category).toUpperCase()==='MOTION'&&/LICENSE_VERIFIED/.test(clean(row.status).toUpperCase()))
+      externalSourceReady:(selectionRegistry?.externalSources||[]).some(row=>clean(row.category).toUpperCase()==='MOTION'&&/LICENSE_VERIFIED/.test(clean(row.status).toUpperCase()))
     };
     const gapPlan=buildAutomaticMotionGapFillPlan({
       profile,
       librarySets:bootstrapSets,
-      externalSources:companyRegistry?.externalSources||[],
+      externalSources:selectionRegistry?.externalSources||[],
       usage,
       requirements:companyLibrary?.autoMotionCoverageGapFill?.baselineMinimums||{}
     });
@@ -3216,7 +3575,7 @@ export function buildVibeAssetProductionPlan({
   const prioritizedMotionAutoFillPlans=[...motionAutoFillPlans].sort((a,b)=>b.topPriority-a.topPriority||b.missingSlots-a.missingSlots||a.id.localeCompare(b.id));
   const autoRuntimeVisualReview=task.assetRuntimeVisualReview?null:discoverRuntimeVisualEvidence({task,target:resolvedTarget});
   const runtimeVisualReviewInput=task.assetRuntimeVisualReview||autoRuntimeVisualReview;
-  const traceAsset=task.motionContinuityTrace?[...universeRepositoryAssets,...(companyRegistry?.assets||[])].find(asset=>asset.id===task.motionContinuityTrace.assetId):null;
+  const traceAsset=task.motionContinuityTrace?[...universeRepositoryAssets,...(selectionRegistry?.assets||[])].find(asset=>asset.id===task.motionContinuityTrace.assetId):null;
   const motionContinuityAudit=task.motionContinuityTrace?{
     ...auditMotionContinuityTrace({...task.motionContinuityTrace,
       expectedSourceHash:clean(traceAsset?.sourceHash||traceAsset?.contentHash||traceAsset?.sha256),
@@ -3260,7 +3619,7 @@ export function buildVibeAssetProductionPlan({
     platforms:runtimeVisualReviewInput.platforms||[resolvedTarget.toUpperCase()]
   }):null;
   const mapDetailReconstruction=task.mapReconstruction?createVibeMapDetailReconstruction({
-    sketch:task.mapReconstruction.sketch||{},assets:[...universeRepositoryAssets,...(companyRegistry?.assets||[])],
+    sketch:task.mapReconstruction.sketch||{},assets:[...universeRepositoryAssets,...(selectionRegistry?.assets||[])],
     styleFamily:assetSynchronization?.document?.styleBible?.profileKey||studioUniversePlan?.styleBible?.profileKey,
     seed:task.mapReconstruction.seed||clean(task.gameId)
   }):null;
@@ -3867,13 +4226,29 @@ export function buildVibeAssetProductionPlan({
   });
 }
 
+function internalLibraryEvolutionGuidanceSummary(evolution={}){
+  const volumeActions=Array.isArray(evolution?.nextVolumeActions)?evolution.nextVolumeActions:[];
+  const qualityActions=Array.isArray(evolution?.nextQualityActions)?evolution.nextQualityActions:[];
+  return freeze({
+    phase:evolution?.phase||null,volumeReady:evolution?.volumeReady===true,worklistSource:evolution?.worklistSource||null,
+    nextVolumeActionCount:volumeActions.length,nextQualityActionCount:qualityActions.length,
+    nextVolumeActions:freezeList(volumeActions.slice(0,24).map(row=>freeze({
+      kind:row?.kind||null,domain:row?.domain||null,subsystem:row?.subsystem||null,ideaId:row?.ideaId||null,role:row?.role||null,
+      priority:Number(row?.priority||0),freeSourceAvailable:row?.freeSourceAvailable===true,freeSourceCandidateCount:Number(row?.freeSourceCandidateCount||0),
+      freeSourceCandidatePoolKey:row?.freeSourceCandidatePoolKey||null,freeSourceCandidateIds:freezeList((row?.freeSourceCandidateIds||[]).slice(0,8)),worklistOrder:Number(row?.worklistOrder||0)
+    }))),
+    nextQualityActions:freezeList(qualityActions.slice(0,12)),autonomousNextAction:evolution?.autonomousNextAction||null,
+    volumeTargetsAdvisoryOnly:evolution?.volumeTargetsAdvisoryOnly===true,safeWorkShortageMayLeaveSlotsIdle:evolution?.safeWorkShortageMayLeaveSlotsIdle===true
+  });
+}
+
 export function assetProductionGuidance(plan={}){
   if(plan?.kind!=='vibe2-asset-production-plan') return '';
   const lines=[
     '[GRAPHICS_PRODUCTION / ASSET INPUT]',
     plan.companyGraphicsLibrary?.baseMotionQualityWorkSession?.defaultMinutes?`[BASE MOTION QUALITY WORK] ${JSON.stringify(plan.companyGraphicsLibrary.baseMotionQualityWorkSession)}. 현재 승인된 내부 자산 모션 수정 1회차는 기존 오브젝트 1개와 기존 동작 1개만 선택한다. task.motionRepairWorkUnit에 실제 objectId/clipId/책임 sourcePath/현재 sourceHash/정확한 sourceWindow와 원본 바인딩 근거를 고정한다. 약 60분은 준비·검수·보고를 제외한 실제 수정 작업량의 추정치다. 같은 동작 안에서 자세·체중 15분, 관절 곡선·접촉 20분, 후행·반동·복귀·루프 15분, 남은 디테일 재수정 10분 분량을 계획한다. 여러 오브젝트나 여러 동작의 수정량을 합산하지 않는다. 같은 대상을 검토가 끝날 때까지 유지하고 별도 워커나 큐를 만들지 않는다. 기존 책임 경로 밖 원본이나 지원하지 않는 authoring 도구가 필요하면 정확한 단계로 남기며 새 권한을 만들지 않는다. 대기나 호출 반복으로 시간을 채우지 않는다. 준비→중심 이동→접촉→반동→회복을 기존 책임 함수에서 수정하고 클립 길이와 기존 판정 이벤트 시점은 보존한다. owner나 ChatGPT를 기다리지 않고 같은 ASSET_DEVELOPMENT 작업을 진행한다. 경과시간·키프레임 수는 품질 증거가 아니며 같은 조건의 전후 비교와 실제 native 재생 전에는 품질 통과나 제작 완료를 주장하지 않는다.`:'',
     plan.internalLibraryEvolution?.nextQualityActions?.length?`[INTERNAL ASSET DETAIL REPAIR] 현재 선택 작업의 activeDetailImprovement 또는 QUALITY_UP_1000.action에 지정된 assetId/sourceFiles/weakestAxis/detailSteps를 기존 책임 함수에 적용한다. 측정이 없는 INSPECT_ASSET_QUALITY는 결함 확정이나 임의 점수 부여가 아니라 현재 원본·동일 조건 비교부터 수행한다. 접합부·재질 반응·상태·모션을 구체적으로 보강하고 preserveAxes와 정체성·게임 의미는 유지한다. 비교와 모바일 예산 확인 전에는 수정 완료나 품질 상승을 주장하지 않는다. 이 목록은 기존 책임 범위를 확대하는 권한이 아니며 다른 게임 소스나 격리 자산을 수정하지 않는다.`:'',
-    plan.internalLibraryEvolution?.phase?`[INTERNAL LIBRARY EVOLUTION] ${JSON.stringify(plan.internalLibraryEvolution)}. VOLUME_UP에서는 company-asset-library.json#internalAssetLibraryAutomation.nextVolumeActions의 우선순위를 먼저 소비하고 각 항목을 REUSE_EXISTING→DERIVE_VARIANT→RECOMBINE_EXISTING→LICENSE_VERIFIED_FREE_SOURCE_ADAPT→NEW_AUTHORING 순서로 해결한다. 외부 무료 원본은 CC0 또는 상업 이용·수정 허용이 명확하고 출처/계보를 남길 수 있는 경우만 사용한다. 후보 카탈로그가 충분하면 미리 다운로드하지 말고 메타데이터만 유지하며, 실제 선택된 worklist 항목에서 기존 내부자산 재사용·변형·재조합이 부족할 때만 원본을 자동 취득해 회사 스타일·플랫폼에 맞게 수정한다. 소스 카탈로그가 충분한 동안 작업 집중도는 퀄리티와 자동화 디테일에 둔다. 기존 안전 자산의 품질 작업이 있으면 권장 수량과 무관하게 QUALITY_UP_1000을 우선한다. 현재 로블록스 출시·출시 준비 게임에서 실제 사용하는 자산의 최약 축부터 개선하며 신규 수량은 현재 게임에 필요한 결손을 기존 자산 재사용으로 해결할 수 없을 때만 늘린다. 내부 1000점은 production/runtime 검증과 별개이며 실제 런타임 증거 없이 productionVerified를 올리지 않는다. progressionComplexityProfiles는 VERY_SIMPLE/SURVIVAL_SIMPLE/DEEP_RPG 중 게임 설계에 맞는 표현 깊이를 선택하는 자산 표현 프로필이며 게임 규칙 권한이 아니다. Audio roleContractCount와 actualVerifiedAudioAssetCount를 분리하고 실제 검증 음원이 없으면 음원 파일 보유를 주장하지 않는다. BGM·적응형 음악, 환경 BED/NEAR/MID/DISTANT/SCATTER, 동물 울음·하울링, 전투·스킬·상호작용 SFX, 실내외·오클루전·리버브·거리 밴드, 반복 변형 세트를 서로 다른 역할군으로 관리하고 단일 루프 반복으로 볼륨을 가장하지 않는다. 기존 오디오도 매 유지관리 회차마다 변형 폭·공간감·믹스 우선순위·음악 전환·모바일 예산의 최약 축부터 계속 품질업한다. 정상적인 안전 자산 작업은 owner나 ChatGPT 존재를 기다리지 않고 기존 ASSET_DEVELOPMENT 루프에서 autonomousNextAction을 계속 소비한다. 특정 자산이 라이선스·권리·보안 이유로 막히면 그 자산만 격리하고 다음 안전 작업을 계속하며, 기존 자산 품질 작업이 생기면 즉시 QUALITY_UP_1000 최약 축 개선으로 돌아간다. 작업 수나 내부 점수는 실제 게임 품질 통과 증거가 아니다.`:'',
+    plan.internalLibraryEvolution?.phase?`[INTERNAL LIBRARY EVOLUTION] ${JSON.stringify(internalLibraryEvolutionGuidanceSummary(plan.internalLibraryEvolution))}. VOLUME_UP에서는 company-asset-library.json#internalAssetLibraryAutomation.nextVolumeActions의 우선순위를 먼저 소비하고 각 항목을 REUSE_EXISTING→DERIVE_VARIANT→RECOMBINE_EXISTING→LICENSE_VERIFIED_FREE_SOURCE_ADAPT→NEW_AUTHORING 순서로 해결한다. 외부 무료 원본은 CC0 또는 상업 이용·수정 허용이 명확하고 출처/계보를 남길 수 있는 경우만 사용한다. 후보 카탈로그가 충분하면 미리 다운로드하지 말고 메타데이터만 유지하며, 실제 선택된 worklist 항목에서 기존 내부자산 재사용·변형·재조합이 부족할 때만 원본을 자동 취득해 회사 스타일·플랫폼에 맞게 수정한다. 소스 카탈로그가 충분한 동안 작업 집중도는 퀄리티와 자동화 디테일에 둔다. 기존 안전 자산의 품질 작업이 있으면 권장 수량과 무관하게 QUALITY_UP_1000을 우선한다. 현재 로블록스 출시·출시 준비 게임에서 실제 사용하는 자산의 최약 축부터 개선하며 신규 수량은 현재 게임에 필요한 결손을 기존 자산 재사용으로 해결할 수 없을 때만 늘린다. 내부 1000점은 production/runtime 검증과 별개이며 실제 런타임 증거 없이 productionVerified를 올리지 않는다. progressionComplexityProfiles는 VERY_SIMPLE/SURVIVAL_SIMPLE/DEEP_RPG 중 게임 설계에 맞는 표현 깊이를 선택하는 자산 표현 프로필이며 게임 규칙 권한이 아니다. Audio roleContractCount와 actualVerifiedAudioAssetCount를 분리하고 실제 검증 음원이 없으면 음원 파일 보유를 주장하지 않는다. BGM·적응형 음악, 환경 BED/NEAR/MID/DISTANT/SCATTER, 동물 울음·하울링, 전투·스킬·상호작용 SFX, 실내외·오클루전·리버브·거리 밴드, 반복 변형 세트를 서로 다른 역할군으로 관리하고 단일 루프 반복으로 볼륨을 가장하지 않는다. 기존 오디오도 매 유지관리 회차마다 변형 폭·공간감·믹스 우선순위·음악 전환·모바일 예산의 최약 축부터 계속 품질업한다. 정상적인 안전 자산 작업은 owner나 ChatGPT 존재를 기다리지 않고 기존 ASSET_DEVELOPMENT 루프에서 autonomousNextAction을 계속 소비한다. 특정 자산이 라이선스·권리·보안 이유로 막히면 그 자산만 격리하고 다음 안전 작업을 계속하며, 기존 자산 품질 작업이 생기면 즉시 QUALITY_UP_1000 최약 축 개선으로 돌아간다. 작업 수나 내부 점수는 실제 게임 품질 통과 증거가 아니다.`:'',
     plan.flowAssetRequirements?.length?`[FLOW-DRIVEN ASSET REQUIREMENTS] ${JSON.stringify(plan.flowAssetRequirements)}. 게임 플로우가 요구한 시각 역할이다. 특정 회사 자산 ID를 고정하지 않고 현재 실행의 최신 company-asset-library.json에서 다시 해석한다. 내부자산 업데이트 후 다음 실행은 자동으로 더 적합한 후보를 재선택할 수 있다. 라이브러리 사용 자격을 장르로 제한하지 않는다. 자산의 원래 장르와 현재 게임 장르가 달라도 후보에서 제외하지 않고 플랫폼·권리·family/role·기술 호환을 먼저 본 뒤 스타일 적응/재조합한다. 장르는 추천 힌트일 뿐 eligibility gate가 아니다. 자산 계층은 gameplay/balance/progression/save/network 권한을 갖지 않는다.`:'',
     plan.flowAssetLoadout?.selections?.length?`[FLOW-DRIVEN ASSET LOADOUT] ${JSON.stringify(plan.flowAssetLoadout)}. selections의 assetId/applicationMode/replacementAction/sourceFiles를 실제 기존 책임 소스 바인딩에 사용한다. unresolved는 없는 자산을 가짜로 만들거나 임의 ID로 채우지 말고 기존 authoring/gap-fill 규칙으로 넘긴다. USE_AS_IS, LIGHT_THEME_ADAPT, STYLE_ADAPT, RECOMBINE_PARTS, NATIVE_REAUTHOR_BASE 중 선택 결과를 따르고 게임 의미는 보존한다.`:'',
     plan.qualityDNA?`[QUALITY DNA] ${JSON.stringify(plan.qualityDNA)}. 이 값은 현재 자산의 임의 점수가 아니라 게임별 최소 제작 하한이다. 각 type의 minimumFloors와 detailLod를 만족시키도록 강한 축은 잠그고 실패한 축만 수정한다. donor는 실패 축만 교체하고 스타일 정체성·출처·잠긴 특징을 보존한다. 검증 상태나 폴리곤/텍스처 수만으로 고퀄 판정하지 않는다.`:'',
@@ -3881,7 +4256,7 @@ export function assetProductionGuidance(plan={}){
     plan.applyFirstSummary?.enabled?`[APPLY USABLE ASSETS FIRST] ${JSON.stringify(plan.applyFirstSummary)}. 먼저 현재 게임/회사/저장소에서 target-compatible하고 실제 경로 또는 native binding이 있는 자산을 게임에 적용한다. 적용 후 실제 게임 카메라에서 품질을 확인하고 부족한 부위만 derived variant로 조형·재질·리그·LOD를 보강해 재적용한다. 사용 가능한 자산이 목표 품질에 도달할 수 있는데 새 자산부터 만들지 않는다. 품질이 부족하면 SILHOUETTE/PROPORTION/STRUCTURE/FACE_HANDS_FEET/MATERIAL/RIG/SOCKET/MOTION/LOD/UI_STATE 같은 축으로 분해하고 강한 축은 유지한다. 다른 호환 자산은 전체 대체뿐 아니라 파츠·리그·재질·모션 기증자로 사용해 derived variant를 재조립한다. GAME_CAMERA→MID_RANGE→CLOSEUP→CONTACT 디테일 바닥을 채우고, 랜덤 소품/노이즈/텍스처 과밀로 디테일을 가장하지 않는다. 핵심 형태나 구조 품질이 부분 보강으로 회복 불가능할 때만 전체 신규 제작으로 넘어간다.`:'' ,
     plan.generatedAssetOutputContract?`[GENERATED NATIVE ASSET CONTRACT] ${JSON.stringify(plan.generatedAssetOutputContract)}. Roblox/Unity에서 기존 자산이 목표 품질을 못 채우면 Blender/Python 또는 엔진 네이티브 authoring으로 실제 원본 자산을 만든다. 생성 소스 레시피와 원본/파생 파일, 동일 조건 미리보기, evidence.json, 회사 자산 장부 등록을 남긴다. GLB/이미지 파일이 생겼다는 사실만으로 VERIFIED 처리하지 말고 대상 native 런타임에서 실제 바인딩·표현·성능 검증 뒤 승격한다.`:'',
     plan.modelRouting?`[ASSET MODEL ROUTING] ${JSON.stringify(plan.modelRouting)}. Hero 자산일 때만 선택된 강한 로컬 모델을 사용하고 일반 자산은 baseline을 유지한다. 모델 상향은 중앙 생성 횟수·timeout·context 예산을 늘리는 권한이 아니며, 준비 실패 시 baseline으로 복귀한다.`:'',
-    plan.nativeAuthoringExecution?`[NATIVE AUTHORING EXECUTION LOOP] ${JSON.stringify(plan.nativeAuthoringExecution)}. AUTHORING_GENERATOR_REQUEST나 텍스트 계획은 제작 완료가 아니다. Roblox/Unity DCC 대상은 candidate 브랜치 안에 실제 editable source/export/hash/preview/evidence 산출물을 남기고 기존 책임 소스가 생성 native artifact의 정확한 repository path와 artifact SHA256을 엔진 네이티브 표현과 함께 실제 소비하도록 바인딩한다. Web은 SVG/CSS/Canvas/JS/WebAudio/motion-engine 같은 기존 웹 네이티브 authoring을 실제 게임 책임 소스에서 강화한다. Web 산출물을 Roblox/Unity에 그대로 복사하지 말고 같은 게임 정체성과 요구를 플랫폼별 네이티브 형태로 다시 제작한다. 게임 규칙·밸런스·저장·진행·멀티 권한은 바꾸지 않는다. 실제 런타임 캡처와 mobile QA 전에는 VERIFIED나 회사 공용 승격을 주장하지 않는다.`:'',
+    plan.nativeAuthoringExecution?`[NATIVE AUTHORING EXECUTION LOOP] ${JSON.stringify(plan.nativeAuthoringExecution)}. AUTHORING_GENERATOR_REQUEST나 텍스트 계획은 제작 완료가 아니다. 3D CHARACTER/CREATURE/ENEMY/BOSS는 공통 원본 GLB 2.0이 필수이며 Mesh+Normals+UV0+Material+Skeleton/SkinWeights+Animation 정적 검사를 통과해야 한다. Part/Primitive 조립체는 프로토타입일 뿐 최종 3D actor가 아니다. Roblox/Unity DCC 대상과 실제 3D Actor를 만드는 Web 대상은 candidate 브랜치 안에 실제 editable source/export/hash/preview/evidence 산출물을 남기고 기존 책임 소스가 생성 native artifact의 정확한 repository path와 artifact SHA256을 엔진 네이티브 표현과 함께 실제 소비하도록 바인딩한다. Web은 3D actor이면 같은 master GLB 또는 권리·해시가 연결된 derived glTF/GLB를 실제 런타임에 바인딩하고, 2D 전용 자산은 기존 SVG/CSS/Canvas 경로를 사용한다. Web 산출물을 Roblox/Unity에 그대로 복사하지 말고 같은 게임 정체성과 요구를 플랫폼별 네이티브 형태로 다시 제작한다. 게임 규칙·밸런스·저장·진행·멀티 권한은 바꾸지 않는다. 실제 런타임 캡처와 mobile QA 전에는 VERIFIED나 회사 공용 승격을 주장하지 않는다.`:'',
     plan.detailReview?`[STYLE COMPARISON AND LOCAL REPAIR] ${JSON.stringify(plan.detailReview)}. 같은 원형·카메라·조명·동작·표본 시점으로 카툰/실사/다크를 비교한다. repairs의 현재 소스/캡처 근거가 있는 부위·프레임·editableParameters만 수정하고 previousParameters와 잠긴 특징은 유지한다. 수정 뒤 동일 조건 재촬영으로 재검토하며 캡처 등록이나 파라미터 변경만으로 문제를 닫지 않는다.`:'',
     plan.runtimeVisualReview?`[RUNTIME VISUAL PIXEL REVIEW] ${JSON.stringify(plan.runtimeVisualReview)}. Roblox Studio·Unity Editor/Android APK·Web Browser의 실제 캡처를 현재 sourceRevision에 묶어 픽셀로 검수한다. expectedSubjects 중 해당 view에서 required인 대상만 누락 판정 대상으로 삼고, 가림·화면 밖·판독 불확실은 누락으로 확정하지 않는다. 실제 픽셀에서 확인된 누락 오브젝트·약한 디테일·겹침·잘림·가독성 문제를 APPLY_FIRST 후보와 precisionProduction의 약한 축 입력으로 사용한다. 먼저 사용 가능 자산을 적용하고 부족 축만 파생 제작·재적용하며 게임 규칙·밸런스·저장·네트워크 권한은 바꾸지 않는다. 수정 후 같은 surface/view에서 재캡처해야 하며 캡처 메타데이터만으로 품질 PASS를 주장하지 않는다.`:'',
     plan.motionContinuityAudit?`[MEASURED CONTINUOUS MOTION] ${JSON.stringify(plan.motionContinuityAudit)}. 루트·접촉점·손/무기 목표점=월드 미터, 관절=루트 로컬 미터, 지지물 접촉=동일 supportId의 로컬 미터, 회전/시선 오차=라디안, 표정=0~1 가중치다. violations의 region/frameRange/normalizedTimeRange에서 발 고정·손/무기 접촉·의상 관통·시선 추적·표정 튐을 수정한다. attachments는 active와 effectorWorldPosition/targetWorldPosition, penetrations는 depthMeters, gaze는 tracking과 forwardWorld/targetDirectionWorld, expressions는 morph별 가중치를 모든 프레임에 계측한다. 레지스트리 motionQA.requiredDetailChannels/limits를 작업 입력이 약화할 수 없다. 현재 소스 해시와 클립 전체 표본 및 선언된 채널이 없으면 UNVERIFIED다. 판정 시점·클립 길이·게임 이동 권한을 바꾸지 말고 재측정한다. unmeasuredGroups는 미검수이며 수치 PASS는 전체 시각 품질이나 런타임 승격 PASS가 아니다.`:'',

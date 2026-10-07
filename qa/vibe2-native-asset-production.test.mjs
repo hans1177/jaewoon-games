@@ -5,8 +5,8 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
-import {assetProductionGuidance,buildAllGameDynamicLibraryBindingPlan,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceGlb} from '../tools/vibe2-asset-production-plan.mjs';
-import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate,buildInternalAssetSourceUsageContract} from '../tools/vibe2-source-worker.mjs';
+import {assetProductionGuidance,buildAllGameDynamicLibraryBindingPlan,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType,crossPlatform3dActorFamilyForType} from '../tools/vibe2-asset-production-plan.mjs';
+import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate,buildInternalAssetSourceUsageContract,inspectRobloxNativeCandidateQuality,executeDeclaredNativeDccAuthoringVerification,evaluateNativeAssetAuthoringCandidate,collectNativeAssetRuntimePromotionCandidates,persistedGeneratedAssetBindings} from '../tools/vibe2-source-worker.mjs';
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
@@ -413,6 +413,361 @@ test('source GLB inventory uses real binary structure and leaves absent morphs o
   for(const term of ['BASIC GLB TO DETAILED ASSET','IMAGE-TO-ASSET CREATION','BASIC MAP TO DETAILED WORLD'])assert.ok(guidance.includes(term));
 });
 
+function writeJsonOnlyGlb(file,document){
+  const raw=Buffer.from(JSON.stringify(document),'utf8');
+  const paddedLength=Math.ceil(raw.length/4)*4;
+  const json=Buffer.alloc(paddedLength,0x20);raw.copy(json);
+  const total=12+8+json.length;
+  const out=Buffer.alloc(total);
+  out.writeUInt32LE(0x46546c67,0);out.writeUInt32LE(2,4);out.writeUInt32LE(total,8);
+  out.writeUInt32LE(json.length,12);out.writeUInt32LE(0x4e4f534a,16);json.copy(out,20);
+  fs.writeFileSync(file,out);
+}
+
+function zeroSkinWeightsInGlb(sourceFile,targetFile){
+  const bytes=Buffer.from(fs.readFileSync(sourceFile));
+  const jsonLength=bytes.readUInt32LE(12),json=JSON.parse(bytes.subarray(20,20+jsonLength).toString('utf8'));
+  let offset=20+jsonLength,binOffset=-1;
+  while(offset<bytes.length){
+    const length=bytes.readUInt32LE(offset),type=bytes.readUInt32LE(offset+4);
+    if(type===0x004e4942){binOffset=offset+8;break;}
+    offset+=8+length;
+  }
+  assert.ok(binOffset>=0);
+  const primitive=json.meshes.flatMap(mesh=>mesh.primitives).find(row=>Number.isInteger(row.attributes?.WEIGHTS_0));
+  assert.ok(primitive);
+  const accessor=json.accessors[primitive.attributes.WEIGHTS_0],view=json.bufferViews[accessor.bufferView];
+  const componentBytes={5121:1,5123:2,5126:4}[accessor.componentType],elementBytes=componentBytes*4,stride=view.byteStride||elementBytes;
+  const start=binOffset+(view.byteOffset||0)+(accessor.byteOffset||0);
+  for(let i=0;i<accessor.count;i++)bytes.fill(0,start+i*stride,start+i*stride+elementBytes);
+  fs.writeFileSync(targetFile,bytes);
+}
+
+test('master GLB rejects broken accessor skin node and animation sampler lineage',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'broken-master-glb-'));
+  try{
+    const file=path.join(root,'broken.glb');
+    writeJsonOnlyGlb(file,{
+      asset:{version:'2.0'},
+      accessors:[{count:3},{count:3},{count:3},{count:3},{count:2},{count:2}],
+      materials:[{name:'body'}],
+      meshes:[{name:'body',primitives:[{material:0,attributes:{POSITION:0,NORMAL:1,TEXCOORD_0:2,JOINTS_0:3,WEIGHTS_0:4}}]}],
+      nodes:[{mesh:0},{name:'joint'}],
+      skins:[{joints:[1]}],
+      animations:[{samplers:[{input:5,output:99}],channels:[{sampler:0,target:{node:1,path:'rotation'}}]}]
+    });
+    const result=evaluateCrossPlatform3dMasterGlb({repoRoot:root,family:'CREATURE',role:'BOSS',source:{path:'broken.glb'}});
+    assert.equal(result.pass,false);
+    assert.ok(result.blockers.includes('MASTER_GLB_ACCESSOR_BINDING_REQUIRED'));
+    assert.ok(result.blockers.includes('MASTER_GLB_SKIN_BINDING_REQUIRED'));
+    assert.ok(result.blockers.includes('MASTER_GLB_ANIMATION_REQUIRED'));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('master GLB rejects zero skin-weight data even when JOINTS and WEIGHTS accessors exist',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'zero-weight-master-glb-'));
+  try{
+    const file=path.join(root,'zero-weight.glb');
+    zeroSkinWeightsInGlb('assets/roblox/world-ghosts/native/spider/spider.glb',file);
+    const result=evaluateCrossPlatform3dMasterGlb({repoRoot:root,family:'CREATURE',role:'BOSS',source:{path:'zero-weight.glb'}});
+    assert.equal(result.pass,false);
+    assert.ok(result.blockers.includes('MASTER_GLB_JOINT_WEIGHTS_REQUIRED'));
+    assert.ok(result.inspection.issues.includes('GLB_SKIN_WEIGHT_DATA_INVALID'));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('3D character creature and boss master assets require a structurally complete GLB',()=>{
+  const spider=evaluateCrossPlatform3dMasterGlb({
+    family:'CREATURE',role:'BOSS',
+    source:{path:'assets/roblox/world-ghosts/native/spider/spider.glb'}
+  });
+  assert.equal(spider.required,true);
+  assert.equal(spider.pass,true);
+  assert.equal(spider.status,'MASTER_GLB_STATIC_QA_PASS');
+  assert.ok(spider.inspection.inventory.meshCount>0);
+  assert.ok(spider.inspection.inventory.materials.length>0);
+  assert.ok(spider.inspection.inventory.skins.length>0);
+  assert.ok(spider.inspection.inventory.animations.length>0);
+  assert.ok(spider.inspection.inventory.jointAnimationChannelCount>0);
+  assert.ok(spider.inspection.inventory.animatedJointCount>0);
+  assert.ok(spider.inspection.inventory.primitives.every(row=>row.hasNormals&&row.hasUv&&row.hasMaterial));
+  assert.ok(spider.inspection.inventory.primitives.every(row=>row.actorBindingValid===true));
+  assert.ok(spider.inspection.inventory.primitives.filter(row=>row.skinBound).every(row=>row.jointWeightDataValid===true&&row.zeroWeightVertexCount===0&&row.weightSumOutOfRangeVertexCount===0&&row.invalidJointValueCount===0&&row.invalidJointBindingCount===0));
+  assert.ok(spider.inspection.inventory.skins.every(row=>row.inverseBindMatricesValid===true));
+  assert.ok(spider.inspection.inventory.animations.every(row=>row.channels.every(channel=>channel.timeAccessorValid===true)));
+
+  const merchantOnCreature=evaluateCrossPlatform3dMasterGlb({family:'CHARACTER',role:'MERCHANT',source:{path:'assets/roblox/world-ghosts/native/spider/spider.glb'}});
+  assert.equal(merchantOnCreature.pass,false);
+  assert.ok(merchantOnCreature.blockers.includes('MASTER_GLB_ROLE_MOTION_REQUIRED'));
+  assert.ok(merchantOnCreature.blockers.includes('MASTER_GLB_ATTACHMENT_SOCKET_BASIS_REQUIRED'));
+  assert.ok(merchantOnCreature.missingRoleMotionClips.length>0);
+  assert.ok(merchantOnCreature.missingAttachmentSocketBasis.length>0);
+
+  const missing=evaluateCrossPlatform3dMasterGlb({family:'CREATURE',role:'ENEMY',source:{path:'../outside.glb'}});
+  assert.equal(missing.pass,false);
+  assert.ok(missing.blockers.length>0);
+
+  const prop=evaluateCrossPlatform3dMasterGlb({family:'PROP',source:{path:'assets/roblox/world-ghosts/native/spider/spider.glb'}});
+  assert.equal(prop.required,false);
+  assert.equal(prop.pass,true);
+});
+
+test('actor DCC recipe without GLB cannot satisfy the 3D master contract',()=>{
+  const plan=buildVibeAssetProductionPlan({
+    target:'roblox',
+    task:{
+      gameId:'master-glb-required',
+      goal:'보스 3D 메시와 모션을 제작',
+      assetAuthoring:{recipes:[{
+        id:'boss-fbx-only',assetId:'boss-fbx-only',family:'CREATURE',license:'project-original',
+        executor:'BLENDER_PYTHON',types:['boss'],targetPlatforms:['ROBLOX'],
+        script:'assets/roblox/demo/build-boss.py',
+        outputs:['assets/roblox/demo/native/boss/boss.fbx','assets/roblox/demo/native/boss/evidence.json','assets/roblox/demo/native/boss/preview.png'],
+        evidenceJson:'assets/roblox/demo/native/boss/evidence.json',
+        preview:'assets/roblox/demo/native/boss/preview.png',
+        editableSource:'assets/roblox/demo/build-boss.py',
+        runMode:'VERIFY_ONLY'
+      }]}
+    },
+    manifest:{assets:[]},presetCatalog:{presets:[]}
+  });
+  assert.equal(plan.nativeAuthoringExecution.dcc.crossPlatform3dMasterGlbRequired,true);
+  assert.ok(plan.nativeAuthoringExecution.dcc.crossPlatform3dMasterGlbRequiredTypes.includes('boss'));
+  assert.ok(plan.nativeAuthoringExecution.dcc.uncoveredTypes.includes('boss'));
+  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes.some(row=>row.id==='boss-fbx-only'),false);
+  assert.notEqual(plan.nativeAuthoringExecution.dcc.executionStatus,'READY_FOR_EXISTING_AUTHORING_EXECUTOR');
+});
+
+test('DCC verification selects the declared master GLB even when a blend output is listed first',()=>{
+  const root=tempRoot();
+  try{
+    const base='assets/demo/boss/native';
+    fs.mkdirSync(path.join(root,base),{recursive:true});
+    fs.mkdirSync(path.join(root,'assets/demo'),{recursive:true});
+    fs.writeFileSync(path.join(root,'assets/demo/build.py'),'# fixture\n','utf8');
+    fs.writeFileSync(path.join(root,base,'source.blend'),'fixture','utf8');
+    fs.copyFileSync('assets/roblox/world-ghosts/native/spider/spider.glb',path.join(root,base,'master.glb'));
+    fs.writeFileSync(path.join(root,base,'preview.png'),'preview','utf8');
+    fs.writeFileSync(path.join(root,base,'evidence.json'),JSON.stringify({productionVerified:false}),'utf8');
+    const fake=path.join(root,'fake-blender.sh');
+    fs.writeFileSync(fake,'#!/bin/sh\nexit 0\n','utf8');fs.chmodSync(fake,0o755);
+    const order={
+      target:'roblox',evidence:['asset-production-parallel:v1'],
+      assetProduction:{nativeAuthoringExecution:{dcc:{executionRecipes:[{
+        id:'declared-master',assetId:'declared-master',family:'CREATURE',license:'project-original',
+        executor:'BLENDER_PYTHON',runMode:'VERIFY_ONLY',script:'assets/demo/build.py',editableSource:'assets/demo/build.py',
+        types:['boss'],targetPlatforms:['roblox'],args:[],
+        outputs:[base+'/source.blend',base+'/master.glb',base+'/preview.png',base+'/evidence.json'],
+        evidenceJson:base+'/evidence.json',preview:base+'/preview.png',
+        masterGlbRequired:true,masterGlbOutput:base+'/master.glb'
+      }]}}}
+    };
+    const result=executeDeclaredNativeDccAuthoringVerification({cwd:root,order,blenderExecutable:fake,persistCandidateOutputs:false});
+    assert.equal(result.executed,true);
+    assert.equal(result.recipes[0].nativeArtifact,base+'/master.glb');
+    assert.equal(result.recipes[0].masterGlb,base+'/master.glb');
+    assert.equal(result.recipes[0].masterGlbHash,result.recipes[0].artifactHash);
+    assert.equal(result.recipes[0].derivedFromMasterGlbHash,null);
+    assert.equal(result.recipes[0].platformNativeDerivativeRequired,true);
+    assert.equal(result.recipes[0].masterGlbStaticQaPass,true);
+    assert.equal(result.recipes[0].masterGlbQaAuthority,'tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb');
+    assert.ok(result.recipes[0].masterGlbInspection.meshSkinBindingCount>0);
+    assert.ok(result.recipes[0].masterGlbInspection.jointAnimationChannelCount>0);
+    assert.ok(result.recipes[0].masterGlbInspection.animatedJointCount>0);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('Web 3D actor authoring requires exact Master GLB path and hash binding in Web source',()=>{
+  const masterPath='assets/generated/web/demo/npc/master.glb';
+  const masterHash='a'.repeat(64);
+  const sourceHash='b'.repeat(64);
+  const order={
+    target:'web',
+    assetProductionLane:true,
+    assetProduction:{nativeAuthoringExecution:{
+      enabled:true,
+      platformReauthoringRequired:true,
+      dcc:{
+        requiredTypes:['npc'],
+        executionStatus:'READY_FOR_EXISTING_AUTHORING_EXECUTOR',
+        executionEvidence:{
+          executed:true,allRecipesPassed:true,candidateUsable:true,persistedForCandidate:true,
+          editableSource:'assets/demo/build-npc.py',nativeArtifact:masterPath,artifactHash:masterHash,preview:'assets/generated/web/demo/npc/preview.png',
+          recipes:[{
+            assetId:'web-npc-master',family:'CHARACTER',license:'project-original',types:['npc'],
+            nativeArtifact:masterPath,artifactHash:masterHash,sourceHash,editableSourceHash:sourceHash,
+            masterGlbRequired:true,masterGlb:masterPath,masterGlbHash:masterHash,masterGlbStaticQaPass:true,
+            persistedForCandidate:true
+          }]
+        }
+      },
+      nativeText:{requiredTypes:['npc']}
+    }}
+  };
+  const good=evaluateNativeAssetAuthoringCandidate({
+    order,
+    candidate:{edits:[{path:'web-games/demo/index.html',replace:[
+      "const MASTER_GLB = '"+masterPath+"';",
+      "const MASTER_GLB_SHA256 = '"+masterHash+"';",
+      "const loader = new GLTFLoader();",
+      "loader.load(MASTER_GLB, gltf => {",
+      "  const mixer = new THREE.AnimationMixer(gltf.scene);",
+      "  const action = mixer.clipAction(gltf.animations[0]); action.play();",
+      "  requestAnimationFrame(function render(){ mixer.update(1/60); requestAnimationFrame(render); });",
+      "});"
+    ].join('\n')}]}
+  });
+  assert.equal(good.dccAuthored,true);
+  assert.equal(good.webMasterGlbRuntimeBindingRequired,true);
+  assert.equal(good.generatedAssetBindingRequired,true);
+  assert.equal(good.generatedAssetBindingApplied,true);
+  assert.deepEqual([...good.generatedNativeArtifacts],[masterPath]);
+  assert.equal(good.generatedAssetIdentityBindings[0].runtimeSource,'MASTER_GLB');
+
+  const missingHash=evaluateNativeAssetAuthoringCandidate({
+    order,
+    candidate:{edits:[{path:'web-games/demo/index.html',replace:[
+      "const MASTER_GLB = '"+masterPath+"';",
+      "const loader = new GLTFLoader();",
+      "loader.load(MASTER_GLB, gltf => {",
+      "  const mixer = new THREE.AnimationMixer(gltf.scene);",
+      "  requestAnimationFrame(function render(){ mixer.update(1/60); requestAnimationFrame(render); });",
+      "});"
+    ].join('\n')}]}
+  });
+  assert.equal(missingHash.generatedAssetBindingRequired,true);
+  assert.equal(missingHash.generatedAssetBindingApplied,false);
+  assert.equal(missingHash.status,'GENERATED_ASSET_BINDING_REQUIRED');
+
+  const commentOnly=evaluateNativeAssetAuthoringCandidate({
+    order,
+    candidate:{edits:[{path:'web-games/demo/index.html',replace:[
+      "const MASTER_GLB = '"+masterPath+"';",
+      "const MASTER_GLB_SHA256 = '"+masterHash+"';",
+      "// const loader = new GLTFLoader(); loader.load(MASTER_GLB); const mixer = new THREE.AnimationMixer(scene); requestAnimationFrame(render);",
+      "document.body.dataset.asset = MASTER_GLB_SHA256;"
+    ].join('\n')}]}
+  });
+  assert.equal(commentOnly.generatedAssetBindingApplied,false);
+  assert.ok(commentOnly.generatedAssetRuntimeBindingFailures.length>0);
+});
+
+test('native actor binding validates every DCC recipe one-to-one and cannot hide a missing derivative',()=>{
+  const masterA='assets/generated/unity/demo/a/master.glb',masterB='assets/generated/unity/demo/b/master.glb';
+  const nativeA='unity-games/demo/Assets/Generated/a.prefab',hashA='a'.repeat(64),masterHashA='b'.repeat(64),masterHashB='c'.repeat(64),sourceHash='d'.repeat(64);
+  const order={target:'unity',assetProductionLane:true,assetProduction:{nativeAuthoringExecution:{
+    enabled:true,dcc:{requiredTypes:['npc','boss'],executionEvidence:{
+      executed:true,allRecipesPassed:true,candidateUsable:true,persistedForCandidate:true,
+      editableSource:'assets/demo/build.py',nativeArtifact:masterA,artifactHash:masterHashA,preview:'assets/demo/preview.png',
+      recipes:[
+        {assetId:'npc-a',family:'CHARACTER',types:['npc'],nativeArtifact:masterA,artifactHash:masterHashA,masterGlbRequired:true,masterGlb:masterA,masterGlbHash:masterHashA,masterGlbStaticQaPass:true,platformNativeArtifact:nativeA,platformNativeArtifactHash:hashA,derivedFromMasterGlbHash:masterHashA},
+        {assetId:'boss-b',family:'CREATURE',types:['boss'],nativeArtifact:masterB,artifactHash:masterHashB,masterGlbRequired:true,masterGlb:masterB,masterGlbHash:masterHashB,masterGlbStaticQaPass:true,platformNativeArtifact:null,platformNativeArtifactHash:null,derivedFromMasterGlbHash:masterHashB}
+      ]
+    }},nativeText:{requiredTypes:['npc','boss']}
+  }}};
+  const result=evaluateNativeAssetAuthoringCandidate({order,candidate:{edits:[{path:'unity-games/demo/Assets/Game.cs',replace:[
+    'var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("'+nativeA+'");',
+    'const string Hash = "'+hashA+'";',
+    'var actor = Instantiate(prefab);',
+    'var skin = actor.GetComponentInChildren<SkinnedMeshRenderer>();',
+    'var animator = actor.GetComponentInChildren<Animator>();'
+  ].join('\\n')}]}});
+  assert.equal(result.dccAuthored,true);
+  assert.equal(result.generatedAssetBindingRequired,true);
+  assert.equal(result.generatedAssetBindingApplied,false);
+  assert.equal(result.missingGeneratedArtifactRecipes.length,1);
+  assert.equal(result.missingGeneratedArtifactRecipes[0].assetId,'boss-b');
+  assert.equal(result.status,'GENERATED_ASSET_BINDING_REQUIRED');
+});
+
+test('master GLB evidence is never exposed as a platform-native binding or promotion candidate',()=>{
+  const masterPath='assets/generated/roblox/demo/creature/actor.glb',masterHash='a'.repeat(64),sourceHash='b'.repeat(64);
+  const order={target:'roblox',assetProductionLane:true,assetProduction:{nativeAuthoringExecution:{dcc:{executionEvidence:{
+    executed:true,allRecipesPassed:true,candidateUsable:true,persistedForCandidate:true,recipes:[{
+      assetId:'actor-master',family:'CREATURE',license:'project-original',nativeArtifact:masterPath,artifactHash:masterHash,sourceHash,editableSourceHash:sourceHash,
+      masterGlbRequired:true,masterGlb:masterPath,masterGlbHash:masterHash,derivedFromMasterGlbHash:null,masterGlbStaticQaPass:true,
+      masterGlbQaAuthority:'tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb',persistedForCandidate:true
+    }]
+  }}}}};
+  assert.deepEqual([...persistedGeneratedAssetBindings(order)],[]);
+  const rows=collectNativeAssetRuntimePromotionCandidates({
+    order,
+    candidate:{edits:[{path:'server/Game.server.luau',replace:`local MasterGlb="${masterPath}"\nlocal MasterHash="${masterHash}"`}]}
+  });
+  assert.deepEqual([...rows],[]);
+});
+
+test('apply-first rejects a 3D enemy that has no compliant master GLB',()=>{
+  const plan=buildVibeAssetProductionPlan({
+    target:'roblox',
+    task:{gameId:'master-glb-apply-first',goal:'enemy monster 3D 모델을 실제 게임에 적용'},
+    manifest:{assets:[{
+      id:'fake-enemy',family:'CREATURE',types:['enemy'],tags:['enemy','monster'],
+      license:'project-original',platforms:['roblox'],path:'assets/logo-sprite-ladybug.svg',
+      sourceHash:'fake-source',robloxAssetId:'12345',sameGameExistingRoblox:true
+    }]},
+    presetCatalog:{version:1,presets:[{id:'enemy',name:'Enemy',genre:'action',keywords:['enemy','monster'],actorAssets:['fake-enemy'],effectAssets:[],toolCandidates:[],platformProfiles:{roblox:{},unity:{},webValidation:{}}}]}
+  });
+  const enemy=plan.decisions.find(row=>row.type==='enemy');
+  assert.ok(enemy);
+  assert.equal(enemy.applyFirst.enabled,false);
+  assert.ok(plan.nativeAuthoringExecution.dcc.requiredTypes.includes('enemy'));
+  assert.equal(plan.nativeAuthoringExecution.dcc.crossPlatform3dMasterGlbRequired,true);
+  assert.ok(plan.nativeAuthoringExecution.dcc.uncoveredTypes.includes('enemy'));
+});
+
+test('NPC companion hostile humanoid mini boss and boss types resolve to the shared 3D actor GLB contract',()=>{
+  for(const type of ['npc','villager','merchant','quest_giver','guard','worker','companion','friendly_character','hostile_humanoid']){
+    assert.equal(isCrossPlatform3dActorType(type),true,type);
+    assert.equal(crossPlatform3dActorFamilyForType(type),'CHARACTER',type);
+  }
+  for(const type of ['enemy','elite','mini_boss','boss','raid_boss','creature']){
+    assert.equal(isCrossPlatform3dActorType(type),true,type);
+    assert.equal(crossPlatform3dActorFamilyForType(type),'CREATURE',type);
+  }
+  const plan=buildVibeAssetProductionPlan({
+    target:'roblox',
+    task:{gameId:'fake-npc-master',goal:'NPC 상인 동료 보스 3D actor를 실제 게임에 적용'},
+    manifest:{assets:[{
+      id:'fake-npc',family:'CHARACTER',types:['npc'],tags:['npc','merchant'],
+      license:'project-original',platforms:['roblox'],path:'assets/fake-npc.glb',
+      downloaded:true,rigged:true,verifiedAnimation:true,animations:['idle','walk'],sameGameExistingRoblox:true
+    }]},
+    presetCatalog:{presets:[]}
+  });
+  const npc=plan.decisions.find(row=>row.type==='npc');
+  assert.ok(npc);
+  assert.equal(npc.applyFirst.enabled,false);
+  assert.ok(plan.nativeAuthoringExecution.dcc.requiredTypes.includes('npc'));
+  assert.ok(plan.nativeAuthoringExecution.dcc.crossPlatform3dMasterGlbRequiredTypes.includes('npc'));
+});
+
+test('Master GLB static QA alone never grants production verification',()=>{
+  const master='assets/roblox/world-ghosts/native/spider/spider.glb';
+  const plan=buildVibeAssetProductionPlan({
+    target:'roblox',
+    task:{gameId:'static-master-only',goal:'enemy monster 3D actor 적용'},
+    manifest:{assets:[{
+      id:'static-spider',family:'CREATURE',types:['enemy'],tags:['enemy','spider'],
+      license:'project-original',platforms:['roblox'],path:master,masterGlb:master,
+      downloaded:true,rigged:true,rigType:'CUSTOM_SKINNED',verifiedAnimation:true,animations:['idle','walk'],
+      productionVerified:false,verifiedCompanyReusable:false
+    }]},
+    presetCatalog:{presets:[]}
+  });
+  const enemy=plan.decisions.find(row=>row.type==='enemy');
+  const candidate=enemy?.applyFirst?.candidates?.find(row=>row.id==='static-spider');
+  assert.ok(candidate);
+  assert.equal(candidate.masterGlbStaticQaPass,true);
+  assert.equal(candidate.sourceHash,null);
+  assert.equal(candidate.editableSourceHash,null);
+  assert.equal(candidate.artifactHash,null);
+  assert.equal(candidate.nativeArtifactHash,null);
+  assert.ok(candidate.masterGlbHash);
+  assert.equal(candidate.productionVerified,false);
+  assert.equal(plan.generatedAssetOutputContract.nativeRuntimeVerificationRequiredBeforeVerifiedPromotion,true);
+});
+
 test('customization and detailed style instructions reach the existing asset work order input',()=>{
   const plan=buildVibeAssetProductionPlan({target:'roblox',task:{
     gameId:'customization-review',goal:'다크 카툰 캐릭터 배경 UI 아이콘 모션',
@@ -723,6 +1078,38 @@ test('generic environment and prop authoring declares task-specific Blender outp
   const web=buildVibeAssetProductionPlan({target:'web',task,manifest:{assets:[]},presetCatalog:{presets:[]}});
   assert.equal(web.nativeAuthoringExecution.dcc.executionRequired,false);
   assert.equal(web.nativeAuthoringExecution.dcc.executionRecipes.length,0);
+});
+
+test('Web 3D actor work requires the shared Master GLB DCC path without forcing 2D Web actors',()=>{
+  const threeD=buildVibeAssetProductionPlan({
+    target:'web',
+    task:{gameId:'web-3d-actor-demo',goal:'3D NPC companion boss를 GLB 기반 WebGL actor로 구현'},
+    manifest:{assets:[]},
+    presetCatalog:{presets:[]}
+  });
+  for(const type of ['npc','companion','boss']){
+    const row=threeD.decisions.find(item=>item.type===type);
+    assert.ok(row,type);
+    assert.ok(row.directAuthoring.includes('blender-python-original-mesh-rig-and-glb'),type);
+    assert.ok(threeD.nativeAuthoringExecution.dcc.requiredTypes.includes(type),type);
+  }
+  assert.equal(threeD.nativeAuthoringExecution.authoringSurface,'WEB_NATIVE_SOURCE_WITH_SHARED_DCC_MASTER');
+  assert.equal(threeD.nativeAuthoringExecution.dcc.executionRequired,true);
+  assert.equal(threeD.nativeAuthoringExecution.dcc.crossPlatform3dMasterGlbRequired,true);
+  assert.equal(threeD.nativeAuthoringExecution.dcc.web3dActorMasterAuthoringRequired,true);
+  assert.ok(threeD.nativeAuthoringExecution.nativeText.requiredTypes.includes('npc'));
+
+  const twoD=buildVibeAssetProductionPlan({
+    target:'web',
+    task:{gameId:'web-2d-actor-demo',goal:'2D Canvas NPC 캐릭터와 UI를 기존 웹 게임에 적용'},
+    manifest:{assets:[]},
+    presetCatalog:{presets:[]}
+  });
+  const npc=twoD.decisions.find(item=>item.type==='npc');
+  assert.ok(npc);
+  assert.equal(npc.directAuthoring.includes('blender-python-original-mesh-rig-and-glb'),false);
+  assert.equal(twoD.nativeAuthoringExecution.dcc.executionRequired,false);
+  assert.equal(twoD.nativeAuthoringExecution.dcc.web3dActorMasterAuthoringRequired,false);
 });
 
 test('task-declared Blender recipe stays mandatory even when a reusable animation candidate is ready',()=>{
@@ -1553,6 +1940,141 @@ test('Roblox Vibe candidate publish waits for target runtime QA instead of final
   assert.doesNotMatch(settle,/queue-control\.mjs pass --id="\$TASK_ID" --evidence="roblox-exact-evidence-pass,main-pr-merged,roblox-open-cloud-published/);
 });
 
+test('Roblox source quality blocks multi-part doll NPCs even when they have joints',()=>{
+  const primitiveNpc=[
+    'local function createNpc()',
+    '  local npc = Instance.new("Model")',
+    '  npc.Name = "NPC"',
+    '  local torso = Instance.new("Part")',
+    '  local head = Instance.new("Part")',
+    '  local leftArm = Instance.new("Part")',
+    '  local rightArm = Instance.new("Part")',
+    '  local root = Instance.new("Part")',
+    '  local shoulder = Instance.new("Motor6D")',
+    '  shoulder.Transform = CFrame.Angles(0, 0.1, 0)',
+    '  local humanoid = Instance.new("Humanoid")',
+    '  local animator = Instance.new("Animator")',
+    '  local track = humanoid:LoadAnimation(Instance.new("Animation"))',
+    '  track:Play(0.2)',
+    '  track:AdjustWeight(1, 0.2)',
+    '  track:AdjustSpeed(speed)',
+    '  torso.Material = Enum.Material.SmoothPlastic',
+    '  local weapon = Instance.new("Part"); weapon.Name = "weapon sword"',
+    '  local tree = Instance.new("Part"); tree.Name = "forest environment tree"',
+    '  root.CFrame = CFrame.new(0, 2, 0)',
+    '  return npc',
+    'end'
+  ].join('\n');
+  const quality=inspectRobloxNativeCandidateQuality({
+    candidate:{edits:[{path:'server/Game.server.luau',replace:primitiveNpc}]},
+    sourceRoot:'roblox-games/demo'
+  });
+  assert.ok(quality.npcFinalActorFindings.some(row=>row.class==='NPC_PRIMITIVE_FINAL_ACTOR_RISK'));
+  assert.equal(quality.npcFinalActorHardFailure,'PRIMITIVE_ONLY_FINAL_3D_ACTOR');
+
+  const pathOnlyQuality=inspectRobloxNativeCandidateQuality({
+    candidate:{edits:[{path:'server/Game.server.luau',replace:[
+      'local MasterGlb = "assets/master/npc.glb"',
+      'local function createNpc()',
+      '  local npc = Instance.new("Model")',
+      '  npc.Name = "NPC"',
+      '  return npc',
+      'end'
+    ].join("\n")}]},
+    sourceRoot:'roblox-games/demo'
+  });
+  assert.equal(pathOnlyQuality.npcFinalActorFindings.length,0);
+  assert.ok(pathOnlyQuality.masterGlbPathOnlyFindings.some(row=>row.class==='MASTER_GLB_PATH_ONLY_ACTOR_BINDING_RISK'));
+  assert.equal(pathOnlyQuality.masterGlbBindingHardFailure,'CROSS_PLATFORM_MASTER_GLB_STATIC_QA_REQUIRED');
+
+  const meshPartOnlyNpc=[
+    'local function createNpc()',
+    '  local npc = Instance.new("Model")',
+    '  npc.Name = "NPC"',
+    '  local torso = Instance.new("MeshPart")',
+    '  torso.Parent = npc',
+    '  return npc',
+    'end'
+  ].join('\n');
+  const meshPartOnlyQuality=inspectRobloxNativeCandidateQuality({
+    candidate:{edits:[{path:'server/Game.server.luau',replace:meshPartOnlyNpc}]},
+    sourceRoot:'roblox-games/demo'
+  });
+  assert.ok(meshPartOnlyQuality.nativeActorBindingFindings.some(row=>row.class==='NPC_NATIVE_ACTOR_BINDING_MISSING_RISK'));
+
+  const importedNpc=[
+    'local template = ReplicatedStorage:WaitForChild("NpcRig")',
+    'local function createNpc()',
+    '  local npc = template:Clone()',
+    '  npc.Name = "NPC"',
+    '  return npc',
+    'end'
+  ].join('\n');
+  const nativeQuality=inspectRobloxNativeCandidateQuality({
+    candidate:{edits:[{path:'server/Game.server.luau',replace:importedNpc}]},
+    sourceRoot:'roblox-games/demo'
+  });
+  assert.equal(nativeQuality.npcFinalActorFindings.length,0);
+  assert.equal(nativeQuality.nativeActorBindingFindings.length,0);
+});
+
+test('Roblox source quality rejects a generic enemy clone that becomes a boss only by scaling',()=>{
+  const quality=inspectRobloxNativeCandidateQuality({
+    candidate:{edits:[{path:'server/Boss.server.luau',replace:[
+      'local enemyTemplate = ReplicatedStorage:WaitForChild("EnemyRig")',
+      'local function createBoss()',
+      '  local boss = enemyTemplate:Clone()',
+      '  boss.Name = "Boss"',
+      '  boss:ScaleTo(2.5)',
+      '  return boss',
+      'end'
+    ].join("\n")}]},
+    sourceRoot:'roblox-games/demo'
+  });
+  assert.ok(quality.bossScaleOnlyFindings.some(row=>row.class==='BOSS_SCALE_ONLY_FINAL_ACTOR_RISK'));
+  assert.equal(quality.bossScaleOnlyHardFailure,'BOSS_SCALE_ONLY_FINAL_3D_ACTOR');
+});
+
+test('Roblox asset adaptation rejects a composed Part doll NPC as a final presentation',()=>{
+  const root=tempRoot();
+  try{
+    const relative='roblox-games/npc-doll/server/Game.server.luau';
+    const file=path.join(root,...relative.split('/'));
+    fs.mkdirSync(path.dirname(file),{recursive:true});
+    fs.writeFileSync(file,`local function createNpc()
+  local npc = Instance.new("Model")
+  npc.Name = "NPC"
+  local rootPart = Instance.new("Part"); rootPart.Name = "HumanoidRootPart"; rootPart.Parent = npc
+  local torso = Instance.new("Part"); torso.Name = "Torso"; torso.Material = Enum.Material.SmoothPlastic; torso.Parent = npc
+  local head = Instance.new("Part"); head.Name = "Head"; head.Parent = npc
+  local leftArm = Instance.new("Part"); leftArm.Name = "LeftArm"; leftArm.Parent = npc
+  local rightArm = Instance.new("Part"); rightArm.Name = "RightArm"; rightArm.Parent = npc
+  local shoulder = Instance.new("Motor6D"); shoulder.Name = "RightShoulder"; shoulder.Part0 = torso; shoulder.Part1 = rightArm; shoulder.Parent = torso
+  shoulder.Transform = CFrame.Angles(0, 0.1, 0)
+  local humanoid = Instance.new("Humanoid"); humanoid.Parent = npc
+  local animator = Instance.new("Animator"); animator.Parent = humanoid
+  local animation = Instance.new("Animation")
+  local track = animator:LoadAnimation(animation)
+  track:Play(0.2); track:AdjustWeight(1,0.2); track:AdjustSpeed(humanoid.WalkSpeed / 16)
+  rootPart.CFrame = CFrame.new(0,2,0)
+  local weapon = Instance.new("Part"); weapon.Name = "weapon sword blade"; weapon.Material = Enum.Material.Metal; weapon.Parent = npc
+  local environment = Instance.new("Part"); environment.Name = "forest ground tree biome"; environment.Material = Enum.Material.Grass; environment.Parent = workspace
+  return npc
+end
+createNpc()
+`);
+    const manifestPath=path.join(root,'manifest-npc-doll.json');
+    fs.writeFileSync(manifestPath,JSON.stringify({
+      target:'roblox',
+      changedFiles:[relative],
+      presentationQuality:{required:true,target:'roblox',pass:'ASSET_ADAPTATION'}
+    },null,2));
+    assert.throws(()=>runIncrementalQa({
+      root,manifest:manifestPath,files:[relative],namespace:'npc-doll-final',force:true
+    }),/ROBLOX_NPC_NO_PRIMITIVE_DOLL_FINAL/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('native asset adaptation rejects a single primitive character placeholder',()=>{
   const root=tempRoot();
   try{
@@ -1615,6 +2137,116 @@ public class PrototypeAnimatedVisuals:MonoBehaviour {
     assert.equal(result.presentationQa.status,'STATIC_PASS');
     assert.ok(result.presentationQa.checks.some(row=>row.name==='NATIVE_COMPOSITE_FORM'&&row.pass));
     assert.ok(result.presentationQa.checks.some(row=>row.name==='GAME_VISUAL_IDENTITY_DOMAINS'&&row.pass));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('Unity Master GLB actor incremental QA requires skinned mesh Animator collider LOD and state binding',()=>{
+  const root=tempRoot();
+  try{
+    const relative='unity-games/actor-demo/Assets/Scripts/ActorVisual.cs';
+    const file=path.join(root,...relative.split('/'));
+    fs.mkdirSync(path.dirname(file),{recursive:true});
+    fs.writeFileSync(file,`using UnityEngine;
+public class ActorVisual:MonoBehaviour {
+  [SerializeField] GameObject actorPrefab;
+  [SerializeField] Material heroMaterial;
+  void Build(){
+    var character=Instantiate(actorPrefab);
+    var skin=character.GetComponentInChildren<SkinnedMeshRenderer>();
+    var animator=character.GetComponentInChildren<Animator>();
+    var collider=character.GetComponentInChildren<CapsuleCollider>();
+    var lod=character.GetComponentInChildren<LODGroup>();
+    skin.sharedMaterial=heroMaterial;
+    animator.CrossFade("Idle",0.15f);
+    var weapon=new GameObject("weapon sword blade"); weapon.AddComponent<MeshRenderer>();
+    var environment=new GameObject("forest environment terrain"); environment.AddComponent<MeshRenderer>();
+  }
+}
+`);
+    const manifestPath=path.join(root,'manifest-unity-actor.json');
+    fs.writeFileSync(manifestPath,JSON.stringify({
+      target:'unity',
+      changedFiles:[relative],
+      assetProduction:{nativeAuthoringExecution:{dcc:{crossPlatform3dMasterGlbRequired:true}}},
+      presentationQuality:{required:true,target:'unity',pass:'ASSET_ADAPTATION'}
+    },null,2));
+    const result=runIncrementalQa({
+      root,manifest:manifestPath,files:[relative],namespace:'unity-master-actor',force:true
+    });
+    assert.equal(result.outcome,'PASS');
+    for(const check of [
+      'UNITY_3D_ACTOR_SKINNED_MESH_RENDERER','UNITY_3D_ACTOR_ANIMATOR','UNITY_3D_ACTOR_ANIMATOR_STATE_BINDING',
+      'UNITY_3D_ACTOR_COLLIDER_PROXY','UNITY_3D_ACTOR_LOD'
+    ])assert.ok(result.presentationQa.checks.some(row=>row.name===check&&row.pass),check);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('Unity Master GLB actor incremental QA rejects a primitive mannequin',()=>{
+  const root=tempRoot();
+  try{
+    const relative='unity-games/actor-demo-bad/Assets/Scripts/ActorVisual.cs';
+    const file=path.join(root,...relative.split('/'));
+    fs.mkdirSync(path.dirname(file),{recursive:true});
+    fs.writeFileSync(file,`using UnityEngine;
+public class ActorVisual:MonoBehaviour {
+  void Build(){
+    var character=GameObject.CreatePrimitive(PrimitiveType.Capsule);
+    character.AddComponent<Animator>().Play("Idle");
+    character.AddComponent<CapsuleCollider>();
+    character.AddComponent<LODGroup>();
+    var weapon=new GameObject("weapon sword blade"); weapon.AddComponent<MeshRenderer>();
+    var environment=new GameObject("forest environment terrain"); environment.AddComponent<MeshRenderer>();
+    var material=new Material(Shader.Find("Standard")); character.GetComponent<Renderer>().material=material;
+  }
+}
+`);
+    const manifestPath=path.join(root,'manifest-unity-actor-bad.json');
+    fs.writeFileSync(manifestPath,JSON.stringify({
+      target:'unity',
+      changedFiles:[relative],
+      assetProduction:{nativeAuthoringExecution:{dcc:{crossPlatform3dMasterGlbRequired:true}}},
+      presentationQuality:{required:true,target:'unity',pass:'ASSET_ADAPTATION'}
+    },null,2));
+    assert.throws(()=>runIncrementalQa({
+      root,manifest:manifestPath,files:[relative],namespace:'unity-master-actor-bad',force:true
+    }),/PRESENTATION_STATIC_QA_FAILED:ASSET_ADAPTATION:.*(?:UNITY_3D_ACTOR_SKINNED_MESH_RENDERER|PRIMITIVE_ONLY_FINAL_3D_ACTOR)/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('Unity Master GLB actor QA rejects an enemy prefab reused as a scale-only boss',()=>{
+  const root=tempRoot();
+  try{
+    const relative='unity-games/boss-scale-only/Assets/Scripts/BossVisual.cs';
+    const file=path.join(root,...relative.split('/'));
+    fs.mkdirSync(path.dirname(file),{recursive:true});
+    fs.writeFileSync(file,`using UnityEngine;
+public class BossVisual:MonoBehaviour {
+  [SerializeField] GameObject enemyPrefab;
+  [SerializeField] Material bossMaterial;
+  void Build(){
+    var boss=Instantiate(enemyPrefab);
+    var skin=boss.GetComponentInChildren<SkinnedMeshRenderer>();
+    var animator=boss.GetComponentInChildren<Animator>();
+    var collider=boss.GetComponentInChildren<CapsuleCollider>();
+    var lod=boss.GetComponentInChildren<LODGroup>();
+    skin.sharedMaterial=bossMaterial;
+    animator.Play("Idle");
+    boss.transform.localScale = Vector3.one * 2.5f;
+    var weapon=new GameObject("weapon sword blade"); weapon.AddComponent<MeshRenderer>();
+    var environment=new GameObject("forest environment terrain"); environment.AddComponent<MeshRenderer>();
+  }
+}
+`);
+    const manifestPath=path.join(root,'manifest-boss-scale-only.json');
+    fs.writeFileSync(manifestPath,JSON.stringify({
+      target:'unity',
+      changedFiles:[relative],
+      assetProduction:{nativeAuthoringExecution:{dcc:{crossPlatform3dMasterGlbRequired:true}}},
+      presentationQuality:{required:true,target:'unity',pass:'ASSET_ADAPTATION'}
+    },null,2));
+    assert.throws(()=>runIncrementalQa({
+      root,manifest:manifestPath,files:[relative],namespace:'unity-boss-scale-only',force:true
+    }),/PRESENTATION_STATIC_QA_FAILED:ASSET_ADAPTATION:.*BOSS_SCALE_ONLY_FINAL_3D_ACTOR/);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
@@ -1715,6 +2347,70 @@ render();
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('Web 3D actor incremental QA requires GLB runtime loader AnimationMixer and state motion binding',()=>{
+  const root=tempRoot();
+  try{
+    const relative='web-games/web-3d-actor/index.html';
+    const file=path.join(root,...relative.split('/'));
+    fs.mkdirSync(path.dirname(file),{recursive:true});
+    fs.writeFileSync(file,`<!doctype html><style>#game{background:#111}</style><canvas id="game"></canvas><script type="module">
+const renderer = new THREE.WebGLRenderer({canvas:document.getElementById('game')});
+const material = new THREE.MeshStandardMaterial({roughness:.6});
+const loader = new GLTFLoader();
+const actorState = {IDLE:'Idle',WALK:'Walk',ATTACK:'Attack',HIT:'Hit',DEATH:'Death'};
+loader.load('./actors/npc-master.glb', gltf => {
+  const mixer = new THREE.AnimationMixer(gltf.scene);
+  const actions = {};
+  for (const clip of gltf.animations) actions[clip.name] = mixer.clipAction(clip);
+  function bindState(state){ const action=actions[actorState[state]]; if(action) action.play(); }
+  bindState('IDLE'); bindState('WALK'); bindState('ATTACK'); bindState('HIT'); bindState('DEATH');
+  function render(){ mixer.update(1/60); renderer.render(gltf.scene, camera); requestAnimationFrame(render); }
+  render();
+});
+</script>`);
+    const manifestPath=path.join(root,'manifest-web-3d-actor.json');
+    fs.writeFileSync(manifestPath,JSON.stringify({
+      target:'web',
+      changedFiles:[relative],
+      assetProduction:{nativeAuthoringExecution:{dcc:{web3dActorMasterAuthoringRequired:true}}},
+      presentationQuality:{required:true,target:'web',pass:'ASSET_ADAPTATION'}
+    },null,2));
+    const result=runIncrementalQa({
+      root,manifest:manifestPath,files:[relative],namespace:'web-3d-actor',force:true
+    });
+    assert.equal(result.outcome,'PASS');
+    assert.ok(result.presentationQa.checks.some(row=>row.name==='WEB_3D_ACTOR_MASTER_GLB_RUNTIME_BINDING'&&row.pass));
+    assert.ok(result.presentationQa.checks.some(row=>row.name==='WEB_3D_ACTOR_ANIMATION_MIXER'&&row.pass));
+    assert.ok(result.presentationQa.checks.some(row=>row.name==='WEB_3D_ACTOR_STATE_MOTION_BINDING'&&row.pass));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('Web 3D actor incremental QA rejects a GLB path with no AnimationMixer state binding',()=>{
+  const root=tempRoot();
+  try{
+    const relative='web-games/web-3d-actor-bad/index.html';
+    const file=path.join(root,...relative.split('/'));
+    fs.mkdirSync(path.dirname(file),{recursive:true});
+    fs.writeFileSync(file,`<!doctype html><style>#game{background:#111}</style><canvas id="game"></canvas><script type="module">
+const renderer = new THREE.WebGLRenderer({canvas:document.getElementById('game')});
+const material = new THREE.MeshStandardMaterial({roughness:.6});
+const loader = new GLTFLoader();
+const states=['IDLE','WALK','ATTACK','HIT','DEATH'];
+loader.load('./actors/npc-master.glb', gltf => renderer.render(gltf.scene, camera));
+</script>`);
+    const manifestPath=path.join(root,'manifest-web-3d-actor-bad.json');
+    fs.writeFileSync(manifestPath,JSON.stringify({
+      target:'web',
+      changedFiles:[relative],
+      assetProduction:{nativeAuthoringExecution:{dcc:{web3dActorMasterAuthoringRequired:true}}},
+      presentationQuality:{required:true,target:'web',pass:'ASSET_ADAPTATION'}
+    },null,2));
+    assert.throws(()=>runIncrementalQa({
+      root,manifest:manifestPath,files:[relative],namespace:'web-3d-actor-bad',force:true
+    }),/PRESENTATION_STATIC_QA_FAILED:ASSET_ADAPTATION:.*WEB_3D_ACTOR_ANIMATION_MIXER/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('web weather marker prevents duplicate weather task creation',()=>{
   const root=tempRoot();
   try{
@@ -1797,12 +2493,14 @@ test('usable same-game asset is applied before new authoring and weak regions de
   const sameGame={
     id:'existing-wolf',path:'roblox-games/apply-first-demo/assets/wolf.glb',types:['enemy'],
     tags:['wolf','enemy'],license:'project-original',platforms:['roblox'],
-    sameGameExistingRoblox:true,sourceHash:'wolf-v1',robloxAssetId:'123456'
+    sameGameExistingRoblox:true,sourceHash:'wolf-v1',robloxAssetId:'123456',
+    masterGlb:'assets/roblox/world-ghosts/native/spider/spider.glb'
   };
   const company={
     id:'company-wolf',path:'assets/roblox/wolf.glb',types:['enemy'],
     tags:['wolf','enemy'],license:'project-original',platforms:['roblox'],
-    companyVerified:true,sourceHash:'company-wolf-v1'
+    companyVerified:true,sourceHash:'company-wolf-v1',
+    masterGlb:'assets/roblox/world-ghosts/native/spider/spider.glb'
   };
   const plan=buildVibeAssetProductionPlan({
     target:'roblox',
@@ -1881,8 +2579,8 @@ test('precision production continues from inspection through authoring and appli
 
 test('low-quality asset rescue preserves strong axes and escalates to full authoring only after targeted derivation',()=>{
   const manifest={assets:[
-    {id:'base-hero',path:'roblox-games/rescue-demo/assets/hero.glb',types:['character'],tags:['character','hero'],license:'project-original',platforms:['roblox'],sameGameExistingRoblox:true,sourceHash:'hero-base',robloxAssetId:'111',rigType:'R15',retargetable:true},
-    {id:'donor-hero',path:'assets/roblox/hero-donor.glb',types:['character'],tags:['character','hero'],license:'project-original',platforms:['roblox'],companyVerified:true,sourceHash:'hero-donor',rigType:'R15',retargetable:true,
+    {id:'base-hero',path:'roblox-games/rescue-demo/assets/hero.glb',types:['character'],tags:['character','hero'],license:'project-original',platforms:['roblox'],sameGameExistingRoblox:true,sourceHash:'hero-base',robloxAssetId:'111',rigType:'R15',retargetable:true,masterGlb:'assets/roblox/world-ghosts/native/mesh/bride.glb'},
+    {id:'donor-hero',path:'assets/roblox/hero-donor.glb',types:['character'],tags:['character','hero'],license:'project-original',platforms:['roblox'],companyVerified:true,sourceHash:'hero-donor',rigType:'R15',retargetable:true,masterGlb:'assets/roblox/world-ghosts/native/mesh/bride.glb',
       platformVariants:{ROBLOX:{path:'assets/roblox/hero-donor.glb'}}}
   ]};
   const plan=buildVibeAssetProductionPlan({

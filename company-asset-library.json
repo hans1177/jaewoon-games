@@ -1,8 +1,8 @@
 {
-  "version": 113,
+  "version": 119,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
-  "updatedAt": "2026-10-05",
+  "updatedAt": "2026-10-07",
   "publicInspectionSurface": true,
   "productionPassAuthority": false,
   "rules": {
@@ -102,7 +102,118 @@
     "volumeExpansionNewAuthoringAllowed": true,
     "volumeTargetBandsAreGuidanceNotHardCreationCaps": true,
     "newAuthoringMustAddDistinctCoverageOrQualityValue": true,
-    "colorOnlyOrDuplicateSpamDoesNotCountAsNewVolume": true
+    "colorOnlyOrDuplicateSpamDoesNotCountAsNewVolume": true,
+    "crossPlatform3dMasterGlbRequired": true,
+    "crossPlatform3dMasterGlbFormat": "GLB_2_0",
+    "crossPlatform3dMasterGlbFamilies": [
+      "CHARACTER",
+      "CREATURE"
+    ],
+    "crossPlatform3dMasterGlbRoles": [
+      "PLAYER",
+      "GENERAL_NPC",
+      "NPC",
+      "VILLAGER",
+      "COMPANION",
+      "PARTY_MEMBER",
+      "ALLY",
+      "FRIENDLY_CHARACTER",
+      "STORY_CHARACTER",
+      "CIVILIAN",
+      "MERCHANT",
+      "VENDOR",
+      "SERVICE_NPC",
+      "QUEST_GIVER",
+      "GUARD",
+      "WORKER",
+      "ARTISAN",
+      "FARMER",
+      "HEALER",
+      "TRAINER",
+      "RIVAL",
+      "HOSTILE_HUMANOID",
+      "NAMED_ELITE",
+      "HUMANOID_BOSS",
+      "ENEMY",
+      "ELITE",
+      "MINI_BOSS",
+      "CREATURE",
+      "PET",
+      "MOUNT",
+      "SUMMON",
+      "BOSS",
+      "RAID_BOSS"
+    ],
+    "crossPlatform3dMasterGlbRequiredContents": [
+      "MESH",
+      "NORMALS",
+      "UV0",
+      "MATERIALS",
+      "SKELETON",
+      "SKIN_WEIGHTS",
+      "JOINT_WEIGHTS",
+      "ANIMATION"
+    ],
+    "masterGlbRequiredBeforePlatformNativeVariant": true,
+    "primitivePartAssemblyPrototypeOnlyFor3dActors": true,
+    "primitiveOrColorOnly3dActorCannotClaimFinalAsset": true,
+    "previewImageSemanticAtomOrMarkerCannotSubstituteMasterGlb": true,
+    "masterGlbPlatformDerivativeBindingRequired": true,
+    "npcRoleProfileRequired": true,
+    "npcRoleSpecificVisualMotionRequired": true,
+    "npcColorOnlyRoleCloneForbidden": true,
+    "npcMinimumDistinctRoleAxes": 3,
+    "crossPlatform3dMasterGlbRoleFamilies": {
+      "CHARACTER": [
+        "PLAYER",
+        "GENERAL_NPC",
+        "NPC",
+        "VILLAGER",
+        "COMPANION",
+        "PARTY_MEMBER",
+        "ALLY",
+        "FRIENDLY_CHARACTER",
+        "STORY_CHARACTER",
+        "CIVILIAN",
+        "MERCHANT",
+        "VENDOR",
+        "SERVICE_NPC",
+        "QUEST_GIVER",
+        "GUARD",
+        "WORKER",
+        "ARTISAN",
+        "FARMER",
+        "HEALER",
+        "TRAINER",
+        "RIVAL",
+        "HOSTILE_HUMANOID",
+        "NAMED_ELITE",
+        "HUMANOID_BOSS"
+      ],
+      "CREATURE": [
+        "ENEMY",
+        "ELITE",
+        "MINI_BOSS",
+        "CREATURE",
+        "PET",
+        "MOUNT",
+        "SUMMON",
+        "BOSS",
+        "RAID_BOSS"
+      ]
+    },
+    "npcRolePhysicalDiversityRequired": true,
+    "npcHeightWeightBodyProportionDiversityRequired": true,
+    "npcFaceHairSurfaceOutfitDiversityRequired": true,
+    "npcStanceGaitInteractionMotionDiversityRequired": true,
+    "npcNearbyPairMinimumDistinctIdentityAxes": 5,
+    "npcHeroCompanionEliteBossTargetDistinctIdentityAxes": 8,
+    "npcColorOnlySizeOnlyOrFaceOnlyCloneForbidden": true,
+    "npcVisualDiversityCannotChangeGameplayStatsHitboxCollisionByDefault": true,
+    "masterGlbJointAnimationChannelRequired": true,
+    "masterGlbPathOnlyCannotClaimNativeBinding": true,
+    "characterMotionMannequinCannotClaimFinalActor": true,
+    "bossScaleOnlyCannotClaimFinalActor": true
   },
   "platformPacks": [
     {
@@ -1076,7 +1187,61 @@
       "internalUseAllowed": true,
       "lowScoreWouldStillBeUsable": true,
       "higherCompatibleInternalScoreAutoPreferred": true,
-      "productionVerificationSeparate": true
+      "productionVerificationSeparate": true,
+      "masterAssetFormat": "GLB_2_0",
+      "masterGlb": "assets/roblox/world-ghosts/native/spider/spider.glb",
+      "masterGlbHash": "c37af6808a539f646eb77dac65bc339717700e932c25f2928fa5c54135a15525",
+      "masterGlbSourceHash": "68580956fe32f95da2e09a11276486613266ad97c2e84d44c104f477260d6fca",
+      "masterGlbContractVersion": 1,
+      "masterGlbStaticQaPass": true,
+      "masterGlbQaAuthority": "tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb",
+      "masterGlbEvidenceRef": "assets/roblox/world-ghosts/native/spider/evidence.json",
+      "crossPlatformMasterSource": true,
+      "platformNativeDerivativeRequired": true,
+      "primitiveFallbackFinalUseForbidden": true,
+      "authoringRecipes": [
+        {
+          "id": "insect-spider-hd-master-glb-v1",
+          "assetId": "roblox-insect-spider-hd-v1",
+          "family": "CREATURE",
+          "license": "project-original",
+          "executor": "BLENDER_PYTHON",
+          "script": "assets/roblox/world-ghosts/build-spider.py",
+          "editableSource": "assets/roblox/world-ghosts/build-spider.py",
+          "types": [
+            "enemy",
+            "boss",
+            "creature"
+          ],
+          "targetPlatforms": [
+            "roblox",
+            "unity",
+            "web"
+          ],
+          "args": [
+            "--output",
+            "assets/roblox/world-ghosts/native/spider",
+            "--render"
+          ],
+          "outputs": [
+            "assets/roblox/world-ghosts/native/spider/spider.glb",
+            "assets/roblox/world-ghosts/native/spider/spider.png",
+            "assets/roblox/world-ghosts/native/spider/evidence.json"
+          ],
+          "evidenceJson": "assets/roblox/world-ghosts/native/spider/evidence.json",
+          "preview": "assets/roblox/world-ghosts/native/spider/spider.png",
+          "runMode": "VERIFY_ONLY",
+          "masterGlbRequired": true,
+          "actorRoles": [
+            "ENEMY",
+            "ELITE",
+            "CREATURE",
+            "PET",
+            "SUMMON",
+            "BOSS"
+          ]
+        }
+      ]
     },
     {
       "id": "ladybug-sprite",
@@ -66310,6 +66475,123 @@
         "combatVfxCameraUiFeedback": true
       },
       "nativeRuntimePassRequiredForVerifiedCount": true
+    },
+    "crossPlatform3dMasterGlbContract": {
+      "version": 1,
+      "status": "ACTIVE_EXECUTABLE_CONTRACT",
+      "format": "GLB_2_0",
+      "appliesToFamilies": [
+        "CHARACTER",
+        "CREATURE"
+      ],
+      "appliesToRoles": [
+        "PLAYER",
+        "GENERAL_NPC",
+        "NPC",
+        "VILLAGER",
+        "COMPANION",
+        "PARTY_MEMBER",
+        "ALLY",
+        "FRIENDLY_CHARACTER",
+        "STORY_CHARACTER",
+        "CIVILIAN",
+        "MERCHANT",
+        "VENDOR",
+        "SERVICE_NPC",
+        "QUEST_GIVER",
+        "GUARD",
+        "WORKER",
+        "ARTISAN",
+        "FARMER",
+        "HEALER",
+        "TRAINER",
+        "RIVAL",
+        "HOSTILE_HUMANOID",
+        "NAMED_ELITE",
+        "HUMANOID_BOSS",
+        "ENEMY",
+        "ELITE",
+        "MINI_BOSS",
+        "CREATURE",
+        "PET",
+        "MOUNT",
+        "SUMMON",
+        "BOSS",
+        "RAID_BOSS"
+      ],
+      "requiredBeforePlatformNativeVariant": true,
+      "structuralQa": [
+        "GLB_VERSION_2",
+        "MESH",
+        "NORMALS",
+        "UV0",
+        "MATERIALS",
+        "SKIN_SKELETON",
+        "JOINT_WEIGHTS",
+        "ANIMATION",
+        "JOINT_ANIMATION_CHANNEL"
+      ],
+      "platformBindings": {
+        "ROBLOX": "NATIVE_IMPORT_OR_REAUTHOR_FROM_MASTER_GLB",
+        "UNITY": "NATIVE_IMPORT_OR_REAUTHOR_FROM_MASTER_GLB",
+        "WEB": "MASTER_GLB_OR_DERIVED_GLTF_RUNTIME_BINDING"
+      },
+      "primitivePartAssemblyPrototypeOnly": true,
+      "platformNativeRuntimeVerificationStillRequired": true,
+      "roleFamilies": {
+        "CHARACTER": [
+          "PLAYER",
+          "GENERAL_NPC",
+          "NPC",
+          "VILLAGER",
+          "COMPANION",
+          "PARTY_MEMBER",
+          "ALLY",
+          "FRIENDLY_CHARACTER",
+          "STORY_CHARACTER",
+          "CIVILIAN",
+          "MERCHANT",
+          "VENDOR",
+          "SERVICE_NPC",
+          "QUEST_GIVER",
+          "GUARD",
+          "WORKER",
+          "ARTISAN",
+          "FARMER",
+          "HEALER",
+          "TRAINER",
+          "RIVAL",
+          "HOSTILE_HUMANOID",
+          "NAMED_ELITE",
+          "HUMANOID_BOSS"
+        ],
+        "CREATURE": [
+          "ENEMY",
+          "ELITE",
+          "MINI_BOSS",
+          "CREATURE",
+          "PET",
+          "MOUNT",
+          "SUMMON",
+          "BOSS",
+          "RAID_BOSS"
+        ]
+      },
+      "roleSpecificAppearanceAndMotionVariantsAllowed": true,
+      "colorOnlyRoleCloneDoesNotCountAsDistinctActor": true,
+      "requiredContents": [
+        "MESH",
+        "NORMALS",
+        "UV0",
+        "MATERIALS",
+        "SKELETON",
+        "SKIN_WEIGHTS",
+        "JOINT_WEIGHTS",
+        "ANIMATION"
+      ],
+      "masterGlbPathOnlyCannotClaimNativeBinding": true,
+      "rootOnlyMotionCannotClaimFinalActor": true,
+      "productionVerifiedRequiresNativeRuntime": true
     }
   },
   "baseMaterialLibrary": {
@@ -68608,7 +68890,7 @@
     }
   },
   "internalAssetLibraryAutomation": {
-    "version": 13,
+    "version": 15,
     "status": "ACTIVE_CATALOG_DRIVEN_INTERNAL_ASSET_AUTOMATION",
     "contract": "assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT",
     "syncFunction": "tools/vibe2-asset-production-plan.mjs#synchronizeCompanyCommonAssetRegistry",
@@ -68619,7 +68901,11 @@
     "hardMaximum": null,
     "overSoftLimitAction": "DEDUPLICATION_REVIEW_ONLY",
     "overSoftLimitBlocksUse": false,
-    "perDomainIdeaBudgetPerCycle": 24,
+    "perDomainIdeaBudgetPerCycle": 16384,
+    "domainVolumeActionLimitPerDomain": 2048,
+    "uiSubsystemVolumeActionLimitPerSubsystem": 1024,
+    "maxVolumeWorklistActions": 65536,
+    "taskReferenceOverlayWorklistLimit": 32768,
     "volumeBeforeQuality": false,
     "reuseAdaptRecombineBeforeNewAuthoring": true,
     "newAuthoringPolicy": {
@@ -69278,7 +69564,7 @@
     "pipelineCreated": false,
     "wrapperCreated": false,
     "shadowSystemCreated": false,
-    "lastCatalogSynchronizedVersion": 113,
+    "lastCatalogSynchronizedVersion": 119,
     "focusPhase": "QUALITY_UP_1000",
     "qualityTarget": 1000,
     "volumeReady": false,
@@ -77001,7 +77287,7 @@
       "runtimeVerificationRequiredBeforeProductionPromotion": true
     },
     "eligibleFreeSourceCount": 22,
-    "freeSourceCandidateLimitPerAction": 8,
+    "freeSourceCandidateLimitPerAction": 2048,
     "freeSourceCatalogSufficiencyCount": 12,
     "freeSourceCatalogReady": true,
     "freeSourceCatalogExpansionMode": "PAUSED_UNTIL_REAL_COVERAGE_GAP",
@@ -79721,7 +80007,7 @@
       "lastChangeFingerprint": "243b46f8",
       "catalogFingerprint": "139e07054babbef4db627f2709a6a89c4ecb218e8ad6093aef0a633275afd2c5",
       "catalogChanged": false,
-      "synchronizedRegistryVersion": 113
+      "synchronizedRegistryVersion": 118
     },
     "studioVariationAxes": {
       "BUILDING": [
@@ -84404,7 +84690,14 @@
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
       }
-    ]
+    ],
+    "maintenanceListLimits": {
+      "semanticDuplicateReviewGroups": 2048,
+      "donorCandidates": 4096,
+      "deltaTokens": 16384,
+      "qualityActions": 8192
+    },
+    "supplyDecisionSummaryActionLimit": 8192
   },
   "characterNpcCustomization": {
     "version": 1,
@@ -84419,6 +84712,10 @@
     "generatedCombinationSpaceIsNotAuthoredAssetCount": true,
     "targetMinimums": {
       "BODY_ARCHETYPE": 12,
+      "HEIGHT_BAND": 8,
+      "VISUAL_MASS_BAND": 6,
+      "FRAME_FAMILY": 8,
+      "BODY_PROPORTION_PROFILE": 24,
       "HEAD_BASE": 48,
       "FACE_MORPH_CONTROL": 28,
       "SKIN_TONE_FAMILY": 32,
@@ -84572,13 +84869,20 @@
       "colorOnlyDuplicateForbidden": true,
       "faceSwapCloneForbidden": true,
       "minimumDistinctIdentityAxesPerNearbyPair": 5,
+      "minimumDistinctBodyAxesPerNearbyPair": 3,
+      "heightAndVisualMassMustParticipateInPopulationDiversity": true,
+      "scaleOnlyDuplicateForbidden": true,
       "sameHeadHairOutfitCombinationReuseLimitPerLocalCrowd": 1,
+      "sameHeightMassFrameCombinationReuseLimitPerLocalCrowd": 2,
       "regionAndOccupationMayBiasSelectionButDoNotHardLockEligibility": true,
       "heroNpcGetsCloseupDetailPriority": true,
       "backgroundNpcMayUseLodButMustKeepDistinctSilhouette": true,
       "deterministicRecipeFromStableSeed": true,
       "speciesPartCompatibilityRequired": true,
-      "gameplayStatsUnaffected": true
+      "gameplayStatsUnaffected": true,
+      "roleProfileRequired": true,
+      "colorOnlyRoleVariantForbidden": true,
+      "roleSpecificSilhouetteEquipmentStanceAndMotionRequired": true
     },
     "production": {
       "preferExistingMorphPartRigAndMaterialLibrary": true,
@@ -84588,7 +84892,10 @@
       "editableDccSourceRequiredForNewMorphs": true,
       "platformNativeVariantsRequired": true,
       "mobileLodRequired": true,
-      "runtimeVerificationRequiredBeforeProductionPromotion": true
+      "runtimeVerificationRequiredBeforeProductionPromotion": true,
+      "final3dNpcMasterGlbRequired": true,
+      "primitivePartOrWeldOnlyNpcPrototypeOnly": true,
+      "platformNativeRigAndAnimationBindingRequired": true
     },
     "referenceImageIdeaIntegration": {
       "enabled": true,
@@ -84605,5 +84912,298 @@
     "balanceAuthority": false,
     "saveAuthority": false,
     "networkAuthority": false
+  },
+  "npcRoleProduction": {
+    "version": 2,
+    "status": "ACTIVE_MACHINE_READABLE_NPC_ROLE_PRODUCTION",
+    "final3dMasterFormat": "GLB_2_0",
+    "physicalDiversity": {
+      "required": true,
+      "appearanceOnlyByDefault": true,
+      "collisionHitboxMovementStatsRemainGameOwned": true,
+      "axes": [
+        "HEIGHT_CM",
+        "WEIGHT_KG",
+        "VISUAL_MASS",
+        "FRAME",
+        "SHOULDER_WIDTH",
+        "TORSO_LENGTH",
+        "TORSO_DEPTH",
+        "PELVIS_WIDTH",
+        "ARM_LENGTH",
+        "LEG_LENGTH",
+        "HAND_FOOT_SCALE",
+        "HEAD_BODY_RATIO",
+        "POSTURE",
+        "ASYMMETRY"
+      ],
+      "nearbyDistinctAxisMinimum": 5,
+      "heroCompanionEliteBossDistinctAxisTarget": 8,
+      "colorOnlySizeOnlyOrFaceOnlyCloneForbidden": true,
+      "roleRanges": {
+        "GENERAL_NPC": {
+          "heightCm": [
+            145,
+            198
+          ],
+          "weightKg": [
+            42,
+            135
+          ]
+        },
+        "COMPANION": {
+          "heightCm": [
+            145,
+            205
+          ],
+          "weightKg": [
+            42,
+            145
+          ]
+        },
+        "ALLY": {
+          "heightCm": [
+            150,
+            210
+          ],
+          "weightKg": [
+            45,
+            155
+          ]
+        },
+        "STORY_CHARACTER": {
+          "heightCm": [
+            145,
+            210
+          ],
+          "weightKg": [
+            40,
+            150
+          ]
+        },
+        "CIVILIAN": {
+          "heightCm": [
+            140,
+            200
+          ],
+          "weightKg": [
+            38,
+            140
+          ]
+        },
+        "MERCHANT": {
+          "heightCm": [
+            145,
+            205
+          ],
+          "weightKg": [
+            42,
+            160
+          ]
+        },
+        "QUEST_GIVER": {
+          "heightCm": [
+            145,
+            205
+          ],
+          "weightKg": [
+            40,
+            150
+          ]
+        },
+        "GUARD": {
+          "heightCm": [
+            155,
+            215
+          ],
+          "weightKg": [
+            50,
+            175
+          ]
+        },
+        "WORKER": {
+          "heightCm": [
+            150,
+            210
+          ],
+          "weightKg": [
+            48,
+            175
+          ]
+        },
+        "ARTISAN": {
+          "heightCm": [
+            145,
+            205
+          ],
+          "weightKg": [
+            42,
+            160
+          ]
+        },
+        "FARMER": {
+          "heightCm": [
+            145,
+            210
+          ],
+          "weightKg": [
+            45,
+            170
+          ]
+        },
+        "HEALER": {
+          "heightCm": [
+            145,
+            205
+          ],
+          "weightKg": [
+            40,
+            145
+          ]
+        },
+        "TRAINER": {
+          "heightCm": [
+            150,
+            215
+          ],
+          "weightKg": [
+            48,
+            175
+          ]
+        },
+        "RIVAL": {
+          "heightCm": [
+            150,
+            220
+          ],
+          "weightKg": [
+            45,
+            180
+          ]
+        },
+        "HOSTILE_HUMANOID": {
+          "heightCm": [
+            145,
+            220
+          ],
+          "weightKg": [
+            45,
+            190
+          ]
+        },
+        "NAMED_ELITE": {
+          "heightCm": [
+            155,
+            235
+          ],
+          "weightKg": [
+            55,
+            205
+          ]
+        },
+        "HUMANOID_BOSS": {
+          "heightCm": [
+            165,
+            260
+          ],
+          "weightKg": [
+            70,
+            220
+          ]
+        },
+        "PLAYER": {
+          "heightCm": [
+            145,
+            210
+          ],
+          "weightKg": [
+            40,
+            155
+          ]
+        }
+      }
+    },
+    "appearanceDiversity": {
+      "required": true,
+      "axes": [
+        "HEAD_BASE",
+        "FACE_PROPORTION",
+        "EYE_SHAPE_AND_COLOR",
+        "BROW",
+        "NOSE",
+        "CHEEKBONE",
+        "MOUTH",
+        "JAW",
+        "EAR",
+        "HAIR_STYLE",
+        "HAIR_TEXTURE",
+        "HAIR_COLOR",
+        "FACIAL_HAIR",
+        "SKIN_OR_SPECIES_SURFACE",
+        "AGE_CUE",
+        "SCAR_MARK_TATTOO",
+        "OUTFIT_LAYERING",
+        "ROLE_EQUIPMENT",
+        "ACCESSORY",
+        "WEAR_HISTORY"
+      ],
+      "majorNpcFaceHairOutfitCombinationMustBeUnique": true,
+      "repeatedNearbyHeadHairOutfitCombinationForbidden": true,
+      "bossAndNamedEliteRequireUniqueSilhouetteAndSurfaceTreatment": true,
+      "companionRequiresPlayerReadablePartySilhouette": true
+    },
+    "roles": [
+      "PLAYER",
+      "GENERAL_NPC",
+      "COMPANION",
+      "ALLY",
+      "STORY_CHARACTER",
+      "CIVILIAN",
+      "MERCHANT",
+      "QUEST_GIVER",
+      "GUARD",
+      "WORKER",
+      "ARTISAN",
+      "FARMER",
+      "HEALER",
+      "TRAINER",
+      "RIVAL",
+      "HOSTILE_HUMANOID",
+      "NAMED_ELITE",
+      "HUMANOID_BOSS"
+    ],
+    "commonFinalRequirements": [
+      "DISTINCT_SILHOUETTE",
+      "ROLE_EQUIPMENT_OR_PROP_LANGUAGE",
+      "ROLE_STANCE_AND_GAIT",
+      "IDLE_AND_INTERACTION_MOTION",
+      "SKINNED_RIG",
+      "ACTIVE_JOINT_MOTION",
+      "MOBILE_LOD",
+      "PLATFORM_NATIVE_BINDING"
+    ],
+    "sharedMasterGlbReuseAllowed": true,
+    "sharedMasterDoesNotPermitColorOnlyRoleClone": true,
+    "roleDifferentiationAxes": [
+      "SILHOUETTE",
+      "HEIGHT_VISUAL_MASS",
+      "BODY_PROPORTION",
+      "FACE_HAIR_SURFACE",
+      "OUTFIT_EQUIPMENT",
+      "STANCE_GAIT",
+      "IDLE_INTERACTION_MOTION",
+      "FACE_GESTURE",
+      "WEAR_HISTORY"
+    ],
+    "minimumDistinctRoleAxes": 3,
+    "namedCompanionEliteBossMinimumDistinctIdentityAxes": 6,
+    "primitivePartOrWeldOnlyFinalNpcForbidden": true,
+    "rootTransformOnlyVisibleMotionForbidden": true,
+    "gameplayAuthority": false,
+    "balanceAuthority": false,
+    "aiAuthority": false,
+    "contract": "assets/vibe-character-identity-director.js#VIBE_NPC_ROLE_PRODUCTION_CONTRACT",
+    "productionVerified": false,
+    "runtimeVerificationRequired": true
   }
 }
