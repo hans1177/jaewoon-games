@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-single-defense-strat-celestial-bastion-build-up-g24-a2284d9b935c",
-  "directiveFingerprint": "a2284d9b935ce99d24c7210c325d0a551a1f8feaf2758f19307a4f97eace9897",
-  "previousDirectiveFingerprint": "2c88dbe327cd26ed0c0854d3547b504a4e9bceb01e754fb1c6f0c13b4c526359",
-  "forbiddenRepeatFingerprint": "2c88dbe327cd26ed0c0854d3547b504a4e9bceb01e754fb1c6f0c13b4c526359",
+  "directiveId": "seed-single-defense-strat-celestial-bastion-build-up-g25-26da86a774fa",
+  "directiveFingerprint": "26da86a774fa3eb73752342d5417f10dab136551087ad248b01644f96d48f98c",
+  "previousDirectiveFingerprint": "a2284d9b935ce99d24c7210c325d0a551a1f8feaf2758f19307a4f97eace9897",
+  "forbiddenRepeatFingerprint": "a2284d9b935ce99d24c7210c325d0a551a1f8feaf2758f19307a4f97eace9897",
   "gameId": "seed-single-defense-strat-celestial-bastion",
   "gameName": "천상의 보루",
-  "generation": 24,
+  "generation": 25,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,8 +14,8 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-single-defense-strat-celestial-bastion",
-  "sourceTreeFingerprint": "14b1e75537a693a39f5998b3a60b4bb13261af3b577f9b93a5d2cae39cd6888b",
-  "designFingerprint": "65224a8fccf2555f21ddc426aed04fa6f277cefb2005fa43fc0b047d3fc0232d",
+  "sourceTreeFingerprint": "19297d865dccf213e4b6b52d6220141bb4f2e77e5c6d0dd96a454976f2356200",
+  "designFingerprint": "9600547ed54551bd4208a9cb0d60cc60b7f5dc16fbeb34f5fb65b965e017741b",
   "identityReinforcement": {
     "appliesToAllGenres": true,
     "genre": "Strategy",
@@ -104,7 +104,7 @@
           "타워 각성 및 궁극기 시스템",
           "특정 타워를 최고 레벨까지 강화하면 고유한 궁극기 스킬을 해금하는 각성 시스템을 도입하여, 플레이어가 후반 웨이브에서 전황을 뒤집을 수 있는 강력한 한 방의 선택지를 제공합니다."
         ],
-        "sourceTreeFingerprint": "14b1e75537a693a39f5998b3a60b4bb13261af3b577f9b93a5d2cae39cd6888b",
+        "sourceTreeFingerprint": "19297d865dccf213e4b6b52d6220141bb4f2e77e5c6d0dd96a454976f2356200",
         "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -114,6 +114,106 @@
     },
     "buildUpRule": "EACH_BUILD_UP_MUST_STRENGTHEN_OR_PRESERVE_THE_REPRESENTATIVE_ACTION_CHOICE_WORLD_RULE_SIGNATURE_SYSTEM_OR_GROWTH_IDENTITY; GENERIC_FEATURE_COUNT_DOES_NOT_COUNT",
     "genreAdaptationRule": "PRESERVE_THE_GENRE_PRIMARY_ACTION; DO_NOT_FORCE_RPG_STYLE_SYSTEMS_ON_PUZZLE_RACING_TYCOON_DEFENSE_SURVIVAL_ACTION_CARD_BOARD_STRATEGY_CASUAL_OR_OTHER_GENRES"
+  },
+  "designImplementationContext": {
+    "source": "LATEST_VERIFIED_DESIGN_FIELDS",
+    "progressionEconomyBalance": {
+      "progressionLoop": "웨이브 방어 성공 -> 자원 획득 -> 타워 강화 및 기술 연구 -> 더 강력한 적 등장 -> 방어 전략 수정의 순환 구조를 가집니다.",
+      "resourceFlow": "적 처치 시 획득하는 에너지는 즉각적인 타워 배치와 업그레이드에 사용되며, 웨이브 클리어 보상은 영구적인 기술 연구에 사용되어 성장의 체감을 제공합니다.",
+      "balanceRules": "적의 체력과 이동 속도는 웨이브가 진행될수록 점진적으로 상승하며, 플레이어의 타워 강화 속도와 균형을 맞추어 항상 긴장감을 유지하도록 설계합니다."
+    },
+    "contentExpansionPlan": [
+      {
+        "milestone": "환경 상호작용 지형 시스템 도입",
+        "newGameplay": "얼음, 용암 등 특수 효과를 가진 지형 타일을 추가하여, 플레이어가 타워 배치 전 지형을 변형하거나 특정 속성 타워를 배치해 환경적 이점을 극대화하는 전략적 플레이를 도입합니다.",
+        "systemImpact": "기존의 고정된 그리드 기반 타워 배치 시스템에 환경 변수가 추가되어, 지형 관리 엔진이 타일 속성을 실시간으로 계산하고 전투 로직에 환경 데미지 및 버프를 반영하도록 시스템이 확장됩니다."
+      },
+      {
+        "milestone": "엘리트 적 유닛 및 카운터 메커니즘",
+        "newGameplay": "지형을 무시하거나 타워를 일시적으로 무력화하는 특수 능력을 가진 엘리트 적 유닛을 추가하여, 플레이어가 단순히 화력을 집중하는 것이 아니라 특정 타워의 스킬을 타이밍에 맞춰 사용하는 능동적 방어를 수행하게 합니다.",
+        "systemImpact": "기존의 단순 경로 차단 AI를 넘어, 적 유닛의 특수 능력과 타워의 방어 스킬 간의 상호작용을 처리하는 전투 로직 엔진의 복잡도가 증가하며, 밸런싱 데이터 수집 시스템이 강화됩니다."
+      },
+      {
+        "milestone": "타워 각성 및 궁극기 시스템",
+        "newGameplay": "특정 타워를 최고 레벨까지 강화하면 고유한 궁극기 스킬을 해금하는 각성 시스템을 도입하여, 플레이어가 후반 웨이브에서 전황을 뒤집을 수 있는 강력한 한 방의 선택지를 제공합니다.",
+        "systemImpact": "타워 데이터 구조에 각성 상태와 스킬 쿨타임 변수가 추가되며, UI 프레임워크는 각성 가능한 타워를 시각적으로 강조하고 궁극기 버튼을 활성화하는 인터페이스를 지원해야 합니다."
+      }
+    ],
+    "failureRetryRisk": {
+      "failureStates": [
+        "보루의 내구도가 0이 되어 방어 실패",
+        "제한 시간 내에 특정 목표를 달성하지 못함"
+      ],
+      "retryFlow": "실패 시 즉시 해당 웨이브의 시작 지점으로 돌아가거나, 이전 체크포인트에서 전략을 수정하여 재도전할 수 있는 기회를 제공합니다.",
+      "riskPressure": "실패는 단순히 게임 오버가 아니라, 플레이어가 자신의 전략적 실수를 인지하고 지형 배치나 타워 조합을 변경하도록 유도하는 학습의 과정입니다.",
+      "recoveryRules": "재도전 시 이전 시도에서 획득한 일부 자원을 보존하거나, 실패 원인을 분석할 수 있는 힌트 시스템을 제공하여 좌절감을 최소화합니다."
+    },
+    "platformFitPlan": {
+      "targetPlatform": "UNITY",
+      "inputModel": "터치 기반의 드래그 앤 드롭으로 타워를 배치하고, 지형을 스와이프하여 변형하는 직관적인 모바일 최적화 조작 방식을 채택합니다.",
+      "performanceBudget": "다수의 적 유닛과 타워 효과가 동시에 발생하므로, 오브젝트 풀링을 활용하여 드로우 콜을 최소화하고 모바일 기기에서의 프레임 드랍을 방지합니다.",
+      "sessionConstraints": "한 세션당 30분 내외로 구성하며, 웨이브 단위로 끊어 플레이할 수 있도록 하여 짧은 시간에도 몰입 가능한 세션 구조를 설계합니다."
+    },
+    "platformProfiles": {
+      "ROBLOX": {
+        "platform": "ROBLOX",
+        "inputModel": "Roblox touch controls first, with keyboard and gamepad parity through ContextActionService and Activated-based UI actions.",
+        "sessionModel": "Fast Roblox experience sessions with spawn, respawn, join-in-progress, and social re-entry semantics matched to the common game loop.",
+        "multiplayerRuntime": "single-player server boundary with local presentation; no fake multiplayer claims",
+        "performanceBudget": "Roblox mobile-first budget: bounded parts and effects, pooled transient objects, limited expensive per-frame work, and stable low-end frame pacing.",
+        "uiUx": "Roblox ScreenGui touch-safe layout with readable mobile controls, controller focus support, observable state feedback, and platform-native social affordances.",
+        "saveAndNetwork": "Server-validated RemoteEvents plus DataStore-backed persistent state only for approved save meaning; clients never own authoritative rewards or progression.",
+        "platformContentAdaptation": "Adapt \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.\" and its loop \"적의 웨이브 정보를 확인하고, 현재 가용 자원을 고려하여 방어 타워를 배치하거나 지형을 수정하여 적의 이동 경로를 최적화합니다. → 전투 중 적을 처치하여 획득한 에너지를 사용하여 타워를 강화하거나, 전장의 지형을 추가로 변형하여 방어 효율을 극대화합니다. → 웨이브 종료 후 획득한 보상으로 새로운 타워 기술을 연구하거나 기존 타워의 속성을 강화하여 다음 단계의 더 강력한 적에 대비합니다.\" to Roblox avatar scale, server/client authority, social sessions, and Roblox-native interaction without changing common gameplay meaning.",
+        "internalReleaseTarget": "Private or restricted Roblox experience published to Roblox servers so the owner and explicitly allowed testers can play before public release.",
+        "validationEvidence": "Exact published Roblox place and source revision, real Roblox runtime play, mobile controls, server/client boundary, save/rejoin when required, independent QA, and regression evidence."
+      },
+      "UNITY": {
+        "platform": "UNITY",
+        "inputModel": "Unity Input System with touch-first on-screen controls, safe-area handling, keyboard and gamepad parity, and app pause/resume input recovery.",
+        "sessionModel": "Native mobile app sessions with cold start, suspend/resume, background/foreground transitions, process restart, and deterministic save restoration.",
+        "multiplayerRuntime": "single-player app session with local gameplay authority; networking remains disabled until design requires it",
+        "performanceBudget": "Android mobile budget covering memory, GPU, thermal load, battery, draw calls, shaders, particles, audio, pooling, GC pressure, and low-end frame pacing.",
+        "uiUx": "Unity UI safe-area responsive layout with touch targets, scalable HUD, controller navigation where relevant, and app-native loading/error/recovery states.",
+        "saveAndNetwork": "Versioned local save with explicit migration plus validated backend synchronization only when required; app lifecycle cannot silently corrupt progress.",
+        "platformContentAdaptation": "Adapt \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.\" and its loop \"적의 웨이브 정보를 확인하고, 현재 가용 자원을 고려하여 방어 타워를 배치하거나 지형을 수정하여 적의 이동 경로를 최적화합니다. → 전투 중 적을 처치하여 획득한 에너지를 사용하여 타워를 강화하거나, 전장의 지형을 추가로 변형하여 방어 효율을 극대화합니다. → 웨이브 종료 후 획득한 보상으로 새로운 타워 기술을 연구하거나 기존 타워의 속성을 강화하여 다음 단계의 더 강력한 적에 대비합니다.\" to Unity scenes, prefabs, mobile app lifecycle, touch UX, and Android packaging without changing common gameplay meaning.",
+        "internalReleaseTarget": "Internal or closed Android test build that can be installed and launched by the owner/testers before any public store release.",
+        "validationEvidence": "Exact APK/AAB source revision, install and launch, real touch gameplay, pause/resume, save/restore, performance, independent QA, regression, and package identity evidence."
+      }
+    },
+    "visualDirection": "천상의 보루라는 이름에 걸맞게 밝고 신비로운 천상의 분위기와 어두운 타락의 대비를 강조합니다. 타워와 적 유닛은 명확한 실루엣과 색상으로 구분하여 전장 상황을 한눈에 파악할 수 있도록 합니다.",
+    "mobileUx": "작은 화면에서도 타워의 사거리와 지형의 높낮이를 명확히 인지할 수 있도록 UI를 배치하고, 복잡한 메뉴보다는 직관적인 아이콘과 제스처를 우선합니다.",
+    "uxAccessibilityPlan": {
+      "hudPriorities": "현재 자원, 보루 내구도, 다음 웨이브 정보, 타워 배치 메뉴를 화면 하단과 상단에 고정하여 시선 이동을 최소화합니다.",
+      "touchAndInput": "오터치 방지를 위해 타워 배치 시 그리드 스냅 기능을 제공하고, 지형 변형 시에는 명확한 시각적 피드백을 제공합니다.",
+      "readability": "색약 모드를 지원하여 속성별 타워와 적의 구분을 색상뿐만 아니라 문양으로도 명확히 식별할 수 있게 합니다.",
+      "accessibility": "게임 속도 조절 기능을 제공하여 전략적 판단이 필요한 순간에 충분한 시간을 확보할 수 있도록 돕습니다."
+    },
+    "artAudioDirection": {
+      "visualIdentity": "판타지풍의 화려한 이펙트와 깔끔한 로우 폴리곤 스타일을 결합하여 가독성과 심미성을 동시에 확보합니다.",
+      "audioIdentity": "긴박한 전투 상황에서는 웅장한 오케스트라 음악을, 전략을 고민하는 시간에는 차분한 앰비언트 사운드를 사용하여 몰입감을 높입니다.",
+      "gameplayFeedbackSync": "타워 공격 시의 타격감과 적 처치 시의 보상 사운드를 명확하게 분리하여 플레이어의 행동에 대한 즉각적인 청각적 피드백을 제공합니다."
+    },
+    "selectedDesignPlan": {},
+    "contentVarietyPlan": {},
+    "narrativeDialoguePlan": {},
+    "implementationTraceability": [
+      {
+        "designElement": "지형 변형 시스템 구현",
+        "responsibleSystem": "지형 관리 엔진 및 경로 탐색 모듈",
+        "validationEvidence": "플레이 테스트를 통해 지형 변형이 적의 경로를 실시간으로 효과적으로 차단하고, 플레이어가 의도한 전략적 우위를 점하는지 경로 탐색 로그 데이터를 분석하여 검증합니다."
+      },
+      {
+        "designElement": "엘리트 적 유닛 전투 로직",
+        "responsibleSystem": "전투 로직 엔진 및 AI 상태 머신",
+        "validationEvidence": "다양한 타워 조합과 엘리트 적 유닛의 상호작용을 시뮬레이션하여, 적의 특수 능력이 전투 결과에 유의미한 변수로 작용하는지 승률 및 클리어 타임 데이터를 통해 검증합니다."
+      },
+      {
+        "designElement": "타워 각성 UI/UX 인터페이스",
+        "responsibleSystem": "UI 프레임워크 및 이벤트 시스템",
+        "validationEvidence": "다양한 모바일 기기 해상도에서 각성 버튼의 가독성과 터치 조작의 정확성을 테스트하고, 실제 플레이 중 각성 스킬 사용 빈도와 만족도를 사용자 피드백으로 검증합니다."
+      }
+    ],
+    "stabilityPriorityPlan": {}
   },
   "gameIdentityAndNonNegotiables": {
     "identity": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.",
@@ -153,8 +253,8 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 186,
-      "progression": 183,
+      "combat": 188,
+      "progression": 197,
       "ai": 42,
       "save": 66,
       "multiplayer": 30,
@@ -166,12 +266,12 @@
       "audio": 4,
       "audioDynamics": 17,
       "ui": 61,
-      "uiFlow": 40,
+      "uiFlow": 42,
       "entryFlow": 10,
       "loadingFlow": 0,
       "input": 62,
       "map": 178,
-      "landmark": 81,
+      "landmark": 85,
       "interaction": 29,
       "inventory": 6,
       "equipment": 3,
@@ -194,7 +294,7 @@
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
-        "score": 284
+        "score": 282
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
@@ -467,17 +567,17 @@
   "previousVersionDelta": {
     "previousGoal": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 23,
-    "previousSourceTreeFingerprint": "cc4ad7e5027b99715087e70395addf4dfae0915a5e5c17b19f245f2769bb61d9",
-    "currentSourceTreeFingerprint": "14b1e75537a693a39f5998b3a60b4bb13261af3b577f9b93a5d2cae39cd6888b",
+    "previousGeneration": 24,
+    "previousSourceTreeFingerprint": "14b1e75537a693a39f5998b3a60b4bb13261af3b577f9b93a5d2cae39cd6888b",
+    "currentSourceTreeFingerprint": "19297d865dccf213e4b6b52d6220141bb4f2e77e5c6d0dd96a454976f2356200",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-    "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+    "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+    "failureSignature": "ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED",
     "blockers": [],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -742,8 +842,8 @@
     },
     {
       "domain": "NARRATIVE_STORY",
-      "state": "NOT_APPLICABLE",
-      "reason": "no narrative or story signal in approved design"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
@@ -1318,12 +1418,12 @@
     },
     {
       "domain": "NARRATIVE_STORY",
-      "state": "NOT_APPLICABLE",
-      "priority": "NOT_APPLICABLE",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "현재 승인 설계상 no narrative or story signal in approved design. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "directive": "스토리가 적용되는 게임이면 세계 설정·NPC 대사·환경 단서·퀘스트 결과가 서로 모순되지 않고 플레이 행동으로 드러나며 긴 설명이 핵심 루프를 끊지 않게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
-      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
@@ -1618,8 +1718,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 120068,
-        "largestFileBytes": 48453,
+        "sourceBytes": 149328,
+        "largestFileBytes": 48423,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1650,14 +1750,14 @@
       ],
       "weakExistingContentMayPreemptNewContent": true
     },
-    "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 10,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=9; uncoveredBefore=4.",
+    "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
+    "themeDepth": 1,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=4.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 6,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 1,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 10,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -1668,7 +1768,6 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1678,7 +1777,8 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY"
       ],
       "requiredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -1689,17 +1789,15 @@
         "MID_LATE_ENDGAME_COMPLETION",
         "PRESENTATION_WORLD_COHESION"
       ],
-      "distinctCovered": 3,
+      "distinctCovered": 4,
       "totalThemes": 7,
       "breadthCycleComplete": false,
       "missingThemes": [
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "MID_LATE_ENDGAME_COMPLETION"
       ],
       "leastCoveredThemes": [
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "MID_LATE_ENDGAME_COMPLETION"
@@ -1707,13 +1805,6 @@
       "selectionPolicy": "SUCCESSFUL_ITERATIONS_PRIORITIZE_UNCOVERED_OR_LEAST_COVERED_COHERENT_THEMES; VERIFIED_FAILURE_MAY_DEEPEN_THE_SAME_CAUSAL_THEME"
     },
     "scoredThemes": [
-      {
-        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 30,
-        "gapDomains": [
-          "EQUIPMENT_LOADOUT"
-        ]
-      },
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
         "score": 26,
@@ -1733,12 +1824,19 @@
       },
       {
         "theme": "QUEST_STORY_PROGRESSION_CHAIN",
-        "score": 12,
+        "score": 14,
         "gapDomains": []
       },
       {
+        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "score": 12,
+        "gapDomains": [
+          "EQUIPMENT_LOADOUT"
+        ]
+      },
+      {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": -94,
+        "score": -92,
         "gapDomains": []
       },
       {
@@ -1753,13 +1851,13 @@
       }
     ],
     "coherentContentBundle": [
-      "SOURCE_AND_DISCOVERY: 아이템이 어디서 왜 나오는지 지역·몹·퀘스트·제작과 연결한다.",
-      "DISTINCT_USE_CASE: 데미지 숫자만 다른 복제 장비가 아니라 사거리·타이밍·상태·위험·보상·조합 역할이 달라야 한다.",
-      "INVENTORY_AND_EQUIP_FLOW: 획득→비교→장착·사용→교체→피드백이 같은 authoritative 상태를 사용한다.",
-      "CRAFT_OR_UPGRADE_CONNECTION: 재료·레시피·제작·강화 결과가 실제 플레이 선택을 바꾼다.",
-      "PROGRESSION_PURPOSE: 아이템이 특정 지역·적·빌드·퀘스트·해금과 연결되어 성장 경로에 의미를 가진다.",
-      "SYNERGY_AND_TRADEOFF: 장비·스킬·소모품 사이에 조합 또는 선택 비용이 있어 하나의 정답만 반복되지 않게 한다.",
-      "WORLD_PRESENTATION: 외형·이름·설명·획득 연출이 실제 기능과 세계 설정을 일치시킨다."
+      "ENEMY_ROLE_SET: 추격·견제·방어·지원·매복·지역 통제 등 서로 다른 전투 역할을 만든다.",
+      "BEHAVIOR_AND_COUNTERPLAY: 이름·HP·공격력만 다른 적이 아니라 이동·전조·공격·약점·대응 선택이 달라야 한다.",
+      "ENCOUNTER_COMPOSITION: 적 역할 조합과 지형·목표가 만나 새로운 판단을 만들게 한다.",
+      "ELITE_OR_BOSS_SIGNATURE: 보스·엘리트는 페이즈·공간 압박·전조·대응·보상 중 여러 축에서 일반 적과 구별한다.",
+      "ECOLOGICAL_WORLD_REASON: 적이 해당 지역·스토리·자원·세력 관계 안에 존재하는 이유를 연결한다.",
+      "DISTINCT_REWARD_PURPOSE: 처치 보상은 다음 장비·퀘스트·제작·지역 해금 중 실제 목적을 가진다.",
+      "VISUAL_TELEGRAPH: 실루엣·모션·VFX·음향·UI 전조가 행동 규칙과 일치해야 한다."
     ],
     "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
     "antiCloneContract": {
@@ -1825,11 +1923,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 24,
-    "previousGeneration": 23,
+    "generation": 25,
+    "previousGeneration": 24,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "14b1e75537a693a39f5998b3a60b4bb13261af3b577f9b93a5d2cae39cd6888b",
-    "priorSourceFingerprint": "cc4ad7e5027b99715087e70395addf4dfae0915a5e5c17b19f245f2769bb61d9",
+    "sourceFingerprint": "19297d865dccf213e4b6b52d6220141bb4f2e77e5c6d0dd96a454976f2356200",
+    "priorSourceFingerprint": "14b1e75537a693a39f5998b3a60b4bb13261af3b577f9b93a5d2cae39cd6888b",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2289,7 +2387,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "14b1e75537a693a39f5998b3a60b4bb13261af3b577f9b93a5d2cae39cd6888b",
+    "sourceTreeFingerprint": "19297d865dccf213e4b6b52d6220141bb4f2e77e5c6d0dd96a454976f2356200",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2379,7 +2477,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "14b1e75537a693a39f5998b3a60b4bb13261af3b577f9b93a5d2cae39cd6888b",
+    "sourceTreeFingerprint": "19297d865dccf213e4b6b52d6220141bb4f2e77e5c6d0dd96a454976f2356200",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2642,11 +2740,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "14b1e75537a693a39f5998b3a60b4bb13261af3b577f9b93a5d2cae39cd6888b",
+      "sourceTreeFingerprint": "19297d865dccf213e4b6b52d6220141bb4f2e77e5c6d0dd96a454976f2356200",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING"
+      "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "failureSignature": "ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2697,7 +2795,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 25,
+    "nextGeneration": 26,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2759,10 +2857,9 @@
     ],
     "notApplicable": [
       "QUESTS",
-      "CRAFTING",
-      "NARRATIVE_STORY"
+      "CRAFTING"
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-07T04:46:41.269Z"
+  "generatedAt": "2026-10-07T05:25:52.849Z"
 }
