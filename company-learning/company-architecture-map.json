@@ -1,5 +1,5 @@
 {
-  "version": 327,
+  "version": 328,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2675,7 +2675,7 @@
     "authorityExpansion": false,
     "webNativeDirectAssetReuseForbidden": true,
     "sharedStyleIdentityAcrossPlatforms": true,
-    "webQualityTarget": "POLISHED_COMMERCIAL_MOBILE_WEB_2D_OR_2_5D",
+    "webQualityTarget": "POLISHED_COMMERCIAL_MOBILE_WEB_2_5D_OR_3D",
     "companyGraphicsLibrary24h": {
       "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
@@ -3322,13 +3322,17 @@
       "sourceWorkerBuildUpDirectiveSyntaxGuard": true,
       "cacheGeneration": 5,
       "modelCachePersistOnMiss": true,
-      "workerModelRepullAfterSharedCacheHitForbidden": true
+      "workerModelRepullAfterSharedCacheHitForbidden": true,
+      "platformConversionAndBindingOwner": "VIBE2_VIBE3_GAME_SOURCE_IMPLEMENTATION_OWNER",
+      "assetSourceOwner": "ASSET_DEVELOPMENT",
+      "runtimeVerificationOwner": "EXISTING_TARGET_RUNTIME_QA",
+      "responsibilityAuthority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification.authorityBoundaries"
     }
   },
   "platformPresentationSeparation": {
     "version": 1,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.platformAssetSeparation",
-    "webRole": "PLAYABLE_REFERENCE_SURFACE",
+    "webRole": "FULL_VISUAL_ASSET_CONSUMER_WITH_SHARED_CUSTOMIZATION_DOCUMENT",
     "webToUnityDirectAssetReuse": false,
     "webToRobloxDirectAssetReuse": false,
     "unityNativePresentationRequired": true,

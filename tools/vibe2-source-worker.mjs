@@ -3557,7 +3557,8 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
   const precisionProduction=order.assetProduction?.precisionProduction;
   const precisionProductionBlock=precisionProduction?[
     '[PRECISION PRODUCTION CHAIN BEGIN]',
-    JSON.stringify(precisionProduction),
+    JSON.stringify({mode:precisionProduction.mode,application:precisionProduction.application,sequence:precisionProduction.sequence,authoringOutputsRequired:precisionProduction.authoringOutputsRequired,continuation:precisionProduction.continuation,qualityDNA:precisionProduction.qualityDNA?.commonRules}),
+    'Asset-library authoring owns reusable source assets. The current game source owner owns target conversion/import AND binding into the existing render/scene/material/rig/motion consumer in the same responsibility. Existing target runtime QA owns verification. Reuse compatible native variants; conversion must preserve source and artifact identity. A local GLB path is not a Roblox uploaded asset ID. Keep required permissions/import gaps explicit. Do not create a conversion queue, duplicate graphics root, wrapper, or parallel owner for the same file. Prepared/exported/registered assets are not applied assets. Missing source or tooling returns the affected scope to its existing task; do not restart unrelated production.',
     'Continue through INSPECT -> DEFINE_REPAIR -> AUTHOR -> APPLY within the current task whenever the responsible source and authoring capability are available. Inspection and repair planning are not terminal outputs. Produce or rebuild editable source plus the target-native derivative, then bind it directly into the existing responsible game system. Build detail in four readable scales: GAME_CAMERA silhouette/function, MID_RANGE structure/parts, CLOSEUP construction/material identity, CONTACT joints/grips/doors/footing/interaction. Every micro-detail needs a functional, construction, contact, weathering, damage, or cultural cause; random clutter/noise is not detail. Do not create a shadow asset path, wrapper binding, or duplicate responsibility. If the authoring tool is genuinely unavailable, leave the exact AUTHOR stage pending with required source/output contract and do not claim the asset was produced.',
     '[PRECISION PRODUCTION CHAIN END]'
   ].join('\n'):'';
@@ -4777,10 +4778,10 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
       ?FULL_WEB_EXPANSION_CONTEXT_WINDOW
       :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_CONTEXT_WINDOW:(robloxRebuildFocused?JSON_CONTEXT_WINDOW:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW))):(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(sourceCandidatePressureInitial?SOURCE_CANDIDATE_COMPACT_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW)))));
     // 압축·부분 수정·확장 재시도에서도 원본 관찰과 잠금/수정 범위를 보존하고 실제 전송량으로 예산을 잡는다.
-    for(const label of ['IMAGE ASSET OBSERVATION','ASSET DETAIL REPAIR','RUNTIME VISUAL REVIEW','SINGLE MOTION WORK UNIT','INTERNAL MOTION COACHING','ROBLOX SOURCE COACHING','INTERNAL ASSET TEACHER PRACTICE']){
+    for(const label of ['PRECISION PRODUCTION CHAIN','IMAGE ASSET OBSERVATION','ASSET DETAIL REPAIR','RUNTIME VISUAL REVIEW','SINGLE MOTION WORK UNIT','INTERNAL MOTION COACHING','ROBLOX SOURCE COACHING','INTERNAL ASSET TEACHER PRACTICE']){
       const block=prompt.match(new RegExp('\\['+label+' BEGIN\\][\\s\\S]*?\\['+label+' END\\]'))?.[0]||'';
       if(!block||attemptPrompt.includes(block))continue;
-      const retryBlock=['SINGLE MOTION WORK UNIT','INTERNAL MOTION COACHING','ROBLOX SOURCE COACHING','INTERNAL ASSET TEACHER PRACTICE'].includes(label)?block:retry?boundedLargeExcerpt(block,RETRY_OBSERVATION_CHUNK_BYTES).content:block;
+      const retryBlock=['PRECISION PRODUCTION CHAIN','SINGLE MOTION WORK UNIT','INTERNAL MOTION COACHING','ROBLOX SOURCE COACHING','INTERNAL ASSET TEACHER PRACTICE'].includes(label)?block:retry?boundedLargeExcerpt(block,RETRY_OBSERVATION_CHUNK_BYTES).content:block;
       attemptPrompt+='\n'+retryBlock;
       if(retry&&retryBlock!==block)console.log(`VIBE2_RETRY_OBSERVATION_COMPACTED=${label}:${Buffer.byteLength(block,'utf8')}->${Buffer.byteLength(retryBlock,'utf8')}`);
     }

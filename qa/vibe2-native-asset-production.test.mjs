@@ -55,10 +55,10 @@ test('registry sync change detection is limited to sections it can mutate',()=>{
   const end=source.indexOf('const inferUniverseFamily',start);
   const syncSource=source.slice(start,end);
   assert.match(syncSource,/const mutableSections=\[/);
-  for(const section of ['assets','internalAssetCompositionContract','companyCommonSeedAssetIdeation','commonLibrarySystemDepthAudit','internalAssetLibraryAutomation','characterNpcCustomization','npcRoleProduction']){
+  for(const section of ['assets','internalAssetStandard','internalAssetCompositionContract','companyCommonSeedAssetIdeation','commonLibrarySystemDepthAudit','internalAssetLibraryAutomation','characterNpcCustomization','npcRoleProduction']){
     assert.match(syncSource,new RegExp("'"+section+"'"));
   }
-  assert.match(syncSource,/catalogAssetsChanged=syncRows\.some\(row=>row\.changed===true\)/);
+  assert.match(syncSource,/catalogAssetsChanged=organizationAssetsChanged\|\|syncRows\.some\(row=>row\.changed===true\)/);
   assert.doesNotMatch(syncSource,/Object\.keys\(original\)/);
   assert.doesNotMatch(syncSource,/Object\.keys\(next\)/);
 });
@@ -2661,6 +2661,11 @@ test('precision production continues from inspection through authoring and appli
   assert.equal(plan.precisionProduction.continuation.stopAfterRepairPlan,false);
   assert.equal(plan.precisionProduction.continuation.stopAfterAuthoring,false);
   assert.equal(plan.precisionProduction.application.directExistingResponsibilityBinding,true);
+  assert.equal(plan.precisionProduction.application.platformConversionOwner,plan.precisionProduction.application.gameBindingOwner);
+  assert.equal(plan.precisionProduction.application.assetSourceOwner,'ASSET_DEVELOPMENT');
+  assert.equal(plan.precisionProduction.application.runtimeVerificationOwner,'EXISTING_TARGET_RUNTIME_QA');
+  assert.ok(plan.precisionProduction.application.nativeVariantRequirements.includes('IMPORTED_OR_EXISTING_AUTHORIZED_NATIVE_ASSET_ID'));
+  assert.equal(plan.precisionProduction.application.preparedAssetIsNotAppliedAsset,true);
   assert.equal(plan.mapDetailReconstruction.productionChain.reportOnlyCompletionForbidden,true);
   assert.ok(plan.mapDetailReconstruction.regions[0].layers.some(row=>row.productionAction==='CREATE_EDITABLE_NATIVE_ASSET'));
   assert.match(assetProductionGuidance(plan),/PRECISION PRODUCTION CHAIN/);
@@ -2670,6 +2675,10 @@ test('precision production continues from inspection through authoring and appli
     ['client/Game.client.luau']
   );
   assert.match(prompt,/PRECISION PRODUCTION CHAIN BEGIN/);
+  const execution=prompt.match(/\[PRECISION PRODUCTION CHAIN BEGIN\]([\s\S]*?)\[PRECISION PRODUCTION CHAIN END\]/)[1];
+  assert.match(execution,/platformConversionOwner/);
+  assert.match(execution,/gameBindingOwner/);
+  assert.doesNotMatch(execution,/"assetItems"|"mapRegions"|"assetChain"|"mapChain"/);
   assert.match(prompt,/qualityDNA/);
   assert.match(prompt,/INSPECT -> DEFINE_REPAIR -> AUTHOR -> APPLY/);
   assert.match(prompt,/GAME_CAMERA silhouette\/function/);
