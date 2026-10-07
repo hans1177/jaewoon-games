@@ -2793,7 +2793,10 @@ export const STUDIO_ASSET_FAMILY_OUTPUTS=Object.freeze({
 });
 
 export const STUDIO_3D_ACTOR_ROLE_FAMILIES=Object.freeze({
-  CHARACTER:Object.freeze(['PLAYER','NPC','COMPANION','ALLY','CIVILIAN','VENDOR','QUEST_GIVER','TRAINER']),
+  CHARACTER:Object.freeze([
+    'PLAYER','GENERAL_NPC','COMPANION','ALLY','STORY_CHARACTER','CIVILIAN','MERCHANT','VENDOR','QUEST_GIVER',
+    'GUARD','WORKER','ARTISAN','FARMER','HEALER','TRAINER','RIVAL','HOSTILE_HUMANOID','NAMED_ELITE','HUMANOID_BOSS'
+  ]),
   CREATURE:Object.freeze(['ENEMY','ELITE','CREATURE','PET','MOUNT','SUMMON','BOSS'])
 });
 export const STUDIO_3D_ACTOR_ROLES=Object.freeze([
@@ -2812,6 +2815,10 @@ export const CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT=Object.freeze({
   requiredBeforePlatformNativeVariant:true,
   roleSpecificAppearanceAndMotionVariantsAllowed:true,
   sameRoleColorOnlyCloneDoesNotCountAsDistinctActor:true,
+  npcRoleDifferentiationRequired:true,
+  npcRoleDifferentiationAxes:Object.freeze(['SILHOUETTE','BODY_PROPORTION','OUTFIT_EQUIPMENT','STANCE_GAIT','IDLE_INTERACTION_MOTION','FACE_GESTURE','WEAR_HISTORY']),
+  minimumDistinctNpcRoleAxes:3,
+  humanoidBossMayUseCharacterFamilyWithBossRole:true,
   requiredContents:Object.freeze(['MESH','NORMALS','UV0','MATERIALS','SKELETON','SKIN_WEIGHTS','ANIMATION']),
   structuralChecks:Object.freeze({
     glbVersion2:true,
@@ -4717,6 +4724,9 @@ export function promoteVerifiedCompanyAssetsFromRuntimeEvidence({registry={},con
       license:text(descriptor?.license),
       sourceHash:text(descriptor?.sourceHash),
       artifactHash:text(descriptor?.artifactHash),
+      masterGlb:text(descriptor?.masterGlb),
+      masterGlbHash:text(descriptor?.masterGlbHash),
+      masterGlbStaticQaPass:descriptor?.masterGlbStaticQaPass===true,
       status:'PREPARED_DECLARED_GENERATED_ASSET',
       productionVerified:false,
       verifiedCompanyReusable:false,
