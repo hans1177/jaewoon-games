@@ -1068,29 +1068,38 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
   const original=registry&&typeof registry==='object'?registry:{};
   const catalog=gameCatalog||readJson(path.join(repoRoot,'game-catalog.json'),{games:[]});
   const games=(catalog.games||[]).filter(sourceConsumerEligibleGame).sort((a,b)=>clean(a.id||a.gameId).localeCompare(clean(b.id||b.gameId)));
-  const next=JSON.parse(JSON.stringify(original));next.assets=Array.isArray(next.assets)?next.assets:[];
+  const next={...original,assets:(Array.isArray(original.assets)?original.assets:[]).map(asset=>({...asset}))};
   const previousDynamicByAsset=new Map((original.assets||[]).map(asset=>[clean(asset.id),unique(asset.sourceBoundConsumerGameIds||[])]));
-  // 한 planning cycle에서 게임 소스는 게임당 한 번만 읽고 모든 자산 매핑이 같은 snapshot을 공유한다.
+  // 한 planning cycle에서 asset path/identity를 한 번 계산하고 모든 게임 snapshot 조회가 같은 metadata를 재사용한다.
+  const sourceMetaByAsset=new Map(next.assets.map(asset=>{
+    const packId=clean(asset.packId),id=clean(asset.id);
+    return [asset,Object.freeze({
+      packId,isPack:Boolean(packId&&packId===id),
+      family:clean(asset.family||asset.category).toUpperCase(),
+      paths:Object.freeze(sourceConsumerAssetPaths(asset)),
+      identities:Object.freeze(sourceConsumerIdentityTokens(asset))
+    })];
+  }));
+  const packAssets=next.assets.filter(asset=>sourceMetaByAsset.get(asset)?.isPack);
   const snapshots=games.map(game=>({game,snapshot:sourceConsumerSnapshot({repoRoot,game})}));
   const packLinks=new Map();
   for(const {game,snapshot} of snapshots){
     const gameId=clean(game.id||game.gameId),linked=new Map();
-    for(const asset of next.assets){
-      if(clean(asset.packId)!==clean(asset.id))continue;
-      const matches=sourceConsumerAssetPaths(asset).filter(assetPath=>snapshot.assetPaths.has(assetPath));
+    for(const asset of packAssets){
+      const meta=sourceMetaByAsset.get(asset);
+      const matches=meta.paths.filter(assetPath=>snapshot.assetPaths.has(assetPath));
       if(matches.length)linked.set(clean(asset.id),matches);
     }
     packLinks.set(gameId,linked);
   }
   const bindings=[],relations=[];
   for(const asset of next.assets){
-    const assetBindings=[],packId=clean(asset.packId),isPack=Boolean(packId&&packId===clean(asset.id));
-    const family=clean(asset.family||asset.category).toUpperCase();
-    const identities=sourceConsumerIdentityTokens(asset);
+    const meta=sourceMetaByAsset.get(asset);
+    const assetBindings=[],packId=meta.packId,isPack=meta.isPack,family=meta.family,identities=meta.identities;
     for(const {game,snapshot} of snapshots){
       const gameId=clean(game.id||game.gameId);
       if(!snapshot.roots.length)continue;
-      const directPaths=sourceConsumerAssetPaths(asset).filter(assetPath=>snapshot.assetPaths.has(assetPath));
+      const directPaths=meta.paths.filter(assetPath=>snapshot.assetPaths.has(assetPath));
       const literalIds=identities.filter(value=>snapshot.usageTokens.has(value.toLowerCase()));
       const managed=identities.filter(value=>snapshot.managedByFamily.get(family)?.has(value.toLowerCase())&&snapshot.usageTokens.has(value.toLowerCase()));
       const linkedPack=packId&&!isPack?packLinks.get(gameId)?.get(packId)||[]:[];
@@ -1218,8 +1227,8 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
 export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),registry=null,persist=true}={}){
   const registryPath=path.join(repoRoot,'company-asset-library.json');
   const original=registry||readJson(registryPath,{version:0,assets:[],externalSources:[]});
-  const next=JSON.parse(JSON.stringify(original));
-  next.assets=Array.isArray(next.assets)?next.assets:[];
+  // 동기화는 asset top-level 필드만 직접 수정하고 중첩 계약은 교체/읽기만 한다. 3MB registry 전체 JSON deep-copy를 피한다.
+  const next={...original,assets:(Array.isArray(original.assets)?original.assets:[]).map(asset=>({...asset}))};
   const gameCatalog=readJson(path.join(repoRoot,'game-catalog.json'),{games:[]});
   const catalogs=commonCatalogFiles(repoRoot).map(file=>({path:path.relative(repoRoot,file).replaceAll('\\','/'),catalog:readJson(file,{})})).filter(row=>row.catalog?.packId);
   const fingerprint=catalogFingerprint(catalogs);
@@ -1496,9 +1505,8 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
 
   const comparableKeys=unique([...Object.keys(original),...Object.keys(next)]).filter(key=>key!=='version'&&key!=='updatedAt').sort();
   const changedSections=comparableKeys.filter(key=>JSON.stringify(original[key])!==JSON.stringify(next[key]));
-  const beforeComparable=JSON.stringify({...original,version:0,updatedAt:null});
-  const afterComparable=JSON.stringify({...next,version:0,updatedAt:null});
-  const changed=beforeComparable!==afterComparable;
+  // changedSections가 version/updatedAt을 제외한 모든 top-level section을 이미 비교하므로 전체 3MB 재직렬화는 중복이다.
+  const changed=changedSections.length>0;
   if(changed){
     next.version=Math.max(0,Number(original.version)||0)+1;
     if(next.internalAssetLibraryAutomation){
@@ -3449,29 +3457,35 @@ export function buildVibeAssetProductionPlan({
     ...(manifestBase?.assets||[]).map(row=>({...row,family:inferUniverseFamily(row),subfamily:clean(row.subfamily||row.type||(row.types||[])[0]).toUpperCase(),status:'REPO_ASSET'}))
   ].filter(row=>clean(row.family||row.category));
   const universeSignals={};
+  const externalReadyFamilies=new Set();
+  for(const row of selectionRegistry?.externalSources||[]){
+    if(!/LICENSE_VERIFIED/.test(clean(row?.status).toUpperCase()))continue;
+    const categories=unique([row?.category,...(Array.isArray(row?.categories)?row.categories:[])]).map(value=>clean(value).toUpperCase());
+    for(const category of categories)externalReadyFamilies.add(category);
+    if(categories.some(category=>['ENVIRONMENT','PROP'].includes(category)))externalReadyFamilies.add('BUILDING');
+    if(categories.some(category=>['VFX','ENVIRONMENT'].includes(category)))externalReadyFamilies.add('MATERIAL');
+  }
+  const verifiedReuseFamilies=new Set((selectionRegistry?.assets||[])
+    .filter(row=>row.verifiedCompanyReusable===true)
+    .map(row=>clean(row.category||row.family).toUpperCase())
+    .filter(Boolean));
   for(const [family,subs] of Object.entries(DEFAULT_COVERAGE_BASELINES)){
     for(const subfamily of Object.keys(subs)){
       const key=family+':'+subfamily;
-      const externalReady=(selectionRegistry?.externalSources||[]).some(row=>{
-        const categories=unique([row?.category,...(Array.isArray(row?.categories)?row.categories:[])]).map(value=>clean(value).toUpperCase());
-        const categoryMatch=categories.includes(family)
-          ||(family==='BUILDING'&&categories.some(category=>['ENVIRONMENT','PROP'].includes(category)))
-          ||(family==='MATERIAL'&&categories.some(category=>['VFX','ENVIRONMENT'].includes(category)));
-        return /LICENSE_VERIFIED/.test(clean(row?.status).toUpperCase())&&categoryMatch;
-      });
-      const verifiedReuse=(selectionRegistry?.assets||[]).some(row=>row.verifiedCompanyReusable===true&&clean(row.category||row.family).toUpperCase()===family);
       universeSignals[key]={
         activeGameDemand:activeDemand[family]?.[subfamily]>0,
         gameConsumerCount:activeDemand[family]?.[subfamily]>0?1:0,
         playerVisibleFrequencyHigh:['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','VFX','UI'].includes(family)&&activeDemand[family]?.[subfamily]>0,
         heroBossLandmark:/보스|BOSS|주인공|HERO|랜드마크|LANDMARK/i.test(request)&&['CHARACTER','CREATURE','BUILDING','ENVIRONMENT'].includes(family),
-        externalSourceReady:externalReady,
-        verifiedReuseAvailable:verifiedReuse
+        externalSourceReady:externalReadyFamilies.has(family),
+        verifiedReuseAvailable:verifiedReuseFamilies.has(family)
       };
     }
   }
   // 동적 연결: 같은 파일은 한 번만 읽고 현재 바이트 지문을 선택 스냅샷에 함께 묶는다.
   const sourceHashes=new Map();
+  let repoRootReal='';
+  try{repoRootReal=fs.realpathSync(repoRoot);}catch{}
   const sourceBoundAssets=(selectionRegistry?.assets||[]).map(asset=>{
     const files=unique(asset.sourceFiles?.length?asset.sourceFiles:[asset.path])
       .map(file=>file.replace(/^\//,''))
@@ -3481,7 +3495,7 @@ export function buildVibeAssetProductionPlan({
       let hash=null;
       try{
         const real=fs.realpathSync(path.resolve(repoRoot,file));
-        if(real.startsWith(fs.realpathSync(repoRoot)+path.sep))hash=crypto.createHash('sha256').update(fs.readFileSync(real)).digest('hex');
+        if(repoRootReal&&real.startsWith(repoRootReal+path.sep))hash=crypto.createHash('sha256').update(fs.readFileSync(real)).digest('hex');
       }catch{}
       sourceHashes.set(file,hash);
     }
