@@ -2,12 +2,14 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {assertGameSeed} from './company-game-seed-contract.mjs';
+import {normalizeGameplaySketch} from './company-game-seed-bootstrap.mjs';
 
 export const CATALOG_FILE='game-catalog.json';
 export const SEED_FILE='game-seed-state.json';
 export const RESET_REVISION='OWNER-ALL-GAMES-DESIGN-RESET-20260917-1';
 export const RESET_SOURCE='OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17';
 export const AUTO_MISSING_DESIGN_SOURCE='AUTO_MISSING_DESIGN_INTAKE_2026-09-25';
+export const HOMEPAGE_NOVEL_GRAMMAR_V4_SOURCE='HOMEPAGE_NOVEL_GRAMMAR_V4_20261007';
 const clean=v=>String(v??'').trim();
 const readJson=(file,fallback)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const writeJson=(file,value)=>fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');
@@ -99,20 +101,61 @@ export function latestVerifiedDesign(root='.',gameId=''){
   }
   return null;
 }
-function baseGameplaySketch(game,coreLoop,category){
-  const description=clean(game?.description)||clean(game?.name)||clean(game?.id);
-  return{
-    version:1,
-    source:'AUTO_MISSING_DESIGN_CATALOG_INTAKE',
-    worldModel:`${description}의 핵심 행동과 목표가 실제 월드·시스템 상태 변화로 연결되는 플레이 공간`,
-    actors:['플레이어: 목표를 읽고 실제 입력으로 핵심 행동을 수행','상대·위협·NPC·월드 엔티티: 플레이어 선택에 실제 상태 변화로 반응'],
-    interactionChains:['대상 또는 공간 선택 -> 실제 입력 -> 대상/월드 상태 변화 -> 보상·위험·목표 변화'],
-    stateMachine:['START_OR_WORLD_ENTRY','REAL_PLAYER_INPUT','CORE_GAMEPLAY_ACTION','OBSERVABLE_STATE_CHANGE','PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE','RISK_FAILURE_OR_RESOURCE_PRESSURE','GOAL_OR_RETRY'],
-    firstPlayableCycle:['월드 또는 세션 진입',coreLoop[0],coreLoop[1],'보상 또는 의미 있는 선택 적용','위험·실패·자원 압박 경험',coreLoop[2]],
-    expansionPlan:['새 적·위협 또는 행동 패턴','새 공간·경로 또는 목표','새 상호작용 또는 전략 결과'],
-    longGoalScenario:['초기 핵심 루프 완료','성장·보상으로 새 선택 개방','새 위협·공간·목표를 거쳐 중간 목표 달성'],
-    validationRisks:['버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다','반복·재시작·대기로 콘텐츠 분량을 채우지 않는다',`장르 ${category}의 핵심 선택이 실제 상태 변화로 이어지는지 검증한다`]
+function homepageWebDesignTarget(game={}){
+  const id=clean(game?.id);
+  const lifecycle=clean(game?.canonical?.lifecycle?.state||game?.lifecycleState||'ACTIVE').toUpperCase();
+  if(!id||!['ACTIVE','REBUILD'].includes(lifecycle))return false;
+  const web=game?.canonical?.sources?.web&&typeof game.canonical.sources.web==='object'?game.canonical.sources.web:{};
+  const state=clean(web.state||game?.ownerWebSourceState).toUpperCase();
+  if(['WITHDRAWN_SIMPLE_PROTOTYPE','NON_GAME_SURFACE','ENTRY_MISSING_OR_INVALID','UNITY_WEB_BUNDLE_INCOMPLETE'].includes(state))return false;
+  const playable=web.playable===true||game?.homepageWebPlayable===true;
+  const archive=web.archive===true||game?.hasWebArchive===true;
+  const raw=clean(web.path||game?.webPath).replace(/^\/+|\/+$/g,'').replace(/\/index\.html$/i,'');
+  return playable&&archive&&raw===`web-games/${id}`;
+}
+function completeNovelGrammarV4(seed={}){
+  const sketch=seed?.GAMEPLAY_SKETCH;
+  const grammar=sketch?.novelGameGrammar;
+  return Number(sketch?.version||0)>=4
+    &&grammar&&typeof grammar==='object'&&!Array.isArray(grammar)
+    &&Array.isArray(grammar.causalDNAs)&&grammar.causalDNAs.length>=2
+    &&grammar.gameplaySystemFusion?.formula==='MAIN × A × B × c'
+    &&Array.isArray(grammar.gameplaySystemFusion?.majorAxes)&&grammar.gameplaySystemFusion.majorAxes.length===2
+    &&Array.isArray(grammar.delveLayer?.elements)&&grammar.delveLayer.elements.length>=4
+    &&grammar.delveLayer?.formulaSuffix==='+ @'
+    &&grammar.emergentGenre?.grammarFormula==='MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @';
+}
+function normalizedHomepageSketch(game,seed){
+  const gameId=clean(game?.id),gameName=clean(game?.name||gameId);
+  const category=clean(seed?.GAME_CATEGORY)||categoryFor(game);
+  const coreLoop=Array.isArray(seed?.CORE_LOOP)&&seed.CORE_LOOP.filter(row=>clean(row)).length>=3
+    ?seed.CORE_LOOP
+    :[
+      `${gameName}의 현재 상황과 목표를 읽고 핵심 행동을 선택한다.`,
+      '실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.',
+      '변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·전략 선택으로 이어간다.'
+    ];
+  const target={requestId:`homepage:${gameId}`,category,materials:[]};
+  const proposal={
+    gameplaySketch:seed?.GAMEPLAY_SKETCH,
+    distinctIdentity:clean(seed?.DISTINCT_IDENTITY)||clean(game?.description)||gameName,
+    coreFunToLearn:Array.isArray(seed?.CORE_FUN_TO_LEARN)?seed.CORE_FUN_TO_LEARN:[],
   };
+  return{category,coreLoop,sketch:normalizeGameplaySketch(target,proposal,coreLoop,gameName)};
+}
+function upgradeHomepageNovelGrammarSeed(seed,game,timestamp){
+  if(completeNovelGrammarV4(seed))return false;
+  const normalized=normalizedHomepageSketch(game,seed);
+  seed.GAME_CATEGORY=normalized.category;
+  seed.CORE_LOOP=normalized.coreLoop;
+  seed.GAMEPLAY_SKETCH=normalized.sketch;
+  seed.homepageNovelGrammarBackfill={version:4,source:HOMEPAGE_NOVEL_GRAMMAR_V4_SOURCE,updatedAt:timestamp};
+  const signals=Array.isArray(seed.designEvolutionSignals)?seed.designEvolutionSignals.filter(row=>clean(row?.id)!==HOMEPAGE_NOVEL_GRAMMAR_V4_SOURCE):[];
+  signals.push({id:HOMEPAGE_NOVEL_GRAMMAR_V4_SOURCE,type:'NOVEL_GRAMMAR_V4_BACKFILL',status:'OPEN',createdAt:timestamp,source:'CURRENT_HOMEPAGE_WEB_GAME'});
+  seed.designEvolutionSignals=signals;
+  seed.updatedAt=timestamp;
+  assertGameSeed(seed);
+  return true;
 }
 export function makeAutoMissingDesignSeed(game,{serial=1,timestamp=new Date().toISOString()}={}){
   const gameId=clean(game?.id),gameName=clean(game?.name||gameId),description=clean(game?.description);
@@ -139,7 +182,7 @@ export function makeAutoMissingDesignSeed(game,{serial=1,timestamp=new Date().to
     ],
     CORE_LOOP:coreLoop,
     DISTINCT_IDENTITY:description||`${gameName}의 장르 정체성과 실제 플레이 상태 변화를 중심으로 독자적인 게임 설계를 자동 생성한다.`,
-    GAMEPLAY_SKETCH:baseGameplaySketch(game,coreLoop,category),
+    GAMEPLAY_SKETCH:normalizeGameplaySketch({requestId:`homepage:${gameId}`,category,materials:[]},{gameplaySketch:null,distinctIdentity:description||`${gameName}의 장르 정체성과 실제 플레이 상태 변화를 중심으로 독자적인 게임 설계를 자동 생성한다.`,coreFunToLearn:[`${gameName}의 실제 플레이 핵심 행동과 선택을 구체화`]},coreLoop,gameName),
     MARKET_EVIDENCE_SUMMARY:{role:'AUTO_MISSING_DESIGN_INTAKE',targetMarketScope:'GLOBAL',hardPassFailGate:false,available:false,note:'Canonical catalog identity seeds the existing design pipeline; strict design review must establish the actual design before gameplay authority resumes.'},
     TARGET_AUDIENCE:genre.length?`${genre.join(' · ')} 플레이를 선호하는 글로벌 플레이어`:`${gameName}의 핵심 플레이를 선호하는 글로벌 플레이어`,
     TARGET_SESSION_DIRECTION:'첫 세션부터 입력, 핵심 행동, 실제 상태 변화, 보상 또는 진행, 위험 또는 실패, 다음 목표가 연결되도록 설계한다.',
@@ -195,28 +238,59 @@ export function autoEnrollMissingDesignSeeds({catalogFile=CATALOG_FILE,seedFile=
     const id=clean(game?.id),life=clean(game?.lifecycleState||game?.canonical?.lifecycle?.state||'ACTIVE').toUpperCase();
     return id&&!removed.has(id)&&['ACTIVE','REBUILD'].includes(life)&&(!targetId||id===targetId);
   });
-  const created=[],reactivated=[],alreadySeeded=[],designPresent=[];
+  const created=[],reactivated=[],alreadySeeded=[],designPresent=[],grammarUpgraded=[],grammarAlreadyCurrent=[];
+  const homepageTargets=games.filter(homepageWebDesignTarget);
   for(const game of games){
     const id=clean(game.id);
-    if(latestUsableDesign(root,id)){designPresent.push(id);continue;}
     const candidates=state.seeds.filter(seed=>clean(seed?.gameId)===id);
-    const active=candidates.find(seed=>!['DISCARDED','REMOVED'].includes(clean(seed?.status).toUpperCase()));
+    let active=candidates.find(seed=>!['DISCARDED','REMOVED'].includes(clean(seed?.status).toUpperCase()));
+    if(homepageWebDesignTarget(game)){
+      if(!active){
+        active=makeAutoMissingDesignSeed(game,{serial:candidates.length+1,timestamp});
+        state.seeds.push(active);
+        created.push(id);
+      }else{
+        if(clean(active.status).toUpperCase()!=='ACTIVE'){
+          active.status='ACTIVE';
+          active.reactivatedBy=AUTO_MISSING_DESIGN_SOURCE;
+          active.updatedAt=timestamp;
+          reactivated.push(id);
+        }
+        if(upgradeHomepageNovelGrammarSeed(active,game,timestamp))grammarUpgraded.push(id);
+        else grammarAlreadyCurrent.push(id);
+      }
+    }
+    if(latestUsableDesign(root,id)){designPresent.push(id);continue;}
     if(active){
-      if(clean(active.status).toUpperCase()!=='ACTIVE'){
-        active.status='ACTIVE';active.reactivatedBy=AUTO_MISSING_DESIGN_SOURCE;active.updatedAt=timestamp;reactivated.push(id);
-      }else alreadySeeded.push(id);
+      if(!created.includes(id)&&!reactivated.includes(id))alreadySeeded.push(id);
       continue;
     }
     const seed=makeAutoMissingDesignSeed(game,{serial:candidates.length+1,timestamp});
-    state.seeds.push(seed);created.push(id);
+    state.seeds.push(seed);
+    created.push(id);
   }
-  if(created.length||reactivated.length){
+  if(created.length||reactivated.length||grammarUpgraded.length){
     state.version=Math.max(2,Number(state.version)||0);
     state.policyDocument='company-learning/platform-release-roadmap.json';
-    state.autoMissingDesignIntake={version:1,source:AUTO_MISSING_DESIGN_SOURCE,updatedAt:timestamp,createdGameIds:created,reactivatedGameIds:reactivated};
+    state.autoMissingDesignIntake={
+      version:2,
+      source:AUTO_MISSING_DESIGN_SOURCE,
+      updatedAt:timestamp,
+      createdGameIds:created,
+      reactivatedGameIds:reactivated,
+      homepageNovelGrammarSource:HOMEPAGE_NOVEL_GRAMMAR_V4_SOURCE,
+      homepageTargetGameIds:homepageTargets.map(game=>clean(game.id)),
+      grammarUpgradedGameIds:grammarUpgraded,
+      grammarAlreadyCurrentGameIds:grammarAlreadyCurrent
+    };
     writeJson(path.join(root,seedFile),state);
   }
-  return{created,reactivated,alreadySeeded,designPresent,eligibleGames:games.map(game=>clean(game.id)),changed:created.length+reactivated.length};
+  return{
+    created,reactivated,alreadySeeded,designPresent,grammarUpgraded,grammarAlreadyCurrent,
+    homepageTargets:homepageTargets.map(game=>clean(game.id)),
+    eligibleGames:games.map(game=>clean(game.id)),
+    changed:created.length+reactivated.length+grammarUpgraded.length
+  };
 }
 export function runOwnerAllGamesDesignReset({catalogFile=CATALOG_FILE,seedFile=SEED_FILE,root='.',timestamp=new Date().toISOString()}={}){
   const catalog=readJson(path.join(root,catalogFile),{games:[]});
@@ -257,6 +331,9 @@ if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
     console.log(`AUTO_MISSING_DESIGN_ALREADY_SEEDED=${result.alreadySeeded.length}`);
     console.log(`AUTO_MISSING_DESIGN_PRESENT=${result.designPresent.length}`);
     console.log(`AUTO_MISSING_DESIGN_CREATED_IDS=${result.created.join(',')||'NONE'}`);
+    console.log(`HOMEPAGE_NOVEL_GRAMMAR_TARGETS=${result.homepageTargets.join(',')||'NONE'}`);
+    console.log(`HOMEPAGE_NOVEL_GRAMMAR_UPGRADED=${result.grammarUpgraded.join(',')||'NONE'}`);
+    console.log(`HOMEPAGE_NOVEL_GRAMMAR_ALREADY_CURRENT=${result.grammarAlreadyCurrent.join(',')||'NONE'}`);
   }else{
     const result=runOwnerAllGamesDesignReset();
     console.log(`OWNER_ALL_GAMES_DESIGN_RESET_COUNT=${result.count}`);
