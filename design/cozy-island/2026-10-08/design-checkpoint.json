@@ -200,26 +200,81 @@
       "steamExpansionDecision": "기존 설계 필드에 기반하여 Steam 플랫폼에 최적화된 게임 패키지 형태로 확장한다. 기존 게임의 기능과 시스템을 유지하면서, Steam의 특성(예: 클라우드 게임, 키보드/마우스 지원, 다양한 플레이어 대상)을 반영한다.",
       "multiplayerMode": "COOP",
       "multiplayerExpansionDecision": "기존 설계 필드에 기반하여 멀티플레이어 확장 계획을 설계한다. 기존 게임의 기능과 시스템을 유지하면서, 멀티플레이어의 특성(예: 서버 권한, RemoteEvent, 병력 지원)을 반영한다."
+    },
+    "designer_draft_slices::alternatives": {
+      "designAlternatives": [
+        {
+          "label": "PLAN_A",
+          "concept": "기본 설계 방향",
+          "playerFantasy": "플레이어는 작은 섬의 주민을 직접 키우고, 나무와 식량을 수집해 왕국을 확장하는 협동 전략가입니다. 주민은 자동화를 통해 생산을 촉진하고, 병사들은 전투력으로 왕국을 확장합니다.",
+          "genreDirection": "힐링, 생활, 낚시",
+          "coreLoopShift": "직접 채집 → 주민 자동화 → 병영/병사 → 거점 점령 → 보상 발동",
+          "mapTopologyRegionRoles": "직접 노동 → 자동화 → 전투력 확장 → 거점 점령 → 보상 발동",
+          "landmarksTraversal": "5개 거점 순차 점령",
+          "enemyEcosystemCounterplay": "다른 플레이어의 병력 지원",
+          "bossSignatureMoments": "자동전투와 점령 보상",
+          "progressionEconomy": "자원 수집 속도와 병력 확장 속도의 균형 유지, 거점 점령 순서의 다양화, 보상의 질과 양의 조절",
+          "questStoryEventFlow": "직접 채집 기능 추가 → 주민 자동화 기능 추가 → 병영/병사 기능 추가",
+          "failureRetryRecovery": "자원 수집 속도 조절 → 병력 확장 속도 조절 → 거점 점령 순서 조정 → 보상 발동 조정",
+          "platformAdaptation": "Roblox 3D 섬 지형에서 지역 기지를 선택하고, 서버 권한 자동전투와 점령 상태를 시각적으로 표시한다.",
+          "implementationScope": "ROBLOX",
+          "validationPlan": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract"
+        },
+        {
+          "label": "PLAN_B",
+          "concept": "다양한 설계 방향",
+          "playerFantasy": "플레이어는 작은 섬의 주민을 직접 키우고, 나무와 식량을 수집해 왕국을 확장하는 협동 전략가입니다. 주민은 자동화를 통해 생산을 촉진하고, 병사들은 전투력으로 왕국을 확장합니다.",
+          "genreDirection": "힐링, 생활, 낚시",
+          "coreLoopShift": "직접 채집 → 주민 자동화 → 병영/병사 → 거점 점령 → 보상 발동",
+          "mapTopologyRegionRoles": "직접 노동 → 자동화 → 전투력 확장 → 거점 점령 → 보상 발동",
+          "landmarksTraversal": "5개 거점 순차 점령",
+          "enemyEcosystemCounterplay": "다른 플레이어의 병력 지원",
+          "bossSignatureMoments": "자동전투와 점령 보상",
+          "progressionEconomy": "자원 수집 속도와 병력 확장 속도의 균형 유지, 거점 점령 순서의 다양화, 보상의 질과 양의 조절",
+          "questStoryEventFlow": "직접 채집 기능 추가 → 주민 자동화 기능 추가 → 병영/병사 기능 추가",
+          "failureRetryRecovery": "자원 수집 속도 조절 → 병력 확장 속도 조절 → 거점 점령 순서 조정 → 보상 발동 조정",
+          "platformAdaptation": "Roblox 3D 섬 지형에서 지역 기지를 선택하고, 서버 권한 자동전투와 점령 상태를 시각적으로 표시한다.",
+          "implementationScope": "ROBLOX",
+          "validationPlan": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract"
+        },
+        {
+          "label": "PLAN_C",
+          "concept": "고급 설계 방향",
+          "playerFantasy": "플레이어는 작은 섬의 주민을 직접 키우고, 나무와 식량을 수집해 왕국을 확장하는 협동 전략가입니다. 주민은 자동화를 통해 생산을 촉진하고, 병사들은 전투력으로 왕국을 확장합니다.",
+          "genreDirection": "힐링, 생활, 낚시",
+          "coreLoopShift": "직접 채집 → 주민 자동화 → 병영/병사 → 거점 점령 → 보상 발동",
+          "mapTopologyRegionRoles": "직접 노동 → 자동화 → 전투력 확장 → 거점 점령 → 보상 발동",
+          "landmarksTraversal": "5개 거점 순차 점령",
+          "enemyEcosystemCounterplay": "다른 플레이어의 병력 지원",
+          "bossSignatureMoments": "자동전투와 점령 보상",
+          "progressionEconomy": "자원 수집 속도와 병력 확장 속도의 균형 유지, 거점 점령 순서의 다양화, 보상의 질과 양의 조절",
+          "questStoryEventFlow": "직접 채집 기능 추가 → 주민 자동화 기능 추가 → 병영/병사 기능 추가",
+          "failureRetryRecovery": "자원 수집 속도 조절 → 병력 확장 속도 조절 → 거점 점령 순서 조정 → 보상 발동 조정",
+          "platformAdaptation": "Roblox 3D 섬 지형에서 지역 기지를 선택하고, 서버 권한 자동전투와 점령 상태를 시각적으로 표시한다.",
+          "implementationScope": "ROBLOX",
+          "validationPlan": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 646378,
-      "lastMs": 82680,
+      "totalMs": 821546,
+      "lastMs": 175168,
       "lastError": null,
-      "updatedAt": "2026-10-07T20:11:56.382Z"
+      "updatedAt": "2026-10-07T20:14:51.551Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T20:01:09.902Z",
-  "updatedAt": "2026-10-07T20:11:56.383Z",
-  "lastSuccessfulModelCallAt": "2026-10-07T20:11:56.382Z",
+  "updatedAt": "2026-10-07T20:14:51.552Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T20:14:51.551Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
