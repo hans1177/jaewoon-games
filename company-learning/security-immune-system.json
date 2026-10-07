@@ -1,5 +1,5 @@
 {
-  "version": 78,
+  "version": 79,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -616,6 +616,11 @@
       "externalAssetRequiresLicenseAndProvenanceGate": true,
       "styleLockDeviationMayRequireRepair": true,
       "directCrossPlatformBinaryReuseForbidden": true,
+      "articulated3DActorFinalAssetRequiresMasterGlb": true,
+      "masterGlbPathHashAndProvenanceRequired": true,
+      "primitiveOnlyCharacterCreatureOrBossCannotPromote": true,
+      "sharedMasterGlbCannotSubstitutePlatformNativeRuntimeVerification": true,
+      "platformNativeVariantMustRemainSeparateFromSharedMaster": true,
       "positiveLearningRequiresVerifiedRuntimePass": true,
       "rawTelemetryDirectTrainingForbidden": true
     },
@@ -987,7 +992,9 @@
       "conversionCompletionRequiresExactSourceRuntimeAndDeploymentEvidence": true,
       "lowQualityScoreMayNotOverrideSafetyOrCompatibility": true,
       "randomSwapOrCountOnlyCannotClaimEvolution": true,
-      "contentExpansionCannotBreakGameIdentityBalanceSaveOrAuthority": true
+      "contentExpansionCannotBreakGameIdentityBalanceSaveOrAuthority": true,
+      "articulated3DActorMasterGlbRequirementCannotBeSatisfiedByMarkersOrPrimitiveAssembly": true,
+      "sharedGlbMasterCannotBypassPlatformNativeRuntimeQa": true
     }
   },
   "existingGameHolisticBackfillSecurity": {
