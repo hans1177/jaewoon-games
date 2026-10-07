@@ -1,3 +1,4 @@
+# 파일명: .github/workflows/company-game-seed-qa.yml
 name: Company GAME_SEED Production QA
 
 on:
@@ -21,6 +22,7 @@ on:
       - '.github/workflows/company-game-seed-bootstrap.yml'
       - '.github/workflows/company-game-seed-qa.yml'
       - 'qa/company-game-seed-flow.test.mjs'
+      - 'qa/company-game-seed-gameplay-sketch.test.mjs'
       - 'qa/company-game-seed-state-file.test.mjs'
       - 'qa/seed-material-dynamic-composition.test.mjs'
       - 'qa/autonomous-portfolio-continuation.test.mjs'
@@ -46,6 +48,7 @@ on:
       - '.github/workflows/company-game-seed-bootstrap.yml'
       - '.github/workflows/company-game-seed-qa.yml'
       - 'qa/company-game-seed-flow.test.mjs'
+      - 'qa/company-game-seed-gameplay-sketch.test.mjs'
       - 'qa/company-game-seed-state-file.test.mjs'
       - 'qa/seed-material-dynamic-composition.test.mjs'
       - 'qa/autonomous-portfolio-continuation.test.mjs'
@@ -92,6 +95,7 @@ jobs:
         run: |
           set -euo pipefail
           node --test qa/company-game-seed-flow.test.mjs
+          node --test qa/company-game-seed-gameplay-sketch.test.mjs
           node --test qa/company-game-seed-state-file.test.mjs
           node --test qa/seed-material-dynamic-composition.test.mjs
           node --test qa/autonomous-portfolio-continuation.test.mjs
