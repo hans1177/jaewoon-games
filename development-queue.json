@@ -2763,7 +2763,7 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "canonicalState": "PRE_F9_VALIDATION_CANDIDATE_DEPLOYED",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T01:24:10.538Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -2793,7 +2793,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-07T09:46:08.595Z",
+      "updatedAt": "2026-10-07T09:48:51.517Z",
       "robloxSourceCommit": "be6b77be052e960f9944e713b44d573e89fd9100",
       "robloxSourceBootstrapPassedAt": "2026-10-07T05:15:04.720Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -3567,7 +3567,7 @@
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
-      "robloxMultiplayerQaPassed": false,
+      "robloxMultiplayerQaPassed": true,
       "robloxIndependentQaPassed": false,
       "robloxIndependentQaPassedAt": null,
       "robloxRegressionPassed": false,
@@ -3586,9 +3586,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED",
       "routingBlockers": [
-        "roblox-runtime-foundation-awaiting-observation"
+        "roblox-first-frame-grounding-unobserved"
       ],
       "robloxExactRevisionPassed": true,
       "robloxMultiplayerQaEvidence": {
@@ -3596,7 +3596,7 @@
         "gameId": "horror-escape-room",
         "sourceRevision": "be6b77be052e960f9944e713b44d573e89fd9100",
         "artifactIdentity": "sha256:565dfabc8acdccc6a22e28eafb53ff34ae354b297727187e9f9a8393e68a03f3",
-        "candidateVersionNumber": 37575388704,
+        "candidateVersionNumber": 9,
         "passed": true,
         "codeContractPassed": true,
         "checks": {
@@ -3608,7 +3608,7 @@
         },
         "runtimeTwoClientExecutionRequired": false,
         "authority": "roblox-static-two-client-source-contract",
-        "verifiedAt": "2026-10-07T08:40:55.655Z"
+        "verifiedAt": "2026-10-07T09:48:51.517Z"
       },
       "robloxMultiplayerQaPassedAt": "2026-10-07T08:40:55.655Z",
       "robloxStudioRuntimeSession": {
@@ -4642,7 +4642,36 @@
       "robloxBuildUpAssetSourceUsageLibraryVersion": 120,
       "robloxBuildAssetSelectionFingerprint": "93c0a9d6106e7f331c4771f576a8ea28483edc02d8d27826b15980a94e54e1c9",
       "robloxBuildAssetLibraryVersion": 120,
-      "robloxCloudImageEvidence": null
+      "robloxCloudImageEvidence": null,
+      "robloxFirstFrameGroundingEvidence": {
+        "observed": true,
+        "runtimeWorldReady": false,
+        "startupWaitSeconds": 8.24,
+        "basePartCount": 1,
+        "spawnCount": 0,
+        "spawnsInBounds": false,
+        "markerSpawnCount": 0,
+        "spawnGroundingObserved": false,
+        "unsupportedSpawns": 0,
+        "floatingSpawns": 0,
+        "maximumSpawnGroundGap": 0,
+        "meshPartCount": 0,
+        "graphicsEvidenceScope": "ENGINE_SCENE_STRUCTURE_NOT_RENDERED_SCREENSHOT",
+        "finiteWorldBounds": true,
+        "boundsSize": {
+          "x": 2044,
+          "y": 252,
+          "z": 2044
+        },
+        "landmarkCount": 0,
+        "objectiveCount": 0,
+        "terrainPresent": true,
+        "lightingAtmospherePresent": false,
+        "streamingEnabled": false,
+        "scanCapped": false,
+        "worldGeometryPresent": true,
+        "sameLuauExecutionSession": true
+      }
     },
     {
       "gameId": "amusement-tycoon",
@@ -45956,7 +45985,7 @@
       "robloxCloudImageEvidence": null
     }
   ],
-  "updatedAt": "2026-10-07T09:48:48.345Z",
+  "updatedAt": "2026-10-07T09:48:51.517Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
