@@ -68,6 +68,14 @@ test('asset homepage automatically publishes new entries, preserves selection, e
 });
 
 
+test('asset registry signature is cached across 304 refreshes',()=>{
+ const script=fs.readFileSync('assets/asset-library.js','utf8');
+ assert.match(script,/registryViewSignature=''/);
+ assert.match(script,/nextRegistry===registry\?registryViewSignature:registrySignature\(nextRegistry\)/);
+ assert.match(script,/registryViewSignature!==nextRegistrySignature/);
+ assert.doesNotMatch(script,/registrySignature\(registry\)!==registrySignature\(nextRegistry\)/);
+});
+
 test('common character assets use the 3D R15 motion viewer instead of image fallback',()=>{
  const page=fs.readFileSync('asset-library.html','utf8');
  const script=fs.readFileSync('assets/asset-library.js','utf8');
