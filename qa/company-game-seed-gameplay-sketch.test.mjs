@@ -276,3 +276,21 @@ test('GAMEPLAY_SKETCH v4 creates emergent genre from material grammar × MAIN×A
   assert.equal(fail.pass,false);
   assert.ok(fail.errors.some(error=>error.includes('not a general system axis')));
 });
+
+
+test('initial GAME_SEED prompt has expanded capacity, UI flow, and detailed MAIN A B c @ grammar',()=>{
+  const source=fs.readFileSync('tools/company-game-seed-bootstrap.mjs','utf8');
+  assert.match(source,/num_ctx:24576,num_predict:8192/);
+  assert.match(source,/const TEXT=\{type:'string',maxLength:1800\}/);
+  assert.match(source,/const SKETCH_ITEM=\{type:'string',minLength:1,maxLength:560\}/);
+  assert.match(source,/UI_INTERACTION_PLAN_SCHEMA/);
+  assert.match(source,/uiInteractionPlan:UI_INTERACTION_PLAN_SCHEMA/);
+  assert.match(source,/초기 GAMEPLAY_SKETCH는 요약본이 아니라 이후 DESIGN이 그대로 확장할 수 있는 상세 설계 원본/);
+  assert.match(source,/MAIN은 실제 입력·반복 이유·즉시 상태 변화·피드백·다음 선택/);
+  assert.match(source,/A\/B 각각은 자신이 소유하는 상태·플레이어 선택·MAIN과 주고받는 입력\/출력/);
+  assert.match(source,/c 서브요소는 최소 2개/);
+  assert.match(source,/@ 요소는 최소 4개 모두 발견 조건·숙련 통찰·실제 플레이 효과·연결 대상/);
+  assert.match(source,/mainMenu에는 플레이·성장\/장비·설정/);
+  assert.match(source,/buttons에는 주 행동·보조 행동·뒤로가기·위험 확인/);
+  assert.match(source,/MATERIAL_CAUSAL_GRAMMAR × \(MAIN × A × B × c\) \+ @/);
+});
