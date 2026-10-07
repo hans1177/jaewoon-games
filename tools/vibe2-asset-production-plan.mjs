@@ -1532,8 +1532,9 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
   const requestedDccScope=explicitRecipeHasUntyped
     ?dccCapableTypes
     :unique([...(explicitRequestedTypes||[]),...explicitRecipeTypes].map(value=>clean(value).toLowerCase()).filter(Boolean));
+  const mandatoryActorGlbTypes=dccCapableTypes.filter(type=>/^(?:character|player|npc|enemy|boss|creature|monster)$/.test(type));
   const automaticDccTypes=engineNativeTarget&&!internalMotion
-    ?dccCapableTypes.filter(type=>requestedDccScope.includes(type))
+    ?dccCapableTypes.filter(type=>requestedDccScope.includes(type)||mandatoryActorGlbTypes.includes(type))
     :[];
   const declaredDccTypes=engineNativeTarget?explicitRecipeTypes:[];
   const nativeTextKinds=targetName==='roblox'?ROBLOX_DIRECT_AUTHORING:targetName==='unity'?UNITY_DIRECT_AUTHORING:webNativeTarget?WEB_DIRECT_AUTHORING:[];
@@ -1680,7 +1681,7 @@ const COMPANY_CATEGORY_TYPES=freeze({
 
 function verifiedCompanyManifestAssets(registry={}){
   return (Array.isArray(registry?.assets)?registry.assets:[])
-    .filter(asset=>asset?.verifiedCompanyReusable===true||/^VERIFIED_COMPANY_/.test(clean(asset?.status).toUpperCase()))
+    .filter(asset=>asset?.verifiedCompanyReusable===true||/^VERIFIED_COMPANY_/.test(clean(asset?.status).toUpperCase())||asset?.crossPlatformMasterSource===true)
     .map(asset=>({
       ...asset,
       id:clean(asset.id),
@@ -1689,7 +1690,8 @@ function verifiedCompanyManifestAssets(registry={}){
       tags:Array.isArray(asset.tags)?asset.tags:[clean(asset.title),clean(asset.category)].filter(Boolean),
       platforms:Array.isArray(asset.platforms)?asset.platforms:(clean(asset.platform)&&!/^SHARED|WEB_/i.test(clean(asset.platform))?[clean(asset.platform).toLowerCase()]:[]),
       downloaded:true,
-      companyVerified:true,
+      companyVerified:asset?.verifiedCompanyReusable===true||/^VERIFIED_COMPANY_/.test(clean(asset?.status).toUpperCase()),
+      crossPlatformMasterSource:asset?.crossPlatformMasterSource===true,
       source:clean(asset.source)||'COMPANY_ASSET_LIBRARY'
     }))
     .filter(asset=>asset.id);
@@ -1703,6 +1705,7 @@ function mergeManifestWithCompanyLibrary(manifest={},registry={}){
 }
 
 function sourceTierFor(asset={}){
+  if(asset?.crossPlatformMasterSource===true)return 'SHARED_GLB_MASTER_SOURCE';
   if(asset?.sameGameExistingRoblox===true)return 'SAME_GAME_EXISTING_ROBLOX_ASSET';
   if(asset?.companyVerified===true)return 'VERIFIED_COMPANY_ASSET';
   const assetPath=clean(asset.path);
@@ -1715,6 +1718,8 @@ function sourceTierFor(asset={}){
 function assetTargetCompatible(asset={},target=''){
   const resolvedTarget=clean(target).toLowerCase();
   const assetPath=clean(asset.path).replaceAll('\\\\','/');
+  const masterGlb=clean(asset?.masterGlb||asset?.meshArtifact||asset?.masterSourcePath).replaceAll('\\\\','/');
+  if(asset?.crossPlatformMasterSource===true&&/\.glb$/i.test(masterGlb))return ['roblox','unity','web'].includes(resolvedTarget);
   const platforms=(Array.isArray(asset.platforms)?asset.platforms:[]).map(value=>clean(value).toLowerCase()).filter(Boolean);
   const researchTargets=(Array.isArray(asset.platformResearchTargets)?asset.platformResearchTargets:[]).map(value=>clean(value).toLowerCase()).filter(Boolean);
   if(resolvedTarget==='web'){
@@ -1738,7 +1743,7 @@ function assetTargetCompatible(asset={},target=''){
   return false;
 }
 
-function matchedForType(selector={},type='',manifest={},target=''){
+function matchedForType(selector={},type='',manifest={},target='',repoRoot=process.cwd()){
   const assets=Array.isArray(manifest?.assets)?manifest.assets:[];
   const byId=new Map(assets.map(asset=>[clean(asset?.id),asset]));
   const selectedRows=(selector.matched||[]).filter(row=>clean(row.type)===clean(type));
@@ -1754,9 +1759,13 @@ function matchedForType(selector={},type='',manifest={},target=''){
   };
   const normalize=(row,adaptationBaseOnly=false)=>{
     const asset=byId.get(clean(row.id))||row;
+    const actorFamily=clean(asset?.family||asset?.category).toUpperCase();
+    const masterGlbQa=evaluateCrossPlatform3dMasterGlb({repoRoot,source:asset,family:actorFamily,role:type});
+    const crossPlatformMasterSource=asset?.crossPlatformMasterSource===true;
+    const resolvedPath=crossPlatformMasterSource&&masterGlbQa.pass===true?clean(masterGlbQa.path):clean(row.path||asset.path);
     return freeze({
       id:clean(row.id||asset.id),
-      path:clean(row.path||asset.path)||null,
+      path:resolvedPath||null,
       license:clean(row.license||asset.license)||null,
       source:clean(row.source||asset.source)||null,
       sourceUrl:clean(asset.sourceUrl)||null,
@@ -1771,8 +1780,8 @@ function matchedForType(selector={},type='',manifest={},target=''){
       companyVerified:asset.companyVerified===true,
       sameGameExistingRoblox:asset.sameGameExistingRoblox===true,
       robloxAssetId:clean(asset.robloxAssetId)||null,
-      sourceHash:clean(asset.sourceHash||asset.sourceSha256||asset.contentHash||asset.sha256)||null,
-      artifactHash:clean(asset.artifactHash||asset.derivedSha256||asset.contentHash||asset.sha256)||null,
+      sourceHash:clean(asset.sourceHash||asset.sourceSha256||asset.contentHash||asset.sha256||masterGlbQa.sourceHash)||null,
+      artifactHash:clean(asset.artifactHash||asset.derivedSha256||asset.contentHash||asset.sha256||asset.masterGlbHash||masterGlbQa.sourceHash)||null,
       sourceFiles:freezeList(unique(Array.isArray(asset.sourceFiles)?asset.sourceFiles:[])),
       nativeArtifacts:freezeList(unique(Array.isArray(asset.nativeArtifacts)?asset.nativeArtifacts:[])),
       tags:freezeList(unique([...(Array.isArray(asset.tags)?asset.tags:[]),clean(asset.family),clean(asset.category),clean(asset.subfamily)].map(clean).filter(Boolean))),
@@ -1784,17 +1793,29 @@ function matchedForType(selector={},type='',manifest={},target=''){
       studioMotionCandidate:asset.studioMotionCandidate===true,
       creatureFamily:clean(asset.creatureFamily)||null,
       compatibleMotionSourceIds:freezeList(asset.compatibleMotionSourceIds||[]),
+      masterGlb:clean(asset.masterGlb||asset.meshArtifact||masterGlbQa.path)||null,
+      masterGlbHash:clean(asset.masterGlbHash||asset.masterGlbSha256||masterGlbQa.sourceHash)||null,
+      masterGlbStaticQaPass:masterGlbQa.required?masterGlbQa.pass:null,
+      masterGlbBlockers:freezeList(masterGlbQa.blockers||[]),
+      crossPlatformMasterSource,
       adaptationBaseOnly,
       finalUseStillRequiresOriginalSelectorContract:adaptationBaseOnly,
       targetCompatible:true
     });
   };
 
+  const selectedMasterBases=selectedRows
+    .filter(row=>{
+      const asset=byId.get(clean(row.id))||row;
+      return asset?.crossPlatformMasterSource===true&&assetTargetCompatible(asset,target);
+    })
+    .map(row=>normalize(row,true));
+
   const finalCandidates=selectedRows
     .filter(row=>assetTargetCompatible(byId.get(clean(row.id))||row,target))
     .filter(row=>{
       const asset=byId.get(clean(row.id))||row;
-      return asset.referenceOnly!==true&&!/_REFERENCE(?:_ONLY)?$/.test(clean(asset.platform).toUpperCase());
+      return asset?.crossPlatformMasterSource!==true&&asset.referenceOnly!==true&&!/_REFERENCE(?:_ONLY)?$/.test(clean(asset.platform).toUpperCase());
     })
     .map(row=>normalize(row,false));
 
@@ -1803,11 +1824,11 @@ function matchedForType(selector={},type='',manifest={},target=''){
     .filter(asset=>declaredFor(asset).includes(clean(type).toLowerCase()))
     .filter(asset=>!licenseBlocked(asset))
     .filter(asset=>assetTargetCompatible(asset,target))
-    .filter(asset=>asset.referenceOnly!==true&&!/_REFERENCE(?:_ONLY)?$/.test(clean(asset.platform).toUpperCase()))
+    .filter(asset=>asset?.crossPlatformMasterSource===true||(asset.referenceOnly!==true&&!/_REFERENCE(?:_ONLY)?$/.test(clean(asset.platform).toUpperCase())))
     .map(asset=>normalize(asset,true));
 
   const deduped=new Map();
-  for(const row of [...finalCandidates,...authoringBases])if(row.id&&!deduped.has(row.id))deduped.set(row.id,row);
+  for(const row of [...selectedMasterBases,...finalCandidates,...authoringBases])if(row.id&&!deduped.has(row.id))deduped.set(row.id,row);
   return freezeList([...deduped.values()]);
 }
 const BASE_MATERIAL_FAMILIES_BY_ASSET_TYPE=Object.freeze({
@@ -2143,12 +2164,14 @@ function assetApplyFirstCandidate(asset={},target='',binding={}){
   const platform=clean(target).toLowerCase();
   const variant=asset?.platformVariants?.[platform.toUpperCase()]||asset?.platformVariants?.[platform]||null;
   const sameGame=asset.sameGameExistingRoblox===true&&platform==='roblox';
+  const requestedType=clean(binding?.type).toLowerCase();
+  const masterGlbRequired=/^(?:character|player|npc|enemy|boss|creature|monster)$/.test(requestedType);
+  const masterGlbReady=!masterGlbRequired||asset.masterGlbStaticQaPass===true;
   const hasNativeReference=Boolean(sameGame&&(asset.path||asset.robloxAssetId)||variant?.path||asset.path||asset.robloxAssetId);
-  const nativeReady=Boolean(sameGame||variant?.path||asset.productionVerified===true);
-  const adaptable=Boolean(!nativeReady&&hasNativeReference&&(asset.retargetable===true||asset.rigType||asset.sourceHash));
+  const nativeReady=Boolean(masterGlbReady&&asset.crossPlatformMasterSource!==true&&(sameGame||variant?.path||asset.productionVerified===true));
+  const adaptable=Boolean(masterGlbReady&&!nativeReady&&hasNativeReference&&(asset.retargetable===true||asset.rigType||asset.sourceHash));
   const lane=nativeReady?(sameGame?'A_SAME_GAME_BOUND':'B_NATIVE_READY'):adaptable?'C_MINIMAL_ADAPT':'D_AUTHORING_REQUIRED';
   const bindingCost=lane==='A_SAME_GAME_BOUND'?0:lane==='B_NATIVE_READY'?1:lane==='C_MINIMAL_ADAPT'?2:3;
-  const requestedType=clean(binding?.type).toLowerCase();
   const roleTokens=unique([requestedType,...(binding?.targetStates||[]).map(clean)]).map(value=>value.toLowerCase()).filter(Boolean);
   const tags=(asset.tags||[]).map(value=>clean(value).toLowerCase());
   const roleMatches=roleTokens.filter(token=>tags.some(tag=>tag.includes(token)||token.includes(tag))).length;
@@ -2183,7 +2206,12 @@ function assetApplyFirstCandidate(asset={},target='',binding={}){
     acquiredExternal:asset.acquiredExternal===true,
     acquisitionOrigin:asset.acquisitionOrigin||null,
     productionVerified:asset.productionVerified===true,
-    ready:Boolean(hasNativeReference&&asset.downloaded!==false&&lane!=='D_AUTHORING_REQUIRED'),
+    ready:Boolean(masterGlbReady&&hasNativeReference&&asset.downloaded!==false&&lane!=='D_AUTHORING_REQUIRED'),
+    masterGlbRequired,
+    masterGlbReady,
+    masterGlb:asset.masterGlb||null,
+    masterGlbHash:asset.masterGlbHash||null,
+    crossPlatformMasterSource:asset.crossPlatformMasterSource===true,
     adaptationAllowed:true,
     adaptationAxes:freezeList(lane==='C_MINIMAL_ADAPT'?['RIG_RETARGET','MATERIAL_REMAP','SOCKET_REBIND','SCALE_AXIS_PIVOT_NORMALIZE','LOD_GENERATION']:[]),
     qualityPassRequiredBeforeKeep:true,
@@ -2369,7 +2397,7 @@ function createPostDownloadInternalComparison({matched=[],target='',binding={},c
 function decisionFor(selector={},target='',binding={},manifest={},conceptContext={}){
   const type=clean(binding.type);
   const qualityDNA=qualityDnaForType(type);
-  const matched=matchedForType(selector,type,manifest,target);
+  const matched=matchedForType(selector,type,manifest,target,conceptContext.repoRoot||process.cwd());
   const sameGameCandidates=freezeList(matched.filter(asset=>asset.sourceTier==='SAME_GAME_EXISTING_ROBLOX_ASSET'));
   const companyCandidates=freezeList(matched.filter(asset=>asset.sourceTier==='VERIFIED_COMPANY_ASSET'));
   const repositoryCandidates=freezeList(matched.filter(asset=>asset.sourceTier==='LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET'));
@@ -3082,7 +3110,7 @@ export function buildVibeAssetProductionPlan({
     presetCatalog:presetInput,
     rebuild:/FULL_WEB_GAME_REBUILD/i.test(request)
   });
-  const decisions=freezeList((selector.binding||[]).map(binding=>decisionFor(selector,resolvedTarget,binding,manifestInput,{task,requestedConcept})));
+  const decisions=freezeList((selector.binding||[]).map(binding=>decisionFor(selector,resolvedTarget,binding,manifestInput,{task,requestedConcept,repoRoot})));
   const highEnd=highEndVisualContract(repoRoot);
   const highEndActive=highEnd?.status==='ACTIVE_EXECUTABLE_CONTRACT';
   const modelRouting=buildAssetModelRouting({task,request,decisions,highEndActive});
