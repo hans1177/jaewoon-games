@@ -5333,6 +5333,55 @@ test('real horror-escape-room source fixture resolves project pack identity and 
   assert.ok(result.summary.gameSummaries[0].currentConsumers>=2);
 });
 
+test('source consumer summary accumulates current intended and family counts without rescanning all assets per game',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-consumer-summary-index-'));
+  try{
+    const registry={assets:[
+      {id:'used-prop',family:'PROP',consumerGameIds:['demo']},
+      {id:'intended-audio',family:'AUDIO',intendedConsumerGameIds:['demo']},
+      {id:'other-creature',family:'CREATURE',consumerGameIds:['other'],intendedConsumerGameIds:['demo']}
+    ]};
+    const result=synchronizeSourceBoundAssetConsumers({
+      repoRoot:root,
+      registry,
+      gameCatalog:{games:[{id:'demo',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'}]}
+    });
+    const summary=result.summary.gameSummaries[0];
+    assert.equal(summary.gameId,'demo');
+    assert.equal(summary.currentConsumers,1);
+    assert.equal(summary.intendedOnly,2);
+    assert.deepEqual(summary.families,{PROP:{used:1,missing:0,repair:0}});
+    assert.equal(result.summary.intendedOnlyAssetCount,1);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('asset consumer summaries use id family and game indexes instead of nested registry rescans',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const source=fs.readFileSync(path.resolve(here,'../tools/vibe2-asset-production-plan.mjs'),'utf8');
+  const supplyStart=source.indexOf('export function buildAssetSupplyDecisionSummary');
+  const supplyEnd=source.indexOf('function sourceConsumerEligibleGame',supplyStart);
+  const supplySource=source.slice(supplyStart,supplyEnd);
+  assert.match(supplySource,/currentAssetIds=new Set\(\)/);
+  assert.match(supplySource,/reusableByFamily=new Map\(\)/);
+  assert.match(supplySource,/assetById=new Map\(\)/);
+  assert.match(supplySource,/currentAssetIds\.has\(clean\(action\.assetId\)\)/);
+  assert.match(supplySource,/assetById\.get\(clean\(action\.assetId\)\)/);
+  assert.match(supplySource,/reusableByFamily\.get\(family\)\|\|\[\]/);
+  assert.doesNotMatch(supplySource,/currentAssets\.some\(/);
+  assert.doesNotMatch(supplySource,/assets\.find\(/);
+  assert.doesNotMatch(supplySource,/const candidates=assets\.filter\(/);
+
+  const syncStart=source.indexOf('export function synchronizeSourceBoundAssetConsumers');
+  const syncEnd=source.indexOf('export function synchronizeCompanyCommonAssetRegistry',syncStart);
+  const syncSource=source.slice(syncStart,syncEnd);
+  assert.match(syncSource,/consumerSummaryByGameId=new Map/);
+  assert.match(syncSource,/aggregate\.currentConsumers\+=1/);
+  assert.match(syncSource,/aggregate\.intendedOnly\+=1/);
+  const gameSummaryStart=syncSource.indexOf('const gameSummaries=snapshots.map');
+  assert.ok(gameSummaryStart>=0);
+  assert.doesNotMatch(syncSource.slice(gameSummaryStart),/next\.assets\.filter\(/);
+});
+
 test('demand-bound asset supply uses five decisions and holds quantity-only library work',()=>{
   const registry={assets:[
     {id:'used-creature',family:'CREATURE',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',sourceBoundConsumerGameIds:['demo'],internalAuditScore:700},
