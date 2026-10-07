@@ -1,5 +1,5 @@
 {
-  "version": 545,
+  "version": 546,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-07",
@@ -16,7 +16,7 @@
       "WEB": 1
     },
     "minimumPlatformDevelopment": {
-      "UNITY": "ONE_SLOT_WHEN_CAPACITY_AND_ELIGIBLE",
+      "UNITY": "OWNER_HOLD_NO_NEW_ASSIGNMENTS",
       "WEB": "TWO_DISTINCT_ACTIVE_GAMES_WHEN_ELIGIBLE_AND_CAPACITY_AVAILABLE"
     },
     "smallCapacitySelection": "WEIGHTED_OBSERVED_SERVICE_ROTATION",
@@ -38,7 +38,7 @@
   "priorityMeaning": "UNITY_WEB_UPPER_PLATFORM_READINESS_PASS_STARTS_ROBLOX_AND_UNITY_NATIVE_IMPLEMENTATIONS_FOR_THE_SAME_GAME",
   "developmentAccess": {
     "ROBLOX": "ALWAYS_ALLOWED",
-    "UNITY": "ALWAYS_ALLOWED",
+    "UNITY": "OWNER_HOLD",
     "FORTNITE_UEFN": "OWNER_HOLD"
   },
   "crossPlatformDevelopmentLockedByPhase": false,
@@ -25214,7 +25214,10 @@
       "unityWorkDeferredUntilRobloxApplicationPathIsVerified": true,
       "preserveExistingDualPlatformArchitecture": true,
       "noNewPipeline": true
-    }
+    },
+    "unityDevelopmentStatus": "OWNER_HOLD",
+    "unityStatusLabel": "개발보류",
+    "ownerPlatformHoldOverridesConcurrentPairing": true
   },
   "centralDocumentation": {
     "version": 4,
@@ -28043,5 +28046,20 @@
       "UNITY",
       "WEB"
     ]
+  },
+  "unityDevelopmentHold": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-10-07",
+    "status": "OWNER_HOLD",
+    "statusLabel": "개발보류",
+    "scope": "NEW_UNITY_DEVELOPMENT_ASSIGNMENTS_AND_NEW_UNITY_RUNTIME_DISPATCH",
+    "newDevelopmentAssignmentsBlocked": true,
+    "newRuntimeDispatchBlocked": true,
+    "existingUnitySourceArtifactsAndVerifiedEvidencePreserved": true,
+    "existingRunningSafeWorkNotForceCancelled": true,
+    "robloxDevelopmentUnaffected": true,
+    "homepagePublishedWebDesignGraphicsAssetAuditAllowed": true,
+    "homepagePublishedWebMaintenanceAllowed": true,
+    "resumeRequiresExplicitOwnerDirective": true
   }
 }
