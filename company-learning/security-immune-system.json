@@ -621,6 +621,9 @@
       "primitiveOnlyCharacterCreatureOrBossCannotPromote": true,
       "sharedMasterGlbCannotSubstitutePlatformNativeRuntimeVerification": true,
       "platformNativeVariantMustRemainSeparateFromSharedMaster": true,
+      "npcCompanionEliteAndBossRoleProfilesRequireDistinctVisualAndMotionEvidence": true,
+      "colorOnlyNpcRoleCloneCannotPromote": true,
+      "roleSpecificActorPresentationCannotMutateGameplayStatsAiAuthorityOrHitRules": true,
       "positiveLearningRequiresVerifiedRuntimePass": true,
       "rawTelemetryDirectTrainingForbidden": true
     },
