@@ -126,10 +126,12 @@ test('detailed verified design fields survive into build-up and implementation p
   assert.match(directivePrompt(directive),/온실 단서 조사/);
   assert.match(directivePrompt(directive),/WEB_DETAILED_GAME_ORIGINAL/);
   assert.match(directivePrompt(directive),/NO_ARTIFICIAL_PARITY_LIMIT_WITHIN_SHARED_LARGE_FRAME/);
-  assert.match(directivePrompt(directive),/세부 parity 제한을 두지 않는다/);
+  assert.match(directivePrompt(directive),/WEB 개발 요청은 독립 브라우저 게임 소스가 아니라 UNITY_WEB 실행면으로 처리한다/);
+  assert.match(directivePrompt(directive),/unity-games\/<gameId>\/의 실제 Unity C#/);
+  assert.match(directivePrompt(directive),/web-games\/<gameId>\/는 생성된 WebGL 빌드 산출물과 런타임 검증 증거만 보관/);
   const unityDirective=buildGameSpecificBuildUpDirective({gameId:'detail-lineage',gameName:'상세 설계',platform:'UNITY',designRecord:detailed,sourceObservation,responsibleFiles:['roblox-games/detail-lineage/Game.luau']});
-  assert.match(directivePrompt(unityDirective),/Unity 전용 시스템·콘텐츠·지역·물리·카메라·애니메이션·세션 구조·UX·연출 확장/);
-  assert.match(directivePrompt(unityDirective),/인위적 parity 제한을 두지 않는다/);
+  assert.match(directivePrompt(unityDirective),/unity-games\/<gameId>\/의 canonical Unity C# 프로젝트에서 구현/);
+  assert.match(directivePrompt(unityDirective),/Unity App과 Unity WebGL은 같은 핵심 게임플레이·UI·저장 의미를 공유/);
 });
 
 test('existing UI without entry or loading flow becomes a cross-platform build-up gap',()=>{
