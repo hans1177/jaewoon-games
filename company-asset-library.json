@@ -112,8 +112,18 @@
     "crossPlatform3dMasterGlbRoles": [
       "PLAYER",
       "NPC",
+      "COMPANION",
+      "ALLY",
+      "CIVILIAN",
+      "VENDOR",
+      "QUEST_GIVER",
+      "TRAINER",
       "ENEMY",
+      "ELITE",
       "CREATURE",
+      "PET",
+      "MOUNT",
+      "SUMMON",
       "BOSS"
     ],
     "crossPlatform3dMasterGlbRequiredContents": [
@@ -129,7 +139,28 @@
     "primitivePartAssemblyPrototypeOnlyFor3dActors": true,
     "primitiveOrColorOnly3dActorCannotClaimFinalAsset": true,
     "previewImageSemanticAtomOrMarkerCannotSubstituteMasterGlb": true,
-    "masterGlbPlatformDerivativeBindingRequired": true
+    "masterGlbPlatformDerivativeBindingRequired": true,
+    "crossPlatform3dMasterGlbRoleFamilies": {
+      "CHARACTER": [
+        "PLAYER",
+        "NPC",
+        "COMPANION",
+        "ALLY",
+        "CIVILIAN",
+        "VENDOR",
+        "QUEST_GIVER",
+        "TRAINER"
+      ],
+      "CREATURE": [
+        "ENEMY",
+        "ELITE",
+        "CREATURE",
+        "PET",
+        "MOUNT",
+        "SUMMON",
+        "BOSS"
+      ]
+    }
   },
   "platformPacks": [
     {
@@ -1131,7 +1162,8 @@
           ],
           "targetPlatforms": [
             "roblox",
-            "unity"
+            "unity",
+            "web"
           ],
           "args": [
             "--output",
@@ -1146,7 +1178,15 @@
           "evidenceJson": "assets/roblox/world-ghosts/native/spider/evidence.json",
           "preview": "assets/roblox/world-ghosts/native/spider/spider.png",
           "runMode": "VERIFY_ONLY",
-          "masterGlbRequired": true
+          "masterGlbRequired": true,
+          "actorRoles": [
+            "ENEMY",
+            "ELITE",
+            "CREATURE",
+            "PET",
+            "SUMMON",
+            "BOSS"
+          ]
         }
       ]
     },
@@ -66394,8 +66434,18 @@
       "appliesToRoles": [
         "PLAYER",
         "NPC",
+        "COMPANION",
+        "ALLY",
+        "CIVILIAN",
+        "VENDOR",
+        "QUEST_GIVER",
+        "TRAINER",
         "ENEMY",
+        "ELITE",
         "CREATURE",
+        "PET",
+        "MOUNT",
+        "SUMMON",
         "BOSS"
       ],
       "requiredBeforePlatformNativeVariant": true,
@@ -66415,7 +66465,30 @@
         "WEB": "MASTER_GLB_OR_DERIVED_GLTF_RUNTIME_BINDING"
       },
       "primitivePartAssemblyPrototypeOnly": true,
-      "platformNativeRuntimeVerificationStillRequired": true
+      "platformNativeRuntimeVerificationStillRequired": true,
+      "roleFamilies": {
+        "CHARACTER": [
+          "PLAYER",
+          "NPC",
+          "COMPANION",
+          "ALLY",
+          "CIVILIAN",
+          "VENDOR",
+          "QUEST_GIVER",
+          "TRAINER"
+        ],
+        "CREATURE": [
+          "ENEMY",
+          "ELITE",
+          "CREATURE",
+          "PET",
+          "MOUNT",
+          "SUMMON",
+          "BOSS"
+        ]
+      },
+      "roleSpecificAppearanceAndMotionVariantsAllowed": true,
+      "colorOnlyRoleCloneDoesNotCountAsDistinctActor": true
     }
   },
   "baseMaterialLibrary": {
