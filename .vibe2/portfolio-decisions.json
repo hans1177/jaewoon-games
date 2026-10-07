@@ -1,7 +1,7 @@
 {
   "version": 1,
   "authority": "PRIMARY_AI_AND_VIBE_JOINT",
-  "generatedAt": "2026-10-07T02:55:44.206Z",
+  "generatedAt": "2026-10-07T02:59:18.099Z",
   "decisions": [
     {
       "gameId": "ant-simulator",
@@ -138,7 +138,7 @@
           "activeTasks": 16,
           "doneTasks": 0,
           "failedTasks": 0,
-          "repeatedFailureSignal": 28
+          "repeatedFailureSignal": 29
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": true
@@ -228,7 +228,7 @@
           "activeTasks": 5,
           "doneTasks": 0,
           "failedTasks": 0,
-          "repeatedFailureSignal": 25
+          "repeatedFailureSignal": 26
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": true
@@ -288,7 +288,7 @@
           "activeTasks": 5,
           "doneTasks": 0,
           "failedTasks": 0,
-          "repeatedFailureSignal": 22
+          "repeatedFailureSignal": 23
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": true
@@ -438,7 +438,7 @@
           "activeTasks": 6,
           "doneTasks": 0,
           "failedTasks": 0,
-          "repeatedFailureSignal": 25
+          "repeatedFailureSignal": 26
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": true
@@ -529,36 +529,6 @@
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 22
-        },
-        "qa": {
-          "criticalRuntimeOrGateBlocker": true
-        },
-        "balance": {
-          "structuralCoreFailure": false
-        },
-        "graphicsAudio": {
-          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
-        }
-      },
-      "jointAuthority": "PRIMARY_AI_AND_VIBE",
-      "ownerApprovalGate": false
-    },
-    {
-      "gameId": "card-grid-duel",
-      "decision": "FOCUSED_REPAIR",
-      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "evidence": {
-        "planningGrowthMarketing": {
-          "packagePresent": false,
-          "state": "UNVERIFIED_NOT_NEGATIVE"
-        },
-        "development": {
-          "activeTasks": 1,
-          "doneTasks": 0,
-          "failedTasks": 0,
-          "repeatedFailureSignal": 53
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": true
