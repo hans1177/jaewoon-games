@@ -443,10 +443,10 @@ function zeroSkinWeightsInGlb(sourceFile,targetFile){
   fs.writeFileSync(targetFile,bytes);
 }
 
-function anonymizeAnimationNamesInGlb(sourceFile,targetFile){
+function rewriteAnimationNamesInGlb(sourceFile,targetFile,nameForIndex){
   const bytes=Buffer.from(fs.readFileSync(sourceFile));
   const jsonLength=bytes.readUInt32LE(12),document=JSON.parse(bytes.subarray(20,20+jsonLength).toString('utf8'));
-  for(const [index,animation] of (document.animations||[]).entries())animation.name='clip_'+String(index).padStart(4,'0');
+  for(const [index,animation] of (document.animations||[]).entries())animation.name=nameForIndex(index);
   const raw=Buffer.from(JSON.stringify(document),'utf8');
   const paddedLength=Math.ceil(raw.length/4)*4,json=Buffer.alloc(paddedLength,0x20);raw.copy(json);
   const remainder=bytes.subarray(20+jsonLength);
@@ -454,6 +454,9 @@ function anonymizeAnimationNamesInGlb(sourceFile,targetFile){
   out.writeUInt32LE(0x46546c67,0);out.writeUInt32LE(2,4);out.writeUInt32LE(total,8);
   out.writeUInt32LE(json.length,12);out.writeUInt32LE(0x4e4f534a,16);json.copy(out,20);remainder.copy(out,20+json.length);
   fs.writeFileSync(targetFile,out);
+}
+function anonymizeAnimationNamesInGlb(sourceFile,targetFile){
+  rewriteAnimationNamesInGlb(sourceFile,targetFile,index=>'clip_'+String(index).padStart(4,'0'));
 }
 
 test('master GLB rejects broken accessor skin node and animation sampler lineage',()=>{
@@ -539,6 +542,18 @@ test('creature boss GLB cannot pass with structurally valid but role-incomplete 
     assert.equal(result.creatureRoleMotionRequired,true);
     assert.ok(result.requiredCreatureMotionClips.includes('THREAT_OR_INTRO'));
     assert.ok(result.missingCreatureRoleMotionClips.includes('ATTACK'));
+    assert.ok(result.missingCreatureRoleMotionClips.includes('SPECIAL_ATTACK'));
+    assert.ok(result.blockers.includes('MASTER_GLB_CREATURE_ROLE_MOTION_REQUIRED'));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('generic ATTACK clip cannot satisfy boss SPECIAL_ATTACK role coverage',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'creature-role-alias-glb-'));
+  try{
+    const file=path.join(root,'attack-only.glb');
+    rewriteAnimationNamesInGlb('assets/roblox/world-ghosts/native/spider/spider.glb',file,()=> 'attack');
+    const result=evaluateCrossPlatform3dMasterGlb({repoRoot:root,family:'CREATURE',role:'BOSS',source:{path:'attack-only.glb'}});
+    assert.equal(result.pass,false);
     assert.ok(result.missingCreatureRoleMotionClips.includes('SPECIAL_ATTACK'));
     assert.ok(result.blockers.includes('MASTER_GLB_CREATURE_ROLE_MOTION_REQUIRED'));
   }finally{fs.rmSync(root,{recursive:true,force:true});}
