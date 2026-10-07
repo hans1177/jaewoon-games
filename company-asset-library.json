@@ -1,5 +1,5 @@
 {
-  "version": 118,
+  "version": 119,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-07",
@@ -68890,7 +68890,7 @@
     }
   },
   "internalAssetLibraryAutomation": {
-    "version": 14,
+    "version": 15,
     "status": "ACTIVE_CATALOG_DRIVEN_INTERNAL_ASSET_AUTOMATION",
     "contract": "assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT",
     "syncFunction": "tools/vibe2-asset-production-plan.mjs#synchronizeCompanyCommonAssetRegistry",
@@ -68901,11 +68901,11 @@
     "hardMaximum": null,
     "overSoftLimitAction": "DEDUPLICATION_REVIEW_ONLY",
     "overSoftLimitBlocksUse": false,
-    "perDomainIdeaBudgetPerCycle": 96,
-    "domainVolumeActionLimitPerDomain": 12,
-    "uiSubsystemVolumeActionLimitPerSubsystem": 8,
-    "maxVolumeWorklistActions": 256,
-    "taskReferenceOverlayWorklistLimit": 256,
+    "perDomainIdeaBudgetPerCycle": 512,
+    "domainVolumeActionLimitPerDomain": 64,
+    "uiSubsystemVolumeActionLimitPerSubsystem": 48,
+    "maxVolumeWorklistActions": 2048,
+    "taskReferenceOverlayWorklistLimit": 1024,
     "volumeBeforeQuality": false,
     "reuseAdaptRecombineBeforeNewAuthoring": true,
     "newAuthoringPolicy": {
@@ -77287,7 +77287,7 @@
       "runtimeVerificationRequiredBeforeProductionPromotion": true
     },
     "eligibleFreeSourceCount": 22,
-    "freeSourceCandidateLimitPerAction": 24,
+    "freeSourceCandidateLimitPerAction": 96,
     "freeSourceCatalogSufficiencyCount": 12,
     "freeSourceCatalogReady": true,
     "freeSourceCatalogExpansionMode": "PAUSED_UNTIL_REAL_COVERAGE_GAP",

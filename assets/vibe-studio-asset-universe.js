@@ -1590,7 +1590,7 @@ export const INTERNAL_ASSET_STUDIO_VARIATION_AXES=Object.freeze({
 });
 
 export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
-  version:14,
+  version:15,
   scope:'ALL_INTERNAL_COMMON_LIBRARIES',
   catalogDiscovery:'assets/roblox/common-*/catalog.json',
   seedDiscovery:'artbook-submissions/seed-*/current.json',
@@ -1629,11 +1629,11 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
   hardMaximum:null,
   overSoftLimitAction:'DEDUPLICATION_REVIEW_ONLY',
   overSoftLimitBlocksUse:false,
-  perDomainIdeaBudgetPerCycle:96,
-  domainVolumeActionLimitPerDomain:12,
-  uiSubsystemVolumeActionLimitPerSubsystem:8,
-  maxVolumeWorklistActions:256,
-  taskReferenceOverlayWorklistLimit:256,
+  perDomainIdeaBudgetPerCycle:512,
+  domainVolumeActionLimitPerDomain:64,
+  uiSubsystemVolumeActionLimitPerSubsystem:48,
+  maxVolumeWorklistActions:2048,
+  taskReferenceOverlayWorklistLimit:1024,
   preferDistinctRoleStateGenreCombination:true,
   ideaDeduplicationFields:Object.freeze(['id','assetId','atomId','role','roles','sourceIdeaId','ideaId']),
   repeatedDistinctVariationProposalForbidden:true,
@@ -1644,7 +1644,7 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
   qualityUpSelection:'WEAKEST_INTERNAL_AUDIT_AXIS_FIRST',
   focusPhases:Object.freeze(['VOLUME_UP','QUALITY_UP_1000']),
   volumeActionConsumption:'PERSISTED_PRIORITY_WORKLIST_FIRST',
-  freeSourceCandidateLimitPerAction:24,
+  freeSourceCandidateLimitPerAction:96,
   freeSourceCatalogSufficiencyCount:12,
   styleExpressionRequiredForAllDomains:true,
   styleExpressionContractRef:'assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_STYLE_EXPRESSION_AXES',
@@ -2266,7 +2266,7 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     const state=currentCount<band.targetMin?'EXPAND_TOWARD_RECOMMENDED_RANGE':
       currentCount<=band.targetMax?'HEALTHY_VOLUME':
       currentCount<band.softReviewAt?'BROAD_LIBRARY_KEEP_IF_DISTINCT':'SOFT_DEDUP_REVIEW_ONLY';
-    const suggestedCount=Math.min(12,Math.max(0,band.targetMin-currentCount));
+    const suggestedCount=Math.min(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.uiSubsystemVolumeActionLimitPerSubsystem,Math.max(0,band.targetMin-currentCount));
     const pool=COMMON_UI_SUBSYSTEM_IDEA_POOLS[id]||[];
     const suggestedIdeas=[],candidateKeys=new Set();
     const pushUiIdea=(ideaId,source,priority)=>{

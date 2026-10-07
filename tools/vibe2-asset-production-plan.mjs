@@ -2900,7 +2900,7 @@ function buildReferenceDrivenAssetIdeaWorklist({studies=[],request='',characterC
       }
     }
   }
-  return freezeList(rows.filter((row,index,list)=>list.findIndex(other=>other.ideaId===row.ideaId)===index).slice(0,96));
+  return freezeList(rows.filter((row,index,list)=>list.findIndex(other=>other.ideaId===row.ideaId)===index).slice(0,512));
 }
 
 export function buildVibeAssetProductionPlan({
@@ -2965,7 +2965,7 @@ export function buildVibeAssetProductionPlan({
     reuseResolutionOrder:freezeList(executionLibraryPlan.reuseResolutionOrder||libraryAutomation.reuseResolutionOrder||['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','LICENSE_VERIFIED_FREE_SOURCE_ADAPT','NEW_AUTHORING']),
     freeOriginalVolumePolicy:freeze({...libraryAutomation.freeOriginalVolumePolicy,...executionLibraryPlan.freeOriginalVolumePolicy}),
     eligibleFreeSourceCount:Number(executionLibraryPlan.eligibleFreeSourceCount||0),
-    freeSourceCandidateLimitPerAction:Number(executionLibraryPlan.freeSourceCandidateLimitPerAction||libraryAutomation.freeSourceCandidateLimitPerAction||8),
+    freeSourceCandidateLimitPerAction:Number(executionLibraryPlan.freeSourceCandidateLimitPerAction||libraryAutomation.freeSourceCandidateLimitPerAction||96),
     freeSourceCatalogSufficiencyCount:Number(executionLibraryPlan.freeSourceCatalogSufficiencyCount||libraryAutomation.freeSourceCatalogSufficiencyCount||12),
     freeSourceCatalogReady:executionLibraryPlan.freeSourceCatalogReady===true,
     freeSourceCatalogExpansionMode:clean(executionLibraryPlan.freeSourceCatalogExpansionMode||libraryAutomation.freeSourceCatalogExpansionMode)||'TARGETED_GAP_ONLY',
@@ -3200,7 +3200,7 @@ export function buildVibeAssetProductionPlan({
       (executionLibraryPlan.nextVolumeActions||[])
         .filter(row=>clean(row?.domain).toUpperCase()===clean(domain).toUpperCase())
         .flatMap(row=>row?.freeSourceCandidateIds||[])
-    ).slice(0,Number(executionLibraryPlan.freeSourceCandidateLimitPerAction||libraryAutomation.freeSourceCandidateLimitPerAction||24));
+    ).slice(0,Number(executionLibraryPlan.freeSourceCandidateLimitPerAction||libraryAutomation.freeSourceCandidateLimitPerAction||96));
     return freeze({
       kind:'REFERENCE_IMAGE_VOLUME',
       domain,
@@ -3238,7 +3238,7 @@ export function buildVibeAssetProductionPlan({
       ?[
         ...taskLocalReferenceVolumeActions,
         ...activeNextVolumeActions.filter(row=>!referenceDrivenAssetIdeas.some(idea=>idea.ideaId===row?.ideaId))
-      ].slice(0,Number(executionLibraryPlan.taskReferenceOverlayWorklistLimit||libraryAutomation.taskReferenceOverlayWorklistLimit||256)).map((row,index)=>{
+      ].slice(0,Number(executionLibraryPlan.taskReferenceOverlayWorklistLimit||libraryAutomation.taskReferenceOverlayWorklistLimit||1024)).map((row,index)=>{
         const domain=clean(row?.domain).toUpperCase();
         return freeze({
           ...row,
