@@ -12,20 +12,20 @@
   "lastSuccessfulModelCallAt": null,
   "failedPhase": "designer_draft",
   "failedTask": "identity-core",
-  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=OPTIONAL_EXTERNAL_AI_DISABLED local=OLLAMA_DESIGN_TIMEOUT 90000ms",
+  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=OPTIONAL_EXTERNAL_AI_DISABLED local=schema required missing: root.signatureSystems[0].playerChoice",
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
+      "calls": 2,
       "successes": 0,
-      "failures": 1,
+      "failures": 2,
       "timeouts": 1,
-      "jsonFailures": 0,
-      "totalMs": 90074,
-      "lastMs": 90074,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 90000ms",
-      "updatedAt": "2026-10-07T17:57:05.767Z"
+      "jsonFailures": 1,
+      "totalMs": 280400,
+      "lastMs": 190326,
+      "lastError": "schema required missing: root.signatureSystems[0].playerChoice",
+      "updatedAt": "2026-10-07T18:31:46.214Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-07T18:28:35.887Z"
+  "updatedAt": "2026-10-07T18:31:46.215Z"
 }
