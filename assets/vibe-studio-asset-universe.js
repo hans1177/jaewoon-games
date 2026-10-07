@@ -1590,7 +1590,7 @@ export const INTERNAL_ASSET_STUDIO_VARIATION_AXES=Object.freeze({
 });
 
 export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
-  version:15,
+  version:16,
   scope:'ALL_INTERNAL_COMMON_LIBRARIES',
   catalogDiscovery:'assets/roblox/common-*/catalog.json',
   seedDiscovery:'artbook-submissions/seed-*/current.json',
@@ -1652,6 +1652,7 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
   focusPhases:Object.freeze(['VOLUME_UP','QUALITY_UP_1000']),
   volumeActionConsumption:'PERSISTED_PRIORITY_WORKLIST_FIRST',
   freeSourceCandidateLimitPerAction:2048,
+  freeSourceCandidatePreviewLimitPerAction:8,
   freeSourceCatalogSufficiencyCount:12,
   styleExpressionRequiredForAllDomains:true,
   styleExpressionContractRef:'assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_STYLE_EXPRESSION_AXES',
@@ -2327,9 +2328,14 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     .filter(row=>row.currentCount<row.targetMin)
     .map(row=>Object.freeze({subsystem:row.subsystem,currentCount:row.currentCount,targetMin:row.targetMin}));
   const volumeReady=volumeBlockingDomains.length===0&&uiBlockingSubsystems.length===0;
+  const freeSourceCandidatePools=Object.freeze(Object.fromEntries(
+    uniq([...sortedDomains.map(row=>row.domain),'UI']).map(domain=>[
+      domain,Object.freeze(freeSourceIdsForDomain(domain).slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction))
+    ])
+  ));
   const nextVolumeActionRows=volumeReady?[]:[
-    ...sortedDomains.flatMap(row=>(row.suggestedIdeas||[]).slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.domainVolumeActionLimitPerDomain).map(idea=>({kind:'DOMAIN_VOLUME',domain:row.domain,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount,freeSourceCandidateIds:freeSourceIdsForDomain(row.domain).slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction)}))),
-    ...uiSubsystems.flatMap(row=>(row.suggestedIdeas||[]).slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.uiSubsystemVolumeActionLimitPerSubsystem).map(idea=>({kind:'UI_SUBSYSTEM_VOLUME',domain:'UI',subsystem:row.subsystem,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount,freeSourceCandidateIds:freeSourceIdsForDomain('UI').slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction)})))
+    ...sortedDomains.flatMap(row=>(row.suggestedIdeas||[]).slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.domainVolumeActionLimitPerDomain).map(idea=>({kind:'DOMAIN_VOLUME',domain:row.domain,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount,freeSourceCandidatePoolKey:row.domain}))),
+    ...uiSubsystems.flatMap(row=>(row.suggestedIdeas||[]).slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.uiSubsystemVolumeActionLimitPerSubsystem).map(idea=>({kind:'UI_SUBSYSTEM_VOLUME',domain:'UI',subsystem:row.subsystem,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount,freeSourceCandidatePoolKey:'UI'})))
   ].sort((a,b)=>b.priority-a.priority||String(a.domain).localeCompare(String(b.domain))||String(a.ideaId).localeCompare(String(b.ideaId))).slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maxVolumeWorklistActions).sort((a,b)=>{
     const deficitA=Math.max(0,Number(a.targetMin||0)-Number(a.currentCount||0));
     const deficitB=Math.max(0,Number(b.targetMin||0)-Number(b.currentCount||0));
@@ -2339,7 +2345,9 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
   });
   const freeSourceCatalogReady=eligibleFreeSources.length>=INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCatalogSufficiencyCount;
   const nextVolumeActions=nextVolumeActionRows.map((row,index)=>{
-    const freeSourceAvailable=Array.isArray(row.freeSourceCandidateIds)&&row.freeSourceCandidateIds.length>0;
+    const freeSourcePool=freeSourceCandidatePools[row.freeSourceCandidatePoolKey]||[];
+    const freeSourceCandidateIds=freeSourcePool.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidatePreviewLimitPerAction);
+    const freeSourceAvailable=freeSourcePool.length>0;
     const allInternalReuseCandidates=internalReuseCandidatesForAction(row.domain,row.role);
     const internalReuseCandidatePreview=allInternalReuseCandidates.slice(0,4).map(candidate=>Object.freeze({
       id:candidate.id,quality:candidate.quality,grade:candidate.grade
@@ -2356,7 +2364,9 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
       studioVariationAxes:Object.freeze([...(INTERNAL_ASSET_STUDIO_VARIATION_AXES[row.domain]||[])]),
       libraryFreshnessFingerprint:maintenance.inventoryFingerprint,
       qualityFreshnessFingerprint:maintenance.qualityFingerprint,
-      freeSourceCandidateIds:Object.freeze([...(row.freeSourceCandidateIds||[])]),
+      freeSourceCandidateIds:Object.freeze([...freeSourceCandidateIds]),
+      freeSourceCandidateCount:freeSourcePool.length,
+      freeSourceCandidateIdsArePreview:true,
       freeSourceAcquisitionMode:freeSourceAvailable?'ON_DEMAND_SELECTED_ACTION_ONLY':'NOT_AVAILABLE',
       bulkPrefetchAllowed:false,
       speculativeDownloadAllowed:false,
@@ -2428,7 +2438,9 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     supplyDecisionSummaryActionLimit:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.supplyDecisionSummaryActionLimit,
     maintenanceListLimits:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maintenanceListLimits,
     eligibleFreeSourceCount:eligibleFreeSources.length,
+    freeSourceCandidatePools,
     freeSourceCandidateLimitPerAction:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction,
+    freeSourceCandidatePreviewLimitPerAction:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidatePreviewLimitPerAction,
     freeSourceCatalogSufficiencyCount:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCatalogSufficiencyCount,
     freeSourceCatalogReady,
     freeSourceCatalogExpansionMode:freeSourceCatalogReady?'PAUSED_UNTIL_REAL_COVERAGE_GAP':'TARGETED_GAP_ONLY',

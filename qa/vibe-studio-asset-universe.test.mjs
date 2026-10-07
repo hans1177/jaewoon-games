@@ -4415,7 +4415,7 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
   const seedPlan=createCompanySeedAssetIdeationPlan({seeds,assets:registry.assets});
   const plan=buildInternalAssetLibraryAutomationPlan({assets:registry.assets,seedPlan,uiAtomIds:ui.atoms.map(row=>row.atomId),externalSources:registry.externalSources});
 
-  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,15);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,16);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.countPolicy,'LOOSE_TARGET_BANDS_NOT_HARD_CAPS');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.persistentWorklistField,'internalAssetLibraryAutomation.nextVolumeActions');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.volumeActionConsumption,'PERSISTED_PRIORITY_WORKLIST_FIRST');
@@ -4426,6 +4426,7 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.taskReferenceOverlayWorklistLimit,32768);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.supplyDecisionSummaryActionLimit,8192);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction,2048);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidatePreviewLimitPerAction,8);
   assert.deepEqual(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maintenanceListLimits,{
     semanticDuplicateReviewGroups:2048,
     donorCandidates:4096,
@@ -4554,7 +4555,9 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
     assert.ok(plan.nextVolumeActions.every(row=>row.libraryFreshnessFingerprint===plan.maintenance.inventoryFingerprint));
     assert.ok(plan.nextVolumeActions.every(row=>row.qualityFreshnessFingerprint===plan.maintenance.qualityFingerprint));
     assert.ok(plan.nextVolumeActions.some(row=>row.freeSourceAvailable===true));
-    assert.ok(plan.nextVolumeActions.every(row=>Array.isArray(row.freeSourceCandidateIds)));
+    assert.ok(plan.nextVolumeActions.every(row=>Array.isArray(row.freeSourceCandidateIds)&&row.freeSourceCandidateIds.length<=8));
+  assert.ok(plan.nextVolumeActions.every(row=>row.freeSourceCandidateIdsArePreview===true&&row.freeSourceCandidateCount>=row.freeSourceCandidateIds.length));
+  assert.ok(Object.keys(plan.freeSourceCandidatePools||{}).length>0);
     assert.ok(plan.nextVolumeActions.every(row=>row.bulkPrefetchAllowed===false));
     assert.ok(plan.nextVolumeActions.every(row=>row.speculativeDownloadAllowed===false));
     assert.ok(plan.nextVolumeActions.filter(row=>row.freeSourceAvailable).every(row=>row.freeSourceAcquisitionMode==='ON_DEMAND_SELECTED_ACTION_ONLY'));
@@ -4656,7 +4659,7 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
 });
 
 test('internal asset breadth profiles support simple-to-deep progression and quality-before-volume',()=>{
-  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,15);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,16);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityTargetInternalAuditScore,1000);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpStartsOnlyAfterRecommendedVolume,false);
 
@@ -4730,7 +4733,7 @@ test('catalog-driven company asset registry synchronization is persistent only w
     assert.ok(stale);
     assert.equal(stale.catalogState,'STALE_CATALOG_ROW_REVIEW');
     assert.equal(stale.automaticDeletionForbidden,true);
-    assert.equal(first.registry.internalAssetLibraryAutomation.version,15);
+    assert.equal(first.registry.internalAssetLibraryAutomation.version,16);
     assert.equal(first.registry.internalAssetLibraryAutomation.autoRegistrySync,true);
     assert.ok(Array.isArray(first.registry.internalAssetLibraryAutomation.nextVolumeActions));
     assert.ok(first.registry.internalAssetLibraryAutomation.nextVolumeActions.length>0);
@@ -4744,6 +4747,8 @@ test('catalog-driven company asset registry synchronization is persistent only w
     assert.equal(first.registry.internalAssetLibraryAutomation.taskReferenceOverlayWorklistLimit,32768);
     assert.equal(first.registry.internalAssetLibraryAutomation.supplyDecisionSummaryActionLimit,8192);
     assert.equal(first.registry.internalAssetLibraryAutomation.freeSourceCandidateLimitPerAction,2048);
+    assert.equal(first.registry.internalAssetLibraryAutomation.freeSourceCandidatePreviewLimitPerAction,8);
+    assert.ok(Object.keys(first.registry.internalAssetLibraryAutomation.freeSourceCandidatePools||{}).length>0);
     assert.deepEqual(first.registry.internalAssetLibraryAutomation.maintenanceListLimits,{
       semanticDuplicateReviewGroups:2048,
       donorCandidates:4096,
