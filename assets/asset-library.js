@@ -21,8 +21,10 @@ async function request(url,options={}){
  if(!response.ok)throw Error('자산 서버에 연결하지 못했어.');return response;
 }
 async function readRegistry(){
- if(registry&&registryEtag){const head=await request('/company-asset-library.json',{method:'HEAD'});if(head.headers.get('etag')===registryEtag)return registry;}
- const response=await request('/company-asset-library.json');
+ const headers=registry&&registryEtag?{'If-None-Match':registryEtag}:undefined;
+ const response=await fetch('/company-asset-library.json',{cache:'no-cache',signal:AbortSignal.timeout(20000),...(headers?{headers}:{})});
+ if(response.status===304&&registry)return registry;
+ if(!response.ok)throw Error('자산 서버에 연결하지 못했어.');
  const next=await response.json();if(!Array.isArray(next.assets))throw Error('자산 목록을 확인하고 있어.');
  registryEtag=response.headers.get('etag');return next;
 }
