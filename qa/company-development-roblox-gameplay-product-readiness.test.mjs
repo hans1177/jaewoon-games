@@ -368,6 +368,35 @@ test('design-grounded profile prioritizes survival identity over incidental stra
   assert.equal(profile.playMode,'SINGLE');
 });
 
+test('fantasy-survival implements its preserved survival loop instead of generic scope handlers',()=>{
+  const baseline={content:{
+    identity:'기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하는 생존 게임',
+    coreFun:'기존 탐험·채집·전투·퀘스트 선택과 결과를 보존한다.',
+    coreLoop:[
+      'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.',
+      'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.',
+      'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'
+    ],
+    signatureSystems:[
+      {name:'기존 게임플레이 의미 보존',purpose:'월드·퀘스트·전투·진행·보상·세이브 규칙을 보존한다.',playerChoice:'기존 선택과 전투 판정을 유지한다.'},
+      {name:'표현 품질 순차 개선',purpose:'기존 전투 이벤트와 모션 피드백을 개선한다.',playerChoice:'기존 전투 행동을 유지한다.'}
+    ],
+    multiplayerMode:'HYBRID'
+  }};
+  const config=fs.readFileSync('roblox-games/fantasy-survival/shared/GameConfig.luau','utf8');
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const actualProject=fs.readFileSync('roblox-games/fantasy-survival/default.project.json','utf8');
+  const result=evaluateRobloxGameplayProductReadiness({gameId:'fantasy-survival',baseline,config,server,client,project:actualProject});
+  assert.equal(result.pass,true,result.blockers.join(','));
+  assert.equal(result.antiSkeletonPassed,true);
+  assert.equal(result.studioReadiness.f9SourceQualityReady,true,result.studioReadiness.criticalGaps.join(','));
+  for(const capability of ['CORE_GAMEPLAY_STATE','SESSION_FLOW','WORLD','CONTENT_ENTITY','COMBAT','ENEMY_AI','GATHERING','WAVE','EQUIPMENT','PROGRESSION','QUEST','BOSS','SAVE','MOBILE_UI','MULTIPLAYER']){
+    assert.equal(result.implementedCapabilities[capability],true,capability);
+  }
+  assert.doesNotMatch(server,/local function scopeHandler\d+/);
+});
+
 test('learning profile follows the actual game config instead of stale per-game hardcoding',()=>{
   const profile=robloxLearningProfileFromSource({
     gameId:'horror-escape-room',
