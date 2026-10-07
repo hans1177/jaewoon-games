@@ -2794,10 +2794,11 @@ export const STUDIO_ASSET_FAMILY_OUTPUTS=Object.freeze({
 
 export const STUDIO_3D_ACTOR_ROLE_FAMILIES=Object.freeze({
   CHARACTER:Object.freeze([
-    'PLAYER','GENERAL_NPC','COMPANION','ALLY','STORY_CHARACTER','CIVILIAN','MERCHANT','VENDOR','QUEST_GIVER',
-    'GUARD','WORKER','ARTISAN','FARMER','HEALER','TRAINER','RIVAL','HOSTILE_HUMANOID','NAMED_ELITE','HUMANOID_BOSS'
+    'PLAYER','GENERAL_NPC','VILLAGER','COMPANION','ALLY','FRIENDLY_CHARACTER','STORY_CHARACTER','CIVILIAN',
+    'MERCHANT','VENDOR','SERVICE_NPC','QUEST_GIVER','GUARD','WORKER','ARTISAN','FARMER','HEALER','TRAINER',
+    'RIVAL','HOSTILE_HUMANOID','NAMED_ELITE','HUMANOID_BOSS'
   ]),
-  CREATURE:Object.freeze(['ENEMY','ELITE','CREATURE','PET','MOUNT','SUMMON','BOSS'])
+  CREATURE:Object.freeze(['ENEMY','ELITE','MINI_BOSS','CREATURE','PET','MOUNT','SUMMON','BOSS','RAID_BOSS'])
 });
 export const STUDIO_3D_ACTOR_ROLES=Object.freeze([
   ...STUDIO_3D_ACTOR_ROLE_FAMILIES.CHARACTER,
@@ -2819,7 +2820,8 @@ export const CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT=Object.freeze({
   npcRoleDifferentiationAxes:Object.freeze(['SILHOUETTE','BODY_PROPORTION','OUTFIT_EQUIPMENT','STANCE_GAIT','IDLE_INTERACTION_MOTION','FACE_GESTURE','WEAR_HISTORY']),
   minimumDistinctNpcRoleAxes:3,
   humanoidBossMayUseCharacterFamilyWithBossRole:true,
-  requiredContents:Object.freeze(['MESH','NORMALS','UV0','MATERIALS','SKELETON','SKIN_WEIGHTS','ANIMATION']),
+  requiredContents:Object.freeze(['MESH','NORMALS','UV0','MATERIALS','SKELETON','SKIN_WEIGHTS','JOINT_WEIGHTS','ANIMATION']),
+  roleMotionContractRef:'assets/vibe-character-identity-director.js#VIBE_NPC_ROLE_MOTION_REQUIREMENTS',
   structuralChecks:Object.freeze({
     glbVersion2:true,
     meshRequired:true,
@@ -2828,7 +2830,17 @@ export const CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT=Object.freeze({
     materialRequired:true,
     skinAndSkeletonRequired:true,
     jointWeightsRequired:true,
-    animationRequired:true
+    animationRequired:true,
+    jointAnimationChannelRequired:true
+  }),
+  actorPackageRequirements:Object.freeze({
+    attachmentSocketBasisRequired:true,
+    attachmentSocketBasis:Object.freeze(['HAND','BACK','HIP','SHIELD','TOOL']),
+    lodAuthoringReadyRequired:true,
+    mobilePlatformLodRequired:true,
+    roleStateMotionBindingRequired:true,
+    masterStaticQaIsNotPlatformRuntimeQa:true,
+    productionVerifiedRequiresPlatformNativeRuntime:true
   }),
   platformUse:Object.freeze({
     ROBLOX:'IMPORT_OR_REAUTHOR_FROM_MASTER_GLB_THEN_BIND_MESHPART_BONES_ANIMATOR',

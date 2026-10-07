@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
-import {assetProductionGuidance,buildAllGameDynamicLibraryBindingPlan,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb} from '../tools/vibe2-asset-production-plan.mjs';
+import {assetProductionGuidance,buildAllGameDynamicLibraryBindingPlan,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType,crossPlatform3dActorFamilyForType} from '../tools/vibe2-asset-production-plan.mjs';
 import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate,buildInternalAssetSourceUsageContract,inspectRobloxNativeCandidateQuality} from '../tools/vibe2-source-worker.mjs';
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
@@ -425,7 +425,9 @@ test('3D character creature and boss master assets require a structurally comple
   assert.ok(spider.inspection.inventory.materials.length>0);
   assert.ok(spider.inspection.inventory.skins.length>0);
   assert.ok(spider.inspection.inventory.animations.length>0);
-  assert.ok(spider.inspection.inventory.primitives.every(row=>row.hasNormals&&row.hasUv));
+  assert.ok(spider.inspection.inventory.jointAnimationChannelCount>0);
+  assert.ok(spider.inspection.inventory.animatedJointCount>0);
+  assert.ok(spider.inspection.inventory.primitives.every(row=>row.hasNormals&&row.hasUv&&row.hasMaterial));
   assert.ok(spider.inspection.inventory.primitives.some(row=>row.hasJointWeights));
 
   const missing=evaluateCrossPlatform3dMasterGlb({family:'CREATURE',role:'ENEMY',source:{path:'../outside.glb'}});
@@ -480,6 +482,53 @@ test('apply-first rejects a 3D enemy that has no compliant master GLB',()=>{
   assert.ok(plan.nativeAuthoringExecution.dcc.requiredTypes.includes('enemy'));
   assert.equal(plan.nativeAuthoringExecution.dcc.crossPlatform3dMasterGlbRequired,true);
   assert.ok(plan.nativeAuthoringExecution.dcc.uncoveredTypes.includes('enemy'));
+});
+
+test('NPC companion hostile humanoid mini boss and boss types resolve to the shared 3D actor GLB contract',()=>{
+  for(const type of ['npc','villager','merchant','quest_giver','guard','worker','companion','friendly_character','hostile_humanoid']){
+    assert.equal(isCrossPlatform3dActorType(type),true,type);
+    assert.equal(crossPlatform3dActorFamilyForType(type),'CHARACTER',type);
+  }
+  for(const type of ['enemy','elite','mini_boss','boss','raid_boss','creature']){
+    assert.equal(isCrossPlatform3dActorType(type),true,type);
+    assert.equal(crossPlatform3dActorFamilyForType(type),'CREATURE',type);
+  }
+  const plan=buildVibeAssetProductionPlan({
+    target:'roblox',
+    task:{gameId:'fake-npc-master',goal:'NPC 상인 동료 보스 3D actor를 실제 게임에 적용'},
+    manifest:{assets:[{
+      id:'fake-npc',family:'CHARACTER',types:['npc'],tags:['npc','merchant'],
+      license:'project-original',platforms:['roblox'],path:'assets/fake-npc.glb',
+      downloaded:true,rigged:true,verifiedAnimation:true,animations:['idle','walk'],sameGameExistingRoblox:true
+    }]},
+    presetCatalog:{presets:[]}
+  });
+  const npc=plan.decisions.find(row=>row.type==='npc');
+  assert.ok(npc);
+  assert.equal(npc.applyFirst.enabled,false);
+  assert.ok(plan.nativeAuthoringExecution.dcc.requiredTypes.includes('npc'));
+  assert.ok(plan.nativeAuthoringExecution.dcc.crossPlatform3dMasterGlbRequiredTypes.includes('npc'));
+});
+
+test('Master GLB static QA alone never grants production verification',()=>{
+  const master='assets/roblox/world-ghosts/native/spider/spider.glb';
+  const plan=buildVibeAssetProductionPlan({
+    target:'roblox',
+    task:{gameId:'static-master-only',goal:'enemy monster 3D actor 적용'},
+    manifest:{assets:[{
+      id:'static-spider',family:'CREATURE',types:['enemy'],tags:['enemy','spider'],
+      license:'project-original',platforms:['roblox'],path:master,masterGlb:master,
+      downloaded:true,rigged:true,rigType:'CUSTOM_SKINNED',verifiedAnimation:true,animations:['idle','walk'],
+      productionVerified:false,verifiedCompanyReusable:false
+    }]},
+    presetCatalog:{presets:[]}
+  });
+  const enemy=plan.decisions.find(row=>row.type==='enemy');
+  const candidate=enemy?.applyFirst?.candidates?.find(row=>row.id==='static-spider');
+  assert.ok(candidate);
+  assert.equal(candidate.masterGlbStaticQaPass,true);
+  assert.equal(candidate.productionVerified,false);
+  assert.equal(plan.policy?.nativeRuntimeVerificationRequiredBeforePromotion!==false,true);
 });
 
 test('customization and detailed style instructions reach the existing asset work order input',()=>{
@@ -1622,11 +1671,15 @@ test('Roblox source quality blocks multi-part doll NPCs even when they have join
     sourceRoot:'roblox-games/demo'
   });
   assert.ok(quality.npcFinalActorFindings.some(row=>row.class==='NPC_PRIMITIVE_FINAL_ACTOR_RISK'));
+  assert.equal(quality.npcFinalActorHardFailure,'PRIMITIVE_ONLY_FINAL_3D_ACTOR');
 
-  const nativeNpc=primitiveNpc.replace(
-    'local torso = Instance.new("Part")',
-    'local torso = Instance.new("MeshPart")\n  torso.MeshId = "rbxassetid://123"'
-  );
+  const pathOnlyQuality=inspectRobloxNativeCandidateQuality({
+    candidate:{edits:[{path:'server/Game.server.luau',replace:'local MasterGlb = "assets/master/npc.glb"\n'+primitiveNpc}]},
+    sourceRoot:'roblox-games/demo'
+  });
+  assert.ok(pathOnlyQuality.npcFinalActorFindings.some(row=>row.class==='NPC_PRIMITIVE_FINAL_ACTOR_RISK'));
+
+  const nativeNpc=primitiveNpc.replaceAll('Instance.new("Part")','Instance.new("MeshPart")');
   const nativeQuality=inspectRobloxNativeCandidateQuality({
     candidate:{edits:[{path:'server/Game.server.luau',replace:nativeNpc}]},
     sourceRoot:'roblox-games/demo'

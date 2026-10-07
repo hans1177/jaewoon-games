@@ -186,15 +186,148 @@ export const VIBE_NPC_ROLE_PRODUCTION_CONTRACT=Object.freeze({
 });
 
 const NPC_ROLE_ALIASES=Object.freeze({
-  NPC:'GENERAL_NPC',VILLAGER:'CIVILIAN',RESIDENT:'CIVILIAN',SHOPKEEPER:'MERCHANT',VENDOR:'MERCHANT',
+  NPC:'GENERAL_NPC',VILLAGER:'CIVILIAN',RESIDENT:'CIVILIAN',SHOPKEEPER:'MERCHANT',VENDOR:'MERCHANT',SERVICE_NPC:'MERCHANT',
   QUEST:'QUEST_GIVER',QUESTGIVER:'QUEST_GIVER',SOLDIER:'GUARD',COMPANION_NPC:'COMPANION',PARTY_MEMBER:'COMPANION',
-  FRIENDLY:'ALLY',ENEMY:'HOSTILE_HUMANOID',HUMANOID_ENEMY:'HOSTILE_HUMANOID',ELITE:'NAMED_ELITE',
-  BOSS:'HUMANOID_BOSS',NPC_BOSS:'HUMANOID_BOSS',CHARACTER_BOSS:'HUMANOID_BOSS'
+  FRIENDLY:'ALLY',FRIENDLY_CHARACTER:'ALLY',ENEMY:'HOSTILE_HUMANOID',HUMANOID_ENEMY:'HOSTILE_HUMANOID',ELITE:'NAMED_ELITE',
+  MINI_BOSS:'NAMED_ELITE',BOSS:'HUMANOID_BOSS',RAID_BOSS:'HUMANOID_BOSS',NPC_BOSS:'HUMANOID_BOSS',CHARACTER_BOSS:'HUMANOID_BOSS'
 });
 
 function npcRoleKey(role='GENERAL_NPC'){
   const raw=String(role||'GENERAL_NPC').trim().toUpperCase().replace(/[\s-]+/g,'_');
   return NPC_ROLE_ALIASES[raw]||raw;
+}
+
+const NPC_COMMON_ACTOR_MOTION_CLIPS=Object.freeze([
+  'IDLE','WALK','JOG_OR_RUN','START','STOP','TURN','LOOK_AROUND','HIT','DEATH'
+]);
+const NPC_ROLE_MOTION_CLIPS=Object.freeze({
+  PLAYER:Object.freeze([...NPC_COMMON_ACTOR_MOTION_CLIPS,'INTERACT','COMBAT_READY','ATTACK_LIGHT','ATTACK_HEAVY','BLOCK','DODGE','CAST_PREPARE','CAST_RELEASE']),
+  GENERAL_NPC:Object.freeze([...NPC_COMMON_ACTOR_MOTION_CLIPS,'TALK','WAVE','SIT','STAND','WORK_IDLE']),
+  CIVILIAN:Object.freeze([...NPC_COMMON_ACTOR_MOTION_CLIPS,'TALK','WAVE','SIT','STAND','WORK_IDLE','FEAR_REACTION']),
+  MERCHANT:Object.freeze([...NPC_COMMON_ACTOR_MOTION_CLIPS,'GREET','PRESENT_ITEM','POINT','TRADE_INTERACTION','RETURN_IDLE']),
+  QUEST_GIVER:Object.freeze([...NPC_COMMON_ACTOR_MOTION_CLIPS,'ATTENTION','EXPLAIN','POINT_DIRECTION','REWARD_HANDOFF']),
+  GUARD:Object.freeze([...NPC_COMMON_ACTOR_MOTION_CLIPS,'GUARD_IDLE','ALERT','DRAW_WEAPON','PATROL','CHASE_RUN','ATTACK','BLOCK']),
+  WORKER:Object.freeze([...NPC_COMMON_ACTOR_MOTION_CLIPS,'WORK_IDLE','WORK_LOOP','CARRY','TOOL_CONTACT']),
+  ARTISAN:Object.freeze([...NPC_COMMON_ACTOR_MOTION_CLIPS,'WORK_IDLE','CRAFT_LOOP','TOOL_CONTACT','PRESENT_RESULT']),
+  FARMER:Object.freeze([...NPC_COMMON_ACTOR_MOTION_CLIPS,'WORK_IDLE','FARM_WORK_LOOP','CARRY']),
+  HEALER:Object.freeze([...NPC_COMMON_ACTOR_MOTION_CLIPS,'GREET','HEAL_PRESENTATION','ASSIST','RECOVERY']),
+  TRAINER:Object.freeze([...NPC_COMMON_ACTOR_MOTION_CLIPS,'DEMONSTRATE','CORRECT','COMBAT_READY']),
+  STORY_CHARACTER:Object.freeze([...NPC_COMMON_ACTOR_MOTION_CLIPS,'TALK','DIALOGUE_GESTURE','EMOTION_REACTION','SCENE_ACTION']),
+  ALLY:Object.freeze([...NPC_COMMON_ACTOR_MOTION_CLIPS,'FOLLOW','WAIT','COMBAT_READY','ASSIST_ATTACK','REACT_TO_PLAYER']),
+  COMPANION:Object.freeze([...NPC_COMMON_ACTOR_MOTION_CLIPS,'FOLLOW','WAIT','COMBAT_READY','ASSIST_ATTACK','REVIVE_HELP','REACT_TO_PLAYER','CELEBRATE']),
+  RIVAL:Object.freeze([...NPC_COMMON_ACTOR_MOTION_CLIPS,'DETECT','TAUNT','COMBAT_READY','ATTACK','BLOCK','RECOVERY']),
+  HOSTILE_HUMANOID:Object.freeze([...NPC_COMMON_ACTOR_MOTION_CLIPS,'PATROL','DETECT','ALERT','CHASE_RUN','ATTACK_ANTICIPATION','ATTACK','RECOVERY','RETREAT']),
+  NAMED_ELITE:Object.freeze([...NPC_COMMON_ACTOR_MOTION_CLIPS,'INTRO','DETECT','BASIC_ATTACK_SET','SPECIAL_ATTACK_SET','ENRAGE','STUN','GUARD_BREAK','RECOVERY','FINISHER','DEATH_SEQUENCE']),
+  HUMANOID_BOSS:Object.freeze([...NPC_COMMON_ACTOR_MOTION_CLIPS,'INTRO','DETECT','IDLE_BOSS','BASIC_ATTACK_SET','SPECIAL_ATTACK_SET','PHASE_CHANGE','ENRAGE','STUN','GUARD_BREAK','FAILED_ATTACK_RECOVERY','RECOVERY','FINISHER','DEATH_SEQUENCE'])
+});
+const NPC_COMMON_STATE_MOTION_BINDINGS=Object.freeze({
+  CALM:Object.freeze(['IDLE','BREATH','WEIGHT_SHIFT']),
+  IDLE:Object.freeze(['IDLE','LOOK_AROUND']),
+  PATROL:Object.freeze(['START','WALK','TURN','STOP']),
+  WORK:Object.freeze(['WORK_IDLE','WORK_LOOP']),
+  INTERACT:Object.freeze(['TURN','INTERACT']),
+  TALK:Object.freeze(['TURN','TALK']),
+  FOLLOW:Object.freeze(['START','WALK','JOG_OR_RUN','TURN','STOP']),
+  ALERT:Object.freeze(['LOOK_AROUND','TURN','ALERT']),
+  SEARCH:Object.freeze(['LOOK_AROUND','WALK','TURN']),
+  FEAR:Object.freeze(['FEAR_REACTION','BACKSTEP']),
+  ANGER:Object.freeze(['ALERT','COMBAT_READY']),
+  INJURED:Object.freeze(['HIT','INJURED_IDLE']),
+  COMBAT:Object.freeze(['COMBAT_READY','ATTACK_ANTICIPATION','ATTACK','RECOVERY']),
+  RETREAT:Object.freeze(['TURN','JOG_OR_RUN','STOP']),
+  DEAD:Object.freeze(['DEATH'])
+});
+const NPC_ROLE_STATE_MOTION_BINDINGS=Object.freeze({
+  MERCHANT:Object.freeze({
+    INTERACT:Object.freeze(['FACE_PLAYER','GREET','PRESENT_ITEM','TRADE_INTERACTION','RETURN_IDLE']),
+    TALK:Object.freeze(['FACE_PLAYER','TALK','PRESENT_ITEM','RETURN_IDLE'])
+  }),
+  QUEST_GIVER:Object.freeze({
+    INTERACT:Object.freeze(['FACE_PLAYER','ATTENTION','EXPLAIN','POINT_DIRECTION','REWARD_HANDOFF']),
+    TALK:Object.freeze(['FACE_PLAYER','EXPLAIN','POINT_DIRECTION'])
+  }),
+  GUARD:Object.freeze({
+    PATROL:Object.freeze(['GUARD_IDLE','START','PATROL','TURN','STOP']),
+    ALERT:Object.freeze(['HEAD_GAZE','TURN','DRAW_WEAPON','CHASE_RUN','ATTACK_ANTICIPATION','ATTACK','RECOVERY']),
+    COMBAT:Object.freeze(['COMBAT_READY','ATTACK_ANTICIPATION','ATTACK','BLOCK','RECOVERY'])
+  }),
+  COMPANION:Object.freeze({
+    FOLLOW:Object.freeze(['FOLLOW','START','WALK','JOG_OR_RUN','TURN','STOP']),
+    COMBAT:Object.freeze(['COMBAT_READY','ASSIST_ATTACK','RECOVERY']),
+    INTERACT:Object.freeze(['REACT_TO_PLAYER','TURN','INTERACT']),
+    INJURED:Object.freeze(['HIT','REVIVE_HELP'])
+  }),
+  HOSTILE_HUMANOID:Object.freeze({
+    PATROL:Object.freeze(['PATROL','TURN','LOOK_AROUND']),
+    ALERT:Object.freeze(['DETECT','ALERT','TURN','CHASE_RUN']),
+    COMBAT:Object.freeze(['ATTACK_ANTICIPATION','ATTACK','RECOVERY']),
+    RETREAT:Object.freeze(['RETREAT','TURN','JOG_OR_RUN'])
+  }),
+  NAMED_ELITE:Object.freeze({
+    ALERT:Object.freeze(['INTRO','DETECT','ENRAGE']),
+    COMBAT:Object.freeze(['BASIC_ATTACK_SET','SPECIAL_ATTACK_SET','STUN','GUARD_BREAK','RECOVERY','FINISHER']),
+    DEAD:Object.freeze(['DEATH_SEQUENCE'])
+  }),
+  HUMANOID_BOSS:Object.freeze({
+    ALERT:Object.freeze(['INTRO','DETECT','IDLE_BOSS']),
+    COMBAT:Object.freeze(['BASIC_ATTACK_SET','SPECIAL_ATTACK_SET','PHASE_CHANGE','ENRAGE','STUN','GUARD_BREAK','FAILED_ATTACK_RECOVERY','RECOVERY','FINISHER']),
+    DEAD:Object.freeze(['DEATH_SEQUENCE'])
+  })
+});
+
+export const VIBE_NPC_ROLE_MOTION_REQUIREMENTS=Object.freeze({
+  version:1,
+  status:'ACTIVE_MACHINE_READABLE_NPC_ROLE_MOTION',
+  commonCoreClips:NPC_COMMON_ACTOR_MOTION_CLIPS,
+  gameplayStates:Object.freeze(['CALM','IDLE','PATROL','WORK','INTERACT','TALK','FOLLOW','ALERT','SEARCH','FEAR','ANGER','INJURED','COMBAT','RETREAT','DEAD']),
+  roleRequiredClips:NPC_ROLE_MOTION_CLIPS,
+  commonStateBindings:NPC_COMMON_STATE_MOTION_BINDINGS,
+  roleStateBindings:NPC_ROLE_STATE_MOTION_BINDINGS,
+  continuity:Object.freeze({
+    animationTrackCrossFadeRequired:true,
+    locomotionPlaybackSpeedSyncRequired:true,
+    startStopTurnContinuityRequired:true,
+    attackAnticipationImpactRecoveryRequired:true,
+    hitReactionRequired:true,
+    deathTransitionRequired:true,
+    rootTransformOnlyMotionForbidden:true,
+    activeJointMotionRequired:true,
+    upperLowerBodyLayeringWhenSupported:true
+  }),
+  masterActor:Object.freeze({
+    masterAssetFormat:'GLB_2_0',
+    skeletonSkinJointWeightsRequired:true,
+    jointAnimationChannelsRequired:true,
+    attachmentSocketBasis:Object.freeze(['HAND','BACK','HIP','SHIELD','TOOL']),
+    mobileLodRequired:true,
+    platformNativeAnimatorBindingRequired:true,
+    platformRuntimeVerificationIndependent:true,
+    masterStaticQaDoesNotGrantProductionVerified:true
+  }),
+  gameplayAuthority:false,
+  aiAuthority:false
+});
+
+export function createVibeNpcRoleMotionRequirement({role='GENERAL_NPC'}={}){
+  const normalized=npcRoleKey(role);
+  const resolved=NPC_ROLE_MOTION_CLIPS[normalized]?normalized:'GENERAL_NPC';
+  const overrides=NPC_ROLE_STATE_MOTION_BINDINGS[resolved]||{};
+  const stateBindings=Object.freeze(Object.fromEntries(
+    VIBE_NPC_ROLE_MOTION_REQUIREMENTS.gameplayStates.map(state=>[
+      state,Object.freeze([...(overrides[state]||NPC_COMMON_STATE_MOTION_BINDINGS[state]||[])])
+    ])
+  ));
+  return Object.freeze({
+    version:VIBE_NPC_ROLE_MOTION_REQUIREMENTS.version,
+    role:resolved,
+    requiredClips:Object.freeze([...(NPC_ROLE_MOTION_CLIPS[resolved]||NPC_COMMON_ACTOR_MOTION_CLIPS)]),
+    stateBindings,
+    continuity:VIBE_NPC_ROLE_MOTION_REQUIREMENTS.continuity,
+    masterActor:VIBE_NPC_ROLE_MOTION_REQUIREMENTS.masterActor,
+    bindOnlyToExistingGameStates:true,
+    authoritativeAiAndGameplayRemainGameOwned:true,
+    runtimeVerified:false
+  });
 }
 function seededRange(seed,[min,max],offset=0){
   const t=((seed+Math.imul(offset+1,2246822519))>>>0)/4294967295;
@@ -257,20 +390,34 @@ export function createVibeNpcRoleProfile({role='GENERAL_NPC',character={},index=
   const normalized=npcRoleKey(role||character?.role);
   const resolved=NPC_ROLE_PROFILES[normalized]?normalized:'GENERAL_NPC';
   const profile=NPC_ROLE_PROFILES[resolved];
+  const motionRequirements=createVibeNpcRoleMotionRequirement({role:resolved});
   return Object.freeze({
     version:VIBE_NPC_ROLE_PRODUCTION_CONTRACT.version,
     role:resolved,
     detailTier:profile.detailTier,
     identity:Object.freeze([...profile.identity]),
     motion:Object.freeze([...profile.motion]),
+    motionRequirements,
+    stateMotionBindings:motionRequirements.stateBindings,
     physical:createVibeNpcPhysicalProfile({...character,role:resolved},index),
     appearanceDiversity:VIBE_NPC_ROLE_PRODUCTION_CONTRACT.appearanceDiversity,
     masterGlbRequired:true,
     masterFormat:VIBE_NPC_ROLE_PRODUCTION_CONTRACT.final3dMasterFormat,
+    masterActorPackage:Object.freeze({
+      masterAssetFormat:'GLB_2_0',
+      requiredStaticContents:Object.freeze(['MESH','NORMALS','UV0','MATERIALS','SKELETON','SKIN_WEIGHTS','JOINT_WEIGHTS','ANIMATION']),
+      jointAnimationChannelsRequired:true,
+      attachmentSocketBasis:Object.freeze(['HAND','BACK','HIP','SHIELD','TOOL']),
+      mobileLodRequired:true,
+      platformNativeAnimatorBindingRequired:true,
+      platformRuntimeVerificationIndependent:true
+    }),
     roleSpecificVisualMotionRequired:true,
     colorOnlyRoleVariantForbidden:true,
     primitivePartOrWeldOnlyFinalNpcForbidden:true,
     platformRuntimeVerificationRequired:true,
+    productionVerified:false,
+    runtimeVerificationState:'PENDING_PLATFORM_NATIVE_RUNTIME',
     gameplayAuthority:false,
     aiAuthority:false
   });
@@ -329,7 +476,7 @@ export function createVibeGaitIdentity(character={},index=0){
 }
 export function createVibePhysicalActionLanguage(character={},index=0){const body=createVibeBodyIdentity(character,index),gait=createVibeGaitIdentity(character,index),seed=hash(`${character.name}|physical-action|${index}`);return Object.freeze({idle:Object.freeze([body.posture,pick(seed,['weight-shift','small-fidget','equipment-check','environment-scan','breath-led'],2)]),walk:gait,run:Object.freeze({lean:body.visualMass.includes('heavy')?'mass-forward':'adaptive-forward',recovery:body.visualMass.includes('heavy')?'delayed-settle':'quick-settle',secondary:pick(seed,['hair-or-cloth-lag','equipment-lag','limb-spring','body-stabilize'],4)}),interaction:Object.freeze({reach:body.proportions.arms==='long'?'long-arc':body.proportions.arms==='short'?'short-arc':'compact-arc',handedness:body.dominantSide,personalSpace:pick(seed,['close','normal','wide'],6)}),impact:Object.freeze({recoil:body.visualMass.includes('heavy')?'small-body-large-secondary':'body-readable',balanceRecovery:body.frame==='slender'?'step-correct':'center-correct'}),rule:'physical traits influence presentation without granting hidden gameplay advantages'})}
 export function createVibeMotionIdentity(character={},index=0){const archetypes=inferVibeCharacterArchetypes(character),sources=archetypes.map(a=>ARCHETYPES[a]).filter(Boolean),body=createVibeBodyIdentity(character,index),physical=createVibePhysicalActionLanguage(character,index),signature=Object.freeze({stance:uniq([...sources.map(x=>x.stance),body.posture]),move:uniq([...sources.flatMap(x=>x.move),physical.walk.torsoMotion,physical.walk.turnStyle]),attack:uniq(sources.flatMap(x=>x.attack)),idle:Object.freeze(['breathing-or-life-cycle','role-awareness','environment-awareness',...physical.idle]),hit:Object.freeze(['directional-recoil','identity-preserving-recover',physical.impact.balanceRecovery]),death:Object.freeze(['mass-aware-collapse','role-prop-settle'])});return Object.freeze({name:character.name||'character',archetypes,body,appearance:createVibeAppearanceIdentity(character,index),equipment:createVibeEquipmentFitIdentity(character,index),physical,signature,personality:Object.freeze(character.traits||[]),preserve:Object.freeze(['movement-speed','collision','hitbox','attack-result','cooldown','game-position','game-scale'])})}
-export function createVibeCharacterPersona(character={},index=0){const seed=hash(`${character.name||'character'}|persona|${index}`),traits=uniq(character.traits||[]),values=uniq(character.values||[pick(seed,['duty','freedom','family','knowledge','honor','survival','compassion','ambition'],2)]),desire=character.desire||character.goal||pick(seed,['protect-someone','prove-self','restore-home','discover-truth','gain-freedom','earn-respect'],4),need=character.need||pick(seed,['trust-others','accept-loss','take-responsibility','learn-restraint','face-fear','choose-own-path'],6),fear=character.fear||pick(seed,['betrayal','failure','loss-of-control','abandonment','powerlessness','being-forgotten'],8),secret=character.secret||pick(seed,['hidden-debt','past-failure','forbidden-loyalty','unknown-origin','concealed-promise','private-guilt'],10),temperament=character.temperament||pick(seed,['calm','warm','guarded','proud','impulsive','skeptical','playful','stern'],12),formality=character.formality||pick(seed,['casual','neutral','formal','ceremonial'],14),rhythm=character.speechRhythm||pick(seed,['short-direct','measured','ornate','hesitant','rapid','dry'],16),risk=character.riskTolerance||pick(seed,['low','medium','high'],18),social=character.socialTendency||pick(seed,['supportive','reserved','challenging','protective','opportunistic'],20),combat=character.combatTendency||pick(seed,['protect-ally','hold-position','flank','pressure-target','avoid-risk','counterattack'],22);return Object.freeze({name:character.name||'character',role:character.role||'',background:character.background||'',values:Object.freeze(values),traits:Object.freeze(traits),desire,need,fear,secret,taboo:Object.freeze(uniq(character.taboo||[])),loyalty:character.loyalty||'',temperament,voice:Object.freeze({formality,vocabulary:character.vocabulary||'background-appropriate',sentenceRhythm:rhythm,relationshipShift:true,emotionSensitive:true,knowledgeBoundary:true,subtext:true}),behaviorIntent:Object.freeze({riskTolerance:risk,socialTendency:social,combatTendency:combat,protectWhen:character.protectWhen||'relationship-and-role-context',retreatWhen:character.retreatWhen||'gameplay-ai-authorized-condition'}),memoryContract:Object.freeze({tracks:['trust','fear','respect','debt','betrayal','promise','known-fact','witnessed-event'],sourceEventRequired:true,persistentWhenGameOwnsSave:true}),gameplayAuthority:false,rule:'persona and voice guide presentation and declared AI intent only; authoritative actions resolve through game-owned APIs'})}
+export function createVibeCharacterPersona(character={},index=0){const seed=hash(`${character.name||'character'}|persona|${index}`),traits=uniq(character.traits||[]),values=uniq(character.values||[pick(seed,['duty','freedom','family','knowledge','honor','survival','compassion','ambition'],2)]),desire=character.desire||character.goal||pick(seed,['protect-someone','prove-self','restore-home','discover-truth','gain-freedom','earn-respect'],4),need=character.need||pick(seed,['trust-others','accept-loss','take-responsibility','learn-restraint','face-fear','choose-own-path'],6),fear=character.fear||pick(seed,['betrayal','failure','loss-of-control','abandonment','powerlessness','being-forgotten'],8),secret=character.secret||pick(seed,['hidden-debt','past-failure','forbidden-loyalty','unknown-origin','concealed-promise','private-guilt'],10),temperament=character.temperament||pick(seed,['calm','warm','guarded','proud','impulsive','skeptical','playful','stern'],12),formality=character.formality||pick(seed,['casual','neutral','formal','ceremonial'],14),rhythm=character.speechRhythm||pick(seed,['short-direct','measured','ornate','hesitant','rapid','dry'],16),risk=character.riskTolerance||pick(seed,['low','medium','high'],18),social=character.socialTendency||pick(seed,['supportive','reserved','challenging','protective','opportunistic'],20),combat=character.combatTendency||pick(seed,['protect-ally','hold-position','flank','pressure-target','avoid-risk','counterattack'],22);return Object.freeze({name:character.name||'character',role:character.role||'',background:character.background||'',values:Object.freeze(values),traits:Object.freeze(traits),desire,need,fear,secret,taboo:Object.freeze(uniq(character.taboo||[])),loyalty:character.loyalty||'',temperament,voice:Object.freeze({formality,vocabulary:character.vocabulary||'background-appropriate',sentenceRhythm:rhythm,relationshipShift:true,emotionSensitive:true,knowledgeBoundary:true,subtext:true}),behaviorIntent:Object.freeze({riskTolerance:risk,socialTendency:social,combatTendency:combat,protectWhen:character.protectWhen||'relationship-and-role-context',retreatWhen:character.retreatWhen||'gameplay-ai-authorized-condition'}),memoryContract:Object.freeze({tracks:['trust','fear','respect','debt','betrayal','promise','known-fact','witnessed-event'],sourceEventRequired:true,persistentWhenGameOwnsSave:true}),final3dActorPresentation:Object.freeze({role:npcRoleKey(character.role||'GENERAL_NPC'),masterAssetFormat:'GLB_2_0',masterGlbRequired:true,roleMotionContract:'VIBE_NPC_ROLE_MOTION_REQUIREMENTS',stateMotionBindingRequired:true,actualJointMotionRequired:true,platformRuntimeVerificationRequired:true,productionVerified:false}),gameplayAuthority:false,rule:'persona and voice guide presentation and declared AI intent only; authoritative actions resolve through game-owned APIs'})}
 export function resolveVibeCharacterBehaviorIntent({persona={},context={}}={}){
   const risk=String(persona?.behaviorIntent?.riskTolerance||'medium').toLowerCase();
   const social=String(persona?.behaviorIntent?.socialTendency||'reserved').toLowerCase();
@@ -437,6 +584,7 @@ export function createVibeCharacterCustomizationRecipe(character={},index=0){
   const speciesKey=String(character.species||'humanoid').toUpperCase();
   const leftEye=pick(seed,['BROWN','AMBER','HAZEL','GREEN','BLUE','GRAY','DARK','PALE','GOLDEN','FANTASY_ACCENT'],31);
   const heterochromia=value(32)>.82;
+  const roleMotion=createVibeNpcRoleMotionRequirement({role:character.role||'GENERAL_NPC'});
   const elfLike=/ELF|FAE/.test(speciesKey);
   const horned=/TIEFLING|DEMON|DEVIL|DRACON|HORN|BEAST/.test(speciesKey);
   const tailed=/TIEFLING|DEMON|DEVIL|DRACON|BEAST|FELINE|LIZARD/.test(speciesKey);
@@ -504,6 +652,19 @@ export function createVibeCharacterCustomizationRecipe(character={},index=0){
       idle:identity.physical.idle,
       expressionFamily:pick(seed,['CALM','WARM','GUARDED','PROUD','STERN','PLAYFUL','WEARY','ALERT'],53),
       gestureFamily:pick(seed,['RESTRAINED','OPEN','FORMAL','WORKING','COMBAT_READY','NERVOUS','CONFIDENT'],54)
+    }),
+    final3dActorPackage:Object.freeze({
+      role:roleMotion.role,
+      masterAssetFormat:'GLB_2_0',
+      masterGlbRequired:true,
+      requiredStaticContents:Object.freeze(['MESH','NORMALS','UV0','MATERIALS','SKELETON','SKIN_WEIGHTS','JOINT_WEIGHTS','ANIMATION']),
+      rig:Object.freeze({skeleton:true,skinWeights:true,jointWeights:true,activeJointAnimation:true}),
+      attachmentSocketBasis:Object.freeze(['HAND','BACK','HIP','SHIELD','TOOL']),
+      motionRequirements:roleMotion,
+      mobileLodRequired:true,
+      platformNativeRuntimeQaIndependent:true,
+      productionVerified:false,
+      runtimeVerificationState:'PENDING_PLATFORM_NATIVE_RUNTIME'
     }),
     referenceVisibleFeatures:Object.freeze(character.referenceVisibleFeatures&&typeof character.referenceVisibleFeatures==='object'?{...character.referenceVisibleFeatures}:{}),
     state:'PREPARED_SEMANTIC_CUSTOMIZATION_RECIPE',

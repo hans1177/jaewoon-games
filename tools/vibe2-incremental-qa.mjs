@@ -472,7 +472,7 @@ function runSpecializedFocusedQa({root,data={},changed=[]}={}){
 }
 function robloxCharacterMotionStaticEvidence(text=''){
   const source=String(text||'');
-  const customActorFactory=/(?:humanoidFigure|figure|create\w*(?:Npc|NPC|Enemy|Monster|Creature|Character)|build\w*(?:Npc|NPC|Enemy|Monster|Creature|Character))\s*\(/i.test(source);
+  const customActorFactory=/(?:humanoidFigure|figure|create\w*(?:Npc|NPC|Villager|Merchant|QuestGiver|Guard|Worker|Companion|Ally|Enemy|Elite|MiniBoss|Boss|Monster|Creature|Character)|build\w*(?:Npc|NPC|Villager|Merchant|QuestGiver|Guard|Worker|Companion|Ally|Enemy|Elite|MiniBoss|Boss|Monster|Creature|Character))\s*\(/i.test(source);
   const customModel=/Instance\.new\s*\(\s*["']Model["']\s*\)/i.test(source);
   const humanoidCreated=/Instance\.new\s*\(\s*["']Humanoid["']\s*\)|Instance\.new\s*\(\s*["']AnimationController["']\s*\)/i.test(source);
   const namedLimbs={
@@ -482,7 +482,7 @@ function robloxCharacterMotionStaticEvidence(text=''){
     head:/(?:\bHead\b|RPGHead|NpcHead|EnemyHead|MonsterHead)/i.test(source)
   };
   const limbFamilies=Object.values(namedLimbs).filter(Boolean).length;
-  const characterTerms=/(?:character|player|npc|enemy|monster|boss|creature|humanoid|villager|resident)/i.test(source);
+  const characterTerms=/(?:character|player|npc|enemy|elite|mini.?boss|boss|monster|creature|humanoid|villager|resident|merchant|quest.?giver|guard|worker|companion|ally)/i.test(source);
   const customArticulatedIntent=humanoidCreated||customActorFactory||(customModel&&characterTerms&&limbFamilies>=2);
   const nativePlayerRigIntent=!customArticulatedIntent&&/(?:CharacterAdded|LocalPlayer|player\.Character|HumanoidRootPart)/.test(source)&&/Humanoid/.test(source);
   const articulation=/(?:Motor6D|\bBone\b|UpperTorso|LowerTorso|LeftUpperArm|RightUpperArm|LeftUpperLeg|RightUpperLeg)/.test(source);
@@ -578,10 +578,13 @@ function runPresentationStaticQa({root,data={},changed=[]}={}){
         for(const [domain,present] of Object.entries(requiredVisualDomains))require('ROBLOX_VISUAL_DOMAIN_'+domain,present);
         require('GAME_VISUAL_IDENTITY_DOMAINS',Object.values(requiredVisualDomains).every(Boolean));
         require('NO_SINGLE_PRIMITIVE_PLACEHOLDER',!singlePrimitiveOnly);
-        const npcFactorySignal=/(?:create|build|spawn|make)\w*(?:Npc|NPC|Villager|Resident|Merchant|Vendor|QuestGiver|Guard|Companion|Ally|HumanoidBoss)\s*\(|Name\s*=\s*["'](?:NPC|Npc|Villager|Resident|Merchant|Vendor|QuestGiver|Guard|Companion|Ally|HumanoidBoss)["']/i.test(text);
-        const npcPrimitivePartCount=(text.match(/Instance\.new\s*\(\s*["'](?:Part|WedgePart|CornerWedgePart|TrussPart)["']\s*\)/gi)||[]).length;
-        const npcNativeActorBinding=/(?:Instance\.new\s*\(\s*["']MeshPart["']\s*\)|\bSpecialMesh\b|\bSurfaceAppearance\b|\bClone\s*\(|GeneratedNativeAssetPath|MasterGlb|\.glb\b|MeshId\s*=|WaitForChild\s*\(\s*["'][^"']*(?:Npc|NPC|Character|Companion|Boss|Rig|Model)[^"']*["']\s*\))/i.test(text);
-        require('ROBLOX_NPC_NO_PRIMITIVE_DOLL_FINAL',!npcFactorySignal||npcPrimitivePartCount<3||npcNativeActorBinding);
+        const npcFactorySignal=/(?:create|build|spawn|make)\w*(?:Npc|NPC|Villager|Resident|Merchant|Vendor|QuestGiver|Guard|Worker|Civilian|Companion|Ally|Elite|MiniBoss|HumanoidBoss|Boss)\s*\(|Name\s*=\s*["'](?:NPC|Npc|Villager|Resident|Merchant|Vendor|QuestGiver|Guard|Worker|Civilian|Companion|Ally|Elite|MiniBoss|HumanoidBoss|Boss)["']/i.test(text);
+        const npcPrimitiveBodyPartCount=(text.match(/(?:local\s+)?\w*(?:head|torso|chest|body|pelvis|arm|leg|hand|foot)\w*\s*=\s*Instance\.new\s*\(\s*["'](?:Part|WedgePart|CornerWedgePart|TrussPart)["']\s*\)/gi)||[]).length;
+        const npcNativeActorBinding=/(?:Instance\.new\s*\(\s*["']MeshPart["']\s*\)|\bSpecialMesh\b|\bClone\s*\(|MeshId\s*=|WaitForChild\s*\(\s*["'][^"']*(?:Npc|NPC|Character|Companion|Elite|Boss|Rig|Model)[^"']*["']\s*\))/i.test(text);
+        const primitiveFinalActor=npcFactorySignal&&npcPrimitiveBodyPartCount>=2;
+        require('ROBLOX_NPC_NO_PRIMITIVE_DOLL_FINAL',!primitiveFinalActor);
+        require('PRIMITIVE_ONLY_FINAL_3D_ACTOR',!primitiveFinalActor);
+        if(npcFactorySignal&&!primitiveFinalActor)require('ROBLOX_NPC_NATIVE_ACTOR_BINDING',npcNativeActorBinding);
         const motionDriver=/(?:TweenService|RenderStepped|Heartbeat|Animator|AnimationTrack|Motor6D|Bone)/i.test(text);
         const motionMutation=/(?:TweenService[\s\S]{0,1200}(?:CFrame|Transform|Position|Orientation)\s*=|(?:RenderStepped|Heartbeat)[\s\S]{0,1200}\.(?:CFrame|Transform|Position|Orientation)\s*=|(?:Motor6D|Bone)[\s\S]{0,800}\.Transform\s*=|\.(?:CFrame|Transform|Position|Orientation)\s*=\s*(?:CFrame|Vector3|UDim2|[^\n;]+[+*\-]))/i.test(text);
         require('ROBLOX_NATIVE_MOTION_DRIVER',motionDriver);

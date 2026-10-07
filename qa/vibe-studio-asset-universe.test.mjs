@@ -106,7 +106,7 @@ import {
   buildBaseMaterialRotationPlan,
   createStudioAssetUniversePlan
 } from '../assets/vibe-studio-asset-universe.js';
-import {createVibeCharacterPersona,resolveVibeCharacterBehaviorIntent,createVibePopulationPersonaDiversity,VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,VIBE_NPC_ROLE_PRODUCTION_CONTRACT,createVibeNpcPhysicalProfile,createVibeNpcRoleProfile,createVibeCharacterCustomizationRecipe,createVibeNpcCustomizationPopulation,createVibePhysicalDiversityGate} from '../assets/vibe-character-identity-director.js';
+import {createVibeCharacterPersona,resolveVibeCharacterBehaviorIntent,createVibePopulationPersonaDiversity,VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,VIBE_NPC_ROLE_PRODUCTION_CONTRACT,VIBE_NPC_ROLE_MOTION_REQUIREMENTS,createVibeNpcRoleMotionRequirement,createVibeNpcPhysicalProfile,createVibeNpcRoleProfile,createVibeCharacterCustomizationRecipe,createVibeNpcCustomizationPopulation,createVibePhysicalDiversityGate} from '../assets/vibe-character-identity-director.js';
 import {synchronizeCompanyCommonAssetRegistry,synchronizeSourceBoundAssetConsumers,buildAssetSupplyDecisionSummary,buildVibeAssetProductionPlan} from '../tools/vibe2-asset-production-plan.mjs';
 
 const fullQualityEvidence=Object.freeze({
@@ -612,6 +612,36 @@ test('NPC physical and role profiles support companions service roles elites and
   }
 });
 
+test('NPC role motion contract binds presentation states to real role motion without taking gameplay authority',()=>{
+  assert.equal(VIBE_NPC_ROLE_MOTION_REQUIREMENTS.status,'ACTIVE_MACHINE_READABLE_NPC_ROLE_MOTION');
+  assert.equal(VIBE_NPC_ROLE_MOTION_REQUIREMENTS.masterActor.masterStaticQaDoesNotGrantProductionVerified,true);
+  const merchant=createVibeNpcRoleMotionRequirement({role:'MERCHANT'});
+  assert.ok(merchant.requiredClips.includes('TRADE_INTERACTION'));
+  assert.ok(merchant.stateBindings.INTERACT.includes('GREET'));
+  const companion=createVibeNpcRoleMotionRequirement({role:'COMPANION'});
+  assert.ok(companion.stateBindings.FOLLOW.includes('JOG_OR_RUN'));
+  assert.ok(companion.requiredClips.includes('REVIVE_HELP'));
+  const guard=createVibeNpcRoleMotionRequirement({role:'GUARD'});
+  assert.ok(guard.stateBindings.ALERT.includes('DRAW_WEAPON'));
+  const boss=createVibeNpcRoleProfile({role:'HUMANOID_BOSS',character:{name:'boss'}});
+  assert.ok(boss.motionRequirements.requiredClips.includes('PHASE_CHANGE'));
+  assert.ok(boss.stateMotionBindings.COMBAT.includes('SPECIAL_ATTACK_SET'));
+  assert.equal(boss.masterActorPackage.jointAnimationChannelsRequired,true);
+  assert.equal(boss.productionVerified,false);
+  assert.equal(boss.runtimeVerificationState,'PENDING_PLATFORM_NATIVE_RUNTIME');
+
+  const recipe=createVibeCharacterCustomizationRecipe({name:'merchant-a',role:'MERCHANT',species:'humanoid'},1);
+  assert.equal(recipe.final3dActorPackage.masterGlbRequired,true);
+  assert.equal(recipe.final3dActorPackage.masterAssetFormat,'GLB_2_0');
+  assert.ok(recipe.final3dActorPackage.requiredStaticContents.includes('JOINT_WEIGHTS'));
+  assert.ok(recipe.final3dActorPackage.motionRequirements.stateBindings.INTERACT.includes('TRADE_INTERACTION'));
+
+  const persona=createVibeCharacterPersona({name:'guard-a',role:'GUARD'},1);
+  assert.equal(persona.final3dActorPresentation.masterGlbRequired,true);
+  assert.equal(persona.final3dActorPresentation.actualJointMotionRequired,true);
+  assert.equal(persona.gameplayAuthority,false);
+});
+
 test('reference image observations become task-local character customization ideas without persistent copy claims',async()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const {buildVibeAssetProductionPlan}=await import('../tools/vibe2-asset-production-plan.mjs');
@@ -908,6 +938,10 @@ test('studio asset universe requires GLB 2.0 masters for final 3D character and 
   assert.equal(CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.format,'GLB_2_0');
   assert.deepEqual([...CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.appliesToFamilies],['CHARACTER','CREATURE']);
   assert.equal(CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.requiredBeforePlatformNativeVariant,true);
+  assert.ok(CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.requiredContents.includes('JOINT_WEIGHTS'));
+  assert.equal(CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.structuralChecks.jointAnimationChannelRequired,true);
+  assert.equal(CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.actorPackageRequirements.attachmentSocketBasisRequired,true);
+  assert.equal(CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.actorPackageRequirements.productionVerifiedRequiresPlatformNativeRuntime,true);
   assert.equal(CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.primitivePartAssemblyPrototypeOnly,true);
   assert.equal(CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.primitiveOrColorOnlyMayNotClaimFinal3dActor,true);
 

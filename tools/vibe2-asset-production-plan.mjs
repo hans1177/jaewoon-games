@@ -19,8 +19,14 @@ const freeze=value=>Object.freeze(value);
 const freezeList=value=>freeze([...(value||[])]);
 const unique=value=>[...new Set((value||[]).map(clean).filter(Boolean))];
 const normalizeActorType=value=>clean(value).toLowerCase().replace(/[\s-]+/g,'_');
-const CROSS_PLATFORM_3D_CHARACTER_TYPES=freezeList(unique(['character',...(STUDIO_3D_ACTOR_ROLE_FAMILIES.CHARACTER||[]).map(normalizeActorType)]));
-const CROSS_PLATFORM_3D_CREATURE_TYPES=freezeList(unique(['monster',...(STUDIO_3D_ACTOR_ROLE_FAMILIES.CREATURE||[]).map(normalizeActorType)]));
+const CROSS_PLATFORM_3D_CHARACTER_TYPES=freezeList(unique([
+  'character','npc','villager','service_npc','friendly_character','party_member',
+  ...(STUDIO_3D_ACTOR_ROLE_FAMILIES.CHARACTER||[]).map(normalizeActorType)
+]));
+const CROSS_PLATFORM_3D_CREATURE_TYPES=freezeList(unique([
+  'monster','mini_boss','raid_boss',
+  ...(STUDIO_3D_ACTOR_ROLE_FAMILIES.CREATURE||[]).map(normalizeActorType)
+]));
 export function crossPlatform3dActorFamilyForType(type=''){
   const key=normalizeActorType(type);
   if(CROSS_PLATFORM_3D_CHARACTER_TYPES.includes(key))return'CHARACTER';
@@ -156,13 +162,18 @@ export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
       offset+=length;
     }
     if(jsonCount!==1||document?.asset?.version!=='2.0')throw new Error('GLB_JSON_INVALID');
-    for(const key of ['meshes','materials','skins','animations','buffers','images','extensionsRequired'])if(document[key]!==undefined&&!Array.isArray(document[key]))throw new Error('GLB_COLLECTION_INVALID:'+key);
+    for(const key of ['meshes','materials','skins','animations','nodes','accessors','buffers','images','extensionsRequired'])if(document[key]!==undefined&&!Array.isArray(document[key]))throw new Error('GLB_COLLECTION_INVALID:'+key);
     if((document.meshes||[]).some(mesh=>!mesh||!Array.isArray(mesh.primitives)||mesh.primitives.some(primitive=>!primitive||typeof primitive.attributes!=='object'||primitive.attributes===null)))throw new Error('GLB_PRIMITIVE_INVALID');
-    for(const key of ['materials','skins','animations','buffers','images'])if((document[key]||[]).some(row=>!row||typeof row!=='object'))throw new Error('GLB_ENTRY_INVALID:'+key);
+    for(const key of ['materials','skins','animations','nodes','accessors','buffers','images'])if((document[key]||[]).some(row=>!row||typeof row!=='object'))throw new Error('GLB_ENTRY_INVALID:'+key);
     if(source.sourceHash&&source.sourceHash!==sourceHash)throw new Error('GLB_SOURCE_HASH_MISMATCH');
   }catch(error){return freeze({status:'SOURCE_GLB_REQUIRED',path:relative,issues:[error.code==='ENOENT'?'GLB_MATERIALIZATION_REQUIRED':error.message],sourceMutationPerformed:false});}
+  const materials=document.materials||[];
+  const nodes=document.nodes||[];
+  const skins=document.skins||[];
+  const jointNodeIndices=new Set(skins.flatMap(skin=>(skin.joints||[]).filter(index=>Number.isInteger(index)&&index>=0&&index<nodes.length)));
   const primitives=(document.meshes||[]).flatMap((mesh,meshIndex)=>(mesh.primitives||[]).map((primitive,primitiveIndex)=>({
     meshIndex,primitiveIndex,name:clean(mesh.name)||`mesh-${meshIndex}`,materialIndex:primitive.material??null,
+    hasMaterial:Number.isInteger(primitive.material)&&primitive.material>=0&&primitive.material<materials.length,
     hasNormals:Number.isInteger(primitive.attributes?.NORMAL),hasUv:Number.isInteger(primitive.attributes?.TEXCOORD_0),
     hasJointWeights:Number.isInteger(primitive.attributes?.JOINTS_0)&&Number.isInteger(primitive.attributes?.WEIGHTS_0),
     morphTargetCount:Array.isArray(primitive.targets)?primitive.targets.length:0,
@@ -170,13 +181,39 @@ export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
   })));
   if(!primitives.length)issues.push('MESH_AUTHORING_REQUIRED');
   if([...document.buffers||[],...document.images||[]].some(row=>row.uri&&!String(row.uri).startsWith('data:')))issues.push('EXTERNAL_RESOURCE_MATERIALIZATION_REQUIRED');
-  const inventory={meshCount:(document.meshes||[]).length,primitives,materials:(document.materials||[]).map((material,index)=>({index,name:material.name||`material-${index}`,hasBaseColorTexture:Boolean(material.pbrMetallicRoughness?.baseColorTexture),hasNormalTexture:Boolean(material.normalTexture)})),skins:(document.skins||[]).map((skin,index)=>({index,name:skin.name||`skin-${index}`,jointCount:(skin.joints||[]).length})),animations:(document.animations||[]).map((animation,index)=>({index,name:animation.name||`animation-${index}`,channelCount:(animation.channels||[]).length})),requiredExtensions:document.extensionsRequired||[]};
+  const animations=(document.animations||[]).map((animation,index)=>{
+    const channels=Array.isArray(animation.channels)?animation.channels:[];
+    const jointChannels=channels.filter(channel=>
+      Number.isInteger(channel?.target?.node)
+      &&jointNodeIndices.has(channel.target.node)
+      &&['rotation','translation','scale'].includes(clean(channel?.target?.path).toLowerCase())
+    );
+    const animatedJoints=unique(jointChannels.map(channel=>String(channel.target.node)));
+    return {
+      index,name:animation.name||`animation-${index}`,channelCount:channels.length,
+      jointChannelCount:jointChannels.length,animatedJointCount:animatedJoints.length,
+      jointMotionPaths:unique(jointChannels.map(channel=>clean(channel?.target?.path).toLowerCase()))
+    };
+  });
+  const inventory={
+    meshCount:(document.meshes||[]).length,nodeCount:nodes.length,jointNodeCount:jointNodeIndices.size,primitives,
+    materials:materials.map((material,index)=>({index,name:material.name||`material-${index}`,hasBaseColorTexture:Boolean(material.pbrMetallicRoughness?.baseColorTexture),hasNormalTexture:Boolean(material.normalTexture)})),
+    skins:skins.map((skin,index)=>{
+      const joints=Array.isArray(skin.joints)?skin.joints:[];
+      const validJointCount=joints.filter(joint=>Number.isInteger(joint)&&joint>=0&&joint<nodes.length).length;
+      return {index,name:skin.name||`skin-${index}`,jointCount:joints.length,validJointCount,invalidJointCount:joints.length-validJointCount};
+    }),
+    animations,
+    jointAnimationChannelCount:animations.reduce((sum,row)=>sum+row.jointChannelCount,0),
+    animatedJointCount:new Set((document.animations||[]).flatMap(animation=>(animation.channels||[]).map(channel=>channel?.target?.node).filter(node=>jointNodeIndices.has(node)))).size,
+    requiredExtensions:document.extensionsRequired||[]
+  };
   const requiredAuthoring=[];
   if(primitives.some(row=>!row.hasUv))requiredAuthoring.push('UV_UNWRAP_AND_TEXTURE_AUTHORING');
   if(primitives.some(row=>!row.hasNormals))requiredAuthoring.push('NORMALS_AND_SMOOTHING_REVIEW');
   if(!primitives.some(row=>row.morphTargetCount))requiredAuthoring.push('AUTHOR_MORPHS_WHEN_SHAPE_CUSTOMIZATION_NEEDED');
   if(!inventory.skins.length)requiredAuthoring.push('RIG_WHEN_ARTICULATION_NEEDED');
-  if(!inventory.animations.length)requiredAuthoring.push('AUTHOR_ACTIONS_WHEN_MOTION_NEEDED');
+  if(!inventory.animations.length||inventory.jointAnimationChannelCount<=0)requiredAuthoring.push('AUTHOR_JOINT_ACTIONS_WHEN_MOTION_NEEDED');
   return freeze({status:issues.length?'AUTHORING_REQUIRED':'INSPECTED_RECONSTRUCTION_INPUT',path:relative,sourceHash,bytes:bytes.length,issues,inventory,requiredAuthoring,
     workflow:['PRESERVE_HASHED_ORIGINAL','INSPECT_SILHOUETTE_TOPOLOGY_AND_MATERIAL_BOUNDARIES','REUSE_BASE_AND_REBUILD_WEAK_FORMS','SCULPT_SECONDARY_ANATOMY_OR_CONSTRUCTION','CONFORM_PARTS_CLOTHING_AND_JOINTS','UV_BAKE_MATERIAL_SEPARATION_AND_CAUSAL_WEAR','RIG_MORPHS_EXPRESSIONS_AND_ACTION_POLISH','LOD_PLATFORM_VARIANTS_AND_REFERENCE_COMPARISON'],
     topologyAndDeformationStillNeedRenderedInspection:true,customizationBindingsMustUseActualNames:true,sourceMutationPerformed:false,generatedAsset:false,runtimeVerified:false});
@@ -199,10 +236,10 @@ export function evaluateCrossPlatform3dMasterGlb({repoRoot=process.cwd(),source=
   if(!Number(inv.meshCount||0)||!primitives.length)blockers.push('MASTER_GLB_MESH_REQUIRED');
   if(primitives.some(row=>row.hasNormals!==true))blockers.push('MASTER_GLB_NORMALS_REQUIRED');
   if(primitives.some(row=>row.hasUv!==true))blockers.push('MASTER_GLB_UV0_REQUIRED');
-  if(!(inv.materials||[]).length)blockers.push('MASTER_GLB_MATERIAL_REQUIRED');
-  if(!(inv.skins||[]).length||(inv.skins||[]).some(row=>Number(row.jointCount||0)<=0))blockers.push('MASTER_GLB_SKIN_SKELETON_REQUIRED');
+  if(!(inv.materials||[]).length||primitives.some(row=>row.hasMaterial!==true))blockers.push('MASTER_GLB_MATERIAL_REQUIRED');
+  if(!(inv.skins||[]).length||Number(inv.jointNodeCount||0)<=0||(inv.skins||[]).some(row=>Number(row.jointCount||0)<=0||Number(row.invalidJointCount||0)>0))blockers.push('MASTER_GLB_SKIN_SKELETON_REQUIRED');
   if(!primitives.some(row=>row.hasJointWeights===true))blockers.push('MASTER_GLB_JOINT_WEIGHTS_REQUIRED');
-  if(!(inv.animations||[]).length)blockers.push('MASTER_GLB_ANIMATION_REQUIRED');
+  if(!(inv.animations||[]).length||Number(inv.jointAnimationChannelCount||0)<=0||Number(inv.animatedJointCount||0)<=0)blockers.push('MASTER_GLB_ANIMATION_REQUIRED');
   const uniqueBlockers=unique(blockers);
   return freeze({
     version:1,required:true,pass:uniqueBlockers.length===0,
@@ -2736,8 +2773,11 @@ export function buildVibeAssetProductionPlan({
   const flowAssetRequirements=normalizeFlowAssetRequirements(task.assetRequirements);
   const currentDemandFamilies=requiredAssetFamilies({request,requirements:flowAssetRequirements});
   const manifestBase=manifest||readJson(path.join(repoRoot,'assets','asset-manifest.json'),{version:0,assets:[]});
-  const librarySync=synchronizeCompanyCommonAssetRegistry({repoRoot,persist:!process.env.NODE_TEST_CONTEXT});
+  const persistedCompanyRegistry=readJson(path.join(repoRoot,'company-asset-library.json'),{version:0,assets:[],externalSources:[]});
+  const librarySync=synchronizeCompanyCommonAssetRegistry({repoRoot,registry:persistedCompanyRegistry,persist:!process.env.NODE_TEST_CONTEXT});
   const companyRegistry=librarySync.registry;
+  // 선택 identity는 실제 저장된 snapshot만 사용한다. dry-run 동기화 결과가 canonical version/hash를 선행하지 못한다.
+  const selectionRegistry=librarySync.changed&&!librarySync.persisted?persistedCompanyRegistry:companyRegistry;
   const libraryAutomation=companyRegistry?.internalAssetLibraryAutomation||{};
   const executionLibraryPlan=librarySync.executionAutomationPlan||librarySync.automationPlan;
   const persistedWorklistFresh=
@@ -2819,12 +2859,12 @@ export function buildVibeAssetProductionPlan({
     newWrapper:false,
     newShadowSystem:false
   });
-  const currentCustomizationDocument=(companyRegistry?.baseMaterialLibrary?.customization?.documents||[]).find(row=>row.gameId===clean(task.gameId))||null;
+  const currentCustomizationDocument=(selectionRegistry?.baseMaterialLibrary?.customization?.documents||[]).find(row=>row.gameId===clean(task.gameId))||null;
   const sharedCustomizationDocument=task.assetCustomization?.sharedDocument||(!task.assetCustomization?.recipes?.length?currentCustomizationDocument:null);
   if(sharedCustomizationDocument)task={...task,styleFamily:sharedCustomizationDocument.styleBible?.profileKey,styleBible:sharedCustomizationDocument.styleBible,concept:{...task.concept,styles:[{family:sharedCustomizationDocument.styleBible?.profileKey,weight:1}]},motionStyleModifiers:sharedCustomizationDocument.motionStyle?.modifiers};
   const sameGameRobloxAssets=resolvedTarget==='roblox'?discoverExistingRobloxGameAssets({repoRoot,gameId:task.gameId}):[];
   const manifestWithSameGameAssets={...manifestBase,assets:[...(Array.isArray(manifestBase?.assets)?manifestBase.assets:[]),...sameGameRobloxAssets]};
-  const manifestInput=mergeManifestWithCompanyLibrary(manifestWithSameGameAssets,companyRegistry);
+  const manifestInput=mergeManifestWithCompanyLibrary(manifestWithSameGameAssets,selectionRegistry);
   const presetInput=presetCatalog||readJson(path.join(repoRoot,'assets','prototype-asset-presets.json'),{version:0,presets:[]});
   const characterCustomizationRequested=Boolean(task.characterCustomization||task.npcCustomization)||/(?:CHARACTER|NPC|AVATAR|CUSTOMI[ZS]|캐릭터|케릭터|커마|커스터마이징|NPC|주민|시민|동료)/i.test(request);
   const duelCombatRequested=/(?:duel|dueling|결투|대전|격투|맨손|무기.?전투|combat|fight|fighter|카타나|katana|검술|쌍검|대검|창술|boxing|복싱|kickboxing|킥복싱|muay|무에타이|karate|가라테|taekwondo|태권도|mma|레슬링|wrestling|judo|유도|jiu.?jitsu|주짓수)/i.test(request);
@@ -3152,7 +3192,7 @@ export function buildVibeAssetProductionPlan({
   const companyCount=decisions.filter(row=>row.companyCandidates.length>0).length;
   const repositoryCount=decisions.filter(row=>row.repositoryCandidates.length>0).length;
   const externalCount=decisions.filter(row=>row.externalCandidates.length>0).length;
-  const bootstrapSets=(companyRegistry?.motionBootstrap?.sets||[]).map(row=>createCreatureMotionSetProfile({...row,verificationState:companyRegistry?.motionBootstrap?.productionVerified===true?'VERIFIED_RUNTIME':'PREPARED_SEMANTIC'}));
+  const bootstrapSets=(selectionRegistry?.motionBootstrap?.sets||[]).map(row=>createCreatureMotionSetProfile({...row,verificationState:selectionRegistry?.motionBootstrap?.productionVerified===true?'VERIFIED_RUNTIME':'PREPARED_SEMANTIC'}));
   const motionAutoGapActive=companyLibrary?.autoMotionCoverageGapFill?.status==='ACTIVE_EXECUTABLE_CONTRACT';
   const requestUpper=request.toUpperCase();
   const universeContract=companyLibrary?.studioAssetUniverse||{};
@@ -3175,21 +3215,21 @@ export function buildVibeAssetProductionPlan({
     family,Object.fromEntries(Object.keys(subs).map(sub=>[sub,familyRegex[family]?.test(request)?1:0]))
   ]));
   const universeRepositoryAssets=[
-    ...(companyRegistry?.assets||[]).filter(row=>clean(row.status).toUpperCase()==='REPO_ASSET'),
+    ...(selectionRegistry?.assets||[]).filter(row=>clean(row.status).toUpperCase()==='REPO_ASSET'),
     ...(manifestBase?.assets||[]).map(row=>({...row,family:inferUniverseFamily(row),subfamily:clean(row.subfamily||row.type||(row.types||[])[0]).toUpperCase(),status:'REPO_ASSET'}))
   ].filter(row=>clean(row.family||row.category));
   const universeSignals={};
   for(const [family,subs] of Object.entries(DEFAULT_COVERAGE_BASELINES)){
     for(const subfamily of Object.keys(subs)){
       const key=family+':'+subfamily;
-      const externalReady=(companyRegistry?.externalSources||[]).some(row=>{
+      const externalReady=(selectionRegistry?.externalSources||[]).some(row=>{
         const categories=unique([row?.category,...(Array.isArray(row?.categories)?row.categories:[])]).map(value=>clean(value).toUpperCase());
         const categoryMatch=categories.includes(family)
           ||(family==='BUILDING'&&categories.some(category=>['ENVIRONMENT','PROP'].includes(category)))
           ||(family==='MATERIAL'&&categories.some(category=>['VFX','ENVIRONMENT'].includes(category)));
         return /LICENSE_VERIFIED/.test(clean(row?.status).toUpperCase())&&categoryMatch;
       });
-      const verifiedReuse=(companyRegistry?.assets||[]).some(row=>row.verifiedCompanyReusable===true&&clean(row.category||row.family).toUpperCase()===family);
+      const verifiedReuse=(selectionRegistry?.assets||[]).some(row=>row.verifiedCompanyReusable===true&&clean(row.category||row.family).toUpperCase()===family);
       universeSignals[key]={
         activeGameDemand:activeDemand[family]?.[subfamily]>0,
         gameConsumerCount:activeDemand[family]?.[subfamily]>0?1:0,
@@ -3202,7 +3242,7 @@ export function buildVibeAssetProductionPlan({
   }
   // 동적 연결: 같은 파일은 한 번만 읽고 현재 바이트 지문을 선택 스냅샷에 함께 묶는다.
   const sourceHashes=new Map();
-  const sourceBoundAssets=(companyRegistry?.assets||[]).map(asset=>{
+  const sourceBoundAssets=(selectionRegistry?.assets||[]).map(asset=>{
     const files=unique(asset.sourceFiles?.length?asset.sourceFiles:[asset.path])
       .map(file=>file.replace(/^\//,''))
       .filter(file=>file.startsWith('assets/')&&!file.split('/').includes('..')).sort();
@@ -3221,12 +3261,12 @@ export function buildVibeAssetProductionPlan({
     };
   });
   const studioUniversePlan=universeActive?createStudioAssetUniversePlan({
-    libraryVersion:Number(companyRegistry?.version)||0,
-    librarySnapshotId:'sha256:'+crypto.createHash('sha256').update(JSON.stringify({registry:companyRegistry,sourceBoundAssets,repositoryAssets:universeRepositoryAssets})).digest('hex'),
+    libraryVersion:Number(selectionRegistry?.version)||0,
+    librarySnapshotId:'sha256:'+crypto.createHash('sha256').update(JSON.stringify({registry:selectionRegistry,sourceBoundAssets,repositoryAssets:universeRepositoryAssets})).digest('hex'),
     expectedSnapshotId:clean(task.expectedAssetLibrarySnapshotId),
     assets:sourceBoundAssets,
     repositoryAssets:universeRepositoryAssets,
-    externalSources:companyRegistry?.externalSources||[],
+    externalSources:selectionRegistry?.externalSources||[],
     activeDemand,
     signalsByKey:universeSignals,
     platform:resolvedTarget.toUpperCase(),
@@ -3239,7 +3279,7 @@ export function buildVibeAssetProductionPlan({
     usageByAsset:task.assetUsageById||{},
     futureGameDemands:Array.isArray(task.futureGameDemands)?task.futureGameDemands:[],
     usageEvents:Array.isArray(task.assetUsageEvents)?task.assetUsageEvents:[],
-    baseMaterialFamilies:companyRegistry?.baseMaterialLibrary?.families||{},
+    baseMaterialFamilies:selectionRegistry?.baseMaterialLibrary?.families||{},
     baseMaterialUsageByAtom:task.baseMaterialUsageByAtom||{},
     styleBible:task.styleBible||{},
     customizationRecipes:Array.isArray(task.assetCustomization?.recipes)?task.assetCustomization.recipes:[],
@@ -3252,11 +3292,11 @@ export function buildVibeAssetProductionPlan({
     ?robloxCurrentAssetSelectionProfile({repoRoot,gameId:task.gameId})
     :Object.freeze({genre:'',subgenre:''});
   const baseMaterialLoadout=buildComposableBaseMaterialLoadout({
-    companyRegistry,studioUniversePlan,decisions,gameId:clean(task.gameId),target:resolvedTarget,request,
+    companyRegistry:selectionRegistry,studioUniversePlan,decisions,gameId:clean(task.gameId),target:resolvedTarget,request,
     robloxProfile:robloxAssetSelectionProfile
   });
   const allGameDynamicLibraryBinding=buildAllGameDynamicLibraryBindingPlan({
-    companyRegistry,target:resolvedTarget,gameId:task.gameId,baseMaterialLoadout
+    companyRegistry:selectionRegistry,target:resolvedTarget,gameId:task.gameId,baseMaterialLoadout
   });
   const motionStyle=deriveMotionStyleVariant({
     style:studioUniversePlan?.styleBible?.profileKey||requestedConcept.styles?.[0]?.family||'STYLIZED_FANTASY',
@@ -3267,7 +3307,7 @@ export function buildVibeAssetProductionPlan({
     currentDocument:currentCustomizationDocument,
     baseRevision:task.assetCustomization?.baseRevision??0,
     gameId:clean(task.gameId),platform:resolvedTarget,
-    assets:[...universeRepositoryAssets,...(companyRegistry?.assets||[])],
+    assets:[...universeRepositoryAssets,...(selectionRegistry?.assets||[])],
     customization:studioUniversePlan.customization,styleBible:studioUniversePlan.styleBible,motionStyle,
     motionBindings:task.assetCustomization?.motionBindings||[]
   }):null;
@@ -3278,12 +3318,12 @@ export function buildVibeAssetProductionPlan({
       gameConsumerCount:Boolean(profile.archetype&&requestUpper.includes(profile.archetype))?1:0,
       playerVisibleFrequencyHigh:Boolean(profile.archetype&&requestUpper.includes(profile.archetype)),
       combatCritical:true,
-      externalSourceReady:(companyRegistry?.externalSources||[]).some(row=>clean(row.category).toUpperCase()==='MOTION'&&/LICENSE_VERIFIED/.test(clean(row.status).toUpperCase()))
+      externalSourceReady:(selectionRegistry?.externalSources||[]).some(row=>clean(row.category).toUpperCase()==='MOTION'&&/LICENSE_VERIFIED/.test(clean(row.status).toUpperCase()))
     };
     const gapPlan=buildAutomaticMotionGapFillPlan({
       profile,
       librarySets:bootstrapSets,
-      externalSources:companyRegistry?.externalSources||[],
+      externalSources:selectionRegistry?.externalSources||[],
       usage,
       requirements:companyLibrary?.autoMotionCoverageGapFill?.baselineMinimums||{}
     });
@@ -3305,7 +3345,7 @@ export function buildVibeAssetProductionPlan({
   const prioritizedMotionAutoFillPlans=[...motionAutoFillPlans].sort((a,b)=>b.topPriority-a.topPriority||b.missingSlots-a.missingSlots||a.id.localeCompare(b.id));
   const autoRuntimeVisualReview=task.assetRuntimeVisualReview?null:discoverRuntimeVisualEvidence({task,target:resolvedTarget});
   const runtimeVisualReviewInput=task.assetRuntimeVisualReview||autoRuntimeVisualReview;
-  const traceAsset=task.motionContinuityTrace?[...universeRepositoryAssets,...(companyRegistry?.assets||[])].find(asset=>asset.id===task.motionContinuityTrace.assetId):null;
+  const traceAsset=task.motionContinuityTrace?[...universeRepositoryAssets,...(selectionRegistry?.assets||[])].find(asset=>asset.id===task.motionContinuityTrace.assetId):null;
   const motionContinuityAudit=task.motionContinuityTrace?{
     ...auditMotionContinuityTrace({...task.motionContinuityTrace,
       expectedSourceHash:clean(traceAsset?.sourceHash||traceAsset?.contentHash||traceAsset?.sha256),
@@ -3349,7 +3389,7 @@ export function buildVibeAssetProductionPlan({
     platforms:runtimeVisualReviewInput.platforms||[resolvedTarget.toUpperCase()]
   }):null;
   const mapDetailReconstruction=task.mapReconstruction?createVibeMapDetailReconstruction({
-    sketch:task.mapReconstruction.sketch||{},assets:[...universeRepositoryAssets,...(companyRegistry?.assets||[])],
+    sketch:task.mapReconstruction.sketch||{},assets:[...universeRepositoryAssets,...(selectionRegistry?.assets||[])],
     styleFamily:assetSynchronization?.document?.styleBible?.profileKey||studioUniversePlan?.styleBible?.profileKey,
     seed:task.mapReconstruction.seed||clean(task.gameId)
   }):null;

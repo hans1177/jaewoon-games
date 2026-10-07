@@ -2248,10 +2248,10 @@ export function inspectRobloxNativeCandidateQuality({candidate={},sourceRoot=''}
     const articulationSignal=/(?:Motor6D|\bBone\b|UpperTorso|LowerTorso|LeftUpperArm|RightUpperArm|LeftUpperLeg|RightUpperLeg)/.test(row.text);
     const animatorSignal=/(?:Animator|AnimationController|AnimationTrack|LoadAnimation|\bAnimate\b|IKControl)/.test(row.text);
     const weldSignal=/WeldConstraint/.test(row.text);
-    const npcFactorySignal=/(?:create|build|spawn|make)\w*(?:Npc|NPC|Villager|Resident|Merchant|Vendor|QuestGiver|Guard|Companion|Ally|HumanoidBoss)\s*\(|Name\s*=\s*["'](?:NPC|Npc|Villager|Resident|Merchant|Vendor|QuestGiver|Guard|Companion|Ally|HumanoidBoss)["']/i.test(row.text);
-    const primitivePartCount=(row.text.match(/Instance\.new\s*\(\s*["'](?:Part|WedgePart|CornerWedgePart|TrussPart)["']\s*\)/gi)||[]).length;
-    const nativeActorAssetSignal=/(?:Instance\.new\s*\(\s*["']MeshPart["']\s*\)|\bSpecialMesh\b|\bSurfaceAppearance\b|:\s*Clone\s*\(|\bClone\s*\(|GeneratedNativeAssetPath|MasterGlb|\.glb\b|MeshId\s*=|WaitForChild\s*\(\s*["'][^"']*(?:Npc|NPC|Character|Companion|Boss|Rig|Model)[^"']*["']\s*\))/i.test(row.text);
-    const primitiveNpcDoll=npcFactorySignal&&primitivePartCount>=3&&!nativeActorAssetSignal;
+    const npcFactorySignal=/(?:create|build|spawn|make)\w*(?:Npc|NPC|Villager|Resident|Merchant|Vendor|QuestGiver|Guard|Worker|Civilian|Companion|Ally|Elite|MiniBoss|HumanoidBoss|Boss)\s*\(|Name\s*=\s*["'](?:NPC|Npc|Villager|Resident|Merchant|Vendor|QuestGiver|Guard|Worker|Civilian|Companion|Ally|Elite|MiniBoss|HumanoidBoss|Boss)["']/i.test(row.text);
+    const primitiveBodyPartCount=(row.text.match(/(?:local\s+)?\w*(?:head|torso|chest|body|pelvis|arm|leg|hand|foot)\w*\s*=\s*Instance\.new\s*\(\s*["'](?:Part|WedgePart|CornerWedgePart|TrussPart)["']\s*\)/gi)||[]).length;
+    const nativeActorAssetSignal=/(?:Instance\.new\s*\(\s*["']MeshPart["']\s*\)|\bSpecialMesh\b|:\s*Clone\s*\(|\bClone\s*\(|MeshId\s*=|WaitForChild\s*\(\s*["'][^"']*(?:Npc|NPC|Character|Companion|Elite|Boss|Rig|Model)[^"']*["']\s*\))/i.test(row.text);
+    const primitiveNpcDoll=npcFactorySignal&&primitiveBodyPartCount>=2;
     if(primitiveNpcDoll)findings.push({file:row.path,class:'NPC_PRIMITIVE_FINAL_ACTOR_RISK'});
     if(actorSignal&&customActorSignal&&rootMotionSignal&&!articulationSignal)findings.push({file:row.path,class:'ROOT_ONLY_ARTICULATED_MOTION_RISK'});
     if(actorSignal&&customActorSignal&&weldSignal&&!articulationSignal)findings.push({file:row.path,class:'WELD_CONSTRAINT_ONLY_CHARACTER_RISK'});
@@ -2270,7 +2270,7 @@ export function inspectRobloxNativeCandidateQuality({candidate={},sourceRoot=''}
     motionQualityFindings:Object.freeze(findings.filter(row=>['ROOT_ONLY_ARTICULATED_MOTION_RISK','WELD_CONSTRAINT_ONLY_CHARACTER_RISK','MISSING_ANIMATOR_BINDING_RISK','LOCOMOTION_BLEND_SPEED_SYNC_MISSING_RISK'].includes(row.class))),
     npcFinalActorFindings:Object.freeze(findings.filter(row=>row.class==='NPC_PRIMITIVE_FINAL_ACTOR_RISK')),
     motionQualityHardFailure:'ROBLOX_CHARACTER_MOTION_MANNEQUIN',
-    npcFinalActorHardFailure:'NPC_PRIMITIVE_FINAL_ACTOR',
+    npcFinalActorHardFailure:'PRIMITIVE_ONLY_FINAL_3D_ACTOR',
     sourceRoot:clean(sourceRoot)||null
   });
 }
@@ -5661,7 +5661,13 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const robloxNativeSourceInspection=buildRobloxNativeSourceInspection({order,context,responsibleFiles});
   const robloxNativeCandidateQuality=target==='roblox'?inspectRobloxNativeCandidateQuality({candidate,sourceRoot}):{required:false,findingCount:0,findings:[],securityRelevantFindings:[],automaticGameWideBlock:false};
   if(target==='roblox'&&assetDevelopmentTask(order)&&robloxNativeCandidateQuality.npcFinalActorFindings?.length){
-    throw new Error('NPC_PRIMITIVE_FINAL_ACTOR:'+robloxNativeCandidateQuality.npcFinalActorFindings.map(row=>row.file).join(','));
+    throw new Error('PRIMITIVE_ONLY_FINAL_3D_ACTOR:NPC_PRIMITIVE_FINAL_ACTOR:'+robloxNativeCandidateQuality.npcFinalActorFindings.map(row=>row.file).join(','));
+  }
+  const mannequinFindings=(robloxNativeCandidateQuality.motionQualityFindings||[]).filter(row=>[
+    'ROOT_ONLY_ARTICULATED_MOTION_RISK','WELD_CONSTRAINT_ONLY_CHARACTER_RISK','MISSING_ANIMATOR_BINDING_RISK'
+  ].includes(row.class));
+  if(target==='roblox'&&assetDevelopmentTask(order)&&mannequinFindings.length){
+    throw new Error('CHARACTER_MOTION_MANNEQUIN:'+mannequinFindings.map(row=>row.file+':'+row.class).join(','));
   }
   if(target==='roblox'){
     console.log('ROBLOX_NATIVE_SOURCE_INSPECTION=PASS:files='+robloxNativeSourceInspection.files.length+':systems='+(robloxNativeSourceInspection.systems.join(',')||'NONE'));
