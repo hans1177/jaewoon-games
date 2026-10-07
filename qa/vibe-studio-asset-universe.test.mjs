@@ -4328,15 +4328,23 @@ test('internal quality detail repair dedupes shared source after selecting the w
   assert.equal(plan.nextQualityActions[1].kind,'REAUDIT_ASSET_QUALITY');
 });
 
-test('asset library automation indexes audit and quality lookups instead of nested rescoring',()=>{
+test('asset library automation indexes audit domain seed and quality lookups instead of repeated full scans',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const source=fs.readFileSync(path.resolve(here,'../assets/vibe-studio-asset-universe.js'),'utf8');
   const start=source.indexOf('export function buildInternalAssetLibraryAutomationPlan');
   const end=source.indexOf('export const INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT',start);
   const plannerSource=source.slice(start,end);
   assert.match(plannerSource,/const auditCache=new WeakMap\(\)/);
+  assert.match(plannerSource,/domainAssetsByDomain=new Map/);
+  assert.match(plannerSource,/commonDepthAssetsByDomain=new Map/);
+  assert.match(plannerSource,/domainsByAsset=new WeakMap/);
+  assert.match(plannerSource,/seedIdeasByDomain=new Map/);
+  assert.match(plannerSource,/freeSourceIdsByDomain=new Map/);
   assert.match(plannerSource,/qualityActionRankByAssetId=new Map/);
+  assert.match(plannerSource,/auditCommonLibrarySystemDepth\(\{assets,domainCandidatesByDomain:commonDepthAssetsByDomain\}\)/);
+  assert.match(plannerSource,/commonLibraryIdentityCount\(domain,assets,domainAssetsByDomain\.get\(domain\)\)/);
   assert.match(plannerSource,/internalAssetMaintenanceQuality\(asset,auditCache\.get\(asset\)\)/);
+  assert.doesNotMatch(plannerSource,/seedIdeas\.filter\(row=>row\.domain===domain\)/);
   assert.doesNotMatch(plannerSource,/maintenance\.nextQualityActions\.find\(action=>allInternalReuseCandidates\.some/);
 });
 
