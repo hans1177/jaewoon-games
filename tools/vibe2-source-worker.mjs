@@ -4578,7 +4578,6 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
   const dedicatedRobloxOversizePath=target==='roblox'
     &&/\[(?:SECOND_PLATFORM_ADAPTATION_REBUILD:ROBLOX|POST_RELEASE_FOCUSED_DEVELOPMENT)\]/.test(String(prompt));
   const sourceCandidatePressureInitial=!allowFullRewrite
-    &&!assetDevelopmentLane
     &&!singleMotionWorkUnit
     &&!systemAtomicPairRequired
     &&!dedicatedRobloxOversizePath
@@ -4741,9 +4740,12 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
     for(const label of ['IMAGE ASSET OBSERVATION','ASSET DETAIL REPAIR','RUNTIME VISUAL REVIEW','SINGLE MOTION WORK UNIT','INTERNAL MOTION COACHING','ROBLOX SOURCE COACHING','INTERNAL ASSET TEACHER PRACTICE']){
       const block=prompt.match(new RegExp('\\['+label+' BEGIN\\][\\s\\S]*?\\['+label+' END\\]'))?.[0]||'';
       if(!block||attemptPrompt.includes(block))continue;
-      const retryBlock=['SINGLE MOTION WORK UNIT','INTERNAL MOTION COACHING','ROBLOX SOURCE COACHING','INTERNAL ASSET TEACHER PRACTICE'].includes(label)?block:retry?boundedLargeExcerpt(block,RETRY_OBSERVATION_CHUNK_BYTES).content:block;
+      const alwaysFull=['SINGLE MOTION WORK UNIT','INTERNAL MOTION COACHING','ROBLOX SOURCE COACHING','INTERNAL ASSET TEACHER PRACTICE'].includes(label);
+      const boundedObservation=retry||sourceCandidatePressureInitial;
+      const retryBlock=alwaysFull?block:boundedObservation?boundedLargeExcerpt(block,RETRY_OBSERVATION_CHUNK_BYTES).content:block;
       attemptPrompt+='\n'+retryBlock;
       if(retry&&retryBlock!==block)console.log(`VIBE2_RETRY_OBSERVATION_COMPACTED=${label}:${Buffer.byteLength(block,'utf8')}->${Buffer.byteLength(retryBlock,'utf8')}`);
+      if(!retry&&sourceCandidatePressureInitial&&retryBlock!==block)console.log(`VIBE2_INITIAL_OBSERVATION_COMPACTED=${label}:${Buffer.byteLength(block,'utf8')}->${Buffer.byteLength(retryBlock,'utf8')}`);
     }
     const contextWindow=focusedReplaceOnly&&!systemAtomicPairCompletion
       ?(robloxRebuildFocused
