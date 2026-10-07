@@ -1,5 +1,5 @@
 {
-  "version": 120,
+  "version": 121,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-07T12:05:00+09:00",
@@ -213,7 +213,15 @@
     "masterGlbJointAnimationChannelRequired": true,
     "masterGlbPathOnlyCannotClaimNativeBinding": true,
     "characterMotionMannequinCannotClaimFinalActor": true,
-    "bossScaleOnlyCannotClaimFinalActor": true
+    "bossScaleOnlyCannotClaimFinalActor": true,
+    "minimumWorldRenderableLibraryDimension": "2.5D",
+    "firstPlayableConsumerMustMeet2_5D": true,
+    "flat2DWorldRenderableLibraryPromotionForbidden": true,
+    "primitiveOrGeometricWorldRenderableLibraryPromotionForbidden": true,
+    "backgroundEnvironmentDepthCompositionRequired": true,
+    "flatSpriteOnlyAsDepthAware2_5DOr3DLayer": true,
+    "uiOverlayMayRemain2D": true,
+    "audioDimensionNotApplicable": true
   },
   "platformPacks": [
     {
@@ -85209,5 +85217,34 @@
     "contract": "assets/vibe-character-identity-director.js#VIBE_NPC_ROLE_PRODUCTION_CONTRACT",
     "productionVerified": false,
     "runtimeVerificationRequired": true
+  },
+  "spatialPresentationContract": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.minimumSpatialAssetContract",
+    "status": "ACTIVE_EXECUTABLE_CONTRACT",
+    "minimumWorldRenderableDimension": "2.5D",
+    "appliesToAllGraphicsLibraries": true,
+    "productionConsumptionRequires2_5DOr3D": true,
+    "firstPlayableConsumerMustMeetMinimum": true,
+    "flat2DWorldRenderablePromotionForbidden": true,
+    "primitiveOrGeometricPlaceholderPromotionForbidden": true,
+    "flatSpriteAllowedOnlyInsideDepthAware2_5DOr3DComposition": true,
+    "backgroundAndEnvironment": {
+      "minimumDepthLayers": [
+        "FOREGROUND",
+        "MIDGROUND",
+        "BACKGROUND"
+      ],
+      "terrainOrWorldSurfaceRequired": true,
+      "landmarkOrHubRequired": true,
+      "setDressingOrRegionDetailRequired": true,
+      "directionalLightOrContactShadowRequired": true,
+      "depthSortOcclusionOrNative3DDepthRequired": true,
+      "flatColorGradientOrSinglePlaneBackgroundCannotPromote": true
+    },
+    "exceptions": {
+      "UI_PRESENTATION_LIBRARY": "2D_OVERLAY_ONLY",
+      "AUDIO_LIBRARY": "NON_VISUAL_DIMENSION_NOT_APPLICABLE"
+    }
   }
 }

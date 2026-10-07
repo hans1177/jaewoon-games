@@ -1,5 +1,5 @@
 {
-  "version": 82,
+  "version": 83,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -636,7 +636,13 @@
       "rootOnlyActorMotionCannotPromote": true,
       "characterMotionMannequinCannotPromote": true,
       "bossScaleOnlyCannotPromote": true,
-      "platformRuntimeEvidenceIndependentPerTarget": true
+      "platformRuntimeEvidenceIndependentPerTarget": true,
+      "minimumWorldRenderableLibraryDimension": "2.5D",
+      "flat2DWorldRenderableLibraryAssetCannotPromote": true,
+      "primitiveOrGeometricWorldRenderableLibraryAssetCannotPromote": true,
+      "backgroundEnvironmentMustProvideDepthCompositionBeforePromotion": true,
+      "uiOverlayOrAudioExceptionCannotSatisfyWorldSpatialRequirement": true,
+      "firstPlayableConsumerMustMeetSpatialFloor": true
     },
     "failureAction": "ASSET_REPAIR_REQUIRED_OR_LIBRARY_QUARANTINE_BY_SCOPE"
   },
@@ -1337,5 +1343,20 @@
       "storyEngineMustPreserveMainABcAtRoleSeparation": true,
       "gameSeedGrammarMayConstrainStoryGenerationButCannotBypassNarrativeQa": true
     }
+  },
+  "webSpatialPresentationSecurity": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation",
+    "protections": {
+      "firstPlayableMinimumDimension": "2.5D",
+      "flat2DGameplayForbiddenFromFirstPlayable": true,
+      "visiblePrimitiveGameplayPrototypeForbidden": true,
+      "backgroundDepthCompositionRequired": true,
+      "flatColorGradientOrSinglePlaneBackgroundCannotPass": true,
+      "markerOnly2_5DDeclarationCannotPass": true,
+      "uiOverlayMayRemain2DButCannotSatisfyWorldSpatialRequirement": true,
+      "gameplaySaveProgressionBalanceEconomyAndHitSemanticsMustRemainUnchanged": true
+    },
+    "failureAction": "ASSET_REPAIR_REQUIRED"
   }
 }

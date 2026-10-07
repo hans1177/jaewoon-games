@@ -1106,8 +1106,16 @@ function webStartupSpatialAudit(project={},repoRoot=process.cwd()){
     }
     const detected3D=/(?:data-spatial-dimension=["']3d["']|WebGLRenderingContext|WebGL2RenderingContext|THREE\.|BABYLON\.|PerspectiveCamera|OrthographicCamera|requestPointerLock)/i.test(text);
     const declared2_5D=/data-spatial-dimension=["'](?:2\.5d|3d)["']/i.test(text);
-    const depthTechnique=detected3D||/(?:perspective\s*:|transform-style\s*:\s*preserve-3d|rotate[XY]\s*\(|translateZ\s*\(|\bisometric\b|\bparallax\b|depthSort|depth-sort|iso(?:metric)?(?:Projection|Project|X|Y)|foreground[\s\S]{0,160}midground[\s\S]{0,160}background)/i.test(text);
+    const depthTechnique=detected3D||/(?:perspective\s*:|transform-style\s*:\s*preserve-3d|rotate[XY]\s*\(|translateZ\s*\(|\bisometric\b|\bparallax\b|depthSort|depth-sort|iso(?:metric)?(?:Projection|Project|X|Y)|foreground[\s\S]{0,240}midground[\s\S]{0,240}background)/i.test(text);
+    const backgroundDepthComposition=detected3D||/(?:foreground[\s\S]{0,240}midground[\s\S]{0,240}background|background[\s\S]{0,240}midground[\s\S]{0,240}foreground|parallax(?:Layers?|Depth)?)/i.test(text);
+    const worldDetailComposition=detected3D||/(?:terrain|worldSurface|groundLayer|landmark|region|biome|setDressing|building|house|tree|rock|vegetation|environment)/i.test(text);
+    const primitiveDrawCount=(text.match(/ctx\.(?:arc|ellipse|fillRect|strokeRect)\s*\(/gi)||[]).length;
+    const realVisualRenderCount=(text.match(/drawImage\s*\(|new\s+Image\s*\(|createImageBitmap\s*\(|<img\b|<svg\b|background(?:-image)?\s*:\s*url\(|Path2D\s*\(|beginPath\s*\([\s\S]{0,240}lineTo\s*\(/gi)||[]).length;
+    const primitiveDominated=!detected3D&&primitiveDrawCount>0&&realVisualRenderCount===0;
     if(!(detected3D||(declared2_5D&&depthTechnique)))blockers.push('MINIMUM_2_5D_PRESENTATION_REQUIRED');
+    if(!backgroundDepthComposition)blockers.push('BACKGROUND_DEPTH_COMPOSITION_REQUIRED');
+    if(!worldDetailComposition)blockers.push('BACKGROUND_WORLD_DETAIL_REQUIRED');
+    if(primitiveDominated)blockers.push('PRIMITIVE_ONLY_GAMEPLAY_PRESENTATION_FORBIDDEN');
     if(text.length<800&&!/\/web-games\/_shared\/vibe2-final\.js/i.test(text))blockers.push(`WEB_ENTRYPOINT_TOO_SMALL:${text.length}`);
   }
   return{pass:blockers.length===0,blockers:[...new Set(blockers)],relative};
@@ -1119,14 +1127,14 @@ function findWebStartupSpatialRepairTask(project,repoRoot,queue){
   const id=nextCausalGenerationId(queue,`${project.gameId}-web-startup-spatial-repair`);if(!id)return null;
   const blockers=audit.blockers.join(' | ');
   const goal=`[WEB_REPAIR] [STARTABILITY_AND_2_5D] 게임: ${project.name||project.gameId}
-현재 Web 게임을 실제 브라우저에서 바로 시작 가능한 상태로 수리하고, 최종 게임플레이 표현을 최소 2.5D 이상으로 올린다.
+현재 Web 게임을 실제 브라우저에서 바로 시작 가능한 상태로 수리하고, 첫 playable 구현부터 게임플레이 표현을 최소 2.5D 이상으로 유지한다.
 확인된 실패: ${blockers}
 빈 화면·검증 단계 버튼·scope 테스트 컨트롤·시작 버튼 무반응을 실제 게임 시작으로 인정하지 않는다. 첫 실제 입력이 플레이어/월드/전투/진행 상태를 바꾸게 연결한다.
-평면 2D 단독 월드, 이모지 그리드, 카드형 검증 화면은 prototype 외 최종 표현으로 금지한다. 장르에 맞춰 등각/원근 카메라, 깊이 정렬, 전경/중경/후경 parallax, 높이·접지 그림자, 깊이 대응 VFX를 조합하거나 실제 3D를 사용한다. UI 오버레이만 2D를 유지할 수 있다.
+평면 2D 단독 월드, 원형/사각형/이모지 중심 캐릭터·적, 카드형 검증 화면은 prototype을 포함한 visible gameplay에서 금지한다. 장르에 맞춰 등각/원근 카메라, 깊이 정렬, 전경/중경/후경 parallax, 지형/랜드마크/set dressing, 높이·접지 그림자/조명, 깊이 대응 VFX를 조합하거나 실제 3D를 사용한다. UI 오버레이만 2D를 유지할 수 있다.
 기존 게임 규칙·세이브·밸런스·진행·경제·판정 의미는 보존하고 책임 소스를 직접 수정한다. 공용 템플릿이 게임 정체성을 평준화하면 게임 전용 구현으로 분리한다. 회사/홈페이지 정책 파일은 수정하지 않는다.`;
   const out=task(id,project,goal,[audit.relative],'owner-immediate','high',[
     'owner-directive:all-web-games-must-start',
-    'owner-directive:minimum-2.5d-final-gameplay',
+    'owner-directive:minimum-2.5d-first-playable',
     'web-stage:WEB_REPAIR',
     'startup-spatial-audit:FAIL',
     ...audit.blockers.map(value=>`startup-spatial-blocker:${value}`)
@@ -1148,7 +1156,10 @@ function webRepairImplementationHints(evidence=[]){
   add(/LOCAL_RUNTIME_DEPENDENCY_MISSING/,'누락된 로컬 script/asset 의존을 실제 파일과 경로에 맞게 복구한다.');
   add(/VALIDATION_PROXY_NOT_REAL_GAMEPLAY/,'검증 단계·scope 버튼을 실제 gameplay UI로 사용하지 말고 진짜 게임 시작/입력/상태 진행 화면으로 교체한다.');
   add(/START_CONTROL_NOT_WIRED/,'시작 버튼을 실제 게임 초기화·입력 활성화·게임 상태 전환 함수에 직접 연결한다.');
-  add(/MINIMUM_2_5D_PRESENTATION_REQUIRED/,'평면 2D 최종 표현을 최소 2.5D로 재구성한다. 등각/원근 카메라·깊이 정렬·전경/중경/후경 parallax·높이/접지 그림자·깊이 대응 VFX 중 실제 공간 단서를 결합하고 UI만 2D overlay로 남긴다.');
+  add(/MINIMUM_2_5D_PRESENTATION_REQUIRED/,'첫 playable부터 평면 2D 표현을 최소 2.5D로 재구성한다. 등각/원근 카메라·깊이 정렬·전경/중경/후경 parallax·높이/접지 그림자·깊이 대응 VFX 중 실제 공간 단서를 결합하고 UI만 2D overlay로 남긴다.');
+  add(/BACKGROUND_DEPTH_COMPOSITION_REQUIRED/,'배경을 전경/중경/후경 깊이 레이어로 실제 렌더링하고 이동/카메라에 따라 깊이 차이가 보이게 한다. 단색·그라데이션·한 장 평면 배경은 금지한다.');
+  add(/BACKGROUND_WORLD_DETAIL_REQUIRED/,'배경/환경에 지형 또는 월드 표면, 랜드마크/허브, 지역별 set dressing을 실제 게임 공간에 배치한다.');
+  add(/PRIMITIVE_ONLY_GAMEPLAY_PRESENTATION_FORBIDDEN/,'플레이어·적·보스·핵심 오브젝트를 원/사각형/ellipse/fillRect 같은 단순 도형만으로 렌더링하지 않는다. 실제 에셋 또는 2.5D 깊이 구조가 있는 고유 실루엣 렌더링으로 교체한다.');
   add(/APPROVED_SCOPE_REAL_SPATIAL_STATE_REQUIRED/,'카운터나 가짜 상태 대신 실제 엔티티 x/y 위치와 공간 상태를 런타임 게임 루프에 연결한다.');
   add(/APPROVED_SCOPE_REAL_ENTITY_INTERACTION_REQUIRED/,'실제 런타임 엔티티가 이동·타게팅·충돌·공격 등 승인된 상호작용을 수행하게 연결한다.');
   add(/REAL_GAME_MECHANIC_COUNT_TOO_LOW/,'누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.');
@@ -1191,7 +1202,7 @@ function findWebAssessmentTask(project,repoRoot,queue){
   const relative=`${posix(project.projectPath)}/index.html`,file=sourceFile(repoRoot,relative),missing=!fs.existsSync(file);
   if(missing){
     const id=nextCausalGenerationId(queue,`${project.gameId}-web-base-implementation`);if(!id)return null;
-    const goal=`[WEB_BASE_IMPLEMENTATION] FULL_WEB_GAME_REBUILD SOURCE_ROOT_BOOTSTRAP_ALLOWED\n게임: ${project.name||project.gameId}\n승인 설계와 scope를 읽고 게임별 아트 방향과 Style Lock을 먼저 확정한 뒤 Vibe가 실제 플레이 가능한 모바일 Web 1차 baseline을 새로 구현한다. Web 단계에서 플레이어·몬스터·배경을 컨셉과 지역 맥락에 맞는 실제 표현으로 만들고 그래픽을 후순위로 미루지 않는다. 최종 게임플레이 공간은 최소 2.5D 이상으로 제작하며 평면 2D 단독 월드·이모지 그리드·검증 카드 화면은 완성 상태로 인정하지 않는다. 액션·전투가 있는 게임은 idle/move/attack/hit/death를 실제 상태에 연결하고 공격·피격·사망 모션과 VFX/SFX를 실제 판정 시점에 동기화한다. 이모지·단순 도형·임시 모형 몹·무맥락 배경은 PASS 근거로 인정하지 않으며, 장르와 실제 규칙에서 UI/애니메이션을 별도로 만들고 첫 10분·오디오·모바일 성능·접근성·저장 안정성·콘텐츠 구조까지 Commercial Readiness를 기존 검증 파이프 안에서 만족해야 한다. 이 Web 표현 기준이 런타임에서 성립한 뒤에만 Roblox/Unity/UEFN 이관 대상으로 본다. 검증된 경험과 transformative recombination context는 참고하되 원본 코드·원본 에셋·식별자를 복사하지 않는다. 회사/홈페이지 정책 파일은 수정하지 않는다.`;
+    const goal=`[WEB_BASE_IMPLEMENTATION] FULL_WEB_GAME_REBUILD SOURCE_ROOT_BOOTSTRAP_ALLOWED\n게임: ${project.name||project.gameId}\n승인 설계와 scope를 읽고 게임별 아트 방향과 Style Lock을 먼저 확정한 뒤 Vibe가 실제 플레이 가능한 모바일 Web 1차 baseline을 새로 구현한다. Web 단계에서 플레이어·몬스터·배경을 컨셉과 지역 맥락에 맞는 실제 표현으로 만들고 그래픽을 후순위로 미루지 않는다. 첫 playable부터 게임플레이 공간은 최소 2.5D 이상으로 제작하며 평면 2D 단독 월드·원형/사각형/이모지 중심 캐릭터·적·검증 카드 화면은 구현 기준을 충족하지 못한 것으로 처리한다. 배경은 전경/중경/후경·지형/랜드마크·접지 그림자/조명 깊이 구성을 포함한다. 액션·전투가 있는 게임은 idle/move/attack/hit/death를 실제 상태에 연결하고 공격·피격·사망 모션과 VFX/SFX를 실제 판정 시점에 동기화한다. 이모지·단순 도형·임시 모형 몹·무맥락 배경은 PASS 근거로 인정하지 않으며, 장르와 실제 규칙에서 UI/애니메이션을 별도로 만들고 첫 10분·오디오·모바일 성능·접근성·저장 안정성·콘텐츠 구조까지 Commercial Readiness를 기존 검증 파이프 안에서 만족해야 한다. 이 Web 표현 기준이 런타임에서 성립한 뒤에만 Roblox/Unity/UEFN 이관 대상으로 본다. 검증된 경험과 transformative recombination context는 참고하되 원본 코드·원본 에셋·식별자를 복사하지 않는다. 회사/홈페이지 정책 파일은 수정하지 않는다.`;
     const out=task(id,project,goal,[relative],'owner-immediate','medium',['owner-directive:webgame-first','web-stage:WEB_BASE_IMPLEMENTATION','source-root-bootstrap-required','full-web-game-rebuild','existing-web-source:MISSING']);out.ownerDirective=true;out.speculativeEligible=false;return out;
   }
   const queueState=clean(project.queueCanonicalState).toUpperCase(),queueStep=clean(project.queueCurrentStep).toUpperCase();
@@ -1215,7 +1226,7 @@ function findWebAssessmentTask(project,repoRoot,queue){
     const out=task(id,project,goal,[relative],'owner-immediate','medium',['owner-directive:webgame-first','web-stage:WEB_REPAIR','company-runtime-state:WEB_VIBE_REPAIR_REQUIRED','recovery-exact-stage:WEB_REPAIR','preserve-existing-game',...diagnosticEvidence]);out.ownerDirective=true;out.speculativeEligible=false;return out;
   }
   const id=`${project.gameId}-existing-web-assessment-v1`;if(hasTask(queue,id))return null;
-  const goal=`[EXISTING_WEB_ASSESS_AND_IMPLEMENT]\n게임: ${project.name||project.gameId}\n기존 Web 소스를 먼저 읽고 승인 설계와 비교하며 게임별 아트 방향과 Style Lock도 함께 확정한다. exploration의 EXISTING_WEB_STRATEGY가 KEEP_AND_CONTINUE면 현재 구조를 보존하며 필요한 개발만 이어가고, PARTIAL_REPAIR면 문제 책임 영역만 수정하고, MAJOR_REWORK면 쓸 수 있는 시스템·세이브·핵심 루프를 보존한 채 큰 결함을 재구성한다. FULL_REBUILD는 exploration이 실제 게임성 신호와 승인 scope 근거가 부족하다고 판정한 경우에만 허용한다. 파일 존재 여부나 프로토타입 문구 하나만으로 전체 재구축을 결정하지 않는다. KEEP 여부와 무관하게 Web에서 플레이어·몬스터·배경·모션 표현을 실제 컨셉과 대조하고, 임시 도형/모형 몹/무맥락 배경을 완성 상태로 인정하지 않는다. 액션·전투 게임은 idle/move/attack/hit/death와 공격·피격·사망 애니메이션이 실제 상태에 연결돼야 하며 이 Web 표현 기준이 런타임에서 성립한 뒤에만 Roblox/Unity/UEFN 이관 대상으로 본다. 검증된 학습은 새 코드·새 에셋 표현으로 재조합하고 기존 게임 정체성과 승인 설계를 유지한다.`;
+  const goal=`[EXISTING_WEB_ASSESS_AND_IMPLEMENT]\n게임: ${project.name||project.gameId}\n기존 Web 소스를 먼저 읽고 승인 설계와 비교하며 게임별 아트 방향과 Style Lock도 함께 확정한다. exploration의 EXISTING_WEB_STRATEGY가 KEEP_AND_CONTINUE면 현재 구조를 보존하며 필요한 개발만 이어가고, PARTIAL_REPAIR면 문제 책임 영역만 수정하고, MAJOR_REWORK면 쓸 수 있는 시스템·세이브·핵심 루프를 보존한 채 큰 결함을 재구성한다. FULL_REBUILD는 exploration이 실제 게임성 신호와 승인 scope 근거가 부족하다고 판정한 경우에만 허용한다. 파일 존재 여부나 프로토타입 문구 하나만으로 전체 재구축을 결정하지 않는다. KEEP 여부와 무관하게 Web에서 플레이어·몬스터·배경·모션 표현을 실제 컨셉과 대조하고, 첫 playable부터 임시 원형/사각형/도형 캐릭터·모형 몹·단색/그라데이션/한 장 평면 배경을 허용하지 않는다. 배경은 전경/중경/후경 깊이, 지형/랜드마크, 그림자/조명 중 실제 공간 단서를 갖춘다. 액션·전투 게임은 idle/move/attack/hit/death와 공격·피격·사망 애니메이션이 실제 상태에 연결돼야 하며 이 Web 표현 기준이 런타임에서 성립한 뒤에만 Roblox/Unity/UEFN 이관 대상으로 본다. 검증된 학습은 새 코드·새 에셋 표현으로 재조합하고 기존 게임 정체성과 승인 설계를 유지한다.`;
   let out=task(id,project,goal,[relative],'owner-immediate','medium',['owner-directive:webgame-first','web-stage:WEB_BASE_IMPLEMENTATION','existing-web-assessment-required','strategy-decision:EXPLORATION','prototype-marker-alone-cannot-force-rebuild']);
   out.ownerDirective=true;
   out.speculativeEligible=false;

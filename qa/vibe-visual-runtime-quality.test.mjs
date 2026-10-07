@@ -15,6 +15,7 @@ import {
   auditVibeGoldenSceneEvidence,
   auditVibeRuntimeBeforeAfterComparison,
   auditVibeRuntimeVisualEvidence,
+  auditVibeWeb25D,
   assertVibeRuntimeVisualQuality,
   GOLDEN_SCENE_ROLES,
   HIGH_END_GOLDEN_SCENE_ROLES,
@@ -35,20 +36,42 @@ function captures(revision='a'.repeat(40)){
 test('art pipeline uses verified asset acquisition before primitive fallback and requires golden scenes',()=>{
   const plan=createVibeArtPipeline({request:'로블록스 카툰 캐릭터 그래픽 고퀄 개선',target:'roblox',quality:2});
   assert.deepEqual([...plan.assetAcquisition.order],[...VIBE_ASSET_ACQUISITION_ORDER]);
-  assert.equal(plan.assetAcquisition.primitiveFallbackPrototypeOnly,true);
+  assert.equal(plan.assetAcquisition.primitiveFallbackPrototypeOnly,false);
+  assert.equal(plan.assetAcquisition.visibleGameplayPrimitiveFallbackForbidden,true);
   assert.equal(plan.runtimeVisualAcceptance.actualRuntimeCaptureRequired,true);
   assert.deepEqual([...plan.runtimeVisualAcceptance.goldenSceneRoles],[...VIBE_GOLDEN_SCENE_ROLES]);
   assert.equal(plan.policy.goldenSceneRuntimeEvidenceRequired,true);
   assert.equal(plan.policy.markerOnlyPresentationPassForbidden,true);
 });
 
-test('asset acquisition prefers existing verified company assets and keeps primitive fallback prototype-only',()=>{
+test('asset acquisition prefers existing verified company assets and forbids visible primitive fallback',()=>{
   const company=[{id:'verified-cartoon-rig'}];
   const plan=createVibeAssetAcquisitionPlan({companyAssets:company,repositoryAssets:[{id:'repo'}],stage:'INTERNAL_PLAYTEST'});
   assert.equal(plan.selectedSource,'VERIFIED_COMPANY_ASSET_AND_RIG_LIBRARY');
   assert.equal(plan.candidates[0].id,'verified-cartoon-rig');
   assert.equal(plan.primitiveFallbackAllowed,false);
   assert.equal(plan.primitiveFallbackCreatesVisualDebt,true);
+  assert.equal(plan.visibleGameplayPrimitiveFallbackForbidden,true);
+});
+
+
+
+test('prototype acquisition cannot fall back to visible primitive gameplay assets',()=>{
+  const plan=createVibeAssetAcquisitionPlan({stage:'PROTOTYPE'});
+  assert.equal(plan.primitiveFallbackAllowed,false);
+  assert.equal(plan.primaryActorPrimitiveFallbackAllowed,false);
+  assert.equal(plan.visibleGameplayPrimitiveFallbackForbidden,true);
+  assert.equal(plan.debugPrimitiveAllowedOnlyWhenNonRendered,true);
+});
+
+test('Web spatial gate requires layered background world detail and rejects primitive-dominated rendering',()=>{
+  const primitive=auditVibeWeb25D({files:[{path:'index.html',text:'<body data-spatial-dimension="2.5d" style="perspective:800px"><script>const foreground={},midground={},background={},terrain={},landmark={},groundShadow=1,depthSort=()=>{};ctx.fillRect(0,0,64,64);</script></body>'}]});
+  assert.equal(primitive.pass,false);
+  assert.equal(primitive.primitiveDominated,true);
+  const layered=auditVibeWeb25D({files:[{path:'index.html',text:'<body data-spatial-dimension="2.5d" style="perspective:800px"><script>const foreground={},midground={},background={},terrain={},landmark={},groundShadow=1,depthSort=()=>{};const layer=new Image();ctx.drawImage(layer,0,0);</script></body>'}]});
+  assert.equal(layered.pass,true);
+  assert.equal(layered.backgroundLayers,true);
+  assert.equal(layered.worldDetail,true);
 });
 
 test('golden scene audit requires all five actual reviewed runtime captures',()=>{
