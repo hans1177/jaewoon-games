@@ -49,25 +49,80 @@
           "playerChoice": "협동 지원을 선택"
         }
       ]
+    },
+    "designer_draft_slices::systems-progression": {
+      "systemInterconnections": [
+        {
+          "fromSystem": "직접 채집",
+          "toSystem": "주민 자동화",
+          "trigger": "나무와 식량을 직접 모으는 선택",
+          "stateChange": "주민 고용 및 자동화 기능 활성화"
+        },
+        {
+          "fromSystem": "주민 자동화",
+          "toSystem": "병영/병사",
+          "trigger": "주민 자동화 기능 선택",
+          "stateChange": "병력 강화 및 전투력 확장"
+        },
+        {
+          "fromSystem": "병영/병사",
+          "toSystem": "5개 자원 거점",
+          "trigger": "5개 거점을 점령하는 선택",
+          "stateChange": "자원 거점 순차 점령 및 보상 획득"
+        }
+      ],
+      "progressionDirection": "초반 직접 노동 → 주민 자동화 → 병영/병사 → 지역 기지 점령 → 특수자원 확보 → 고급 병종/무역 → 해전·공성 → 대형 섬/왕국 정복 순서로 확장한다. 낚시는 포함하지 않는다",
+      "progressionEconomyBalance": {
+        "progressionLoop": "직접 채집 → 주민 자동화 → 병영/병사 → 지역 기지 점령 → 특수자원 확보 → 고급 병종/무역 → 해전·공성 → 대형 섬/왕국 정복",
+        "resourceFlow": "나무·식량 직접 채집 → 주민 고용 및 자동화 → 병력 강화 및 전투력 확장 → 자원 거점 점령 및 보상 획득 → 고급 병종/무역 → 해전·공성 → 대형 섬/왕국 정복",
+        "balanceRules": "직접 채집 기능은 주민 자동화 기능과 동일한 자원을 제공하며, 병력 강화는 전투력 확장과 동일한 전략을 요구한다. 자원 거점 점령은 보상 획득과 동일한 성장 상태를 생성한다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "새 적·위협 또는 행동 패턴",
+          "newGameplay": "협동 지원 기반의 병종/무역 전략",
+          "systemImpact": "병력 강화와 전투력 확장 기능의 혼합 사용"
+        },
+        {
+          "milestone": "새 공간·경로 또는 목표",
+          "newGameplay": "5개 거점의 순차 점령 및 보상 획득",
+          "systemImpact": "자원 거점 점령 기능의 확장 및 보상 시스템의 개선"
+        },
+        {
+          "milestone": "새 상호작용 또는 전략 결과",
+          "newGameplay": "협동 지원 기반의 전투력 확장",
+          "systemImpact": "병력 강화 및 전투력 확장 기능의 혼합 사용"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "직접 채집 기능 실패",
+          "주민 자동화 기능 실패",
+          "병영/병사 기능 실패"
+        ],
+        "retryFlow": "직접 채집 기능 재설정 → 주민 자동화 기능 재설정 → 병영/병사 기능 재설정",
+        "riskPressure": "자원 거점 점령 기능의 실패로 인해 보상 획득 기능의 감소 및 전략적 선택의 제한이 발생할 수 있음",
+        "recoveryRules": "자원 거점 점령 기능의 재설정은 병력 강화 및 전투력 확장 기능의 재활용을 통해 회복 가능"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 1,
+      "calls": 4,
+      "successes": 2,
       "failures": 2,
       "timeouts": 1,
       "jsonFailures": 1,
-      "totalMs": 442010,
-      "lastMs": 148466,
+      "totalMs": 618644,
+      "lastMs": 176634,
       "lastError": "Expected ',' or ']' after array element in JSON at position 1654 (line 1 column 1655)",
-      "updatedAt": "2026-10-07T19:19:31.690Z"
+      "updatedAt": "2026-10-07T19:22:28.325Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T18:14:44.822Z",
-  "updatedAt": "2026-10-07T19:19:31.691Z",
+  "updatedAt": "2026-10-07T19:22:28.326Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
@@ -80,7 +135,7 @@
     "preservedTaskCount": 0,
     "migratedAt": "2026-10-07T19:17:03.220Z"
   },
-  "lastSuccessfulModelCallAt": "2026-10-07T19:19:31.690Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T19:22:28.325Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
