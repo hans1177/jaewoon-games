@@ -20,7 +20,7 @@ import { latestVerifiedDesign } from './company-all-games-design-reset.mjs';
 import { latestMinimumDesign } from './company-minimum-design-contract.mjs';
 import { robloxDesignProfileFromBaseline } from './company-development-roblox-gameplay-product-readiness.mjs';
 import { readUpperPlatformReadiness, nativeUpperPlatformAlreadyStarted } from './company-upper-platform-admission.mjs';
-import { buildGameSpecificBuildUpDirective, directivePrompt, inspectGameSources } from './company-build-up-directive.mjs';
+import { buildGameSpecificBuildUpDirective, directivePrompt, extractDesignContext, inspectGameSources } from './company-build-up-directive.mjs';
 import { hasCurrentRobloxPackageAssetRepair, currentSourceTreeSha } from './company-development-roblox-source-reconcile.mjs';
 import { buildGameFlowArchitecture, buildFlowAssetRequirements } from './company-vibe2-game-flow-architect.mjs';
 import { synchronizeSourceBoundAssetConsumers } from './vibe2-asset-production-plan.mjs';
@@ -2386,6 +2386,8 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
   const verified=designContextOverride||latestVerifiedDesign(repoRoot,project.gameId);
   const minimum=verified?null:latestMinimumDesign(repoRoot,project.gameId);
   const designContext=verified||minimum;
+  const canonicalDesign=extractDesignContext(designContext?.record||{});
+  const canonicalDesignMode=clean(canonicalDesign.multiplayerMode).toUpperCase();
   const requestedFocus=clean(taskInput?.studioQualityEvolution?.focusPillar).toUpperCase();
   const sourceSafeNoDesign=Boolean(
     !designContext
@@ -2429,10 +2431,9 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     &&!(postF9Exact&&isReleaseWait(item))
   );
   const activeDirectiveMultiplayerState=clean((activeDirectiveTask?.buildUpDirective?.qualityGapMap||[]).find(row=>clean(row?.domain).toUpperCase()==='MULTIPLAYER_AND_SYNC')?.state).toUpperCase();
-  const projectPlayMode=clean(project?.playMode).toUpperCase();
-  const projectRequiresMultiplayer=Boolean(projectPlayMode&&projectPlayMode!=='SINGLE');
+  const canonicalDesignRequiresMultiplayer=Boolean(canonicalDesignMode&&canonicalDesignMode!=='SINGLE');
   const activeDirectivePlatformCompatible=platformLane!=='roblox'||clean(activeDirectiveTask?.buildUpDirective?.platform).toUpperCase()==='ROBLOX';
-  const activeDirectiveSemanticCompatible=!projectRequiresMultiplayer||activeDirectiveMultiplayerState!=='NOT_APPLICABLE';
+  const activeDirectiveSemanticCompatible=!canonicalDesignRequiresMultiplayer||activeDirectiveMultiplayerState!=='NOT_APPLICABLE';
   const productionPolicy=readJson(sourceFile(repoRoot,'company-learning/platform-release-roadmap.json'),{})?.robloxStudioProductionFlowContract||{};
   const productionTarget=platformLane.startsWith('unity')||posix(project.projectPath).startsWith('unity-games/')?'UNITY':platformLane.toUpperCase();
   const productionRequired=productionPolicy.status==='ACTIVE_EXECUTABLE_CONTRACT'&&(productionPolicy.platforms||[]).includes(productionTarget);
@@ -2486,6 +2487,8 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
         'build-up-focus:'+directive.primaryFocus,
         'build-up-source-tree:'+directive.sourceTreeFingerprint,
         'build-up-platform-common-goal:YES',
+      'build-up-shared-game-design:v1',
+      'build-up-shared-design-fingerprint:'+clean(directive.sharedDesignFingerprint),
       'experience-build-up-platform:'+clean(directive.experienceBuildUpContract?.platform||'COMMON'),
       ...(directive.experienceBuildUpContract?.platform==='ROBLOX'?['experience-build-up-roblox-extra-attention:YES']:[]),
       'experience-build-up-owner-disabled-audio-preserved:YES',
@@ -2547,16 +2550,9 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
   const rawDesignRecord=designContext?.record||{content:{identity:project.name||project.gameId}};
   const effectiveDesignRecord=JSON.parse(JSON.stringify(rawDesignRecord));
   effectiveDesignRecord.content=effectiveDesignRecord.content&&typeof effectiveDesignRecord.content==='object'?effectiveDesignRecord.content:{};
-  if(platformLane==='roblox'){
-    const canonicalMode=clean(effectiveDesignRecord.content.multiplayerMode).toUpperCase();
-    const projectMode=clean(project?.playMode).toUpperCase();
-    const profile=effectiveDesignRecord.content.platformProfiles?.ROBLOX;
-    const profileMode=clean(profile?.playMode||profile?.multiplayerMode).toUpperCase();
-    const fallbackMode=canonicalMode||profileMode||projectMode;
-    if(!canonicalMode&&fallbackMode)effectiveDesignRecord.content.multiplayerMode=fallbackMode;
-    if(projectMode&&canonicalMode&&projectMode!==canonicalMode){
-      taskInput={...taskInput,evidence:[...new Set([...(taskInput.evidence||[]),'build-up-platform-metadata-design-mismatch:ROBLOX_PLAY_MODE'])]};
-    }
+  const projectMode=clean(project?.playMode).toUpperCase();
+  if(platformLane==='roblox'&&projectMode&&canonicalDesignMode&&projectMode!==canonicalDesignMode){
+    taskInput={...taskInput,evidence:[...new Set([...(taskInput.evidence||[]),'build-up-platform-metadata-design-mismatch:ROBLOX_PLAY_MODE'])]};
   }
   const directive=applyRobloxQualityRepairDirective(buildGameSpecificBuildUpDirective({
     gameId:project.gameId,
@@ -2608,6 +2604,8 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
       'build-up-every-loop-regenerate:YES',
       'build-up-all-domain-coverage:YES',
       'build-up-platform-common-goal:YES',
+      'build-up-shared-game-design:v1',
+      'build-up-shared-design-fingerprint:'+clean(directive.sharedDesignFingerprint),
       ...(platformLane==='roblox'?['build-up-roblox-design-profile-grounded:YES']:[]),
       ...(postF9Exact?[
         'post-f9-continuous-evolution:EXACT_F9_VERIFIED',
@@ -3025,6 +3023,8 @@ function bindSharedBuildUpDirective(taskInput,directive){
       'build-up-focus:'+directive.primaryFocus,
       'build-up-source-tree:'+directive.sourceTreeFingerprint,
       'build-up-platform-common-goal:YES',
+      'build-up-shared-game-design:v1',
+      'build-up-shared-design-fingerprint:'+clean(directive.sharedDesignFingerprint),
       ...(presentationFocus?[
         'asset-production-parallel:v1',
         'atomic-neuron-stream:presentation',
