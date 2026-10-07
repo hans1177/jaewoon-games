@@ -56,25 +56,110 @@
           "playerChoice": "15마리 파티 사냥 및 보상 획득"
         }
       ]
+    },
+    "designer_draft_slices::systems-progression": {
+      "systemInterconnections": [
+        {
+          "fromSystem": "마을",
+          "toSystem": "포탈",
+          "trigger": "포탈 이동",
+          "stateChange": "포탈 진행 중"
+        },
+        {
+          "fromSystem": "포탈",
+          "toSystem": "전투",
+          "trigger": "몬스터 처치",
+          "stateChange": "전투 중"
+        },
+        {
+          "fromSystem": "전투",
+          "toSystem": "보스 공략",
+          "trigger": "보스 첫 처치",
+          "stateChange": "보스 공략 중"
+        },
+        {
+          "fromSystem": "보스 공략",
+          "toSystem": "보스 동료 해금",
+          "trigger": "보스 동료 해금",
+          "stateChange": "보스 동료 해금 중"
+        },
+        {
+          "fromSystem": "보스 동료 해금",
+          "toSystem": "파티 조합 확장",
+          "trigger": "파티 조합 확장",
+          "stateChange": "파티 조합 확장 중"
+        }
+      ],
+      "progressionDirection": "마을 준비 → 포탈 전투 → Lv.15 1차 전직 → 보스 격파/동료 해금 → 동료 3명 조합 → Lv.40 2차 완성형 → Lv.60 만렙/숙련",
+      "progressionEconomyBalance": {
+        "progressionLoop": "마을 준비 → 포탈 전투 → Lv.15 1차 전직 → 보스 격파/동료 해금 → 동료 3명 조합 → Lv.40 2차 완성형 → Lv.60 만렙/숙련",
+        "resourceFlow": "마을 장비/퀘스트 준비 → 포탈 이동 → 몬스터 전투 → 보스 공략 → 보스 동료 해금 → 파티 조합 확장",
+        "balanceRules": "최대체력 +10, 공격력 +10 증가, 15마리 파티 사냥 및 보상 획득, 플레이어 + 보스 동료 최대 3명 편성"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "5포탈 지역",
+          "newGameplay": "초원·협곡·유적·설원·심연의 독립 대형 사냥터",
+          "systemImpact": "5개 대형 지역 전투로 돌파"
+        },
+        {
+          "milestone": "레벨 성장",
+          "newGameplay": "레벨업마다 최대체력 +10, 공격력 +10",
+          "systemImpact": "레벨업 시 체력과 공격력 증가"
+        },
+        {
+          "milestone": "5단계 장비",
+          "newGameplay": "무기·방어구는 T1~T5로 단순 성장하고, 유물 1칸은 직업 특성을 가볍게 바꾼다",
+          "systemImpact": "장비 슬롯 선택 및 유물 특성 조정"
+        },
+        {
+          "milestone": "1차 전직",
+          "newGameplay": "Lv.15 직업 시험 후 각 시작 직업에서 2개 분기 중 하나를 선택한다",
+          "systemImpact": "1차 전직 분기 선택 및 재전직 가능성 확인"
+        },
+        {
+          "milestone": "파티 토글",
+          "newGameplay": "AI를 두 번 클릭해 즉시 파티 초대/제외",
+          "systemImpact": "파티 초대/제외 조작"
+        },
+        {
+          "milestone": "15킬 파티사냥",
+          "newGameplay": "15마리 처치 시 종료하고 기여도에 따라 XP/골드 보상",
+          "systemImpact": "15마리 파티 사냥 및 보상 획득"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "마을 귀환 시 풀회복",
+          "전투 중 귀환 금지",
+          "퀘스트 기본 50골드+50XP",
+          "레벨업 최대체력+10/공격력+10",
+          "파티사냥 15킬",
+          "RoomCode 1~10"
+        ],
+        "retryFlow": "마을 귀환 시 풀회복, 전투 중 귀환 금지, 퀘스트 보상, 레벨업 증가, 파티 사냥 및 보상 획득",
+        "riskPressure": "최대체력 +10, 공격력 +10, 15마리 파티 사냥 및 보상 획득, 플레이어 + 보스 동료 최대 3명 편성, 보스 동료 리더 레벨 자동 동기화, 보스 동료 기본공격1·고유스킬1·특성1",
+        "recoveryRules": "마을 귀환 시 풀회복, 전투 중 귀환 금지, 퀘스트 보상, 레벨업 증가, 파티 사냥 및 보상 획득"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 173658,
-      "lastMs": 173658,
+      "totalMs": 387034,
+      "lastMs": 213376,
       "lastError": null,
-      "updatedAt": "2026-10-07T22:52:13.248Z"
+      "updatedAt": "2026-10-07T22:55:46.629Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T22:49:19.585Z",
-  "updatedAt": "2026-10-07T22:52:13.251Z",
+  "updatedAt": "2026-10-07T22:55:46.633Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1490,11 +1575,12 @@
     "assetFacts": {}
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "7929655494503413150badc9b86c630bd7a165e63b110c22558b213569036ee3"
   },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
-  "lastSuccessfulModelCallAt": "2026-10-07T22:52:13.248Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T22:55:46.629Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
