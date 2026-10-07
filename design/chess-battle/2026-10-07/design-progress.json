@@ -10,22 +10,10 @@
   "completedPhaseCount": 0,
   "cachedTaskCount": 0,
   "lastSuccessfulModelCallAt": null,
-  "failedPhase": "designer_draft",
+  "failedPhase": null,
   "failedTask": null,
-  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=OPTIONAL_EXTERNAL_AI_DISABLED local=OLLAMA_DESIGN_TIMEOUT 90000ms",
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 24,
-      "successes": 0,
-      "failures": 24,
-      "timeouts": 21,
-      "jsonFailures": 3,
-      "totalMs": 2500332,
-      "lastMs": 90018,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 90000ms",
-      "updatedAt": "2026-10-07T02:43:55.399Z"
-    }
-  },
+  "lastError": null,
+  "modelHealth": {},
   "slowPhases": {},
-  "updatedAt": "2026-10-07T02:43:55.400Z"
+  "updatedAt": "2026-10-07T02:58:05.507Z"
 }
