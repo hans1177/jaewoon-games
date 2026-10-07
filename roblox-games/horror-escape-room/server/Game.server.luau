@@ -3324,19 +3324,22 @@ Players.PlayerAdded:Connect(function(p)
  if p.Character then task.defer(function()BotAI.onCharacter(p)end)end
  syncLobbyState()
 end)
-for _,p in ipairs(Players:GetPlayers())do
- task.spawn(function()
- load(p)
- if state~="RUNNING"and lobbySpawnLocation and lobbySpawnLocation.Parent then p.RespawnLocation=lobbySpawnLocation end
- p:SetAttribute("RoomFeedback","")
- adoptReservedRoomFromPlayer(p)
- p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
- p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
- p.CharacterAdded:Connect(function()BotAI.onCharacter(p)end)
- if p.Character then task.defer(function()BotAI.onCharacter(p)end)end
- end)
+function BotAI.bindExistingPlayers()
+ for _,p in ipairs(Players:GetPlayers())do
+  task.spawn(function()
+   load(p)
+   if state~="RUNNING"and lobbySpawnLocation and lobbySpawnLocation.Parent then p.RespawnLocation=lobbySpawnLocation end
+   p:SetAttribute("RoomFeedback","")
+   adoptReservedRoomFromPlayer(p)
+   p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
+   p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
+   p.CharacterAdded:Connect(function()BotAI.onCharacter(p)end)
+   if p.Character then task.defer(function()BotAI.onCharacter(p)end)end
+  end)
+ end
+ syncLobbyState()
 end
-syncLobbyState()
+BotAI.bindExistingPlayers()
 qaCaptureRemote.OnServerEvent:Connect(function(p,label,value)
  if C.QACameraEnabled~=true then return end
  if typeof(label)~="string"or #label<1 or #label>48 then return end

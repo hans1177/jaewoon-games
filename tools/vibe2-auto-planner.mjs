@@ -2808,7 +2808,7 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
     ?` 승인 설계의 coreFun/coreLoop/signatureSystems를 실제 입력→판단→상태 변화→피드백→다음 선택으로 구현·심화한다. APPROVED_DESIGN=${JSON.stringify(designSummary)}`
     :focusPillar==='PROGRESSION'
       ?` 승인 설계의 progressionDirection/coreLoop/signatureSystems를 실제 목표·보상·해금·웨이브·퀘스트·인벤토리·경제·콘텐츠 깊이 중 해당 게임에 존재하는 책임 시스템으로 구현·심화한다. APPROVED_DESIGN=${JSON.stringify(designSummary)}`
-      :(designContext?` 승인 설계 맥락을 보존한다. APPROVED_DESIGN_SOURCE=${designSource}`:'');
+      :(designContext?` 승인 설계 맥락을 모든 작업 축에서 실제 구현 기준으로 보존한다. APPROVED_DESIGN=${JSON.stringify(designSummary)}`:'');
   const flowQualityInstruction=flowArchitecture
     ?` FLOW_QUALITY_CONTRACT=${JSON.stringify(flowArchitecture.qualityGrowthContract||{})}; FLOW_SYSTEM_BLUEPRINT=${JSON.stringify(systemBlueprintSummary||{})}; FLOW_ASSET_REQUIREMENTS=${JSON.stringify(flowAssetRequirements)}. 시스템은 컨셉에 맞는 묶음으로만 사용하고 서로 인과적으로 연결한다. 기존 inventory/crafting/quest/economy/skill/targeting/AI 등 호환 라이브러리가 있으면 먼저 재사용하고, 플랫폼이 다르면 소스 복사가 아니라 같은 의미를 현재 네이티브 책임 구조에 재구현한다. 생존은 채집→제작→하우징/장비→탐험/위험, RPG는 NPC/동료→퀘스트→전투/아이템→관계/지역 변화처럼 핵심 판타지와 연결한다. 메뉴만 존재하거나 시스템이 서로 단절되면 완성도로 인정하지 않는다.${flowAssetInstruction}`
     :'';
