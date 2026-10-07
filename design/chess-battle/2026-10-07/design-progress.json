@@ -10,22 +10,10 @@
   "completedPhaseCount": 0,
   "cachedTaskCount": 0,
   "lastSuccessfulModelCallAt": null,
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=OPTIONAL_EXTERNAL_AI_DISABLED local=schema required missing: root.identity",
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 0,
-      "failures": 19,
-      "timeouts": 7,
-      "jsonFailures": 12,
-      "totalMs": 1023709,
-      "lastMs": 32055,
-      "lastError": "schema required missing: root.identity",
-      "updatedAt": "2026-10-07T13:33:22.315Z"
-    }
-  },
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
+  "modelHealth": {},
   "slowPhases": {},
-  "updatedAt": "2026-10-07T13:33:27.465Z"
+  "updatedAt": "2026-10-07T13:41:58.119Z"
 }
