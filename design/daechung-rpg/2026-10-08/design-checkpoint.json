@@ -3,197 +3,378 @@
   "gameId": "daechung-rpg",
   "date": "2026-10-08",
   "seedId": "OWNER-DESIGN-DAECHUNG-RPG",
-  "fingerprint": "90f15db271621d851efc4db25ee2f81cebe9708344bcb745504a98a81b525039",
+  "fingerprint": "a0c3cd08865f40437b7846e741cbf2a1a4086d029619a0ef12fcdb389f1f2594",
   "policyDigest": "223f74bb658bbab4921a06b74e652d4e7fc27d174188c3b4b3488e9b3d026f6f",
-  "engineDigest": "723e2687bc264a6d89930fd69e4069aea7c3de0c3a1ac1cd73a5392ee9cc5971",
+  "engineDigest": "cc088ad7a8676ded2864387d1c00a39b024f9e9a4e72f50308346406aea805a9",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "designer_draft_slices::identity-core": {
-      "identity": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG",
-      "playerFantasy": "AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG 플레이어는, 마을의 퀘스트와 장비 준비를 통해 다양한 지역을 전투로 돌파하고, 10명의 AI 유저와 파티를 구성해 보스를 공략하며, 기여도로 보상을 얻는 재미 있는 게임 플레이어입니다.",
-      "coreFun": "5개 대형 지역을 전투로 돌파하고, 10명의 AI 유저 중 원하는 역할을 골라 파티 사냥을 하며 기여도로 보상을 얻는 성장 재미",
-      "coreLoop": [
-        "마을에서 퀘스트와 장비 준비",
-        "포탈로 사냥터 이동",
-        "몬스터 직접 전투",
-        "보스 첫 처치로 AI 동료 해금",
-        "15마리 파티 사냥과 기여도 보상",
-        "플레이어 + 보스 동료 최대 3명 편성",
-        "보스 공략 → 보스 동료 해금 → 파티 조합 확장",
-        "마을 귀환/회복/강화"
-      ],
-      "signatureSystems": [
-        {
-          "name": "5포탈 지역",
-          "purpose": "초원·협곡·유적·설원·심연의 독립 대형 사냥터. 각 포탈은 서로 다른 전조·사거리·패링 가능 여부·특수공격을 가진다.",
-          "playerChoice": "포탈 선택 및 전투 전략"
-        },
-        {
-          "name": "레벨 성장",
-          "purpose": "레벨업마다 최대체력 +10, 공격력 +10.",
-          "playerChoice": "레벨업 선택 및 보상 수령"
-        },
-        {
-          "name": "5단계 장비",
-          "purpose": "무기·방어구는 T1~T5로 단순 성장하고, 유물 1칸은 직업 특성을 가볍게 바꾼다. 장착 슬롯은 무기/방어구/유물 3개.",
-          "playerChoice": "장비 슬롯 선택 및 장비 업그레이드"
-        },
-        {
-          "name": "1차 전직",
-          "purpose": "Lv.15 직업 시험 후 각 시작 직업에서 2개 분기 중 하나를 선택한다. 같은 시작 직업의 다른 1차 분기는 마을에서 재전직 가능.",
-          "playerChoice": "1차 전직 분기 선택"
-        },
-        {
-          "name": "파티 토글",
-          "purpose": "AI를 두 번 클릭해 즉시 파티 초대/제외.",
-          "playerChoice": "파티 토글 조작"
-        },
-        {
-          "name": "15킬 파티사냥",
-          "purpose": "15마리 처치 시 종료하고 기여도에 따라 XP/골드 보상.",
-          "playerChoice": "파티사냥 조작"
-        }
-      ]
-    },
-    "designer_draft_slices::systems-progression": {
-      "systemInterconnections": [
-        {
-          "fromSystem": "마을",
-          "toSystem": "5포탈 지역",
-          "trigger": "포탈 선택 및 전투 전략",
-          "stateChange": "포탈 선택 후 전투 전략 조정"
-        },
-        {
-          "fromSystem": "레벨 성장",
-          "toSystem": "5단계 장비",
-          "trigger": "레벨업 선택 및 보상 수령",
-          "stateChange": "레벨업 후 장비 업그레이드"
-        },
-        {
-          "fromSystem": "5단계 장비",
-          "toSystem": "1차 전직",
-          "trigger": "1차 전직 분기 선택",
-          "stateChange": "1차 전직 분기 선택 후 직업 선택"
-        }
-      ],
-      "progressionDirection": "마을 준비 → 포탈 전투 → Lv.15 1차 전직 → 보스 격파/동료 해금 → 동료 3명 조합 → Lv.40 2차 완성형 → Lv.60 만렙/숙련",
-      "progressionEconomyBalance": {
-        "progressionLoop": "마을 → 포탈 → Lv.15 → 보스 → 동료 → Lv.40 → Lv.60",
-        "resourceFlow": "퀘스트/장비/보상/기여도/레벨/직업",
-        "balanceRules": "레벨업 최대체력+10/공격력+10, 15킬 파티사냥, 보스 첫 처치 동료 해금 저장, 플레이어+보스 동료 최대3명 파티"
-      },
-      "contentExpansionPlan": [
-        {
-          "milestone": "초원 시드형 로그라이크 런",
-          "newGameplay": "1번 포탈 초원은 빈 런 시작 시 Seed로 방/길/전투/이벤트/보물/정예 구성을 다시 조합한다.",
-          "systemImpact": "플레이어는 동일 런을 공유한다."
-        },
-        {
-          "milestone": "초원 10종 몬스터·히든 보스",
-          "newGameplay": "초원 기본 몬스터 10종은 서로 다른 전조·사거리·패링 가능 여부·특수공격을 가진다.",
-          "systemImpact": "비밀 숲에서 백색 송곳니 또는 고목의 심장 히든 보스가 확률 출현한다."
-        },
-        {
-          "milestone": "초원 런 보스 봉인",
-          "newGameplay": "금빛 큰뿔은 런 시작부터 존재하지만 봉인 상태로 전투에 참여하지 않는다.",
-          "systemImpact": " 일반/정예 전투 몬스터를 모두 처치하면 봉인이 해제되어 보스전을 시작한다."
-        }
-      ],
-      "failureRetryRisk": {
-        "failureStates": [
-          "전투 중 마을 귀환 금지",
-          "보스 동료는 리더 레벨 자동 동기화",
-          "동료 단순 스킬셋"
-        ],
-        "retryFlow": "AI를 두 번 클릭해 즉시 파티 초대/제외",
-        "riskPressure": "15마리 처치 시 종료하고 기여도에 따라 XP/골드 보상",
-        "recoveryRules": "마을 귀환 시 풀회복, 전투 중 귀환 금지"
-      }
-    },
-    "designer_draft_slices::platform-profiles": {
-      "platformFitPlan": {
-        "targetPlatform": "ROBLOX",
-        "inputModel": "모바일 이동·공격·회피·스킬, 키보드/게임패드 보조",
-        "performanceBudget": "전투구역별 AI/적 수 제한, 경로탐색/스킬평가 주기 분산",
-        "sessionConstraints": "마을 편성→포탈 전투→보스 격파/영입→귀환. 싱글은 플레이어1+보스동료 최대3, 멀티는 실제 플레이어와 각자 해금한 동료를 혼합."
-      },
-      "platformProfiles": {
-        "ROBLOX": {
-          "platform": "ROBLOX",
-          "inputModel": "모바일 이동·공격·회피·스킬, 키보드/게임패드 보조",
-          "sessionModel": "마을 편성→포탈 전투→보스 격파/영입→귀환. 싱글은 플레이어1+보스동료 최대3, 멀티는 실제 플레이어와 각자 해금한 동료를 혼합.",
-          "multiplayerRuntime": "서버가 실제 플레이어 상태·보스 동료 해금·최대3 동료 편성·전투/보상 상태를 authoritative하게 관리.",
-          "performanceBudget": "전투구역별 AI/적 수 제한, 경로탐색/스킬평가 주기 분산",
-          "uiUx": "전투 HUD와 파티/장비 화면 분리",
-          "saveAndNetwork": "직업·전직·장비·보스동료 해금·레벨/숙련·RoomCode를 DataStore 저장.",
-          "platformContentAdaptation": "플레이어는 Roblox R15 직업형 캐릭터. AI 동료는 보스 모델의 고유 실루엣을 재사용하며 별도 인간형 캐릭터 로스터를 만들지 않는다.",
-          "internalReleaseTarget": "OPEN_CLOUD_PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
-          "validationEvidence": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract, Mobile input/UI contract, Save/rejoin contract when applicable, Multiplayer state-sync contract when applicable, Headless exact-artifact regression, Open Cloud private/restricted publish"
-        },
-        "UNITY": {
-          "platform": "UNITY",
-          "inputModel": "3D 모션 컨트롤, 키보드/게임패드 보조",
-          "sessionModel": "마을 편성→포탈 전투→보스 격파/영입→귀환. 싱글은 플레이어1+보스동료 최대3, 멀티는 실제 플레이어와 각자 해금한 동료를 혼합.",
-          "multiplayerRuntime": "서버가 실제 플레이어 상태·보스 동료 해금·최대3 동료 편성·전투/보상 상태를 authoritative하게 관리.",
-          "performanceBudget": "전투구역별 AI/적 수 제한, 경로탐색/스킬평가 주기 분산",
-          "uiUx": "전투 HUD와 파티/장비 화면 분리",
-          "saveAndNetwork": "직업·전직·장비·보스동료 해금·레벨/숙련·RoomCode를 DataStore 저장.",
-          "platformContentAdaptation": "플레이어는 Roblox R15 직업형 캐릭터. AI 동료는 보스 모델의 고유 실루엣을 재사용하며 별도 인간형 캐릭터 로스터를 만들지 않는다.",
-          "internalReleaseTarget": "OPEN_CLOUD_PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
-          "validationEvidence": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract, Mobile input/UI contract, Save/rejoin contract when applicable, Multiplayer state-sync contract when applicable, Headless exact-artifact regression, Open Cloud private/restricted publish"
-        }
-      }
-    },
-    "designer_draft_slices::web-canonical": {
-      "webCanonicalDesign": {
-        "role": "WEB_DETAILED_GAME_ORIGINAL",
-        "designAuthority": "GAME_DESIGN_REFERENCE_NOT_SOURCE_CODE_AUTHORITY",
-        "playerFlow": [
-          "마을에서 퀘스트와 장비 준비",
-          "포탈로 사냥터 이동",
-          "몬스터 직접 전투",
-          "보스 첫 처치로 AI 동료 해금",
-          "15마리 파티 사냥과 기여도 보상",
-          "플레이어 + 보스 동료 최대 3명 편성",
-          "보스 공략 → 보스 동료 해금 → 파티 조합 확장",
-          "마을 귀환/회복/강화"
-        ],
-        "worldAndTraversal": "ROBLOX_2_5D_FANTASY",
-        "systemsAndContent": "GAME_DESIGN_2_5D_FANTASY",
-        "combatAndInteraction": "ROBLOX_2_5D_FANTASY_COMBAT",
-        "progressionAndEconomy": "ROBLOX_2_5D_FANTASY_PROGRESSION",
-        "sessionFailureRecovery": "ROBLOX_2_5D_FANTASY_SESSION_FAILURE",
-        "uiMenuAndOnboarding": "ROBLOX_2_5D_FANTASY_UI_MENU",
-        "inputCameraAccessibility": "ROBLOX_2_5D_FANTASY_INPUT_ACCESSIBILITY",
-        "presentationAndAudio": "ROBLOX_2_5D_FANTASY_PRESENTATION_AUDIO",
-        "multiplayerPersistence": "ROBLOX_2_5D_FANTASY_MULTIPLAYER_PERSISTENCE",
-        "expansionSpace": "ROBLOX_2_5D_FANTASY_EXPANSION_SPACE"
-      }
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
-      "failures": 0,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 854659,
-      "lastMs": 211684,
-      "lastError": null,
-      "updatedAt": "2026-10-07T20:13:41.446Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-07T19:59:26.643Z",
-  "updatedAt": "2026-10-07T20:13:41.447Z",
-  "lastSuccessfulModelCallAt": "2026-10-07T20:13:41.447Z",
-  "effectiveDesignerModel": "ollama:qwen3:1.7b",
-  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "createdAt": "2026-10-07T20:24:14.781Z",
+  "updatedAt": "2026-10-07T20:24:14.783Z",
+  "assetLibraryContext": {
+    "source": "company-asset-library.json",
+    "status": "AVAILABLE",
+    "version": 121,
+    "sha256": "5b9e5a2facc4d7a8bf5cc66605645f9355eb102fd7af1f09d98206ade99d2f9c",
+    "inventoryCount": 717,
+    "candidateSummaryOnly": true,
+    "auditScoreIsNotRuntimeQuality": true,
+    "productionVerificationGranted": false,
+    "platforms": {
+      "WEB": {
+        "evaluatedAssetCount": 717,
+        "eligibleAssetCount": 713,
+        "requiredFamilies": [
+          "AUDIO",
+          "BUILDING",
+          "CREATURE",
+          "ENVIRONMENT",
+          "MATERIAL",
+          "MOTION",
+          "PROP",
+          "SKILL",
+          "VFX",
+          "WEAPON"
+        ],
+        "candidates": [
+          {
+            "family": "AUDIO",
+            "action": "AUTHOR",
+            "assetId": null
+          },
+          {
+            "family": "BUILDING",
+            "action": "ADAPT",
+            "assetId": "roblox-common-building-archway",
+            "applicationMode": "STYLE_ADAPT"
+          },
+          {
+            "family": "CREATURE",
+            "action": "ADAPT",
+            "assetId": "roblox-insect-spider-hd",
+            "applicationMode": "STYLE_ADAPT"
+          },
+          {
+            "family": "ENVIRONMENT",
+            "action": "ADAPT",
+            "assetId": "roblox-common-environment-cave",
+            "applicationMode": "STYLE_ADAPT"
+          },
+          {
+            "family": "MATERIAL",
+            "action": "ADAPT",
+            "assetId": "roblox-common-material-asphalt",
+            "applicationMode": "STYLE_ADAPT"
+          },
+          {
+            "family": "MOTION",
+            "action": "ADAPT",
+            "assetId": "roblox-common-motion-bed-lie-down",
+            "applicationMode": "STYLE_ADAPT"
+          },
+          {
+            "family": "PROP",
+            "action": "ADAPT",
+            "assetId": "roblox-common-item-antidote",
+            "applicationMode": "STYLE_ADAPT"
+          },
+          {
+            "family": "SKILL",
+            "action": "ADAPT",
+            "assetId": "roblox-common-skill-area-field",
+            "applicationMode": "STYLE_ADAPT"
+          },
+          {
+            "family": "VFX",
+            "action": "ADAPT",
+            "assetId": "roblox-common-vfx-attack-telegraph-pulse",
+            "applicationMode": "STYLE_ADAPT"
+          },
+          {
+            "family": "WEAPON",
+            "action": "ADAPT",
+            "assetId": "roblox-common-tool-axe",
+            "applicationMode": "STYLE_ADAPT"
+          }
+        ]
+      },
+      "UNITY": {
+        "evaluatedAssetCount": 717,
+        "eligibleAssetCount": 713,
+        "requiredFamilies": [
+          "AUDIO",
+          "BUILDING",
+          "CREATURE",
+          "ENVIRONMENT",
+          "MATERIAL",
+          "MOTION",
+          "PROP",
+          "SKILL",
+          "VFX",
+          "WEAPON"
+        ],
+        "candidates": [
+          {
+            "family": "AUDIO",
+            "action": "AUTHOR",
+            "assetId": null
+          },
+          {
+            "family": "BUILDING",
+            "action": "ADAPT",
+            "assetId": "roblox-common-building-archway",
+            "applicationMode": "STYLE_ADAPT"
+          },
+          {
+            "family": "CREATURE",
+            "action": "ADAPT",
+            "assetId": "roblox-insect-spider-hd",
+            "applicationMode": "STYLE_ADAPT"
+          },
+          {
+            "family": "ENVIRONMENT",
+            "action": "ADAPT",
+            "assetId": "roblox-common-environment-cave",
+            "applicationMode": "STYLE_ADAPT"
+          },
+          {
+            "family": "MATERIAL",
+            "action": "ADAPT",
+            "assetId": "roblox-common-material-asphalt",
+            "applicationMode": "STYLE_ADAPT"
+          },
+          {
+            "family": "MOTION",
+            "action": "ADAPT",
+            "assetId": "roblox-common-motion-bed-lie-down",
+            "applicationMode": "STYLE_ADAPT"
+          },
+          {
+            "family": "PROP",
+            "action": "ADAPT",
+            "assetId": "roblox-common-item-antidote",
+            "applicationMode": "STYLE_ADAPT"
+          },
+          {
+            "family": "SKILL",
+            "action": "ADAPT",
+            "assetId": "roblox-common-skill-area-field",
+            "applicationMode": "STYLE_ADAPT"
+          },
+          {
+            "family": "VFX",
+            "action": "ADAPT",
+            "assetId": "roblox-common-vfx-attack-telegraph-pulse",
+            "applicationMode": "STYLE_ADAPT"
+          },
+          {
+            "family": "WEAPON",
+            "action": "ADAPT",
+            "assetId": "roblox-common-tool-axe",
+            "applicationMode": "STYLE_ADAPT"
+          }
+        ]
+      },
+      "ROBLOX": {
+        "evaluatedAssetCount": 717,
+        "eligibleAssetCount": 713,
+        "requiredFamilies": [
+          "AUDIO",
+          "BUILDING",
+          "CREATURE",
+          "ENVIRONMENT",
+          "MATERIAL",
+          "MOTION",
+          "PROP",
+          "SKILL",
+          "VFX",
+          "WEAPON"
+        ],
+        "candidates": [
+          {
+            "family": "AUDIO",
+            "action": "AUTHOR",
+            "assetId": null
+          },
+          {
+            "family": "BUILDING",
+            "action": "USE",
+            "assetId": "roblox-common-building-archway",
+            "applicationMode": "USE_AS_IS"
+          },
+          {
+            "family": "CREATURE",
+            "action": "ADAPT",
+            "assetId": "roblox-insect-spider-hd",
+            "applicationMode": "STYLE_ADAPT"
+          },
+          {
+            "family": "ENVIRONMENT",
+            "action": "USE",
+            "assetId": "roblox-common-environment-cave",
+            "applicationMode": "USE_AS_IS"
+          },
+          {
+            "family": "MATERIAL",
+            "action": "USE",
+            "assetId": "roblox-common-material-asphalt",
+            "applicationMode": "USE_AS_IS"
+          },
+          {
+            "family": "MOTION",
+            "action": "USE",
+            "assetId": "roblox-common-motion-bed-lie-down",
+            "applicationMode": "USE_AS_IS"
+          },
+          {
+            "family": "PROP",
+            "action": "USE",
+            "assetId": "roblox-common-item-antidote",
+            "applicationMode": "USE_AS_IS"
+          },
+          {
+            "family": "SKILL",
+            "action": "USE",
+            "assetId": "roblox-common-skill-area-field",
+            "applicationMode": "USE_AS_IS"
+          },
+          {
+            "family": "VFX",
+            "action": "USE",
+            "assetId": "roblox-common-vfx-attack-telegraph-pulse",
+            "applicationMode": "USE_AS_IS"
+          },
+          {
+            "family": "WEAPON",
+            "action": "USE",
+            "assetId": "roblox-common-tool-axe",
+            "applicationMode": "USE_AS_IS"
+          }
+        ]
+      }
+    },
+    "assetFacts": {
+      "roblox-common-building-archway": {
+        "family": "BUILDING",
+        "role": "ARCHWAY",
+        "sourcePath": "/assets/roblox/common-building-v1/RobloxCommonBuilding.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 890.2,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
+      },
+      "roblox-insect-spider-hd": {
+        "family": "CREATURE",
+        "role": "INSECT_ARACHNID",
+        "sourcePath": "/assets/roblox/world-ghosts/native/spider/spider.png",
+        "platform": "SHARED_NATIVE_SOURCE",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 909.6,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "GLB_VALIDATED_NATIVE_RUNTIME_PENDING",
+        "productionVerified": false
+      },
+      "roblox-common-environment-cave": {
+        "family": "ENVIRONMENT",
+        "role": "BIOME",
+        "sourcePath": "/assets/roblox/common-environment-v1/RobloxCommonEnvironment.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 950.1,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
+      },
+      "roblox-common-material-asphalt": {
+        "family": "MATERIAL",
+        "role": "ASPHALT",
+        "sourcePath": "/assets/roblox/common-materials-v1/RobloxCommonMaterials.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 916.3,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
+      },
+      "roblox-common-motion-bed-lie-down": {
+        "family": "MOTION",
+        "role": "BED_LIE_DOWN",
+        "sourcePath": "/assets/roblox/common-motion-v1/RobloxCommonMotion.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 917.1,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
+      },
+      "roblox-common-item-antidote": {
+        "family": "PROP",
+        "role": "ITEM",
+        "sourcePath": "/assets/roblox/common-items-v1/RobloxCommonItems.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 892.4,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
+      },
+      "roblox-common-skill-area-field": {
+        "family": "SKILL",
+        "role": "AREA",
+        "sourcePath": "/assets/roblox/common-skill-v1/RobloxCommonSkillPresentation.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 908.1,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
+      },
+      "roblox-common-vfx-attack-telegraph-pulse": {
+        "family": "VFX",
+        "role": "ATTACK_TELEGRAPH_PRESENTATION",
+        "sourcePath": "/assets/roblox/common-vfx-v1/RobloxCommonVFX.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 913.1,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
+      },
+      "roblox-common-tool-axe": {
+        "family": "WEAPON",
+        "role": "AXE",
+        "sourcePath": "/assets/roblox/common-tools-v1/RobloxCommonTools.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 888,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
+      }
+    }
+  }
 }
