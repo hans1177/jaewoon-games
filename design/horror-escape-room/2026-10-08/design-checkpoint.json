@@ -234,25 +234,72 @@
           "validationPlan": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract, Mobile input/UI contract, Save/rejoin contract when applicable, Multiplayer state-sync contract when applicable, Headless exact-artifact regression, Open Cloud private/restricted publish"
         }
       ]
+    },
+    "designer_draft_slices::selection-variety": {
+      "selectedDesignPlan": {
+        "label": "PLAN_A",
+        "rationale": "선택된 설계 계획은 기존 원본의 핵심 요소인 '4대4 AI 충원', '감염 전환', '인간 정화'를 강조하고, 모바일 UI와 저장 기능을 포함하여 사용자 경험을 최적화한 설계입니다.",
+        "identityPreserved": "기존 원본의 '인간4/몬스터4 배정', 'AI 충원', '감염 공격', '정화 공격' 등의 핵심 요소를 유지합니다.",
+        "creativeDeviation": "감염 스킬의 유니크성과 모바일 UI의 편의성, 저장 기능의 실용성을 강조하여 사용자 경험을 향상시킵니다.",
+        "genreChange": true,
+        "reversibility": "감염 전환 및 정화 공격은 실시간으로 적용되며, 사용자 경험의 유연성을 유지합니다."
+      },
+      "contentVarietyPlan": {
+        "regions": [
+          {
+            "name": "학교/폐병원/폐놀이공원",
+            "traversal": "순환 방식으로 인간과 몬스터의 역할이 실시간으로 바뀌며, 맵 이벤트를 통해 플레이어는 다양한 상호작용을 경험할 수 있습니다.",
+            "riskReward": "맵 이벤트는 사용자 경험의 다양성을 증대시키고, 감염 스킬의 유니크성을 강화합니다.",
+            "landmark": "인간은 정화와 대시로 몬스터를 제거하고, 몬스터는 명시적 감염 공격으로 인간을 전환합니다.",
+            "encounterPattern": "감염 공격과 정화 공격은 실시간으로 적용되며, 사용자 경험의 유연성을 유지합니다.",
+            "resourcePressure": "감염 공격과 정화 공격은 실시간으로 적용되며, 사용자 경험의 유연성을 유지합니다.",
+            "storyContext": "감염 전환과 정화 공격은 사용자 경험의 유연성을 유지하며, 감염 스킬의 유니크성을 강화합니다."
+          }
+        ],
+        "enemiesOrChallenges": [
+          {
+            "name": "감염 스킬",
+            "behavior": "유니크한 감염 스킬을 사용하여 사용자 경험의 유연성을 유지하며, 감염 전환과 정화 공격의 실시간 적용을 강조합니다.",
+            "counterplay": "감염 스킬의 유니크성과 사용자 경험의 유연성을 강조하여, 사용자 경험의 다양성을 증대시킵니다.",
+            "positioning": "감염 스킬은 사용자 경험의 유연성을 강조하며, 감염 전환과 정화 공격의 실시간 적용을 강조합니다.",
+            "timing": "감염 공격과 정화 공격은 실시간으로 적용되며, 사용자 경험의 유연성을 유지합니다.",
+            "mobility": "감염 공격과 정화 공격은 실시간으로 적용되며, 사용자 경험의 유연성을 유지합니다.",
+            "groupRole": "감염 스킬은 사용자 경험의 유연성을 강조하며, 감염 전환과 정화 공격의 실시간 적용을 강조합니다.",
+            "identity": "감염 스킬은 사용자 경험의 유연성을 강조하며, 감염 전환과 정화 공격의 실시간 적용을 강조합니다.",
+            "rewardMeaning": "감염 스킬은 사용자 경험의 유연성을 강조하며, 감염 전환과 정화 공격의 실시간 적용을 강조합니다."
+          }
+        ],
+        "objectives": [
+          {
+            "role": "인간",
+            "variation": "인간은 고유 도구·대시·정화로 생존/반격하며, 감염 스킬의 유니크성을 강조하여, 사용자 경험의 유연성을 유지합니다."
+          },
+          {
+            "role": "몬스터",
+            "variation": "몬스터는 명시적 감염 공격으로 인간을 감염하며, 감염 스킬의 유니크성을 강조하여, 사용자 경험의 유연성을 유지합니다."
+          }
+        ],
+        "antiMonotonyRule": "감염 스킬의 유니크성과 사용자 경험의 유연성을 강조하여, 사용자 경험의 다양성을 증대시킵니다."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1467275,
-      "lastMs": 128270,
+      "totalMs": 1569090,
+      "lastMs": 101815,
       "lastError": null,
-      "updatedAt": "2026-10-07T20:49:34.812Z"
+      "updatedAt": "2026-10-07T20:51:16.628Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T20:25:07.525Z",
-  "updatedAt": "2026-10-07T20:49:34.812Z",
+  "updatedAt": "2026-10-07T20:51:16.629Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -445,7 +492,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-07T20:49:34.812Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T20:51:16.628Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
