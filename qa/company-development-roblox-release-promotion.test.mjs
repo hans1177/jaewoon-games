@@ -240,6 +240,14 @@ test('central native foundation policy locks spawn ordering candidate invalidati
 });
 
 
+test('Roblox runtime batch wakes when private candidate routing implementation changes',()=>{
+  const runtime=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  assert.match(runtime,/- '\.github\/workflows\/company-development-roblox-release-promotion\.yml'/);
+  assert.match(runtime,/- 'tools\/vibe3-roblox-platform\.mjs'/);
+  assert.match(runtime,/- 'qa\/company-development-roblox-release-promotion\.test\.mjs'/);
+});
+
+
 test('private runtime candidate uses the same shallow checkout contract while preserving ancestry proof',()=>{
   assert.match(workflow,/Checkout current canonical implementation[\s\S]*fetch-depth:\s*1[\s\S]*fetch-tags:\s*false[\s\S]*filter:\s*blob:none/);
   assert.doesNotMatch(workflow,/fetch-depth:\s*0/);
