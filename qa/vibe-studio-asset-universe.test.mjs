@@ -5333,6 +5333,20 @@ test('real horror-escape-room source fixture resolves project pack identity and 
   assert.ok(result.summary.gameSummaries[0].currentConsumers>=2);
 });
 
+test('source consumer snapshot scans quoted usage tokens only once after removing binding boilerplate',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const source=fs.readFileSync(path.resolve(here,'../tools/vibe2-asset-production-plan.mjs'),'utf8');
+  const start=source.indexOf('function sourceConsumerSnapshot');
+  const end=source.indexOf('function sourceConsumerAssetPaths',start);
+  const snapshotSource=source.slice(start,end);
+  assert.match(snapshotSource,/usageTokens=new Map\(\)/);
+  assert.match(snapshotSource,/const usageSource=sourceConsumerUsageSource\(source\)/);
+  assert.match(snapshotSource,/addToken\(usageTokens,match\[1\],relative\)/);
+  assert.doesNotMatch(snapshotSource,/tokens=new Map\(\)/);
+  assert.doesNotMatch(snapshotSource,/addToken\(tokens,/);
+  assert.doesNotMatch(snapshotSource,/assetPaths,tokens,usageTokens/);
+});
+
 test('source consumer summary accumulates current intended and family counts without rescanning all assets per game',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-consumer-summary-index-'));
   try{
