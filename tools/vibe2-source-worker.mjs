@@ -101,14 +101,15 @@ const JSON_CONTEXT_WINDOW=STANDARD_GAME_SOURCE_CONTEXT_WINDOW;
 const JSON_FINAL_CONTEXT_WINDOW=STANDARD_GAME_SOURCE_CONTEXT_WINDOW;
 const JSON_FOCUSED_REPLACE_CONTEXT_WINDOW=STANDARD_GAME_SOURCE_CONTEXT_WINDOW;
 const FULL_WEB_CONTEXT_WINDOW=32768;
+const DEFAULT_LOCAL_MODEL_CONTEXT_LIMIT=40960;
 export function sourcePromptContextWindow(prompt='',{baseContextWindow=JSON_CONTEXT_WINDOW,maxPredict=DEFAULT_MAX_PREDICT}={}){
-  const base=Math.max(8192,Number(baseContextWindow)||JSON_CONTEXT_WINDOW);
+  const base=Math.min(DEFAULT_LOCAL_MODEL_CONTEXT_LIMIT,Math.max(8192,Number(baseContextWindow)||JSON_CONTEXT_WINDOW));
   const estimatedPromptTokens=Math.ceil(Buffer.byteLength(String(prompt??''),'utf8')/3);
   const required=estimatedPromptTokens+Math.max(512,Number(maxPredict)||DEFAULT_MAX_PREDICT)+1024;
   if(required<=base)return base;
   if(required<=24576)return Math.max(base,24576);
   if(required<=32768)return Math.max(base,32768);
-  return Math.max(base,65536);
+  return DEFAULT_LOCAL_MODEL_CONTEXT_LIMIT;
 }
 const MAX_GENERATION_ATTEMPTS=4;
 const SPECULATIVE_FULL_WEB_MAX_GENERATION_ATTEMPTS=3;
