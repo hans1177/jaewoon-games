@@ -12,6 +12,7 @@ import {createHash} from 'node:crypto';
 import {buildAllGameDynamicLibraryBindingPlan,buildAssetSupplyDecisionSummary} from '../tools/vibe2-asset-production-plan.mjs';
 
 const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
+const assertDesignSchema=runInNewContext(design.slice(design.indexOf('function assertSchemaValue('),design.indexOf('function normalizeSchemaValue('))+'\nassertSchemaValue');
 
 // 대표 검증과 일반 배치 모두 실제 대상 수·중앙 정책 범위 안에서 병렬 실행한다.
 test('design canary games run concurrently without bypassing the verified-engine gate',()=>{
@@ -108,11 +109,11 @@ test('truncated local output splits required fields and resumes only the unfinis
     requestLocalDesignerRaw:async(prompt,{schema:contract})=>{
       const fields=Object.keys(contract.properties);calls.push(fields.join(','));
       if(fields.length===4)throw new Error('OLLAMA_DESIGN_OUTPUT_TRUNCATED');
-      if(fields[0]==='c'&&secondPartFails){secondPartFails=false;throw new Error('OLLAMA_DESIGN_TIMEOUT 300000ms');}
+      if(fields[0]==='c'&&secondPartFails){secondPartFails=false;throw new Error('OLLAMA_DESIGN_HTTP_503');}
       return JSON.stringify(Object.fromEntries(fields.map(field=>[field,'authored '+field])));
     }
   });
-  await assert.rejects(author('system','owner brief',schema),/OLLAMA_DESIGN_TIMEOUT/);
+  await assert.rejects(author('system','owner brief',schema),/OLLAMA_DESIGN_HTTP_503/);
   assert.equal(Object.keys(checkpoint.tasks).length,1,'only the completed half may be saved');
   const value=await author('system','owner brief',schema);
   assert.deepEqual(JSON.parse(JSON.stringify(value)),{a:'authored a',b:'authored b',c:'authored c',d:'authored d'});
@@ -336,4 +337,96 @@ test('design library facts preserve compatibility and separate audit scores from
   assert.deepEqual(payload,JSON.parse(JSON.stringify(context)),'library evidence must not be clipped by shared context');
   assert.match(sent,/점수는 내부 평가이며 런타임 품질 통과가 아니다/);
   assert.match(sent,/게임당 설계 원본은 하나/);
+});
+
+// 생성 실패 복구와 동일 입력 체크포인트 재사용만 검증한다.
+test('local timeout subdivides required fields and never swallows an atomic timeout',async()=>{
+  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
+  const taskSource=design.slice(design.indexOf('async function runCheckpointTask('),design.indexOf('function isParallelPressure('));
+  const schema={type:'object',required:['a','b'],properties:{a:{type:'string'},b:{type:'string'}},additionalProperties:false};
+  const checkpoint={tasks:{}},calls=[];
+  let atomicFails=true;
+  const author=runInNewContext(taskSource+'\n'+source+'\ncallLocalDesignerModel',{
+    createHash,designAssetLibraryContext:{sha256:'library'},localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'local',
+    designerRoute:{id:'ollama:local'},designCheckpoint:checkpoint,modelCallStats:[],console:{log(){}},clean:String,
+    parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,assertSchemaValue:assertDesignSchema,recordModelHealth(){},persistDesignCheckpoint(){},
+    requestLocalDesignerRaw:async(prompt,{schema:contract})=>{
+      const fields=Object.keys(contract.properties);calls.push(fields.join(','));
+      if(fields.length>1||fields[0]==='b'&&atomicFails)throw new Error('OLLAMA_DESIGN_TIMEOUT 300000ms');
+      return JSON.stringify(Object.fromEntries(fields.map(field=>[field,field+' complete'])));
+    }
+  });
+  await assert.rejects(author('system','brief',schema),/OLLAMA_DESIGN_TIMEOUT/);
+  assert.equal(Object.keys(checkpoint.tasks).length,1);
+  atomicFails=false;
+  assert.deepEqual(JSON.parse(JSON.stringify(await author('system','brief',schema))),{a:'a complete',b:'b complete'});
+  assert.deepEqual(calls,['a,b','a','b','b'],'completed fields and failed oversized parent are not replayed');
+  calls.length=0;
+  await author('system','different request',schema,{recoverOversized:true});
+  assert.deepEqual(calls,['a','b'],'a persisted oversized timeout starts with smaller requests');
+});
+
+test('nested alternatives are checkpointed as distinct complete items before oversized generation',async()=>{
+  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
+  const taskSource=design.slice(design.indexOf('async function runCheckpointTask('),design.indexOf('function isParallelPressure('));
+  const fields=['label',...Array.from({length:8},(_,i)=>'detail'+i)];
+  const item={type:'object',required:fields,properties:Object.fromEntries(fields.map(field=>[field,field==='label'?{type:'string',enum:['PLAN_A','PLAN_B','PLAN_C']}:{type:'string'}])),additionalProperties:false};
+  const schema={type:'object',required:['designAlternatives'],properties:{designAlternatives:{type:'array',minItems:2,maxItems:3,items:item}},additionalProperties:false};
+  const checkpoint={tasks:{}},calls=[];
+  let failSecond=true;
+  const author=runInNewContext(taskSource+'\n'+source+'\ncallLocalDesignerModel',{
+    createHash,designAssetLibraryContext:{sha256:'library'},localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'local',
+    designerRoute:{id:'ollama:local'},designCheckpoint:checkpoint,modelCallStats:[],console:{log(){}},clean:String,
+    parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,assertSchemaValue:assertDesignSchema,recordModelHealth(){},persistDesignCheckpoint(){},
+    requestLocalDesignerRaw:async(prompt,{schema:contract})=>{
+      const props=contract.properties;calls.push({prompt,fields:Object.keys(props)});
+      assert.ok(Object.keys(props).length<=6);
+      assert.equal(props.designAlternatives,undefined,'array wrapper never goes to the model');
+      if(props.label?.enum?.[0]==='PLAN_B'&&failSecond){failSecond=false;throw new Error('OLLAMA_DESIGN_HTTP_503');}
+      return JSON.stringify(Object.fromEntries(Object.entries(props).map(([key,value])=>[key,value.enum?.[0]||key+' authored'])));
+    }
+  });
+  await assert.rejects(author('system','brief',schema),/OLLAMA_DESIGN_HTTP_503/);
+  const planACalls=calls.filter(x=>x.prompt.includes('designAlternatives[0]')).length;
+  const result=await author('system','brief',schema);
+  assert.deepEqual(Array.from(result.designAlternatives,x=>x.label),['PLAN_A','PLAN_B']);
+  assert.ok(result.designAlternatives.every(row=>fields.every(field=>typeof row[field]==='string')));
+  assert.equal(calls.filter(x=>x.prompt.includes('designAlternatives[0]')).length,planACalls);
+  assert.ok(calls.some(x=>x.prompt.includes('PREVIOUS_ARRAY_ITEMS=[{"label":"PLAN_A"')),'next alternative sees the authored previous plan');
+});
+
+test('slice input keeps the owner original in a stable prefix and omits compatibility-only seed duplication',async()=>{
+  const source=design.slice(design.indexOf('async function authorDesignInCheckpointedSlices('),design.indexOf('function mergeDesignerDesign('));
+  const calls=[];
+  const author=runInNewContext(source+'\nauthorDesignInCheckpointedSlices',{
+    seed:{designInputMode:'OWNER_BRIEF_AND_ORIGINAL_ONLY'},seedDesignDepthContext:{duplicate:'x'.repeat(9000)},
+    clip:(value,n)=>{const s=typeof value==='string'?value:JSON.stringify(value);return s.slice(0,n);},
+    DESIGN_AUTHORING_SLICES:[{id:'first',fields:['identity'],predict:1200},{id:'second',fields:['coreFun'],predict:1200}],
+    designSliceSchema:fields=>({properties:Object.fromEntries(fields.map(field=>[field,{}]))}),repairStructureContract:fields=>fields,
+    designCheckpoint:{failedTask:'second',lastError:'OLLAMA_DESIGN_TIMEOUT 300000ms'},
+    runCheckpointTask:async(phase,id,work)=>work(),callDesignerModel:async(system,user,schema,options)=>{
+      calls.push({user,options});return Object.fromEntries(Object.keys(schema.properties).map(field=>[field,'authored']));
+    },repairDesignRequiredFields:value=>({value}),factPack:{},enforceOwnerPreservationDesign:value=>value,assertSchemaValue:assertDesignSchema,DESIGN:{},console:{log(){}}
+  });
+  const original='OWNER_ORIGINAL_DESIGN_INPUT='+JSON.stringify({locked:'4v4 infection',source:'original'});
+  const result=await author({phase:'designer_draft',system:'system',sharedContext:original});
+  assert.equal(result.coreFun,'authored');
+  assert.ok(calls.every(x=>x.user.startsWith('SHARED_CONTEXT='+original)));
+  assert.ok(calls.every(x=>!x.user.includes('GAME_SEED_DESIGN_DEPTH=')));
+  assert.equal(calls[1].options.recoverOversized,true);
+  assert.ok(calls[1].user.includes('"identity":"authored"'),'later work keeps prior authored continuity');
+});
+
+test('transport repair reuses previous drafts only when every original input still matches',()=>{
+  const source=design.slice(design.indexOf('const checkpointV3CompatibleEngineMigrationEligible='),design.indexOf('if(!checkpointReusable'));
+  const oldEngine='cc088ad7a8676ded2864387d1c00a39b024f9e9a4e72f50308346406aea805a9';
+  const checkpointInputContext={gameId:'g',date:'d',seed:{seedId:'s'},evidence:{librarySha:'unchanged'},policyDigest:'p',engineDigest:'new-engine'};
+  const fingerprint=createHash('sha256').update(JSON.stringify({...checkpointInputContext,engineDigest:oldEngine})).digest('hex');
+  const cp={contractVersion:4,gameId:'g',date:'d',seedId:'s',policyDigest:'p',engineDigest:oldEngine,fingerprint,phases:{},tasks:{identity:'authored'},modelHealth:{}};
+  const eligible=context=>runInNewContext(source+'\ncheckpointV3CompatibleEngineMigrationEligible',{
+    designCheckpoint:cp,checkpointInputContext:context,DESIGN_CHECKPOINT_CONTRACT_VERSION:4,gameId:'g',date:'d',seed:{seedId:'s'},policyDigest:'p',checkpointCompatibleEngineDigests:new Set(),clean:String,createHash
+  });
+  assert.equal(Boolean(eligible(checkpointInputContext)),true);
+  assert.equal(Boolean(eligible({...checkpointInputContext,evidence:{librarySha:'changed'}})),false);
+  assert.equal(Boolean(eligible({...checkpointInputContext,seed:{seedId:'s',newOwnerRequest:'changed'}})),false);
 });
