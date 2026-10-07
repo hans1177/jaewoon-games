@@ -664,24 +664,26 @@ function drawWeatherOverlay(now){
 
 const MUSIC_TRACK_SECONDS=180;
 const MUSIC_THEMES={
- forest:{bpm:82,mode:'major',root:146.83,progression:[0,4,5,3,0,2,4,5],riff:[0,2,4,2,5,4,2,1],style:'forest'},
- canyon:{bpm:70,mode:'minor',root:110,progression:[0,3,5,1,0,6,3,4],riff:[0,2,3,1,-1,2,0,-2],style:'canyon'},
- worldtree:{bpm:64,mode:'major',root:130.81,progression:[0,5,3,4,0,2,5,3],riff:[0,4,2,5,4,2,6,4],style:'worldtree'},
- volcano:{bpm:76,mode:'minor',root:82.41,progression:[0,1,5,0,6,1,4,0],riff:[0,-1,2,0,-3,1,0,-2],style:'volcano'},
- crystal:{bpm:72,mode:'major',root:174.61,progression:[0,2,5,4,0,6,3,5],riff:[0,5,2,6,4,1,5,3],style:'crystal'},
- giantlake:{bpm:76,mode:'major',root:130.81,progression:[0,4,2,5,0,3,4,1],riff:[0,2,5,4,2,6,3,1],style:'giantlake'},
- underwater:{bpm:68,mode:'minor',root:110,progression:[0,3,5,2,0,6,4,3],riff:[0,2,4,1,5,3,6,2],style:'underwater'},
- deepcoral:{bpm:58,mode:'minor',root:82.41,progression:[0,5,3,6,0,2,5,1],riff:[0,-2,3,1,5,2,4,-1],style:'deepcoral'},
- snow:{bpm:74,mode:'major',root:164.81,progression:[0,5,3,4,0,2,6,4],riff:[0,4,2,5,3,6,4,1],style:'snow'},
- jungle:{bpm:88,mode:'minor',root:123.47,progression:[0,3,6,4,0,5,2,6],riff:[0,3,1,5,2,6,4,3],style:'jungle'},
- flowerfield:{bpm:92,mode:'major',root:174.61,progression:[0,3,4,5,0,2,4,1],riff:[0,2,4,6,5,3,1,4],style:'flowerfield'},
- giantgarden:{bpm:80,mode:'major',root:146.83,progression:[0,5,2,4,0,3,6,5],riff:[0,4,6,3,5,2,7,4],style:'giantgarden'},
- underground:{bpm:62,mode:'minor',root:98,progression:[0,5,3,6,0,4,1,5],riff:[0,-2,1,-1,3,0,-3,1],style:'underground'},
- questcave:{bpm:66,mode:'minor',root:92.5,progression:[0,3,1,5,0,6,4,1],riff:[0,1,-2,3,1,-1,2,-3],style:'questcave'},
- battle1:{bpm:168,mode:'minor',root:110,progression:[0,6,5,3,0,1,6,5],riff:[0,3,5,6,5,3,1,6],style:'battle1'},
- battle2:{bpm:178,mode:'minor',root:123.47,progression:[0,1,6,4,0,5,1,6],riff:[0,5,6,3,5,2,6,4],style:'battle2'},
- battle3:{bpm:160,mode:'minor',root:98,progression:[0,5,1,6,0,3,5,1],riff:[0,6,5,3,1,5,4,2],style:'battle3'},
- boss:{bpm:118,mode:'minor',root:73.42,progression:[0,1,6,5,0,3,1,6],riff:[0,3,5,1,6,3,1,-2],style:'boss'}
+ forest:{bpm:60,mode:'minor',root:146.83,progression:[0,3,5,4,0,6,3,4],riff:[0,2,1,3,0,4,2,1],style:'forest'},
+ canyon:{bpm:54,mode:'minor',root:110,progression:[0,5,3,1,0,6,4,1],riff:[0,-1,2,0,-2,1,-1,0],style:'canyon'},
+ worldtree:{bpm:52,mode:'minor',root:130.81,progression:[0,3,5,2,0,4,6,3],riff:[0,2,4,1,3,2,5,1],style:'worldtree'},
+ volcano:{bpm:64,mode:'minor',root:82.41,progression:[0,1,5,6,0,3,1,5],riff:[0,-2,1,-1,2,0,-3,1],style:'volcano'},
+ crystal:{bpm:56,mode:'minor',root:174.61,progression:[0,5,3,6,0,2,4,5],riff:[0,2,4,1,3,5,2,1],style:'crystal'},
+ giantlake:{bpm:58,mode:'minor',root:130.81,progression:[0,4,2,5,0,3,6,4],riff:[0,2,1,4,2,3,1,0],style:'giantlake'},
+ underwater:{bpm:50,mode:'minor',root:110,progression:[0,3,5,2,0,6,4,3],riff:[0,1,3,0,2,4,1,-1],style:'underwater'},
+ deepcoral:{bpm:46,mode:'minor',root:82.41,progression:[0,5,3,6,0,2,5,1],riff:[0,-2,1,3,0,2,-1,1],style:'deepcoral'},
+ snow:{bpm:52,mode:'minor',root:164.81,progression:[0,5,3,4,0,2,6,4],riff:[0,2,1,3,2,4,1,0],style:'snow'},
+ jungle:{bpm:66,mode:'minor',root:123.47,progression:[0,3,6,4,0,5,2,6],riff:[0,2,1,4,2,3,1,2],style:'jungle'},
+ flowerfield:{bpm:58,mode:'minor',root:174.61,progression:[0,3,4,5,0,2,4,1],riff:[0,2,3,1,4,2,1,3],style:'flowerfield'},
+ giantgarden:{bpm:56,mode:'minor',root:146.83,progression:[0,5,2,4,0,3,6,5],riff:[0,3,2,4,1,3,5,2],style:'giantgarden'},
+ swamp:{bpm:48,mode:'minor',root:92.5,progression:[0,1,5,3,0,6,1,4],riff:[0,-1,1,-2,2,0,-1,1],style:'swamp'},
+ desert:{bpm:58,mode:'minor',root:98,progression:[0,5,1,6,0,3,5,1],riff:[0,1,-1,2,0,-2,1,-1],style:'desert'},
+ underground:{bpm:46,mode:'minor',root:98,progression:[0,5,3,6,0,4,1,5],riff:[0,-2,1,-1,2,0,-3,1],style:'underground'},
+ questcave:{bpm:50,mode:'minor',root:92.5,progression:[0,3,1,5,0,6,4,1],riff:[0,1,-2,2,0,-1,1,-3],style:'questcave'},
+ battle1:{bpm:112,mode:'minor',root:110,progression:[0,6,5,3,0,1,6,5],riff:[0,3,1,4,2,5,3,1],style:'battle1'},
+ battle2:{bpm:120,mode:'minor',root:123.47,progression:[0,1,6,4,0,5,1,6],riff:[0,4,2,5,1,3,5,2],style:'battle2'},
+ battle3:{bpm:104,mode:'minor',root:98,progression:[0,5,1,6,0,3,5,1],riff:[0,3,2,5,1,4,2,0],style:'battle3'},
+ boss:{bpm:84,mode:'minor',root:73.42,progression:[0,1,6,5,0,3,1,6],riff:[0,2,4,1,5,2,1,-1],style:'boss'}
 };
 const music={ctx:null,master:null,started:false,enabled:true,volume:1.44,theme:null,nextAt:0,beatIndex:0,trackStart:0,noise:null,noiseInitPending:false,battleActive:false,battleTheme:null,warmupUntil:0,startPending:false};
 function initMusicNoiseDeferred(){
@@ -704,7 +706,7 @@ function ensureMusicStarted(){
 }
 function scaleFreq(root,degree,minor=false,oct=0){const major=[0,2,4,5,7,9,11],min=[0,2,3,5,7,8,10],scale=minor?min:major;let d=degree,shift=0;while(d<0){d+=7;shift--}while(d>=7){d-=7;shift++}return root*Math.pow(2,(scale[d]+12*(shift+oct))/12)}
 function smoothVoice(freq,at,dur,gain=.035,wave='sine',filterHz=1600,attack=.06){if(!music.ctx)return;const o=music.ctx.createOscillator(),g=music.ctx.createGain(),f=music.ctx.createBiquadFilter();o.type=wave;o.frequency.setValueAtTime(freq,at);f.type='lowpass';f.frequency.value=filterHz;f.Q.value=.5;g.gain.setValueAtTime(.0001,at);g.gain.linearRampToValueAtTime(gain,at+Math.min(attack,dur*.35));g.gain.exponentialRampToValueAtTime(.0001,at+dur);o.connect(f);f.connect(g);g.connect(music.master);o.start(at);o.stop(at+dur+.04)}
-function padVoice(freq,at,dur,gain=.026,filterHz=1200){if(!music.ctx)return;const g=music.ctx.createGain(),f=music.ctx.createBiquadFilter();f.type='lowpass';f.frequency.value=filterHz;g.gain.setValueAtTime(.0001,at);g.gain.linearRampToValueAtTime(gain,at+.35);g.gain.setValueAtTime(gain,Math.max(at+.36,at+dur-.45));g.gain.linearRampToValueAtTime(.0001,at+dur);f.connect(g);g.connect(music.master);for(const det of [-7,7]){const o=music.ctx.createOscillator();o.type=det<0?'sine':'triangle';o.frequency.setValueAtTime(freq,at);o.detune.value=det;o.connect(f);o.start(at);o.stop(at+dur+.05)}}
+function padVoice(freq,at,dur,gain=.026,filterHz=1200){if(!music.ctx)return;const g=music.ctx.createGain(),f=music.ctx.createBiquadFilter();f.type='lowpass';f.frequency.value=filterHz;f.Q.value=.7;g.gain.setValueAtTime(.0001,at);g.gain.linearRampToValueAtTime(gain,at+Math.min(.8,dur*.28));g.gain.setValueAtTime(gain,Math.max(at+.81,at+dur-.8));g.gain.linearRampToValueAtTime(.0001,at+dur);f.connect(g);g.connect(music.master);for(const det of [-9,0,9]){const o=music.ctx.createOscillator();o.type='sine';o.frequency.setValueAtTime(freq,at);o.detune.value=det;o.connect(f);o.start(at);o.stop(at+dur+.05)}}
 function glassVoice(freq,at,dur=.9,gain=.022){if(!music.ctx)return;for(const [mul,g] of [[1,gain],[2.01,gain*.32],[3.98,gain*.12]])smoothVoice(freq*mul,at,dur,g,'sine',4200,.015)}
 function noiseBrush(at,dur=.16,gain=.014,center=1800){if(!music.ctx||!music.noise)return;const src=music.ctx.createBufferSource(),f=music.ctx.createBiquadFilter(),g=music.ctx.createGain();src.buffer=music.noise;f.type='bandpass';f.frequency.value=center;f.Q.value=.8;g.gain.setValueAtTime(gain,at);g.gain.exponentialRampToValueAtTime(.0001,at+dur);src.connect(f);f.connect(g);g.connect(music.master);src.start(at);src.stop(at+dur+.02)}
 function lowDrum(at,pitch=90,gain=.065,dur=.22){if(!music.ctx)return;const o=music.ctx.createOscillator(),g=music.ctx.createGain();o.type='sine';o.frequency.setValueAtTime(pitch,at);o.frequency.exponentialRampToValueAtTime(Math.max(38,pitch*.48),at+dur*.75);g.gain.setValueAtTime(gain,at);g.gain.exponentialRampToValueAtTime(.0001,at+dur);o.connect(g);g.connect(music.master);o.start(at);o.stop(at+dur+.02)}
@@ -771,74 +773,62 @@ function desiredMusicTheme(){
 }
 function scheduleBandBeat(key,t,beat,at){
  const beatDur=60/t.bpm,bar=Math.floor(beat/4),b=beat%4,minor=t.mode==='minor',ch=t.progression[bar%t.progression.length],root=scaleFreq(t.root,ch,minor,-1),lead=scaleFreq(t.root,ch+t.riff[beat%t.riff.length],minor,0);
+ const longPad=(gain=.028,filter=900)=>{if(b===0){padVoice(root,at,beatDur*4,gain,filter);padVoice(scaleFreq(t.root,ch+4,minor,-1),at,beatDur*4,gain*.42,filter*1.2)}};
  switch(t.style){
-  case'forest':if(b===0){padVoice(root*2,at,beatDur*4,.020,1500);padVoice(scaleFreq(t.root,ch+4,minor,0),at,beatDur*4,.012,1800)}if(b===0||b===2)smoothVoice(lead,at,beatDur*1.4,.026,'sine',2400,.12);if(b===1||b===3)noiseBrush(at,beatDur*.35,.006,4200);break;
-  case'canyon':lowDrum(at,b===0?92:68,b===0?.07:.035,beatDur*.55);if(b===0||b===2)smoothVoice(root,at,beatDur*1.6,.033,'triangle',850,.04);if(b===1||b===3)smoothVoice(lead,at,beatDur*.9,.024,'triangle',1350,.025);break;
-  case'worldtree':if(b===0){padVoice(root*2,at,beatDur*4,.032,1150);padVoice(scaleFreq(t.root,ch+4,minor,0),at,beatDur*4,.022,1450)}if(b===0||b===2)smoothVoice(lead,at,beatDur*1.9,.020,'sine',2100,.2);if(b===3)noiseBrush(at,beatDur*.7,.005,950);break;
-  case'volcano':lowDrum(at,b===0?78:58,b===0?.095:.05,beatDur*.72);if(b===0)padVoice(root,at,beatDur*4,.032,520);if(b===2)smoothVoice(root*1.5,at,beatDur*1.7,.024,'triangle',680,.12);if(b===1||b===3)noiseBrush(at,beatDur*.42,.015,620);break;
-  case'crystal':if(b===0)padVoice(root*2,at,beatDur*4,.017,2600);if(b===0||b===2)glassVoice(lead*1.5,at,beatDur*1.8,.020);if(b===3)glassVoice(scaleFreq(t.root,ch+6,minor,1),at,beatDur*2.1,.012);break;
+  case'forest':
+   longPad(.030,1050);if(b===2)smoothVoice(lead,at,beatDur*1.8,.012,'sine',1500,.32);if(b===3)noiseBrush(at,beatDur*.7,.004,3000);break;
+  case'canyon':
+   longPad(.032,700);if(b===0)lowDrum(at,72,.070,beatDur*.9);if(b===2)lowDrum(at,52,.032,beatDur*.65);if(b===3)smoothVoice(lead,at,beatDur*1.5,.011,'sine',900,.28);break;
+  case'worldtree':
+   longPad(.038,880);if(b===2)smoothVoice(lead,at,beatDur*2.1,.014,'sine',1350,.38);if(b===3)noiseBrush(at,beatDur*.8,.004,820);break;
+  case'volcano':
+   longPad(.034,480);if(b===0)lowDrum(at,66,.095,beatDur*1.05);if(b===2)lowDrum(at,48,.045,beatDur*.8);if(b===1||b===3)noiseBrush(at,beatDur*.55,.011,560);break;
+  case'crystal':
+   longPad(.025,1550);if(b===2)smoothVoice(lead*1.25,at,beatDur*2.2,.012,'sine',2100,.5);if(b===3)noiseBrush(at,beatDur*.7,.003,3600);break;
   case'giantlake':
-   if(b===0){padVoice(root*2,at,beatDur*4,.023,1550);smoothVoice(scaleFreq(t.root,ch+4,minor,0),at,beatDur*2.8,.013,'sine',2400,.18)}
-   if(b===0||b===2)glassVoice(lead*1.25,at,beatDur*.9,.014);
-   if(b===1||b===3)noiseBrush(at,beatDur*.22,.005,3300);
-   break;
+   longPad(.031,980);if(b===2)smoothVoice(lead,at,beatDur*2,.012,'sine',1500,.38);if(b===1||b===3)noiseBrush(at,beatDur*.6,.004,2200);break;
   case'underwater':
-   if(b===0)padVoice(root,at,beatDur*4,.032,720);
-   if(b===0||b===2)smoothVoice(lead,at,beatDur*1.5,.018,'sine',1250,.18);
-   if(b===3)glassVoice(lead*1.4,at,beatDur*1.4,.009);
-   noiseBrush(at+beatDur*.58,beatDur*.24,.004,1200);
-   break;
+   longPad(.039,560);if(b===2)smoothVoice(lead,at,beatDur*2.4,.010,'sine',900,.55);if(b===3)noiseBrush(at,beatDur*.8,.004,980);break;
   case'deepcoral':
-   if(b===0){padVoice(root,at,beatDur*4,.041,520);padVoice(scaleFreq(t.root,ch+3,true,-1),at,beatDur*4,.018,760)}
-   if(b===1||b===3)glassVoice(lead,at,beatDur*1.8,.010);
-   if(b===2)noiseBrush(at,beatDur*.55,.008,680);
-   break;
+   longPad(.046,420);if(b===2)smoothVoice(lead,at,beatDur*2.5,.009,'sine',720,.6);if(b===1||b===3)noiseBrush(at,beatDur*.8,.005,620);break;
   case'snow':
-   if(b===0){padVoice(root*2,at,beatDur*4,.022,1900);glassVoice(scaleFreq(t.root,ch+4,minor,0),at,beatDur*1.8,.011)}
-   if(b===1||b===3)glassVoice(lead*1.5,at,beatDur*.9,.015);
-   if(b===2)noiseBrush(at,beatDur*.28,.004,4300);
-   break;
+   longPad(.030,1250);if(b===2)smoothVoice(lead*1.15,at,beatDur*2.3,.010,'sine',1800,.55);if(b===3)noiseBrush(at,beatDur*.7,.004,4000);break;
   case'jungle':
-   lowDrum(at,b===0?84:64,b===0?.052:.025,beatDur*.45);
-   if(b===0)padVoice(root*1.5,at,beatDur*4,.025,920);
-   if(b===1||b===3)noiseBrush(at,beatDur*.18,.010,1650);
-   smoothVoice(lead,at,beatDur*.72,.021,'triangle',1650,.025);
-   break;
+   longPad(.030,760);if(b===0)lowDrum(at,72,.060,beatDur*.72);if(b===2)lowDrum(at,54,.030,beatDur*.5);if(b===1||b===3)noiseBrush(at,beatDur*.38,.007,1250);break;
   case'flowerfield':
-   if(b===0)padVoice(root*2,at,beatDur*4,.018,2200);
-   if(b===0||b===2)glassVoice(lead*1.6,at,beatDur*.72,.017);
-   if(b===1||b===3)smoothVoice(scaleFreq(t.root,ch+4,minor,1),at,beatDur*.5,.012,'sine',3200,.02);
-   break;
+   longPad(.026,1350);if(b===2)smoothVoice(lead,at,beatDur*2,.011,'sine',1900,.5);if(b===3)noiseBrush(at,beatDur*.6,.0035,2900);break;
   case'giantgarden':
-   if(b===0){padVoice(root*2,at,beatDur*4,.027,1450);padVoice(scaleFreq(t.root,ch+5,minor,0),at,beatDur*4,.014,1950)}
-   if(b===0||b===2)smoothVoice(lead*1.25,at,beatDur*1.2,.023,'triangle',2150,.12);
-   if(b===3)glassVoice(scaleFreq(t.root,ch+6,minor,1),at,beatDur*1.5,.013);
-   break;
-  case'underground':case'questcave':if(b===0)padVoice(root,at,beatDur*4,.03,t.style==='questcave'?540:650);if(b===0||b===3)lowDrum(at,t.style==='questcave'?62:70,.048,beatDur*.8);if(b===2)smoothVoice(lead,at,beatDur*1.6,.016,'sine',900,.18);break;
+   longPad(.033,1000);if(b===2)smoothVoice(lead,at,beatDur*2.1,.012,'sine',1550,.45);if(b===3)noiseBrush(at,beatDur*.7,.004,1800);break;
+  case'swamp':
+   longPad(.041,430);if(b===0)lowDrum(at,58,.052,beatDur*.9);if(b===2)noiseBrush(at,beatDur*.8,.008,520);if(b===3)smoothVoice(lead,at,beatDur*1.8,.009,'sine',720,.5);break;
+  case'desert':
+   longPad(.034,650);if(b===0)lowDrum(at,64,.058,beatDur*.78);if(b===1||b===3)noiseBrush(at,beatDur*.46,.006,1150);if(b===2)smoothVoice(lead,at,beatDur*1.8,.010,'sine',980,.38);break;
+  case'underground':case'questcave':
+   longPad(t.style==='questcave'?.039:.043,t.style==='questcave'?430:500);if(b===0)lowDrum(at,t.style==='questcave'?54:50,.052,beatDur*.95);if(b===3)noiseBrush(at,beatDur*.75,.006,620);break;
   case'battle1':
-   lowDrum(at,b===0?104:76,b===0?.13:.07,beatDur*.46);
-   lowDrum(at+beatDur*.5,62,.055,beatDur*.30);
-   noiseBrush(at+beatDur*.18,beatDur*.18,.017,1650);
-   noiseBrush(at+beatDur*.68,beatDur*.16,.014,2300);
-   if(b===0)padVoice(root,at,beatDur*2,.031,780);
-   smoothVoice(lead*1.45,at,beatDur*.62,.035,'triangle',1900,.012);
+   if(b===0){padVoice(root,at,beatDur*4,.040,620);lowDrum(at,86,.135,beatDur*.62)}
+   if(b===2)lowDrum(at,62,.080,beatDur*.48);
+   if(b===1||b===3)noiseBrush(at,beatDur*.28,.013,1250);
+   if(b===3)smoothVoice(lead,at,beatDur*1.35,.018,'sine',1200,.16);
    break;
   case'battle2':
-   lowDrum(at,b===0?116:82,b===0?.125:.074,beatDur*.38);
-   noiseBrush(at+beatDur*.12,beatDur*.16,.018,2100);
-   noiseBrush(at+beatDur*.56,beatDur*.14,.016,2800);
-   if(b===0)padVoice(root,at,beatDur*2,.028,900);
-   smoothVoice(lead*1.55,at,beatDur*.48,.036,'triangle',2350,.01);
-   smoothVoice(scaleFreq(t.root,ch+3,minor,0),at+beatDur*.5,beatDur*.42,.025,'sine',2700,.012);
+   if(b===0){padVoice(root,at,beatDur*4,.043,680);lowDrum(at,92,.145,beatDur*.58)}
+   if(b===2)lowDrum(at,66,.086,beatDur*.45);
+   noiseBrush(at+beatDur*.48,beatDur*.24,.012,1500);
+   if(b===1||b===3)smoothVoice(lead,at,beatDur*1.1,.017,'sine',1350,.14);
    break;
   case'battle3':
-   lowDrum(at,b===0?90:66,b===0?.14:.08,beatDur*.52);
-   if(b===0){padVoice(root,at,beatDur*2,.036,650);padVoice(root*1.5,at,beatDur*2,.018,1050)}
-   noiseBrush(at+beatDur*.26,beatDur*.20,.020,1450);
-   noiseBrush(at+beatDur*.76,beatDur*.13,.015,2500);
-   smoothVoice(lead*1.35,at,beatDur*.66,.038,'triangle',1750,.014);
+   if(b===0){padVoice(root,at,beatDur*4,.048,520);padVoice(root*.5,at,beatDur*4,.024,360);lowDrum(at,78,.155,beatDur*.72)}
+   if(b===2)lowDrum(at,54,.092,beatDur*.55);
+   if(b===1||b===3)noiseBrush(at,beatDur*.36,.014,920);
+   if(b===3)smoothVoice(lead,at,beatDur*1.4,.016,'sine',980,.2);
    break;
-  case'boss':lowDrum(at,b===0?70:55,b===0?.14:.075,beatDur*.72);if(b===0)padVoice(root,at,beatDur*4,.042,520);if(b===1||b===3)noiseBrush(at,beatDur*.42,.026,900);smoothVoice(lead,at,beatDur*.8,.034,'triangle',1100,.03);break;
+  case'boss':
+   if(b===0){padVoice(root,at,beatDur*4,.058,360);padVoice(root*.5,at,beatDur*4,.032,260);lowDrum(at,62,.180,beatDur*.92)}
+   if(b===2)lowDrum(at,44,.110,beatDur*.72);
+   if(b===1||b===3)noiseBrush(at,beatDur*.62,.020,620);
+   if(b===3)smoothVoice(lead,at,beatDur*1.8,.020,'sine',720,.32);
+   break;
  }
 }
 function musicTick(){if(!music.started||!music.enabled||!music.ctx)return;const key=desiredMusicTheme(),t=MUSIC_THEMES[key]||MUSIC_THEMES.forest,beatDur=60/t.bpm;if(music.theme!==key){music.theme=key;music.beatIndex=0;music.trackStart=music.ctx.currentTime+.10;music.nextAt=music.trackStart}const now=music.ctx.currentTime,elapsed=now-music.trackStart;if(elapsed>=MUSIC_TRACK_SECONDS){music.beatIndex=0;music.trackStart=now+.10;music.nextAt=music.trackStart}if(music.nextAt<now-.25)music.nextAt=now+.04;let scheduled=0,maxPerFrame=performance.now()<(music.warmupUntil||0)?1:2;while(music.nextAt<now+.08&&scheduled<maxPerFrame){scheduleBandBeat(key,t,music.beatIndex,music.nextAt);music.beatIndex++;music.nextAt+=beatDur;scheduled++}}
