@@ -429,9 +429,9 @@ test('large non-full source request is compacted before local model generation w
     responsibleFiles:[relative],allowFullRewrite:false,responseFiles:[response]
   });
   assert.equal(result.generation.attempts,1);
-  assert.ok(result.generation.requestPromptBytes<16000);
+  assert.ok(result.generation.requestPromptBytes<32000);
   assert.ok(result.generation.requestPromptBytes<result.generation.initialPromptBytes);
-  assert.equal(result.generation.contextWindow,12288);
+  assert.equal(result.generation.contextWindow,32768);
   assert.equal(result.candidate.edits.length,1);
   assert.equal(result.candidate.edits[0].path,relative);
 });
@@ -1600,7 +1600,7 @@ test('asset-development Roblox graphics starts with bounded focused local-model 
     assert.equal(result.generation.completionMode,'JSON_REPLACE_ONLY');
     assert.equal(result.generation.maxPredict,768);
     assert.equal(result.generation.timeoutMs,120000);
-    assert.equal(result.generation.contextWindow,8192);
+    assert.equal(result.generation.contextWindow,32768);
     assert.equal(result.presentationCandidateDelta.pass,true);
     const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8');
     assert.match(candidate,/EnemyBody/);
@@ -2501,9 +2501,9 @@ test('different failure signatures do not falsely trigger root cause saturation'
 test('JSON source generation uses bounded context and structured output mode',()=>{
   const source=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
   assert.match(source,/const MAX_CONTEXT_BYTES=96000;/);
-  assert.match(source,/const JSON_CONTEXT_WINDOW=16384;/);
+  assert.match(source,/const JSON_CONTEXT_WINDOW=STANDARD_GAME_SOURCE_CONTEXT_WINDOW;/);
   assert.match(source,/const format=completionMode==='JSON_REPLACE_ONLY'[\s\S]*?\(\/\^JSON_\/\.test\(completionMode\)\?'json':null\)/);
-  assert.match(source,/const FOCUSED_WEB_REPAIR_CONTEXT_BYTES=28000;/);
+  assert.match(source,/const FOCUSED_WEB_REPAIR_CONTEXT_BYTES=48000;/);
   assert.match(source,/const FULL_WEB_CONTEXT_WINDOW=32768;/);
 });
 
@@ -3060,14 +3060,13 @@ test('primary focused Roblox repair uses the existing fourth attempt after repea
   assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates/primary-focused-fourth-attempt/files',relative),'utf8'),/local score = 1/);
 });
 
-test('focused replace recovery budget matches the central fast-path contract',()=>{
+test('focused replace recovery budget matches the raised shared source contract',()=>{
   const source=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
   const focusedPredict=Number(source.match(/const JSON_FOCUSED_REPLACE_MAX_PREDICT=(\d+);/)?.[1]||0);
-  const focusedTimeout=Number(source.match(/const JSON_FOCUSED_REPLACE_TIMEOUT_MS=(\d+);/)?.[1]||0);
-  const focusedContext=Number(source.match(/const JSON_FOCUSED_REPLACE_CONTEXT_WINDOW=(\d+);/)?.[1]||0);
   assert.equal(focusedPredict,384);
-  assert.equal(focusedTimeout,90000);
-  assert.equal(focusedContext,8192);
+  assert.match(source,/const STANDARD_GAME_SOURCE_CONTEXT_WINDOW=32768;/);
+  assert.match(source,/const JSON_FOCUSED_REPLACE_TIMEOUT_MS=DEFAULT_TIMEOUT_MS;/);
+  assert.match(source,/const JSON_FOCUSED_REPLACE_CONTEXT_WINDOW=STANDARD_GAME_SOURCE_CONTEXT_WINDOW;/);
 });
 
 test('focused Web repair malformed output fast-escalates to focused replace on the next attempt', async () => {
@@ -3516,9 +3515,9 @@ test('single-file Web diagnostic uses the same compact generation profile', asyn
   const result=await runVibe2SourceWorker({cwd,responseFile});
   assert.equal(result.generation.focusedWebRepair,true);
   assert.equal(result.generation.maxPredict,1024);
-  assert.equal(result.generation.contextWindow,12288);
+  assert.equal(result.generation.contextWindow,32768);
   assert.ok(result.generation.contextFiles<=2);
-  assert.ok(result.generation.contextBytes<=28000);
+  assert.ok(result.generation.contextBytes<=48000);
   assert.deepEqual(result.changedFiles,['rpg.html']);
 });
 
@@ -3541,9 +3540,9 @@ test('exact Web repair uses compact generation budget without weakening edit bou
   const result=await runVibe2SourceWorker({cwd,responseFile});
   assert.equal(result.generation.focusedWebRepair,true);
   assert.equal(result.generation.maxPredict,1024);
-  assert.equal(result.generation.contextWindow,12288);
+  assert.equal(result.generation.contextWindow,32768);
   assert.ok(result.generation.contextFiles<=2);
-  assert.ok(result.generation.contextBytes<=28000);
+  assert.ok(result.generation.contextBytes<=48000);
   assert.deepEqual(result.changedFiles,['index.html']);
 });
 test('focused Web repair composes exact primary-symbol windows instead of broad file excerpts',async()=>{
@@ -3569,7 +3568,7 @@ test('focused Web repair composes exact primary-symbol windows instead of broad 
   assert.equal(result.generation.exactSourceWindows,true);
   assert.equal(result.generation.fullFileContextFallback,false);
   assert.ok(result.generation.focusedSymbolCount>=1);
-  assert.ok(result.generation.contextBytes<=28000);
+  assert.ok(result.generation.contextBytes<=48000);
   assert.equal(result.codingMethod.contextMode,'PRIMARY_SYMBOL_WINDOWS');
   assert.deepEqual(result.changedFiles,['index.html']);
 });
@@ -3625,7 +3624,7 @@ test('focused symbol context matches JavaScript identifiers containing regex met
   assert.equal(result.generation.contextMode,'PRIMARY_SYMBOL_WINDOWS');
   assert.equal(result.generation.exactSourceWindows,true);
   assert.ok(result.generation.focusedSymbolCount>=1);
-  assert.ok(result.generation.contextBytes<=28000);
+  assert.ok(result.generation.contextBytes<=48000);
   assert.deepEqual(result.changedFiles,['index.html']);
 });
 
@@ -3685,7 +3684,7 @@ test('second no-op receives one short focused third retry', async () => {
   assert.equal(result.generation.recoveryUsed,true);
   assert.equal(result.generation.focusedFinalRetry,true);
   assert.equal(result.generation.focusedReplaceOnly,true);
-  assert.equal(result.generation.timeoutMs,90000);
+  assert.equal(result.generation.timeoutMs,240000);
   assert.equal(result.generation.maxPredict,384);
   assert.equal(result.generation.temperature,0.08);
   assert.deepEqual(result.changedFiles,['index.html']);
@@ -3904,6 +3903,9 @@ test('generation failure classification keeps causal retry reasons distinct',()=
   assert.equal(generationFailureClass(new Error('변경 없는 edit: index.html')),'NO_OP');
   assert.equal(generationFailureClass(new Error('Ollama 응답 시간 초과: 240000ms')),'TIMEOUT');
   assert.equal(generationFailureClass(new Error('SEMANTIC_DIFF_BUDGET_VIOLATION:UNRELATED_SYSTEM:ECONOMY')),'SEMANTIC_DIFF_BUDGET');
+  const dynamicAssetBindingError=new Error('ALL_GAME_DYNAMIC_ASSET_BINDING_REQUIRED:ALL_GAME_APPLICABLE_ASSET_FAMILY_NOT_BOUND:UI');
+  assert.equal(generationFailureClass(dynamicAssetBindingError),'GENERATED_ASSET_BINDING');
+  assert.equal(shouldRetryGenerationError(dynamicAssetBindingError),true);
   assert.equal(shouldRetryGenerationError(new Error('SEMANTIC_DIFF_BUDGET_VIOLATION:UNRELATED_SYSTEM:ECONOMY')),true);
   assert.equal(generationFailureClass(new Error('책임 파일 범위 밖 수정 금지: config.js')),'INVALID_PATH');
   assert.equal(generationFailureClass(new Error('잘못된 상대 경로:')),'INVALID_PATH');
@@ -4293,8 +4295,8 @@ test('zero-output model stalls use first-output deadline and stop after two empt
   const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.match(workerSource,/MODEL_FIRST_OUTPUT_TIMEOUT_MS=Math\.max\(30000,Math\.min\(DEFAULT_TIMEOUT_MS,Number\(process\.env\.VIBE2_MODEL_FIRST_OUTPUT_TIMEOUT_MS\|\|120000\)\)\)/);
   assert.match(workerSource,/ZERO_OUTPUT_RETRY_TIMEOUT_MS=120000/);
-  assert.match(workerSource,/SOURCE_CANDIDATE_INITIAL_PROMPT_BYTES=16000/);
-  assert.match(workerSource,/SOURCE_CANDIDATE_COMPACT_CONTEXT_WINDOW=12288/);
+  assert.match(workerSource,/SOURCE_CANDIDATE_INITIAL_PROMPT_BYTES=32000/);
+  assert.match(workerSource,/SOURCE_CANDIDATE_COMPACT_CONTEXT_WINDOW=STANDARD_GAME_SOURCE_CONTEXT_WINDOW/);
   assert.match(workerSource,/sourceCandidatePressureInitial=!allowFullRewrite[\s\S]*?&&!assetDevelopmentLane/);
   assert.match(workerSource,/Ollama 첫 출력 시간 초과/);
   assert.match(workerSource,/VIBE2_MODEL_FIRST_OUTPUT_MS=/);
@@ -4394,7 +4396,7 @@ test('first edit-match failure fast-escalates attempt two to exact replace-only 
   assert.equal(result.generation.focusedReplaceOnly,true);
   assert.equal(result.generation.completionMode,'JSON_REPLACE_ONLY');
   assert.equal(result.generation.maxPredict,384);
-  assert.equal(result.generation.timeoutMs,90000);
+  assert.equal(result.generation.timeoutMs,240000);
   assert.deepEqual(result.changedFiles,['index.html']);
 });
 
@@ -4551,7 +4553,7 @@ test('retried Web task reuses prior focused generation evidence on the first att
   assert.equal(result.generation.completionMode,'JSON_EDIT_PARTIAL');
   assert.equal(result.generation.focusedFirstEditEarlyStop,true);
   assert.equal(result.generation.maxPredict,1024);
-  assert.equal(result.generation.contextWindow,12288);
+  assert.equal(result.generation.contextWindow,32768);
   assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates/focused-history-reuse/files/index.html'),'utf8'),/Continue/);
 });
 
@@ -5492,7 +5494,7 @@ test('asset-development Roblox graphics stays on bounded focused retries while g
   assert.match(source,/ASSET_DEVELOPMENT_ROBLOX_MAX_GENERATION_ATTEMPTS=3/);
   assert.match(source,/ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS=120000/);
   assert.match(source,/ASSET_DEVELOPMENT_ROBLOX_FOCUSED_MAX_PREDICT=768/);
-  assert.match(source,/ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW=8192/);
+  assert.match(source,/ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW=STANDARD_GAME_SOURCE_CONTEXT_WINDOW/);
   assert.match(source,/robloxTimeoutFocusedRecoveryNeedsPackage=robloxAssetAdaptationTask[\s\S]*?&&!assetDevelopmentLane/);
   assert.match(source,/robloxFullGraphicsPackageRecovery=robloxAssetAdaptationTask[\s\S]*?&&!assetDevelopmentLane/);
   assert.match(source,/const assetDevelopmentFocusedGraphics=assetDevelopmentLane&&robloxAssetAdaptationTask/);
@@ -5570,9 +5572,11 @@ test('failed source generation still performs post-work shared-context SHA valid
 
 test('focused replace Ollama requests keep canonical budget and enforce one-key schema',()=>{
   const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
-  assert.match(source,/JSON_FOCUSED_REPLACE_TIMEOUT_MS=90000/);
+  assert.match(source,/JSON_FOCUSED_REPLACE_TIMEOUT_MS=DEFAULT_TIMEOUT_MS/);
   assert.match(source,/JSON_FOCUSED_REPLACE_MAX_PREDICT=384/);
-  assert.match(source,/JSON_FOCUSED_REPLACE_CONTEXT_WINDOW=8192/);
+  assert.match(source,/STANDARD_GAME_SOURCE_CONTEXT_WINDOW=32768/);
+  assert.match(source,/ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW=STANDARD_GAME_SOURCE_CONTEXT_WINDOW/);
+  assert.match(source,/JSON_FOCUSED_REPLACE_CONTEXT_WINDOW=STANDARD_GAME_SOURCE_CONTEXT_WINDOW/);
   assert.match(source,/focusedReplaceOnly&&!systemAtomicPairCompletion[\s\S]*?focusedReplaceTimeoutMs/);
   assert.match(source,/focusedReplaceOnly&&!systemAtomicPairCompletion[\s\S]*?JSON_FOCUSED_REPLACE_CONTEXT_WINDOW/);
   assert.ok(source.includes("focusedReplaceOnly?0.08"));
@@ -6733,7 +6737,7 @@ test('localized asset repair evidence and identity locks survive compact model r
   assert.deepEqual(requests[1].format.required,['replace']);
   assert.match(requests[2].prompt,/SOURCE CONTENT REPAIR/);
   assert.ok(Buffer.byteLength(requests[1].prompt)<Buffer.byteLength(requests[0].prompt));
-  for(const request of requests.slice(1))assert.equal(request.options.num_ctx,sourcePromptContextWindow(request.prompt,{baseContextWindow:8192,maxPredict:request.options.num_predict}));
+  for(const request of requests.slice(1))assert.equal(request.options.num_ctx,sourcePromptContextWindow(request.prompt,{baseContextWindow:32768,maxPredict:request.options.num_predict}));
   assert.equal(fs.readFileSync(path.join(cwd,root,relative),'utf8'),source);
 });
 
