@@ -592,6 +592,11 @@ test('Master GLB static QA alone never grants production verification',()=>{
   const candidate=enemy?.applyFirst?.candidates?.find(row=>row.id==='static-spider');
   assert.ok(candidate);
   assert.equal(candidate.masterGlbStaticQaPass,true);
+  assert.equal(candidate.sourceHash,null);
+  assert.equal(candidate.editableSourceHash,null);
+  assert.equal(candidate.artifactHash,null);
+  assert.equal(candidate.nativeArtifactHash,null);
+  assert.ok(candidate.masterGlbHash);
   assert.equal(candidate.productionVerified,false);
   assert.equal(plan.generatedAssetOutputContract.nativeRuntimeVerificationRequiredBeforeVerifiedPromotion,true);
 });

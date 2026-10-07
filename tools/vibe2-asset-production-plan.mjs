@@ -1880,6 +1880,9 @@ function matchedForType(selector={},type='',manifest={},target='',repoRoot=proce
     const masterGlbQa=evaluateCrossPlatform3dMasterGlb({repoRoot,source:asset,family:actorFamily,role:type});
     const crossPlatformMasterSource=asset?.crossPlatformMasterSource===true;
     const resolvedPath=crossPlatformMasterSource&&masterGlbQa.pass===true?clean(masterGlbQa.path):clean(row.path||asset.path);
+    const actorLineageRequired=masterGlbQa.required===true;
+    const editableSourceHash=clean(asset.editableSourceHash||asset.sourceHash||asset.sourceSha256||asset.masterGlbSourceHash||(!actorLineageRequired?(asset.contentHash||asset.sha256):''));
+    const nativeArtifactHash=clean(asset.nativeArtifactHash||asset.artifactHash||asset.derivedSha256||(!actorLineageRequired?(asset.contentHash||asset.sha256):''));
     return freeze({
       id:clean(row.id||asset.id),
       path:resolvedPath||null,
@@ -1897,8 +1900,10 @@ function matchedForType(selector={},type='',manifest={},target='',repoRoot=proce
       companyVerified:asset.companyVerified===true,
       sameGameExistingRoblox:asset.sameGameExistingRoblox===true,
       robloxAssetId:clean(asset.robloxAssetId)||null,
-      sourceHash:clean(asset.sourceHash||asset.sourceSha256||asset.contentHash||asset.sha256||masterGlbQa.sourceHash)||null,
-      artifactHash:clean(asset.artifactHash||asset.derivedSha256||asset.contentHash||asset.sha256||asset.masterGlbHash||masterGlbQa.sourceHash)||null,
+      sourceHash:editableSourceHash||null,
+      editableSourceHash:editableSourceHash||null,
+      artifactHash:nativeArtifactHash||null,
+      nativeArtifactHash:nativeArtifactHash||null,
       sourceFiles:freezeList(unique(Array.isArray(asset.sourceFiles)?asset.sourceFiles:[])),
       nativeArtifacts:freezeList(unique(Array.isArray(asset.nativeArtifacts)?asset.nativeArtifacts:[])),
       tags:freezeList(unique([...(Array.isArray(asset.tags)?asset.tags:[]),clean(asset.family),clean(asset.category),clean(asset.subfamily)].map(clean).filter(Boolean))),
@@ -2321,6 +2326,9 @@ function assetApplyFirstCandidate(asset={},target='',binding={}){
     path:asset.path||variant?.path||null,
     robloxAssetId:asset.robloxAssetId||null,
     sourceHash:asset.sourceHash||null,
+    editableSourceHash:asset.editableSourceHash||asset.sourceHash||null,
+    artifactHash:asset.artifactHash||null,
+    nativeArtifactHash:asset.nativeArtifactHash||asset.artifactHash||null,
     acquiredExternal:asset.acquiredExternal===true,
     acquisitionOrigin:asset.acquisitionOrigin||null,
     productionVerified:asset.productionVerified===true,

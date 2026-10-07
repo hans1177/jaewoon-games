@@ -4647,10 +4647,10 @@ export function createStudioTestbedPlan({assetIds=[],platform='UNITY',mobile=tru
 export function evaluateCompanyAssetPromotion({asset={},consumer={},runtimeEvidence={}}={}){
   const id=text(asset?.id),family=upper(asset?.family||asset?.category),platform=upper(runtimeEvidence?.platform||consumer?.platform||asset?.platformVariant||asset?.platform);
   const license=text(asset?.license);
-  const sourceHash=text(asset?.editableSourceHash||asset?.sourceHash||asset?.sourceSha256||asset?.masterGlbSourceHash||asset?.contentHash||asset?.sha256);
-  const artifactHash=text(asset?.nativeArtifactHash||asset?.artifactHash||asset?.derivedSha256||asset?.contentHash||asset?.sha256);
-  const artifactPath=text(runtimeEvidence?.artifactPath||asset?.path);
   const masterGlbRequired=['CHARACTER','CREATURE'].includes(family);
+  const sourceHash=text(asset?.editableSourceHash||asset?.sourceHash||asset?.sourceSha256||asset?.masterGlbSourceHash||(!masterGlbRequired?(asset?.contentHash||asset?.sha256):''));
+  const artifactHash=text(asset?.nativeArtifactHash||asset?.artifactHash||asset?.derivedSha256||(!masterGlbRequired?(asset?.contentHash||asset?.sha256):''));
+  const artifactPath=text(runtimeEvidence?.artifactPath||asset?.path);
   const masterGlb=text(asset?.masterGlb||asset?.meshArtifact||asset?.masterSourcePath);
   const masterGlbHash=text(asset?.masterGlbHash||asset?.masterSourceHash||asset?.masterGlbSha256);
   const masterGlbStaticQaPass=asset?.masterGlbStaticQaPass===true;
