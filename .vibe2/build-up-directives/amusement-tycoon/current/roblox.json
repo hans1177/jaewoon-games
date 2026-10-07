@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "amusement-tycoon-build-up-g31-b7c91aacc755",
-  "directiveFingerprint": "b7c91aacc7550af9ce8434cb6f51fe9214f99b811776b85963143ea19b39eef6",
-  "previousDirectiveFingerprint": "cf8d70cc8b5a4db753dc57516b2a635deffb8f4b9e3cb0443e7b652e55862494",
-  "forbiddenRepeatFingerprint": "cf8d70cc8b5a4db753dc57516b2a635deffb8f4b9e3cb0443e7b652e55862494",
+  "directiveId": "amusement-tycoon-build-up-g32-65f25ae77822",
+  "directiveFingerprint": "65f25ae77822a6d672d2b5ba9e33e57308ad7ceb87e159b11351807cefcf1dc2",
+  "previousDirectiveFingerprint": "b7c91aacc7550af9ce8434cb6f51fe9214f99b811776b85963143ea19b39eef6",
+  "forbiddenRepeatFingerprint": "b7c91aacc7550af9ce8434cb6f51fe9214f99b811776b85963143ea19b39eef6",
   "gameId": "amusement-tycoon",
   "gameName": "놀이공원 타이쿤",
-  "generation": 31,
+  "generation": 32,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,8 +14,8 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/amusement-tycoon",
-  "sourceTreeFingerprint": "663292e4fb9ceeea972f78a8fa5876c39d60a2f63aefc730b5eb41a9f548da26",
-  "designFingerprint": "ed1951d95c804507ae8479c86fdfdfa65cfa87897afde0cf17f07125b657e4b4",
+  "sourceTreeFingerprint": "7b0cdbecd8a51a66201abf4f23788608ed1075960d9788ad0a50e1d3e99a2c36",
+  "designFingerprint": "fe4a636c7799fe1cd4beb439c12d1ec931fce64406dbe257c5bb802ae600ba99",
   "identityReinforcement": {
     "appliesToAllGenres": true,
     "genre": "Strategy",
@@ -104,7 +104,7 @@
           "글로벌 랭킹 및 경쟁 경영 챌린지",
           "자신의 공원 가치를 전 세계 플레이어와 비교하고, 주간 최고 수익 공원을 선정하는 챌린지 모드가 도입됩니다."
         ],
-        "sourceTreeFingerprint": "663292e4fb9ceeea972f78a8fa5876c39d60a2f63aefc730b5eb41a9f548da26",
+        "sourceTreeFingerprint": "7b0cdbecd8a51a66201abf4f23788608ed1075960d9788ad0a50e1d3e99a2c36",
         "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -114,6 +114,147 @@
     },
     "buildUpRule": "EACH_BUILD_UP_MUST_STRENGTHEN_OR_PRESERVE_THE_REPRESENTATIVE_ACTION_CHOICE_WORLD_RULE_SIGNATURE_SYSTEM_OR_GROWTH_IDENTITY; GENERIC_FEATURE_COUNT_DOES_NOT_COUNT",
     "genreAdaptationRule": "PRESERVE_THE_GENRE_PRIMARY_ACTION; DO_NOT_FORCE_RPG_STYLE_SYSTEMS_ON_PUZZLE_RACING_TYCOON_DEFENSE_SURVIVAL_ACTION_CARD_BOARD_STRATEGY_CASUAL_OR_OTHER_GENRES"
+  },
+  "designImplementationContext": {
+    "source": "LATEST_VERIFIED_DESIGN_FIELDS",
+    "coreFun": "놀이공원 타이쿤의 핵심 재미는 '최적의 동선 설계'와 '손님 만족도 관리'입니다. 플레이어는 놀이기구의 위치를 조정하여 손님의 대기 시간을 줄이고, 상점 배치를 통해 수익을 극대화하는 선택을 반복합니다. 이러한 선택은 손님의 이동 경로와 행복도 수치에 즉각적인 변화를 주며, 결과적으로 공원의 일일 수익과 평판이라는 가시적인 성과로 이어집니다.",
+    "coreLoop": [
+      "공간 배치 및 놀이기구 건설: 제한된 자본을 사용하여 놀이기구와 편의시설을 배치하고 동선을 설계합니다.",
+      "손님 흐름 관찰 및 피드백 수집: 손님들의 이동 경로와 만족도 아이콘을 통해 병목 현상이나 불만족 요소를 실시간으로 파악합니다.",
+      "수익 재투자 및 최적화: 벌어들인 수익으로 시설을 업그레이드하거나 새로운 구역을 개방하여 효율을 극대화하고 다음 성장을 준비합니다."
+    ],
+    "signatureSystems": [
+      {
+        "name": "동선 최적화 시스템",
+        "purpose": "손님의 이동 효율을 극대화하고 병목 현상을 방지하여 공원 전체의 수용 능력을 높이는 것이 목적입니다.",
+        "playerChoice": "플레이어는 길의 너비, 놀이기구 입구의 위치, 휴식 공간의 배치를 결정하여 손님의 이동 흐름을 직접 제어하고 최적화할 수 있습니다."
+      },
+      {
+        "name": "감정 기반 만족도 엔진",
+        "purpose": "손님 개개인의 만족도를 실시간으로 추적하여 공원의 평판과 수익에 직접적인 영향을 미치는 시스템입니다.",
+        "playerChoice": "플레이어는 놀이기구의 스릴 강도 조절, 테마 장식 추가, 음식 가격 책정을 통해 손님의 감정 상태를 긍정적으로 유도하는 선택을 합니다."
+      }
+    ],
+    "systemInterconnections": [
+      {
+        "fromSystem": "손님 동선 최적화 관리 시스템",
+        "toSystem": "감정 기반 만족도 분석 엔진",
+        "trigger": "손님이 특정 놀이기구까지 이동하는 대기 시간이 설정된 임계치를 초과하여 불만족 상태가 감지될 때",
+        "stateChange": "손님의 피로도 수치가 즉각적으로 상승하며 해당 놀이기구의 만족도 점수를 하락시켜 재방문 의사를 감소시킴"
+      },
+      {
+        "fromSystem": "감정 기반 만족도 분석 엔진",
+        "toSystem": "공원 경제 수익 창출 시스템",
+        "trigger": "공원 내 손님들의 평균 만족도가 특정 임계값 이상으로 유지되어 공원 평판이 긍정적인 단계로 상승할 때",
+        "stateChange": "공원 입장료 수익 및 내부 상점 매출에 1.2배의 보너스 배율이 적용되어 경제적 선순환 구조가 강화됨"
+      },
+      {
+        "fromSystem": "공원 경제 수익 창출 시스템",
+        "toSystem": "놀이공원 구역 확장 건설 시스템",
+        "trigger": "플레이어가 누적된 수익을 사용하여 새로운 테마 구역을 구매하거나 도로를 건설하는 결정을 내릴 때",
+        "stateChange": "경로 탐색 알고리즘의 가용 노드가 확장되어 손님들이 더 효율적인 경로를 선택할 수 있는 전략적 선택지가 증가함"
+      }
+    ],
+    "progressionDirection": "초반에는 소규모 놀이기구와 기본 시설을 통해 경영의 기초를 익히고, 중반에는 테마 구역 확장과 효율적인 동선 설계를 통해 수익을 극대화합니다. 후반부에는 대규모 랜드마크 건설과 고도화된 만족도 관리를 통해 세계 최고의 놀이공원으로 성장하는 것을 목표로 합니다.",
+    "progressionEconomyBalance": {
+      "progressionLoop": "시설 건설 -> 손님 유입 -> 수익 발생 -> 효율 개선 및 확장 -> 더 큰 수익 발생의 선순환 구조를 유지합니다.",
+      "resourceFlow": "입장료와 상점 매출로 얻은 현금은 시설 유지비와 신규 투자 비용으로 순환되며, 평판은 추가 대출 한도나 특별 이벤트 해금의 자원으로 활용됩니다.",
+      "balanceRules": "시설의 유지비는 수익의 일정 비율을 넘지 않도록 설계하며, 손님의 만족도가 낮아지면 수익이 급감하는 페널티를 적용하여 무분별한 확장을 방지합니다."
+    },
+    "contentExpansionPlan": [
+      {
+        "milestone": "테마 구역 확장 및 시너지 시스템 도입",
+        "newGameplay": "특정 테마(우주, 중세, 미래)에 맞는 전용 놀이기구와 장식 아이템을 배치하여 구역을 꾸미는 건설 모드가 추가됩니다.",
+        "systemImpact": "기존 만족도 엔진에 테마 시너지 효과가 추가되어, 테마가 통일된 구역에 방문한 손님들의 만족도가 15% 추가 상승하는 로직이 반영됩니다."
+      },
+      {
+        "milestone": "계절 이벤트 및 한정 퀘스트 시스템",
+        "newGameplay": "할로윈, 크리스마스 등 시즌별 한정 놀이기구와 특별 퀘스트가 등장하여 단기적인 목표를 제공하는 이벤트 모드가 활성화됩니다.",
+        "systemImpact": "경제 시스템에 일시적인 수익 부스트와 특별 아이템 판매가 추가되어, 시즌 기간 동안 자금 흐름에 높은 변동성과 전략적 재미를 부여합니다."
+      },
+      {
+        "milestone": "글로벌 랭킹 및 경쟁 경영 챌린지",
+        "newGameplay": "자신의 공원 가치를 전 세계 플레이어와 비교하고, 주간 최고 수익 공원을 선정하는 챌린지 모드가 도입됩니다.",
+        "systemImpact": "기존 경영 시스템에 경쟁 요소가 결합되어, 효율적인 동선 설계와 수익 극대화에 대한 플레이어의 동기부여가 강화됩니다."
+      }
+    ],
+    "failureRetryRisk": {
+      "failureStates": [
+        "공원 파산: 현금 보유액이 마이너스가 되어 운영이 불가능한 상태",
+        "손님 이탈: 만족도 저하로 인해 공원 내 손님이 0명이 되는 상태"
+      ],
+      "retryFlow": "파산 시 이전 저장 시점이나 특정 체크포인트에서 재시작하며, 실패 원인이 된 시설을 철거하거나 재배치하여 다시 도전합니다.",
+      "riskPressure": "운영 자금이 부족해질수록 시설 유지보수가 지연되어 손님 만족도가 급격히 하락하는 압박을 가합니다.",
+      "recoveryRules": "파산 직전 대출 기능을 제공하지만, 높은 이자율을 적용하여 장기적인 경영에 리스크를 부여합니다."
+    },
+    "platformFitPlan": {
+      "targetPlatform": "UNITY",
+      "inputModel": "모바일 환경을 고려하여 드래그 앤 드롭 방식의 직관적인 건설 인터페이스와 핀치 줌을 통한 시점 조작을 지원합니다.",
+      "performanceBudget": "다수의 손님과 놀이기구를 동시에 렌더링하기 위해 오브젝트 풀링 기술을 적용하고, 저사양 기기에서도 30fps를 유지하도록 최적화합니다.",
+      "sessionConstraints": "한 세션당 5~10분 내외로 핵심 경영 판단을 내릴 수 있도록 빠른 템포의 게임 진행과 자동 저장 기능을 제공합니다."
+    },
+    "platformProfiles": {
+      "ROBLOX": {
+        "platform": "ROBLOX",
+        "inputModel": "Roblox touch controls first, with keyboard and gamepad parity through ContextActionService and Activated-based UI actions.",
+        "sessionModel": "Fast Roblox experience sessions with spawn, respawn, join-in-progress, and social re-entry semantics matched to the common game loop.",
+        "multiplayerRuntime": "single-player server boundary with local presentation; no fake multiplayer claims",
+        "performanceBudget": "Roblox mobile-first budget: bounded parts and effects, pooled transient objects, limited expensive per-frame work, and stable low-end frame pacing.",
+        "uiUx": "Roblox ScreenGui touch-safe layout with readable mobile controls, controller focus support, observable state feedback, and platform-native social affordances.",
+        "saveAndNetwork": "Server-validated RemoteEvents plus DataStore-backed persistent state only for approved save meaning; clients never own authoritative rewards or progression.",
+        "platformContentAdaptation": "Adapt \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.\" and its loop \"공간 배치 및 놀이기구 건설: 제한된 자본을 사용하여 놀이기구와 편의시설을 배치하고 동선을 설계합니다. → 손님 흐름 관찰 및 피드백 수집: 손님들의 이동 경로와 만족도 아이콘을 통해 병목 현상이나 불만족 요소를 실시간으로 파악합니다. → 수익 재투자 및 최적화: 벌어들인 수익으로 시설을 업그레이드하거나 새로운 구역을 개방하여 효율을 극대화하고 다음 성장을 준비합니다.\" to Roblox avatar scale, server/client authority, social sessions, and Roblox-native interaction without changing common gameplay meaning.",
+        "internalReleaseTarget": "Private or restricted Roblox experience published to Roblox servers so the owner and explicitly allowed testers can play before public release.",
+        "validationEvidence": "Exact published Roblox place and source revision, real Roblox runtime play, mobile controls, server/client boundary, save/rejoin when required, independent QA, and regression evidence."
+      },
+      "UNITY": {
+        "platform": "UNITY",
+        "inputModel": "Unity Input System with touch-first on-screen controls, safe-area handling, keyboard and gamepad parity, and app pause/resume input recovery.",
+        "sessionModel": "Native mobile app sessions with cold start, suspend/resume, background/foreground transitions, process restart, and deterministic save restoration.",
+        "multiplayerRuntime": "single-player app session with local gameplay authority; networking remains disabled until design requires it",
+        "performanceBudget": "Android mobile budget covering memory, GPU, thermal load, battery, draw calls, shaders, particles, audio, pooling, GC pressure, and low-end frame pacing.",
+        "uiUx": "Unity UI safe-area responsive layout with touch targets, scalable HUD, controller navigation where relevant, and app-native loading/error/recovery states.",
+        "saveAndNetwork": "Versioned local save with explicit migration plus validated backend synchronization only when required; app lifecycle cannot silently corrupt progress.",
+        "platformContentAdaptation": "Adapt \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.\" and its loop \"공간 배치 및 놀이기구 건설: 제한된 자본을 사용하여 놀이기구와 편의시설을 배치하고 동선을 설계합니다. → 손님 흐름 관찰 및 피드백 수집: 손님들의 이동 경로와 만족도 아이콘을 통해 병목 현상이나 불만족 요소를 실시간으로 파악합니다. → 수익 재투자 및 최적화: 벌어들인 수익으로 시설을 업그레이드하거나 새로운 구역을 개방하여 효율을 극대화하고 다음 성장을 준비합니다.\" to Unity scenes, prefabs, mobile app lifecycle, touch UX, and Android packaging without changing common gameplay meaning.",
+        "internalReleaseTarget": "Internal or closed Android test build that can be installed and launched by the owner/testers before any public store release.",
+        "validationEvidence": "Exact APK/AAB source revision, install and launch, real touch gameplay, pause/resume, save/restore, performance, independent QA, regression, and package identity evidence."
+      }
+    },
+    "webCanonicalDesign": {},
+    "platformExpansionPolicy": {},
+    "visualDirection": "밝고 화사한 파스텔 톤의 색감을 사용하여 놀이공원 특유의 즐거운 분위기를 강조하고, 3D 모델링은 단순화된 형태를 사용하여 가독성을 높입니다.",
+    "mobileUx": "한 손 조작이 가능하도록 주요 메뉴를 화면 하단에 배치하고, 놀이기구 건설 시 그리드 시스템을 시각적으로 명확히 표시하여 조작의 정확성을 높입니다.",
+    "uxAccessibilityPlan": {
+      "hudPriorities": "현재 수익, 손님 만족도, 공원 평판을 화면 상단에 고정하여 즉각적인 상태 확인이 가능하게 합니다.",
+      "touchAndInput": "건설 모드와 일반 모드를 명확히 구분하고, 실수로 인한 시설 삭제를 방지하기 위한 확인 창을 제공합니다.",
+      "readability": "텍스트 크기를 조절 가능하게 하고, 색약 모드를 지원하여 만족도 상태를 색상 외의 아이콘으로도 구분할 수 있게 합니다.",
+      "accessibility": "긴 시간 플레이 시 눈의 피로를 줄이기 위한 야간 모드와 화면 밝기 조절 기능을 포함합니다."
+    },
+    "artAudioDirection": {
+      "visualIdentity": "장난감 같은 귀여운 캐릭터 디자인과 역동적인 놀이기구 애니메이션을 통해 시각적 즐거움을 극대화합니다.",
+      "audioIdentity": "경쾌한 배경 음악과 놀이기구에서 들리는 비명 소리, 웃음 소리를 입체적으로 배치하여 현장감을 살립니다.",
+      "gameplayFeedbackSync": "건설 완료 시 경쾌한 효과음과 함께 시각적인 파티클 효과를 발생시켜 성취감을 즉각적으로 전달합니다."
+    },
+    "selectedDesignPlan": {},
+    "contentVarietyPlan": {},
+    "narrativeDialoguePlan": {},
+    "implementationTraceability": [
+      {
+        "designElement": "동선 최적화 시스템 구현",
+        "responsibleSystem": "경로 탐색 알고리즘 모듈",
+        "validationEvidence": "다양한 동선 배치 테스트를 통해 손님의 이동 시간이 단축되는지 시뮬레이션으로 검증하고, 경로 이탈률이 5% 미만인지 확인하는 테스트를 수행함"
+      },
+      {
+        "designElement": "감정 기반 만족도 엔진 설계",
+        "responsibleSystem": "상태 머신(State Machine) 관리자",
+        "validationEvidence": "만족도 수치 변화에 따른 손님의 행동 패턴(기쁨, 불만, 분노 등)이 의도대로 출력되는지 디버깅 로그를 통해 검증하고 상태 전이 로직을 확인함"
+      },
+      {
+        "designElement": "경제 시스템 밸런싱",
+        "responsibleSystem": "재화 관리 매니저 시스템",
+        "validationEvidence": "수익과 지출의 밸런스 시트를 작성하여 게임 플레이 중 파산 확률이 적절한지 밸런싱 테스트를 수행하고, 초기 자본 대비 성장 곡선을 검증함"
+      }
+    ],
+    "stabilityPriorityPlan": {}
   },
   "gameIdentityAndNonNegotiables": {
     "identity": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.",
@@ -411,17 +552,17 @@
   "previousVersionDelta": {
     "previousGoal": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 30,
-    "previousSourceTreeFingerprint": "afe352a684c4e78c6cc75f5a8aa310ddadb0657140b658f521c414f9ca2859aa",
-    "currentSourceTreeFingerprint": "663292e4fb9ceeea972f78a8fa5876c39d60a2f63aefc730b5eb41a9f548da26",
+    "previousGeneration": 31,
+    "previousSourceTreeFingerprint": "663292e4fb9ceeea972f78a8fa5876c39d60a2f63aefc730b5eb41a9f548da26",
+    "currentSourceTreeFingerprint": "7b0cdbecd8a51a66201abf4f23788608ed1075960d9788ad0a50e1d3e99a2c36",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-    "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+    "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+    "failureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE",
     "blockers": [],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -486,8 +627,8 @@
     },
     {
       "domain": "QUESTS",
-      "state": "NOT_APPLICABLE",
-      "reason": "no quest/story objective signal in approved design"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "CONTENT_VARIETY",
@@ -686,8 +827,8 @@
     },
     {
       "domain": "NARRATIVE_STORY",
-      "state": "NOT_APPLICABLE",
-      "reason": "no narrative or story signal in approved design"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
@@ -696,8 +837,8 @@
     },
     {
       "domain": "REPLAYABILITY_VARIATION",
-      "state": "NOT_APPLICABLE",
-      "reason": "no explicit replay variation signal in approved design"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "CHARACTER_VISUALS",
@@ -902,12 +1043,12 @@
     },
     {
       "domain": "QUESTS",
-      "state": "NOT_APPLICABLE",
-      "priority": "NOT_APPLICABLE",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "현재 승인 설계상 no quest/story objective signal in approved design. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "directive": "퀘스트가 적용되는 게임이면 목표·진행 추적·완료 판정·보상·세계/캐릭터 반응까지 연결하고, 핵심 루프와 무관한 심부름 반복을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
-      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
     {
       "domain": "CONTENT_VARIETY",
@@ -1262,12 +1403,12 @@
     },
     {
       "domain": "NARRATIVE_STORY",
-      "state": "NOT_APPLICABLE",
-      "priority": "NOT_APPLICABLE",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "현재 승인 설계상 no narrative or story signal in approved design. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "directive": "스토리가 적용되는 게임이면 세계 설정·NPC 대사·환경 단서·퀘스트 결과가 서로 모순되지 않고 플레이 행동으로 드러나며 긴 설명이 핵심 루프를 끊지 않게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
-      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
@@ -1280,12 +1421,12 @@
     },
     {
       "domain": "REPLAYABILITY_VARIATION",
-      "state": "NOT_APPLICABLE",
-      "priority": "NOT_APPLICABLE",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "현재 승인 설계상 no explicit replay variation signal in approved design. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "directive": "반복 플레이가 적용되는 게임이면 조우 조합·지역 경로·보상 선택·빌드/전략·이벤트 중 게임에 맞는 변주를 제공해 같은 정답만 반복되지 않게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
-      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
     {
       "domain": "CHARACTER_VISUALS",
@@ -1595,13 +1736,13 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 7,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=6; uncoveredBefore=3.",
+    "themeDepth": 8,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=7; uncoveredBefore=3.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 6,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 7,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 8,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 10,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -1615,7 +1756,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
@@ -1651,29 +1792,29 @@
     "scoredThemes": [
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 78,
+        "score": 60,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
       },
       {
         "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": 20,
-        "gapDomains": []
-      },
-      {
-        "theme": "MID_LATE_ENDGAME_COMPLETION",
-        "score": 14,
+        "score": 22,
         "gapDomains": []
       },
       {
         "theme": "QUEST_STORY_PROGRESSION_CHAIN",
-        "score": 12,
+        "score": 16,
+        "gapDomains": []
+      },
+      {
+        "theme": "MID_LATE_ENDGAME_COMPLETION",
+        "score": 16,
         "gapDomains": []
       },
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": -94,
+        "score": -92,
         "gapDomains": []
       },
       {
@@ -1767,11 +1908,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 31,
-    "previousGeneration": 30,
+    "generation": 32,
+    "previousGeneration": 31,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "663292e4fb9ceeea972f78a8fa5876c39d60a2f63aefc730b5eb41a9f548da26",
-    "priorSourceFingerprint": "afe352a684c4e78c6cc75f5a8aa310ddadb0657140b658f521c414f9ca2859aa",
+    "sourceFingerprint": "7b0cdbecd8a51a66201abf4f23788608ed1075960d9788ad0a50e1d3e99a2c36",
+    "priorSourceFingerprint": "663292e4fb9ceeea972f78a8fa5876c39d60a2f63aefc730b5eb41a9f548da26",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2003,12 +2144,12 @@
     "반복 조작은 편의 기능으로 줄이되 핵심 플레이 선택과 위험/보상 판단을 자동화하지 않는다."
   ],
   "platformAdaptationDirectives": {
-    "WEB": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.: 동일 공통 목표 \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 현재 canonical Web 경로에 구현한다. 실제 터치 입력, DOM/Canvas 프레임 변화, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 함께 검수한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "WEB": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.: WEB 상세 게임 원본과 공통 큰틀을 기준으로 \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. WEB 자체 시스템·콘텐츠·지역·세션·UI·카메라·연출 확장에는 다른 플랫폼과의 세부 parity 제한을 두지 않는다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
     "ROBLOX": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.: 동일 공통 목표 \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
-    "UNITY": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.: 동일 공통 목표 \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 함께 검증한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
+    "UNITY": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.: WEB 상세 게임 원본에서 공통 큰틀만 이어받아 \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 경험으로 재해석한다. Unity 전용 시스템·콘텐츠·지역·물리·카메라·애니메이션·세션 구조·UX·연출 확장에는 인위적 parity 제한을 두지 않는다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
     "FORTNITE_UEFN": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.: 동일 공통 목표 \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UNITY_WEB": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.: 동일 공통 목표 \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 현재 canonical Web 경로에 구현한다. 실제 터치 입력, DOM/Canvas 프레임 변화, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 함께 검수한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "UNITY_APP": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.: 동일 공통 목표 \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 함께 검증한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
+    "UNITY_WEB": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.: WEB 상세 게임 원본과 공통 큰틀을 기준으로 \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. WEB 자체 시스템·콘텐츠·지역·세션·UI·카메라·연출 확장에는 다른 플랫폼과의 세부 parity 제한을 두지 않는다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "UNITY_APP": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.: WEB 상세 게임 원본에서 공통 큰틀만 이어받아 \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 경험으로 재해석한다. Unity 전용 시스템·콘텐츠·지역·물리·카메라·애니메이션·세션 구조·UX·연출 확장에는 인위적 parity 제한을 두지 않는다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
     "UNREAL": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.: 동일 공통 목표 \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
     "UEFN": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.: 동일 공통 목표 \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
   },
@@ -2016,9 +2157,9 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/amusement-tycoon/shared/GameConfig.luau",
-      "roblox-games/amusement-tycoon/server/Game.server.luau",
       "roblox-games/amusement-tycoon/client/Game.client.luau",
+      "roblox-games/amusement-tycoon/server/Game.server.luau",
+      "roblox-games/amusement-tycoon/shared/GameConfig.luau",
       "roblox-games/amusement-tycoon/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -2231,7 +2372,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "663292e4fb9ceeea972f78a8fa5876c39d60a2f63aefc730b5eb41a9f548da26",
+    "sourceTreeFingerprint": "7b0cdbecd8a51a66201abf4f23788608ed1075960d9788ad0a50e1d3e99a2c36",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2321,7 +2462,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "663292e4fb9ceeea972f78a8fa5876c39d60a2f63aefc730b5eb41a9f548da26",
+    "sourceTreeFingerprint": "7b0cdbecd8a51a66201abf4f23788608ed1075960d9788ad0a50e1d3e99a2c36",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2358,9 +2499,9 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/amusement-tycoon/shared/GameConfig.luau",
-      "roblox-games/amusement-tycoon/server/Game.server.luau",
       "roblox-games/amusement-tycoon/client/Game.client.luau",
+      "roblox-games/amusement-tycoon/server/Game.server.luau",
+      "roblox-games/amusement-tycoon/shared/GameConfig.luau",
       "roblox-games/amusement-tycoon/default.project.json"
     ],
     "sourceAnchors": [
@@ -2504,9 +2645,9 @@
     "gameId": "amusement-tycoon",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/amusement-tycoon/shared/GameConfig.luau",
-      "roblox-games/amusement-tycoon/server/Game.server.luau",
       "roblox-games/amusement-tycoon/client/Game.client.luau",
+      "roblox-games/amusement-tycoon/server/Game.server.luau",
+      "roblox-games/amusement-tycoon/shared/GameConfig.luau",
       "roblox-games/amusement-tycoon/default.project.json"
     ],
     "impact": {
@@ -2584,11 +2725,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "663292e4fb9ceeea972f78a8fa5876c39d60a2f63aefc730b5eb41a9f548da26",
+      "sourceTreeFingerprint": "7b0cdbecd8a51a66201abf4f23788608ed1075960d9788ad0a50e1d3e99a2c36",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING"
+      "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "failureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2639,7 +2780,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 32,
+    "nextGeneration": 33,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2700,12 +2841,9 @@
       "MENU_FLOW"
     ],
     "notApplicable": [
-      "QUESTS",
-      "CRAFTING",
-      "NARRATIVE_STORY",
-      "REPLAYABILITY_VARIATION"
+      "CRAFTING"
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-07T04:46:41.057Z"
+  "generatedAt": "2026-10-07T13:58:04.222Z"
 }

@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "daechung-rpg-build-up-g28-9d402b8139d0",
-  "directiveFingerprint": "9d402b8139d07075c9fabd8a9f9007d6b10efc16d1111eca3d35ad7d3f1e9415",
-  "previousDirectiveFingerprint": "c175d854f80985cc018f6b7375a9424f3613d24709aebd53f5b2a135a1261e01",
-  "forbiddenRepeatFingerprint": "c175d854f80985cc018f6b7375a9424f3613d24709aebd53f5b2a135a1261e01",
+  "directiveId": "daechung-rpg-build-up-g29-aed8a632371c",
+  "directiveFingerprint": "aed8a632371cae97496951953fe3003749e82ad11d1c6c2fdfde5f2f1dfd67d4",
+  "previousDirectiveFingerprint": "9d402b8139d07075c9fabd8a9f9007d6b10efc16d1111eca3d35ad7d3f1e9415",
+  "forbiddenRepeatFingerprint": "9d402b8139d07075c9fabd8a9f9007d6b10efc16d1111eca3d35ad7d3f1e9415",
   "gameId": "daechung-rpg",
   "gameName": "대충 RPG",
-  "generation": 28,
+  "generation": 29,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,8 +14,8 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/daechung-rpg",
-  "sourceTreeFingerprint": "70a6017478a3fbf973872e6a11193f548bbda81f3f4b5ae255c8332b9d639fa4",
-  "designFingerprint": "f619ede30ccf04377b4a751d14672dd176dea96aeeab7cf3730b7a146728ca23",
+  "sourceTreeFingerprint": "abad22ca2c6944a0753b3211851cf50e112f49400f167140e774d79a3f165549",
+  "designFingerprint": "7608a1412f1d762599e0743f5d860abef069ce49126098f69c570d4f10648ec3",
   "identityReinforcement": {
     "appliesToAllGenres": true,
     "genre": "RPG",
@@ -107,7 +107,7 @@
           "조합 엔딩",
           "특정 4인 파티의 기억과 관계를 충족하면 고유 후일담과 비밀 보스를 연다."
         ],
-        "sourceTreeFingerprint": "70a6017478a3fbf973872e6a11193f548bbda81f3f4b5ae255c8332b9d639fa4",
+        "sourceTreeFingerprint": "abad22ca2c6944a0753b3211851cf50e112f49400f167140e774d79a3f165549",
         "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -117,6 +117,179 @@
     },
     "buildUpRule": "EACH_BUILD_UP_MUST_STRENGTHEN_OR_PRESERVE_THE_REPRESENTATIVE_ACTION_CHOICE_WORLD_RULE_SIGNATURE_SYSTEM_OR_GROWTH_IDENTITY; GENERIC_FEATURE_COUNT_DOES_NOT_COUNT",
     "genreAdaptationRule": "PRESERVE_THE_GENRE_PRIMARY_ACTION; DO_NOT_FORCE_RPG_STYLE_SYSTEMS_ON_PUZZLE_RACING_TYCOON_DEFENSE_SURVIVAL_ACTION_CARD_BOARD_STRATEGY_CASUAL_OR_OTHER_GENRES"
+  },
+  "designImplementationContext": {
+    "source": "LATEST_VERIFIED_DESIGN_FIELDS",
+    "coreFun": "4인 파티 조합과 장비 세팅을 계속 바꿔 보며 서로 다른 AI 행동·관계·합동기·직업 능력이 맞물리는 순간을 찾는 재미. 희귀도보다 조합과 세팅이 더 중요하다.",
+    "coreLoop": [
+      "마을과 지역 스토리를 진행해 새로운 AI 동료와 사건을 발견한다.",
+      "보유 동료 중 4명을 골라 파티를 만들고 각 동료의 장비, AI 성향, 스킬을 세팅한다.",
+      "필드·던전·보스에서 직접 전투하며 파티 조합과 장비가 실제 전투에서 어떻게 맞물리는지 확인한다.",
+      "동료 전용 퀘스트, 숙명 관계, 히든 조건, 보스 포섭을 통해 새로운 동료·합동기·전용장비를 얻고 다른 4인 조합을 시험한다."
+    ],
+    "signatureSystems": [
+      {
+        "name": "4인 파티 고정",
+        "purpose": "파티 슬롯은 항상 4명이며 탱·딜·힐 강제를 없애고 여러 조합이 실전에서 성립하도록 밸런스를 맞춘다.",
+        "playerChoice": ""
+      },
+      {
+        "name": "무한 확장 AI 동료",
+        "purpose": "새 지역·스토리 업데이트마다 동료를 계속 추가할 수 있고 각 동료는 전용 스토리, AI 행동, 스킬과 장비 방향을 가진다.",
+        "playerChoice": ""
+      },
+      {
+        "name": "숙명 관계",
+        "purpose": "특정 동료 조합이 함께 사건을 겪으면 전용 대사, 관계 변화, 합동기 또는 전투 규칙 변화가 열린다.",
+        "playerChoice": ""
+      },
+      {
+        "name": "파티 기억",
+        "purpose": "같은 4인으로 중요한 사건·보스·역전을 겪은 기록이 파티 정체성으로 남고 특수 대사·행동·지원 효과를 연다.",
+        "playerChoice": ""
+      },
+      {
+        "name": "보스·히든 동료",
+        "purpose": "특정 보스를 죽이는 대신 조건을 만족해 포섭하거나 숨겨진 시간·아이템·동료 조합으로 레어 동료를 발견한다.",
+        "playerChoice": ""
+      },
+      {
+        "name": "장비가 AI를 바꿈",
+        "purpose": "장비는 수치뿐 아니라 공격성, 보호 우선, 상태이상 활용 같은 AI 행동 우선순위와 스킬 운용을 바꾼다.",
+        "playerChoice": ""
+      },
+      {
+        "name": "라이벌 AI 파티",
+        "purpose": "다른 AI 4인 파티도 세계에서 성장하고 보스·보물·사건을 경쟁하거나 때로 협력한다.",
+        "playerChoice": ""
+      },
+      {
+        "name": "조합 엔딩",
+        "purpose": "특정 4인 조합으로 주요 스토리를 끝내면 그 조합만의 후일담·비밀 엔딩을 볼 수 있다.",
+        "playerChoice": ""
+      }
+    ],
+    "systemInterconnections": [
+      {
+        "fromSystem": "대충 주사위 판정 시스템",
+        "toSystem": "위험도 가속기 시스템",
+        "trigger": "플레이어가 주사위 판정에서 연속으로 대성공을 거두어 던전 깊숙이 진입할 때 발생합니다.",
+        "stateChange": "던전의 기본 위험도 수치가 즉시 2배로 증가하며, 몬스터의 공격력과 드롭되는 골드량이 동시에 가속화됩니다."
+      },
+      {
+        "fromSystem": "위험도 가속기 시스템",
+        "toSystem": "대충 주사위 판정 시스템",
+        "trigger": "위험도 가속 수치가 최대치에 도달하여 던전 환경이 폭주 상태로 전환될 때 발생합니다.",
+        "stateChange": "주사위 판정에 필요한 최소 성공 요구치가 상승하며, 실패 시 캐릭터가 받는 피해량이 3배로 증가합니다."
+      },
+      {
+        "fromSystem": "대충 주사위 판정 시스템",
+        "toSystem": "골드 경제 시스템",
+        "trigger": "주사위 판정 결과 보물상자 획득 또는 정예 몬스터 처치 판정이 성공했을 때 발생합니다.",
+        "stateChange": "플레이어의 보유 골드가 즉시 증가하며, 마을 상점에서 영구 능력치를 해금할 수 있는 재화 상태로 전환됩니다."
+      }
+    ],
+    "progressionDirection": "초기 4인 동료 확보 → 지역 스토리와 장비 파밍 → 숙명 관계·전용 퀘스트 → 히든/보스 동료 → 고난도 조합전투 → 라이벌 파티 경쟁 → 조합별 엔딩과 계속 추가되는 새 동료.",
+    "progressionEconomyBalance": {
+      "progressionLoop": "스토리·전투 -> 동료/장비/관계 해금 -> 4인 파티 재구성 -> 더 어려운 전투/히든 조건 -> 새 동료와 전용장비",
+      "resourceFlow": "골드와 재료는 장비 제작·강화·동료 세팅에 사용하지만 특정 희귀 동료나 장비만 있으면 압도하도록 만들지 않는다.",
+      "balanceRules": "희귀도는 상위호환이 아니라 플레이 방식 차이로 제한한다. 내부 밸런스 목표는 특정 동료가 거의 모든 상위 조합에 고정되거나 한 조합이 동급 콘텐츠에서 약 15~20% 이상 지속적으로 압도하지 않게 조정한다."
+    },
+    "contentExpansionPlan": [
+      {
+        "milestone": "새 지역과 동료군",
+        "newGameplay": "새 스토리 지역마다 일반·히든·보스 동료와 전용 장비, 관계 퀘스트를 추가한다.",
+        "systemImpact": "기존 4인 조합과 새 동료 간 상호작용을 추가해 조합 수를 계속 확장한다."
+      },
+      {
+        "milestone": "라이벌 파티 시즌",
+        "newGameplay": "성장하는 AI 파티가 필드·보스·보물 경쟁에 개입한다.",
+        "systemImpact": "같은 콘텐츠라도 어떤 라이벌을 만나는지에 따라 전투와 스토리 결과가 달라진다."
+      },
+      {
+        "milestone": "조합 엔딩",
+        "newGameplay": "특정 4인 파티의 기억과 관계를 충족하면 고유 후일담과 비밀 보스를 연다.",
+        "systemImpact": "동료 수집을 단순 도감이 아니라 반복 플레이 동기로 연결한다."
+      }
+    ],
+    "failureRetryRisk": {
+      "failureStates": [
+        "4인 파티 전멸",
+        "특정 동료·장비 조합이 전투 기믹과 맞지 않아 공략 실패",
+        "라이벌 파티에게 목표를 선점당함"
+      ],
+      "retryFlow": "전멸 후 마을에서 동료·장비·AI 성향을 빠르게 바꾸고 다시 도전한다.",
+      "riskPressure": "같은 강한 캐릭터만 반복 사용하기보다 적 패턴·관계·장비에 따라 파티를 바꾸는 것이 유리하게 설계한다.",
+      "recoveryRules": "스토리 필수 동료는 영구 소실되지 않으며 분기·이탈은 다른 퀘스트나 복귀 루트로 이어진다."
+    },
+    "platformFitPlan": {
+      "targetPlatform": "ROBLOX_UNITY",
+      "inputModel": "3D 액션 이동·공격·회피·스킬을 모바일/키보드/게임패드에 맞게 제공하고 파티 명령은 소수의 직관 버튼으로 제한한다.",
+      "performanceBudget": "동시에 활성화되는 AI 동료·적 수를 전투 구역 단위로 제한하고 경로탐색/스킬 평가 주기를 분산한다.",
+      "sessionConstraints": "짧은 사냥과 긴 스토리/던전 모두 가능하지만 한 전투 안에서는 파티 조합의 차이가 빠르게 드러나야 한다."
+    },
+    "platformProfiles": {
+      "ROBLOX": {
+        "platform": "ROBLOX",
+        "inputModel": "Roblox touch controls first, with keyboard and gamepad parity through ContextActionService and Activated-based UI actions.",
+        "sessionModel": "마을에서 4인 파티를 편성하고 스토리·필드·던전으로 출발하는 지속형 RPG 세션. 실제 플레이어가 들어오면 AI 슬롯을 대체할 수 있다.",
+        "multiplayerRuntime": "싱글은 플레이어 1 + AI 동료 3, 멀티는 실제 플레이어가 AI 슬롯을 대체해 최대 4인 파티를 구성한다. 서버가 동료 전투 AI, 장비, 관계 효과, 보상과 파티 상태를 authoritative하게 관리한다.",
+        "performanceBudget": "Roblox mobile-first budget: bounded parts and effects, pooled transient objects, limited expensive per-frame work, and stable low-end frame pacing.",
+        "uiUx": "모바일 전투 HUD는 이동·공격·회피·핵심 스킬과 간단 파티 명령만 제공하고, 파티 편성·장비·관계는 별도 화면에서 관리한다.",
+        "saveAndNetwork": "동료 보유, 스토리 분기, 관계, 파티 기억, 장비, AI 성향, 히든/보스 동료 해금은 DataStore에 저장하며 전투 판정은 서버 권한으로 처리한다.",
+        "platformContentAdaptation": "Adapt \"대충 RPG는 한 손 조작 기반의 초고속 탐험과 자동 전투, 그리고 실시간 위험 회피가 결합된 캐주얼 로그라이트 RPG입니다. 플레이어는 매 순간 전진할지 후퇴할지 결정해야 하며, 이 선택은 시그니처 시스템인 '대충 주사위 판정'과 '위험도 가속기'를 통해 즉각적인 보상과 치명적인 패널티로 이어집니다. 기존의 복잡한 RPG 시스템을 걷어내고, 오직 타이밍과 확률적 선택에만 집중하여 매 세션마다 고유한 상태 변화를 만들어냅니다.\" and its loop \"입력 및 선택: 플레이어가 화면을 터치하여 캐릭터를 전진시키고, 무작위로 등장하는 인카운터(전투, 상자, 함정)에 직면합니다. → 상태 변화: 캐릭터의 체력과 던전 위험도가 실시간으로 변동하며, 주사위 굴림을 통해 전투의 승패와 획득 보상이 결정됩니다. → 보상 및 다음 선택: 획득한 골드로 능력치를 즉시 강화하거나, 더 높은 난이도의 던전으로 진입할지 아니면 안전하게 복귀할지 결정합니다.\" to Roblox avatar scale, server/client authority, social sessions, and Roblox-native interaction without changing common gameplay meaning.",
+        "internalReleaseTarget": "Private or restricted Roblox experience published to Roblox servers so the owner and explicitly allowed testers can play before public release.",
+        "validationEvidence": "4인 파티 구성 다양성, AI 슬롯의 실제 플레이어 대체, 장비에 따른 AI 행동 변화, 동료 관계/합동기, 저장·재접속, 모바일 전투를 실제 Roblox 서버에서 검증한다."
+      },
+      "UNITY": {
+        "platform": "UNITY",
+        "inputModel": "Unity Input System with touch-first on-screen controls, safe-area handling, keyboard and gamepad parity, and app pause/resume input recovery.",
+        "sessionModel": "스토리 중심 3D 파티 액션 RPG 세션으로 마을 편성, 지역 탐험, 전투, 귀환과 관계 이벤트가 연결된다.",
+        "multiplayerRuntime": "싱글 1+3 AI 파티와 최대 4인 실제/AI 혼합 파티를 같은 파티 규칙으로 지원하고 전투·장비·관계 상태를 권한 주체가 검증한다.",
+        "performanceBudget": "Android mobile budget covering memory, GPU, thermal load, battery, draw calls, shaders, particles, audio, pooling, GC pressure, and low-end frame pacing.",
+        "uiUx": "터치·패드 전투와 파티 편성/장비/관계 UI를 분리해 가독성을 유지한다.",
+        "saveAndNetwork": "버전 저장에 동료, 장비, 스토리, 관계, 파티 기억을 보존하고 멀티 세션 상태는 권한 서버/호스트가 검증한다.",
+        "platformContentAdaptation": "Adapt \"대충 RPG는 한 손 조작 기반의 초고속 탐험과 자동 전투, 그리고 실시간 위험 회피가 결합된 캐주얼 로그라이트 RPG입니다. 플레이어는 매 순간 전진할지 후퇴할지 결정해야 하며, 이 선택은 시그니처 시스템인 '대충 주사위 판정'과 '위험도 가속기'를 통해 즉각적인 보상과 치명적인 패널티로 이어집니다. 기존의 복잡한 RPG 시스템을 걷어내고, 오직 타이밍과 확률적 선택에만 집중하여 매 세션마다 고유한 상태 변화를 만들어냅니다.\" and its loop \"입력 및 선택: 플레이어가 화면을 터치하여 캐릭터를 전진시키고, 무작위로 등장하는 인카운터(전투, 상자, 함정)에 직면합니다. → 상태 변화: 캐릭터의 체력과 던전 위험도가 실시간으로 변동하며, 주사위 굴림을 통해 전투의 승패와 획득 보상이 결정됩니다. → 보상 및 다음 선택: 획득한 골드로 능력치를 즉시 강화하거나, 더 높은 난이도의 던전으로 진입할지 아니면 안전하게 복귀할지 결정합니다.\" to Unity scenes, prefabs, mobile app lifecycle, touch UX, and Android packaging without changing common gameplay meaning.",
+        "internalReleaseTarget": "Internal or closed Android test build that can be installed and launched by the owner/testers before any public store release.",
+        "validationEvidence": "혼합 4인 파티, AI 행동, 스토리 동료 합류, 장비/관계 저장, 실기기 전투 성능과 회귀를 검증한다."
+      }
+    },
+    "webCanonicalDesign": {},
+    "platformExpansionPolicy": {},
+    "visualDirection": "세 게임 중 캐릭터와 전투 연출 퀄리티를 가장 높게 잡는 애니메이션풍 스타일라이즈드 판타지 3D. 기본 Roblox 아바타 감각은 유지하되 직업·동료·보스가 얼굴, 무기, 실루엣, 스킬 이펙트만 봐도 구분되도록 한다. 실사보다 강한 색 대비와 읽기 쉬운 전투 이펙트를 우선한다.",
+    "mobileUx": "직접 전투 조작은 이동·기본공격·회피·핵심 스킬 중심으로 단순화하고, 파티 편성·장비·AI 성향은 전투 밖에서 명확한 카드형 UI로 관리한다.",
+    "uxAccessibilityPlan": {
+      "hudPriorities": "화면 최상단에 현재 체력과 획득 골드를 표시하고, 중앙에는 주사위 판정 창, 하단에는 전진/탈출 액션 버튼을 배치하여 시각적 위계를 명확히 합니다.",
+      "touchAndInput": "모든 터치 영역은 최소 64dp 이상으로 확보하여 오작동을 방지하며, 햅틱 피드백을 적극 활용하여 주사위 충돌과 타격감을 손끝으로 전달합니다.",
+      "readability": "고대비 폰트와 굵은 외곽선을 사용하여 야외 광원 아래에서도 텍스트와 수치를 명확히 읽을 수 있도록 가독성을 극대화합니다.",
+      "accessibility": "적녹색약 플레이어를 위해 함정과 몬스터의 경고 범위를 단순 색상이 아닌 빗금 패턴과 아이콘으로 병행 표기합니다."
+    },
+    "artAudioDirection": {
+      "visualIdentity": "판타지 광장, 룬 기둥, 발광 수정, 무기 실루엣을 중심으로 한 스타일라이즈드 3D. 동료는 직업별 색과 무기 실루엣이 명확하고 보스는 큰 체형·별도 조명·전용 색으로 즉시 구분한다.",
+      "audioIdentity": "경쾌한 8비트 레트로 사운드와 웅장한 오케스트라 악기를 혼합하여, 가볍지만 모험의 긴장감을 잃지 않는 독창적인 사운드트랙을 제공합니다.",
+      "gameplayFeedbackSync": "주사위가 굴러가서 멈추는 순간의 둔탁한 타격음과 몬스터 처치 시 골드가 쏟아지는 금속성 효과음을 화면 연출과 0.01초 단위로 동기화하여 타격감을 극대화합니다."
+    },
+    "selectedDesignPlan": {},
+    "contentVarietyPlan": {},
+    "narrativeDialoguePlan": {},
+    "implementationTraceability": [
+      {
+        "designElement": "대충 주사위 판정 시스템의 물리 기반 연출 및 결과 도출 과정",
+        "responsibleSystem": "DicePhysicsManager 및 UIResultPresenter 시스템",
+        "validationEvidence": "주사위 투척 입력 후 1.2초 이내에 물리 연출이 완료되고, 판정 결과 수치가 UI에 오차 없이 동기화되어 표시되는지 프레임 단위 테스트를 통해 검증합니다."
+      },
+      {
+        "designElement": "위험도 가속기에 따른 몬스터 능력치 실시간 스케일링 공식",
+        "responsibleSystem": "DungeonDifficultyDirector 시스템",
+        "validationEvidence": "가속도 단계가 상승할 때마다 몬스터의 공격력과 체력이 기획된 지수 그래프 모델을 정확히 따르는지 시뮬레이터 로그 분석을 통해 검증합니다."
+      },
+      {
+        "designElement": "사망 시 골드 유실 및 마을 복귀 처리 흐름",
+        "responsibleSystem": "PlayerInventoryAndSessionManager 시스템",
+        "validationEvidence": "던전 내 사망 트리거 발생 시 보유 골드의 정확히 50%가 차감되고, 로딩 시간 2초 이내에 마을 씬으로 안전하게 전환되는지 예외 처리 테스트를 통해 검증합니다."
+      }
+    ],
+    "stabilityPriorityPlan": {}
   },
   "gameIdentityAndNonNegotiables": {
     "identity": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.",
@@ -649,17 +822,17 @@
   "previousVersionDelta": {
     "previousGoal": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
     "previousFocus": "PRESENTATION",
-    "previousGeneration": 27,
-    "previousSourceTreeFingerprint": "275d3027dd59906d829b1d10cb23c95dc8523a702c9cb5b6f5ba26377497cb74",
-    "currentSourceTreeFingerprint": "70a6017478a3fbf973872e6a11193f548bbda81f3f4b5ae255c8332b9d639fa4",
+    "previousGeneration": 28,
+    "previousSourceTreeFingerprint": "70a6017478a3fbf973872e6a11193f548bbda81f3f4b5ae255c8332b9d639fa4",
+    "currentSourceTreeFingerprint": "abad22ca2c6944a0753b3211851cf50e112f49400f167140e774d79a3f165549",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-    "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+    "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+    "failureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
     "blockers": [],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -809,8 +982,8 @@
     },
     {
       "domain": "CRAFTING",
-      "state": "NOT_APPLICABLE",
-      "reason": "no crafting signal in approved design"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "SYSTEM_CONNECTION",
@@ -919,8 +1092,8 @@
     },
     {
       "domain": "NPC_SOCIAL_BEHAVIOR",
-      "state": "NOT_APPLICABLE",
-      "reason": "no NPC or social behavior signal in approved design"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "NARRATIVE_STORY",
@@ -1293,12 +1466,12 @@
     },
     {
       "domain": "CRAFTING",
-      "state": "NOT_APPLICABLE",
-      "priority": "NOT_APPLICABLE",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "현재 승인 설계상 no crafting signal in approved design. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "directive": "제작이 적용되는 게임이면 재료 발견→레시피 이해→제작 조건→대기/완료→인벤토리 반영→실제 사용까지 끊김 없이 연결하고 중복 레시피를 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
-      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
     {
       "domain": "SYSTEM_CONNECTION",
@@ -1491,12 +1664,12 @@
     },
     {
       "domain": "NPC_SOCIAL_BEHAVIOR",
-      "state": "NOT_APPLICABLE",
-      "priority": "NOT_APPLICABLE",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "현재 승인 설계상 no NPC or social behavior signal in approved design. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "directive": "NPC가 적용되는 게임이면 idle 순환뿐 아니라 이동 목적, 상호작용 반응, 시간/지역/퀘스트 상태에 따른 행동 변화가 세계 역할과 연결되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
-      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
     {
       "domain": "NARRATIVE_STORY",
@@ -1835,12 +2008,12 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "WORLD_ECOLOGY_STORY_CHAIN",
-    "themeDepth": 8,
-    "selectedThemeReason": "0 explicit GAP(s) and 7 applicable domain(s); focus=PRESENTATION; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=7; uncoveredBefore=4.",
+    "themeDepth": 9,
+    "selectedThemeReason": "0 explicit GAP(s) and 8 applicable domain(s); focus=PRESENTATION; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=8; uncoveredBefore=4.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
-        "WORLD_ECOLOGY_STORY_CHAIN": 8,
+        "WORLD_ECOLOGY_STORY_CHAIN": 9,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 10,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
@@ -1854,7 +2027,7 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -1893,22 +2066,22 @@
     "scoredThemes": [
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 56,
+        "score": 40,
+        "gapDomains": []
+      },
+      {
+        "theme": "QUEST_STORY_PROGRESSION_CHAIN",
+        "score": 16,
+        "gapDomains": []
+      },
+      {
+        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "score": 16,
         "gapDomains": []
       },
       {
         "theme": "MID_LATE_ENDGAME_COMPLETION",
         "score": 16,
-        "gapDomains": []
-      },
-      {
-        "theme": "QUEST_STORY_PROGRESSION_CHAIN",
-        "score": 14,
-        "gapDomains": []
-      },
-      {
-        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 14,
         "gapDomains": []
       },
       {
@@ -2008,11 +2181,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 28,
-    "previousGeneration": 27,
+    "generation": 29,
+    "previousGeneration": 28,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "70a6017478a3fbf973872e6a11193f548bbda81f3f4b5ae255c8332b9d639fa4",
-    "priorSourceFingerprint": "275d3027dd59906d829b1d10cb23c95dc8523a702c9cb5b6f5ba26377497cb74",
+    "sourceFingerprint": "abad22ca2c6944a0753b3211851cf50e112f49400f167140e774d79a3f165549",
+    "priorSourceFingerprint": "70a6017478a3fbf973872e6a11193f548bbda81f3f4b5ae255c8332b9d639fa4",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2244,12 +2417,12 @@
     "반복 조작은 편의 기능으로 줄이되 핵심 플레이 선택과 위험/보상 판단을 자동화하지 않는다."
   ],
   "platformAdaptationDirectives": {
-    "WEB": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 현재 canonical Web 경로에 구현한다. 실제 터치 입력, DOM/Canvas 프레임 변화, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 함께 검수한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "WEB": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: WEB 상세 게임 원본과 공통 큰틀을 기준으로 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 구현한다. WEB 자체 시스템·콘텐츠·지역·세션·UI·카메라·연출 확장에는 다른 플랫폼과의 세부 parity 제한을 두지 않는다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
     "ROBLOX": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
-    "UNITY": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 함께 검증한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
+    "UNITY": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: WEB 상세 게임 원본에서 공통 큰틀만 이어받아 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Unity 네이티브 경험으로 재해석한다. Unity 전용 시스템·콘텐츠·지역·물리·카메라·애니메이션·세션 구조·UX·연출 확장에는 인위적 parity 제한을 두지 않는다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
     "FORTNITE_UEFN": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UNITY_WEB": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 현재 canonical Web 경로에 구현한다. 실제 터치 입력, DOM/Canvas 프레임 변화, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 함께 검수한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "UNITY_APP": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 함께 검증한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
+    "UNITY_WEB": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: WEB 상세 게임 원본과 공통 큰틀을 기준으로 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 구현한다. WEB 자체 시스템·콘텐츠·지역·세션·UI·카메라·연출 확장에는 다른 플랫폼과의 세부 parity 제한을 두지 않는다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "UNITY_APP": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: WEB 상세 게임 원본에서 공통 큰틀만 이어받아 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Unity 네이티브 경험으로 재해석한다. Unity 전용 시스템·콘텐츠·지역·물리·카메라·애니메이션·세션 구조·UX·연출 확장에는 인위적 parity 제한을 두지 않는다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
     "UNREAL": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
     "UEFN": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
   },
@@ -2481,7 +2654,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "70a6017478a3fbf973872e6a11193f548bbda81f3f4b5ae255c8332b9d639fa4",
+    "sourceTreeFingerprint": "abad22ca2c6944a0753b3211851cf50e112f49400f167140e774d79a3f165549",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2575,7 +2748,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "70a6017478a3fbf973872e6a11193f548bbda81f3f4b5ae255c8332b9d639fa4",
+    "sourceTreeFingerprint": "abad22ca2c6944a0753b3211851cf50e112f49400f167140e774d79a3f165549",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2843,11 +3016,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "70a6017478a3fbf973872e6a11193f548bbda81f3f4b5ae255c8332b9d639fa4",
+      "sourceTreeFingerprint": "abad22ca2c6944a0753b3211851cf50e112f49400f167140e774d79a3f165549",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING"
+      "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "failureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2898,7 +3071,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 29,
+    "nextGeneration": 30,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2957,11 +3130,8 @@
     "holisticGaps": [
       "MENU_FLOW"
     ],
-    "notApplicable": [
-      "CRAFTING",
-      "NPC_SOCIAL_BEHAVIOR"
-    ],
+    "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-07T04:46:40.784Z"
+  "generatedAt": "2026-10-07T14:10:00.212Z"
 }

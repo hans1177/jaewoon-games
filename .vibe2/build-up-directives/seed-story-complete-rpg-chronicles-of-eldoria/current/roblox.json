@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-story-complete-rpg-chronicles-of-eldoria-build-up-g23-b45885c4a663",
-  "directiveFingerprint": "b45885c4a66375cca262803f0f95b69755090324a91be1c1b1011513115e9c16",
-  "previousDirectiveFingerprint": "a2aeb945b845c06ecfd5a340af1157e0558c441bb0f993361ee1ab05823b7b78",
-  "forbiddenRepeatFingerprint": "a2aeb945b845c06ecfd5a340af1157e0558c441bb0f993361ee1ab05823b7b78",
+  "directiveId": "seed-story-complete-rpg-chronicles-of-eldoria-build-up-g24-5c7221fd2bea",
+  "directiveFingerprint": "5c7221fd2beaa27dbddd918cf3ac0402da6db32cf48bc8b7aadf44440db4a95b",
+  "previousDirectiveFingerprint": "b45885c4a66375cca262803f0f95b69755090324a91be1c1b1011513115e9c16",
+  "forbiddenRepeatFingerprint": "b45885c4a66375cca262803f0f95b69755090324a91be1c1b1011513115e9c16",
   "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
   "gameName": "엘도리아 연대기",
-  "generation": 23,
+  "generation": 24,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,11 +14,11 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria",
-  "sourceTreeFingerprint": "71711be828429e6915c40ec005280c599ee258eb82cf4baaef3aeb13fc951913",
-  "designFingerprint": "daa0eb49313b00bae65989b9d00420ed30dc558372093ed1b36b664d42fa671c",
+  "sourceTreeFingerprint": "fc63ddc26333236aa572d1988d8c7d38a7df26549369edbb27b74f37e767bcd9",
+  "designFingerprint": "f3dedab9aa1f8be3b33babe82fdbf58f5554fdfb0a02dd646259a16d71e5078f",
   "identityReinforcement": {
     "appliesToAllGenres": true,
-    "genre": "GAME_SPECIFIC",
+    "genre": "Strategy",
     "oneLineFantasy": "플레이어는 멸망해가는 세계 엘도리아의 마지막 수호자가 되어, 잃어버린 고대 유물을 복구하고 동료들과 함께 운명을 개척하는 영웅적 여정을 경험합니다. 자신의 결정에 따라 세계의 지형이 바뀌고 동료들의 신뢰도가 변하는 결과를 직접 목격합니다.",
     "representativeAction": "월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.",
     "representativeChoice": "플레이어는 매 턴마다 어떤 속성의 스킬을 우선 사용할지, 혹은 동료와 어떤 속성 연계를 발동시킬지 결정하며, 이 선택이 전투의 템포와 피해량을 즉각적으로 변화시킵니다.",
@@ -104,7 +104,7 @@
           "최종 결전 및 플레이어 선택 반영 엔딩",
           "지금까지의 모든 탐험 경로와 캐릭터 선택이 반영된 최종 보스전이 진행됩니다. 플레이어는 자신이 개척한 지형과 동료와의 유대 관계를 활용하여 보스의 약점을 공략하는 총력전을 수행합니다."
         ],
-        "sourceTreeFingerprint": "71711be828429e6915c40ec005280c599ee258eb82cf4baaef3aeb13fc951913",
+        "sourceTreeFingerprint": "fc63ddc26333236aa572d1988d8c7d38a7df26549369edbb27b74f37e767bcd9",
         "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -114,6 +114,148 @@
     },
     "buildUpRule": "EACH_BUILD_UP_MUST_STRENGTHEN_OR_PRESERVE_THE_REPRESENTATIVE_ACTION_CHOICE_WORLD_RULE_SIGNATURE_SYSTEM_OR_GROWTH_IDENTITY; GENERIC_FEATURE_COUNT_DOES_NOT_COUNT",
     "genreAdaptationRule": "PRESERVE_THE_GENRE_PRIMARY_ACTION; DO_NOT_FORCE_RPG_STYLE_SYSTEMS_ON_PUZZLE_RACING_TYCOON_DEFENSE_SURVIVAL_ACTION_CARD_BOARD_STRATEGY_CASUAL_OR_OTHER_GENRES"
+  },
+  "designImplementationContext": {
+    "source": "LATEST_VERIFIED_DESIGN_FIELDS",
+    "coreFun": "전투 중 스킬의 속성 조합을 선택하여 적의 약점을 공략하고, 탐험 중 발견한 고대 문자를 해석하여 지름길을 개척하는 반복적인 의사결정이 핵심입니다. 이러한 선택은 즉각적으로 전투의 승패와 캐릭터의 성장 방향을 결정짓는 가시적인 상태 변화로 이어집니다.",
+    "coreLoop": [
+      "월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.",
+      "턴제 전투 시스템에서 적의 속성을 파악하고 스킬 콤보를 설계하여 승리한 뒤, 경험치와 고대 유물 파편을 획득하여 캐릭터를 강화합니다.",
+      "획득한 유물 파편을 사용하여 스킬 트리를 커스터마이징하고, 강화된 능력으로 이전에는 도달할 수 없었던 고난도 지역에 도전하여 서사를 완결합니다."
+    ],
+    "signatureSystems": [
+      {
+        "name": "속성 공명 시스템",
+        "purpose": "전투 시 캐릭터의 스킬 속성을 조합하여 시너지를 발생시키고, 적의 방어 체계를 무력화하여 전략적 우위를 점하기 위해 설계되었습니다.",
+        "playerChoice": "플레이어는 매 턴마다 어떤 속성의 스킬을 우선 사용할지, 혹은 동료와 어떤 속성 연계를 발동시킬지 결정하며, 이 선택이 전투의 템포와 피해량을 즉각적으로 변화시킵니다."
+      },
+      {
+        "name": "운명 개척 탐험 시스템",
+        "purpose": "탐험 중 발견한 고대 유물을 사용하여 지형을 변화시키거나 새로운 길을 열어, 단순한 이동을 전략적인 자원 관리의 영역으로 확장하기 위해 설계되었습니다.",
+        "playerChoice": "플레이어는 제한된 유물 에너지를 사용하여 특정 지형을 복구할지, 아니면 전투 보너스를 얻기 위해 소모할지 선택하며, 이 선택이 맵의 접근성과 이후 전투 난이도에 직접적인 영향을 줍니다."
+      }
+    ],
+    "systemInterconnections": [
+      {
+        "fromSystem": "속성 공명 시스템",
+        "toSystem": "운명 개척 탐험 시스템",
+        "trigger": "전투에서 특정 속성 콤보로 승리할 경우",
+        "stateChange": "탐험 시스템에서 사용할 수 있는 '유물 에너지'가 충전되어, 막혀있던 지형을 개척할 수 있는 상태로 변화합니다."
+      },
+      {
+        "fromSystem": "운명 개척 탐험 시스템",
+        "toSystem": "스토리 진행 시스템",
+        "trigger": "플레이어가 특정 지형을 개척하여 숨겨진 장소에 도달할 경우",
+        "stateChange": "메인 스토리의 분기가 해금되거나 새로운 NPC와의 상호작용이 활성화되어 서사가 확장됩니다."
+      },
+      {
+        "fromSystem": "스토리 진행 시스템",
+        "toSystem": "속성 공명 시스템",
+        "trigger": "스토리의 특정 구간에서 고대 지식을 습득할 경우",
+        "stateChange": "캐릭터의 새로운 속성 스킬이 해금되거나 기존 스킬의 위력이 강화되어 전투 전략의 폭이 넓어집니다."
+      }
+    ],
+    "progressionDirection": "플레이어는 초반에 기본적인 전투와 탐험을 익히며, 중반부에는 고대 유물을 활용한 전략적 선택의 비중이 커집니다. 후반부에는 축적된 스킬과 유물 조합을 통해 최종 보스에 도달하며, 모든 선택이 결합된 하나의 완결된 서사를 경험하게 됩니다.",
+    "progressionEconomyBalance": {
+      "progressionLoop": "전투 승리 -> 경험치/유물 획득 -> 스킬/유물 강화 -> 더 어려운 지역 탐험 -> 스토리 진행의 선순환 구조를 유지합니다.",
+      "resourceFlow": "전투 보상은 스킬 강화에, 탐험 보상은 지형 개척에 집중되어 두 자원 흐름이 서로 보완적인 관계를 형성합니다.",
+      "balanceRules": "플레이어의 성장이 정체되지 않도록 적의 난이도 곡선을 스킬 해금 속도에 맞춰 조정하며, 과도한 파밍 없이도 스토리를 완결할 수 있도록 설계합니다."
+    },
+    "contentExpansionPlan": [
+      {
+        "milestone": "고대 유적지 개방 및 환경 퍼즐 도입",
+        "newGameplay": "플레이어는 고대 유적지에서 유물 에너지를 수집하여 지형을 물리적으로 조작하는 퍼즐을 해결해야 합니다. 이는 단순 이동을 넘어 지형을 변형시켜 새로운 경로를 개척하는 능동적 탐험을 제공합니다.",
+        "systemImpact": "기존 탐험 시스템에 지형 변형 로직이 추가되어 월드 맵 매니저의 데이터 구조가 확장됩니다. 또한, 유물 에너지 자원 관리 시스템이 추가되어 플레이어의 자원 운용 전략이 중요해집니다."
+      },
+      {
+        "milestone": "동료 영입 및 속성 공명 연계 시스템",
+        "newGameplay": "새로운 동료 캐릭터가 합류함에 따라 전투 중 다중 캐릭터가 동시에 공격하는 속성 공명 시스템이 활성화됩니다. 플레이어는 캐릭터 간의 속성 조합을 실시간으로 고려하여 연계 공격을 설계해야 합니다.",
+        "systemImpact": "전투 엔진 내에 캐릭터 간 상태 공유 및 연계 트리거 시스템이 도입됩니다. 파티 구성에 따른 시너지 효과가 전투 결과에 직접적인 영향을 미치도록 전투 밸런스 수식이 재설계됩니다."
+      },
+      {
+        "milestone": "최종 결전 및 플레이어 선택 반영 엔딩",
+        "newGameplay": "지금까지의 모든 탐험 경로와 캐릭터 선택이 반영된 최종 보스전이 진행됩니다. 플레이어는 자신이 개척한 지형과 동료와의 유대 관계를 활용하여 보스의 약점을 공략하는 총력전을 수행합니다.",
+        "systemImpact": "퀘스트 매니저와 월드 상태 데이터가 최종 보스전의 난이도와 패턴에 동적으로 반영됩니다. 플레이어의 누적된 성장 데이터가 엔딩 분기에 직접적인 영향을 미치도록 서사 분기 시스템이 확장됩니다."
+      }
+    ],
+    "failureRetryRisk": {
+      "failureStates": [
+        "전투 중 파티 전멸",
+        "탐험 중 유물 에너지 고갈로 인한 고립",
+        "스토리 분기 선택 실패로 인한 배드 엔딩 진입"
+      ],
+      "retryFlow": "전투 패배 시 마지막 체크포인트에서 즉시 재도전 가능하며, 탐험 실패 시 소량의 자원을 소모하여 이전 안전 지대로 복귀합니다.",
+      "riskPressure": "실패 시 자원 손실은 최소화하되, 전투의 긴장감을 유지하기 위해 적의 패턴을 학습해야 하는 구조를 채택합니다.",
+      "recoveryRules": "패배 후 재도전 시 적의 약점이 힌트로 제공되어 플레이어가 전략을 수정할 기회를 부여합니다."
+    },
+    "platformFitPlan": {
+      "targetPlatform": "UNITY",
+      "inputModel": "터치 기반의 직관적인 드래그 앤 드롭 인터페이스를 사용하여 스킬 선택과 지형 조작을 간편하게 수행합니다.",
+      "performanceBudget": "모바일 기기에서의 발열과 배터리 소모를 고려하여 턴제 기반의 정적인 화면 연출과 최적화된 셰이더를 사용합니다.",
+      "sessionConstraints": "30분 내외의 세션 동안 한 번의 전투와 탐험을 완결할 수 있도록 맵의 크기와 전투 템포를 조절합니다."
+    },
+    "platformProfiles": {
+      "ROBLOX": {
+        "platform": "ROBLOX",
+        "inputModel": "Roblox touch controls first, with keyboard and gamepad parity through ContextActionService and Activated-based UI actions.",
+        "sessionModel": "Fast Roblox experience sessions with spawn, respawn, join-in-progress, and social re-entry semantics matched to the common game loop.",
+        "multiplayerRuntime": "single-player server boundary with local presentation; no fake multiplayer claims",
+        "performanceBudget": "Roblox mobile-first budget: bounded parts and effects, pooled transient objects, limited expensive per-frame work, and stable low-end frame pacing.",
+        "uiUx": "Roblox ScreenGui touch-safe layout with readable mobile controls, controller focus support, observable state feedback, and platform-native social affordances.",
+        "saveAndNetwork": "Server-validated RemoteEvents plus DataStore-backed persistent state only for approved save meaning; clients never own authoritative rewards or progression.",
+        "platformContentAdaptation": "Adapt \"엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.\" and its loop \"월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다. → 턴제 전투 시스템에서 적의 속성을 파악하고 스킬 콤보를 설계하여 승리한 뒤, 경험치와 고대 유물 파편을 획득하여 캐릭터를 강화합니다. → 획득한 유물 파편을 사용하여 스킬 트리를 커스터마이징하고, 강화된 능력으로 이전에는 도달할 수 없었던 고난도 지역에 도전하여 서사를 완결합니다.\" to Roblox avatar scale, server/client authority, social sessions, and Roblox-native interaction without changing common gameplay meaning.",
+        "internalReleaseTarget": "Private or restricted Roblox experience published to Roblox servers so the owner and explicitly allowed testers can play before public release.",
+        "validationEvidence": "Exact published Roblox place and source revision, real Roblox runtime play, mobile controls, server/client boundary, save/rejoin when required, independent QA, and regression evidence."
+      },
+      "UNITY": {
+        "platform": "UNITY",
+        "inputModel": "Unity Input System with touch-first on-screen controls, safe-area handling, keyboard and gamepad parity, and app pause/resume input recovery.",
+        "sessionModel": "Native mobile app sessions with cold start, suspend/resume, background/foreground transitions, process restart, and deterministic save restoration.",
+        "multiplayerRuntime": "single-player app session with local gameplay authority; networking remains disabled until design requires it",
+        "performanceBudget": "Android mobile budget covering memory, GPU, thermal load, battery, draw calls, shaders, particles, audio, pooling, GC pressure, and low-end frame pacing.",
+        "uiUx": "Unity UI safe-area responsive layout with touch targets, scalable HUD, controller navigation where relevant, and app-native loading/error/recovery states.",
+        "saveAndNetwork": "Versioned local save with explicit migration plus validated backend synchronization only when required; app lifecycle cannot silently corrupt progress.",
+        "platformContentAdaptation": "Adapt \"엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.\" and its loop \"월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다. → 턴제 전투 시스템에서 적의 속성을 파악하고 스킬 콤보를 설계하여 승리한 뒤, 경험치와 고대 유물 파편을 획득하여 캐릭터를 강화합니다. → 획득한 유물 파편을 사용하여 스킬 트리를 커스터마이징하고, 강화된 능력으로 이전에는 도달할 수 없었던 고난도 지역에 도전하여 서사를 완결합니다.\" to Unity scenes, prefabs, mobile app lifecycle, touch UX, and Android packaging without changing common gameplay meaning.",
+        "internalReleaseTarget": "Internal or closed Android test build that can be installed and launched by the owner/testers before any public store release.",
+        "validationEvidence": "Exact APK/AAB source revision, install and launch, real touch gameplay, pause/resume, save/restore, performance, independent QA, regression, and package identity evidence."
+      }
+    },
+    "webCanonicalDesign": {},
+    "platformExpansionPolicy": {},
+    "visualDirection": "판타지 세계관을 바탕으로 한 수채화풍의 따뜻하고 감성적인 아트 스타일을 채택하여, 모바일 화면에서도 가독성이 높고 몰입감을 주는 시각적 경험을 제공합니다.",
+    "mobileUx": "한 손 조작이 가능하도록 주요 UI를 하단에 배치하고, 전투 중 스킬 아이콘의 크기를 충분히 확보하여 오입력을 방지합니다.",
+    "uxAccessibilityPlan": {
+      "hudPriorities": "현재 체력, 유물 에너지, 다음 턴의 적 행동 예고를 최우선으로 표시합니다.",
+      "touchAndInput": "복잡한 제스처 대신 탭과 드래그 위주의 입력을 사용하여 접근성을 높입니다.",
+      "readability": "고대 문자와 텍스트는 가독성이 높은 폰트를 사용하고, 배경과 대비되는 색상을 적용합니다.",
+      "accessibility": "색약 모드를 지원하여 속성 구분을 색상 외에 아이콘과 패턴으로도 명확히 식별할 수 있게 합니다."
+    },
+    "artAudioDirection": {
+      "visualIdentity": "부드러운 파스텔 톤과 명확한 실루엣을 사용하여 캐릭터와 배경을 구분하고, 전투 시에는 강렬한 이펙트로 타격감을 강조합니다.",
+      "audioIdentity": "오케스트라 기반의 웅장한 배경음악과 함께, 전투 시에는 속성별로 차별화된 타격음과 효과음을 배치합니다.",
+      "gameplayFeedbackSync": "스킬 발동과 지형 변화 시 즉각적인 사운드 피드백을 제공하여 플레이어의 선택이 게임에 반영됨을 청각적으로 인지시킵니다."
+    },
+    "selectedDesignPlan": {},
+    "contentVarietyPlan": {},
+    "narrativeDialoguePlan": {},
+    "implementationTraceability": [
+      {
+        "designElement": "속성 공명 연계 시스템",
+        "responsibleSystem": "전투 엔진 및 파티 매니저",
+        "validationEvidence": "전투 시뮬레이션 테스트를 통해 다양한 속성 조합 시 연계 공격 발동 확률과 데미지 증폭 수치가 기획 의도대로 작동하는지 100회 이상의 반복 테스트로 검증합니다."
+      },
+      {
+        "designElement": "운명 개척 탐험 시스템",
+        "responsibleSystem": "월드 맵 매니저 및 지형 데이터베이스",
+        "validationEvidence": "맵 탐색 테스트를 통해 유물 에너지 소모와 지형 변화가 30분 세션 내에 적절히 배치되었는지 확인하고, 지형 조작이 퀘스트 진행을 막지 않는지 경로 검증을 수행합니다."
+      },
+      {
+        "designElement": "스토리 분기 및 엔딩 시스템",
+        "responsibleSystem": "퀘스트 매니저 및 서사 데이터베이스",
+        "validationEvidence": "스토리 흐름 테스트를 통해 플레이어의 주요 선택지가 데이터베이스에 기록되고, 최종 보스전에서 해당 선택지가 보스 패턴 변화로 이어지는지 논리적 연결성을 검증합니다."
+      }
+    ],
+    "stabilityPriorityPlan": {}
   },
   "gameIdentityAndNonNegotiables": {
     "identity": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.",
@@ -355,20 +497,20 @@
   "previousVersionDelta": {
     "previousGoal": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 22,
-    "previousSourceTreeFingerprint": "a31632d757aecf4f197979859f23dd34a61ad1d4b1be0280558f5675f999c881",
-    "currentSourceTreeFingerprint": "71711be828429e6915c40ec005280c599ee258eb82cf4baaef3aeb13fc951913",
+    "previousGeneration": 23,
+    "previousSourceTreeFingerprint": "71711be828429e6915c40ec005280c599ee258eb82cf4baaef3aeb13fc951913",
+    "currentSourceTreeFingerprint": "fc63ddc26333236aa572d1988d8c7d38a7df26549369edbb27b74f37e767bcd9",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": {
-      "sourceRevision": "cddfbda37be15bd8ce93487e53dde67d45587ae9",
-      "artifactIdentity": "sha256:d296d12df685932e1e6c2a27cd31a258dd4cf0188d38a00b5f618f0315e0cc4b",
+      "sourceRevision": "702f4049b0463f64170c1c7856059aab348f31db",
+      "artifactIdentity": "sha256:b9571629790dbc4ee1bfe54c0a87f28771b90244f16f6078316b14b4dfbf6fec",
       "authority": "roblox-f0-gameplay-product-readiness-failure",
-      "workflowRunId": 37626885580,
-      "testedAt": "2026-10-07T13:18:55.652Z",
+      "workflowRunId": 37631200150,
+      "testedAt": "2026-10-07T13:55:02.962Z",
       "repairSurfaces": [
         "CORE_GAMEPLAY",
         "WORLD_MAP",
@@ -476,9 +618,24 @@
         }
       ]
     },
-    "failureStage": "",
-    "failureSignature": "",
-    "blockers": [],
+    "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+    "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
+    "blockers": [
+      "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+      "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+      "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+      "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+      "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+      "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+      "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+      "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+      "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+      "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+      "GENERIC_SCOPE_HANDLER_SKELETON"
+    ],
     "runtimeObserved": true,
     "runtimePassed": false,
     "independentQaPassed": false,
@@ -542,8 +699,8 @@
     },
     {
       "domain": "QUESTS",
-      "state": "NOT_APPLICABLE",
-      "reason": "no quest/story objective signal in approved design"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "CONTENT_VARIETY",
@@ -737,8 +894,8 @@
     },
     {
       "domain": "NPC_SOCIAL_BEHAVIOR",
-      "state": "NOT_APPLICABLE",
-      "reason": "no NPC or social behavior signal in approved design"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "NARRATIVE_STORY",
@@ -752,8 +909,8 @@
     },
     {
       "domain": "REPLAYABILITY_VARIATION",
-      "state": "NOT_APPLICABLE",
-      "reason": "no explicit replay variation signal in approved design"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "CHARACTER_VISUALS",
@@ -958,12 +1115,12 @@
     },
     {
       "domain": "QUESTS",
-      "state": "NOT_APPLICABLE",
-      "priority": "NOT_APPLICABLE",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "현재 승인 설계상 no quest/story objective signal in approved design. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "directive": "퀘스트가 적용되는 게임이면 목표·진행 추적·완료 판정·보상·세계/캐릭터 반응까지 연결하고, 핵심 루프와 무관한 심부름 반복을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
-      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
     {
       "domain": "CONTENT_VARIETY",
@@ -1309,12 +1466,12 @@
     },
     {
       "domain": "NPC_SOCIAL_BEHAVIOR",
-      "state": "NOT_APPLICABLE",
-      "priority": "NOT_APPLICABLE",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "현재 승인 설계상 no NPC or social behavior signal in approved design. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "directive": "NPC가 적용되는 게임이면 idle 순환뿐 아니라 이동 목적, 상호작용 반응, 시간/지역/퀘스트 상태에 따른 행동 변화가 세계 역할과 연결되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
-      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
     {
       "domain": "NARRATIVE_STORY",
@@ -1336,12 +1493,12 @@
     },
     {
       "domain": "REPLAYABILITY_VARIATION",
-      "state": "NOT_APPLICABLE",
-      "priority": "NOT_APPLICABLE",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "현재 승인 설계상 no explicit replay variation signal in approved design. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "directive": "반복 플레이가 적용되는 게임이면 조우 조합·지역 경로·보상 선택·빌드/전략·이벤트 중 게임에 맞는 변주를 제공해 같은 정답만 반복되지 않게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
-      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
     {
       "domain": "CHARACTER_VISUALS",
@@ -1563,7 +1720,7 @@
   ],
   "primaryFocus": "STABILITY",
   "thisLoopPrimaryGoal": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 STABILITY를 우선한다. 게임 고유 앵커는 \"속성 공명 시스템\", 현재 책임 소스는 roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau::render, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::scopeHandler1, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::scopeHandler2, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::scopeHandler4, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::scopeHandler5, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::scopeHandler6, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau::reportNativeFoundationReady, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::initializePlayer이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "실제 runtime 실패가 관찰됐다(F0_GAMEPLAY_PRODUCT_READINESS / ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED). 콘텐츠·그래픽 확장보다 기본 플레이 foundation의 원인 시스템 복구를 먼저 완료하고 같은 실패 시나리오를 다시 검증한다. 책임 소스는 roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau::render, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::scopeHandler1, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::scopeHandler2, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::scopeHandler4, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::scopeHandler5, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::scopeHandler6, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau::reportNativeFoundationReady, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::initializePlayer이다.",
   "gameplayImplementationDirectives": [
     "우선 책임 소스 앵커 roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau::render, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::scopeHandler1, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::scopeHandler2, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::scopeHandler4, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::scopeHandler5, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::scopeHandler6, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau::reportNativeFoundationReady, roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau::initializePlayer에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "속성 공명 시스템를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
@@ -1604,9 +1761,9 @@
       "UNITY"
     ],
     "requestedPlatform": "ROBLOX",
-    "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
-    "contentExpansionDeferredUntilRuntimeRepairPass": false,
-    "themeCoverageAdvanced": true,
+    "executionMode": "CAUSAL_REPAIR_FIRST_KEEP_EXPANSION_CONTEXT",
+    "contentExpansionDeferredUntilRuntimeRepairPass": true,
+    "themeCoverageAdvanced": false,
     "dataCapacityBudget": {
       "state": "NORMAL",
       "limits": {
@@ -1652,7 +1809,7 @@
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
     "themeDepth": 7,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=6; uncoveredBefore=4.",
+    "selectedThemeReason": "Observed runtime failure requires causal foundation repair first; selected theme is retained as context only and does not advance coverage until runtime repair passes.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1709,7 +1866,7 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 84,
+        "score": 66,
         "gapDomains": [
           "EQUIPMENT_LOADOUT"
         ]
@@ -1723,22 +1880,22 @@
       },
       {
         "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": 20,
-        "gapDomains": []
-      },
-      {
-        "theme": "MID_LATE_ENDGAME_COMPLETION",
-        "score": 14,
+        "score": 22,
         "gapDomains": []
       },
       {
         "theme": "QUEST_STORY_PROGRESSION_CHAIN",
-        "score": 12,
+        "score": 16,
+        "gapDomains": []
+      },
+      {
+        "theme": "MID_LATE_ENDGAME_COMPLETION",
+        "score": 16,
         "gapDomains": []
       },
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": -94,
+        "score": -92,
         "gapDomains": []
       },
       {
@@ -1752,16 +1909,8 @@
         ]
       }
     ],
-    "coherentContentBundle": [
-      "SOURCE_AND_DISCOVERY: 아이템이 어디서 왜 나오는지 지역·몹·퀘스트·제작과 연결한다.",
-      "DISTINCT_USE_CASE: 데미지 숫자만 다른 복제 장비가 아니라 사거리·타이밍·상태·위험·보상·조합 역할이 달라야 한다.",
-      "INVENTORY_AND_EQUIP_FLOW: 획득→비교→장착·사용→교체→피드백이 같은 authoritative 상태를 사용한다.",
-      "CRAFT_OR_UPGRADE_CONNECTION: 재료·레시피·제작·강화 결과가 실제 플레이 선택을 바꾼다.",
-      "PROGRESSION_PURPOSE: 아이템이 특정 지역·적·빌드·퀘스트·해금과 연결되어 성장 경로에 의미를 가진다.",
-      "SYNERGY_AND_TRADEOFF: 장비·스킬·소모품 사이에 조합 또는 선택 비용이 있어 하나의 정답만 반복되지 않게 한다.",
-      "WORLD_PRESENTATION: 외형·이름·설명·획득 연출이 실제 기능과 세계 설정을 일치시킨다."
-    ],
-    "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
+    "coherentContentBundle": [],
+    "bundleRule": "OBSERVED_RUNTIME_FAILURE_CAUSAL_REPAIR_MUST_PASS_BEFORE_CONTENT_BUNDLE_EXECUTION",
     "antiCloneContract": {
       "compareAgainstExistingContentBeforeAdding": true,
       "nameColorOrStatOnlyCloneForbidden": true,
@@ -1794,17 +1943,9 @@
       ]
     },
     "derivedRuleEvolution": {
-      "allowed": true,
-      "rule": "MAY_ADD_DERIVED_GAMEPLAY_INTERACTION_RULES_WHEN_THEY_REINFORCE_APPROVED_IDENTITY_AND_DO_NOT_CONTRADICT_CANONICAL_RULES_OR_PROTECTED_VALUES",
-      "examples": [
-        "ENVIRONMENTAL_RULE",
-        "ENEMY_RELATIONSHIP_RULE",
-        "BOSS_PHASE_RULE",
-        "ITEM_SYNERGY_RULE",
-        "QUEST_STATE_RULE",
-        "REGION_ACCESS_RULE",
-        "MULTIPLAYER_INTERACTION_RULE"
-      ],
+      "allowed": false,
+      "rule": "DEFER_DERIVED_GAMEPLAY_RULE_EVOLUTION_UNTIL_OBSERVED_RUNTIME_FAILURE_CAUSAL_REPAIR_PASSES",
+      "examples": [],
       "protected": [
         "EXISTING_CANONICAL_RULE_SEMANTICS",
         "AUTHORIZED_BALANCE_VALUES",
@@ -1814,23 +1955,21 @@
       ]
     },
     "completionAcceptance": [
+      "RUNTIME_FAILURE_CAUSAL_REPAIR_PASS_REQUIRED_BEFORE_CONTENT_EXPANSION",
       "REAL_GAME_SOURCE_DELTA_REQUIRED",
       "PLAYER_FACING_OR_GAMEPLAY_SYSTEM_EFFECT_REQUIRED",
-      "DISTINCT_FROM_EXISTING_CONTENT_BY_MEANING_NOT_ONLY_NAME_OR_STATS",
-      "CONNECTED_TO_EXISTING_GAME_FLOW",
-      "CONTINUITY_AND_CAUSALITY_PRESERVED",
       "EXISTING_RELEVANT_INCREMENTAL_QA_PASSES",
       "DATA_CAPACITY_BUDGET_RESPECTED_WITHOUT_TERMINATING_BUILD_UP"
     ]
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 23,
-    "previousGeneration": 22,
+    "generation": 24,
+    "previousGeneration": 23,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "71711be828429e6915c40ec005280c599ee258eb82cf4baaef3aeb13fc951913",
-    "priorSourceFingerprint": "a31632d757aecf4f197979859f23dd34a61ad1d4b1be0280558f5675f999c881",
-    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
+    "sourceFingerprint": "fc63ddc26333236aa572d1988d8c7d38a7df26549369edbb27b74f37e767bcd9",
+    "priorSourceFingerprint": "71711be828429e6915c40ec005280c599ee258eb82cf4baaef3aeb13fc951913",
+    "previousRuntimeEffect": "REGRESSION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -2061,12 +2200,12 @@
     "반복 조작은 편의 기능으로 줄이되 핵심 플레이 선택과 위험/보상 판단을 자동화하지 않는다."
   ],
   "platformAdaptationDirectives": {
-    "WEB": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.: 동일 공통 목표 \"엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 현재 canonical Web 경로에 구현한다. 실제 터치 입력, DOM/Canvas 프레임 변화, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 함께 검수한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "WEB": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.: WEB 상세 게임 원본과 공통 큰틀을 기준으로 \"엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. WEB 자체 시스템·콘텐츠·지역·세션·UI·카메라·연출 확장에는 다른 플랫폼과의 세부 parity 제한을 두지 않는다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
     "ROBLOX": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.: 동일 공통 목표 \"엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
-    "UNITY": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.: 동일 공통 목표 \"엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 함께 검증한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
+    "UNITY": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.: WEB 상세 게임 원본에서 공통 큰틀만 이어받아 \"엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 경험으로 재해석한다. Unity 전용 시스템·콘텐츠·지역·물리·카메라·애니메이션·세션 구조·UX·연출 확장에는 인위적 parity 제한을 두지 않는다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
     "FORTNITE_UEFN": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.: 동일 공통 목표 \"엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UNITY_WEB": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.: 동일 공통 목표 \"엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 현재 canonical Web 경로에 구현한다. 실제 터치 입력, DOM/Canvas 프레임 변화, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 함께 검수한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "UNITY_APP": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.: 동일 공통 목표 \"엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 함께 검증한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
+    "UNITY_WEB": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.: WEB 상세 게임 원본과 공통 큰틀을 기준으로 \"엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. WEB 자체 시스템·콘텐츠·지역·세션·UI·카메라·연출 확장에는 다른 플랫폼과의 세부 parity 제한을 두지 않는다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "UNITY_APP": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.: WEB 상세 게임 원본에서 공통 큰틀만 이어받아 \"엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 경험으로 재해석한다. Unity 전용 시스템·콘텐츠·지역·물리·카메라·애니메이션·세션 구조·UX·연출 확장에는 인위적 parity 제한을 두지 않는다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
     "UNREAL": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.: 동일 공통 목표 \"엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
     "UEFN": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.: 동일 공통 목표 \"엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
   },
@@ -2289,7 +2428,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "71711be828429e6915c40ec005280c599ee258eb82cf4baaef3aeb13fc951913",
+    "sourceTreeFingerprint": "fc63ddc26333236aa572d1988d8c7d38a7df26549369edbb27b74f37e767bcd9",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2379,7 +2518,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "71711be828429e6915c40ec005280c599ee258eb82cf4baaef3aeb13fc951913",
+    "sourceTreeFingerprint": "fc63ddc26333236aa572d1988d8c7d38a7df26549369edbb27b74f37e767bcd9",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2642,11 +2781,11 @@
       "runtimeObserved": true
     },
     "baseline": {
-      "sourceTreeFingerprint": "71711be828429e6915c40ec005280c599ee258eb82cf4baaef3aeb13fc951913",
-      "runtimeObserved": false,
+      "sourceTreeFingerprint": "fc63ddc26333236aa572d1988d8c7d38a7df26549369edbb27b74f37e767bcd9",
+      "runtimeObserved": true,
       "runtimePassed": false,
-      "failureStage": null,
-      "failureSignature": null
+      "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+      "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2697,7 +2836,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 24,
+    "nextGeneration": 25,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2758,12 +2897,9 @@
       "MENU_FLOW"
     ],
     "notApplicable": [
-      "QUESTS",
-      "CRAFTING",
-      "NPC_SOCIAL_BEHAVIOR",
-      "REPLAYABILITY_VARIATION"
+      "CRAFTING"
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-07T04:46:41.294Z"
+  "generatedAt": "2026-10-07T13:58:05.186Z"
 }

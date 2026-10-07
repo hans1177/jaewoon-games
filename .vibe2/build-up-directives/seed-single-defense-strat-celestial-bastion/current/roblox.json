@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-single-defense-strat-celestial-bastion-build-up-g25-26da86a774fa",
-  "directiveFingerprint": "26da86a774fa3eb73752342d5417f10dab136551087ad248b01644f96d48f98c",
-  "previousDirectiveFingerprint": "a2284d9b935ce99d24c7210c325d0a551a1f8feaf2758f19307a4f97eace9897",
-  "forbiddenRepeatFingerprint": "a2284d9b935ce99d24c7210c325d0a551a1f8feaf2758f19307a4f97eace9897",
+  "directiveId": "seed-single-defense-strat-celestial-bastion-build-up-g26-bb604d92ccb7",
+  "directiveFingerprint": "bb604d92ccb7baf940d7b4bfa564c3bd33b57e180f9ca7a0b759e04f62e24d17",
+  "previousDirectiveFingerprint": "26da86a774fa3eb73752342d5417f10dab136551087ad248b01644f96d48f98c",
+  "forbiddenRepeatFingerprint": "26da86a774fa3eb73752342d5417f10dab136551087ad248b01644f96d48f98c",
   "gameId": "seed-single-defense-strat-celestial-bastion",
   "gameName": "천상의 보루",
-  "generation": 25,
+  "generation": 26,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,8 +14,8 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-single-defense-strat-celestial-bastion",
-  "sourceTreeFingerprint": "19297d865dccf213e4b6b52d6220141bb4f2e77e5c6d0dd96a454976f2356200",
-  "designFingerprint": "9600547ed54551bd4208a9cb0d60cc60b7f5dc16fbeb34f5fb65b965e017741b",
+  "sourceTreeFingerprint": "270a19a33bd9c5bdecf138a4c476f80a219f3c295c48c89f8f61e6aeb91562aa",
+  "designFingerprint": "d90cffc4914e970f19e00d0ed0e86e759a9212fdb835b452b7313e9a8fab522d",
   "identityReinforcement": {
     "appliesToAllGenres": true,
     "genre": "Strategy",
@@ -104,7 +104,7 @@
           "타워 각성 및 궁극기 시스템",
           "특정 타워를 최고 레벨까지 강화하면 고유한 궁극기 스킬을 해금하는 각성 시스템을 도입하여, 플레이어가 후반 웨이브에서 전황을 뒤집을 수 있는 강력한 한 방의 선택지를 제공합니다."
         ],
-        "sourceTreeFingerprint": "19297d865dccf213e4b6b52d6220141bb4f2e77e5c6d0dd96a454976f2356200",
+        "sourceTreeFingerprint": "270a19a33bd9c5bdecf138a4c476f80a219f3c295c48c89f8f61e6aeb91562aa",
         "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -117,6 +117,45 @@
   },
   "designImplementationContext": {
     "source": "LATEST_VERIFIED_DESIGN_FIELDS",
+    "coreFun": "적의 이동 경로를 실시간으로 차단하거나 유도하는 지형 변형의 쾌감, 그리고 배치된 타워의 속성을 조합하여 적의 약점을 공략할 때 발생하는 즉각적인 파괴의 시각적 피드백이 핵심 재미입니다.",
+    "coreLoop": [
+      "적의 웨이브 정보를 확인하고, 현재 가용 자원을 고려하여 방어 타워를 배치하거나 지형을 수정하여 적의 이동 경로를 최적화합니다.",
+      "전투 중 적을 처치하여 획득한 에너지를 사용하여 타워를 강화하거나, 전장의 지형을 추가로 변형하여 방어 효율을 극대화합니다.",
+      "웨이브 종료 후 획득한 보상으로 새로운 타워 기술을 연구하거나 기존 타워의 속성을 강화하여 다음 단계의 더 강력한 적에 대비합니다."
+    ],
+    "signatureSystems": [
+      {
+        "name": "지형 변형 시스템",
+        "purpose": "고정된 맵에서 벗어나 플레이어가 직접 전장의 길을 만들거나 막아 적의 이동 경로를 제어하게 함으로써 전략적 자유도를 극대화합니다.",
+        "playerChoice": "플레이어는 특정 구역의 지형을 높여 적의 이동을 차단하거나, 낮추어 특정 타워의 사거리 안으로 적을 유인하는 선택을 할 수 있습니다."
+      },
+      {
+        "name": "속성 공명 시스템",
+        "purpose": "단순한 타워 배치를 넘어, 인접한 타워들의 속성을 조합하여 강력한 시너지 효과를 발생시켜 전술적 깊이를 더합니다.",
+        "playerChoice": "플레이어는 화염 타워와 전기 타워를 인접하게 배치하여 광역 폭발 효과를 노릴지, 혹은 냉기 타워를 배치하여 적의 이동 속도를 늦출지 선택해야 합니다."
+      }
+    ],
+    "systemInterconnections": [
+      {
+        "fromSystem": "지형 변형 시스템",
+        "toSystem": "적 AI 경로 탐색",
+        "trigger": "플레이어가 지형을 수정하여 이동 경로를 차단하거나 변경할 때",
+        "stateChange": "적 AI는 즉시 변경된 지형을 반영하여 최단 경로를 재계산하고 새로운 이동 경로를 생성합니다."
+      },
+      {
+        "fromSystem": "속성 공명 시스템",
+        "toSystem": "타워 공격력 계산",
+        "trigger": "서로 다른 속성의 타워가 특정 범위 내에 배치되어 공명 조건이 충족될 때",
+        "stateChange": "타워의 공격력, 사거리, 혹은 특수 효과가 강화되어 적에게 입히는 데미지 수치가 즉각적으로 상승합니다."
+      },
+      {
+        "fromSystem": "전투 보상 시스템",
+        "toSystem": "타워 연구 시스템",
+        "trigger": "웨이브를 성공적으로 방어하고 자원을 획득했을 때",
+        "stateChange": "플레이어는 획득한 자원을 사용하여 새로운 타워 기술을 해금하거나 기존 타워의 업그레이드 트리를 활성화할 수 있습니다."
+      }
+    ],
+    "progressionDirection": "초반에는 기본적인 타워 배치와 지형 활용법을 익히고, 중반부터는 속성 공명을 활용한 복합적인 전략이 요구됩니다. 후반부에는 제한된 자원 내에서 최적의 방어 효율을 찾아내는 퍼즐적 요소와 전략적 판단이 결합된 성장을 지향합니다.",
     "progressionEconomyBalance": {
       "progressionLoop": "웨이브 방어 성공 -> 자원 획득 -> 타워 강화 및 기술 연구 -> 더 강력한 적 등장 -> 방어 전략 수정의 순환 구조를 가집니다.",
       "resourceFlow": "적 처치 시 획득하는 에너지는 즉각적인 타워 배치와 업그레이드에 사용되며, 웨이브 클리어 보상은 영구적인 기술 연구에 사용되어 성장의 체감을 제공합니다.",
@@ -180,6 +219,8 @@
         "validationEvidence": "Exact APK/AAB source revision, install and launch, real touch gameplay, pause/resume, save/restore, performance, independent QA, regression, and package identity evidence."
       }
     },
+    "webCanonicalDesign": {},
+    "platformExpansionPolicy": {},
     "visualDirection": "천상의 보루라는 이름에 걸맞게 밝고 신비로운 천상의 분위기와 어두운 타락의 대비를 강조합니다. 타워와 적 유닛은 명확한 실루엣과 색상으로 구분하여 전장 상황을 한눈에 파악할 수 있도록 합니다.",
     "mobileUx": "작은 화면에서도 타워의 사거리와 지형의 높낮이를 명확히 인지할 수 있도록 UI를 배치하고, 복잡한 메뉴보다는 직관적인 아이콘과 제스처를 우선합니다.",
     "uxAccessibilityPlan": {
@@ -253,8 +294,8 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 188,
-      "progression": 197,
+      "combat": 186,
+      "progression": 183,
       "ai": 42,
       "save": 66,
       "multiplayer": 30,
@@ -266,12 +307,12 @@
       "audio": 4,
       "audioDynamics": 17,
       "ui": 61,
-      "uiFlow": 42,
+      "uiFlow": 40,
       "entryFlow": 10,
       "loadingFlow": 0,
       "input": 62,
       "map": 178,
-      "landmark": 85,
+      "landmark": 81,
       "interaction": 29,
       "inventory": 6,
       "equipment": 3,
@@ -294,7 +335,7 @@
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
-        "score": 282
+        "score": 284
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
@@ -567,9 +608,9 @@
   "previousVersionDelta": {
     "previousGoal": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 24,
-    "previousSourceTreeFingerprint": "14b1e75537a693a39f5998b3a60b4bb13261af3b577f9b93a5d2cae39cd6888b",
-    "currentSourceTreeFingerprint": "19297d865dccf213e4b6b52d6220141bb4f2e77e5c6d0dd96a454976f2356200",
+    "previousGeneration": 25,
+    "previousSourceTreeFingerprint": "19297d865dccf213e4b6b52d6220141bb4f2e77e5c6d0dd96a454976f2356200",
+    "currentSourceTreeFingerprint": "270a19a33bd9c5bdecf138a4c476f80a219f3c295c48c89f8f61e6aeb91562aa",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -577,7 +618,7 @@
     "platform": "ROBLOX",
     "studioQualityFailure": null,
     "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-    "failureSignature": "ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED",
+    "failureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE",
     "blockers": [],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -1718,8 +1759,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 149328,
-        "largestFileBytes": 48423,
+        "sourceBytes": 120068,
+        "largestFileBytes": 48453,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1751,13 +1792,13 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 1,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=4.",
+    "themeDepth": 2,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=3.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 6,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 1,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 2,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 10,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -1767,7 +1808,6 @@
       "sequence": [
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1778,6 +1818,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY"
       ],
       "requiredThemes": [
@@ -1807,7 +1848,7 @@
     "scoredThemes": [
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 26,
+        "score": 168,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
@@ -1828,13 +1869,6 @@
         "gapDomains": []
       },
       {
-        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 12,
-        "gapDomains": [
-          "EQUIPMENT_LOADOUT"
-        ]
-      },
-      {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
         "score": -92,
         "gapDomains": []
@@ -1847,6 +1881,13 @@
           "TERRAIN",
           "CHARACTER_VISUALS",
           "ENEMY_VISUALS"
+        ]
+      },
+      {
+        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "score": -148,
+        "gapDomains": [
+          "EQUIPMENT_LOADOUT"
         ]
       }
     ],
@@ -1923,11 +1964,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 25,
-    "previousGeneration": 24,
+    "generation": 26,
+    "previousGeneration": 25,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "19297d865dccf213e4b6b52d6220141bb4f2e77e5c6d0dd96a454976f2356200",
-    "priorSourceFingerprint": "14b1e75537a693a39f5998b3a60b4bb13261af3b577f9b93a5d2cae39cd6888b",
+    "sourceFingerprint": "270a19a33bd9c5bdecf138a4c476f80a219f3c295c48c89f8f61e6aeb91562aa",
+    "priorSourceFingerprint": "19297d865dccf213e4b6b52d6220141bb4f2e77e5c6d0dd96a454976f2356200",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2159,12 +2200,12 @@
     "반복 조작은 편의 기능으로 줄이되 핵심 플레이 선택과 위험/보상 판단을 자동화하지 않는다."
   ],
   "platformAdaptationDirectives": {
-    "WEB": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.: 동일 공통 목표 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 현재 canonical Web 경로에 구현한다. 실제 터치 입력, DOM/Canvas 프레임 변화, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 함께 검수한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "WEB": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.: WEB 상세 게임 원본과 공통 큰틀을 기준으로 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. WEB 자체 시스템·콘텐츠·지역·세션·UI·카메라·연출 확장에는 다른 플랫폼과의 세부 parity 제한을 두지 않는다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
     "ROBLOX": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.: 동일 공통 목표 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
-    "UNITY": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.: 동일 공통 목표 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 함께 검증한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
+    "UNITY": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.: WEB 상세 게임 원본에서 공통 큰틀만 이어받아 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 경험으로 재해석한다. Unity 전용 시스템·콘텐츠·지역·물리·카메라·애니메이션·세션 구조·UX·연출 확장에는 인위적 parity 제한을 두지 않는다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
     "FORTNITE_UEFN": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.: 동일 공통 목표 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UNITY_WEB": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.: 동일 공통 목표 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 현재 canonical Web 경로에 구현한다. 실제 터치 입력, DOM/Canvas 프레임 변화, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 함께 검수한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "UNITY_APP": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.: 동일 공통 목표 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 함께 검증한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
+    "UNITY_WEB": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.: WEB 상세 게임 원본과 공통 큰틀을 기준으로 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. WEB 자체 시스템·콘텐츠·지역·세션·UI·카메라·연출 확장에는 다른 플랫폼과의 세부 parity 제한을 두지 않는다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "UNITY_APP": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.: WEB 상세 게임 원본에서 공통 큰틀만 이어받아 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 경험으로 재해석한다. Unity 전용 시스템·콘텐츠·지역·물리·카메라·애니메이션·세션 구조·UX·연출 확장에는 인위적 parity 제한을 두지 않는다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
     "UNREAL": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.: 동일 공통 목표 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
     "UEFN": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.: 동일 공통 목표 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
   },
@@ -2387,7 +2428,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "19297d865dccf213e4b6b52d6220141bb4f2e77e5c6d0dd96a454976f2356200",
+    "sourceTreeFingerprint": "270a19a33bd9c5bdecf138a4c476f80a219f3c295c48c89f8f61e6aeb91562aa",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2477,7 +2518,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "19297d865dccf213e4b6b52d6220141bb4f2e77e5c6d0dd96a454976f2356200",
+    "sourceTreeFingerprint": "270a19a33bd9c5bdecf138a4c476f80a219f3c295c48c89f8f61e6aeb91562aa",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2740,11 +2781,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "19297d865dccf213e4b6b52d6220141bb4f2e77e5c6d0dd96a454976f2356200",
+      "sourceTreeFingerprint": "270a19a33bd9c5bdecf138a4c476f80a219f3c295c48c89f8f61e6aeb91562aa",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "failureSignature": "ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED"
+      "failureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2795,7 +2836,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 26,
+    "nextGeneration": 27,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2861,5 +2902,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-07T05:25:52.849Z"
+  "generatedAt": "2026-10-07T13:58:05.112Z"
 }
