@@ -1738,10 +1738,10 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-07T03:16:41.861Z",
-      "robloxSourceCommit": "e987559c43b20951b6f60468ae9ea278aceb7304",
-      "robloxSourceBootstrapPassedAt": "2026-10-07T03:07:34.872Z",
-      "robloxSourceBootstrapFailedAt": "2026-10-07T03:11:45.408Z",
+      "updatedAt": "2026-10-07T03:17:00.059Z",
+      "robloxSourceCommit": "3dab842cacb1f2bf8d98fe8ec3f1f87dcbf7bfaa",
+      "robloxSourceBootstrapPassedAt": "2026-10-07T03:17:00.059Z",
+      "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -1793,7 +1793,7 @@
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
       "robloxFailureSignature": "roblox-package-asset-binding-failed",
       "routingBlockers": [
-        "roblox-build-package:roblox-package-asset-binding-failed"
+        "roblox-runtime-evidence-pending"
       ],
       "robloxExactRevisionPassed": false,
       "robloxMultiplayerQaEvidence": {
@@ -2299,8 +2299,8 @@
         "bindingVersion": 2,
         "applied": true,
         "source": "company-asset-library.json#baseMaterialLibrary",
-        "libraryVersion": 113,
-        "selectionFingerprint": "7d03aa7f8dacf7bbac1b0584c6833334d122b52c872804cab54f0a4506a8bf24",
+        "libraryVersion": 119,
+        "selectionFingerprint": "ffb32733060770c38f56f7023f1ad306d4274cfc990bf9e273c9588b55f0384e",
         "synchronization": {
           "mode": "VERSION_AND_SELECTION_FINGERPRINT_INCREMENTAL",
           "fullLibraryReplicationForbidden": true,
@@ -39462,7 +39462,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-07T03:16:41.861Z",
+  "updatedAt": "2026-10-07T03:17:00.059Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -39529,5 +39529,6 @@
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
   "executionContractVersion": 1,
-  "robloxTechnicalParallelism": null
+  "robloxTechnicalParallelism": null,
+  "robloxSourceParallelism": null
 }
