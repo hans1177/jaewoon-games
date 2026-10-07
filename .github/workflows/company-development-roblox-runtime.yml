@@ -521,6 +521,7 @@ jobs:
           )"
           if [ -z "$SOURCE_PLAN_CONTRACT_FINGERPRINT" ] || [ "$live_contract_fingerprint" != "$SOURCE_PLAN_CONTRACT_FINGERPRINT" ]; then
             echo "superseded=true" >> "$GITHUB_OUTPUT"
+            echo "supersede_reason=SOURCE_PLAN_CONTRACT_STALE" >> "$GITHUB_OUTPUT"
             echo "ROBLOX_SOURCE_PLAN_CONTRACT_STALE_BEFORE_WORKER=$GAME_ID:${SOURCE_PLAN_CONTRACT_FINGERPRINT:-MISSING}:$live_contract_fingerprint"
             exit 0
           fi
@@ -528,8 +529,10 @@ jobs:
           if [ -n "$RECONCILIATION_SOURCE_TREE_SHA" ]; then
             live_tree="$(git rev-parse "origin/main:$TARGET_SOURCE" 2>/dev/null || true)"
             if [ "$live_tree" != "$RECONCILIATION_SOURCE_TREE_SHA" ]; then
-              echo "ROBLOX_SOURCE_TREE_STALE_BEFORE_WORKER=$GAME_ID:$RECONCILIATION_SOURCE_TREE_SHA:${live_tree:-MISSING}" >&2
-              exit 75
+              echo "superseded=true" >> "$GITHUB_OUTPUT"
+              echo "supersede_reason=SOURCE_TREE_STALE" >> "$GITHUB_OUTPUT"
+              echo "ROBLOX_SOURCE_TREE_STALE_BEFORE_WORKER=$GAME_ID:$RECONCILIATION_SOURCE_TREE_SHA:${live_tree:-MISSING}"
+              exit 0
             fi
             echo "ROBLOX_SOURCE_TREE_IDENTITY_CURRENT=$GAME_ID:$live_tree"
           fi
@@ -618,6 +621,7 @@ jobs:
           PR_URL: ${{ steps.merge.outputs.pr_url }}
           SOURCE_REVISION: ${{ steps.merge.outputs.source_revision }}
           SUPERSEDED: ${{ steps.generate.outputs.superseded }}
+          SUPERSEDE_REASON: ${{ steps.generate.outputs.supersede_reason }}
         shell: bash
         run: |
           set -euo pipefail
@@ -628,16 +632,20 @@ jobs:
           const id=process.env.GAME_ID;
           const safe=String(id).replace(/[^a-zA-Z0-9._-]+/g,'-');
           const superseded=process.env.SUPERSEDED==='true';
+          const supersedeReason=String(process.env.SUPERSEDE_REASON||'').trim();
           const generated=!superseded&&process.env.GENERATE_OUTCOME==='success';
           const promoted=generated&&process.env.MERGE_OUTCOME==='success';
           const candidateReady=generated&&Boolean(String(process.env.SOURCE_BRANCH||'').trim());
-          const failure=superseded?'source-plan-contract-superseded':!generated?'source-generation-failed':!promoted?'source-promotion-pending':null;
+          const failure=superseded
+            ?(supersedeReason==='SOURCE_TREE_STALE'?'source-tree-superseded':'source-plan-contract-superseded')
+            :!generated?'source-generation-failed':!promoted?'source-promotion-pending':null;
           const bootstrapEvidencePath=path.join('/tmp',`roblox-source-bootstrap-${safe}.json`);
           const bootstrapEvidence=fs.existsSync(bootstrapEvidencePath)?JSON.parse(fs.readFileSync(bootstrapEvidencePath,'utf8')):{};
           const result={
             gameId:id,
             pass:promoted,
             superseded,
+            supersedeReason:superseded?(supersedeReason||'SOURCE_PLAN_CONTRACT_STALE'):null,
             candidateReady,
             candidateBranch:process.env.SOURCE_BRANCH||null,
             sourcePath:process.env.TARGET_SOURCE,

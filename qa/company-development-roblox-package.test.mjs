@@ -9,6 +9,29 @@ import {collectRobloxSourceScriptInventory,createRobloxBuildEvidence,normalizeRo
 import {hasCurrentRobloxPackageAssetRepair,robloxPackageAssetRepairContext} from '../tools/company-development-roblox-source-reconcile.mjs';
 import {buildRobloxStudioAssetBootstrapPlan,detectRobloxStudioAssetSystems,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES,robloxBuildProfileFromBaseline,robloxStudioAssetFamilyBoundInText,robloxStudioAssetFamilyStatusFromSource} from '../tools/company-development-roblox-bootstrap.mjs';
 
+test('guarded native asset bindings count the condition and render sink as one binding scope',()=>{
+  const environment='if #studioAssetFamily("ENVIRONMENT") > 0 and camp and camp:IsA("BasePart") then\n  camp.Material = Enum.Material.Slate\nend';
+  const prop='if #studioAssetFamily("PROP") > 0 and workbench and workbench:IsA("BasePart") then\n  workbench.Material = Enum.Material.WoodPlanks\nend';
+  const unbound='if #studioAssetFamily("ENVIRONMENT") > 0 then\n  local marker = true\nend';
+  assert.equal(robloxStudioAssetFamilyBoundInText(environment,'ENVIRONMENT'),true);
+  assert.equal(robloxStudioAssetFamilyBoundInText(prop,'PROP'),true);
+  assert.equal(robloxStudioAssetFamilyBoundInText(unbound,'ENVIRONMENT'),false);
+});
+
+test('stale same-game source trees are coalesced as superseded work instead of failed workers',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const start=workflow.indexOf('if [ -n "$RECONCILIATION_SOURCE_TREE_SHA" ]; then');
+  const end=workflow.indexOf('          branch="development/roblox-',start);
+  assert.ok(start>=0&&end>start);
+  const block=workflow.slice(start,end);
+  assert.match(block,/ROBLOX_SOURCE_TREE_STALE_BEFORE_WORKER/);
+  assert.match(block,/superseded=true/);
+  assert.match(block,/supersede_reason=SOURCE_TREE_STALE/);
+  assert.match(block,/exit 0/);
+  assert.doesNotMatch(block,/exit 75/);
+  assert.match(workflow,/source-tree-superseded/);
+});
+
 test('asset failure survives worker recording and exact-source persistence while stale results preserve siblings',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const nodeStep=name=>{

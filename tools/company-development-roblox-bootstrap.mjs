@@ -157,7 +157,8 @@ export function robloxStudioAssetFamilyBoundInText(text='',family=''){
       const after=raw.slice(lineEnd<0?raw.length:lineEnd+1,Math.min(raw.length,(lineEnd<0?raw.length:lineEnd+1)+1800));
       const blockEnd=after.search(/\n\s*end\b/);
       const block=blockEnd>=0?after.slice(0,blockEnd):after;
-      if(renderSink.test(block)&&nativePattern.test(block))return true;
+      const guardedBlock=line+'\n'+block;
+      if(renderSink.test(guardedBlock)&&nativePattern.test(guardedBlock))return true;
     }
 
     const assignmentPrefix=raw.slice(statementStart,index).match(/\b(?:local\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*$/);

@@ -131,6 +131,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    # Exact F0 work identity only. Unrelated games and newer source/artifact identities remain fully parallel.
+    concurrency:
+      group: roblox-f0-validate-${{ matrix.gameId }}-${{ matrix.sourceRevision }}-${{ matrix.artifactIdentity }}
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:

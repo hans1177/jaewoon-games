@@ -308,7 +308,8 @@ test('Roblox source workflow redispatches against fresh main when reconciliation
 test('Roblox source workflow keeps compiled candidates pending when Actions cannot create PRs',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/Attempt validated Roblox source promotion through PR[\s\S]*continue-on-error: true/);
-  assert.ok(workflow.includes("failure=superseded?'source-plan-contract-superseded':!generated?'source-generation-failed':!promoted?'source-promotion-pending':null"));
+  assert.match(workflow,/const supersedeReason=String\(process\.env\.SUPERSEDE_REASON\|\|''\)\.trim\(\)/);
+  assert.match(workflow,/supersedeReason==='SOURCE_TREE_STALE'\?'source-tree-superseded':'source-plan-contract-superseded'/);
   assert.ok(workflow.includes("routingBlockers:['roblox-source-promotion-pending']"));
   assert.ok(workflow.includes("item.robloxSourceCandidateReadyAt"));
   assert.ok(workflow.includes("item.robloxSourceCandidateBranch"));
@@ -801,7 +802,7 @@ test('Roblox source worker bases candidate on current main without leaking workf
   assert.doesNotMatch(worker,/git checkout -b "\$branch"/);
   assert.match(worker,/ROBLOX_SOURCE_BRANCH_BASE=/);
   assert.match(worker,/if: steps\.generate\.outcome == 'success' && steps\.generate\.outputs\.superseded != 'true'/);
-  assert.match(worker,/failure=superseded\?'source-plan-contract-superseded'/);
+  assert.match(worker,/supersedeReason==='SOURCE_TREE_STALE'\?'source-tree-superseded':'source-plan-contract-superseded'/);
   assert.match(worker,/ROBLOX_WORKER_RESULT=\$\{id\}:\$\{superseded\?'SUPERSEDED'/);
 });
 

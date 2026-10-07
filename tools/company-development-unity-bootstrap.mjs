@@ -140,6 +140,23 @@ const csharpArray=values=>(values||[]).map(value=>`        "${csharp(value)}",`)
 const developmentLearning=verifiedExternalLearning.gameDevelopmentProfile;
 
 // 프로젝트 의존성: 기존 선언은 보존하고 생성 소스가 사용하는 내장 모듈만 보충한다.
+function existingCSharpSources(root){
+  const scriptRoot=path.join(root,'Assets/Scripts');
+  if(!fs.existsSync(scriptRoot))return '';
+  const chunks=[];
+  const visit=dir=>{
+    for(const entry of fs.readdirSync(dir,{withFileTypes:true})){
+      const file=path.join(dir,entry.name);
+      if(entry.isDirectory()){visit(file);continue;}
+      if(!entry.isFile()||!entry.name.endsWith('.cs')||entry.name==='SeedTechnicalPrototype.cs')continue;
+      chunks.push(fs.readFileSync(file,'utf8'));
+    }
+  };
+  visit(scriptRoot);
+  return chunks.join('\n');
+}
+const existingCSharpSource=existingCSharpSources(output);
+const existingNativeMotionActor=/\bclass\s+JaewoonNativeMotionActor\b/.test(existingCSharpSource);
 const manifestPath=path.join(output,'Packages/manifest.json');
 const manifest=fs.existsSync(manifestPath)?readJson(manifestPath):{dependencies:{}};
 if(!manifest||typeof manifest!=='object'||Array.isArray(manifest)
@@ -147,16 +164,19 @@ if(!manifest||typeof manifest!=='object'||Array.isArray(manifest)
   throw new Error('UNITY_PACKAGE_MANIFEST_INVALID');
 }
 manifest.dependencies??={};
-for(const module of ['animation','imgui','physics']){
+const requiredModules=new Set(['animation','imgui','physics']);
+if(/\bJsonUtility\b/.test(existingCSharpSource))requiredModules.add('jsonserialize');
+if(/\bUnityWebRequest\b/.test(existingCSharpSource))requiredModules.add('unitywebrequest');
+if(/\.LoadImage\s*\(/.test(existingCSharpSource))requiredModules.add('imageconversion');
+for(const module of requiredModules){
   manifest.dependencies['com.unity.modules.'+module]??='1.0.0';
 }
-fs.rmSync(output,{recursive:true,force:true});
 for(const dir of ['Assets/Scripts','Assets/Editor','Packages','ProjectSettings'])fs.mkdirSync(path.join(output,dir),{recursive:true});
 fs.writeFileSync(manifestPath,JSON.stringify(manifest,null,2)+'\n');
 fs.writeFileSync(path.join(output,'ProjectSettings/ProjectVersion.txt'),`m_EditorVersion: ${UNITY_EDITOR_VERSION}\nm_EditorVersionWithRevision: ${UNITY_EDITOR_VERSION} (${UNITY_EDITOR_REVISION})\n`);
 fs.writeFileSync(path.join(output,'Assets/link.xml'),`<linker>\n  <assembly fullname="UnityEngine.ContentLoadModule">\n    <type fullname="Unity.Loading.ContentLoadingSystem" preserve="all" />\n  </assembly>\n</linker>\n`);
 
-const runtime=`using System;
+let runtime=`using System;
 using UnityEngine;
 using UnityEngine.Profiling;
 
@@ -662,6 +682,12 @@ public static class SeedAndroidBuild
 #endif
 `;
 
+if(existingNativeMotionActor){
+  const motionStart=runtime.indexOf('public sealed class JaewoonNativeMotionActor');
+  const seedStart=runtime.indexOf('public sealed class SeedTechnicalPrototype');
+  if(motionStart<0||seedStart<=motionStart)throw new Error('UNITY_NATIVE_MOTION_TEMPLATE_BOUNDARY_MISSING');
+  runtime=runtime.slice(0,motionStart)+runtime.slice(seedStart);
+}
 fs.writeFileSync(path.join(output,'Assets/Scripts/SeedTechnicalPrototype.cs'),runtime);
 fs.writeFileSync(path.join(output,'Assets/Editor/SeedAndroidBuild.cs'),build);
 fs.writeFileSync(path.join(output,'README.md'),`# ${gameName} — DEVELOPMENT_CONFIRMED Unity app native development baseline\n\n- gameId: \`${gameId}\`\n- mode: \`${category}\`\n- Unity editor: \`${UNITY_EDITOR_VERSION}\` (${UNITY_EDITOR_REVISION})\n- source design: \`${baselinePath}\`
