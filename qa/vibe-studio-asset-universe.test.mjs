@@ -5197,6 +5197,42 @@ test('source-bound consumer sync maps project paths exact asset ids and managed 
 });
 
 
+test('source consumer summaries aggregate current intended and family counts without per-game registry rescans',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-consumer-summary-'));
+  try{
+    const registry={assets:[
+      {id:'current-a',family:'PROP',consumerGameIds:['game-a']},
+      {id:'current-b-intended-a',family:'UI',consumerGameIds:['game-b'],intendedConsumerGameIds:['game-a']},
+      {id:'intended-a-only',family:'CREATURE',intendedConsumerGameIds:['game-a']}
+    ]};
+    const gameCatalog={games:[
+      {id:'game-a',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'},
+      {id:'game-b',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'}
+    ]};
+    const result=synchronizeSourceBoundAssetConsumers({repoRoot:root,registry,gameCatalog});
+    const summaries=new Map(result.summary.gameSummaries.map(row=>[row.gameId,row]));
+    assert.equal(summaries.get('game-a').currentConsumers,1);
+    assert.equal(summaries.get('game-a').intendedOnly,2);
+    assert.equal(summaries.get('game-a').families.PROP.used,1);
+    assert.equal(summaries.get('game-b').currentConsumers,1);
+    assert.equal(summaries.get('game-b').intendedOnly,0);
+    assert.equal(summaries.get('game-b').families.UI.used,1);
+    assert.equal(result.summary.intendedOnlyAssetCount,1);
+
+    const source=fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../tools/vibe2-asset-production-plan.mjs'),'utf8');
+    const start=source.indexOf('export function synchronizeSourceBoundAssetConsumers');
+    const end=source.indexOf('export function synchronizeCompanyCommonAssetRegistry',start);
+    const syncSource=source.slice(start,end);
+    const summaryStart=syncSource.indexOf('const gameSummaries=');
+    const summarySource=syncSource.slice(summaryStart);
+    assert.match(syncSource,/const gameSummaryStats=new Map/);
+    assert.match(syncSource,/let intendedOnlyAssetCount=0/);
+    assert.match(syncSource,/stats\.currentConsumers\+=1/);
+    assert.match(syncSource,/stats\.intendedOnly\+=1/);
+    assert.doesNotMatch(summarySource,/next\.assets\.filter\(/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('dynamic source consumers stay outside registry identity and refresh on the next planning cycle',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-consumer-overlay-'));
   try{
