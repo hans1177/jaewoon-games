@@ -126,7 +126,7 @@ test('상용 로딩과 로비 상태는 서버 정본에 바인딩된다',()=>{
  assert.match(client,/ContentProvider:PreloadAsync/);
  assert.match(client,/Name="LoadingScreen"/);
  assert.match(client,/workspace:GetAttribute\("MapReady"\)/);
- assert.match(server,/local function syncLobbyState\(phase\)/);
+ assert.match(server,/(?:local function syncLobbyState|function Room\.syncLobbyState)\(phase\)/);
  for(const key of ['LobbyReady','LobbyPhase','LobbyRealPlayers','LobbyAIFill'])assert.ok(server.includes('"'+key+'"'),key);
  assert.match(manorClient,/roomSlots\.Name="ManorRoomSlots"/);
  assert.match(manorClient,/local visible=.*PhysicalLobbyReady/);
@@ -241,9 +241,9 @@ test('AI는 시야·기억·예측·협공 판단과 같은 편 멘트를 사용
 });
 
 test('1인 출정은 같은 서버에서 시작하고 맵 선택만으로 서버 이동하지 않는다',()=>{
- assert.match(server,/local function startLocalSoloRoom\(p\)/);
+ assert.match(server,/(?:local function startLocalSoloRoom|function Room\.startLocalSoloRoom)\(p\)/);
  assert.match(server,/localSoloSession=true;roomSolo=true;roomServer=true;roomCode="SOLO"/);
- assert.match(server,/if #Players:GetPlayers\(\)==1 then startLocalSoloRoom\(p\)else createReservedRoom\(p,"PRIVATE",true\)end/);
+ assert.match(server,/if #Players:GetPlayers\(\)==1 then (?:Room\.)?startLocalSoloRoom\(p\)else (?:Room\.)?createReservedRoom\(p,"PRIVATE",true\)end/);
  assert.match(server,/RESULT_RETURN_SAME_SERVER/);
  assert.doesNotMatch(server,/if roomServer and not studioRoomFallback and not localSoloSession then leaveReservedRoom\(p\)end/);
  assert.match(server,/localSoloSession=false;roomServer=false;roomCode=""/);
@@ -407,7 +407,7 @@ test('5대3 6대2 7대1 열세 패시브는 양 진영 공통 에너지 보정�
  assert.match(config,/Minority=3,Majority=5,RegenMultiplier=1\.25/);
  assert.match(config,/Minority=2,Majority=6,RegenMultiplier=1\.50,StationBonus=10/);
  assert.match(config,/Minority=1,Majority=7,RegenMultiplier=1\.80,StationBonus=20,LastStandEnergy=35/);
- assert.match(server,/local function pressurePassiveFor\(role,humans,monsters\)/);
+ assert.match(server,/(?:local function pressurePassiveFor|function Runtime\.pressurePassiveFor)\(role,humans,monsters\)/);
  assert.match(server,/role=="SURVIVOR"and humans or role=="MONSTER"and monsters/);
  assert.doesNotMatch(config,/PressurePassives=[\s\S]{0,500}(WalkSpeed|Damage|RangeBonus|PurifyRange)/);
  assert.match(client,/열세 패시브/);
@@ -668,7 +668,7 @@ test('결과는 시레머니 다음 보상 정산 후 저택 복귀 안내로 �
  assert.match(client,/task\.delay\(6\.15/);
  assert.match(client,/내 저택으로 돌아가는 중…/);
  assert.match(client,/총 \+%d 코인/);
- assert.match(server,/teleport\(p,personalSpawn\(p\)\)/);
+ assert.match(server,/teleport\(p,(?:Room\.)?personalSpawn\(p\)\)/);
  assert.match(server,/RESULT_RETURN_SAME_SERVER/);
  assert.match(server,/RESULT_CEREMONY_NO_MANOR_RECOVERY/);
  assert.match(server,/if manorLobby and state=="WAITING"then/);
@@ -714,14 +714,14 @@ test('1인 방 생성과 방장 시작은 8인 AI 충원 계약을 유지한다'
  assert.match(config,/MinimumParticipants=1/);
  assert.match(config,/Room=\{MaxPlayers=8/);
  for(const action of ['CREATE_ROOM','JOIN_ROOM_CODE','QUICK_JOIN_PUBLIC','QUICK_JOIN_FRIEND','START_ROOM','LEAVE_ROOM'])assert.ok(config.includes(action+'="'+action+'"'),action);
- assert.match(server,/local function createReservedRoom\(p,visibility,solo\)/);
+ assert.match(server,/(?:local function createReservedRoom|function Room\.createReservedRoom)\(p,visibility,solo\)/);
  assert.match(server,/roomSolo=solo==true/);
- assert.match(server,/local function startRoomMatch\(p\)/);
+ assert.match(server,/(?:local function startRoomMatch|function Room\.startRoomMatch)\(p\)/);
  assert.match(server,/#Players:GetPlayers\(\)<math\.max\(1,tonumber\(C\.MinimumParticipants\)or 1\)/);
  assert.match(server,/configure\(h,survivorOrder,monsterOrder,si,mi\)/);
  assert.match(manorClient,/혼자 바로 시작/);
- assert.match(server,/local function startLocalSoloRoom\(p\)/);
- assert.match(server,/if #Players:GetPlayers\(\)==1 then startLocalSoloRoom\(p\)else createReservedRoom\(p,"PRIVATE",true\)end/);
+ assert.match(server,/(?:local function startLocalSoloRoom|function Room\.startLocalSoloRoom)\(p\)/);
+ assert.match(server,/if #Players:GetPlayers\(\)==1 then (?:Room\.)?startLocalSoloRoom\(p\)else (?:Room\.)?createReservedRoom\(p,"PRIVATE",true\)end/);
 });
 
 test('예약 방은 공개 친구만 비공개를 서버가 검증하고 예약 코드를 클라이언트에 노출하지 않는다',()=>{
@@ -850,7 +850,7 @@ test('첫 캐릭터 프레임은 안전 바닥을 먼저 만들고 실제 목적
 test('대기 로비 캐릭터는 경기장 MapReady를 기다리지 않고 로비 바닥에 즉시 스폰한다',()=>{
  const block=server.slice(server.indexOf('function BotAI.onCharacter'),server.indexOf('Players.PlayerAdded:Connect(function(p)'));
  assert.match(block,/workspace:GetAttribute\("PhysicalLobbyReady"\)/);
- assert.match(block,/local destination,look=personalSpawn\(p\)/);
+ assert.match(block,/local destination,look=(?:Room\.)?personalSpawn\(p\)/);
  assert.match(block,/p\.RespawnLocation=lobbyBootstrapSpawn/);
  assert.match(block,/teleport\(p,destination,look\)/);
  assert.doesNotMatch(block,/SetAttribute\("(?:LobbySpawnGroundedAt|RoundRespawnGroundedAt)",workspace:GetServerTimeNow\(\)\)/);
