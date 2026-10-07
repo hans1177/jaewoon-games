@@ -20,6 +20,10 @@ export const VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT=Object.freeze({
   generatedCombinationSpaceIsNotAuthoredAssetCount:true,
   targetMinimums:Object.freeze({
     BODY_ARCHETYPE:12,
+    HEIGHT_BAND:8,
+    VISUAL_MASS_BAND:6,
+    FRAME_FAMILY:8,
+    BODY_PROPORTION_PROFILE:24,
     HEAD_BASE:48,
     FACE_MORPH_CONTROL:28,
     SKIN_TONE_FAMILY:32,
@@ -79,7 +83,11 @@ export const VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT=Object.freeze({
     colorOnlyDuplicateForbidden:true,
     faceSwapCloneForbidden:true,
     minimumDistinctIdentityAxesPerNearbyPair:5,
+    minimumDistinctBodyAxesPerNearbyPair:3,
+    heightAndVisualMassMustParticipateInPopulationDiversity:true,
+    scaleOnlyDuplicateForbidden:true,
     sameHeadHairOutfitCombinationReuseLimitPerLocalCrowd:1,
+    sameHeightMassFrameCombinationReuseLimitPerLocalCrowd:2,
     regionAndOccupationMayBiasSelectionButDoNotHardLockEligibility:true,
     heroNpcGetsCloseupDetailPriority:true,
     backgroundNpcMayUseLodButMustKeepDistinctSilhouette:true,
@@ -167,8 +175,9 @@ export const VIBE_NPC_ROLE_PRODUCTION_CONTRACT=Object.freeze({
   ]),
   sharedMasterGlbReuseAllowed:true,
   sharedMasterDoesNotPermitColorOnlyRoleClone:true,
-  roleDifferentiationAxes:Object.freeze(['SILHOUETTE','BODY_PROPORTION','OUTFIT_EQUIPMENT','STANCE_GAIT','IDLE_INTERACTION_MOTION','FACE_GESTURE','WEAR_HISTORY']),
+  roleDifferentiationAxes:Object.freeze(['SILHOUETTE','HEIGHT_VISUAL_MASS','BODY_PROPORTION','FACE_HAIR_SURFACE','OUTFIT_EQUIPMENT','STANCE_GAIT','IDLE_INTERACTION_MOTION','FACE_GESTURE','WEAR_HISTORY']),
   minimumDistinctRoleAxes:3,
+  namedCompanionEliteBossMinimumDistinctIdentityAxes:6,
   primitivePartOrWeldOnlyFinalNpcForbidden:true,
   rootTransformOnlyVisibleMotionForbidden:true,
   gameplayAuthority:false,
@@ -443,6 +452,7 @@ export function createVibeCharacterCustomizationRecipe(character={},index=0){
       weightKg:identity.body.weightKg,
       scaleClass:identity.body.scaleClass,
       visualMassClass:identity.body.visualMass,
+      frame:identity.body.frame,
       heightPresentation:value(2),visualMass:value(3),shoulderWidth:value(4),torsoLength:value(5),torsoDepth:value(6),
       pelvisWidth:value(7),armLength:value(8),legLength:value(9),handFootScale:value(10),headBodyRatio:value(11),
       posture:identity.body.posture,asymmetry:value(12)
@@ -509,49 +519,68 @@ export function createVibeNpcCustomizationPopulation({count=64,seed='npc-populat
   const speciesPool=species.length?species:['humanoid'];
   const recipes=Array.from({length:total},(_,index)=>{
     const role=rolePool[index%rolePool.length];
-    const base=createVibeCharacterCustomizationRecipe({
+    const character={
       name:`${seed}-${index+1}`,
       role,
       region:regionPool[Math.floor(index/rolePool.length)%regionPool.length],
       species:speciesPool[index%speciesPool.length]
-    },index);
-    return Object.freeze({...base,npcRoleProfile:createVibeNpcRoleProfile({role,character:{
-      name:base.character,role,region:base.region,species:base.species,
-      heightCm:base.body.heightCm,weightKg:base.body.weightKg,frame:base.body.archetype,posture:base.body.posture
-    },index})});
+    };
+    const base=createVibeCharacterCustomizationRecipe(character,index);
+    return Object.freeze({...base,npcRoleProfile:createVibeNpcRoleProfile({role,character,index})});
   });
   const identityKeys=recipes.map(row=>JSON.stringify([
-    row.body.heightCm,row.body.weightKg,row.body.scaleClass,row.body.visualMassClass,row.body.archetype,
+    row.body.heightCm,row.body.weightKg,row.body.scaleClass,row.body.visualMassClass,row.body.frame,row.body.archetype,
     row.body.shoulderWidth,row.body.torsoLength,row.body.torsoDepth,row.body.pelvisWidth,row.body.armLength,row.body.legLength,row.body.handFootScale,row.body.headBodyRatio,row.body.posture,
-    row.head.baseFamily,row.head.faceWidth,row.head.jawWidth,row.eyes.leftColor,row.eyes.rightColor,row.hair.style,row.hair.texture,row.hair.primaryColor,
-    row.surface.detail,row.surface.agePresentation,row.speciesParts.ear,row.speciesParts.horn,row.accessory,row.outfit.layerTheme,
-    row.presentation.expressionFamily,row.presentation.gestureFamily
+    row.head.baseFamily,row.head.faceWidth,row.head.faceLength,row.head.jawWidth,row.eyes.leftColor,row.eyes.rightColor,
+    row.hair.style,row.hair.texture,row.hair.primaryColor,row.surface.toneFamily,row.surface.detail,row.surface.agePresentation,
+    row.speciesParts.ear,row.speciesParts.horn,row.accessory,row.outfit.layerTheme,
+    row.presentation.gait?.cadence,row.presentation.gait?.stride,row.presentation.expressionFamily,row.presentation.gestureFamily
   ]));
-  const physicalKeys=recipes.map(row=>JSON.stringify([
-    row.body.heightCm,row.body.weightKg,row.body.scaleClass,row.body.visualMassClass,row.body.archetype,
+  const bodyKeys=recipes.map(row=>JSON.stringify([
+    row.body.heightCm,row.body.weightKg,row.body.scaleClass,row.body.visualMassClass,row.body.frame,row.body.archetype,
     row.body.shoulderWidth,row.body.torsoLength,row.body.torsoDepth,row.body.pelvisWidth,row.body.armLength,row.body.legLength,row.body.handFootScale,row.body.headBodyRatio,row.body.posture
   ]));
+  const appearanceKeys=recipes.map(row=>JSON.stringify([
+    row.head.baseFamily,row.head.faceWidth,row.head.faceLength,row.head.eyeSpacing,row.head.jawWidth,
+    row.eyes.leftColor,row.eyes.rightColor,row.hair.style,row.hair.texture,row.hair.primaryColor,
+    row.surface.toneFamily,row.surface.detail,row.surface.agePresentation,row.accessory,row.outfit.layerTheme
+  ]));
+  const heights=recipes.map(row=>Number(row.body.heightCm)).filter(Number.isFinite);
+  const weights=recipes.map(row=>Number(row.body.weightKg)).filter(Number.isFinite);
   const unique=uniq(identityKeys).length;
-  const physicalUnique=uniq(physicalKeys).length;
+  const bodyUnique=uniq(bodyKeys).length;
   return Object.freeze({
-    version:1,
+    version:2,
     seed:String(seed),
     total,
     unique,
     diversityPercent:Math.round(unique/total*100),
-    physicalDiversityPercent:Math.round(physicalUnique/total*100),
     cloneRatePercent:Math.round((total-unique)/total*100),
-    physicalCloneRatePercent:Math.round((total-physicalUnique)/total*100),
-    heightRangeCm:Object.freeze([Math.min(...recipes.map(row=>row.body.heightCm)),Math.max(...recipes.map(row=>row.body.heightCm))]),
-    weightRangeKg:Object.freeze([Math.min(...recipes.map(row=>row.body.weightKg)),Math.max(...recipes.map(row=>row.body.weightKg))]),
-    scaleClassCoverage:Object.freeze(uniq(recipes.map(row=>row.body.scaleClass))),
-    visualMassCoverage:Object.freeze(uniq(recipes.map(row=>row.body.visualMassClass))),
+    physicalDiversityPercent:Math.round(bodyUnique/total*100),
+    physicalCloneRatePercent:Math.round((total-bodyUnique)/total*100),
+    bodyDiversity:Object.freeze({
+      uniqueBodyProfileCount:bodyUnique,
+      uniqueHeightCount:uniq(heights).length,
+      uniqueWeightCount:uniq(weights).length,
+      heightRangeCm:Object.freeze([Math.min(...heights),Math.max(...heights)]),
+      weightRangeKg:Object.freeze([Math.min(...weights),Math.max(...weights)]),
+      scaleClasses:Object.freeze(uniq(recipes.map(row=>row.body.scaleClass))),
+      visualMassClasses:Object.freeze(uniq(recipes.map(row=>row.body.visualMassClass))),
+      frameFamilies:Object.freeze(uniq(recipes.map(row=>row.body.frame))),
+      scaleOnlyVariationForbidden:true
+    }),
+    appearanceDiversity:Object.freeze({
+      uniqueAppearanceProfileCount:uniq(appearanceKeys).length,
+      faceHairSurfaceOutfitCombined:true,
+      colorOnlyVariationForbidden:true
+    }),
     recipes:Object.freeze(recipes),
     target:VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.target,
     sameAssetPoolAsPlayerCustomization:true,
     roleContract:VIBE_NPC_ROLE_PRODUCTION_CONTRACT,
     roleCoverage:Object.freeze(uniq(recipes.map(row=>row.npcRoleProfile.role))),
     colorOnlyDuplicateForbidden:true,
+    sizeOnlyDuplicateForbidden:true,
     productionVerified:false,
     gameplayAuthority:false
   });
@@ -560,15 +589,19 @@ export function createVibeNpcCustomizationPopulation({count=64,seed='npc-populat
 export function createVibePopulationPhysicalDiversity(characters=[]){
   const rows=characters.map((character,index)=>createVibeMotionIdentity(character,index));
   const keys=rows.map(identity=>JSON.stringify([
-    identity.body.heightCm,identity.body.weightKg,identity.body.scaleClass,identity.body.frame,identity.body.proportions,identity.body.posture,
-    identity.physical.walk.cadence,identity.physical.walk.armSwing,identity.appearance.face.shape,identity.appearance.face.featureBalance,
-    identity.appearance.surface.hairOrCrest,identity.appearance.surface.ageCue,identity.appearance.individualMarks
+    identity.body.heightCm,identity.body.weightKg,identity.body.scaleClass,identity.body.visualMass,identity.body.frame,identity.body.proportions,identity.body.posture,
+    identity.physical.walk.cadence,identity.physical.walk.stride,identity.physical.walk.armSwing,
+    identity.appearance.face.shape,identity.appearance.face.featureBalance,
+    identity.appearance.surface.skinOrShell,identity.appearance.surface.hairOrCrest,identity.appearance.surface.ageCue,identity.appearance.individualMarks
   ]));
   const unique=uniq(keys).length,score=Math.round(unique/Math.max(1,rows.length)*100);
   return Object.freeze({
     score,unique,total:rows.length,cloneRate:Math.round((rows.length-unique)/Math.max(1,rows.length)*100),
     heightRangeCm:rows.length?Object.freeze([Math.min(...rows.map(row=>row.body.heightCm)),Math.max(...rows.map(row=>row.body.heightCm))]):Object.freeze([0,0]),
     weightRangeKg:rows.length?Object.freeze([Math.min(...rows.map(row=>row.body.weightKg)),Math.max(...rows.map(row=>row.body.weightKg))]):Object.freeze([0,0]),
+    scaleClasses:Object.freeze(uniq(rows.map(row=>row.body.scaleClass))),
+    visualMassClasses:Object.freeze(uniq(rows.map(row=>row.body.visualMass))),
+    frameFamilies:Object.freeze(uniq(rows.map(row=>row.body.frame))),
     pass:score>=80
   });
 }
@@ -576,37 +609,11 @@ export function createVibePhysicalDiversityGate({characters=[]}={}){
   const rows=characters.map((character,index)=>createVibeMotionIdentity(character,index)),issues=[];
   for(let i=0;i<rows.length;i++)for(let j=i+1;j<rows.length;j++){
     const a=rows[i],b=rows[j];
-    const same=[
-      Math.abs(a.body.heightCm-b.body.heightCm)<3,
-      Math.abs(a.body.weightKg-b.body.weightKg)<5,
-      a.body.scaleClass===b.body.scaleClass,
-      a.body.frame===b.body.frame,
-      a.body.proportions.shoulders===b.body.proportions.shoulders,
-      a.body.proportions.torso===b.body.proportions.torso,
-      a.body.proportions.arms===b.body.proportions.arms,
-      a.body.proportions.legs===b.body.proportions.legs,
-      a.body.proportions.headBodyRatio===b.body.proportions.headBodyRatio,
-      a.body.posture===b.body.posture,
-      a.physical.walk.cadence===b.physical.walk.cadence,
-      a.physical.walk.armSwing===b.physical.walk.armSwing,
-      a.appearance.face.shape===b.appearance.face.shape,
-      a.appearance.face.featureBalance===b.appearance.face.featureBalance,
-      a.appearance.surface.hairOrCrest===b.appearance.surface.hairOrCrest,
-      a.appearance.surface.ageCue===b.appearance.surface.ageCue
-    ].filter(Boolean).length;
-    if(same>=12)issues.push(`${a.name}:${b.name}:physical-appearance-clone`);
-  }
-  return Object.freeze({
-    pass:!issues.length,issues:Object.freeze(issues),checkedAxes:16,
-    rule:'major NPCs companions elites and bosses must differ across height weight body proportions face hair surface posture and gait; palette-only size-only or face-only clones are forbidden'
-  });
-}
-  const rows=characters.map((c,i)=>createVibeMotionIdentity(c,i)),issues=[];
-  for(let i=0;i<rows.length;i++)for(let j=i+1;j<rows.length;j++){
-    const a=rows[i],b=rows[j];
-    const axes=[
+    const distinct=[
       Math.abs(a.body.heightCm-b.body.heightCm)>=6,
       Math.abs(a.body.weightKg-b.body.weightKg)>=8,
+      a.body.scaleClass!==b.body.scaleClass,
+      a.body.visualMass!==b.body.visualMass,
       a.body.frame!==b.body.frame,
       a.body.proportions.shoulders!==b.body.proportions.shoulders,
       a.body.proportions.torso!==b.body.proportions.torso,
@@ -618,17 +625,23 @@ export function createVibePhysicalDiversityGate({characters=[]}={}){
       a.body.proportions.headBodyRatio!==b.body.proportions.headBodyRatio,
       a.body.posture!==b.body.posture,
       a.physical.walk.cadence!==b.physical.walk.cadence,
+      a.physical.walk.stride!==b.physical.walk.stride,
       a.physical.walk.armSwing!==b.physical.walk.armSwing,
       a.appearance.face.shape!==b.appearance.face.shape,
-      a.appearance.surface.skinOrShell!==b.appearance.surface.skinOrShell
-    ];
-    const distinct=axes.filter(Boolean).length;
-    if(distinct<VIBE_NPC_ROLE_PRODUCTION_CONTRACT.physicalDiversity.nearbyDistinctAxisMinimum)issues.push(`${a.name}:${b.name}:physical-clone:${distinct}`);
+      a.appearance.face.featureBalance!==b.appearance.face.featureBalance,
+      a.appearance.surface.skinOrShell!==b.appearance.surface.skinOrShell,
+      a.appearance.surface.hairOrCrest!==b.appearance.surface.hairOrCrest,
+      a.appearance.surface.ageCue!==b.appearance.surface.ageCue
+    ].filter(Boolean).length;
+    if(distinct<VIBE_NPC_ROLE_PRODUCTION_CONTRACT.physicalDiversity.nearbyDistinctAxisMinimum){
+      issues.push(`${a.name}:${b.name}:physical-appearance-clone:${distinct}`);
+    }
   }
   return Object.freeze({
     pass:!issues.length,issues:Object.freeze(issues),
     minimumDistinctAxes:VIBE_NPC_ROLE_PRODUCTION_CONTRACT.physicalDiversity.nearbyDistinctAxisMinimum,
-    rule:'major and nearby NPCs must differ across height weight body proportion appearance and gait axes, not only palette'
+    checkedAxes:22,heightWeightFrameChecked:true,scaleOnlyDifferenceInsufficient:true,
+    rule:'major and nearby NPCs companions elites and bosses must differ across height weight frame proportions face hair surface posture and gait; palette-only size-only or face-only clones are forbidden'
   });
 }
 export function scoreVibeMotionOriginality(characters=[]){const signatures=characters.map((c,i)=>createVibeMotionIdentity(c,i)),keys=signatures.map(s=>JSON.stringify([s.archetypes,s.body,s.signature.move,s.signature.attack,s.physical.walk])),unique=uniq(keys).length,score=Math.round((unique/Math.max(1,characters.length))*100);return Object.freeze({score,unique,total:characters.length,duplicates:characters.length-unique,needsDiversification:score<80})}
