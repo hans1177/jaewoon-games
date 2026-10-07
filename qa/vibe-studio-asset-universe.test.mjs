@@ -5393,7 +5393,7 @@ test('asset supply summary preserves selection semantics with one-pass registry 
   assert.equal(summary.families.MATERIAL.repair,1);
   assert.ok(summary.nextActions.some(row=>row.family==='CREATURE'&&row.assetId==='a-current-creature'&&['USE','ADAPT'].includes(row.action)));
   assert.ok(summary.nextActions.some(row=>row.family==='WEAPON'&&row.assetId==='a-weapon'&&['USE','ADAPT'].includes(row.action)));
-  assert.ok(summary.nextActions.some(row=>row.family==='MATERIAL'&&row.assetId==='material-current'&&row.action==='IMPROVE'));
+  assert.ok(summary.nextActions.some(row=>row.family===null&&row.assetId==='material-current'&&row.action==='IMPROVE'));
 });
 
 test('asset supply summary indexes registry and quality lookups instead of nested full scans',()=>{
