@@ -18,7 +18,7 @@ test('design canary games run concurrently without bypassing the verified-engine
   const selection=workflow.split('\n').find(line=>line.trim().startsWith('const selected='));
   const concurrency=workflow.split('\n').find(line=>line.trim().startsWith('const parallelMax='));
   for(const [verified,preservation,count,wip,expected] of [
-    [false,false,14,256,2],[true,false,14,256,14],
+    [false,false,14,256,3],[true,false,14,256,14],
     [false,false,1,256,1],[false,false,0,256,1],
     [false,false,2,1,1],[false,true,14,256,1]
   ]){
@@ -26,11 +26,14 @@ test('design canary games run concurrently without bypassing the verified-engine
       pending:Array.from({length:count},(_,id)=>({id})),canaryVerified:verified,preservationOnly:preservation,designWipMax:wip
     });
     assert.equal(result.parallelMax,expected);
-    if(!verified)assert.ok(result.selected<=2,'representative canary must remain required');
+    if(!verified)assert.ok(result.selected<=3,'representative canary must remain required');
   }
   assert.match(workflow,/fail-fast: false/);
   assert.match(workflow,/max-parallel: \$\{\{ fromJSON\(needs\.resolve-seed-targets\.outputs\.parallel_max\) \}\}/);
   assert.match(workflow,/canary_mode == 'true' && needs\.design-cycle\.result == 'success'/);
+  assert.match(workflow,/target_count: \$\{\{ steps\.targets\.outputs\.target_count \}\}/);
+  assert.match(workflow,/VERIFIED_GAME_COUNT: \$\{\{ needs\.resolve-seed-targets\.outputs\.target_count \}\}/);
+  assert.match(workflow,/"verifiedGameCount": \$VERIFIED_GAME_COUNT/);
 });
 
 // 내부 모델 시간 제한·준비·재개 회귀 검증

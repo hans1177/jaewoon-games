@@ -85,6 +85,7 @@ jobs:
     outputs:
       run: ${{ steps.targets.outputs.run }}
       targets: ${{ steps.targets.outputs.targets }}
+      target_count: ${{ steps.targets.outputs.target_count }}
       parallel_max: ${{ steps.targets.outputs.parallel_max }}
       canary_mode: ${{ steps.targets.outputs.canary_mode }}
       engine_digest: ${{ steps.targets.outputs.engine_digest }}
@@ -341,7 +342,7 @@ jobs:
             String(a.createdAt||'').localeCompare(String(b.createdAt||''))||
             String(a.gameId||'').localeCompare(String(b.gameId||''))
           ).slice(0,preservationOnly?1:designWipMax);
-          const selected=canaryVerified?pending:pending.slice(0,preservationOnly?1:2);
+          const selected=canaryVerified?pending:pending.slice(0,preservationOnly?1:3);
           const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
           const get=t=>parts.find(x=>x.type===t)?.value||'';const date=`${get('year')}-${get('month')}-${get('day')}`;
           const targets=selected.map(seed=>{const evolution=designEvolutionDueFor(seed);return{game_id:seed.gameId,game_name:seed.gameName||seed.gameId,seed_id:seed.seedId,category:seed.GAME_CATEGORY,target_platform:String(seed.INITIAL_TARGET_PLATFORM||'').toUpperCase(),date,multiplayer_mode:seed.MULTIPLAYER_DESIGN_MODE||'SINGLE',target_session_minutes:Number(seed.TARGET_SESSION_MINUTES||30),design_evolution_due:evolution.due,design_evolution_reason:evolution.reason,baseline_review_at:Number(evolution.baselineReviewAt||0)};});
@@ -349,6 +350,7 @@ jobs:
           const parallelMax=Math.max(1,Math.min(designWipMax,targets.length||1));
           console.log(`run=${targets.length?'true':'false'}`);
           console.log(`targets=${JSON.stringify(targets)}`);
+          console.log(`target_count=${targets.length}`);
           console.log(`parallel_max=${parallelMax}`);
           console.log(`canary_mode=${canaryVerified?'false':'true'}`);
           console.log(`engine_digest=${engineDigest}`);
@@ -1017,6 +1019,7 @@ jobs:
       - name: Persist verified design engine canary
         env:
           ENGINE_DIGEST: ${{ needs.resolve-seed-targets.outputs.engine_digest }}
+          VERIFIED_GAME_COUNT: ${{ needs.resolve-seed-targets.outputs.target_count }}
         shell: bash
         run: |
           set -euo pipefail
@@ -1027,9 +1030,9 @@ jobs:
             "version": 1,
             "engineDigest": "$ENGINE_DIGEST",
             "engineSha": "$GITHUB_SHA",
-            "verifiedGameCount": 2,
+            "verifiedGameCount": $VERIFIED_GAME_COUNT,
             "verifiedAt": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-            "policy": "CANARY_TWO_GAMES_BEFORE_FIVE_LANE_BATCH"
+            "policy": "CANARY_SELECTED_GAMES_BEFORE_CENTRAL_POLICY_BATCH"
           }
           JSON
           pushed=0

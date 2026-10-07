@@ -240,7 +240,7 @@ test('quality gate applies material count only to material-composed seeds and le
   assert.match(qualityGate,/MULTIPLAYER_DESIGN_MODE/);
 });
 
-test('autonomous runtime pins verified design engines, canaries two games, then expands to central WIP without weakening gates',()=>{
+test('autonomous runtime pins verified design engines, canaries three games, then expands to central WIP without weakening gates',()=>{
   for(const text of [seedWorkflow,seedDesignWorkflow,statusWorkflow]){
     assert.match(text,/COMPANY_RUNTIME_BRANCH: company-runtime/);
     assert.doesNotMatch(text,/gh pr create/);
@@ -261,8 +261,8 @@ test('autonomous runtime pins verified design engines, canaries two games, then 
   assert.match(seedDesignWorkflow,/canary_mode=/);
   assert.match(seedDesignWorkflow,/engine_digest=/);
   assert.match(seedDesignWorkflow,/pending_total=/);
-  assert.match(seedDesignWorkflow,/pending\.slice\(0,preservationOnly\?1:2\)/);
-  assert.match(seedDesignWorkflow,/const selected=canaryVerified\?pending:pending\.slice\(0,preservationOnly\?1:2\)/);
+  assert.match(seedDesignWorkflow,/pending\.slice\(0,preservationOnly\?1:3\)/);
+  assert.match(seedDesignWorkflow,/const selected=canaryVerified\?pending:pending\.slice\(0,preservationOnly\?1:3\)/);
   assert.match(seedDesignWorkflow,/Math\.min\(designWipMax,targets\.length\|\|1\)/);
   assert.match(seedDesignWorkflow,/GAME_DESIGN_GATE_BYPASS=NO/);
   assert.match(seedDesignWorkflow,/mark-design-engine-canary:/);
