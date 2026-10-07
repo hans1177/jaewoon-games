@@ -271,6 +271,47 @@ test('Unity bootstrap repairs existing motion dependencies and preserves custom 
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('Unity bootstrap preserves existing gameplay while repairing exact modules and duplicate motion ownership',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'jaewoon-unity-existing-source-'));
+  try{
+    const {baseline,playbooks}=fixtures(root,true);
+    const sandbox=path.join(root,'sandbox');
+    fs.mkdirSync(path.join(sandbox,'tools'),{recursive:true});
+    fs.copyFileSync(generatorSource,path.join(sandbox,'tools/company-development-unity-bootstrap.mjs'));
+    const project=path.join(sandbox,'unity-games/seed-puzzle-chromatic-cascade');
+    const scripts=path.join(project,'Assets/Scripts');
+    const packages=path.join(project,'Packages');
+    fs.mkdirSync(scripts,{recursive:true});
+    fs.mkdirSync(packages,{recursive:true});
+    const existingSource=[
+      'using UnityEngine;',
+      'using UnityEngine.Networking;',
+      'public sealed class JaewoonNativeMotionActor : MonoBehaviour {}',
+      'public sealed class ExistingGameplay : MonoBehaviour {',
+      '  public string Save(){ return JsonUtility.ToJson(this); }',
+      '  public void Bind(byte[] bytes){ var texture=new Texture2D(2,2); texture.LoadImage(bytes); }',
+      '  public UnityWebRequest Request(){ return UnityWebRequest.Get("https://example.invalid"); }',
+      '}',
+      ''
+    ].join('\\n');
+    const existingFile=path.join(scripts,'UnityWebFloorGame.cs');
+    fs.writeFileSync(existingFile,existingSource);
+    fs.writeFileSync(path.join(packages,'manifest.json'),JSON.stringify({dependencies:{'com.unity.modules.imgui':'1.0.0'}}));
+    const run=spawnSync(process.execPath,['tools/company-development-unity-bootstrap.mjs','--game-id=seed-puzzle-chromatic-cascade',`--baseline=${baseline}`,`--playbooks=${playbooks}`],{cwd:sandbox,encoding:'utf8'});
+    assert.equal(run.status,0,run.stderr||run.stdout);
+    assert.equal(fs.readFileSync(existingFile,'utf8'),existingSource,'existing gameplay source must survive native F0 bootstrap repair');
+    const generated=fs.readFileSync(path.join(scripts,'SeedTechnicalPrototype.cs'),'utf8');
+    assert.doesNotMatch(generated,/public sealed class JaewoonNativeMotionActor/,'existing motion owner must not be duplicated');
+    assert.match(generated,/GetComponent<JaewoonNativeMotionActor>\(\)/);
+    const manifest=JSON.parse(fs.readFileSync(path.join(packages,'manifest.json'),'utf8'));
+    assert.equal(manifest.dependencies['com.unity.modules.animation'],'1.0.0');
+    assert.equal(manifest.dependencies['com.unity.modules.physics'],'1.0.0');
+    assert.equal(manifest.dependencies['com.unity.modules.jsonserialize'],'1.0.0');
+    assert.equal(manifest.dependencies['com.unity.modules.unitywebrequest'],'1.0.0');
+    assert.equal(manifest.dependencies['com.unity.modules.imageconversion'],'1.0.0');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('Unity native generator ignores legacy Web evidence and emits no WebGL path',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'jaewoon-unity-native-only-'));
   const sandbox=path.join(root,'sandbox');
