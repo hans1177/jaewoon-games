@@ -1,8 +1,8 @@
 {
-  "version": 540,
+  "version": 541,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
-  "recordedAt": "2026-10-03",
+  "recordedAt": "2026-10-07",
   "priority": [
     "ROBLOX",
     "UNITY"
@@ -6441,7 +6441,7 @@
       }
     }
   },
-  "updatedAt": "2026-10-05",
+  "updatedAt": "2026-10-07",
   "priorityTiers": [
     {
       "tier": 1,
@@ -19667,6 +19667,70 @@
           "negativeLearningRequiresVerifiedFailureCause": true,
           "rawTelemetryDirectTrainingForbidden": true,
           "existingCanonicalLearningChainOnly": true
+        },
+        "gltfMasterAssetStandard": {
+          "version": 1,
+          "status": "ACTIVE_EXECUTABLE_CONTRACT",
+          "scope": "ARTICULATED_OR_RENDERED_3D_CHARACTER_CREATURE_AND_BOSS_MASTER_ASSET",
+          "appliesToFamilies": [
+            "CHARACTER",
+            "CREATURE"
+          ],
+          "includesEliteAndBoss": true,
+          "masterFormat": "GLB",
+          "gltfVersion": "2.0",
+          "masterBeforePlatformVariants": true,
+          "requiredForNew3dFinalAssets": true,
+          "commonMasterRole": "CROSS_PLATFORM_AUTHORING_SOURCE_NOT_FINAL_RUNTIME_BINARY",
+          "requiredMasterContents": [
+            "MESH",
+            "UV",
+            "MATERIAL_SLOTS",
+            "RIG_AND_SKIN_WHEN_ARTICULATED",
+            "ANIMATION_CLIPS_OR_EXPLICIT_COMPATIBLE_MOTION_BINDING_WHEN_ANIMATED",
+            "STABLE_SCALE_ORIGIN_AND_AXIS",
+            "ATTACHMENT_SOCKET_METADATA_OR_BINDING_MAP",
+            "LOD_SOURCE_OR_DERIVATION_PLAN"
+          ],
+          "authoring": {
+            "preferredExecutor": "BLENDER_PYTHON",
+            "editableSourceRecipeRequired": true,
+            "repositoryPersistedGlbRequired": true,
+            "sourceHashRequired": true,
+            "artifactHashRequired": true,
+            "evidenceJsonRequired": true,
+            "previewRequired": true,
+            "primitivePartActorAllowedOnlyForPrototype": true,
+            "primitivePartActorMayNotClaimFinalAsset": true,
+            "colorOnlyVariantMayNotCreateDistinctCreature": true
+          },
+          "platformDerivation": {
+            "ROBLOX": "IMPORT_OR_DERIVE_FROM_EXACT_GLTF_MASTER_HASH_THEN_BIND_MESHPART_BONES_ANIMATOR_AND_PLATFORM_NATIVE_MATERIALS",
+            "UNITY": "IMPORT_OR_DERIVE_FROM_EXACT_GLTF_MASTER_HASH_THEN_BIND_SKINNED_MESH_RENDERER_ANIMATOR_MATERIALS_AND_PREFAB",
+            "WEB": "LOAD_EXACT_GLTF_MASTER_OR_OPTIMIZED_DERIVATIVE_WITH_MASTER_HASH_LINEAGE",
+            "directCrossPlatformFinalBinaryReuseForbidden": true,
+            "platformNativeRuntimeVerificationRequired": true
+          },
+          "promotionHardFailures": [
+            "GLB_MASTER_REQUIRED",
+            "GLB_MASTER_FORMAT_INVALID",
+            "GLB_MASTER_ARTIFACT_HASH_REQUIRED",
+            "GLB_MASTER_SOURCE_RECIPE_REQUIRED",
+            "GLB_MASTER_SOURCE_HASH_REQUIRED",
+            "GLB_MASTER_EVIDENCE_REQUIRED",
+            "GLB_MASTER_MESH_REQUIRED",
+            "GLB_MASTER_UV_REQUIRED",
+            "GLB_MASTER_MATERIAL_REQUIRED",
+            "GLB_MASTER_RIG_REQUIRED",
+            "GLB_MASTER_SKIN_REQUIRED",
+            "GLB_MASTER_MOTION_BINDING_REQUIRED",
+            "PRIMITIVE_ONLY_ACTOR_FINAL",
+            "PLATFORM_VARIANT_MASTER_LINEAGE_MISSING"
+          ],
+          "runtimePromotionStillRequiresNativeConsumerEvidence": true,
+          "gameplayAuthorityExpansionForbidden": true,
+          "existingGraphicsProductionOnly": true,
+          "newPipelineWorkerQueueScheduler": false
         }
       },
       "composableBaseMaterialLibrary": {
