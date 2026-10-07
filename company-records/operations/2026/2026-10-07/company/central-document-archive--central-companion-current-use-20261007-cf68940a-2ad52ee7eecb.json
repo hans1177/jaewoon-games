@@ -1,0 +1,2089 @@
+{
+  "schemaVersion": 1,
+  "recordId": "central-companion-current-use-20261007-cf68940a-2ad52ee7eecb",
+  "recordType": "central-document-archive",
+  "domain": "operations",
+  "scope": {
+    "type": "COMPANY",
+    "id": "company",
+    "gameId": "",
+    "platform": "NONE"
+  },
+  "timestamps": {
+    "createdAt": "2026-10-07T00:38:59.035Z",
+    "observedAt": null
+  },
+  "provenance": {
+    "producer": "COMPANY_RECORDS_GOVERNANCE",
+    "authority": "MACHINE_EXECUTION_CONTRACT",
+    "sourceRevision": "cf68940ad0f4f0d134447d58e749236d89343139",
+    "artifactIdentity": null,
+    "sourceRefs": [
+      "company-learning/company-log-map.json"
+    ]
+  },
+  "status": "ARCHIVED",
+  "retentionClass": "CANONICAL",
+  "data": {
+    "mode": "AUTO_CURRENT_USE_COMPANION",
+    "documents": {
+      "logMap": {
+        "sourcePath": "company-learning/company-log-map.json",
+        "beforeUtf8Bytes": 134794,
+        "afterUtf8Bytes": 60339,
+        "archivedPaths": [
+          "allGameDynamicAssetBindingEvidenceContract",
+          "allGamePlayableAccessEvidence",
+          "assetArmSchedulerEpochEvidence",
+          "assetQualityFirstDevelopment",
+          "autoMotionGapFillEvidenceContract",
+          "centralPolicyExecutionEvidence",
+          "completionContract",
+          "concurrentPlatformSharedProgressMonotonicityEvidence",
+          "continuousGameplaySystemEvolutionContract",
+          "continuousLearning24hEvidenceContract",
+          "controlPlaneHeavyRunnerSeparationEvidence",
+          "controlPlaneLatestHeadDedupeEvidence",
+          "controlPlaneRunnerIsolationEvidence",
+          "departmentRuntimeLogContract",
+          "dualNativeCorrelation",
+          "existingGameHolisticBackfillEvidenceContract",
+          "failureContract",
+          "fanInRefillParallelReserveEvidence",
+          "finalDevelopmentLockEvidenceContract",
+          "flowSequenceLockEvidence",
+          "focusedCaretakerMaximumParallelismContract",
+          "gameErrorRepairLogContract",
+          "homepageGameMediaEvidence",
+          "homepageRunnerIsolationEvidence",
+          "internalAssetMotionRepair",
+          "lightweightGameIngressRunnerReliefEvidence",
+          "maximumParallelDevelopmentEvidenceContract",
+          "minimumNecessaryProcedureDevelopmentEvidence",
+          "missingDesignAutoCreationContract",
+          "motionAdvancedQualityEvidence",
+          "motionDirectorEvidenceContract",
+          "nativeChildPreDispatchDedupeEvidence",
+          "nativeControlRunnerIsolationEvidence",
+          "nativeDevelopmentTriggerResponsibilityEvidence",
+          "nonblockingCoordinationTelemetryContract",
+          "perGameFlowQueueBottleneckEvidence",
+          "perpetualBuildUpDataCapacityEvidence",
+          "platformVerifiedF0F9PublicationEvidence",
+          "playableWebMandatoryDeploymentEvidence",
+          "robloxDevelopmentParallelismEvidenceContract",
+          "robloxDevelopmentVerificationEvidenceContract",
+          "robloxHomepageThumbnailSyncEvidenceContract",
+          "robloxNativeCodingQualityEvidenceContract",
+          "robloxStudioAssetBindingEvidenceContract",
+          "robloxStudioProductionEvidence",
+          "robloxVerifiedCyclePublicationEvidence",
+          "runnablePlatformAccessEvidence",
+          "runnerQueueFreshnessDrainEvidence",
+          "runtimeMotionLearningEvidenceContract",
+          "studioAssetUniverseEvidenceContract",
+          "systemAiDeepBottleneckReasoning",
+          "systemAiWorkerLogContract",
+          "unityExactChildRunDedupeEvidence",
+          "unityFoundationEvidenceContract",
+          "unityPrepareInputOverlapEvidence",
+          "unityRuntimeParallelCheckpointEvidence",
+          "universalAssetCoverageEvidenceContract",
+          "universalAssetFirstUpgradeEvidenceContract",
+          "updatedAt",
+          "verifiedDesignGameplayAuthorityContract",
+          "vibe24hStaleSingletonEpochRelease",
+          "vibeFanInPinnedContractOverlay",
+          "vibeLaneReserveAndLearningPressureRelief",
+          "vibeModelCacheLookupOnlyWarmup",
+          "vibeProductionPressureEvidence",
+          "vibeReserveContractRegressionPreflight",
+          "vibeResultAndRecoveryParallelismEvidence",
+          "vibeRunnerPressureCallbackCoalescing",
+          "vibeRunnerPressureSpeculativeRelief",
+          "vibeSourceGenerationFocusedTimeoutAndContextSync",
+          "vibeUnityResultParallelismEvidence",
+          "vibeUnityWebBootstrapExploration",
+          "vibeWorkerConditionalModelRestore",
+          "vibeWorkerControlCheckoutRelief",
+          "webInternalPriorityEvidence",
+          "workerSessionPreflightEvidence"
+        ],
+        "archivedPayload": {
+          "failureContract": {
+            "exactStageRequired": true,
+            "exactSignatureRequired": true,
+            "repeatedFailureDedupeRequired": true,
+            "staleFailureMayNotOverrideCurrentRawState": true,
+            "classificationRequired": true,
+            "allowedClassSource": "company-learning/platform-release-roadmap.json#aiExecutionEfficiency.systemAiEvolution.failureClassification.classes",
+            "infrastructureFailureSeparatedFromTaskFailure": true,
+            "permissionFailureEvidenceFields": [
+              "FAILURE_STAGE",
+              "FAILURE_SIGNATURE",
+              "REQUIRED_SCOPE",
+              "HTTP_STATUS"
+            ],
+            "permissionFailurePersistentStateDedupeRequired": true
+          },
+          "completionContract": {
+            "structuredEvidenceBeforeCompletion": true,
+            "rawLogAloneCannotProvePass": true,
+            "centralPolicyAndArchitectureMustMatchExecution": true,
+            "qaContractRepairRequiresIndependentVerification": true
+          },
+          "systemAiWorkerLogContract": {
+            "queue": "vibe2-unreal-core:.vibe2/system-ai-queue.json",
+            "requiredMarkers": [
+              "SYSTEM_AI_TASK_ID",
+              "SYSTEM_AI_RESERVATION_ID",
+              "SYSTEM_AI_CANDIDATE_BRANCH",
+              "SYSTEM_AI_PR_URL",
+              "SYSTEM_AI_VERIFICATION",
+              "PRIMARY_AI_REVIEW",
+              "SYSTEM_AI_FAILURE_CLASS",
+              "SYSTEM_AI_FAILURE_STAGE",
+              "SYSTEM_AI_FAILURE_SIGNATURE",
+              "SYSTEM_AI_HANDOFF_STATE",
+              "SYSTEM_AI_HANDOFF_FROM_RESERVATION",
+              "SYSTEM_AI_HANDOFF_TO_RESERVATION",
+              "SYSTEM_AI_BOTTLENECK_CLASS",
+              "SYSTEM_AI_BOTTLENECK_IMPACT_SCORE",
+              "SYSTEM_AI_QUEUE_DEPTH",
+              "SYSTEM_AI_RESERVATION_WAIT_MS",
+              "SYSTEM_AI_FAN_IN_WAIT_MS",
+              "SYSTEM_AI_CARETAKER_GAME_ID",
+              "SYSTEM_AI_QA_CONTRACT_DRIFT=YES|NO",
+              "SYSTEM_AI_KNOWLEDGE_IDS",
+              "SYSTEM_AI_KNOWLEDGE_OUTCOME",
+              "SYSTEM_AI_LEARNING_KNOWLEDGE_OUTCOMES_ADDED",
+              "COMPANY_SYSTEM_AI_CONTROL_REFRESH_RETRY",
+              "COMPANY_SYSTEM_AI_CONTROL_WRITE",
+              "SYSTEM_AI_PENDING_RUNS",
+              "COMPANY_SYSTEM_AI_DUPLICATE_REPAIRS_COALESCED",
+              "COMPANY_SYSTEM_AI_DUPLICATE_REPAIR_GROUPS",
+              "SYSTEM_AI_PRODUCER_DEDUPE",
+              "SYSTEM_AI_REPAIR_IDENTITY",
+              "SYSTEM_AI_DUPLICATE_DEPENDENCY_REWIRED",
+              "COMPANY_SYSTEM_AI_SUPERSEDED_DEPENDENCIES_REWIRED",
+              "SYSTEM_AI_SUPERVISOR_REVIEW_WAIT_MS",
+              "COMPANY_SYSTEM_AI_CROSS_SCOPE_CANARY_DEPENDENCIES_REMOVED",
+              "COMPANY_SYSTEM_AI_PUSH_QA_ONLY=YES"
+            ],
+            "rawModelOutputStored": false,
+            "rawModelOutputSha256Required": true,
+            "workerSelfAcceptanceForbidden": true,
+            "failedVerificationMustRequeueOrFail": true,
+            "primaryAiReviewMayAcceptReworkReopenOrRedirect": true,
+            "workerWaveMax": 32,
+            "focusedRecruitmentEvidenceRequired": true,
+            "centralPolicy": "company-learning/platform-release-roadmap.json#aiExecutionEfficiency.systemAiEvolution",
+            "evolutionObservability": {
+              "source": "company-learning/platform-release-roadmap.json#aiExecutionEfficiency.systemAiEvolution",
+              "rawPrivateReasoningLogged": false,
+              "requiredDimensions": [
+                "FAILURE_CLASSIFICATION",
+                "WORKER_HANDOFF",
+                "BOTTLENECK_SENSOR",
+                "FOCUSED_CARETAKER",
+                "QA_CONTRACT_DRIFT",
+                "PRIMARY_AI_VIBE_COLLABORATION",
+                "VERIFIED_LEARNING_REUSE"
+              ],
+              "structuredEvidenceRequired": true,
+              "duplicatePersistentLogForbidden": true,
+              "implementationState": "IMPLEMENTED_QA_VERIFIED_ACTIVE_RUNTIME",
+              "runtimeBindings": [
+                "tools/company-system-ai-failure-classifier.mjs",
+                "tools/company-system-ai-bottleneck-sensor.mjs",
+                "tools/company-system-ai-qa-contract-review.mjs",
+                "tools/company-system-ai-queue.mjs",
+                ".github/workflows/company-system-ai-workers.yml"
+              ],
+              "verifiedEvidence": {
+                "implementationRevision": "5e1dc153d62167c95da3ec1465217a4f24193dd8",
+                "systemAiReserveRun": 598,
+                "centralPolicyQaRun": 2261,
+                "integratedRegressionRun": 7913,
+                "securityImmuneRun": 3154
+              },
+              "liveWaitMetricMarkers": [
+                "SYSTEM_AI_PENDING_RUNS",
+                "SYSTEM_AI_RESERVATION_WAIT_MS",
+                "SYSTEM_AI_FAN_IN_WAIT_MS"
+              ],
+              "failureClassifierEvidenceMarkers": [
+                "qa-contract-drift:UNVERIFIED",
+                "system-ai-qa-contract-claim:FAIL_CLOSED"
+              ],
+              "producerSideRecoveryReuse": {
+                "binding": "tools/company-recovery-dispatch.mjs",
+                "identity": "tools/company-system-ai-queue.mjs::systemAiRepairWorkIdentity",
+                "reuseMarker": "system-ai-producer-dedupe:REUSED_EXISTING_REPAIR",
+                "dependencyRewireMarker": "system-ai-duplicate-dependency-rewired:YES",
+                "exactCheckpointIdentityPreserved": true,
+                "rawPrivateReasoningLogged": false
+              }
+            },
+            "runtimeEvidence": {
+              "latestReserveRunId": 35803294553,
+              "reserveSharedContractQa": "PASS",
+              "collisionRetriesObserved": 2,
+              "reservePersistedAttempt": 3,
+              "bottleneckQueueDepthObserved": 267,
+              "bottleneckRecommendedBatch": 19,
+              "reservedDisjointWorkers": 2,
+              "latestImplementationRevision": "f2c7dc0fca00a0046a50160680c92a895c80d3d8",
+              "failureClassifierRevision": "6a7959814875d7471f8d5a288491d59679d840e2",
+              "liveWaitMetricBindingRevision": "1c90f8242d7f78f257c39cba5dcfd3184f58e689",
+              "incrementalLiveVerification": "PENDING_NEXT_NATURAL_SYSTEM_AI_WORKER_RUN",
+              "duplicateRepairCoalescingRevision": "9ab01df47287ae1ae836e71b9d7be843db8ff867",
+              "duplicateRepairCheckpointRevision": "24d941a8e5bf75a37ea54b35cbd351b5daae5bad",
+              "duplicateRepairTestRevision": "a45a0cdd1f4b74daa0a69460f160d3d2a077acd8",
+              "duplicateRepairLiveVerification": "PENDING_NEXT_RESERVE_CYCLE",
+              "runnableReservationWaitMetricRevision": "01dea7dfd2948f0a86a48eeedaecccf5516d8051",
+              "runnableReservationWaitMetricTestRevision": "eb55d7a130b819c6fd7863b947bb779bc91c2378",
+              "runnableReservationWaitMetricLiveVerification": "PENDING_NEXT_SYSTEM_AI_RESERVE_RUN",
+              "stableRepairWorkIdentityRevision": "e006f1038dd8b32f260494ce2c947ffc287b7d9d",
+              "supersededRepairDependencyRewireRevision": "d011af3f7ecf290962ef12f0e3b0ac4e06fcd21e",
+              "supersededRepairDependencyRewireTestRevision": "94b8bbd05b355c7308d1a81cf0a4d337badc30b9",
+              "supersededRepairDependencyRewireLiveVerification": "PENDING_NEXT_RESERVE_CYCLE",
+              "historicalSupersededDependencyRepairRevision": "f6d3ad0892d869add873a5aaadb8dff832c53747",
+              "historicalSupersededDependencyRepairTestRevision": "3c418b6e80e5eda2cb55f88856426913764cab6c",
+              "historicalSupersededDependencyRepairLiveVerification": "VERIFIED_RUNTIME_RUN_35806215679",
+              "allReservePathQueueReconciliationRevision": "6a1663bd2a4683ae3c4f104c99c29801c273297a",
+              "allReservePathQueueReconciliationTests": [
+                "170dff04a67d5b6d302135296b480d303845ed89",
+                "7d50a0f64075d67467389f18a8ac30a386e7ce81"
+              ],
+              "allReservePathQueueReconciliationLiveVerification": "PENDING_NEXT_RESERVE_CYCLE",
+              "historicalSupersededDependenciesRewired": 16,
+              "historicalSupersededOrphansAfter": 0,
+              "workflowWaitCauseClassificationRevision": "6a05859ccf52528c43b333f05d680b09eeba6768",
+              "preciseWaitSensorRevision": "d3db69b57e4754ada7a6c68f8069008c0a4ac608",
+              "preciseWaitWorkflowRevision": "68550bced736074602c5df848af92ba5c8724e7c",
+              "preciseWaitTests": [
+                "5b2bdcf809f3d10aa7607ebaebde97bb97ac2878",
+                "2095f85bb419149c14168a135d72aa456de7747c"
+              ],
+              "preciseWaitLiveVerification": "PENDING_NEXT_SYSTEM_AI_RESERVE_RUN",
+              "responsibilityScopedRecoveryCohortRevision": "599a575779e96093841aa2c81fbbac5cc1fbad03",
+              "crossScopeCanaryReconciliationRevision": "16a40328b8d05c4416cad1672606ad38cb489a18",
+              "crossScopeCanaryReconciliationTests": [
+                "2a7ab4957c5c670ca03ea689a384fa0aab471147",
+                "c556915ea3022ef8002dec8acba9b2bb95e78e7d"
+              ],
+              "crossScopeCanaryLiveVerification": "PENDING_NEXT_SYSTEM_AI_RESERVE_RUN",
+              "pushQaOnlyRevision": "2b9181069b4c09cf5e53c25e4baa3841ea8d5d2d",
+              "pushQaOnlyTestRevision": "7514d87deae8799f9891eaf67fe2a684dcccd55b",
+              "pushQaReserveLockIsolationRevision": "9eece1f69e1c30bb89688f1662d2ec3f306c9a0c",
+              "pushQaReserveLockIsolationTestRevision": "eec5aa2219bc4523bb08f0c4d9d293772f0bbc2e",
+              "systemAiExternalMatrixCapacityRevision": "e0968e099aed84a75444639186c60541c84f9377",
+              "systemAiExternalMatrixCapacityTestRevision": "a15ba49c058743cea3e1fcde0413bc7952f72097",
+              "systemAiConfiguredBatchMax": 256,
+              "systemAiStrategyMaxParallel": null,
+              "gameWorkerAdaptiveCapRemovedRevision": "d685c17caa8da473e89b280a365bd6adb264b49d",
+              "gameWorkerProviderCapacityRunnerRevision": "86c7defe4b3fd6c03562e5ae860e73f04a07a51f",
+              "gameWorkerAdaptiveCapRemovedTestRevision": "172705b2741ef7beb19ad7e76ea7b613233cd6dd",
+              "gameWorkerProviderCapacityLiveVerification": "PENDING_NEXT_GAME_PRIMARY_WAVE"
+            },
+            "metricSemantics": {
+              "SYSTEM_AI_RESERVATION_WAIT_MS": {
+                "population": "RUNNABLE_DEPENDENCY_READY_QUEUED_ONLY",
+                "waitStart": "MAX_TASK_UPDATE_AND_TERMINAL_DEPENDENCY_UPDATE",
+                "excludes": [
+                  "UNRESOLVED_DEPENDENCIES",
+                  "UNRESOLVED_SHARED_SIGNATURE_CANARY"
+                ],
+                "source": ".github/workflows/company-system-ai-workers.yml",
+                "implementationRevision": "68550bced736074602c5df848af92ba5c8724e7c"
+              },
+              "SYSTEM_AI_FAN_IN_WAIT_MS": {
+                "population": "ACTIVE_COMPANY_SYSTEM_AI_WORKFLOW_RUNS",
+                "waitStart": "LATEST_COMPLETED_WORKER_JOB",
+                "waitEnd": "FAN_IN_JOB_START_OR_NOW_IF_QUEUED",
+                "source": "GITHUB_ACTIONS_JOB_GRAPH",
+                "implementationRevision": "68550bced736074602c5df848af92ba5c8724e7c"
+              },
+              "SYSTEM_AI_SUPERVISOR_REVIEW_WAIT_MS": {
+                "population": "SYSTEM_AI_QUEUE_AWAITING_SUPERVISOR",
+                "source": "vibe2-unreal-core:.vibe2/system-ai-queue.json",
+                "implementationRevision": "68550bced736074602c5df848af92ba5c8724e7c"
+              }
+            },
+            "durableQueueEvidenceMarkers": [
+              "system-ai-duplicate-dependency-rewired:YES",
+              "system-ai-duplicate-repair-superseded-by:<canonical-task-id>",
+              "system-ai-cross-scope-canary-dependency-removed:YES"
+            ]
+          },
+          "dualNativeCorrelation": {
+            "gameKey": "GAME_ID",
+            "platformKeys": [
+              "ROBLOX",
+              "UNITY"
+            ],
+            "sharedDesignEvidence": "design/<gameId>/<date>/design-revised.json",
+            "platformEvidenceIndependent": true,
+            "homepageExposureState": "homepage-platform-exposure.json"
+          },
+          "departmentRuntimeLogContract": {
+            "version": 1,
+            "launcher": ".github/workflows/artbook-free-department-bots.yml",
+            "requiredMarkers": [
+              "OWNER_ACTIVE_DESIGN_RESET_COUNT",
+              "OWNER_ACTIVE_DESIGN_RESET_TARGETS",
+              "OWNER_ACTIVE_DESIGN_RESET_PENDING",
+              "GAME_PRIMARY_GATE=RUN_PARALLEL_STRICT_DESIGN",
+              "GAME_SEED_DESIGN_TARGET_COUNT"
+            ],
+            "liveVerification": "PENDING_NEXT_DEPARTMENT_WORKFLOW_RUN",
+            "revisions": {
+              "leadPolicy": "ed368aa6e07ba390217a4a841118788e3413b851",
+              "providerContract": "4bb509f3d79de183fc6c0594dfcbf2ca441ed523",
+              "sweep": "72d9498e944eca8833e2bc3abfbb8be2670e27bb",
+              "sweepTest": "6cc10c25178c0e80a97195a59ffdc369d9879097",
+              "nativeDelegate": "da19705e37720bfb78494a62aca7b1922c2ac298",
+              "legacyRemoval": "a0d9f6fe898fba667a98f42554cd0ccd6ea21c8e",
+              "delegateTest": "de1f61ff4bc8d6e3604b077b2b82deb0cb23d9e4"
+            },
+            "canonicalDepartments": [
+              "planning",
+              "graphics",
+              "development",
+              "qa",
+              "audio"
+            ],
+            "departmentCount": 5,
+            "balanceStandaloneMarkerForbidden": true,
+            "audioDepartmentRequired": true
+          },
+          "updatedAt": "2026-10-05",
+          "centralPolicyExecutionEvidence": {
+            "humanReadablePolicyDocsRequired": false,
+            "machinePolicyHashesRequired": true
+          },
+          "gameErrorRepairLogContract": {
+            "version": 2,
+            "centralPolicy": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.design.continuousIntelligentDesignEvolution.gameErrorRepair",
+            "role": "LOG_FORMAT_AND_CORRELATION_ONLY",
+            "policyAuthority": false,
+            "policySemanticsDefinedInCentralOnly": true,
+            "scope": "ONLY_WHEN_GAME_ERROR_REPAIR_OR_CAUSAL_REPLAY_EXECUTES",
+            "requiredMarkers": [
+              "GAME_REPAIR_FAILURE_STAGE",
+              "GAME_REPAIR_FAILURE_SIGNATURE",
+              "GAME_REPAIR_PREPATCH_REPRODUCED=YES|NO",
+              "GAME_REPAIR_RESPONSIBLE_SYSTEM",
+              "GAME_REPAIR_RESPONSIBLE_FILES",
+              "GAME_REPAIR_LAST_KNOWN_GOOD_REVISION",
+              "GAME_REPAIR_FIRST_BROKEN_REVISION",
+              "GAME_REPAIR_CURRENT_REVISION",
+              "GAME_REPAIR_ORIGINAL_SCENARIO_REPLAY=PASS|PENDING_RUNTIME_EVIDENCE|NOT_APPLICABLE",
+              "GAME_REPAIR_INVARIANTS=PASS|PENDING_RUNTIME_EVIDENCE|NOT_APPLICABLE",
+              "GAME_REPAIR_SAVE_MIGRATION=PASS|PENDING_RUNTIME_EVIDENCE|NOT_APPLICABLE",
+              "GAME_REPAIR_MULTIPLAYER_LIFECYCLE=PASS_AUTOMATED_HARNESS|PENDING_AUTONOMOUS_HARNESS_EVIDENCE|INVALID_AUTOMATION_CONTRACT|NOT_APPLICABLE",
+              "GAME_REPAIR_USER_ASSISTANCE_REQUIRED=NO",
+              "GAME_REPAIR_IMPACT_REGRESSION=PASS|FAIL",
+              "GAME_REPAIR_FULL_REGRESSION_REQUIRED=YES",
+              "GAME_REPAIR_REPEAT_COUNT",
+              "GAME_REPAIR_MODE=FOCUSED_REPAIR|ROOT_CAUSE_MODE",
+              "GAME_REPAIR_READY_FOR_FAN_IN=YES|NO"
+            ],
+            "repeatedFailureDedupeBy": [
+              "GAME_ID",
+              "FAILURE_STAGE",
+              "FAILURE_SIGNATURE"
+            ],
+            "rawDuplicateFailureSpamForbidden": true,
+            "rawSavePayloadLoggingForbidden": true,
+            "rawPrivateReasoningLogged": false,
+            "structuredEvidenceRequiredForAcceptance": true
+          },
+          "motionDirectorEvidenceContract": {
+            "version": 2,
+            "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.motionDirectorSystem",
+            "recordKind": "motion-director-evidence",
+            "rootScope": "INSIDE_GRAPHICS_PRODUCTION_ONLY",
+            "topLevelWorkUnitForbidden": true,
+            "requiredFields": [
+              "GAME_ID",
+              "CANDIDATE_SHA",
+              "GRAPHICS_PRODUCTION_ID",
+              "MOTION_DIRECTOR_TARGET",
+              "BODY_PLAN",
+              "RIG_PROFILE",
+              "STYLE_LOCK",
+              "MOTION_DNA_SUMMARY",
+              "COMPATIBILITY_RESULT",
+              "COMPOSITION_CHANNELS_USED",
+              "CONTEXT_SELECTOR_INPUTS",
+              "SELECTED_MOTION_IDS",
+              "REACTION_MATCH_RESULT",
+              "PAIR_MOTION_ALIGNMENT_WHEN_USED",
+              "STYLE_VARIANT_PROVENANCE",
+              "MUTATION_PROVENANCE",
+              "VARIATION_HISTORY_SUMMARY",
+              "ROOT_MOVEMENT_ENVELOPE_RESULT",
+              "CONTACT_SYNC_RESULT",
+              "PLATFORM_RUNTIME_CAPTURE",
+              "QA_RESULT",
+              "ACTOR_CLASS",
+              "RIG_ARTICULATION_RESULT",
+              "ANIMATOR_BINDING_RESULT",
+              "MOTION_SOURCE_STRATEGY",
+              "BLEND_PROFILE",
+              "LOCOMOTION_SPEED_SYNC_RESULT",
+              "JOINT_ACTIVITY_RESULT",
+              "MANNEQUIN_CHECK_RESULT",
+              "PROCEDURAL_CONTACT_CORRECTION_RESULT"
+            ],
+            "unresolvedCompatibilityOrLibraryEdgeBlocksVerifiedPromotion": true,
+            "markerOnlyEvidenceForbidden": true,
+            "actualRuntimeCaptureRequired": true,
+            "gameplayAuthorityMutationEvidenceMustFail": true,
+            "unityAndRobloxEvidenceRemainPlatformSpecific": true,
+            "failureState": "ASSET_REPAIR_REQUIRED",
+            "passMeaning": "MOTION_PRESENTATION_CHECKPOINT_NOT_RELEASE_AUTHORITY",
+            "manuallyAuthoredMotionMustExplainWhyVerifiedCompatibleLibraryMotionWasInsufficient": true,
+            "rootOnlyLocomotionCannotProveArticulatedMotionPass": true,
+            "manquinFailureCode": "CHARACTER_MOTION_MANNEQUIN"
+          },
+          "autoMotionGapFillEvidenceContract": {
+            "version": 1,
+            "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.autoMotionCoverageGapFill",
+            "recordKind": "motion-coverage-gap-fill-evidence",
+            "rootScope": "INSIDE_GRAPHICS_PRODUCTION_ONLY",
+            "requiredFields": [
+              "GAME_ID",
+              "GRAPHICS_PRODUCTION_ID",
+              "ARCHETYPE",
+              "BODY_PLAN",
+              "COVERAGE_AUDIT",
+              "MISSING_GROUPS",
+              "REQUIRED_ROLE_GAPS",
+              "PRIORITY_SCORE",
+              "REUSE_DONOR_CANDIDATES",
+              "EXTERNAL_SOURCE_CANDIDATES",
+              "SEMANTIC_SEEDS_PREPARED",
+              "DUPLICATE_FINGERPRINT_CHECK",
+              "RUNTIME_VERIFICATION_STATE"
+            ],
+            "preparedSemanticMayNotClaimVerified": true,
+            "automaticFillMayNotCreateReleaseAuthority": true,
+            "actualPromotionStillRequiresNativeRuntimeEvidence": true
+          },
+          "runtimeMotionLearningEvidenceContract": {
+            "version": 1,
+            "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.motionDirectorSystem.runtimeMotionLearning",
+            "recordKind": "runtime-motion-learning-evidence",
+            "requiredFields": [
+              "GAME_ID",
+              "PLATFORM",
+              "MOTION_ID",
+              "ARCHETYPE",
+              "TRANSITION_QUALITY_SCORE",
+              "CONTACT_QA_SCORE",
+              "PAIR_ALIGNMENT_SCORE",
+              "IMMEDIATE_REPEAT_RATE",
+              "SAME_FAMILY_REPEAT_RATE",
+              "MOTION_LOD_FRAME_COST",
+              "FRAME_STABILITY",
+              "MOBILE_READABILITY",
+              "RUNTIME_VERIFIED",
+              "PASS_OR_FAILURE",
+              "FAILURE_REASON",
+              "EVIDENCE_ID"
+            ],
+            "positiveLearningRequiresVerifiedRuntimePass": true,
+            "verifiedFailureMayTeachAvoidPattern": true,
+            "preparedSemanticMayNotIncreaseMastery": true,
+            "rawTelemetryDirectTrainingForbidden": true,
+            "canonicalTrainingPipelineOnly": true
+          },
+          "motionAdvancedQualityEvidence": {
+            "version": 2,
+            "required": [
+              "TRANSITION_DIRECTOR_RESULT",
+              "CONTACT_QA_RESULT",
+              "GAMEPLAY_EVENT_BINDING_RESULT",
+              "PROCEDURAL_CORRECTION_PROFILE",
+              "GROUP_OR_MULTI_ACTOR_ALIGNMENT_WHEN_USED",
+              "EMOTION_INTENT_LAYER_WHEN_USED",
+              "MOTION_LOD_TIER",
+              "MOTION_LINEAGE",
+              "JOINT_ACTIVITY_RESULT",
+              "LOCOMOTION_SPEED_SYNC_RESULT",
+              "STATE_BLEND_CONTINUITY_RESULT",
+              "FOOT_SLIDE_RESULT",
+              "IK_OR_CONTACT_CORRECTION_RESULT_WHEN_SUPPORTED",
+              "MANNEQUIN_HARD_FAILURE_RESULT"
+            ],
+            "hardFailureBlocksPromotion": true
+          },
+          "continuousLearning24hEvidenceContract": {
+            "version": 1,
+            "centralContract": "company-learning/platform-release-roadmap.json#continuousLearning24hContract",
+            "recordKind": "continuous-learning-24h-evidence",
+            "requiredFields": [
+              "CYCLE_ID",
+              "SCHEDULER_RUN_ID",
+              "LEARNING_QUEUE_DEPTH",
+              "LEARNING_LANE_ACTIVE",
+              "PRODUCTION_LANE_ACTIVE",
+              "NEXT_CYCLE_DISPATCHED",
+              "VERIFIED_INGEST_COUNT",
+              "FAILURE_RETRY_STATE"
+            ],
+            "noLearningPauseMarkerAllowedDuringHealthySchedulerOperation": true,
+            "queuedWorkDuringCapacityPressureCountsAsContinuity": true,
+            "positiveLearningStillRequiresExistingVerificationGates": true
+          },
+          "studioAssetUniverseEvidenceContract": {
+            "version": 1,
+            "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.studioAssetUniverse",
+            "recordKind": "studio-asset-universe-evidence",
+            "requiredFields": [
+              "GAME_ID",
+              "PLATFORM",
+              "STYLE_LOCK",
+              "COVERAGE_REPORT",
+              "IDENTITY_QA",
+              "COMPATIBILITY_GRAPH_RESULT",
+              "STYLE_BIBLE_RESULT",
+              "LINEAGE_RESULT",
+              "LICENSE_RESULT",
+              "PLATFORM_VARIANT_RESULT",
+              "GAP_PRIORITY",
+              "FILL_ROUTE",
+              "RUNTIME_VERIFICATION_STATE"
+            ],
+            "preparedSemanticMayNotClaimVerified": true,
+            "actualNativeRuntimeEvidenceRequiredForPromotion": true,
+            "unresolvedRequiredCompatibilityEdgeBlocksPromotion": true
+          },
+          "universalAssetCoverageEvidenceContract": {
+            "version": 1,
+            "recordKind": "universal-asset-coverage-evidence",
+            "requiredFields": [
+              "ASSET_FAMILY",
+              "SUBFAMILY",
+              "REQUIRED_BASELINE",
+              "AVAILABLE_VERIFIED",
+              "AVAILABLE_PREPARED",
+              "MISSING_SLOTS",
+              "COVERAGE_PERCENT",
+              "PRIORITY_SCORE",
+              "REUSE_CANDIDATES",
+              "EXTERNAL_CANDIDATES",
+              "SEMANTIC_SEEDS"
+            ],
+            "heatmapPriorityMustBeEvidenceBased": true
+          },
+          "robloxStudioAssetBindingEvidenceContract": {
+            "version": 2,
+            "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.composableBaseMaterialLibrary.robloxSelectionHandoff",
+            "recordScope": "PER_GAME_EXACT_ROBLOX_SOURCE_ARTIFACT_AND_PLACE_VERSION",
+            "correlationKeys": [
+              "GAME_ID",
+              "SOURCE_REVISION",
+              "ARTIFACT_IDENTITY",
+              "CANDIDATE_VERSION_NUMBER"
+            ],
+            "markers": {
+              "selectionHandoff": "ROBLOX_STUDIO_ASSET_SELECTION_HANDOFF",
+              "staticBinding": "ROBLOX_STUDIO_ASSET_BINDING_VERSION",
+              "runtimePass": "ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS",
+              "publishPending": "roblox-runtime-verification-required",
+              "f9Review": "roblox-final-review-pass",
+              "targetEngineQaRef": "target-engine-qa-ref:roblox-f9-<RUN_ID>"
+            },
+            "runtimePassRequires": [
+              "EXACT_SOURCE_REVISION",
+              "EXACT_ARTIFACT_IDENTITY",
+              "EXACT_PUBLISHED_PLACE_VERSION",
+              "TARGET_ENGINE_EXECUTED",
+              "TARGET_ENGINE_STUDIO_ASSET_SELECTION_MATCHED",
+              "F5_INPUT_CAMERA_UI_PASS",
+              "F8_CORE_LOOP_PASS",
+              "RUNTIME_ACCEPTANCE_PASS"
+            ],
+            "expectedAndObservedAtomListsRequired": true,
+            "markerOnlyEvidenceForbidden": true,
+            "positivePromotionRequiresRuntimePass": true,
+            "rawAssetBinaryInLogsForbidden": true,
+            "queueCorrelation": {
+              "waitEvidence": "roblox-runtime-await-game:<GAME_ID>",
+              "waitingBlocker": "candidate-awaiting-roblox-runtime-qa",
+              "finalStatusSource": "F9_EXACT_RUNTIME_REVIEW_ONLY"
+            },
+            "finalVibePassRequires": [
+              "ROBLOX_RUNTIME_ACCEPTANCE_PASS",
+              "ROBLOX_F9_FINAL_REVIEW_PASS",
+              "ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS_WHEN_BINDING_REQUIRED"
+            ]
+          },
+          "maximumParallelDevelopmentEvidenceContract": {
+            "version": 1,
+            "centralContract": "company-learning/platform-release-roadmap.json#studioQualityEvolution.parallelExecution",
+            "scope": "PER_GAME_AND_CROSS_GAME_MAXIMUM_SAFE_PARALLEL_EXECUTION",
+            "correlationKeys": [
+              "GAME_ID",
+              "TASK_ID",
+              "RESPONSIBLE_FILES",
+              "SOURCE_ROOT",
+              "LANE",
+              "RUN_ID",
+              "CANDIDATE_SHA"
+            ],
+            "requiredEvidence": [
+              "RESPONSIBLE_FILE_SET",
+              "DEPENDENCY_CONFLICT_RESULT",
+              "PARALLEL_DISPATCH_RESULT",
+              "FILE_CONFLICT_SERIALIZATION_RESULT_WHEN_APPLICABLE",
+              "LANE_LOCAL_FAILURE_RESULT_WHEN_APPLICABLE",
+              "FAN_IN_RESULT_WHEN_SHARED_ACCEPTANCE_REQUIRED"
+            ],
+            "sourceRootExclusiveLockForbidden": true,
+            "sameGameGlobalWriteLockForbidden": true,
+            "responsibleFileConflictMaySerialize": true,
+            "atomicSharedStateMutationMaySerializeBriefly": true,
+            "unrelatedGraphicsRuntimeOrReleaseFailureMayNotBeLoggedAsGameWideDevelopmentBlocker": true,
+            "internalConcurrencyCapForbidden": true,
+            "externalProviderCapacityMayQueueWork": true,
+            "queueingFromExternalCapacityIsNotGameQualityFailure": true,
+            "fixedRepeatDevelopmentSlots": 64,
+            "externalProviderBoundary": 256,
+            "externalProviderBoundaryIsPhysicalOnly": true
+          },
+          "focusedCaretakerMaximumParallelismContract": {
+            "version": 1,
+            "source": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.postReleaseFocusedDevelopment",
+            "logicalCaretakerPerGameMayRemain": true,
+            "logicalCaretakerDoesNotImposePhysicalWorkerCap": true,
+            "sameGameNonOverlappingPackagesParallel": true,
+            "sourceRootOrGameWideLockForbidden": true,
+            "responsibleFileConflictSerializationOnly": true,
+            "postReleaseFixedProtectedSlotForbidden": true,
+            "historicalMaintenanceInternalCap": null,
+            "externalCapacityOnlyBoundary": true
+          },
+          "continuousGameplaySystemEvolutionContract": {
+            "version": 1,
+            "source": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract",
+            "documentedAt": "2026-09-25",
+            "problem": "GENERIC_QUALITY_TASKS_COULD_ADVANCE_PRESENTATION_WITHOUT_STRONGLY_GROUNDING_CORE_FUN_OR_PROGRESSION_IN_THE_GAME_DESIGN",
+            "resolution": "LOAD_LATEST_REVISED_DESIGN_AND_GENERATE_GAME_SPECIFIC_CORE_FUN_AND_PROGRESSION_WORK_IN_PARALLEL_WITH_PRESENTATION",
+            "protectedSemanticsUnchanged": true,
+            "sourceRootOrGameWideLockForbidden": true,
+            "maxSafeParallelismPreserved": true
+          },
+          "missingDesignAutoCreationContract": {
+            "version": 1,
+            "source": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.designContext",
+            "documentedAt": "2026-09-25",
+            "trigger": "ACTIVE_OR_REBUILD_GAME_HAS_NO_USABLE_DESIGN_REVISED_CONTEXT",
+            "action": "AUTO_ENROLL_EXISTING_GAME_IN_EXISTING_GAME_SEED_AND_DESIGN_RUNTIME",
+            "passiveWaitingForbidden": true,
+            "genericGameplayGuessForbidden": true,
+            "existingPipelineReuseRequired": true,
+            "shadowPipelineForbidden": true
+          },
+          "verifiedDesignGameplayAuthorityContract": {
+            "version": 1,
+            "source": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.designContext",
+            "runtimeAuthority": "company-runtime",
+            "requiredEvidence": [
+              "DESIGN_BASELINE_READY",
+              "STRICT_DESIGN_PASS_SCORE_GTE_80",
+              "NO_STRICT_HARD_FAILURES"
+            ],
+            "currentOwnerResetGamesRequirePostResetFreshEvidence": true,
+            "plannerMustOverlayRuntimeDesignEvidence": true,
+            "coreFunOrProgressionWithoutVerifiedDesignForbidden": true,
+            "safeParallelLanesRemainLive": true
+          },
+          "nonblockingCoordinationTelemetryContract": {
+            "version": 1,
+            "source": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+            "documentedAt": "2026-09-25",
+            "observedFailure": "COMPANY_DEVELOPMENT_QUEUE_RECONCILE_MARKED_SUCCESS_WHILE_RECONCILE_JOB_SKIPPED_AFTER_VIBE_QUEUE_TELEMETRY_INVALID",
+            "staleReference": "vibe2-unreal-core",
+            "correction": "READ_MAIN_QUEUE_AS_OPTIONAL_TELEMETRY_AND_NEVER_DEFER_RECONCILE_OR_DESIGN_ON_MISSING_INVALID_OR_ACTIVE_GAME_WORK",
+            "runtimeReconcileMustActuallyExecute": true
+          },
+          "minimumNecessaryProcedureDevelopmentEvidence": {
+            "version": 1,
+            "source": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy.developmentLoopOptimization",
+            "logOnlyWhenProcedureRunsOrIsSkippedForKnownUnrelatedScope": true,
+            "reuseEvidenceMustReferenceOriginalVerifiedEvidence": true,
+            "optimizationLaneActivityMustRemainObservable": true,
+            "unrelatedProcedureSkipIsNotFailure": true,
+            "relevantSecurityFindingStillRequiresExistingQuarantineEvidence": true
+          },
+          "vibeRunnerPressureSpeculativeRelief": {
+            "version": 1,
+            "source": "company-learning/platform-release-roadmap.json#changeRecord.runnerPressureSpeculativeRelief20260926",
+            "requiredMarkers": [
+              "VIBE2_SPECULATIVE_EXPANSION=ENABLED",
+              "VIBE2_SPECULATIVE_EXPANSION=SUPPRESSED_RUNNER_PRESSURE"
+            ],
+            "schedulerEvidence": [
+              "primaryTaskCount",
+              "workerCount",
+              "speculativeExpansionAllowed",
+              "speculativeExpansionReason"
+            ],
+            "primaryCoverageMustRemainUnchangedWhenSuppressed": true,
+            "suppressionIsNotFailure": true,
+            "automaticRecoveryExpected": true
+          },
+          "vibeRunnerPressureCallbackCoalescing": {
+            "version": 1,
+            "source": "company-learning/platform-release-roadmap.json#changeRecord.runnerPressureCallbackCoalescing20260926",
+            "requiredMarkers": [
+              "VIBE2_LIVE_RUNNER_QUEUE_PRESSURE=",
+              "VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=PASS",
+              "VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=COALESCED_TO_COHORT_FANIN",
+              "VIBE2_PRESSURE_REFILL_DISPATCH=WAVE_LEADER_EXISTING_FANIN_REFILL",
+              "VIBE2_ATOMIC_NEURON_PRESSURE_OBSERVATION=FAIL_OPEN"
+            ],
+            "coalescedResultMustRemainInWorkerArtifact": true,
+            "existingCohortFanInMustConsumeCoalescedResult": true,
+            "coalescingIsNotTaskFailure": true,
+            "coalescedResultMayStillTriggerSingleWaveCapacityRefill": true,
+            "capacityRefillDoesNotConsumeWorkerResult": true,
+            "immediateDispatchMustResumeWhenQueuePressureClears": true,
+            "workerDirectControlWriteForbidden": true
+          },
+          "vibeReserveContractRegressionPreflight": {
+            "version": 1,
+            "source": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.selfRecoveryAndBottleneckRelief.automaticRecovery.reserveContractRegressionPreflight",
+            "workflow": ".github/workflows/vibe2-continuous-core.yml",
+            "requiredMarkers": [
+              "VIBE2_RESERVE_CORE_QA_REUSE_OBSERVATION=",
+              "VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=",
+              "VIBE2_RESERVE_CONTRACT_REGRESSION=PASS"
+            ],
+            "sameFanInRegressionSuiteRequiredOnFallback": true,
+            "exactContractShaRequired": true,
+            "brokenContractGameWorkerStartForbidden": true,
+            "observationFailureRunsLocalRegression": true
+          },
+          "vibeWorkerControlCheckoutRelief": {
+            "version": 1,
+            "source": "company-learning/platform-release-roadmap.json#changeRecord.controlBranchWorkerCheckoutRelief20260926",
+            "workflow": ".github/workflows/vibe2-continuous-core.yml",
+            "requiredMarkers": [
+              "VIBE2_CONTROL_CHECKOUT_SCOPE=STATE_ONLY",
+              "VIBE2_WORKER_EXECUTABLE_CODE_SOURCE=PINNED_MAIN_CONTRACT"
+            ],
+            "metrics": [
+              "checkoutMs"
+            ],
+            "comparison": "BEFORE_AFTER_WORKER_CHECKOUT_MS_AND_CHECKOUT_NETWORK_BOTTLENECK_CLASSIFICATION",
+            "gamePrimaryBoundaryMustRemain": 256,
+            "adaptivePressureBehaviorMustRemainUnchanged": true,
+            "checkoutReliefMustNotBecomeQaOrSecurityBypass": true
+          },
+          "vibeFanInPinnedContractOverlay": {
+            "version": 1,
+            "source": "company-learning/platform-release-roadmap.json#changeRecord.fanInPinnedContractOverlayRepair20260926",
+            "workflow": ".github/workflows/vibe2-continuous-core.yml",
+            "requiredMarkers": [
+              "VIBE2_RUNTIME_DESIGN_OVERLAY=company-runtime:design,game-seed-state.json",
+              "VIBE2_REGRESSION_ROLE=PASS",
+              "VIBE2_HIERARCHICAL_FAN_IN=PASS:"
+            ],
+            "failureClass": "FAN_IN_RUNTIME_OVERLAY_ROOT_MISSING",
+            "forbiddenPath": "/tmp/vibe2-main",
+            "requiredOverlayRoot": "$GITHUB_WORKSPACE/vibe2-contract",
+            "liveFailureEvidence": [
+              "run:36220960087",
+              "run:36221316381"
+            ],
+            "regressionMayPassBeforeOverlayFailure": true,
+            "queueSettlementRequiredAfterOverlay": true
+          },
+          "vibeUnityWebBootstrapExploration": {
+            "version": 1,
+            "source": "company-learning/platform-release-roadmap.json#changeRecord.unityWebBootstrapExplorationRepair20260926",
+            "failureClass": "UNITY_WEB_BOOTSTRAP_EXPLORATION_SOURCE_ROOT_MISSING",
+            "liveFailureEvidence": {
+              "runId": 36225893107,
+              "jobId": 108360981334,
+              "sourceRoot": "unity-games/cozy-island"
+            },
+            "requiredEvidence": [
+              "source-root-bootstrap-required",
+              "unity-web-source-root-bootstrap-required"
+            ],
+            "requiredResponsibleFiles": [
+              "Assets/Scripts/GameCore.cs",
+              "Assets/Scripts/RuntimeBootstrap.cs"
+            ],
+            "ordinaryMissingSourceRootMustStillFail": true,
+            "bootstrapResultMarker": "bootstrap:true"
+          },
+          "systemAiDeepBottleneckReasoning": {
+            "version": 1,
+            "source": "company-learning/platform-release-roadmap.json#changeRecord.systemAiDeepBottleneckReasoning20260926",
+            "requiredMarkers": [
+              "SYSTEM_AI_BOTTLENECK_RECOMMENDED_TARGETS=",
+              "SYSTEM_AI_BOTTLENECK_RESERVATION_MODE=",
+              "COMPANY_SYSTEM_AI_DEEP_REASONING=",
+              "COMPANY_SYSTEM_AI_CRITIC_VERDICT=",
+              "COMPANY_SYSTEM_AI_SELECTED_STRATEGY="
+            ],
+            "resultEvidence": [
+              "deepReasoningUsed",
+              "selectedHypothesisId",
+              "selectedStrategyId",
+              "criticVerdict",
+              "falsifiedHypothesisIds",
+              "repairStrategyFingerprint"
+            ],
+            "rawPrivateReasoningStored": false,
+            "deterministicVerificationStillRequired": true,
+            "failedStrategyMustFeedRetry": true,
+            "rejectedHypothesesMustFeedRetry": true
+          },
+          "vibeLaneReserveAndLearningPressureRelief": {
+            "version": 1,
+            "source": "company-learning/platform-release-roadmap.json#changeRecord.laneReserveAndLearningPressureRelief20260926",
+            "requiredMarkers": [
+              "VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=PASS",
+              "VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=FAIL_DEFER_LEARNING",
+              "VIBE2_24H_RUNNER_QUEUE_PRESSURE=",
+              "VIBE2_24H_LEARNING_IDLE_DEFERRED=RUNNER_PRESSURE",
+              "VIBE2_24H_LEARNING_IDLE_DEFERRED=NO"
+            ],
+            "reserveConcurrencyKey": "vibe2-control-state-{execution_lane}",
+            "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v3",
+            "gamePrimaryBoundaryMustRemain": 256,
+            "productionMustNotWaitForLearningReserve": true,
+            "directWorkerControlWriteForbidden": true,
+            "liveVerification": {
+              "runId": 36204978877,
+              "stalePreV2RunId": 36204043933,
+              "markers": {
+                "runnerPressureObservation": "PASS",
+                "runnerQueuePressure": 9,
+                "learningIdleDeferred": "RUNNER_PRESSURE",
+                "freeGameWorkerSlots": 235,
+                "gameRefillReady": "YES",
+                "gamePrimaryQueued": 4,
+                "recoveryFastQueued": 3
+              },
+              "reserveResults": {
+                "recoveryFast": "PASS",
+                "gamePrimary": "PASS"
+              },
+              "nextBottleneck": "RUNNER_CAPACITY_AND_MODEL_CACHE_STARTUP_PRESSURE"
+            }
+          },
+          "robloxNativeCodingQualityEvidenceContract": {
+            "version": 2,
+            "centralContract": "company-learning/platform-release-roadmap.json#robloxNativeCodingQualityContract",
+            "correlationKeys": [
+              "TASK_ID",
+              "GAME_ID",
+              "SOURCE_REVISION",
+              "CANDIDATE_SHA",
+              "ROBLOX_RESPONSIBLE_FILE",
+              "ROBLOX_SOURCE_SYMBOL",
+              "ROBLOX_FAILURE_CLASS"
+            ],
+            "requiredMarkers": [
+              "ROBLOX_NATIVE_SOURCE_INSPECTION=",
+              "ROBLOX_NATIVE_BUILD_UP_BINDING=",
+              "ROBLOX_NATIVE_FUNCTIONAL_CHAIN=",
+              "ROBLOX_NATIVE_ACTUAL_PLAY_FEEDBACK=",
+              "ROBLOX_NATIVE_FAILURE_CLASS=",
+              "ROBLOX_NATIVE_LEARNING_REUSE=",
+              "ROBLOX_CHARACTER_MOTION_QUALITY="
+            ],
+            "failureClasses": [
+              "ROBLOX_SERVER_CLIENT_BOUNDARY",
+              "ROBLOX_REMOTE_EVENT_OR_FUNCTION",
+              "ROBLOX_TOUCH_INPUT",
+              "ROBLOX_DATASTORE_SAVE_LOAD",
+              "ROBLOX_CHARACTER_RESPAWN_STATE",
+              "ROBLOX_UI_STATE",
+              "ROBLOX_MULTIPLAYER_SYNC",
+              "ROBLOX_STUDIO_RUNTIME",
+              "ROBLOX_SOURCE_GENERATION",
+              "ROBLOX_CHARACTER_RIG_ANIMATION",
+              "ROBLOX_CHARACTER_MOTION_MANNEQUIN"
+            ],
+            "observedStudioFailureMustReferenceExactScenario": true,
+            "exactScriptFunctionEventOrStatePreferred": true,
+            "repeatedFailureDedupeRequired": true,
+            "rawLogAloneCannotProvePass": true,
+            "verifiedLearningMustReferenceSourceAndOutcome": true,
+            "motionQualityEvidence": {
+              "centralContract": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality",
+              "requiredWhenCharacterMotionAffected": true,
+              "exactActorClassAndRigRequired": true,
+              "jointActivityAndBlendObservationRequired": true,
+              "officialStudioMcpRuntimeCaptureRequired": true,
+              "staticMarkerOnlyPassForbidden": true,
+              "hardFailureCode": "ROBLOX_CHARACTER_MOTION_MANNEQUIN"
+            }
+          },
+          "vibeModelCacheLookupOnlyWarmup": {
+            "version": 2,
+            "source": "company-learning/platform-release-roadmap.json#changeRecord.modelCacheLookupOnlyWarmupRelief20260926",
+            "requiredMarkers": [
+              "VIBE2_MODEL_CACHE_RESERVE_PROBE_LOOKUP_ONLY=YES",
+              "VIBE2_MODEL_CACHE_RESERVE_PROBE_HIT=",
+              "VIBE2_MODEL_CACHE_WARMUP_DECISION=SKIP_CACHE_HIT|RUN_CACHE_MISS"
+            ],
+            "baselineRunId": 36204978877,
+            "baselineCacheBytes": 2814033971,
+            "expectedEffect": "REMOVE_REDUNDANT_PREWARM_CACHE_PAYLOAD_DOWNLOAD_AND_EXTRACTION_AND_DEDICATED_PREWARM_RUNNER_ON_HIT",
+            "modelCacheJobMustSkipOnReserveHit": true,
+            "workerRestoreMustRemainWhenLocalModelRequired": true,
+            "liveVerificationRunId": 36208311596,
+            "liveVerificationResult": "PASS",
+            "gamePrimaryBoundaryMustRemain": 256
+          },
+          "robloxHomepageThumbnailSyncEvidenceContract": {
+            "version": 1,
+            "centralContract": "company-learning/platform-release-roadmap.json#robloxHomepageThumbnailSyncContract",
+            "requiredMarkers": [
+              "ROBLOX_THUMBNAIL_SOURCE=",
+              "ROBLOX_THUMBNAIL_RENDER=PASS",
+              "ROBLOX_THUMBNAIL_UPLOAD=",
+              "ROBLOX_THUMBNAIL_VERIFY=",
+              "HOMEPAGE_MARKETING_IMAGE_SYNC=PASS"
+            ],
+            "correlationKeys": [
+              "GAME_ID",
+              "UNIVERSE_ID",
+              "SOURCE_REVISION",
+              "THUMBNAIL_SOURCE_PATH",
+              "THUMBNAIL_SOURCE_SHA256"
+            ],
+            "secretRedactionRequired": true,
+            "rawApiKeyForbidden": true,
+            "uploadPassRequiresHttpSuccessAndOperationEvidence": true,
+            "verifyPassRequiresProcessingOrListedThumbnailEvidence": true
+          },
+          "vibeWorkerConditionalModelRestore": {
+            "version": 1,
+            "source": "company-learning/platform-release-roadmap.json#changeRecord.workerConditionalModelRestore20260926",
+            "requiredMarkers": [
+              "VIBE2_WORKER_MODEL_CACHE_REQUIRED=YES|NO",
+              "VIBE2_WORKER_MODEL_CACHE_REASON="
+            ],
+            "structuredEvidenceFields": [
+              "modelCacheRequired",
+              "modelCacheReason",
+              "ollamaCacheHit",
+              "ollamaRuntimeSource",
+              "modelPrepMs"
+            ],
+            "baselineRunId": 36208311596,
+            "baselineWorkerJobId": 108309749479,
+            "baselineCacheBytes": 2814033971,
+            "skipRestoreWhenWorkLockNotAcquired": true,
+            "gamePrimaryBoundaryMustRemain": 256
+          },
+          "universalAssetFirstUpgradeEvidenceContract": {
+            "version": 2,
+            "authority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.universalAssetFirstUpgradeContract",
+            "requiredFor": [
+              "VIBE2",
+              "VIBE3",
+              "ROBLOX",
+              "UNITY",
+              "WEB"
+            ],
+            "assetFamilies": [
+              "CHARACTER",
+              "CREATURE",
+              "BUILDING",
+              "ENVIRONMENT",
+              "WEAPON",
+              "SKILL",
+              "MATERIAL",
+              "AUDIO",
+              "VFX",
+              "UI",
+              "MOTION",
+              "PROP"
+            ],
+            "requiredFields": [
+              "ASSET_LOOKUP_EXECUTED",
+              "ASSET_FAMILY_APPLICABILITY_MATRIX",
+              "SELECTED_ASSET_IDS_OR_ATOMS",
+              "SOURCE_BINDING_FILES_AND_SYMBOLS",
+              "ACTUAL_RUNTIME_USAGE_RESULT",
+              "MAP_ENVIRONMENT_COVERAGE_RESULT",
+              "PRIMITIVE_ONLY_CHECK_RESULT",
+              "LIBRARY_VERSION",
+              "SELECTION_FINGERPRINT",
+              "SELECTED_SOURCE_CONTENT_HASHES",
+              "GAME_SOURCE_REVISION",
+              "PLATFORM_ARTIFACT_IDENTITY",
+              "PER_GAME_PLATFORM_CONVERSION_RESULT",
+              "CYCLE_ID",
+              "PREVIOUS_ASSET_SELECTION",
+              "ASSET_REPLACEMENT_REASON",
+              "SOURCE_GROWTH_DIFF",
+              "CONTENT_EXPANSION_RESULT",
+              "EXACT_RUNTIME_OUTCOME"
+            ],
+            "rules": {
+              "everyFamilyMustBeAccountedFor": true,
+              "notApplicableRequiresEvidence": true,
+              "markersOrConfigSelectionAloneCannotProveUsage": true,
+              "runtimeEvidenceRequiredBeforeVerifiedPromotion": true,
+              "exactFailureClassRequired": true,
+              "staleIdentityCannotProveSynchronized": true,
+              "allRegisteredLibrariesAccountedFor": true,
+              "sourceAndRuntimeAndDeploymentEvidenceRequiredForConversionCompletion": true,
+              "platformEvidenceCannotSubstituteForAnotherPlatform": true
+            },
+            "hardFailureClasses": [
+              "UNIVERSAL_ASSET_LOOKUP_MISSING",
+              "APPLICABLE_ASSET_FAMILY_NOT_BOUND",
+              "ASSET_MARKER_ONLY_NO_VISIBLE_USE",
+              "PRIMITIVE_ONLY_VISUAL_UPGRADE",
+              "MAP_ENVIRONMENT_ASSET_COVERAGE_MISSING"
+            ]
+          },
+          "existingGameHolisticBackfillEvidenceContract": {
+            "version": 5,
+            "authority": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameSpecificBuildUpDirective.existingGameHolisticBackfill",
+            "requiredFor": "EVERY_ELIGIBLE_EXISTING_ACTIVE_OR_REBUILD_GAME_UNTIL_HOLISTIC_BASELINE_VERIFIED",
+            "requiredCorrelationKeys": [
+              "gameId",
+              "buildUpDirectiveId",
+              "buildUpGeneration",
+              "developmentDepth",
+              "studioQualityFocusPillar",
+              "sourceTreeFingerprint",
+              "platformLane",
+              "sourceRoot"
+            ],
+            "requiredEvidence": [
+              "EXISTING_HOLISTIC_BACKFILL_REQUIRED",
+              "EXISTING_HOLISTIC_BACKFILL_FOCUS",
+              "EXISTING_GAME_SOURCE_PRESERVE",
+              "EXISTING_GAME_GRANDFATHER_EXEMPTION_NO",
+              "HOLISTIC_DOMAIN_TRI_STATE_RESULT",
+              "CHANGED_RESPONSIBLE_GAME_FILES_WHEN_GAP_REPAIRED",
+              "FOCUS_PILLAR_QA_OR_RUNTIME_RESULT",
+              "SHARED_DIRECTIVE_FAN_IN_STATUS",
+              "ALL_FIVE_PILLAR_BACKFILL_OUTCOMES",
+              "HOLISTIC_BACKFILL_SCHEDULING_PRIORITY"
+            ],
+            "requiredPillars": [
+              "CORE_FUN",
+              "PROGRESSION",
+              "PRESENTATION",
+              "USABILITY",
+              "STABILITY"
+            ],
+            "completionRules": {
+              "allFiveVerifiedRequired": true,
+              "failedOrUnknownPillarCannotEmitBaselinePass": true,
+              "legacyPassCannotSubstituteCurrentEvidence": true,
+              "exactFailureStageAndSignatureRequired": true,
+              "noMeaningfulEffectCannotAdvanceDepth": true,
+              "markerOnlyEvidenceCannotProveQuality": true
+            },
+            "markers": {
+              "active": "existing-holistic-backfill:v1",
+              "grandfather": "existing-game-grandfather-exemption:NO",
+              "baseline": "EXISTING_GAME_HOLISTIC_BASELINE_VERIFIED",
+              "platformLane": "studio-quality-platform-lane:<lane>",
+              "priority": "existing-holistic-priority-before-generic-polish:YES"
+            },
+            "platformLaneEvidence": {
+              "allowed": [
+                "WEB",
+                "ROBLOX",
+                "UNITY_WEB",
+                "UNITY_NATIVE"
+              ],
+              "allFivePillarsVerifiedPerLane": true,
+              "siblingLaneEvidenceCannotSubstitute": true,
+              "unityWebRequiresWebglBrowserRuntimeEvidence": true,
+              "sameUnitySourceDoesNotMergeUnityWebAndUnityNativePassState": true
+            },
+            "schedulingEvidence": {
+              "higherSeverityRepairMayPreempt": true,
+              "genericPresentationMayNotPreemptEligibleHolisticBackfill": true,
+              "alreadyRunningSafeTaskNotRequiredToBeCancelled": true,
+              "nextGenerationMustUseCurrentPriority": true,
+              "ownerExplicitP0MayPreempt": true,
+              "gamePrimaryAdaptiveFloor": 30,
+              "externalProviderBoundary": 256,
+              "minimumWorkloadExpansionEvidenceRequiredWhenApplied": true,
+              "queuedGenericPolishDeferralMarker": "deferred-behind:EXISTING_GAME_HOLISTIC_BACKFILL",
+              "queuedGenericPolishPriorityAfterDeferral": "low",
+              "runningGenericPolishMayNotBeRewritten": true,
+              "existingBackfillExecutionGateIntentMarker": "existing-game-preservation-intent:NOT_NEW_GAME_CREATION",
+              "realNewGameExecutionGateMarker": "company-owner-gate-required",
+              "falsePositiveFailureEvidence": "RUN_36225893107_EXECUTION_GATE_BLOCKED_COMPANY_OWNER_GATE_REQUIRED",
+              "fanInTaskLocalReviewIsolation": {
+                "liveRun": 36225893107,
+                "fullRegression": "608_PASS_0_FAIL",
+                "blockedReviewCount": 5,
+                "requiredMarkers": [
+                  "VIBE2_FAN_IN_REVIEW=BLOCKED",
+                  "fan-in-review-task-local-requeue:YES",
+                  "VIBE2_FAN_IN_COHORT_SETTLEMENT=PASS_WITH_TASK_LOCAL_REQUEUE"
+                ],
+                "blockedTaskMustKeepMissingEvidence": true,
+                "blockedTaskReleaseCandidateForbidden": true,
+                "unrelatedTasksMaySettle": true
+              }
+            }
+          },
+          "vibeSourceGenerationFocusedTimeoutAndContextSync": {
+            "version": 1,
+            "source": "company-learning/platform-release-roadmap.json#changeRecord.vibeSourceGenerationFocusedTimeoutSync20260926",
+            "requiredRuntimeMarkers": [
+              "VIBE2_ZERO_OUTPUT_TIMEOUT_FOCUSED_RECOVERY=",
+              "VIBE2_FOCUSED_REPLACE_SCHEMA=ONE_KEY_REPLACE",
+              "WORKER_CONTEXT_SYNC=PASS",
+              "shared-context-sync:PASS"
+            ],
+            "failureEvidenceRules": {
+              "postWorkSharedContextMustRunBeforeFailedSourceWorkerExit": true,
+              "sharedContextMissingMayOnlyBeEmittedWhenValidatedContextFileIsActuallyAbsent": true,
+              "sourceGenerationFailureClassMustRemainCausal": true
+            },
+            "focusedRecoveryContract": {
+              "timeoutMs": 90000,
+              "maxPredict": 384,
+              "contextWindow": 8192,
+              "temperature": 0.08,
+              "structuredOutputMode": "OLLAMA_JSON_SCHEMA_ONE_KEY_REPLACE",
+              "additionalProperties": false,
+              "workerPinnedReplaceOnly": true
+            },
+            "liveBaseline": {
+              "runId": 36229097447,
+              "sourceGenerationFailures": 37,
+              "zeroOutputTimeoutsObserved": true,
+              "sharedContextMissingFalseEvidenceObserved": true
+            },
+            "authorityChange": "NONE"
+          },
+          "vibe24hStaleSingletonEpochRelease": {
+            "version": 2,
+            "source": "company-learning/platform-release-roadmap.json#developmentSpeedExecution",
+            "workflow": ".github/workflows/vibe2-24h-runner.yml",
+            "previousEpoch": "vibe2-24h-cycle-singleton-v9",
+            "currentEpoch": "vibe2-24h-cycle-<runId>",
+            "observedEvidence": {
+              "holdingRunId": 36231868218,
+              "holdingRunNumber": 4554,
+              "holdingJobId": 108376800973,
+              "holdingStage": "Generate isolated candidate from pinned main contract",
+              "joblessPendingCancelledRunIds": [
+                36231885689,
+                36232156226,
+                36232191628,
+                36232791575
+              ],
+              "nextPatchedPendingRunId": 36233623707
+            },
+            "expectedLiveEvidence": [
+              "LATEST_MAIN_24H_RUN_STARTS_WITHOUT_WAITING_FOR_OLDER_24H_RUN",
+              "ASSET_DEVELOPMENT_RESERVE_MAY_RUN_WHILE_OLDER_CYCLE_DRAINS",
+              "SHARED_QUEUE_WRITE_CONFLICTS_USE_EXISTING_OPTIMISTIC_RETRY",
+              "RESPONSIBLE_FILE_CONFLICTS_USE_EXISTING_WORK_LOCK",
+              "SUPERSEDED_QUEUED_WORKER_RESERVATIONS_RECYCLED_WITHOUT_DROPPING_IMMUTABLE_ARTIFACT_WAITS"
+            ],
+            "authorityChange": "NONE_EXECUTION_TOPOLOGY_ALIGNED_TO_EXISTING_CENTRAL_PARALLEL_POLICY",
+            "globalSingletonForbidden": true,
+            "runScopedConcurrencyRequired": true,
+            "studioActualPlayOnlyHeavySerializationException": true,
+            "liveVerification": "PENDING_EXACT_HEAD_QA_AND_MAIN_RUNTIME"
+          },
+          "robloxDevelopmentParallelismEvidenceContract": {
+            "version": 3,
+            "authority": "MACHINE_EXECUTION_LOG_MAP",
+            "policySource": "company-learning/platform-release-roadmap.json#developmentSpeedExecution.robloxEndToEndParallelExecution",
+            "workflows": [
+              ".github/workflows/company-development-roblox-runtime.yml",
+              ".github/workflows/company-development-roblox-runtime-continuation.yml",
+              ".github/workflows/company-development-roblox-headless-fast-mvp.yml",
+              ".github/workflows/company-development-roblox-release-promotion.yml"
+            ],
+            "correlationKeys": [
+              "GAME_ID",
+              "SOURCE_REVISION",
+              "ARTIFACT_IDENTITY",
+              "GITHUB_RUN_ID"
+            ],
+            "requiredMarkers": [
+              "ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCHED",
+              "ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCH=DEDUPED_ACTIVE",
+              "ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCH_COUNT",
+              "ROBLOX_F0_SOURCE_PREFLIGHT_DEDUPED_COUNT",
+              "ROBLOX_PRIVATE_RUNTIME_DISPATCHED",
+              "ROBLOX_PRIVATE_RUNTIME_DISPATCH=DEDUPED_ACTIVE",
+              "ROBLOX_PRIVATE_RUNTIME_DISPATCH_COUNT",
+              "ROBLOX_PRIVATE_RUNTIME_DEDUPED_COUNT",
+              "ROBLOX_F0_PERSIST_OPTIMISTIC_ATTEMPT",
+              "ROBLOX_F0_PERSIST_CONFLICT_RETRY",
+              "ROBLOX_PRIVATE_RUNTIME_DEDUPE_WINNER",
+              "ROBLOX_PRIVATE_RUNTIME_DEDUPE_CURRENT",
+              "ROBLOX_PRIVATE_RUNTIME_DUPLICATE_SKIPPED",
+              "ROBLOX_PRIVATE_RUNTIME_DEDUPE_PASS"
+            ],
+            "heavyWorkMaySerializeForSharedStateWrite": false,
+            "sharedStateWriteMayRetryOptimistically": true,
+            "sameGameDuplicateDispatchMustDedup": true,
+            "differentGamesMustRemainIndependent": true,
+            "privateRuntimeDedupeRule": "OLDEST_ACTIVE_SAME_GAME_RUN_EXECUTES_HEAVY_WORK_OTHERS_SELF_SKIP",
+            "workflowConcurrencyQueueReplacementForbidden": false,
+            "workflowConcurrencyQueueReplacementAllowedScope": "EXACT_DUPLICATE_GAME_STAGE_CONTROL_REVISION_ONLY",
+            "nonDuplicateWorkflowConcurrencyReplacementForbidden": true,
+            "stageScopedConcurrencyGroups": [
+              "roblox-shared-preflight-<gameId-or-batch>-<sourceRevision>",
+              "roblox-publish-exact-<gameId>-<publishStage>-<cycleOrControlRevision>",
+              "roblox-verified-learning-sweep-<gameId-or-batch>-<sourceRevision>"
+            ],
+            "wholeGameWorkflowConcurrencyForbidden": true,
+            "sameGameIndependentStagesMayRunParallel": true
+          },
+          "unityRuntimeParallelCheckpointEvidence": {
+            "version": 1,
+            "policySource": "company-learning/platform-release-roadmap.json#developmentSpeedExecution",
+            "workflow": ".github/workflows/company-development-unity-runtime.yml",
+            "correlationKeys": [
+              "GAME_ID",
+              "SOURCE_REVISION",
+              "ARTIFACT_IDENTITY",
+              "BUILD_RUN_ID"
+            ],
+            "requiredMarkers": [
+              "UNITY_RUNTIME_GAME_PERSIST_OPTIMISTIC_ATTEMPT",
+              "UNITY_RUNTIME_GAME_PERSIST_CONFLICT_RETRY",
+              "DEVELOPMENT_UNITY_GAME_PERSIST",
+              "COMPANY_RUNTIME_UNITY_GAME_PERSIST=PASS",
+              "IMMEDIATE_NEXT_STAGE_DISPATCH=YES",
+              "COHORT_PERSIST_FAN_IN=DISABLED"
+            ],
+            "cohortPersistFanInForbidden": true,
+            "sharedStateWriteOnlyMayRetry": true,
+            "heavyRuntimeQaMayNotWaitInsideSharedStateWrite": true,
+            "exactGameContinuationRequired": true
+          },
+          "nativeDevelopmentTriggerResponsibilityEvidence": {
+            "version": 1,
+            "authority": "MACHINE_EXECUTION_LOG_MAP",
+            "centralOwner": ".github/workflows/company-development-confirmed-runtime.yml",
+            "requiredEvidence": [
+              "UPPER_PLATFORM_ELIGIBLE_COUNT",
+              "UPPER_PLATFORM_ELIGIBLE_IDS",
+              "ROBLOX_RUNTIME_EXACT_DEDUPED_ACTIVE",
+              "UNITY_REQUESTED_GAME_IDS"
+            ],
+            "duplicateCentralAndChildPushRunIsBottleneck": true,
+            "duplicateValidationWithoutRelevantDeltaForbidden": true,
+            "platformSpecificDirectPushMayRemainParallel": true,
+            "sharedPolicyChangeUsesCentralFanOut": true
+          },
+          "controlPlaneRunnerIsolationEvidence": {
+            "version": 1,
+            "authority": "MACHINE_EXECUTION_LOG_MAP",
+            "runnerLabel": "ubuntu-slim",
+            "workflows": [
+              ".github/workflows/company-evolution-qa.yml",
+              ".github/workflows/company-central-policy-contract-qa.yml",
+              ".github/workflows/main-write-guard.yml"
+            ],
+            "evidenceSource": "GITHUB_ACTIONS_JOB_RUNNER_LABEL",
+            "gamePrimaryCapacityClaim": false,
+            "acceptanceGatesUnchanged": true
+          },
+          "controlPlaneLatestHeadDedupeEvidence": {
+            "version": 1,
+            "authority": "MACHINE_EXECUTION_LOG_MAP",
+            "evidence": [
+              "GITHUB_ACTIONS_CONCURRENCY_GROUP",
+              "CANCELLED_SUPERSEDED_RUN",
+              "LATEST_REF_RUN_REMAINS"
+            ],
+            "staleRunCancellationIsExpected": true,
+            "gameRunCancellationByThisContractForbidden": true,
+            "securityAndReleaseGateClaimsUnchanged": true
+          },
+          "controlPlaneHeavyRunnerSeparationEvidence": {
+            "version": 1,
+            "authority": "MACHINE_EXECUTION_LOG_MAP",
+            "expected": [
+              "SYSTEM_AI_RESERVE_RUNNER=ubuntu-slim",
+              "SYSTEM_AI_WORKER_RUNNER=ubuntu-latest",
+              "SYSTEM_AI_FANIN_RUNNER=ubuntu-slim",
+              "SEED_DESIGN_CYCLE_RUNNER=ubuntu-latest",
+              "SEED_DESIGN_CONTROL_RUNNERS=ubuntu-slim"
+            ],
+            "gameHeavyCapacityProtected": true,
+            "gateSemanticsUnchanged": true
+          },
+          "nativeChildPreDispatchDedupeEvidence": {
+            "version": 1,
+            "authority": "MACHINE_EXECUTION_LOG_MAP",
+            "markers": [
+              "NATIVE_ACTIVE_RUN_SCAN=PASS",
+              "ROBLOX_NATIVE_DISPATCH_DEDUPED_ACTIVE",
+              "UNITY_NATIVE_DISPATCH_DEDUPED_ACTIVE",
+              "ROBLOX_NATIVE_DISPATCH_IDS",
+              "UNITY_NATIVE_DISPATCH_IDS",
+              "DIRECT_NATIVE_DUAL_DISPATCH=CENTRAL_EXACT_FANOUT",
+              "DIRECT_NATIVE_BATCH_DISPATCH=FORBIDDEN"
+            ],
+            "duplicateChildQueueEntryIsWaste": true,
+            "independentPlatformLaneMayProceedWhenSiblingAlreadyActive": true
+          },
+          "homepageRunnerIsolationEvidence": {
+            "version": 1,
+            "authority": "MACHINE_EXECUTION_LOG_MAP",
+            "expectedRunnerLabel": "ubuntu-slim",
+            "jobs": [
+              "pr-fast-qa",
+              "manage-and-self-qa",
+              "director-supervision"
+            ],
+            "gamePrimaryCapacityClaim": false,
+            "publicationEvidenceUnchanged": true
+          },
+          "fanInRefillParallelReserveEvidence": {
+            "version": 1,
+            "authority": "MACHINE_EXECUTION_LOG_MAP",
+            "markers": [
+              "VIBE2_CONTROL_OPTIMISTIC_ATTEMPT",
+              "VIBE2_CONTROL_OPTIMISTIC_CONFLICT",
+              "VIBE2_EVENT_DRIVEN_REFILL"
+            ],
+            "sameLaneWorkflowSingletonForbidden": true,
+            "atomicSharedStateRetryRequired": true
+          },
+          "unityExactChildRunDedupeEvidence": {
+            "version": 1,
+            "authority": "MACHINE_EXECUTION_LOG_MAP",
+            "markers": [
+              "UNITY_ANDROID_INDEPENDENT_QA_REUSE_ACTIVE",
+              "UNITY_ANDROID_INDEPENDENT_QA_DISPATCHED",
+              "UNITY_ANDROID_REGRESSION_REUSE_ACTIVE",
+              "UNITY_ANDROID_REGRESSION_DISPATCHED"
+            ],
+            "exactIdentity": "BUILD_RUN"
+          },
+          "runnerQueueFreshnessDrainEvidence": {
+            "version": 1,
+            "authority": "MACHINE_EXECUTION_LOG_MAP",
+            "markers": [
+              "DIRECTOR_RUNNER_DRAIN_CANCELLED",
+              "VIBE2_STALE_UNSTARTED_SCHEDULER",
+              "VIBE2_STALE_UNSTARTED_FANIN_REFILL",
+              "DUPLICATE_TITLE",
+              "VIBE2_STALE_UNSTARTED_MAIN_PUSH_GAME_PRIMARY_WAKE"
+            ],
+            "currentMainMustBeResolvedBeforeSelection": true,
+            "inProgressCancellationForbidden": true,
+            "independentGameCancellationForbidden": true,
+            "staleUnstartedMainPushGamePrimaryWakeTracked": true,
+            "inProgressMainPushGamePrimaryWakeCancellationForbidden": true
+          },
+          "nativeControlRunnerIsolationEvidence": {
+            "version": 1,
+            "authority": "MACHINE_EXECUTION_LOG_MAP",
+            "expectedRunnerLabels": {
+              "robloxPreflightPlan": "ubuntu-slim",
+              "robloxPreflightWorker": "ubuntu-latest",
+              "robloxPreflightPersist": "ubuntu-slim",
+              "robloxDispatchHeadless": "ubuntu-slim",
+              "unityWebSourceBootstrap": "ubuntu-slim"
+            },
+            "heavyGameRunnerClaimUnchanged": true,
+            "acceptanceGatesUnchanged": true
+          },
+          "unityPrepareInputOverlapEvidence": {
+            "version": 1,
+            "authority": "MACHINE_EXECUTION_LOG_MAP",
+            "source": "company-learning/platform-release-roadmap.json#changeRecord.unityPrepareInputOverlap20260927",
+            "markers": [
+              "UNITY_PREPARE_CONTRACT_VERIFY=PASS",
+              "UNITY_PREPARE_QUEUE_FETCH=PASS",
+              "UNITY_PREPARE_INPUT_OVERLAP=PASS",
+              "UNITY_PREPARE_INPUT_OVERLAP=FAIL"
+            ],
+            "queueSelectionRequiresBothInputs": true,
+            "queueFetchSerializedBehindContractChecks": false,
+            "canonicalStageOrderUnchanged": true
+          },
+          "lightweightGameIngressRunnerReliefEvidence": {
+            "version": 3,
+            "authority": "MACHINE_EXECUTION_LOG_MAP",
+            "source": "company-learning/platform-release-roadmap.json#changeRecord.lightweightGameIngressRunnerRelief20260927",
+            "observedBeforeChange": {
+              "queuedWorkflowRuns": 105,
+              "armIngressQueueObserved": true,
+              "slimPlannerCompletionObserved": true
+            },
+            "expectedRunnerLabels": {
+              "centralNativePlan": "ubuntu-slim",
+              "robloxSourcePlan": "ubuntu-24.04",
+              "unityPrepare": "ubuntu-slim",
+              "vibe2Reserve": "ubuntu-slim",
+              "directorRunnerDrain": "ubuntu-24.04",
+              "vibe2FanIn": "ubuntu-24.04-arm",
+              "heavyGameExecution": "ubuntu-latest",
+              "robloxSourcePlanExact": "ubuntu-24.04",
+              "robloxSourcePlanBatch": "ubuntu-24.04"
+            },
+            "expectedConcurrency": {
+              "centralMainPushCoalesced": true,
+              "robloxBatchPushCoalesced": true,
+              "unityBatchPushCoalesced": true,
+              "cancelInProgress": false
+            },
+            "expectedDrainBehavior": {
+              "duplicateQueuedUnityBatch": true,
+              "independentGameCancellationForbidden": true,
+              "inProgressGameCancellationForbidden": true
+            },
+            "qualityGateSemanticsUnchanged": true,
+            "expectedMainPushWakeFilter": {
+              "qaOnlyCommitCreatesContinuousCore": false,
+              "descriptiveArchitectureMapCommitCreatesContinuousCore": false,
+              "descriptiveLogMapCommitCreatesContinuousCore": false,
+              "runtimeOrExecutableContractCommitCreatesContinuousCore": true,
+              "evidenceCommit": "87fd1e73c216284a99c03c79fa1dc808166da603",
+              "evidenceObservation": "QA_ONLY_COMMIT_TRIGGERED_VIBE2_CORE_QA_WITHOUT_NEW_VIBE2_CONTINUOUS_CORE_RUN"
+            },
+            "expectedSafetyNetPushFilter": {
+              "workflow": ".github/workflows/vibe2-24h-runner.yml",
+              "qaOnlyCommitCreates24hRunner": false,
+              "descriptiveArchitectureMapCommitCreates24hRunner": false,
+              "descriptiveLogMapCommitCreates24hRunner": false,
+              "humanVibeDocumentCommitCreates24hRunner": false,
+              "executableRuntimeOrGameSourceCommitCreates24hRunner": true,
+              "fiveMinuteCronStillRuns": true,
+              "verificationState": "PR_CI_REQUIRED"
+            },
+            "robloxSourcePlanCriticalIngressException": {
+              "previousRunner": "ubuntu-slim",
+              "runner": "FIXED_2404",
+              "observedDirectorDrainRunId": 36290168197,
+              "directorDrainSucceededOnFixed2404": true,
+              "sourcePlanStillQueuedOnSlimAfterDrain": true,
+              "exactGameRunner": "ubuntu-24.04",
+              "batchRunner": "ubuntu-24.04"
+            }
+          },
+          "concurrentPlatformSharedProgressMonotonicityEvidence": {
+            "version": 2,
+            "authority": "MACHINE_EXECUTION_LOG_MAP",
+            "gameId": "horror-escape-room",
+            "observedSequence": {
+              "robloxPackagePersistCommit": "b78d5ea9bb2834afa265bc77d23e86c01ea1f121",
+              "unityCheckpointPersistCommit": "8ed5ede92901fe21935b12aa642a68b89e63830e",
+              "exactSourceRevision": "b74a4ac341b7dff0ecd9f2d6cf25375534a2d268",
+              "exactArtifactIdentity": "sha256:4109e8ab3df1273f6fb877930c128b4e717c68cefcf6050269a11e1a59e846de",
+              "robloxF0Passed": true,
+              "sharedStepRegressedByUnityWriter": true
+            },
+            "expectedMarkers": [
+              "UNITY_SHARED_PROGRESS_PRESERVED_FROM_ROBLOX",
+              "DEVELOPMENT_QUEUE_RUNTIME_CHANGE",
+              "ROBLOX_PRIVATE_RUNTIME_PENDING_COUNT"
+            ],
+            "expectedRecoveredF0Step": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+            "expectedRecoveredF0State": "F0_SOURCE_PREFLIGHT_PASSED",
+            "expectedCandidateStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+            "expectedCandidateState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+            "sharedProgressRegressionForbidden": true,
+            "exactSourceArtifactBindingRequired": true,
+            "privateRuntimeRecoveryUsesExactF0Evidence": true,
+            "privateRuntimeRecoverySharedCurrentStepDependencyForbidden": true
+          },
+          "assetArmSchedulerEpochEvidence": {
+            "version": 3,
+            "centralContract": "company-learning/platform-release-roadmap.json#changeRecord.assetArmSchedulerEpochRelease20260927",
+            "previousEpoch": "vibe2-24h-cycle-singleton-v5",
+            "currentEpoch": "vibe2-24h-cycle-singleton-v6",
+            "staleHoldingRunId": 36308954595,
+            "staleHoldingHead": "df004bd40b823015bc7a223c8f437f7d9fa1c539",
+            "currentArmRunnerExpected": "ubuntu-24.04-arm",
+            "gamePrimaryRunnerUnchanged": "ubuntu-latest",
+            "oldEpochMayDrain": true,
+            "cancelInProgress": false,
+            "newQueueOrPipelineCreated": false,
+            "liveArmWorkerEvidence": "PENDING_POST_V6_MERGE",
+            "postConcurrencyFixHead": "816fea99e56d2e9b1d7d56c88fc6f69eab8827e7",
+            "postConcurrencyFixPr": 3775,
+            "schedulerPlanRunner": "ubuntu-24.04-arm",
+            "assetReserveRunner": "ubuntu-24.04-arm",
+            "assetModelCacheRunner": "ubuntu-24.04-arm",
+            "ollamaCacheKey": "vibe2-ollama-v5-${runner.os}-${runner.arch}-qwen3-1.7b",
+            "architectureAwareCache": true,
+            "modelCachePersistOnMiss": true
+          },
+          "robloxVerifiedCyclePublicationEvidence": {
+            "version": 1,
+            "authority": "company-learning/platform-release-roadmap.json#roblox.deploymentControl.verifiedCyclePublication",
+            "requiredMarkers": [
+              "ROBLOX_VALIDATION_TARGET_PUBLISH=PASS",
+              "ROBLOX_F9_FINAL_REVIEW_PASS",
+              "ROBLOX_F9_CANONICAL_PUBLISH_DISPATCHED",
+              "ROBLOX_NEXT_EVOLUTION_CYCLE_DISPATCHED"
+            ],
+            "forbiddenMarkers": [
+              "ROBLOX_CANONICAL_PUBLISH_FROM_F0"
+            ],
+            "f9Terminal": false,
+            "nextCycleRequiresCanonicalPublishSuccess": false,
+            "nextCycleRequiresFinalPublishDispatch": true,
+            "publicationOutcomeNonBlocking": true,
+            "publicationVisibilityNonBlocking": true,
+            "optionalPublicationMarkers": [
+              "ROBLOX_CANONICAL_FINAL_PUBLISH=PASS",
+              "ROBLOX_CANONICAL_FINAL_PUBLISH=REPAIR_REQUIRED"
+            ],
+            "nextCycleStartsAfterF9PublishDispatch": true,
+            "publicationOutcomeDiagnosticOnly": true,
+            "nextCycleRequiresCanonicalPublishDispatch": true
+          },
+          "platformVerifiedF0F9PublicationEvidence": {
+            "version": 1,
+            "authority": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.verifiedF0F9PublicationLoop",
+            "requiredCommonMarkers": [
+              "PLATFORM_F9_VERIFIED",
+              "PLATFORM_PUBLISH_OR_DEPLOY_DISPATCHED",
+              "PLATFORM_NEXT_EVOLUTION_CYCLE_DISPATCHED"
+            ],
+            "platformMarkers": {
+              "WEB": [
+                "WEB_F9_VERIFIED",
+                "WEB_DEPLOY_ATTEMPTED",
+                "WEB_NEXT_EVOLUTION_CYCLE_DISPATCHED"
+              ],
+              "ROBLOX": [
+                "ROBLOX_F9_VERIFIED_CANONICAL_PUBLISH_PENDING",
+                "ROBLOX_F9_CANONICAL_PUBLISH_DISPATCHED",
+                "ROBLOX_F9_VIBE_REFILL_DISPATCHED"
+              ],
+              "UNITY": [
+                "UNITY_F9_VERIFIED",
+                "UNITY_F9_DEPLOYED_INTERNAL_OR_CLOSED_BUILD",
+                "UNITY_NEXT_EVOLUTION_CYCLE_DISPATCHED"
+              ]
+            },
+            "publicationFailureMayCoexistWithNextEvolution": true,
+            "publicationVisibilityMayNotBlockNextEvolution": true,
+            "publicationFailureMustRemainRetryTracked": true,
+            "automaticPublicationRetryRequired": true,
+            "publicationRetryPreservesExactFailedCycleIdentity": true
+          },
+          "playableWebMandatoryDeploymentEvidence": {
+            "version": 1,
+            "authority": "MACHINE_EXECUTION_LOG_MAP",
+            "workflow": ".github/workflows/vibe2-candidate-release.yml",
+            "markers": [
+              "WEB_DEPLOYMENT_ELIGIBILITY=PLAYABLE_F0_F9_PLUS_STATIC_SAVE_QA",
+              "WEB_NATIVE_HOMEPAGE_READINESS_REQUIRED=NO",
+              "WEB_PLAYABLE_VERIFIED_MUST_DEPLOY=YES",
+              "VIBE2_RELEASE_PAGES_CHECK",
+              "VIBE2_WEB_CURRENT_DEPLOYMENT_CHECK",
+              "WEB_SAME_VERIFIED_CANDIDATE_RETRY=YES",
+              "VIBE2_WEB_TASK_FINAL_PASS=EXACT_SOURCE_RUNTIME_AND_DEPLOYMENT",
+              "WEB_NEXT_EVOLUTION_CYCLE_DISPATCHED"
+            ],
+            "homepageAutoIngestMarkers": [
+              "COMPANY_OWNER_WEB_ADDED",
+              "COMPANY_OWNER_WEB_UPDATED"
+            ],
+            "taskPassBeforeMainCloudflareForbidden": true
+          },
+          "perpetualBuildUpDataCapacityEvidence": {
+            "version": 1,
+            "authority": "MACHINE_EXECUTION_LOG_MAP",
+            "policy": "company-learning/vibe-autonomous-content-expansion-policy.json#dataCapacityBudget",
+            "generator": "tools/company-build-up-directive.mjs",
+            "qa": "qa/company-build-up-directive.test.mjs",
+            "limits": {
+              "savePersistedDataBytes": 2097152,
+              "webDownloadBytes": 104857600,
+              "singleFileBytes": 26214400,
+              "mobileMemoryTargetBytes": 314572800,
+              "mobileMinimumFps": 30
+            },
+            "states": [
+              "NORMAL",
+              "WARNING",
+              "EXCEEDED"
+            ],
+            "buildUpContinuesAtAllStates": true,
+            "warningRecombinationPreferred": true,
+            "generationLimit": null,
+            "contentCountLimit": null
+          },
+          "webInternalPriorityEvidence": {
+            "version": 1,
+            "authority": "MACHINE_EXECUTION_LOG_MAP",
+            "planner": "tools/vibe2-auto-planner.mjs",
+            "qa": "qa/vibe2-auto-planner.test.mjs",
+            "markers": [
+              "web-internal-priority:recent-owner-work",
+              "web-internal-priority-scope:WEB_ONLY",
+              "owner-recent-web-source-revision"
+            ],
+            "globalPriorityChanged": false,
+            "firstPlayableDeployClearsSpecialPriority": true
+          },
+          "unityFoundationEvidenceContract": {
+            "version": 1,
+            "authority": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.nativeGameFoundationValidationStack.unityAdapter",
+            "requiredMarkers": [
+              "UNITY_FOUNDATION_F1_F8_SINGLE_RUNTIME",
+              "UNITY_RUNTIME_EXACT_FAILURE_FLOOR",
+              "UNITY_F9_RUNTIME_REPLAY=NO",
+              "UNITY_F9_EVIDENCE_FANIN",
+              "UNITY_EXACT_ARTIFACT_REGRESSION=PASS"
+            ],
+            "oneExactRuntimeSessionPerCandidate": true,
+            "perFloorRuntimeRerunForbidden": true,
+            "f9RuntimeReplayForbidden": true,
+            "exactArtifactIdentityRequired": true,
+            "failureStageMustBeFirstFailedFloor": true,
+            "rawLogAloneCannotProvePass": true
+          },
+          "robloxDevelopmentVerificationEvidenceContract": {
+            "version": 1,
+            "authority": "company-learning/platform-release-roadmap.json#roblox.developmentVerification",
+            "requiredFields": [
+              "GAME_ID",
+              "SOURCE_REVISION",
+              "CODE_QA_RESULT",
+              "STATIC_QA_RESULT",
+              "DEPLOYMENT_RESULT_WHEN_ATTEMPTED"
+            ],
+            "studioEvidenceRequired": false,
+            "studioDiagnosticOptional": true,
+            "actualStudioPassMayNotBeFabricated": true
+          },
+          "vibeUnityResultParallelismEvidence": {
+            "version": 1,
+            "authority": "MACHINE_EXECUTION_LOG_MAP",
+            "workflows": [
+              ".github/workflows/vibe2-unity-candidate-result.yml",
+              ".github/workflows/vibe2-unity-release-result.yml"
+            ],
+            "requiredMarkers": [
+              "VIBE2_RECONCILE_ATTEMPT",
+              "VIBE2_RECONCILE_WRITE_RACE=RETRY",
+              "VIBE2_UNITY_RESULT_QUEUE_WRITE_ATTEMPT",
+              "VIBE2_UNITY_RESULT_QUEUE_WRITE=PASS"
+            ],
+            "forbiddenWorkflowGroups": [
+              "vibe2-control-state-vibe2-unreal-core",
+              "vibe2-release-serial"
+            ],
+            "allowedSerialization": "EXACT_DUPLICATE_CANDIDATE_OR_RESPONSIBLE_FILE_CONFLICT_OR_ATOMIC_SHARED_STATE_WRITE_ONLY",
+            "liveVerification": "PENDING_EXACT_HEAD_QA_AND_MAIN_RUNTIME"
+          },
+          "vibeResultAndRecoveryParallelismEvidence": {
+            "version": 1,
+            "authority": "MACHINE_EXECUTION_LOG_MAP",
+            "requiredMarkers": [
+              "VIBE2_CANDIDATE_QUEUE_WRITE_ATTEMPT",
+              "VIBE2_CANDIDATE_QUEUE_WRITE_RACE=RETRY",
+              "VIBE2_ROBLOX_RECONCILE_ATTEMPT",
+              "VIBE2_ROBLOX_RECONCILE_WRITE_RACE=RETRY",
+              "ROBLOX_RELEASE_HANDOFF_RUNTIME_WRITE_ATTEMPT",
+              "ROBLOX_RELEASE_HANDOFF_RUNTIME_WRITE_RACE=RETRY",
+              "VIBE2_RECOVERY_FAST_PUSH_RETRY"
+            ],
+            "forbiddenGlobalGroups": [
+              "vibe2-control-state-vibe2-unreal-core",
+              "vibe2-release-serial",
+              "vibe2-recovery-fast",
+              "vibe2-roblox-release-handoff",
+              "company-runtime-writer"
+            ],
+            "liveVerification": "PENDING_EXACT_HEAD_QA_AND_MAIN_RUNTIME"
+          },
+          "vibeProductionPressureEvidence": {
+            "version": 1,
+            "authority": "MACHINE_EXECUTION_LOG_MAP",
+            "requiredMarkers": [
+              "VIBE2_PREPLAN_PRODUCTION_PRESSURE_GATE=DISABLED_EXTERNAL_RUNNER_QUEUE_OWNS_CAPACITY",
+              "VIBE2_24H_REFILL_GLOBAL_GATE=DISABLED_EXTERNAL_RUNNER_QUEUE_OWNS_CAPACITY",
+              "VIBE2_RECOVERY_FAST_PRODUCTION_PRESSURE_GATE=DISABLED_EXTERNAL_RUNNER_QUEUE_OWNS_CAPACITY"
+            ],
+            "forbiddenProductionMarkers": [
+              "VIBE2_PREPLAN_DISPATCH=DEFER_RUNNER_PRESSURE",
+              "VIBE2_24H_REFILL=DEFERRED_TO_SCHEDULE_RUNNER_PRESSURE",
+              "VIBE2_RECOVERY_FAST_GAME_WORKER_DISPATCH=DEFERRED_RUNNER_PRESSURE_QUEUE_STATE_PRESERVED"
+            ],
+            "learningPressureObservationPreserved": true,
+            "liveVerification": "PENDING_EXACT_HEAD_QA_AND_MAIN_RUNTIME"
+          },
+          "finalDevelopmentLockEvidenceContract": {
+            "version": 1,
+            "authority": "company-learning/platform-release-roadmap.json#finalDevelopmentLock",
+            "markers": [
+              "MAIN_DIRECT_WRITE_GUARD",
+              "FINAL_CHAIN_LOCKED",
+              "BUILD_UP_DIRECTIVE_ID",
+              "ROBLOX_OPEN_CLOUD_ENGINE_PROBE",
+              "JAEWOON_OPEN_CLOUD_WORLD_BOUNDS_SIZE"
+            ],
+            "dryRunFields": [
+              "plannedFiles",
+              "impact.categories",
+              "requiredQa",
+              "conditionalQa",
+              "openCloudWorldChecks"
+            ],
+            "worldEvidenceFields": [
+              "basePartCount",
+              "spawnCount",
+              "spawnsInBounds",
+              "finiteWorldBounds",
+              "boundsSize",
+              "landmarkCount",
+              "objectiveCount",
+              "terrainPresent",
+              "lightingAtmospherePresent",
+              "streamingEnabled"
+            ],
+            "unverifiedStateCannotBeLoggedAsPass": true
+          },
+          "workerSessionPreflightEvidence": {
+            "version": 1,
+            "authority": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.sharedWorkerContext.newSessionPreflight",
+            "sourceRef": "LATEST_MAIN_AT_WORK_START",
+            "canonicalReadOrder": [
+              "company-learning/platform-release-roadmap.json",
+              "company-learning/company-log-map.json",
+              "company-learning/company-architecture-map.json",
+              "company-learning/security-immune-system.json"
+            ],
+            "mutationDeploymentStateChangeBeforePass": "FORBIDDEN",
+            "rememberedContextAuthority": "NON_AUTHORITATIVE",
+            "lockStateEvidenceRequired": true
+          },
+          "flowSequenceLockEvidence": {
+            "version": 1,
+            "authority": "company-learning/platform-release-roadmap.json#finalDevelopmentLock",
+            "requiredMarkers": [
+              "FLOW_SEQUENCE_LOCK=PASS",
+              "FLOW_GLOBAL_SERIALIZATION=FORBIDDEN",
+              "FLOW_GAME_WIDE_SERIALIZATION=FORBIDDEN",
+              "FLOW_PARALLEL_SAFE_WORK=ALLOWED",
+              "FLOW_ATOMIC_STATE_WRITE_SERIALIZATION=ALLOWED"
+            ],
+            "bottleneckRepairMustPreserveCanonicalOrder": true,
+            "queueOptimizationMayNotClaimSequenceChange": true
+          },
+          "perGameFlowQueueBottleneckEvidence": {
+            "version": 1,
+            "authority": "MACHINE_EXECUTION_LOG_MAP",
+            "source": "company-learning/platform-release-roadmap.json#changeRecord.perGameFlowQueueBottleneckRepair20261004",
+            "requiredMarkers": [
+              "ROBLOX_VERIFIED_LEARNING_REBIND_COUNT",
+              "ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH_COUNT",
+              "ROBLOX_VERIFIED_LEARNING_SWEEP_DEDUPED_COUNT",
+              "ROBLOX_PRIVATE_RUNTIME_DUPLICATE_SKIPPED",
+              "ROBLOX_F0_PER_GAME_PRIVATE_VALIDATION_DISPATCH",
+              "UNITY_RUNTIME_GAME_PERSIST_OPTIMISTIC_ATTEMPT",
+              "COHORT_PERSIST_FAN_IN=DISABLED"
+            ],
+            "sequenceLockMarker": "FLOW_SEQUENCE_LOCK=PASS",
+            "wholeGameSerializationForbidden": true,
+            "queueReductionTarget": "EXACT_DUPLICATE_STAGE_RUNS_ONLY",
+            "independentGamesContinueOnOtherGameFailure": true
+          },
+          "allGameDynamicAssetBindingEvidenceContract": {
+            "version": 1,
+            "authority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.allGameDynamicInternalAssetBindingContract",
+            "recordKind": "all-game-dynamic-asset-binding-evidence",
+            "requiredForAllGameDevelopment": true,
+            "requiredFields": [
+              "GAME_ID",
+              "TARGET_PLATFORM",
+              "SOURCE_REVISION",
+              "LIBRARY_VERSION",
+              "SELECTION_FINGERPRINT",
+              "ASSET_SOURCE_USAGE_FINGERPRINT",
+              "FAMILY_RESULTS",
+              "APPLICABLE_FAMILY_BINDINGS",
+              "NOT_APPLICABLE_EVIDENCE",
+              "BOUND_RESPONSIBLE_FILES",
+              "BOUND_ASSET_IDS",
+              "PLATFORM_NATIVE_ADAPTATIONS",
+              "PACKAGE_OR_RUNTIME_IDENTITY",
+              "QA_RESULT"
+            ],
+            "familyResultValues": [
+              "APPLIED",
+              "NOT_APPLICABLE"
+            ],
+            "allTwelveFamiliesRequired": true,
+            "allCompatibleInternalCandidatesRemainEligible": true,
+            "noArtificialAssetOrFamilyCountCap": true,
+            "lowScoreIsQualityDebtNotUsageFailure": true,
+            "markerConfigManifestOnlyCannotProveUse": true,
+            "primitivePlainFallbackCannotProveUse": true,
+            "exactSourceAndLibraryLineageRequired": true,
+            "dynamicSyncEvidenceRequired": true,
+            "platformOrder": [
+              "ROBLOX",
+              "UNITY",
+              "WEB"
+            ],
+            "completionRequiresPlatformRuntimeEvidence": true,
+            "nativeRenderConsumerSourceRequired": true,
+            "commentLogAndCountOnlyEvidenceForbidden": true,
+            "staticQaCannotClaimRuntimeOrDeploymentCompletion": true,
+            "noOpSourceCannotEarnBuildUpGrowthCredit": true,
+            "robloxValidationProvider": "ROBLOX_OFFICIAL_CLOUD_API_ONLY",
+            "cloudImageEvidenceFields": [
+              "API_ENDPOINT",
+              "UNIVERSE_ID",
+              "OBSERVED_AT",
+              "IMAGE_URL",
+              "CONTENT_TYPE",
+              "CONTENT_BYTES",
+              "SHA256",
+              "CONTENT_SIGNATURE_MATCHED",
+              "RUNTIME_SCREENSHOT_FALSE_UNLESS_SEPARATELY_PROVEN"
+            ]
+          },
+          "allGamePlayableAccessEvidence": {
+            "sourcePolicy": "catalogNormalization.ownerWebAutoIngest.webExposureQuality",
+            "required": [
+              "ACTUAL_CANONICAL_ENTRY",
+              "PROTOTYPE_WITHDRAWAL_REASON",
+              "VERIFIED_NATIVE_TEST_TARGET",
+              "EXACT_DEPLOYED_CATALOG"
+            ],
+            "runtimePassMayNotBeInferredFromCatalog": true
+          },
+          "internalAssetMotionRepair": {
+            "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.parallelism.internalAssetFocus",
+            "sourceRoot": "assets/roblox/world-ghosts/motions",
+            "worker": "EXISTING_ASSET_DEVELOPMENT",
+            "scope": "REGISTERED_PARENT_ONE_DERIVED_OBJECT_ONE_CLIP",
+            "sourceHashAndExactWindowRequired": true,
+            "gameBindingGatesUnchanged": true,
+            "originalSourcePreserved": true,
+            "sharedBindingsSerialized": true,
+            "nativeQualityPassRequiresActualPlayback": true,
+            "status": "IMPLEMENTATION_PENDING_MAIN_QA"
+          },
+          "homepageGameMediaEvidence": {
+            "sourcePolicy": "homepageGameMediaContract",
+            "imageBytesAndSha256Required": true,
+            "actualVideoBindingsRequired": true,
+            "failedCaptureMayNotBeMarkedPass": true
+          },
+          "runnablePlatformAccessEvidence": {
+            "sourcePolicy": "serverHomepageIntegration.runnablePlatformAccess",
+            "launchAvailabilitySeparateFromReleaseReadiness": true,
+            "sourceTargetAndRuntimeAvailabilityRequired": true,
+            "webWithdrawalMustRecordWebOnlyScope": true
+          },
+          "robloxStudioProductionEvidence": {
+            "sourcePolicy": "robloxStudioProductionFlowContract",
+            "fields": [
+              "gameId",
+              "genreProfile",
+              "conceptIdentity",
+              "selectedIdea.id",
+              "implementationPackages",
+              "sourceTreeFingerprint",
+              "platform",
+              "executionSurface",
+              "qualityContract"
+            ],
+            "designPlanIsNotImplementationOrRuntimePass": true,
+            "ownerRequestIdentity": [
+              "requestId",
+              "featureId",
+              "action",
+              "ownerChangeFingerprint"
+            ],
+            "optionalExternalAiEvidence": [
+              "DESIGN_EXTERNAL_AI_REQUIRED=NO",
+              "DESIGN_AI_REVIEW_LANES=NONE",
+              "DESIGN_EXTERNAL_AI_WAIT=DISABLED"
+            ],
+            "webFlowTelemetry": [
+              "VIBE2_WEB_FLOW_TARGET",
+              "VIBE2_WEB_FLOW_ACTIVE_GAMES",
+              "VIBE2_WEB_FLOW_SHORTFALL",
+              "planningBacklog.webGameFlow"
+            ],
+            "platforms": [
+              "ROBLOX",
+              "UNITY",
+              "WEB"
+            ]
+          },
+          "assetQualityFirstDevelopment": {
+            "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.parallelism.qualityFirstDevelopment",
+            "version": 1,
+            "concurrentSlots": 63,
+            "slotMeaning": "MAX_SIMULTANEOUS_DISTINCT_SAFE_TASKS_NOT_TOTAL_ASSET_COUNT",
+            "normalOperationsOwner": "VIBE2_VIBE3",
+            "priority": [
+              "ROBLOX_RELEASED_GAME_CURRENT_ASSET",
+              "ROBLOX_RELEASE_PREPARATION_CURRENT_ASSET",
+              "OTHER_ACTIVE_GAME_CURRENT_ASSET",
+              "REUSABLE_LIBRARY_QUALITY",
+              "DEMAND_BOUND_MISSING_ASSET"
+            ],
+            "qualityBeforeVolume": true,
+            "recommendedVolumeBlocksQuality": false,
+            "quantityQuotaRequiresNewAsset": false,
+            "currentConsumerEvidenceRequired": true,
+            "intendedConsumerAloneIsNotActualUse": true,
+            "sameFailedObjectAndMotionRepairRequired": true,
+            "sourceScopeAndGameplaySemanticsPreserved": true,
+            "sameFileParallelForbidden": true,
+            "runningTasksDrainWithoutCancellation": true,
+            "safeWorkShortageMayLeaveSlotsIdle": true,
+            "actualRuntimeAndBeforeAfterRequiredForQualityPass": true,
+            "sourceOnlyPassIsNotQualityPass": true,
+            "newWorkflowQueueOrScheduler": false,
+            "evidenceRequired": [
+              "ACTUAL_RESERVED_TASK_COUNT",
+              "RUNNING_ASSET_TASK_COUNT",
+              "GAME_AND_ASSET_IDENTITY",
+              "SOURCE_DIFF",
+              "NATIVE_BEFORE_AFTER_AND_MOBILE_QA"
+            ]
+          }
+        },
+        "currentReferencePaths": [
+          "activeNativeRunDedupeCoverageEvidence.markers.includes",
+          "activeNativeRunDedupeCoverageEvidence.queueAuthorityFetchParallelWithRunScan",
+          "architectureMap",
+          "assetDevelopmentDedicatedLaneEvidence.executionLane",
+          "assetDevelopmentDedicatedLaneEvidence.physicalRunnerPoolSeparated",
+          "assetDevelopmentDedicatedLaneEvidence.runnerLabel",
+          "centralPolicy",
+          "controlPlaneGameRunnerEvictionEvidence.expectedRunnerLabels.directorDrain",
+          "descriptiveMirrorPushWakeReductionEvidence.securityMainPushValidationPreserved",
+          "designEvolutionEvidenceContract.policyAuthority",
+          "designEvolutionEvidenceContract.policySemanticsDefinedInCentralOnly",
+          "designEvolutionEvidenceContract.role",
+          "developmentFloorParallelBottleneckRepairEvidence.duplicateRuntimeAuditPresent",
+          "developmentFloorParallelBottleneckRepairEvidence.independentGameParallelismRequired",
+          "developmentQueueReconcileRunnerIsolationEvidence.expectedRunnerLabels.gamePrimaryGate",
+          "developmentQueueReconcileRunnerIsolationEvidence.expectedRunnerLabels.reconcile",
+          "directorDrainRunnerIsolationEvidence.expectedRunnerLabel",
+          "directorHomepageWakeDecouplingEvidence.homepageInternalDirectorSupervisionExpected",
+          "directorHomepageWakeDecouplingEvidence.removedWorkflowRunSource",
+          "directorPreSupervisionCoalescingEvidence",
+          "existingGameWorldPatternEvidenceContract.exactCoordinatesTerrainMeshOrLayoutInLearningEvidenceForbidden",
+          "existingGameWorldPatternEvidenceContract.positiveCrossGameReuseRequiresTwoIndependentVerifiedGames",
+          "existingGameWorldPatternEvidenceContract.singleGameCrossGamePromotionForbidden",
+          "fixedAutonomousDevelopmentOperatingEvidence.autonomousBottleneckManagementOwner",
+          "fixedAutonomousDevelopmentOperatingEvidence.autonomousLearning.owner",
+          "fixedAutonomousDevelopmentOperatingEvidence.autonomousLearning.ownerOrChatgptPresenceRequired",
+          "fixedAutonomousDevelopmentOperatingEvidence.centralContract",
+          "fixedAutonomousDevelopmentOperatingEvidence.chatgptNormalOperationsOwner",
+          "fixedAutonomousDevelopmentOperatingEvidence.chatgptOverflowBottleneckAssist.normalOperationsDependency",
+          "fixedAutonomousDevelopmentOperatingEvidence.chatgptOverflowBottleneckAssist.primaryOwner",
+          "fixedAutonomousDevelopmentOperatingEvidence.chatgptOverflowBottleneckAssist.role",
+          "fixedAutonomousDevelopmentOperatingEvidence.ownerOrChatgptBottleneckPresenceRequired",
+          "fixedAutonomousDevelopmentOperatingEvidence.requestedRuntimeQaIsolation.requestedGameOnly",
+          "fixedAutonomousDevelopmentOperatingEvidence.sourceGrowthIntegrityEvidenceRequired",
+          "fixedAutonomousDevelopmentOperatingEvidence.vibeOwnsAllNormalProcessManagement",
+          "fixedRepeatDevelopment64EvidenceContract.runnerPressureMaySuppressGamePrimaryRefill",
+          "fixedRepeatDevelopment64EvidenceContract.runnerPressureMaySuppressNextCycleRefill",
+          "gameControlRunnerPoolEvidence.expectedRunnerLabels.directorDrain",
+          "gameControlRunnerPoolEvidence.expectedRunnerLabels.robloxBatchIngress",
+          "gameControlRunnerPoolEvidence.expectedRunnerLabels.robloxExactIngress",
+          "gameControlRunnerPoolEvidence.expectedRunnerLabels.robloxIngress",
+          "gameSpecificBuildUpDirectiveEvidenceContract.gameIdentityConceptEvidence.causalGameGrammarEvidence.formula",
+          "graphicsProductionEvidenceContract.implementationBindingEvidenceRequired",
+          "graphicsProductionEvidenceContract.recordKind",
+          "graphicsProductionEvidenceContract.separateCharacterEnvironmentAnimationVfxTopLevelEvidenceRecordsForbidden",
+          "graphicsProductionEvidenceContract.unlimitedEvolutionGenerationsAllowed",
+          "highEndVisualEvidenceContract.checkpointEvidenceNotTerminalCompletion",
+          "highEndVisualEvidenceContract.markerOnlyEvidenceForbidden",
+          "highEndVisualEvidenceContract.standaloneReleaseAuthority",
+          "mainPushWakeFreshnessEvidence",
+          "mainPushWakeFreshnessEvidence.workflowCallInheritedPushEventMustRemainRunScoped",
+          "maxGrowthUtf8Bytes",
+          "narrativeRuntimeEvidenceContract",
+          "narrativeRuntimeEvidenceContract.existingCanonicalLearningMotorOnly",
+          "nativeExactGameWorkflowConcurrencyEvidence.distinctGameParallelismRequired",
+          "nativeExactGameWorkflowConcurrencyEvidence.exactDuplicateStageCoalescingRequired",
+          "nativeExactGameWorkflowConcurrencyEvidence.exactGameOverlapForbidden",
+          "nativeExactGameWorkflowConcurrencyEvidence.wholeGameConcurrencyGroupForbidden",
+          "orchestrationLogContract.deterministicMachineGateMayCompleteWithoutPrimaryAi",
+          "orchestrationLogContract.finalAcceptanceRequiresPrimaryAiReview",
+          "orchestrationLogContract.internalVibeAiCollaboration",
+          "orchestrationLogContract.supervisorAbsenceIsNotAWorkerBlocker",
+          "orchestrationLogContract.systemStewardRecovery",
+          "orchestrationLogContract.workerMustNotInventPolicy",
+          "qualityFirstBuildupShortCircuitEvidence",
+          "reconcileCancellationChurnContract.queueMutationStatusSyncMarker",
+          "referenceImageWorldObservationEvidenceContract.directMapLayoutOrDistinctiveLandmarkCopyForbidden",
+          "referenceImageWorldObservationEvidenceContract.rawReferenceImageBytesInLearningLogsForbidden",
+          "requiredForAllWorkers",
+          "reusableCoreLaneConcurrencyEvidence.requiresExplicitLaneEmptyForMainPushSingleton",
+          "runnerQueueDrainEvidence",
+          "securityPolicy",
+          "sharedOllamaModelCacheEvidence.cacheHitSkipsModelPull",
+          "sharedOllamaModelCacheEvidence.cacheSaveFailureMayBlockDevelopment",
+          "specializedVerifiedQueueEvidenceContract",
+          "specializedVerifiedQueueEvidenceContract.candidateResultWorkflowCannotMintFinalMarker",
+          "specializedVerifiedQueueEvidenceContract.nativeTwoStageReviewRequired",
+          "unityPlannerDuplicateContractQaRemovalEvidence.duplicateRuntimeTestsPresent",
+          "unityPlannerDuplicateContractQaRemovalEvidence.runtimeContractTestsRemaining",
+          "unityWebActiveRunDedupeEvidence.sameGameDuplicateDispatchForbidden",
+          "unityWebBootProofReuseEvidence.bootPassMustComeFromActualPlayEvidence",
+          "unityWebBootProofReuseEvidence.separateBootBrowserLaunchExpected",
+          "unityWebGameDevelopmentEvidence",
+          "unityWebLibraryCacheReuseEvidence.cacheHitDoesNotImplyBuildPass",
+          "unityWebLibraryCacheReuseEvidence.cacheHitDoesNotImplyQaPass",
+          "utf8Bytes",
+          "verifiedExternalLearningFirstApplicationEvidenceContract",
+          "verifiedSpecializedQueueEvidenceIngressContract",
+          "workerContextLogContract.allCanonicalDocumentHashesMustBeBoundToExecutionEvidence",
+          "workerContextLogContract.canonicalDocumentHashesRequired",
+          "workerContextLogContract.canonicalReadOrderRequired",
+          "workerContextLogContract.finalDevelopmentLockStatusRequired",
+          "workerContextLogContract.fixedAutonomousDevelopmentOperatingContractRequired",
+          "workerContextLogContract.latestMainShaRequired",
+          "workerContextLogContract.launcherValidationRequired",
+          "workerContextLogContract.newChatAndWorkerPreflightRequired",
+          "workerContextLogContract.preMutationSharedContextPassRequired",
+          "workerContextLogContract.priorConversationOrMemoryOverrideForbidden",
+          "workerContextLogContract.roadmapPolicyHashRequired",
+          "workerContextLogContract.securityPolicyHashRequired",
+          "workerContextLogContract.staleContextMutationForbidden"
+        ]
+      }
+    }
+  },
+  "evidenceRefs": [],
+  "relatedFiles": [
+    "company-learning/company-log-map.json"
+  ],
+  "supersedes": [],
+  "tags": [
+    "central-document",
+    "archive",
+    "retention",
+    "current-use"
+  ]
+}
