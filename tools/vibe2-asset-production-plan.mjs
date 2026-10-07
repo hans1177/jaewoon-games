@@ -413,8 +413,9 @@ export function evaluateCrossPlatform3dMasterGlb({repoRoot=process.cwd(),source=
     };
     return unique([key,...(map[key]||[])]).map(value=>value.replace(/[^A-Z0-9]+/g,'_'));
   };
-  const missingRoleMotionClips=requiredRoleMotionClips.filter(clip=>!clipAliases(clip).some(alias=>animationNames.some(name=>name===alias||name.includes(alias)||alias.includes(name))));
-  const missingCreatureRoleMotionClips=requiredCreatureMotionClips.filter(clip=>!clipAliases(clip).some(alias=>animationNames.some(name=>name===alias||name.includes(alias)||alias.includes(name))));
+  const animationMatchesClip=clip=>clipAliases(clip).some(alias=>animationNames.some(name=>name===alias||name.includes(alias)));
+  const missingRoleMotionClips=requiredRoleMotionClips.filter(clip=>!animationMatchesClip(clip));
+  const missingCreatureRoleMotionClips=requiredCreatureMotionClips.filter(clip=>!animationMatchesClip(clip));
   const socketMatchers={
     HAND:[/(?:^|_)(?:RIGHT_)?HAND(?:_|$)/i,/(?:GRIP|WRIST)/i],BACK:[/(?:BACK|SPINE|CHEST)/i],HIP:[/(?:HIP|PELVIS|WAIST)/i],
     SHIELD:[/(?:SHIELD|OFFHAND|LEFT_HAND|HAND_L)/i],TOOL:[/(?:TOOL|WEAPON|GRIP|RIGHT_HAND|HAND_R)/i]
