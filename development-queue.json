@@ -9316,8 +9316,8 @@
       },
       "robloxProjectPath": "roblox-games/village-dungeons",
       "unityProjectPath": "unity-games/village-dungeons",
-      "targetSourcePath": "unity-games/village-dungeons",
-      "sourcePath": "unity-games/village-dungeons",
+      "targetSourcePath": "roblox-games/village-dungeons",
+      "sourcePath": "roblox-games/village-dungeons",
       "designBaselineSource": "design/village-dungeons/2026-09-19/design-revised.json",
       "designDate": "2026-09-19",
       "minimumDesignContract": {
@@ -9355,19 +9355,19 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-07T14:02:09.971Z",
-      "robloxSourceCommit": "8e8be6b6f7ecf7fd5adebcaa5507b0eca71be6f1",
-      "robloxSourceBootstrapPassedAt": "2026-10-07T13:52:13.540Z",
+      "updatedAt": "2026-10-07T14:10:25.480Z",
+      "robloxSourceCommit": "a9a3dd17cf1b997ffa3fd49e73a1f9da7b937afd",
+      "robloxSourceBootstrapPassedAt": "2026-10-07T14:10:25.480Z",
       "robloxSourceBootstrapFailedAt": null,
-      "robloxSourceCandidateBranch": "development/roblox-village-dungeons-37632390643-1",
-      "robloxSourceCandidateReadyAt": "2026-10-07T14:02:09.971Z",
+      "robloxSourceCandidateBranch": null,
+      "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "cc9fa5aec393ae7656ee2251fe61653970a6549f",
       "robloxBuildArtifactIdentity": "sha256:1f6c4de97b608eed38ad651c177cf5dd063f1f74404340b738bb2495d8f65cd6",
@@ -9465,7 +9465,7 @@
       "robloxFailureStage": "F0_SOURCE_INTEGRITY",
       "robloxFailureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
       "routingBlockers": [
-        "roblox-source-promotion-pending"
+        "roblox-runtime-evidence-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -45788,7 +45788,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-07T14:09:47.568Z",
+  "updatedAt": "2026-10-07T14:10:25.480Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -45855,5 +45855,6 @@
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
   "executionContractVersion": 1,
-  "robloxTechnicalParallelism": null
+  "robloxTechnicalParallelism": null,
+  "robloxSourceParallelism": null
 }
