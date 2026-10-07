@@ -1054,7 +1054,7 @@ function sourceConsumerUsageSource(source=''){
 function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
   const gameId=clean(game.id||game.gameId);
   const roots=sourceConsumerRoots({repoRoot,game});
-  const assetPaths=new Map(),tokens=new Map(),usageTokens=new Map(),managedByFamily=new Map(),managedFiles=new Set(),fingerprintRows=[];
+  const assetPaths=new Map(),usageTokens=new Map(),managedByFamily=new Map(),managedFiles=new Set(),fingerprintRows=[];
   let scannedFileCount=0,scannedBytes=0;
   const addToken=(target,token,file)=>{
     const normalized=clean(token).toLowerCase();
@@ -1081,7 +1081,6 @@ function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
         scannedFileCount+=1;scannedBytes+=stat.size;
         const relative=sourceConsumerPath(path.relative(repoRoot,file));
         fingerprintRows.push([relative,crypto.createHash('sha256').update(source).digest('hex')]);
-        for(const match of source.matchAll(/["']([A-Za-z0-9][A-Za-z0-9_.:-]{1,95})["']/g))addToken(tokens,match[1],relative);
         const usageSource=sourceConsumerUsageSource(source);
         for(const match of usageSource.matchAll(/["']([A-Za-z0-9][A-Za-z0-9_.:-]{1,95})["']/g))addToken(usageTokens,match[1],relative);
         for(const match of source.matchAll(/((?:\.\.\/|\.\/)*assets\/[A-Za-z0-9._\/-]+)/g)){
@@ -1108,7 +1107,7 @@ function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
   }
   fingerprintRows.sort((a,b)=>a[0].localeCompare(b[0]));
   const snapshot=Object.freeze({
-    gameId,roots:Object.freeze(roots.map(row=>row.relative)),assetPaths,tokens,usageTokens,managedByFamily,managedFiles,
+    gameId,roots:Object.freeze(roots.map(row=>row.relative)),assetPaths,usageTokens,managedByFamily,managedFiles,
     scannedFileCount,scannedBytes,
     sourceFingerprint:crypto.createHash('sha256').update(JSON.stringify(fingerprintRows)).digest('hex')
   });
