@@ -1989,8 +1989,8 @@ export function evaluateStudioQualityCandidateDelta({candidate={},sourceRoot='',
   };
 }
 
-export function evaluateRobloxDesignAnchorGrounding({candidate={},directive=null,sourceRootRelative='',required=false}={}){
-  if(required!==true)return{required:false,pass:true,reason:'NOT_REQUIRED',anchorPaths:[],changedPaths:[]};
+export function evaluateRobloxDesignAnchorGrounding({candidate={},directive=null,sourceRootRelative='',required=false,gameplayFiles=[]}={}){
+  if(required!==true)return{required:false,pass:true,reason:'NOT_REQUIRED',anchorPaths:[],changedPaths:[],gameplayPaths:[]};
   const normalize=value=>{
     let relative=posix(clean(value));
     const root=posix(clean(sourceRootRelative));
@@ -2005,14 +2005,16 @@ export function evaluateRobloxDesignAnchorGrounding({candidate={},directive=null
     ...(candidate?.newFiles||[]).map(row=>normalize(row?.path)),
     ...(candidate?.replaceFiles||[]).map(row=>normalize(row?.path))
   ].filter(Boolean));
-  if(!anchors.length)return{required:true,pass:true,reason:'NO_EXACT_DESIGN_ANCHOR_FALLBACK_TO_RESPONSIBLE_SCOPE',anchorPaths:[],changedPaths:changed};
-  const matched=changed.filter(file=>anchors.includes(file));
+  const gameplay=unique((Array.isArray(gameplayFiles)?gameplayFiles:[]).map(normalize).filter(Boolean));
+  if(!anchors.length)return{required:true,pass:true,reason:'NO_EXACT_DESIGN_ANCHOR_FALLBACK_TO_RESPONSIBLE_SCOPE',anchorPaths:[],changedPaths:changed,gameplayPaths:gameplay};
+  const matched=gameplay.filter(file=>anchors.includes(file));
   return{
     required:true,
     pass:matched.length>0,
-    reason:matched.length?'ROBLOX_DESIGN_SOURCE_ANCHOR_TOUCHED':'ROBLOX_DESIGN_SOURCE_ANCHOR_NOT_TOUCHED',
+    reason:matched.length?'ROBLOX_DESIGN_GAMEPLAY_ANCHOR_TOUCHED':'ROBLOX_DESIGN_GAMEPLAY_ANCHOR_NOT_TOUCHED',
     anchorPaths:unique(anchors),
     changedPaths:changed,
+    gameplayPaths:gameplay,
     matchedPaths:matched
   };
 }
@@ -5715,6 +5717,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       candidate,
       directive:buildUpDirective,
       sourceRootRelative,
+      gameplayFiles:studioQualityDelta.gameplayFiles||[],
       required:target==='roblox'&&studioQualityContract?.gameplaySourceDeltaRequired===true
     });
     if(robloxDesignGrounding.required&&!robloxDesignGrounding.pass){
