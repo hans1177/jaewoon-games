@@ -5857,10 +5857,12 @@ test('Studio initial prompt compacts repeated directive prose within the base mo
   assert.equal(sourcePromptContextWindow(initial,{baseContextWindow:16384,maxPredict:3072}),16384);
 });
 
-test('source prompt context expands above 32K without exceeding the default local model context limit',()=>{
+test('source prompt context uses the selected local model safe cap without making a larger model mandatory',()=>{
   const huge='x'.repeat(120000);
-  assert.equal(sourcePromptContextWindow(huge,{baseContextWindow:32768,maxPredict:3072}),40960);
-  assert.equal(sourcePromptContextWindow(huge,{baseContextWindow:65536,maxPredict:3072}),40960);
+  assert.equal(sourcePromptContextWindow(huge,{baseContextWindow:32768,maxPredict:3072,model:'qwen3:1.7b'}),40960);
+  assert.equal(sourcePromptContextWindow(huge,{baseContextWindow:65536,maxPredict:3072,model:'qwen3:1.7b'}),40960);
+  assert.equal(sourcePromptContextWindow(huge,{baseContextWindow:32768,maxPredict:3072,model:'qwen3:4b-instruct'}),65536);
+  assert.equal(sourcePromptContextWindow(huge,{baseContextWindow:65536,maxPredict:3072,model:'qwen3:4b-instruct'}),65536);
 });
 
 test('zero-output focused retry compacts oversized goal into the canonical 8K context budget',()=>{
