@@ -8,7 +8,7 @@ import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import { planAssetApplication } from '../assets/asset-selector.js';
 import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation,createMotionDirectorPlan,createDuelCombatAuthoringRecipe,createSurvivalPlayerMotionProfile,createSurvivalWildlifeMotionProfile,deriveMotionStyleVariant,auditMotionContinuityTrace} from '../assets/vibe-motion-director.js';
-import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile,synchronizeAssetCustomization,createAssetDetailReviewPlan,createAssetRuntimeVisualReviewPlan,auditCommonLibrarySystemDepth,createCompanySeedAssetIdeationPlan,buildInternalAssetLibraryAutomationPlan,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT,INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES,INTERNAL_PROGRESSION_COMPLEXITY_PROFILES,resolveInternalAssetStyleExpressionProfile,INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS} from '../assets/vibe-studio-asset-universe.js';
+import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile,synchronizeAssetCustomization,createAssetDetailReviewPlan,createAssetRuntimeVisualReviewPlan,auditCommonLibrarySystemDepth,createCompanySeedAssetIdeationPlan,buildInternalAssetLibraryAutomationPlan,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT,INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES,INTERNAL_PROGRESSION_COMPLEXITY_PROFILES,resolveInternalAssetStyleExpressionProfile,INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS,STUDIO_3D_ACTOR_ROLE_FAMILIES} from '../assets/vibe-studio-asset-universe.js';
 import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {auditVibeRuntimeVisualEvidence,auditVibeRuntimeBeforeAfterComparison} from '../assets/vibe-visual-quality-gate.js';
 import {VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,createVibeNpcCustomizationPopulation} from '../assets/vibe-character-identity-director.js';
@@ -18,6 +18,16 @@ const clean=value=>String(value??'').trim();
 const freeze=value=>Object.freeze(value);
 const freezeList=value=>freeze([...(value||[])]);
 const unique=value=>[...new Set((value||[]).map(clean).filter(Boolean))];
+const normalizeActorType=value=>clean(value).toLowerCase().replace(/[\s-]+/g,'_');
+const CROSS_PLATFORM_3D_CHARACTER_TYPES=freezeList(unique(['character',...(STUDIO_3D_ACTOR_ROLE_FAMILIES.CHARACTER||[]).map(normalizeActorType)]));
+const CROSS_PLATFORM_3D_CREATURE_TYPES=freezeList(unique(['monster',...(STUDIO_3D_ACTOR_ROLE_FAMILIES.CREATURE||[]).map(normalizeActorType)]));
+export function crossPlatform3dActorFamilyForType(type=''){
+  const key=normalizeActorType(type);
+  if(CROSS_PLATFORM_3D_CHARACTER_TYPES.includes(key))return'CHARACTER';
+  if(CROSS_PLATFORM_3D_CREATURE_TYPES.includes(key))return'CREATURE';
+  return null;
+}
+export function isCrossPlatform3dActorType(type=''){return Boolean(crossPlatform3dActorFamilyForType(type));}
 
 
 function robloxCurrentAssetSelectionProfile({repoRoot=process.cwd(),gameId=''}={}){
@@ -175,7 +185,7 @@ export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
 export function evaluateCrossPlatform3dMasterGlb({repoRoot=process.cwd(),source={},family='',role=''}={}){
   const resolvedFamily=clean(family||source?.family||source?.category).toUpperCase();
   const resolvedRole=clean(role||source?.role||source?.subfamily).toUpperCase();
-  const required=['CHARACTER','CREATURE'].includes(resolvedFamily)||/(?:PLAYER|NPC|ENEMY|CREATURE|BOSS)/.test(resolvedRole);
+  const required=['CHARACTER','CREATURE'].includes(resolvedFamily)||isCrossPlatform3dActorType(resolvedRole);
   if(!required)return freeze({required:false,pass:true,status:'NOT_REQUIRED',blockers:freezeList([]),inspection:null});
   const inspection=inspectVibeSourceGlb({repoRoot,source:{...source,path:clean(source?.masterGlb||source?.meshArtifact||source?.path)}});
   const blockers=[];
@@ -1445,9 +1455,11 @@ function buildAssetModelRouting({task={},request='',decisions=[],highEndActive=f
   });
 }
 function nativeDccFamilyForTypes(types=[]){
+  const actorFamilies=unique((types||[]).map(crossPlatform3dActorFamilyForType).filter(Boolean));
+  if(actorFamilies.length===1)return actorFamilies[0];
   const joined=(types||[]).map(value=>clean(value).toLowerCase()).join(' ');
-  if(/character|player|npc/.test(joined))return'CHARACTER';
-  if(/boss|enemy|creature|monster/.test(joined))return'CREATURE';
+  if(/character|player|npc|companion|ally|civilian|vendor|quest[ _-]?giver|trainer/.test(joined))return'CHARACTER';
+  if(/boss|enemy|elite|creature|monster|pet|mount|summon/.test(joined))return'CREATURE';
   if(/background|environment/.test(joined))return'ENVIRONMENT';
   if(/item|weapon|equipment/.test(joined))return'WEAPON';
   if(/animation|motion/.test(joined))return'MOTION';
@@ -1473,7 +1485,7 @@ function normalizeNativeDccAuthoringRecipe(recipe={},asset={},target='',required
   const targetMatch=!targets.length||targets.includes(targetName)||targets.includes(targetName.toUpperCase().toLowerCase());
   const safePath=value=>Boolean(value&&!path.isAbsolute(value)&&!value.split('/').includes('..'));
   const family=clean(recipe?.family||asset?.family||asset?.category).toUpperCase()||nativeDccFamilyForTypes(types);
-  const masterGlbRequired=['CHARACTER','CREATURE'].includes(family)||types.some(type=>/^(?:character|player|npc|enemy|boss|creature|monster)$/.test(type));
+  const masterGlbRequired=['CHARACTER','CREATURE'].includes(family)||types.some(isCrossPlatform3dActorType);
   const masterGlbOutput=outputs.find(value=>/\.glb$/i.test(value))||null;
   const safe=executor==='BLENDER_PYTHON'&&/\.py$/i.test(script)&&safePath(script)&&outputs.length>0&&outputs.every(safePath)&&(!evidenceJson||safePath(evidenceJson))&&(!preview||safePath(preview))&&(!masterGlbRequired||Boolean(masterGlbOutput));
   const license=clean(recipe?.license||asset?.license)||null;
@@ -1532,7 +1544,7 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
   const requestedDccScope=explicitRecipeHasUntyped
     ?dccCapableTypes
     :unique([...(explicitRequestedTypes||[]),...explicitRecipeTypes].map(value=>clean(value).toLowerCase()).filter(Boolean));
-  const mandatoryActorGlbTypes=dccCapableTypes.filter(type=>/^(?:character|player|npc|enemy|boss|creature|monster)$/.test(type));
+  const mandatoryActorGlbTypes=dccCapableTypes.filter(isCrossPlatform3dActorType);
   const automaticDccTypes=engineNativeTarget&&!internalMotion
     ?dccCapableTypes.filter(type=>requestedDccScope.includes(type)||mandatoryActorGlbTypes.includes(type))
     :[];
@@ -1623,8 +1635,8 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
       previewRenderRequired:true,
       artifactHashesRequired:true,
       requiredEvidenceFields:freezeList(['recipe','editableSource','nativeArtifact','artifactHash','preview','runtimeVerificationState']),
-      crossPlatform3dMasterGlbRequired:uniqueDccTypes.some(type=>/^(?:character|player|npc|enemy|boss|creature|monster)$/.test(type)),
-      crossPlatform3dMasterGlbRequiredTypes:freezeList(uniqueDccTypes.filter(type=>/^(?:character|player|npc|enemy|boss|creature|monster)$/.test(type))),
+      crossPlatform3dMasterGlbRequired:uniqueDccTypes.some(isCrossPlatform3dActorType),
+      crossPlatform3dMasterGlbRequiredTypes:freezeList(uniqueDccTypes.filter(isCrossPlatform3dActorType)),
       crossPlatform3dMasterGlbFormat:'GLB_2_0',
       crossPlatform3dMasterGlbRequiredContents:freezeList(['MESH','NORMALS','UV0','MATERIALS','SKELETON','SKIN_WEIGHTS','ANIMATION']),
       primitivePartAssemblyPrototypeOnly:true,
@@ -1670,8 +1682,8 @@ const GENERATED_ASSET_OUTPUT_CONTRACT=freeze({
 });
 
 const COMPANY_CATEGORY_TYPES=freeze({
-  CHARACTER:freeze(['character']),
-  CREATURE:freeze(['enemy','boss']),
+  CHARACTER:freeze([...CROSS_PLATFORM_3D_CHARACTER_TYPES]),
+  CREATURE:freeze([...CROSS_PLATFORM_3D_CREATURE_TYPES]),
   MOTION:freeze(['animation']),
   ENVIRONMENT:freeze(['background','prop']),
   VFX:freeze(['effect']),
@@ -2081,8 +2093,8 @@ function buildComposableBaseMaterialLoadout({companyRegistry={},studioUniversePl
 }
 function directAuthoringFor(target='',type=''){
   const resolvedTarget=clean(target).toLowerCase();
-  const actor=/character|player|enemy|boss|npc|animation/i.test(clean(type));
-  const dcc=/character|player|enemy|boss|npc|animation|background|environment|item|weapon|prop/i.test(clean(type));
+  const actor=isCrossPlatform3dActorType(type)||/animation/i.test(clean(type));
+  const dcc=isCrossPlatform3dActorType(type)||/animation|background|environment|item|weapon|prop/i.test(clean(type));
   const audio=/audio|sound|music|bgm|sfx/i.test(clean(type));
   if(resolvedTarget==='web'){
     if(audio) return freezeList(['web-audio-sfx']);
@@ -2101,20 +2113,21 @@ function directAuthoringFor(target='',type=''){
 }
 
 function qualityDnaForType(type=''){
-  const kind=clean(type).toLowerCase();
-  const profile=/character|player|npc/.test(kind)?'HERO_CHARACTER'
-    :/boss/.test(kind)?'HERO_BOSS'
-    :/enemy|creature/.test(kind)?'FOREGROUND_CREATURE'
+  const kind=normalizeActorType(type);
+  const actorFamily=crossPlatform3dActorFamilyForType(kind);
+  const profile=kind==='boss'?'HERO_BOSS'
+    :actorFamily==='CHARACTER'?'HERO_CHARACTER'
+    :actorFamily==='CREATURE'?'FOREGROUND_CREATURE'
     :/background|environment/.test(kind)?'REGION_WORLD'
     :/item|weapon/.test(kind)?'INTERACTIVE_EQUIPMENT'
     :/prop/.test(kind)?'FUNCTIONAL_PROP'
     :/ui/.test(kind)?'INTERFACE'
     :/animation|motion/.test(kind)?'MOTION'
     :'GENERAL_VISUAL';
-  const axes=/character|player|npc/.test(kind)
-    ?['SILHOUETTE','PROPORTION','ANATOMY','FACE_HANDS_FEET','CLOTHING_EQUIPMENT_FIT','MATERIAL','RIG','SOCKET','MOTION','SECONDARY_MOTION','LOD']
-    :/boss|enemy|creature/.test(kind)
-      ?['SPECIES_SILHOUETTE','BODY_PLAN','HEAD_MOUTH_EYES','LIMB_APPENDAGE_STRUCTURE','SURFACE_MATERIAL','RIG','ATTACK_CONTACT','LOCOMOTION','HIT_DEATH_MOTION','LOD']
+  const axes=actorFamily==='CHARACTER'
+    ?['SILHOUETTE','PROPORTION','ANATOMY','FACE_HANDS_FEET','CLOTHING_EQUIPMENT_FIT','MATERIAL','RIG','SOCKET','ROLE_READABILITY','MOTION','SECONDARY_MOTION','LOD']
+    :actorFamily==='CREATURE'
+      ?['SPECIES_SILHOUETTE','BODY_PLAN','HEAD_MOUTH_EYES','LIMB_APPENDAGE_STRUCTURE','SURFACE_MATERIAL','RIG','ROLE_READABILITY','ATTACK_CONTACT','LOCOMOTION','HIT_DEATH_MOTION','LOD']
       :/background|environment/.test(kind)
         ?['MACRO_FORM','LANDMARK','ROUTE_READABILITY','STRUCTURAL_DENSITY','VEGETATION','FUNCTIONAL_PROPS','MATERIAL_HISTORY','AMBIENT_MOTION','STREAMING_LOD']
         :/item|weapon|prop/.test(kind)
@@ -2164,8 +2177,8 @@ function assetApplyFirstCandidate(asset={},target='',binding={}){
   const platform=clean(target).toLowerCase();
   const variant=asset?.platformVariants?.[platform.toUpperCase()]||asset?.platformVariants?.[platform]||null;
   const sameGame=asset.sameGameExistingRoblox===true&&platform==='roblox';
-  const requestedType=clean(binding?.type).toLowerCase();
-  const masterGlbRequired=/^(?:character|player|npc|enemy|boss|creature|monster)$/.test(requestedType);
+  const requestedType=normalizeActorType(binding?.type);
+  const masterGlbRequired=isCrossPlatform3dActorType(requestedType);
   const masterGlbReady=!masterGlbRequired||asset.masterGlbStaticQaPass===true;
   const hasNativeReference=Boolean(sameGame&&(asset.path||asset.robloxAssetId)||variant?.path||asset.path||asset.robloxAssetId);
   const nativeReady=Boolean(masterGlbReady&&asset.crossPlatformMasterSource!==true&&(sameGame||variant?.path||asset.productionVerified===true));
