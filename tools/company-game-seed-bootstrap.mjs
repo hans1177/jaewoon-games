@@ -90,12 +90,12 @@ const MODEL_TIMEOUT_MS=Math.max(30000,Number(process.env.GAME_SEED_MODEL_TIMEOUT
 const IDLE_TARGET_COUNT=Math.max(0,Math.min(3,Number(process.env.GAME_SEED_IDLE_TARGET_COUNT||0)));
 const FORCE_TARGET_COUNT=Math.max(0,Math.min(3,Number(process.env.GAME_SEED_FORCE_TARGET_COUNT||0)));
 
-const TEXT={type:'string',maxLength:1200};
-const SKETCH_ITEM={type:'string',minLength:1,maxLength:360};
+const TEXT={type:'string',maxLength:1800};
+const SKETCH_ITEM={type:'string',minLength:1,maxLength:560};
 const CAUSAL_DNA_ITEM_SCHEMA={
   type:'object',
   required:['id','source','principle','gameplayConversion','fusionRole'],
-  properties:{id:{type:'string',minLength:3,maxLength:120},source:{type:'string',minLength:3,maxLength:180},principle:{type:'string',minLength:10,maxLength:600},gameplayConversion:{type:'string',minLength:10,maxLength:700},fusionRole:{type:'string',minLength:10,maxLength:500}},
+  properties:{id:{type:'string',minLength:3,maxLength:120},source:{type:'string',minLength:3,maxLength:220},principle:{type:'string',minLength:10,maxLength:900},gameplayConversion:{type:'string',minLength:10,maxLength:1000},fusionRole:{type:'string',minLength:10,maxLength:800}},
   additionalProperties:false
 };
 const SYSTEM_AXIS_SCHEMA={
@@ -104,9 +104,9 @@ const SYSTEM_AXIS_SCHEMA={
   properties:{
     key:{type:'string',enum:['A','B']},
     name:{type:'string',minLength:2,maxLength:180},
-    purpose:{type:'string',minLength:10,maxLength:600},
-    playerChoice:{type:'string',minLength:10,maxLength:600},
-    stateContribution:{type:'string',minLength:10,maxLength:700}
+    purpose:{type:'string',minLength:10,maxLength:900},
+    playerChoice:{type:'string',minLength:10,maxLength:900},
+    stateContribution:{type:'string',minLength:10,maxLength:1000}
   },
   additionalProperties:false
 };
@@ -115,9 +115,9 @@ const SUB_ELEMENT_SCHEMA={
   required:['name','role','supports','variationEffect'],
   properties:{
     name:{type:'string',minLength:2,maxLength:180},
-    role:{type:'string',minLength:10,maxLength:600},
+    role:{type:'string',minLength:10,maxLength:900},
     supports:{type:'array',minItems:1,maxItems:3,uniqueItems:true,items:{type:'string',enum:['MAIN','A','B']}},
-    variationEffect:{type:'string',minLength:10,maxLength:700}
+    variationEffect:{type:'string',minLength:10,maxLength:1000}
   },
   additionalProperties:false
 };
@@ -126,9 +126,9 @@ const DELVE_ELEMENT_SCHEMA={
   required:['name','discoveryCondition','masteryOrInsight','gameplayEffect','connectsTo'],
   properties:{
     name:{type:'string',minLength:2,maxLength:180},
-    discoveryCondition:{type:'string',minLength:10,maxLength:600},
-    masteryOrInsight:{type:'string',minLength:10,maxLength:700},
-    gameplayEffect:{type:'string',minLength:10,maxLength:700},
+    discoveryCondition:{type:'string',minLength:10,maxLength:900},
+    masteryOrInsight:{type:'string',minLength:10,maxLength:1000},
+    gameplayEffect:{type:'string',minLength:10,maxLength:1000},
     connectsTo:{type:'array',minItems:2,maxItems:4,uniqueItems:true,items:{type:'string',enum:['MAIN','A','B','c']}}
   },
   additionalProperties:false
@@ -138,20 +138,20 @@ const NOVEL_GAME_GRAMMAR_SCHEMA={
   required:['toneBlend','familiarAnchor','causalDNAs','brokenGenreAssumption','newPrimaryVerb','worldRule','causalFusion','irreducibilityTest','storyWorldBindings','gameplaySystemFusion','delveLayer','emergentGenre','expansionVectors','culturalAbstractionRule'],
   properties:{
     toneBlend:{type:'array',minItems:1,maxItems:4,uniqueItems:true,items:{type:'string',minLength:2,maxLength:120}},
-    familiarAnchor:{type:'string',minLength:15,maxLength:700},
+    familiarAnchor:{type:'string',minLength:15,maxLength:1000},
     causalDNAs:{type:'array',minItems:2,maxItems:4,items:CAUSAL_DNA_ITEM_SCHEMA},
-    brokenGenreAssumption:{type:'string',minLength:15,maxLength:700},
-    newPrimaryVerb:{type:'string',minLength:8,maxLength:300},
-    worldRule:{type:'string',minLength:15,maxLength:700},
-    causalFusion:{type:'array',minItems:2,maxItems:6,uniqueItems:true,items:{type:'string',minLength:15,maxLength:700}},
-    irreducibilityTest:{type:'object',required:['removeFirstAxis','removeSecondAxis','verdict'],properties:{removeFirstAxis:{type:'string',minLength:15,maxLength:600},removeSecondAxis:{type:'string',minLength:15,maxLength:600},verdict:{type:'string',minLength:15,maxLength:600}},additionalProperties:false},
-    storyWorldBindings:{type:'object',required:['emotionalConflict','characterRule','monsterRule','regionRule','storyRule','plausibility'],properties:{emotionalConflict:{type:'string',minLength:15,maxLength:700},characterRule:{type:'string',minLength:15,maxLength:700},monsterRule:{type:'string',minLength:15,maxLength:700},regionRule:{type:'string',minLength:15,maxLength:700},storyRule:{type:'string',minLength:15,maxLength:700},plausibility:{type:'string',minLength:15,maxLength:700}},additionalProperties:false},
+    brokenGenreAssumption:{type:'string',minLength:15,maxLength:1000},
+    newPrimaryVerb:{type:'string',minLength:8,maxLength:420},
+    worldRule:{type:'string',minLength:15,maxLength:1000},
+    causalFusion:{type:'array',minItems:2,maxItems:6,uniqueItems:true,items:{type:'string',minLength:15,maxLength:1000}},
+    irreducibilityTest:{type:'object',required:['removeFirstAxis','removeSecondAxis','verdict'],properties:{removeFirstAxis:{type:'string',minLength:15,maxLength:900},removeSecondAxis:{type:'string',minLength:15,maxLength:900},verdict:{type:'string',minLength:15,maxLength:900}},additionalProperties:false},
+    storyWorldBindings:{type:'object',required:['emotionalConflict','characterRule','monsterRule','regionRule','storyRule','plausibility'],properties:{emotionalConflict:{type:'string',minLength:15,maxLength:1000},characterRule:{type:'string',minLength:15,maxLength:1000},monsterRule:{type:'string',minLength:15,maxLength:1000},regionRule:{type:'string',minLength:15,maxLength:1000},storyRule:{type:'string',minLength:15,maxLength:1000},plausibility:{type:'string',minLength:15,maxLength:1000}},additionalProperties:false},
     gameplaySystemFusion:{type:'object',required:['formula','main','majorAxes','subElements','crossSystemRules'],properties:{
       formula:{type:'string',enum:['MAIN × A × B × c']},
-      main:{type:'object',required:['name','purpose','playerAction','stateContribution'],properties:{name:{type:'string',minLength:2,maxLength:180},purpose:{type:'string',minLength:10,maxLength:600},playerAction:{type:'string',minLength:10,maxLength:600},stateContribution:{type:'string',minLength:10,maxLength:700}},additionalProperties:false},
+      main:{type:'object',required:['name','purpose','playerAction','stateContribution'],properties:{name:{type:'string',minLength:2,maxLength:220},purpose:{type:'string',minLength:10,maxLength:900},playerAction:{type:'string',minLength:10,maxLength:900},stateContribution:{type:'string',minLength:10,maxLength:1000}},additionalProperties:false},
       majorAxes:{type:'array',minItems:2,maxItems:2,items:SYSTEM_AXIS_SCHEMA},
       subElements:{type:'array',minItems:2,maxItems:6,items:SUB_ELEMENT_SCHEMA},
-      crossSystemRules:{type:'array',minItems:4,maxItems:10,uniqueItems:true,items:{type:'string',minLength:15,maxLength:700}}
+      crossSystemRules:{type:'array',minItems:4,maxItems:10,uniqueItems:true,items:{type:'string',minLength:15,maxLength:1000}}
     },additionalProperties:false},
     delveLayer:{type:'object',required:['formulaSuffix','role','elements'],properties:{
       formulaSuffix:{type:'string',enum:['+ @']},
@@ -160,13 +160,13 @@ const NOVEL_GAME_GRAMMAR_SCHEMA={
     },additionalProperties:false},
     emergentGenre:{type:'object',required:['name','definition','whyNotSingleConventionalGenre','grammarFormula','categoryRole'],properties:{
       name:{type:'string',minLength:4,maxLength:180},
-      definition:{type:'string',minLength:20,maxLength:800},
-      whyNotSingleConventionalGenre:{type:'string',minLength:20,maxLength:800},
+      definition:{type:'string',minLength:20,maxLength:1200},
+      whyNotSingleConventionalGenre:{type:'string',minLength:20,maxLength:1200},
       grammarFormula:{type:'string',enum:['MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @']},
       categoryRole:{type:'string',enum:['SEED_DISCOVERY_HINT_ONLY_NOT_FINAL_GENRE']}
     },additionalProperties:false},
-    expansionVectors:{type:'array',minItems:4,maxItems:8,uniqueItems:true,items:{type:'string',minLength:15,maxLength:700}},
-    culturalAbstractionRule:{type:'string',minLength:15,maxLength:700}
+    expansionVectors:{type:'array',minItems:4,maxItems:8,uniqueItems:true,items:{type:'string',minLength:15,maxLength:1000}},
+    culturalAbstractionRule:{type:'string',minLength:15,maxLength:1000}
   },
   additionalProperties:false
 };
@@ -196,6 +196,44 @@ const IDENTITY_CORE_SCHEMA={
   },
   additionalProperties:false
 };
+const UI_MENU_ITEM_SCHEMA={
+  type:'object',
+  required:['name','purpose','destination','availabilityRule'],
+  properties:{
+    name:{type:'string',minLength:1,maxLength:180},
+    purpose:{type:'string',minLength:8,maxLength:700},
+    destination:{type:'string',minLength:2,maxLength:260},
+    availabilityRule:{type:'string',minLength:8,maxLength:700}
+  },
+  additionalProperties:false
+};
+const UI_BUTTON_SCHEMA={
+  type:'object',
+  required:['name','action','priority','states','touchRule','confirmationRule'],
+  properties:{
+    name:{type:'string',minLength:1,maxLength:180},
+    action:{type:'string',minLength:8,maxLength:700},
+    priority:{type:'string',enum:['PRIMARY','SECONDARY','CONTEXTUAL','DANGEROUS']},
+    states:{type:'array',minItems:3,maxItems:6,uniqueItems:true,items:{type:'string',enum:['DEFAULT','PRESSED','DISABLED','LOADING','ERROR','CONFIRM']}},
+    touchRule:{type:'string',minLength:8,maxLength:700},
+    confirmationRule:{type:'string',minLength:8,maxLength:700}
+  },
+  additionalProperties:false
+};
+const UI_INTERACTION_PLAN_SCHEMA={
+  type:'object',
+  required:['navigationModel','mainMenu','gameplayHud','screenFlow','buttons','mobileRules','feedbackStates'],
+  properties:{
+    navigationModel:{type:'string',minLength:15,maxLength:1000},
+    mainMenu:{type:'array',minItems:3,maxItems:10,items:UI_MENU_ITEM_SCHEMA},
+    gameplayHud:{type:'array',minItems:3,maxItems:10,uniqueItems:true,items:{type:'string',minLength:8,maxLength:700}},
+    screenFlow:{type:'array',minItems:4,maxItems:12,uniqueItems:true,items:{type:'string',minLength:8,maxLength:700}},
+    buttons:{type:'array',minItems:4,maxItems:14,items:UI_BUTTON_SCHEMA},
+    mobileRules:{type:'array',minItems:4,maxItems:10,uniqueItems:true,items:{type:'string',minLength:8,maxLength:700}},
+    feedbackStates:{type:'array',minItems:4,maxItems:10,uniqueItems:true,items:{type:'string',minLength:8,maxLength:700}}
+  },
+  additionalProperties:false
+};
 const PACING_PLAN_SCHEMA={
   type:'object',
   required:['first5Minutes','minutes5To15','minutes15To25','minutes25To30','midLateGame','replayMotivation'],
@@ -211,16 +249,16 @@ const PACING_PLAN_SCHEMA={
 };
 const GAMEPLAY_SKETCH_SCHEMA={
   type:'object',
-  required:['worldModel','actors','interactionChains','stateMachine','firstPlayableCycle','identityCore','novelGameGrammar','playerPromise','funDrivers','balanceRules','pacingPlan','progressionLayers','expansionPlan','longGoalScenario','completionCriteria','codingGrowthHooks','validationRisks'],
+  required:['worldModel','actors','interactionChains','stateMachine','firstPlayableCycle','identityCore','novelGameGrammar','playerPromise','funDrivers','balanceRules','pacingPlan','progressionLayers','expansionPlan','longGoalScenario','completionCriteria','codingGrowthHooks','validationRisks','uiInteractionPlan'],
   properties:{
-    worldModel:{type:'string',minLength:1,maxLength:900},
+    worldModel:{type:'string',minLength:1,maxLength:1400},
     identityCore:IDENTITY_CORE_SCHEMA,
     novelGameGrammar:NOVEL_GAME_GRAMMAR_SCHEMA,
     actors:{type:'array',minItems:2,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
     interactionChains:{type:'array',minItems:1,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
     stateMachine:{type:'array',minItems:5,maxItems:10,uniqueItems:true,items:SKETCH_ITEM},
     firstPlayableCycle:{type:'array',minItems:6,maxItems:10,uniqueItems:true,items:SKETCH_ITEM},
-    playerPromise:{type:'string',minLength:20,maxLength:700},
+    playerPromise:{type:'string',minLength:20,maxLength:1100},
     funDrivers:{type:'array',minItems:3,maxItems:6,uniqueItems:true,items:SKETCH_ITEM},
     balanceRules:{type:'array',minItems:4,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
     pacingPlan:PACING_PLAN_SCHEMA,
@@ -230,6 +268,7 @@ const GAMEPLAY_SKETCH_SCHEMA={
     completionCriteria:{type:'array',minItems:4,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
     codingGrowthHooks:{type:'array',minItems:4,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
     validationRisks:{type:'array',minItems:2,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
+    uiInteractionPlan:UI_INTERACTION_PLAN_SCHEMA,
   },
   additionalProperties:false,
 };
@@ -238,14 +277,14 @@ const PROPOSAL_PROPERTIES={
   category:{type:'string',maxLength:80},
   gameName:{type:'string',maxLength:120},
   referenceGames:{type:'array',minItems:0,maxItems:4,uniqueItems:true,items:{type:'string',maxLength:120}},
-  coreFunToLearn:{type:'array',minItems:1,maxItems:6,uniqueItems:true,items:{type:'string',maxLength:300}},
-  coreLoop:{type:'array',minItems:3,maxItems:8,uniqueItems:true,items:{type:'string',maxLength:300}},
+  coreFunToLearn:{type:'array',minItems:1,maxItems:6,uniqueItems:true,items:{type:'string',maxLength:500}},
+  coreLoop:{type:'array',minItems:3,maxItems:8,uniqueItems:true,items:{type:'string',maxLength:500}},
   distinctIdentity:TEXT,
-  targetAudience:{type:'string',maxLength:600},
+  targetAudience:{type:'string',maxLength:900},
   initialTargetPlatform:{type:'string',enum:allowedTargetPlatforms},
   initialPlayMode:{type:'string',minLength:1,maxLength:120},
   multiplayerDesignMode:{type:'string',enum:['SINGLE','COOP','COMPETITIVE','HYBRID']},
-  crossPlatformExpansionValue:{type:'string',minLength:1,maxLength:500},
+  crossPlatformExpansionValue:{type:'string',minLength:1,maxLength:800},
   steamExpansionPossible:{type:'string',enum:['POSSIBLE','NOT_RECOMMENDED']},
   transformationMode:{type:'string',enum:['HOMAGE','REINTERPRETATION','ORIGINAL_COMPOSITION']},
   gameplaySketch:GAMEPLAY_SKETCH_SCHEMA,
@@ -592,6 +631,38 @@ function normalizeGameplaySketch(target,p,coreLoop,gameName){
     '프레젠테이션 자산 바인딩은 게임 로직과 분리해 최신 내부자산을 재선택·적응할 수 있게 한다'
   ],4,8);
   const validationRisks=sketchArray(raw.validationRisks,['버튼/라벨/파일 크기만으로 구현 완료를 가장하지 않는다','반복·재시작·대기로 콘텐츠 분량을 채우지 않는다','색상·체력·데미지 배수만 바꾼 변형을 새 콘텐츠 깊이로 계산하지 않는다'],2,8);
+  const uiRaw=raw.uiInteractionPlan&&typeof raw.uiInteractionPlan==='object'&&!Array.isArray(raw.uiInteractionPlan)?raw.uiInteractionPlan:{};
+  const mainMenuRaw=Array.isArray(uiRaw.mainMenu)?uiRaw.mainMenu:[];
+  const mainMenuFallback=[
+    {name:'플레이',purpose:'현재 진행에서 실제 게임 세션으로 진입한다.',destination:'GAMEPLAY_ENTRY',availabilityRule:'필수 로딩과 저장 상태 확인 뒤 활성화한다.'},
+    {name:'성장/장비',purpose:'현재 성장·장비·빌드 선택을 확인하고 변경한다.',destination:'PROGRESSION_OR_LOADOUT',availabilityRule:'해당 시스템이 실제로 존재할 때만 노출한다.'},
+    {name:'설정',purpose:'입력·오디오·그래픽·접근성 옵션을 조정한다.',destination:'SETTINGS',availabilityRule:'게임 진행 여부와 무관하게 안전하게 접근 가능해야 한다.'}
+  ];
+  const mainMenu=[...mainMenuRaw,...mainMenuFallback].slice(0,10).map((row,i)=>{
+    const fallback=mainMenuFallback[i%mainMenuFallback.length];
+    return {name:clean(row?.name)||fallback.name,purpose:clean(row?.purpose)||fallback.purpose,destination:clean(row?.destination)||fallback.destination,availabilityRule:clean(row?.availabilityRule)||fallback.availabilityRule};
+  }).slice(0,Math.max(3,Math.min(10,mainMenuRaw.length||3)));
+  const buttonRaw=Array.isArray(uiRaw.buttons)?uiRaw.buttons:[];
+  const buttonFallback=[
+    {name:'주 행동',action:'현재 MAIN 핵심 행동을 실행한다.',priority:'PRIMARY',states:['DEFAULT','PRESSED','DISABLED','LOADING'],touchRule:'엄지로 반복 입력해도 인접 버튼과 오작동하지 않는 충분한 터치 영역을 확보한다.',confirmationRule:'일반 반복 행동은 추가 확인 없이 즉시 실행한다.'},
+    {name:'보조 행동',action:'A/B 또는 상황별 보조 상호작용을 실행한다.',priority:'SECONDARY',states:['DEFAULT','PRESSED','DISABLED'],touchRule:'주 행동과 시각·공간적으로 구분하고 이동 입력을 가리지 않는다.',confirmationRule:'상태가 불가능하면 비활성 이유를 피드백한다.'},
+    {name:'뒤로가기',action:'현재 화면을 닫고 직전 안전 화면으로 돌아간다.',priority:'CONTEXTUAL',states:['DEFAULT','PRESSED','DISABLED'],touchRule:'플랫폼 뒤로가기 입력과 일관되며 중요한 주 행동과 떨어뜨린다.',confirmationRule:'저장되지 않은 중요한 변경이 있을 때만 확인한다.'},
+    {name:'위험 확인',action:'삭제·초기화·비가역 소비 같은 위험 행동을 확정한다.',priority:'DANGEROUS',states:['DEFAULT','PRESSED','DISABLED','CONFIRM'],touchRule:'주요 반복 버튼과 충분히 분리하고 실수 터치를 방지한다.',confirmationRule:'비가역 또는 큰 손실 행동은 별도 확인 단계를 요구한다.'}
+  ];
+  const buttons=[...buttonRaw,...buttonFallback].slice(0,14).map((row,i)=>{
+    const fallback=buttonFallback[i%buttonFallback.length];
+    const states=uniq(row?.states).filter(value=>['DEFAULT','PRESSED','DISABLED','LOADING','ERROR','CONFIRM'].includes(value));
+    return {name:clean(row?.name)||fallback.name,action:clean(row?.action)||fallback.action,priority:['PRIMARY','SECONDARY','CONTEXTUAL','DANGEROUS'].includes(clean(row?.priority).toUpperCase())?clean(row.priority).toUpperCase():fallback.priority,states:states.length>=3?states.slice(0,6):fallback.states,touchRule:clean(row?.touchRule)||fallback.touchRule,confirmationRule:clean(row?.confirmationRule)||fallback.confirmationRule};
+  }).slice(0,Math.max(4,Math.min(14,buttonRaw.length||4)));
+  const uiInteractionPlan={
+    navigationModel:clean(uiRaw.navigationModel)||'메인 메뉴→게임 진입→플레이 HUD→필요한 서브 화면→직전 플레이 상태 복귀 흐름을 유지하고, 막다른 화면 없이 뒤로가기와 취소 경로를 항상 제공한다.',
+    mainMenu,
+    gameplayHud:sketchArray(uiRaw.gameplayHud,['현재 목표와 진행 상태를 최우선으로 읽힌다.','체력·위험·핵심 자원처럼 즉시 판단에 필요한 정보를 플레이 영역을 가리지 않고 표시한다.','MAIN 행동 가능 여부와 A/B/c 상태 변화를 같은 시각 언어로 피드백한다.','불필요한 상시 버튼은 숨기고 상황별 기능은 컨텍스트가 있을 때만 노출한다.'],3,10),
+    screenFlow:sketchArray(uiRaw.screenFlow,['메인 메뉴 -> 플레이 선택 -> 저장/세션 상태 확인 -> 게임 진입','게임플레이 -> 인벤토리/성장/지도 등 서브 화면 -> 닫기/뒤로가기 -> 같은 플레이 상태 복귀','실패/완료 -> 결과 요약 -> 재시도/다음 목표/안전한 허브 선택','설정 -> 변경 적용 또는 취소 -> 호출한 화면으로 복귀'],4,12),
+    buttons,
+    mobileRules:sketchArray(uiRaw.mobileRules,['핵심 터치 버튼은 엄지 도달 범위 안에서 서로 겹치지 않고 충분한 간격을 둔다.','조이스틱·카메라·주 행동·보조 행동의 동시 입력을 방해하지 않는다.','노치·안전영역·가로/세로 비율 차이에서 버튼과 텍스트가 잘리지 않는다.','버튼 라벨만으로 의미를 숨기지 않고 아이콘·텍스트·상태 피드백을 함께 사용한다.','로딩 중 중복 입력과 여러 번 결제를 막고 진행 상태를 표시한다.'],4,10),
+    feedbackStates:sketchArray(uiRaw.feedbackStates,['기본/눌림/비활성 상태가 시각적으로 명확히 구분된다.','로딩 또는 네트워크 대기 중에는 입력 중복 방지와 진행 피드백을 함께 제공한다.','실패한 행동은 이유와 다음 가능한 조치를 같은 화면에서 알려준다.','성공한 구매·장착·저장·퀘스트 완료는 즉시 확인 가능한 피드백을 준다.','위험 행동은 확인 전과 확정 후 상태가 분명히 다르다.'],4,10)
+  };
   const flowBaseline={content:{
     identity:clean(p?.distinctIdentity)||gameName,
     playerFantasy:playerPromise,
@@ -602,7 +673,7 @@ function normalizeGameplaySketch(target,p,coreLoop,gameName){
     novelGameGrammar,
   }};
   const flowArchitecture=buildGameFlowArchitecture({gameId:`seed:${target.requestId}`,genre:target.category,baseline:flowBaseline,inventory:[]});
-  return{version:4,source:clean(raw.source)||'GAME_SEED_MODEL_OR_NORMALIZED_SKETCH_V4_CAUSAL_GRAMMAR',worldModel,actors,interactionChains,stateMachine,firstPlayableCycle,identityCore,novelGameGrammar,playerPromise,funDrivers,balanceRules,pacingPlan,progressionLayers,expansionPlan,longGoalScenario,completionCriteria,codingGrowthHooks,validationRisks,flowArchitecture};
+  return{version:4,source:clean(raw.source)||'GAME_SEED_MODEL_OR_NORMALIZED_SKETCH_V4_CAUSAL_GRAMMAR',worldModel,actors,interactionChains,stateMachine,firstPlayableCycle,identityCore,novelGameGrammar,playerPromise,funDrivers,balanceRules,pacingPlan,progressionLayers,expansionPlan,longGoalScenario,completionCriteria,codingGrowthHooks,validationRisks,uiInteractionPlan,flowArchitecture};
 }
 function normalizeProposal(target,p={}){
   const existingNames=new Set((state.seeds||[]).map(s=>norm(s.gameName)).filter(Boolean));
@@ -659,7 +730,7 @@ async function callModelBatch(targets){
     multiplayerMustBeDecidedNow:true,
     allowedMultiplayerModes:['SINGLE','COOP','COMPETITIVE','HYBRID'],
   }));
-  const prompt=`GAME_SEED를 작성하라. 각 요청의 seedMaterials는 100개 재료 풀에서 목표 플랫폼, 카테고리 적합성, 재료 상호보완성, 검증된 학습 성과, 기존 Top30과의 차별성을 기준으로 2~4개가 동적으로 선정되었다. 주어진 재료를 모두 실제로 조합한다. 재료는 기존 게임일 필요가 없으며 직업·산업·자연·과학·스포츠·놀이·사회관계·생존상황·공간운영·완전 신규 아이디어를 동등하게 사용할 수 있다. existing game reference는 선택사항이다. 동일 참고 게임이나 동일 장르 재사용은 허용하지만 최종 coreLoop와 distinctIdentity가 기존 프로젝트와 사실상 같으면 안 된다. 직접적인 이름·스토리·캐릭터·맵·아트·소스코드 복제를 금지한다. initialTargetPlatform은 Roblox/Unity/Fortnite UEFN 중 프로젝트에 가장 맞게 정하고, multiplayerDesignMode를 설계 전에 SINGLE/COOP/COMPETITIVE/HYBRID 중 하나로 확정한다. gameplaySketch는 코드 작성 전에 게임 전체를 머릿속에서 실행해 보는 스케치다. novelGameGrammar는 장르에 기능을 더하는 목록이 아니라 새로운 게임문법을 만든다. 선택된 seedMaterials의 causalDNA를 최소 2개 실제 사용한다. 동서양 역사·고전·종교·신화·철학·비극·희극·해학·정치·역사적 인물 원형은 장식 세계관이 아니라 인과관계 재료다. 업보는 과거 행동이 미래 규칙으로 돌아오는 구조, 비극적 예언은 피하려는 행동이 조건을 완성하는 구조, 정통성은 점령보다 인정이 권한을 만드는 구조, 희극적 오해는 틀린 믿음이 실제 목표·관계를 바꾸는 구조처럼 플레이 규칙으로 변환한다. 익숙한 인간 갈등을 familiarAnchor로 잡아 공감을 유지하되 brokenGenreAssumption에서 해당 장르의 당연한 전제 하나 이상을 깨고 newPrimaryVerb에는 이 게임에서만 반복할 수 있는 새 동사를 적는다. causalFusion은 인과 DNA들이 서로 원인·제약·보상을 교환해야 하며 단순 전투+무역+동료 병렬 조합은 불충분하다. irreducibilityTest는 주요 인과축 하나를 빼면 게임이 다시 평범한 장르로 돌아가는지 검사한다. storyWorldBindings에서 인간 갈등·캐릭터·몬스터·지역·스토리가 같은 세계법칙을 각자 다르게 증명하게 한다. 철학·종교·신화·역사·정치·비극·희극·해학·엽기·코믹 등 재료 사이에 깊이 등급을 만들지 않는다. toneBlend는 이 게임에 맞는 톤을 자유롭게 섞는다. gameplaySystemFusion은 일반 플레이 구조를 MAIN × A × B × c로 정확히 구성한다. MAIN은 가장 반복하는 중심 플레이, A와 B는 서로 크게 물리는 일반 시스템 대축이다. c는 A/B와 동급 대축이 아니라 날씨·타이밍·지역규칙·이벤트·보조자원·상태변수처럼 MAIN/A/B 관계를 상황별로 변주하고 연결하는 서브요소 묶음이다. A/B는 전투·탐험·경제·제작·퍼즐·대화·관계·건설·카드·레이싱·외교 등 익숙한 시스템이어도 된다. 중요한 것은 병렬 기능 목록이 아니라 MAIN↔A↔B의 상태 전달에 c가 변주를 만들고 결과가 다시 MAIN으로 돌아오는 것이다. delveLayer의 + @는 c와도 다르며 일반 시스템이 아니다. @는 숨은 조합·숙련 테크닉·발견·재해석·재방문·관계 변화·고급 변형·메타 규칙처럼 플레이어가 파고들수록 드러나는 요소이며 최소 4개를 설계하고 각 요소는 MAIN/A/B 중 최소 2개와 연결하거나 c 서브요소를 통해 그 관계를 확장한다. emergentGenre는 GAME_CATEGORY를 그대로 답하지 말고 재료 인과문법 × (MAIN × A × B × c) + @의 결과로 생긴 새 복합장르의 이름과 정의를 작성한다. GAME_CATEGORY는 시드 탐색과 운영 라우팅 힌트일 뿐 최종 장르가 아니다. expansionVectors는 콘텐츠 개수 증가보다 MAIN/A/B/c 관계와 @의 새로운 사용법을 변형해 장기 확장성을 만든다. worldModel에는 실제 플레이 공간·경로·위치가 게임 결과에 어떻게 연결되는지 적고, actors에는 플레이어/NPC/적/사물 역할을, interactionChains에는 접근·선택→입력→대상 상태 변화→게임 결과 변화를 적는다. stateMachine과 firstPlayableCycle은 시작부터 실제 입력·핵심 행동·상태변화·성장/선택·위험/실패·목표/재도전까지 이어져야 한다. identityCore는 모든 장르에 공통 적용하되 같은 RPG식 시스템을 강제하지 않는다. oneLineFantasy는 플레이어가 누구이고 무엇을 하는지 한 문장으로 고정하고, playerRole은 플레이어의 역할과 책임을, representativeAction은 가장 자주 반복하는 실제 행동을, representativeChoice는 계속 고민하게 되는 선택을, signatureWorldRule은 이 게임에서만 통하는 세계/규칙 결합을 적는다. signatureSystemPromise는 제목을 가려도 이 게임을 알아볼 정도의 시그니처 시스템 약속 1~2개만 적고, growthIdentity는 숫자 상승보다 성장 후 새 행동·경로·조합·관계·발견·대응법이 무엇인지 적는다. identityCoherence는 세계 문화·시각·오디오·적/아이템/NPC가 같은 정체성을 어떻게 공유하는지 적는다. threeSentenceTest.whatGame/whatDifferent/whatGrowthUnlocks는 각각 무슨 게임인지, 같은 장르와 무엇이 다른지, 성장하면 무엇을 새로 할 수 있는지를 독립적으로 답해야 한다. genreAdaptationRule은 퍼즐·레이싱·타이쿤·디펜스·생존·액션·RPG·카드·전략·캐주얼 등 해당 장르의 핵심 행동을 우선하며 장르에 맞지 않는 시스템을 억지로 넣지 않는 원칙을 적는다. playerPromise는 플레이어가 반복할 핵심 경험과 숙련의 보상을 한 문장으로 고정한다. funDrivers는 즉시 피드백·트레이드오프·숙련에 따른 새 선택·월드/적 반응을 구체적으로 적고, balanceRules는 지배전략 방지·파워/위협 동반 성장·복구 가능한 실패·경제 source/sink·후반 판단구조 변화를 포함한다. pacingPlan은 0~5/5~15/15~25/25~30분과 중후반/재플레이를 각각 다른 역할로 설계하고, progressionLayers는 세션/중기/장기 성장의 선택 폭 변화를 적는다. expansionPlan은 새 적·구역·목표·상호작용·전략 결과로 실제 콘텐츠를 늘리며 색상/체력/데미지 배수만 다른 변형이나 반복/재시작/대기를 깊이로 세지 않는다. completionCriteria는 첫 플레이부터 30분+, 실패복구, 모바일, 초중후반 역할 차이를 포함하고 codingGrowthHooks는 기존 책임 함수·데이터 테이블·안정 ID·저장 마이그레이션·프레젠테이션 자산 분리를 고려한다. longGoalScenario는 여러 단계 목표를 실제 플레이 순서로 적고 validationRisks에는 소프트락·저장·경제·난이도·성능·모바일·겉구현 위험 중 핵심을 적는다. 첫 세션은 정확히 30분의 의미 있는 진행을 전제로 하며 단순 반복·대기·체력 증가로 시간을 채우면 안 된다. REQUESTS=${JSON.stringify(requests)}. JSON 스키마만 출력하라.`;
+  const prompt=`GAME_SEED를 작성하라. 각 요청의 seedMaterials는 100개 재료 풀에서 목표 플랫폼, 카테고리 적합성, 재료 상호보완성, 검증된 학습 성과, 기존 Top30과의 차별성을 기준으로 2~4개가 동적으로 선정되었다. 주어진 재료를 모두 실제로 조합한다. 재료는 기존 게임일 필요가 없으며 직업·산업·자연·과학·스포츠·놀이·사회관계·생존상황·공간운영·완전 신규 아이디어를 동등하게 사용할 수 있다. existing game reference는 선택사항이다. 동일 참고 게임이나 동일 장르 재사용은 허용하지만 최종 coreLoop와 distinctIdentity가 기존 프로젝트와 사실상 같으면 안 된다. 직접적인 이름·스토리·캐릭터·맵·아트·소스코드 복제를 금지한다. initialTargetPlatform은 Roblox/Unity/Fortnite UEFN 중 프로젝트에 가장 맞게 정하고, multiplayerDesignMode를 설계 전에 SINGLE/COOP/COMPETITIVE/HYBRID 중 하나로 확정한다. gameplaySketch는 코드 작성 전에 게임 전체를 머릿속에서 실행해 보는 스케치다. novelGameGrammar는 장르에 기능을 더하는 목록이 아니라 새로운 게임문법을 만든다. 선택된 seedMaterials의 causalDNA를 최소 2개 실제 사용한다. 동서양 역사·고전·종교·신화·철학·비극·희극·해학·정치·역사적 인물 원형은 장식 세계관이 아니라 인과관계 재료다. 업보는 과거 행동이 미래 규칙으로 돌아오는 구조, 비극적 예언은 피하려는 행동이 조건을 완성하는 구조, 정통성은 점령보다 인정이 권한을 만드는 구조, 희극적 오해는 틀린 믿음이 실제 목표·관계를 바꾸는 구조처럼 플레이 규칙으로 변환한다. 익숙한 인간 갈등을 familiarAnchor로 잡아 공감을 유지하되 brokenGenreAssumption에서 해당 장르의 당연한 전제 하나 이상을 깨고 newPrimaryVerb에는 이 게임에서만 반복할 수 있는 새 동사를 적는다. causalFusion은 인과 DNA들이 서로 원인·제약·보상을 교환해야 하며 단순 전투+무역+동료 병렬 조합은 불충분하다. irreducibilityTest는 주요 인과축 하나를 빼면 게임이 다시 평범한 장르로 돌아가는지 검사한다. storyWorldBindings에서 인간 갈등·캐릭터·몬스터·지역·스토리가 같은 세계법칙을 각자 다르게 증명하게 한다. 철학·종교·신화·역사·정치·비극·희극·해학·엽기·코믹 등 재료 사이에 깊이 등급을 만들지 않는다. toneBlend는 이 게임에 맞는 톤을 자유롭게 섞는다. gameplaySystemFusion은 일반 플레이 구조를 MAIN × A × B × c로 정확히 구성한다. MAIN은 가장 반복하는 중심 플레이, A와 B는 서로 크게 물리는 일반 시스템 대축이다. c는 A/B와 동급 대축이 아니라 날씨·타이밍·지역규칙·이벤트·보조자원·상태변수처럼 MAIN/A/B 관계를 상황별로 변주하고 연결하는 서브요소 묶음이다. A/B는 전투·탐험·경제·제작·퍼즐·대화·관계·건설·카드·레이싱·외교 등 익숙한 시스템이어도 된다. 중요한 것은 병렬 기능 목록이 아니라 MAIN↔A↔B의 상태 전달에 c가 변주를 만들고 결과가 다시 MAIN으로 돌아오는 것이다. delveLayer의 + @는 c와도 다르며 일반 시스템이 아니다. @는 숨은 조합·숙련 테크닉·발견·재해석·재방문·관계 변화·고급 변형·메타 규칙처럼 플레이어가 파고들수록 드러나는 요소이며 최소 4개를 설계하고 각 요소는 MAIN/A/B 중 최소 2개와 연결하거나 c 서브요소를 통해 그 관계를 확장한다. emergentGenre는 GAME_CATEGORY를 그대로 답하지 말고 재료 인과문법 × (MAIN × A × B × c) + @의 결과로 생긴 새 복합장르의 이름과 정의를 작성한다. GAME_CATEGORY는 시드 탐색과 운영 라우팅 힌트일 뿐 최종 장르가 아니다. expansionVectors는 콘텐츠 개수 증가보다 MAIN/A/B/c 관계와 @의 새로운 사용법을 변형해 장기 확장성을 만든다. worldModel에는 실제 플레이 공간·경로·위치가 게임 결과에 어떻게 연결되는지 적고, actors에는 플레이어/NPC/적/사물 역할을, interactionChains에는 접근·선택→입력→대상 상태 변화→게임 결과 변화를 적는다. stateMachine과 firstPlayableCycle은 시작부터 실제 입력·핵심 행동·상태변화·성장/선택·위험/실패·목표/재도전까지 이어져야 한다. identityCore는 모든 장르에 공통 적용하되 같은 RPG식 시스템을 강제하지 않는다. oneLineFantasy는 플레이어가 누구이고 무엇을 하는지 한 문장으로 고정하고, playerRole은 플레이어의 역할과 책임을, representativeAction은 가장 자주 반복하는 실제 행동을, representativeChoice는 계속 고민하게 되는 선택을, signatureWorldRule은 이 게임에서만 통하는 세계/규칙 결합을 적는다. signatureSystemPromise는 제목을 가려도 이 게임을 알아볼 정도의 시그니처 시스템 약속 1~2개만 적고, growthIdentity는 숫자 상승보다 성장 후 새 행동·경로·조합·관계·발견·대응법이 무엇인지 적는다. identityCoherence는 세계 문화·시각·오디오·적/아이템/NPC가 같은 정체성을 어떻게 공유하는지 적는다. threeSentenceTest.whatGame/whatDifferent/whatGrowthUnlocks는 각각 무슨 게임인지, 같은 장르와 무엇이 다른지, 성장하면 무엇을 새로 할 수 있는지를 독립적으로 답해야 한다. genreAdaptationRule은 퍼즐·레이싱·타이쿤·디펜스·생존·액션·RPG·카드·전략·캐주얼 등 해당 장르의 핵심 행동을 우선하며 장르에 맞지 않는 시스템을 억지로 넣지 않는 원칙을 적는다. playerPromise는 플레이어가 반복할 핵심 경험과 숙련의 보상을 한 문장으로 고정한다. funDrivers는 즉시 피드백·트레이드오프·숙련에 따른 새 선택·월드/적 반응을 구체적으로 적고, balanceRules는 지배전략 방지·파워/위협 동반 성장·복구 가능한 실패·경제 source/sink·후반 판단구조 변화를 포함한다. pacingPlan은 0~5/5~15/15~25/25~30분과 중후반/재플레이를 각각 다른 역할로 설계하고, progressionLayers는 세션/중기/장기 성장의 선택 폭 변화를 적는다. expansionPlan은 새 적·구역·목표·상호작용·전략 결과로 실제 콘텐츠를 늘리며 색상/체력/데미지 배수만 다른 변형이나 반복/재시작/대기를 깊이로 세지 않는다. completionCriteria는 첫 플레이부터 30분+, 실패복구, 모바일, 초중후반 역할 차이를 포함하고 codingGrowthHooks는 기존 책임 함수·데이터 테이블·안정 ID·저장 마이그레이션·프레젠테이션 자산 분리를 고려한다. longGoalScenario는 여러 단계 목표를 실제 플레이 순서로 적고 validationRisks에는 소프트락·저장·경제·난이도·성능·모바일·겉구현 위험 중 핵심을 적는다. 첫 세션은 정확히 30분의 의미 있는 진행을 전제로 하며 단순 반복·대기·체력 증가로 시간을 채우면 안 된다. 초기 GAMEPLAY_SKETCH는 요약본이 아니라 이후 DESIGN이 그대로 확장할 수 있는 상세 설계 원본이어야 한다. MAIN은 실제 입력·반복 이유·즉시 상태 변화·피드백·다음 선택까지 적고, A/B 각각은 자신이 소유하는 상태·플레이어 선택·MAIN과 주고받는 입력/출력·실패 또는 카운터플레이·성장 후 달라지는 사용법을 구체화한다. c 서브요소는 최소 2개를 실제 상황 변수로 두고 어느 MAIN/A/B 관계를 어떻게 변주하는지 적되 독립 승리조건이나 세 번째 대축으로 만들지 않는다. @ 요소는 최소 4개 모두 발견 조건·숙련 통찰·실제 플레이 효과·연결 대상이 서로 달라야 하며 단순 숨겨진 보상 목록으로 쓰지 않는다. 각 interactionChain과 crossSystemRule은 원인→입력/선택→상태 변화→비용/위험/보상→다음 상태가 추적되게 작성하고, 적·지역·목표·성장·실패복구가 같은 문법을 서로 다른 방식으로 사용하게 한다. uiInteractionPlan도 실제 설계한다. mainMenu에는 플레이·성장/장비·설정 등 게임에 필요한 메뉴 목적과 이동 대상을, gameplayHud에는 플레이 중 항상 필요한 정보 우선순위를, screenFlow에는 메인메뉴·게임·서브화면·결과·설정 사이 전환과 뒤로가기 경로를 적는다. buttons에는 주 행동·보조 행동·뒤로가기·위험 확인을 포함해 action/priority/default·pressed·disabled·loading·error·confirm 상태/모바일 touchRule/confirmationRule을 구체화한다. 모바일에서는 조이스틱·카메라·행동 버튼 동시입력, 안전영역, 한손 도달성, 화면 잘림, 중복입력 방지를 설계한다. REQUESTS=${JSON.stringify(requests)}. JSON 스키마만 출력하라.`;
   try{
     const r=await fetch('http://127.0.0.1:11434/api/chat',{
       method:'POST',
@@ -670,7 +741,7 @@ async function callModelBatch(targets){
           {role:'system',content:'너는 재운컴퍼니 GAME_SEED 조합 AI다. 목표는 정해진 장르에 재료를 끼워 넣는 것이 아니라 선택된 재료의 인과 DNA를 융복합해 새 대표 동사와 새 전개 문법을 만들고, 일반 시스템 MAIN×A×B×c와 @ 파고들기까지 결합한 결과 자체를 새로운 복합장르로 만드는 것이다. 철학·종교·신화·역사·정치·비극·희극·해학·엽기·코믹 등 모든 재료는 동등하며 특정 재료를 더 깊거나 가볍다고 분류하지 않는다. 재료를 게임으로 오해하지 말고 여러 출처의 추상 재료를 독립 게임 설계 후보로 조합한다. 코드 생성 전에 실제 월드와 플레이 흐름을 GAMEPLAY_SKETCH로 먼저 구성한다. 모든 장르에서 먼저 게임 정체성을 한 줄 판타지·대표 행동·대표 선택·시그니처 세계 규칙·시그니처 시스템·성장 정체성·3문장 테스트로 선명하게 만든다. 장르별 핵심 행동은 다르므로 RPG식 시스템을 강제하지 않는다. 퍼즐은 해결 방식, 레이싱은 주행 판단, 타이쿤은 운영 선택, 디펜스는 배치와 대응, 생존은 탐험과 자원 판단, 액션은 전투와 이동 숙련, RPG는 역할·관계·성장, 카드/보드는 손패·위험·영역·거래 판단처럼 해당 장르의 실제 플레이를 정체성 중심에 둔다. 재미·밸런스·페이싱·성장·중후반 확장·완성 기준을 서로 연결하고 수치만 키운 복제 콘텐츠를 금지한다.'},
           {role:'user',content:prompt},
         ],
-        options:{temperature:0.25,num_ctx:16384,num_predict:7000},
+        options:{temperature:0.25,num_ctx:24576,num_predict:8192},
       }),
       signal:controller.signal,
     });
