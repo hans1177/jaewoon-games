@@ -1155,7 +1155,11 @@
           "evidenceJson": "assets/roblox/world-ghosts/native/spider/evidence.json",
           "preview": "assets/roblox/world-ghosts/native/spider/spider.png",
           "runMode": "VERIFY_ONLY",
-          "gltfMasterRequired": true
+          "gltfMasterRequired": true,
+          "actorRoles": [
+            "STANDARD_ENEMY",
+            "ELITE_ENEMY"
+          ]
         }
       ],
       "actorRoles": [
