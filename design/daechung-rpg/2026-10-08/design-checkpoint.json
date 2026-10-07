@@ -10,11 +10,23 @@
   "completedPhases": [],
   "phases": {},
   "tasks": {},
-  "modelHealth": {},
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 1,
+      "jsonFailures": 0,
+      "totalMs": 300096,
+      "lastMs": 300096,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
+      "updatedAt": "2026-10-07T20:29:14.881Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T20:24:14.781Z",
-  "updatedAt": "2026-10-07T20:24:14.783Z",
+  "updatedAt": "2026-10-07T20:29:14.883Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -376,5 +388,8 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms"
 }
