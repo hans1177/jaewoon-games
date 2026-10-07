@@ -9,10 +9,76 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "designer_draft_slices::identity-core": {
+      "identity": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG",
+      "playerFantasy": "AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG 플레이어는, 마을의 퀘스트와 장비 준비를 통해 다양한 지역을 전투로 돌파하고, 10명의 AI 유저와 파티를 구성해 보스를 공략하며, 기여도로 보상을 얻는 재미 있는 게임 플레이어입니다.",
+      "coreFun": "5개 대형 지역을 전투로 돌파하고, 10명의 AI 유저 중 원하는 역할을 골라 파티 사냥을 하며 기여도로 보상을 얻는 성장 재미",
+      "coreLoop": [
+        "마을에서 퀘스트와 장비 준비",
+        "포탈로 사냥터 이동",
+        "몬스터 직접 전투",
+        "보스 첫 처치로 AI 동료 해금",
+        "15마리 파티 사냥과 기여도 보상",
+        "플레이어 + 보스 동료 최대 3명 편성",
+        "보스 공략 → 보스 동료 해금 → 파티 조합 확장",
+        "마을 귀환/회복/강화"
+      ],
+      "signatureSystems": [
+        {
+          "name": "5포탈 지역",
+          "purpose": "초원·협곡·유적·설원·심연의 독립 대형 사냥터. 각 포탈은 서로 다른 전조·사거리·패링 가능 여부·특수공격을 가진다.",
+          "playerChoice": "포탈 선택 및 전투 전략"
+        },
+        {
+          "name": "레벨 성장",
+          "purpose": "레벨업마다 최대체력 +10, 공격력 +10.",
+          "playerChoice": "레벨업 선택 및 보상 수령"
+        },
+        {
+          "name": "5단계 장비",
+          "purpose": "무기·방어구는 T1~T5로 단순 성장하고, 유물 1칸은 직업 특성을 가볍게 바꾼다. 장착 슬롯은 무기/방어구/유물 3개.",
+          "playerChoice": "장비 슬롯 선택 및 장비 업그레이드"
+        },
+        {
+          "name": "1차 전직",
+          "purpose": "Lv.15 직업 시험 후 각 시작 직업에서 2개 분기 중 하나를 선택한다. 같은 시작 직업의 다른 1차 분기는 마을에서 재전직 가능.",
+          "playerChoice": "1차 전직 분기 선택"
+        },
+        {
+          "name": "파티 토글",
+          "purpose": "AI를 두 번 클릭해 즉시 파티 초대/제외.",
+          "playerChoice": "파티 토글 조작"
+        },
+        {
+          "name": "15킬 파티사냥",
+          "purpose": "15마리 처치 시 종료하고 기여도에 따라 XP/골드 보상.",
+          "playerChoice": "파티사냥 조작"
+        }
+      ]
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 195894,
+      "lastMs": 195894,
+      "lastError": null,
+      "updatedAt": "2026-10-07T20:02:42.676Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T19:59:26.643Z",
-  "updatedAt": "2026-10-07T19:59:26.734Z"
+  "updatedAt": "2026-10-07T20:02:42.677Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T20:02:42.676Z",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
