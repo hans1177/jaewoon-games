@@ -179,26 +179,41 @@
         "unityRule": "UNITY_3D_4D_5D",
         "robloxRule": "ROBLOX_3D_4D_5D"
       }
+    },
+    "designer_draft_slices::ux-presentation": {
+      "visualDirection": "밝고 따뜻한 동화책 미니어처 왕국. 큰 머리와 둥근 얼굴, 짧고 굵은 팔다리의 치비 주민과 하나의 연결된 실루엣으로 보이는 야생동물을 사용한다.",
+      "mobileUx": "모바일 큰 버튼과 터치 상호작용을 우선하고 키보드와 게임패드를 같은 행동에 매핑한다.",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "상단에 기본자원·특수자원·주민·병력·점령 상태를 표시하고 하단에 벌목·식량수급·주민영입·병영·모집·전투 버튼을 모바일 큰 버튼으로 제공한다.",
+        "touchAndInput": "모바일 큰 버튼과 터치 상호작용을 우선하고 키보드와 게임패드를 같은 행동에 매핑한다.",
+        "readability": "서버 권한으로 자동전투와 협동 지원 계산을 처리하고, 사용자에게 보상과 성장 상태를 동기화한다.",
+        "accessibility": "모바일 Roblox에서 낮은 파트 수와 제한된 이펙트, 짧은 네트워크 이벤트를 유지한다."
+      },
+      "artAudioDirection": {
+        "visualIdentity": "COZY_CHIBI_KINGDOM",
+        "audioIdentity": "COZY_CHIBI_KINGDOM",
+        "gameplayFeedbackSync": "서버 권한으로 자동전투와 협동 지원 계산을 처리하고, 사용자에게 보상과 성장 상태를 동기화한다."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 468508,
-      "lastMs": 79599,
+      "totalMs": 563698,
+      "lastMs": 95190,
       "lastError": null,
-      "updatedAt": "2026-10-07T20:08:58.509Z"
+      "updatedAt": "2026-10-07T20:10:33.701Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T20:01:09.902Z",
-  "updatedAt": "2026-10-07T20:08:58.510Z",
-  "lastSuccessfulModelCallAt": "2026-10-07T20:08:58.509Z",
+  "updatedAt": "2026-10-07T20:10:33.701Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T20:10:33.701Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
