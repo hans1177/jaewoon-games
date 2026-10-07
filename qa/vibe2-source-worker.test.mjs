@@ -5502,6 +5502,7 @@ test('asset-development Roblox graphics stays on bounded focused retries while g
   assert.match(source,/ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS=120000/);
   assert.match(source,/ASSET_DEVELOPMENT_ROBLOX_FOCUSED_MAX_PREDICT=768/);
   assert.match(source,/ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW=STANDARD_GAME_SOURCE_CONTEXT_WINDOW/);
+  assert.match(source,/assetDevelopmentFocusedGraphics\?sourcePromptContextWindow\(attemptPrompt,\{baseContextWindow:ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW,maxPredict,model\}\)/);
   assert.match(source,/robloxTimeoutFocusedRecoveryNeedsPackage=robloxAssetAdaptationTask[\s\S]*?&&!assetDevelopmentLane/);
   assert.match(source,/robloxFullGraphicsPackageRecovery=robloxAssetAdaptationTask[\s\S]*?&&!assetDevelopmentLane/);
   assert.match(source,/const assetDevelopmentFocusedGraphics=assetDevelopmentLane&&robloxAssetAdaptationTask/);
