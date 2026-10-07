@@ -25,6 +25,15 @@ const EDITOR_BINARY_EXTENSIONS = new Set(['.rbxl', '.rbxlx', '.uasset', '.umap',
 const AUTO_DEPLOY_STATES = new Set(['release-confirmed', 'development-confirmed']);
 const PRESENTATION_PASSES = new Set(['ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','POLISH_MOBILE']);
 
+function currentLaneMaxWorkMinutes(runtime = {}) {
+  const lane = clean(process.env.VIBE2_EXECUTION_LANE).toLowerCase();
+  if (lane === 'asset-development') return 60;
+  const configured = lane === 'game-primary'
+    ? runtime?.continuous?.gamePrimaryMaxWorkMinutes
+    : runtime?.continuous?.maxWorkMinutes;
+  return Math.max(1, Math.min(60, Math.floor(Number(configured) || 20)));
+}
+
 function readJson(file, fallback = {}) { if (!file || !fs.existsSync(file)) return fallback; return JSON.parse(fs.readFileSync(file, 'utf8')); }
 function writeJson(file, value) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`); }
 function parseArgs(argv = process.argv.slice(2)) {
@@ -474,7 +483,7 @@ function buildSystemArchitectureWorkOrder({base,task,centralPolicy,centralPolicy
     `candidate-variant=${strategy.variant}; strategy=${strategy.strategy}`
   ].join('\n\n');
   const qa=freezeList(plan.qa);
-  const maxWorkMinutes=Math.max(1,Math.min(60,Math.floor(Number(runtime?.continuous?.maxWorkMinutes)||20)));
+  const maxWorkMinutes = currentLaneMaxWorkMinutes(runtime);
   return freeze({
     ...base,run:true,reason:'SYSTEM_ARCHITECTURE_WORK_READY',selectedTask:task,taskId:task.id,gameId:task.gameId,
     target:'system',shard:task.shard,sourceRootLock:'.',workMode:'source-change-candidate',executionRoute:'text-source-worker',
@@ -553,8 +562,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
 
   const adapter = plan.engineAdapter;
   const route = classifyVibeExecutionRoute({ target:plan.target, task, adapter });
-  const assetDevelopmentWork=clean(process.env.VIBE2_EXECUTION_LANE).toLowerCase()==='asset-development';
-  const maxWorkMinutes = assetDevelopmentWork?60:Math.max(1, Math.min(60, Math.floor(Number(runtime?.continuous?.maxWorkMinutes) || 20)));
+  const maxWorkMinutes = currentLaneMaxWorkMinutes(runtime);
   const editorConfig = runtime?.engineEditors?.[plan.target] || {};
   const releaseState = clean(task.releaseState) || 'other';
   const supervisedByEvidence=(task?.evidence||[]).map(clean).includes('supervised-web-build:required');
