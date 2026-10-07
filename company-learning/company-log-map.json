@@ -1,5 +1,5 @@
 {
-  "version": 177,
+  "version": 178,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -873,6 +873,28 @@
       "roleSpecificVisualAndMotionEvidenceRequired": true,
       "colorOnlyRoleCloneCannotCountAsDistinctActor": true
     }
+  },
+  "npcRoleProductionEvidenceContract": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.studioAssetUniverse.npcRoleProduction",
+    "requiredFields": [
+      "NPC_ROLE",
+      "HEIGHT_CM",
+      "WEIGHT_KG",
+      "BODY_PROPORTION_SIGNATURE",
+      "HEAD_FACE_HAIR_SURFACE_SIGNATURE",
+      "OUTFIT_EQUIPMENT_WEAR_SIGNATURE",
+      "GAIT_IDLE_INTERACTION_SIGNATURE",
+      "MASTER_GLB_PATH",
+      "MASTER_GLB_SHA256",
+      "PLATFORM_NATIVE_BINDING_RESULT",
+      "RUNTIME_VISUAL_MOTION_RESULT"
+    ],
+    "nearbyDistinctAxisMinimum": 5,
+    "heroCompanionEliteBossDistinctAxisTarget": 8,
+    "colorOnlySizeOnlyOrFaceOnlyCloneCannotPass": true,
+    "physicalIdentityMustReachRoleProfileAndCustomizationRecipe": true,
+    "gameplayScaleCollisionHitboxMovementStatsEvidenceMustRemainUnchanged": true
   },
   "universalAssetCoverageEvidenceContract": {
     "version": 1,
