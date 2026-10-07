@@ -74,21 +74,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 7,
+      "calls": 10,
+      "successes": 8,
       "failures": 2,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1354839,
-      "lastMs": 134227,
+      "totalMs": 1474611,
+      "lastMs": 119772,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-07T23:30:16.613Z"
+      "updatedAt": "2026-10-07T23:46:46.913Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T22:49:57.276Z",
-  "updatedAt": "2026-10-07T23:44:47.139Z",
+  "updatedAt": "2026-10-07T23:46:46.915Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -932,6 +932,40 @@
         "evidenceLevel": null,
         "minimumRequired": null,
         "evidence": {
+          "path": "contentExpansionPlan[0].newGameplay",
+          "value": "INFECTED_STATE_CHANGE"
+        },
+        "requiredAction": "contentExpansionPlan[0].newGameplay의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentExpansionPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentExpansionPlan[0].systemImpact",
+          "value": "INFECTED_STATE_CHANGE"
+        },
+        "requiredAction": "contentExpansionPlan[0].systemImpact의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentExpansionPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
           "path": "contentExpansionPlan[1].milestone",
           "value": "PURIFICATION_STATE_CHANGE"
         },
@@ -949,10 +983,78 @@
         "evidenceLevel": null,
         "minimumRequired": null,
         "evidence": {
+          "path": "contentExpansionPlan[1].newGameplay",
+          "value": "PURIFICATION_STATE_CHANGE"
+        },
+        "requiredAction": "contentExpansionPlan[1].newGameplay의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentExpansionPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentExpansionPlan[1].systemImpact",
+          "value": "PURIFICATION_STATE_CHANGE"
+        },
+        "requiredAction": "contentExpansionPlan[1].systemImpact의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentExpansionPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
           "path": "contentExpansionPlan[2].milestone",
           "value": "INFECTED_ATTACK_STATE"
         },
         "requiredAction": "contentExpansionPlan[2].milestone의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentExpansionPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentExpansionPlan[2].newGameplay",
+          "value": "INFECTED_ATTACK_STATE"
+        },
+        "requiredAction": "contentExpansionPlan[2].newGameplay의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentExpansionPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentExpansionPlan[2].systemImpact",
+          "value": "INFECTED_ATTACK_STATE"
+        },
+        "requiredAction": "contentExpansionPlan[2].systemImpact의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -1013,16 +1115,16 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 4
+    "designer_draft_slices::systems-progression": 5
   },
   "localAuthoringSplits": {
     "49f1514db76fae55de9fcb06d1f658b591c08e5abcf7bfe16c3ac299987c1be4": true,
     "15ea3c6684012894904262e5f5fe04407eb9b9068c739c8d8aeb1c86cbd5a80b": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-07T23:30:16.613Z",
-  "failedPhase": "designer_draft",
+  "lastSuccessfulModelCallAt": "2026-10-07T23:46:46.913Z",
+  "failedPhase": "designer_draft_slices",
   "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
