@@ -341,25 +341,38 @@
         "인간4/몬스터4 배정 및 AI 충원은 실시간으로 바뀌며, 감염 스킬을 사용한다.",
         "한 진영이 0명이 되면 즉시 승패, 240초까지 양팀이 남으면 무승부."
       ]
+    },
+    "local_authoring_parts::ca585e553470f2c217601853cca864617dfa14b6ddf410f9ffb02c00a303cc40:characterVoiceProfiles": {
+      "characterVoiceProfiles": [
+        {
+          "character": "감염된 인간",
+          "grammarRegister": "감염된 인간은 고유 도구·대시·정화로 생존/반격하며, 몬스터는 에너지를 소모하는 명시적 감염 공격으로 인간을 감염한다.",
+          "vocabularyRhythm": "고유 도구·대시·정화로 생존/반격",
+          "relationshipShift": "감염된 인간은 몬스터로 전환하고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격을 시작한다.",
+          "emotionalRange": "긴장감, 승리의 기쁨, 승패의 슬픔",
+          "knowledgeBoundary": "감염 공격과 정화의 규칙을 숙지하고, 인간 직업별 고유 감염 스킬을 사용한다.",
+          "subtextBehavior": "감염 공격 적중 시 인간은 몬스터로 전환하고, 직업별 고유 감염 스킬을 얻는다. 정화 공격 시 몬스터는 라운드에서 제거된다."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 11,
+      "calls": 15,
+      "successes": 12,
       "failures": 3,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2279806,
-      "lastMs": 132802,
+      "totalMs": 2390403,
+      "lastMs": 110597,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-07T21:17:47.335Z"
+      "updatedAt": "2026-10-07T21:19:37.933Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T20:25:07.525Z",
-  "updatedAt": "2026-10-07T21:17:47.335Z",
+  "updatedAt": "2026-10-07T21:19:37.933Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -552,7 +565,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-07T21:15:34.532Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T21:19:37.933Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
