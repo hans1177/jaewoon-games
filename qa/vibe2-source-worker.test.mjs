@@ -5312,6 +5312,10 @@ test('game-specific BUILD_UP directive survives compact generation retries',()=>
 
 test('game-specific BUILD_UP worker guidance carries detailed verified design into the actual implementation prompt',()=>{
   const designContext={
+    sharedGameDesign:{identity:'정원 방어 상세 설계',coreFun:'같은 핵심 재미',multiplayerMode:'COOP'},
+    sharedDesignFingerprint:'a'.repeat(64),
+    selectedPlatformProfile:'ROBLOX',
+    platformDesignProfile:{platform:'ROBLOX',inputModel:'touch-gamepad'},
     uxAccessibilityPlan:{touchAndInput:'하단 우측 공격 버튼과 뒤로가기 버튼의 역할을 분리'},
     narrativeDialoguePlan:{questStates:['퀘스트: 온실 단서 조사 -> 방어 -> 후속 지역 해금']},
     implementationTraceability:[{designElement:'메뉴 버튼 상태',responsibleSystem:'HUD/Menu state',validationEvidence:'버튼 활성/잠금과 실제 상태 일치'}]
@@ -5358,6 +5362,10 @@ test('game-specific BUILD_UP worker guidance carries detailed verified design in
   assert.match(prompt,/하단 우측 공격 버튼과 뒤로가기 버튼의 역할을 분리/);
   assert.match(prompt,/온실 단서 조사/);
   assert.match(prompt,/메뉴 버튼 상태/);
+  assert.match(prompt,/sharedGameDesign/);
+  assert.match(prompt,/sharedDesignFingerprint/);
+  assert.match(prompt,/selectedPlatformProfile/);
+  assert.match(prompt,/같은 핵심 재미/);
 
   const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.match(source,/sourceAnchors=.*CURRENT=/);
