@@ -41,6 +41,7 @@ test('asset registry change detection skips untouched top-level serialization an
     assert.equal(untouchedSerializationCount,0);
     assert.equal(first.changed,true);
     assert.ok(first.changedSections.includes('assets'));
+    assert.deepEqual(first.changedSections,[...first.changedSections].sort());
     assert.ok(first.registry.assets.some(row=>row.assetId==='APPLE'));
     const second=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry:first.registry,persist:false});
     assert.equal(untouchedSerializationCount,0);
