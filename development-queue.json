@@ -9391,7 +9391,7 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T05:12:43.771Z",
       "saveNormalizationRequired": true,
@@ -9422,10 +9422,10 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T05:12:43.771Z"
       },
-      "updatedAt": "2026-10-07T04:46:47.369Z",
-      "robloxSourceCommit": "577667ad1f993d158614a514fdac2ae4da3fc58c",
-      "robloxSourceBootstrapPassedAt": "2026-10-07T04:39:08.673Z",
-      "robloxSourceBootstrapFailedAt": "2026-10-07T04:41:50.723Z",
+      "updatedAt": "2026-10-07T04:50:31.619Z",
+      "robloxSourceCommit": "51d3d00e868380dbd79733707b2c10cff697924e",
+      "robloxSourceBootstrapPassedAt": "2026-10-07T04:50:31.619Z",
+      "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": true,
@@ -10129,7 +10129,7 @@
       "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
       "routingBlockers": [
-        "roblox-source-bootstrap:source-generation-failed"
+        "roblox-runtime-evidence-pending"
       ],
       "robloxExactRevisionPassed": true,
       "robloxMultiplayerQaEvidence": {
@@ -45283,7 +45283,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-07T04:49:42.474Z",
+  "updatedAt": "2026-10-07T04:50:31.619Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
