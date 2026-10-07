@@ -11,6 +11,27 @@ import {EventEmitter} from 'node:events';
 
 const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
 
+// 대표 검증과 일반 배치 모두 실제 대상 수·중앙 정책 범위 안에서 병렬 실행한다.
+test('design canary games run concurrently without bypassing the verified-engine gate',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  const selection=workflow.split('\n').find(line=>line.trim().startsWith('const selected='));
+  const concurrency=workflow.split('\n').find(line=>line.trim().startsWith('const parallelMax='));
+  for(const [verified,preservation,count,wip,expected] of [
+    [false,false,14,256,2],[true,false,14,256,14],
+    [false,false,1,256,1],[false,false,0,256,1],
+    [false,false,2,1,1],[false,true,14,256,1]
+  ]){
+    const result=runInNewContext(selection+'\nconst targets=selected;\n'+concurrency+'\n({selected:selected.length,parallelMax})',{
+      pending:Array.from({length:count},(_,id)=>({id})),canaryVerified:verified,preservationOnly:preservation,designWipMax:wip
+    });
+    assert.equal(result.parallelMax,expected);
+    if(!verified)assert.ok(result.selected<=2,'representative canary must remain required');
+  }
+  assert.match(workflow,/fail-fast: false/);
+  assert.match(workflow,/max-parallel: \$\{\{ fromJSON\(needs\.resolve-seed-targets\.outputs\.parallel_max\) \}\}/);
+  assert.match(workflow,/canary_mode == 'true' && needs\.design-cycle\.result == 'success'/);
+});
+
 // 내부 모델 시간 제한·준비·재개 회귀 검증
 test('local authoring owns a bounded five-minute budget independently of external timeout',async()=>{
   const config=design.split('\n').filter(line=>/^const (?:modelCallTimeoutMs|localDesignerCallTimeoutMs)=/.test(line)).join('\n');

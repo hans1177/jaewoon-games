@@ -350,7 +350,8 @@ jobs:
           const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
           const get=t=>parts.find(x=>x.type===t)?.value||'';const date=`${get('year')}-${get('month')}-${get('day')}`;
           const targets=selected.map(seed=>{const evolution=designEvolutionDueFor(seed);return{game_id:seed.gameId,game_name:seed.gameName||seed.gameId,seed_id:seed.seedId,category:seed.GAME_CATEGORY,target_platform:String(seed.INITIAL_TARGET_PLATFORM||'').toUpperCase(),date,multiplayer_mode:seed.MULTIPLAYER_DESIGN_MODE||'SINGLE',target_session_minutes:Number(seed.TARGET_SESSION_MINUTES||30),design_evolution_due:evolution.due,design_evolution_reason:evolution.reason,baseline_review_at:Number(evolution.baselineReviewAt||0)};});
-          const parallelMax=Math.max(1,Math.min(preservationOnly?1:(canaryVerified?designWipMax:1),targets.length||1));
+          // 대표 검증 대상도 독립 게임별로 병렬 실행하고 성공 증거로만 다음 배치를 연다.
+          const parallelMax=Math.max(1,Math.min(designWipMax,targets.length||1));
           console.log(`run=${targets.length?'true':'false'}`);
           console.log(`targets=${JSON.stringify(targets)}`);
           console.log(`parallel_max=${parallelMax}`);
