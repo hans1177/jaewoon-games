@@ -110,9 +110,53 @@ export const VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT=Object.freeze({
 });
 
 export const VIBE_NPC_ROLE_PRODUCTION_CONTRACT=Object.freeze({
-  version:1,
+  version:2,
   status:'ACTIVE_MACHINE_READABLE_NPC_ROLE_PRODUCTION',
   final3dMasterFormat:'GLB_2_0',
+  physicalDiversity:Object.freeze({
+    required:true,
+    appearanceOnlyByDefault:true,
+    collisionHitboxMovementStatsRemainGameOwned:true,
+    axes:Object.freeze([
+      'HEIGHT_CM','WEIGHT_KG','VISUAL_MASS','FRAME','SHOULDER_WIDTH','TORSO_LENGTH','TORSO_DEPTH','PELVIS_WIDTH',
+      'ARM_LENGTH','LEG_LENGTH','HAND_FOOT_SCALE','HEAD_BODY_RATIO','POSTURE','ASYMMETRY'
+    ]),
+    nearbyDistinctAxisMinimum:5,
+    heroCompanionEliteBossDistinctAxisTarget:8,
+    colorOnlySizeOnlyOrFaceOnlyCloneForbidden:true,
+    roleRanges:Object.freeze({
+      GENERAL_NPC:Object.freeze({heightCm:Object.freeze([145,198]),weightKg:Object.freeze([42,135])}),
+      COMPANION:Object.freeze({heightCm:Object.freeze([145,205]),weightKg:Object.freeze([42,145])}),
+      ALLY:Object.freeze({heightCm:Object.freeze([150,210]),weightKg:Object.freeze([45,155])}),
+      STORY_CHARACTER:Object.freeze({heightCm:Object.freeze([145,210]),weightKg:Object.freeze([40,150])}),
+      CIVILIAN:Object.freeze({heightCm:Object.freeze([140,200]),weightKg:Object.freeze([38,140])}),
+      MERCHANT:Object.freeze({heightCm:Object.freeze([145,205]),weightKg:Object.freeze([42,160])}),
+      QUEST_GIVER:Object.freeze({heightCm:Object.freeze([145,205]),weightKg:Object.freeze([40,150])}),
+      GUARD:Object.freeze({heightCm:Object.freeze([155,215]),weightKg:Object.freeze([50,175])}),
+      WORKER:Object.freeze({heightCm:Object.freeze([150,210]),weightKg:Object.freeze([48,175])}),
+      ARTISAN:Object.freeze({heightCm:Object.freeze([145,205]),weightKg:Object.freeze([42,160])}),
+      FARMER:Object.freeze({heightCm:Object.freeze([145,210]),weightKg:Object.freeze([45,170])}),
+      HEALER:Object.freeze({heightCm:Object.freeze([145,205]),weightKg:Object.freeze([40,145])}),
+      TRAINER:Object.freeze({heightCm:Object.freeze([150,215]),weightKg:Object.freeze([48,175])}),
+      RIVAL:Object.freeze({heightCm:Object.freeze([150,220]),weightKg:Object.freeze([45,180])}),
+      HOSTILE_HUMANOID:Object.freeze({heightCm:Object.freeze([145,220]),weightKg:Object.freeze([45,190])}),
+      NAMED_ELITE:Object.freeze({heightCm:Object.freeze([155,235]),weightKg:Object.freeze([55,205])}),
+      HUMANOID_BOSS:Object.freeze({heightCm:Object.freeze([165,260]),weightKg:Object.freeze([70,220])}),
+      PLAYER:Object.freeze({heightCm:Object.freeze([145,210]),weightKg:Object.freeze([40,155])})
+    })
+  }),
+  appearanceDiversity:Object.freeze({
+    required:true,
+    axes:Object.freeze([
+      'HEAD_BASE','FACE_PROPORTION','EYE_SHAPE_AND_COLOR','BROW','NOSE','CHEEKBONE','MOUTH','JAW','EAR',
+      'HAIR_STYLE','HAIR_TEXTURE','HAIR_COLOR','FACIAL_HAIR','SKIN_OR_SPECIES_SURFACE','AGE_CUE',
+      'SCAR_MARK_TATTOO','OUTFIT_LAYERING','ROLE_EQUIPMENT','ACCESSORY','WEAR_HISTORY'
+    ]),
+    majorNpcFaceHairOutfitCombinationMustBeUnique:true,
+    repeatedNearbyHeadHairOutfitCombinationForbidden:true,
+    bossAndNamedEliteRequireUniqueSilhouetteAndSurfaceTreatment:true,
+    companionRequiresPlayerReadablePartySilhouette:true
+  }),
   roles:Object.freeze([
     'PLAYER','GENERAL_NPC','COMPANION','ALLY','STORY_CHARACTER','CIVILIAN','MERCHANT','QUEST_GIVER','GUARD',
     'WORKER','ARTISAN','FARMER','HEALER','TRAINER','RIVAL','HOSTILE_HUMANOID','NAMED_ELITE','HUMANOID_BOSS'
@@ -139,6 +183,46 @@ const NPC_ROLE_ALIASES=Object.freeze({
   BOSS:'HUMANOID_BOSS',NPC_BOSS:'HUMANOID_BOSS',CHARACTER_BOSS:'HUMANOID_BOSS'
 });
 
+function npcRoleKey(role='GENERAL_NPC'){
+  const raw=String(role||'GENERAL_NPC').trim().toUpperCase().replace(/[\s-]+/g,'_');
+  return NPC_ROLE_ALIASES[raw]||raw;
+}
+function seededRange(seed,[min,max],offset=0){
+  const t=((seed+Math.imul(offset+1,2246822519))>>>0)/4294967295;
+  return Math.round((min+(max-min)*t)*10)/10;
+}
+export function createVibeNpcPhysicalProfile(character={},index=0){
+  const role=npcRoleKey(character.role);
+  const resolved=VIBE_NPC_ROLE_PRODUCTION_CONTRACT.physicalDiversity.roleRanges[role]?role:'GENERAL_NPC';
+  const range=VIBE_NPC_ROLE_PRODUCTION_CONTRACT.physicalDiversity.roleRanges[resolved];
+  const seed=hash(`${character.name||'npc'}|${character.species||'humanoid'}|${resolved}|${character.region||''}|${index}|physical`);
+  const explicitHeight=Number(character.heightCm),explicitWeight=Number(character.weightKg);
+  const heightCm=Number.isFinite(explicitHeight)?clamp(explicitHeight,60,320):seededRange(seed,range.heightCm,1);
+  const weightKg=Number.isFinite(explicitWeight)?clamp(explicitWeight,20,300):seededRange(seed,range.weightKg,2);
+  const frame=character.frame||pick(seed,['slender','compact','balanced','athletic','broad','heavy','long-limbed','short-limbed'],3);
+  const proportions=Object.freeze({
+    shoulderWidth:pick(seed,['narrow','average','broad','very-broad'],4),
+    torsoLength:pick(seed,['short','balanced','long'],5),
+    torsoDepth:pick(seed,['shallow','balanced','deep'],6),
+    pelvisWidth:pick(seed,['narrow','average','broad'],7),
+    armLength:pick(seed,['short','balanced','long'],8),
+    legLength:pick(seed,['short','balanced','long'],9),
+    handFootScale:pick(seed,['small','balanced','large'],10),
+    headBodyRatio:pick(seed,['large-head','balanced','small-head'],11)
+  });
+  const posture=character.posture||pick(seed,['upright','relaxed','forward','guarded','asymmetric','proud','weary'],12);
+  const visualMass=weightKg>=180?'colossal':weightKg>=135?'very-heavy':weightKg>=95?'heavy':weightKg<=50?'light':'medium';
+  const scaleClass=heightCm>=235?'GIANT':heightCm>=205?'VERY_TALL':heightCm>=185?'TALL':heightCm<150?'SHORT':'STANDARD';
+  return Object.freeze({
+    role:resolved,heightCm,weightKg,visualMass,scaleClass,frame,proportions,posture,
+    appearanceOnly:true,
+    authoritativeCollisionScaleOwnedByGame:true,
+    authoritativeHitboxOwnedByGame:true,
+    movementSpeedUnchanged:true,
+    statsUnchanged:true
+  });
+}
+
 const NPC_ROLE_PROFILES=Object.freeze({
   PLAYER:Object.freeze({detailTier:'HERO',identity:Object.freeze(['PLAYER_READABLE_SILHOUETTE','EQUIPPED_GEAR','STANCE_IDENTITY']),motion:Object.freeze(['IDLE','WALK','RUN','TURN','INTERACT','ACTION','HIT','DEATH'])}),
   GENERAL_NPC:Object.freeze({detailTier:'STANDARD',identity:Object.freeze(['ROLE_SILHOUETTE','OCCUPATION_OR_CONTEXT_GEAR','GAIT_IDENTITY']),motion:Object.freeze(['IDLE','WALK','TURN','GREET','INTERACT'])}),
@@ -160,9 +244,8 @@ const NPC_ROLE_PROFILES=Object.freeze({
   HUMANOID_BOSS:Object.freeze({detailTier:'BOSS',identity:Object.freeze(['BOSS_UNIQUE_SILHOUETTE','DEDICATED_GEAR_OR_BODY_DETAIL','BOSS_STANCE']),motion:Object.freeze(['INTRO','IDLE_ALERT','LOCOMOTION','BASIC_ATTACK_SET','SPECIAL_ATTACK_SET','PHASE_CHANGE','ENRAGE','STUN_OR_GUARD_BREAK','RECOVERY','DEATH_SEQUENCE'])})
 });
 
-export function createVibeNpcRoleProfile({role='GENERAL_NPC'}={}){
-  const raw=String(role||'GENERAL_NPC').trim().toUpperCase().replace(/[\s-]+/g,'_');
-  const normalized=NPC_ROLE_ALIASES[raw]||raw;
+export function createVibeNpcRoleProfile({role='GENERAL_NPC',character={},index=0}={}){
+  const normalized=npcRoleKey(role||character?.role);
   const resolved=NPC_ROLE_PROFILES[normalized]?normalized:'GENERAL_NPC';
   const profile=NPC_ROLE_PROFILES[resolved];
   return Object.freeze({
@@ -171,6 +254,8 @@ export function createVibeNpcRoleProfile({role='GENERAL_NPC'}={}){
     detailTier:profile.detailTier,
     identity:Object.freeze([...profile.identity]),
     motion:Object.freeze([...profile.motion]),
+    physical:createVibeNpcPhysicalProfile({...character,role:resolved},index),
+    appearanceDiversity:VIBE_NPC_ROLE_PRODUCTION_CONTRACT.appearanceDiversity,
     masterGlbRequired:true,
     masterFormat:VIBE_NPC_ROLE_PRODUCTION_CONTRACT.final3dMasterFormat,
     roleSpecificVisualMotionRequired:true,
@@ -185,7 +270,34 @@ export function createVibeNpcRoleProfile({role='GENERAL_NPC'}={}){
 export function inferVibeCharacterArchetypes({role='',species='',weapon='',traits=[]}={}){const t=`${role} ${species} ${weapon} ${(traits||[]).join(' ')}`.toLowerCase(),out=[];if(/sword|melee|warrior|검|전사/.test(t))out.push('melee');if(/bow|gun|ranged|archer|활|궁수|총/.test(t))out.push('ranged');if(/heal|support|힐|치유/.test(t))out.push('healer');if(/insect|mantis|ant|bee|spider|scorpion|벌레|사마귀|개미|벌|거미|전갈/.test(t))out.push('insect');if(/fly|wing|bird|bee|날개|비행|새/.test(t))out.push('flying');if(/heavy|giant|tank|boss|거대|중갑|보스/.test(t))out.push('heavy');if(/magic|mage|staff|wizard|마법|지팡이/.test(t))out.push('magic');return Object.freeze(out.length?uniq(out):['melee'])}
 
 // 키/몸무게는 게임 스탯이 아니라 시각적 신체 정체성이다. 기존 collision/game-scale은 그대로 보존한다.
-export function createVibeBodyIdentity(character={},index=0){const seed=hash(`${character.name||'character'}|${character.species||''}|${character.role||''}|${index}`),species=String(character.species||'humanoid').toLowerCase(),explicitHeight=Number(character.heightCm),explicitWeight=Number(character.weightKg),height=Number.isFinite(explicitHeight)?clamp(explicitHeight,60,260):pick(seed,[152,158,164,169,174,179,184,190],3),weight=Number.isFinite(explicitWeight)?clamp(explicitWeight,20,220):pick(seed,[48,55,63,71,80,91,104,118],5),frame=character.frame||pick(seed,['slender','compact','balanced','broad','long-limbed','short-limbed'],7),shoulders=character.shoulders||pick(seed,['narrow','average','broad'],11),torso=character.torso||pick(seed,['short','balanced','long'],13),limbs=character.limbs||pick(seed,['short','balanced','long'],17),posture=character.posture||pick(seed,['upright','relaxed','forward','guarded','asymmetric'],19),dominantSide=character.dominantSide||pick(seed,['left','right','mixed'],23);return Object.freeze({species,heightCm:height,weightKg:weight,frame,proportions:Object.freeze({shoulders,torso,limbs}),posture,dominantSide,visualMass:weight>=100?'very-heavy':weight>=82?'heavy':weight<=55?'light':'medium',protected:Object.freeze(['collision','hitbox','movement-speed','game-scale','stats']),rule:'body identity changes presentation and animation only unless the game explicitly owns a matching gameplay rule'})}
+export function createVibeBodyIdentity(character={},index=0){
+  const species=String(character.species||'humanoid').toLowerCase();
+  const npcPhysical=createVibeNpcPhysicalProfile(character,index);
+  const seed=hash(`${character.name||'character'}|${species}|${character.role||''}|${index}`);
+  const dominantSide=character.dominantSide||pick(seed,['left','right','mixed'],23);
+  return Object.freeze({
+    species,
+    heightCm:npcPhysical.heightCm,
+    weightKg:npcPhysical.weightKg,
+    frame:npcPhysical.frame,
+    proportions:Object.freeze({
+      shoulders:npcPhysical.proportions.shoulderWidth,
+      torso:npcPhysical.proportions.torsoLength,
+      torsoDepth:npcPhysical.proportions.torsoDepth,
+      pelvis:npcPhysical.proportions.pelvisWidth,
+      arms:npcPhysical.proportions.armLength,
+      legs:npcPhysical.proportions.legLength,
+      handFootScale:npcPhysical.proportions.handFootScale,
+      headBodyRatio:npcPhysical.proportions.headBodyRatio
+    }),
+    posture:npcPhysical.posture,
+    dominantSide,
+    visualMass:npcPhysical.visualMass,
+    scaleClass:npcPhysical.scaleClass,
+    protected:Object.freeze(['collision','hitbox','movement-speed','game-scale','stats']),
+    rule:'height weight body mass and proportions are authored visual identity by default; gameplay collision hitbox speed and stats remain game-owned unless existing design explicitly says otherwise'
+  });
+}
 export function createVibeAppearanceIdentity(character={},index=0){const seed=hash(`${character.name}|appearance|${index}`),body=createVibeBodyIdentity(character,index);return Object.freeze({body,face:Object.freeze({shape:pick(seed,['angular','round','long','square','soft','sharp'],2),featureBalance:pick(seed,['eyes-led','brow-led','nose-led','jaw-led','balanced'],4),asymmetry:pick(seed,['subtle-left','subtle-right','near-symmetric'],6)}),surface:Object.freeze({skinOrShell:character.skinOrShell||pick(seed,['smooth','weathered','scarred','freckled-or-patterned','rough','patched'],8),hairOrCrest:character.hairOrCrest||pick(seed,['short','long','tied','messy','layered','none-or-species-specific'],10),ageCue:character.ageCue||pick(seed,['young','mature','weathered','elder'],12)}),individualMarks:Object.freeze(uniq(character.marks||[pick(seed,['scar','mole-or-spot','brow-shape','ear-or-horn-detail','shell-pattern','tattoo-or-cultural-mark'],14)])),rule:'avoid face-swap clones; silhouette proportion surface and marks combine into identity'})}
 export function createVibeEquipmentFitIdentity(character={},index=0){const body=createVibeBodyIdentity(character,index),seed=hash(`${character.name}|equipment|${index}`);return Object.freeze({fit:body.frame==='broad'?'reinforced-wide-fit':body.frame==='slender'?'close-light-fit':'role-fit',carry:pick(seed,['hip-biased','back-carried','cross-body','hand-ready','balanced'],3),wear:pick(seed,['new','maintained','patched','weathered','heavily-used'],5),personalization:pick(seed,['minimal','utility-charms','faction-mark','personal-token','field-repair'],7),rule:'equipment follows body occupation history and culture rather than floating as identical costume'})}
 export function createVibeGaitIdentity(character={},index=0){const body=createVibeBodyIdentity(character,index),seed=hash(`${character.name}|gait|${index}`),mass=body.visualMass,baseCadence=mass==='very-heavy'?'slow':mass==='heavy'?'measured':mass==='light'?'quick':'medium';return Object.freeze({cadence:character.gaitCadence||baseCadence,stride:body.proportions.limbs==='long'?'long':body.proportions.limbs==='short'?'short':'medium',footfall:mass==='very-heavy'||mass==='heavy'?'planted':'light-to-medium',verticalBob:mass==='heavy'?'low':pick(seed,['low','medium'],3),armSwing:character.armSwing||pick(seed,['restrained','balanced','loose','asymmetric'],5),torsoMotion:body.posture==='forward'?'forward-drive':body.posture==='guarded'?'contained':'counter-rotation',headBehavior:pick(seed,['stable','scanning','slight-bob','goal-locked'],7),turnStyle:mass==='heavy'?'hips-then-torso':'head-torso-hips',startStop:mass==='heavy'?'visible-acceleration-and-settle':'quick-anticipation-and-settle',rule:'different gait appearance must preserve authoritative movement distance and speed'})}
@@ -310,6 +422,10 @@ export function createVibeCharacterCustomizationRecipe(character={},index=0){
     role:String(character.role||'').toUpperCase()||null,
     body:Object.freeze({
       archetype:pick(seed,VIBE_CUSTOM_BODY_ARCHETYPES,1),
+      heightCm:identity.body.heightCm,
+      weightKg:identity.body.weightKg,
+      scaleClass:identity.body.scaleClass,
+      visualMassClass:identity.body.visualMass,
       heightPresentation:value(2),visualMass:value(3),shoulderWidth:value(4),torsoLength:value(5),torsoDepth:value(6),
       pelvisWidth:value(7),armLength:value(8),legLength:value(9),handFootScale:value(10),headBodyRatio:value(11),
       posture:identity.body.posture,asymmetry:value(12)
