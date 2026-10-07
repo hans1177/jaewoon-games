@@ -14,7 +14,7 @@ import { execFileSync } from 'node:child_process';
 import { learningGuidance } from '../tools/vibe2-learning-motor.mjs';
 import { buildInternalMotionCoaching, singleMotionResponseSchema } from '../tools/vibe2-motion-coaching.mjs';
 import { validateCandidateSyntax } from '../tools/vibe2-source-worker.mjs';
-import { evaluateSingleMotionWorkUnit, SINGLE_MOTION_DEPTH_AXES, generateCandidateWithRecovery, runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateRobloxDesignAnchorGrounding, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, attachSelectedInternalAssetApiContext, evaluateRobloxInternalAssetFamilyBindingCandidate, evaluateAllGameDynamicAssetBindingCandidate, assertAllGameDynamicAssetBindingContract, ROBLOX_INTERNAL_ASSET_FAMILIES } from '../tools/vibe2-source-worker.mjs';
+import { evaluateSingleMotionWorkUnit, SINGLE_MOTION_DEPTH_AXES, generateCandidateWithRecovery, runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateRobloxDesignAnchorGrounding, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, localModelContextLimit, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, attachSelectedInternalAssetApiContext, evaluateRobloxInternalAssetFamilyBindingCandidate, evaluateAllGameDynamicAssetBindingCandidate, assertAllGameDynamicAssetBindingContract, ROBLOX_INTERNAL_ASSET_FAMILIES } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { buildVibeAssetProductionPlan, assetProductionGuidance } from '../tools/vibe2-asset-production-plan.mjs';
 import { createVibeContinuousQueue } from '../assets/vibe-continuous-queue.js';
@@ -2506,6 +2506,8 @@ test('JSON source generation uses bounded context and structured output mode',()
   assert.match(source,/const FOCUSED_WEB_REPAIR_CONTEXT_BYTES=48000;/);
   assert.match(source,/const FULL_WEB_CONTEXT_WINDOW=32768;/);
   assert.match(source,/const FULL_WEB_EXPANSION_CONTEXT_WINDOW=32768;/);
+  assert.match(source,/const EXTENDED_LOCAL_MODEL_CONTEXT_LIMIT=262144;/);
+  assert.match(source,/sourcePromptContextWindow\(attemptPrompt,\{[\s\S]*?model[\s\S]*?\}\);/);
 });
 
 test('deterministic diagnostic repair handles interval cleanup without model generation',()=>{
@@ -5857,10 +5859,13 @@ test('Studio initial prompt compacts repeated directive prose within the base mo
   assert.equal(sourcePromptContextWindow(initial,{baseContextWindow:16384,maxPredict:3072}),16384);
 });
 
-test('source prompt context expands above 32K without exceeding the default local model context limit',()=>{
+test('source prompt context expands by selected local model capability without forcing external AI',()=>{
   const huge='x'.repeat(120000);
-  assert.equal(sourcePromptContextWindow(huge,{baseContextWindow:32768,maxPredict:3072}),40960);
-  assert.equal(sourcePromptContextWindow(huge,{baseContextWindow:65536,maxPredict:3072}),40960);
+  assert.equal(localModelContextLimit('qwen3:1.7b'),40960);
+  assert.equal(localModelContextLimit('qwen3:4b-instruct'),262144);
+  assert.equal(sourcePromptContextWindow(huge,{baseContextWindow:32768,maxPredict:3072,model:'qwen3:1.7b'}),40960);
+  assert.equal(sourcePromptContextWindow(huge,{baseContextWindow:65536,maxPredict:3072,model:'qwen3:1.7b'}),40960);
+  assert.equal(sourcePromptContextWindow(huge,{baseContextWindow:32768,maxPredict:3072,model:'qwen3:4b-instruct'}),65536);
 });
 
 test('zero-output focused retry compacts oversized goal into the canonical 8K context budget',()=>{
