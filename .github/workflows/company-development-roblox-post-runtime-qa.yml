@@ -446,13 +446,13 @@ jobs:
                 const universeKey=String(c.universeId);
                 if(!imageRequests.has(universeKey))imageRequests.set(universeKey,probeRobloxOpenCloudImageEvidence({
                   universeId:universeKey,apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,
-                  networkRetryAttempts:4,networkRetryDelayMs:750,
+                  networkRetryAttempts:2,networkRetryDelayMs:750,
                 }));
                 const [engineAttempt,imageAttempt]=await Promise.allSettled([
                   probeRobloxOpenCloudEngine({
                     universeId:String(c.universeId),placeId:String(c.placeId),versionNumber:Number(c.versionNumber),
                     apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,pollIntervalMs:1000,maxPolls:45,
-                    networkRetryAttempts:6,networkRetryDelayMs:1000,
+                    networkRetryAttempts:3,networkRetryDelayMs:1000,
                     expectedStudioAssetBinding:(item.robloxStudioAssetBindingApplied===true||item.robloxStudioAssetBinding?.required===true)?item.robloxStudioAssetBinding:null,
                   }),
                   imageRequests.get(universeKey),
