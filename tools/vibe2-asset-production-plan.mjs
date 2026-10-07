@@ -1351,7 +1351,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     catalogChanged:Boolean(previousMaintenance?.catalogFingerprint)&&previousMaintenance.catalogFingerprint!==fingerprint,
     synchronizedRegistryVersion:Number(original?.version||0)
   };
-  const depth=auditCommonLibrarySystemDepth({assets:next.assets});
+  const depth=libraryPlan.systemDepthAudit||auditCommonLibrarySystemDepth({assets:next.assets});
   const volumeByDomain=new Map(libraryPlan.domains.map(row=>[row.domain,row]));
   const environmentCatalog=catalogs.find(row=>row.catalog.packId==='roblox-common-environment-v1')?.catalog||{};
 
