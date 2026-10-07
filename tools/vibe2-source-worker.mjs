@@ -3574,7 +3574,7 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
       generatedAssetOutputContract:order.assetProduction.generatedAssetOutputContract,
       nativeAuthoringExecution:order.assetProduction.nativeAuthoringExecution
     }),
-    'Use these exact selected bindings, quality floors and native outputs in the existing responsible consumer. Preserve gameplay, saves and multiplayer authority. Source changes, generated files and internal scores do not prove actual runtime visual quality.',
+    'Apply in the existing consumer; actual runtime QA remains required.',
     '[ASSET IMPLEMENTATION CONTRACT END]'
   ].join('\n'):'';
   const precisionProductionBlock=precisionProduction?[
