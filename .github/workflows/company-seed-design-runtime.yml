@@ -691,7 +691,8 @@ jobs:
           }
           trap 'exit 143' TERM INT
           trap cleanup_design_runtime EXIT
-          node tools/artbook-production-pipeline.mjs &
+          node tools/artbook-fact-pack.mjs
+          node tools/company-design-cycle.mjs &
           pipeline_pid=$!
           (
             while kill -0 "$pipeline_pid" >/dev/null 2>&1; do
@@ -709,6 +710,26 @@ jobs:
           sync_pid=0
           persist_design_checkpoint || true
           if [ "$rc" -eq 0 ]; then
+            node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          const gameId=String(process.env.ARTBOOK_GAME_ID||'').trim();
+          const date=String(process.env.ARTBOOK_DATE||'').trim();
+          const base=path.join('design',gameId,date);
+          const read=name=>{
+            const file=path.join(base,name);
+            if(!fs.existsSync(file))throw new Error('DESIGN_MODEL_OUTPUT_MISSING: '+file);
+            return JSON.parse(fs.readFileSync(file,'utf8'));
+          };
+          const status=read('cycle-status.json'),design=read('design-revised.json');
+          if(status.gameId!==gameId||status.date!==date||status.status!=='COMPLETE')throw new Error('DESIGN_MODEL_STATUS_IDENTITY_MISMATCH');
+          if(design.gameId!==gameId||design.date!==date||design.authorRole!=='GAME_DESIGNER_AI'||!design.authorModel||!design.content)throw new Error('DESIGN_MODEL_AUTHOR_OUTPUT_REQUIRED');
+          const state=JSON.parse(fs.readFileSync('game-seed-state.json','utf8'));
+          const seed=(state.seeds||[]).find(row=>row.gameId===gameId&&String(row.status).toUpperCase()==='ACTIVE');
+          const eventId=String(seed?.ownerRequestInstanceId||seed?.ownerDirectiveRevision||seed?.ownerResetRevision||'');
+          if(eventId&&design.ownerDesignEventId!==eventId)throw new Error('DESIGN_MODEL_OWNER_EVENT_MISMATCH');
+          console.log('DESIGN_MODEL_OUTPUT_FILES=VERIFIED');
+          NODE
             echo 'complete=true' >> "$GITHUB_OUTPUT"
             echo 'quota_state=READY' >> "$GITHUB_OUTPUT"
             echo 'DESIGN_MODEL_CYCLE_RESULT=COMPLETE'

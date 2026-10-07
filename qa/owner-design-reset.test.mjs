@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import {spawnSync} from 'node:child_process';
 import {ensureOwnerDesignResetSeed,materializeOwnerDesignResetSeeds} from '../tools/owner-design-reset.mjs';
 
 test('active owner reset seeds stay DESIGN_ONLY inputs even when catalog development has already started',()=>{
@@ -190,4 +191,49 @@ test('already developed games can re-enter the same designer from an owner brief
   assert.equal(blocked({productionClass:'DEVELOPMENT_CONFIRMED'},{designInputMode:'OWNER_BRIEF_AND_ORIGINAL_ONLY'},clean),false);
   assert.equal(blocked({productionClass:'DEVELOPMENT_CONFIRMED'},{},clean),true);
   assert.match(cycle,/OWNER_ORIGINAL_DESIGN_INPUT=/);
+});
+
+
+test('design workflow invokes the actual designer for developed games instead of class routing',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  const launch=workflow.match(/          node tools\/artbook-fact-pack\.mjs\n          node tools\/company-design-cycle\.mjs &\n          pipeline_pid=\$!/);
+  assert.ok(launch,'same design workflow must directly call the existing designer');
+  assert.doesNotMatch(workflow,/node tools\/artbook-production-pipeline\.mjs &/);
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'design-direct-launch-'));
+  try{
+    fs.mkdirSync(path.join(dir,'tools'));
+    fs.writeFileSync(path.join(dir,'game-catalog.json'),JSON.stringify({games:[{id:'x',productionClass:'DEVELOPMENT_CONFIRMED'}]}));
+    fs.writeFileSync(path.join(dir,'tools/artbook-fact-pack.mjs'),"import fs from 'node:fs'; fs.writeFileSync('fact-ready','yes');");
+    fs.writeFileSync(path.join(dir,'tools/company-design-cycle.mjs'),"import fs from 'node:fs'; if(!fs.existsSync('fact-ready'))throw Error('facts missing');fs.writeFileSync('designer-called',process.env.ARTBOOK_GAME_ID);");
+    const result=spawnSync('bash',['-euo','pipefail','-c',launch[0]+'\nwait "$pipeline_pid"'],{cwd:dir,env:{...process.env,ARTBOOK_GAME_ID:'x'},encoding:'utf8'});
+    assert.equal(result.status,0,result.stderr);
+    assert.equal(fs.readFileSync(path.join(dir,'designer-called'),'utf8'),'x');
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
+
+test('a zero-exit designer without current authored output cannot be marked complete',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  const begin=workflow.indexOf('          if [ "$rc" -eq 0 ]; then');
+  const end=workflow.indexOf("            echo 'complete=true'",begin);
+  const block=workflow.slice(begin,end);
+  assert.ok(begin>=0&&end>begin);
+  const source=block.match(/<<'NODE'\n([\s\S]*?)\n          NODE/)[1].replace(/^          /gm,'');
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'design-output-guard-'));
+  try{
+    const run=()=>spawnSync(process.execPath,['--input-type=module','-e',source],{cwd:dir,env:{...process.env,ARTBOOK_GAME_ID:'x',ARTBOOK_DATE:'2026-10-08'},encoding:'utf8'});
+    assert.match(run().stderr,/DESIGN_MODEL_OUTPUT_MISSING/);
+    const base=path.join(dir,'design/x/2026-10-08');fs.mkdirSync(base,{recursive:true});
+    const write=(name,value)=>fs.writeFileSync(path.join(base,name),JSON.stringify(value));
+    fs.writeFileSync(path.join(dir,'game-seed-state.json'),JSON.stringify({seeds:[{gameId:'x',status:'ACTIVE',ownerResetRevision:'CURRENT'}]}));
+    write('cycle-status.json',{gameId:'x',date:'2026-10-08',status:'COMPLETE'});
+    const design={gameId:'x',date:'2026-10-08',authorRole:'GAME_DESIGNER_AI',authorModel:'test-designer',ownerDesignEventId:'OLD',content:{identity:'test fixture'}};
+    write('design-revised.json',design);
+    assert.match(run().stderr,/DESIGN_MODEL_OWNER_EVENT_MISMATCH/);
+    design.ownerDesignEventId='CURRENT';design.authorRole='REQUEST_ORCHESTRATOR';
+    write('design-revised.json',design);
+    assert.match(run().stderr,/DESIGN_MODEL_AUTHOR_OUTPUT_REQUIRED/);
+    design.authorRole='GAME_DESIGNER_AI';write('design-revised.json',design);
+    const good=run();assert.equal(good.status,0,good.stderr);
+    assert.match(good.stdout,/DESIGN_MODEL_OUTPUT_FILES=VERIFIED/);
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
