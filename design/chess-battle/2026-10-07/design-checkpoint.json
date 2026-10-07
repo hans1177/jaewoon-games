@@ -12,21 +12,21 @@
   "tasks": {},
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
+      "calls": 5,
       "successes": 0,
-      "failures": 4,
-      "timeouts": 3,
+      "failures": 5,
+      "timeouts": 4,
       "jsonFailures": 1,
-      "totalMs": 351336,
-      "lastMs": 68143,
-      "lastError": "OLLAMA_DESIGN_HTTP_500 {\"error\":\"prediction aborted, token repeat limit reached\"}",
-      "updatedAt": "2026-10-07T03:03:58.095Z"
+      "totalMs": 471437,
+      "lastMs": 120101,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
+      "updatedAt": "2026-10-07T03:16:04.260Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T02:58:05.294Z",
-  "updatedAt": "2026-10-07T03:14:04.155Z",
+  "updatedAt": "2026-10-07T03:16:04.260Z",
   "failedPhase": "designer_draft",
   "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=OPTIONAL_EXTERNAL_AI_DISABLED local=OLLAMA_DESIGN_HTTP_500 {\"error\":\"prediction aborted, token repeat limit reached\"}"
 }
