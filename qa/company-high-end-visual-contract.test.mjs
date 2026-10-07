@@ -578,23 +578,36 @@ test('canonical graphics policy requires one GLB master before platform-native 3
   assert.equal(policy.rules.platformNativeImportAdaptationRequired,true);
   assert.equal(policy.rules.platformRuntimeEvidenceIndependent,true);
   assert.equal(policy.rules.skinSkeletonJointWeightsAndAnimationRequired,true);
+  assert.ok(policy.requiredContents.includes('JOINT_WEIGHTS'));
+  for(const role of ['VILLAGER','SERVICE_NPC','FRIENDLY_CHARACTER','MINI_BOSS','RAID_BOSS'])assert.ok(policy.appliesToRoles.includes(role),role);
+  assert.equal(policy.rules.jointAnimationChannelsRequired,true);
+  assert.equal(policy.rules.rootOnlyMotionFailsCharacterMotionMannequin,true);
+  assert.equal(policy.rules.masterGlbPathStringAloneCannotProveBinding,true);
 
   const topology=architecture.assetProductionParallelism.companyGraphicsLibrary24h.studioAssetUniverse.crossPlatform3dMasterGlb;
   assert.equal(topology.masterFormat,'GLB_2_0');
   assert.deepEqual(topology.platformConsumers,['ROBLOX','UNITY','WEB']);
   assert.equal(topology.primitiveOnlyFinalActorForbidden,true);
   assert.equal(topology.newWorkerQueueOrPipeline,false);
+  assert.ok(topology.requiredStaticContents.includes('JOINT_WEIGHTS'));
+  assert.equal(topology.jointAnimationChannelRequired,true);
+  assert.equal(topology.masterGlbPathStringAloneIsNotNativeBinding,true);
 
   const evidence=logMap.studioAssetUniverseEvidenceContract.articulated3DActorGlbEvidence;
   assert.deepEqual(evidence.requiredForFamilies,['CHARACTER','CREATURE']);
   assert.ok(evidence.requiredFields.includes('MASTER_GLB_PATH'));
   assert.ok(evidence.requiredFields.includes('MASTER_GLB_SHA256'));
+  assert.ok(evidence.requiredFields.includes('JOINT_ANIMATION_CHANNEL_RESULT'));
+  assert.ok(evidence.requiredFields.includes('PLATFORM_ANIMATOR_BINDING_RESULT'));
   assert.equal(evidence.primitiveOnlyFinalActorCannotPass,true);
   assert.equal(evidence.sharedMasterDoesNotProvePlatformRuntime,true);
 
   assert.equal(security.studioAssetUniverseSecurity.protections.articulated3DActorFinalAssetRequiresMasterGlb,true);
   assert.equal(security.studioAssetUniverseSecurity.protections.masterGlbPathHashAndProvenanceRequired,true);
   assert.equal(security.studioAssetUniverseSecurity.protections.sharedMasterGlbCannotSubstitutePlatformNativeRuntimeVerification,true);
+  assert.equal(security.studioAssetUniverseSecurity.protections.masterGlbJointWeightsAndJointAnimationChannelsRequired,true);
+  assert.equal(security.studioAssetUniverseSecurity.protections.masterGlbPathStringAloneCannotClaimNativeBinding,true);
+  assert.equal(security.studioAssetUniverseSecurity.protections.characterMotionMannequinCannotPromote,true);
 
   assert.equal(CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.format,'GLB_2_0');
   assert.deepEqual([...CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.appliesToFamilies],['CHARACTER','CREATURE']);

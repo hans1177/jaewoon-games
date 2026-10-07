@@ -1743,7 +1743,7 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
       crossPlatform3dMasterGlbRequired:uniqueDccTypes.some(isCrossPlatform3dActorType),
       crossPlatform3dMasterGlbRequiredTypes:freezeList(uniqueDccTypes.filter(isCrossPlatform3dActorType)),
       crossPlatform3dMasterGlbFormat:'GLB_2_0',
-      crossPlatform3dMasterGlbRequiredContents:freezeList(['MESH','NORMALS','UV0','MATERIALS','SKELETON','SKIN_WEIGHTS','ANIMATION']),
+      crossPlatform3dMasterGlbRequiredContents:freezeList(['MESH','NORMALS','UV0','MATERIALS','SKELETON','SKIN_WEIGHTS','JOINT_WEIGHTS','ANIMATION']),
       primitivePartAssemblyPrototypeOnly:true,
       nativeSourceMayNotMaskDccRequirement:true,
       textWorkerMayClaimDccCompletion:false

@@ -526,7 +526,10 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
             meshCount:Number(masterGlbQa?.inspection?.inventory?.meshCount||0),
             materialCount:Number(masterGlbQa?.inspection?.inventory?.materials?.length||0),
             skinCount:Number(masterGlbQa?.inspection?.inventory?.skins?.length||0),
+            meshSkinBindingCount:Number(masterGlbQa?.inspection?.inventory?.meshSkinBindingCount||0),
             animationCount:Number(masterGlbQa?.inspection?.inventory?.animations?.length||0),
+            jointAnimationChannelCount:Number(masterGlbQa?.inspection?.inventory?.jointAnimationChannelCount||0),
+            animatedJointCount:Number(masterGlbQa?.inspection?.inventory?.animatedJointCount||0),
             sourceHash:masterGlbQa?.sourceHash||null
           }):null,
           reproducesExistingNativeArtifact,persistedForCandidate:persist,candidateUsable:persist||reproducesExistingNativeArtifact,

@@ -1,5 +1,5 @@
 {
-  "version": 180,
+  "version": 181,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -821,7 +821,6 @@
         "CHARACTER",
         "CREATURE"
       ],
-      "bossRoleIncluded": true,
       "requiredFields": [
         "MASTER_GLB_PATH",
         "MASTER_GLB_SHA256",
@@ -911,7 +910,6 @@
         ]
       },
       "roleSpecificVisualAndMotionEvidenceRequired": true,
-      "colorOnlyRoleCloneCannotCountAsDistinctActor": true,
       "npcDiversityEvidence": {
         "required": true,
         "requiredFields": [
@@ -928,19 +926,7 @@
         "nearbyPairMinimumDistinctAxes": 5,
         "heroCompanionEliteBossTargetDistinctAxes": 8,
         "colorOnlySizeOnlyOrFaceOnlyCloneCannotPass": true
-      },
-      "requiredStaticContents": [
-        "MESH",
-        "NORMALS",
-        "UV0",
-        "MATERIALS",
-        "SKELETON",
-        "SKIN_WEIGHTS",
-        "JOINT_WEIGHTS",
-        "ANIMATION"
-      ],
-      "masterGlbPathStringAloneCannotPass": true,
-      "rootOnlyMotionCannotPass": true
+      }
     }
   },
   "npcRoleProductionEvidenceContract": {
@@ -967,32 +953,7 @@
     "heroCompanionEliteBossDistinctAxisTarget": 8,
     "colorOnlySizeOnlyOrFaceOnlyCloneCannotPass": true,
     "physicalIdentityMustReachRoleProfileAndCustomizationRecipe": true,
-    "gameplayScaleCollisionHitboxMovementStatsEvidenceMustRemainUnchanged": true,
-    "requiredRoles": [
-      "GENERAL_NPC",
-      "NPC",
-      "VILLAGER",
-      "COMPANION",
-      "PARTY_MEMBER",
-      "ALLY",
-      "FRIENDLY_CHARACTER",
-      "STORY_CHARACTER",
-      "CIVILIAN",
-      "MERCHANT",
-      "VENDOR",
-      "SERVICE_NPC",
-      "QUEST_GIVER",
-      "GUARD",
-      "WORKER",
-      "ARTISAN",
-      "FARMER",
-      "HEALER",
-      "TRAINER",
-      "RIVAL",
-      "HOSTILE_HUMANOID",
-      "NAMED_ELITE",
-      "HUMANOID_BOSS"
-    ]
+    "gameplayScaleCollisionHitboxMovementStatsEvidenceMustRemainUnchanged": true
   },
   "universalAssetCoverageEvidenceContract": {
     "version": 1,
