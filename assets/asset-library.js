@@ -12,10 +12,25 @@ const clipNames={idle:'대기',walk:'걷기',chase:'추격',attack:'공격',hit:
 const motionLabels={IDLE_RELAXED:'대기',WALK:'걷기',JOG:'조깅',RUN:'달리기',START:'출발',STOP:'정지',TURN_90:'90도 회전',JUMP_START:'점프',LAND:'착지',HIT_FRONT:'정면 피격',DEATH_FRONT:'쓰러짐',BLOCK_RAISE:'방어 올리기',BLOCK_HOLD:'방어 유지',PARRY_PERFECT:'정밀 받아치기',GUARD_BREAK:'가드 브레이크',COUNTER_READY:'카운터 준비',SPRINT:'전력질주',CROUCH_IDLE:'웅크리기',DODGE_LEFT:'왼쪽 회피',DODGE_RIGHT:'오른쪽 회피',ROLL_FORWARD:'앞구르기',CLIMB_LOOP:'오르기',SWIM_FORWARD:'수영',INTERACT_USE:'상호작용',GATHER_SWING:'채집 휘두르기',CRAFT_LOOP:'제작',CARRY_IDLE:'들고 대기',EQUIP_DRAW:'장비 꺼내기',UNEQUIP_STOW:'장비 넣기',USE_CONSUMABLE:'소모품 사용',DOWNED_IDLE:'다운',REVIVE_HELP:'부활 도움',EMOTE_WAVE:'손 흔들기',LIGHT_ATTACK_1:'약공격',HEAVY_ATTACK_1:'강공격',RANGED_DRAW_SHOT:'원거리 발사',CAST_BURST:'마법 발동',CHANNEL_LOOP:'집중 시전',HIT_BACK:'후방 피격',BLEND_NEUTRAL:'중립 블렌드',SIT_DOWN:'앉기',STAND_UP:'일어나기',LEAN_WALL_IDLE:'벽 기대기',OPEN_DOOR:'문 열기',OPEN_CONTAINER:'상자 열기',PICKUP_GROUND:'줍기',PLACE_GROUND:'놓기',PUSH_OBJECT:'밀기',PULL_OBJECT:'당기기',TALK_GESTURE:'대화 제스처',NPC_WORK_LOOP:'NPC 작업',COOK_LOOP:'요리',FARM_TEND:'농사',FISH_CAST:'낚시',BED_LIE_DOWN:'눕기',LADDER_ENTER:'사다리 진입',LADDER_EXIT:'사다리 이탈',SLOPE_ASCEND:'오르막',SLOPE_DESCEND:'내리막',FATIGUED_IDLE:'지친 대기',INJURED_WALK:'부상 걷기'};
 const featuredTargets=[['featuredWalk','roblox-world-ghost-ghoul','walk'],['featuredAttack','roblox-world-ghost-ifrit','attack']];
 let manifest=null,registry=null,registryEtag=null,rows=[],kind='monster',selectedId='',selectionToken=0,currentKey='',currentRow=null;
+let manifestIndexes={sourceFingerprint:null,monsters:new Map(),environments:new Map(),common:new Map()};
 let viewer=null,viewerPromise=null,refreshing=false,paused=matchMedia('(prefers-reduced-motion:reduce)').matches,selectedClip='idle';
 const cache=new Map();
 const localImage=value=>typeof value==='string'&&/^\/(assets|web-games)\/[a-zA-Z0-9_./-]+\.(png|jpe?g|webp|svg|avif)$/i.test(value)&&!value.split('/').includes('..')?value:'';
 const validSamplePath=value=>typeof value==='string'&&/^\/assets\/roblox\/world-ghosts\/native\/gallery\/(monster|environment)-[a-z0-9-]+\.json$/.test(value);
+function manifestRows(){
+ if(manifestIndexes.sourceFingerprint===manifest?.sourceFingerprint)return manifestIndexes;
+ manifestIndexes={
+  sourceFingerprint:manifest?.sourceFingerprint||null,
+  monsters:new Map((manifest?.monsters||[]).map(row=>['roblox-world-ghost-'+row.id,row])),
+  environments:new Map((manifest?.environments||[]).map(row=>['roblox-common-environment-'+row.id,row])),
+  common:new Map((manifest?.commonMotions||[]).map(row=>['roblox-common-motion-'+row.id,row]))
+ };
+ return manifestIndexes;
+}
+function indexRow(row){
+ row.searchText=[row.title,row.id,categoryLabels[row.category]||row.category,forms[row.form]||row.form,row.role,row.asset?.platform,row.asset?.status,row.asset?.runtimeVerificationState,row.asset?.internalAuditGrade,row.asset?.consumerGameIds?.join(' '),row.asset?.productionVerified===true?'production verified':row.asset?.productionVerified===false?'production unverified':''].filter(Boolean).join(' ').toLocaleLowerCase();
+ return row;
+}
 async function request(url,options={}){
  const response=await fetch(url,{cache:'no-cache',signal:AbortSignal.timeout(20000),...options});
  if(!response.ok)throw Error('자산 서버에 연결하지 못했어.');return response;
@@ -29,28 +44,26 @@ async function readRegistry(){
  registryEtag=response.headers.get('etag');return next;
 }
 function allRows(){
- const monsters=new Map(manifest.monsters.map(row=>['roblox-world-ghost-'+row.id,row]));
- const environments=new Map(manifest.environments.map(row=>['roblox-common-environment-'+row.id,row]));
- const common=new Map((manifest.commonMotions||[]).map(row=>['roblox-common-motion-'+row.id,row]));
+ const {monsters,environments,common}=manifestRows();
  if(kind==='all')return registry.assets.map(asset=>{
   const category=asset.category||asset.family||'OTHER',retiredPreview=retiredPreviews.has(asset.id);
   const sample=retiredPreview?null:category==='CREATURE'?monsters.get(asset.id):category==='ENVIRONMENT'?environments.get(asset.id):null;
   const atom=retiredPreview?null:category==='MOTION'?common.get(asset.id):null,key=atom?.atomId||asset.id;
-  return {id:asset.id,title:atom?(motionLabels[key]||key):sample?(category==='ENVIRONMENT'?biomes[sample.id]||sample.title:sample.title):asset.title||asset.id,
+  return indexRow({id:asset.id,title:atom?(motionLabels[key]||key):sample?(category==='ENVIRONMENT'?biomes[sample.id]||sample.title:sample.title):asset.title||asset.id,
    category,form:category,role:[asset.platform,asset.status].filter(Boolean).join(' · '),sample,atom,asset,retiredPreview,
-   image:retiredPreview?'':localImage(asset.previewPath)||localImage(asset.path),sharedImage:Boolean(asset.previewPath&&asset.previewPath!==asset.path)};
+   image:retiredPreview?'':localImage(asset.previewPath)||localImage(asset.path),sharedImage:Boolean(asset.previewPath&&asset.previewPath!==asset.path)});
  }).sort((a,b)=>a.category.localeCompare(b.category)||a.title.localeCompare(b.title,'ko'));
  if(kind==='common')return publicAssets(registry.assets).filter(row=>row.category==='MOTION').map(asset=>{
   const atom=common.get(asset.id),key=atom?.atomId||asset.id;
-  return {id:asset.id,title:atom?(motionLabels[key]||key):asset.title||asset.id,category:'MOTION',asset,
+  return indexRow({id:asset.id,title:atom?(motionLabels[key]||key):asset.title||asset.id,category:'MOTION',asset,
    form:atom?.priority||'MOTION',role:atom?[[(atom.looped?'반복':'단발'),atom.duration+'초'],atom.motionRole].filter(Boolean).join(' · '):'공용 R15 모션팩',
-   atom,sharedImage:false};
+   atom,sharedImage:false});
  }).sort((a,b)=>Number(Boolean(b.atom))-Number(Boolean(a.atom))||a.title.localeCompare(b.title,'ko'));
  return publicAssets(registry.assets).filter(row=>row.category===(kind==='monster'?'CREATURE':'ENVIRONMENT')).map(asset=>{
   const sample=(kind==='monster'?monsters:environments).get(asset.id),category=kind==='monster'?'CREATURE':'ENVIRONMENT';
-  return {id:asset.id,title:sample?(kind==='environment'?biomes[sample.id]||sample.title:sample.title):asset.title||asset.id,
+  return indexRow({id:asset.id,title:sample?(kind==='environment'?biomes[sample.id]||sample.title:sample.title):asset.title||asset.id,
    category,asset,form:sample?.form||'OTHER',role:sample?.role||'',sample,image:localImage(asset.previewPath)||localImage(asset.path),
-   sharedImage:Boolean(asset.previewPath&&asset.previewPath!==asset.path)};
+   sharedImage:Boolean(asset.previewPath&&asset.previewPath!==asset.path)});
  }).sort((a,b)=>Number(Boolean(b.sample))-Number(Boolean(a.sample)));
 }
 function updateFilters(){
@@ -61,7 +74,7 @@ function updateFilters(){
 }
 function showList(){
  const query=$('assetSearch').value.trim().toLocaleLowerCase(),form=(kind==='monster'||kind==='all')?$('formFilter').value:'';
- const filtered=rows.filter(row=>(!form||row.form===form)&&(!query||[row.title,row.id,categoryLabels[row.category]||row.category,forms[row.form]||row.form,row.role,row.asset?.platform,row.asset?.status,row.asset?.runtimeVerificationState,row.asset?.internalAuditGrade,row.asset?.consumerGameIds?.join(' '),row.asset?.productionVerified===true?'production verified':row.asset?.productionVerified===false?'production unverified':''].filter(Boolean).join(' ').toLocaleLowerCase().includes(query)));
+ const filtered=rows.filter(row=>(!form||row.form===form)&&(!query||row.searchText.includes(query)));
  const list=$('assetList'),scrollTop=list.scrollTop,scrollLeft=list.scrollLeft,focused=document.activeElement?.dataset?.id;list.replaceChildren();
  $('resultCount').textContent=filtered.length+'개 / 전체 '+rows.length+'개';
  for(const row of filtered){
@@ -92,7 +105,7 @@ function showClips(sample){
 }
 function syncFeaturedButtons(){
  const available=new Set(publicAssets(registry.assets).map(row=>row.id));
- const monsters=new Map(manifest.monsters.map(row=>['roblox-world-ghost-'+row.id,row]));
+ const {monsters}=manifestRows();
  for(const [buttonId,assetId,clipId]of featuredTargets){const sample=monsters.get(assetId);$(buttonId).disabled=!(available.has(assetId)&&sample?.clips?.includes(clipId));}
 }
 async function openFeatured(assetId,clipId){
@@ -174,9 +187,16 @@ async function refresh(force=false){
   manifest=nextManifest;registry=nextRegistry;syncFeaturedButtons();
   $('assetCount').textContent=registry.assets.length.toLocaleString('ko-KR');
   $('allCount').textContent=registry.assets.length;
-  $('monsterCount').textContent=publicAssets(registry.assets).filter(row=>row.category==='CREATURE').length;
-  $('environmentCount').textContent=publicAssets(registry.assets).filter(row=>row.category==='ENVIRONMENT').length;
-  $('commonCount').textContent=publicAssets(registry.assets).filter(row=>row.category==='MOTION').length;
+  let monsterCount=0,environmentCount=0,commonCount=0;
+  for(const asset of registry.assets){
+   if(retiredPreviews.has(asset.id))continue;
+   if(asset.category==='CREATURE')monsterCount+=1;
+   else if(asset.category==='ENVIRONMENT')environmentCount+=1;
+   else if(asset.category==='MOTION')commonCount+=1;
+  }
+  $('monsterCount').textContent=monsterCount;
+  $('environmentCount').textContent=environmentCount;
+  $('commonCount').textContent=commonCount;
   if(changed||force||!currentKey){rows=allRows();updateFilters();showList();const selected=rows.find(row=>row.id===selectedId)||rows.find(row=>row.sample?.id==='ghoul')||rows[0];if(selected)await choose(selected,force);}
   $('syncStatus').textContent='자동 동기화 연결됨 · '+new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+' 확인';
  }catch(error){$('syncStatus').textContent=(registry?'이전 목록을 표시 중이야. ':'')+(error.message||'자산 정보를 불러오지 못했어.')+' 새로고침으로 다시 시도할 수 있어.';}
