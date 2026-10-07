@@ -190,25 +190,31 @@
         "audioIdentity": "COZY_CHIBI_KINGDOM_AUDIO",
         "gameplayFeedbackSync": "COZY_CHIBI_KINGDOM_GAMEPLAY_SYNC_V2"
       }
+    },
+    "designer_draft_slices::market-multiplayer": {
+      "marketTargetDirection": "COZY_CHIBI_KINGDOM",
+      "steamExpansionDecision": "COZY_CHIBI_KINGDOM_EXPANSION_V2",
+      "multiplayerMode": "COOP",
+      "multiplayerExpansionDecision": "COZY_CHIBI_KINGDOM_MULTIPLAYER_V2"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1163030,
-      "lastMs": 202694,
+      "totalMs": 1312367,
+      "lastMs": 149337,
       "lastError": null,
-      "updatedAt": "2026-10-07T20:43:53.492Z"
+      "updatedAt": "2026-10-07T20:46:22.831Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T20:24:30.415Z",
-  "updatedAt": "2026-10-07T20:43:53.493Z",
+  "updatedAt": "2026-10-07T20:46:22.832Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -367,7 +373,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-07T20:43:53.492Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T20:46:22.831Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
