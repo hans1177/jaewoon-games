@@ -21,6 +21,72 @@ import { createVibeContinuousQueue } from '../assets/vibe-continuous-queue.js';
 import { robloxDeterministicPresentationEligible } from '../tools/vibe2-source-worker.mjs';
 import { expandPresentationResponsibleFiles } from '../tools/vibe2-continuous-runner.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
+test('asset source references group shared paths without dropping any selected asset',()=>{
+  const candidates=Array.from({length:500},(_,i)=>({
+    assetId:'selected-asset-'+i,sourceFiles:['assets/shared/factory.js','assets/shared/actor.glb'],path:'assets/shared/actor.glb'
+  }));
+  candidates.push({assetId:'different-source',sourceFiles:['assets/other/factory.js'],path:''});
+  const prompt=buildPrompt({
+    target:'web',goal:'Apply the selected library',
+    internalAssetSourceUsage:{
+      exactFamilies:{CREATURE:['CREATURE_A']},flowSelections:[],sourceCandidates:candidates,
+      fingerprint:'fixture-selection',libraryVersion:1,synchronization:{mode:'DELTA'},
+      sourceConsumptionSequence:['READ','APPLY'],usageMatrix:[]
+    }
+  },{files:[]},[]);
+  const row=prompt.split('\n').find(line=>line.startsWith('Selected source/API references'));
+  assert.ok(Buffer.byteLength(row)<12000);
+  assert.equal(row.split('assets/shared/factory.js').length-1,1);
+  assert.equal(row.split('assets/shared/actor.glb').length-1,1);
+  for(const candidate of candidates)assert.ok(row.includes(candidate.assetId));
+  assert.match(row,/different-source@assets\/other\/factory\.js/);
+});
+
+test('asset Web first request bounds planner history while preserving binding and visual repair contracts',async(t)=>{
+  process.env.VIBE2_EXECUTION_LANE='asset-development';
+  const source='function render(){ return "current visual"; }';
+  const work={
+    target:'web',goal:'Repair the current Web presentation.\n'+'Historical library planning. '.repeat(240000),
+    assetProductionLane:true,
+    assetProduction:{
+      decisions:[],flowAssetRequirements:[{family:'CREATURE',role:'HERO'}],
+      flowAssetLoadout:{selections:[{assetId:'actual-hero',sourceFiles:['assets/hero.glb']}]},
+      styleBible:{styleFamily:'COZY'},qualityDNA:{minimumFloors:{SILHOUETTE:'HERO_GRADE'}},
+      nativeAuthoringExecution:{target:'web',generatedFiles:['assets/hero.glb']},
+      generatedAssetOutputContract:{fakeBinaryForbidden:true},
+      runtimeVisualRepair:{defects:[{id:'clipped-hand',sourceHash:'current-source-hash',lockedParameters:['hitTiming']}]}
+    },
+    internalAssetSourceUsage:{
+      exactFamilies:{CREATURE:['ACTUAL_HERO']},flowSelections:[],
+      sourceCandidates:[{assetId:'actual-hero',sourceFiles:['assets/hero.glb'],path:''}],
+      fingerprint:'fixture-current-library',libraryVersion:1,synchronization:{mode:'DELTA'},
+      sourceConsumptionSequence:['READ','APPLY'],usageMatrix:[]
+    }
+  };
+  const context={files:[{path:'game.js',editable:true,content:source}],internalAssetApiIndex:'assets/factory.js: createHero(options)'};
+  const prompt=buildPrompt(work,context,['game.js']);
+  assert.ok(Buffer.byteLength(prompt)>6600000);
+  const requests=[];
+  const server=http.createServer((req,res)=>{
+    let body='';req.on('data',chunk=>body+=chunk);req.on('end',()=>{
+      requests.push(JSON.parse(body));res.writeHead(503);res.end('fixture ends before model execution');
+    });
+  });
+  await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(11434,'127.0.0.1',resolve);});
+  t.after(()=>new Promise(resolve=>server.close(resolve)));
+  await assert.rejects(generateCandidateWithRecovery({
+    prompt,model:'qwen3:4b-instruct',target:'web',allowFullRewrite:false,responsibleFiles:['game.js'],sourceRootRelative:'web-games/demo'
+  }),/Ollama HTTP 503/);
+  assert.equal(requests.length,1);
+  const sent=requests[0];
+  assert.ok(Buffer.byteLength(sent.prompt)<64000);
+  assert.ok(sent.options.num_ctx<=40960);
+  for(const expected of [source,'ACTUAL_HERO','actual-hero@assets/hero.glb','createHero(options)','HERO_GRADE','fakeBinaryForbidden','clipped-hand','current-source-hash','hitTiming']){
+    assert.ok(sent.prompt.includes(expected),'missing implementation input: '+expected);
+  }
+  assert.equal(sent.format,'json');
+  assert.equal(work.assetProduction.flowAssetLoadout.selections.length,1);
+});
 
 // 테스트 실행 환경: 호출한 작업 흐름의 작업군이 개별 검증 조건을 바꾸지 않게 격리한다.
 const inheritedExecutionLane = process.env.VIBE2_EXECUTION_LANE;
@@ -7461,3 +7527,4 @@ test('package asset repair evidence survives focused and oversized worker prompt
   assert.equal(directive.playtestRuntimeFindings.runtimeObserved,false);
   assert.equal(directive.playtestRuntimeFindings.runtimePassed,false);
 });
+
