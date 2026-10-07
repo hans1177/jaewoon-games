@@ -245,7 +245,9 @@ test('private runtime candidate uses the same shallow checkout contract while pr
   assert.doesNotMatch(workflow,/fetch-depth:\s*0/);
   assert.match(workflow,/git fetch --no-tags --depth=1 origin "\$SOURCE_REVISION"/);
   assert.match(workflow,/gh api "repos\/\$GITHUB_REPOSITORY\/compare\/\$SOURCE_REVISION\.\.\.\$\(git rev-parse HEAD\)"/);
-  assert.match(workflow,/git diff --quiet "\$SOURCE_REVISION" HEAD -- "\$SOURCE_ROOT"/);
+  assert.match(workflow,/git ls-tree -r "\$SOURCE_REVISION" -- "\$SOURCE_ROOT"[\s\S]*roblox-source-bootstrap\.json/);
+  assert.match(workflow,/git ls-tree -r origin\/main -- "\$SOURCE_ROOT"[\s\S]*roblox-source-bootstrap\.json/);
+  assert.doesNotMatch(workflow,/git diff --quiet "\$SOURCE_REVISION" HEAD -- "\$SOURCE_ROOT"/);
 });
 
 
@@ -482,6 +484,9 @@ test('pre-F9 validation publish requires exact F0 but never current F9',()=>{
   };
   const candidate={item,sourceRevision,artifactIdentity,sourceTree:'tree',latestSourceTree:'tree',publishStage:'validation'};
   assert.equal(assertRobloxLatestPublishCandidate(candidate),true);
+  assert.equal(assertRobloxLatestPublishCandidate({...candidate,item:{...item,robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:'c'.repeat(40)}}),true);
+  assert.throws(()=>assertRobloxLatestPublishCandidate({...candidate,item:{...item,robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:sourceRevision}}),/ROBLOX_PUBLISH_CURRENT_QUALITY_REPAIR_REQUIRED/);
+  assert.throws(()=>assertRobloxLatestPublishCandidate({...candidate,item:{...item,robloxQualityBuildUpRequired:true}}),/ROBLOX_PUBLISH_CURRENT_QUALITY_REPAIR_REQUIRED/);
   assert.throws(()=>assertRobloxLatestPublishCandidate({...candidate,item:{...item,robloxFoundationF0Passed:false}}),/ROBLOX_PUBLISH_CURRENT_F0_REQUIRED/);
   assert.throws(()=>assertRobloxLatestPublishCandidate({...candidate,publishStage:'final'}),/ROBLOX_PUBLISH_CURRENT_F9_REQUIRED/);
   assert.match(workflow,/PUBLISH_STAGE: \$\{\{ inputs\.publish_stage \|\| 'validation' \}\}/);
