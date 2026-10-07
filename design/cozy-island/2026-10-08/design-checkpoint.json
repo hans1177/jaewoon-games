@@ -3,31 +3,16 @@
   "gameId": "cozy-island",
   "date": "2026-10-08",
   "seedId": "OWNER-DESIGN-COZY-ISLAND",
-  "fingerprint": "4ba5ba7aa9124f6df82d022fa43c17cf095ca6ff87b7a5debbd203b2c9f25162",
+  "fingerprint": "5f4a100ce69d31b0d0c3114f876e8dc93c3f1db770451633e70ed551eefc7d21",
   "policyDigest": "223f74bb658bbab4921a06b74e652d4e7fc27d174188c3b4b3488e9b3d026f6f",
   "engineDigest": "81b77ec5e350f8737109235df27ddb3a375a99cf53bfce58e356fcdea285920b",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
   "tasks": {},
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 0,
-      "failures": 1,
-      "timeouts": 1,
-      "jsonFailures": 0,
-      "totalMs": 90074,
-      "lastMs": 90074,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 90000ms",
-      "updatedAt": "2026-10-07T17:53:13.404Z"
-    }
-  },
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-07T17:51:43.327Z",
-  "updatedAt": "2026-10-07T17:53:13.405Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=OPTIONAL_EXTERNAL_AI_DISABLED local=OLLAMA_DESIGN_TIMEOUT 90000ms"
+  "createdAt": "2026-10-07T18:14:44.822Z",
+  "updatedAt": "2026-10-07T18:14:44.866Z"
 }
