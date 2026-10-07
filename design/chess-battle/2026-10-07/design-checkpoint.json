@@ -12,21 +12,21 @@
   "tasks": {},
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
+      "calls": 19,
       "successes": 0,
-      "failures": 18,
-      "timeouts": 18,
+      "failures": 19,
+      "timeouts": 19,
       "jsonFailures": 0,
-      "totalMs": 1620919,
-      "lastMs": 90067,
+      "totalMs": 1710985,
+      "lastMs": 90066,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 90000ms",
-      "updatedAt": "2026-10-07T12:47:49.876Z"
+      "updatedAt": "2026-10-07T12:49:25.059Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T12:19:31.336Z",
-  "updatedAt": "2026-10-07T12:47:54.990Z",
+  "updatedAt": "2026-10-07T12:49:30.181Z",
   "failedPhase": "designer_draft",
   "failedTask": "identity-core",
   "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=OPTIONAL_EXTERNAL_AI_DISABLED local=OLLAMA_DESIGN_TIMEOUT 90000ms"
