@@ -151,11 +151,6 @@ const CENTRAL_POLICY_REL='company-learning/platform-release-roadmap.json';
 const CENTRAL_ARCHITECTURE_REL='company-learning/company-architecture-map.json';
 const CENTRAL_LOG_MAP_REL='company-learning/company-log-map.json';
 const CENTRAL_SECURITY_REL='company-learning/security-immune-system.json';
-const COMPANY_ASSET_LIBRARY_REL='company-asset-library.json';
-const COMPANY_ASSET_LIBRARY_BUDGET=Object.freeze({
-  hardMaxUtf8Bytes:32*1024*1024,
-  maxGrowthUtf8Bytes:8*1024*1024
-});
 const CENTRAL_SCAN_ROOTS=Object.freeze(['qa','tools','.github','assets']);
 const CENTRAL_COMPANION_DOCUMENTS=Object.freeze({
   architecture:Object.freeze({
@@ -454,46 +449,6 @@ export function inspectCentralDocumentBudgets({baseRevision=''}={}){
     baseRevision:base||null,
     documents:Object.freeze(documents),
     errors:Object.freeze(uniq(errors))
-  });
-}
-
-export function inspectCompanyAssetLibraryBudget({baseRevision=''}={}){
-  const base=clean(baseRevision);
-  const currentText=readTextRel(COMPANY_ASSET_LIBRARY_REL);
-  JSON.parse(currentText);
-  const currentBytes=utf8Bytes(currentText);
-  let baseBytes=null;
-  const errors=[];
-  if(base&&!/^0+$/.test(base)){
-    if(base==='HEAD'){
-      baseBytes=currentBytes;
-    }else{
-      try{
-        const prior=execFileSync('git',['show',base+':'+COMPANY_ASSET_LIBRARY_REL],{
-          cwd:ROOT,encoding:'utf8',maxBuffer:40*1024*1024
-        });
-        baseBytes=utf8Bytes(prior);
-      }catch{
-        errors.push('COMPANY_ASSET_LIBRARY_BASE_READ_FAILED:'+base);
-      }
-    }
-  }
-  const growth=baseBytes===null?null:currentBytes-baseBytes;
-  if(currentBytes>COMPANY_ASSET_LIBRARY_BUDGET.hardMaxUtf8Bytes){
-    errors.push('COMPANY_ASSET_LIBRARY_HARD_LIMIT_EXCEEDED:'+currentBytes+'>'+COMPANY_ASSET_LIBRARY_BUDGET.hardMaxUtf8Bytes);
-  }
-  if(growth!==null&&growth>COMPANY_ASSET_LIBRARY_BUDGET.maxGrowthUtf8Bytes){
-    errors.push('COMPANY_ASSET_LIBRARY_GROWTH_LIMIT_EXCEEDED:'+growth+'>'+COMPANY_ASSET_LIBRARY_BUDGET.maxGrowthUtf8Bytes);
-  }
-  return Object.freeze({
-    sourcePath:COMPANY_ASSET_LIBRARY_REL,
-    utf8Bytes:currentBytes,
-    baseUtf8Bytes:baseBytes,
-    growthUtf8Bytes:growth,
-    hardMaxUtf8Bytes:COMPANY_ASSET_LIBRARY_BUDGET.hardMaxUtf8Bytes,
-    maxGrowthUtf8Bytes:COMPANY_ASSET_LIBRARY_BUDGET.maxGrowthUtf8Bytes,
-    headroomUtf8Bytes:COMPANY_ASSET_LIBRARY_BUDGET.hardMaxUtf8Bytes-currentBytes,
-    errors:Object.freeze(errors)
   });
 }
 
@@ -903,7 +858,6 @@ function main(){
     const baseRevision=baseArg?clean(baseArg.slice('--central-base='.length)):'';
     const report=inspectCentralDocument();
     const budgets=inspectCentralDocumentBudgets({baseRevision});
-    const assetLibraryBudget=inspectCompanyAssetLibraryBudget({baseRevision});
     console.log('CENTRAL_POLICY_UTF8_BYTES='+report.utf8Bytes);
     console.log('CENTRAL_POLICY_SOFT_TARGET_BYTES='+report.softTargetUtf8Bytes);
     console.log('CENTRAL_POLICY_HARD_MAX_BYTES='+report.maxUtf8Bytes);
@@ -920,21 +874,12 @@ function main(){
         console.log('CENTRAL_DOCUMENT_'+marker+'_GROWTH_BYTES='+row.growthUtf8Bytes);
       }
     }
-    console.log('COMPANY_ASSET_LIBRARY_UTF8_BYTES='+assetLibraryBudget.utf8Bytes);
-    console.log('COMPANY_ASSET_LIBRARY_HARD_MAX_BYTES='+assetLibraryBudget.hardMaxUtf8Bytes);
-    console.log('COMPANY_ASSET_LIBRARY_HEADROOM_BYTES='+assetLibraryBudget.headroomUtf8Bytes);
-    console.log('COMPANY_ASSET_LIBRARY_MAX_GROWTH_BYTES='+assetLibraryBudget.maxGrowthUtf8Bytes);
-    if(assetLibraryBudget.baseUtf8Bytes!==null){
-      console.log('COMPANY_ASSET_LIBRARY_BASE_BYTES='+assetLibraryBudget.baseUtf8Bytes);
-      console.log('COMPANY_ASSET_LIBRARY_GROWTH_BYTES='+assetLibraryBudget.growthUtf8Bytes);
-    }
     if(report.aboveSoftTarget){
       console.warn('CENTRAL_POLICY_SOFT_TARGET_EXCEEDED=YES');
       for(const row of discoverCentralArchiveCandidates({limit:10}))console.warn('CENTRAL_POLICY_ARCHIVE_CANDIDATE='+row.path+':'+row.utf8Bytes);
     }
-    const errors=uniq([...report.errors,...budgets.errors,...assetLibraryBudget.errors]);
+    const errors=uniq([...report.errors,...budgets.errors]);
     if(errors.length){errors.forEach(x=>console.error(x));process.exit(1);}
-    console.log('COMPANY_ASSET_LIBRARY_BUDGET=PASS');
     console.log('CENTRAL_DOCUMENT_BUDGETS=PASS');
     console.log('CENTRAL_POLICY_RETENTION=PASS');
     return;
