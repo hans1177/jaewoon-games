@@ -159,25 +159,41 @@
         "multiplayerPersistence": "WEB_2_5D_HORROR_ESCAPE_ROOM_MULTIPLAYER_PERSISTENCE",
         "expansionSpace": "WEB_2_5D_HORROR_ESCAPE_ROOM_EXPANSION_SPACE"
       }
+    },
+    "designer_draft_slices::platform-expansion": {
+      "platformExpansionPolicy": {
+        "mode": "SHARED_LARGE_FRAME_PLATFORM_NATIVE_EXPANSION",
+        "sharedLargeFrame": [
+          "CORE_IDENTITY",
+          "CORE_IDENTITY",
+          "CORE_IDENTITY",
+          "CORE_IDENTITY",
+          "CORE_IDENTITY"
+        ],
+        "expansionLimit": "NO_ARTIFICIAL_PARITY_LIMIT_WITHIN_SHARED_LARGE_FRAME",
+        "webRule": "WEB_2_5D_HORROR_ESCAPE_ROOM",
+        "unityRule": "UNITY_4_3D_HORROR_ESCAPE_ROOM",
+        "robloxRule": "ROBLOX_3_2D_HORROR_ESCAPE_ROOM"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 902791,
-      "lastMs": 213927,
+      "totalMs": 1106324,
+      "lastMs": 203533,
       "lastError": null,
-      "updatedAt": "2026-10-07T20:40:10.323Z"
+      "updatedAt": "2026-10-07T20:43:33.857Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T20:25:07.525Z",
-  "updatedAt": "2026-10-07T20:40:10.323Z",
+  "updatedAt": "2026-10-07T20:43:33.858Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -370,7 +386,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-07T20:40:10.323Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T20:43:33.857Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
