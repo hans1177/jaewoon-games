@@ -5,7 +5,7 @@ import {buildVibeAssetProductionPlan} from '../tools/vibe2-asset-production-plan
 import {createVibeArtPipeline,createVibeGraphicsProduction,createVibeOwnerChangeRequestStability,VIBE_HIGH_END_TARGET_FRAME_ROLES,GRAPHICS_PRODUCTION_INTERNAL_MODULES,GRAPHICS_PRODUCTION_STAGES,VIBE_STUDIO_HUMANOID_LOCOMOTION,VIBE_STUDIO_HUMANOID_COMBAT,VIBE_STUDIO_CREATURE_FAMILIES,VIBE_STUDIO_RETARGET_CLEANUP,VIBE_BIPED_CREATURE_FAMILIES,VIBE_CREATURE_STYLE_VARIANTS,VIBE_CARTOON_MOTION_TRANSFORMS,VIBE_CREATURE_LIBRARY_GRAPH} from '../assets/vibe-art-pipeline.js';
 import {createVibeHighEndVisualDirection,HIGH_END_VISUAL_TARGET_FRAMES} from '../assets/vibe-visual-autopilot.js';
 import {MOTION_DIRECTOR_TARGET,MOTION_COMPOSITION_CHANNELS,MOTION_DNA_FIELDS,MOTION_LIBRARY_GRAPH_NODES} from '../assets/vibe-motion-director.js';
-import {STUDIO_ASSET_UNIVERSE_TARGET,STUDIO_ASSET_FAMILIES,CREATURE_BODY_PLANS,CREATURE_SPECIES,CLOTHING_LAYER_SLOTS,BIOME_FAMILIES,BUILDING_THEMES} from '../assets/vibe-studio-asset-universe.js';
+import {STUDIO_ASSET_UNIVERSE_TARGET,STUDIO_ASSET_FAMILIES,CREATURE_BODY_PLANS,CREATURE_SPECIES,CLOTHING_LAYER_SLOTS,BIOME_FAMILIES,BUILDING_THEMES,CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT} from '../assets/vibe-studio-asset-universe.js';
 import {createVibeHighEndPresentationStack} from '../assets/vibe-presentation-director.js';
 import {auditVibeRuntimeVisualEvidence,HIGH_END_GOLDEN_SCENE_ROLES} from '../assets/vibe-visual-quality-gate.js';
 
@@ -563,4 +563,40 @@ test('owner presentation changes replace conflicting same-scope intent instead o
   assert.equal(stability.directResponsibleSystemModificationPreferred,true);
   assert.equal(stability.wrapperOverrideV2FinalTemporaryPatchAccumulationForbidden,true);
   assert.deepEqual([...stability.affectedScopes],['bear.attack.motion']);
+});
+
+test('canonical graphics policy requires one GLB master before platform-native 3D actor variants',()=>{
+  const policy=roadmap.assetProductionParallelContract.companyGraphicsLibrary24h.studioAssetUniverse.articulated3DActorGlbMaster;
+  assert.equal(policy.status,'ACTIVE_EXECUTABLE_CONTRACT');
+  assert.equal(policy.masterFormat,'GLB');
+  assert.deepEqual(policy.appliesToFamilies,['CHARACTER','CREATURE']);
+  assert.equal(policy.bossRoleIncluded,true);
+  assert.equal(policy.requiredForFinal3DActorAsset,true);
+  assert.equal(policy.rules.primitivePartAssemblyPrototypeOnly,true);
+  assert.equal(policy.rules.primitivePartAssemblyCannotClaimFinalCharacterCreatureOrBoss,true);
+  assert.equal(policy.rules.sharedGlbIsAuthoringMasterNotCrossPlatformRuntimePass,true);
+  assert.equal(policy.rules.platformNativeImportAdaptationRequired,true);
+  assert.equal(policy.rules.platformRuntimeEvidenceIndependent,true);
+
+  const topology=architecture.assetProductionParallelism.companyGraphicsLibrary24h.studioAssetUniverse.articulated3DActorGlbMaster;
+  assert.equal(topology.masterFormat,'GLB');
+  assert.deepEqual(topology.platformConsumers,['ROBLOX','UNITY','WEB']);
+  assert.equal(topology.primitiveOnlyFinalActorForbidden,true);
+  assert.equal(topology.newWorkerQueueOrPipeline,false);
+
+  const evidence=logMap.studioAssetUniverseEvidenceContract.articulated3DActorGlbEvidence;
+  assert.deepEqual(evidence.requiredForFamilies,['CHARACTER','CREATURE']);
+  assert.ok(evidence.requiredFields.includes('MASTER_GLB_PATH'));
+  assert.ok(evidence.requiredFields.includes('MASTER_GLB_SHA256'));
+  assert.equal(evidence.primitiveOnlyFinalActorCannotPass,true);
+  assert.equal(evidence.sharedMasterDoesNotProvePlatformRuntime,true);
+
+  assert.equal(security.studioAssetUniverseSecurity.protections.articulated3DActorFinalAssetRequiresMasterGlb,true);
+  assert.equal(security.studioAssetUniverseSecurity.protections.masterGlbPathHashAndProvenanceRequired,true);
+  assert.equal(security.studioAssetUniverseSecurity.protections.sharedMasterGlbCannotSubstitutePlatformNativeRuntimeVerification,true);
+
+  assert.equal(CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.format,'GLB_2_0');
+  assert.deepEqual([...CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.appliesToFamilies],['CHARACTER','CREATURE']);
+  assert.equal(CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.requiredBeforePlatformNativeVariant,true);
+  assert.equal(CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.primitivePartAssemblyPrototypeOnly,true);
 });
