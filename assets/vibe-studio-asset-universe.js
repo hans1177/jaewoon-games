@@ -2848,6 +2848,9 @@ export function evaluateGltfMasterAssetStandard({asset={},family='',platform='',
   if(articulated&&content.rig!==true)blockers.push('GLB_MASTER_RIG_REQUIRED');
   if(articulated&&content.skin!==true)blockers.push('GLB_MASTER_SKIN_REQUIRED');
   if(animated&&!motionBinding)blockers.push('GLB_MASTER_MOTION_BINDING_REQUIRED');
+  if(content.stableScaleOriginAxis!==true)blockers.push('GLB_MASTER_SCALE_AXIS_REQUIRED');
+  if(content.attachmentOrBindingMap!==true)blockers.push('GLB_MASTER_ATTACHMENT_BINDING_REQUIRED');
+  if(content.lodDerivationPlan!==true)blockers.push('GLB_MASTER_LOD_PLAN_REQUIRED');
   if(master.platformVariantsRequireExactMasterHash!==true)blockers.push('PLATFORM_VARIANT_MASTER_LINEAGE_MISSING');
   return Object.freeze({
     version:1,required:true,pass:blockers.length===0,blockers:Object.freeze(blockers),family:resolvedFamily||null,
