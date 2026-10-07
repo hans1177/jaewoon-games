@@ -30,6 +30,7 @@ async function fetchWithNetworkRetry(fetchImpl,url,init={},options={}){
   const attempts=Math.max(1,Math.min(6,Number(options.attempts)||4));
   const delayMs=Math.max(0,Number(options.delayMs)||0);
   const requestTimeoutMs=Math.max(1000,Math.min(30000,Number(options.requestTimeoutMs)||12000));
+  const maxInRunRetryDelayMs=Math.max(1000,Math.min(30000,Number(options.maxInRunRetryDelayMs)||30000));
   const label=clean(options.label)||'ROBLOX_OPEN_CLOUD';
   let lastError=null;
   for(let attempt=1;attempt<=attempts;attempt++){
@@ -38,8 +39,12 @@ async function fetchWithNetworkRetry(fetchImpl,url,init={},options={}){
       const response=await fetchImpl(url,requestInit);
       const status=Number(response?.status||0);
       if(transientHttpStatuses.has(status)&&attempt<attempts){
-        console.warn(label+'_HTTP_RETRY='+attempt+'/'+attempts+':HTTP_'+status);
         const waitMs=transientHttpDelayMs(response,delayMs,attempt);
+        if(waitMs>maxInRunRetryDelayMs){
+          console.warn(label+'_HTTP_RETRY_DEFERRED_EXTERNAL_CAPACITY='+attempt+'/'+attempts+':HTTP_'+status+':WAIT_MS='+waitMs);
+          return response;
+        }
+        console.warn(label+'_HTTP_RETRY='+attempt+'/'+attempts+':HTTP_'+status+':WAIT_MS='+waitMs);
         if(waitMs>0)await sleep(waitMs);
         continue;
       }
