@@ -1,5 +1,5 @@
 {
-  "version": 541,
+  "version": 542,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-07",
@@ -18706,7 +18706,7 @@
           ],
           "bossRoleIncluded": true,
           "format": "GLB_2_0",
-          "purpose": "REQUIRE_ONE_PLATFORM_NEUTRAL_GLTF_BINARY_MASTER_FOR_EVERY_FINAL_3D_CHARACTER_CREATURE_OR_BOSS_BEFORE_PLATFORM_NATIVE_VARIANTS",
+          "purpose": "REQUIRE_ONE_PLATFORM_NEUTRAL_GLTF_BINARY_MASTER_FOR_EVERY_FINAL_3D_PLAYER_NPC_COMPANION_ALLY_SERVICE_NPC_PET_MOUNT_SUMMON_ENEMY_ELITE_CREATURE_OR_BOSS_BEFORE_PLATFORM_NATIVE_VARIANTS",
           "requiredForFinal3DActorAsset": true,
           "sharedMasterSourceMayFeed": [
             "ROBLOX",
@@ -18732,7 +18732,10 @@
             "platformNativeImportAdaptationRequired": true,
             "platformRuntimeEvidenceIndependent": true,
             "directPlatformFinalBinaryReuseForbidden": true,
-            "originalMasterImmutable": true
+            "originalMasterImmutable": true,
+            "roleSpecificAppearanceAndMotionVariantsAllowed": true,
+            "colorOnlyRoleCloneDoesNotCountAsDistinctActor": true,
+            "serviceNpcCompanionPetMountAndSummonIncluded": true
           },
           "implementationBindings": [
             "company-asset-library.json",
@@ -18745,7 +18748,45 @@
             "CROSS_PLATFORM_MASTER_GLB_HASH_REQUIRED",
             "CROSS_PLATFORM_MASTER_GLB_STATIC_QA_REQUIRED",
             "PRIMITIVE_ONLY_FINAL_3D_ACTOR"
-          ]
+          ],
+          "appliesToRoles": [
+            "PLAYER",
+            "NPC",
+            "COMPANION",
+            "ALLY",
+            "CIVILIAN",
+            "VENDOR",
+            "QUEST_GIVER",
+            "TRAINER",
+            "ENEMY",
+            "ELITE",
+            "CREATURE",
+            "PET",
+            "MOUNT",
+            "SUMMON",
+            "BOSS"
+          ],
+          "roleFamilies": {
+            "CHARACTER": [
+              "PLAYER",
+              "NPC",
+              "COMPANION",
+              "ALLY",
+              "CIVILIAN",
+              "VENDOR",
+              "QUEST_GIVER",
+              "TRAINER"
+            ],
+            "CREATURE": [
+              "ENEMY",
+              "ELITE",
+              "CREATURE",
+              "PET",
+              "MOUNT",
+              "SUMMON",
+              "BOSS"
+            ]
+          }
         },
         "clothingAndArmor": {
           "layerSlots": [
