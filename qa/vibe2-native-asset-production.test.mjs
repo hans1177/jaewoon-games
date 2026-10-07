@@ -463,6 +463,25 @@ test('actor DCC recipe without GLB cannot satisfy the 3D master contract',()=>{
   assert.notEqual(plan.nativeAuthoringExecution.dcc.executionStatus,'READY_FOR_EXISTING_AUTHORING_EXECUTOR');
 });
 
+test('apply-first rejects a 3D enemy that has no compliant master GLB',()=>{
+  const plan=buildVibeAssetProductionPlan({
+    target:'roblox',
+    task:{gameId:'master-glb-apply-first',goal:'enemy monster 3D 모델을 실제 게임에 적용'},
+    manifest:{assets:[{
+      id:'fake-enemy',family:'CREATURE',types:['enemy'],tags:['enemy','monster'],
+      license:'project-original',platforms:['roblox'],path:'assets/logo-sprite-ladybug.svg',
+      sourceHash:'fake-source',robloxAssetId:'12345',sameGameExistingRoblox:true
+    }]},
+    presetCatalog:{version:1,presets:[{id:'enemy',name:'Enemy',genre:'action',keywords:['enemy','monster'],actorAssets:['fake-enemy'],effectAssets:[],toolCandidates:[],platformProfiles:{roblox:{},unity:{},webValidation:{}}}]}
+  });
+  const enemy=plan.decisions.find(row=>row.type==='enemy');
+  assert.ok(enemy);
+  assert.equal(enemy.applyFirst.enabled,false);
+  assert.ok(plan.nativeAuthoringExecution.dcc.requiredTypes.includes('enemy'));
+  assert.equal(plan.nativeAuthoringExecution.dcc.crossPlatform3dMasterGlbRequired,true);
+  assert.ok(plan.nativeAuthoringExecution.dcc.uncoveredTypes.includes('enemy'));
+});
+
 test('customization and detailed style instructions reach the existing asset work order input',()=>{
   const plan=buildVibeAssetProductionPlan({target:'roblox',task:{
     gameId:'customization-review',goal:'다크 카툰 캐릭터 배경 UI 아이콘 모션',
@@ -1817,12 +1836,14 @@ test('usable same-game asset is applied before new authoring and weak regions de
   const sameGame={
     id:'existing-wolf',path:'roblox-games/apply-first-demo/assets/wolf.glb',types:['enemy'],
     tags:['wolf','enemy'],license:'project-original',platforms:['roblox'],
-    sameGameExistingRoblox:true,sourceHash:'wolf-v1',robloxAssetId:'123456'
+    sameGameExistingRoblox:true,sourceHash:'wolf-v1',robloxAssetId:'123456',
+    masterGlb:'assets/roblox/world-ghosts/native/spider/spider.glb'
   };
   const company={
     id:'company-wolf',path:'assets/roblox/wolf.glb',types:['enemy'],
     tags:['wolf','enemy'],license:'project-original',platforms:['roblox'],
-    companyVerified:true,sourceHash:'company-wolf-v1'
+    companyVerified:true,sourceHash:'company-wolf-v1',
+    masterGlb:'assets/roblox/world-ghosts/native/spider/spider.glb'
   };
   const plan=buildVibeAssetProductionPlan({
     target:'roblox',
@@ -1901,8 +1922,8 @@ test('precision production continues from inspection through authoring and appli
 
 test('low-quality asset rescue preserves strong axes and escalates to full authoring only after targeted derivation',()=>{
   const manifest={assets:[
-    {id:'base-hero',path:'roblox-games/rescue-demo/assets/hero.glb',types:['character'],tags:['character','hero'],license:'project-original',platforms:['roblox'],sameGameExistingRoblox:true,sourceHash:'hero-base',robloxAssetId:'111',rigType:'R15',retargetable:true},
-    {id:'donor-hero',path:'assets/roblox/hero-donor.glb',types:['character'],tags:['character','hero'],license:'project-original',platforms:['roblox'],companyVerified:true,sourceHash:'hero-donor',rigType:'R15',retargetable:true,
+    {id:'base-hero',path:'roblox-games/rescue-demo/assets/hero.glb',types:['character'],tags:['character','hero'],license:'project-original',platforms:['roblox'],sameGameExistingRoblox:true,sourceHash:'hero-base',robloxAssetId:'111',rigType:'R15',retargetable:true,masterGlb:'assets/roblox/world-ghosts/native/mesh/bride.glb'},
+    {id:'donor-hero',path:'assets/roblox/hero-donor.glb',types:['character'],tags:['character','hero'],license:'project-original',platforms:['roblox'],companyVerified:true,sourceHash:'hero-donor',rigType:'R15',retargetable:true,masterGlb:'assets/roblox/world-ghosts/native/mesh/bride.glb',
       platformVariants:{ROBLOX:{path:'assets/roblox/hero-donor.glb'}}}
   ]};
   const plan=buildVibeAssetProductionPlan({
