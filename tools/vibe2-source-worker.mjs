@@ -2952,10 +2952,18 @@ function internalAssetSourceUsageGuidance(order={}){
   if(!Object.keys(contract.exactFamilies||{}).length&&!contract.flowSelections.length&&!contract.sourceCandidates.length)return'';
   const exactRows=Object.entries(contract.exactFamilies).map(([family,atoms])=>family+'='+atoms.join('|')).join('; ');
   const flowRows=contract.flowSelections.map(row=>[row.requirementId,row.assetId,row.family,row.role].filter(Boolean).join(':')).join('; ');
-  const sourceRows=contract.sourceCandidates
-    .filter(row=>row.sourceFiles.length||row.path)
-    .map(row=>row.assetId+'@'+([...(row.sourceFiles||[]),row.path].filter(Boolean).join('|')))
-    .join('; ');
+  // Many variants share the same source set. Keep every asset ID and binding,
+  // but describe that source set once instead of repeating the catalog paths.
+  const sourceGroups=new Map();
+  for(const row of contract.sourceCandidates){
+    const files=unique([...(row.sourceFiles||[]),row.path].filter(Boolean)).sort();
+    if(!files.length)continue;
+    const key=JSON.stringify(files);
+    if(!sourceGroups.has(key))sourceGroups.set(key,{files,ids:[]});
+    sourceGroups.get(key).ids.push(row.assetId);
+  }
+  const sourceRows=[...sourceGroups.values()]
+    .map(({files,ids})=>unique(ids).join(',')+'@'+files.join('|')).join('; ');
   // 공유 파일의 역할은 자산마다 반복하지 않고 경로별 한 번만 전달한다.
   const roleFiles=new Map();
   for(const row of [...contract.sourceCandidates,...contract.flowSelections]){
@@ -2974,7 +2982,7 @@ function internalAssetSourceUsageGuidance(order={}){
     'syncFingerprint='+contract.fingerprint+'; libraryVersion='+contract.libraryVersion+'; selectionFingerprint='+(contract.selectionFingerprint||'NONE')+'; syncMode='+contract.synchronization.mode,
     'Exact selected family IDs only: '+(exactRows||'NONE'),
     'Exact flow selections: '+(flowRows||'NONE'),
-    'Selected source/API references: '+(sourceRows||'NONE'),
+    'Selected source/API references (comma-separated asset IDs before @ share the exact following source set): '+(sourceRows||'NONE'),
     'Selected file roles (each shared path once per role): '+(fileRows||'LEGACY_SOURCE_FIELDS'),
     'All registry assets are shared by family. Legacy pack IDs and directories describe source lineage, not game-exclusive ownership. Consumer game IDs are usage history only. Preserve role/style/license/platform compatibility.',
     'File application: authoring files rebuild assets; runtimeCode files expose factories; models are importable artifacts; previews/references are visual guidance; textures are material inputs; catalogs/support are metadata; quality is displayed by internalAuditScore rather than a separate evidence asset category. Never substitute a preview image for a required native model. Import only applicable compatible models through the existing target pipeline, keep gameplay responsibility unchanged, and do not claim runtime pass from file classification.',
@@ -3555,6 +3563,20 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
     '[APPLY USABLE ASSETS FIRST END]'
   ].join('\n'):'';
   const precisionProduction=order.assetProduction?.precisionProduction;
+  const assetImplementationBlock=order.assetProduction?[
+    '[ASSET IMPLEMENTATION CONTRACT BEGIN]',
+    JSON.stringify({
+      flowAssetRequirements:order.assetProduction.flowAssetRequirements,
+      flowAssetLoadout:order.assetProduction.flowAssetLoadout,
+      styleBible:order.assetProduction.styleBible,
+      motionStyle:order.assetProduction.motionStyle,
+      qualityDNA:order.assetProduction.qualityDNA,
+      generatedAssetOutputContract:order.assetProduction.generatedAssetOutputContract,
+      nativeAuthoringExecution:order.assetProduction.nativeAuthoringExecution
+    }),
+    'Apply in the existing consumer; actual runtime QA remains required.',
+    '[ASSET IMPLEMENTATION CONTRACT END]'
+  ].join('\n'):'';
   const precisionProductionBlock=precisionProduction?[
     '[PRECISION PRODUCTION CHAIN BEGIN]',
     JSON.stringify({mode:precisionProduction.mode,application:precisionProduction.application,sequence:precisionProduction.sequence,authoringOutputsRequired:precisionProduction.authoringOutputsRequired,continuation:precisionProduction.continuation,qualityDNA:precisionProduction.qualityDNA?.commonRules}),
@@ -3611,6 +3633,7 @@ runtimeVisualRepairBlock,
 singleMotionBlock,
 assetTeachingBlock,
 applyFirstBlock,
+assetImplementationBlock,
 precisionProductionBlock,
 order.imageAssetObservation?.required?'[IMAGE ASSET OBSERVATION BEGIN]\n'+JSON.stringify(order.imageAssetObservation)+'\nVisible observations are proposals from actual pixels. Hidden geometry and motion are creative proposals. Implement editable native assets, then compare close-up/full-turnaround/game-camera/action frames to the source; no placeholder or declaration-only completion.\n[IMAGE ASSET OBSERVATION END]':'',
 studioQualityWorkerGuidance(order),
@@ -4618,7 +4641,7 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
   const dedicatedRobloxOversizePath=target==='roblox'
     &&/\[(?:SECOND_PLATFORM_ADAPTATION_REBUILD:ROBLOX|POST_RELEASE_FOCUSED_DEVELOPMENT)\]/.test(String(prompt));
   const sourceCandidatePressureInitial=!allowFullRewrite
-    &&!assetDevelopmentLane
+    &&(!assetDevelopmentLane||target==='web')
     &&!singleMotionWorkUnit
     &&!systemAtomicPairRequired
     &&!dedicatedRobloxOversizePath
@@ -4778,10 +4801,21 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
       ?FULL_WEB_EXPANSION_CONTEXT_WINDOW
       :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_CONTEXT_WINDOW:(robloxRebuildFocused?JSON_CONTEXT_WINDOW:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW))):(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(sourceCandidatePressureInitial?SOURCE_CANDIDATE_COMPACT_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW)))));
     // 압축·부분 수정·확장 재시도에서도 원본 관찰과 잠금/수정 범위를 보존하고 실제 전송량으로 예산을 잡는다.
-    for(const label of ['PRECISION PRODUCTION CHAIN','IMAGE ASSET OBSERVATION','ASSET DETAIL REPAIR','RUNTIME VISUAL REVIEW','SINGLE MOTION WORK UNIT','INTERNAL MOTION COACHING','ROBLOX SOURCE COACHING','INTERNAL ASSET TEACHER PRACTICE']){
+    // Source bindings and public APIs are implementation inputs, not disposable
+    // planner history. Preserve them exactly when an oversized request is rebuilt.
+    for(const [begin,end] of [
+      ['[INTERNAL ASSET SOURCE CONSUMPTION CONTRACT]','[END INTERNAL ASSET SOURCE CONSUMPTION CONTRACT]'],
+      ['[INTERNAL ASSET API INDEX - ALL SELECTED SOURCES]','[END INTERNAL ASSET API INDEX]']
+    ]){
+      const start=String(prompt).indexOf(begin),finish=String(prompt).indexOf(end,start);
+      if(start<0||finish<0)continue;
+      const block=String(prompt).slice(start,finish+end.length);
+      if(!attemptPrompt.includes(block))attemptPrompt+='\n'+block;
+    }
+    for(const label of ['ASSET IMPLEMENTATION CONTRACT','APPLY USABLE ASSETS FIRST','PRECISION PRODUCTION CHAIN','IMAGE ASSET OBSERVATION','ASSET DETAIL REPAIR','RUNTIME VISUAL REVIEW','RUNTIME VISUAL REPAIR','SINGLE MOTION WORK UNIT','INTERNAL MOTION COACHING','ROBLOX SOURCE COACHING','INTERNAL ASSET TEACHER PRACTICE']){
       const block=prompt.match(new RegExp('\\['+label+' BEGIN\\][\\s\\S]*?\\['+label+' END\\]'))?.[0]||'';
       if(!block||attemptPrompt.includes(block))continue;
-      const retryBlock=['PRECISION PRODUCTION CHAIN','SINGLE MOTION WORK UNIT','INTERNAL MOTION COACHING','ROBLOX SOURCE COACHING','INTERNAL ASSET TEACHER PRACTICE'].includes(label)?block:retry?boundedLargeExcerpt(block,RETRY_OBSERVATION_CHUNK_BYTES).content:block;
+      const retryBlock=['ASSET IMPLEMENTATION CONTRACT','APPLY USABLE ASSETS FIRST','RUNTIME VISUAL REPAIR','PRECISION PRODUCTION CHAIN','SINGLE MOTION WORK UNIT','INTERNAL MOTION COACHING','ROBLOX SOURCE COACHING','INTERNAL ASSET TEACHER PRACTICE'].includes(label)?block:retry?boundedLargeExcerpt(block,RETRY_OBSERVATION_CHUNK_BYTES).content:block;
       attemptPrompt+='\n'+retryBlock;
       if(retry&&retryBlock!==block)console.log(`VIBE2_RETRY_OBSERVATION_COMPACTED=${label}:${Buffer.byteLength(block,'utf8')}->${Buffer.byteLength(retryBlock,'utf8')}`);
     }
@@ -6124,3 +6158,4 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     throw error;
   }
 }
+
