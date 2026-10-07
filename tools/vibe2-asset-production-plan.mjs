@@ -1148,6 +1148,11 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
   }));
   const packAssets=next.assets.filter(asset=>sourceMetaByAsset.get(asset)?.isPack);
   const snapshots=games.map(game=>({game,snapshot:sourceConsumerSnapshot({repoRoot,game})}));
+  const gameSummaryStats=new Map(snapshots.map(({game})=>[
+    clean(game.id||game.gameId),
+    {currentConsumers:0,intendedOnly:0,families:new Map()}
+  ]));
+  let intendedOnlyAssetCount=0;
   const packLinks=new Map();
   for(const {game,snapshot} of snapshots){
     const gameId=clean(game.id||game.gameId),linked=new Map();
@@ -1212,6 +1217,21 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
       delete asset.sourceConsumerBindings;
       delete asset.sourceConsumerState;
     }
+    const currentConsumerIds=currentAssetConsumerIds(asset);
+    const currentConsumerSet=new Set(currentConsumerIds);
+    const intendedConsumerIds=unique(asset.intendedConsumerGameIds||[]);
+    if(intendedConsumerIds.length&&currentConsumerIds.length===0)intendedOnlyAssetCount+=1;
+    for(const gameId of currentConsumerIds){
+      const stats=gameSummaryStats.get(gameId);if(!stats)continue;
+      stats.currentConsumers+=1;
+      const currentFamily=family||'UNCLASSIFIED';
+      const familyStats=stats.families.get(currentFamily)||{used:0,missing:0,repair:0};
+      familyStats.used+=1;stats.families.set(currentFamily,familyStats);
+    }
+    for(const gameId of intendedConsumerIds){
+      if(currentConsumerSet.has(gameId))continue;
+      const stats=gameSummaryStats.get(gameId);if(stats)stats.intendedOnly+=1;
+    }
     const relationGames=new Set(currentBoundGames);
     for(const gameId of unique(asset.consumerGameIds||[])){
       if(relationGames.has(gameId))continue;
@@ -1224,7 +1244,7 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
       }));
       relationGames.add(gameId);
     }
-    for(const gameId of unique(asset.intendedConsumerGameIds||[])){
+    for(const gameId of intendedConsumerIds){
       if(relationGames.has(gameId))continue;
       relations.push(Object.freeze({
         assetId:clean(asset.id),gameId,family,classification:'INTENDED_ONLY',
@@ -1248,19 +1268,12 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
   const relationStates={};for(const row of relations)relationStates[row.classification]=(relationStates[row.classification]||0)+1;
   const gameSummaries=snapshots.map(({game,snapshot})=>{
     const gameId=clean(game.id||game.gameId);
-    const current=next.assets.filter(asset=>currentAssetConsumerIds(asset).includes(gameId));
-    const intendedOnly=next.assets.filter(asset=>(asset.intendedConsumerGameIds||[]).map(clean).includes(gameId)&&!currentAssetConsumerIds(asset).includes(gameId));
-    const families={};
-    for(const asset of current){
-      const currentFamily=clean(asset.family||asset.category).toUpperCase()||'UNCLASSIFIED';
-      families[currentFamily]=families[currentFamily]||{used:0,missing:0,repair:0};
-      families[currentFamily].used+=1;
-    }
+    const stats=gameSummaryStats.get(gameId)||{currentConsumers:0,intendedOnly:0,families:new Map()};
     return Object.freeze({
-      gameId,currentConsumers:current.length,intendedOnly:intendedOnly.length,
+      gameId,currentConsumers:stats.currentConsumers,intendedOnly:stats.intendedOnly,
       sourceFingerprint:snapshot.sourceFingerprint,
       scannedFileCount:snapshot.scannedFileCount,
-      families:Object.freeze(Object.fromEntries(Object.entries(families).sort(([a],[b])=>a.localeCompare(b)).map(([name,value])=>[name,Object.freeze(value)]))),
+      families:Object.freeze(Object.fromEntries([...stats.families.entries()].sort(([a],[b])=>a.localeCompare(b)).map(([name,value])=>[name,Object.freeze({...value})]))),
       nextActions:Object.freeze([])
     });
   });
@@ -1276,7 +1289,7 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
     runtimeVerifiedConsumerCount:Number(relationStates.RUNTIME_VERIFIED_CONSUMER||0),
     actualSourceBoundCount:Number(relationStates.ACTUAL_SOURCE_BOUND||0),
     intendedOnlyRelationCount:Number(relationStates.INTENDED_ONLY||0),
-    intendedOnlyAssetCount:next.assets.filter(asset=>(asset.intendedConsumerGameIds||[]).length&&currentAssetConsumerIds(asset).length===0).length,
+    intendedOnlyAssetCount,
     modes:Object.freeze(modes),
     gameSummaries:Object.freeze(gameSummaries),
     currentConsumerFields:Object.freeze(['consumerGameIds','sourceBoundConsumerGameIds']),
