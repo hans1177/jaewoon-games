@@ -3,9 +3,9 @@
   "gameId": "horror-escape-room",
   "date": "2026-10-08",
   "seedId": "OWNER-DESIGN-HORROR-ESCAPE-ROOM",
-  "fingerprint": "088199e6aff9298b70713c9bef24c179764f17a7b0dae23f0697b7d966f620a5",
+  "fingerprint": "cd8236a5dd9163e491f0bb61f87c30a3215aa4a08e3f45ff0cbc246ae3cc9ed2",
   "policyDigest": "223f74bb658bbab4921a06b74e652d4e7fc27d174188c3b4b3488e9b3d026f6f",
-  "engineDigest": "cc088ad7a8676ded2864387d1c00a39b024f9e9a4e72f50308346406aea805a9",
+  "engineDigest": "635ecb0d21a9a5a7334acf530359981b48cfa98aabec8a331b74dde6b9b610e8",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
@@ -299,7 +299,7 @@
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T20:25:07.525Z",
-  "updatedAt": "2026-10-07T20:51:16.629Z",
+  "updatedAt": "2026-10-07T21:05:56.611Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -497,5 +497,14 @@
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "checkpointMigration": {
+    "fromContractVersion": 4,
+    "toContractVersion": 4,
+    "reason": "QUOTA_VIBE_REPAIR_COMPATIBLE_ENGINE_CHANGE_NO_REPLAY",
+    "previousEngineDigest": "cc088ad7a8676ded2864387d1c00a39b024f9e9a4e72f50308346406aea805a9",
+    "preservedPhaseCount": 0,
+    "preservedTaskCount": 9,
+    "migratedAt": "2026-10-07T21:05:56.609Z"
+  }
 }
