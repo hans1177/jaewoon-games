@@ -1707,7 +1707,7 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T01:24:10.538Z",
       "saveNormalizationRequired": true,
@@ -1738,10 +1738,10 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-07T03:03:57.808Z",
-      "robloxSourceCommit": "d3e986e209ccd0a0edfbf5a358cf92c5cd7dfae3",
-      "robloxSourceBootstrapPassedAt": "2026-10-07T01:59:30.192Z",
-      "robloxSourceBootstrapFailedAt": "2026-10-07T03:03:57.808Z",
+      "updatedAt": "2026-10-07T03:05:39.826Z",
+      "robloxSourceCommit": "e987559c43b20951b6f60468ae9ea278aceb7304",
+      "robloxSourceBootstrapPassedAt": "2026-10-07T03:05:39.826Z",
+      "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -1789,11 +1789,11 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "existing-source-studio-asset-binding-required",
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
       "routingBlockers": [
-        "roblox-source-bootstrap:existing-source-studio-asset-binding-required:ROBLOX_STUDIO_ASSET_BINDING_REFRESH_REQUIRED"
+        "roblox-build-package-revalidation-pending"
       ],
       "robloxExactRevisionPassed": false,
       "robloxMultiplayerQaEvidence": {
@@ -1841,8 +1841,8 @@
       "robloxFastMvpPublishedAt": null,
       "robloxEvidenceInvalidatedBySourceChange": {
         "previousSourceRevision": "d3e986e209ccd0a0edfbf5a358cf92c5cd7dfae3",
-        "newSourceRevision": "d3e986e209ccd0a0edfbf5a358cf92c5cd7dfae3",
-        "invalidatedAt": "2026-10-07T01:59:30.192Z"
+        "newSourceRevision": "e987559c43b20951b6f60468ae9ea278aceb7304",
+        "invalidatedAt": "2026-10-07T03:05:39.826Z"
       },
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": "development/unity-tech-horror-escape-room-37327263262",
@@ -18694,7 +18694,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-07T03:03:57.808Z",
+  "updatedAt": "2026-10-07T03:05:39.826Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
