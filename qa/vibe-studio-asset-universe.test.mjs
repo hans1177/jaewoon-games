@@ -12,6 +12,8 @@ import {
   createAssetProductionTeachingRecipe,
   STUDIO_ASSET_FAMILIES,
   STUDIO_GLTF_MASTER_ASSET_STANDARD,
+  STUDIO_GLTF_ACTOR_ROLE_PROFILES,
+  createGltfActorRoleProfile,
   evaluateGltfMasterAssetStandard,
   ASSET_STYLE_FAMILIES,
   STUDIO_ASSET_QUALITY_MAX,
@@ -110,8 +112,8 @@ import {
 import {createVibeCharacterPersona,resolveVibeCharacterBehaviorIntent,createVibePopulationPersonaDiversity,VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,createVibeCharacterCustomizationRecipe,createVibeNpcCustomizationPopulation} from '../assets/vibe-character-identity-director.js';
 import {synchronizeCompanyCommonAssetRegistry,synchronizeSourceBoundAssetConsumers,buildAssetSupplyDecisionSummary,buildVibeAssetProductionPlan} from '../tools/vibe2-asset-production-plan.mjs';
 
-const actorGltfMaster=(masterPath='assets/actor.glb',sourceRecipe='assets/build-actor.py')=>Object.freeze({
-  version:1,format:'GLB',gltfVersion:'2.0',path:masterPath,
+const actorGltfMaster=(masterPath='assets/actor.glb',sourceRecipe='assets/build-actor.py',actorRoles=['STANDARD_ENEMY'])=>Object.freeze({
+  version:1,format:'GLB',gltfVersion:'2.0',path:masterPath,actorRoles:Object.freeze(actorRoles),
   artifactHash:'b'.repeat(64),sourceRecipe,sourceHash:'a'.repeat(64),
   evidencePath:masterPath.replace(/\.glb$/i,'-evidence.json'),
   previewPath:masterPath.replace(/\.glb$/i,'-preview.png'),
@@ -776,6 +778,31 @@ test('3D character and creature library assets require a hash-bound GLB master b
   assert.equal(primitiveOnly.pass,false);
   assert.ok(primitiveOnly.blockers.includes('GLB_MASTER_REQUIRED'));
   assert.ok(primitiveOnly.blockers.includes('GLB_MASTER_ARTIFACT_HASH_REQUIRED'));
+});
+
+test('actor roles cover NPC companion pet enemy elite and boss production without owning gameplay',()=>{
+  for(const role of ['CIVILIAN_NPC','QUEST_NPC','MERCHANT_NPC','CRAFTER_NPC','TRAINER_NPC','GUARD_NPC','STORY_NPC','COMPANION','SUMMONED_COMPANION','PET_COMPANION','MOUNT_COMPANION','STANDARD_ENEMY','ELITE_ENEMY','MINI_BOSS','STORY_BOSS','WORLD_BOSS','RAID_BOSS']){
+    assert.ok(STUDIO_GLTF_ACTOR_ROLE_PROFILES[role],role);
+    assert.ok(STUDIO_GLTF_ACTOR_ROLE_PROFILES[role].requirements.length>=4,role);
+  }
+  const companion=createGltfActorRoleProfile({roles:['COMPANION'],family:'CHARACTER'});
+  assert.equal(companion.valid,true);
+  assert.equal(companion.companionRole,true);
+  assert.equal(companion.gameplayAuthority,false);
+  assert.ok(companion.requirements.includes('FOLLOW_LOCOMOTION'));
+  assert.ok(companion.requirements.includes('DIALOGUE_OR_EMOTE'));
+
+  const boss=createGltfActorRoleProfile({roles:['STORY_BOSS'],family:'CREATURE'});
+  assert.equal(boss.valid,true);
+  assert.equal(boss.bossRole,true);
+  assert.equal(boss.bossScaledOnlyForbidden,true);
+  assert.ok(boss.requirements.includes('BASIC_ATTACK_SET_4'));
+  assert.ok(boss.requirements.includes('SPECIAL_ATTACK_SET_3'));
+  assert.ok(boss.requirements.includes('PHASE_CHANGE'));
+
+  const wrong=createGltfActorRoleProfile({roles:['MERCHANT_NPC'],family:'CREATURE'});
+  assert.equal(wrong.valid,false);
+  assert.deepEqual([...wrong.incompatible],['MERCHANT_NPC']);
 });
 
 test('wildlife skins require meaningful anatomy or material variation beyond recolor',()=>{
