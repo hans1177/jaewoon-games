@@ -3,9 +3,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-test('central v499 preserves every result artifact while coalescing callback workflows under pressure',()=>{
+test('central policy preserves every result artifact while exact-task refill wakes stay independent',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-  assert.equal(policy.version,499);
+  assert.ok(Number(policy.version)>=545);
   const gate=policy.developmentSpeedExecution?.controlPlaneQueueBacklogMitigation||{};
   assert.equal(gate.status,'ENABLED_PRESSURE_COHORT_FANIN');
   assert.equal(gate.neuronCompletionCallback?.resultBearing,true);
@@ -14,7 +14,9 @@ test('central v499 preserves every result artifact while coalescing callback wor
   assert.equal(gate.neuronCompletionCallback?.callbackWorkflowSuppressionUnderQueuePressure,true);
   assert.equal(gate.neuronCompletionCallback?.singleTaskGameMicroFanInPressureExceptionRemoved,true);
   assert.equal(gate.neuronCompletionCallback?.reserveRunnerPool,'ubuntu-latest');
-  assert.equal(gate.fanInRefill?.coalesceByExecutionLane,true);
+  assert.equal(gate.fanInRefill?.coalesceByExecutionLane,false);
+  assert.equal(gate.fanInRefill?.coalesceByExactTaskIdentity,true);
+  assert.equal(gate.fanInRefill?.distinctGameRefillCancellationForbidden,true);
   assert.equal(gate.fanInRefill?.reserveRunnerPool,'ubuntu-latest');
   assert.equal(gate.fanInRunnerPool,'ubuntu-latest');
   assert.equal(gate.qualityOrEvidenceGateWeakeningForbidden,true);
@@ -22,7 +24,8 @@ test('central v499 preserves every result artifact while coalescing callback wor
 
 test('continuous core suppresses non-asset callback storms under pressure and preserves cohort fan-in',()=>{
   const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
-  assert.match(workflow,/github\.event\.action == 'vibe2-fanin-refill' && format\('vibe2-fanin-refill-\{0\}'/);
+  assert.match(workflow,/github\.event\.action == 'vibe2-fanin-refill' && format\('vibe2-fanin-refill-\{0\}-\{1\}'/);
+  assert.match(workflow,/github\.event\.client_payload\.source_task \|\| github\.event\.client_payload\.source_run \|\| github\.run_id/);
   assert.match(workflow,/github\.event\.action == 'vibe2-fanin-refill' \|\| github\.event\.action == 'vibe2-neuron-complete'/);
   assert.match(workflow,/vibe2-neuron-complete'[\s\S]*'ubuntu-latest'/);
   assert.match(workflow,/fan_in:[\s\S]*runs-on: ubuntu-latest/);
