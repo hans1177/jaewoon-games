@@ -4348,6 +4348,24 @@ test('asset library automation indexes audit domain seed and quality lookups ins
   assert.doesNotMatch(plannerSource,/maintenance\.nextQualityActions\.find\(action=>allInternalReuseCandidates\.some/);
 });
 
+test('library synchronization reuses the automation plan system depth audit',()=>{
+  const assets=[
+    {id:'prop-depth',family:'PROP',subfamily:'CONTAINER',role:'CONTAINER',companyCommonBase:true,catalogActive:true,license:'project-original'},
+    {id:'motion-depth',family:'MOTION',subfamily:'WALK',role:'LOCOMOTION',companyCommonBase:true,catalogActive:true,license:'project-original'}
+  ];
+  const plan=buildInternalAssetLibraryAutomationPlan({assets});
+  const direct=auditCommonLibrarySystemDepth({assets});
+  assert.deepEqual(plan.systemDepthAudit,direct);
+
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const plannerSource=fs.readFileSync(path.resolve(here,'../tools/vibe2-asset-production-plan.mjs'),'utf8');
+  const start=plannerSource.indexOf('export function synchronizeCompanyCommonAssetRegistry');
+  const end=plannerSource.indexOf('const inferUniverseFamily',start);
+  const syncSource=plannerSource.slice(start,end);
+  assert.match(syncSource,/const depth=libraryPlan\.systemDepthAudit\|\|auditCommonLibrarySystemDepth\(\{assets:next\.assets\}\)/);
+  assert.equal((syncSource.match(/auditCommonLibrarySystemDepth\s*\(/g)||[]).length,1);
+});
+
 test('catalog synchronization cannot inherit or manufacture production verification',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-proof-'));
   try{
