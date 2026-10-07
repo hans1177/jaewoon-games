@@ -14,12 +14,12 @@
   "existingSourcePreserved": true,
   "gameplayAuthorityChanged": false,
   "serverSourceChanged": false,
-  "foundationRepairApplied": true,
+  "foundationRepairApplied": false,
   "generatedFiles": [
     "shared/GameConfig.luau",
     "client/Game.client.luau"
   ],
-  "generationMode": "EXISTING_SOURCE_FOUNDATION_REPAIR",
+  "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
   "modelUsed": false,
   "modelAttempts": 0,
   "modelContractFailures": [],
@@ -59,8 +59,8 @@
     "bindingVersion": 2,
     "applied": true,
     "source": "company-asset-library.json#baseMaterialLibrary",
-    "libraryVersion": 113,
-    "selectionFingerprint": "1013ee1714665c38f9f3ae957a849ada9be9e35054d158aed91f789ef106b88a",
+    "libraryVersion": 119,
+    "selectionFingerprint": "223b1c5ffc9e8b6e1baedcf081d1dc1af11a84354a786e663b8437b7e8d309e2",
     "synchronization": {
       "mode": "VERSION_AND_SELECTION_FINGERPRINT_INCREMENTAL",
       "fullLibraryReplicationForbidden": true,
@@ -565,7 +565,7 @@
   "studioAssetPromotionEligible": false,
   "implementationNotes": [
     "existing Roblox gameplay source preserved",
-    "native foundation/input/runtime readiness scaffolding repaired without changing gameplay balance save schema or network authority",
+    "company library Studio asset binding updated in existing config and client presentation",
     "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
   ],
   "buildUpDirectiveId": "fantasy-survival-build-up-g22-45f0f6cec098",
@@ -575,5 +575,5 @@
   "buildUpDirectiveConsumed": true,
   "buildUpDirectiveCompletionClaim": false,
   "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
-  "createdAt": "2026-10-07T02:02:05.818Z"
+  "createdAt": "2026-10-07T02:57:42.182Z"
 }
