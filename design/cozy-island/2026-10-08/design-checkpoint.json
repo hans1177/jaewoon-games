@@ -46,25 +46,80 @@
           "playerChoice": "다른 플레이어의 병력을 지원하는 선택"
         }
       ]
+    },
+    "designer_draft_slices::systems-progression": {
+      "systemInterconnections": [
+        {
+          "fromSystem": "직접 채집",
+          "toSystem": "주민 자동화",
+          "trigger": "나무와 식량을 직접 모으는 선택",
+          "stateChange": "주민 고용 및 생산 직업 배치"
+        },
+        {
+          "fromSystem": "주민 자동화",
+          "toSystem": "병영 강화",
+          "trigger": "주민 고용 및 생산 직업 배치",
+          "stateChange": "병력 확장 및 전투력 강화"
+        },
+        {
+          "fromSystem": "병영 강화",
+          "toSystem": "자원 거점 선택",
+          "trigger": "자원을 병력으로 전환하고 병영 레벨 강화",
+          "stateChange": "자원 거점 선택 및 전략적 전투"
+        }
+      ],
+      "progressionDirection": "초반 직접 노동 → 주민 자동화 → 병영/병사 → 지역 기지 점령 → 특수자원 확보 → 고급 병종/무역 → 해전·공성 → 대형 섬/왕국 정복 순서로 확장한다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "직접 채집 → 주민 고용 → 병영 강화 → 자원 거점 선택 → 자동전투 → 협동 지원",
+        "resourceFlow": "나무·식량 직접 수집 → 주민 고용 → 병력 확장 → 자원 거점 확보 → 전략적 전투 → 왕국 확장",
+        "balanceRules": "자원 수집과 전략적 전투의 균형 유지, 병력 확장과 전투력의 상호작용, 협동 지원의 효율성 조절"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "직접 채집",
+          "newGameplay": "나무와 식량은 월드 노드에서 직접 상호작용해 획득한다.",
+          "systemImpact": "자원 수집의 직접성 강화"
+        },
+        {
+          "milestone": "주민 자동화",
+          "newGameplay": "고용한 주민을 생산 직업에 배치해 반복 노동을 자동화한다.",
+          "systemImpact": "반복 노동의 자동화 및 효율성 증대"
+        },
+        {
+          "milestone": "병영 강화",
+          "newGameplay": "자원을 병력으로 전환하고 병영 레벨을 강화한다.",
+          "systemImpact": "병력 확장 및 전투력의 증대"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "자원 수집의 부족",
+          "병력 확장의 부족",
+          "전략적 전투의 부족"
+        ],
+        "retryFlow": "자원 수집 → 병력 확장 → 전략적 전투",
+        "riskPressure": "자원 수집과 전략적 전투의 균형 유지, 병력 확장과 전투력의 상호작용, 협동 지원의 효율성 조절",
+        "recoveryRules": "자원 수집의 부족을 보상으로 대체, 병력 확장의 부족을 전투력으로 대체, 전략적 전투의 부족을 협동 지원으로 대체"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 167237,
-      "lastMs": 167237,
+      "totalMs": 353461,
+      "lastMs": 186224,
       "lastError": null,
-      "updatedAt": "2026-10-07T20:27:17.693Z"
+      "updatedAt": "2026-10-07T20:30:23.918Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T20:24:30.415Z",
-  "updatedAt": "2026-10-07T20:27:17.694Z",
+  "updatedAt": "2026-10-07T20:30:23.919Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -223,7 +278,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-07T20:27:17.693Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T20:30:23.918Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
