@@ -4980,7 +4980,7 @@
         }
       },
       "strictDesignReviewRefreshRequired": true,
-      "updatedAt": "2026-10-07T13:36:42.354Z",
+      "updatedAt": "2026-10-07T13:55:47.579Z",
       "pausedAt": "2026-10-07T10:24:11.672Z",
       "novelGrammarBackfill": {
         "version": 4,
@@ -9593,7 +9593,7 @@
         }
       },
       "strictDesignReviewRefreshRequired": true,
-      "updatedAt": "2026-10-07T13:36:42.354Z",
+      "updatedAt": "2026-10-07T13:55:47.579Z",
       "pausedAt": "2026-10-07T10:24:11.672Z",
       "novelGrammarBackfill": {
         "version": 4,
@@ -9910,9 +9910,9 @@
       "status": "ACTIVE",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-DESIGNER-ORIGINAL-20261007-2",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
-      "lifecycleState": "DESIGN_ONLY",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "strictDesignReview": {
         "verdict": "PASS",
         "totalScore": 91.80000000000001,
@@ -9920,7 +9920,51 @@
         "evidencePath": "design/cozy-island/2026-09-18/strict-design-review.json",
         "passThreshold": 80
       },
-      "strictDesignReviewUpdatedAt": "2026-10-07T13:52:06.625Z"
+      "strictDesignReviewUpdatedAt": "2026-10-07T13:52:06.625Z",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/cozy-island/2026-09-22/design-revised.json",
+        "date": "2026-09-22"
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/cozy-island/2026-09-22/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/cozy-island/2026-09-22/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "strictDesignReviewRefreshRequired": true,
+      "updatedAt": "2026-10-07T13:55:47.579Z",
+      "promotion": {
+        "from": "DEVELOPMENT_CONFIRMED",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "ROBLOX",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/cozy-island",
+          "UNITY": "unity-games/cozy-island"
+        },
+        "designBaselineSource": "design/cozy-island/2026-09-22/design-revised.json",
+        "designDate": "2026-09-22",
+        "strictDesignReviewRequiredForAdmission": false,
+        "strictDesignReviewContinuesInParallel": true,
+        "promotedAt": "2026-10-07T13:55:47.579Z"
+      },
+      "productionTier": 2,
+      "selectedPlatform": "ROBLOX"
     },
     {
       "version": 1,
@@ -22919,9 +22963,9 @@
       "status": "ACTIVE",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-DESIGNER-ORIGINAL-20261007-2",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
-      "lifecycleState": "DESIGN_ONLY",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "strictDesignReview": {
         "verdict": "PASS",
         "totalScore": 91.80000000000001,
@@ -22929,7 +22973,51 @@
         "evidencePath": "design/daechung-rpg/2026-09-19/strict-design-review.json",
         "passThreshold": 80
       },
-      "strictDesignReviewUpdatedAt": "2026-10-07T13:52:06.627Z"
+      "strictDesignReviewUpdatedAt": "2026-10-07T13:52:06.627Z",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/daechung-rpg/2026-09-22/design-revised.json",
+        "date": "2026-09-22"
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/daechung-rpg/2026-09-22/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/daechung-rpg/2026-09-22/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "strictDesignReviewRefreshRequired": true,
+      "updatedAt": "2026-10-07T13:55:47.579Z",
+      "promotion": {
+        "from": "DEVELOPMENT_CONFIRMED",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "ROBLOX",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/daechung-rpg",
+          "UNITY": "unity-games/daechung-rpg"
+        },
+        "designBaselineSource": "design/daechung-rpg/2026-09-22/design-revised.json",
+        "designDate": "2026-09-22",
+        "strictDesignReviewRequiredForAdmission": false,
+        "strictDesignReviewContinuesInParallel": true,
+        "promotedAt": "2026-10-07T13:55:47.579Z"
+      },
+      "productionTier": 2,
+      "selectedPlatform": "ROBLOX"
     },
     {
       "version": 2,
@@ -23275,7 +23363,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-07T13:36:42.354Z",
+      "updatedAt": "2026-10-07T13:55:47.579Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -25718,7 +25806,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-07T13:36:42.354Z",
+      "updatedAt": "2026-10-07T13:55:47.579Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -28003,7 +28091,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-07T13:36:42.354Z",
+      "updatedAt": "2026-10-07T13:55:47.579Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -30065,7 +30153,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-07T13:36:42.354Z",
+      "updatedAt": "2026-10-07T13:55:47.579Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -32054,7 +32142,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-07T13:36:42.354Z",
+      "updatedAt": "2026-10-07T13:55:47.579Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -34335,7 +34423,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-07T13:36:42.354Z",
+      "updatedAt": "2026-10-07T13:55:47.579Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -36707,7 +36795,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-07T13:36:42.354Z",
+      "updatedAt": "2026-10-07T13:55:47.579Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -38718,7 +38806,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-07T13:36:42.354Z",
+      "updatedAt": "2026-10-07T13:55:47.579Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -40732,7 +40820,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-07T13:36:42.354Z",
+      "updatedAt": "2026-10-07T13:55:47.579Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -42710,7 +42798,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-07T13:36:42.354Z",
+      "updatedAt": "2026-10-07T13:55:47.579Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -47907,7 +47995,7 @@
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "createdAt": "2026-09-19T16:17:06.466Z",
-      "updatedAt": "2026-10-07T13:36:42.354Z",
+      "updatedAt": "2026-10-07T13:55:47.579Z",
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
       "MULTIPLAYER_QA_REQUIRED": true,
       "semanticNormalization": {
@@ -50862,9 +50950,53 @@
       "status": "ACTIVE",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-DESIGNER-ORIGINAL-20261007-2",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
-      "lifecycleState": "DESIGN_ONLY"
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/horror-escape-room/2026-09-22/design-revised.json",
+        "date": "2026-09-22"
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/horror-escape-room/2026-09-22/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/horror-escape-room/2026-09-22/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "strictDesignReviewRefreshRequired": true,
+      "updatedAt": "2026-10-07T13:55:47.579Z",
+      "promotion": {
+        "from": "DEVELOPMENT_CONFIRMED",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "ROBLOX",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/horror-escape-room",
+          "UNITY": "unity-games/horror-escape-room"
+        },
+        "designBaselineSource": "design/horror-escape-room/2026-09-22/design-revised.json",
+        "designDate": "2026-09-22",
+        "strictDesignReviewRequiredForAdmission": false,
+        "strictDesignReviewContinuesInParallel": true,
+        "promotedAt": "2026-10-07T13:55:47.579Z"
+      },
+      "productionTier": 2,
+      "selectedPlatform": "ROBLOX"
     },
     {
       "version": 2,
@@ -99945,7 +100077,7 @@
   ],
   "lastRunAt": "2026-09-19T16:17:06.466Z",
   "lastAction": "OWNER_PRESERVATION_SEED_MATERIALIZATION",
-  "updatedAt": "2026-10-07T13:36:42.354Z",
+  "updatedAt": "2026-10-07T13:55:47.579Z",
   "ownerAllGamesDesignReset": {
     "revision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
     "source": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
@@ -100093,6 +100225,5 @@
       "tower-choice-rpg",
       "zombie-survival"
     ]
-  },
-  "policyDocument": "company-learning/platform-release-roadmap.json"
+  }
 }
