@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-10-07T09:22:32.445Z",
+  "updatedAt": "2026-10-07T09:52:13.722Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -186,15 +186,16 @@
         "{\"version\":1,\"gameId\":\"daechung-rpg\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"e2b3b809861bed8c53ccf9e11326d09f8ea9f402\",\"artifactIdentity\":\"sha256:8031e52fd5f3275e2fc563567413fb123f0746952daa2fc83f665e9adf4846da\",\"artifactRunId\":37017024515,\"universeId\":\"10768961338\",\"placeId\":\"79150944093879\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":4,\"workflowRunId\":37017259600,\"publishedAt\":\"2026-10-02T14:04:36.336Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}",
         "{\"version\":1,\"gameId\":\"daechung-rpg\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"dc0e69c84c82c09269eaabd9565294973bcb751b\",\"artifactIdentity\":\"sha256:ea03b17b1547dc7d667d9330cf57d21a993dd55b1907ae47f40fd5e47239bd13\",\"artifactRunId\":37019555949,\"universeId\":\"10768961338\",\"placeId\":\"79150944093879\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":5,\"workflowRunId\":37019977166,\"publishedAt\":\"2026-10-02T14:28:38.016Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}",
         "{\"version\":1,\"gameId\":\"daechung-rpg\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"dc0e69c84c82c09269eaabd9565294973bcb751b\",\"artifactIdentity\":\"sha256:ea03b17b1547dc7d667d9330cf57d21a993dd55b1907ae47f40fd5e47239bd13\",\"artifactRunId\":37139004255,\"universeId\":\"10768961338\",\"placeId\":\"79150944093879\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":5,\"workflowRunId\":37140416031,\"publishedAt\":\"2026-10-03T17:26:54.017Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}",
-        "{\"version\":2,\"gameId\":\"daechung-rpg\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"dc0e69c84c82c09269eaabd9565294973bcb751b\",\"artifactIdentity\":\"sha256:ea03b17b1547dc7d667d9330cf57d21a993dd55b1907ae47f40fd5e47239bd13\",\"artifactRunId\":37139004255,\"universeId\":\"10767445769\",\"placeId\":\"126302702438348\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"exposure\":\"PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":35,\"workflowRunId\":37163328866,\"publishedAt\":\"2026-10-04T00:16:26.807Z\",\"authority\":\"roblox-open-cloud-dedicated-private-runtime-candidate\",\"dedicated\":true,\"current\":true,\"publisherMainRevision\":\"ae0d35a20ad2d842f788b93a1bf6987a5c3c351f\"}"
+        "{\"version\":2,\"gameId\":\"daechung-rpg\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"dc0e69c84c82c09269eaabd9565294973bcb751b\",\"artifactIdentity\":\"sha256:ea03b17b1547dc7d667d9330cf57d21a993dd55b1907ae47f40fd5e47239bd13\",\"artifactRunId\":37139004255,\"universeId\":\"10767445769\",\"placeId\":\"126302702438348\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"exposure\":\"PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":35,\"workflowRunId\":37163328866,\"publishedAt\":\"2026-10-04T00:16:26.807Z\",\"authority\":\"roblox-open-cloud-dedicated-private-runtime-candidate\",\"dedicated\":true,\"current\":true,\"publisherMainRevision\":\"ae0d35a20ad2d842f788b93a1bf6987a5c3c351f\"}",
+        "{\"version\":1,\"gameId\":\"daechung-rpg\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"269d4a741562a4e6e1f93d1360952ab2bc6affb5\",\"artifactIdentity\":\"sha256:5983948268b44253a704447a353f7fd639fec53ffadce396e7992b4f21dd1f2b\",\"artifactRunId\":37575952015,\"universeId\":\"10768961338\",\"placeId\":\"79150944093879\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":8,\"workflowRunId\":37602693068,\"publishedAt\":\"2026-10-07T09:45:38.328Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
       "route": "GAME_TESTER_FOUNDATION_EXECUTION",
       "repairEligible": false,
       "status": "OPEN",
       "createdAt": "2026-09-23T11:54:41.174Z",
-      "updatedAt": "2026-10-04T00:45:48.400Z",
-      "occurrenceCount": 330,
+      "updatedAt": "2026-10-07T09:52:13.719Z",
+      "occurrenceCount": 331,
       "internalFlowBlocking": true,
       "externalReleaseBlockingOnly": false
     },
@@ -357,15 +358,16 @@
         "{\"version\":1,\"gameId\":\"cozy-island\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"ceb568d1dd3ff51e9287668d41d2759e205575ca\",\"artifactIdentity\":\"sha256:9dab5a3ed2d0aee7598e3b84999880710057854fd81a9108615f19f7ca885917\",\"artifactRunId\":36381224879,\"universeId\":\"10767445741\",\"placeId\":\"116850096561713\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"exposure\":\"PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":27,\"workflowRunId\":36383159611,\"publishedAt\":\"2026-09-28T05:44:46.937Z\",\"authority\":\"roblox-open-cloud-private-runtime-candidate\"}",
         "{\"version\":1,\"gameId\":\"cozy-island\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"d16adbfc1286b57e20c4166ec870dc48a95adb1a\",\"artifactIdentity\":\"sha256:e21b310a56e0b6ba44bd35cd0bc5ecadb250cf2641e3b52f96ed9cc4f864c09b\",\"artifactRunId\":36407298943,\"universeId\":\"10768436216\",\"placeId\":\"123712124890681\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":2,\"workflowRunId\":36417298371,\"publishedAt\":\"2026-09-28T11:43:43.598Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}",
         "{\"version\":1,\"gameId\":\"cozy-island\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"18141713083918f873f7b25fa0dea966f00f44ab\",\"artifactIdentity\":\"sha256:e9447ab4ffdb7e0c765945c8b9300eac5a7388a7366aee55828c454c7e533cf1\",\"artifactRunId\":37008589565,\"universeId\":\"10768961327\",\"placeId\":\"120624557291637\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":3,\"workflowRunId\":37008816937,\"publishedAt\":\"2026-10-02T12:47:58.501Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}",
-        "{\"version\":1,\"gameId\":\"cozy-island\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"dc0e69c84c82c09269eaabd9565294973bcb751b\",\"artifactIdentity\":\"sha256:6184dce22f966bbdd96e418e5d00e599d16cf92e925fa559d27e8cca19db7f84\",\"artifactRunId\":37019555949,\"universeId\":\"10768961327\",\"placeId\":\"120624557291637\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":4,\"workflowRunId\":37019995481,\"publishedAt\":\"2026-10-02T14:32:42.791Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}"
+        "{\"version\":1,\"gameId\":\"cozy-island\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"dc0e69c84c82c09269eaabd9565294973bcb751b\",\"artifactIdentity\":\"sha256:6184dce22f966bbdd96e418e5d00e599d16cf92e925fa559d27e8cca19db7f84\",\"artifactRunId\":37019555949,\"universeId\":\"10768961327\",\"placeId\":\"120624557291637\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":4,\"workflowRunId\":37019995481,\"publishedAt\":\"2026-10-02T14:32:42.791Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}",
+        "{\"version\":1,\"gameId\":\"cozy-island\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"51d3d00e868380dbd79733707b2c10cff697924e\",\"artifactIdentity\":\"sha256:cef54ad7f8848ef2badd9547c5c2e0b75011ae75916fd488558a034cde037e0a\",\"artifactRunId\":37573396777,\"universeId\":\"10768961327\",\"placeId\":\"120624557291637\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":5,\"workflowRunId\":37602701469,\"publishedAt\":\"2026-10-07T09:49:50.561Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
       "route": "GAME_TESTER_FOUNDATION_EXECUTION",
       "repairEligible": false,
       "status": "OPEN",
       "createdAt": "2026-09-24T07:13:17.730Z",
-      "updatedAt": "2026-10-03T12:53:15.630Z",
-      "occurrenceCount": 331,
+      "updatedAt": "2026-10-07T09:52:13.719Z",
+      "occurrenceCount": 332,
       "internalFlowBlocking": true,
       "externalReleaseBlockingOnly": false
     },
@@ -467,15 +469,16 @@
         "{\"version\":1,\"gameId\":\"horror-escape-room\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"b74a4ac341b7dff0ecd9f2d6cf25375534a2d268\",\"artifactIdentity\":\"sha256:4109e8ab3df1273f6fb877930c128b4e717c68cefcf6050269a11e1a59e846de\",\"artifactRunId\":36289290111,\"universeId\":\"10767445796\",\"placeId\":\"98222620265768\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"exposure\":\"PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":24,\"workflowRunId\":36293244970,\"publishedAt\":\"2026-09-27T04:05:29.921Z\",\"authority\":\"roblox-open-cloud-private-runtime-candidate\"}",
         "{\"version\":1,\"gameId\":\"horror-escape-room\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"c2bd4470028498f826818a5cd0b10fc1c79b7123\",\"artifactIdentity\":\"sha256:5f53ec14362106137b410cfa59e99c5ffbcd8200642fdd426098c3f53bd414bc\",\"artifactRunId\":36309369387,\"universeId\":\"10767445796\",\"placeId\":\"98222620265768\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"exposure\":\"PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":25,\"workflowRunId\":36312365581,\"publishedAt\":\"2026-09-27T10:26:20.581Z\",\"authority\":\"roblox-open-cloud-private-runtime-candidate\"}",
         "{\"version\":1,\"gameId\":\"horror-escape-room\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"ceb568d1dd3ff51e9287668d41d2759e205575ca\",\"artifactIdentity\":\"sha256:4379711829195b1328131fbd49f1f6b3270acb5764d868fd089a95e4d0a76508\",\"artifactRunId\":36381224879,\"universeId\":\"10767445796\",\"placeId\":\"98222620265768\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"exposure\":\"PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":27,\"workflowRunId\":36383139378,\"publishedAt\":\"2026-09-28T05:44:25.525Z\",\"authority\":\"roblox-open-cloud-private-runtime-candidate\"}",
-        "{\"version\":1,\"gameId\":\"horror-escape-room\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"d16adbfc1286b57e20c4166ec870dc48a95adb1a\",\"artifactIdentity\":\"sha256:6101e58da18b7326c7d94f7698c4ac0ee3d4ce0930feb54ae256079010305095\",\"artifactRunId\":36407298943,\"universeId\":\"10768435302\",\"placeId\":\"109865812698735\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":2,\"workflowRunId\":36416206011,\"publishedAt\":\"2026-09-28T11:35:42.922Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}"
+        "{\"version\":1,\"gameId\":\"horror-escape-room\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"d16adbfc1286b57e20c4166ec870dc48a95adb1a\",\"artifactIdentity\":\"sha256:6101e58da18b7326c7d94f7698c4ac0ee3d4ce0930feb54ae256079010305095\",\"artifactRunId\":36407298943,\"universeId\":\"10768435302\",\"placeId\":\"109865812698735\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":2,\"workflowRunId\":36416206011,\"publishedAt\":\"2026-09-28T11:35:42.922Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}",
+        "{\"version\":1,\"gameId\":\"horror-escape-room\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"be6b77be052e960f9944e713b44d573e89fd9100\",\"artifactIdentity\":\"sha256:565dfabc8acdccc6a22e28eafb53ff34ae354b297727187e9f9a8393e68a03f3\",\"artifactRunId\":37575388704,\"universeId\":\"10768961379\",\"placeId\":\"130054603482321\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":9,\"workflowRunId\":37602696074,\"publishedAt\":\"2026-10-07T09:46:08.595Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
       "route": "GAME_TESTER_FOUNDATION_EXECUTION",
       "repairEligible": false,
       "status": "OPEN",
       "createdAt": "2026-09-24T09:30:30.062Z",
-      "updatedAt": "2026-09-28T13:07:45.495Z",
-      "occurrenceCount": 246,
+      "updatedAt": "2026-10-07T09:52:13.719Z",
+      "occurrenceCount": 247,
       "internalFlowBlocking": true,
       "externalReleaseBlockingOnly": false
     },
@@ -3723,8 +3726,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-30T21:54:48.103Z",
-      "updatedAt": "2026-10-07T09:22:32.442Z",
-      "occurrenceCount": 123
+      "updatedAt": "2026-10-07T09:52:13.719Z",
+      "occurrenceCount": 124
     },
     {
       "id": "bug-c7db2be1bdc6c06c3fa4",
@@ -5135,8 +5138,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-07T09:22:32.442Z",
-      "occurrenceCount": 488
+      "updatedAt": "2026-10-07T09:52:13.719Z",
+      "occurrenceCount": 489
     },
     {
       "id": "bug-aeaf9db6cfc39c4713f6",
@@ -5162,8 +5165,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-07T09:22:32.442Z",
-      "occurrenceCount": 488
+      "updatedAt": "2026-10-07T09:52:13.719Z",
+      "occurrenceCount": 489
     },
     {
       "id": "bug-7391f6e22431967dcb01",
@@ -6943,6 +6946,167 @@
       "createdAt": "2026-10-05T17:34:08.409Z",
       "updatedAt": "2026-10-05T17:49:12.484Z",
       "occurrenceCount": 5
+    },
+    {
+      "id": "bug-4a4408c43d3e8e4578bd",
+      "gameId": "daechung-rpg",
+      "surface": "ROBLOX",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"26334e03c2880c5f7916f3f816e19b79cb547d9e\",\"sourceRootTreeSha\":\"5f6831e7fa4629d5778e732e0043053bb49f7120\",\"sourceFingerprint\":\"4f8c53a467c8e78aedeff287529e68261c3b532a5189b9c4cae5ea0c91f10d35\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"F0_SOURCE_PREFLIGHT\",\"failureStage\":\"PRIVATE_RUNTIME_CANDIDATE_DEPLOY\",\"failureSignature\":\"ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING\"}"
+      ],
+      "exactFailedStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-10-07T09:52:13.719Z",
+      "updatedAt": "2026-10-07T09:52:13.719Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-326306c6e9e505fa6f59",
+      "gameId": "horror-escape-room",
+      "surface": "ROBLOX",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"bd0b85e715fa00e9823ee69e4705c8d0e9afc003\",\"sourceRootTreeSha\":\"ab0aca9561f9efb5e26473d8f5a19011e9e468db\",\"sourceFingerprint\":\"758df3c8fdedfaa61773c2ab874d48676a744ba7bbde873c5ae94f6510d63a26\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:e6ddbf73dd4bf76e7050af6f1933eb48dbf39a0b69f100f0016d4bd280e455fd\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":true,\"independentQa\":true,\"regression\":true},\"canonicalEvidenceBound\":true,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F0_SOURCE_PREFLIGHT\",\"failureStage\":\"PRIVATE_RUNTIME_CANDIDATE_DEPLOY\",\"failureSignature\":\"ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING\"}"
+      ],
+      "exactFailedStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-10-07T09:52:13.719Z",
+      "updatedAt": "2026-10-07T09:52:13.719Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-690e5fbc4cf17084e61f",
+      "gameId": "bug-defense",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"df0b4e4772f7269d25c1760cad7a347e381d1942\",\"sourceRootTreeSha\":\"f29ace9d9eba145670a1a7c558d525c373b08d55\",\"sourceFingerprint\":\"cb8c9d4217a48cdf257a7016926d50cc4acd17bbebda44443ae1fbd6d51a3efd\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:fb37273461bd3ab34cc813bef1ccba82c71d1a9f1843eb6afa94a08fa43c517b\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":true,\"independentQa\":true,\"regression\":true},\"canonicalEvidenceBound\":true,\"f0ToF9Passed\":true,\"exactRevision\":true,\"lastSuccessfulStage\":\"F0_SOURCE_PREFLIGHT\",\"failureStage\":\"PRIVATE_RUNTIME_CANDIDATE_DEPLOY\",\"failureSignature\":\"ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING\"}"
+      ],
+      "exactFailedStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-10-07T09:52:13.719Z",
+      "updatedAt": "2026-10-07T09:52:13.719Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-e9d9b62b52b6ecac8146",
+      "gameId": "bug-defense",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"df0b4e4772f7269d25c1760cad7a347e381d1942\",\"sourceRootTreeSha\":\"f29ace9d9eba145670a1a7c558d525c373b08d55\",\"sourceFingerprint\":\"cb8c9d4217a48cdf257a7016926d50cc4acd17bbebda44443ae1fbd6d51a3efd\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:fb37273461bd3ab34cc813bef1ccba82c71d1a9f1843eb6afa94a08fa43c517b\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":true,\"independentQa\":true,\"regression\":true},\"canonicalEvidenceBound\":true,\"f0ToF9Passed\":true,\"exactRevision\":true,\"lastSuccessfulStage\":\"F0_SOURCE_PREFLIGHT\",\"failureStage\":\"PRIVATE_RUNTIME_CANDIDATE_DEPLOY\",\"failureSignature\":\"ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING\"}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-10-07T09:52:13.719Z",
+      "updatedAt": "2026-10-07T09:52:13.719Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-bbf717741590cf4f61fa",
+      "gameId": "cozy-island",
+      "surface": "ROBLOX",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"48a351631ac3be22e3c9bac0d1f1ef502233879e\",\"sourceRootTreeSha\":\"c0710835d4bd756b47cf9a77a16398c2b9730c9e\",\"sourceFingerprint\":\"a65616d74e55e9d7b43b539543e04c4486b43086cbc0e56b059ac5d8804dcef8\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:4fc3b4ac9d3e12086317af9202986fb9f15175c394a48be8b7c1ad643fd74ba4\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":true,\"independentQa\":true,\"regression\":true},\"canonicalEvidenceBound\":true,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F0_SOURCE_PREFLIGHT\",\"failureStage\":\"PRIVATE_RUNTIME_CANDIDATE_DEPLOY\",\"failureSignature\":\"ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING\"}"
+      ],
+      "exactFailedStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-10-07T09:52:13.719Z",
+      "updatedAt": "2026-10-07T09:52:13.719Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-1a789720536999430762",
+      "gameId": "survival",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"ac758e07fdecbb1e7b1fff0fa6157a3980630ae7\",\"sourceRootTreeSha\":\"ccc185d6b07bc02d055ec9319352f82b70d1a85c\",\"sourceFingerprint\":\"0266cdcb2b793003d2342d2be370a30295401ebcf4520f8e7cedfcf8d461e4a1\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"F0_SOURCE_PREFLIGHT\",\"failureStage\":\"PRIVATE_RUNTIME_CANDIDATE_DEPLOY\",\"failureSignature\":\"ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING\"}"
+      ],
+      "exactFailedStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-10-07T09:52:13.719Z",
+      "updatedAt": "2026-10-07T09:52:13.719Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-a33b92fc547c2fed253b",
+      "gameId": "survival",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"ac758e07fdecbb1e7b1fff0fa6157a3980630ae7\",\"sourceRootTreeSha\":\"ccc185d6b07bc02d055ec9319352f82b70d1a85c\",\"sourceFingerprint\":\"0266cdcb2b793003d2342d2be370a30295401ebcf4520f8e7cedfcf8d461e4a1\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"F0_SOURCE_PREFLIGHT\",\"failureStage\":\"PRIVATE_RUNTIME_CANDIDATE_DEPLOY\",\"failureSignature\":\"ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING\"}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-10-07T09:52:13.719Z",
+      "updatedAt": "2026-10-07T09:52:13.719Z",
+      "occurrenceCount": 1
     }
   ]
 }
