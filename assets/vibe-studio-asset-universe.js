@@ -3,6 +3,17 @@
 // Unifies asset semantics, compatibility, coverage, identity and 24H gap-fill planning.
 // It never promotes prepared assets without native runtime verification.
 
+import {
+  VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,
+  createVibeBodyIdentity,
+  createVibeAppearanceIdentity,
+  createVibeGaitIdentity,
+  createVibeCharacterCustomizationRecipe,
+  createVibeNpcCustomizationPopulation,
+  createVibePopulationPhysicalDiversity,
+  createVibePhysicalDiversityGate
+} from './vibe-character-identity-director.js';
+
 const text=value=>String(value??'').trim();
 const upper=value=>text(value).toUpperCase();
 const uniq=values=>[...new Set((values||[]).map(text).filter(Boolean))];
@@ -2778,8 +2789,8 @@ export const STUDIO_ASSET_QUALITY_AXIS_APPLICABILITY=Object.freeze({
   PROP:Object.freeze(['SILHOUETTE_FORM','MODELING_STRUCTURE','MATERIAL_TEXTURE','COLOR_LIGHTING','WORLD_STYLE_COHERENCE','DETAIL_DENSITY','GAME_CAMERA_READABILITY','ORIGINALITY_IDENTITY','MOBILE_PERFORMANCE','ACTUAL_GAME_BINDING','PRODUCTION_VERIFICATION'])
 });
 export const STUDIO_ASSET_FAMILY_OUTPUTS=Object.freeze({
-  CHARACTER:Object.freeze(['WORLD_MODEL','RIG','MATERIAL_SET','MOTION_SET','PORTRAIT_OR_ICON','LOD0','LOD1','LOD2']),
-  CREATURE:Object.freeze(['WORLD_MODEL','BODY_PLAN_RIG','MATERIAL_SET','SPECIES_MOTION_SET','ICON','LOD0','LOD1','LOD2']),
+  CHARACTER:Object.freeze(['GLB_MASTER','ACTOR_ROLE_PROFILE','WORLD_MODEL','RIG','MATERIAL_SET','MOTION_SET','PORTRAIT_OR_ICON','LOD0','LOD1','LOD2']),
+  CREATURE:Object.freeze(['GLB_MASTER','ACTOR_ROLE_PROFILE','WORLD_MODEL','BODY_PLAN_RIG','MATERIAL_SET','SPECIES_MOTION_SET','ICON','LOD0','LOD1','LOD2']),
   BUILDING:Object.freeze(['WORLD_MODEL','MODULAR_PARTS','INTERIOR_WHEN_APPLICABLE','MATERIAL_SET','COLLISION_NAV_PROXY','LOD0','LOD1','LOD2']),
   ENVIRONMENT:Object.freeze(['TERRAIN_OR_KIT','LANDMARK','SET_DRESSING','MATERIAL_SET','PLACEMENT_RULES','LOD_OR_STREAMING_VARIANTS']),
   WEAPON:Object.freeze(['EQUIPPED_MODEL','WORLD_DROP_MODEL','INVENTORY_ICON','CRAFTING_ICON_WHEN_CRAFTABLE','MATERIAL_SET','GRIP_SOCKET_MAP','LOD0','LOD1','LOD2']),
@@ -2791,6 +2802,248 @@ export const STUDIO_ASSET_FAMILY_OUTPUTS=Object.freeze({
   MOTION:Object.freeze(['SOURCE_MOTION','PLATFORM_RETARGET','CONTACT_MAP','BLEND_VARIANTS','MOTION_LOD']),
   PROP:Object.freeze(['WORLD_MODEL','INTERACTION_VARIANT','INVENTORY_ICON_WHEN_ITEM','CRAFTING_ICON_WHEN_CRAFTABLE','DROP_MODEL_WHEN_COLLECTIBLE','COLLISION_PROXY','LOD0','LOD1','LOD2'])
 });
+
+export const STUDIO_GLTF_NPC_MORPHOLOGY_STANDARD=Object.freeze({
+  version:1,
+  status:'ACTIVE_EXECUTABLE_CONTRACT',
+  sourceContract:'assets/vibe-character-identity-director.js#VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT',
+  appliesToFamily:'CHARACTER',
+  appliesToRoles:Object.freeze([
+    'PLAYER','CIVILIAN_NPC','QUEST_NPC','MERCHANT_NPC','CRAFTER_NPC','TRAINER_NPC','GUARD_NPC','STORY_NPC',
+    'COMPANION','SUMMONED_COMPANION','STANDARD_ENEMY','ELITE_ENEMY','MINI_BOSS','STORY_BOSS','WORLD_BOSS','RAID_BOSS'
+  ]),
+  physicalIdentityAxes:Object.freeze([
+    'HEIGHT_CM_PRESENTATION','WEIGHT_KG_PRESENTATION','VISUAL_MASS','BODY_ARCHETYPE','SHOULDER_WIDTH','TORSO_LENGTH',
+    'TORSO_DEPTH','PELVIS_WIDTH','ARM_LENGTH','LEG_LENGTH','HAND_FOOT_SCALE','HEAD_BODY_RATIO','POSTURE','ASYMMETRY'
+  ]),
+  appearanceAxes:Object.freeze([
+    'HEAD_BASE','FACE_WIDTH','FACE_LENGTH','FOREHEAD','BROW_HEIGHT','BROW_ANGLE','EYE_SPACING','EYE_SIZE','EYE_TILT',
+    'NOSE_BRIDGE','NOSE_LENGTH','NOSE_WIDTH','CHEEKBONE','CHEEK_FULLNESS','MOUTH_WIDTH','LIP_VOLUME','JAW_WIDTH',
+    'JAW_DEPTH','CHIN_PROJECTION','EAR_SCALE','SKIN_TONE','SKIN_DETAIL','AGE_PRESENTATION','HAIR_STYLE','HAIR_TEXTURE',
+    'HAIR_COLOR','HAIR_HIGHLIGHT','HAIR_GRAYING','FACIAL_HAIR','SCAR_OR_MARK','ACCESSORY','OUTFIT_FIT_AND_WEAR'
+  ]),
+  motionIdentityAxes:Object.freeze([
+    'GAIT_CADENCE','STRIDE_LENGTH','FOOTFALL_MASS','VERTICAL_BOB','ARM_SWING','TORSO_COUNTER_MOTION','TURN_STYLE','START_STOP_WEIGHT'
+  ]),
+  productionRules:Object.freeze({
+    actualMeshOrBoneProportionVariationRequired:true,
+    wholeModelScaleOnlyForbidden:true,
+    colorOnlyIdentityForbidden:true,
+    bodyMassMayAffectPresentationButNotGameplayMass:true,
+    heightMayAffectVisualRigButNotAuthoritativeHitboxUnlessGameExplicitlyOwnsIt:true,
+    weightMayAffectMotionPresentationButNotDamageSpeedOrPhysicsAuthority:true,
+    clothingEquipmentMustRefitMorphology:true,
+    faceHairOutfitCombinationCloneSuppressionRequired:true,
+    nearbyNpcMinimumDistinctIdentityAxes:5,
+    backgroundNpcMayUseLodButMustKeepDistinctSilhouette:true,
+    heroCompanionBossGetsCloseupDetailPriority:true,
+    deterministicStableSeedRecipes:true
+  }),
+  populationQuality:Object.freeze({
+    physicalDiversityTargetPercent:80,
+    colorOnlyDuplicateForbidden:true,
+    sameHeadHairOutfitCombinationReuseLimitPerLocalCrowd:1,
+    roleRegionCultureOccupationMayBiasSelection:true,
+    runtimeCrowdReadabilityRequired:true
+  }),
+  protectedGameplay:Object.freeze(['COLLISION','HITBOX','MOVEMENT_SPEED','DAMAGE','COOLDOWN','SAVE_MEANING','PROGRESSION','ECONOMY','NETWORK_AUTHORITY']),
+  gameplayAuthority:false
+});
+
+export function createGltfNpcMorphologyProfile(character={},index=0){
+  const body=createVibeBodyIdentity(character,index);
+  const appearance=createVibeAppearanceIdentity(character,index);
+  const gait=createVibeGaitIdentity(character,index);
+  const customization=createVibeCharacterCustomizationRecipe(character,index);
+  return Object.freeze({
+    version:1,
+    character:text(character.name)||`npc-${index+1}`,
+    role:upper(character.role)||null,
+    species:upper(character.species||'HUMANOID'),
+    heightCm:body.heightCm,
+    weightKg:body.weightKg,
+    visualMass:body.visualMass,
+    frame:body.frame,
+    proportions:body.proportions,
+    posture:body.posture,
+    dominantSide:body.dominantSide,
+    face:appearance.face,
+    surface:appearance.surface,
+    individualMarks:appearance.individualMarks,
+    gait,
+    customization,
+    requiredDccEffects:Object.freeze([
+      'BONE_OR_MORPH_PROPORTION_VARIATION',
+      'CLOTHING_AND_EQUIPMENT_REFIT',
+      'FACE_HEAD_HAIR_IDENTITY_VARIATION',
+      'GAIT_AND_WEIGHT_PRESENTATION_VARIATION'
+    ]),
+    wholeModelScaleOnlyForbidden:true,
+    gameplayAuthority:false,
+    protectedGameplay:STUDIO_GLTF_NPC_MORPHOLOGY_STANDARD.protectedGameplay
+  });
+}
+
+export function createGltfNpcPopulationMorphologyPlan({count=32,seed='npc-population',roles=[],regions=[],species=[]}={}){
+  const population=createVibeNpcCustomizationPopulation({count,seed,roles,regions,species});
+  const characters=population.recipes.map((row,index)=>({
+    name:row.character,
+    role:row.role,
+    species:row.species,
+    heightCm:undefined,
+    weightKg:undefined,
+    frame:String(row.body?.archetype||'').toLowerCase(),
+    region:row.region
+  }));
+  const physical=createVibePopulationPhysicalDiversity(characters);
+  const gate=createVibePhysicalDiversityGate({characters});
+  return Object.freeze({
+    version:1,
+    seed:text(seed),
+    total:population.total,
+    unique:population.unique,
+    customizationDiversityPercent:population.diversityPercent,
+    physicalDiversityPercent:physical.score,
+    physicalCloneRatePercent:physical.cloneRate,
+    pass:population.diversityPercent>=80&&physical.pass&&gate.pass,
+    recipes:population.recipes,
+    physical,
+    physicalGate:gate,
+    minimumDistinctIdentityAxes:VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.npcPopulationRules.minimumDistinctIdentityAxesPerNearbyPair,
+    gameplayAuthority:false
+  });
+}
+
+export const STUDIO_GLTF_ACTOR_ROLE_PROFILES=Object.freeze({
+  PLAYER:Object.freeze({families:Object.freeze(['CHARACTER']),requirements:Object.freeze(['HERO_READABLE_SILHOUETTE','FULL_LOCOMOTION','COMBAT_OR_INTERACTION_SET','HIT_DEATH_OR_DOWNED','EQUIPMENT_SOCKET_MAP','MOBILE_READABILITY'])}),
+  CIVILIAN_NPC:Object.freeze({families:Object.freeze(['CHARACTER']),requirements:Object.freeze(['IDLE_VARIATION','WALK','LOOK_GESTURE','INTERACTION_POSE','ROLE_OUTFIT_OR_PROP_SOCKET'])}),
+  QUEST_NPC:Object.freeze({families:Object.freeze(['CHARACTER']),requirements:Object.freeze(['IDLE_VARIATION','WALK','DIALOGUE_GESTURE','QUEST_INTERACTION_POSE','FACIAL_OR_HEAD_REACTION_WHEN_SUPPORTED'])}),
+  MERCHANT_NPC:Object.freeze({families:Object.freeze(['CHARACTER']),requirements:Object.freeze(['IDLE_VARIATION','WALK','SHOP_GESTURE','ITEM_OR_COUNTER_INTERACTION','ROLE_OUTFIT_OR_PROP_SOCKET'])}),
+  CRAFTER_NPC:Object.freeze({families:Object.freeze(['CHARACTER']),requirements:Object.freeze(['IDLE_VARIATION','WALK','WORK_LOOP','TOOL_SOCKET','INTERACTION_GESTURE'])}),
+  TRAINER_NPC:Object.freeze({families:Object.freeze(['CHARACTER']),requirements:Object.freeze(['IDLE_VARIATION','WALK','TEACHING_GESTURE','DEMO_ACTION','WEAPON_OR_TOOL_SOCKET_WHEN_APPLICABLE'])}),
+  GUARD_NPC:Object.freeze({families:Object.freeze(['CHARACTER']),requirements:Object.freeze(['IDLE_ALERT','PATROL_WALK','RUN','COMBAT_SET','HIT_DEATH','WEAPON_SOCKET'])}),
+  STORY_NPC:Object.freeze({families:Object.freeze(['CHARACTER']),requirements:Object.freeze(['DISTINCT_SILHOUETTE','IDLE_VARIATION','DIALOGUE_GESTURE','EMOTION_REACTION','CINEMATIC_BLOCKING_SUPPORT'])}),
+  COMPANION:Object.freeze({families:Object.freeze(['CHARACTER','CREATURE']),requirements:Object.freeze(['DISTINCT_SILHOUETTE','IDLE_VARIATION','FOLLOW_LOCOMOTION','COMBAT_OR_SUPPORT_SET','HIT_DOWNED_OR_DEATH','DIALOGUE_OR_EMOTE','REVIVE_OR_ASSIST_WHEN_APPLICABLE','EQUIPMENT_OR_ABILITY_SOCKET_MAP'])}),
+  SUMMONED_COMPANION:Object.freeze({families:Object.freeze(['CHARACTER','CREATURE']),requirements:Object.freeze(['SUMMON_INTRO','IDLE','FOLLOW_OR_HOVER','COMBAT_OR_SUPPORT_SET','DISMISS_OR_DEATH','OWNER_READABLE_IDENTITY'])}),
+  PET_COMPANION:Object.freeze({families:Object.freeze(['CREATURE']),requirements:Object.freeze(['IDLE_VARIATION','FOLLOW_LOCOMOTION','EMOTE_OR_REACTION','INTERACTION_POSE','COMBAT_SET_WHEN_APPLICABLE'])}),
+  MOUNT_COMPANION:Object.freeze({families:Object.freeze(['CREATURE']),requirements:Object.freeze(['IDLE','WALK','RUN','TURN','MOUNT_SOCKET','BOARD_RIDE_DISMOUNT_COMPATIBILITY','GROUND_CONTACT'])}),
+  WILDLIFE:Object.freeze({families:Object.freeze(['CREATURE']),requirements:Object.freeze(['SPECIES_SILHOUETTE','IDLE','LOCOMOTION','FLEE_OR_DEFEND','HIT_DEATH','ECOLOGY_READABILITY'])}),
+  STANDARD_ENEMY:Object.freeze({families:Object.freeze(['CHARACTER','CREATURE']),requirements:Object.freeze(['THREAT_SILHOUETTE','IDLE_ALERT','LOCOMOTION','ATTACK_SET','HIT_DEATH','TELEGRAPH_READABILITY'])}),
+  ELITE_ENEMY:Object.freeze({families:Object.freeze(['CHARACTER','CREATURE']),requirements:Object.freeze(['DISTINCT_FROM_STANDARD_BEYOND_SCALE_OR_COLOR','ELITE_ORNAMENT_OR_ANATOMY','IDLE_ALERT','LOCOMOTION','ATTACK_SET','SIGNATURE_ATTACK','HIT_DEATH','TELEGRAPH_READABILITY'])}),
+  MINI_BOSS:Object.freeze({families:Object.freeze(['CHARACTER','CREATURE']),requirements:Object.freeze(['DEDICATED_SILHOUETTE','INTRO','LOCOMOTION','MULTI_ATTACK_SET','SPECIAL_ATTACK','STUN_OR_BREAK_REACTION','DEATH_SEQUENCE','DEDICATED_VFX_AUDIO_BINDING_POINTS'])}),
+  STORY_BOSS:Object.freeze({families:Object.freeze(['CHARACTER','CREATURE']),requirements:Object.freeze(['DEDICATED_SILHOUETTE','INTRO','BASIC_ATTACK_SET_4','SPECIAL_ATTACK_SET_3','PHASE_CHANGE','ENRAGE','FAILED_ATTACK_RECOVERY','STUN','GUARD_BREAK','FINISHER','DEATH_SEQUENCE','DEDICATED_VFX_AUDIO_CAMERA_BINDING_POINTS'])}),
+  WORLD_BOSS:Object.freeze({families:Object.freeze(['CHARACTER','CREATURE']),requirements:Object.freeze(['COLOSSAL_OR_SIGNATURE_SILHOUETTE','INTRO','BASIC_ATTACK_SET_4','SPECIAL_ATTACK_SET_3','PHASE_CHANGE','ENRAGE','STUN_OR_BREAK','MULTIPLAYER_READABLE_TELEGRAPHS','DEATH_SEQUENCE','LOD_AND_DISTANCE_READABILITY'])}),
+  RAID_BOSS:Object.freeze({families:Object.freeze(['CHARACTER','CREATURE']),requirements:Object.freeze(['UNIQUE_SIGNATURE_FORM','INTRO','BASIC_ATTACK_SET_4','SPECIAL_ATTACK_SET_3','MULTI_PHASE','ENRAGE','STUN_OR_BREAK','GROUP_READABLE_TELEGRAPHS','FINISHER_OR_WIPE_PRESENTATION_BINDING','DEATH_SEQUENCE','LOD_AND_MOBILE_BUDGET'])})
+});
+
+export function createGltfActorRoleProfile({roles=[],family=''}={}){
+  const resolvedFamily=upper(family);
+  const requested=uniq(Array.isArray(roles)?roles:[roles]).map(upper);
+  const rows=requested.map(role=>({role,profile:STUDIO_GLTF_ACTOR_ROLE_PROFILES[role]||null}));
+  const unknown=rows.filter(row=>!row.profile).map(row=>row.role);
+  const incompatible=rows.filter(row=>row.profile&&resolvedFamily&&!row.profile.families.includes(resolvedFamily)).map(row=>row.role);
+  const requirements=uniq(rows.flatMap(row=>row.profile?.requirements||[]));
+  const bossRole=requested.some(role=>/BOSS$/.test(role));
+  const companionRole=requested.some(role=>/COMPANION/.test(role));
+  return Object.freeze({
+    roles:Object.freeze(requested),family:resolvedFamily||null,valid:requested.length>0&&!unknown.length&&!incompatible.length,
+    unknown:Object.freeze(unknown),incompatible:Object.freeze(incompatible),requirements:Object.freeze(requirements),
+    bossRole,companionRole,
+    bossScaledOnlyForbidden:bossRole,
+    bossColorOnlyForbidden:bossRole,
+    companionEnemyMotionBlindReuseForbidden:companionRole,
+    gameplayAuthority:false
+  });
+}
+
+export const STUDIO_GLTF_MASTER_ASSET_STANDARD=Object.freeze({
+  version:1,
+  status:'ACTIVE_EXECUTABLE_CONTRACT',
+  scope:'ARTICULATED_OR_RENDERED_3D_CHARACTER_CREATURE_AND_BOSS_MASTER_ASSET',
+  appliesToFamilies:Object.freeze(['CHARACTER','CREATURE']),
+  includesEliteAndBoss:true,
+  masterFormat:'GLB',
+  gltfVersion:'2.0',
+  masterBeforePlatformVariants:true,
+  commonMasterRole:'CROSS_PLATFORM_AUTHORING_SOURCE_NOT_FINAL_RUNTIME_BINARY',
+  requiredMasterContents:Object.freeze([
+    'MESH','UV','MATERIAL_SLOTS','RIG_AND_SKIN_WHEN_ARTICULATED',
+    'ANIMATION_CLIPS_OR_EXPLICIT_COMPATIBLE_MOTION_BINDING_WHEN_ANIMATED',
+    'STABLE_SCALE_ORIGIN_AND_AXIS','ATTACHMENT_SOCKET_METADATA_OR_BINDING_MAP','LOD_SOURCE_OR_DERIVATION_PLAN'
+  ]),
+  primitivePartActorPrototypeOnly:true,
+  primitivePartActorCannotClaimFinalAsset:true,
+  platformVariantMustPreserveMasterHash:true,
+  directCrossPlatformFinalBinaryReuseForbidden:true,
+  nativeRuntimeVerificationRequired:true,
+  actorRoleProfileRequired:true,
+  actorRoleProfiles:STUDIO_GLTF_ACTOR_ROLE_PROFILES,
+  npcMorphologyStandard:STUDIO_GLTF_NPC_MORPHOLOGY_STANDARD,
+  bossNormalEnemyScaledOnlyForbidden:true,
+  companionEnemyMotionBlindReuseForbidden:true,
+  gameplayAuthority:false
+});
+
+const GLTF_MASTER_SHA256=/^[a-f0-9]{64}$/i;
+
+export function evaluateGltfMasterAssetStandard({asset={},family='',platform='',required=null}={}){
+  const resolvedFamily=upper(family||asset?.family||asset?.category);
+  const requiredByFamily=STUDIO_GLTF_MASTER_ASSET_STANDARD.appliesToFamilies.includes(resolvedFamily);
+  const mustRequire=required===null?requiredByFamily:required===true;
+  if(!mustRequire)return Object.freeze({version:1,required:false,pass:true,blockers:Object.freeze([]),family:resolvedFamily||null,master:null});
+  const master=asset?.gltfMaster&&typeof asset.gltfMaster==='object'?asset.gltfMaster:{};
+  const sourceFiles=Array.isArray(asset?.sourceFiles)?asset.sourceFiles.map(value=>text(value).replace(/^\//,'')):[];
+  const masterPath=text(master.path||asset?.meshArtifact||asset?.modelDownloadPath||(/\.glb$/i.test(text(asset?.path))?asset.path:'')).replace(/^\//,'');
+  const sourceRecipe=text(master.sourceRecipe||asset?.sourceRecipe||sourceFiles.find(value=>/\.py$/i.test(value))).replace(/^\//,'');
+  const evidencePath=text(master.evidencePath||asset?.gltfEvidencePath||sourceFiles.find(value=>/evidence\.json$/i.test(value))).replace(/^\//,'');
+  const previewPath=text(master.previewPath||asset?.viewerPreviewPath||sourceFiles.find(value=>/\.(?:png|webp|jpg|jpeg)$/i.test(value))).replace(/^\//,'');
+  const artifactHash=text(master.artifactHash||asset?.gltfMasterArtifactHash||asset?.artifactHash||asset?.derivedSha256);
+  const sourceHash=text(master.sourceHash||asset?.sourceHash||asset?.sourceSha256);
+  const content=master.contentEvidence&&typeof master.contentEvidence==='object'?master.contentEvidence:{};
+  const articulated=master.articulated!==false;
+  const animated=master.animated!==false;
+  const actorRoleProfile=createGltfActorRoleProfile({roles:master.actorRoles||asset?.actorRoles||asset?.roles||[],family:resolvedFamily});
+  const morphologyProfiles=Array.isArray(master.morphologyProfiles)?master.morphologyProfiles:Array.isArray(asset?.morphologyProfiles)?asset.morphologyProfiles:[];
+  const morphologyRequired=resolvedFamily==='CHARACTER';
+  const morphologyReady=!morphologyRequired||(
+    morphologyProfiles.length>0
+    &&morphologyProfiles.every(row=>Number.isFinite(Number(row?.heightCm))&&Number.isFinite(Number(row?.weightKg))&&text(row?.frame)&&row?.wholeModelScaleOnlyForbidden===true)
+  );
+  const motionBinding=content.animationClips===true||Number(content.motionCount||0)>0
+    ||master.compatibleMotionBinding===true||(Array.isArray(asset?.compatibleMotionSourceIds)&&asset.compatibleMotionSourceIds.length>0);
+  const blockers=[];
+  if(!masterPath)blockers.push('GLB_MASTER_REQUIRED');
+  else if(!/\.glb$/i.test(masterPath)||upper(master.format||'GLB')!=='GLB')blockers.push('GLB_MASTER_FORMAT_INVALID');
+  if(!GLTF_MASTER_SHA256.test(artifactHash))blockers.push('GLB_MASTER_ARTIFACT_HASH_REQUIRED');
+  if(!sourceRecipe||!/\.py$/i.test(sourceRecipe))blockers.push('GLB_MASTER_SOURCE_RECIPE_REQUIRED');
+  if(!GLTF_MASTER_SHA256.test(sourceHash))blockers.push('GLB_MASTER_SOURCE_HASH_REQUIRED');
+  if(!evidencePath||!previewPath)blockers.push('GLB_MASTER_EVIDENCE_REQUIRED');
+  if(!actorRoleProfile.roles.length)blockers.push('GLB_MASTER_ACTOR_ROLE_REQUIRED');
+  else if(!actorRoleProfile.valid)blockers.push('GLB_MASTER_ACTOR_ROLE_FAMILY_MISMATCH');
+  if(morphologyRequired&&!morphologyReady)blockers.push('GLB_MASTER_MORPHOLOGY_PROFILE_REQUIRED');
+  if(content.mesh!==true)blockers.push('GLB_MASTER_MESH_REQUIRED');
+  if(content.uv!==true)blockers.push('GLB_MASTER_UV_REQUIRED');
+  if(content.materialSlots!==true&&content.materials!==true)blockers.push('GLB_MASTER_MATERIAL_REQUIRED');
+  if(articulated&&content.rig!==true)blockers.push('GLB_MASTER_RIG_REQUIRED');
+  if(articulated&&content.skin!==true)blockers.push('GLB_MASTER_SKIN_REQUIRED');
+  if(animated&&!motionBinding)blockers.push('GLB_MASTER_MOTION_BINDING_REQUIRED');
+  if(content.stableScaleOriginAxis!==true)blockers.push('GLB_MASTER_SCALE_AXIS_REQUIRED');
+  if(content.attachmentOrBindingMap!==true)blockers.push('GLB_MASTER_ATTACHMENT_BINDING_REQUIRED');
+  if(content.lodDerivationPlan!==true)blockers.push('GLB_MASTER_LOD_PLAN_REQUIRED');
+  if(master.platformVariantsRequireExactMasterHash!==true)blockers.push('PLATFORM_VARIANT_MASTER_LINEAGE_MISSING');
+  return Object.freeze({
+    version:1,required:true,pass:blockers.length===0,blockers:Object.freeze(blockers),family:resolvedFamily||null,
+    platform:upper(platform)||null,master:Object.freeze({
+      format:'GLB',path:masterPath||null,artifactHash:artifactHash||null,sourceRecipe:sourceRecipe||null,sourceHash:sourceHash||null,
+      evidencePath:evidencePath||null,previewPath:previewPath||null,articulated,animated,motionBinding,
+      actorRoles:actorRoleProfile.roles,actorRoleProfile,
+      morphologyRequired,morphologyReady,morphologyProfiles:Object.freeze(morphologyProfiles.map(row=>Object.freeze({...row}))),
+      contentEvidence:Object.freeze({...content}),platformVariantsRequireExactMasterHash:master.platformVariantsRequireExactMasterHash===true
+    }),
+    actorRoleProfile,morphologyRequired,morphologyReady,
+    primitivePartActorPrototypeOnly:true,nativeRuntimeVerificationStillRequired:true,gameplayAuthority:false
+  });
+}
 
 export const CREATURE_BODY_PLANS=Object.freeze([
   'SMALL_HUMANOID_BIPED','STANDARD_HUMANOID_MONSTER','HEAVY_BIPED','DIGITIGRADE_BIPED','HUNCHED_BIPED',
@@ -2923,6 +3176,9 @@ export function createSurvivalWildlifeAssetProfile({species='BEAR',platform='ROB
       lodRequired:true,
       groundContactShadowRequired:true
     }),
+    gltfMasterRequired:true,
+    gltfMasterFormat:'GLB',
+    actorRoles:Object.freeze(['WILDLIFE']),
     productionVerified:false,
     runtimeVerificationRequired:true,
     exactThirdPartyAssetCopy:false
@@ -4545,6 +4801,8 @@ export function createCreatureSpeciesBlueprint({
       signatureSkill:text(signatureSkill),audioIdentity:text(audioIdentity),hitDeathIdentity:text(hitDeathIdentity)
     }),
     platform:upper(platform),complete:missing.length===0,missing:Object.freeze(missing),
+    gltfMasterRequired:true,gltfMasterFormat:'GLB',
+    actorRoleProfiles:STUDIO_GLTF_ACTOR_ROLE_PROFILES,
     colorOnlySpeciesVariantAllowed:false,gameplayStatsAuthority:false
   });
 }
@@ -4579,6 +4837,7 @@ export function createStudioTestbedPlan({assetIds=[],platform='UNITY',mobile=tru
 
 export function evaluateCompanyAssetPromotion({asset={},consumer={},runtimeEvidence={}}={}){
   const id=text(asset?.id),family=upper(asset?.family||asset?.category),platform=upper(runtimeEvidence?.platform||consumer?.platform||asset?.platformVariant||asset?.platform);
+  const gltfMaster=evaluateGltfMasterAssetStandard({asset,family,platform});
   const license=text(asset?.license);
   const sourceHash=text(asset?.sourceHash||asset?.sourceSha256||asset?.contentHash||asset?.sha256);
   const artifactHash=text(asset?.artifactHash||asset?.derivedSha256||asset?.contentHash||asset?.sha256);
@@ -4593,6 +4852,7 @@ export function evaluateCompanyAssetPromotion({asset={},consumer={},runtimeEvide
   if(!['ROBLOX','UNITY'].includes(platform))blockers.push('NATIVE_PLATFORM_REQUIRED');
   if(!license||/^unknown$/i.test(license)||/(?:CC-BY-NC|NONCOMMERCIAL|NO-COMMERCIAL|NC\b)/i.test(license))blockers.push('COMMERCIAL_MODIFIABLE_LICENSE_REQUIRED');
   if(!sourceHash)blockers.push('SOURCE_HASH_REQUIRED');
+  if(gltfMaster.required&&!gltfMaster.pass)blockers.push(...gltfMaster.blockers);
   if(!artifactPath)blockers.push('NATIVE_ARTIFACT_OR_SOURCE_PATH_REQUIRED');
   if(!consumerGameId)blockers.push('RUNTIME_CONSUMER_GAME_REQUIRED');
   if(runtimeEvidence?.nativeBindingPass!==true)blockers.push('NATIVE_BINDING_PASS_REQUIRED');
@@ -4608,10 +4868,12 @@ export function evaluateCompanyAssetPromotion({asset={},consumer={},runtimeEvide
   const eligible=blockers.length===0;
   return Object.freeze({
     version:1,eligible,blockers:Object.freeze(blockers),assetId:id||null,family:family||null,platform:platform||null,consumerGameId:consumerGameId||null,
+    gltfMaster,
     promotion:eligible?Object.freeze({
       id,family,category:family,platform,status:'VERIFIED_COMPANY_ASSET',path:artifactPath,license,
       sourceHash,artifactHash:artifactHash||null,productionVerified:true,verifiedCompanyReusable:true,runtimeVerificationState:'VERIFIED_NATIVE_RUNTIME',
       artReviewState:'RUNTIME_VERIFIED',consumerGameIds:Object.freeze([consumerGameId]),
+      ...(gltfMaster.required?{gltfMaster:Object.freeze({...asset.gltfMaster,productionVerified:true,nativeRuntimeVerificationRequired:false})}:{}),
       promotionEvidence:Object.freeze({
         assetId:id,nativeBindingPass:true,visualRuntimePass:true,mobilePerformancePass:true,regressionPass:true,licenseProvenancePass:true,
         sourceHash,artifactHash:artifactHash||null,runtimeEvidenceId:text(runtimeEvidence?.id||runtimeEvidence?.runId)||null
@@ -5389,6 +5651,9 @@ export function createStudioAssetUniversePlan({
     coverage,
     heatmap:gapFill.heatmap,
     gapFill,
+    gltfMasterAssetStandard:STUDIO_GLTF_MASTER_ASSET_STANDARD,
+    gltfActorRoleProfiles:STUDIO_GLTF_ACTOR_ROLE_PROFILES,
+    gltfNpcMorphologyStandard:STUDIO_GLTF_NPC_MORPHOLOGY_STANDARD,
     creatureUniverse:Object.freeze({
       bodyPlanCount:CREATURE_BODY_PLANS.length,
       speciesCount:CREATURE_SPECIES.length,

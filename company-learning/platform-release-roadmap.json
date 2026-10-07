@@ -1,8 +1,8 @@
 {
-  "version": 540,
+  "version": 541,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
-  "recordedAt": "2026-10-03",
+  "recordedAt": "2026-10-07",
   "priority": [
     "ROBLOX",
     "UNITY"
@@ -6441,7 +6441,7 @@
       }
     }
   },
-  "updatedAt": "2026-10-05",
+  "updatedAt": "2026-10-07",
   "priorityTiers": [
     {
       "tier": 1,
@@ -19667,6 +19667,452 @@
           "negativeLearningRequiresVerifiedFailureCause": true,
           "rawTelemetryDirectTrainingForbidden": true,
           "existingCanonicalLearningChainOnly": true
+        },
+        "gltfMasterAssetStandard": {
+          "version": 1,
+          "status": "ACTIVE_EXECUTABLE_CONTRACT",
+          "scope": "ARTICULATED_OR_RENDERED_3D_CHARACTER_CREATURE_AND_BOSS_MASTER_ASSET",
+          "appliesToFamilies": [
+            "CHARACTER",
+            "CREATURE"
+          ],
+          "includesEliteAndBoss": true,
+          "masterFormat": "GLB",
+          "gltfVersion": "2.0",
+          "masterBeforePlatformVariants": true,
+          "requiredForNew3dFinalAssets": true,
+          "commonMasterRole": "CROSS_PLATFORM_AUTHORING_SOURCE_NOT_FINAL_RUNTIME_BINARY",
+          "requiredMasterContents": [
+            "MESH",
+            "UV",
+            "MATERIAL_SLOTS",
+            "RIG_AND_SKIN_WHEN_ARTICULATED",
+            "ANIMATION_CLIPS_OR_EXPLICIT_COMPATIBLE_MOTION_BINDING_WHEN_ANIMATED",
+            "STABLE_SCALE_ORIGIN_AND_AXIS",
+            "ATTACHMENT_SOCKET_METADATA_OR_BINDING_MAP",
+            "LOD_SOURCE_OR_DERIVATION_PLAN"
+          ],
+          "authoring": {
+            "preferredExecutor": "BLENDER_PYTHON",
+            "editableSourceRecipeRequired": true,
+            "repositoryPersistedGlbRequired": true,
+            "sourceHashRequired": true,
+            "artifactHashRequired": true,
+            "evidenceJsonRequired": true,
+            "previewRequired": true,
+            "primitivePartActorAllowedOnlyForPrototype": true,
+            "primitivePartActorMayNotClaimFinalAsset": true,
+            "colorOnlyVariantMayNotCreateDistinctCreature": true
+          },
+          "platformDerivation": {
+            "ROBLOX": "IMPORT_OR_DERIVE_FROM_EXACT_GLTF_MASTER_HASH_THEN_BIND_MESHPART_BONES_ANIMATOR_AND_PLATFORM_NATIVE_MATERIALS",
+            "UNITY": "IMPORT_OR_DERIVE_FROM_EXACT_GLTF_MASTER_HASH_THEN_BIND_SKINNED_MESH_RENDERER_ANIMATOR_MATERIALS_AND_PREFAB",
+            "WEB": "LOAD_EXACT_GLTF_MASTER_OR_OPTIMIZED_DERIVATIVE_WITH_MASTER_HASH_LINEAGE",
+            "directCrossPlatformFinalBinaryReuseForbidden": true,
+            "platformNativeRuntimeVerificationRequired": true
+          },
+          "promotionHardFailures": [
+            "GLB_MASTER_REQUIRED",
+            "GLB_MASTER_FORMAT_INVALID",
+            "GLB_MASTER_ARTIFACT_HASH_REQUIRED",
+            "GLB_MASTER_SOURCE_RECIPE_REQUIRED",
+            "GLB_MASTER_SOURCE_HASH_REQUIRED",
+            "GLB_MASTER_EVIDENCE_REQUIRED",
+            "GLB_MASTER_MESH_REQUIRED",
+            "GLB_MASTER_UV_REQUIRED",
+            "GLB_MASTER_MATERIAL_REQUIRED",
+            "GLB_MASTER_RIG_REQUIRED",
+            "GLB_MASTER_SKIN_REQUIRED",
+            "GLB_MASTER_MOTION_BINDING_REQUIRED",
+            "PRIMITIVE_ONLY_ACTOR_FINAL",
+            "PLATFORM_VARIANT_MASTER_LINEAGE_MISSING",
+            "GLB_MASTER_SCALE_AXIS_REQUIRED",
+            "GLB_MASTER_ATTACHMENT_BINDING_REQUIRED",
+            "GLB_MASTER_LOD_PLAN_REQUIRED",
+            "GLB_MASTER_ACTOR_ROLE_REQUIRED",
+            "GLB_MASTER_ACTOR_ROLE_FAMILY_MISMATCH",
+            "GLB_MASTER_MORPHOLOGY_PROFILE_REQUIRED",
+            "GLB_MASTER_NPC_DIVERSITY_REQUIRED"
+          ],
+          "runtimePromotionStillRequiresNativeConsumerEvidence": true,
+          "gameplayAuthorityExpansionForbidden": true,
+          "existingGraphicsProductionOnly": true,
+          "newPipelineWorkerQueueScheduler": false,
+          "actorRoleStandard": {
+            "version": 1,
+            "requiredForFinalActorAsset": true,
+            "roleIsPresentationAndAssetCompatibilityOnly": true,
+            "gameplayAiDamageQuestEconomySaveNetworkAuthority": false,
+            "roles": {
+              "PLAYER": {
+                "families": [
+                  "CHARACTER"
+                ],
+                "requirements": [
+                  "HERO_READABLE_SILHOUETTE",
+                  "FULL_LOCOMOTION",
+                  "COMBAT_OR_INTERACTION_SET",
+                  "HIT_DEATH_OR_DOWNED",
+                  "EQUIPMENT_SOCKET_MAP",
+                  "MOBILE_READABILITY"
+                ]
+              },
+              "CIVILIAN_NPC": {
+                "families": [
+                  "CHARACTER"
+                ],
+                "requirements": [
+                  "IDLE_VARIATION",
+                  "WALK",
+                  "LOOK_GESTURE",
+                  "INTERACTION_POSE",
+                  "ROLE_OUTFIT_OR_PROP_SOCKET"
+                ]
+              },
+              "QUEST_NPC": {
+                "families": [
+                  "CHARACTER"
+                ],
+                "requirements": [
+                  "IDLE_VARIATION",
+                  "WALK",
+                  "DIALOGUE_GESTURE",
+                  "QUEST_INTERACTION_POSE",
+                  "FACIAL_OR_HEAD_REACTION_WHEN_SUPPORTED"
+                ]
+              },
+              "MERCHANT_NPC": {
+                "families": [
+                  "CHARACTER"
+                ],
+                "requirements": [
+                  "IDLE_VARIATION",
+                  "WALK",
+                  "SHOP_GESTURE",
+                  "ITEM_OR_COUNTER_INTERACTION",
+                  "ROLE_OUTFIT_OR_PROP_SOCKET"
+                ]
+              },
+              "CRAFTER_NPC": {
+                "families": [
+                  "CHARACTER"
+                ],
+                "requirements": [
+                  "IDLE_VARIATION",
+                  "WALK",
+                  "WORK_LOOP",
+                  "TOOL_SOCKET",
+                  "INTERACTION_GESTURE"
+                ]
+              },
+              "TRAINER_NPC": {
+                "families": [
+                  "CHARACTER"
+                ],
+                "requirements": [
+                  "IDLE_VARIATION",
+                  "WALK",
+                  "TEACHING_GESTURE",
+                  "DEMO_ACTION",
+                  "WEAPON_OR_TOOL_SOCKET_WHEN_APPLICABLE"
+                ]
+              },
+              "GUARD_NPC": {
+                "families": [
+                  "CHARACTER"
+                ],
+                "requirements": [
+                  "IDLE_ALERT",
+                  "PATROL_WALK",
+                  "RUN",
+                  "COMBAT_SET",
+                  "HIT_DEATH",
+                  "WEAPON_SOCKET"
+                ]
+              },
+              "STORY_NPC": {
+                "families": [
+                  "CHARACTER"
+                ],
+                "requirements": [
+                  "DISTINCT_SILHOUETTE",
+                  "IDLE_VARIATION",
+                  "DIALOGUE_GESTURE",
+                  "EMOTION_REACTION",
+                  "CINEMATIC_BLOCKING_SUPPORT"
+                ]
+              },
+              "COMPANION": {
+                "families": [
+                  "CHARACTER",
+                  "CREATURE"
+                ],
+                "requirements": [
+                  "DISTINCT_SILHOUETTE",
+                  "IDLE_VARIATION",
+                  "FOLLOW_LOCOMOTION",
+                  "COMBAT_OR_SUPPORT_SET",
+                  "HIT_DOWNED_OR_DEATH",
+                  "DIALOGUE_OR_EMOTE",
+                  "REVIVE_OR_ASSIST_WHEN_APPLICABLE",
+                  "EQUIPMENT_OR_ABILITY_SOCKET_MAP"
+                ]
+              },
+              "SUMMONED_COMPANION": {
+                "families": [
+                  "CHARACTER",
+                  "CREATURE"
+                ],
+                "requirements": [
+                  "SUMMON_INTRO",
+                  "IDLE",
+                  "FOLLOW_OR_HOVER",
+                  "COMBAT_OR_SUPPORT_SET",
+                  "DISMISS_OR_DEATH",
+                  "OWNER_READABLE_IDENTITY"
+                ]
+              },
+              "PET_COMPANION": {
+                "families": [
+                  "CREATURE"
+                ],
+                "requirements": [
+                  "IDLE_VARIATION",
+                  "FOLLOW_LOCOMOTION",
+                  "EMOTE_OR_REACTION",
+                  "INTERACTION_POSE",
+                  "COMBAT_SET_WHEN_APPLICABLE"
+                ]
+              },
+              "MOUNT_COMPANION": {
+                "families": [
+                  "CREATURE"
+                ],
+                "requirements": [
+                  "IDLE",
+                  "WALK",
+                  "RUN",
+                  "TURN",
+                  "MOUNT_SOCKET",
+                  "BOARD_RIDE_DISMOUNT_COMPATIBILITY",
+                  "GROUND_CONTACT"
+                ]
+              },
+              "WILDLIFE": {
+                "families": [
+                  "CREATURE"
+                ],
+                "requirements": [
+                  "SPECIES_SILHOUETTE",
+                  "IDLE",
+                  "LOCOMOTION",
+                  "FLEE_OR_DEFEND",
+                  "HIT_DEATH",
+                  "ECOLOGY_READABILITY"
+                ]
+              },
+              "STANDARD_ENEMY": {
+                "families": [
+                  "CHARACTER",
+                  "CREATURE"
+                ],
+                "requirements": [
+                  "THREAT_SILHOUETTE",
+                  "IDLE_ALERT",
+                  "LOCOMOTION",
+                  "ATTACK_SET",
+                  "HIT_DEATH",
+                  "TELEGRAPH_READABILITY"
+                ]
+              },
+              "ELITE_ENEMY": {
+                "families": [
+                  "CHARACTER",
+                  "CREATURE"
+                ],
+                "requirements": [
+                  "DISTINCT_FROM_STANDARD_BEYOND_SCALE_OR_COLOR",
+                  "ELITE_ORNAMENT_OR_ANATOMY",
+                  "IDLE_ALERT",
+                  "LOCOMOTION",
+                  "ATTACK_SET",
+                  "SIGNATURE_ATTACK",
+                  "HIT_DEATH",
+                  "TELEGRAPH_READABILITY"
+                ]
+              },
+              "MINI_BOSS": {
+                "families": [
+                  "CHARACTER",
+                  "CREATURE"
+                ],
+                "requirements": [
+                  "DEDICATED_SILHOUETTE",
+                  "INTRO",
+                  "LOCOMOTION",
+                  "MULTI_ATTACK_SET",
+                  "SPECIAL_ATTACK",
+                  "STUN_OR_BREAK_REACTION",
+                  "DEATH_SEQUENCE",
+                  "DEDICATED_VFX_AUDIO_BINDING_POINTS"
+                ]
+              },
+              "STORY_BOSS": {
+                "families": [
+                  "CHARACTER",
+                  "CREATURE"
+                ],
+                "requirements": [
+                  "DEDICATED_SILHOUETTE",
+                  "INTRO",
+                  "BASIC_ATTACK_SET_4",
+                  "SPECIAL_ATTACK_SET_3",
+                  "PHASE_CHANGE",
+                  "ENRAGE",
+                  "FAILED_ATTACK_RECOVERY",
+                  "STUN",
+                  "GUARD_BREAK",
+                  "FINISHER",
+                  "DEATH_SEQUENCE",
+                  "DEDICATED_VFX_AUDIO_CAMERA_BINDING_POINTS"
+                ]
+              },
+              "WORLD_BOSS": {
+                "families": [
+                  "CHARACTER",
+                  "CREATURE"
+                ],
+                "requirements": [
+                  "COLOSSAL_OR_SIGNATURE_SILHOUETTE",
+                  "INTRO",
+                  "BASIC_ATTACK_SET_4",
+                  "SPECIAL_ATTACK_SET_3",
+                  "PHASE_CHANGE",
+                  "ENRAGE",
+                  "STUN_OR_BREAK",
+                  "MULTI_PLAYER_READABLE_TELEGRAPHS",
+                  "DEATH_SEQUENCE",
+                  "LOD_AND_DISTANCE_READABILITY"
+                ]
+              },
+              "RAID_BOSS": {
+                "families": [
+                  "CHARACTER",
+                  "CREATURE"
+                ],
+                "requirements": [
+                  "UNIQUE_SIGNATURE_FORM",
+                  "INTRO",
+                  "BASIC_ATTACK_SET_4",
+                  "SPECIAL_ATTACK_SET_3",
+                  "MULTI_PHASE",
+                  "ENRAGE",
+                  "STUN_OR_BREAK",
+                  "GROUP_READABLE_TELEGRAPHS",
+                  "FINISHER_OR_WIPE_PRESENTATION_BINDING",
+                  "DEATH_SEQUENCE",
+                  "LOD_AND_MOBILE_BUDGET"
+                ]
+              }
+            },
+            "bossRules": {
+              "normalEnemyScaledOnlyForbidden": true,
+              "colorOnlyBossVariantForbidden": true,
+              "dedicatedSignatureFormRequired": true,
+              "dedicatedAttackLanguageRequired": true,
+              "dedicatedPhasePresentationRequired": true
+            },
+            "companionRules": {
+              "enemyMotionPackBlindReuseForbidden": true,
+              "socialOrSupportReadabilityRequired": true,
+              "ownerOrPartyIdentityReadable": true
+            }
+          },
+          "npcMorphologyStandard": {
+            "version": 1,
+            "status": "ACTIVE_EXECUTABLE_CONTRACT",
+            "source": "assets/vibe-character-identity-director.js#VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT",
+            "appliesToFamily": "CHARACTER",
+            "requiredForNpcCompanionHumanoidEnemyAndBoss": true,
+            "physicalAxes": [
+              "HEIGHT_CM_PRESENTATION",
+              "WEIGHT_KG_PRESENTATION",
+              "VISUAL_MASS",
+              "BODY_ARCHETYPE",
+              "SHOULDER_WIDTH",
+              "TORSO_LENGTH",
+              "TORSO_DEPTH",
+              "PELVIS_WIDTH",
+              "ARM_LENGTH",
+              "LEG_LENGTH",
+              "HAND_FOOT_SCALE",
+              "HEAD_BODY_RATIO",
+              "POSTURE",
+              "ASYMMETRY"
+            ],
+            "appearanceAxes": [
+              "HEAD_BASE",
+              "FACE_WIDTH",
+              "FACE_LENGTH",
+              "FOREHEAD",
+              "BROW_HEIGHT",
+              "BROW_ANGLE",
+              "EYE_SPACING",
+              "EYE_SIZE",
+              "EYE_TILT",
+              "NOSE_BRIDGE",
+              "NOSE_LENGTH",
+              "NOSE_WIDTH",
+              "CHEEKBONE",
+              "CHEEK_FULLNESS",
+              "MOUTH_WIDTH",
+              "LIP_VOLUME",
+              "JAW_WIDTH",
+              "JAW_DEPTH",
+              "CHIN_PROJECTION",
+              "EAR_SCALE",
+              "SKIN_TONE",
+              "SKIN_DETAIL",
+              "AGE_PRESENTATION",
+              "HAIR_STYLE",
+              "HAIR_TEXTURE",
+              "HAIR_COLOR",
+              "HAIR_HIGHLIGHT",
+              "HAIR_GRAYING",
+              "FACIAL_HAIR",
+              "SCAR_OR_MARK",
+              "ACCESSORY",
+              "OUTFIT_FIT_AND_WEAR"
+            ],
+            "motionAxes": [
+              "GAIT_CADENCE",
+              "STRIDE_LENGTH",
+              "FOOTFALL_MASS",
+              "VERTICAL_BOB",
+              "ARM_SWING",
+              "TORSO_COUNTER_MOTION",
+              "TURN_STYLE",
+              "START_STOP_WEIGHT"
+            ],
+            "productionRules": {
+              "actualMeshOrBoneProportionVariationRequired": true,
+              "wholeModelScaleOnlyForbidden": true,
+              "colorOnlyIdentityForbidden": true,
+              "bodyMassPresentationOnly": true,
+              "heightMayNotSilentlyChangeAuthoritativeHitbox": true,
+              "weightMayNotChangeDamageSpeedPhysics": true,
+              "clothingEquipmentRefitRequired": true,
+              "faceHairOutfitCloneSuppressionRequired": true,
+              "nearbyNpcMinimumDistinctIdentityAxes": 5,
+              "backgroundNpcMayUseLodButMustKeepDistinctSilhouette": true,
+              "companionBossCloseupDetailPriority": true
+            },
+            "populationTargets": {
+              "physicalDiversityPercentMinimum": 80,
+              "sameHeadHairOutfitReuseLimitPerLocalCrowd": 1
+            },
+            "gameplayAuthority": false
+          }
         }
       },
       "composableBaseMaterialLibrary": {

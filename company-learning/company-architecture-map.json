@@ -1,5 +1,5 @@
 {
-  "version": 323,
+  "version": 324,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2961,7 +2961,60 @@
           "GENRE_WORLD_GRAMMAR"
         ],
         "learningUsesExistingCanonicalChainOnly": true,
-        "platformNativeRuntimeVerificationRequired": true
+        "platformNativeRuntimeVerificationRequired": true,
+        "gltfMasterAssetStandard": {
+          "centralPolicy": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.studioAssetUniverse.gltfMasterAssetStandard",
+          "masterFormat": "GLB",
+          "families": [
+            "CHARACTER",
+            "CREATURE"
+          ],
+          "includesEliteAndBoss": true,
+          "implementation": "assets/vibe-studio-asset-universe.js",
+          "planner": "tools/vibe2-asset-production-plan.mjs",
+          "sourceWorker": "tools/vibe2-source-worker.mjs",
+          "qa": [
+            "qa/vibe-studio-asset-universe.test.mjs",
+            "qa/vibe2-native-asset-production.test.mjs"
+          ],
+          "flow": [
+            "INSPECT_VERIFIED_REUSE",
+            "AUTHOR_OR_REBUILD_EDITABLE_DCC_SOURCE",
+            "EXPORT_REPOSITORY_PERSISTED_GLTF_MASTER",
+            "VERIFY_MASTER_HASH_AND_CONTENT_CONTRACT",
+            "DERIVE_PLATFORM_NATIVE_VARIANT",
+            "BIND_EXISTING_GAME_RESPONSIBILITY",
+            "NATIVE_RUNTIME_AND_MOBILE_QA",
+            "PROMOTE_ONLY_VERIFIED_CONSUMER"
+          ],
+          "primitiveFinalActorForbidden": true,
+          "directCrossPlatformFinalBinaryReuseForbidden": true,
+          "existingGraphicsProductionOnly": true,
+          "newPipelineCreated": false,
+          "actorRoleProfileOwner": "assets/vibe-studio-asset-universe.js",
+          "actorRoles": [
+            "PLAYER",
+            "CIVILIAN_NPC",
+            "QUEST_NPC",
+            "MERCHANT_NPC",
+            "CRAFTER_NPC",
+            "TRAINER_NPC",
+            "GUARD_NPC",
+            "STORY_NPC",
+            "COMPANION",
+            "SUMMONED_COMPANION",
+            "PET_COMPANION",
+            "MOUNT_COMPANION",
+            "WILDLIFE",
+            "STANDARD_ENEMY",
+            "ELITE_ENEMY",
+            "MINI_BOSS",
+            "STORY_BOSS",
+            "WORLD_BOSS",
+            "RAID_BOSS"
+          ],
+          "actorRoleDoesNotOwnGameplay": true
+        }
       },
       "conceptDirector": {
         "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.studioAssetUniverse.conceptDirector",
@@ -4278,7 +4331,7 @@
       ]
     }
   },
-  "updatedAt": "2026-10-05",
+  "updatedAt": "2026-10-07",
   "centralDocumentationTopology": {
     "version": 2,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",

@@ -1,5 +1,5 @@
 {
-  "version": 175,
+  "version": 176,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -492,7 +492,7 @@
     "continuousEvolutionEvidenceAllowedAfterInternalAndPublicRelease": true,
     "standaloneReleaseAuthority": false
   },
-  "updatedAt": "2026-10-05",
+  "updatedAt": "2026-10-07",
   "graphicsProductionEvidenceContract": {
     "version": 5,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -3351,5 +3351,50 @@
     "gamePrimaryWorkBudgetAppliesTo": "ALL_GAME_PRIMARY_GAME_BUILD_UP_WORKERS_PRE_AND_POST_RELEASE",
     "modelCallTimeoutAndRetryUnchanged": true,
     "canonicalF0ThroughF9SequenceUnchanged": true
+  },
+  "gltfMasterAssetEvidenceContract": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.studioAssetUniverse.gltfMasterAssetStandard",
+    "appliesToFamilies": [
+      "CHARACTER",
+      "CREATURE"
+    ],
+    "requiredMarkers": [
+      "GLB_MASTER_ASSET=",
+      "GLB_MASTER_HASH=",
+      "GLB_MASTER_RECIPE=",
+      "GLB_MASTER_CONTENTS=",
+      "GLB_MASTER_PLATFORM_VARIANT=",
+      "GLB_MASTER_RUNTIME=",
+      "GLB_MASTER_ACTOR_ROLE="
+    ],
+    "failureClasses": [
+      "GLB_MASTER_REQUIRED",
+      "GLB_MASTER_FORMAT_INVALID",
+      "GLB_MASTER_ARTIFACT_HASH_REQUIRED",
+      "GLB_MASTER_SOURCE_RECIPE_REQUIRED",
+      "GLB_MASTER_SOURCE_HASH_REQUIRED",
+      "GLB_MASTER_EVIDENCE_REQUIRED",
+      "GLB_MASTER_MESH_REQUIRED",
+      "GLB_MASTER_UV_REQUIRED",
+      "GLB_MASTER_MATERIAL_REQUIRED",
+      "GLB_MASTER_RIG_REQUIRED",
+      "GLB_MASTER_SKIN_REQUIRED",
+      "GLB_MASTER_MOTION_BINDING_REQUIRED",
+      "PRIMITIVE_ONLY_ACTOR_FINAL",
+      "PLATFORM_VARIANT_MASTER_LINEAGE_MISSING",
+      "GLB_MASTER_SCALE_AXIS_REQUIRED",
+      "GLB_MASTER_ATTACHMENT_BINDING_REQUIRED",
+      "GLB_MASTER_LOD_PLAN_REQUIRED",
+      "GLB_MASTER_ACTOR_ROLE_REQUIRED",
+      "GLB_MASTER_ACTOR_ROLE_FAMILY_MISMATCH"
+    ],
+    "glbPresenceAloneCannotProveRuntimePass": true,
+    "sourceRecipeAndHashBindingRequired": true,
+    "nativeRuntimeAndMobileEvidenceStillRequired": true,
+    "primitivePrototypeCannotEmitFinalAssetPass": true,
+    "repeatedFailureDedupeRequired": true,
+    "roleProfileEvidenceRequired": true,
+    "roleProfileMayNotClaimGameplayAuthority": true
   }
 }

@@ -5,7 +5,7 @@ import {buildVibeAssetProductionPlan} from '../tools/vibe2-asset-production-plan
 import {createVibeArtPipeline,createVibeGraphicsProduction,createVibeOwnerChangeRequestStability,VIBE_HIGH_END_TARGET_FRAME_ROLES,GRAPHICS_PRODUCTION_INTERNAL_MODULES,GRAPHICS_PRODUCTION_STAGES,VIBE_STUDIO_HUMANOID_LOCOMOTION,VIBE_STUDIO_HUMANOID_COMBAT,VIBE_STUDIO_CREATURE_FAMILIES,VIBE_STUDIO_RETARGET_CLEANUP,VIBE_BIPED_CREATURE_FAMILIES,VIBE_CREATURE_STYLE_VARIANTS,VIBE_CARTOON_MOTION_TRANSFORMS,VIBE_CREATURE_LIBRARY_GRAPH} from '../assets/vibe-art-pipeline.js';
 import {createVibeHighEndVisualDirection,HIGH_END_VISUAL_TARGET_FRAMES} from '../assets/vibe-visual-autopilot.js';
 import {MOTION_DIRECTOR_TARGET,MOTION_COMPOSITION_CHANNELS,MOTION_DNA_FIELDS,MOTION_LIBRARY_GRAPH_NODES} from '../assets/vibe-motion-director.js';
-import {STUDIO_ASSET_UNIVERSE_TARGET,STUDIO_ASSET_FAMILIES,CREATURE_BODY_PLANS,CREATURE_SPECIES,CLOTHING_LAYER_SLOTS,BIOME_FAMILIES,BUILDING_THEMES} from '../assets/vibe-studio-asset-universe.js';
+import {STUDIO_ASSET_UNIVERSE_TARGET,STUDIO_ASSET_FAMILIES,STUDIO_GLTF_MASTER_ASSET_STANDARD,CREATURE_BODY_PLANS,CREATURE_SPECIES,CLOTHING_LAYER_SLOTS,BIOME_FAMILIES,BUILDING_THEMES} from '../assets/vibe-studio-asset-universe.js';
 import {createVibeHighEndPresentationStack} from '../assets/vibe-presentation-director.js';
 import {auditVibeRuntimeVisualEvidence,HIGH_END_GOLDEN_SCENE_ROLES} from '../assets/vibe-visual-quality-gate.js';
 
@@ -15,6 +15,8 @@ const logMap=JSON.parse(fs.readFileSync('company-learning/company-log-map.json',
 const security=JSON.parse(fs.readFileSync('company-learning/security-immune-system.json','utf8'));
 const plannerSource=fs.readFileSync('tools/vibe2-auto-planner.mjs','utf8');
 const learningMotorSource=fs.readFileSync('tools/vibe2-learning-motor.mjs','utf8');
+const assetPlannerSource=fs.readFileSync('tools/vibe2-asset-production-plan.mjs','utf8');
+const sourceWorkerSource=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
 
 test('canonical high-end visual contract reuses existing graphics and asset pipeline',()=>{
   const c=roadmap.assetProductionParallelContract.highEndVisualProductionContract;
@@ -563,4 +565,38 @@ test('owner presentation changes replace conflicting same-scope intent instead o
   assert.equal(stability.directResponsibleSystemModificationPreferred,true);
   assert.equal(stability.wrapperOverrideV2FinalTemporaryPatchAccumulationForbidden,true);
   assert.deepEqual([...stability.affectedScopes],['bear.attack.motion']);
+});
+
+
+test('canonical asset pipeline requires one GLB master before platform-native 3D actor variants',()=>{
+  const policy=roadmap.assetProductionParallelContract.companyGraphicsLibrary24h.studioAssetUniverse.gltfMasterAssetStandard;
+  assert.equal(policy.status,'ACTIVE_EXECUTABLE_CONTRACT');
+  assert.equal(policy.masterFormat,'GLB');
+  assert.deepEqual(policy.appliesToFamilies,['CHARACTER','CREATURE']);
+  assert.equal(policy.includesEliteAndBoss,true);
+  assert.equal(policy.masterBeforePlatformVariants,true);
+  assert.equal(policy.authoring.repositoryPersistedGlbRequired,true);
+  assert.equal(policy.authoring.primitivePartActorMayNotClaimFinalAsset,true);
+  assert.equal(policy.platformDerivation.directCrossPlatformFinalBinaryReuseForbidden,true);
+  assert.ok(policy.promotionHardFailures.includes('GLB_MASTER_REQUIRED'));
+
+  const topology=architecture.assetProductionParallelism.companyGraphicsLibrary24h.studioAssetUniverse.gltfMasterAssetStandard;
+  assert.equal(topology.masterFormat,'GLB');
+  assert.equal(topology.implementation,'assets/vibe-studio-asset-universe.js');
+  assert.equal(topology.planner,'tools/vibe2-asset-production-plan.mjs');
+  assert.equal(topology.sourceWorker,'tools/vibe2-source-worker.mjs');
+  assert.equal(topology.newPipelineCreated,false);
+
+  assert.equal(logMap.gltfMasterAssetEvidenceContract.glbPresenceAloneCannotProveRuntimePass,true);
+  assert.ok(logMap.gltfMasterAssetEvidenceContract.requiredMarkers.includes('GLB_MASTER_HASH='));
+  assert.equal(security.gltfMasterAssetSecurity.protections.binaryAssetTextForgeryForbidden,true);
+  assert.equal(security.gltfMasterAssetSecurity.protections.glbPresenceMayNotBypassNativeRuntimeQa,true);
+  assert.equal(security.gltfMasterAssetSecurity.protections.existingSecurityScanQaAndF0F9RemainRequired,true);
+
+  assert.equal(STUDIO_GLTF_MASTER_ASSET_STANDARD.masterFormat,'GLB');
+  assert.equal(STUDIO_GLTF_MASTER_ASSET_STANDARD.primitivePartActorCannotClaimFinalAsset,true);
+  assert.match(assetPlannerSource,/GLB_MASTER_DCC_TYPES/);
+  assert.match(assetPlannerSource,/gltfMasterMissingTypes/);
+  assert.match(sourceWorkerSource,/GLB_MASTER_ASSET_REQUIRED/);
+  assert.match(sourceWorkerSource,/GLB_MASTER_OUTPUT_REQUIRED/);
 });
