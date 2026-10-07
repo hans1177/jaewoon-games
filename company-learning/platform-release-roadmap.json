@@ -1298,7 +1298,10 @@
       "fanInRefill": {
         "event": "vibe2-fanin-refill",
         "resultBearing": false,
-        "coalesceByExecutionLane": true,
+        "coalesceByExecutionLane": false,
+        "coalesceByExactTaskIdentity": true,
+        "concurrencyIdentity": "EXECUTION_LANE_PLUS_SOURCE_TASK_FALLBACK_SOURCE_RUN_OR_RUN_ID",
+        "distinctGameRefillCancellationForbidden": true,
         "topLevelConcurrencyGroupRequired": true,
         "cancelRunningRefill": false,
         "reserveRunnerPool": "ubuntu-latest"
