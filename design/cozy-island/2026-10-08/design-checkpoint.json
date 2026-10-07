@@ -3,9 +3,9 @@
   "gameId": "cozy-island",
   "date": "2026-10-08",
   "seedId": "OWNER-DESIGN-COZY-ISLAND",
-  "fingerprint": "e8e455212782429dea6f35e4eba84ce8608fd424a182633c6b4cd547c0c80ce2",
+  "fingerprint": "234d6789ab36e8f980bdc0d4669a94d1ca90e5a4817c8681f11d0476bed05a4a",
   "policyDigest": "223f74bb658bbab4921a06b74e652d4e7fc27d174188c3b4b3488e9b3d026f6f",
-  "engineDigest": "cc088ad7a8676ded2864387d1c00a39b024f9e9a4e72f50308346406aea805a9",
+  "engineDigest": "635ecb0d21a9a5a7334acf530359981b48cfa98aabec8a331b74dde6b9b610e8",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
@@ -214,7 +214,7 @@
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T20:24:30.415Z",
-  "updatedAt": "2026-10-07T20:51:22.935Z",
+  "updatedAt": "2026-10-07T21:06:48.551Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -378,5 +378,14 @@
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": "designer_draft",
   "failedTask": "alternatives",
-  "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms"
+  "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
+  "checkpointMigration": {
+    "fromContractVersion": 4,
+    "toContractVersion": 4,
+    "reason": "QUOTA_VIBE_REPAIR_COMPATIBLE_ENGINE_CHANGE_NO_REPLAY",
+    "previousEngineDigest": "cc088ad7a8676ded2864387d1c00a39b024f9e9a4e72f50308346406aea805a9",
+    "preservedPhaseCount": 0,
+    "preservedTaskCount": 7,
+    "migratedAt": "2026-10-07T21:06:48.549Z"
+  }
 }
