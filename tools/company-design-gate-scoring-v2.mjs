@@ -84,6 +84,8 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
     }
     if(typeof value!=='string')return;
     const text=clean(value);
+    // 기존 표현 개선 계약이 생성하는 추적 ID는 설명용 임시 표식이 아니다.
+    if(/^implementationTraceability\[\d+\]\.designElement$/.test(path)&&['ASSET_ADAPTATION','LIVING_MOTION_AND_ANIMATION_FEEL','VFX_AUDIO_CAMERA_POLISH_MOBILE'].includes(text))return;
     if(/^[A-Z][A-Z0-9]*(?:_[A-Z0-9]+){2,}$/.test(text)||/^(?:TODO|TBD|PLACEHOLDER|미정|작성 예정|추후 작성)$/i.test(text)){
       reject('DESIGN_PLACEHOLDER_CONTENT','IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY',[root],{path,value:text.slice(0,160)},`${path}의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.`);
     }

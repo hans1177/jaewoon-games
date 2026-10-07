@@ -273,7 +273,9 @@ assert.doesNotMatch(designCycle,/GEMINI_MODEL_QUARANTINE_RESTORED=/);
 assert.doesNotMatch(designCycle,/persistentGeminiUnavailableStatus/);
 assert.match(designCycle,/DESIGN_PRE_GATE_REPAIR_CHECKPOINTS_PRESERVED=YES/);
 assert.doesNotMatch(designCycle,/delete designCheckpoint\.phases\[key\]/);
-assert.match(designCycle,/DESIGN_LOCAL_SPLIT_TRUNCATED_FIELDS=/);
+assert.match(designCycle,/DESIGN_LOCAL_SPLIT=/);
+assert.match(designCycle,/arrayChild\?'ARRAY_ITEMS':objectChild\?'NESTED_OBJECT':'FIELDS'/);
+assert.match(designCycle,/OUTPUT_TRUNCATED\|TIMEOUT/);
 assert.match(designCycle,/localAuthoringSplits/);
 assert.doesNotMatch(designCycle,/generativelanguage|callExternalDesignerModel/);
 

@@ -501,12 +501,13 @@ async function authorDesignInCheckpointedSlices({phase,system,sharedContext,curr
     const anchors=compactRule(Object.fromEntries(Object.entries(priorRules).map(([field,value])=>[field,field==='designAlternatives'?value.map(plan=>Object.fromEntries(['label','coreLoopShift','mapTopologyRegionRoles','enemyEcosystemCounterplay','progressionEconomy'].map(key=>[key,plan[key]]))):field==='selectedDesignPlan'?{label:value.label,durationRationale:value.durationRationale}:value])));
     designCheckpoint.sliceDependencies||={};
     designCheckpoint.sliceRepairFeedback||={};
+    designCheckpoint.sliceRepairAttempts||={};
     if(designCheckpoint.sliceDependencies[taskKey]&&designCheckpoint.sliceDependencies[taskKey]!==dependencyHash)delete designCheckpoint.tasks[taskKey];
     let result,feedback=designCheckpoint.sliceRepairFeedback[taskKey]||[];
     for(let attempt=0;attempt<2;attempt++){
       result=await runCheckpointTask(`${phase}_slices`,slice.id,()=>callDesignerModel(
       system,
-      `${commonInput}\n전체 설계를 한 번에 출력하지 말고 현재 필드 묶음만 상세하게 작성하라. 다른 필드는 출력하지 않는다. MAIN/A/B/c/@와 causalDNA 연결은 현재 필드가 담당하는 범위에서 실제 상태 변화로 유지한다. 이미 작성된 설계와 모순시키지 않는다. 원본 규칙과 수치를 보존한다.\nSLICE_ID=${slice.id}\nSLICE_FIELDS=${JSON.stringify(slice.fields)}\nSTRUCTURE_CONTRACT=${JSON.stringify(repairStructureContract(slice.fields))}\nCURRENT_SLICE=${clip(existing,3500)}\nSHARED_RULE_ANCHORS=${JSON.stringify(anchors)}\nAUTHORING_REPAIR_FEEDBACK=${JSON.stringify(feedback)}`,
+      `${commonInput}\n전체 설계를 한 번에 출력하지 말고 현재 필드 묶음만 상세하게 작성하라. 다른 필드는 출력하지 않는다. MAIN/A/B/c/@와 causalDNA 연결은 현재 필드가 담당하는 범위에서 실제 상태 변화로 유지한다. 이미 작성된 설계와 모순시키지 않는다. 원본 규칙과 수치를 보존한다.\nSLICE_ID=${slice.id}\nSLICE_FIELDS=${JSON.stringify(slice.fields)}\nSTRUCTURE_CONTRACT=${JSON.stringify(repairStructureContract(slice.fields))}\nCURRENT_SLICE=${clip(existing,3500)}\nSHARED_RULE_ANCHORS=${JSON.stringify(anchors)}\nAUTHORING_REPAIR_ATTEMPT=${designCheckpoint.sliceRepairAttempts[taskKey]||0}\nAUTHORING_REPAIR_FEEDBACK=${JSON.stringify(feedback)}`,
       schema,
       {predict:slice.predict,temperature:phase.includes('revision')?0.16:0.24,numCtx:8192,recoverOversized:designCheckpoint.failedTask===slice.id&&/^OLLAMA_DESIGN_(TIMEOUT|OUTPUT_TRUNCATED)/.test(designCheckpoint.lastError||'')}
       ));
@@ -515,6 +516,8 @@ async function authorDesignInCheckpointedSlices({phase,system,sharedContext,curr
       if(!feedback.length)break;
       delete designCheckpoint.tasks[taskKey];
       designCheckpoint.sliceRepairFeedback[taskKey]=feedback;
+      // 같은 오류가 반복돼도 실패한 하위 조각 캐시를 다시 쓰지 않는다.
+      designCheckpoint.sliceRepairAttempts[taskKey]=(designCheckpoint.sliceRepairAttempts[taskKey]||0)+1;
       designCheckpoint.failedPhase=`${phase}_slices`;designCheckpoint.failedTask=slice.id;
       designCheckpoint.lastError=`DESIGN_CONTENT_REPAIR_REQUIRED ${feedback.map(row=>row.code).join(',')}`;
       persistDesignCheckpoint();

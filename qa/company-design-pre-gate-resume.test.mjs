@@ -430,6 +430,13 @@ test('authoring rejects observed multiplayer, platform, placeholder and duplicat
   assert.ok(reasons.every(row=>row.fields.length&&row.bypassAllowed===false));
 });
 
+test('preservation trace identifiers stay valid while their evidence must still be prose',()=>{
+  const implementationTraceability=['ASSET_ADAPTATION','LIVING_MOTION_AND_ANIMATION_FEEL','VFX_AUDIO_CAMERA_POLISH_MOBILE'].map(designElement=>({designElement,responsibleSystem:'기존 표현과 상태 이벤트 책임 함수',validationEvidence:'같은 입력에서 게임 상태를 유지하며 실제 렌더링 결과를 비교한다.'}));
+  assert.deepEqual(validateDesignAuthoringContent({design:{implementationTraceability}}),[]);
+  implementationTraceability[0].validationEvidence='WEB_UNVERIFIED_PLACEHOLDER';
+  assert.ok(validateDesignAuthoringContent({design:{implementationTraceability}}).some(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT'));
+});
+
 test('one complete playthrough preserves state continuity and needs duration evidence',()=>{
   const states=['배정된 인간과 몬스터가 각 출발 지점에서 준비한다','첫 추격을 마치고 감염으로 양쪽 인원 구성이 바뀌었다','남은 인간과 몬스터가 마지막 정화와 감염 기회를 겨룬다','승패 또는 제한시간 종료 결과를 확인하고 다음 라운드를 준비한다'];
   const playthrough=['OPENING','DEVELOPMENT','RESOLUTION'].map((phase,index)=>({phase,entryState:states[index],playerChoice:'주변의 동료와 추격자의 위치를 보고 이동 경로를 고른다',actionAndResponse:'원본 도구 조건을 확인한 뒤 입력하고 서버 판정과 적의 대응을 확인한다',exitState:states[index+1],nextDecision:'바뀐 인원과 도구 상태를 보고 다음 경로 또는 재시도를 선택한다'}));
@@ -459,22 +466,25 @@ test('role-grounded asset selection beats an unrelated higher score without gran
   assert.equal(current.nextActions[0].assetId,'bed','existing consumers remain reusable and quality work is not globally stopped');
 });
 
-test('a bad cached slice is repaired before downstream authoring and the valid result is reused',async()=>{
+test('bad cached slices refresh nested identities across retries and valid results are reused',async()=>{
   const source=design.slice(design.indexOf('async function authorDesignInCheckpointedSlices('),design.indexOf('function mergeDesignerDesign('));
   const checkpoint={tasks:{'designer_draft_slices::mode':{multiplayerMode:'SINGLE'}}};
   let calls=0;
+  const localParts=new Map();
   const author=runInNewContext(source+'\nauthorDesignInCheckpointedSlices',{
     seed:{MULTIPLAYER_DESIGN_MODE:'COMPETITIVE'},seedDesignDepthContext:{},createHash,validateDesignAuthoringContent,
     clip:(value,n)=>JSON.stringify(value).slice(0,n),clean:value=>String(value),
     DESIGN_AUTHORING_SLICES:[{id:'mode',fields:['multiplayerMode'],predict:900}],designSliceSchema:()=>({type:'object',required:['multiplayerMode'],properties:{multiplayerMode:{type:'string'}},additionalProperties:false}),
     repairStructureContract:()=>[],designCheckpoint:checkpoint,persistDesignCheckpoint(){},
     runCheckpointTask:async(phase,id,work)=>checkpoint.tasks[`${phase}::${id}`]??(checkpoint.tasks[`${phase}::${id}`]=await work()),
-    callDesignerModel:async(system,user)=>{calls++;assert.match(user,/DESIGN_MULTIPLAYER_CONTRADICTION/);return {multiplayerMode:'COMPETITIVE'};},
+    callDesignerModel:async(system,user)=>{assert.match(user,/DESIGN_MULTIPLAYER_CONTRADICTION/);if(!localParts.has(user)){calls++;localParts.set(user,{multiplayerMode:calls===1?'SINGLE':'COMPETITIVE'});}return localParts.get(user);},
     repairDesignRequiredFields:value=>({value}),factPack:{},enforceOwnerPreservationDesign:value=>value,assertSchemaValue:assertDesignSchema,DESIGN:{},console:{log(){}}
   });
+  await assert.rejects(author({phase:'designer_draft',system:'s',sharedContext:'c'}),/DESIGN_CONTENT_REPAIR_REQUIRED/);
+  assert.equal(checkpoint.sliceRepairAttempts['designer_draft_slices::mode'],2);
   assert.equal((await author({phase:'designer_draft',system:'s',sharedContext:'c'})).multiplayerMode,'COMPETITIVE');
   assert.equal((await author({phase:'designer_draft',system:'s',sharedContext:'c'})).multiplayerMode,'COMPETITIVE');
-  assert.equal(calls,1);
+  assert.equal(calls,2);
   assert.equal(Object.keys(checkpoint.sliceRepairFeedback).length,0);
 });
 
