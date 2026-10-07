@@ -9,12 +9,62 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "designer_draft_slices::identity-core": {
+      "identity": "작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임",
+      "playerFantasy": "작은 섬의 주민은 직접 나무와 식량을 모으며, 병사와 병영을 통해 왕국을 확장하는 협동 생존 게임. 각 플레이어는 자원을 수집하고, 전략적 거점에 점령하며, 왕국의 지배를 확보하는 전략적 역할을 수행한다.",
+      "coreFun": "직접 채집, 주민 고용, 병영 강화, 자원 거점 선택, 자동전투, 협동 지원. 각 단계는 실제 자원 수집과 전략적 전투를 통해 확장된다.",
+      "coreLoop": [
+        "직접 채집 -> 자원 수집 -> 주민 고용 -> 병영 강화 -> 자원 거점 선택 -> 자동전투 -> 협동 지원",
+        "자원 거점 점령 -> 전략적 전투 -> 병력 확장 -> 왕국 확장 -> 새로운 거점 확보",
+        "보상 획득 -> 전략적 선택 -> 자원 확보 -> 병력 증가 -> 왕국 확장"
+      ],
+      "signatureSystems": [
+        {
+          "name": "직접 채집",
+          "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득한다.",
+          "playerChoice": "나무와 식량을 직접 모으는 선택"
+        },
+        {
+          "name": "주민 자동화",
+          "purpose": "고용한 주민을 생산 직업에 배치해 반복 노동을 자동화한다.",
+          "playerChoice": "주민을 고용하고, 생산 직업에 배치하는 선택"
+        },
+        {
+          "name": "병영/병사",
+          "purpose": "자원을 병력으로 전환하고 병영 레벨로 전투력을 확장한다.",
+          "playerChoice": "자원을 병력으로 전환하고, 병영 레벨을 강화하는 선택"
+        },
+        {
+          "name": "5개 자원 거점",
+          "purpose": "서로 다른 적과 보상을 가진 5개 거점을 순차 점령한다.",
+          "playerChoice": "5개 거점을 순차적으로 점령하는 선택"
+        },
+        {
+          "name": "협동 지원",
+          "purpose": "다른 플레이어의 준비 병력을 서버가 지원 전력으로 합산한다.",
+          "playerChoice": "다른 플레이어의 병력을 지원하는 선택"
+        }
+      ]
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 167237,
+      "lastMs": 167237,
+      "lastError": null,
+      "updatedAt": "2026-10-07T20:27:17.693Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T20:24:30.415Z",
-  "updatedAt": "2026-10-07T20:24:30.421Z",
+  "updatedAt": "2026-10-07T20:27:17.694Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -172,5 +222,11 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-07T20:27:17.693Z",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
