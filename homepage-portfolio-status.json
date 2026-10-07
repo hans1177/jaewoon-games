@@ -4,11 +4,11 @@
   "publicSafe": true,
   "authority": "SANITIZED_PORTFOLIO_CONTROL_SNAPSHOT",
   "source": "vibe2-unreal-core:.vibe2/portfolio-decisions.json",
-  "generatedAt": "2026-10-07T13:37:54.640Z",
+  "generatedAt": "2026-10-07T13:58:19.807Z",
   "counts": {
     "ACCELERATE": 0,
     "CONTINUE": 0,
-    "FOCUSED_REPAIR": 17,
+    "FOCUSED_REPAIR": 18,
     "REDESIGN": 0,
     "PAUSE": 0,
     "RETIRE_REVIEW": 0,
@@ -44,6 +44,15 @@
     },
     {
       "gameId": "cozy-island",
+      "decision": "FOCUSED_REPAIR",
+      "label": "집중수리",
+      "priorityRank": 1,
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "authority": "PRIMARY_AI_AND_VIBE_JOINT"
+    },
+    {
+      "gameId": "daechung-rpg",
       "decision": "FOCUSED_REPAIR",
       "label": "집중수리",
       "priorityRank": 1,
