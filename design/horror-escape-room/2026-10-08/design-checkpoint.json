@@ -186,25 +186,40 @@
         "unityRule": "UNITY_4D_HUMAN_MONSTER_ABERRATION_WITH_2_5D_WEB_RENDERING",
         "robloxRule": "ROBLOX_4D_HUMAN_MONSTER_ABERRATION_WITH_2_5D_WEB_RENDERING"
       }
+    },
+    "designer_draft_slices::ux-presentation": {
+      "visualDirection": "세 게임 중 가장 현실적인 인간 비율과 가장 비정상적인 몬스터 체형을 강하게 대비시키는 가독성 중심 공포 3D.",
+      "mobileUx": "모바일 이동과 큰 상호작용 버튼, PC 키보드·게임패드 보조 입력을 사용한다.",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "모바일 이동과 큰 상호작용 버튼, PC 키보드·게임패드 보조 입력을 사용한다.",
+        "touchAndInput": "모바일 이동과 큰 상호작용 버튼, PC 키보드·게임패드 보조 입력을 사용한다.",
+        "readability": "모바일 이동과 큰 상호작용 버튼, PC 키보드·게임패드 보조 입력을 사용한다.",
+        "accessibility": "모바일 이동과 큰 상호작용 버튼, PC 키보드·게임패드 보조 입력을 사용한다."
+      },
+      "artAudioDirection": {
+        "visualIdentity": "REALISTIC_HUMANS_ABERRANT_MONSTERS",
+        "audioIdentity": "HORROR_3D_AUDIO_LAYOUT",
+        "gameplayFeedbackSync": "감염 스킬 선택, 정화 공격, 몬스터 감염 공격, 인간 정화"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 6,
+      "calls": 10,
+      "successes": 7,
       "failures": 3,
       "timeouts": 1,
       "jsonFailures": 1,
-      "totalMs": 1408200,
-      "lastMs": 154227,
+      "totalMs": 1577613,
+      "lastMs": 169413,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-07T19:34:44.797Z"
+      "updatedAt": "2026-10-07T19:37:34.211Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T17:55:35.632Z",
-  "updatedAt": "2026-10-07T19:34:44.797Z",
+  "updatedAt": "2026-10-07T19:37:34.212Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
@@ -220,7 +235,7 @@
   "localAuthoringSplits": {
     "b0562ba8bb121c6f29db549cd378dd345fb1669cdccd5e5f6382f3175e914676": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-07T19:34:44.797Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T19:37:34.211Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
