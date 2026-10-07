@@ -51,9 +51,13 @@ function studioAssetRefreshState({root='',assetLibrary={}}={}){
   const config=fs.readFileSync(configFile,'utf8');
   const client=fs.readFileSync(clientFile,'utf8');
   const libraryVersion=Number(config.match(/LibraryVersion\s*=\s*(\d+)/)?.[1]||0);
+  const sourceUsageFingerprint=clean(config.match(/SourceUsageFingerprint\s*=\s*["']([0-9a-f]{64})["']/i)?.[1]);
+  const sourceUsageLibraryVersion=Number(config.match(/SourceUsageLibraryVersion\s*=\s*(\d+)/)?.[1]||0);
   const bindingVersion=Number(config.match(/BindingVersion\s*=\s*(\d+)/)?.[1]||0);
   const clientBindingVersion=Number(client.match(/STUDIO_ASSET_BINDING_VERSION\s*=\s*(\d+)/)?.[1]||0);
   const expectedBindingVersion=Number(expected.bindingVersion||0);
+  const expectedSourceUsageFingerprint=clean(expected.buildUpAssetSourceUsageFingerprint);
+  const expectedSourceUsageLibraryVersion=Number(expected.buildUpAssetSourceUsageLibraryVersion||expected.libraryVersion||0);
   const applied=/StudioAssets\s*=\s*\{[\s\S]*?Applied\s*=\s*true/.test(config);
   const clientConfigBound=/[A-Za-z_][A-Za-z0-9_]*\.StudioAssets/.test(client);
   const clientVisibleBound=/StudioAssetFramePanel/.test(client)
@@ -73,17 +77,22 @@ function studioAssetRefreshState({root='',assetLibrary={}}={}){
   const refreshRequired=!applied
     ||bindingVersion!==expectedBindingVersion
     ||libraryVersion!==Number(expected.libraryVersion||0)
+    ||sourceUsageFingerprint!==expectedSourceUsageFingerprint
+    ||sourceUsageLibraryVersion!==expectedSourceUsageLibraryVersion
     ||clientBindingVersion!==expectedBindingVersion
     ||!clientConfigBound
     ||!clientVisibleBound
     ||!familySelectionTraceComplete
     ||!familyStatusTraceComplete
     ||familyStatusMismatches.length>0;
+  const sourceUsageMismatch=sourceUsageFingerprint!==expectedSourceUsageFingerprint||sourceUsageLibraryVersion!==expectedSourceUsageLibraryVersion;
   const reason=familyStatusMismatches.length
     ?'FAMILY_STATUS_SOURCE_MISMATCH'
+    :sourceUsageMismatch?'SOURCE_USAGE_LINEAGE_MISMATCH'
     :(refreshRequired?'STALE_OR_MISSING_STUDIO_ASSET_BINDING':null);
   return {
     required:true,refreshRequired,libraryVersion:Number(expected.libraryVersion||0),currentLibraryVersion:libraryVersion,
+    sourceUsageFingerprint,expectedSourceUsageFingerprint,sourceUsageLibraryVersion,expectedSourceUsageLibraryVersion,
     bindingVersion,clientBindingVersion,expectedBindingVersion,applied,clientConfigBound,clientVisibleBound,
     familySelectionTraceComplete,familyStatusTraceComplete,currentFamilyStatus,expectedFamilyStatus,
     familyStatusMismatches,reason

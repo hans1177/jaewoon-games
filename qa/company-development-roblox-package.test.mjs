@@ -193,6 +193,8 @@ test('Roblox package requires all internal library families and rejects primitiv
     BindingVersion = 2,
     LibraryVersion = ${plan.libraryVersion},
     SelectionFingerprint = "${plan.selectionFingerprint}",
+    SourceUsageFingerprint = "${plan.buildUpAssetSourceUsageFingerprint}",
+    SourceUsageLibraryVersion = ${plan.buildUpAssetSourceUsageLibraryVersion},
     Families = {
 ${familyRows}
     },
@@ -227,6 +229,10 @@ ${familyRows}
     assert.equal(pass.requiredFamilyCount,12);
     assert.equal(pass.allFamiliesAutoSelected,true);
     assert.equal(pass.visibleAssetBindingPass,true);
+    assert.match(pass.buildUpAssetSourceUsageFingerprint,/^[0-9a-f]{64}$/i);
+    assert.equal(pass.buildUpAssetSourceUsageFingerprint,plan.buildUpAssetSourceUsageFingerprint);
+    assert.equal(pass.buildUpAssetSourceUsageLibraryVersion,plan.buildUpAssetSourceUsageLibraryVersion);
+    assert.deepEqual(pass.selectedSourceContentHashes,plan.selectedSourceContentHashes);
     assert.equal(pass.familyBindingPassCount,1);
     assert.equal(pass.appliedFamilyCount,1);
     assert.equal(pass.notApplicableFamilyCount,11);
@@ -540,6 +546,8 @@ test('Roblox package applicability ignores managed learning and foundation scaff
     BindingVersion = 2,
     LibraryVersion = ${plan.libraryVersion},
     SelectionFingerprint = "${plan.selectionFingerprint}",
+    SourceUsageFingerprint = "${plan.buildUpAssetSourceUsageFingerprint}",
+    SourceUsageLibraryVersion = ${plan.buildUpAssetSourceUsageLibraryVersion},
     Families = {
 ${familyRows}
     },

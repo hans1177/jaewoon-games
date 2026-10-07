@@ -1343,6 +1343,9 @@ jobs:
           set -euo pipefail
           safe="$(printf '%s' "$GAME_ID" | tr -cs 'A-Za-z0-9._-' '-')"
           artifact_identity="$(node -e "const e=require(process.argv[1]);process.stdout.write(e.artifactIdentity)" "$BUILD_EVIDENCE")"
+          build_up_asset_fingerprint="$(node -e "const e=require(process.argv[1]);process.stdout.write(String(e.buildUpAssetSourceUsageFingerprint||''))" "$BUILD_EVIDENCE")"
+          asset_selection_fingerprint="$(node -e "const e=require(process.argv[1]);process.stdout.write(String(e.assetSelectionFingerprint||''))" "$BUILD_EVIDENCE")"
+          asset_library_version="$(node -e "const e=require(process.argv[1]);process.stdout.write(String(e.assetLibraryVersion||0))" "$BUILD_EVIDENCE")"
           rm -rf /tmp/luau-exact-source
           mkdir -p /tmp/luau-exact-source
           git archive "$SOURCE_REVISION" "$SOURCE_PATH" | tar -x -C /tmp/luau-exact-source
@@ -1364,6 +1367,9 @@ jobs:
             --artifact-run-id="$GITHUB_RUN_ID" \
             --native-language-compile-passed=true \
             --native-compiler-version=0.739 \
+            --build-up-asset-fingerprint="$build_up_asset_fingerprint" \
+            --asset-selection-fingerprint="$asset_selection_fingerprint" \
+            --asset-library-version="$asset_library_version" \
             --baseline="$baseline" \
             --output="/tmp/roblox-technical/results/${safe}.headless.json"
           echo 'ROBLOX_F0_BUILD_REUSE=SAME_WORKER_EXACT_PACKAGE'
@@ -1422,6 +1428,10 @@ jobs:
             sourcePath:process.env.SOURCE_PATH,
             sourceRevision:process.env.SOURCE_REVISION,
             artifactIdentity:evidence?.artifactIdentity||null,
+            buildUpAssetSourceUsageFingerprint:evidence?.buildUpAssetSourceUsageFingerprint||null,
+            buildUpAssetSourceUsageLibraryVersion:Number(evidence?.buildUpAssetSourceUsageLibraryVersion||0)||null,
+            assetSelectionFingerprint:evidence?.assetSelectionFingerprint||null,
+            assetLibraryVersion:Number(evidence?.assetLibraryVersion||0)||null,
             saveRequired:evidence?.saveRequired===true,
             failure:superseded?'roblox-technical-superseded':assetBindingFailed?'roblox-package-asset-binding-failed':!packagePassed?'roblox-build-package-failed':secondary?null:!preflightPass?'roblox-build-preflight-blocked':(!f0Pass?'roblox-f0-source-preflight-failed':null),
           };
@@ -1771,6 +1781,10 @@ jobs:
                 currentStep:f0Exact?'PRIVATE_RUNTIME_CANDIDATE_DEPLOY':preflightExact?'ROBLOX_F0_SOURCE_PREFLIGHT':'TARGET_PLATFORM_TECHNICAL_VALIDATION',
                 canonicalState:f0Exact?'F0_SOURCE_PREFLIGHT_PASSED':preflightExact?'F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED':'TARGET_PLATFORM_REPAIR_REQUIRED',
                 robloxBuildOrPackagePassed:true,robloxBuildSourceRevision:result.sourceRevision,robloxBuildArtifactIdentity:result.artifactIdentity,
+                robloxBuildUpAssetSourceUsageFingerprint:result.buildUpAssetSourceUsageFingerprint,
+                robloxBuildUpAssetSourceUsageLibraryVersion:Number(result.buildUpAssetSourceUsageLibraryVersion||0)||null,
+                robloxBuildAssetSelectionFingerprint:result.assetSelectionFingerprint,
+                robloxBuildAssetLibraryVersion:Number(result.assetLibraryVersion||0)||null,
                 robloxBuildPassedAt:stamp,robloxBuildFailedAt:null,
                 robloxBuildPreflightPassed:preflightExact,robloxBuildPreflightPassedAt:preflightExact?stamp:null,robloxBuildPreflightFailedAt:preflightExact?null:stamp,robloxBuildPreflightEvidence:result.preflightEvidence||null,
                 robloxFoundationF0Passed:f0Exact,robloxFoundationF0PassedAt:f0Exact?stamp:null,robloxFoundationF0Evidence:(f0Exact||gameplayProductFailure)?result.f0Evidence:null,
