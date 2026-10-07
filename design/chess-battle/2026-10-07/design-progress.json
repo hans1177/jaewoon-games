@@ -12,20 +12,20 @@
   "lastSuccessfulModelCallAt": null,
   "failedPhase": "designer_draft",
   "failedTask": null,
-  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=OPTIONAL_EXTERNAL_AI_DISABLED local=schema required missing: root.identity",
+  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=OPTIONAL_EXTERNAL_AI_DISABLED local=OLLAMA_DESIGN_TIMEOUT 120000ms",
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 27,
+      "calls": 28,
       "successes": 0,
-      "failures": 27,
-      "timeouts": 14,
+      "failures": 28,
+      "timeouts": 15,
       "jsonFailures": 13,
-      "totalMs": 2643360,
-      "lastMs": 120034,
+      "totalMs": 2763371,
+      "lastMs": 120011,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
-      "updatedAt": "2026-10-07T05:25:22.544Z"
+      "updatedAt": "2026-10-07T05:27:22.556Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-07T05:25:22.544Z"
+  "updatedAt": "2026-10-07T05:27:22.557Z"
 }
