@@ -648,13 +648,15 @@ test('감염 스킬과 감염 공격은 화면 효과와 공격 모션 이벤트
  assert.match(server,/FireAllClients\("MONSTER_ATTACK_EFFECT"/);
  assert.match(client,/snapshot\.Infected==true/);
  for(const ability of ['FALSE_ALARM','BLACKOUT','RUSH','HUNT_FLASH','BREACH'])assert.ok(client.includes('ability=="'+ability+'"'),ability);
- assert.match(client,/local function abilityRing\(/);
- assert.match(client,/local function abilitySparkBurst\(/);
+ assert.match(client,/local combatEffects=\{\}/);
+ assert.match(client,/function combatEffects\.abilityRing\(/);
+ assert.match(client,/function combatEffects\.abilitySparkBurst\(/);
  assert.match(client,/MonsterAbilitySparks/);
  assert.match(client,/InfectedAbilitySparks/);
  assert.match(client,/MonsterAttackSparks/);
  assert.match(client,/HumanAbilitySparks/);
- assert.match(client,/local function playMonsterAttackEffect\(snapshot\)/);
+ assert.match(client,/function combatEffects\.playMonsterAttackEffect\(snapshot\)/);
+ assert.doesNotMatch(client,/local function (?:abilityRing|abilitySparkBurst|playMonsterAttackEffect)\(/);
  assert.match(client,/kind=="MONSTER_ATTACK_EFFECT"/);
 });
 
