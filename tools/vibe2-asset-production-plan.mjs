@@ -11,7 +11,7 @@ import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySema
 import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile,synchronizeAssetCustomization,createAssetDetailReviewPlan,createAssetRuntimeVisualReviewPlan,auditCommonLibrarySystemDepth,createCompanySeedAssetIdeationPlan,buildInternalAssetLibraryAutomationPlan,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT,INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES,INTERNAL_PROGRESSION_COMPLEXITY_PROFILES,resolveInternalAssetStyleExpressionProfile,INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS,STUDIO_3D_ACTOR_ROLE_FAMILIES} from '../assets/vibe-studio-asset-universe.js';
 import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {auditVibeRuntimeVisualEvidence,auditVibeRuntimeBeforeAfterComparison} from '../assets/vibe-visual-quality-gate.js';
-import {VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,createVibeNpcCustomizationPopulation} from '../assets/vibe-character-identity-director.js';
+import {VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,VIBE_NPC_ROLE_PRODUCTION_CONTRACT,createVibeNpcCustomizationPopulation} from '../assets/vibe-character-identity-director.js';
 import {buildRobloxStudioAssetBootstrapPlan} from './company-development-roblox-bootstrap.mjs';
 
 const clean=value=>String(value??'').trim();
@@ -1259,6 +1259,13 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     balanceAuthority:false,
     saveAuthority:false,
     networkAuthority:false
+  };
+
+  next.npcRoleProduction={
+    ...JSON.parse(JSON.stringify(VIBE_NPC_ROLE_PRODUCTION_CONTRACT)),
+    contract:'assets/vibe-character-identity-director.js#VIBE_NPC_ROLE_PRODUCTION_CONTRACT',
+    productionVerified:false,
+    runtimeVerificationRequired:true
   };
 
 
