@@ -175,3 +175,19 @@ test('seed scheduler prioritizes valid resumable checkpoints within the existing
   assert.match(workflow,/designEvolutionDueFor/);
   assert.match(workflow,/PERIODIC_DEEP_HEALTH_REVIEW/);
 });
+
+
+test('initial design authoring keeps expanded context, output budget, grammar, and UI detail',()=>{
+  assert.match(design,/uiInteractionPlan:seedGameplaySketch\?\.uiInteractionPlan/);
+  assert.match(design,/582dffc82fea152c4f7727b3746e071c6a180d2cb0c90806d0caefc464532baa/);
+  assert.match(design,/num_ctx:Math\.min\(24576/);
+  assert.match(design,/predict:8192,temperature:0\.28,numCtx:24576/);
+  assert.match(design,/GAME_SEED_DESIGN_DEPTH=\$\{clip\(seedDesignDepthContext,18000\)\}/);
+  assert.match(design,/EVIDENCE=\$\{clip\(evidence,14000\)\}/);
+  assert.match(design,/MAIN\/A\/B\/c\/@/);
+  assert.match(design,/메뉴와 버튼도 게임 설계다/);
+  assert.match(design,/기본·눌림·비활성·로딩·오류·확인 상태/);
+  assert.match(design,/platformProfiles\.ROBLOX\.uiUx와 UNITY\.uiUx/);
+  assert.match(design,/DESIGN_BASE,\{predict:2600,temperature:0\.3,numCtx:16384/);
+  assert.match(design,/DESIGN_GATE,\{predict:5600,temperature:0\.2,numCtx:24576/);
+});
