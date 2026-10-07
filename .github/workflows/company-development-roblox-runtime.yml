@@ -1055,8 +1055,8 @@ jobs:
 
   technical-plan:
     name: resolve Roblox technical package work
-    needs: source-bootstrap
-    if: always() && needs.source-bootstrap.result == 'success'
+    needs: source-plan
+    if: always() && needs.source-plan.result == 'success'
     runs-on: ubuntu-24.04
     timeout-minutes: 8
     outputs:
