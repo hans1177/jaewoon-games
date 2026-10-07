@@ -545,6 +545,8 @@ export function extractDesignContext(record={}){
     contentExpansionPlan:(Array.isArray(d?.contentExpansionPlan)?d.contentExpansionPlan:[]).map(row=>({milestone:clean(row?.milestone),newGameplay:clean(row?.newGameplay),systemImpact:clean(row?.systemImpact)})).slice(0,8),
     failureRetryRisk:asObject(d?.failureRetryRisk),
     platformFitPlan:asObject(d?.platformFitPlan),
+    webCanonicalDesign:asObject(d?.webCanonicalDesign),
+    platformExpansionPolicy:asObject(d?.platformExpansionPolicy),
     visualDirection:clean(d?.visualDirection),
     mobileUx:clean(d?.mobileUx),
     uxAccessibilityPlan:asObject(d?.uxAccessibilityPlan),
@@ -603,6 +605,8 @@ function domainState(domain,{design={},source={}}={}){
     failureRetryRisk:design.failureRetryRisk,
     platformFitPlan:design.platformFitPlan,
     platformProfiles:design.platformProfiles,
+    webCanonicalDesign:design.webCanonicalDesign,
+    platformExpansionPolicy:design.platformExpansionPolicy,
     visualDirection:design.visualDirection,
     mobileUx:design.mobileUx,
     uxAccessibilityPlan:design.uxAccessibilityPlan,
@@ -1302,9 +1306,9 @@ function buildAutonomousContentExpansion({
 }
 
 function platformDirectives({identity,goal}){
-  const web=`${identity}: 동일 공통 목표 "${goal}"를 현재 canonical Web 경로에 구현한다. 실제 터치 입력, DOM/Canvas 프레임 변화, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 함께 검수한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.`;
+  const web=`${identity}: WEB 상세 게임 원본과 공통 큰틀을 기준으로 "${goal}"를 구현한다. WEB 자체 시스템·콘텐츠·지역·세션·UI·카메라·연출 확장에는 다른 플랫폼과의 세부 parity 제한을 두지 않는다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.`;
   const roblox=`${identity}: 동일 공통 목표 "${goal}"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.`;
-  const unity=`${identity}: 동일 공통 목표 "${goal}"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 함께 검증한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.`;
+  const unity=`${identity}: WEB 상세 게임 원본에서 공통 큰틀만 이어받아 "${goal}"를 Unity 네이티브 경험으로 재해석한다. Unity 전용 시스템·콘텐츠·지역·물리·카메라·애니메이션·세션 구조·UX·연출 확장에는 인위적 parity 제한을 두지 않는다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.`;
   const fortnite=`${identity}: 동일 공통 목표 "${goal}"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.`;
   return{
     WEB:web,
@@ -1736,6 +1740,8 @@ export function buildGameSpecificBuildUpDirective({
       failureRetryRisk:design.failureRetryRisk,
       platformFitPlan:design.platformFitPlan,
       platformProfiles:design.platformProfiles,
+      webCanonicalDesign:design.webCanonicalDesign,
+      platformExpansionPolicy:design.platformExpansionPolicy,
       visualDirection:design.visualDirection,
       mobileUx:design.mobileUx,
       uxAccessibilityPlan:design.uxAccessibilityPlan,
