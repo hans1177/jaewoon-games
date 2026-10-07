@@ -494,7 +494,7 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
         const preview=recipe?.preview?dccRepoPath(recipe.preview):null;
         if(preview){const file=path.resolve(cwd,preview);if(!fs.existsSync(file)||!fs.statSync(file).isFile()||fs.statSync(file).size<=0)throw new Error('NATIVE_DCC_PREVIEW_MISSING:'+preview);}
         const gltfMasterRequired=recipe?.gltfMasterRequired===true||['CHARACTER','CREATURE'].includes(clean(recipe?.family).toUpperCase())
-          ||(Array.isArray(recipe?.types)&&recipe.types.some(type=>['character','player','npc','enemy','boss','creature'].includes(clean(type).toLowerCase())));
+          ||(Array.isArray(recipe?.types)&&recipe.types.some(type=>['character','player','npc','enemy','boss','creature','monster','animal'].includes(clean(type).toLowerCase())));
         const nativeArtifact=gltfMasterRequired
           ?generated.find(row=>/\.glb$/i.test(row.path))
           :(generated.find(row=>/\.(?:glb|gltf|fbx|blend)$/i.test(row.path))||generated[0]);
