@@ -242,8 +242,9 @@ workspace:SetAttribute("RoomMaxPlayers",(C.Room and C.Room.MaxPlayers)or 8)
 workspace:SetAttribute("RoomStartRequested",false)
 local refreshPhysicalLobby=nil
 local mapById=nil
+local Room={}
 
-local function syncRoomState()
+function Room.syncRoomState()
  local count=#Players:GetPlayers()
  workspace:SetAttribute("RoomServer",roomServer)
  workspace:SetAttribute("RoomCode",roomCode)
@@ -275,7 +276,7 @@ local function syncRoomState()
  if refreshPhysicalLobby then refreshPhysicalLobby()end
 end
 
-local function syncLobbyState(phase)
+function Room.syncLobbyState(phase)
  local real=#Players:GetPlayers()
  local aiFill=math.max(0,(C.TargetPopulation or 8)-real)
  local currentPhase=phase or tostring(workspace:GetAttribute("LobbyPhase")or"WAITING")
@@ -290,39 +291,39 @@ local function syncLobbyState(phase)
   player:SetAttribute("LobbyRealPlayers",real)
   player:SetAttribute("LobbyAIFill",aiFill)
  end
- syncRoomState()
+ Room.syncRoomState()
 end
 
-local function roomFeedback(p,kind,message)
+function Room.roomFeedback(p,kind,message)
  if not p or not p.Parent then return end
  p:SetAttribute("RoomFeedback",tostring(kind or"INFO")..":"..tostring(message or""))
 end
-local function manorFeedback(p,kind,message)
+function Room.manorFeedback(p,kind,message)
  if not p or not p.Parent then return end
  p:SetAttribute("ManorVisitFeedback",tostring(kind or"INFO")..":"..tostring(message or""))
 end
-local function visitingManor(p)
+function Room.visitingManor(p)
  return math.floor(tonumber(p:GetAttribute("VisitedManorOwnerUserId"))or 0)>0
 end
-local function normalizeRoomVisibility(value)
+function Room.normalizeRoomVisibility(value)
  local raw=string.upper(tostring(value or"PUBLIC"))
  for _,allowed in ipairs(C.Room and C.Room.Visibility or{"PUBLIC","FRIENDS","PRIVATE"})do
   if raw==allowed then return raw end
  end
  return"PUBLIC"
 end
-local function roomActionReady(p)
- if visitingManor(p)then manorFeedback(p,"ERROR","내 저택으로 돌아간 뒤 출정할 수 있어");return false end
+function Room.roomActionReady(p)
+ if Room.visitingManor(p)then Room.manorFeedback(p,"ERROR","내 저택으로 돌아간 뒤 출정할 수 있어");return false end
  local now=os.clock()
  local cd=math.max(.5,tonumber(C.Room and C.Room.ActionCooldownSeconds)or 1.5)
  if now-(roomActionLast[p]or 0)<cd then return false end
  roomActionLast[p]=now
  return true
 end
-local function roomDirectoryExpiration()
+function Room.roomDirectoryExpiration()
  return math.max(300,math.floor(tonumber(C.Room and C.Room.DirectoryExpirationSeconds)or 7200))
 end
-local function roomMaxPlayers()
+function Room.roomMaxPlayers()
  return roomSolo and 1 or math.max(1,math.floor(tonumber(C.Room and C.Room.MaxPlayers)or C.TargetPopulation or 8))
 end
 mapById=function(id)
@@ -330,57 +331,57 @@ mapById=function(id)
  for _,map in ipairs(C.Maps or{})do if map.Id==wanted then return map end end
  return(C.Maps and C.Maps[1])or{Id="SCHOOL",Name="학교"}
 end
-local function selectLobbyMap(p,value)
- if state=="RUNNING"or roomServer or visitingManor(p)or typeof(value)~="string"then return nil end
+function Room.selectLobbyMap(p,value)
+ if state=="RUNNING"or roomServer or Room.visitingManor(p)or typeof(value)~="string"then return nil end
  local map=mapById(value)
  p:SetAttribute("SelectedLobbyMap",map.Id)
  p:SetAttribute("SelectedLobbyMapName",map.Name)
  return map
 end
-local function setRoomDirectoryEntry(code,data)
+function Room.setRoomDirectoryEntry(code,data)
  if not roomDirectory or code==""or typeof(data)~="table"then return false end
- local ok=pcall(function()roomDirectory:SetAsync(code,data,roomDirectoryExpiration(),os.time())end)
+ local ok=pcall(function()roomDirectory:SetAsync(code,data,Room.roomDirectoryExpiration(),os.time())end)
  return ok
 end
-local function getRoomDirectoryEntry(code)
+function Room.getRoomDirectoryEntry(code)
  if not roomDirectory then return nil end
  local ok,data=pcall(function()return roomDirectory:GetAsync(code)end)
  if not ok or typeof(data)~="table"then return nil end
  return data
 end
-local function removeRoomDirectoryEntry(code)
+function Room.removeRoomDirectoryEntry(code)
  if not roomDirectory or code==""then return end
  pcall(function()roomDirectory:RemoveAsync(code)end)
 end
-local function updateCurrentRoomDirectory()
+function Room.updateCurrentRoomDirectory()
  if not roomServer or roomCode==""then return end
- local existing=getRoomDirectoryEntry(roomCode)
+ local existing=Room.getRoomDirectoryEntry(roomCode)
  if not existing then return end
  existing.hostUserId=roomHostUserId
  existing.hostName=roomHostName
  existing.visibility=roomVisibility
  existing.memberCount=#Players:GetPlayers()
- existing.maxPlayers=roomMaxPlayers()
+ existing.maxPlayers=Room.roomMaxPlayers()
  existing.updatedAt=os.time()
  existing.state=state=="RUNNING"and"RUNNING"or state=="RESULT"and"RESULT"or"WAITING"
  local selectedMap=mapById(roomSelectedMapId)
  existing.mapId=selectedMap.Id;existing.mapName=selectedMap.Name
- setRoomDirectoryEntry(roomCode,existing)
+ Room.setRoomDirectoryEntry(roomCode,existing)
 end
-local function createUniqueRoomCode()
+function Room.createUniqueRoomCode()
  local length=math.clamp(math.floor(tonumber(C.Room and C.Room.CodeLength)or 6),4,8)
  local low=10^(length-1);local high=10^length-1
  for _=1,12 do
   local code=tostring(math.random(low,high))
-  if not getRoomDirectoryEntry(code)then return code end
+  if not Room.getRoomDirectoryEntry(code)then return code end
  end
  return nil
 end
-local function teleportToReservedRoom(p,record)
+function Room.teleportToReservedRoom(p,record)
  if not p or not p.Parent or typeof(record)~="table"or typeof(record.accessCode)~="string"or record.accessCode==""then return false end
  if roomTeleportPending[p]then return true end
  roomTeleportPending[p]=true
- roomFeedback(p,"CONNECTING",record.code or"")
+ Room.roomFeedback(p,"CONNECTING",record.code or"")
  local options=Instance.new("TeleportOptions")
  options.ReservedServerAccessCode=record.accessCode
  options:SetTeleportData({
@@ -398,22 +399,22 @@ local function teleportToReservedRoom(p,record)
  local ok,err=pcall(function()TeleportService:TeleportAsync(game.PlaceId,{p},options)end)
  if not ok then
   roomTeleportPending[p]=nil
-  roomFeedback(p,"ERROR","방 연결 실패 · 다시 시도")
+  Room.roomFeedback(p,"ERROR","방 연결 실패 · 다시 시도")
   warn("Room teleport failed",err)
   return false
  end
- roomFeedback(p,"TELEPORTING",record.code or"")
+ Room.roomFeedback(p,"TELEPORTING",record.code or"")
  task.delay(10,function()if p.Parent==Players then roomTeleportPending[p]=nil end end)
  return true
 end
-local function teleportPlayersToReservedRoom(players,record)
+function Room.teleportPlayersToReservedRoom(players,record)
  if typeof(players)~="table"or #players==0 or typeof(record)~="table"or typeof(record.accessCode)~="string"or record.accessCode==""then return false end
  local valid={}
  for _,p in ipairs(players)do
   if p and p.Parent==Players and not roomTeleportPending[p]then table.insert(valid,p)end
  end
  if #valid==0 then return false end
- for _,p in ipairs(valid)do roomTeleportPending[p]=true;roomFeedback(p,"CONNECTING",record.code or"")end
+ for _,p in ipairs(valid)do roomTeleportPending[p]=true;Room.roomFeedback(p,"CONNECTING",record.code or"")end
  local options=Instance.new("TeleportOptions")
  options.ReservedServerAccessCode=record.accessCode
  options:SetTeleportData({
@@ -431,89 +432,89 @@ local function teleportPlayersToReservedRoom(players,record)
  if not ok then
   for _,p in ipairs(valid)do
    roomTeleportPending[p]=nil
-   roomFeedback(p,"ERROR","방 연결 실패 · 집사에게 다시 시도")
+   Room.roomFeedback(p,"ERROR","방 연결 실패 · 집사에게 다시 시도")
   end
   warn("Room group teleport failed",err)
   return false
  end
  for _,p in ipairs(valid)do
-  roomFeedback(p,"TELEPORTING",record.code or"")
+  Room.roomFeedback(p,"TELEPORTING",record.code or"")
   task.delay(10,function()if p.Parent==Players then roomTeleportPending[p]=nil end end)
  end
  return true
 end
 
-local function createQueuedReservedRoom(players,selectedMapId)
+function Room.createQueuedReservedRoom(players,selectedMapId)
  if typeof(players)~="table"or #players==0 then return false end
  local selectedMap=mapById(selectedMapId)
  if studioRoomFallback then
   local host=players[1]
   roomServer=true;roomCode="000001";roomHostUserId=host.UserId;roomHostName=host.DisplayName;roomVisibility="PUBLIC";roomSelectedMapId=selectedMap.Id;roomStartRequested=true
-  for _,p in ipairs(players)do roomJoinedAt[p]=os.clock();p:SetAttribute("LobbySelectionConfirmed",true);roomFeedback(p,"CREATED",roomCode)end
+  for _,p in ipairs(players)do roomJoinedAt[p]=os.clock();p:SetAttribute("LobbySelectionConfirmed",true);Room.roomFeedback(p,"CREATED",roomCode)end
   workspace:SetAttribute("StudioRoomFallback",true)
-  syncRoomState();syncLobbyState("INTERMISSION")
+  Room.syncRoomState();Room.syncLobbyState("INTERMISSION")
   return true
  end
- local code=createUniqueRoomCode()
- if not code then for _,p in ipairs(players)do roomFeedback(p,"ERROR","방 코드 생성 실패")end;return false end
+ local code=Room.createUniqueRoomCode()
+ if not code then for _,p in ipairs(players)do Room.roomFeedback(p,"ERROR","방 코드 생성 실패")end;return false end
  local ok,accessCode=pcall(function()return TeleportService:ReserveServerAsync(game.PlaceId)end)
- if not ok or typeof(accessCode)~="string"or accessCode==""then for _,p in ipairs(players)do roomFeedback(p,"ERROR","예약 서버 생성 실패")end;return false end
+ if not ok or typeof(accessCode)~="string"or accessCode==""then for _,p in ipairs(players)do Room.roomFeedback(p,"ERROR","예약 서버 생성 실패")end;return false end
  local host=players[1]
  local record={
   code=code,accessCode=accessCode,hostUserId=host.UserId,hostName=host.DisplayName,
-  visibility="PUBLIC",memberCount=#players,maxPlayers=roomMaxPlayers(),mapId=selectedMap.Id,mapName=selectedMap.Name,
+  visibility="PUBLIC",memberCount=#players,maxPlayers=Room.roomMaxPlayers(),mapId=selectedMap.Id,mapName=selectedMap.Name,
   createdAt=os.time(),updatedAt=os.time(),state="WAITING",placeId=game.PlaceId,
  }
- if not setRoomDirectoryEntry(code,record)then for _,p in ipairs(players)do roomFeedback(p,"ERROR","방 등록 실패")end;return false end
- if not teleportPlayersToReservedRoom(players,record)then removeRoomDirectoryEntry(code);return false end
+ if not Room.setRoomDirectoryEntry(code,record)then for _,p in ipairs(players)do Room.roomFeedback(p,"ERROR","방 등록 실패")end;return false end
+ if not Room.teleportPlayersToReservedRoom(players,record)then Room.removeRoomDirectoryEntry(code);return false end
  return true
 end
-local function startLocalSoloRoom(p)
- if roomServer or state=="RUNNING"or not roomActionReady(p)then return false end
+function Room.startLocalSoloRoom(p)
+ if roomServer or state=="RUNNING"or not Room.roomActionReady(p)then return false end
  local selectedMap=mapById(p:GetAttribute("SelectedLobbyMap")or"SCHOOL")
  localSoloSession=true;roomSolo=true;roomServer=true;roomCode="SOLO"
  roomHostUserId=p.UserId;roomHostName=p.DisplayName;roomVisibility="PRIVATE";roomSelectedMapId=selectedMap.Id
  roomExpectedCount=1;roomFirstJoinAt=os.clock();roomStartRequested=true;roomJoinedAt[p]=os.clock()
  p:SetAttribute("LobbySelectionConfirmed",true)
  workspace:SetAttribute("RoomStartRequested",true)
- roomFeedback(p,"START",selectedMap.Name.." · 같은 서버에서 바로 출정")
- syncRoomState();syncLobbyState("INTERMISSION")
+ Room.roomFeedback(p,"START",selectedMap.Name.." · 같은 서버에서 바로 출정")
+ Room.syncRoomState();Room.syncLobbyState("INTERMISSION")
  return true
 end
 
-local function createReservedRoom(p,visibility,solo)
- if roomServer or state=="RUNNING"or not roomActionReady(p)then return end
+function Room.createReservedRoom(p,visibility,solo)
+ if roomServer or state=="RUNNING"or not Room.roomActionReady(p)then return end
  local selectedMap=mapById(p:GetAttribute("SelectedLobbyMap")or"SCHOOL")
  if studioRoomFallback then
   roomSolo=solo==true
-  roomServer=true;roomCode="000001";roomHostUserId=p.UserId;roomHostName=p.DisplayName;roomVisibility=normalizeRoomVisibility(visibility);roomSelectedMapId=selectedMap.Id;roomStartRequested=roomSolo or roomVisibility=="PUBLIC"
+  roomServer=true;roomCode="000001";roomHostUserId=p.UserId;roomHostName=p.DisplayName;roomVisibility=Room.normalizeRoomVisibility(visibility);roomSelectedMapId=selectedMap.Id;roomStartRequested=roomSolo or roomVisibility=="PUBLIC"
   roomJoinedAt[p]=os.clock()
   workspace:SetAttribute("StudioRoomFallback",true)
-  p:SetAttribute("LobbySelectionConfirmed",true);roomFeedback(p,"CREATED",roomCode);syncRoomState();syncLobbyState(roomStartRequested and"INTERMISSION"or"ROOM_WAITING")
+  p:SetAttribute("LobbySelectionConfirmed",true);Room.roomFeedback(p,"CREATED",roomCode);Room.syncRoomState();Room.syncLobbyState(roomStartRequested and"INTERMISSION"or"ROOM_WAITING")
   return
  end
- local code=createUniqueRoomCode()
- if not code then roomFeedback(p,"ERROR","방 코드 생성 실패");return end
+ local code=Room.createUniqueRoomCode()
+ if not code then Room.roomFeedback(p,"ERROR","방 코드 생성 실패");return end
  local ok,accessCode=pcall(function()
   local reservedCode=TeleportService:ReserveServerAsync(game.PlaceId)
   return reservedCode
  end)
- if not ok or typeof(accessCode)~="string"or accessCode==""then roomFeedback(p,"ERROR","예약 서버 생성 실패");return end
+ if not ok or typeof(accessCode)~="string"or accessCode==""then Room.roomFeedback(p,"ERROR","예약 서버 생성 실패");return end
  local record={
   code=code,accessCode=accessCode,hostUserId=p.UserId,hostName=p.DisplayName,
-  visibility=normalizeRoomVisibility(visibility),memberCount=0,maxPlayers=solo and 1 or roomMaxPlayers(),soloSession=solo==true,mapId=selectedMap.Id,mapName=selectedMap.Name,
+  visibility=Room.normalizeRoomVisibility(visibility),memberCount=0,maxPlayers=solo and 1 or Room.roomMaxPlayers(),soloSession=solo==true,mapId=selectedMap.Id,mapName=selectedMap.Name,
   createdAt=os.time(),updatedAt=os.time(),state="WAITING",placeId=game.PlaceId,
  }
- if not setRoomDirectoryEntry(code,record)then roomFeedback(p,"ERROR","방 등록 실패");return end
- if not teleportToReservedRoom(p,record)then removeRoomDirectoryEntry(code)end
+ if not Room.setRoomDirectoryEntry(code,record)then Room.roomFeedback(p,"ERROR","방 등록 실패");return end
+ if not Room.teleportToReservedRoom(p,record)then Room.removeRoomDirectoryEntry(code)end
 end
-local function canJoinRoom(p,record,explicitCode)
+function Room.canJoinRoom(p,record,explicitCode)
  if typeof(record)~="table"then return false,"방을 찾을 수 없음"end
  if tonumber(record.placeId)~=game.PlaceId then return false,"다른 장소의 방"end
  if tostring(record.state or"WAITING")~="WAITING"then return false,"이미 게임 진행 중"end
- if (tonumber(record.memberCount)or 0)>=(tonumber(record.maxPlayers)or roomMaxPlayers())then return false,"방이 가득 참"end
+ if (tonumber(record.memberCount)or 0)>=(tonumber(record.maxPlayers)or Room.roomMaxPlayers())then return false,"방이 가득 참"end
  if record.soloSession==true and p.UserId~=tonumber(record.hostUserId)then return false,"1인 플레이 진행 중"end
- local visibility=normalizeRoomVisibility(record.visibility)
+ local visibility=Room.normalizeRoomVisibility(record.visibility)
  if visibility=="PRIVATE"and explicitCode~=true then return false,"비공개 방"end
  if visibility=="FRIENDS"and p.UserId~=tonumber(record.hostUserId)then
   local ok,isFriend=pcall(function()return p:IsFriendsWithAsync(tonumber(record.hostUserId)or 0)end)
@@ -521,35 +522,35 @@ local function canJoinRoom(p,record,explicitCode)
  end
  return true,nil
 end
-local function joinRoomByCode(p,rawCode)
- if roomServer or state=="RUNNING"or not roomActionReady(p)then return end
+function Room.joinRoomByCode(p,rawCode)
+ if roomServer or state=="RUNNING"or not Room.roomActionReady(p)then return end
  local code=tostring(rawCode or""):gsub("%s+","")
- if not code:match("^%d+$")or #code~=math.clamp(math.floor(tonumber(C.Room and C.Room.CodeLength)or 6),4,8)then roomFeedback(p,"ERROR","방 코드 확인");return end
- local record=getRoomDirectoryEntry(code)
- local allowed,reason=canJoinRoom(p,record,true)
- if not allowed then roomFeedback(p,"ERROR",reason);return end
- teleportToReservedRoom(p,record)
+ if not code:match("^%d+$")or #code~=math.clamp(math.floor(tonumber(C.Room and C.Room.CodeLength)or 6),4,8)then Room.roomFeedback(p,"ERROR","방 코드 확인");return end
+ local record=Room.getRoomDirectoryEntry(code)
+ local allowed,reason=Room.canJoinRoom(p,record,true)
+ if not allowed then Room.roomFeedback(p,"ERROR",reason);return end
+ Room.teleportToReservedRoom(p,record)
 end
-local function quickJoinRoom(p,friendsOnly)
- if roomServer or state=="RUNNING"or not roomActionReady(p)then return end
- if not roomDirectory then roomActionLast[p]=nil;createReservedRoom(p,"PUBLIC");return end
+function Room.quickJoinRoom(p,friendsOnly)
+ if roomServer or state=="RUNNING"or not Room.roomActionReady(p)then return end
+ if not roomDirectory then roomActionLast[p]=nil;Room.createReservedRoom(p,"PUBLIC");return end
  local ok,rows=pcall(function()return roomDirectory:GetRangeAsync(Enum.SortDirection.Descending,30)end)
- if not ok or typeof(rows)~="table"then roomFeedback(p,"ERROR","방 목록 조회 실패");return end
+ if not ok or typeof(rows)~="table"then Room.roomFeedback(p,"ERROR","방 목록 조회 실패");return end
  for _,row in ipairs(rows)do
   local record=typeof(row)=="table"and row.value or nil
   if typeof(record)=="table"then
-   local visibility=normalizeRoomVisibility(record.visibility)
+   local visibility=Room.normalizeRoomVisibility(record.visibility)
    local candidate=(friendsOnly and visibility=="FRIENDS")or(not friendsOnly and visibility=="PUBLIC")
    if candidate then
-    local allowed=canJoinRoom(p,record,false)
-    if allowed and teleportToReservedRoom(p,record)then return end
+    local allowed=Room.canJoinRoom(p,record,false)
+    if allowed and Room.teleportToReservedRoom(p,record)then return end
    end
   end
  end
- if not friendsOnly then roomActionLast[p]=nil;createReservedRoom(p,"PUBLIC");return end
- roomFeedback(p,"EMPTY","참가 가능한 친구 방 없음")
+ if not friendsOnly then roomActionLast[p]=nil;Room.createReservedRoom(p,"PUBLIC");return end
+ Room.roomFeedback(p,"EMPTY","참가 가능한 친구 방 없음")
 end
-local function adoptReservedRoomFromPlayer(p)
+function Room.adoptReservedRoomFromPlayer(p)
  if not roomServer then return end
  local ok,joinData=pcall(function()return p:GetJoinData()end)
  local teleportData=ok and typeof(joinData)=="table"and joinData.TeleportData or nil
@@ -561,10 +562,10 @@ local function adoptReservedRoomFromPlayer(p)
    roomVisibility="PRIVATE"
    roomExpectedCount=1
    roomFirstJoinAt=os.clock()
-   roomFeedback(p,"CONNECTED","예약 방 연결 복구")
+   Room.roomFeedback(p,"CONNECTED","예약 방 연결 복구")
   end
   roomJoinedAt[p]=os.clock()
-  syncRoomState();syncLobbyState("ROOM_WAITING")
+  Room.syncRoomState();Room.syncLobbyState("ROOM_WAITING")
   return
  end
  local incomingCode=tostring(teleportData.roomCode or"")
@@ -575,44 +576,44 @@ local function adoptReservedRoomFromPlayer(p)
   roomCode=incomingCode
   roomHostUserId=tonumber(teleportData.roomHostUserId)or p.UserId
   roomHostName=tostring(teleportData.roomHostName or p.DisplayName)
-  roomVisibility=normalizeRoomVisibility(teleportData.roomVisibility)
+  roomVisibility=Room.normalizeRoomVisibility(teleportData.roomVisibility)
   roomSolo=teleportData.soloSession==true
   if teleportData.rolePreference=="MONSTER"or teleportData.rolePreference=="SURVIVOR"then p:SetAttribute("MonsterPreference",teleportData.rolePreference)end
   roomSelectedMapId=mapById(teleportData.selectedMapId).Id
-  roomExpectedCount=math.clamp(math.floor(tonumber(teleportData.expectedMemberCount)or 1),1,roomMaxPlayers())
+  roomExpectedCount=math.clamp(math.floor(tonumber(teleportData.expectedMemberCount)or 1),1,Room.roomMaxPlayers())
   roomFirstJoinAt=os.clock()
  elseif roomCode~=incomingCode then
   warn("Room code mismatch recovered",roomCode,incomingCode,p.UserId)
-  roomFeedback(p,"SYNC","기존 방에 안전하게 연결됨")
+  Room.roomFeedback(p,"SYNC","기존 방에 안전하게 연결됨")
  end
  roomJoinedAt[p]=os.clock()
  p:SetAttribute("LobbySelectionConfirmed",true)
- roomFeedback(p,"CONNECTED",roomCode)
- syncRoomState()
- syncLobbyState("ROOM_WAITING")
- task.defer(updateCurrentRoomDirectory)
+ Room.roomFeedback(p,"CONNECTED",roomCode)
+ Room.syncRoomState()
+ Room.syncLobbyState("ROOM_WAITING")
+ task.defer(Room.updateCurrentRoomDirectory)
 end
-local function startRoomMatch(p)
+function Room.startRoomMatch(p)
  if not roomServer or state~="WAITING"or p.UserId~=roomHostUserId then return end
- if #Players:GetPlayers()<math.max(1,tonumber(C.MinimumParticipants)or 1)then roomFeedback(p,"ERROR","참가 인원 부족");return end
+ if #Players:GetPlayers()<math.max(1,tonumber(C.MinimumParticipants)or 1)then Room.roomFeedback(p,"ERROR","참가 인원 부족");return end
  roomStartRequested=true
  workspace:SetAttribute("RoomStartRequested",true)
- roomFeedback(p,"START","게임 시작")
- syncRoomState()
+ Room.roomFeedback(p,"START","게임 시작")
+ Room.syncRoomState()
 end
-local function leaveReservedRoom(p)
- if not roomServer or state~="WAITING"or not roomActionReady(p)then return end
+function Room.leaveReservedRoom(p)
+ if not roomServer or state~="WAITING"or not Room.roomActionReady(p)then return end
  if studioRoomFallback then
   roomServer=false;roomCode="";roomHostUserId=0;roomHostName="";roomVisibility="PUBLIC";roomStartRequested=false
   workspace:SetAttribute("StudioRoomFallback",false)
-  for _,player in ipairs(Players:GetPlayers())do player:SetAttribute("RoundState","ROOM_BROWSER");roomFeedback(player,"LEFT","로비로 이동")end
-  syncLobbyState("ROOM_BROWSER")
+  for _,player in ipairs(Players:GetPlayers())do player:SetAttribute("RoundState","ROOM_BROWSER");Room.roomFeedback(player,"LEFT","로비로 이동")end
+  Room.syncLobbyState("ROOM_BROWSER")
   return
  end
- roomFeedback(p,"TELEPORTING","로비로 이동")
+ Room.roomFeedback(p,"TELEPORTING","로비로 이동")
  local ok,err=pcall(function()TeleportService:TeleportAsync(game.PlaceId,{p})end)
  if not ok then
-  roomFeedback(p,"ERROR","저택 복귀 실패 · 다시 시도해줘")
+  Room.roomFeedback(p,"ERROR","저택 복귀 실패 · 다시 시도해줘")
   warn("Room return teleport failed",err)
  end
 end
@@ -626,7 +627,7 @@ local monsterSpawns={
  Vector3.new(-12,3,-54),Vector3.new(-4,3,-54),Vector3.new(4,3,-54),
  Vector3.new(12,3,-54),Vector3.new(-8,3,-42),Vector3.new(8,3,-42)
 }
-local function shuffledSpawns(source)
+function Room.shuffledSpawns(source)
  local shuffled=table.clone(source)
  for i=#shuffled,2,-1 do
   local j=math.random(1,i)
@@ -634,17 +635,18 @@ local function shuffledSpawns(source)
  end
  return shuffled
 end
-local function personalSpawn(p)
+function Room.personalSpawn(p)
  if manorLobby then return manorLobby:GetSpawn(p)end
  return Vector3.new(0,3,330),Vector3.new(0,5,268),lobbyBootstrapSpawn
 end
+local Runtime={}
 local assetCache={}
 local objectiveState={round=0,done=0,total=0}
 local escapedPlayers={}
 
 local function root(p)local c=p.Character;return c and c:FindFirstChild("HumanoidRootPart")end
 local function hum(p)local c=p.Character;return c and c:FindFirstChildOfClass("Humanoid")end
-local function loadFoundationState()
+function Runtime.loadFoundationState()
  if not foundationStore then return end
  local ok,old=pcall(function()return foundationStore:GetAsync("latest")end)
  if not ok or typeof(old)~="table"then return end
@@ -656,7 +658,7 @@ local function loadFoundationState()
  end
  foundationSequence=math.max(foundationSequence,math.floor(tonumber(old.sequence)or 0))
 end
-local function foundationCheckpoint(name,p,extra)
+function Runtime.foundationCheckpoint(name,p,extra)
  if foundationSeen[name]then return true end
  if not foundationStore then
   foundationSeen[name]=true
@@ -696,11 +698,11 @@ local function foundationCheckpoint(name,p,extra)
 end
 -- 검증 기록 저장은 화면·월드 생성의 선행 조건이 아니다.
 task.spawn(function()
- loadFoundationState()
- foundationCheckpoint("SERVER_BOOT",nil,{placeVersion=game.PlaceVersion})
- foundationCheckpoint("MODULE_GRAPH_READY",nil,{modulesReady=true})
+ Runtime.loadFoundationState()
+ Runtime.foundationCheckpoint("SERVER_BOOT",nil,{placeVersion=game.PlaceVersion})
+ Runtime.foundationCheckpoint("MODULE_GRAPH_READY",nil,{modulesReady=true})
 end)
-local function restoreMovement(p,v)
+function Runtime.restoreMovement(p,v)
  local h=hum(p);local r=root(p)
  if r then r.Anchored=false end
  if h then
@@ -708,7 +710,7 @@ local function restoreMovement(p,v)
   h.JumpPower=50;h.JumpHeight=7.2
  end
 end
-local function speed(p,v)restoreMovement(p,v)end
+local function speed(p,v)Runtime.restoreMovement(p,v)end
 local legacyMonsterIds={DRAK="DRACULA",FRANKEN="FRANKENSTEIN",WOLF="WEREWOLF",MIRAA="MUMMY",REAPER="GRIM_REAPER"}
 local function form(p)
  local id=p:GetAttribute("MonsterForm")or"DRACULA"
@@ -716,29 +718,29 @@ local function form(p)
  for _,f in ipairs(C.MonsterForms)do if f.Id==id then return f end end
  return C.MonsterForms[1]
 end
-local function humanForm(p)
+function Runtime.humanForm(p)
  local id=p:GetAttribute("HumanForm")or"BROADCAST"
  for _,f in ipairs(C.HumanForms or{})do if f.Id==id then return f end end
  return(C.HumanForms and C.HumanForms[1])or{Id="BROADCAST",Name="방송부"}
 end
-local function energyMax()return math.max(1,tonumber(C.Energy and C.Energy.Max)or 100)end
-local function energyOf(p)return math.clamp(tonumber(p:GetAttribute("Energy"))or 0,0,energyMax())end
-local function setEnergy(p,value)
- local v=math.clamp(tonumber(value)or 0,0,energyMax())
- p:SetAttribute("Energy",v);p:SetAttribute("EnergyMax",energyMax())
+function Runtime.energyMax()return math.max(1,tonumber(C.Energy and C.Energy.Max)or 100)end
+function Runtime.energyOf(p)return math.clamp(tonumber(p:GetAttribute("Energy"))or 0,0,Runtime.energyMax())end
+function Runtime.setEnergy(p,value)
+ local v=math.clamp(tonumber(value)or 0,0,Runtime.energyMax())
+ p:SetAttribute("Energy",v);p:SetAttribute("EnergyMax",Runtime.energyMax())
  return v
 end
-local function spendEnergy(p,cost,actionName)
+function Runtime.spendEnergy(p,cost,actionName)
  cost=math.max(0,tonumber(cost)or 0)
- local current=energyOf(p)
+ local current=Runtime.energyOf(p)
  if current+1e-4<cost then
   p:SetAttribute("EnergyFeedback","NO_ENERGY:"..tostring(actionName or"ACTION")..":"..tostring(math.ceil(cost-current)))
   return false
  end
- setEnergy(p,current-cost)
+ Runtime.setEnergy(p,current-cost)
  return true
 end
-local function pressurePassiveFor(role,humans,monsters)
+function Runtime.pressurePassiveFor(role,humans,monsters)
  local own=role=="SURVIVOR"and humans or role=="MONSTER"and monsters or 0
  local other=role=="SURVIVOR"and monsters or role=="MONSTER"and humans or 0
  for _,row in ipairs(C.Energy and C.Energy.PressurePassives or{})do
@@ -857,7 +859,7 @@ local function load(p)
  p:SetAttribute("LastRoundBaseReward",0);p:SetAttribute("LastRoundWinBonus",0);p:SetAttribute("LastRoundContribution",0);p:SetAttribute("RoundContributionCoins",0)
  p:SetAttribute("PurifyReadyAt",0);p:SetAttribute("DashReadyAt",0);p:SetAttribute("HumanAbilityReadyAt",0);p:SetAttribute("InfectReadyAt",0);p:SetAttribute("AbilityReadyAt",0);p:SetAttribute("Spectating",false)
  p:SetAttribute("FalseAlarmUntil",0);p:SetAttribute("BlackoutUntil",0);p:SetAttribute("HuntFlashUntil",0);p:SetAttribute("AbilityFeedback","");p:SetAttribute("HumanAbilityFeedback","");p:SetAttribute("RageUntil",0)
- p:SetAttribute("Energy",energyMax());p:SetAttribute("EnergyMax",energyMax());p:SetAttribute("EnergyFeedback","");p:SetAttribute("PressurePassive","")
+ p:SetAttribute("Energy",Runtime.energyMax());p:SetAttribute("EnergyMax",Runtime.energyMax());p:SetAttribute("EnergyFeedback","");p:SetAttribute("PressurePassive","")
  p:SetAttribute("MapContentFeedback","")
  p:SetAttribute("CelebrationName","");p:SetAttribute("CelebrationCaption","");p:SetAttribute("CelebrationWinner",false);p:SetAttribute("CelebrationComic",false)
  p:SetAttribute("RoundParticipant",false);p:SetAttribute("RoundTeam","")
@@ -993,7 +995,7 @@ end
 
 -- New native GLB scene with one spatial instance per player.
 makePhysicalLobby=function()
- local ok,value=pcall(ManorLobby.new,remote,selectLobbyMap)
+ local ok,value=pcall(ManorLobby.new,remote,Room.selectLobbyMap)
  if not ok then
   workspace:SetAttribute("LobbyLoadError","저택을 불러오지 못했어. 잠시 후 다시 접속해줘.")
   error(value)
@@ -1142,16 +1144,16 @@ local function addObjectiveStation(f,name,pos,index)
   local ready=energyStationReady[p]or{};energyStationReady[p]=ready
   local availableAt=tonumber(ready[index])or 0
   if now<availableAt then p:SetAttribute("EnergyFeedback","STATION_COOLDOWN:"..tostring(math.ceil(availableAt-now)));return end
-  local current=energyOf(p);local max=energyMax()
+  local current=Runtime.energyOf(p);local max=Runtime.energyMax()
   if current>=max-.01 then p:SetAttribute("EnergyFeedback","ENERGY_FULL");return end
   local recharge=math.max(0,tonumber(C.Energy and C.Energy.StationRecharge)or 35)
   local humans=tonumber(workspace:GetAttribute("HumanCount"))or 0
   local monsters=tonumber(workspace:GetAttribute("MonsterCount"))or 0
-  local pressure=pressurePassiveFor(role,humans,monsters)
+  local pressure=Runtime.pressurePassiveFor(role,humans,monsters)
   recharge+=math.max(0,tonumber(pressure and pressure.StationBonus)or 0)
   local stationCooldown=math.max(1,tonumber(C.Energy and C.Energy.StationCooldown)or 25)
   ready[index]=now+stationCooldown
-  setEnergy(p,current+recharge)
+  Runtime.setEnergy(p,current+recharge)
   p:SetAttribute("EnergyFeedback","STATION_RECHARGE:"..tostring(math.floor(recharge)))
   if tonumber(base:GetAttribute("ObjectiveRound"))~=objectiveState.round then screen.Color=Color3.fromRGB(150,226,255)end
   task.delay(.25,function()
@@ -1187,7 +1189,7 @@ local function addMapUtility(f,id,name,pos)
   if now<readyAt then p:SetAttribute("MapContentFeedback","UTILITY_COOLDOWN:"..name..":"..tostring(math.ceil(readyAt-now)));return end
   readyAt=now+math.max(1,tonumber(C.Energy and C.Energy.MapUtilityCooldown)or 35)
   local recharge=math.max(0,tonumber(C.Energy and C.Energy.MapUtilityRecharge)or 20)
-  setEnergy(p,energyOf(p)+recharge)
+  Runtime.setEnergy(p,Runtime.energyOf(p)+recharge)
   p:SetAttribute("MapContentFeedback","UTILITY:"..id..":"..name)
   workspace:SetAttribute("MapUtilityActive",id)
   workspace:SetAttribute("MapUtilityUntil",now+math.max(1,tonumber(C.Energy and C.Energy.MapUtilityDuration)or 8))
@@ -1231,7 +1233,7 @@ local function addEnergyCore(f,mapId,pos)
   local role=p:GetAttribute("Role");if role~="SURVIVOR"and role~="MONSTER"then return end
   open=false;prompt.Enabled=false;core.Color=Color3.fromRGB(52,60,72);light.Brightness=.25
   local recharge=math.max(0,tonumber(C.Energy and C.Energy.CoreRecharge)or 50)
-  setEnergy(p,energyOf(p)+recharge)
+  Runtime.setEnergy(p,Runtime.energyOf(p)+recharge)
   p:SetAttribute("MapContentFeedback","CORE:"..mapId..":"..tostring(math.floor(recharge)))
   workspace:SetAttribute("EnergyCoreState","CLAIMED")
  end)
@@ -1880,8 +1882,8 @@ local function makeArena(map)
  arena=f
  workspace:SetAttribute("MapReady",true)
  workspace:SetAttribute("MapBuilding",false)
- foundationCheckpoint("WORLD_READY",nil,{mapId=map.Id})
- if foundationSpawn and foundationSpawn.Parent then foundationCheckpoint("SPAWN_READY",nil,{spawnY=foundationSpawn.Position.Y})end
+ Runtime.foundationCheckpoint("WORLD_READY",nil,{mapId=map.Id})
+ if foundationSpawn and foundationSpawn.Parent then Runtime.foundationCheckpoint("SPAWN_READY",nil,{spawnY=foundationSpawn.Position.Y})end
  return f
 end
 local function recordServerQA(status)
@@ -1924,8 +1926,8 @@ makeFallbackArena=function(map,reason)
  workspace:SetAttribute("WorldArtPass","MIDNIGHT_FALLBACK_SAFE_V1")
  workspace:SetAttribute("MapBuilding",false)
  workspace:SetAttribute("MapReady",true)
- foundationCheckpoint("WORLD_READY",nil,{mapId=chosen.Id,fallback=true})
- if foundationSpawn and foundationSpawn.Parent then foundationCheckpoint("SPAWN_READY",nil,{spawnY=foundationSpawn.Position.Y,fallback=true})end
+ Runtime.foundationCheckpoint("WORLD_READY",nil,{mapId=chosen.Id,fallback=true})
+ if foundationSpawn and foundationSpawn.Parent then Runtime.foundationCheckpoint("SPAWN_READY",nil,{spawnY=foundationSpawn.Position.Y,fallback=true})end
  arena=f
  recordServerQA("MAP_FALLBACK:"..tostring(reason or"unknown"))
  return f
@@ -2162,7 +2164,7 @@ local function bot(role,pos)
   speed=role=="MONSTER"and 18 or 14,baseSpeed=role=="MONSTER"and 18 or 14,
   monsterId=monsterId,humanFormId=humanFormId,visuals=visuals,
   infectReadyAt=0,purifyReadyAt=0,infectAttackReadyAt=0,abilityReadyAt=0,dashReadyAt=0,
-  energy=energyMax(),motionClock=math.random()*6.28,tacticSlot=botSequence,
+  energy=Runtime.energyMax(),motionClock=math.random()*6.28,tacticSlot=botSequence,
   decisionAt=0,speedResetAt=0,currentTargetKey=nil,targetLockUntil=0,patrolTarget=nil,patrolRefreshAt=0,patrolCycle=0,
   lastSeenTargetKey=nil,lastSeenPos=nil,lastSeenAt=0,lastCalloutTargetKey=nil,calloutAt=0,
  }
@@ -2416,7 +2418,7 @@ local function setRole(p,r)
   p:SetAttribute("RoundTeam",r)
   if p.Character then for _,d in ipairs(p.Character:GetDescendants())do if d:IsA("BasePart")then d.CollisionGroup="Default"end end end
  end
- restoreMovement(p,r=="MONSTER"and 19 or 16);applyRoleVisual(p,r)
+ Runtime.restoreMovement(p,r=="MONSTER"and 19 or 16);applyRoleVisual(p,r)
  if manorLobby then manorLobby:Dress(p)end
  tagGraceUntil[p]=os.clock()+6
 end
@@ -2522,7 +2524,7 @@ local function startRound()
   if i<=C.TargetPopulation then table.insert(h,p)else table.insert(overflow,p)end
  end
  if #overflow>0 and not studioRoomFallback then
-  task.spawn(function()createQueuedReservedRoom(overflow,roomSelectedMapId)end)
+  task.spawn(function()Room.createQueuedReservedRoom(overflow,roomSelectedMapId)end)
  end
  local map=mapById(roomSelectedMapId)
  for i,row in ipairs(C.Maps or{})do if row.Id==map.Id then currentMapIndex=i;break end end
@@ -2532,8 +2534,8 @@ local function startRound()
  local startingMonsters=selectStartingMonsters(h)
  objectiveState.round+=1;objectiveState.done=0;objectiveState.total=C.ObjectiveCount
  escapedPlayers={};workspace:SetAttribute("EscapeUnlocked",false);workspace:SetAttribute("SurvivorEscapeTriggered",false)
- local survivorOrder=shuffledSpawns(survivorSpawns)
- local monsterOrder=shuffledSpawns(monsterSpawns)
+ local survivorOrder=Room.shuffledSpawns(survivorSpawns)
+ local monsterOrder=Room.shuffledSpawns(monsterSpawns)
  -- Roblox 엔진 리스폰은 항상 bootstrap 하나만 사용한다. 실제 경기 위치는 아래 role teleport가 책임진다.
  lobbyBootstrapSpawn.Enabled=true
  workspace:SetAttribute("EngineSpawnPhase","SINGLE_BOOTSTRAP")
@@ -2543,7 +2545,7 @@ local function startRound()
   p:SetAttribute("ObjectivesDone",0);p:SetAttribute("ObjectivesTotal",C.ObjectiveCount);p:SetAttribute("Escaped",false);p:SetAttribute("Infected",false);p:SetAttribute("InfectionReadyAt",0);p:SetAttribute("RoundScore",0)
   p:SetAttribute("PurifyReadyAt",0);p:SetAttribute("DashReadyAt",0);p:SetAttribute("HumanAbilityReadyAt",0);p:SetAttribute("InfectReadyAt",0);p:SetAttribute("AbilityReadyAt",0);p:SetAttribute("Spectating",false)
   p:SetAttribute("FalseAlarmUntil",0);p:SetAttribute("BlackoutUntil",0);p:SetAttribute("HuntFlashUntil",0);p:SetAttribute("AbilityFeedback","");p:SetAttribute("HumanAbilityFeedback","");p:SetAttribute("RageUntil",0)
-  setEnergy(p,energyMax());p:SetAttribute("EnergyFeedback","")
+  Runtime.setEnergy(p,Runtime.energyMax());p:SetAttribute("EnergyFeedback","")
   p:SetAttribute("RoundContributionCoins",0);p:SetAttribute("LastRoundBaseReward",0);p:SetAttribute("LastRoundWinBonus",0);p:SetAttribute("LastRoundContribution",0)
   p:SetAttribute("RoundParticipant",true)
   p.RespawnLocation=lobbyBootstrapSpawn
@@ -2558,7 +2560,7 @@ local function startRound()
  end
  configure(h,survivorOrder,monsterOrder,si,mi)
  local startHumans,startMonsters=teamCounts();pressureLastCounts.SURVIVOR=startHumans;pressureLastCounts.MONSTER=startMonsters
- state="RUNNING";timeLeft=C.RoundSeconds;syncLobbyState("RUNNING");return true
+ state="RUNNING";timeLeft=C.RoundSeconds;Room.syncLobbyState("RUNNING");return true
 end
 local function chooseCelebration(winner)
  local pool=(C.Celebrations and C.Celebrations[winner])or(C.Celebrations and C.Celebrations.DRAW)or{}
@@ -2621,7 +2623,7 @@ local function animateCelebratingBots(winner,duration,entries)
  end)
 end
 local function endRound(winner)
- if state~="RUNNING"then return end;state="RESULT";syncLobbyState("RESULT")
+ if state~="RUNNING"then return end;state="RESULT";Room.syncLobbyState("RESULT")
  local celebration=chooseCelebration(winner)
  local celebrationPlayers={}
  for _,player in ipairs(Players:GetPlayers())do
@@ -2657,7 +2659,7 @@ local function endRound(winner)
   p:SetAttribute("LastRoundBaseReward",baseReward);p:SetAttribute("LastRoundWinBonus",winBonus);p:SetAttribute("LastRoundContribution",contribution)
   p:SetAttribute("PurifyReadyAt",0);p:SetAttribute("DashReadyAt",0);p:SetAttribute("HumanAbilityReadyAt",0);p:SetAttribute("InfectReadyAt",0);p:SetAttribute("AbilityReadyAt",0);p:SetAttribute("Spectating",false)
   p:SetAttribute("FalseAlarmUntil",0);p:SetAttribute("BlackoutUntil",0);p:SetAttribute("HuntFlashUntil",0);p:SetAttribute("AbilityFeedback","");p:SetAttribute("HumanAbilityFeedback","");p:SetAttribute("RageUntil",0)
-  setEnergy(p,energyMax());p:SetAttribute("EnergyFeedback","")
+  Runtime.setEnergy(p,Runtime.energyMax());p:SetAttribute("EnergyFeedback","")
   p:SetAttribute("CelebrationName",celebration.Name or"팀 세레머니");p:SetAttribute("CelebrationCaption",celebration.Caption or"")
   local celebrate=participated and(winner=="DRAW"or win)
   p:SetAttribute("CelebrationWinner",winner~="DRAW"and win);p:SetAttribute("CelebrationComic",false)
@@ -2687,15 +2689,15 @@ local function endRound(winner)
   p:SetAttribute("RoundState","ROOM_BROWSER")
   p:SetAttribute("Role","WAITING");applyRoleVisual(p,"WAITING")
   if manorLobby then manorLobby:Dress(p)end
-  teleport(p,personalSpawn(p))
+  teleport(p,Room.personalSpawn(p))
  end
  if wasRoomServer and completedRoomCode~=""and completedRoomCode~="SOLO"and not studioRoomFallback then
-  removeRoomDirectoryEntry(completedRoomCode)
+  Room.removeRoomDirectoryEntry(completedRoomCode)
  end
  localSoloSession=false;roomServer=false;roomCode="";roomHostUserId=0;roomHostName="";roomVisibility="PUBLIC"
  roomSolo=false;roomStartRequested=false;roomExpectedCount=1;roomFirstJoinAt=0
  workspace:SetAttribute("RoomStartRequested",false)
- syncRoomState();syncLobbyState("ROOM_BROWSER")
+ Room.syncRoomState();Room.syncLobbyState("ROOM_BROWSER")
  if refreshPhysicalLobby then refreshPhysicalLobby()end
 end
 local purifyCooldown={}
@@ -2716,7 +2718,7 @@ local function eliminateMonsterPlayer(target)
 end
 local function purify(p)
  if state~="RUNNING"or p:GetAttribute("Role")~="SURVIVOR"then return end
- local hf=humanForm(p);local now=os.clock();local cd=math.max(2,(C.PurifyCooldown or 5)+(hf.PurifyCooldownBonus or 0))
+ local hf=Runtime.humanForm(p);local now=os.clock();local cd=math.max(2,(C.PurifyCooldown or 5)+(hf.PurifyCooldownBonus or 0))
  local lastPurify=purifyCooldown[p]
  if lastPurify and now-lastPurify<cd then return end
  local r=root(p);if not r then return end
@@ -2724,7 +2726,7 @@ local function purify(p)
  for _,other in ipairs(Players:GetPlayers())do if other:GetAttribute("Role")=="MONSTER"then local q=root(other);if q then local d=(q.Position-r.Position).Magnitude;if d<=best then best=d;targetPlayer=other;targetBot=nil end end end end
  for _,b in ipairs(bots)do if b.role=="MONSTER"then local d=(b.part.Position-r.Position).Magnitude;if d<=best then best=d;targetBot=b;targetPlayer=nil end end end
  if not targetPlayer and not targetBot then p:SetAttribute("EnergyFeedback","NO_TARGET:PURIFY");return end
- if not spendEnergy(p,C.Energy and C.Energy.PurifyCost or 35,"PURIFY")then return end
+ if not Runtime.spendEnergy(p,C.Energy and C.Energy.PurifyCost or 35,"PURIFY")then return end
  purifyCooldown[p]=now;p:SetAttribute("PurifyReadyAt",workspace:GetServerTimeNow()+cd)
  if targetPlayer then
   if eliminateMonsterPlayer(targetPlayer)then awardContribution(p,(C.Reward and C.Reward.PurifyPlayerCoins)or 4);p:SetAttribute("FeedbackEvent","PURIFY_HIT:"..tostring(math.floor(os.clock()*1000)))end
@@ -2771,7 +2773,7 @@ end
 
 local function humanAbility(p)
  if state~="RUNNING"or p:GetAttribute("Role")~="SURVIVOR"then return end
- local formInfo=humanForm(p)
+ local formInfo=Runtime.humanForm(p)
  local abilityId,profile=humanAbilityProfile(formInfo)
  if not abilityId or not profile then return end
  local rr=root(p);if not rr then return end
@@ -2783,7 +2785,7 @@ local function humanAbility(p)
  local rows=humanAbilityTargets(rr.Position,radius)
  if #rows==0 then p:SetAttribute("EnergyFeedback","NO_TARGET:HUMAN_ABILITY");return end
  local cost=math.max(0,tonumber(profile.Cost)or 30)
- if not spendEnergy(p,cost,"HUMAN_ABILITY")then return end
+ if not Runtime.spendEnergy(p,cost,"HUMAN_ABILITY")then return end
  humanAbilityCooldown[p]=now
  p:SetAttribute("HumanAbilityReadyAt",workspace:GetServerTimeNow()+cooldownSeconds)
  local targetPos=rows[1]and rows[1].pos or nil
@@ -2791,7 +2793,7 @@ local function humanAbility(p)
  if abilityId=="SIGNAL_JAM"then
   local drain=math.max(0,tonumber(profile.EnergyDrain)or 20)
   for _,row in ipairs(rows)do
-   if row.player then setEnergy(row.player,energyOf(row.player)-drain)
+   if row.player then Runtime.setEnergy(row.player,Runtime.energyOf(row.player)-drain)
    elseif row.bot then row.bot.energy=math.max(0,(row.bot.energy or 0)-drain)end
   end
  elseif abilityId=="OVERLOAD"or abilityId=="CAMERA_FLASH"or abilityId=="SHOCK_BATON"then
@@ -2832,12 +2834,12 @@ end
 
 local function survivorDash(p)
  if state~="RUNNING"or p:GetAttribute("Role")~="SURVIVOR"then return end
- local hf=humanForm(p);local now=os.clock();local cd=math.max(3,C.SurvivorDashCooldown+(hf.DashCooldownBonus or 0))
+ local hf=Runtime.humanForm(p);local now=os.clock();local cd=math.max(3,C.SurvivorDashCooldown+(hf.DashCooldownBonus or 0))
  -- First use must not inherit server uptime as cooldown; only an actual prior dash starts it. Studio actual-play validates the resulting movement.
  local lastDash=dashCooldown[p]
  if lastDash and now-lastDash<cd then return end
  local r=root(p);if r then
-  if not spendEnergy(p,C.Energy and C.Energy.DashCost or 25,"DASH")then return end
+  if not Runtime.spendEnergy(p,C.Energy and C.Energy.DashCost or 25,"DASH")then return end
   dashCooldown[p]=now;p:SetAttribute("DashReadyAt",workspace:GetServerTimeNow()+cd)
   movementGraceUntil[p]=now+.7
   r.AssemblyLinearVelocity=r.CFrame.LookVector*(52+(hf.DashPowerBonus or 0))+Vector3.new(0,r.AssemblyLinearVelocity.Y,0)
@@ -2848,11 +2850,11 @@ local function ability(p)
  if state~="RUNNING"or p:GetAttribute("Role")~="MONSTER"then return end
  local now=os.clock();local lastAbility=cooldown[p];if lastAbility and now-lastAbility<C.MonsterAbilityCooldown then return end
  local r=root(p);if not r then return end
- if not spendEnergy(p,C.Energy and C.Energy.AbilityCost or 45,"ABILITY")then return end
+ if not Runtime.spendEnergy(p,C.Energy and C.Energy.AbilityCost or 45,"ABILITY")then return end
  cooldown[p]=now;p:SetAttribute("AbilityReadyAt",workspace:GetServerTimeNow()+C.MonsterAbilityCooldown)
  movementGraceUntil[p]=now+.9
  local stamp=tostring(math.floor(now*1000))
- local infectedAbility=p:GetAttribute("Infected")==true and humanForm(p).InfectedAbility or nil
+ local infectedAbility=p:GetAttribute("Infected")==true and Runtime.humanForm(p).InfectedAbility or nil
  local profile=infectedAbility and C.InfectedAbilities and C.InfectedAbilities[infectedAbility]or nil
 
  if infectedAbility and profile then
@@ -2931,7 +2933,7 @@ local function ability(p)
   for _,o in ipairs(Players:GetPlayers())do
    if o:GetAttribute("Role")=="SURVIVOR"then
     local q=root(o)
-    if q and(q.Position-origin).Magnitude<=drainRadius then setEnergy(o,energyOf(o)-drain)end
+    if q and(q.Position-origin).Magnitude<=drainRadius then Runtime.setEnergy(o,Runtime.energyOf(o)-drain)end
    end
   end
   for _,b in ipairs(bots)do
@@ -3021,7 +3023,7 @@ local function infectAttack(p)
   end
  end
  if not targetPlayer and not targetBot then p:SetAttribute("EnergyFeedback","NO_TARGET:INFECT");return end
- if not spendEnergy(p,C.Energy and C.Energy.InfectAttackCost or 30,"INFECT")then return end
+ if not Runtime.spendEnergy(p,C.Energy and C.Energy.InfectAttackCost or 30,"INFECT")then return end
  infectAttackCooldown[p]=now;p:SetAttribute("InfectReadyAt",workspace:GetServerTimeNow()+cd)
  local hit=targetPlayer and infectPlayer(targetPlayer,p)or infectBot(targetBot,p)
  if hit then
@@ -3122,7 +3124,7 @@ local function returnToPersonalManor(p,reason)
  local destination,look=manorLobby:ReturnHome(p)
  if destination then
   teleport(p,destination,look)
-  manorFeedback(p,"RETURNED",reason or"내 저택으로 돌아왔어")
+  Room.manorFeedback(p,"RETURNED",reason or"내 저택으로 돌아왔어")
   return true
  end
  return false
@@ -3131,21 +3133,21 @@ local function setPersonalManorVisibility(p,value)
  if not manorLobby or roomServer or state=="RUNNING"then return end
  local visibility=string.upper(tostring(value or"PRIVATE"))=="PUBLIC"and"PUBLIC"or"PRIVATE"
  local ejected=manorLobby:SetVisibility(p,visibility)
- manorFeedback(p,"VISIBILITY",visibility=="PUBLIC"and"저택을 공개했어"or"저택을 비공개로 전환했어")
+ Room.manorFeedback(p,"VISIBILITY",visibility=="PUBLIC"and"저택을 공개했어"or"저택을 비공개로 전환했어")
  for _,visitor in ipairs(ejected or{})do
   if visitor.Parent==Players then
    local destination,look=manorLobby:GetSpawn(visitor)
    teleport(visitor,destination,look)
-   manorFeedback(visitor,"RETURNED","저택 주인이 비공개로 전환해서 내 저택으로 돌아왔어")
+   Room.manorFeedback(visitor,"RETURNED","저택 주인이 비공개로 전환해서 내 저택으로 돌아왔어")
   end
  end
 end
 local function visitPublicManor(p,ownerUserId)
  if not manorLobby or roomServer or state=="RUNNING"then return end
  local destination,look,reason=manorLobby:Visit(p,ownerUserId)
- if not destination then manorFeedback(p,"ERROR",reason or"저택을 방문할 수 없어");return end
+ if not destination then Room.manorFeedback(p,"ERROR",reason or"저택을 방문할 수 없어");return end
  teleport(p,destination,look)
- manorFeedback(p,"VISITING",tostring(p:GetAttribute("VisitedManorOwnerName")or"").."의 저택 방문 중")
+ Room.manorFeedback(p,"VISITING",tostring(p:GetAttribute("VisitedManorOwnerName")or"").."의 저택 방문 중")
 end
 
 local function broadcastMultiplayerSync(actor)
@@ -3155,7 +3157,7 @@ end
 remote.OnServerEvent:Connect(function(p,a,value)
  if not validRemoteAction(p,a)then return end
  if a==C.Actions.SELECT_MAP then
-  selectLobbyMap(p,value)
+  Room.selectLobbyMap(p,value)
  elseif a==C.Actions.SET_MANOR_VISIBILITY then
   setPersonalManorVisibility(p,value)
  elseif a==C.Actions.VISIT_MANOR then
@@ -3163,7 +3165,7 @@ remote.OnServerEvent:Connect(function(p,a,value)
  elseif a==C.Actions.RETURN_MANOR then
   returnToPersonalManor(p)
  elseif a==C.Actions.MANOR_SOLO and state~="RUNNING"and not roomServer then
-  if #Players:GetPlayers()==1 then startLocalSoloRoom(p)else createReservedRoom(p,"PRIVATE",true)end
+  if #Players:GetPlayers()==1 then Room.startLocalSoloRoom(p)else Room.createReservedRoom(p,"PRIVATE",true)end
  elseif a==C.Actions.MANOR_RANK and state~="RUNNING"and manorLobby then
   task.spawn(function()manorLobby:Rank(p)end)
  elseif a==C.Actions.MANOR_GAG and state~="RUNNING"and manorLobby then
@@ -3196,13 +3198,13 @@ remote.OnServerEvent:Connect(function(p,a,value)
  elseif a==C.Actions.BUY_COSMETIC then buyCosmetic(p,value)
  elseif a==C.Actions.EQUIP_COSMETIC then equipCosmetic(p,value)
  elseif a==C.Actions.GHOST_SIGHTING_FOUND then reportGhostSighting(p,value)
- elseif a==C.Actions.CREATE_ROOM then createReservedRoom(p,value)
- elseif a==C.Actions.JOIN_ROOM_CODE then joinRoomByCode(p,value)
- elseif a==C.Actions.QUICK_JOIN_PUBLIC then quickJoinRoom(p,false)
- elseif a==C.Actions.QUICK_JOIN_FRIEND then quickJoinRoom(p,true)
- elseif a==C.Actions.START_ROOM then startRoomMatch(p)
- elseif a==C.Actions.LEAVE_ROOM then leaveReservedRoom(p)end
- if a==C.Actions.PURIFY or a==C.Actions.RESCUE or a==C.Actions.DASH or a==C.Actions.HUMAN_ABILITY or a==C.Actions.INFECT_ATTACK or a==C.Actions.ABILITY then foundationCheckpoint("CORE_LOOP_READY",p,{action=a})end
+ elseif a==C.Actions.CREATE_ROOM then Room.createReservedRoom(p,value)
+ elseif a==C.Actions.JOIN_ROOM_CODE then Room.joinRoomByCode(p,value)
+ elseif a==C.Actions.QUICK_JOIN_PUBLIC then Room.quickJoinRoom(p,false)
+ elseif a==C.Actions.QUICK_JOIN_FRIEND then Room.quickJoinRoom(p,true)
+ elseif a==C.Actions.START_ROOM then Room.startRoomMatch(p)
+ elseif a==C.Actions.LEAVE_ROOM then Room.leaveReservedRoom(p)end
+ if a==C.Actions.PURIFY or a==C.Actions.RESCUE or a==C.Actions.DASH or a==C.Actions.HUMAN_ABILITY or a==C.Actions.INFECT_ATTACK or a==C.Actions.ABILITY then Runtime.foundationCheckpoint("CORE_LOOP_READY",p,{action=a})end
  broadcastMultiplayerSync(p)
 end)
 
@@ -3228,8 +3230,8 @@ function BotAI.validateCharacterFoundation(p,c,sequence)
    c:SetAttribute("SpawnGroundedSequence",sequence);c:SetAttribute("SpawnGroundedAt",stamp)
    p:SetAttribute(scope=="LOBBY"and"LobbySpawnGroundedAt"or"RoundRespawnGroundedAt",stamp)
    p:SetAttribute("FoundationFailure","")
-   foundationCheckpoint("CHARACTER_READY",p,{rootAnchored=r.Anchored,platformStand=h.PlatformStand,rootX=r.Position.X,rootY=r.Position.Y,rootZ=r.Position.Z})
-   foundationCheckpoint("GROUND_CONTACT",p,{groundY=hit.Position.Y,rootY=r.Position.Y,groundName=hit.Instance:GetFullName(),scope=scope,groundedSamples=groundedSamples})
+   Runtime.foundationCheckpoint("CHARACTER_READY",p,{rootAnchored=r.Anchored,platformStand=h.PlatformStand,rootX=r.Position.X,rootY=r.Position.Y,rootZ=r.Position.Z})
+   Runtime.foundationCheckpoint("GROUND_CONTACT",p,{groundY=hit.Position.Y,rootY=r.Position.Y,groundName=hit.Instance:GetFullName(),scope=scope,groundedSamples=groundedSamples})
    return
   end
   task.wait(.1)
@@ -3251,10 +3253,10 @@ function BotAI.onCharacter(p)
  if state~="RUNNING"then
   if lobbySpawnLocation and lobbySpawnLocation.Parent then p.RespawnLocation=lobbySpawnLocation end
   h.PlatformStand=false;h.Sit=false;h.AutoRotate=true;r.Anchored=false
-  setEnergy(p,energyMax());p:SetAttribute("EnergyFeedback","")
+  Runtime.setEnergy(p,Runtime.energyMax());p:SetAttribute("EnergyFeedback","")
   p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
   p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
-  local destination,look=personalSpawn(p)
+  local destination,look=Room.personalSpawn(p)
   p.RespawnLocation=lobbyBootstrapSpawn
   applyRoleVisual(p,"WAITING")
   for _,d in ipairs(c:GetDescendants())do if d:IsA("BasePart")then d.CollisionGroup="ManorAvatar"end end
@@ -3270,14 +3272,14 @@ function BotAI.onCharacter(p)
  local role=p:GetAttribute("Role")
  if role=="MONSTER"or role=="SURVIVOR"then
   setRole(p,role)
-  restoreMovement(p,role=="MONSTER"and 19 or 16)
+  Runtime.restoreMovement(p,role=="MONSTER"and 19 or 16)
   local pool=role=="MONSTER"and monsterSpawns or survivorSpawns
   local index=(math.abs(p.UserId)%#pool)+1
   local spawnPos=pool[index]
   local faceTarget=role=="MONSTER"and Vector3.new(0,3,0)or Vector3.new(0,3,0)
   teleport(p,spawnPos,faceTarget)
  elseif role=="SPECTATING"then
-  local destination,look=personalSpawn(p)
+  local destination,look=Room.personalSpawn(p)
   p.RespawnLocation=lobbyBootstrapSpawn
   h.PlatformStand=false;h.Sit=false;h.AutoRotate=true;r.Anchored=false
   teleport(p,destination,look)
@@ -3296,17 +3298,17 @@ Players.PlayerAdded:Connect(function(p)
  load(p)
  if state~="RUNNING"and lobbySpawnLocation and lobbySpawnLocation.Parent then p.RespawnLocation=lobbySpawnLocation end
  p:SetAttribute("RoomFeedback","")
- adoptReservedRoomFromPlayer(p)
- local overflow=roomServer and #Players:GetPlayers()>roomMaxPlayers()
+ Room.adoptReservedRoomFromPlayer(p)
+ local overflow=roomServer and #Players:GetPlayers()>Room.roomMaxPlayers()
  if overflow then
   p:SetAttribute("Role","WAITING");p:SetAttribute("RoundState","ROOM_CONNECTING");p:SetAttribute("Spectating",false)
-  roomFeedback(p,"MATCHING","새 경기방으로 이동 중")
+  Room.roomFeedback(p,"MATCHING","새 경기방으로 이동 중")
   local selectedMap=roomSelectedMapId
   task.defer(function()
-   local moved=createQueuedReservedRoom({p},selectedMap)
+   local moved=Room.createQueuedReservedRoom({p},selectedMap)
    if not moved and p.Parent==Players then
     task.wait(math.max(.5,tonumber(C.Room and C.Room.TeleportRetrySeconds)or 1.25))
-    if p.Parent==Players then createQueuedReservedRoom({p},selectedMap)end
+    if p.Parent==Players then Room.createQueuedReservedRoom({p},selectedMap)end
    end
   end)
   return
@@ -3316,13 +3318,13 @@ Players.PlayerAdded:Connect(function(p)
   p:SetAttribute("RoundState","SPECTATING")
   p:SetAttribute("Spectating",true)
   p:SetAttribute("TimeLeft",timeLeft)
-  roomFeedback(p,"SPECTATING","다음 라운드부터 참가")
+  Room.roomFeedback(p,"SPECTATING","다음 라운드부터 참가")
  end
  p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
  p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
  p.CharacterAdded:Connect(function()BotAI.onCharacter(p)end)
  if p.Character then task.defer(function()BotAI.onCharacter(p)end)end
- syncLobbyState()
+ Room.syncLobbyState()
 end)
 function BotAI.bindExistingPlayers()
  for _,p in ipairs(Players:GetPlayers())do
@@ -3330,14 +3332,14 @@ function BotAI.bindExistingPlayers()
    load(p)
    if state~="RUNNING"and lobbySpawnLocation and lobbySpawnLocation.Parent then p.RespawnLocation=lobbySpawnLocation end
    p:SetAttribute("RoomFeedback","")
-   adoptReservedRoomFromPlayer(p)
+   Room.adoptReservedRoomFromPlayer(p)
    p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
    p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
    p.CharacterAdded:Connect(function()BotAI.onCharacter(p)end)
    if p.Character then task.defer(function()BotAI.onCharacter(p)end)end
   end)
  end
- syncLobbyState()
+ Room.syncLobbyState()
 end
 BotAI.bindExistingPlayers()
 qaCaptureRemote.OnServerEvent:Connect(function(p,label,value)
@@ -3367,9 +3369,9 @@ end)
 foundationRemote.OnServerEvent:Connect(function(p,name)
  if typeof(name)~="string"then return end
  if name=="REMOTE_PING"then foundationRemote:FireClient(p,"REMOTE_PONG");return end
- if name=="REMOTE_ROUNDTRIP"then foundationCheckpoint("REMOTE_ROUNDTRIP",p,{roundtrip=true});return end
+ if name=="REMOTE_ROUNDTRIP"then Runtime.foundationCheckpoint("REMOTE_ROUNDTRIP",p,{roundtrip=true});return end
  local now=os.clock();if now-(foundationLast[p]or 0)<.05 then return end;foundationLast[p]=now
- if name=="CAMERA_READY"or name=="INPUT_READY"then foundationCheckpoint(name,p,{clientReported=true})end
+ if name=="CAMERA_READY"or name=="INPUT_READY"then Runtime.foundationCheckpoint(name,p,{clientReported=true})end
 end)
 
 Players.PlayerRemoving:Connect(function(p)
@@ -3384,7 +3386,7 @@ Players.PlayerRemoving:Connect(function(p)
    if visitor.Parent==Players then
     local destination,look=manorLobby:GetSpawn(visitor)
     teleport(visitor,destination,look)
-    manorFeedback(visitor,"RETURNED","저택 주인이 떠나서 내 저택으로 돌아왔어")
+    Room.manorFeedback(visitor,"RETURNED","저택 주인이 떠나서 내 저택으로 돌아왔어")
    end
   end
   manorLobby:Remove(p)
@@ -3400,22 +3402,22 @@ Players.PlayerRemoving:Connect(function(p)
   if roomServer then
    local remaining=Players:GetPlayers()
    if #remaining==0 then
-    removeRoomDirectoryEntry(roomCode)
+    Room.removeRoomDirectoryEntry(roomCode)
    elseif leavingWasHost then
     table.sort(remaining,function(a,b)return(roomJoinedAt[a]or math.huge)<(roomJoinedAt[b]or math.huge)end)
     local nextHost=remaining[1]
-    if nextHost then roomHostUserId=nextHost.UserId;roomHostName=nextHost.DisplayName;roomFeedback(nextHost,"HOST","방장이 되었어")end
+    if nextHost then roomHostUserId=nextHost.UserId;roomHostName=nextHost.DisplayName;Room.roomFeedback(nextHost,"HOST","방장이 되었어")end
    end
-   syncRoomState();updateCurrentRoomDirectory()
+   Room.syncRoomState();Room.updateCurrentRoomDirectory()
   end
-  syncLobbyState()
+  Room.syncLobbyState()
  end)
 end)
 
 TeleportService.TeleportInitFailed:Connect(function(player,teleportResult,errorMessage)
  if player and player.Parent==Players then
   roomTeleportPending[player]=nil
-  roomFeedback(player,"ERROR","방 연결 실패 · 집사에게 다시 시도")
+  Room.roomFeedback(player,"ERROR","방 연결 실패 · 집사에게 다시 시도")
   warn("Room teleport init failed",player.UserId,teleportResult,errorMessage)
  end
 end)
@@ -3436,45 +3438,45 @@ for _,p in ipairs(Players:GetPlayers())do
  p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
  p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
 end
-syncLobbyState("WAITING")
+Room.syncLobbyState("WAITING")
 
 task.spawn(function()
  while true do
   local players=Players:GetPlayers()
   if #players==0 then
-   state="WAITING";roomStartRequested=false;syncLobbyState("WAITING");task.wait(1)
+   state="WAITING";roomStartRequested=false;Room.syncLobbyState("WAITING");task.wait(1)
   elseif not roomServer then
    state="WAITING";roomStartRequested=false
    for _,p in ipairs(players)do p:SetAttribute("RoundState","ROOM_BROWSER");p:SetAttribute("TimeLeft",0)end
-   syncLobbyState("ROOM_BROWSER")
+   Room.syncLobbyState("ROOM_BROWSER")
    task.wait(.5)
   elseif roomCode==""then
    state="WAITING";roomStartRequested=false
    for _,p in ipairs(players)do p:SetAttribute("RoundState","ROOM_CONNECTING");p:SetAttribute("TimeLeft",0)end
-   syncLobbyState("ROOM_CONNECTING")
+   Room.syncLobbyState("ROOM_CONNECTING")
    task.wait(.25)
   elseif not roomStartRequested then
-   local expected=math.clamp(math.floor(tonumber(roomExpectedCount)or 1),1,roomMaxPlayers())
+   local expected=math.clamp(math.floor(tonumber(roomExpectedCount)or 1),1,Room.roomMaxPlayers())
    local grace=math.max(2,tonumber(C.Room and C.Room.ArrivalGraceSeconds)or 6)
    local elapsed=roomFirstJoinAt>0 and(os.clock()-roomFirstJoinAt)or grace
    local autoStart=roomSolo or roomVisibility=="PUBLIC"
    if autoStart and(#players>=expected or elapsed>=grace)then
     roomStartRequested=true
     workspace:SetAttribute("RoomStartRequested",true)
-    syncLobbyState("INTERMISSION")
+    Room.syncLobbyState("INTERMISSION")
     task.wait(.1)
    else
     for _,p in ipairs(players)do
      p:SetAttribute("RoundState","ROOM_WAITING")
      p:SetAttribute("TimeLeft",autoStart and math.max(0,math.ceil(grace-elapsed))or 0)
-     roomFeedback(p,"WAITING",autoStart and string.format("참가자 연결 중 %d/%d",#players,expected)or"친구를 초대한 뒤 방장이 출정을 시작해.")
+     Room.roomFeedback(p,"WAITING",autoStart and string.format("참가자 연결 중 %d/%d",#players,expected)or"친구를 초대한 뒤 방장이 출정을 시작해.")
     end
-    syncLobbyState("ROOM_WAITING")
+    Room.syncLobbyState("ROOM_WAITING")
     task.wait(.2)
    end
   else
    roomStartRequested=false;workspace:SetAttribute("RoomStartRequested",false)
-   state="INTERMISSION";syncLobbyState("INTERMISSION");updateCurrentRoomDirectory()
+   state="INTERMISSION";Room.syncLobbyState("INTERMISSION");Room.updateCurrentRoomDirectory()
    soloStartRequested=false
    local fastStartSeconds=3
    for t=fastStartSeconds,1,-1 do
@@ -3486,7 +3488,7 @@ task.spawn(function()
     task.wait(1)
    end
    if startRound()then
-    updateCurrentRoomDirectory()
+    Room.updateCurrentRoomDirectory()
     while state=="RUNNING"and timeLeft>0 do
      local humans,monsters=teamCounts();workspace:SetAttribute("HumanCount",humans);workspace:SetAttribute("MonsterCount",monsters)
      if humans==0 then endRound("MONSTER");break end
@@ -3497,32 +3499,32 @@ task.spawn(function()
      for _,p in ipairs(Players:GetPlayers())do
       local role=p:GetAttribute("Role")
       if role=="SURVIVOR"or role=="MONSTER"then
-       local pressure=pressurePassiveFor(role,humans,monsters)
+       local pressure=Runtime.pressurePassiveFor(role,humans,monsters)
        local mult=math.max(1,tonumber(pressure and pressure.RegenMultiplier)or 1)
-       setEnergy(p,energyOf(p)+baseRegen*mult)
+       Runtime.setEnergy(p,Runtime.energyOf(p)+baseRegen*mult)
        p:SetAttribute("PressurePassive",pressure and tostring(pressure.Label or"열세 보정")or"")
       else
        p:SetAttribute("PressurePassive","")
       end
      end
      for _,b in ipairs(bots)do
-      local pressure=pressurePassiveFor(b.role,humans,monsters)
+      local pressure=Runtime.pressurePassiveFor(b.role,humans,monsters)
       local mult=math.max(1,tonumber(pressure and pressure.RegenMultiplier)or 1)
-      b.energy=math.clamp((tonumber(b.energy)or energyMax())+baseRegen*mult,0,energyMax())
+      b.energy=math.clamp((tonumber(b.energy)or Runtime.energyMax())+baseRegen*mult,0,Runtime.energyMax())
      end
 
      if humans==1 and pressureLastCounts.SURVIVOR>1 then
-      local row=pressurePassiveFor("SURVIVOR",humans,monsters);local bonus=math.max(0,tonumber(row and row.LastStandEnergy)or 0)
+      local row=Runtime.pressurePassiveFor("SURVIVOR",humans,monsters);local bonus=math.max(0,tonumber(row and row.LastStandEnergy)or 0)
       if bonus>0 then
-       for _,p in ipairs(Players:GetPlayers())do if p:GetAttribute("Role")=="SURVIVOR"then setEnergy(p,energyOf(p)+bonus);p:SetAttribute("EnergyFeedback","LAST_STAND:"..tostring(math.floor(bonus)))end end
-       for _,b in ipairs(bots)do if b.role=="SURVIVOR"then b.energy=math.min(energyMax(),(b.energy or 0)+bonus)end end
+       for _,p in ipairs(Players:GetPlayers())do if p:GetAttribute("Role")=="SURVIVOR"then Runtime.setEnergy(p,Runtime.energyOf(p)+bonus);p:SetAttribute("EnergyFeedback","LAST_STAND:"..tostring(math.floor(bonus)))end end
+       for _,b in ipairs(bots)do if b.role=="SURVIVOR"then b.energy=math.min(Runtime.energyMax(),(b.energy or 0)+bonus)end end
       end
      end
      if monsters==1 and pressureLastCounts.MONSTER>1 then
-      local row=pressurePassiveFor("MONSTER",humans,monsters);local bonus=math.max(0,tonumber(row and row.LastStandEnergy)or 0)
+      local row=Runtime.pressurePassiveFor("MONSTER",humans,monsters);local bonus=math.max(0,tonumber(row and row.LastStandEnergy)or 0)
       if bonus>0 then
-       for _,p in ipairs(Players:GetPlayers())do if p:GetAttribute("Role")=="MONSTER"then setEnergy(p,energyOf(p)+bonus);p:SetAttribute("EnergyFeedback","LAST_STAND:"..tostring(math.floor(bonus)))end end
-       for _,b in ipairs(bots)do if b.role=="MONSTER"then b.energy=math.min(energyMax(),(b.energy or 0)+bonus)end end
+       for _,p in ipairs(Players:GetPlayers())do if p:GetAttribute("Role")=="MONSTER"then Runtime.setEnergy(p,Runtime.energyOf(p)+bonus);p:SetAttribute("EnergyFeedback","LAST_STAND:"..tostring(math.floor(bonus)))end end
+       for _,b in ipairs(bots)do if b.role=="MONSTER"then b.energy=math.min(Runtime.energyMax(),(b.energy or 0)+bonus)end end
       end
      end
      pressureLastCounts.SURVIVOR=humans;pressureLastCounts.MONSTER=monsters
@@ -3532,7 +3534,7 @@ task.spawn(function()
     end
     if state=="RUNNING"then endRound("DRAW")end
     roomStartRequested=false;workspace:SetAttribute("RoomStartRequested",false)
-    syncRoomState();updateCurrentRoomDirectory()
+    Room.syncRoomState();Room.updateCurrentRoomDirectory()
    end
   end
  end
@@ -3759,10 +3761,10 @@ function BotAI.distributedSurvivorTarget(b)
     local blocked=visible and 0 or(tonumber(C.AICombat and C.AICombat.BlockedSightPenalty)or 52)
     local vulnerability=0
     if entry.p then
-     local ratio=energyOf(entry.p)/energyMax()
+     local ratio=Runtime.energyOf(entry.p)/Runtime.energyMax()
      vulnerability=ratio*(tonumber(C.AICombat and C.AICombat.LowEnergyTargetWeight)or 16)
     elseif entry.b then
-     local ratio=math.clamp((entry.b.energy or energyMax())/energyMax(),0,1)
+     local ratio=math.clamp((entry.b.energy or Runtime.energyMax())/Runtime.energyMax(),0,1)
      vulnerability=ratio*(tonumber(C.AICombat and C.AICombat.LowEnergyTargetWeight)or 16)
     end
     table.insert(entries,{entry=entry,pos=predicted,rawPos=pos,distance=(predicted-b.part.Position).Magnitude,key=key,visible=visible,score=distance+load*(tonumber(C.AICombat and C.AICombat.TargetCrowdPenalty)or 38)+blocked+vulnerability})
@@ -3887,7 +3889,7 @@ function BotAI.tryBotHumanAbility(b,target,distance)
   for _,player in ipairs(Players:GetPlayers())do
    if player:GetAttribute("Role")=="MONSTER"then
     local rr=root(player)
-    if rr and(rr.Position-origin).Magnitude<=radius then setEnergy(player,energyOf(player)-drain)end
+    if rr and(rr.Position-origin).Magnitude<=radius then Runtime.setEnergy(player,Runtime.energyOf(player)-drain)end
    end
   end
   for _,other in ipairs(bots)do
@@ -3969,7 +3971,7 @@ function BotAI.tryBotMonsterAbility(b,targetPos,distance)
   for _,player in ipairs(Players:GetPlayers())do
    if player:GetAttribute("Role")=="SURVIVOR"then
     local rr=root(player)
-    if rr and(rr.Position-effectTarget).Magnitude<=drainRadius then setEnergy(player,energyOf(player)-drain)end
+    if rr and(rr.Position-effectTarget).Magnitude<=drainRadius then Runtime.setEnergy(player,Runtime.energyOf(player)-drain)end
    end
   end
   for _,other in ipairs(bots)do
@@ -4001,7 +4003,7 @@ function BotAI.tryBotMonsterAbility(b,targetPos,distance)
   b.speedResetAt=now+duration;b.rageUntil=now+duration
  elseif ability=="CURSE_SLOW"then
   local radius=tonumber(profile.Radius)or 22
-  if distance>radius then b.energy=math.min(energyMax(),(b.energy or 0)+cost);b.abilityReadyAt=0;return false end
+  if distance>radius then b.energy=math.min(Runtime.energyMax(),(b.energy or 0)+cost);b.abilityReadyAt=0;return false end
   local slowSpeed=tonumber(profile.SlowSpeed)or 9
   local duration=tonumber(profile.Duration)or 3
   for _,player in ipairs(Players:GetPlayers())do
@@ -4023,7 +4025,7 @@ function BotAI.tryBotMonsterAbility(b,targetPos,distance)
   effectTarget=origin+look*step
   setBotCFrame(b,CFrame.lookAt(effectTarget,effectTarget+look))
  else
-  b.energy=math.min(energyMax(),(b.energy or 0)+cost);b.abilityReadyAt=0;return false
+  b.energy=math.min(Runtime.energyMax(),(b.energy or 0)+cost);b.abilityReadyAt=0;return false
  end
  remote:FireAllClients("MONSTER_ABILITY_EFFECT",{
   Ability=ability,Effect=profile.Effect or ability,Origin=origin,Target=effectTarget,Look=look,UserId=0,Stamp=tostring(math.floor(now*1000)),
@@ -4137,7 +4139,7 @@ RunService.Heartbeat:Connect(function(dt)
   if h and r and h.MoveDirection.Magnitude>.05 then
    local start=movementProbeStart[p]
    if not start then movementProbeStart[p]=r.Position
-   elseif (r.Position-start).Magnitude>=2 then foundationCheckpoint("MOVEMENT_CONFIRMED",p,{displacement=(r.Position-start).Magnitude});movementProbeStart[p]=nil end
+   elseif (r.Position-start).Magnitude>=2 then Runtime.foundationCheckpoint("MOVEMENT_CONFIRMED",p,{displacement=(r.Position-start).Magnitude});movementProbeStart[p]=nil end
   elseif h and h.MoveDirection.Magnitude<=.05 then movementProbeStart[p]=nil end
   if r and state=="RUNNING"then
    local pos=r.Position
