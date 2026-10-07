@@ -5033,8 +5033,8 @@ test('game-scoped asset planning limits source-consumer scan without shrinking f
     const here=path.dirname(fileURLToPath(import.meta.url));
     const plannerSource=fs.readFileSync(path.resolve(here,'../tools/vibe2-asset-production-plan.mjs'),'utf8');
     const cli=plannerSource.slice(plannerSource.indexOf('if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href)'));
-    assert.equal((cli.match(/synchronizeCompanyCommonAssetRegistry\\s*\\(/g)||[]).length,0);
-    assert.match(cli,/registrySync:result\\.registrySync/);
+    assert.equal((cli.match(/synchronizeCompanyCommonAssetRegistry\s*\(/g)||[]).length,0);
+    assert.match(cli,/registrySync:result\.registrySync/);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
