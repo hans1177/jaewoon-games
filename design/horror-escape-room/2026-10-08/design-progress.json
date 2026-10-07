@@ -9,23 +9,23 @@
   "completedPhases": [],
   "completedPhaseCount": 0,
   "cachedTaskCount": 5,
-  "lastSuccessfulModelCallAt": "2026-10-07T23:04:28.959Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-07T23:06:12.252Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT",
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 871672,
-      "lastMs": 52874,
+      "totalMs": 974960,
+      "lastMs": 103288,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-07T23:04:28.959Z"
+      "updatedAt": "2026-10-07T23:06:12.252Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-07T23:04:28.963Z"
+  "updatedAt": "2026-10-07T23:06:12.256Z"
 }
