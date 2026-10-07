@@ -9,7 +9,7 @@ export const SEED_FILE='game-seed-state.json';
 export const RESET_REVISION='OWNER-ALL-GAMES-DESIGN-RESET-20260917-1';
 export const RESET_SOURCE='OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17';
 export const AUTO_MISSING_DESIGN_SOURCE='AUTO_MISSING_DESIGN_INTAKE_2026-09-25';
-export const HOMEPAGE_NOVEL_GRAMMAR_V4_SOURCE='HOMEPAGE_NOVEL_GRAMMAR_V4_20261007';
+export const CANONICAL_NOVEL_GRAMMAR_V4_SOURCE='CANONICAL_GAME_SEED_NOVEL_GRAMMAR_V4_20261007';
 const clean=v=>String(v??'').trim();
 const readJson=(file,fallback)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const writeJson=(file,value)=>fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');
@@ -101,18 +101,6 @@ export function latestVerifiedDesign(root='.',gameId=''){
   }
   return null;
 }
-function homepageWebDesignTarget(game={}){
-  const id=clean(game?.id);
-  const lifecycle=clean(game?.canonical?.lifecycle?.state||game?.lifecycleState||'ACTIVE').toUpperCase();
-  if(!id||!['ACTIVE','REBUILD'].includes(lifecycle))return false;
-  const web=game?.canonical?.sources?.web&&typeof game.canonical.sources.web==='object'?game.canonical.sources.web:{};
-  const state=clean(web.state||game?.ownerWebSourceState).toUpperCase();
-  if(['WITHDRAWN_SIMPLE_PROTOTYPE','NON_GAME_SURFACE','ENTRY_MISSING_OR_INVALID','UNITY_WEB_BUNDLE_INCOMPLETE'].includes(state))return false;
-  const playable=web.playable===true||game?.homepageWebPlayable===true;
-  const archive=web.archive===true||game?.hasWebArchive===true;
-  const raw=clean(web.path||game?.webPath).replace(/^\/+|\/+$/g,'').replace(/\/index\.html$/i,'');
-  return playable&&archive&&raw===`web-games/${id}`;
-}
 function completeNovelGrammarV4(seed={}){
   const sketch=seed?.GAMEPLAY_SKETCH;
   const grammar=sketch?.novelGameGrammar;
@@ -125,7 +113,7 @@ function completeNovelGrammarV4(seed={}){
     &&grammar.delveLayer?.formulaSuffix==='+ @'
     &&grammar.emergentGenre?.grammarFormula==='MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @';
 }
-function normalizedHomepageSketch(game,seed){
+function normalizedCanonicalSketch(game,seed){
   const gameId=clean(game?.id),gameName=clean(game?.name||gameId);
   const category=clean(seed?.GAME_CATEGORY)||categoryFor(game);
   const coreLoop=Array.isArray(seed?.CORE_LOOP)&&seed.CORE_LOOP.filter(row=>clean(row)).length>=3
@@ -135,7 +123,7 @@ function normalizedHomepageSketch(game,seed){
       '실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.',
       '변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·전략 선택으로 이어간다.'
     ];
-  const target={requestId:`homepage:${gameId}`,category,materials:[]};
+  const target={requestId:`canonical:${gameId}`,category,materials:[]};
   const proposal={
     gameplaySketch:seed?.GAMEPLAY_SKETCH,
     distinctIdentity:clean(seed?.DISTINCT_IDENTITY)||clean(game?.description)||gameName,
@@ -143,15 +131,15 @@ function normalizedHomepageSketch(game,seed){
   };
   return{category,coreLoop,sketch:normalizeGameplaySketch(target,proposal,coreLoop,gameName)};
 }
-function upgradeHomepageNovelGrammarSeed(seed,game,timestamp){
+function upgradeCanonicalNovelGrammarSeed(seed,game,timestamp){
   if(completeNovelGrammarV4(seed))return false;
-  const normalized=normalizedHomepageSketch(game,seed);
+  const normalized=normalizedCanonicalSketch(game,seed);
   seed.GAME_CATEGORY=normalized.category;
   seed.CORE_LOOP=normalized.coreLoop;
   seed.GAMEPLAY_SKETCH=normalized.sketch;
-  seed.homepageNovelGrammarBackfill={version:4,source:HOMEPAGE_NOVEL_GRAMMAR_V4_SOURCE,updatedAt:timestamp};
-  const signals=Array.isArray(seed.designEvolutionSignals)?seed.designEvolutionSignals.filter(row=>clean(row?.id)!==HOMEPAGE_NOVEL_GRAMMAR_V4_SOURCE):[];
-  signals.push({id:HOMEPAGE_NOVEL_GRAMMAR_V4_SOURCE,type:'NOVEL_GRAMMAR_V4_BACKFILL',status:'OPEN',createdAt:timestamp,source:'CURRENT_HOMEPAGE_WEB_GAME'});
+  seed.novelGrammarBackfill={version:4,source:CANONICAL_NOVEL_GRAMMAR_V4_SOURCE,updatedAt:timestamp};
+  const signals=Array.isArray(seed.designEvolutionSignals)?seed.designEvolutionSignals.filter(row=>clean(row?.id)!==CANONICAL_NOVEL_GRAMMAR_V4_SOURCE):[];
+  signals.push({id:CANONICAL_NOVEL_GRAMMAR_V4_SOURCE,type:'NOVEL_GRAMMAR_V4_BACKFILL',status:'OPEN',createdAt:timestamp,source:'CANONICAL_GAME_SEED'});
   seed.designEvolutionSignals=signals;
   seed.updatedAt=timestamp;
   assertGameSeed(seed);
@@ -182,7 +170,7 @@ export function makeAutoMissingDesignSeed(game,{serial=1,timestamp=new Date().to
     ],
     CORE_LOOP:coreLoop,
     DISTINCT_IDENTITY:description||`${gameName}의 장르 정체성과 실제 플레이 상태 변화를 중심으로 독자적인 게임 설계를 자동 생성한다.`,
-    GAMEPLAY_SKETCH:normalizeGameplaySketch({requestId:`homepage:${gameId}`,category,materials:[]},{gameplaySketch:null,distinctIdentity:description||`${gameName}의 장르 정체성과 실제 플레이 상태 변화를 중심으로 독자적인 게임 설계를 자동 생성한다.`,coreFunToLearn:[`${gameName}의 실제 플레이 핵심 행동과 선택을 구체화`]},coreLoop,gameName),
+    GAMEPLAY_SKETCH:normalizeGameplaySketch({requestId:`canonical:${gameId}`,category,materials:[]},{gameplaySketch:null,distinctIdentity:description||`${gameName}의 장르 정체성과 실제 플레이 상태 변화를 중심으로 독자적인 게임 설계를 자동 생성한다.`,coreFunToLearn:[`${gameName}의 실제 플레이 핵심 행동과 선택을 구체화`]},coreLoop,gameName),
     MARKET_EVIDENCE_SUMMARY:{role:'AUTO_MISSING_DESIGN_INTAKE',targetMarketScope:'GLOBAL',hardPassFailGate:false,available:false,note:'Canonical catalog identity seeds the existing design pipeline; strict design review must establish the actual design before gameplay authority resumes.'},
     TARGET_AUDIENCE:genre.length?`${genre.join(' · ')} 플레이를 선호하는 글로벌 플레이어`:`${gameName}의 핵심 플레이를 선호하는 글로벌 플레이어`,
     TARGET_SESSION_DIRECTION:'첫 세션부터 입력, 핵심 행동, 실제 상태 변화, 보상 또는 진행, 위험 또는 실패, 다음 목표가 연결되도록 설계한다.',
@@ -239,47 +227,38 @@ export function autoEnrollMissingDesignSeeds({catalogFile=CATALOG_FILE,seedFile=
     return id&&!removed.has(id)&&['ACTIVE','REBUILD'].includes(life)&&(!targetId||id===targetId);
   });
   const created=[],reactivated=[],alreadySeeded=[],designPresent=[],grammarUpgraded=[],grammarAlreadyCurrent=[];
-  const homepageTargets=games.filter(homepageWebDesignTarget);
   for(const game of games){
     const id=clean(game.id);
     const candidates=state.seeds.filter(seed=>clean(seed?.gameId)===id);
     let active=candidates.find(seed=>!['DISCARDED','REMOVED'].includes(clean(seed?.status).toUpperCase()));
-    if(homepageWebDesignTarget(game)){
-      if(!active){
-        active=makeAutoMissingDesignSeed(game,{serial:candidates.length+1,timestamp});
-        state.seeds.push(active);
-        created.push(id);
-      }else{
-        if(clean(active.status).toUpperCase()!=='ACTIVE'){
-          active.status='ACTIVE';
-          active.reactivatedBy=AUTO_MISSING_DESIGN_SOURCE;
-          active.updatedAt=timestamp;
-          reactivated.push(id);
-        }
-        if(upgradeHomepageNovelGrammarSeed(active,game,timestamp))grammarUpgraded.push(id);
-        else grammarAlreadyCurrent.push(id);
+    if(!active){
+      active=makeAutoMissingDesignSeed(game,{serial:candidates.length+1,timestamp});
+      state.seeds.push(active);
+      created.push(id);
+    }else{
+      if(clean(active.status).toUpperCase()!=='ACTIVE'){
+        active.status='ACTIVE';
+        active.reactivatedBy=AUTO_MISSING_DESIGN_SOURCE;
+        active.updatedAt=timestamp;
+        reactivated.push(id);
       }
+      if(upgradeCanonicalNovelGrammarSeed(active,game,timestamp))grammarUpgraded.push(id);
+      else grammarAlreadyCurrent.push(id);
     }
-    if(latestUsableDesign(root,id)){designPresent.push(id);continue;}
-    if(active){
-      if(!created.includes(id)&&!reactivated.includes(id))alreadySeeded.push(id);
-      continue;
-    }
-    const seed=makeAutoMissingDesignSeed(game,{serial:candidates.length+1,timestamp});
-    state.seeds.push(seed);
-    created.push(id);
+    if(latestUsableDesign(root,id))designPresent.push(id);
+    if(!created.includes(id)&&!reactivated.includes(id)&&!grammarUpgraded.includes(id))alreadySeeded.push(id);
   }
   if(created.length||reactivated.length||grammarUpgraded.length){
     state.version=Math.max(2,Number(state.version)||0);
     state.policyDocument='company-learning/platform-release-roadmap.json';
     state.autoMissingDesignIntake={
-      version:2,
+      version:3,
       source:AUTO_MISSING_DESIGN_SOURCE,
       updatedAt:timestamp,
       createdGameIds:created,
       reactivatedGameIds:reactivated,
-      homepageNovelGrammarSource:HOMEPAGE_NOVEL_GRAMMAR_V4_SOURCE,
-      homepageTargetGameIds:homepageTargets.map(game=>clean(game.id)),
+      canonicalNovelGrammarSource:CANONICAL_NOVEL_GRAMMAR_V4_SOURCE,
+      canonicalTargetGameIds:games.map(game=>clean(game.id)),
       grammarUpgradedGameIds:grammarUpgraded,
       grammarAlreadyCurrentGameIds:grammarAlreadyCurrent
     };
@@ -287,7 +266,7 @@ export function autoEnrollMissingDesignSeeds({catalogFile=CATALOG_FILE,seedFile=
   }
   return{
     created,reactivated,alreadySeeded,designPresent,grammarUpgraded,grammarAlreadyCurrent,
-    homepageTargets:homepageTargets.map(game=>clean(game.id)),
+    canonicalTargets:games.map(game=>clean(game.id)),
     eligibleGames:games.map(game=>clean(game.id)),
     changed:created.length+reactivated.length+grammarUpgraded.length
   };
@@ -331,9 +310,9 @@ if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
     console.log(`AUTO_MISSING_DESIGN_ALREADY_SEEDED=${result.alreadySeeded.length}`);
     console.log(`AUTO_MISSING_DESIGN_PRESENT=${result.designPresent.length}`);
     console.log(`AUTO_MISSING_DESIGN_CREATED_IDS=${result.created.join(',')||'NONE'}`);
-    console.log(`HOMEPAGE_NOVEL_GRAMMAR_TARGETS=${result.homepageTargets.join(',')||'NONE'}`);
-    console.log(`HOMEPAGE_NOVEL_GRAMMAR_UPGRADED=${result.grammarUpgraded.join(',')||'NONE'}`);
-    console.log(`HOMEPAGE_NOVEL_GRAMMAR_ALREADY_CURRENT=${result.grammarAlreadyCurrent.join(',')||'NONE'}`);
+    console.log(`CANONICAL_NOVEL_GRAMMAR_TARGETS=${result.canonicalTargets.join(',')||'NONE'}`);
+    console.log(`CANONICAL_NOVEL_GRAMMAR_UPGRADED=${result.grammarUpgraded.join(',')||'NONE'}`);
+    console.log(`CANONICAL_NOVEL_GRAMMAR_ALREADY_CURRENT=${result.grammarAlreadyCurrent.join(',')||'NONE'}`);
   }else{
     const result=runOwnerAllGamesDesignReset();
     console.log(`OWNER_ALL_GAMES_DESIGN_RESET_COUNT=${result.count}`);
