@@ -37,14 +37,29 @@ export function detectVibeEngineTarget(request = '', target = 'auto') {
 }
 
 function sourceContract(target, slug, motionRepairWorkUnit=null, assetQualityWorkUnit=null) {
-  if(assetQualityWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY_QUALITY'){
+  if(assetQualityWorkUnit){
     const unit=assetQualityWorkUnit;
     const root=clean(unit.sourceRoot).replaceAll('\\','/').replace(/\/$/,'');
-    const sourcePath=clean(unit.sourcePath).replaceAll('\\','/').replace(/^\//,'');
+    const sourcePath=clean(unit.sourcePath).replaceAll('\\','/');
     const file=root+'/'+sourcePath;
     const ext=(sourcePath.match(/\.[^.\/]+$/)?.[0]||'').toLowerCase();
     const allowed=target==='roblox'?new Set(['.luau','.lua','.json']):target==='unity'?new Set(['.cs','.asmdef','.json','.uxml','.uss','.unity','.prefab','.asset']):target==='web'?new Set(['.html','.htm','.css','.js','.mjs','.cjs','.json','.svg']):new Set([]);
-    if(!['roblox','unity','web'].includes(target)||!root.startsWith('assets/')||root.split('/').includes('..')||!sourcePath||sourcePath.split('/').includes('..')||!allowed.has(ext)||clean(unit.sourceFile)!==file||Number(unit.estimatedModificationMinutes)!==60)throw new Error('INTERNAL_ASSET_QUALITY_SOURCE_SCOPE_INVALID');
+    // 잘못된 내부 자산 주문이 일반 게임 쓰기로 떨어지거나 다른 플랫폼에 전달되면 안 된다.
+    // 해시는 형식만 검사한다. 실제 파일 일치와 native 검증은 기존 worker/QA가 확인한다.
+    const platform=clean(unit.platform).toLowerCase();
+    const nativeRoot=/^assets\/(roblox|unity|web)\//.exec(root)?.[1]||null;
+    if(unit.scope!=='INTERNAL_ASSET_LIBRARY_QUALITY'||motionRepairWorkUnit
+      ||!['roblox','unity','web'].includes(target)||platform!==target
+      ||!clean(unit.assetId)||!/^[a-f0-9]{64}$/i.test(clean(unit.sourceHash))
+      ||!/^assets\/[A-Za-z0-9._/-]+$/.test(root)
+      ||root.split('/').some(part=>!part||part==='.'||part==='..')
+      ||!sourcePath||!/^[A-Za-z0-9._/-]+$/.test(sourcePath)
+      ||sourcePath.split('/').some(part=>!part||part==='.'||part==='..')
+      ||(nativeRoot&&nativeRoot!==target)||!allowed.has(ext)
+      ||clean(unit.sourceFile)!==file||Number(unit.estimatedModificationMinutes)!==60
+      ||(unit.workerTimeoutMinutes!=null&&Number(unit.workerTimeoutMinutes)!==60)){
+      throw new Error('INTERNAL_ASSET_QUALITY_SOURCE_SCOPE_INVALID');
+    }
     return freeze({root,writable:true,internalAssetQuality:true,candidateFiles:freezeList([file]),textWritablePatterns:freezeList([file]),editorRequiredPatterns:freezeList([]),ignoredPaths:freezeList([]),maintenanceOnly:false,newGameAutomatic:true});
   }
   if(motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY'){

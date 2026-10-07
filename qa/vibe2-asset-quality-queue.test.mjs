@@ -1,3 +1,4 @@
+// 파일명: qa/vibe2-asset-quality-queue.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
@@ -183,4 +184,48 @@ test('quality reservation never converts missing native evidence into runtime ve
   assert.equal(queue.tasks[0].executionLane, 'RELEASE_WAIT');
   assert.equal(queue.tasks[0].assetQualityWorkUnit.runtimeVerified, false);
   assert.equal(result.capacityRunning.length, 0);
+});
+
+// 작업 주문이 잘못됐을 때 게임 루트로 권한이 확대되지 않는지 확인한다.
+import { createVibeEngineAdapter, validateVibeEngineAdapter } from '../assets/vibe-engine-adapter.js';
+
+for (const target of targets) {
+  test(`${target} 품질 주문은 정확한 내부 파일 하나만 쓰고 기존 런타임 검증을 유지한다`, () => {
+    const unit = qualityTask('adapter', target).assetQualityWorkUnit;
+    const adapter = createVibeEngineAdapter({ target, gameSlug: 'consumer', assetQualityWorkUnit: unit });
+    assert.equal(validateVibeEngineAdapter(adapter).valid, true);
+    assert.equal(adapter.source.root, unit.sourceRoot);
+    assert.deepEqual(adapter.source.candidateFiles, [unit.sourceFile]);
+    assert.deepEqual(adapter.source.textWritablePatterns, [unit.sourceFile]);
+    assert.equal(adapter.source.internalAssetQuality, true);
+    assert.equal(adapter.execution.binaryAssetsDirectTextEditForbidden, true);
+    assert.ok(adapter.qa.includes(target === 'roblox' ? 'target-platform-runtime-check' : target === 'unity' ? 'runtime-check' : 'browser-runtime-check'));
+    assert.equal(adapter.runtimeVerified, undefined);
+  });
+}
+
+for (const [name, changes] of [
+  ['없는 범위', { scope: 'UNKNOWN_SCOPE' }],
+  ['없는 자산 식별자', { assetId: '' }],
+  ['없는 해시', { sourceHash: '' }],
+  ['잘못된 해시', { sourceHash: 'NOT_A_SOURCE_HASH' }],
+  ['다른 플랫폼', { platform: 'UNITY' }],
+  ['절대 책임 경로', { sourcePath: '/init.luau' }],
+  ['중간 현재 디렉터리', { sourceRoot: 'assets/roblox/./quality-fixture/adapter', sourceFile: 'assets/roblox/./quality-fixture/adapter/init.luau' }],
+  ['중복 경로 구분자', { sourceRoot: 'assets/roblox//quality-fixture/adapter', sourceFile: 'assets/roblox//quality-fixture/adapter/init.luau' }],
+  ['플랫폼 루트 불일치', { sourceRoot: 'assets/unity/quality-fixture/adapter', sourceFile: 'assets/unity/quality-fixture/adapter/init.luau' }],
+  ['축소된 작업 창', { workerTimeoutMinutes: 5 }]
+]) {
+  test(`품질 주문의 ${name}는 일반 게임 쓰기로 전환되지 않고 거부된다`, () => {
+    const unit = { ...qualityTask('adapter').assetQualityWorkUnit, ...changes };
+    assert.throws(() => createVibeEngineAdapter({ target: 'roblox', gameSlug: 'consumer', assetQualityWorkUnit: unit }), /INTERNAL_ASSET_QUALITY_SOURCE_SCOPE_INVALID/);
+  });
+}
+
+test('품질 주문과 단일 모션 주문을 섞어 책임 범위를 덮어쓰지 않는다', () => {
+  const unit = qualityTask('adapter').assetQualityWorkUnit;
+  const motion = { scope: 'INTERNAL_ASSET_LIBRARY', objectId: 'roblox-world-ghost-fixture', objectCount: 1, motionCount: 1, clipId: 'walk', sourcePath: 'init.luau' };
+  assert.throws(() => createVibeEngineAdapter({ target: 'roblox', assetQualityWorkUnit: unit, motionRepairWorkUnit: motion }), /INTERNAL_ASSET_QUALITY_SOURCE_SCOPE_INVALID/);
+  assert.equal(createVibeEngineAdapter({ target: 'roblox', motionRepairWorkUnit: motion }).source.internalAssetMotion, true);
+  assert.equal(createVibeEngineAdapter({ target: 'roblox', gameSlug: 'consumer' }).source.root, 'roblox-games/consumer');
 });
