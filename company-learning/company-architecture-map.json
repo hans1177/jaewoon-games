@@ -1,5 +1,5 @@
 {
-  "version": 325,
+  "version": 326,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2985,7 +2985,18 @@
           "primitiveOnlyFinalActorForbidden": true,
           "roleSpecificVisualAndMotionRequired": true,
           "minimumDistinctRoleAxes": 3,
-          "newWorkerQueueOrPipeline": false
+          "newWorkerQueueOrPipeline": false,
+          "npcIdentityDirector": "assets/vibe-character-identity-director.js",
+          "npcRoleProductionContract": "assets/vibe-character-identity-director.js#VIBE_NPC_ROLE_PRODUCTION_CONTRACT",
+          "npcPhysicalDiversity": {
+            "roleAwareHeightWeight": true,
+            "bodyProportionAxes": true,
+            "faceHairSurfaceOutfitVariation": true,
+            "stanceGaitInteractionMotionVariation": true,
+            "masterGlbLineageRequired": true,
+            "primitiveOrWeldOnlyFinalNpcForbidden": true,
+            "gameplayAuthorityExpansion": false
+          }
         },
         "npcRoleProduction": {
           "policy": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.studioAssetUniverse.npcRoleProduction",
