@@ -3,376 +3,18 @@
   "gameId": "horror-escape-room",
   "date": "2026-10-08",
   "seedId": "OWNER-DESIGN-HORROR-ESCAPE-ROOM",
-  "fingerprint": "cd8236a5dd9163e491f0bb61f87c30a3215aa4a08e3f45ff0cbc246ae3cc9ed2",
-  "policyDigest": "223f74bb658bbab4921a06b74e652d4e7fc27d174188c3b4b3488e9b3d026f6f",
-  "engineDigest": "635ecb0d21a9a5a7334acf530359981b48cfa98aabec8a331b74dde6b9b610e8",
+  "fingerprint": "7f02bfc80ef41cd8e04a76092f18a87e17cf0342b253449ec16eacacee2639a0",
+  "policyDigest": "aeaa6bc4a0a63214afbd971d20e292165286bd9fc150bd87a134529dc53a3dea",
+  "engineDigest": "d985f7aaf22b24468b2601492050d9ada4963d118de46d78b5ac12cd5c97d032",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "designer_draft_slices::identity-core": {
-      "identity": "인간 4명과 몬스터 4명이 시작하고, 몬스터의 명시적 감염 공격에 맞은 인간이 즉시 몬스터로 전환돼 판세가 계속 뒤집히는 8인 감염 추격전.",
-      "playerFantasy": "감염된 인간은 고유 도구·대시·정화로 생존/반격하며, 몬스터는 에너지를 소모하는 명시적 감염 공격으로 인간을 감염한다. 감염된 인간은 몬스터로 전환하고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격을 시작한다.",
-      "coreFun": "4대4에서 시작한 인원 구성이 감염 공격과 정화 때문에 실시간으로 바뀌며, 방금 전 동료가 다음 순간 고유 감염 스킬을 가진 몬스터로 나를 쫓는 긴장감. 인간4/몬스터4 배정, 빈자리 AI 충원. 인간은 고유 도구·대시·정화로 생존/반격, 몬스터는 명시적 감염 공격으로 인간을 감염. 감염된 인간은 몬스터로 전환하고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격. 인간 정화 공격은 몬스터를 라운드에서 제거. 한 진영이 0명이 되면 즉시 승패. 240초까지 양팀이 남으면 무승부.",
-      "coreLoop": [
-        "인간4/몬스터4 배정, 빈자리 AI 충원",
-        "인간은 고유 도구·대시·정화로 생존/반격",
-        "몬스터는 명시적 감염 공격으로 인간을 감염",
-        "감염된 인간은 몬스터로 전환하고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격",
-        "인간 정화 공격은 몬스터를 라운드에서 제거",
-        "한 진영이 0명이 되면 즉시 승패",
-        "240초까지 양팀이 남으면 무승부"
-      ],
-      "signatureSystems": [
-        {
-          "name": "4대4 AI 충원",
-          "purpose": "논리 인원 8명, 인간4/몬스터4를 실제 플레이어+AI로 항상 채운다.",
-          "playerChoice": "인간 직업 선택 및 AI 충원 조건"
-        },
-        {
-          "name": "감염 전환",
-          "purpose": "몬스터의 명시적 서버 권한 감염 공격이 적중한 인간이 탈락하지 않고 몬스터로 전환하며 인간 직업별 감염 스킬을 얻는다.",
-          "playerChoice": "감염 공격 적중 여부"
-        },
-        {
-          "name": "인간 정화",
-          "purpose": "인간이 정화 공격으로 몬스터를 라운드에서 제거한다.",
-          "playerChoice": "정화 공격 실행 여부"
-        },
-        {
-          "name": "확장형 인간 로스터",
-          "purpose": "각 인간은 고유 도구+패시브+감염 후 고유 능력 세트로 계속 추가한다.",
-          "playerChoice": "인간 추가 여부"
-        }
-      ]
-    },
-    "designer_draft_slices::systems-progression": {
-      "systemInterconnections": [
-        {
-          "fromSystem": "4대4 AI 충원",
-          "toSystem": "감염 전환",
-          "trigger": "몬스터의 명시적 감염 공격이 적중한 인간",
-          "stateChange": "인간은 몬스터로 전환하고, 직업별 감염 스킬을 얻는다"
-        },
-        {
-          "fromSystem": "감염 전환",
-          "toSystem": "인간 정화",
-          "trigger": "인간 정화 공격",
-          "stateChange": "몬스터는 라운드에서 제거된다"
-        },
-        {
-          "fromSystem": "4대4 AI 충원",
-          "toSystem": "확장형 인간 로스터",
-          "trigger": "인간 추가 요청",
-          "stateChange": "인간은 고유 도구+패시브+감염 후 고유 능력 세트로 추가된다"
-        }
-      ],
-      "progressionDirection": "인간 직업과 몬스터를 동일한 데이터 구조에 계속 추가하며, 각 캐릭터는 플레이 방식이 달라지게 확장한다",
-      "progressionEconomyBalance": {
-        "progressionLoop": "인간4/몬스터4 배정, 빈자리 AI 충원",
-        "resourceFlow": "인간은 고유 도구·대시·정화로 생존/반격, 몬스터는 명시적 감염 공격으로 인간을 감염",
-        "balanceRules": "감염된 인간은 몬스터로 전환하고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격, 인간 정화 공격은 몬스터를 라운드에서 제거, 한 진영이 0명이 되면 즉시 승패, 240초까지 양팀이 남으면 무승부"
-      },
-      "contentExpansionPlan": [
-        {
-          "milestone": "새 적·위협 또는 행동 패턴",
-          "newGameplay": "감염 전환, 정화, 대시, 고유 능력 세트 추가",
-          "systemImpact": "4대4 AI 충원, 감염 전환, 인간 정화, 확장형 인간 로스터"
-        },
-        {
-          "milestone": "새 공간·경로 또는 목표",
-          "newGameplay": "학교·폐병원·폐놀이공원 순환, 맵 이벤트",
-          "systemImpact": "3맵 순환, 맵 이벤트"
-        },
-        {
-          "milestone": "새 상호작용 또는 전략 결과",
-          "newGameplay": "대시/몬스터 능력, 모바일 UI, 저장",
-          "systemImpact": "대시/몬스터 능력, 모바일 UI, 저장"
-        }
-      ],
-      "failureRetryRisk": {
-        "failureStates": [
-          "인간4/몬스터4 배정",
-          "AI 충원",
-          "감염 공격",
-          "정화 공격",
-          "승패"
-        ],
-        "retryFlow": "감염 전환, 정화, 대시, 몬스터 능력, 저장",
-        "riskPressure": "감염 공격, 정화 공격, 대시, 몬스터 능력, 저장",
-        "recoveryRules": "감염 전환, 정화, 대시, 몬스터 능력, 저장"
-      }
-    },
-    "designer_draft_slices::platform-profiles": {
-      "platformFitPlan": {
-        "targetPlatform": "ROBLOX",
-        "inputModel": "모바일 이동과 큰 상호작용 버튼, PC 키보드·게임패드 보조 입력을 사용한다.",
-        "performanceBudget": "모바일에서 조명·괴물·파티클을 제한하고 방 단위 활성화로 인스턴스 수를 관리한다.",
-        "sessionConstraints": "1인은 역할 선호 선택 + AI 충원, 2명 이상은 실제 플레이어를 공정 배정하고 AI가 빈 인간/몬스터 슬롯을 채워 논리 4대4로 시작한다."
-      },
-      "platformProfiles": {
-        "ROBLOX": {
-          "platform": "ROBLOX",
-          "inputModel": "모바일 이동과 큰 상호작용 버튼, PC 키보드·게임패드 보조 입력을 사용한다.",
-          "sessionModel": "1인은 역할 선호 선택 + AI 충원, 2명 이상은 실제 플레이어를 공정 배정하고 AI가 빈 인간/몬스터 슬롯을 채워 논리 4대4로 시작한다.",
-          "multiplayerRuntime": "서버가 Role, Infected, HumanCount, MonsterCount, Energy, cooldown, conversion, purification, winner와 역할선정 공정 상태를 authoritative하게 관리한다.",
-          "performanceBudget": "모바일에서 조명·괴물·파티클을 제한하고 방 단위 활성화로 인스턴스 수를 관리한다.",
-          "uiUx": "로비에서는 역할 선호·인간 직업·몬스터 폼을 선택하고, 라운드에서는 인간 정화/대시 또는 몬스터 감염 공격/고유 스킬만 노출한다.",
-          "saveAndNetwork": "MonsterXP·MonsterForm·HumanForm·코스메틱·괴담/로어 진행과 역할 공정 가중치에 필요한 최소 기록을 저장하고 라운드 판정은 서버가 관리한다.",
-          "platformContentAdaptation": "학교·폐병원·폐놀이공원에서 인간은 정화와 대시로 몬스터를 제거하고, 몬스터는 명시적 감염 공격으로 인간을 전환한다. 감염된 인간은 직업별 고유 감염 스킬을 사용한다.",
-          "internalReleaseTarget": "OPEN_CLOUD_PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
-          "validationEvidence": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract, Mobile input/UI contract, Save/rejoin contract when applicable, Multiplayer state-sync contract when applicable, Headless exact-artifact regression, Open Cloud private/restricted publish"
-        },
-        "UNITY": {
-          "platform": "UNITY",
-          "inputModel": "모바일 이동과 큰 상호작용 버튼, PC 키보드·게임패드 보조 입력을 사용한다.",
-          "sessionModel": "1인은 역할 선호 선택 + AI 충원, 2명 이상은 실제 플레이어를 공정 배정하고 AI가 빈 인간/몬스터 슬롯을 채워 논리 4대4로 시작한다.",
-          "multiplayerRuntime": "서버가 Role, Infected, HumanCount, MonsterCount, Energy, cooldown, conversion, purification, winner와 역할선정 공정 상태를 authoritative하게 관리한다.",
-          "performanceBudget": "모바일에서 조명·괴물·파티클을 제한하고 방 단위 활성화로 인스턴스 수를 관리한다.",
-          "uiUx": "로비에서는 역할 선호·인간 직업·몬스터 폼을 선택하고, 라운드에서는 인간 정화/대시 또는 몬스터 감염 공격/고유 스킬만 노출한다.",
-          "saveAndNetwork": "MonsterXP·MonsterForm·HumanForm·코스메틱·괴담/로어 진행과 역할 공정 가중치에 필요한 최소 기록을 저장하고 라운드 판정은 서버가 관리한다.",
-          "platformContentAdaptation": "학교·폐병원·폐놀이공원에서 인간은 정화와 대시로 몬스터를 제거하고, 몬스터는 명시적 감염 공격으로 인간을 전환한다. 감염된 인간은 직업별 고유 감염 스킬을 사용한다.",
-          "internalReleaseTarget": "OPEN_CLOUD_PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
-          "validationEvidence": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract, Mobile input/UI contract, Save/rejoin contract when applicable, Multiplayer state-sync contract when applicable, Headless exact-artifact regression, Open Cloud private/restricted publish"
-        }
-      }
-    },
-    "designer_draft_slices::web-canonical": {
-      "webCanonicalDesign": {
-        "role": "WEB_DETAILED_GAME_ORIGINAL",
-        "designAuthority": "GAME_DESIGN_REFERENCE_NOT_SOURCE_CODE_AUTHORITY",
-        "playerFlow": [
-          "인간4/몬스터4 배정",
-          "AI 충원",
-          "감염 공격",
-          "정화 공격",
-          "승패 판정"
-        ],
-        "worldAndTraversal": "WEB_2_5D_HORROR_ESCAPE_ROOM",
-        "systemsAndContent": "WEB_2_5D_HORROR_ESCAPE_ROOM_CONTENT",
-        "combatAndInteraction": "WEB_2_5D_HORROR_ESCAPE_ROOM_COMBAT",
-        "progressionAndEconomy": "WEB_2_5D_HORROR_ESCAPE_ROOM_PROGRESSION",
-        "sessionFailureRecovery": "WEB_2_5D_HORROR_ESCAPE_ROOM_SESSION_FAILURE",
-        "uiMenuAndOnboarding": "WEB_2_5D_HORROR_ESCAPE_ROOM_UI_MENU",
-        "inputCameraAccessibility": "WEB_2_5D_HORROR_ESCAPE_ROOM_INPUT_ACCESSIBILITY",
-        "presentationAndAudio": "WEB_2_5D_HORROR_ESCAPE_ROOM_PRESENTATION",
-        "multiplayerPersistence": "WEB_2_5D_HORROR_ESCAPE_ROOM_MULTIPLAYER_PERSISTENCE",
-        "expansionSpace": "WEB_2_5D_HORROR_ESCAPE_ROOM_EXPANSION_SPACE"
-      }
-    },
-    "designer_draft_slices::platform-expansion": {
-      "platformExpansionPolicy": {
-        "mode": "SHARED_LARGE_FRAME_PLATFORM_NATIVE_EXPANSION",
-        "sharedLargeFrame": [
-          "CORE_IDENTITY",
-          "CORE_IDENTITY",
-          "CORE_IDENTITY",
-          "CORE_IDENTITY",
-          "CORE_IDENTITY"
-        ],
-        "expansionLimit": "NO_ARTIFICIAL_PARITY_LIMIT_WITHIN_SHARED_LARGE_FRAME",
-        "webRule": "WEB_2_5D_HORROR_ESCAPE_ROOM",
-        "unityRule": "UNITY_4_3D_HORROR_ESCAPE_ROOM",
-        "robloxRule": "ROBLOX_3_2D_HORROR_ESCAPE_ROOM"
-      }
-    },
-    "designer_draft_slices::ux-presentation": {
-      "visualDirection": "세 게임 중 가장 현실적인 인간 비율과 가장 비정상적인 몬스터 체형을 강하게 대비시키는 가독성 중심 공포 3D",
-      "mobileUx": "모바일 이동과 큰 상호작용 버튼, PC 키보드·게임패드 보조 입력을 사용한다",
-      "uxAccessibilityPlan": {
-        "hudPriorities": "인간4/몬스터4 배정, AI 충원, 감염 공격, 정화 공격, 승패 판정",
-        "touchAndInput": "모바일 이동과 큰 상호작용 버튼, PC 키보드·게임패드 보조 입력을 사용한다",
-        "readability": "로비에서는 역할 선호·인간 직업·몬스터 폼을 선택하고, 라운드에서는 인간 정화/대시 또는 몬스터 감염 공격/고유 스킬만 노출한다",
-        "accessibility": "로비에서는 역할 선호·인간 직업·몬스터 폼을 선택하고, 라운드에서는 인간 정화/대시 또는 몬스터 감염 공격/고유 스킬만 노출한다"
-      },
-      "artAudioDirection": {
-        "visualIdentity": "가독성 중심 공포 3D",
-        "audioIdentity": "감염 전환, 정화, 대시, 고유 능력 세트 추가",
-        "gameplayFeedbackSync": "감염 공격, 정화 공격, 대시, 몬스터 능력, 저장"
-      }
-    },
-    "designer_draft_slices::market-multiplayer": {
-      "marketTargetDirection": "게임 내부에서 인물과 몬스터의 역할 선호를 기반으로 한 AI 충원과 감염 전환 시스템을 확장",
-      "steamExpansionDecision": "게임 내부에서 인물과 몬스터의 역할 선호를 기반으로 한 AI 충원과 감염 전환 시스템을 확장",
-      "multiplayerMode": "SINGLE",
-      "multiplayerExpansionDecision": "SINGLE_MULTIPLAYER_MODE_EXPANSION_DECISION_NOT_APPLICABLE_OR_NOT_REQUESTED_OR_NOT_SUPPORTED_OR_NOT_RELEVANT_OR_NOT_NEEDED_OR_NOT_AVAILABLE_OR_NOT_SUPPORTED_OR_NOT_RELEVANT_OR_NOT_NEEDED_OR_NOT_AVAILABLE_OR_NOT_SUPPORTED_OR_NOT_RELEVANT_OR_NOT_NEEDED_OR_NOT_AVAILABLE_OR_NOT_SUPPORTED_OR_NOT_RELEVANT_OR_NOT_NEEDED_OR_NOT_AVAILABLE_OR_NOT_SUPPORTED_OR_NOT_RELEVANT_OR_NOT_NEEDED_OR_NOT_AVAILABLE_OR_NOT_SUPPORTED_OR_NOT_RELEVANT_OR_NOT_NEEDED_OR_NOT_AVAILABLE_OR_NOT_SUPPORTED_OR_NOT_RELEVANT_OR_NOT_N"
-    },
-    "designer_draft_slices::alternatives": {
-      "designAlternatives": [
-        {
-          "label": "PLAN_A",
-          "concept": "기존 디자이너의 원본 설계를 기반으로, 4대4 AI 충원, 감염 전환, 인간 정화, 확장형 인간 로스터 등 기존 시스템을 유지하며, 감염 공격과 정화의 실시간 변화를 강화한 플레이어 경험을 제공한다.",
-          "playerFantasy": "감염된 인간은 고유 도구·대시·정화로 생존/반격하며, 몬스터는 에너지를 소모하는 명시적 감염 공격으로 인간을 감염한다. 감염된 인간은 몬스터로 전환하고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격을 시작한다.",
-          "genreDirection": "공포 3D, 현실적인 인간 비율, 비정상적인 몬스터 체형, 8인 감염 추격전",
-          "coreLoopShift": "인간4/몬스터4 배정, 빈자리 AI 충원, 감염 공격, 정화 공격, 승패 판정",
-          "mapTopologyRegionRoles": "학교·폐병원·폐놀이공원 순환, 맵 이벤트",
-          "landmarksTraversal": "감염 전환, 인간 정화, 대시/몬스터 능력, 저장",
-          "enemyEcosystemCounterplay": "대시/몬스터 능력, 모바일 UI, 저장",
-          "bossSignatureMoments": "감염 전환, 인간 정화, 대시, 몬스터 능력, 저장",
-          "progressionEconomy": "인간 직업과 몬스터를 동일한 데이터 구조에 계속 추가하며, 각 캐릭터는 플레이 방식이 달라지게 확장한다",
-          "questStoryEventFlow": "감염 공격, 정화 공격, 대시, 몬스터 능력, 저장",
-          "failureRetryRecovery": "감염 전환, 정화, 대시, 몬스터 능력, 저장",
-          "platformAdaptation": "모바일 이동과 큰 상호작용 버튼, PC 키보드·게임패드 보조 입력을 사용한다",
-          "implementationScope": "기존 원본 설계 유지, 로블·유니티·웹의 구현 차이를 디자이너가 원본에 맞춰 설계한다",
-          "validationPlan": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract, Mobile input/UI contract, Save/rejoin contract when applicable, Multiplayer state-sync contract when applicable, Headless exact-artifact regression, Open Cloud private/restricted publish"
-        },
-        {
-          "label": "PLAN_B",
-          "concept": "기존 디자이너의 원본 설계를 기반으로, 4대4 AI 충원, 감염 전환, 인간 정화, 확장형 인간 로스터 등 기존 시스템을 유지하며, 감염 공격과 정화의 실시간 변화를 강화한 플레이어 경험을 제공한다.",
-          "playerFantasy": "감염된 인간은 고유 도구·대시·정화로 생존/반격하며, 몬스터는 에너지를 소모하는 명시적 감염 공격으로 인간을 감염한다. 감염된 인간은 몬스터로 전환하고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격을 시작한다.",
-          "genreDirection": "공포 3D, 현실적인 인간 비율, 비정상적인 몬스터 체형, 8인 감염 추격전",
-          "coreLoopShift": "인간4/몬스터4 배정, 빈자리 AI 충원, 감염 공격, 정화 공격, 승패 판정",
-          "mapTopologyRegionRoles": "학교·폐병원·폐놀이공원 순환, 맵 이벤트",
-          "landmarksTraversal": "감염 전환, 인간 정화, 대시/몬스터 능력, 저장",
-          "enemyEcosystemCounterplay": "대시/몬스터 능력, 모바일 UI, 저장",
-          "bossSignatureMoments": "감염 전환, 인간 정화, 대시, 몬스터 능력, 저장",
-          "progressionEconomy": "인간 직업과 몬스터를 동일한 데이터 구조에 계속 추가하며, 각 캐릭터는 플레이 방식이 달라지게 확장한다",
-          "questStoryEventFlow": "감염 공격, 정화 공격, 대시, 몬스터 능력, 저장",
-          "failureRetryRecovery": "감염 전환, 정화, 대시, 몬스터 능력, 저장",
-          "platformAdaptation": "모바일 이동과 큰 상호작용 버튼, PC 키보드·게임패드 보조 입력을 사용한다",
-          "implementationScope": "기존 원본 설계 유지, 로블·유니티·웹의 구현 차이를 디자이너가 원본에 맞춰 설계한다",
-          "validationPlan": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract, Mobile input/UI contract, Save/rejoin contract when applicable, Multiplayer state-sync contract when applicable, Headless exact-artifact regression, Open Cloud private/restricted publish"
-        }
-      ]
-    },
-    "designer_draft_slices::selection-variety": {
-      "selectedDesignPlan": {
-        "label": "PLAN_A",
-        "rationale": "선택된 설계 계획은 기존 원본의 핵심 요소인 '4대4 AI 충원', '감염 전환', '인간 정화'를 강조하고, 모바일 UI와 저장 기능을 포함하여 사용자 경험을 최적화한 설계입니다.",
-        "identityPreserved": "기존 원본의 '인간4/몬스터4 배정', 'AI 충원', '감염 공격', '정화 공격' 등의 핵심 요소를 유지합니다.",
-        "creativeDeviation": "감염 스킬의 유니크성과 모바일 UI의 편의성, 저장 기능의 실용성을 강조하여 사용자 경험을 향상시킵니다.",
-        "genreChange": true,
-        "reversibility": "감염 전환 및 정화 공격은 실시간으로 적용되며, 사용자 경험의 유연성을 유지합니다."
-      },
-      "contentVarietyPlan": {
-        "regions": [
-          {
-            "name": "학교/폐병원/폐놀이공원",
-            "traversal": "순환 방식으로 인간과 몬스터의 역할이 실시간으로 바뀌며, 맵 이벤트를 통해 플레이어는 다양한 상호작용을 경험할 수 있습니다.",
-            "riskReward": "맵 이벤트는 사용자 경험의 다양성을 증대시키고, 감염 스킬의 유니크성을 강화합니다.",
-            "landmark": "인간은 정화와 대시로 몬스터를 제거하고, 몬스터는 명시적 감염 공격으로 인간을 전환합니다.",
-            "encounterPattern": "감염 공격과 정화 공격은 실시간으로 적용되며, 사용자 경험의 유연성을 유지합니다.",
-            "resourcePressure": "감염 공격과 정화 공격은 실시간으로 적용되며, 사용자 경험의 유연성을 유지합니다.",
-            "storyContext": "감염 전환과 정화 공격은 사용자 경험의 유연성을 유지하며, 감염 스킬의 유니크성을 강화합니다."
-          }
-        ],
-        "enemiesOrChallenges": [
-          {
-            "name": "감염 스킬",
-            "behavior": "유니크한 감염 스킬을 사용하여 사용자 경험의 유연성을 유지하며, 감염 전환과 정화 공격의 실시간 적용을 강조합니다.",
-            "counterplay": "감염 스킬의 유니크성과 사용자 경험의 유연성을 강조하여, 사용자 경험의 다양성을 증대시킵니다.",
-            "positioning": "감염 스킬은 사용자 경험의 유연성을 강조하며, 감염 전환과 정화 공격의 실시간 적용을 강조합니다.",
-            "timing": "감염 공격과 정화 공격은 실시간으로 적용되며, 사용자 경험의 유연성을 유지합니다.",
-            "mobility": "감염 공격과 정화 공격은 실시간으로 적용되며, 사용자 경험의 유연성을 유지합니다.",
-            "groupRole": "감염 스킬은 사용자 경험의 유연성을 강조하며, 감염 전환과 정화 공격의 실시간 적용을 강조합니다.",
-            "identity": "감염 스킬은 사용자 경험의 유연성을 강조하며, 감염 전환과 정화 공격의 실시간 적용을 강조합니다.",
-            "rewardMeaning": "감염 스킬은 사용자 경험의 유연성을 강조하며, 감염 전환과 정화 공격의 실시간 적용을 강조합니다."
-          }
-        ],
-        "objectives": [
-          {
-            "role": "인간",
-            "variation": "인간은 고유 도구·대시·정화로 생존/반격하며, 감염 스킬의 유니크성을 강조하여, 사용자 경험의 유연성을 유지합니다."
-          },
-          {
-            "role": "몬스터",
-            "variation": "몬스터는 명시적 감염 공격으로 인간을 감염하며, 감염 스킬의 유니크성을 강조하여, 사용자 경험의 유연성을 유지합니다."
-          }
-        ],
-        "antiMonotonyRule": "감염 스킬의 유니크성과 사용자 경험의 유연성을 강조하여, 사용자 경험의 다양성을 증대시킵니다."
-      }
-    },
-    "local_authoring_parts::94ba74f3e4877ecadcadbde2ff7895fe416480e9e49b90523d91012576e7a3fc:applicable,worldRules,characterGoals,plotBeats,questStates,foreshadowing": {
-      "applicable": true,
-      "worldRules": [
-        "4대4 감염전",
-        "감염 공격과 정화 규칙",
-        "감염된 인간은 몬스터로 전환",
-        "인간 정화 공격은 몬스터를 라운드에서 제거",
-        "한 진영이 0명이 되면 즉시 승패",
-        "240초까지 양팀이 남으면 무승부"
-      ],
-      "characterGoals": [
-        "인간4/몬스터4 배정",
-        "AI 충원",
-        "감염 공격",
-        "정화 공격",
-        "승패 판정"
-      ],
-      "plotBeats": [
-        "감염 전환",
-        "정화 공격",
-        "대시/몬스터 능력 추가",
-        "인간 직업별 고유 감염 스킬 사용",
-        "감염된 인간은 몬스터로 전환"
-      ],
-      "questStates": [
-        "인간4/몬스터4 배정",
-        "AI 충원",
-        "감염 공격",
-        "정화 공격",
-        "승패 판정"
-      ],
-      "foreshadowing": [
-        "감염 공격과 정화 규칙",
-        "감염된 인간은 몬스터로 전환",
-        "인간 직업별 고유 감염 스킬 사용",
-        "인간 정화 공격은 몬스터를 라운드에서 제거",
-        "한 진영이 0명이 되면 즉시 승패"
-      ]
-    },
-    "local_authoring_parts::d2beb499deaa47e909c4fbd4ee3f564b0d09549bb33318cf8402c5b76dbbc404:payoffs,twists,dialogueRules": {
-      "payoffs": [
-        "인간4/몬스터4 배정",
-        "AI 충원",
-        "감염 공격",
-        "정화 공격",
-        "승패 판정"
-      ],
-      "twists": [
-        "감염 전환",
-        "정화 공격",
-        "대시/몬스터 능력 추가",
-        "인간 직업별 고유 감염 스킬 사용"
-      ],
-      "dialogueRules": [
-        "감염 공격 적중 시 인간은 몬스터로 전환하고, 직업별 고유 감염 스킬을 얻는다.",
-        "정화 공격 시 몬스터는 라운드에서 제거된다.",
-        "인간4/몬스터4 배정 및 AI 충원은 실시간으로 바뀌며, 감염 스킬을 사용한다.",
-        "한 진영이 0명이 되면 즉시 승패, 240초까지 양팀이 남으면 무승부."
-      ]
-    },
-    "local_authoring_parts::ca585e553470f2c217601853cca864617dfa14b6ddf410f9ffb02c00a303cc40:characterVoiceProfiles": {
-      "characterVoiceProfiles": [
-        {
-          "character": "감염된 인간",
-          "grammarRegister": "감염된 인간은 고유 도구·대시·정화로 생존/반격하며, 몬스터는 에너지를 소모하는 명시적 감염 공격으로 인간을 감염한다.",
-          "vocabularyRhythm": "고유 도구·대시·정화로 생존/반격",
-          "relationshipShift": "감염된 인간은 몬스터로 전환하고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격을 시작한다.",
-          "emotionalRange": "긴장감, 승리의 기쁨, 승패의 슬픔",
-          "knowledgeBoundary": "감염 공격과 정화의 규칙을 숙지하고, 인간 직업별 고유 감염 스킬을 사용한다.",
-          "subtextBehavior": "감염 공격 적중 시 인간은 몬스터로 전환하고, 직업별 고유 감염 스킬을 얻는다. 정화 공격 시 몬스터는 라운드에서 제거된다."
-        }
-      ]
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 12,
-      "failures": 4,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 2522647,
-      "lastMs": 132244,
-      "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-07T21:21:50.178Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-07T20:25:07.525Z",
-  "updatedAt": "2026-10-07T21:21:50.186Z",
+  "createdAt": "2026-10-07T22:04:59.348Z",
+  "updatedAt": "2026-10-07T22:04:59.374Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -393,35 +35,226 @@
           "VFX",
           "WEAPON"
         ],
+        "availableRoles": {
+          "AUDIO": [],
+          "CREATURE": [
+            "AQUATIC_BODY",
+            "ARACHNID",
+            "ARACHNID_CORE",
+            "ARACHNID_LEG_CLUSTER",
+            "CANINE_HEAD_MODULE",
+            "CLAW_PAIR",
+            "CREATURE_CLAW_MODULE",
+            "CREATURE_PARTS_PACK",
+            "ELITE_ORNAMENT",
+            "FIELD_ELITE_GROUND",
+            "FIELD_ELITE_WATER",
+            "FIELD_ELITE_WIND",
+            "FIN_PAIR",
+            "FLYING_BODY",
+            "GIANT_TORSO",
+            "GOLEM_CORE",
+            "GRAZER_HEAD",
+            "HORN_PAIR",
+            "HUMANOID_RAIDER_TORSO",
+            "INSECT_ARACHNID",
+            "INSECT_HEAD",
+            "LONG_JAW_MODULE",
+            "MANDIBLE_PAIR",
+            "MONSTER_PACK",
+            "PLAINS_WILD_DARK",
+            "PLAINS_WILD_GROUND",
+            "PLAINS_WILD_WIND",
+            "PREDATOR_HEAD",
+            "SERPENT_BODY",
+            "SHELL_BACK",
+            "STARTER_HERO_FIRE",
+            "STARTER_HERO_GRASS",
+            "STARTER_HERO_WATER",
+            "TAIL_LONG",
+            "TENTACLE_CLUSTER",
+            "THORAX_INSECT",
+            "TORSO_BIPED",
+            "TORSO_QUADRUPED",
+            "UNDEAD_TORSO",
+            "WING_PAIR"
+          ],
+          "MOTION": [
+            "BED_LIE_DOWN",
+            "BLEND_NEUTRAL",
+            "BLOCK_HOLD",
+            "BLOCK_RAISE",
+            "CARRY_IDLE",
+            "CAST_BURST",
+            "CHANNEL_LOOP",
+            "CLIMB_LOOP",
+            "COOK_LOOP",
+            "COUNTER_READY",
+            "CRAFT_LOOP",
+            "CROUCH_IDLE",
+            "DEATH_FRONT",
+            "DODGE_LEFT",
+            "DODGE_RIGHT",
+            "DOWNED_IDLE",
+            "EMOTE_WAVE",
+            "EQUIP_DRAW",
+            "FARM_TEND",
+            "FATIGUED_IDLE",
+            "FISH_CAST",
+            "GATHER_SWING",
+            "GUARD_BREAK",
+            "HEAVY_ATTACK_1",
+            "HIT_BACK",
+            "HIT_FRONT",
+            "IDLE_RELAXED",
+            "INJURED_WALK",
+            "INTERACT_USE",
+            "JOG",
+            "JUMP_START",
+            "LADDER_ENTER",
+            "LADDER_EXIT",
+            "LAND",
+            "LEAN_WALL_IDLE",
+            "LIGHT_ATTACK_1",
+            "MOTION_PACK",
+            "NPC_WORK_LOOP",
+            "OPEN_CONTAINER",
+            "OPEN_DOOR",
+            "PARRY_PERFECT",
+            "PICKUP_GROUND",
+            "PLACE_GROUND",
+            "PULL_OBJECT",
+            "PUSH_OBJECT",
+            "RANGED_DRAW_SHOT",
+            "REVIVE_HELP",
+            "ROLL_FORWARD",
+            "RUN",
+            "SIT_DOWN",
+            "SLOPE_ASCEND",
+            "SLOPE_DESCEND",
+            "SPRINT",
+            "STAND_UP",
+            "START",
+            "STOP",
+            "SWIM_FORWARD",
+            "TALK_GESTURE",
+            "TURN_90",
+            "UNEQUIP_STOW",
+            "USE_CONSUMABLE",
+            "WALK"
+          ],
+          "VFX": [
+            "ATTACK_TELEGRAPH_PRESENTATION",
+            "BLOCK_CONTACT",
+            "BOSS",
+            "BUFF",
+            "BURST_FEEDBACK",
+            "COUNTER_WINDOW_PRESENTATION",
+            "CRAFT",
+            "CRITICAL",
+            "DEBUFF",
+            "DESTRUCTION",
+            "DISMANTLE",
+            "DODGE",
+            "ENVIRONMENT",
+            "FAST_MOTION_TRAIL",
+            "GUARD_BREAK_WARNING",
+            "HEAL",
+            "IMPACT_CONFIRMATION",
+            "INTERACTION",
+            "LOOT_COMMON",
+            "LOOT_LEGENDARY",
+            "LOOT_RARE",
+            "MOBILE_DENSITY",
+            "PERFECT_PARRY_CONFIRMATION",
+            "QUEST_UPDATE",
+            "STATUS",
+            "UPGRADE",
+            "VFX_PACK",
+            "WEATHER"
+          ],
+          "WEAPON": [
+            "AXE",
+            "BOW",
+            "CLUB",
+            "CROSSBOW",
+            "CROSS_GUARD_MODULE",
+            "DAGGER",
+            "DUAL_WIELD_PAIR",
+            "GREAT_AXE",
+            "HAMMER",
+            "HAMMER_MACE",
+            "LONG_BLADE_MODULE",
+            "LONG_GRIP_MODULE",
+            "MAGIC_FOCUS",
+            "MODULAR_COMBAT_PARTS_PACK",
+            "PICKAXE",
+            "SCYTHE",
+            "SHIELD",
+            "SPEAR",
+            "STAFF",
+            "SWORD",
+            "THROWN",
+            "TOOL_PACK",
+            "TWO_HAND_BLADE",
+            "WARHAMMER"
+          ]
+        },
         "candidates": [
           {
             "family": "AUDIO",
-            "action": "AUTHOR",
-            "assetId": null
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
           },
           {
             "family": "CREATURE",
-            "action": "ADAPT",
-            "assetId": "roblox-insect-spider-hd",
-            "applicationMode": "STYLE_ADAPT"
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
           },
           {
             "family": "MOTION",
-            "action": "ADAPT",
-            "assetId": "roblox-common-motion-bed-lie-down",
-            "applicationMode": "STYLE_ADAPT"
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
           },
           {
             "family": "VFX",
-            "action": "ADAPT",
-            "assetId": "roblox-common-vfx-attack-telegraph-pulse",
-            "applicationMode": "STYLE_ADAPT"
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
           },
           {
             "family": "WEAPON",
-            "action": "ADAPT",
-            "assetId": "roblox-common-tool-axe",
-            "applicationMode": "STYLE_ADAPT"
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
           }
         ]
       },
@@ -435,35 +268,226 @@
           "VFX",
           "WEAPON"
         ],
+        "availableRoles": {
+          "AUDIO": [],
+          "CREATURE": [
+            "AQUATIC_BODY",
+            "ARACHNID",
+            "ARACHNID_CORE",
+            "ARACHNID_LEG_CLUSTER",
+            "CANINE_HEAD_MODULE",
+            "CLAW_PAIR",
+            "CREATURE_CLAW_MODULE",
+            "CREATURE_PARTS_PACK",
+            "ELITE_ORNAMENT",
+            "FIELD_ELITE_GROUND",
+            "FIELD_ELITE_WATER",
+            "FIELD_ELITE_WIND",
+            "FIN_PAIR",
+            "FLYING_BODY",
+            "GIANT_TORSO",
+            "GOLEM_CORE",
+            "GRAZER_HEAD",
+            "HORN_PAIR",
+            "HUMANOID_RAIDER_TORSO",
+            "INSECT_ARACHNID",
+            "INSECT_HEAD",
+            "LONG_JAW_MODULE",
+            "MANDIBLE_PAIR",
+            "MONSTER_PACK",
+            "PLAINS_WILD_DARK",
+            "PLAINS_WILD_GROUND",
+            "PLAINS_WILD_WIND",
+            "PREDATOR_HEAD",
+            "SERPENT_BODY",
+            "SHELL_BACK",
+            "STARTER_HERO_FIRE",
+            "STARTER_HERO_GRASS",
+            "STARTER_HERO_WATER",
+            "TAIL_LONG",
+            "TENTACLE_CLUSTER",
+            "THORAX_INSECT",
+            "TORSO_BIPED",
+            "TORSO_QUADRUPED",
+            "UNDEAD_TORSO",
+            "WING_PAIR"
+          ],
+          "MOTION": [
+            "BED_LIE_DOWN",
+            "BLEND_NEUTRAL",
+            "BLOCK_HOLD",
+            "BLOCK_RAISE",
+            "CARRY_IDLE",
+            "CAST_BURST",
+            "CHANNEL_LOOP",
+            "CLIMB_LOOP",
+            "COOK_LOOP",
+            "COUNTER_READY",
+            "CRAFT_LOOP",
+            "CROUCH_IDLE",
+            "DEATH_FRONT",
+            "DODGE_LEFT",
+            "DODGE_RIGHT",
+            "DOWNED_IDLE",
+            "EMOTE_WAVE",
+            "EQUIP_DRAW",
+            "FARM_TEND",
+            "FATIGUED_IDLE",
+            "FISH_CAST",
+            "GATHER_SWING",
+            "GUARD_BREAK",
+            "HEAVY_ATTACK_1",
+            "HIT_BACK",
+            "HIT_FRONT",
+            "IDLE_RELAXED",
+            "INJURED_WALK",
+            "INTERACT_USE",
+            "JOG",
+            "JUMP_START",
+            "LADDER_ENTER",
+            "LADDER_EXIT",
+            "LAND",
+            "LEAN_WALL_IDLE",
+            "LIGHT_ATTACK_1",
+            "MOTION_PACK",
+            "NPC_WORK_LOOP",
+            "OPEN_CONTAINER",
+            "OPEN_DOOR",
+            "PARRY_PERFECT",
+            "PICKUP_GROUND",
+            "PLACE_GROUND",
+            "PULL_OBJECT",
+            "PUSH_OBJECT",
+            "RANGED_DRAW_SHOT",
+            "REVIVE_HELP",
+            "ROLL_FORWARD",
+            "RUN",
+            "SIT_DOWN",
+            "SLOPE_ASCEND",
+            "SLOPE_DESCEND",
+            "SPRINT",
+            "STAND_UP",
+            "START",
+            "STOP",
+            "SWIM_FORWARD",
+            "TALK_GESTURE",
+            "TURN_90",
+            "UNEQUIP_STOW",
+            "USE_CONSUMABLE",
+            "WALK"
+          ],
+          "VFX": [
+            "ATTACK_TELEGRAPH_PRESENTATION",
+            "BLOCK_CONTACT",
+            "BOSS",
+            "BUFF",
+            "BURST_FEEDBACK",
+            "COUNTER_WINDOW_PRESENTATION",
+            "CRAFT",
+            "CRITICAL",
+            "DEBUFF",
+            "DESTRUCTION",
+            "DISMANTLE",
+            "DODGE",
+            "ENVIRONMENT",
+            "FAST_MOTION_TRAIL",
+            "GUARD_BREAK_WARNING",
+            "HEAL",
+            "IMPACT_CONFIRMATION",
+            "INTERACTION",
+            "LOOT_COMMON",
+            "LOOT_LEGENDARY",
+            "LOOT_RARE",
+            "MOBILE_DENSITY",
+            "PERFECT_PARRY_CONFIRMATION",
+            "QUEST_UPDATE",
+            "STATUS",
+            "UPGRADE",
+            "VFX_PACK",
+            "WEATHER"
+          ],
+          "WEAPON": [
+            "AXE",
+            "BOW",
+            "CLUB",
+            "CROSSBOW",
+            "CROSS_GUARD_MODULE",
+            "DAGGER",
+            "DUAL_WIELD_PAIR",
+            "GREAT_AXE",
+            "HAMMER",
+            "HAMMER_MACE",
+            "LONG_BLADE_MODULE",
+            "LONG_GRIP_MODULE",
+            "MAGIC_FOCUS",
+            "MODULAR_COMBAT_PARTS_PACK",
+            "PICKAXE",
+            "SCYTHE",
+            "SHIELD",
+            "SPEAR",
+            "STAFF",
+            "SWORD",
+            "THROWN",
+            "TOOL_PACK",
+            "TWO_HAND_BLADE",
+            "WARHAMMER"
+          ]
+        },
         "candidates": [
           {
             "family": "AUDIO",
-            "action": "AUTHOR",
-            "assetId": null
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
           },
           {
             "family": "CREATURE",
-            "action": "ADAPT",
-            "assetId": "roblox-insect-spider-hd",
-            "applicationMode": "STYLE_ADAPT"
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
           },
           {
             "family": "MOTION",
-            "action": "ADAPT",
-            "assetId": "roblox-common-motion-bed-lie-down",
-            "applicationMode": "STYLE_ADAPT"
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
           },
           {
             "family": "VFX",
-            "action": "ADAPT",
-            "assetId": "roblox-common-vfx-attack-telegraph-pulse",
-            "applicationMode": "STYLE_ADAPT"
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
           },
           {
             "family": "WEAPON",
-            "action": "ADAPT",
-            "assetId": "roblox-common-tool-axe",
-            "applicationMode": "STYLE_ADAPT"
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
           }
         ]
       },
@@ -477,112 +501,230 @@
           "VFX",
           "WEAPON"
         ],
+        "availableRoles": {
+          "AUDIO": [],
+          "CREATURE": [
+            "AQUATIC_BODY",
+            "ARACHNID",
+            "ARACHNID_CORE",
+            "ARACHNID_LEG_CLUSTER",
+            "CANINE_HEAD_MODULE",
+            "CLAW_PAIR",
+            "CREATURE_CLAW_MODULE",
+            "CREATURE_PARTS_PACK",
+            "ELITE_ORNAMENT",
+            "FIELD_ELITE_GROUND",
+            "FIELD_ELITE_WATER",
+            "FIELD_ELITE_WIND",
+            "FIN_PAIR",
+            "FLYING_BODY",
+            "GIANT_TORSO",
+            "GOLEM_CORE",
+            "GRAZER_HEAD",
+            "HORN_PAIR",
+            "HUMANOID_RAIDER_TORSO",
+            "INSECT_ARACHNID",
+            "INSECT_HEAD",
+            "LONG_JAW_MODULE",
+            "MANDIBLE_PAIR",
+            "MONSTER_PACK",
+            "PLAINS_WILD_DARK",
+            "PLAINS_WILD_GROUND",
+            "PLAINS_WILD_WIND",
+            "PREDATOR_HEAD",
+            "SERPENT_BODY",
+            "SHELL_BACK",
+            "STARTER_HERO_FIRE",
+            "STARTER_HERO_GRASS",
+            "STARTER_HERO_WATER",
+            "TAIL_LONG",
+            "TENTACLE_CLUSTER",
+            "THORAX_INSECT",
+            "TORSO_BIPED",
+            "TORSO_QUADRUPED",
+            "UNDEAD_TORSO",
+            "WING_PAIR"
+          ],
+          "MOTION": [
+            "BED_LIE_DOWN",
+            "BLEND_NEUTRAL",
+            "BLOCK_HOLD",
+            "BLOCK_RAISE",
+            "CARRY_IDLE",
+            "CAST_BURST",
+            "CHANNEL_LOOP",
+            "CLIMB_LOOP",
+            "COOK_LOOP",
+            "COUNTER_READY",
+            "CRAFT_LOOP",
+            "CROUCH_IDLE",
+            "DEATH_FRONT",
+            "DODGE_LEFT",
+            "DODGE_RIGHT",
+            "DOWNED_IDLE",
+            "EMOTE_WAVE",
+            "EQUIP_DRAW",
+            "FARM_TEND",
+            "FATIGUED_IDLE",
+            "FISH_CAST",
+            "GATHER_SWING",
+            "GUARD_BREAK",
+            "HEAVY_ATTACK_1",
+            "HIT_BACK",
+            "HIT_FRONT",
+            "IDLE_RELAXED",
+            "INJURED_WALK",
+            "INTERACT_USE",
+            "JOG",
+            "JUMP_START",
+            "LADDER_ENTER",
+            "LADDER_EXIT",
+            "LAND",
+            "LEAN_WALL_IDLE",
+            "LIGHT_ATTACK_1",
+            "MOTION_PACK",
+            "NPC_WORK_LOOP",
+            "OPEN_CONTAINER",
+            "OPEN_DOOR",
+            "PARRY_PERFECT",
+            "PICKUP_GROUND",
+            "PLACE_GROUND",
+            "PULL_OBJECT",
+            "PUSH_OBJECT",
+            "RANGED_DRAW_SHOT",
+            "REVIVE_HELP",
+            "ROLL_FORWARD",
+            "RUN",
+            "SIT_DOWN",
+            "SLOPE_ASCEND",
+            "SLOPE_DESCEND",
+            "SPRINT",
+            "STAND_UP",
+            "START",
+            "STOP",
+            "SWIM_FORWARD",
+            "TALK_GESTURE",
+            "TURN_90",
+            "UNEQUIP_STOW",
+            "USE_CONSUMABLE",
+            "WALK"
+          ],
+          "VFX": [
+            "ATTACK_TELEGRAPH_PRESENTATION",
+            "BLOCK_CONTACT",
+            "BOSS",
+            "BUFF",
+            "BURST_FEEDBACK",
+            "COUNTER_WINDOW_PRESENTATION",
+            "CRAFT",
+            "CRITICAL",
+            "DEBUFF",
+            "DESTRUCTION",
+            "DISMANTLE",
+            "DODGE",
+            "ENVIRONMENT",
+            "FAST_MOTION_TRAIL",
+            "GUARD_BREAK_WARNING",
+            "HEAL",
+            "IMPACT_CONFIRMATION",
+            "INTERACTION",
+            "LOOT_COMMON",
+            "LOOT_LEGENDARY",
+            "LOOT_RARE",
+            "MOBILE_DENSITY",
+            "PERFECT_PARRY_CONFIRMATION",
+            "QUEST_UPDATE",
+            "STATUS",
+            "UPGRADE",
+            "VFX_PACK",
+            "WEATHER"
+          ],
+          "WEAPON": [
+            "AXE",
+            "BOW",
+            "CLUB",
+            "CROSSBOW",
+            "CROSS_GUARD_MODULE",
+            "DAGGER",
+            "DUAL_WIELD_PAIR",
+            "GREAT_AXE",
+            "HAMMER",
+            "HAMMER_MACE",
+            "LONG_BLADE_MODULE",
+            "LONG_GRIP_MODULE",
+            "MAGIC_FOCUS",
+            "MODULAR_COMBAT_PARTS_PACK",
+            "PICKAXE",
+            "SCYTHE",
+            "SHIELD",
+            "SPEAR",
+            "STAFF",
+            "SWORD",
+            "THROWN",
+            "TOOL_PACK",
+            "TWO_HAND_BLADE",
+            "WARHAMMER"
+          ]
+        },
         "candidates": [
           {
             "family": "AUDIO",
-            "action": "AUTHOR",
-            "assetId": null
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
           },
           {
             "family": "CREATURE",
-            "action": "ADAPT",
-            "assetId": "roblox-insect-spider-hd",
-            "applicationMode": "STYLE_ADAPT"
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
           },
           {
             "family": "MOTION",
-            "action": "USE",
-            "assetId": "roblox-common-motion-bed-lie-down",
-            "applicationMode": "USE_AS_IS"
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
           },
           {
             "family": "VFX",
-            "action": "USE",
-            "assetId": "roblox-common-vfx-attack-telegraph-pulse",
-            "applicationMode": "USE_AS_IS"
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
           },
           {
             "family": "WEAPON",
-            "action": "USE",
-            "assetId": "roblox-common-tool-axe",
-            "applicationMode": "USE_AS_IS"
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
           }
         ]
       }
     },
-    "assetFacts": {
-      "roblox-insect-spider-hd": {
-        "family": "CREATURE",
-        "role": "INSECT_ARACHNID",
-        "sourcePath": "/assets/roblox/world-ghosts/native/spider/spider.png",
-        "platform": "SHARED_NATIVE_SOURCE",
-        "license": "project-original",
-        "referenceOnly": false,
-        "auditScore": 909.6,
-        "auditState": "UNKNOWN",
-        "qualityGap": null,
-        "runtimeState": "GLB_VALIDATED_NATIVE_RUNTIME_PENDING",
-        "productionVerified": false
-      },
-      "roblox-common-motion-bed-lie-down": {
-        "family": "MOTION",
-        "role": "BED_LIE_DOWN",
-        "sourcePath": "/assets/roblox/common-motion-v1/RobloxCommonMotion.luau",
-        "platform": "ROBLOX",
-        "license": "project-original",
-        "referenceOnly": false,
-        "auditScore": 917.1,
-        "auditState": "UNKNOWN",
-        "qualityGap": null,
-        "runtimeState": "PENDING_STUDIO",
-        "productionVerified": false
-      },
-      "roblox-common-vfx-attack-telegraph-pulse": {
-        "family": "VFX",
-        "role": "ATTACK_TELEGRAPH_PRESENTATION",
-        "sourcePath": "/assets/roblox/common-vfx-v1/RobloxCommonVFX.luau",
-        "platform": "ROBLOX",
-        "license": "project-original",
-        "referenceOnly": false,
-        "auditScore": 913.1,
-        "auditState": "UNKNOWN",
-        "qualityGap": null,
-        "runtimeState": "PENDING_STUDIO",
-        "productionVerified": false
-      },
-      "roblox-common-tool-axe": {
-        "family": "WEAPON",
-        "role": "AXE",
-        "sourcePath": "/assets/roblox/common-tools-v1/RobloxCommonTools.luau",
-        "platform": "ROBLOX",
-        "license": "project-original",
-        "referenceOnly": false,
-        "auditScore": 888,
-        "auditState": "UNKNOWN",
-        "qualityGap": null,
-        "runtimeState": "PENDING_STUDIO",
-        "productionVerified": false
-      }
-    }
-  },
-  "lastSuccessfulModelCallAt": "2026-10-07T21:19:37.933Z",
-  "effectiveDesignerModel": "ollama:qwen3:1.7b",
-  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
-  "failedPhase": "designer_draft",
-  "failedTask": "narrative-homage",
-  "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-  "checkpointMigration": {
-    "fromContractVersion": 4,
-    "toContractVersion": 4,
-    "reason": "QUOTA_VIBE_REPAIR_COMPATIBLE_ENGINE_CHANGE_NO_REPLAY",
-    "previousEngineDigest": "cc088ad7a8676ded2864387d1c00a39b024f9e9a4e72f50308346406aea805a9",
-    "preservedPhaseCount": 0,
-    "preservedTaskCount": 9,
-    "migratedAt": "2026-10-07T21:05:56.609Z"
-  },
-  "localAuthoringSplits": {
-    "1f97b20412e31866f6f6c2c66219317c59404f774548a896946741d1524dc16e": true,
-    "d2beb499deaa47e909c4fbd4ee3f564b0d09549bb33318cf8402c5b76dbbc404": true,
-    "ca585e553470f2c217601853cca864617dfa14b6ddf410f9ffb02c00a303cc40": true
+    "assetFacts": {}
   }
 }
