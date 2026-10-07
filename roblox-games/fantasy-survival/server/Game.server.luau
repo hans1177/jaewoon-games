@@ -304,7 +304,8 @@ local function bindNativeFoundationCharacter(character)
   params.FilterType = Enum.RaycastFilterType.Exclude
   params.FilterDescendantsInstances = {character}
   local groundHit = workspace:Raycast(rootPart.Position + Vector3.new(0, 4, 0), Vector3.new(0, -16, 0), params)
-  character:SetAttribute("GROUND_CONTACT", groundHit ~= nil)
+  local groundContact = groundHit ~= nil and groundHit.Instance ~= nil
+  character:SetAttribute("GROUND_CONTACT", groundContact)
   character:SetAttribute("MOVEMENT_CONFIRMED", true)
 end
 local function bindNativeFoundationPlayer(player)
