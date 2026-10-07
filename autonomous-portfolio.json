@@ -192,7 +192,7 @@
       "name": "곤충 생존기",
       "sourcePath": "web-games/insect-survival",
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "profileStatus": "DESIGN_ONLY",
       "mode": "REDESIGN",
       "targetEngine": "design-only",
@@ -222,7 +222,7 @@
       "name": "수정 디펜스",
       "sourcePath": "web-games/crystal-defense",
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "profileStatus": "DESIGN_ONLY",
       "mode": "REDESIGN",
       "targetEngine": "design-only",
@@ -291,7 +291,7 @@
       "name": "휴먼 GO",
       "sourcePath": "web-games/human-go",
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "profileStatus": "DESIGN_ONLY",
       "mode": "REDESIGN",
       "targetEngine": "design-only",
@@ -320,12 +320,12 @@
       "name": "대충 RPG",
       "sourcePath": "web-games/daechung-rpg",
       "productionSourcePath": "unity-games/daechung-rpg",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-      "profileStatus": "DEVELOPMENT_CONFIRMED",
+      "productionClass": "DESIGN_ONLY",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
+      "profileStatus": "DESIGN_ONLY",
       "selectedPlatform": "UNITY",
-      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "mode": "REDESIGN",
+      "targetEngine": "design-only",
       "targetPlatformReady": true,
       "dedicatedDevelopmentLane": "UNITY_PRIMARY",
       "unityProjectReady": true,
@@ -346,18 +346,7 @@
         "unity-primary",
         "public-web-archive"
       ],
-      "lifecycleState": "ACTIVE",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/daechung-rpg",
-        "UNITY": "unity-games/daechung-rpg"
-      },
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "lifecycleState": "ACTIVE"
     },
     {
       "id": "P0007",
@@ -365,7 +354,7 @@
       "name": "무인도 마을",
       "sourcePath": "web-games/island-village",
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "profileStatus": "HOLD_MISSING_SOURCE",
       "mode": "HOLD",
       "targetEngine": "design-only",
@@ -380,7 +369,7 @@
       "name": "알 도둑 대작전",
       "sourcePath": "web-games/egg-heist",
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "profileStatus": "HOLD_REDIRECT_ONLY",
       "mode": "HOLD",
       "targetEngine": "design-only",
@@ -438,7 +427,7 @@
       "name": "체스 배틀",
       "sourcePath": "web-games/chess-battle",
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "profileStatus": "DESIGN_ONLY",
       "mode": "REDESIGN",
       "targetEngine": "design-only",
@@ -458,7 +447,7 @@
       "name": "숲의 생존자들",
       "sourcePath": "web-games/survival2",
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "profileStatus": "DESIGN_ONLY",
       "mode": "REDESIGN",
       "targetEngine": "design-only",
@@ -478,7 +467,7 @@
       "name": "영토전쟁",
       "sourcePath": "web-games/territory-war",
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "profileStatus": "DESIGN_ONLY",
       "mode": "REDESIGN",
       "targetEngine": "design-only",
@@ -491,35 +480,6 @@
       "lifecycleState": "ACTIVE",
       "selectedPlatform": "ROBLOX",
       "targetPlatformReady": true
-    },
-    {
-      "id": "RUNTIME-cozy-island",
-      "slug": "cozy-island",
-      "name": "포근섬",
-      "sourcePath": "roblox-games/cozy-island",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-      "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "selectedPlatform": "ROBLOX",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/cozy-island",
-        "UNITY": "unity-games/cozy-island"
-      },
-      "developmentFocus": {
-        "total": 0
-      },
-      "runtimeSynthesized": true,
-      "lifecycleState": "ACTIVE",
-      "targetPlatformReady": true,
-      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
     },
     {
       "id": "RUNTIME-seed-action-survival-rogu-echoes-of-the-lost-star",
@@ -810,35 +770,6 @@
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
       "strictDesignReviewRunsInParallel": true
-    },
-    {
-      "id": "RUNTIME-horror-escape-room",
-      "slug": "horror-escape-room",
-      "name": "심야 술래잡기",
-      "sourcePath": "roblox-games/horror-escape-room",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-      "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "selectedPlatform": "ROBLOX",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/horror-escape-room",
-        "UNITY": "unity-games/horror-escape-room"
-      },
-      "developmentFocus": {
-        "total": 0
-      },
-      "runtimeSynthesized": true,
-      "lifecycleState": "ACTIVE",
-      "targetPlatformReady": true,
-      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
     }
   ],
   "productionClassState": {
@@ -858,26 +789,23 @@
       "distinctFamilies": [
         "SURVIVAL",
         "DEFENSE",
-        "RPG",
         "TURN_BASED",
+        "RPG",
         "STRATEGY"
       ]
     },
     "counts": {
       "releaseConfirmed": 0,
-      "developmentConfirmed": 16,
-      "designOnly": 8
+      "developmentConfirmed": 13,
+      "designOnly": 9
     },
     "releaseConfirmedGameIds": [],
     "developmentConfirmedGameIds": [
       "P0001",
       "P0004",
-      "P0006",
       "P0009",
       "RUNTIME-amusement-tycoon",
-      "RUNTIME-cozy-island",
       "RUNTIME-fantasy-survival",
-      "RUNTIME-horror-escape-room",
       "RUNTIME-line-defense",
       "RUNTIME-seed-action-survival-rogu-echoes-of-the-lost-star",
       "RUNTIME-seed-casual-realm-weaver",
@@ -891,6 +819,7 @@
       "P0002",
       "P0003",
       "P0005",
+      "P0006",
       "P0007",
       "P0008",
       "P0101",
@@ -911,7 +840,6 @@
         "P0101",
         "P0102",
         "P0103",
-        "RUNTIME-cozy-island",
         "RUNTIME-seed-action-survival-rogu-echoes-of-the-lost-star",
         "RUNTIME-seed-single-defense-strat-celestial-bastion",
         "RUNTIME-seed-puzzle-chromatic-cascade",
@@ -921,8 +849,7 @@
         "RUNTIME-village-dungeons",
         "RUNTIME-amusement-tycoon",
         "RUNTIME-line-defense",
-        "RUNTIME-fantasy-survival",
-        "RUNTIME-horror-escape-room"
+        "RUNTIME-fantasy-survival"
       ],
       "paused": [],
       "rebuild": [],
@@ -931,11 +858,11 @@
     },
     "pipeline": {
       "target": 60,
-      "count": 24,
+      "count": 22,
       "activeDevelopmentWipMax": null,
       "capacityOnly": true,
       "noArtificialGlobalGameCountCap": true,
-      "deficit": 36
+      "deficit": 38
     },
     "ranking": [
       {
@@ -959,7 +886,7 @@
         "gameId": "P0006",
         "slug": "daechung-rpg",
         "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
+        "productionClass": "DESIGN_ONLY",
         "gameplayFamily": "RPG",
         "evidenceScore": 811,
         "developmentFocus": 8,
@@ -1136,36 +1063,6 @@
       {
         "rank": 14,
         "rawEvidenceRank": 14,
-        "gameId": "RUNTIME-cozy-island",
-        "slug": "cozy-island",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "UNCLASSIFIED",
-        "evidenceScore": 6,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "ROBLOX",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 15,
-        "rawEvidenceRank": 15,
-        "gameId": "RUNTIME-horror-escape-room",
-        "slug": "horror-escape-room",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "UNCLASSIFIED",
-        "evidenceScore": 6,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "ROBLOX",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 16,
-        "rawEvidenceRank": 16,
         "gameId": "RUNTIME-amusement-tycoon",
         "slug": "amusement-tycoon",
         "lifecycleState": "ACTIVE",
@@ -1179,8 +1076,8 @@
         "sourceReady": true
       },
       {
-        "rank": 17,
-        "rawEvidenceRank": 17,
+        "rank": 15,
+        "rawEvidenceRank": 15,
         "gameId": "RUNTIME-fantasy-survival",
         "slug": "fantasy-survival",
         "lifecycleState": "ACTIVE",
@@ -1194,8 +1091,8 @@
         "sourceReady": true
       },
       {
-        "rank": 18,
-        "rawEvidenceRank": 18,
+        "rank": 16,
+        "rawEvidenceRank": 16,
         "gameId": "RUNTIME-line-defense",
         "slug": "line-defense",
         "lifecycleState": "ACTIVE",
@@ -1209,8 +1106,8 @@
         "sourceReady": true
       },
       {
-        "rank": 19,
-        "rawEvidenceRank": 19,
+        "rank": 17,
+        "rawEvidenceRank": 17,
         "gameId": "RUNTIME-village-dungeons",
         "slug": "village-dungeons",
         "lifecycleState": "ACTIVE",
@@ -1224,8 +1121,8 @@
         "sourceReady": true
       },
       {
-        "rank": 20,
-        "rawEvidenceRank": 20,
+        "rank": 18,
+        "rawEvidenceRank": 18,
         "gameId": "P0101",
         "slug": "chess-battle",
         "lifecycleState": "ACTIVE",
@@ -1239,8 +1136,8 @@
         "sourceReady": true
       },
       {
-        "rank": 21,
-        "rawEvidenceRank": 21,
+        "rank": 19,
+        "rawEvidenceRank": 19,
         "gameId": "P0102",
         "slug": "survival2",
         "lifecycleState": "ACTIVE",
