@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {assetProductionGuidance,buildAllGameDynamicLibraryBindingPlan,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb} from '../tools/vibe2-asset-production-plan.mjs';
-import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate,buildInternalAssetSourceUsageContract} from '../tools/vibe2-source-worker.mjs';
+import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate,buildInternalAssetSourceUsageContract,inspectRobloxNativeCandidateQuality} from '../tools/vibe2-source-worker.mjs';
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
@@ -1590,6 +1590,88 @@ test('Roblox Vibe candidate publish waits for target runtime QA instead of final
   assert.match(settle,/company-development-roblox-runtime\.yml[^\n]*-f game_id="\$GAME_ID"/);
   assert.match(settle,/VIBE2_ROBLOX_TASK_FINAL_PASS=NO_RUNTIME_QA_PENDING/);
   assert.doesNotMatch(settle,/queue-control\.mjs pass --id="\$TASK_ID" --evidence="roblox-exact-evidence-pass,main-pr-merged,roblox-open-cloud-published/);
+});
+
+test('Roblox source quality blocks multi-part doll NPCs even when they have joints',()=>{
+  const primitiveNpc=[
+    'local function createNpc()',
+    '  local npc = Instance.new("Model")',
+    '  npc.Name = "NPC"',
+    '  local torso = Instance.new("Part")',
+    '  local head = Instance.new("Part")',
+    '  local leftArm = Instance.new("Part")',
+    '  local rightArm = Instance.new("Part")',
+    '  local root = Instance.new("Part")',
+    '  local shoulder = Instance.new("Motor6D")',
+    '  shoulder.Transform = CFrame.Angles(0, 0.1, 0)',
+    '  local humanoid = Instance.new("Humanoid")',
+    '  local animator = Instance.new("Animator")',
+    '  local track = humanoid:LoadAnimation(Instance.new("Animation"))',
+    '  track:Play(0.2)',
+    '  track:AdjustWeight(1, 0.2)',
+    '  track:AdjustSpeed(speed)',
+    '  torso.Material = Enum.Material.SmoothPlastic',
+    '  local weapon = Instance.new("Part"); weapon.Name = "weapon sword"',
+    '  local tree = Instance.new("Part"); tree.Name = "forest environment tree"',
+    '  root.CFrame = CFrame.new(0, 2, 0)',
+    '  return npc',
+    'end'
+  ].join('\n');
+  const quality=inspectRobloxNativeCandidateQuality({
+    candidate:{edits:[{path:'server/Game.server.luau',replace:primitiveNpc}]},
+    sourceRoot:'roblox-games/demo'
+  });
+  assert.ok(quality.npcFinalActorFindings.some(row=>row.class==='NPC_PRIMITIVE_FINAL_ACTOR_RISK'));
+
+  const nativeNpc=primitiveNpc.replace(
+    'local torso = Instance.new("Part")',
+    'local torso = Instance.new("MeshPart")\n  torso.MeshId = "rbxassetid://123"'
+  );
+  const nativeQuality=inspectRobloxNativeCandidateQuality({
+    candidate:{edits:[{path:'server/Game.server.luau',replace:nativeNpc}]},
+    sourceRoot:'roblox-games/demo'
+  });
+  assert.equal(nativeQuality.npcFinalActorFindings.length,0);
+});
+
+test('Roblox asset adaptation rejects a composed Part doll NPC as a final presentation',()=>{
+  const root=tempRoot();
+  try{
+    const relative='roblox-games/npc-doll/server/Game.server.luau';
+    const file=path.join(root,...relative.split('/'));
+    fs.mkdirSync(path.dirname(file),{recursive:true});
+    fs.writeFileSync(file,`local function createNpc()
+  local npc = Instance.new("Model")
+  npc.Name = "NPC"
+  local rootPart = Instance.new("Part"); rootPart.Name = "HumanoidRootPart"; rootPart.Parent = npc
+  local torso = Instance.new("Part"); torso.Name = "Torso"; torso.Material = Enum.Material.SmoothPlastic; torso.Parent = npc
+  local head = Instance.new("Part"); head.Name = "Head"; head.Parent = npc
+  local leftArm = Instance.new("Part"); leftArm.Name = "LeftArm"; leftArm.Parent = npc
+  local rightArm = Instance.new("Part"); rightArm.Name = "RightArm"; rightArm.Parent = npc
+  local shoulder = Instance.new("Motor6D"); shoulder.Name = "RightShoulder"; shoulder.Part0 = torso; shoulder.Part1 = rightArm; shoulder.Parent = torso
+  shoulder.Transform = CFrame.Angles(0, 0.1, 0)
+  local humanoid = Instance.new("Humanoid"); humanoid.Parent = npc
+  local animator = Instance.new("Animator"); animator.Parent = humanoid
+  local animation = Instance.new("Animation")
+  local track = animator:LoadAnimation(animation)
+  track:Play(0.2); track:AdjustWeight(1,0.2); track:AdjustSpeed(humanoid.WalkSpeed / 16)
+  rootPart.CFrame = CFrame.new(0,2,0)
+  local weapon = Instance.new("Part"); weapon.Name = "weapon sword blade"; weapon.Material = Enum.Material.Metal; weapon.Parent = npc
+  local environment = Instance.new("Part"); environment.Name = "forest ground tree biome"; environment.Material = Enum.Material.Grass; environment.Parent = workspace
+  return npc
+end
+createNpc()
+`);
+    const manifestPath=path.join(root,'manifest-npc-doll.json');
+    fs.writeFileSync(manifestPath,JSON.stringify({
+      target:'roblox',
+      changedFiles:[relative],
+      presentationQuality:{required:true,target:'roblox',pass:'ASSET_ADAPTATION'}
+    },null,2));
+    assert.throws(()=>runIncrementalQa({
+      root,manifest:manifestPath,files:[relative],namespace:'npc-doll-final',force:true
+    }),/ROBLOX_NPC_NO_PRIMITIVE_DOLL_FINAL/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
 test('native asset adaptation rejects a single primitive character placeholder',()=>{
