@@ -155,6 +155,180 @@ function dualPlatformProfiles(out,seed,mode){
   };
 }
 
+const SHARED_PLATFORM_LARGE_FRAME=Object.freeze([
+  'CORE_IDENTITY',
+  'CORE_FUN_AND_REPRESENTATIVE_LOOP',
+  'WORLD_AND_PROGRESSION_DIRECTION',
+  'SAVE_PERSISTENCE_MEANING',
+  'MULTIPLAYER_INTENT'
+]);
+
+function joined(values,fallback){
+  const text=(values||[]).map(clean).filter(Boolean).join(' | ');
+  return text||fallback;
+}
+function webCanonicalFallback(out,seed,mode){
+  const loops=Array.isArray(out?.coreLoop)?out.coreLoop.map(clean).filter(Boolean).slice(0,8):[];
+  const flow=[...loops];
+  const fallbacks=[
+    firstText(out?.coreFun,out?.identity,'핵심 행동을 시작하고 즉시 피드백을 받는다.'),
+    firstText(out?.progressionDirection,'현재 결과를 다음 선택과 성장 상태로 연결한다.'),
+    firstText(out?.failureRetryRisk?.retryFlow,'실패 또는 세션 종료 뒤 다음 유효 플레이 상태로 복귀한다.'),
+    '세션 결과를 확인하고 다음 플레이 목표 또는 재진입 선택으로 이어간다.'
+  ];
+  for(const item of fallbacks)if(flow.length<4&&clean(item)&&!flow.includes(clean(item)))flow.push(clean(item));
+  while(flow.length<4)flow.push('현재 플레이 상태를 읽고 다음 유효 행동과 결과 상태로 이어간다.');
+  const systems=(Array.isArray(out?.signatureSystems)?out.signatureSystems:[]).map(row=>joined([row?.name,row?.purpose,row?.playerChoice],'')).filter(Boolean);
+  const connections=(Array.isArray(out?.systemInterconnections)?out.systemInterconnections:[]).map(row=>joined([row?.fromSystem,row?.trigger,row?.toSystem,row?.stateChange],'')).filter(Boolean);
+  const regions=(Array.isArray(out?.contentVarietyPlan?.regions)?out.contentVarietyPlan.regions:[]).map(row=>joined([row?.name,row?.traversal,row?.riskReward,row?.landmark,row?.encounterPattern,row?.resourcePressure],'')).filter(Boolean);
+  const enemies=(Array.isArray(out?.contentVarietyPlan?.enemiesOrChallenges)?out.contentVarietyPlan.enemiesOrChallenges:[]).map(row=>joined([row?.name,row?.behavior,row?.counterplay,row?.groupRole,row?.rewardMeaning],'')).filter(Boolean);
+  const expansion=(Array.isArray(out?.contentExpansionPlan)?out.contentExpansionPlan:[]).map(row=>joined([row?.milestone,row?.newGameplay,row?.systemImpact],'')).filter(Boolean);
+  const economy=out?.progressionEconomyBalance&&typeof out.progressionEconomyBalance==='object'?out.progressionEconomyBalance:{};
+  const failure=out?.failureRetryRisk&&typeof out.failureRetryRisk==='object'?out.failureRetryRisk:{};
+  const ux=out?.uxAccessibilityPlan&&typeof out.uxAccessibilityPlan==='object'?out.uxAccessibilityPlan:{};
+  const art=out?.artAudioDirection&&typeof out.artAudioDirection==='object'?out.artAudioDirection:{};
+  const identity=firstText(out?.identity,seed?.DISTINCT_IDENTITY,'현재 게임 정체성');
+  return{
+    role:'WEB_DETAILED_GAME_ORIGINAL',
+    designAuthority:'GAME_DESIGN_REFERENCE_NOT_SOURCE_CODE_AUTHORITY',
+    playerFlow:flow.slice(0,8).map(value=>clip(value,340)),
+    worldAndTraversal:clip(identity+'의 WEB 원본 월드는 '+joined(regions,'현재 설계의 지역 역할·랜드마크·접근 조건·위험보상·재방문 흐름')+'을 실제 플레이 동선으로 연결한다. 지역은 단순 배경이 아니라 이동 선택과 다음 목표를 바꾸는 플레이 공간으로 설계한다.',900),
+    systemsAndContent:clip('핵심 시스템은 '+joined(systems,firstText(out?.coreFun,identity))+'. 시스템 연결은 '+joined(connections,'입력→상태 변화→피드백→보상/위험→다음 선택')+'으로 구성하고 지역·적·아이템·퀘스트·이벤트가 서로 원인과 결과를 주고받게 한다.',900),
+    combatAndInteraction:clip('WEB 원본의 전투/상호작용은 '+firstText(out?.coreFun,'핵심 상호작용')+'을 중심으로 입력 조건, 판정, 자원/쿨다운, 적 또는 환경 반응, 카운터플레이, 성공/실패 결과와 피드백을 한 흐름으로 연결한다. 적/도전 역할은 '+joined(enemies,'게임에 맞는 서로 다른 역할과 대응법')+'로 구성한다.',900),
+    progressionAndEconomy:clip(firstText(out?.progressionDirection,'성장은 다음 행동과 경로를 연다.')+' 진행 루프='+firstText(economy.progressionLoop,'플레이 결과가 다음 선택과 해금으로 이어진다.')+'; 자원 흐름='+firstText(economy.resourceFlow,'획득원과 소비처가 다음 선택에 의미를 만든다.')+'; 밸런스='+firstText(economy.balanceRules,'성장이 핵심 위험과 선택을 무효화하지 않게 한다.'),900),
+    sessionFailureRecovery:clip('실패 상태='+joined(failure.failureStates,'게임별 실패 상태')+'; 재시도='+firstText(failure.retryFlow,'실패 후 다음 유효 플레이 상태로 복귀')+'; 위험='+firstText(failure.riskPressure,'선택에 따라 위험과 보상이 변함')+'; 복구='+firstText(failure.recoveryRules,'진행 의미를 보존하는 복구 흐름'),900),
+    uiMenuAndOnboarding:clip(firstText(out?.mobileUx,'WEB에서 핵심 행동과 다음 목표를 즉시 읽을 수 있게 한다.')+' HUD='+firstText(ux.hudPriorities,'현재 상태와 목표 우선')+'; 조작='+firstText(ux.touchAndInput,'터치와 포인터 입력 분리')+'; 가독성='+firstText(ux.readability,'작은 화면에서도 상태를 구분')+'; 시작·계속·일시정지·설정·인벤토리·상점·퀘스트·사망/재시도 등 필요한 화면의 진입/복귀/잠금/오류 흐름을 연결한다.',900),
+    inputCameraAccessibility:clip('입력='+firstText(out?.platformFitPlan?.inputModel,'터치/포인터/키보드 입력을 핵심 상태와 직접 연결')+'; 카메라는 핵심 행동·위험 신호·목표 공간을 가리지 않게 장르에 맞춰 추적/전환한다. 접근성='+firstText(ux.accessibility,'색상 외 중복 신호와 설정 분리')+'; 세션='+firstText(out?.platformFitPlan?.sessionConstraints,'중단과 복귀가 진행을 막지 않게 한다.'),900),
+    presentationAndAudio:clip('시각='+firstText(out?.visualDirection,art.visualIdentity,'게임 정체성을 월드·캐릭터·UI에 일관되게 반영')+'; 오디오='+firstText(art.audioIdentity,'상태 전환과 위험/보상 신호를 구분')+'; 피드백='+firstText(art.gameplayFeedbackSync,'애니메이션·VFX·UI·사운드를 같은 게임 상태 변화에 동기화')+'. WEB은 검증용 축약본이 아니라 이 원형을 실제 플레이 가능한 표현으로 구체화한다.',900),
+    multiplayerPersistence:clip('멀티 의도='+(mode||clean(out?.multiplayerMode)||'SINGLE')+'; '+firstText(out?.multiplayerExpansionDecision,'승인된 멀티 의도를 유지한다.')+' 저장/복구 의미는 유지하되 WEB 저장 기술과 재접속/중단 처리 방식은 WEB 특성에 맞게 설계한다.',900),
+    expansionSpace:clip('WEB 자체 확장은 공통 큰틀 안에서 시스템·콘텐츠·지역·퀘스트·세션·UX·연출을 자유롭게 깊게 할 수 있다. 현재 확장 방향='+joined(expansion,'현재 핵심 루프를 더 깊게 연결하고 새로운 역할·상황·재방문 가치를 추가')+'. 다른 플랫폼과 세부 기능 수나 구조를 맞추기 위한 parity 제한은 두지 않는다.',900)
+  };
+}
+function normalizeWebCanonicalAndExpansionPolicy(out,seed,mode,repairs){
+  const fallback=webCanonicalFallback(out,seed,mode);
+  const current=out?.webCanonicalDesign&&typeof out.webCanonicalDesign==='object'&&!Array.isArray(out.webCanonicalDesign)?out.webCanonicalDesign:{};
+  const currentFlow=Array.isArray(current.playerFlow)?current.playerFlow.map(clean).filter(Boolean).slice(0,8):[];
+  const next={
+    role:'WEB_DETAILED_GAME_ORIGINAL',
+    designAuthority:'GAME_DESIGN_REFERENCE_NOT_SOURCE_CODE_AUTHORITY',
+    playerFlow:(currentFlow.length>=4?currentFlow:fallback.playerFlow).map(value=>clip(value,340)).slice(0,8),
+    worldAndTraversal:clip(firstText(current.worldAndTraversal,fallback.worldAndTraversal),900),
+    systemsAndContent:clip(firstText(current.systemsAndContent,fallback.systemsAndContent),900),
+    combatAndInteraction:clip(firstText(current.combatAndInteraction,fallback.combatAndInteraction),900),
+    progressionAndEconomy:clip(firstText(current.progressionAndEconomy,fallback.progressionAndEconomy),900),
+    sessionFailureRecovery:clip(firstText(current.sessionFailureRecovery,fallback.sessionFailureRecovery),900),
+    uiMenuAndOnboarding:clip(firstText(current.uiMenuAndOnboarding,fallback.uiMenuAndOnboarding),900),
+    inputCameraAccessibility:clip(firstText(current.inputCameraAccessibility,fallback.inputCameraAccessibility),900),
+    presentationAndAudio:clip(firstText(current.presentationAndAudio,fallback.presentationAndAudio),900),
+    multiplayerPersistence:clip(firstText(current.multiplayerPersistence,fallback.multiplayerPersistence),900),
+    expansionSpace:clip(firstText(current.expansionSpace,fallback.expansionSpace),900)
+  };
+  if(JSON.stringify(current)!==JSON.stringify(next)){
+    out.webCanonicalDesign=next;
+    repairs.push({field:'webCanonicalDesign',source:'DETAILED_WEB_GAME_ORIGINAL_FROM_APPROVED_DESIGN'});
+  }
+  const policy={
+    mode:'SHARED_LARGE_FRAME_PLATFORM_NATIVE_EXPANSION',
+    sharedLargeFrame:[...SHARED_PLATFORM_LARGE_FRAME],
+    expansionLimit:'NO_ARTIFICIAL_PARITY_LIMIT_WITHIN_SHARED_LARGE_FRAME',
+    webRule:'WEB은 상세 게임 원본을 자체 플레이 경험으로 계속 확장할 수 있다. 다른 플랫폼과 세부 기능·콘텐츠 수·UI 구조를 맞출 필요가 없고 명시된 owner/preservation lock만 따른다. Unity WebGL 소스 권한은 기존 중앙정책대로 동일 Unity 프로젝트에 남는다.',
+    unityRule:'Unity는 WEB 상세 원본을 설계 출발점으로 해석하되 공통 큰틀만 유지한다. Unity 네이티브 조작·물리·카메라·공간·시스템·콘텐츠·세션·UX·연출 확장에는 인위적 parity 제한을 두지 않고 명시된 owner/preservation lock만 따른다.',
+    robloxRule:'기존 Roblox 상세 설계와 platformProfiles.ROBLOX/robloxBuildProfile은 그대로 독립 기준으로 유지하고 WEB·Unity 세부 설계에 종속시키지 않는다. 공통 큰틀 안의 Roblox 네이티브 응용·확장에는 인위적 parity 제한을 두지 않는다.'
+  };
+  const currentPolicy=out?.platformExpansionPolicy&&typeof out.platformExpansionPolicy==='object'&&!Array.isArray(out.platformExpansionPolicy)?out.platformExpansionPolicy:{};
+  if(JSON.stringify(currentPolicy)!==JSON.stringify(policy)){
+    out.platformExpansionPolicy=policy;
+    repairs.push({field:'platformExpansionPolicy',source:'SHARED_LARGE_FRAME_PLATFORM_NATIVE_EXPANSION_POLICY'});
+  }
+}
+
+const SHARED_PLATFORM_LARGE_FRAME=Object.freeze([
+  'CORE_IDENTITY',
+  'CORE_FUN_AND_REPRESENTATIVE_LOOP',
+  'WORLD_AND_PROGRESSION_DIRECTION',
+  'SAVE_PERSISTENCE_MEANING',
+  'MULTIPLAYER_INTENT'
+]);
+
+function joined(values,fallback){
+  const text=(Array.isArray(values)?values:[]).map(clean).filter(Boolean).join(' | ');
+  return text||fallback;
+}
+function webCanonicalFallback(out,seed,mode){
+  const loops=Array.isArray(out?.coreLoop)?out.coreLoop.map(clean).filter(Boolean).slice(0,8):[];
+  const flow=[...loops];
+  const fallbacks=[
+    firstText(out?.coreFun,out?.identity,'핵심 행동을 시작하고 즉시 피드백을 받는다.'),
+    firstText(out?.progressionDirection,'현재 결과를 다음 선택과 성장 상태로 연결한다.'),
+    firstText(out?.failureRetryRisk?.retryFlow,'실패 또는 세션 종료 뒤 다음 유효 플레이 상태로 복귀한다.'),
+    '세션 결과를 확인하고 다음 플레이 목표 또는 재진입 선택으로 이어간다.'
+  ];
+  for(const item of fallbacks)if(flow.length<4&&clean(item)&&!flow.includes(clean(item)))flow.push(clean(item));
+  while(flow.length<4)flow.push('현재 플레이 상태를 읽고 다음 유효 행동과 결과 상태로 이어간다.');
+  const systems=(Array.isArray(out?.signatureSystems)?out.signatureSystems:[]).map(row=>joined([row?.name,row?.purpose,row?.playerChoice],'')).filter(Boolean);
+  const connections=(Array.isArray(out?.systemInterconnections)?out.systemInterconnections:[]).map(row=>joined([row?.fromSystem,row?.trigger,row?.toSystem,row?.stateChange],'')).filter(Boolean);
+  const regions=(Array.isArray(out?.contentVarietyPlan?.regions)?out.contentVarietyPlan.regions:[]).map(row=>joined([row?.name,row?.traversal,row?.riskReward,row?.landmark,row?.encounterPattern,row?.resourcePressure],'')).filter(Boolean);
+  const enemies=(Array.isArray(out?.contentVarietyPlan?.enemiesOrChallenges)?out.contentVarietyPlan.enemiesOrChallenges:[]).map(row=>joined([row?.name,row?.behavior,row?.counterplay,row?.groupRole,row?.rewardMeaning],'')).filter(Boolean);
+  const expansion=(Array.isArray(out?.contentExpansionPlan)?out.contentExpansionPlan:[]).map(row=>joined([row?.milestone,row?.newGameplay,row?.systemImpact],'')).filter(Boolean);
+  const economy=out?.progressionEconomyBalance&&typeof out.progressionEconomyBalance==='object'?out.progressionEconomyBalance:{};
+  const failure=out?.failureRetryRisk&&typeof out.failureRetryRisk==='object'?out.failureRetryRisk:{};
+  const ux=out?.uxAccessibilityPlan&&typeof out.uxAccessibilityPlan==='object'?out.uxAccessibilityPlan:{};
+  const art=out?.artAudioDirection&&typeof out.artAudioDirection==='object'?out.artAudioDirection:{};
+  const identity=firstText(out?.identity,seed?.DISTINCT_IDENTITY,'현재 게임 정체성');
+  return{
+    role:'WEB_DETAILED_GAME_ORIGINAL',
+    designAuthority:'GAME_DESIGN_REFERENCE_NOT_SOURCE_CODE_AUTHORITY',
+    playerFlow:flow.slice(0,8).map(value=>clip(value,340)),
+    worldAndTraversal:clip(identity+'의 WEB 원본 월드는 '+joined(regions,'현재 설계의 지역 역할·랜드마크·접근 조건·위험보상·재방문 흐름')+'을 실제 플레이 동선으로 연결한다. 지역은 단순 배경이 아니라 이동 선택과 다음 목표를 바꾸는 플레이 공간으로 설계한다.',900),
+    systemsAndContent:clip('핵심 시스템은 '+joined(systems,firstText(out?.coreFun,identity))+'. 시스템 연결은 '+joined(connections,'입력→상태 변화→피드백→보상/위험→다음 선택')+'으로 구성하고 지역·적·아이템·퀘스트·이벤트가 서로 원인과 결과를 주고받게 한다.',900),
+    combatAndInteraction:clip('WEB 원본의 전투/상호작용은 '+firstText(out?.coreFun,'핵심 상호작용')+'을 중심으로 입력 조건, 판정, 자원/쿨다운, 적 또는 환경 반응, 카운터플레이, 성공/실패 결과와 피드백을 한 흐름으로 연결한다. 적/도전 역할은 '+joined(enemies,'게임에 맞는 서로 다른 역할과 대응법')+'로 구성한다.',900),
+    progressionAndEconomy:clip(firstText(out?.progressionDirection,'성장은 다음 행동과 경로를 연다.')+' 진행 루프='+firstText(economy.progressionLoop,'플레이 결과가 다음 선택과 해금으로 이어진다.')+'; 자원 흐름='+firstText(economy.resourceFlow,'획득원과 소비처가 다음 선택에 의미를 만든다.')+'; 밸런스='+firstText(economy.balanceRules,'성장이 핵심 위험과 선택을 무효화하지 않게 한다.'),900),
+    sessionFailureRecovery:clip('실패 상태='+joined(failure.failureStates,'게임별 실패 상태')+'; 재시도='+firstText(failure.retryFlow,'실패 후 다음 유효 플레이 상태로 복귀')+'; 위험='+firstText(failure.riskPressure,'선택에 따라 위험과 보상이 변함')+'; 복구='+firstText(failure.recoveryRules,'진행 의미를 보존하는 복구 흐름'),900),
+    uiMenuAndOnboarding:clip(firstText(out?.mobileUx,'WEB에서 핵심 행동과 다음 목표를 즉시 읽을 수 있게 한다.')+' HUD='+firstText(ux.hudPriorities,'현재 상태와 목표 우선')+'; 조작='+firstText(ux.touchAndInput,'터치와 포인터 입력 분리')+'; 가독성='+firstText(ux.readability,'작은 화면에서도 상태를 구분')+'; 시작·계속·일시정지·설정·인벤토리·상점·퀘스트·사망/재시도 등 필요한 화면의 진입/복귀/잠금/오류 흐름을 연결한다.',900),
+    inputCameraAccessibility:clip('입력='+firstText(out?.platformFitPlan?.inputModel,'터치/포인터/키보드 입력을 핵심 상태와 직접 연결')+'; 카메라는 핵심 행동·위험 신호·목표 공간을 가리지 않게 장르에 맞춰 추적/전환한다. 접근성='+firstText(ux.accessibility,'색상 외 중복 신호와 설정 분리')+'; 세션='+firstText(out?.platformFitPlan?.sessionConstraints,'중단과 복귀가 진행을 막지 않게 한다.'),900),
+    presentationAndAudio:clip('시각='+firstText(out?.visualDirection,art.visualIdentity,'게임 정체성을 월드·캐릭터·UI에 일관되게 반영')+'; 오디오='+firstText(art.audioIdentity,'상태 전환과 위험/보상 신호를 구분')+'; 피드백='+firstText(art.gameplayFeedbackSync,'애니메이션·VFX·UI·사운드를 같은 게임 상태 변화에 동기화')+'. WEB은 검증용 축약본이 아니라 이 원형을 실제 플레이 가능한 표현으로 구체화한다.',900),
+    multiplayerPersistence:clip('멀티 의도='+(mode||clean(out?.multiplayerMode)||'SINGLE')+'; '+firstText(out?.multiplayerExpansionDecision,'승인된 멀티 의도를 유지한다.')+' 저장/복구 의미는 유지하되 WEB 저장 기술과 재접속/중단 처리 방식은 WEB 특성에 맞게 설계한다.',900),
+    expansionSpace:clip('WEB 자체 확장은 공통 큰틀 안에서 시스템·콘텐츠·지역·퀘스트·세션·UX·연출을 자유롭게 깊게 할 수 있다. 현재 확장 방향='+joined(expansion,'현재 핵심 루프를 더 깊게 연결하고 새로운 역할·상황·재방문 가치를 추가')+'. 다른 플랫폼과 세부 기능 수나 구조를 맞추기 위한 parity 제한은 두지 않는다.',900)
+  };
+}
+function normalizeWebCanonicalAndExpansionPolicy(out,seed,mode,repairs){
+  const fallback=webCanonicalFallback(out,seed,mode);
+  const current=out?.webCanonicalDesign&&typeof out.webCanonicalDesign==='object'&&!Array.isArray(out.webCanonicalDesign)?out.webCanonicalDesign:{};
+  const currentFlow=Array.isArray(current.playerFlow)?current.playerFlow.map(clean).filter(Boolean).slice(0,8):[];
+  const next={
+    role:'WEB_DETAILED_GAME_ORIGINAL',
+    designAuthority:'GAME_DESIGN_REFERENCE_NOT_SOURCE_CODE_AUTHORITY',
+    playerFlow:(currentFlow.length>=4?currentFlow:fallback.playerFlow).map(value=>clip(value,340)).slice(0,8),
+    worldAndTraversal:clip(firstText(current.worldAndTraversal,fallback.worldAndTraversal),900),
+    systemsAndContent:clip(firstText(current.systemsAndContent,fallback.systemsAndContent),900),
+    combatAndInteraction:clip(firstText(current.combatAndInteraction,fallback.combatAndInteraction),900),
+    progressionAndEconomy:clip(firstText(current.progressionAndEconomy,fallback.progressionAndEconomy),900),
+    sessionFailureRecovery:clip(firstText(current.sessionFailureRecovery,fallback.sessionFailureRecovery),900),
+    uiMenuAndOnboarding:clip(firstText(current.uiMenuAndOnboarding,fallback.uiMenuAndOnboarding),900),
+    inputCameraAccessibility:clip(firstText(current.inputCameraAccessibility,fallback.inputCameraAccessibility),900),
+    presentationAndAudio:clip(firstText(current.presentationAndAudio,fallback.presentationAndAudio),900),
+    multiplayerPersistence:clip(firstText(current.multiplayerPersistence,fallback.multiplayerPersistence),900),
+    expansionSpace:clip(firstText(current.expansionSpace,fallback.expansionSpace),900)
+  };
+  if(JSON.stringify(current)!==JSON.stringify(next)){
+    out.webCanonicalDesign=next;
+    repairs.push({field:'webCanonicalDesign',source:'DETAILED_WEB_GAME_ORIGINAL_FROM_APPROVED_DESIGN'});
+  }
+  const policy={
+    mode:'SHARED_LARGE_FRAME_PLATFORM_NATIVE_EXPANSION',
+    sharedLargeFrame:[...SHARED_PLATFORM_LARGE_FRAME],
+    expansionLimit:'NO_ARTIFICIAL_PARITY_LIMIT_WITHIN_SHARED_LARGE_FRAME',
+    webRule:'WEB은 상세 게임 원본을 자체 플레이 경험으로 계속 확장할 수 있다. 다른 플랫폼과 세부 기능·콘텐츠 수·UI 구조를 맞출 필요가 없고 명시된 owner/preservation lock만 따른다. Unity WebGL 소스 권한은 기존 중앙정책대로 동일 Unity 프로젝트에 남는다.',
+    unityRule:'Unity는 WEB 상세 원본을 설계 출발점으로 해석하되 공통 큰틀만 유지한다. Unity 네이티브 조작·물리·카메라·공간·시스템·콘텐츠·세션·UX·연출 확장에는 인위적 parity 제한을 두지 않고 명시된 owner/preservation lock만 따른다.',
+    robloxRule:'기존 Roblox 상세 설계와 platformProfiles.ROBLOX/robloxBuildProfile은 그대로 독립 기준으로 유지하고 WEB·Unity 세부 설계에 종속시키지 않는다. 공통 큰틀 안의 Roblox 네이티브 응용·확장에는 인위적 parity 제한을 두지 않는다.'
+  };
+  const currentPolicy=out?.platformExpansionPolicy&&typeof out.platformExpansionPolicy==='object'&&!Array.isArray(out.platformExpansionPolicy)?out.platformExpansionPolicy:{};
+  if(JSON.stringify(currentPolicy)!==JSON.stringify(policy)){
+    out.platformExpansionPolicy=policy;
+    repairs.push({field:'platformExpansionPolicy',source:'SHARED_LARGE_FRAME_PLATFORM_NATIVE_EXPANSION_POLICY'});
+  }
+}
+
 export function validateRobloxBuildProfile(profile,mode){
   const blockers=[];
   const expectedMode=clean(mode).toUpperCase();
@@ -214,6 +388,8 @@ export function repairDesignRequiredFields(value,{seed={},factPack={},phase='UNK
     };
     if(JSON.stringify(current)!==JSON.stringify(next)){out.platformProfiles=next;repairs.push({field:'platformProfiles',source:'DUAL_NATIVE_PLATFORM_ENVIRONMENT_DEFAULTS+DESIGN'});}
   }
+  normalizeWebCanonicalAndExpansionPolicy(out,seed,mode,repairs);
+  normalizeWebCanonicalAndExpansionPolicy(out,seed,mode,repairs);
   setMissingArray(out,'technicalAssumptions',[],repairs,'STRUCTURAL_EMPTY_ALLOWED',{min:0,max:8});
   setMissingArray(out,'validationQuestions',[],repairs,'STRUCTURAL_EMPTY_ALLOWED',{min:0,max:8});
   setMissingArray(out,'openQuestions',[],repairs,'STRUCTURAL_EMPTY_ALLOWED',{min:0,max:8});
