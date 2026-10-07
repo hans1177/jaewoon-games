@@ -160,7 +160,7 @@ test('motion detail catches acceleration spikes and declared loop velocity seams
   const jerk=auditMotionContinuityTrace(spike);
   assert.ok(jerk.metrics.maxJointSpeed<12);
   assert.equal(jerk.verdict,'FAIL');
-  assert.ok(jerk.violations.some(row=>row.kind==='maxJointAcceleration'&&row.region==='head'&&row.frameRange.includes(15)));
+  assert.ok(jerk.violations.some(row=>row.kind==='maxJointAcceleration'&&row.region==='head'&&row.frameRange[0]<=15&&row.frameRange[1]>=15));
   const cycle=continuityFixture();cycle.loop=true;
   cycle.frames.forEach(frame=>{frame.jointPositions.hip[0]=.02*Math.sin(2*Math.PI*frame.timeSeconds);});
   const valid=auditMotionContinuityTrace(cycle);
