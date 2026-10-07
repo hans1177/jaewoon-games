@@ -1055,8 +1055,8 @@ jobs:
 
   technical-plan:
     name: resolve Roblox technical package work
-    needs: source-bootstrap
-    if: always() && needs.source-bootstrap.result == 'success'
+    needs: source-plan
+    if: always() && needs.source-plan.result == 'success'
     runs-on: ubuntu-24.04
     timeout-minutes: 8
     outputs:
@@ -1078,6 +1078,8 @@ jobs:
         id: targets
         env:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+          CURRENT_SOURCE_TARGETS_JSON: ${{ needs.source-plan.outputs.targets_json || '[]' }}
+          CURRENT_SOURCE_RECONCILIATION_JSON: ${{ needs.source-plan.outputs.reconciliation_json || '[]' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -1089,6 +1091,9 @@ jobs:
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           if(requested&&!/^[a-z0-9][a-z0-9-]{1,48}$/.test(requested))throw new Error('ROBLOX_REQUESTED_GAME_ID_INVALID:'+requested);
+          const sourceTargets=JSON.parse(process.env.CURRENT_SOURCE_TARGETS_JSON||'[]');
+          const sourceReconciliation=JSON.parse(process.env.CURRENT_SOURCE_RECONCILIATION_JSON||'[]');
+          const sourceBusyIds=new Set([...sourceTargets,...sourceReconciliation].map(row=>String(row?.gameId||'').trim()).filter(Boolean));
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const assetLibrary=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
           const sourceRepairOwns=item=>{
@@ -1105,6 +1110,10 @@ jobs:
           for(const item of candidates){
             if(rows.length>=DEVELOPMENT_GAME_WIP_MAX)break;
             if(requested&&item.gameId!==requested)continue;
+            if(sourceBusyIds.has(String(item.gameId||''))){
+              console.log('ROBLOX_TECHNICAL_DEFER_SOURCE_STAGE='+item.gameId);
+              continue;
+            }
             if(!windowIds.has(item.gameId))continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             const concurrentDefault=platformDevelopmentEligible(item,'ROBLOX');
