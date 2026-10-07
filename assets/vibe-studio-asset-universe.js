@@ -3892,11 +3892,23 @@ export function createAssetProductionTeachingRecipe({families=[],styleBible={},p
   const familyLessons=selected.filter(family=>ASSET_TEACHER_FAMILY_NOTES[family]).map(family=>Object.freeze({family,lesson:ASSET_TEACHER_FAMILY_NOTES[family]}));
   return Object.freeze({
     id:'INTERNAL_ASSET_TEACHER_V1',provenance:'TEACHER_AUTHORED',status:'PRACTICE_ONLY',runtimeVerified:false,productionVerified:false,gameplayAuthority:false,
+    version:2,
     familyLessons:freezeList(familyLessons),unmappedFamilies:freezeList(selected.filter(family=>!ASSET_TEACHER_FAMILY_NOTES[family])),
     domainModules:freezeList(selected.flatMap(family=>ASSET_TEACHER_DOMAIN_MODULES[family]||[])),
     advancedTechniques:freezeList(target&&target!=='ROBLOX'?[]:ASSET_TEACHER_ADVANCED_TECHNIQUES.filter(technique=>technique.families.some(family=>selected.includes(family)))),
     cinematicDirection:cinematicEnabled?CINEMATIC_DIRECTION_TEACHER:null,
     surfaceCraft:surfaceEnabled?SURFACE_CRAFT_TEACHER:null,
+    // 표면 이해는 플랫폼 공통이고, 실제 적용 API/예제는 기존 네이티브 경계를 따른다.
+    surfaceStudy:selected.some(family=>['MATERIAL','CHARACTER','CREATURE','BUILDING','ENVIRONMENT','PROP','WEAPON'].includes(family))?Object.freeze({
+      status:'AUTHORING_STUDY_NOT_MEASURED',nativePlatform:target||'UNSPECIFIED',
+      sequence:freezeList(['IDENTIFY_SUBSTRATE_AND_COATING','LOCK_PHYSICAL_SCALE_AND_DIRECTION','SEPARATE_COLOR_MICROSURFACE_AND_RELIEF','PLACE_CAUSE_BASED_WEAR','COMPARE_NEUTRAL_AND_GAME_LIGHT']),
+      materialIdentity:'Name the actual substrate and each coating per visible region. Exposed metal, paint, oxide, leather, cloth, wood and stone must differ in highlight width, value response, edge construction and relief scale; color changes alone do not separate them. Keep unsupported channels explicit.',
+      textureHierarchy:'Large masses and material boundaries first, construction-scale grain/seams/folds second, sparse microdetail last. Align grain/weave with construction, and compare texel/feature scale across neighboring parts. Dirt follows cavities/water; polish follows touch; chipped coating exposes its actual substrate.',
+      lightingStudy:'Compare the same object under neutral frontal and grazing light, then the actual game camera. Rotate light independently of the object to distinguish baked paint from surface response. Record which material pair remains indistinguishable and repair that pair without increasing noise everywhere.',
+      styleTranslation:'Use the locked style to simplify or emphasize the SAME material causes. Preserve broad value groups and the hero silhouette; concentrate fine detail at focal/contact regions. Generic gloss, random speckles and uniform edge wear are not material identity.',
+      nativeBoundary:target==='ROBLOX'?SURFACE_CRAFT_TEACHER.nativeContract:'Inspect the target renderer and existing shader/material imports first. Use only its supported color, microsurface and normal/relief channels with valid UVs. Roblox BasePart, SurfaceAppearance and Lua examples are not native APIs for this target.',
+      runtimeVerified:false
+    }):null,
     creatureCraft:creatureEnabled?CREATURE_CRAFT_TEACHER:null,
     actorAI:actorAIEnabled?ACTOR_AI_TEACHER:null,
     photoReferenceLessons:visualReference===true?PHOTO_REFERENCE_TEACHER_LESSONS:freezeList([]),
@@ -3907,6 +3919,14 @@ export function createAssetProductionTeachingRecipe({families=[],styleBible={},p
     failurePractice:'Exercise a normal case and a breaking case: different frame rates, zero/boundary values, stale view results, repeated open/close, support orientation and dense mobile scenes. Check the actual visible result and state, not helper existence. Keep successful axes; rework only observed defects and retain uncertainty when measurements are missing.',
     moduleScope:'These modules are reference coverage, not permission to add every screen/object/era. Apply only the current task and responsible source. Open the listed internal source to inspect actual IDs, options and return contracts before calling its APIs. Engine-specific source is reused only on its native platform.',
     style:Object.freeze({family:bible.styleFamily,profileKey:style,lesson:ASSET_TEACHER_STYLE_NOTES[style]||null,needsSpecificBrief:!ASSET_TEACHER_STYLE_NOTES[style],shape:bible.shapeLanguage,material:bible.materialLanguage,motion:bible.animationExaggeration,expression:bible.styleExpression}),
+    styleStudy:Object.freeze({
+      lockedProfile:style,
+      shapeDecision:'Use the subject identity and role to choose one dominant silhouette gesture, a secondary countershape and intentional negative space. Repeat one construction motif across related parts; preserve existing identity anchors. A style name alone does not define an individual design.',
+      valueDecision:'Establish dominant, supporting and accent value/color groups at game distance. Place the strongest contrast at the intended focal or interaction area; subordinate ornament and protect the locked palette.',
+      surfaceDecision:bible.materialLanguage,
+      motionDecision:bible.animationExaggeration,
+      comparison:'Compare silhouette-only, flat-value and final-lit views under the same camera. State the exact shape/material/motion feature distinguishing this subject from a generic member of its style. If identity evidence is missing, mark a proposal; do not claim uniqueness or measured appeal.'
+    }),
     inspect:'Open the selected internal source and verify its path/hash, native format, rig/pivots, material channels, variants and existing consumer. A registry entry, image, score or missing path is not a usable native asset or runtime proof. Reuse compatible strong parts; author only missing/weak parts in the existing responsibility. The explicit concept/style lock overrides generic teacher suggestions.',
     exercise:'Within the current object/source scope: fix the largest silhouette/construction defect, then material separation, articulation/contact and visible detail. Connect the actual native result to the existing consumer. Use before/after executable edits and the existing QA/evidence path; a renamed constant, recipe declaration or unused helper is not production.',
     verify:'Compare the same camera/light/scale/state before and after: silhouette, structure, material, style, motion/contact when applicable, mobile readability/performance and actual game binding. Keep source identity, gameplay timing, collision, saves and network authority. Record unsupported axes as unverified; this teacher cannot grant learning mastery or commercial/runtime PASS.'

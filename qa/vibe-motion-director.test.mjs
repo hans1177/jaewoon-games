@@ -155,6 +155,26 @@ test('motion trace cannot pass with gaps, stale source, missing joints, invalid 
   for(const change of changes){const input=continuityFixture();change(input);const result=auditMotionContinuityTrace(input);assert.equal(result.verdict,'UNVERIFIED');assert.equal(result.metrics,null);assert.equal(result.blocksVerifiedPromotion,true);}
 });
 
+test('motion detail catches acceleration spikes and declared loop velocity seams without rejecting root travel',()=>{
+  const spike=continuityFixture();spike.frames[15].jointPositions.head[0]=.2;
+  const jerk=auditMotionContinuityTrace(spike);
+  assert.ok(jerk.metrics.maxJointSpeed<12);
+  assert.equal(jerk.verdict,'FAIL');
+  assert.ok(jerk.violations.some(row=>row.kind==='maxJointAcceleration'&&row.region==='head'&&row.frameRange.includes(15)));
+  const cycle=continuityFixture();cycle.loop=true;
+  cycle.frames.forEach(frame=>{frame.jointPositions.hip[0]=.02*Math.sin(2*Math.PI*frame.timeSeconds);});
+  const valid=auditMotionContinuityTrace(cycle);
+  assert.equal(valid.verdict,'PASS');assert.equal(valid.measurementCoverage.loopBoundaryMeasured,true);
+  assert.equal(valid.runtimeVerified,false);
+  cycle.frames.forEach(frame=>{const t=frame.timeSeconds;frame.jointPositions.hip[0]=.2*t*(1-t);});
+  const seam=auditMotionContinuityTrace(cycle);
+  assert.equal(seam.metrics.maxLoopJointPosition,0);
+  assert.ok(seam.violations.some(row=>row.kind==='maxLoopJointVelocity'&&row.region==='hip'));
+  cycle.frames.at(-1).contacts.leftFoot.planted=false;
+  assert.ok(auditMotionContinuityTrace(cycle).violations.some(row=>row.kind==='LOOP_CONTACT_STATE_MISMATCH'));
+  cycle.loop='true';assert.equal(auditMotionContinuityTrace(cycle).verdict,'UNVERIFIED');
+});
+
 function detailContinuityFixture(){
   const input=continuityFixture();
   input.requiredDetailChannels={attachments:['rightGrip'],penetrations:['coatThigh'],gaze:['eyes'],expressions:['brow'],supportedContacts:['leftFoot']};
@@ -1240,6 +1260,11 @@ test('studio motion teacher reuses canonical action phases and native metrics wi
   const unknown=createStudioMotionActionProfile({teachingClip:'unregistered_special_clip'}).teaching;
   assert.equal(unknown.needsSpecificClipBrief,true);
   assert.deepEqual(unknown.lessons,[]);
+  const arachnid=createStudioMotionActionProfile({teachingClip:'attack',bodyPlan:'ARACHNID',actorClass:'CREATURE',archetype:'spider',weaponFamily:'CLAW',weightClass:'HEAVY'}).teaching;
+  assert.equal(arachnid.version,2);assert.equal(arachnid.performanceStudy.bodyPlan,'ARACHNID');
+  assert.equal(arachnid.performanceStudy.weaponFamily,'CLAW');
+  assert.match(arachnid.performanceStudy.forcePath,/actual load path/);
+  assert.match(arachnid.performanceStudy.review,/velocity and acceleration/);
 });
 
 test('studio-grade motion profile binds pose matching warping contact IK reactions audio and mobile LOD without gameplay authority',()=>{

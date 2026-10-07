@@ -1956,10 +1956,10 @@ export function applySemanticGapPreparation({profile={},gapPlan={}}={}){
 
 
 // 실제 시간/좌표 표본에서 연속성 문제를 계산한다. 미적 품질·게임 판정 검증은 별도다.
-export function auditMotionContinuityTrace({sourceHash='',expectedSourceHash='',clipId='',durationSeconds,characterHeightMeters,frames=[],limits={},requiredDetailChannels={}}={}){
-  const thresholds={maxSampleGapSeconds:1/15,maxRootAcceleration:80,maxJointSpeed:12,maxYawSpeed:20,maxPlantedDrift:.015,
+export function auditMotionContinuityTrace({sourceHash='',expectedSourceHash='',clipId='',durationSeconds,characterHeightMeters,frames=[],limits={},requiredDetailChannels={},loop=false}={}){
+  const thresholds={maxSampleGapSeconds:1/15,maxRootAcceleration:80,maxJointSpeed:12,maxJointAcceleration:80,maxLoopJointPosition:.005,maxLoopJointVelocity:.15,maxYawSpeed:20,maxPlantedDrift:.015,
     maxAttachmentOffset:.02,maxPenetrationDepth:.005,maxGazeErrorRadians:.26,maxGazeAngularSpeed:20,maxExpressionRate:12,...limits};
-  const issues=[],violations=[],metrics={maxRootAcceleration:0,maxJointSpeed:0,maxYawSpeed:0,maxPlantedDrift:0};
+  const issues=[],violations=[],metrics={maxRootAcceleration:0,maxJointSpeed:0,maxJointAcceleration:0,maxYawSpeed:0,maxPlantedDrift:0,...(loop===true?{maxLoopJointPosition:0,maxLoopJointVelocity:0}:{})};
   const finite=value=>typeof value==='number'&&Number.isFinite(value);
   const vec=value=>Array.isArray(value)&&value.length===3&&value.every(finite);
   const record=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
@@ -1968,6 +1968,7 @@ export function auditMotionContinuityTrace({sourceHash='',expectedSourceHash='',
   const angle=(a,b)=>Math.acos(Math.max(-1,Math.min(1,a.reduce((sum,value,index)=>sum+value/Math.hypot(...a)*(b[index]/Math.hypot(...b)),0))));
   if(!text(sourceHash)||sourceHash!==expectedSourceHash)issues.push('CURRENT_SOURCE_HASH_REQUIRED');
   if(!text(clipId))issues.push('CLIP_ID_REQUIRED');
+  if(typeof loop!=='boolean')issues.push('LOOP_CONTRACT_BOOLEAN_REQUIRED');
   if(!finite(durationSeconds)||durationSeconds<=0||!finite(characterHeightMeters)||characterHeightMeters<=0)issues.push('DURATION_AND_BODY_SCALE_REQUIRED');
   if(Object.values(thresholds).some(value=>!finite(value)||value<=0))issues.push('POSITIVE_FINITE_LIMITS_REQUIRED');
   if(!Array.isArray(frames)||frames.length<3)issues.push('CONTINUOUS_FRAME_SAMPLES_REQUIRED');
@@ -2014,7 +2015,7 @@ export function auditMotionContinuityTrace({sourceHash='',expectedSourceHash='',
   if(channels.supportedContacts.some(key=>!contactKeys.includes(key)))issues.push('REQUIRED_SUPPORT_CONTACT_MISSING');
   if(samples[0]?.timeSeconds!==0||!finite(samples.at(-1)?.timeSeconds)||Math.abs(samples.at(-1).timeSeconds-durationSeconds)>1e-6)issues.push('FULL_CLIP_BOUNDARIES_REQUIRED');
   if(issues.length)return Object.freeze({verdict:'UNVERIFIED',sourceHash:text(sourceHash),clipId:text(clipId),issues:freezeList(issues),violations:freezeList([]),metrics:null,blocksVerifiedPromotion:true,runtimeVerified:false});
-  const anchors=new Map(),openViolations=new Map();let previousVelocity=null,previousDt=null;
+  const anchors=new Map(),openViolations=new Map(),jointVelocities=new Map();let previousVelocity=null,previousDt=null;
   const report=(kind,index,value,limit,region,startIndex=Math.max(0,index-1))=>{
     metrics[kind]=Math.max(metrics[kind],value);
     const key=kind+':'+region,open=openViolations.get(key);
@@ -2048,10 +2049,16 @@ export function auditMotionContinuityTrace({sourceHash='',expectedSourceHash='',
     const before=samples[index-1],after=samples[index],dt=after.timeSeconds-before.timeSeconds;
     const velocity=after.rootPosition.map((value,axis)=>(value-before.rootPosition[axis])/dt/characterHeightMeters);
     if(previousVelocity)report('maxRootAcceleration',index,distance(velocity,previousVelocity)/((dt+previousDt)/2),thresholds.maxRootAcceleration,'ROOT');
-    previousVelocity=velocity;previousDt=dt;
+    previousVelocity=velocity;
     const yawDelta=after.rootYawRadians-before.rootYawRadians;
     report('maxYawSpeed',index,Math.abs(Math.atan2(Math.sin(yawDelta),Math.cos(yawDelta)))/dt,thresholds.maxYawSpeed,'ROOT_YAW');
-    for(const key of jointKeys)report('maxJointSpeed',index,distance(after.jointPositions[key],before.jointPositions[key])/dt/characterHeightMeters,thresholds.maxJointSpeed,key);
+    for(const key of jointKeys){
+      const jointVelocity=after.jointPositions[key].map((value,axis)=>(value-before.jointPositions[key][axis])/dt/characterHeightMeters);
+      report('maxJointSpeed',index,Math.hypot(...jointVelocity),thresholds.maxJointSpeed,key);
+      if(jointVelocities.has(key))report('maxJointAcceleration',index,distance(jointVelocity,jointVelocities.get(key))/((dt+previousDt)/2),thresholds.maxJointAcceleration,key,Math.max(0,index-2));
+      jointVelocities.set(key,jointVelocity);
+    }
+    previousDt=dt;
     for(const key of contactKeys){
       const contact=after.contacts[key];
       if(!contact.planted){anchors.delete(key);openViolations.delete('maxPlantedDrift:'+key);continue;}
@@ -2059,10 +2066,23 @@ export function auditMotionContinuityTrace({sourceHash='',expectedSourceHash='',
       report('maxPlantedDrift',index,distance(contactPosition(after,key),anchors.get(key))/characterHeightMeters,thresholds.maxPlantedDrift,key);
     }
   }
+  if(loop){
+    const last=samples.length-1,first=samples[0],end=samples[last];
+    // 루트의 전진 거리는 보존하고, 루트 로컬 관절의 닫힘과 속도만 비교한다.
+    const boundaryVelocity=(key,endIndex,neighbor,other)=>{
+      const t1=samples[neighbor].timeSeconds-samples[endIndex].timeSeconds,t2=samples[other].timeSeconds-samples[endIndex].timeSeconds;
+      return samples[endIndex].jointPositions[key].map((value,axis)=>(-(t1+t2)/(t1*t2)*value+t2/(t1*(t2-t1))*samples[neighbor].jointPositions[key][axis]-t1/(t2*(t2-t1))*samples[other].jointPositions[key][axis])/characterHeightMeters);
+    };
+    for(const key of jointKeys){
+      report('maxLoopJointPosition',last,distance(first.jointPositions[key],end.jointPositions[key])/characterHeightMeters,thresholds.maxLoopJointPosition,key,0);
+      report('maxLoopJointVelocity',last,distance(boundaryVelocity(key,0,1,2),boundaryVelocity(key,last,last-1,last-2)),thresholds.maxLoopJointVelocity,key,0);
+    }
+    for(const key of contactKeys)if(first.contacts[key].planted!==end.contacts[key].planted)violations.push({kind:'LOOP_CONTACT_STATE_MISMATCH',region:key,frameRange:[0,last],normalizedTimeRange:[0,1],peakFrame:last});
+  }
   return Object.freeze({verdict:violations.length?'FAIL':'PASS',sourceHash,clipId,issues:freezeList([]),metrics:Object.freeze(metrics),violations:freezeList(violations),thresholds:Object.freeze(thresholds),
     frameCount:samples.length,coordinateContract:'ROOT_AND_CONTACT_WORLD_METERS_JOINTS_ROOT_LOCAL_METERS_YAW_RADIANS',
     detailCoordinateContract:'ATTACHMENTS_WORLD_METERS_PENETRATION_METERS_GAZE_WORLD_DIRECTIONS_EXPRESSION_WEIGHTS_0_TO_1_SUPPORT_LOCAL_METERS',
-    measurementCoverage:Object.freeze({channels,requiredDetailChannels:declared,unmeasuredGroups:groups.filter(group=>!channels[group].length)}),
+    measurementCoverage:Object.freeze({channels,requiredDetailChannels:declared,unmeasuredGroups:groups.filter(group=>!channels[group].length),jointAccelerationMeasured:true,loopBoundaryMeasured:loop}),
     blocksVerifiedPromotion:violations.length>0,traceChecksOnly:true,runtimeVerified:false});
 }
 
@@ -2693,7 +2713,17 @@ export function createStudioMotionActionProfile({
   const roles=clip==='ALL'?Object.keys(STUDIO_MOTION_TEACHER_LESSONS):STUDIO_MOTION_TEACHER_LESSONS[role]?[role]:[];
   return Object.freeze({...profile,teaching:Object.freeze({
     id:'STUDIO_MOTION_ACTION_TEACHER_V1',provenance:'TEACHER_AUTHORED',status:'PRACTICE_ONLY',runtimeVerified:false,productionVerified:false,gameplayAuthority:false,
+    version:2,
     clipId:text(teachingClip),needsSpecificClipBrief:roles.length===0,
+    performanceStudy:Object.freeze({
+      actorClass:upper(actorClass),bodyPlan:upper(bodyPlan),archetype:upper(archetype),weaponFamily:upper(weaponFamily),weightClass:weight,
+      preparation:'Read the existing joint hierarchy, visible geometry, support contacts and exact event markers. Map intent to gaze/head lead, support/load shift, primary arc, distal response and settling only on real movable channels. Unknown anatomy stays unknown; do not default a floating or many-legged subject to a humanoid.',
+      timing:'For each existing phase mark its start/end, key pose, breakdown pose, speed peak and next support state. Fit unequal spacing inside the locked time window: held preparation, directed acceleration, readable contact, dissipating follow-through and recovery. A common sine on all joints loses this ordering.',
+      forcePath:'Trace support through the existing pelvis/body mass to torso/shoulder and effector; for other topologies use their actual load path. Counter-rotate compatible masses to preserve balance. Identify which joint leads, which follows, and which must remain stable; do not exaggerate all channels together.',
+      contact:'At the existing contact marker inspect palm/sole/weapon orientation, grip offset, penetration and the support change immediately before/after. Preserve impact/cancel/root authority. A pleasant local arc without world contact remains unverified.',
+      secondary:'Separate primary travel from delayed head, tail, cloth or equipment response only where those channels exist. Secondary amplitude decays after primary motion; keep a readable still point and preserve already sound channels.',
+      review:'Compare normal speed, quarter speed and frames around each speed peak, contact, reversal and seam. Name the exact joint, interval and visible defect. Measure position, velocity and acceleration; for declared loops compare endpoint position/velocity and contact state. Smooth curves alone do not prove weight, acting or appeal.'
+    }),
     lessons:freezeList(roles.map(id=>Object.freeze({role:id,phases:freezeList((DUEL_COMBAT_AUTHORING_PHASES[id]||[]).map(row=>row.phase)),lesson:STUDIO_MOTION_TEACHER_LESSONS[id]}))),
     craft:'Inspect the exact rig/clip and weak axis first. Block silhouette and intent at the game camera, refine arcs and spacing, then contacts/grips, secondary overlap and transitions. Use compatible authored source and preserve strong axes. Hermite segments can match endpoint pose and velocity; C1 continuity alone does not prove contact or appeal.',
     timing:'Phase names are staging references only. Read existing seconds/event markers, active/cancel/recovery windows and locks from the target source. Never substitute generic normalized timestamps, default speed, hit-stop, camera or LOD numbers. No new combo, gameplay event or root trajectory is authorized.',

@@ -3495,18 +3495,27 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
     ?{...motionTeaching,example:{contract:'Use the source-hash-bound example in INTERNAL MOTION COACHING; adapt its principles to the target rig, never its identity or duration.',reference:boundMotionReference}}
     :motionTeaching;
   const craftGoal=[order.goal,order.selectedTask?.goal,order.selectedTask?.focus].filter(Boolean).join(' ');
+  const productionFamilies=motionUnit?['MOTION']:[...(order.assetProduction?.decisions||[]).map(row=>row.type).filter(Boolean),...Object.entries(order.assetProduction?.baseMaterialLoadout?.families||{}).filter(([,atoms])=>Array.isArray(atoms)&&atoms.length>0).map(([family])=>family)];
+  const taskRequests=unique([order.selectedTask?.goal,order.selectedTask?.focus]);
+  if(!taskRequests.length&&!motionUnit&&Buffer.byteLength(String(order.goal||''),'utf8')<=6000&&clean(order.goal))taskRequests.push(String(order.goal));
+  const productionRequestBlock=assetDevelopmentTask(order)&&taskRequests.length?[
+    '[PRODUCTION REQUEST CONTRACT BEGIN]',
+    JSON.stringify({requests:taskRequests,allowedPaths:responsibleFiles,target:order.target,objectId:motionUnit?.objectId||null,clipId:motionUnit?.clipId||null,styleLock:order.assetProduction?.styleBible||null}),
+    'Apply each requested change to the assigned existing subject. Preserve explicit exclusions, quantities, ordering and identity features verbatim. Teacher examples are advisory and cannot replace this request or widen editable scope. If a request conflicts with source locks or needs unsupported anatomy/material channels, state that exact unresolved item; do not silently substitute a generic asset or claim completion.',
+    '[PRODUCTION REQUEST CONTRACT END]'
+  ].join('\n'):'';
   const photoCraft=!motionUnit&&(order.assetProduction?.imageAssetCreation?.enabled===true||order.imageAssetObservation?.required===true);
   const assetTeaching=assetDevelopmentTask(order)?createAssetProductionTeachingRecipe({
     platform:order.target||'UNSPECIFIED',
     visualReference:photoCraft,
     actorAI:!motionUnit&&(order.selectedTask?.actorAI===true||/\bai\b|인공지능|행동\s*트리|길찾기|pathfinding|behaviou?r\s*tree/i.test(craftGoal)),
-    surfaceCraft:!motionUnit&&(photoCraft||order.selectedTask?.surfaceCraft===true||/재질|질감|표면|텍스처|털|비늘|깃털|저폴리|\b(?:material|texture|surface|fur|scale|feather|pbr|low[\s-]?poly)s?\b/i.test(craftGoal)),
+    surfaceCraft:!motionUnit&&(productionFamilies.some(family=>clean(family).toUpperCase()==='MATERIAL')||photoCraft||order.selectedTask?.surfaceCraft===true||/재질|질감|표면|텍스처|털|비늘|깃털|저폴리|\b(?:material|texture|surface|fur|scale|feather|pbr|low[\s-]?poly)s?\b/i.test(craftGoal)),
     creatureCraft:!motionUnit&&(photoCraft||order.selectedTask?.creatureCraft===true||/동물|몬스터|생물|체형|괴물|\b(?:animal|monster|creature|wildlife|body[\s-]?plan)s?\b/i.test(craftGoal)),
     cinematic:!motionUnit&&(/컷신|시네마틱|연출|cut[\s-]?scene|cinematic|storyboard|shot[\s-]?list/i.test([order.goal,order.selectedTask?.goal,order.selectedTask?.focus].filter(Boolean).join(' '))||order.selectedTask?.cinematicDirection===true),
-    families:motionUnit?['MOTION']:[...(order.assetProduction?.decisions||[]).map(row=>row.type).filter(Boolean),...Object.entries(order.assetProduction?.baseMaterialLoadout?.families||{}).filter(([,atoms])=>Array.isArray(atoms)&&atoms.length>0).map(([family])=>family)],
+    families:productionFamilies,
     styleBible:order.assetProduction?.styleBible||{styleFamily:order.selectedTask?.styleFamily||order.styleFamily}
   }):null;
-  const studioMotionTeaching=order.target==='roblox'&&assetTeaching?.familyLessons.some(row=>row.family==='MOTION')?createStudioMotionActionProfile({platform:'ROBLOX',teachingClip:motionUnit?.clipId||'ALL'}).teaching:null;
+  const studioMotionTeaching=assetTeaching?.familyLessons.some(row=>row.family==='MOTION')?createStudioMotionActionProfile({platform:clean(order.target).toUpperCase()||'UNSPECIFIED',teachingClip:motionUnit?.clipId||order.selectedTask?.clipId||'ALL',bodyPlan:motionCoaching?.evidence?.form||motionUnit?.bodyPlan||order.selectedTask?.bodyPlan||'UNKNOWN',actorClass:order.selectedTask?.actorClass||'UNKNOWN',archetype:motionCoaching?.evidence?.targetId||motionUnit?.objectId||'',weaponFamily:order.selectedTask?.weaponFamily||'UNSPECIFIED',weightClass:order.selectedTask?.weightClass||'UNKNOWN'}).teaching:null;
   // Bound motion functions keep pure samples; carrying new spring/lifecycle state is
   // outside their responsibility. Full recipes retain those examples for other owners.
   const assetTeachingBlock=assetTeaching?'[INTERNAL ASSET TEACHER PRACTICE BEGIN]\n'+JSON.stringify({...assetTeaching,...(motionUnit?{advancedTechniques:assetTeaching.advancedTechniques.map(({id,when,check})=>({id,when,check})),applicationExamples:boundMotionReference?[]:assetTeaching.applicationExamples.filter(example=>['HERMITE_POSE_SEGMENT','TWO_BONE_REACH_GEOMETRY','SHORTEST_QUATERNION_BLEND'].includes(example.id)),...(boundMotionReference?{sourceBoundExample:boundMotionReference}:{})}:{}),...(studioMotionTeaching?{studioMotion:studioMotionTeaching}:{})})+'\n[INTERNAL ASSET TEACHER PRACTICE END]':'';
@@ -3527,6 +3536,7 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
       'You are the Vibe2 source worker. Implement the assigned existing motion. Return JSON only; instructions or plans without edits are invalid.',
       'Engine: '+order.target+'; allowed edit path: '+allowed,
       compactUnit,
+      productionRequestBlock,
       learningContract.block,
       motionCoaching?.block||'',
       assetTeachingBlock,
@@ -3616,6 +3626,7 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
 allowFullRewrite?'You are the Vibe2 game source worker. Return exactly one raw VIBE2_FULL_FILE envelope. Do not return JSON. Do not use markdown fences.':'You are the Vibe2 game source worker. Return JSON only.',
 `Engine: ${order.target}`,
 `Goal: ${goal}`,
+productionRequestBlock,
 `Department: ${order.department||'development'}`,
 learningContract.block,
 robloxSourceCoaching?.block||'',
@@ -4812,10 +4823,10 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
       const block=String(prompt).slice(start,finish+end.length);
       if(!attemptPrompt.includes(block))attemptPrompt+='\n'+block;
     }
-    for(const label of ['ASSET IMPLEMENTATION CONTRACT','APPLY USABLE ASSETS FIRST','PRECISION PRODUCTION CHAIN','IMAGE ASSET OBSERVATION','ASSET DETAIL REPAIR','RUNTIME VISUAL REVIEW','RUNTIME VISUAL REPAIR','SINGLE MOTION WORK UNIT','INTERNAL MOTION COACHING','ROBLOX SOURCE COACHING','INTERNAL ASSET TEACHER PRACTICE']){
+    for(const label of ['PRODUCTION REQUEST CONTRACT','ASSET IMPLEMENTATION CONTRACT','APPLY USABLE ASSETS FIRST','PRECISION PRODUCTION CHAIN','IMAGE ASSET OBSERVATION','ASSET DETAIL REPAIR','RUNTIME VISUAL REVIEW','RUNTIME VISUAL REPAIR','SINGLE MOTION WORK UNIT','INTERNAL MOTION COACHING','ROBLOX SOURCE COACHING','INTERNAL ASSET TEACHER PRACTICE']){
       const block=prompt.match(new RegExp('\\['+label+' BEGIN\\][\\s\\S]*?\\['+label+' END\\]'))?.[0]||'';
       if(!block||attemptPrompt.includes(block))continue;
-      const retryBlock=['ASSET IMPLEMENTATION CONTRACT','APPLY USABLE ASSETS FIRST','RUNTIME VISUAL REPAIR','PRECISION PRODUCTION CHAIN','SINGLE MOTION WORK UNIT','INTERNAL MOTION COACHING','ROBLOX SOURCE COACHING','INTERNAL ASSET TEACHER PRACTICE'].includes(label)?block:retry?boundedLargeExcerpt(block,RETRY_OBSERVATION_CHUNK_BYTES).content:block;
+      const retryBlock=['PRODUCTION REQUEST CONTRACT','ASSET IMPLEMENTATION CONTRACT','APPLY USABLE ASSETS FIRST','RUNTIME VISUAL REPAIR','PRECISION PRODUCTION CHAIN','SINGLE MOTION WORK UNIT','INTERNAL MOTION COACHING','ROBLOX SOURCE COACHING','INTERNAL ASSET TEACHER PRACTICE'].includes(label)?block:retry?boundedLargeExcerpt(block,RETRY_OBSERVATION_CHUNK_BYTES).content:block;
       attemptPrompt+='\n'+retryBlock;
       if(retry&&retryBlock!==block)console.log(`VIBE2_RETRY_OBSERVATION_COMPACTED=${label}:${Buffer.byteLength(block,'utf8')}->${Buffer.byteLength(retryBlock,'utf8')}`);
     }

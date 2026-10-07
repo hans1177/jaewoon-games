@@ -251,6 +251,19 @@ test('material and creature teacher scope native craft, body plans and original 
   assert.equal(ordinary.surfaceCraft,null);assert.equal(ordinary.creatureCraft,null);
 });
 
+test('surface and style studies apply across engines while native craft APIs stay scoped',()=>{
+  for(const platform of ['WEB','UNITY','ROBLOX']){
+    const recipe=createAssetProductionTeachingRecipe({families:['MATERIAL'],platform,styleBible:{styleFamily:'COZY'}});
+    assert.equal(recipe.version,2);assert.equal(recipe.surfaceStudy.nativePlatform,platform);
+    assert.equal(recipe.surfaceStudy.runtimeVerified,false);
+    assert.match(recipe.surfaceStudy.materialIdentity,/substrate/);
+    assert.match(recipe.surfaceStudy.textureHierarchy,/grain\/weave/);
+    assert.equal(recipe.styleStudy.lockedProfile,'COZY');
+    if(platform!=='ROBLOX'){assert.equal(recipe.surfaceCraft,null);assert.deepEqual(recipe.applicationExamples,[]);assert.match(recipe.surfaceStudy.nativeBoundary,/not native APIs/);}
+  }
+  for(const family of ['MOTION','UI','AUDIO'])assert.equal(createAssetProductionTeachingRecipe({families:[family]}).surfaceStudy,null);
+});
+
 test('photo and world layout teacher separate pixel evidence from construction and reuse canonical layout APIs',async()=>{
   const photo=createAssetProductionTeachingRecipe({families:['CREATURE'],visualReference:true});
   assert.equal(photo.photoReferenceLessons.length,7);
