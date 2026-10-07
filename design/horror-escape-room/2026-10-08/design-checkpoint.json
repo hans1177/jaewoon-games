@@ -3,9 +3,9 @@
   "gameId": "horror-escape-room",
   "date": "2026-10-08",
   "seedId": "OWNER-DESIGN-HORROR-ESCAPE-ROOM",
-  "fingerprint": "61a5f2aad925eab7ee56466da8d765a184788249323284d38211a69cbf4c5dcb",
+  "fingerprint": "ed06739fc1cc7f7dac4e23b966f01e548b712f83e77cea3c5da87bedca86b565",
   "policyDigest": "223f74bb658bbab4921a06b74e652d4e7fc27d174188c3b4b3488e9b3d026f6f",
-  "engineDigest": "81b77ec5e350f8737109235df27ddb3a375a99cf53bfce58e356fcdea285920b",
+  "engineDigest": "4392f6c8aaf3b4a62d3195d1aa9afdb76cd0ba1f633317503035d6af19a057b9",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
@@ -26,8 +26,17 @@
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T17:55:35.632Z",
-  "updatedAt": "2026-10-07T17:57:05.768Z",
+  "updatedAt": "2026-10-07T18:28:35.886Z",
   "failedPhase": "designer_draft",
   "failedTask": "identity-core",
-  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=OPTIONAL_EXTERNAL_AI_DISABLED local=OLLAMA_DESIGN_TIMEOUT 90000ms"
+  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=OPTIONAL_EXTERNAL_AI_DISABLED local=OLLAMA_DESIGN_TIMEOUT 90000ms",
+  "checkpointMigration": {
+    "fromContractVersion": 4,
+    "toContractVersion": 4,
+    "reason": "QUOTA_VIBE_REPAIR_COMPATIBLE_ENGINE_CHANGE_NO_REPLAY",
+    "previousEngineDigest": "81b77ec5e350f8737109235df27ddb3a375a99cf53bfce58e356fcdea285920b",
+    "preservedPhaseCount": 0,
+    "preservedTaskCount": 0,
+    "migratedAt": "2026-10-07T18:28:35.885Z"
+  }
 }
