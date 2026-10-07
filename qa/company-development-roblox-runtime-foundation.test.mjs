@@ -232,6 +232,35 @@ test('cloud image evidence fetches actual CDN bytes without leaking the API key 
  assert.equal(result.imageVisualQualityVerified,false);
 });
 
+
+
+test('cloud image content verification keeps full coverage with bounded worker concurrency',async()=>{
+ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jS1sAAAAASUVORK5CYII=','base64');
+ const urls=Array.from({length:12},(_,i)=>'https://tr.rbxcdn.com/image-'+i+'.png');
+ let active=0,maxActive=0,imageCalls=0;
+ const result=await probeRobloxOpenCloudImageEvidence({
+  universeId:'1',apiKey:'k',networkRetryAttempts:1,networkRetryDelayMs:0,
+  fetchImpl:async(url,init={})=>{
+   if(url.startsWith('https://apis.roblox.com/'))return new Response(JSON.stringify({thumbnails:urls.map(imageUrl=>({imageUrl}))}));
+   assert.ok(init.signal,'CDN request must remain bounded');
+   imageCalls++;
+   active++;
+   maxActive=Math.max(maxActive,active);
+   await new Promise(resolve=>setTimeout(resolve,5));
+   active--;
+   return new Response(png,{headers:{'content-type':'image/png'}});
+  },
+ });
+ assert.equal(imageCalls,12,'every returned CDN image is verified');
+ assert.equal(result.imageContent.length,12);
+ assert.equal(result.imageContentPassed,true);
+ assert.ok(maxActive>4,'image verification is no longer limited to serial batches of four');
+ assert.ok(maxActive<=8,'image verification stays within the bounded worker pool');
+ const source=fs.readFileSync('tools/company-development-roblox-runtime-foundation.mjs','utf8');
+ assert.match(source,/const imageWorkerCount=Math\.max\(1,Math\.min\(8,urls\.length\|\|1\)\)/);
+ assert.match(source,/AbortSignal\.timeout\(12000\)/);
+});
+
 test('cloud image validation rejects unsafe URLs corrupt payloads and metadata-only responses',async()=>{
  for(const [imageUrl,response,expected] of [
   ['https://example.com/image.png',null,'UNTRUSTED_IMAGE_URL'],
