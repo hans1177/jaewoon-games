@@ -339,8 +339,84 @@ test('failed previous generation keeps depth and routes next action to causal re
   assert.equal(second.developmentDepth,1);
   assert.equal(second.effectivenessMeasurement.previousGeneration.classification,'REGRESSION');
   assert.equal(second.nextActionDecision.action,'CAUSAL_REPAIR');
+  assert.equal(second.primaryFocus,'STABILITY');
+  assert.match(second.thisLoopPrimaryGoal,/현재 실패 근거/);
+  assert.equal(second.autonomousContentExpansion.contentExpansionDeferredUntilRuntimeRepairPass,true);
+  assert.equal(second.autonomousContentExpansion.themeCoverageAdvanced,false);
+  assert.equal(second.autonomousContentExpansion.coherentContentBundle.length,0);
+  assert.equal(second.autonomousContentExpansion.derivedRuleEvolution.allowed,false);
 });
 
+
+test('observed runtime failure overrides stale presentation focus and freezes expansion progress until repair passes',()=>{
+  const visualSource={
+    sourceRoot:'roblox-games/foundation-first-demo',
+    sourceTreeFingerprint:'7'.repeat(64),
+    fileCount:2,
+    topFiles:[{file:'roblox-games/foundation-first-demo/client/Game.client.luau',score:30}],
+    sourceAnchors:[{file:'roblox-games/foundation-first-demo/client/Game.client.luau',line:12,kind:'FUNCTION',symbol:'renderWorld',context:'local function renderWorld()',score:40}],
+    signals:{combat:8,progression:8,ai:3,save:2,multiplayer:2,animation:0,vfx:0,camera:0,ui:5,uiFlow:3,input:3,map:6,landmark:2,interaction:4,inventory:1,equipment:1,settings:1,feedback:4,session:3,content:10,choice:3,connection:3,performance:3,lighting:0,primitive:20,todo:0,errorRecovery:3},
+    observations:['CURRENT_SOURCE_FILES=2','PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH','MOTION_IMPLEMENTATION_SPARSE']
+  };
+  const first=buildGameSpecificBuildUpDirective({
+    gameId:'foundation-first-demo',
+    designRecord:design(),
+    sourceObservation:visualSource,
+    qualitySignals:['visual placeholder debt']
+  });
+  assert.equal(first.primaryFocus,'PRESENTATION');
+  const second=buildGameSpecificBuildUpDirective({
+    gameId:'foundation-first-demo',
+    designRecord:design(),
+    sourceObservation:{...visualSource,sourceTreeFingerprint:'8'.repeat(64)},
+    previousDirective:first,
+    previousDirectiveOutcome:'verified',
+    runtimeEvidence:{
+      runtimeObserved:true,
+      runtimePassed:false,
+      failureStage:'F4_PHYSICS_AND_MOVEMENT',
+      failureSignature:'PLAYER_MOVEMENT_BLOCKED',
+      blockers:['INPUT_NOT_REACHING_MOVEMENT_STATE']
+    }
+  });
+  assert.equal(second.effectivenessMeasurement.previousGeneration.classification,'REGRESSION');
+  assert.equal(second.nextActionDecision.action,'CAUSAL_REPAIR');
+  assert.equal(second.primaryFocus,'STABILITY');
+  assert.match(second.primaryGoalReason,/콘텐츠·그래픽 확장보다 기본 플레이 foundation/);
+  assert.equal(second.autonomousContentExpansion.contentExpansionDeferredUntilRuntimeRepairPass,true);
+  assert.equal(second.autonomousContentExpansion.themeCoverageAdvanced,false);
+  assert.equal(second.autonomousContentExpansion.themeDepth,first.autonomousContentExpansion.themeDepth);
+  assert.deepEqual(second.autonomousContentExpansion.themeCoverageLedger.counts,first.autonomousContentExpansion.themeCoverageLedger.counts);
+  assert.deepEqual(second.autonomousContentExpansion.themeCoverageLedger.sequence,first.autonomousContentExpansion.themeCoverageLedger.sequence);
+  assert.equal(second.autonomousContentExpansion.coherentContentBundle.length,0);
+});
+
+test('source-generation failure without runtime observation keeps the current BUILD_UP focus',()=>{
+  const source={
+    sourceRoot:'roblox-games/source-retry-demo',
+    sourceTreeFingerprint:'5'.repeat(64),
+    fileCount:1,
+    topFiles:[],
+    sourceAnchors:[],
+    signals:{combat:8,progression:8,ai:3,save:2,multiplayer:0,animation:0,vfx:0,camera:0,ui:5,uiFlow:3,input:3,map:3,landmark:1,interaction:3,inventory:0,equipment:0,settings:1,feedback:3,session:2,content:6,choice:2,connection:2,performance:2,lighting:0,primitive:20,todo:0,errorRecovery:2},
+    observations:['PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH']
+  };
+  const first=buildGameSpecificBuildUpDirective({
+    gameId:'source-retry-demo',designRecord:design(),sourceObservation:source,qualitySignals:['visual placeholder debt']
+  });
+  assert.equal(first.primaryFocus,'PRESENTATION');
+  const retry=buildGameSpecificBuildUpDirective({
+    gameId:'source-retry-demo',
+    designRecord:design(),
+    sourceObservation:source,
+    previousDirective:first,
+    previousDirectiveOutcome:'failed'
+  });
+  assert.equal(retry.effectivenessMeasurement.previousGeneration.classification,'REGRESSION');
+  assert.equal(retry.nextActionDecision.action,'CAUSAL_REPAIR');
+  assert.equal(retry.primaryFocus,'PRESENTATION');
+  assert.equal(retry.autonomousContentExpansion.contentExpansionDeferredUntilRuntimeRepairPass,false);
+});
 
 test('primary focus prioritizes core gameplay over generic presentation debt when both are evidenced',()=>{
   const sourceObservation={
@@ -388,6 +464,13 @@ test('verified product-quality failure routes first buildup generation directly 
   assert.equal(directive.generation,1);
   assert.equal(directive.effectivenessMeasurement.previousGeneration.classification,'REGRESSION');
   assert.equal(directive.nextActionDecision.action,'CAUSAL_REPAIR');
+  assert.equal(directive.primaryFocus,'STABILITY');
+  assert.match(directive.thisLoopPrimaryGoal,/현재 실패 근거/);
+  assert.match(directive.primaryGoalReason,/runtime 실패/);
+  assert.equal(directive.autonomousContentExpansion.contentExpansionDeferredUntilRuntimeRepairPass,true);
+  assert.equal(directive.autonomousContentExpansion.themeCoverageAdvanced,false);
+  assert.equal(directive.autonomousContentExpansion.coherentContentBundle.length,0);
+  assert.ok(directive.autonomousContentExpansion.completionAcceptance.includes('RUNTIME_FAILURE_CAUSAL_REPAIR_PASS_REQUIRED_BEFORE_CONTENT_EXPANSION'));
   assert.match(directive.nextActionDecision.reason,/failure|regression/i);
 });
 
@@ -518,7 +601,11 @@ test('failed effectiveness may stay on the same content theme instead of breadth
     runtimeEvidence:{runtimeObserved:true,runtimePassed:false,failureStage:'PLAYTEST',failureSignature:'verified-product-quality-failure'}
   });
   assert.equal(second.autonomousContentExpansion.selectedTheme,first.autonomousContentExpansion.selectedTheme);
-  assert.equal(second.autonomousContentExpansion.themeDepth,2);
+  assert.equal(second.autonomousContentExpansion.themeDepth,first.autonomousContentExpansion.themeDepth);
+  assert.deepEqual(second.autonomousContentExpansion.themeCoverageLedger.counts,first.autonomousContentExpansion.themeCoverageLedger.counts);
+  assert.deepEqual(second.autonomousContentExpansion.themeCoverageLedger.sequence,first.autonomousContentExpansion.themeCoverageLedger.sequence);
+  assert.equal(second.autonomousContentExpansion.contentExpansionDeferredUntilRuntimeRepairPass,true);
+  assert.equal(second.autonomousContentExpansion.themeCoverageAdvanced,false);
   assert.equal(second.autonomousContentExpansion.executionMode,'CAUSAL_REPAIR_FIRST_KEEP_EXPANSION_CONTEXT');
 });
 
@@ -538,7 +625,11 @@ test('verified product-quality failure keeps autonomous expansion inside existin
     runtimeEvidence:{runtimeObserved:true,runtimePassed:false,failureStage:'PLAYTEST',failureSignature:'verified-product-quality-failure'}
   });
   assert.equal(d.nextActionDecision.action,'CAUSAL_REPAIR');
+  assert.equal(d.primaryFocus,'STABILITY');
   assert.equal(d.autonomousContentExpansion.executionMode,'CAUSAL_REPAIR_FIRST_KEEP_EXPANSION_CONTEXT');
+  assert.equal(d.autonomousContentExpansion.contentExpansionDeferredUntilRuntimeRepairPass,true);
+  assert.equal(d.autonomousContentExpansion.coherentContentBundle.length,0);
+  assert.equal(d.autonomousContentExpansion.derivedRuleEvolution.allowed,false);
   assert.equal(d.autonomousContentExpansion.newWorkflowForbidden,true);
   assert.equal(d.autonomousContentExpansion.newStageForbidden,true);
 });
