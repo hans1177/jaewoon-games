@@ -1,5 +1,5 @@
 {
-  "version": 80,
+  "version": 81,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -625,7 +625,12 @@
       "colorOnlyNpcRoleCloneCannotPromote": true,
       "roleSpecificActorPresentationCannotMutateGameplayStatsAiAuthorityOrHitRules": true,
       "positiveLearningRequiresVerifiedRuntimePass": true,
-      "rawTelemetryDirectTrainingForbidden": true
+      "rawTelemetryDirectTrainingForbidden": true,
+      "npcPhysicalAppearanceDiversityCannotMutateGameplayStats": true,
+      "npcVisualHeightWeightCannotImplicitlyChangeHitboxOrCollision": true,
+      "npcColorOnlySizeOnlyOrFaceOnlyCloneCannotPromote": true,
+      "npcRoleVariationMustPreserveMasterGlbProvenance": true,
+      "companionEliteBossVisualVariationCannotGrantUndeclaredGameplayAdvantages": true
     },
     "failureAction": "ASSET_REPAIR_REQUIRED_OR_LIBRARY_QUARANTINE_BY_SCOPE"
   },
