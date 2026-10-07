@@ -250,6 +250,20 @@ test('single motion work unit accepts one complete function and keeps native qua
   assert.equal(evaluateStudioQualityCandidateDelta({...f,contract,singleMotionCheck:result}).pass,true);
   assert.equal(evaluateStudioQualityCandidateDelta({...f,contract}).pass,false);
 });
+test('design-grounded Roblox gameplay BUILD_UP rejects presentation-only delta and accepts gameplay code delta',()=>{
+  const contract={phase:'BUILD_UP',focusPillar:'CORE_FUN',requiredConnectedImprovements:{min:1},realSourceDeltaRequired:true,gameplaySourceDeltaRequired:true};
+  const visualOnly={edits:[{path:'client/Game.client.luau',find:'root.BackgroundColor3 = Color3.fromRGB(18, 28, 48)',replace:'root.BackgroundColor3 = Color3.fromRGB(28, 38, 58)'}],newFiles:[],replaceFiles:[]};
+  const blocked=evaluateStudioQualityCandidateDelta({candidate:visualOnly,contract});
+  assert.equal(blocked.pass,false);
+  assert.equal(blocked.reason,'GAMEPLAY_SOURCE_DELTA_REQUIRED');
+  assert.equal(blocked.gameplayUnits,0);
+  const gameplay={edits:[{path:'server/Game.server.luau',find:'player:SetAttribute("Progress", 0)',replace:'player:SetAttribute("Progress", 1)'}],newFiles:[],replaceFiles:[]};
+  const accepted=evaluateStudioQualityCandidateDelta({candidate:gameplay,contract});
+  assert.equal(accepted.pass,true);
+  assert.equal(accepted.gameplayUnits,1);
+  assert.deepEqual(accepted.gameplayFiles,['server/Game.server.luau']);
+});
+
 test('single motion work unit planner carries the exact binding without silently shrinking an invalid batch',t=>{
   const f=singleMotionFixture(t);
   const plan=buildVibeAssetProductionPlan({repoRoot:f.sourceRoot,target:'web',task:{motionRepairWorkUnit:f.unit},manifest:{assets:[]},presetCatalog:{presets:[]}});
