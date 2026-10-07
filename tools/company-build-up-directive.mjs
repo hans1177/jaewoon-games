@@ -269,7 +269,7 @@ function walkSource(root){
       if(['node_modules','Library','Temp','Logs','build','dist','.git','Binaries','Intermediate','Saved','Packages','ProjectSettings'].includes(entry.name))continue;
       const full=path.join(current,entry.name);
       if(entry.isDirectory()){stack.push(full);continue;}
-      if(!evolutionFileEligible(full))continue;
+      if(!entry.isFile()||!evolutionFileEligible(full))continue;
       rows.push(full);
     }
   }
@@ -395,7 +395,21 @@ function decideNextVibeAction({previousEffectiveness={},previousOutcome='',focus
 }
 
 export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
-  const absolute=path.resolve(repoRoot,sourceRoot);
+  // 파일명: tools/company-build-up-directive.mjs — 소스 범위 검증
+  // 빈 경로나 저장소 루트를 게임 소스로 해석하지 않는다. 누락은 누락으로 반환한다.
+  const repository=path.resolve(repoRoot);
+  const requested=clean(sourceRoot);
+  const resolved=requested?path.resolve(repository,requested):null;
+  const relative=resolved?path.relative(repository,resolved):'';
+  let absolute=null;
+  if(relative&&relative!=='..'&&!relative.startsWith('..'+path.sep)&&!path.isAbsolute(relative)){
+    try{
+      const realRepository=fs.realpathSync(repository);
+      const realSource=fs.realpathSync(resolved);
+      // 심볼릭 링크가 다른 게임이나 저장소 전체의 근거를 빌려오지 못하게 한다.
+      if(path.relative(realRepository,realSource)===relative&&fs.statSync(realSource).isDirectory())absolute=resolved;
+    }catch{}
+  }
   const capacityMeasure=measureSourceData(absolute);
   const files=walkSource(absolute);
   const rows=files.map(file=>{
@@ -697,7 +711,7 @@ function buildAllDomainDirectives({states=[],design={},focus='CORE_FUN',depthInf
     CORE_FUN:`${anchor}가 단순 반복 입력이 아니라 상황을 읽고 선택을 바꾸는 핵심 재미가 되게 한다. 같은 선택의 반복 이득을 줄이고 성공/실패 이유가 즉시 보이게 한다.`,
     COMBAT_OR_PRIMARY_INTERACTION:`${anchor}의 입력→전조/준비→판정→결과→회복 흐름을 실제 상태 머신에 연결하고 타이밍·거리·위험/보상 중 게임에 맞는 최소 두 축에서 선택 차이를 만든다.`,
     PLAYER_ACTIONS:`플레이어의 주요 행동마다 사용 조건, 취소/실패 조건, 상태 변화, 쿨다운 또는 후딜, 화면/음향 피드백을 일관되게 연결하고 무의미한 중복 행동은 정리한다.`,
-    ENEMY_AI:`적 역할이 이동·타깃 선택·공격 전조·공격 패턴·후퇴/회복 또는 특수상태에서 구별되게 하고 ${anchor}에 대한 카운터플레이가 실제 플레이에서 가능하게 한다.`,
+    ENEMY_AI:`적 역할이 이동·타이깃 선택·공격 전조·공격 패턴·후퇴/회복 또는 특수상태에서 구별되게 하고 ${anchor}에 대한 카운터플레이가 실제 플레이에서 가능하게 한다.`,
     BOSS_AND_SIGNATURE_MOMENTS:`${identity}의 보스/시그니처 순간은 일반 적의 체력만 키운 형태를 금지하고 단계 변화, 공간 압박, 전조, 대응 선택, 보상 연출을 핵심 시스템 ${secondary}와 연결한다.`,
     PROGRESSION:`${progression}을 짧은 목표→보상→해금→새 선택→다음 난도로 연결하고 성장 수치만 오르는 대신 플레이 방식이 실제로 넓어지게 한다.`,
     GOALS:`현재 목표·다음 목표·실패 조건을 플레이 중 확인 가능하게 하고, 목표가 ${anchor}와 직접 연결되어 플레이어가 왜 행동하는지 분명하게 한다.`,
@@ -1337,6 +1351,7 @@ export function buildGameSpecificBuildUpDirective({
 }={}){
   const id=clean(gameId);if(!id)throw new Error('BUILD_UP_GAME_ID_REQUIRED');
   const design=extractDesignContext(designRecord||{});
+  sourceRoot=posix(sourceRoot)||posix(sourceObservation?.sourceRoot);
   const source=sourceObservation||inspectGameSource({repoRoot,sourceRoot});
   const signals=uniq([
     ...qualitySignals,

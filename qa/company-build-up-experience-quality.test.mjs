@@ -10,6 +10,7 @@ import {
   buildGameSpecificBuildUpDirective,
   directivePrompt,
   inspectGameSource,
+  inspectGameSources,
 } from '../tools/company-build-up-directive.mjs';
 
 const sourceObservation=(overrides={})=>({
@@ -127,7 +128,9 @@ test('Web and Unity keep one common buildup loop but use native evidence profile
 test('source inspection detects perceptual motion and audio depth instead of only presence markers',()=>{
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'build-up-experience-'));
   try{
-    fs.writeFileSync(path.join(dir,'Game.luau'),`
+    const gameRoot='roblox-games/test-game';
+    fs.mkdirSync(path.join(dir,gameRoot),{recursive:true});
+    fs.writeFileSync(path.join(dir,gameRoot,'Game.luau'),`
 local SoundService=game:GetService("SoundService")
 local group=Instance.new("SoundGroup")
 group.Parent=SoundService
@@ -143,7 +146,7 @@ local attack="ATTACK";local impact="IMPACT";local recovery="RECOVERY";local deat
 local hitStop=true;local recoil=true;local cameraKick=true
 local inventory={};local equippedWeapon=nil
 `);
-    const observed=inspectGameSource({repoRoot:dir,sourceRoot:'.'});
+    const observed=inspectGameSource({repoRoot:dir,sourceRoot:gameRoot});
     assert.ok(observed.signals.audio>=2);
     assert.ok(observed.signals.audioDynamics>=2);
     assert.ok(observed.signals.motionStates>=5);
@@ -165,4 +168,96 @@ test('designless safe presentation may polish existing inventory and audio witho
     assert.notEqual(row.priority,'NOT_APPLICABLE',domain);
   }
   assert.ok(directive.acceptanceEvidence.includes('OWNER_DISABLED_AUDIO_CATEGORIES_PRESERVED'));
+});
+
+// 소스 범위 회귀: 아래 데이터는 검사기 입력이며 실제 플레이 증거가 아니다.
+function sourceScopeFixture(t){
+  const base=fs.mkdtempSync(path.join(os.tmpdir(),'build-up-scope-'));
+  const root=path.join(base,'repo');fs.mkdirSync(root);
+  t.after(()=>fs.rmSync(base,{recursive:true,force:true}));
+  const write=(file,text)=>{
+    const full=path.join(root,file);
+    fs.mkdirSync(path.dirname(full),{recursive:true});fs.writeFileSync(full,text);
+  };
+  write('company-policy.json',JSON.stringify({combat:'attack reward enemy health hp'}));
+  write('roblox-games/other/server/Game.server.luau','function foreignAttack(enemy) enemy.Health -= 1 end\n');
+  write('roblox-games/cozy-island/server/Game.server.luau','function gatherResource(player) return player.wood end\n');
+  write('web-games/cozy-island/index.html','<script>function updateHud(state){return state.wood}</script>');
+  fs.writeFileSync(path.join(base,'outside.luau'),'function unrelatedAttack() return 1 end\n');
+  return{root,base,write};
+}
+function assertMissingSourceScope(observed){
+  assert.equal(observed.fileCount,0);assert.equal(observed.dataFileCount,0);
+  assert.equal(observed.sourceBytes,0);assert.equal(observed.largestFileBytes,0);
+  assert.deepEqual(observed.topFiles,[]);assert.deepEqual(observed.sourceAnchors,[]);
+  assert.ok(Object.values(observed.signals).every(value=>value===0));
+  assert.ok(observed.observations.includes('CURRENT_SOURCE_MISSING_OR_UNREADABLE'));
+}
+for(const sourceRoot of ['', ' ', '.', './', '..', '../', 'tools/..', '/'])test(`source scope rejects unscoped paths: ${JSON.stringify(sourceRoot)}`,t=>{
+  const f=sourceScopeFixture(t);assertMissingSourceScope(inspectGameSource({repoRoot:f.root,sourceRoot}));
+});
+for(const sourceRoots of [[],[''],['.'],['missing'],['','missing']])test(`aggregate source scope does not fall back to the repository: ${JSON.stringify(sourceRoots)}`,t=>{
+  const f=sourceScopeFixture(t);assertMissingSourceScope(inspectGameSources({repoRoot:f.root,sourceRoots}));
+});
+test('absolute repository root cannot become game source evidence',t=>{
+  const f=sourceScopeFixture(t);assertMissingSourceScope(inspectGameSource({repoRoot:f.root,sourceRoot:f.root}));
+});
+test('unrelated game edits cannot alter the selected game fingerprint or anchors',t=>{
+  const f=sourceScopeFixture(t);
+  const before=inspectGameSource({repoRoot:f.root,sourceRoot:'roblox-games/cozy-island'});
+  assert.equal(before.fileCount,1);assert.equal(before.sourceAnchors[0].symbol,'gatherResource');
+  assert.ok(before.topFiles.every(row=>row.file.startsWith('roblox-games/cozy-island/')));
+  f.write('roblox-games/other/server/Game.server.luau','function foreignAttack(enemy) enemy.Health -= 100 end\n');
+  assert.equal(inspectGameSource({repoRoot:f.root,sourceRoot:'roblox-games/cozy-island'}).sourceTreeFingerprint,before.sourceTreeFingerprint);
+});
+test('explicit absolute game directory remains supported',t=>{
+  const f=sourceScopeFixture(t);
+  assert.equal(inspectGameSource({repoRoot:f.root,sourceRoot:path.join(f.root,'roblox-games/cozy-island')}).fileCount,1);
+});
+test('same-game native and Web source aggregation stays intact',t=>{
+  const f=sourceScopeFixture(t);
+  const observed=inspectGameSources({repoRoot:f.root,sourceRoots:['roblox-games/cozy-island','web-games/cozy-island']});
+  assert.equal(observed.fileCount,2);assert.ok(observed.topFiles.every(row=>row.file.includes('/cozy-island/')));
+});
+test('root directory symlink cannot borrow a different game',t=>{
+  const f=sourceScopeFixture(t);
+  fs.symlinkSync(path.join(f.root,'roblox-games/other'),path.join(f.root,'alias'),'dir');
+  assertMissingSourceScope(inspectGameSource({repoRoot:f.root,sourceRoot:'alias'}));
+});
+test('linked file cannot contribute foreign implementation anchors',t=>{
+  const f=sourceScopeFixture(t);
+  fs.symlinkSync(path.join(f.base,'outside.luau'),path.join(f.root,'roblox-games/cozy-island/borrowed.luau'));
+  const observed=inspectGameSource({repoRoot:f.root,sourceRoot:'roblox-games/cozy-island'});
+  assert.equal(observed.fileCount,1);assert.ok(!observed.sourceAnchors.some(row=>row.symbol==='unrelatedAttack'));
+});
+test('linked subdirectory cannot contribute another game',t=>{
+  const f=sourceScopeFixture(t);
+  fs.symlinkSync(path.join(f.root,'roblox-games/other'),path.join(f.root,'roblox-games/cozy-island/borrowed'),'dir');
+  assert.equal(inspectGameSource({repoRoot:f.root,sourceRoot:'roblox-games/cozy-island'}).fileCount,1);
+});
+test('file passed as source directory stays missing rather than scanning the repository',t=>{
+  const f=sourceScopeFixture(t);
+  assertMissingSourceScope(inspectGameSource({repoRoot:f.root,sourceRoot:'company-policy.json'}));
+});
+test('directive retains the exact source scope already inspected by its caller',t=>{
+  const f=sourceScopeFixture(t);
+  const observed=inspectGameSources({repoRoot:f.root,sourceRoots:['roblox-games/cozy-island','web-games/cozy-island']});
+  const directive=buildGameSpecificBuildUpDirective({gameId:'cozy-island',repoRoot:f.root,designRecord:design,sourceObservation:observed});
+  assert.equal(directive.sourceRoot,observed.sourceRoot);
+  assert.equal(directive.sourceTreeFingerprint,observed.sourceTreeFingerprint);
+  assert.ok(directive.responsibleSystemsAndFiles.files.every(file=>file.includes('/cozy-island/')));
+  assert.equal(directive.effectivenessMeasurement.baseline.runtimeObserved,false);
+});
+test('explicit directive source scope is not replaced by the aggregate observation',()=>{
+  const observed=sourceObservation();
+  const directive=buildGameSpecificBuildUpDirective({gameId:'test-game',sourceRoot:'roblox-games/test-game',designRecord:design,sourceObservation:{...observed,sourceRoot:'roblox-games/test-game|web-games/test-game'}});
+  assert.equal(directive.sourceRoot,'roblox-games/test-game');
+});
+test('unscoped directive never inherits unrelated repository files as implementation',t=>{
+  const f=sourceScopeFixture(t);
+  const directive=buildGameSpecificBuildUpDirective({gameId:'cozy-island',repoRoot:f.root,designRecord:design});
+  assert.deepEqual(directive.currentImplementationFindings.topFiles,[]);
+  assert.deepEqual(directive.responsibleSystemsAndFiles.sourceAnchors,[]);
+  assert.ok(directive.currentImplementationFindings.sourceObservations.includes('CURRENT_SOURCE_MISSING_OR_UNREADABLE'));
+  assert.equal(directive.effectivenessMeasurement.baseline.runtimePassed,false);
 });
