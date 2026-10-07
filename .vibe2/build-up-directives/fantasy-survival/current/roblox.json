@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "fantasy-survival-build-up-g25-5b1529569742",
-  "directiveFingerprint": "5b1529569742115bcd65087a6301f940be4392488ff27446cd67f2281b6a6ba3",
-  "previousDirectiveFingerprint": "d7f408ac7a65bd22f1576962cd4f6ce2fb4510374c20d261f115b94f4869bc1d",
-  "forbiddenRepeatFingerprint": "d7f408ac7a65bd22f1576962cd4f6ce2fb4510374c20d261f115b94f4869bc1d",
+  "directiveId": "fantasy-survival-build-up-g26-699c57c639a2",
+  "directiveFingerprint": "699c57c639a2feb3b0e2091b8174d896ea8a2a8a2a202a937718935e0eab291b",
+  "previousDirectiveFingerprint": "5b1529569742115bcd65087a6301f940be4392488ff27446cd67f2281b6a6ba3",
+  "forbiddenRepeatFingerprint": "5b1529569742115bcd65087a6301f940be4392488ff27446cd67f2281b6a6ba3",
   "gameId": "fantasy-survival",
   "gameName": "마력숲 생존기",
-  "generation": 25,
+  "generation": 26,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,8 +14,8 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/fantasy-survival",
-  "sourceTreeFingerprint": "bc2675aa78cd1b316c17f98ea6665bf91604070637aa7fad202f998ba910a13e",
-  "designFingerprint": "47629f899ccd0e25f5db0d9b2975635bfa0961ed7a791c2ef9f93fc87e59aada",
+  "sourceTreeFingerprint": "c2571c8debff8a8c2aea1c8f487e7d1bd7aeb234fc020793db5fd841c8c1276c",
+  "designFingerprint": "b56715c728de8e4338cd0e6965e0d17d912630ffe3d693de4f0fdcd7c0ee98d8",
   "identityReinforcement": {
     "appliesToAllGenres": true,
     "genre": "Survival",
@@ -104,7 +104,7 @@
           "VFX_AUDIO_CAMERA_POLISH_MOBILE",
           "새 규칙을 추가하지 않는다. 기존 적중·위험·보상·스토리 이벤트에 VFX·오디오·카메라·UI 폴리시를 동기화한다."
         ],
-        "sourceTreeFingerprint": "bc2675aa78cd1b316c17f98ea6665bf91604070637aa7fad202f998ba910a13e",
+        "sourceTreeFingerprint": "c2571c8debff8a8c2aea1c8f487e7d1bd7aeb234fc020793db5fd841c8c1276c",
         "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -114,6 +114,108 @@
     },
     "buildUpRule": "EACH_BUILD_UP_MUST_STRENGTHEN_OR_PRESERVE_THE_REPRESENTATIVE_ACTION_CHOICE_WORLD_RULE_SIGNATURE_SYSTEM_OR_GROWTH_IDENTITY; GENERIC_FEATURE_COUNT_DOES_NOT_COUNT",
     "genreAdaptationRule": "PRESERVE_THE_GENRE_PRIMARY_ACTION; DO_NOT_FORCE_RPG_STYLE_SYSTEMS_ON_PUZZLE_RACING_TYCOON_DEFENSE_SURVIVAL_ACTION_CARD_BOARD_STRATEGY_CASUAL_OR_OTHER_GENRES"
+  },
+  "designImplementationContext": {
+    "source": "LATEST_VERIFIED_DESIGN_FIELDS",
+    "progressionEconomyBalance": {
+      "progressionLoop": "기존 구현의 탐험·채집·제작·전투·퀘스트 진행 루프를 그대로 사용하며 표현 패스는 진행 속도와 해금 조건에 관여하지 않는다.",
+      "resourceFlow": "기존 재료 획득량·제작 비용·보상·드랍·소비 규칙을 그대로 유지하고 표현 개선은 자원 수치에 영향을 주지 않는다.",
+      "balanceRules": "체력·공격력·쿨다운·드랍률·제작 비용·보상·적 수치 등 기존 밸런스 값을 변경하지 않는다."
+    },
+    "contentExpansionPlan": [
+      {
+        "milestone": "ASSET_ADAPTATION",
+        "newGameplay": "새 게임플레이를 추가하지 않는다. 기존 캐릭터·몬스터·자원·구조물·지역 표현을 기존 렌더 책임 함수 안에서 마력숲 스타일에 맞게 적응한다.",
+        "systemImpact": "원본 에셋과 게임 상태를 보존하고 렌더 표현만 바꾼다. 세이브·충돌·상호작용·수치 변경은 금지한다."
+      },
+      {
+        "milestone": "LIVING_MOTION_AND_ANIMATION_FEEL",
+        "newGameplay": "새 행동을 추가하지 않는다. 기존 idle·이동·회전·공격·피격 상태에 호흡·블렌딩·anticipation·impact·recovery를 연결한다.",
+        "systemImpact": "기존 입력·이동 속도·데미지·쿨다운·적중 이벤트를 권위로 사용하고 애니메이션은 표현 계층으로만 동작한다."
+      },
+      {
+        "milestone": "VFX_AUDIO_CAMERA_POLISH_MOBILE",
+        "newGameplay": "새 규칙을 추가하지 않는다. 기존 적중·위험·보상·스토리 이벤트에 VFX·오디오·카메라·UI 폴리시를 동기화한다.",
+        "systemImpact": "모바일 가독성·터치·프레임 안정성을 우선하고 게임플레이·저장·진행 의미는 그대로 유지한다."
+      }
+    ],
+    "failureRetryRisk": {
+      "failureStates": [
+        "기존 구현에 이미 정의된 전투·생존 실패 상태만 유지한다.",
+        "기존 퀘스트 또는 진행에서 이미 정의된 실패·재시도 상태만 유지한다."
+      ],
+      "retryFlow": "기존 사망·회복·재시도·귀환 흐름과 저장 결과를 그대로 유지하며 새 자원 손실이나 패널티를 추가하지 않는다.",
+      "riskPressure": "기존 지역·적·생존 규칙이 만드는 위험만 사용하고 표현 패스가 난이도나 위험 수치를 변경하지 않는다.",
+      "recoveryRules": "기존 회복·부활·재개·세이브 로드 규칙을 그대로 사용하고 새 회복 규칙을 만들지 않는다."
+    },
+    "platformFitPlan": {
+      "targetPlatform": "UNITY",
+      "inputModel": "기존 키보드 및 모바일 터치/조이스틱 입력 체계를 유지하고 표현 효과가 입력 영역이나 반응성을 가리지 않게 한다.",
+      "performanceBudget": "가능한 경우 60fps를 목표로 하되 파티클·트레일·보조 모션은 단계적으로 축소 가능하게 하고 게임플레이 판정은 품질 스케일과 무관하게 유지한다.",
+      "sessionConstraints": "기존 세션과 진행 의미를 보존하며 설계 검증 기준 TARGET_SESSION_MINUTES=30을 유지한다. 표현 개선 때문에 세션 길이·진행 속도를 바꾸지 않는다."
+    },
+    "platformProfiles": {
+      "ROBLOX": {
+        "platform": "ROBLOX",
+        "inputModel": "Roblox touch controls first, with keyboard and gamepad parity through ContextActionService and Activated-based UI actions.",
+        "sessionModel": "Fast Roblox experience sessions with spawn, respawn, join-in-progress, and social re-entry semantics matched to the common game loop.",
+        "multiplayerRuntime": "server-authoritative Roblox hybrid multiplayer with co-op and competitive state separated by mode",
+        "performanceBudget": "Roblox mobile-first budget: bounded parts and effects, pooled transient objects, limited expensive per-frame work, and stable low-end frame pacing.",
+        "uiUx": "Roblox ScreenGui touch-safe layout with readable mobile controls, controller focus support, observable state feedback, and platform-native social affordances.",
+        "saveAndNetwork": "Server-validated RemoteEvents plus DataStore-backed persistent state only for approved save meaning; clients never own authoritative rewards or progression.",
+        "platformContentAdaptation": "Adapt \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.\" and its loop \"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. → Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. → Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.\" to Roblox avatar scale, server/client authority, social sessions, and Roblox-native interaction without changing common gameplay meaning.",
+        "internalReleaseTarget": "Private or restricted Roblox experience published to Roblox servers so the owner and explicitly allowed testers can play before public release.",
+        "validationEvidence": "Exact published Roblox place and source revision, real Roblox runtime play, mobile controls, server/client boundary, save/rejoin when required, independent QA, and regression evidence."
+      },
+      "UNITY": {
+        "platform": "UNITY",
+        "inputModel": "Unity Input System with touch-first on-screen controls, safe-area handling, keyboard and gamepad parity, and app pause/resume input recovery.",
+        "sessionModel": "Native mobile app sessions with cold start, suspend/resume, background/foreground transitions, process restart, and deterministic save restoration.",
+        "multiplayerRuntime": "authoritative hybrid app networking with explicit co-op and competitive session modes plus reconnect recovery",
+        "performanceBudget": "Android mobile budget covering memory, GPU, thermal load, battery, draw calls, shaders, particles, audio, pooling, GC pressure, and low-end frame pacing.",
+        "uiUx": "Unity UI safe-area responsive layout with touch targets, scalable HUD, controller navigation where relevant, and app-native loading/error/recovery states.",
+        "saveAndNetwork": "Versioned local save with explicit migration plus validated backend synchronization only when required; app lifecycle cannot silently corrupt progress.",
+        "platformContentAdaptation": "Adapt \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.\" and its loop \"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. → Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. → Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.\" to Unity scenes, prefabs, mobile app lifecycle, touch UX, and Android packaging without changing common gameplay meaning.",
+        "internalReleaseTarget": "Internal or closed Android test build that can be installed and launched by the owner/testers before any public store release.",
+        "validationEvidence": "Exact APK/AAB source revision, install and launch, real touch gameplay, pause/resume, save/restore, performance, independent QA, regression, and package identity evidence."
+      }
+    },
+    "webCanonicalDesign": {},
+    "platformExpansionPolicy": {},
+    "visualDirection": "기존 마력숲의 숲·수정·화산·세계수·연구소 정체성을 유지하면서 팔레트·광원·윤곽·재질 반응·VFX 밀도를 하나의 스타일 락으로 통일한다.",
+    "mobileUx": "가상 조이스틱과 직관적인 터치 인터페이스를 통해 복잡한 조작 없이도 이동, 채집, 전투가 원활하게 이루어지도록 최적화된 레이아웃.",
+    "uxAccessibilityPlan": {
+      "hudPriorities": "Display essential survival stats, health, hunger, active quest objectives, and wave pressure indicators clearly at the top of the mobile screen.",
+      "touchAndInput": "Provide responsive virtual joystick and clearly delineated touch buttons for gathering, attacking, and inventory management.",
+      "readability": "Ensure text fonts, UI layouts, and VFX particle densities do not obstruct enemy threat signals or core gameplay visibility.",
+      "accessibility": "Incorporate high-contrast visual cues and distinct audio feedback to assist players in identifying danger states and combat hits."
+    },
+    "artAudioDirection": {
+      "visualIdentity": "기존 월드와 오브젝트를 재사용·변형하여 마력숲 고유 지역 구분을 더 명확히 하며 새 게임 규칙을 시각 요소로 위장해 추가하지 않는다.",
+      "audioIdentity": "기존 음악/사운드 책임 시스템을 재사용하고 탐험·전투·보스·스토리 상태 전환을 부드럽게 연결한다.",
+      "gameplayFeedbackSync": "기존 authoritative 적중·피격·상호작용 이벤트 한 지점에 애니메이션·VFX·오디오·카메라를 동기화하고 데미지 판정 시점은 바꾸지 않는다."
+    },
+    "selectedDesignPlan": {},
+    "contentVarietyPlan": {},
+    "narrativeDialoguePlan": {},
+    "implementationTraceability": [
+      {
+        "designElement": "ASSET_ADAPTATION",
+        "responsibleSystem": "기존 캐릭터·몬스터·월드 렌더 함수",
+        "validationEvidence": "동일 게임 상태에서 표현만 변경되고 충돌·상호작용·자원·세이브 값이 동일함을 비교한다."
+      },
+      {
+        "designElement": "LIVING_MOTION_AND_ANIMATION_FEEL",
+        "responsibleSystem": "기존 이동·공격·피격 상태와 렌더 업데이트",
+        "validationEvidence": "idle/walk/run/turn/attack 전환 연속성과 기존 적중 이벤트·데미지·쿨다운 불변을 함께 검증한다."
+      },
+      {
+        "designElement": "VFX_AUDIO_CAMERA_POLISH_MOBILE",
+        "responsibleSystem": "기존 전투·퀘스트 이벤트와 오디오/카메라 책임 경로",
+        "validationEvidence": "적중 순간 동기화, 모바일 가독성, 프레임 안정성, 중복 재생 없음과 게임 상태 불변을 검증한다."
+      }
+    ],
+    "stabilityPriorityPlan": {}
   },
   "gameIdentityAndNonNegotiables": {
     "identity": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.",
@@ -264,7 +366,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 310,
+        "line": 311,
         "kind": "FUNCTION",
         "symbol": "bindNativeFoundationPlayer",
         "context": "local function bindNativeFoundationPlayer(player)",
@@ -355,36 +457,151 @@
   "previousVersionDelta": {
     "previousGoal": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 24,
-    "previousSourceTreeFingerprint": "01d51a765cc916c5f10445732beb99d8677729f4bcaeee7ecd837faac2242513",
-    "currentSourceTreeFingerprint": "bc2675aa78cd1b316c17f98ea6665bf91604070637aa7fad202f998ba910a13e",
+    "previousGeneration": 25,
+    "previousSourceTreeFingerprint": "bc2675aa78cd1b316c17f98ea6665bf91604070637aa7fad202f998ba910a13e",
+    "currentSourceTreeFingerprint": "c2571c8debff8a8c2aea1c8f487e7d1bd7aeb234fc020793db5fd841c8c1276c",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": null,
-    "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
-    "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
-    "blockers": [
-      "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-      "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-      "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-      "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-      "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-      "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-      "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
-      "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-      "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-      "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-      "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-      "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-      "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-      "GENERIC_SCOPE_HANDLER_SKELETON"
-    ],
+    "studioQualityFailure": {
+      "sourceRevision": "2cc4a7b31a540925a89d10880b1a17e82e3ede2c",
+      "artifactIdentity": "sha256:698489c0b178f9f5ea25b9a2ea2a76aa877660b1e1153951597a7abe487812c4",
+      "authority": "roblox-f0-gameplay-product-readiness-failure",
+      "workflowRunId": 37578930455,
+      "testedAt": "2026-10-07T06:09:08.159Z",
+      "repairSurfaces": [
+        "CORE_GAMEPLAY",
+        "WORLD_MAP",
+        "COMBAT_FEEL",
+        "PROGRESSION_CONTENT"
+      ],
+      "qualityFailureDetails": [
+        {
+          "id": "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P0",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"fantasy-survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"WAVE\",\"EQUIPMENT\",\"PROGRESSION\",\"QUEST\",\"BOSS\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"WAVE\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"QUEST\":true,\"BOSS\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\"],\"pass\":false},{\"index\":1,\"step\":\"Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.\",\"capabilities\":[\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"PROGRESSION\",\"BOSS\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"기존 게임플레이 의미 보존\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"QUEST\"],\"pass\":false},{\"index\":1,\"name\":\"표현 품질 순차 개선\",\"capabilities\":[\"COMBAT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"QUEST_TO_PROGRESSION\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"4890ed995cf1ae9f3f8bd80095461b49a207fb5eb77dca17d21c6890160af23b\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"HYBRID\",\"sourcePlayMode\":\"HYBRID\"}"
+        },
+        {
+          "id": "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P0",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"fantasy-survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"WAVE\",\"EQUIPMENT\",\"PROGRESSION\",\"QUEST\",\"BOSS\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"WAVE\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"QUEST\":true,\"BOSS\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\"],\"pass\":false},{\"index\":1,\"step\":\"Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.\",\"capabilities\":[\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"PROGRESSION\",\"BOSS\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"기존 게임플레이 의미 보존\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"QUEST\"],\"pass\":false},{\"index\":1,\"name\":\"표현 품질 순차 개선\",\"capabilities\":[\"COMBAT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"QUEST_TO_PROGRESSION\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"4890ed995cf1ae9f3f8bd80095461b49a207fb5eb77dca17d21c6890160af23b\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"HYBRID\",\"sourcePlayMode\":\"HYBRID\"}"
+        },
+        {
+          "id": "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P0",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"fantasy-survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"WAVE\",\"EQUIPMENT\",\"PROGRESSION\",\"QUEST\",\"BOSS\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"WAVE\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"QUEST\":true,\"BOSS\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\"],\"pass\":false},{\"index\":1,\"step\":\"Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.\",\"capabilities\":[\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"PROGRESSION\",\"BOSS\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"기존 게임플레이 의미 보존\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"QUEST\"],\"pass\":false},{\"index\":1,\"name\":\"표현 품질 순차 개선\",\"capabilities\":[\"COMBAT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"QUEST_TO_PROGRESSION\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"4890ed995cf1ae9f3f8bd80095461b49a207fb5eb77dca17d21c6890160af23b\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"HYBRID\",\"sourcePlayMode\":\"HYBRID\"}"
+        },
+        {
+          "id": "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"fantasy-survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"WAVE\",\"EQUIPMENT\",\"PROGRESSION\",\"QUEST\",\"BOSS\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"WAVE\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"QUEST\":true,\"BOSS\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\"],\"pass\":false},{\"index\":1,\"step\":\"Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.\",\"capabilities\":[\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"PROGRESSION\",\"BOSS\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"기존 게임플레이 의미 보존\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"QUEST\"],\"pass\":false},{\"index\":1,\"name\":\"표현 품질 순차 개선\",\"capabilities\":[\"COMBAT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"QUEST_TO_PROGRESSION\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"4890ed995cf1ae9f3f8bd80095461b49a207fb5eb77dca17d21c6890160af23b\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"HYBRID\",\"sourcePlayMode\":\"HYBRID\"}"
+        },
+        {
+          "id": "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"fantasy-survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"WAVE\",\"EQUIPMENT\",\"PROGRESSION\",\"QUEST\",\"BOSS\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"WAVE\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"QUEST\":true,\"BOSS\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\"],\"pass\":false},{\"index\":1,\"step\":\"Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.\",\"capabilities\":[\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"PROGRESSION\",\"BOSS\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"기존 게임플레이 의미 보존\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"QUEST\"],\"pass\":false},{\"index\":1,\"name\":\"표현 품질 순차 개선\",\"capabilities\":[\"COMBAT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"QUEST_TO_PROGRESSION\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"4890ed995cf1ae9f3f8bd80095461b49a207fb5eb77dca17d21c6890160af23b\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"HYBRID\",\"sourcePlayMode\":\"HYBRID\"}"
+        },
+        {
+          "id": "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"fantasy-survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"WAVE\",\"EQUIPMENT\",\"PROGRESSION\",\"QUEST\",\"BOSS\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"WAVE\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"QUEST\":true,\"BOSS\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\"],\"pass\":false},{\"index\":1,\"step\":\"Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.\",\"capabilities\":[\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"PROGRESSION\",\"BOSS\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"기존 게임플레이 의미 보존\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"QUEST\"],\"pass\":false},{\"index\":1,\"name\":\"표현 품질 순차 개선\",\"capabilities\":[\"COMBAT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"QUEST_TO_PROGRESSION\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"4890ed995cf1ae9f3f8bd80095461b49a207fb5eb77dca17d21c6890160af23b\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"HYBRID\",\"sourcePlayMode\":\"HYBRID\"}"
+        },
+        {
+          "id": "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"fantasy-survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"WAVE\",\"EQUIPMENT\",\"PROGRESSION\",\"QUEST\",\"BOSS\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"WAVE\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"QUEST\":true,\"BOSS\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\"],\"pass\":false},{\"index\":1,\"step\":\"Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.\",\"capabilities\":[\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"PROGRESSION\",\"BOSS\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"기존 게임플레이 의미 보존\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"QUEST\"],\"pass\":false},{\"index\":1,\"name\":\"표현 품질 순차 개선\",\"capabilities\":[\"COMBAT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"QUEST_TO_PROGRESSION\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"4890ed995cf1ae9f3f8bd80095461b49a207fb5eb77dca17d21c6890160af23b\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"HYBRID\",\"sourcePlayMode\":\"HYBRID\"}"
+        },
+        {
+          "id": "MISSING_GAMEPLAY_CAPABILITY:WAVE",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"fantasy-survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"WAVE\",\"EQUIPMENT\",\"PROGRESSION\",\"QUEST\",\"BOSS\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"WAVE\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"QUEST\":true,\"BOSS\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\"],\"pass\":false},{\"index\":1,\"step\":\"Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.\",\"capabilities\":[\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"PROGRESSION\",\"BOSS\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"기존 게임플레이 의미 보존\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"QUEST\"],\"pass\":false},{\"index\":1,\"name\":\"표현 품질 순차 개선\",\"capabilities\":[\"COMBAT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"QUEST_TO_PROGRESSION\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"4890ed995cf1ae9f3f8bd80095461b49a207fb5eb77dca17d21c6890160af23b\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"HYBRID\",\"sourcePlayMode\":\"HYBRID\"}"
+        },
+        {
+          "id": "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"fantasy-survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"WAVE\",\"EQUIPMENT\",\"PROGRESSION\",\"QUEST\",\"BOSS\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"WAVE\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"QUEST\":true,\"BOSS\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\"],\"pass\":false},{\"index\":1,\"step\":\"Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.\",\"capabilities\":[\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"PROGRESSION\",\"BOSS\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"기존 게임플레이 의미 보존\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"QUEST\"],\"pass\":false},{\"index\":1,\"name\":\"표현 품질 순차 개선\",\"capabilities\":[\"COMBAT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"QUEST_TO_PROGRESSION\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"4890ed995cf1ae9f3f8bd80095461b49a207fb5eb77dca17d21c6890160af23b\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"HYBRID\",\"sourcePlayMode\":\"HYBRID\"}"
+        },
+        {
+          "id": "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"fantasy-survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"WAVE\",\"EQUIPMENT\",\"PROGRESSION\",\"QUEST\",\"BOSS\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"WAVE\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"QUEST\":true,\"BOSS\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\"],\"pass\":false},{\"index\":1,\"step\":\"Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.\",\"capabilities\":[\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"PROGRESSION\",\"BOSS\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"기존 게임플레이 의미 보존\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"QUEST\"],\"pass\":false},{\"index\":1,\"name\":\"표현 품질 순차 개선\",\"capabilities\":[\"COMBAT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"QUEST_TO_PROGRESSION\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"4890ed995cf1ae9f3f8bd80095461b49a207fb5eb77dca17d21c6890160af23b\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"HYBRID\",\"sourcePlayMode\":\"HYBRID\"}"
+        },
+        {
+          "id": "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"fantasy-survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"WAVE\",\"EQUIPMENT\",\"PROGRESSION\",\"QUEST\",\"BOSS\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"WAVE\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"QUEST\":true,\"BOSS\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\"],\"pass\":false},{\"index\":1,\"step\":\"Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.\",\"capabilities\":[\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"PROGRESSION\",\"BOSS\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"기존 게임플레이 의미 보존\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"QUEST\"],\"pass\":false},{\"index\":1,\"name\":\"표현 품질 순차 개선\",\"capabilities\":[\"COMBAT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"QUEST_TO_PROGRESSION\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"4890ed995cf1ae9f3f8bd80095461b49a207fb5eb77dca17d21c6890160af23b\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"HYBRID\",\"sourcePlayMode\":\"HYBRID\"}"
+        },
+        {
+          "id": "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"fantasy-survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"WAVE\",\"EQUIPMENT\",\"PROGRESSION\",\"QUEST\",\"BOSS\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"WAVE\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"QUEST\":true,\"BOSS\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\"],\"pass\":false},{\"index\":1,\"step\":\"Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.\",\"capabilities\":[\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"PROGRESSION\",\"BOSS\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"기존 게임플레이 의미 보존\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"QUEST\"],\"pass\":false},{\"index\":1,\"name\":\"표현 품질 순차 개선\",\"capabilities\":[\"COMBAT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"QUEST_TO_PROGRESSION\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"4890ed995cf1ae9f3f8bd80095461b49a207fb5eb77dca17d21c6890160af23b\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"HYBRID\",\"sourcePlayMode\":\"HYBRID\"}"
+        },
+        {
+          "id": "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"fantasy-survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"WAVE\",\"EQUIPMENT\",\"PROGRESSION\",\"QUEST\",\"BOSS\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"WAVE\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"QUEST\":true,\"BOSS\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\"],\"pass\":false},{\"index\":1,\"step\":\"Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.\",\"capabilities\":[\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"PROGRESSION\",\"BOSS\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"기존 게임플레이 의미 보존\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"QUEST\"],\"pass\":false},{\"index\":1,\"name\":\"표현 품질 순차 개선\",\"capabilities\":[\"COMBAT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"QUEST_TO_PROGRESSION\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"4890ed995cf1ae9f3f8bd80095461b49a207fb5eb77dca17d21c6890160af23b\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"HYBRID\",\"sourcePlayMode\":\"HYBRID\"}"
+        },
+        {
+          "id": "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"fantasy-survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"WAVE\",\"EQUIPMENT\",\"PROGRESSION\",\"QUEST\",\"BOSS\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"WAVE\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"QUEST\":true,\"BOSS\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\"],\"pass\":false},{\"index\":1,\"step\":\"Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.\",\"capabilities\":[\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"PROGRESSION\",\"BOSS\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"기존 게임플레이 의미 보존\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"QUEST\"],\"pass\":false},{\"index\":1,\"name\":\"표현 품질 순차 개선\",\"capabilities\":[\"COMBAT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"QUEST_TO_PROGRESSION\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"4890ed995cf1ae9f3f8bd80095461b49a207fb5eb77dca17d21c6890160af23b\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"HYBRID\",\"sourcePlayMode\":\"HYBRID\"}"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"fantasy-survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"WAVE\",\"EQUIPMENT\",\"PROGRESSION\",\"QUEST\",\"BOSS\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"WAVE\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"QUEST\":true,\"BOSS\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\"],\"pass\":false},{\"index\":1,\"step\":\"Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.\",\"capabilities\":[\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"PROGRESSION\",\"BOSS\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"기존 게임플레이 의미 보존\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"QUEST\"],\"pass\":false},{\"index\":1,\"name\":\"표현 품질 순차 개선\",\"capabilities\":[\"COMBAT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"QUEST_TO_PROGRESSION\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"4890ed995cf1ae9f3f8bd80095461b49a207fb5eb77dca17d21c6890160af23b\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"HYBRID\",\"sourcePlayMode\":\"HYBRID\"}"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"fantasy-survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"WAVE\",\"EQUIPMENT\",\"PROGRESSION\",\"QUEST\",\"BOSS\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"WAVE\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"QUEST\":true,\"BOSS\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\"],\"pass\":false},{\"index\":1,\"step\":\"Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.\",\"capabilities\":[\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"PROGRESSION\",\"BOSS\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"기존 게임플레이 의미 보존\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"QUEST\"],\"pass\":false},{\"index\":1,\"name\":\"표현 품질 순차 개선\",\"capabilities\":[\"COMBAT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"QUEST_TO_PROGRESSION\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"4890ed995cf1ae9f3f8bd80095461b49a207fb5eb77dca17d21c6890160af23b\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"HYBRID\",\"sourcePlayMode\":\"HYBRID\"}"
+        },
+        {
+          "id": "GENERIC_SCOPE_HANDLER_SKELETON",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"fantasy-survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:GATHERING\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"GATHERING\",\"WAVE\",\"EQUIPMENT\",\"PROGRESSION\",\"QUEST\",\"BOSS\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"GATHERING\":false,\"WAVE\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"QUEST\":true,\"BOSS\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\"],\"pass\":false},{\"index\":1,\"step\":\"Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.\",\"capabilities\":[\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"PROGRESSION\",\"BOSS\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"기존 게임플레이 의미 보존\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"QUEST\"],\"pass\":false},{\"index\":1,\"name\":\"표현 품질 순차 개선\",\"capabilities\":[\"COMBAT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"ROUGH\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"QUEST_TO_PROGRESSION\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"4890ed995cf1ae9f3f8bd80095461b49a207fb5eb77dca17d21c6890160af23b\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"HYBRID\",\"sourcePlayMode\":\"HYBRID\"}"
+        }
+      ]
+    },
+    "failureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+    "failureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
+    "blockers": [],
     "runtimeObserved": true,
     "runtimePassed": false,
     "independentQaPassed": false,
@@ -643,8 +860,8 @@
     },
     {
       "domain": "NPC_SOCIAL_BEHAVIOR",
-      "state": "NOT_APPLICABLE",
-      "reason": "no NPC or social behavior signal in approved design"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "NARRATIVE_STORY",
@@ -1215,12 +1432,12 @@
     },
     {
       "domain": "NPC_SOCIAL_BEHAVIOR",
-      "state": "NOT_APPLICABLE",
-      "priority": "NOT_APPLICABLE",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "현재 승인 설계상 no NPC or social behavior signal in approved design. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "directive": "NPC가 적용되는 게임이면 idle 순환뿐 아니라 이동 목적, 상호작용 반응, 시간/지역/퀘스트 상태에 따른 행동 변화가 세계 역할과 연결되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
-      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
     {
       "domain": "NARRATIVE_STORY",
@@ -1469,7 +1686,7 @@
   ],
   "primaryFocus": "STABILITY",
   "thisLoopPrimaryGoal": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
-  "primaryGoalReason": "실제 runtime 실패가 관찰됐다(F0_GAMEPLAY_PRODUCT_READINESS / ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED). 콘텐츠·그래픽 확장보다 기본 플레이 foundation의 원인 시스템 복구를 먼저 완료하고 같은 실패 시나리오를 다시 검증한다. 책임 소스는 roblox-games/fantasy-survival/client/Game.client.luau::render, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler1, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler2, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler3, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler4, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler5, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler6, roblox-games/fantasy-survival/server/Game.server.luau::bindNativeFoundationPlayer이다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 STABILITY를 우선한다. 게임 고유 앵커는 \"기존 게임플레이 의미 보존\", 현재 책임 소스는 roblox-games/fantasy-survival/client/Game.client.luau::render, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler1, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler2, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler3, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler4, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler5, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler6, roblox-games/fantasy-survival/server/Game.server.luau::bindNativeFoundationPlayer이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
     "우선 책임 소스 앵커 roblox-games/fantasy-survival/client/Game.client.luau::render, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler1, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler2, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler3, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler4, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler5, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler6, roblox-games/fantasy-survival/server/Game.server.luau::bindNativeFoundationPlayer에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "기존 게임플레이 의미 보존를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
@@ -1510,9 +1727,9 @@
       "UNITY"
     ],
     "requestedPlatform": "ROBLOX",
-    "executionMode": "CAUSAL_REPAIR_FIRST_KEEP_EXPANSION_CONTEXT",
-    "contentExpansionDeferredUntilRuntimeRepairPass": true,
-    "themeCoverageAdvanced": false,
+    "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
+    "contentExpansionDeferredUntilRuntimeRepairPass": false,
+    "themeCoverageAdvanced": true,
     "dataCapacityBudget": {
       "state": "NORMAL",
       "limits": {
@@ -1524,7 +1741,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 100765,
+        "sourceBytes": 130192,
         "largestFileBytes": 47673,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1557,13 +1774,13 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 2,
-    "selectedThemeReason": "Observed runtime failure requires causal foundation repair first; selected theme is retained as context only and does not advance coverage until runtime repair passes.",
+    "themeDepth": 3,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=4.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 2,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 3,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 10,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -1582,7 +1799,7 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY"
       ],
@@ -1626,18 +1843,18 @@
         "gapDomains": []
       },
       {
-        "theme": "MID_LATE_ENDGAME_COMPLETION",
+        "theme": "WORLD_ECOLOGY_STORY_CHAIN",
         "score": 16,
         "gapDomains": []
       },
       {
-        "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 14,
+        "theme": "QUEST_STORY_PROGRESSION_CHAIN",
+        "score": 16,
         "gapDomains": []
       },
       {
-        "theme": "QUEST_STORY_PROGRESSION_CHAIN",
-        "score": 14,
+        "theme": "MID_LATE_ENDGAME_COMPLETION",
+        "score": 16,
         "gapDomains": []
       },
       {
@@ -1658,8 +1875,16 @@
         ]
       }
     ],
-    "coherentContentBundle": [],
-    "bundleRule": "OBSERVED_RUNTIME_FAILURE_CAUSAL_REPAIR_MUST_PASS_BEFORE_CONTENT_BUNDLE_EXECUTION",
+    "coherentContentBundle": [
+      "ENEMY_ROLE_SET: 추격·견제·방어·지원·매복·지역 통제 등 서로 다른 전투 역할을 만든다.",
+      "BEHAVIOR_AND_COUNTERPLAY: 이름·HP·공격력만 다른 적이 아니라 이동·전조·공격·약점·대응 선택이 달라야 한다.",
+      "ENCOUNTER_COMPOSITION: 적 역할 조합과 지형·목표가 만나 새로운 판단을 만들게 한다.",
+      "ELITE_OR_BOSS_SIGNATURE: 보스·엘리트는 페이즈·공간 압박·전조·대응·보상 중 여러 축에서 일반 적과 구별한다.",
+      "ECOLOGICAL_WORLD_REASON: 적이 해당 지역·스토리·자원·세력 관계 안에 존재하는 이유를 연결한다.",
+      "DISTINCT_REWARD_PURPOSE: 처치 보상은 다음 장비·퀘스트·제작·지역 해금 중 실제 목적을 가진다.",
+      "VISUAL_TELEGRAPH: 실루엣·모션·VFX·음향·UI 전조가 행동 규칙과 일치해야 한다."
+    ],
+    "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
     "antiCloneContract": {
       "compareAgainstExistingContentBeforeAdding": true,
       "nameColorOrStatOnlyCloneForbidden": true,
@@ -1692,9 +1917,17 @@
       ]
     },
     "derivedRuleEvolution": {
-      "allowed": false,
-      "rule": "DEFER_DERIVED_GAMEPLAY_RULE_EVOLUTION_UNTIL_OBSERVED_RUNTIME_FAILURE_CAUSAL_REPAIR_PASSES",
-      "examples": [],
+      "allowed": true,
+      "rule": "MAY_ADD_DERIVED_GAMEPLAY_INTERACTION_RULES_WHEN_THEY_REINFORCE_APPROVED_IDENTITY_AND_DO_NOT_CONTRADICT_CANONICAL_RULES_OR_PROTECTED_VALUES",
+      "examples": [
+        "ENVIRONMENTAL_RULE",
+        "ENEMY_RELATIONSHIP_RULE",
+        "BOSS_PHASE_RULE",
+        "ITEM_SYNERGY_RULE",
+        "QUEST_STATE_RULE",
+        "REGION_ACCESS_RULE",
+        "MULTIPLAYER_INTERACTION_RULE"
+      ],
       "protected": [
         "EXISTING_CANONICAL_RULE_SEMANTICS",
         "AUTHORIZED_BALANCE_VALUES",
@@ -1704,21 +1937,23 @@
       ]
     },
     "completionAcceptance": [
-      "RUNTIME_FAILURE_CAUSAL_REPAIR_PASS_REQUIRED_BEFORE_CONTENT_EXPANSION",
       "REAL_GAME_SOURCE_DELTA_REQUIRED",
       "PLAYER_FACING_OR_GAMEPLAY_SYSTEM_EFFECT_REQUIRED",
+      "DISTINCT_FROM_EXISTING_CONTENT_BY_MEANING_NOT_ONLY_NAME_OR_STATS",
+      "CONNECTED_TO_EXISTING_GAME_FLOW",
+      "CONTINUITY_AND_CAUSALITY_PRESERVED",
       "EXISTING_RELEVANT_INCREMENTAL_QA_PASSES",
       "DATA_CAPACITY_BUDGET_RESPECTED_WITHOUT_TERMINATING_BUILD_UP"
     ]
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 25,
-    "previousGeneration": 24,
+    "generation": 26,
+    "previousGeneration": 25,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "bc2675aa78cd1b316c17f98ea6665bf91604070637aa7fad202f998ba910a13e",
-    "priorSourceFingerprint": "01d51a765cc916c5f10445732beb99d8677729f4bcaeee7ecd837faac2242513",
-    "previousRuntimeEffect": "REGRESSION",
+    "sourceFingerprint": "c2571c8debff8a8c2aea1c8f487e7d1bd7aeb234fc020793db5fd841c8c1276c",
+    "priorSourceFingerprint": "bc2675aa78cd1b316c17f98ea6665bf91604070637aa7fad202f998ba910a13e",
+    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -1949,12 +2184,12 @@
     "반복 조작은 편의 기능으로 줄이되 핵심 플레이 선택과 위험/보상 판단을 자동화하지 않는다."
   ],
   "platformAdaptationDirectives": {
-    "WEB": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: 동일 공통 목표 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 현재 canonical Web 경로에 구현한다. 실제 터치 입력, DOM/Canvas 프레임 변화, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 함께 검수한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "WEB": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: WEB 상세 게임 원본과 공통 큰틀을 기준으로 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. WEB 자체 시스템·콘텐츠·지역·세션·UI·카메라·연출 확장에는 다른 플랫폼과의 세부 parity 제한을 두지 않는다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
     "ROBLOX": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: 동일 공통 목표 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
-    "UNITY": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: 동일 공통 목표 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 함께 검증한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
+    "UNITY": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: WEB 상세 게임 원본에서 공통 큰틀만 이어받아 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 경험으로 재해석한다. Unity 전용 시스템·콘텐츠·지역·물리·카메라·애니메이션·세션 구조·UX·연출 확장에는 인위적 parity 제한을 두지 않는다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
     "FORTNITE_UEFN": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: 동일 공통 목표 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UNITY_WEB": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: 동일 공통 목표 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 현재 canonical Web 경로에 구현한다. 실제 터치 입력, DOM/Canvas 프레임 변화, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 함께 검수한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "UNITY_APP": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: 동일 공통 목표 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 함께 검증한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
+    "UNITY_WEB": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: WEB 상세 게임 원본과 공통 큰틀을 기준으로 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. WEB 자체 시스템·콘텐츠·지역·세션·UI·카메라·연출 확장에는 다른 플랫폼과의 세부 parity 제한을 두지 않는다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "UNITY_APP": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: WEB 상세 게임 원본에서 공통 큰틀만 이어받아 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 경험으로 재해석한다. Unity 전용 시스템·콘텐츠·지역·물리·카메라·애니메이션·세션 구조·UX·연출 확장에는 인위적 parity 제한을 두지 않는다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
     "UNREAL": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: 동일 공통 목표 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
     "UEFN": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: 동일 공통 목표 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
   },
@@ -2033,7 +2268,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 310,
+        "line": 311,
         "kind": "FUNCTION",
         "symbol": "bindNativeFoundationPlayer",
         "currentBehavior": "local function bindNativeFoundationPlayer(player)",
@@ -2177,7 +2412,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "bc2675aa78cd1b316c17f98ea6665bf91604070637aa7fad202f998ba910a13e",
+    "sourceTreeFingerprint": "c2571c8debff8a8c2aea1c8f487e7d1bd7aeb234fc020793db5fd841c8c1276c",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2267,7 +2502,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "bc2675aa78cd1b316c17f98ea6665bf91604070637aa7fad202f998ba910a13e",
+    "sourceTreeFingerprint": "c2571c8debff8a8c2aea1c8f487e7d1bd7aeb234fc020793db5fd841c8c1276c",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2396,7 +2631,7 @@
       },
       {
         "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 310,
+        "line": 311,
         "kind": "FUNCTION",
         "symbol": "bindNativeFoundationPlayer",
         "context": "local function bindNativeFoundationPlayer(player)",
@@ -2530,11 +2765,11 @@
       "runtimeObserved": true
     },
     "baseline": {
-      "sourceTreeFingerprint": "bc2675aa78cd1b316c17f98ea6665bf91604070637aa7fad202f998ba910a13e",
-      "runtimeObserved": true,
+      "sourceTreeFingerprint": "c2571c8debff8a8c2aea1c8f487e7d1bd7aeb234fc020793db5fd841c8c1276c",
+      "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
-      "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED"
+      "failureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+      "failureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2585,7 +2820,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 26,
+    "nextGeneration": 27,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2645,10 +2880,8 @@
       "EQUIPMENT_LOADOUT",
       "MENU_FLOW"
     ],
-    "notApplicable": [
-      "NPC_SOCIAL_BEHAVIOR"
-    ],
+    "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-07T04:46:40.848Z"
+  "generatedAt": "2026-10-07T06:08:05.550Z"
 }
