@@ -531,11 +531,15 @@ export function extractDesignContext(record={}){
     purpose:clean(system?.purpose),
     playerChoice:clean(system?.playerChoice)
   })).filter(x=>x.name||x.purpose||x.playerChoice).slice(0,12);
+  const platformModes=uniq(['WEB','UNITY','ROBLOX']
+    .map(key=>clean(d?.platformProfiles?.[key]?.playMode||d?.platformProfiles?.[key]?.multiplayerMode))
+    .filter(Boolean));
+  const canonicalMultiplayerMode=clean(d?.multiplayerMode)||(platformModes.length===1?platformModes[0]:'');
   return Object.freeze({
     identity:clean(d?.identity),
     playerFantasy:clean(d?.playerFantasy),
-    genre:clean(d?.robloxBuildProfile?.genre||d?.genre),
-    subgenre:clean(d?.robloxBuildProfile?.subgenre||d?.subgenre),
+    genre:clean(d?.genre||d?.robloxBuildProfile?.genre),
+    subgenre:clean(d?.subgenre||d?.robloxBuildProfile?.subgenre),
     ownerFeatureChanges:Array.isArray(d?.ownerFeatureChanges)?d.ownerFeatureChanges:[],
     coreFun:clean(d?.coreFun),
     coreLoop:uniq(d?.coreLoop).slice(0,10),
@@ -558,8 +562,30 @@ export function extractDesignContext(record={}){
     implementationTraceability:(Array.isArray(d?.implementationTraceability)?d.implementationTraceability:[]).slice(0,8),
     stabilityPriorityPlan:asObject(d?.stabilityPriorityPlan),
     progressionDirection:clean(d?.progressionDirection),
-    multiplayerMode:clean(d?.multiplayerMode),
+    multiplayerMode:canonicalMultiplayerMode,
     platformProfiles:d?.platformProfiles&&typeof d.platformProfiles==='object'?d.platformProfiles:{}
+  });
+}
+
+function sharedGameDesignCore(design={}){
+  const {platformProfiles:_platformProfiles,...commonCore}=design&&typeof design==='object'?design:{};
+  return Object.freeze(commonCore);
+}
+
+function selectedPlatformDesignProfile(design={},platform='COMMON',sourceRoot=''){
+  const requested=clean(platform).toUpperCase()||'COMMON';
+  const roots=clean(sourceRoot).split('|').map(posix).filter(Boolean);
+  const key=requested==='ROBLOX'?'ROBLOX'
+    :['UNITY','UNITY_APP','UNITY_WEB'].includes(requested)?'UNITY'
+    :requested==='WEB'&&roots.some(root=>root.startsWith('unity-games/'))?'UNITY'
+    :requested==='WEB'?'WEB'
+    :requested;
+  const profiles=design?.platformProfiles&&typeof design.platformProfiles==='object'?design.platformProfiles:{};
+  const profile=profiles?.[key]&&typeof profiles[key]==='object'?profiles[key]:{};
+  return Object.freeze({
+    key,
+    source:key&&key!=='COMMON'?'design-revised.json#content.platformProfiles.'+key:null,
+    profile:Object.freeze({...profile})
   });
 }
 
@@ -1332,6 +1358,7 @@ export function directivePrompt(d={}){
     `id=${d.directiveId}; generation=${d.generation}; depth=${d.developmentDepth}; stage=${d.escalationStage}; focus=${d.primaryFocus}`,
     `GAME_IDENTITY: ${d.gameIdentityAndNonNegotiables.identity}`,
     `DESIGN_IMPLEMENTATION_CONTEXT: ${JSON.stringify(d.designImplementationContext||{})}`,
+    `CROSS_PLATFORM_GAME_DESIGN_CONTRACT: ${JSON.stringify(d.crossPlatformDesignContract||{})}`,
     `IDENTITY_ONE_LINE_FANTASY: ${d.identityReinforcement?.oneLineFantasy||d.gameIdentityAndNonNegotiables.identity}`,
     `IDENTITY_REPRESENTATIVE_ACTION: ${d.identityReinforcement?.representativeAction||'CURRENT_CORE_ACTION'}`,
     `IDENTITY_REPRESENTATIVE_CHOICE: ${d.identityReinforcement?.representativeChoice||'CURRENT_CORE_CHOICE'}`,
@@ -1398,6 +1425,10 @@ export function buildGameSpecificBuildUpDirective({
   const id=clean(gameId);if(!id)throw new Error('BUILD_UP_GAME_ID_REQUIRED');
   const design=extractDesignContext(designRecord||{});
   sourceRoot=posix(sourceRoot)||posix(sourceObservation?.sourceRoot);
+  const sharedDesign=sharedGameDesignCore(design);
+  const sharedDesignFingerprint=sha(JSON.stringify(sharedDesign));
+  const platformDesignProfile=selectedPlatformDesignProfile(design,platform,sourceRoot);
+  const platformDesignProfileFingerprint=sha(JSON.stringify(platformDesignProfile.profile));
   const source=sourceObservation||inspectGameSource({repoRoot,sourceRoot});
   const signals=uniq([
     ...qualitySignals,
@@ -1728,9 +1759,29 @@ export function buildGameSpecificBuildUpDirective({
     sourceRoot:posix(sourceRoot),
     sourceTreeFingerprint:source.sourceTreeFingerprint,
     designFingerprint:sha(JSON.stringify(design)),
+    sharedDesignFingerprint,
+    platformDesignProfileFingerprint,
+    crossPlatformDesignContract:Object.freeze({
+      version:1,
+      oneSharedGameDesign:true,
+      commonCoreAuthority:'design-revised.json#content',
+      commonCoreFingerprint:sharedDesignFingerprint,
+      selectedPlatformProfile:platformDesignProfile.key,
+      selectedPlatformProfileSource:platformDesignProfile.source,
+      platformProfileMayAdaptImplementationOnly:true,
+      platformProfileMayChangeCoreRulesBalanceProgressionEconomySaveOrMultiplayerMeaning:false,
+      webUnityRobloxCommonCoreMustMatch:true,
+      unityWebUsesUnityProfileWhenCanonicalSourceIsUnity:true
+    }),
     identityReinforcement,
     designImplementationContext:Object.freeze({
       source:'LATEST_VERIFIED_DESIGN_FIELDS',
+      sharedGameDesign:sharedDesign,
+      sharedDesignFingerprint,
+      selectedPlatformProfile:platformDesignProfile.key,
+      selectedPlatformProfileSource:platformDesignProfile.source,
+      platformDesignProfile:platformDesignProfile.profile,
+      platformDesignProfileFingerprint,
       progressionEconomyBalance:design.progressionEconomyBalance,
       contentExpansionPlan:design.contentExpansionPlan,
       failureRetryRisk:design.failureRetryRisk,
