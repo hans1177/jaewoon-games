@@ -84,6 +84,25 @@ function resultSampleId(row={}){
     resultCandidateBranch(row)
   ].filter(Boolean).join('|')||null;
 }
+function indexFanInResults(resultRows=[]){
+  const byTaskId=new Map(),exactByTaskAndBranch=new Map(),firstPassByTaskId=new Map();
+  for(const row of resultRows){
+    const taskId=clean(row?.taskId);
+    if(!taskId)continue;
+    const taskRows=byTaskId.get(taskId);
+    if(taskRows)taskRows.push(row);else byTaskId.set(taskId,[row]);
+    const branch=resultCandidateBranch(row);
+    if(branch){
+      const key=taskId+'\u0000'+branch;
+      if(!exactByTaskAndBranch.has(key))exactByTaskAndBranch.set(key,row);
+    }
+    if(clean(row?.outcome).toUpperCase()==='PASS'&&!firstPassByTaskId.has(taskId))firstPassByTaskId.set(taskId,row);
+  }
+  return Object.freeze({byTaskId,exactByTaskAndBranch,firstPassByTaskId});
+}
+function indexedExactResult(index={},taskId='',candidateBranch=''){
+  return index?.exactByTaskAndBranch?.get(clean(taskId)+'\u0000'+clean(candidateBranch))||null;
+}
 function candidateIdentityFailures(task={},row={},candidateBranch=null){
   const identity=row?.candidateIdentity&&typeof row.candidateIdentity==='object'?row.candidateIdentity:{};
   const failures=[];
@@ -278,6 +297,7 @@ export function runPostNativeSpecializedReview({queueFile='.vibe2/queue.json',ca
 
 export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
   const resultRows=Array.isArray(results)?results.filter(row=>row&&typeof row==='object'):[];
+  const resultIndex=indexFanInResults(resultRows);
   const ids=new Set([...(taskIds||[]).map(clean),...resultRows.map(row=>clean(row?.taskId))].filter(Boolean));
   const reviewed=[];
   const skipped=[];
@@ -301,8 +321,7 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
     let presentationRuntimeVisual=null;
     if(!candidateBranch)missing.push('candidate-branch');
     else{
-      const rows=resultRows.filter(row=>clean(row?.taskId)===clean(task.id));
-      selectedResult=rows.find(row=>resultCandidateBranch(row)===candidateBranch)||rows.find(row=>clean(row?.outcome).toUpperCase()==='PASS')||null;
+      selectedResult=indexedExactResult(resultIndex,task.id,candidateBranch)||resultIndex.firstPassByTaskId.get(clean(task.id))||null;
       if(!selectedResult)missing.push('candidate-identity-result');
       else {
         missing.push(...candidateIdentityFailures(task,selectedResult,candidateBranch));
@@ -531,7 +550,7 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
   }
   for(const taskId of ids){
     const task=taskById.get(clean(taskId))||{};
-    const pairRows=resultRows.filter(row=>clean(row?.taskId)===clean(taskId)&&row?.phase4BenchmarkVerification?.active===true);
+    const pairRows=(resultIndex.byTaskId.get(clean(taskId))||[]).filter(row=>row?.phase4BenchmarkVerification?.active===true);
     if(pairRows.length<2)continue;
     const selectedResult=selectedResultByTaskId.get(clean(taskId))||null;
     for(const benchmarkReview of buildPairedCapabilityBenchmarkReviews({
