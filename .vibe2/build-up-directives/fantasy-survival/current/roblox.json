@@ -1,120 +1,21 @@
 {
   "version": 2,
-  "directiveId": "fantasy-survival-build-up-g23-753de6266425",
-  "directiveFingerprint": "753de626642562953f7e14ae2ed0f293e285c01c5495edd9724e6bcde518af57",
-  "previousDirectiveFingerprint": "45f0f6cec09820d67ead76e3359be608fe180e5fd518f719938ac67a782b7e0e",
-  "forbiddenRepeatFingerprint": "45f0f6cec09820d67ead76e3359be608fe180e5fd518f719938ac67a782b7e0e",
+  "directiveId": "fantasy-survival-build-up-g22-45f0f6cec098",
+  "directiveFingerprint": "45f0f6cec09820d67ead76e3359be608fe180e5fd518f719938ac67a782b7e0e",
+  "previousDirectiveFingerprint": "d0881e80b70306c3e1dc7981db4795937b5af419309c51b0fa3aa4952817524a",
+  "forbiddenRepeatFingerprint": "d0881e80b70306c3e1dc7981db4795937b5af419309c51b0fa3aa4952817524a",
   "gameId": "fantasy-survival",
   "gameName": "마력숲 생존기",
-  "generation": 23,
+  "generation": 22,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "running",
+  "previousDirectiveOutcome": "queued",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/fantasy-survival",
-  "sourceTreeFingerprint": "ab501530fb2567a0b192ceeaaee09025caca6897e258f5c10ac85c0f90aad56c",
-  "designFingerprint": "47629f899ccd0e25f5db0d9b2975635bfa0961ed7a791c2ef9f93fc87e59aada",
-  "identityReinforcement": {
-    "appliesToAllGenres": true,
-    "genre": "Survival",
-    "oneLineFantasy": "광활한 마력숲과 수정 지역, 화산 지대를 탐험하며 몰려오는 몬스터 무리를 헤쳐나가고, 비밀 연구소의 단서를 파헤치는 생존 마법사의 판타지.",
-    "representativeAction": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
-    "representativeChoice": "플레이어의 선택·자원 소비·전투 판정·퀘스트 결과는 기존 구현과 동일하게 유지된다.",
-    "signatureWorldRule": "게임 상태는 유지하고 색·재질·실루엣·레이어 표현만 마력숲 스타일 락에 맞춘다.",
-    "signatureSystems": [
-      "기존 게임플레이 의미 보존",
-      "표현 품질 순차 개선"
-    ],
-    "growthIdentity": "기존 마력숲의 퀘스트 체인, 연구소, 수정 지역, 화산, 세계수, 보스와 장기 진행 순서를 그대로 유지한다. 이번 파일럿에서 새 성장 규칙·새 경제·새 해금 조건을 만들지 않는다.",
-    "threeSentenceTest": {
-      "whatGame": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.",
-      "whatDifferent": "현재 구현의 월드·퀘스트·전투·제작·진행·보상·세이브 규칙을 구현 기준으로 잠그고 표현 변경이 게임 결과를 바꾸지 않게 한다.",
-      "whatGrowthUnlocks": "기존 마력숲의 퀘스트 체인, 연구소, 수정 지역, 화산, 세계수, 보스와 장기 진행 순서를 그대로 유지한다. 이번 파일럿에서 새 성장 규칙·새 경제·새 해금 조건을 만들지 않는다."
-    },
-    "causalGrammarEvidence": {
-      "worldRules": [],
-      "causalInspirations": [],
-      "systemInterconnections": [
-        {
-          "fromSystem": "기존 월드/캐릭터 렌더",
-          "toSystem": "ASSET_ADAPTATION",
-          "trigger": "기존 오브젝트와 캐릭터를 그리는 동일 렌더 경로",
-          "stateChange": "게임 상태는 유지하고 색·재질·실루엣·레이어 표현만 마력숲 스타일 락에 맞춘다."
-        },
-        {
-          "fromSystem": "기존 이동/공격 상태",
-          "toSystem": "LIVING_MOTION_AND_ANIMATION_FEEL",
-          "trigger": "기존 이동 속도와 authoritative 공격 이벤트",
-          "stateChange": "판정·쿨다운·데미지는 유지하고 호흡·가감속·회전·공격 anticipation/impact/recovery 표현만 동기화한다."
-        },
-        {
-          "fromSystem": "기존 전투/퀘스트 이벤트",
-          "toSystem": "VFX_AUDIO_CAMERA_POLISH",
-          "trigger": "기존 적중·피격·보상·스토리 이벤트",
-          "stateChange": "같은 이벤트 순간에 VFX·사운드·카메라 피드백을 연결하되 저장·진행·보상 의미는 변경하지 않는다."
-        }
-      ],
-      "expansionPlan": [
-        {
-          "milestone": "ASSET_ADAPTATION",
-          "newGameplay": "새 게임플레이를 추가하지 않는다. 기존 캐릭터·몬스터·자원·구조물·지역 표현을 기존 렌더 책임 함수 안에서 마력숲 스타일에 맞게 적응한다.",
-          "systemImpact": "원본 에셋과 게임 상태를 보존하고 렌더 표현만 바꾼다. 세이브·충돌·상호작용·수치 변경은 금지한다."
-        },
-        {
-          "milestone": "LIVING_MOTION_AND_ANIMATION_FEEL",
-          "newGameplay": "새 행동을 추가하지 않는다. 기존 idle·이동·회전·공격·피격 상태에 호흡·블렌딩·anticipation·impact·recovery를 연결한다.",
-          "systemImpact": "기존 입력·이동 속도·데미지·쿨다운·적중 이벤트를 권위로 사용하고 애니메이션은 표현 계층으로만 동작한다."
-        },
-        {
-          "milestone": "VFX_AUDIO_CAMERA_POLISH_MOBILE",
-          "newGameplay": "새 규칙을 추가하지 않는다. 기존 적중·위험·보상·스토리 이벤트에 VFX·오디오·카메라·UI 폴리시를 동기화한다.",
-          "systemImpact": "모바일 가독성·터치·프레임 안정성을 우선하고 게임플레이·저장·진행 의미는 그대로 유지한다."
-        }
-      ],
-      "integrityNotes": [],
-      "formula": "MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @",
-      "existingGameGrammarMap": {
-        "mode": "EXISTING_GAME_RECONSTRUCTION_FROM_CURRENT_DESIGN_AND_INSPECTED_SOURCE",
-        "formula": "MAIN × A × B × c + @",
-        "main": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
-        "majorAxes": [
-          {
-            "key": "A",
-            "name": "기존 게임플레이 의미 보존",
-            "source": "CURRENT_DESIGN_SIGNATURE_SYSTEM"
-          },
-          {
-            "key": "B",
-            "name": "표현 품질 순차 개선",
-            "source": "CURRENT_DESIGN_SIGNATURE_SYSTEM_OR_LOOP"
-          }
-        ],
-        "cSubElements": [
-          "기존 오브젝트와 캐릭터를 그리는 동일 렌더 경로",
-          "기존 이동 속도와 authoritative 공격 이벤트",
-          "기존 적중·피격·보상·스토리 이벤트"
-        ],
-        "delveAtEvidence": [
-          "ASSET_ADAPTATION",
-          "새 게임플레이를 추가하지 않는다. 기존 캐릭터·몬스터·자원·구조물·지역 표현을 기존 렌더 책임 함수 안에서 마력숲 스타일에 맞게 적응한다.",
-          "LIVING_MOTION_AND_ANIMATION_FEEL",
-          "새 행동을 추가하지 않는다. 기존 idle·이동·회전·공격·피격 상태에 호흡·블렌딩·anticipation·impact·recovery를 연결한다.",
-          "VFX_AUDIO_CAMERA_POLISH_MOBILE",
-          "새 규칙을 추가하지 않는다. 기존 적중·위험·보상·스토리 이벤트에 VFX·오디오·카메라·UI 폴리시를 동기화한다."
-        ],
-        "sourceTreeFingerprint": "ab501530fb2567a0b192ceeaaee09025caca6897e258f5c10ac85c0f90aad56c",
-        "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
-        "identityRewriteRequired": false,
-        "existingBalanceSaveEconomyAndAuthorityPreserved": true
-      },
-      "rule": "NEW_CONTENT_MUST_PRESERVE_OR_DEEPEN_THE_APPROVED_CAUSAL_GRAMMAR_AND_MAIN_A_B_c_RELATIONSHIPS; c_IS_SUB_ELEMENT_NOT_MAJOR_AXIS; @ IS_DELVE_LAYER_NOT_GENERAL_SYSTEM; DECORATIVE_LORE_OR_PARALLEL_FEATURE_STACK_DOES_NOT_COUNT",
-      "familiarHumanConflictShouldRemainReadable": true
-    },
-    "buildUpRule": "EACH_BUILD_UP_MUST_STRENGTHEN_OR_PRESERVE_THE_REPRESENTATIVE_ACTION_CHOICE_WORLD_RULE_SIGNATURE_SYSTEM_OR_GROWTH_IDENTITY; GENERIC_FEATURE_COUNT_DOES_NOT_COUNT",
-    "genreAdaptationRule": "PRESERVE_THE_GENRE_PRIMARY_ACTION; DO_NOT_FORCE_RPG_STYLE_SYSTEMS_ON_PUZZLE_RACING_TYCOON_DEFENSE_SURVIVAL_ACTION_CARD_BOARD_STRATEGY_CASUAL_OR_OTHER_GENRES"
-  },
+  "sourceTreeFingerprint": "370c0344d9dbb7905e9e6982c1c2debb6f0a6ec5774b30179e371b4e0d6095c9",
+  "designFingerprint": "fa31a7f83fef27433785050aa8c813e32fd7067d8024b804e961c5ff3ddc513c",
   "gameIdentityAndNonNegotiables": {
     "identity": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.",
     "coreFun": "기존 탐험·채집·제작·전투·퀘스트 선택과 결과는 바꾸지 않고, 같은 입력과 같은 판정에 살아있는 모션·명확한 타격 피드백·일관된 에셋 표현을 결합해 체감 품질을 높인다.",
@@ -355,19 +256,19 @@
   "previousVersionDelta": {
     "previousGoal": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
     "previousFocus": "USABILITY",
-    "previousGeneration": 22,
-    "previousSourceTreeFingerprint": "370c0344d9dbb7905e9e6982c1c2debb6f0a6ec5774b30179e371b4e0d6095c9",
-    "currentSourceTreeFingerprint": "ab501530fb2567a0b192ceeaaee09025caca6897e258f5c10ac85c0f90aad56c",
+    "previousGeneration": 21,
+    "previousSourceTreeFingerprint": "58d386022a15523646d52f1d18a08001c89bfd99d5bd33844dcd89e572392098",
+    "currentSourceTreeFingerprint": "370c0344d9dbb7905e9e6982c1c2debb6f0a6ec5774b30179e371b4e0d6095c9",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-    "failureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
+    "failureStage": "F0_SOURCE_INTEGRITY",
+    "failureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
     "blockers": [],
-    "runtimeObserved": false,
+    "runtimeObserved": true,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -795,7 +696,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "적 역할이 이동·타이깃 선택·공격 전조·공격 패턴·후퇴/회복 또는 특수상태에서 구별되게 하고 기존 게임플레이 의미 보존에 대한 카운터플레이가 실제 플레이에서 가능하게 한다.",
+      "directive": "적 역할이 이동·타깃 선택·공격 전조·공격 패턴·후퇴/회복 또는 특수상태에서 구별되게 하고 기존 게임플레이 의미 보존에 대한 카운터플레이가 실제 플레이에서 가능하게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1472,9 +1373,7 @@
     "초반 10분과 중후반을 각각 점검해 초반 학습·첫 보상과 중후반 전략/콘텐츠 확장이 모두 실제 소스와 플레이 흐름에 존재하게 한다.",
     "콘텐츠 확장은 배경·지역·몹·아이템·퀘스트·스토리·보상·규칙 중 관련 요소를 서로 연결된 묶음으로 설계하고, 한 요소만 고립해서 개수만 늘리는 업데이트를 피한다.",
     "이전 세대와 이름·색·수치만 다른 복제 콘텐츠를 추가하지 말고 역할·행동·플레이어 선택·세계 이유·결과/보상·시스템 연결 중 최소 두 축 이상에서 실제 차이를 만든다.",
-    "새 스토리·퀘스트·지역·규칙은 이전 상태에서 왜 발생하고 완료 후 무엇이 달라지는지 게임 상태와 세계 흐름에 남겨 개연성과 진행 연결을 유지한다.",
-    "승인된 인과 문법이 있으면 새 지역·몬스터·NPC·아이템·세력은 같은 법칙을 복제하지 말고 서로 다른 방식으로 전달·왜곡·상속·분산·역전시켜 새 선택 구조를 만든다.",
-    "가벼운 D1 엽기/코믹 문법은 억지로 장대한 신화·정치 구조로 키우지 않는다. 단순한 농담 규칙이라도 실제 상태 변화와 후폭풍이 반복 가능하면 깊이 있는 정체성으로 인정한다."
+    "새 스토리·퀘스트·지역·규칙은 이전 상태에서 왜 발생하고 완료 후 무엇이 달라지는지 게임 상태와 세계 흐름에 남겨 개연성과 진행 연결을 유지한다."
   ],
   "autonomousContentExpansion": {
     "version": 2,
@@ -1493,8 +1392,6 @@
     ],
     "requestedPlatform": "ROBLOX",
     "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
-    "contentExpansionDeferredUntilRuntimeRepairPass": false,
-    "themeCoverageAdvanced": true,
     "dataCapacityBudget": {
       "state": "NORMAL",
       "limits": {
@@ -1506,7 +1403,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 100233,
+        "sourceBytes": 100272,
         "largestFileBytes": 47539,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1539,13 +1436,13 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 3,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=USABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=4.",
+    "themeDepth": 2,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=USABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=4.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 3,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 2,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 10,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -1564,7 +1461,7 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "PRESENTATION_WORLD_COHESION",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY"
       ],
@@ -1597,7 +1494,7 @@
     "scoredThemes": [
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 150,
+        "score": 168,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
@@ -1713,11 +1610,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 23,
-    "previousGeneration": 22,
+    "generation": 22,
+    "previousGeneration": 21,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "ab501530fb2567a0b192ceeaaee09025caca6897e258f5c10ac85c0f90aad56c",
-    "priorSourceFingerprint": "370c0344d9dbb7905e9e6982c1c2debb6f0a6ec5774b30179e371b4e0d6095c9",
+    "sourceFingerprint": "370c0344d9dbb7905e9e6982c1c2debb6f0a6ec5774b30179e371b4e0d6095c9",
+    "priorSourceFingerprint": "58d386022a15523646d52f1d18a08001c89bfd99d5bd33844dcd89e572392098",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -1962,9 +1859,9 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/fantasy-survival/shared/GameConfig.luau",
-      "roblox-games/fantasy-survival/server/Game.server.luau",
       "roblox-games/fantasy-survival/client/Game.client.luau",
+      "roblox-games/fantasy-survival/server/Game.server.luau",
+      "roblox-games/fantasy-survival/shared/GameConfig.luau",
       "roblox-games/fantasy-survival/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -2170,7 +2067,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "ab501530fb2567a0b192ceeaaee09025caca6897e258f5c10ac85c0f90aad56c",
+    "sourceTreeFingerprint": "370c0344d9dbb7905e9e6982c1c2debb6f0a6ec5774b30179e371b4e0d6095c9",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2253,7 +2150,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "ab501530fb2567a0b192ceeaaee09025caca6897e258f5c10ac85c0f90aad56c",
+    "sourceTreeFingerprint": "370c0344d9dbb7905e9e6982c1c2debb6f0a6ec5774b30179e371b4e0d6095c9",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2290,9 +2187,9 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/fantasy-survival/shared/GameConfig.luau",
-      "roblox-games/fantasy-survival/server/Game.server.luau",
       "roblox-games/fantasy-survival/client/Game.client.luau",
+      "roblox-games/fantasy-survival/server/Game.server.luau",
+      "roblox-games/fantasy-survival/shared/GameConfig.luau",
       "roblox-games/fantasy-survival/default.project.json"
     ],
     "sourceAnchors": [
@@ -2436,9 +2333,9 @@
     "gameId": "fantasy-survival",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/fantasy-survival/shared/GameConfig.luau",
-      "roblox-games/fantasy-survival/server/Game.server.luau",
       "roblox-games/fantasy-survival/client/Game.client.luau",
+      "roblox-games/fantasy-survival/server/Game.server.luau",
+      "roblox-games/fantasy-survival/shared/GameConfig.luau",
       "roblox-games/fantasy-survival/default.project.json"
     ],
     "impact": {
@@ -2511,16 +2408,16 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
-      "runtimeObserved": false
+      "classification": "REGRESSION",
+      "reason": "current source Studio product-quality failure requires source repair before another observation",
+      "runtimeObserved": true
     },
     "baseline": {
-      "sourceTreeFingerprint": "ab501530fb2567a0b192ceeaaee09025caca6897e258f5c10ac85c0f90aad56c",
+      "sourceTreeFingerprint": "370c0344d9dbb7905e9e6982c1c2debb6f0a6ec5774b30179e371b4e0d6095c9",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "failureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED"
+      "failureStage": "F0_SOURCE_INTEGRITY",
+      "failureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2531,8 +2428,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CAUSAL_REPAIR",
+    "reason": "current source Studio product-quality failure requires source repair before another observation"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -2552,14 +2449,6 @@
     "ROBLOX_EXPERIENCE_BUILD_UP_USES_EXTRA_NATIVE_STUDIO_ATTENTION",
     "AUTONOMOUS_CONTENT_EXPANSION_STAYS_INSIDE_EXISTING_BUILD_UP",
     "CONTENT_EXPANSION_MUST_BE_COHERENT_CONNECTED_AND_NON_CLONE",
-    "GAME_IDENTITY_THREE_SENTENCE_TEST_PRESERVED_OR_STRENGTHENED",
-    "REPRESENTATIVE_ACTION_CHOICE_SIGNATURE_WORLD_RULE_AND_GROWTH_IDENTITY_REVIEWED",
-    "GENRE_PRIMARY_ACTION_PRESERVED_WITHOUT_FORCED_RPG_SYSTEMS",
-    "APPROVED_CAUSAL_GAME_GRAMMAR_PRESERVED_OR_MUTATED_WITH_REAL_STATE_EFFECT",
-    "MAIN_A_B_MAJOR_AXES_AND_c_SUB_ELEMENTS_ROLE_PRESERVED",
-    "AT_DELVE_LAYER_IS_NOT_GENERAL_SYSTEM_AXIS",
-    "EXISTING_GAME_GRAMMAR_DISCOVERED_FROM_CURRENT_DESIGN_AND_SOURCE_BEFORE_EXPANSION",
-    "CHARACTER_MONSTER_REGION_STORY_SHARE_CAUSAL_WORLD_LAW_WHEN_APPLICABLE",
     "EXISTING_COMPLETENESS_RECHECK_REQUIRED_EVERY_BUILD_UP",
     "WEB_ROBLOX_UNITY_COMMON_EXPANSION_CONTRACT"
   ],
@@ -2571,7 +2460,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 24,
+    "nextGeneration": 23,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2636,5 +2525,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-07T03:05:39.618Z"
+  "generatedAt": "2026-10-06T07:33:52.219Z"
 }
