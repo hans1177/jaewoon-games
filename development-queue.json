@@ -20795,7 +20795,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-07T00:14:12.776Z",
+      "updatedAt": "2026-10-07T00:19:50.217Z",
       "robloxSourceCommit": "6755dc544db3af8597d57252d914c3af8932b351",
       "robloxSourceBootstrapPassedAt": "2026-10-06T06:57:31.563Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -20806,20 +20806,21 @@
       "robloxBuildArtifactIdentity": "sha256:e71d85b132958bea65f29c0fe9c5f2c87bdcf86c56a025b504cb409691f6980e",
       "robloxBuildPassedAt": "2026-10-07T00:13:00.300Z",
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": false,
-      "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-07T00:13:00.300Z",
+      "robloxBuildPreflightPassed": true,
+      "robloxBuildPreflightPassedAt": "2026-10-07T00:19:50.217Z",
+      "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-        "pass": false,
-        "state": "BLOCKED",
-        "checkedAt": "2026-10-07T00:11:35.684Z",
+        "pass": true,
+        "state": "PASS",
+        "checkedAt": "2026-10-07T00:17:54.025Z",
+        "sourceRevision": "6755dc544db3af8597d57252d914c3af8932b351",
+        "artifactIdentity": "sha256:e71d85b132958bea65f29c0fe9c5f2c87bdcf86c56a025b504cb409691f6980e",
+        "secondaryOwnerFocus": false,
         "facts": {
-          "pass": false,
-          "blockers": [
-            "roblox-platform-required"
-          ],
+          "pass": true,
+          "blockers": [],
           "leads": {
             "planning": "llama3.2:1b",
             "graphics": "llama3.2:1b",
@@ -20830,9 +20831,9 @@
           "sharedModel": "llama3.2:1b",
           "distinctLeadCount": 1,
           "secondaryOwnerFocus": false,
-          "robloxLaneEligible": false,
+          "robloxLaneEligible": true,
           "directRoblox": false,
-          "concurrentRoblox": false,
+          "concurrentRoblox": true,
           "build": {
             "sourceRevision": "6755dc544db3af8597d57252d914c3af8932b351",
             "artifactIdentity": "sha256:e71d85b132958bea65f29c0fe9c5f2c87bdcf86c56a025b504cb409691f6980e",
@@ -20845,10 +20846,16 @@
             "buildOrPackagePassed": true
           }
         },
-        "leadReviews": [],
-        "blockers": [
-          "roblox-platform-required"
+        "leadReviews": [
+          {
+            "role": "shared-review",
+            "model": "llama3.2:1b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": "No concrete build-stage blockers found."
+          }
         ],
+        "blockers": [],
         "authority": "roblox-vibe-shared-model-build-preflight"
       },
       "robloxFoundationF0Passed": false,
@@ -20887,11 +20894,11 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
+      "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+      "robloxFailureStage": "F0_SOURCE_INTEGRITY",
+      "robloxFailureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_PENDING",
       "routingBlockers": [
-        "roblox-build-preflight-blocked"
+        "roblox-f0-source-preflight-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -36212,7 +36219,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-07T00:16:40.621Z",
+  "updatedAt": "2026-10-07T00:19:50.217Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
