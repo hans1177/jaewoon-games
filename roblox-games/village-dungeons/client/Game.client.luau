@@ -387,14 +387,16 @@ task.defer(function()
     end
   end
 
-  if #studioAssetFamily("SKILL") > 0 then
+  if #studioAssetFamily("SKILL") > 0 or #studioAssetFamily("VFX") > 0 then
     local character = player.Character or player.CharacterAdded:Wait()
     local rootPart = character:WaitForChild("HumanoidRootPart", 5)
     if rootPart then
       local attachment = Instance.new("Attachment")
       attachment.Name = "StudioSkillAttachment"
       attachment.Position = Vector3.new(0, 0.5, 0)
-      attachment:SetAttribute("StudioSkillAtom", studioAssetFamily("SKILL")[1] or "")
+      if #studioAssetFamily("SKILL") > 0 then
+        attachment:SetAttribute("StudioSkillAtom", studioAssetFamily("SKILL")[1] or "")
+      end
       attachment.Parent = rootPart
       local emitter = Instance.new("ParticleEmitter")
       emitter.Name = "StudioSkillEmitter"
@@ -402,6 +404,10 @@ task.defer(function()
       emitter.Lifetime = NumberRange.new(0.15, 0.28)
       emitter.Speed = NumberRange.new(3, 6)
       emitter.LightEmission = 0.65
+      if #studioAssetFamily("VFX") > 0 then
+        emitter:SetAttribute("StudioVfxAtom", studioAssetFamily("VFX")[1] or "")
+        emitter.LightEmission = table.find(studioAssetFamily("VFX"), "IMPACT_FLASH") and 0.8 or 0.65
+      end
       emitter.Parent = attachment
       player:GetAttributeChangedSignal("LastApprovedScope"):Connect(function()
         if player:GetAttribute("LastApprovedScope") == "scope-corefun-029d85a01a" then emitter:Emit(10) end
