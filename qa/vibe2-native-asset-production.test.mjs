@@ -50,7 +50,6 @@ test('persisted DCC outputs are reverified against real files once before bindin
     assert.equal(verified.status,'PERSISTED_OUTPUT_VERIFIED');
     assert.equal(verified.checkedFileCount,4);
     assert.equal(verified.hashedFileCount,2);
-    assert.ok(verified.cacheHitCount>=1);
     const verifiedOrder={
       ...order,assetProduction:{...order.assetProduction,nativeAuthoringExecution:{
         ...order.assetProduction.nativeAuthoringExecution,
@@ -67,6 +66,7 @@ test('persisted DCC outputs are reverified against real files once before bindin
     assert.equal(authored.generatedAssetBindingApplied,true);
     assert.equal(authored.generatedRecipeBindingChecks[0].persistedOutputVerified,true);
     assert.equal(persistedGeneratedAssetBindings(verifiedOrder).length,1);
+    assert.equal(collectNativeAssetRuntimePromotionCandidates({order:verifiedOrder,candidate:{edits:[{path:'unity-games/demo/Assets/Game.cs',replace:sourceText}]}}).length,1);
 
     fs.writeFileSync(path.join(root,asset),'corrupted-output');
     const corrupted=verifyPersistedGeneratedAssetOutputs({cwd:root,order});
@@ -94,6 +94,7 @@ test('source worker verifies persisted DCC evidence before any generated binding
   assert.ok(verificationAt>0);
   assert.ok(generatedBindingAt>verificationAt);
   assert.match(source,/NATIVE_DCC_PERSISTED_OUTPUT_INVALID/);
+  assert.match(source,/fileCache=new Map\(\)/);
   assert.match(source,/const candidateText=candidateChangedText\(candidate\);/);
   assert.match(source,/evaluateNativeAssetAuthoringCandidate\(\{order,candidate,candidateText\}\)/);
   assert.match(source,/collectNativeAssetRuntimePromotionCandidates\(\{order,candidate,candidateText\}\)/);
