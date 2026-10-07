@@ -83,3 +83,20 @@ test('same game designer splits large design schema without bypassing the full g
   assert.match(design,/assertSchemaValue\(merged,DESIGN\)/);
   assert.match(design,/DESIGN_SPLIT_SCHEMA_MERGED=/);
 });
+
+
+test('initial design prompt has generous capacity and concrete causal grammar depth',()=>{
+  assert.match(design,/num_ctx:Math\.min\(24576,Math\.max\(4096,Number\(numCtx\|\|8192\)\)\)/);
+  assert.match(design,/predict:8000,temperature:0\.28,numCtx:24576/);
+  assert.match(design,/STRICT_GATE_FEEDBACK=\$\{clip\(strictDesignerFeedback,6500\)\}/);
+  assert.match(design,/GAME_SEED_DESIGN_DEPTH=\$\{clip\(seedDesignDepthContext,16000\)\}/);
+  assert.match(design,/EVIDENCE=\$\{clip\(evidence,15000\)\}/);
+  assert.match(design,/초기 설계는 압축 요약보다 구체적 상태 전이와 플레이 사례를 우선한다/);
+  assert.match(design,/MAIN은 입력→즉시 피드백→상태 변화→위험\/보상→다음 선택/);
+  assert.match(design,/A와 B는 각각 독립된 대축/);
+  assert.match(design,/c는 최소 3개 이상의 서브요소/);
+  assert.match(design,/@는 해금 조건·발견 단서·숙련 보상·재방문 가치·고급 조합/);
+  assert.match(design,/실제 플레이 5분·15분·30분 흐름/);
+  assert.match(design,/DESIGN_BASE,\{predict:1800,temperature:0\.3,numCtx:12288/);
+  assert.match(design,/DESIGN_GATE,\{predict:4800,temperature:0\.2,numCtx:16384/);
+});
