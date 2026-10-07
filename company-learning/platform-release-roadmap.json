@@ -18735,7 +18735,10 @@
             "originalMasterImmutable": true,
             "roleSpecificAppearanceAndMotionVariantsAllowed": true,
             "colorOnlyRoleCloneDoesNotCountAsDistinctActor": true,
-            "serviceNpcCompanionPetMountAndSummonIncluded": true
+            "serviceNpcCompanionPetMountAndSummonIncluded": true,
+            "roleSpecificSilhouetteEquipmentStanceGaitAndMotionRequired": true,
+            "minimumDistinctRoleAxes": 3,
+            "humanoidBossMayUseCharacterFamilyWithBossRole": true
           },
           "implementationBindings": [
             "company-asset-library.json",
@@ -18751,13 +18754,24 @@
           ],
           "appliesToRoles": [
             "PLAYER",
-            "NPC",
+            "GENERAL_NPC",
             "COMPANION",
             "ALLY",
+            "STORY_CHARACTER",
             "CIVILIAN",
+            "MERCHANT",
             "VENDOR",
             "QUEST_GIVER",
+            "GUARD",
+            "WORKER",
+            "ARTISAN",
+            "FARMER",
+            "HEALER",
             "TRAINER",
+            "RIVAL",
+            "HOSTILE_HUMANOID",
+            "NAMED_ELITE",
+            "HUMANOID_BOSS",
             "ENEMY",
             "ELITE",
             "CREATURE",
@@ -18768,24 +18782,35 @@
           ],
           "roleFamilies": {
             "CHARACTER": [
-              "PLAYER",
-              "NPC",
-              "COMPANION",
-              "ALLY",
-              "CIVILIAN",
-              "VENDOR",
-              "QUEST_GIVER",
-              "TRAINER"
-            ],
+            "PLAYER",
+            "GENERAL_NPC",
+            "COMPANION",
+            "ALLY",
+            "STORY_CHARACTER",
+            "CIVILIAN",
+            "MERCHANT",
+            "VENDOR",
+            "QUEST_GIVER",
+            "GUARD",
+            "WORKER",
+            "ARTISAN",
+            "FARMER",
+            "HEALER",
+            "TRAINER",
+            "RIVAL",
+            "HOSTILE_HUMANOID",
+            "NAMED_ELITE",
+            "HUMANOID_BOSS"
+          ],
             "CREATURE": [
-              "ENEMY",
-              "ELITE",
-              "CREATURE",
-              "PET",
-              "MOUNT",
-              "SUMMON",
-              "BOSS"
-            ]
+            "ENEMY",
+            "ELITE",
+            "CREATURE",
+            "PET",
+            "MOUNT",
+            "SUMMON",
+            "BOSS"
+          ]
           }
         },
         "npcRoleProduction": {
