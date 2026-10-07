@@ -137,7 +137,7 @@ local stepClock=0
 lobbyBgm:Play()
 
 -- 선택된 내부 자산 family를 기존 심야 대탈출 네이티브 표현에 직접 연결한다.
-actionSfx.Volume=table.find(studioAssetFamily("AUDIO"),"UI_CONFIRM")and .32 or .30
+actionSfx.Volume=actionSfx:IsA("Sound")and table.find(studioAssetFamily("AUDIO"),"UI_CONFIRM")and .32 or .30
 
 local studioHorrorEmitter=nil
 local function bindStudioHorrorCharacter(character)
@@ -157,7 +157,7 @@ local function bindStudioHorrorCharacter(character)
   emitter.Lifetime=NumberRange.new(.16,.32)
   emitter.Speed=NumberRange.new(4,8)
   emitter.SpreadAngle=Vector2.new(42,42)
-  emitter.LightEmission=table.find(studioAssetFamily("SKILL"),"IMPACT_SMALL")and .72 or .45
+  emitter.LightEmission=table.find(studioAssetFamily("VFX"),"STATUS_GLOW")and .9 or(table.find(studioAssetFamily("SKILL"),"IMPACT_SMALL")and .72 or .45)
   emitter.LightInfluence=table.find(studioAssetFamily("VFX"),"STATUS_GLOW")and 0 or 1
   emitter.Parent=attachment
   studioHorrorEmitter=emitter
@@ -202,7 +202,7 @@ task.defer(function()
    or descendant.Name:find("Table",1,true)or descendant.Name:find("Cabinet",1,true)or descendant.Name:find("Bed",1,true)
    or descendant.Name:find("Crate",1,true)or descendant.Name:find("Barrel",1,true)or descendant.Name:find("Sign",1,true)
   then
-   descendant.Material=table.find(studioAssetFamily("PROP"),"LAMP")and Enum.Material.Metal or descendant.Material
+   descendant.Material=descendant:IsA("BasePart")and table.find(studioAssetFamily("PROP"),"LAMP")and Enum.Material.Metal or descendant.Material
   end
  end
  for _,descendant in ipairs(arena:GetDescendants())do bindStudioArenaPart(descendant)end

@@ -106,7 +106,7 @@ local function bindStudioCharacterAssets(character)
     emitter.Lifetime = NumberRange.new(0.16, 0.34)
     emitter.Speed = NumberRange.new(5, 9)
     emitter.SpreadAngle = Vector2.new(45, 45)
-    emitter.LightEmission = table.find(studioAssetFamily("SKILL"), "IMPACT_SMALL") and 0.8 or 0
+    emitter.LightEmission = table.find(studioAssetFamily("VFX"), "IMPACT_FLASH") and 1 or (table.find(studioAssetFamily("SKILL"), "IMPACT_SMALL") and 0.8 or 0)
     emitter.LightInfluence = table.find(studioAssetFamily("VFX"), "IMPACT_FLASH") and 0 or 1
     emitter.Parent = attachment
     studioSkillEmitter = emitter
