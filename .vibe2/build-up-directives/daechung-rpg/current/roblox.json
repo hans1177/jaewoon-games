@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "daechung-rpg-build-up-g24-ace99851e932",
-  "directiveFingerprint": "ace99851e93271c14ec273bdf72a8d00fe2b53cc17f467d26f4d9b35abcd20bf",
-  "previousDirectiveFingerprint": "3cd00a12b1317d830b5622b312ef01bda35a59f464ec50e85fe60ff3909b2d38",
-  "forbiddenRepeatFingerprint": "3cd00a12b1317d830b5622b312ef01bda35a59f464ec50e85fe60ff3909b2d38",
+  "directiveId": "daechung-rpg-build-up-g25-90e073c0645a",
+  "directiveFingerprint": "90e073c0645abca0561b2f53dc2a2a1dd07a078f422825afa4fbbec5b6f7483c",
+  "previousDirectiveFingerprint": "ace99851e93271c14ec273bdf72a8d00fe2b53cc17f467d26f4d9b35abcd20bf",
+  "forbiddenRepeatFingerprint": "ace99851e93271c14ec273bdf72a8d00fe2b53cc17f467d26f4d9b35abcd20bf",
   "gameId": "daechung-rpg",
   "gameName": "5포탈 RPG: 던전 파티",
-  "generation": 24,
+  "generation": 25,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,8 +14,110 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/daechung-rpg",
-  "sourceTreeFingerprint": "f0f06b5361acde7d13bc04814a0d0a4fb8b7373a796ab647123d3343c5e7ee87",
-  "designFingerprint": "726a3717a2962a12fb3a5af7da4b0e4fcd65836b96f98751c6f7e22031c6763b",
+  "sourceTreeFingerprint": "194434db8320ec61a52afa67b10b23ed45bbf93147f9f4e493e7ee2a13e97285",
+  "designFingerprint": "6872ed9411c21cc5727c6016c50f192b540af8e0512c7d7be92e242c78e8f053",
+  "identityReinforcement": {
+    "appliesToAllGenres": true,
+    "genre": "RPG",
+    "oneLineFantasy": "내가 발견하고 구한 동료들로 나만의 4인 파티를 만들고, 평범한 동료부터 히든·보스 동료까지 조합해 예상 밖의 강한 파티를 완성하는 모험가.",
+    "representativeAction": "마을과 지역 스토리를 진행해 새로운 AI 동료와 사건을 발견한다.",
+    "representativeChoice": "보유 동료 중 4명을 골라 파티를 만들고 각 동료의 장비, AI 성향, 스킬을 세팅한다.",
+    "signatureWorldRule": "던전의 기본 위험도 수치가 즉시 2배로 증가하며, 몬스터의 공격력과 드롭되는 골드량이 동시에 가속화됩니다.",
+    "signatureSystems": [
+      "4인 파티 고정",
+      "무한 확장 AI 동료"
+    ],
+    "growthIdentity": "초기 4인 동료 확보 → 지역 스토리와 장비 파밍 → 숙명 관계·전용 퀘스트 → 히든/보스 동료 → 고난도 조합전투 → 라이벌 파티 경쟁 → 조합별 엔딩과 계속 추가되는 새 동료.",
+    "threeSentenceTest": {
+      "whatGame": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.",
+      "whatDifferent": "파티 슬롯은 항상 4명이며 탱·딜·힐 강제를 없애고 여러 조합이 실전에서 성립하도록 밸런스를 맞춘다.",
+      "whatGrowthUnlocks": "초기 4인 동료 확보 → 지역 스토리와 장비 파밍 → 숙명 관계·전용 퀘스트 → 히든/보스 동료 → 고난도 조합전투 → 라이벌 파티 경쟁 → 조합별 엔딩과 계속 추가되는 새 동료."
+    },
+    "causalGrammarEvidence": {
+      "worldRules": [],
+      "causalInspirations": [],
+      "systemInterconnections": [
+        {
+          "fromSystem": "대충 주사위 판정 시스템",
+          "toSystem": "위험도 가속기 시스템",
+          "trigger": "플레이어가 주사위 판정에서 연속으로 대성공을 거두어 던전 깊숙이 진입할 때 발생합니다.",
+          "stateChange": "던전의 기본 위험도 수치가 즉시 2배로 증가하며, 몬스터의 공격력과 드롭되는 골드량이 동시에 가속화됩니다."
+        },
+        {
+          "fromSystem": "위험도 가속기 시스템",
+          "toSystem": "대충 주사위 판정 시스템",
+          "trigger": "위험도 가속 수치가 최대치에 도달하여 던전 환경이 폭주 상태로 전환될 때 발생합니다.",
+          "stateChange": "주사위 판정에 필요한 최소 성공 요구치가 상승하며, 실패 시 캐릭터가 받는 피해량이 3배로 증가합니다."
+        },
+        {
+          "fromSystem": "대충 주사위 판정 시스템",
+          "toSystem": "골드 경제 시스템",
+          "trigger": "주사위 판정 결과 보물상자 획득 또는 정예 몬스터 처치 판정이 성공했을 때 발생합니다.",
+          "stateChange": "플레이어의 보유 골드가 즉시 증가하며, 마을 상점에서 영구 능력치를 해금할 수 있는 재화 상태로 전환됩니다."
+        }
+      ],
+      "expansionPlan": [
+        {
+          "milestone": "새 지역과 동료군",
+          "newGameplay": "새 스토리 지역마다 일반·히든·보스 동료와 전용 장비, 관계 퀘스트를 추가한다.",
+          "systemImpact": "기존 4인 조합과 새 동료 간 상호작용을 추가해 조합 수를 계속 확장한다."
+        },
+        {
+          "milestone": "라이벌 파티 시즌",
+          "newGameplay": "성장하는 AI 파티가 필드·보스·보물 경쟁에 개입한다.",
+          "systemImpact": "같은 콘텐츠라도 어떤 라이벌을 만나는지에 따라 전투와 스토리 결과가 달라진다."
+        },
+        {
+          "milestone": "조합 엔딩",
+          "newGameplay": "특정 4인 파티의 기억과 관계를 충족하면 고유 후일담과 비밀 보스를 연다.",
+          "systemImpact": "동료 수집을 단순 도감이 아니라 반복 플레이 동기로 연결한다."
+        }
+      ],
+      "integrityNotes": [],
+      "formula": "MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @",
+      "existingGameGrammarMap": {
+        "mode": "EXISTING_GAME_RECONSTRUCTION_FROM_CURRENT_DESIGN_AND_INSPECTED_SOURCE",
+        "formula": "MAIN × A × B × c + @",
+        "main": "마을과 지역 스토리를 진행해 새로운 AI 동료와 사건을 발견한다.",
+        "majorAxes": [
+          {
+            "key": "A",
+            "name": "4인 파티 고정",
+            "source": "CURRENT_DESIGN_SIGNATURE_SYSTEM"
+          },
+          {
+            "key": "B",
+            "name": "무한 확장 AI 동료",
+            "source": "CURRENT_DESIGN_SIGNATURE_SYSTEM_OR_LOOP"
+          }
+        ],
+        "cSubElements": [
+          "숙명 관계",
+          "파티 기억",
+          "보스·히든 동료",
+          "장비가 AI를 바꿈",
+          "라이벌 AI 파티",
+          "조합 엔딩"
+        ],
+        "delveAtEvidence": [
+          "새 지역과 동료군",
+          "새 스토리 지역마다 일반·히든·보스 동료와 전용 장비, 관계 퀘스트를 추가한다.",
+          "라이벌 파티 시즌",
+          "성장하는 AI 파티가 필드·보스·보물 경쟁에 개입한다.",
+          "조합 엔딩",
+          "특정 4인 파티의 기억과 관계를 충족하면 고유 후일담과 비밀 보스를 연다."
+        ],
+        "sourceTreeFingerprint": "194434db8320ec61a52afa67b10b23ed45bbf93147f9f4e493e7ee2a13e97285",
+        "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
+        "identityRewriteRequired": false,
+        "existingBalanceSaveEconomyAndAuthorityPreserved": true
+      },
+      "rule": "NEW_CONTENT_MUST_PRESERVE_OR_DEEPEN_THE_APPROVED_CAUSAL_GRAMMAR_AND_MAIN_A_B_c_RELATIONSHIPS; c_IS_SUB_ELEMENT_NOT_MAJOR_AXIS; @ IS_DELVE_LAYER_NOT_GENERAL_SYSTEM; DECORATIVE_LORE_OR_PARALLEL_FEATURE_STACK_DOES_NOT_COUNT",
+      "familiarHumanConflictShouldRemainReadable": true
+    },
+    "buildUpRule": "EACH_BUILD_UP_MUST_STRENGTHEN_OR_PRESERVE_THE_REPRESENTATIVE_ACTION_CHOICE_WORLD_RULE_SIGNATURE_SYSTEM_OR_GROWTH_IDENTITY; GENERIC_FEATURE_COUNT_DOES_NOT_COUNT",
+    "genreAdaptationRule": "PRESERVE_THE_GENRE_PRIMARY_ACTION; DO_NOT_FORCE_RPG_STYLE_SYSTEMS_ON_PUZZLE_RACING_TYCOON_DEFENSE_SURVIVAL_ACTION_CARD_BOARD_STRATEGY_CASUAL_OR_OTHER_GENRES"
+  },
   "gameIdentityAndNonNegotiables": {
     "identity": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.",
     "coreFun": "4인 파티 조합과 장비 세팅을 계속 바꿔 보며 서로 다른 AI 행동·관계·합동기·직업 능력이 맞물리는 순간을 찾는 재미. 희귀도보다 조합과 세팅이 더 중요하다.",
@@ -91,14 +193,14 @@
       "save": 185,
       "multiplayer": 18,
       "animation": 53,
-      "motionStates": 687,
-      "gameFeel": 37,
-      "vfx": 47,
+      "motionStates": 688,
+      "gameFeel": 38,
+      "vfx": 49,
       "camera": 93,
       "audio": 44,
       "audioDynamics": 20,
       "ui": 213,
-      "uiFlow": 192,
+      "uiFlow": 193,
       "entryFlow": 8,
       "loadingFlow": 0,
       "input": 106,
@@ -130,7 +232,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "score": 288
+        "score": 289
       },
       {
         "file": "roblox-games/daechung-rpg/shared/RPGMenu.luau",
@@ -547,9 +649,9 @@
   "previousVersionDelta": {
     "previousGoal": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
     "previousFocus": "PRESENTATION",
-    "previousGeneration": 23,
-    "previousSourceTreeFingerprint": "5f51522ddcd6d142b25c9ec605f319be9fe0d812dd687308fbb8fcc938ee2816",
-    "currentSourceTreeFingerprint": "f0f06b5361acde7d13bc04814a0d0a4fb8b7373a796ab647123d3343c5e7ee87",
+    "previousGeneration": 24,
+    "previousSourceTreeFingerprint": "f0f06b5361acde7d13bc04814a0d0a4fb8b7373a796ab647123d3343c5e7ee87",
+    "currentSourceTreeFingerprint": "194434db8320ec61a52afa67b10b23ed45bbf93147f9f4e493e7ee2a13e97285",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -987,7 +1089,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "적 역할이 이동·타깃 선택·공격 전조·공격 패턴·후퇴/회복 또는 특수상태에서 구별되게 하고 4인 파티 고정에 대한 카운터플레이가 실제 플레이에서 가능하게 한다.",
+      "directive": "적 역할이 이동·타이깃 선택·공격 전조·공격 패턴·후퇴/회복 또는 특수상태에서 구별되게 하고 4인 파티 고정에 대한 카운터플레이가 실제 플레이에서 가능하게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1666,7 +1768,9 @@
     "초반 10분과 중후반을 각각 점검해 초반 학습·첫 보상과 중후반 전략/콘텐츠 확장이 모두 실제 소스와 플레이 흐름에 존재하게 한다.",
     "콘텐츠 확장은 배경·지역·몹·아이템·퀘스트·스토리·보상·규칙 중 관련 요소를 서로 연결된 묶음으로 설계하고, 한 요소만 고립해서 개수만 늘리는 업데이트를 피한다.",
     "이전 세대와 이름·색·수치만 다른 복제 콘텐츠를 추가하지 말고 역할·행동·플레이어 선택·세계 이유·결과/보상·시스템 연결 중 최소 두 축 이상에서 실제 차이를 만든다.",
-    "새 스토리·퀘스트·지역·규칙은 이전 상태에서 왜 발생하고 완료 후 무엇이 달라지는지 게임 상태와 세계 흐름에 남겨 개연성과 진행 연결을 유지한다."
+    "새 스토리·퀘스트·지역·규칙은 이전 상태에서 왜 발생하고 완료 후 무엇이 달라지는지 게임 상태와 세계 흐름에 남겨 개연성과 진행 연결을 유지한다.",
+    "승인된 인과 문법이 있으면 새 지역·몬스터·NPC·아이템·세력은 같은 법칙을 복제하지 말고 서로 다른 방식으로 전달·왜곡·상속·분산·역전시켜 새 선택 구조를 만든다.",
+    "가벼운 D1 엽기/코믹 문법은 억지로 장대한 신화·정치 구조로 키우지 않는다. 단순한 농담 규칙이라도 실제 상태 변화와 후폭풍이 반복 가능하면 깊이 있는 정체성으로 인정한다."
   ],
   "autonomousContentExpansion": {
     "version": 2,
@@ -1685,6 +1789,8 @@
     ],
     "requestedPlatform": "ROBLOX",
     "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
+    "contentExpansionDeferredUntilRuntimeRepairPass": false,
+    "themeCoverageAdvanced": true,
     "dataCapacityBudget": {
       "state": "NORMAL",
       "limits": {
@@ -1696,7 +1802,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 254851,
+        "sourceBytes": 254915,
         "largestFileBytes": 105650,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1729,12 +1835,12 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "WORLD_ECOLOGY_STORY_CHAIN",
-    "themeDepth": 4,
-    "selectedThemeReason": "0 explicit GAP(s) and 7 applicable domain(s); focus=PRESENTATION; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=4.",
+    "themeDepth": 5,
+    "selectedThemeReason": "0 explicit GAP(s) and 7 applicable domain(s); focus=PRESENTATION; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=4; uncoveredBefore=4.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
-        "WORLD_ECOLOGY_STORY_CHAIN": 4,
+        "WORLD_ECOLOGY_STORY_CHAIN": 5,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 10,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
@@ -1752,7 +1858,7 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -1787,7 +1893,7 @@
     "scoredThemes": [
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 128,
+        "score": 110,
         "gapDomains": []
       },
       {
@@ -1902,11 +2008,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 24,
-    "previousGeneration": 23,
+    "generation": 25,
+    "previousGeneration": 24,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "f0f06b5361acde7d13bc04814a0d0a4fb8b7373a796ab647123d3343c5e7ee87",
-    "priorSourceFingerprint": "5f51522ddcd6d142b25c9ec605f319be9fe0d812dd687308fbb8fcc938ee2816",
+    "sourceFingerprint": "194434db8320ec61a52afa67b10b23ed45bbf93147f9f4e493e7ee2a13e97285",
+    "priorSourceFingerprint": "f0f06b5361acde7d13bc04814a0d0a4fb8b7373a796ab647123d3343c5e7ee87",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2151,15 +2257,15 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/daechung-rpg/client/Game.client.luau",
-      "roblox-games/daechung-rpg/shared/VisualStyle.luau",
       "roblox-games/daechung-rpg/server/Game.server.luau",
+      "roblox-games/daechung-rpg/client/Game.client.luau",
       "roblox-games/daechung-rpg/shared/GameConfig.luau",
       "roblox-games/daechung-rpg/shared/RPGMenu.luau",
       "roblox-games/daechung-rpg/shared/QACamera.luau",
       "roblox-games/daechung-rpg/launch-mvp.json",
       "roblox-games/daechung-rpg/shared/RPGMenuModel.luau",
-      "roblox-games/daechung-rpg/default.project.json"
+      "roblox-games/daechung-rpg/default.project.json",
+      "roblox-games/daechung-rpg/shared/VisualStyle.luau"
     ],
     "sourceSymbolsOrStateAnchors": [
       {
@@ -2366,16 +2472,16 @@
       {
         "role": "SHARED_DEFINITION",
         "files": [
-          "roblox-games/daechung-rpg/shared/VisualStyle.luau",
           "roblox-games/daechung-rpg/shared/GameConfig.luau",
           "roblox-games/daechung-rpg/shared/RPGMenu.luau",
           "roblox-games/daechung-rpg/shared/QACamera.luau",
-          "roblox-games/daechung-rpg/shared/RPGMenuModel.luau"
+          "roblox-games/daechung-rpg/shared/RPGMenuModel.luau",
+          "roblox-games/daechung-rpg/shared/VisualStyle.luau"
         ],
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "f0f06b5361acde7d13bc04814a0d0a4fb8b7373a796ab647123d3343c5e7ee87",
+    "sourceTreeFingerprint": "194434db8320ec61a52afa67b10b23ed45bbf93147f9f4e493e7ee2a13e97285",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2460,16 +2566,16 @@
       {
         "role": "SHARED_DEFINITION",
         "files": [
-          "roblox-games/daechung-rpg/shared/VisualStyle.luau",
           "roblox-games/daechung-rpg/shared/GameConfig.luau",
           "roblox-games/daechung-rpg/shared/RPGMenu.luau",
           "roblox-games/daechung-rpg/shared/QACamera.luau",
-          "roblox-games/daechung-rpg/shared/RPGMenuModel.luau"
+          "roblox-games/daechung-rpg/shared/RPGMenuModel.luau",
+          "roblox-games/daechung-rpg/shared/VisualStyle.luau"
         ],
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "f0f06b5361acde7d13bc04814a0d0a4fb8b7373a796ab647123d3343c5e7ee87",
+    "sourceTreeFingerprint": "194434db8320ec61a52afa67b10b23ed45bbf93147f9f4e493e7ee2a13e97285",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2506,15 +2612,15 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/daechung-rpg/client/Game.client.luau",
-      "roblox-games/daechung-rpg/shared/VisualStyle.luau",
       "roblox-games/daechung-rpg/server/Game.server.luau",
+      "roblox-games/daechung-rpg/client/Game.client.luau",
       "roblox-games/daechung-rpg/shared/GameConfig.luau",
       "roblox-games/daechung-rpg/shared/RPGMenu.luau",
       "roblox-games/daechung-rpg/shared/QACamera.luau",
       "roblox-games/daechung-rpg/launch-mvp.json",
       "roblox-games/daechung-rpg/shared/RPGMenuModel.luau",
-      "roblox-games/daechung-rpg/default.project.json"
+      "roblox-games/daechung-rpg/default.project.json",
+      "roblox-games/daechung-rpg/shared/VisualStyle.luau"
     ],
     "sourceAnchors": [
       {
@@ -2655,15 +2761,15 @@
     "gameId": "daechung-rpg",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/daechung-rpg/client/Game.client.luau",
-      "roblox-games/daechung-rpg/shared/VisualStyle.luau",
       "roblox-games/daechung-rpg/server/Game.server.luau",
+      "roblox-games/daechung-rpg/client/Game.client.luau",
       "roblox-games/daechung-rpg/shared/GameConfig.luau",
       "roblox-games/daechung-rpg/shared/RPGMenu.luau",
       "roblox-games/daechung-rpg/shared/QACamera.luau",
       "roblox-games/daechung-rpg/launch-mvp.json",
       "roblox-games/daechung-rpg/shared/RPGMenuModel.luau",
-      "roblox-games/daechung-rpg/default.project.json"
+      "roblox-games/daechung-rpg/default.project.json",
+      "roblox-games/daechung-rpg/shared/VisualStyle.luau"
     ],
     "impact": {
       "version": 1,
@@ -2737,7 +2843,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "f0f06b5361acde7d13bc04814a0d0a4fb8b7373a796ab647123d3343c5e7ee87",
+      "sourceTreeFingerprint": "194434db8320ec61a52afa67b10b23ed45bbf93147f9f4e493e7ee2a13e97285",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2773,6 +2879,14 @@
     "ROBLOX_EXPERIENCE_BUILD_UP_USES_EXTRA_NATIVE_STUDIO_ATTENTION",
     "AUTONOMOUS_CONTENT_EXPANSION_STAYS_INSIDE_EXISTING_BUILD_UP",
     "CONTENT_EXPANSION_MUST_BE_COHERENT_CONNECTED_AND_NON_CLONE",
+    "GAME_IDENTITY_THREE_SENTENCE_TEST_PRESERVED_OR_STRENGTHENED",
+    "REPRESENTATIVE_ACTION_CHOICE_SIGNATURE_WORLD_RULE_AND_GROWTH_IDENTITY_REVIEWED",
+    "GENRE_PRIMARY_ACTION_PRESERVED_WITHOUT_FORCED_RPG_SYSTEMS",
+    "APPROVED_CAUSAL_GAME_GRAMMAR_PRESERVED_OR_MUTATED_WITH_REAL_STATE_EFFECT",
+    "MAIN_A_B_MAJOR_AXES_AND_c_SUB_ELEMENTS_ROLE_PRESERVED",
+    "AT_DELVE_LAYER_IS_NOT_GENERAL_SYSTEM_AXIS",
+    "EXISTING_GAME_GRAMMAR_DISCOVERED_FROM_CURRENT_DESIGN_AND_SOURCE_BEFORE_EXPANSION",
+    "CHARACTER_MONSTER_REGION_STORY_SHARE_CAUSAL_WORLD_LAW_WHEN_APPLICABLE",
     "EXISTING_COMPLETENESS_RECHECK_REQUIRED_EVERY_BUILD_UP",
     "WEB_ROBLOX_UNITY_COMMON_EXPANSION_CONTRACT"
   ],
@@ -2784,7 +2898,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 25,
+    "nextGeneration": 26,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2849,5 +2963,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-06T08:52:37.387Z"
+  "generatedAt": "2026-10-07T01:58:40.877Z"
 }
