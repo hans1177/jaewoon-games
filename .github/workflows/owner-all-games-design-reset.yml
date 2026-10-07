@@ -5,7 +5,6 @@ on:
   push:
     paths:
       - 'game-catalog.json'
-      - 'tools/company-all-games-design-reset.mjs'
       - 'tools/company-game-seed-contract.mjs'
       - '.github/workflows/owner-all-games-design-reset.yml'
 
@@ -22,6 +21,7 @@ env:
 
 jobs:
   reset-to-design:
+    if: github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[owner-reset-trigger-scope-only]')
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
