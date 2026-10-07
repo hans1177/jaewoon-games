@@ -48,6 +48,7 @@ jobs:
           cp -a _site/. /tmp/magic-forest-pages/
           git config user.name "jaewoon-pages"
           git config user.email "pages@users.noreply.github.com"
+          git sparse-checkout disable
           git switch --orphan magic-forest-pages-publish
           git rm -rf . >/dev/null 2>&1 || true
           cp -a /tmp/magic-forest-pages/. .
