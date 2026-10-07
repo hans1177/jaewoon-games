@@ -1,3 +1,4 @@
+# 파일명: .github/workflows/company-game-seed-bootstrap.yml
 name: Company GAME_SEED Bootstrap
 
 on:
@@ -148,10 +149,17 @@ jobs:
 
       - name: Verified free budget preflight
         if: steps.finalneed.outputs.model == 'true'
+        shell: bash
+        env:
+          REQUEST_COUNT: ${{ steps.finalneed.outputs.request_count }}
         run: |
-          node tools/free-budget-telemetry.mjs --verify-public-repo=true --runner=ubuntu-latest --model-calls=1 --runner-minutes=20 --output=.autonomous/free-budget-telemetry.json
+          set -euo pipefail
+          [[ "$REQUEST_COUNT" =~ ^[1-9][0-9]*$ ]] || { echo 'GAME_SEED_REQUEST_COUNT_INVALID' >&2; exit 1; }
+          # 기존 게임당 제한 4분과 모델 준비·검증 여유를 사전 예산에 반영한다.
+          runner_minutes=$((10 + REQUEST_COUNT * 4))
+          node tools/free-budget-telemetry.mjs --verify-public-repo=true --runner=ubuntu-latest --model-calls="$REQUEST_COUNT" --runner-minutes="$runner_minutes" --output=.autonomous/free-budget-telemetry.json
           node -e "const r=require('./.autonomous/free-budget-telemetry.json');if(r.allowed!==true)process.exit(1)"
-          echo 'GAME_SEED_MODEL_CALLS_MAX_THIS_RUN=1'
+          echo "GAME_SEED_MODEL_CALLS_MAX_THIS_RUN=$REQUEST_COUNT"
 
       - name: Prepare free local GAME_SEED model
         if: steps.finalneed.outputs.model == 'true'
