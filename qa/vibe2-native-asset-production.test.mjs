@@ -2804,3 +2804,92 @@ test('selected source content changes invalidate binding without a library versi
     assert.equal(after.selectedSourceHashes.filter((row,i)=>row.sha256!==before.selectedSourceHashes[i].sha256).length,1);
   }finally{fs.rmSync(cwd,{recursive:true,force:true});}
 });
+
+
+// 공용 분류와 모델 파일 동기화 회귀 검증.
+test('shared asset organization preserves lineage, blocked sources and runtime truth across repeated sync',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'shared-asset-organization-'));
+  try{
+    fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify({games:[]}));
+    const asset={
+      id:'legacy-game-spider',packId:'legacy-game-pack',category:'CREATURE',platform:'SHARED_NATIVE_SOURCE',
+      license:'project-original',path:'/assets/shared/spider.png',
+      sourceFiles:['assets/shared/build-spider.py','assets/shared/view.html'],
+      nativeArtifacts:['assets/shared/spider.glb','assets/shared/evidence.json'],
+      authoringRecipes:[{script:'assets/shared/build-spider.py',preview:'assets/shared/spider.png',outputs:['assets/shared/spider.glb'],evidenceJson:'assets/shared/evidence.json'}],
+      intendedConsumerGameIds:['old-game'],consumerGameIds:[],
+      productionVerified:false,runtimeVerificationState:'PENDING_NATIVE_IMPORT'
+    };
+    const blocked={id:'missing-reference',category:'ENVIRONMENT',platform:'WEB_REFERENCE',license:'CC0',path:'/assets/missing.png',corruptSource:true,catalogActive:false};
+    const original={version:1,assets:[asset,blocked],externalSources:[]};
+    const first=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry:original,persist:false});
+    const shared=first.registry.assets.find(row=>row.id===asset.id);
+    assert.equal(shared.companyCommonBase,true);
+    assert.equal(shared.reuseScope,'COMPANY_COMMON_BASE');
+    assert.equal(shared.gameExclusive,false);
+    assert.equal(shared.family,'CREATURE');
+    assert.equal(shared.packId,asset.packId);
+    assert.equal(shared.path,asset.path);
+    assert.deepEqual(shared.sourceFiles,asset.sourceFiles);
+    assert.deepEqual(shared.nativeArtifacts,asset.nativeArtifacts);
+    assert.deepEqual(shared.intendedConsumerGameIds,['old-game']);
+    assert.deepEqual(shared.fileRoles.authoring,['assets/shared/build-spider.py']);
+    assert.deepEqual(shared.fileRoles.models,['assets/shared/spider.glb']);
+    assert.deepEqual(shared.fileRoles.previews,['assets/shared/spider.png']);
+    assert.ok(shared.fileRoles.support.includes('assets/shared/evidence.json'));
+    assert.equal(shared.fileRoles.evidence,undefined);
+    assert.equal(shared.productionVerified,false);
+    assert.equal(shared.runtimeVerificationState,'PENDING_NATIVE_IMPORT');
+    assert.equal(first.registry.assets.find(row=>row.id===blocked.id).corruptSource,true);
+    assert.equal(first.registry.assets.find(row=>row.id===blocked.id).catalogActive,false);
+    assert.equal(original.assets[0].fileRoles,undefined,'input registry must stay untouched');
+    const second=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry:first.registry,persist:false});
+    assert.equal(second.changed,false,JSON.stringify(second.changedSections));
+    assert.equal(second.registry.version,first.registry.version);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('native artifact and role-only model changes invalidate existing source synchronization',()=>{
+  const cwd=fs.mkdtempSync(path.join(os.tmpdir(),'shared-model-sync-'));
+  try{
+    fs.mkdirSync(path.join(cwd,'assets/shared'),{recursive:true});
+    fs.writeFileSync(path.join(cwd,'assets/shared/model.glb'),Buffer.from([1,2,3,4]));
+    fs.writeFileSync(path.join(cwd,'assets/shared/preview.png'),Buffer.from([8,9]));
+    const asset={id:'model',family:'CREATURE',platform:'SHARED_NATIVE_SOURCE',license:'project-original',
+      path:'/assets/shared/preview.png',sourceFiles:[],nativeArtifacts:['assets/shared/model.glb'],
+      fileRoles:{models:['assets/shared/model.glb'],previews:['assets/shared/preview.png']}};
+    const dynamic=buildAllGameDynamicLibraryBindingPlan({companyRegistry:{version:7,assets:[asset]},target:'web',gameId:'demo'});
+    assert.deepEqual(dynamic.familyCandidates.CREATURE[0].nativeArtifacts,asset.nativeArtifacts);
+    const order={target:'web',gameId:'demo',assetProduction:{allGameDynamicLibraryBinding:dynamic,baseMaterialLoadout:{libraryVersion:7,selectionFingerprint:'a'.repeat(64)}}};
+    const first=buildInternalAssetSourceUsageContract(order,{cwd});
+    assert.ok(first.selectedSourcePaths.includes('assets/shared/model.glb'));
+    assert.deepEqual(first.sourceCandidates[0].fileRoles.models,['assets/shared/model.glb']);
+    assert.equal(first.fingerprint,buildInternalAssetSourceUsageContract(order,{cwd}).fingerprint);
+    const duplicate=buildInternalAssetSourceUsageContract({...order,assetProduction:{...order.assetProduction,decisions:[{type:'enemy',applyFirst:{candidates:[{id:'model',family:'CREATURE',sourceFiles:[]}]}}]}},{cwd});
+    assert.ok(duplicate.selectedSourcePaths.includes('assets/shared/model.glb'),'duplicate selection must preserve model files');
+    assert.deepEqual(duplicate.sourceCandidates[0].fileRoles.models,['assets/shared/model.glb']);
+    fs.writeFileSync(path.join(cwd,'assets/shared/model.glb'),Buffer.from([1,2,3,5]));
+    const second=buildInternalAssetSourceUsageContract(order,{cwd});
+    assert.notEqual(first.fingerprint,second.fingerprint);
+    assert.equal(first.libraryVersion,second.libraryVersion);
+    assert.equal(second.selectedSourceHashes.filter((row,i)=>row.sha256!==first.selectedSourceHashes[i].sha256).length,1);
+    const roleOnly={...asset,nativeArtifacts:[],fileRoles:{models:['assets/shared/model.glb']}};
+    const rolePlan=buildAllGameDynamicLibraryBindingPlan({companyRegistry:{version:7,assets:[roleOnly]},target:'web',gameId:'demo'});
+    const roleUsage=buildInternalAssetSourceUsageContract({...order,assetProduction:{...order.assetProduction,allGameDynamicLibraryBinding:rolePlan}},{cwd});
+    assert.ok(roleUsage.selectedSourcePaths.includes('assets/shared/model.glb'));
+    const flowUsage=buildInternalAssetSourceUsageContract({target:'web',assetProduction:{flowAssetLoadout:{selections:[{assetId:'model',family:'CREATURE',nativeArtifacts:asset.nativeArtifacts,fileRoles:asset.fileRoles}]}}},{cwd});
+    assert.ok(flowUsage.selectedSourcePaths.includes('assets/shared/model.glb'));
+  }finally{fs.rmSync(cwd,{recursive:true,force:true});}
+});
+
+test('registered assets are shared by family while all original safety and platform constraints remain separate',()=>{
+  const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  assert.equal(registry.internalAssetStandard.sharedOrganization.gameExclusivePacks,false);
+  for(const asset of registry.assets){
+    assert.equal(asset.companyCommonBase,true,asset.id);
+    assert.equal(asset.reuseScope,'COMPANY_COMMON_BASE',asset.id);
+    assert.equal(asset.gameExclusive,false,asset.id);
+    assert.ok(asset.family,asset.id);
+    assert.ok(asset.fileRoles,asset.id);
+  }
+});

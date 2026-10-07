@@ -1341,6 +1341,51 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     assetById:registryAssetById,
     assetsByPackId:registryAssetsByPackId
   }));
+
+  // 공용 자산 분류: 기존 packId/경로는 출처 이력이며 게임 전용 사용 제한이 아니다.
+  let organizationAssetsChanged=false;
+  for(const asset of next.assets){
+    const family=clean(asset.family||asset.category).toUpperCase();
+    const files=unique([
+      asset.path,...(asset.sourceFiles||[]),...(asset.nativeArtifacts||[]),
+      asset.previewPath,asset.internalAuditEvidenceRef,
+      asset.masterGlb,asset.meshArtifact,asset.masterSourcePath,
+      asset.meshUpgrade?.model,asset.meshUpgrade?.evidence,
+      ...(asset.authoringRecipes||[]).flatMap(recipe=>[
+        recipe.script,recipe.editableSource,recipe.preview,recipe.evidenceJson,...(recipe.outputs||[])
+      ])
+    ].map(value=>clean(value).replaceAll('\\','/').replace(/^\/+/,'').split('#')[0]).filter(Boolean)).sort();
+    const previews=new Set([asset.previewPath,...(asset.authoringRecipes||[]).map(recipe=>recipe.preview)].map(value=>clean(value).replace(/^\/+/,'')).filter(Boolean));
+    const fileRoles={authoring:[],runtimeCode:[],models:[],previews:[],textures:[],references:[],catalogs:[],support:[]};
+    for(const file of files){
+      const role=previews.has(file)?'previews'
+        :/\.(?:blend|py)$/i.test(file)||/(?:^|\/)(?:build|generate)[^/]*\.(?:mjs|js)$/i.test(file)?'authoring'
+        :/\.(?:glb|gltf|fbx|obj|rbxm|rbxmx|rbxl|rbxlx)$/i.test(file)?'models'
+        :/(?:^|\/)(?:catalog|research)[^/]*\.(?:json|tsv)$/i.test(file)?'catalogs'
+        :/\.(?:png|webp|jpe?g|gif|svg)$/i.test(file)?(/REFERENCE/.test(clean(asset.platform))?'references':'textures')
+        :/\.(?:lua|luau|js|mjs|cs)$/i.test(file)?'runtimeCode':'support';
+      fileRoles[role].push(file);
+    }
+    const metadata={family,companyCommonBase:true,reuseScope:'COMPANY_COMMON_BASE',gameExclusive:false,fileRoles};
+    if(Object.entries(metadata).some(([key,value])=>JSON.stringify(asset[key])!==JSON.stringify(value))){
+      Object.assign(asset,metadata);
+      organizationAssetsChanged=true;
+    }
+  }
+  next.internalAssetStandard={
+    ...(next.internalAssetStandard||{}),
+    sharedOrganization:{
+      version:1,scope:'ALL_REGISTERED_ASSETS',groupBy:'FAMILY',
+      gameExclusivePacks:false,packIdMeaning:'SOURCE_LINEAGE_NOT_GAME_EXCLUSIVITY',
+      fileRoles:['authoring','runtimeCode','models','previews','textures','references','catalogs','support'],
+      consumerGameIdsMeaning:'ACTUAL_USAGE_HISTORY_NOT_EXCLUSIVE_OWNERSHIP',
+      intendedConsumerGameIdsMeaning:'DEMAND_HINT_NOT_USAGE_RESTRICTION',
+      platformCompatibilityRequired:true,sourcePathsPreserved:true,
+      qualityDisplay:{field:'internalAuditScore',maxScore:1000},
+      fileClassificationIsNotRuntimeVerification:true
+    }
+  };
+
   const consumerSync=synchronizeSourceBoundAssetConsumers({repoRoot,registry:next,gameCatalog:consumerScanCatalog});
   const sourceConsumerSync=Object.freeze({
     ...consumerSync.summary,
@@ -1624,9 +1669,10 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     'companyCommonSeedAssetIdeation',
     'internalAssetCompositionContract',
     'internalAssetLibraryAutomation',
+    'internalAssetStandard',
     'npcRoleProduction'
   ];
-  const catalogAssetsChanged=syncRows.some(row=>row.changed===true);
+  const catalogAssetsChanged=organizationAssetsChanged||syncRows.some(row=>row.changed===true);
   const changedSections=mutableSections.filter(key=>
     key==='assets'
       ?catalogAssetsChanged
@@ -2177,6 +2223,7 @@ function matchedForType(selector={},type='',manifest={},target='',repoRoot=proce
       nativeArtifactHash:nativeArtifactHash||null,
       sourceFiles:freezeList(unique(Array.isArray(asset.sourceFiles)?asset.sourceFiles:[])),
       nativeArtifacts:freezeList(unique(Array.isArray(asset.nativeArtifacts)?asset.nativeArtifacts:[])),
+      fileRoles:freeze(Object.fromEntries(Object.entries(asset?.fileRoles||{}).map(([role,files])=>[role,freezeList(files)]))),
       tags:freezeList(unique([...(Array.isArray(asset.tags)?asset.tags:[]),clean(asset.family),clean(asset.category),clean(asset.subfamily)].map(clean).filter(Boolean))),
       family:clean(asset.family||asset.category)||null,
       subfamily:clean(asset.subfamily)||null,
@@ -2305,6 +2352,8 @@ export function buildAllGameDynamicLibraryBindingPlan({companyRegistry={},target
         license:clean(asset?.license)||null,
         path:clean(asset?.path)||null,
         sourceFiles:freezeList(asset?.sourceFiles||[]),
+        nativeArtifacts:freezeList(asset?.nativeArtifacts||[]),
+        fileRoles:freeze(Object.fromEntries(Object.entries(asset?.fileRoles||{}).map(([role,files])=>[role,freezeList(files)]))),
         companyCommonBase:asset?.companyCommonBase===true,
         verifiedCompanyReusable:asset?.verifiedCompanyReusable===true,
         roleCompatibility:'EVALUATE_AGAINST_EXISTING_GAME_SYSTEM',
@@ -2330,7 +2379,7 @@ export function buildAllGameDynamicLibraryBindingPlan({companyRegistry={},target
     version:1,gameId:clean(gameId),target:resolved,libraryVersion:Number(companyRegistry?.version||0),
     baseMaterialFamilies:Object.fromEntries(Object.entries(baseMaterialFamilies).map(([family,rows])=>[family,[...rows].sort()])),
     candidates:Object.fromEntries(UNIVERSAL_ASSET_FAMILIES.map(family=>[
-      family,familyCandidates[family].map(row=>[row.assetId,row.applicationMode,row.path,[...row.sourceFiles]]).sort((a,b)=>String(a[0]).localeCompare(String(b[0])))
+      family,familyCandidates[family].map(row=>[row.assetId,row.applicationMode,row.path,[...row.sourceFiles],[...row.nativeArtifacts],row.fileRoles]).sort((a,b)=>String(a[0]).localeCompare(String(b[0])))
     ]))
   })).digest('hex');
   return freeze({

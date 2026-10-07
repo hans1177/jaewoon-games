@@ -4840,6 +4840,8 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
       effectiveGain:choice.effectiveGain,
       packId:picked?.row.packId||null,
       sourceFiles:picked?freezeList(picked.row.sourceFiles.length?picked.row.sourceFiles:[text(picked.asset.path)].filter(Boolean)):Object.freeze([]),
+      nativeArtifacts:picked?.row.nativeArtifacts||Object.freeze([]),
+      fileRoles:picked?.row.fileRoles||Object.freeze({}),
       machineTags:picked?.row.machineTags||Object.freeze([]),
       usageContract:picked?.row.usageContract||null,
       gameSpecificVariationFields:picked?.row.gameSpecificVariationFields||Object.freeze([]),
@@ -4863,7 +4865,7 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
     snapshotMatches,
     atomicBindingReady:bindingReady,
     bindingBatch:freezeList(bindingReady?selections.filter(row=>!row.unresolved).map(row=>Object.freeze({
-      assetId:row.assetId,atomId:row.atomId,packId:row.packId,sourceFiles:row.sourceFiles,sourceHash:row.sourceHash,
+      assetId:row.assetId,atomId:row.atomId,packId:row.packId,sourceFiles:row.sourceFiles,nativeArtifacts:row.nativeArtifacts,fileRoles:row.fileRoles,sourceHash:row.sourceHash,
       sourceContentFingerprint:row.sourceContentFingerprint,
       libraryVersion:row.libraryVersion,librarySnapshotId:row.librarySnapshotId,applicationMode:row.applicationMode,
       usageContract:row.usageContract
@@ -5404,6 +5406,8 @@ function normalizeRegistryAsset(asset={}){
     machineTags:(asset.machineTags||asset.tags||asset.capabilities||[]).map(upper),
     packId:text(asset.packId),
     sourceFiles:Object.freeze([...(asset.sourceFiles||[])]),
+    nativeArtifacts:Object.freeze([...(asset.nativeArtifacts||[])]),
+    fileRoles:Object.freeze(Object.fromEntries(Object.entries(asset.fileRoles||{}).map(([role,files])=>[role,Object.freeze([...files])]))),
     companyCommonBase:asset.companyCommonBase===true,
     usageContract:asset.usageContract||asset.bindingHint||asset.assemblyContract||asset.introContract||null,
     gameSpecificVariationFields:Object.freeze([...(asset.gameSpecificVariationFields||[])])
