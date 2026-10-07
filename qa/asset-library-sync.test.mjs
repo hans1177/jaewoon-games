@@ -76,6 +76,26 @@ test('asset registry signature is cached across 304 refreshes',()=>{
  assert.doesNotMatch(script,/registrySignature\(registry\)!==registrySignature\(nextRegistry\)/);
 });
 
+test('asset library UI preindexes search manifest lookups and category counts',()=>{
+ const script=fs.readFileSync('assets/asset-library.js','utf8');
+ assert.match(script,/function manifestRows\(\)/);
+ assert.match(script,/function indexRow\(row\)/);
+ assert.match(script,/row\.searchText=/);
+ assert.match(script,/row\.searchText\.includes\(query\)/);
+ assert.match(script,/const \{monsters,environments,common\}=manifestRows\(\)/);
+ assert.match(script,/const \{monsters\}=manifestRows\(\)/);
+ assert.match(script,/for\(const asset of registry\.assets\)/);
+ const showStart=script.indexOf('function showList()');
+ const showEnd=script.indexOf('function pauseLabel()',showStart);
+ const showSource=script.slice(showStart,showEnd);
+ assert.doesNotMatch(showSource,/\.join\(' '\)\.toLocaleLowerCase\(\)/);
+ const refreshStart=script.indexOf('async function refresh(');
+ const refreshEnd=script.indexOf('function switchKind',refreshStart);
+ const refreshSource=script.slice(refreshStart,refreshEnd);
+ assert.doesNotMatch(refreshSource,/publicAssets\(registry\.assets\)\.filter\(row=>row\.category===/);
+ assert.match(refreshSource,/nextRegistry===registry\?registryViewSignature:registrySignature\(nextRegistry\)/);
+});
+
 test('common character assets use the 3D R15 motion viewer instead of image fallback',()=>{
  const page=fs.readFileSync('asset-library.html','utf8');
  const script=fs.readFileSync('assets/asset-library.js','utf8');
