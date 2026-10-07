@@ -56,26 +56,82 @@
           "playerChoice": "파티 사냥 조작"
         }
       ]
+    },
+    "designer_draft_slices::systems-progression": {
+      "systemInterconnections": [
+        {
+          "fromSystem": "5포탈 지역",
+          "toSystem": "레벨 성장",
+          "trigger": "포탈 전투 성공",
+          "stateChange": "레벨업 최대체력 +10, 공격력 +10"
+        },
+        {
+          "fromSystem": "레벨 성장",
+          "toSystem": "5단계 장비",
+          "trigger": "레벨업 완료",
+          "stateChange": "무기·방어구는 T1~T5로 단순 성장하고, 유물 1칸은 직업 특성을 가볍게 바꾼다. 장착 슬롯은 무기/방어구/유물 3개."
+        },
+        {
+          "fromSystem": "5단계 장비",
+          "toSystem": "1차 전직",
+          "trigger": "15마리 파티 사냥 완료",
+          "stateChange": "Lv.15 직업 시험 후 각 시작 직업에서 2개 분기 중 하나를 골라 선택"
+        }
+      ],
+      "progressionDirection": "마을 준비 → 포탈 전투 → Lv.15 1차 전직 → 보스 격파/동료 해금 → 동료 3명 조합 → Lv.40 2차 완성형 → Lv.60 만렙/숙련",
+      "progressionEconomyBalance": {
+        "progressionLoop": "마을 준비 → 포탈 전투 → Lv.15 1차 전직 → 보스 격파/동료 해금 → 동료 3명 조합 → Lv.40 2차 완성형 → Lv.60 만렙/숙련",
+        "resourceFlow": "레벨업 최대체력 +10, 공격력 +10",
+        "balanceRules": "15마리 파티 사냥, 3명 파티 구성, 보스 동료 해금 저장, 플레이어 + 보스 동료 최대 3명"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "초원 시드형 로그라이크 런",
+          "newGameplay": "1번 포탈 초원은 빈 런 시작 시 Seed로 방/길/전투/이벤트/보물/정예 구성을 다시 조합한다.",
+          "systemImpact": "플레이어는 동일 런을 공유한다."
+        },
+        {
+          "milestone": "초원 10종 몬스터·히든 보스",
+          "newGameplay": "초원 기본 몬스터 10종은 서로 다른 전조·사거리·패링 가능 여부·특수공격을 가진다.",
+          "systemImpact": "비밀 숲에서 백색 송곳니 또는 고목의 심장 히든 보스가 확률 출현한다."
+        },
+        {
+          "milestone": "초원 런 보스 봉인",
+          "newGameplay": "금빛 큰뿔은 런 시작부터 존재하지만 봉인 상태로 전투에 참여하지 않는다.",
+          "systemImpact": " 일반/정예 전투 몬스터를 모두 처치하면 봉인이 해제되어 보스전을 시작한다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "전투 중 마을 귀환 차단",
+          "전투 중 마을 귀환 성공 시 풀회복",
+          "보스 동료 해금 저장",
+          "플레이어 + 보스 동료 최대 3명"
+        ],
+        "retryFlow": "15마리 파티 사냥, 3명 파티 구성, 보스 동료 해금 저장, 플레이어 + 보스 동료 최대 3명",
+        "riskPressure": "보스 첫 처치로 AI 동료 해금, 파티 조합 확장, 레벨/숙련/RoomCode 저장 및 회복",
+        "recoveryRules": "보스 동료는 리더 레벨 자동 동기화, 동료 단순 스킬셋"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 207310,
-      "lastMs": 207310,
+      "totalMs": 452488,
+      "lastMs": 245178,
       "lastError": null,
-      "updatedAt": "2026-10-07T19:19:44.505Z"
+      "updatedAt": "2026-10-07T19:23:49.685Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T19:16:17.192Z",
-  "updatedAt": "2026-10-07T19:19:44.506Z",
-  "lastSuccessfulModelCallAt": "2026-10-07T19:19:44.505Z",
+  "updatedAt": "2026-10-07T19:23:49.686Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T19:23:49.685Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
