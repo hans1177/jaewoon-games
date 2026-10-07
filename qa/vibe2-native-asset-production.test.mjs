@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
-import {assetProductionGuidance,buildAllGameDynamicLibraryBindingPlan,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceGlb} from '../tools/vibe2-asset-production-plan.mjs';
+import {assetProductionGuidance,buildAllGameDynamicLibraryBindingPlan,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb} from '../tools/vibe2-asset-production-plan.mjs';
 import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate,buildInternalAssetSourceUsageContract} from '../tools/vibe2-source-worker.mjs';
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
@@ -411,6 +411,56 @@ test('source GLB inventory uses real binary structure and leaves absent morphs o
   assert.equal(plan.sourceGlbReconstruction[0].sourceHash,source.sourceHash);
   const guidance=assetProductionGuidance(plan);
   for(const term of ['BASIC GLB TO DETAILED ASSET','IMAGE-TO-ASSET CREATION','BASIC MAP TO DETAILED WORLD'])assert.ok(guidance.includes(term));
+});
+
+test('3D character creature and boss master assets require a structurally complete GLB',()=>{
+  const spider=evaluateCrossPlatform3dMasterGlb({
+    family:'CREATURE',role:'BOSS',
+    source:{path:'assets/roblox/world-ghosts/native/spider/spider.glb'}
+  });
+  assert.equal(spider.required,true);
+  assert.equal(spider.pass,true);
+  assert.equal(spider.status,'MASTER_GLB_STATIC_QA_PASS');
+  assert.ok(spider.inspection.inventory.meshCount>0);
+  assert.ok(spider.inspection.inventory.materials.length>0);
+  assert.ok(spider.inspection.inventory.skins.length>0);
+  assert.ok(spider.inspection.inventory.animations.length>0);
+  assert.ok(spider.inspection.inventory.primitives.every(row=>row.hasNormals&&row.hasUv));
+  assert.ok(spider.inspection.inventory.primitives.some(row=>row.hasJointWeights));
+
+  const missing=evaluateCrossPlatform3dMasterGlb({family:'CREATURE',role:'ENEMY',source:{path:'../outside.glb'}});
+  assert.equal(missing.pass,false);
+  assert.ok(missing.blockers.length>0);
+
+  const prop=evaluateCrossPlatform3dMasterGlb({family:'PROP',source:{path:'assets/roblox/world-ghosts/native/spider/spider.glb'}});
+  assert.equal(prop.required,false);
+  assert.equal(prop.pass,true);
+});
+
+test('actor DCC recipe without GLB cannot satisfy the 3D master contract',()=>{
+  const plan=buildVibeAssetProductionPlan({
+    target:'roblox',
+    task:{
+      gameId:'master-glb-required',
+      goal:'보스 3D 메시와 모션을 제작',
+      assetAuthoring:{recipes:[{
+        id:'boss-fbx-only',assetId:'boss-fbx-only',family:'CREATURE',license:'project-original',
+        executor:'BLENDER_PYTHON',types:['boss'],targetPlatforms:['ROBLOX'],
+        script:'assets/roblox/demo/build-boss.py',
+        outputs:['assets/roblox/demo/native/boss/boss.fbx','assets/roblox/demo/native/boss/evidence.json','assets/roblox/demo/native/boss/preview.png'],
+        evidenceJson:'assets/roblox/demo/native/boss/evidence.json',
+        preview:'assets/roblox/demo/native/boss/preview.png',
+        editableSource:'assets/roblox/demo/build-boss.py',
+        runMode:'VERIFY_ONLY'
+      }]}
+    },
+    manifest:{assets:[]},presetCatalog:{presets:[]}
+  });
+  assert.equal(plan.nativeAuthoringExecution.dcc.crossPlatform3dMasterGlbRequired,true);
+  assert.ok(plan.nativeAuthoringExecution.dcc.crossPlatform3dMasterGlbRequiredTypes.includes('boss'));
+  assert.ok(plan.nativeAuthoringExecution.dcc.uncoveredTypes.includes('boss'));
+  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes.some(row=>row.id==='boss-fbx-only'),false);
+  assert.notEqual(plan.nativeAuthoringExecution.dcc.executionStatus,'READY_FOR_EXISTING_AUTHORING_EXECUTOR');
 });
 
 test('customization and detailed style instructions reach the existing asset work order input',()=>{
