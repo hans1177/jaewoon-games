@@ -2792,6 +2792,48 @@ export const STUDIO_ASSET_FAMILY_OUTPUTS=Object.freeze({
   PROP:Object.freeze(['WORLD_MODEL','INTERACTION_VARIANT','INVENTORY_ICON_WHEN_ITEM','CRAFTING_ICON_WHEN_CRAFTABLE','DROP_MODEL_WHEN_COLLECTIBLE','COLLISION_PROXY','LOD0','LOD1','LOD2'])
 });
 
+export const STUDIO_GLTF_ACTOR_ROLE_PROFILES=Object.freeze({
+  PLAYER:Object.freeze({families:Object.freeze(['CHARACTER']),requirements:Object.freeze(['HERO_READABLE_SILHOUETTE','FULL_LOCOMOTION','COMBAT_OR_INTERACTION_SET','HIT_DEATH_OR_DOWNED','EQUIPMENT_SOCKET_MAP','MOBILE_READABILITY'])}),
+  CIVILIAN_NPC:Object.freeze({families:Object.freeze(['CHARACTER']),requirements:Object.freeze(['IDLE_VARIATION','WALK','LOOK_GESTURE','INTERACTION_POSE','ROLE_OUTFIT_OR_PROP_SOCKET'])}),
+  QUEST_NPC:Object.freeze({families:Object.freeze(['CHARACTER']),requirements:Object.freeze(['IDLE_VARIATION','WALK','DIALOGUE_GESTURE','QUEST_INTERACTION_POSE','FACIAL_OR_HEAD_REACTION_WHEN_SUPPORTED'])}),
+  MERCHANT_NPC:Object.freeze({families:Object.freeze(['CHARACTER']),requirements:Object.freeze(['IDLE_VARIATION','WALK','SHOP_GESTURE','ITEM_OR_COUNTER_INTERACTION','ROLE_OUTFIT_OR_PROP_SOCKET'])}),
+  CRAFTER_NPC:Object.freeze({families:Object.freeze(['CHARACTER']),requirements:Object.freeze(['IDLE_VARIATION','WALK','WORK_LOOP','TOOL_SOCKET','INTERACTION_GESTURE'])}),
+  TRAINER_NPC:Object.freeze({families:Object.freeze(['CHARACTER']),requirements:Object.freeze(['IDLE_VARIATION','WALK','TEACHING_GESTURE','DEMO_ACTION','WEAPON_OR_TOOL_SOCKET_WHEN_APPLICABLE'])}),
+  GUARD_NPC:Object.freeze({families:Object.freeze(['CHARACTER']),requirements:Object.freeze(['IDLE_ALERT','PATROL_WALK','RUN','COMBAT_SET','HIT_DEATH','WEAPON_SOCKET'])}),
+  STORY_NPC:Object.freeze({families:Object.freeze(['CHARACTER']),requirements:Object.freeze(['DISTINCT_SILHOUETTE','IDLE_VARIATION','DIALOGUE_GESTURE','EMOTION_REACTION','CINEMATIC_BLOCKING_SUPPORT'])}),
+  COMPANION:Object.freeze({families:Object.freeze(['CHARACTER','CREATURE']),requirements:Object.freeze(['DISTINCT_SILHOUETTE','IDLE_VARIATION','FOLLOW_LOCOMOTION','COMBAT_OR_SUPPORT_SET','HIT_DOWNED_OR_DEATH','DIALOGUE_OR_EMOTE','REVIVE_OR_ASSIST_WHEN_APPLICABLE','EQUIPMENT_OR_ABILITY_SOCKET_MAP'])}),
+  SUMMONED_COMPANION:Object.freeze({families:Object.freeze(['CHARACTER','CREATURE']),requirements:Object.freeze(['SUMMON_INTRO','IDLE','FOLLOW_OR_HOVER','COMBAT_OR_SUPPORT_SET','DISMISS_OR_DEATH','OWNER_READABLE_IDENTITY'])}),
+  PET_COMPANION:Object.freeze({families:Object.freeze(['CREATURE']),requirements:Object.freeze(['IDLE_VARIATION','FOLLOW_LOCOMOTION','EMOTE_OR_REACTION','INTERACTION_POSE','COMBAT_SET_WHEN_APPLICABLE'])}),
+  MOUNT_COMPANION:Object.freeze({families:Object.freeze(['CREATURE']),requirements:Object.freeze(['IDLE','WALK','RUN','TURN','MOUNT_SOCKET','BOARD_RIDE_DISMOUNT_COMPATIBILITY','GROUND_CONTACT'])}),
+  WILDLIFE:Object.freeze({families:Object.freeze(['CREATURE']),requirements:Object.freeze(['SPECIES_SILHOUETTE','IDLE','LOCOMOTION','FLEE_OR_DEFEND','HIT_DEATH','ECOLOGY_READABILITY'])}),
+  STANDARD_ENEMY:Object.freeze({families:Object.freeze(['CHARACTER','CREATURE']),requirements:Object.freeze(['THREAT_SILHOUETTE','IDLE_ALERT','LOCOMOTION','ATTACK_SET','HIT_DEATH','TELEGRAPH_READABILITY'])}),
+  ELITE_ENEMY:Object.freeze({families:Object.freeze(['CHARACTER','CREATURE']),requirements:Object.freeze(['DISTINCT_FROM_STANDARD_BEYOND_SCALE_OR_COLOR','ELITE_ORNAMENT_OR_ANATOMY','IDLE_ALERT','LOCOMOTION','ATTACK_SET','SIGNATURE_ATTACK','HIT_DEATH','TELEGRAPH_READABILITY'])}),
+  MINI_BOSS:Object.freeze({families:Object.freeze(['CHARACTER','CREATURE']),requirements:Object.freeze(['DEDICATED_SILHOUETTE','INTRO','LOCOMOTION','MULTI_ATTACK_SET','SPECIAL_ATTACK','STUN_OR_BREAK_REACTION','DEATH_SEQUENCE','DEDICATED_VFX_AUDIO_BINDING_POINTS'])}),
+  STORY_BOSS:Object.freeze({families:Object.freeze(['CHARACTER','CREATURE']),requirements:Object.freeze(['DEDICATED_SILHOUETTE','INTRO','BASIC_ATTACK_SET_4','SPECIAL_ATTACK_SET_3','PHASE_CHANGE','ENRAGE','FAILED_ATTACK_RECOVERY','STUN','GUARD_BREAK','FINISHER','DEATH_SEQUENCE','DEDICATED_VFX_AUDIO_CAMERA_BINDING_POINTS'])}),
+  WORLD_BOSS:Object.freeze({families:Object.freeze(['CHARACTER','CREATURE']),requirements:Object.freeze(['COLOSSAL_OR_SIGNATURE_SILHOUETTE','INTRO','BASIC_ATTACK_SET_4','SPECIAL_ATTACK_SET_3','PHASE_CHANGE','ENRAGE','STUN_OR_BREAK','MULTIPLAYER_READABLE_TELEGRAPHS','DEATH_SEQUENCE','LOD_AND_DISTANCE_READABILITY'])}),
+  RAID_BOSS:Object.freeze({families:Object.freeze(['CHARACTER','CREATURE']),requirements:Object.freeze(['UNIQUE_SIGNATURE_FORM','INTRO','BASIC_ATTACK_SET_4','SPECIAL_ATTACK_SET_3','MULTI_PHASE','ENRAGE','STUN_OR_BREAK','GROUP_READABLE_TELEGRAPHS','FINISHER_OR_WIPE_PRESENTATION_BINDING','DEATH_SEQUENCE','LOD_AND_MOBILE_BUDGET'])})
+});
+
+export function createGltfActorRoleProfile({roles=[],family=''}={}){
+  const resolvedFamily=upper(family);
+  const requested=uniq(Array.isArray(roles)?roles:[roles]).map(upper);
+  const rows=requested.map(role=>({role,profile:STUDIO_GLTF_ACTOR_ROLE_PROFILES[role]||null}));
+  const unknown=rows.filter(row=>!row.profile).map(row=>row.role);
+  const incompatible=rows.filter(row=>row.profile&&resolvedFamily&&!row.profile.families.includes(resolvedFamily)).map(row=>row.role);
+  const requirements=uniq(rows.flatMap(row=>row.profile?.requirements||[]));
+  const bossRole=requested.some(role=>/BOSS$/.test(role));
+  const companionRole=requested.some(role=>/COMPANION/.test(role));
+  return Object.freeze({
+    roles:Object.freeze(requested),family:resolvedFamily||null,valid:requested.length>0&&!unknown.length&&!incompatible.length,
+    unknown:Object.freeze(unknown),incompatible:Object.freeze(incompatible),requirements:Object.freeze(requirements),
+    bossRole,companionRole,
+    bossScaledOnlyForbidden:bossRole,
+    bossColorOnlyForbidden:bossRole,
+    companionEnemyMotionBlindReuseForbidden:companionRole,
+    gameplayAuthority:false
+  });
+}
+
 export const STUDIO_GLTF_MASTER_ASSET_STANDARD=Object.freeze({
   version:1,
   status:'ACTIVE_EXECUTABLE_CONTRACT',
@@ -2812,6 +2854,10 @@ export const STUDIO_GLTF_MASTER_ASSET_STANDARD=Object.freeze({
   platformVariantMustPreserveMasterHash:true,
   directCrossPlatformFinalBinaryReuseForbidden:true,
   nativeRuntimeVerificationRequired:true,
+  actorRoleProfileRequired:true,
+  actorRoleProfiles:STUDIO_GLTF_ACTOR_ROLE_PROFILES,
+  bossNormalEnemyScaledOnlyForbidden:true,
+  companionEnemyMotionBlindReuseForbidden:true,
   gameplayAuthority:false
 });
 
@@ -2833,6 +2879,7 @@ export function evaluateGltfMasterAssetStandard({asset={},family='',platform='',
   const content=master.contentEvidence&&typeof master.contentEvidence==='object'?master.contentEvidence:{};
   const articulated=master.articulated!==false;
   const animated=master.animated!==false;
+  const actorRoleProfile=createGltfActorRoleProfile({roles:master.actorRoles||asset?.actorRoles||asset?.roles||[],family:resolvedFamily});
   const motionBinding=content.animationClips===true||Number(content.motionCount||0)>0
     ||master.compatibleMotionBinding===true||(Array.isArray(asset?.compatibleMotionSourceIds)&&asset.compatibleMotionSourceIds.length>0);
   const blockers=[];
@@ -2842,6 +2889,8 @@ export function evaluateGltfMasterAssetStandard({asset={},family='',platform='',
   if(!sourceRecipe||!/\.py$/i.test(sourceRecipe))blockers.push('GLB_MASTER_SOURCE_RECIPE_REQUIRED');
   if(!GLTF_MASTER_SHA256.test(sourceHash))blockers.push('GLB_MASTER_SOURCE_HASH_REQUIRED');
   if(!evidencePath||!previewPath)blockers.push('GLB_MASTER_EVIDENCE_REQUIRED');
+  if(!actorRoleProfile.roles.length)blockers.push('GLB_MASTER_ACTOR_ROLE_REQUIRED');
+  else if(!actorRoleProfile.valid)blockers.push('GLB_MASTER_ACTOR_ROLE_FAMILY_MISMATCH');
   if(content.mesh!==true)blockers.push('GLB_MASTER_MESH_REQUIRED');
   if(content.uv!==true)blockers.push('GLB_MASTER_UV_REQUIRED');
   if(content.materialSlots!==true&&content.materials!==true)blockers.push('GLB_MASTER_MATERIAL_REQUIRED');
@@ -2857,8 +2906,10 @@ export function evaluateGltfMasterAssetStandard({asset={},family='',platform='',
     platform:upper(platform)||null,master:Object.freeze({
       format:'GLB',path:masterPath||null,artifactHash:artifactHash||null,sourceRecipe:sourceRecipe||null,sourceHash:sourceHash||null,
       evidencePath:evidencePath||null,previewPath:previewPath||null,articulated,animated,motionBinding,
+      actorRoles:actorRoleProfile.roles,actorRoleProfile,
       contentEvidence:Object.freeze({...content}),platformVariantsRequireExactMasterHash:master.platformVariantsRequireExactMasterHash===true
     }),
+    actorRoleProfile,
     primitivePartActorPrototypeOnly:true,nativeRuntimeVerificationStillRequired:true,gameplayAuthority:false
   });
 }
@@ -2996,6 +3047,7 @@ export function createSurvivalWildlifeAssetProfile({species='BEAR',platform='ROB
     }),
     gltfMasterRequired:true,
     gltfMasterFormat:'GLB',
+    actorRoles:Object.freeze(['WILDLIFE']),
     productionVerified:false,
     runtimeVerificationRequired:true,
     exactThirdPartyAssetCopy:false
@@ -4619,6 +4671,7 @@ export function createCreatureSpeciesBlueprint({
     }),
     platform:upper(platform),complete:missing.length===0,missing:Object.freeze(missing),
     gltfMasterRequired:true,gltfMasterFormat:'GLB',
+    actorRoleProfiles:STUDIO_GLTF_ACTOR_ROLE_PROFILES,
     colorOnlySpeciesVariantAllowed:false,gameplayStatsAuthority:false
   });
 }
@@ -5468,6 +5521,7 @@ export function createStudioAssetUniversePlan({
     heatmap:gapFill.heatmap,
     gapFill,
     gltfMasterAssetStandard:STUDIO_GLTF_MASTER_ASSET_STANDARD,
+    gltfActorRoleProfiles:STUDIO_GLTF_ACTOR_ROLE_PROFILES,
     creatureUniverse:Object.freeze({
       bodyPlanCount:CREATURE_BODY_PLANS.length,
       speciesCount:CREATURE_SPECIES.length,
