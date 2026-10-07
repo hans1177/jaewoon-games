@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import {validateCompanyRecord,scanCompanyRecords,extractChangeRecordReferences,extractCentralPolicyReferences,extractCentralDocumentReferences,classifyCentralChangeRecordRetention,planCentralDocumentArchive,planCentralCurrentUsePrune,planCompanionCurrentUsePrune,evaluateCentralDocumentBudget,inspectCentralDocument,inspectCentralDocumentBudgets,discoverCentralArchiveCandidates} from '../tools/company-records-governance.mjs';
+import {validateCompanyRecord,scanCompanyRecords,extractChangeRecordReferences,extractCentralPolicyReferences,extractCentralDocumentReferences,classifyCentralChangeRecordRetention,planCentralDocumentArchive,planCentralCurrentUsePrune,planCompanionCurrentUsePrune,evaluateCentralDocumentBudget,inspectCentralDocument,inspectCentralDocumentBudgets,inspectCompanyAssetLibraryBudget,discoverCentralArchiveCandidates} from '../tools/company-records-governance.mjs';
 
 const root=process.cwd();
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
@@ -319,6 +319,23 @@ test('current central four documents stay inside absolute anti-bloat budgets',()
   assert.equal(report.documents.architecture.maxGrowthUtf8Bytes,8000);
   assert.equal(report.documents.logMap.maxGrowthUtf8Bytes,4000);
   assert.equal(report.documents.security.maxGrowthUtf8Bytes,4000);
+});
+
+test('company asset library has generous independent growth headroom',()=>{
+  const report=inspectCompanyAssetLibraryBudget();
+  assert.deepEqual(report.errors,[]);
+  assert.equal(report.sourcePath,'company-asset-library.json');
+  assert.equal(report.hardMaxUtf8Bytes,32*1024*1024);
+  assert.equal(report.maxGrowthUtf8Bytes,8*1024*1024);
+  assert.ok(report.utf8Bytes<report.hardMaxUtf8Bytes);
+  assert.ok(report.headroomUtf8Bytes>16*1024*1024);
+});
+
+test('company asset library exact-head baseline reports zero growth',()=>{
+  const report=inspectCompanyAssetLibraryBudget({baseRevision:'HEAD'});
+  assert.deepEqual(report.errors,[]);
+  assert.equal(report.growthUtf8Bytes,0);
+  assert.equal(report.baseUtf8Bytes,report.utf8Bytes);
 });
 
 test('central document growth report reads an exact git baseline',()=>{
