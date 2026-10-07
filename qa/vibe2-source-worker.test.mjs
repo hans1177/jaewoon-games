@@ -436,7 +436,7 @@ test('large non-full source request is compacted before local model generation w
   assert.equal(result.candidate.edits[0].path,relative);
 });
 
-test('source candidate prompt compaction never applies to asset-development lane',async t=>{
+test('oversized asset-development prompt compacts before model generation while retaining bounded asset observation',async t=>{
   const cwd=tempRoot();t.after(()=>fs.rmSync(cwd,{recursive:true,force:true}));
   const sourceRoot=path.join(cwd,'unity-games/demo');
   const relative='Assets/Scripts/GameCore.cs';
@@ -445,13 +445,16 @@ test('source candidate prompt compaction never applies to asset-development lane
   const prompt=[
     'You are the Vibe2 game source worker. Return JSON only.',
     'Engine: unity',
-    'Goal: preserve full asset-development context while editing the exact responsible source',
-    'OVERSIZED_ASSET_CONTEXT='+('asset quality context '.repeat(1800)),
+    'Goal: preserve asset-development evidence while editing the exact responsible source',
+    'OVERSIZED_ASSET_CONTEXT='+('asset quality context '.repeat(5000)),
+    '[IMAGE ASSET OBSERVATION BEGIN]',
+    'observedAsset=demo; '+('grounded visual observation '.repeat(5000)),
+    '[IMAGE ASSET OBSERVATION END]',
     'Allowed edit paths: '+relative,
     '=== FILE '+relative+' [EDITABLE] ===',
     source
   ].join('\n');
-  assert.ok(Buffer.byteLength(prompt,'utf8')>16000);
+  assert.ok(Buffer.byteLength(prompt,'utf8')>64000);
   const response=path.join(cwd,'answer.json');
   write(response,JSON.stringify({edits:[{path:relative,find:'public int State = 1;',replace:'public int State = 2;'}]}));
   const previousLane=process.env.VIBE2_EXECUTION_LANE;
@@ -461,8 +464,11 @@ test('source candidate prompt compaction never applies to asset-development lane
       prompt,target:'unity',sourceRoot,sourceRootRelative:'unity-games/demo',
       responsibleFiles:[relative],allowFullRewrite:false,responseFiles:[response]
     });
-    assert.equal(result.generation.requestPromptBytes,Buffer.byteLength(prompt,'utf8'));
-    assert.ok(result.generation.contextWindow>=24576);
+    assert.equal(result.generation.attempts,1);
+    assert.ok(result.generation.requestPromptBytes<64000);
+    assert.ok(result.generation.requestPromptBytes<result.generation.initialPromptBytes);
+    assert.equal(result.generation.contextWindow,32768);
+    assert.equal(result.candidate.edits[0].path,relative);
   }finally{
     if(previousLane===undefined)delete process.env.VIBE2_EXECUTION_LANE;
     else process.env.VIBE2_EXECUTION_LANE=previousLane;
@@ -4298,7 +4304,7 @@ test('zero-output model stalls use first-output deadline and stop after two empt
   assert.match(workerSource,/ZERO_OUTPUT_RETRY_TIMEOUT_MS=120000/);
   assert.match(workerSource,/SOURCE_CANDIDATE_INITIAL_PROMPT_BYTES=64000/);
   assert.match(workerSource,/SOURCE_CANDIDATE_COMPACT_CONTEXT_WINDOW=STANDARD_GAME_SOURCE_CONTEXT_WINDOW/);
-  assert.match(workerSource,/sourceCandidatePressureInitial=!allowFullRewrite[\s\S]*?&&!assetDevelopmentLane/);
+  assert.match(workerSource,/sourceCandidatePressureInitial=!allowFullRewrite[\s\S]*?&&!singleMotionWorkUnit/);\n  assert.doesNotMatch(workerSource,/sourceCandidatePressureInitial=!allowFullRewrite[\s\S]*?&&!assetDevelopmentLane/);\n  assert.match(workerSource,/VIBE2_INITIAL_OBSERVATION_COMPACTED=/);
   assert.match(workerSource,/Ollama 첫 출력 시간 초과/);
   assert.match(workerSource,/VIBE2_MODEL_FIRST_OUTPUT_MS=/);
   assert.match(workerSource,/VIBE2_MODEL_GENERATION_DURATION_MS=/);
