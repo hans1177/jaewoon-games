@@ -1546,11 +1546,11 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
 
   const mutableSections=[
     'assets',
-    'internalAssetCompositionContract',
-    'companyCommonSeedAssetIdeation',
-    'commonLibrarySystemDepthAudit',
-    'internalAssetLibraryAutomation',
     'characterNpcCustomization',
+    'commonLibrarySystemDepthAudit',
+    'companyCommonSeedAssetIdeation',
+    'internalAssetCompositionContract',
+    'internalAssetLibraryAutomation',
     'npcRoleProduction'
   ];
   const catalogAssetsChanged=syncRows.some(row=>row.changed===true);
