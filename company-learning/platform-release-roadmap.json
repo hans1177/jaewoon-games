@@ -19728,12 +19728,303 @@
             "PLATFORM_VARIANT_MASTER_LINEAGE_MISSING",
             "GLB_MASTER_SCALE_AXIS_REQUIRED",
             "GLB_MASTER_ATTACHMENT_BINDING_REQUIRED",
-            "GLB_MASTER_LOD_PLAN_REQUIRED"
+            "GLB_MASTER_LOD_PLAN_REQUIRED",
+            "GLB_MASTER_ACTOR_ROLE_REQUIRED"
           ],
           "runtimePromotionStillRequiresNativeConsumerEvidence": true,
           "gameplayAuthorityExpansionForbidden": true,
           "existingGraphicsProductionOnly": true,
-          "newPipelineWorkerQueueScheduler": false
+          "newPipelineWorkerQueueScheduler": false,
+          "actorRoleStandard": {
+            "version": 1,
+            "requiredForFinalActorAsset": true,
+            "roleIsPresentationAndAssetCompatibilityOnly": true,
+            "gameplayAiDamageQuestEconomySaveNetworkAuthority": false,
+            "roles": {
+              "PLAYER": {
+                "families": [
+                  "CHARACTER"
+                ],
+                "requirements": [
+                  "HERO_READABLE_SILHOUETTE",
+                  "FULL_LOCOMOTION",
+                  "COMBAT_OR_INTERACTION_SET",
+                  "HIT_DEATH_OR_DOWNED",
+                  "EQUIPMENT_SOCKET_MAP",
+                  "MOBILE_READABILITY"
+                ]
+              },
+              "CIVILIAN_NPC": {
+                "families": [
+                  "CHARACTER"
+                ],
+                "requirements": [
+                  "IDLE_VARIATION",
+                  "WALK",
+                  "LOOK_GESTURE",
+                  "INTERACTION_POSE",
+                  "ROLE_OUTFIT_OR_PROP_SOCKET"
+                ]
+              },
+              "QUEST_NPC": {
+                "families": [
+                  "CHARACTER"
+                ],
+                "requirements": [
+                  "IDLE_VARIATION",
+                  "WALK",
+                  "DIALOGUE_GESTURE",
+                  "QUEST_INTERACTION_POSE",
+                  "FACIAL_OR_HEAD_REACTION_WHEN_SUPPORTED"
+                ]
+              },
+              "MERCHANT_NPC": {
+                "families": [
+                  "CHARACTER"
+                ],
+                "requirements": [
+                  "IDLE_VARIATION",
+                  "WALK",
+                  "SHOP_GESTURE",
+                  "ITEM_OR_COUNTER_INTERACTION",
+                  "ROLE_OUTFIT_OR_PROP_SOCKET"
+                ]
+              },
+              "CRAFTER_NPC": {
+                "families": [
+                  "CHARACTER"
+                ],
+                "requirements": [
+                  "IDLE_VARIATION",
+                  "WALK",
+                  "WORK_LOOP",
+                  "TOOL_SOCKET",
+                  "INTERACTION_GESTURE"
+                ]
+              },
+              "TRAINER_NPC": {
+                "families": [
+                  "CHARACTER"
+                ],
+                "requirements": [
+                  "IDLE_VARIATION",
+                  "WALK",
+                  "TEACHING_GESTURE",
+                  "DEMO_ACTION",
+                  "WEAPON_OR_TOOL_SOCKET_WHEN_APPLICABLE"
+                ]
+              },
+              "GUARD_NPC": {
+                "families": [
+                  "CHARACTER"
+                ],
+                "requirements": [
+                  "IDLE_ALERT",
+                  "PATROL_WALK",
+                  "RUN",
+                  "COMBAT_SET",
+                  "HIT_DEATH",
+                  "WEAPON_SOCKET"
+                ]
+              },
+              "STORY_NPC": {
+                "families": [
+                  "CHARACTER"
+                ],
+                "requirements": [
+                  "DISTINCT_SILHOUETTE",
+                  "IDLE_VARIATION",
+                  "DIALOGUE_GESTURE",
+                  "EMOTION_REACTION",
+                  "CINEMATIC_BLOCKING_SUPPORT"
+                ]
+              },
+              "COMPANION": {
+                "families": [
+                  "CHARACTER",
+                  "CREATURE"
+                ],
+                "requirements": [
+                  "DISTINCT_SILHOUETTE",
+                  "IDLE_VARIATION",
+                  "FOLLOW_LOCOMOTION",
+                  "COMBAT_OR_SUPPORT_SET",
+                  "HIT_DOWNED_OR_DEATH",
+                  "DIALOGUE_OR_EMOTE",
+                  "REVIVE_OR_ASSIST_WHEN_APPLICABLE",
+                  "EQUIPMENT_OR_ABILITY_SOCKET_MAP"
+                ]
+              },
+              "SUMMONED_COMPANION": {
+                "families": [
+                  "CHARACTER",
+                  "CREATURE"
+                ],
+                "requirements": [
+                  "SUMMON_INTRO",
+                  "IDLE",
+                  "FOLLOW_OR_HOVER",
+                  "COMBAT_OR_SUPPORT_SET",
+                  "DISMISS_OR_DEATH",
+                  "OWNER_READABLE_IDENTITY"
+                ]
+              },
+              "PET_COMPANION": {
+                "families": [
+                  "CREATURE"
+                ],
+                "requirements": [
+                  "IDLE_VARIATION",
+                  "FOLLOW_LOCOMOTION",
+                  "EMOTE_OR_REACTION",
+                  "INTERACTION_POSE",
+                  "COMBAT_SET_WHEN_APPLICABLE"
+                ]
+              },
+              "MOUNT_COMPANION": {
+                "families": [
+                  "CREATURE"
+                ],
+                "requirements": [
+                  "IDLE",
+                  "WALK",
+                  "RUN",
+                  "TURN",
+                  "MOUNT_SOCKET",
+                  "BOARD_RIDE_DISMOUNT_COMPATIBILITY",
+                  "GROUND_CONTACT"
+                ]
+              },
+              "WILDLIFE": {
+                "families": [
+                  "CREATURE"
+                ],
+                "requirements": [
+                  "SPECIES_SILHOUETTE",
+                  "IDLE",
+                  "LOCOMOTION",
+                  "FLEE_OR_DEFEND",
+                  "HIT_DEATH",
+                  "ECOLOGY_READABILITY"
+                ]
+              },
+              "STANDARD_ENEMY": {
+                "families": [
+                  "CHARACTER",
+                  "CREATURE"
+                ],
+                "requirements": [
+                  "THREAT_SILHOUETTE",
+                  "IDLE_ALERT",
+                  "LOCOMOTION",
+                  "ATTACK_SET",
+                  "HIT_DEATH",
+                  "TELEGRAPH_READABILITY"
+                ]
+              },
+              "ELITE_ENEMY": {
+                "families": [
+                  "CHARACTER",
+                  "CREATURE"
+                ],
+                "requirements": [
+                  "DISTINCT_FROM_STANDARD_BEYOND_SCALE_OR_COLOR",
+                  "ELITE_ORNAMENT_OR_ANATOMY",
+                  "IDLE_ALERT",
+                  "LOCOMOTION",
+                  "ATTACK_SET",
+                  "SIGNATURE_ATTACK",
+                  "HIT_DEATH",
+                  "TELEGRAPH_READABILITY"
+                ]
+              },
+              "MINI_BOSS": {
+                "families": [
+                  "CHARACTER",
+                  "CREATURE"
+                ],
+                "requirements": [
+                  "DEDICATED_SILHOUETTE",
+                  "INTRO",
+                  "LOCOMOTION",
+                  "MULTI_ATTACK_SET",
+                  "SPECIAL_ATTACK",
+                  "STUN_OR_BREAK_REACTION",
+                  "DEATH_SEQUENCE",
+                  "DEDICATED_VFX_AUDIO_BINDING_POINTS"
+                ]
+              },
+              "STORY_BOSS": {
+                "families": [
+                  "CHARACTER",
+                  "CREATURE"
+                ],
+                "requirements": [
+                  "DEDICATED_SILHOUETTE",
+                  "INTRO",
+                  "BASIC_ATTACK_SET_4",
+                  "SPECIAL_ATTACK_SET_3",
+                  "PHASE_CHANGE",
+                  "ENRAGE",
+                  "FAILED_ATTACK_RECOVERY",
+                  "STUN",
+                  "GUARD_BREAK",
+                  "FINISHER",
+                  "DEATH_SEQUENCE",
+                  "DEDICATED_VFX_AUDIO_CAMERA_BINDING_POINTS"
+                ]
+              },
+              "WORLD_BOSS": {
+                "families": [
+                  "CHARACTER",
+                  "CREATURE"
+                ],
+                "requirements": [
+                  "COLOSSAL_OR_SIGNATURE_SILHOUETTE",
+                  "INTRO",
+                  "BASIC_ATTACK_SET_4",
+                  "SPECIAL_ATTACK_SET_3",
+                  "PHASE_CHANGE",
+                  "ENRAGE",
+                  "STUN_OR_BREAK",
+                  "MULTI_PLAYER_READABLE_TELEGRAPHS",
+                  "DEATH_SEQUENCE",
+                  "LOD_AND_DISTANCE_READABILITY"
+                ]
+              },
+              "RAID_BOSS": {
+                "families": [
+                  "CHARACTER",
+                  "CREATURE"
+                ],
+                "requirements": [
+                  "UNIQUE_SIGNATURE_FORM",
+                  "INTRO",
+                  "BASIC_ATTACK_SET_4",
+                  "SPECIAL_ATTACK_SET_3",
+                  "MULTI_PHASE",
+                  "ENRAGE",
+                  "STUN_OR_BREAK",
+                  "GROUP_READABLE_TELEGRAPHS",
+                  "FINISHER_OR_WIPE_PRESENTATION_BINDING",
+                  "DEATH_SEQUENCE",
+                  "LOD_AND_MOBILE_BUDGET"
+                ]
+              }
+            },
+            "bossRules": {
+              "normalEnemyScaledOnlyForbidden": true,
+              "colorOnlyBossVariantForbidden": true,
+              "dedicatedSignatureFormRequired": true,
+              "dedicatedAttackLanguageRequired": true,
+              "dedicatedPhasePresentationRequired": true
+            },
+            "companionRules": {
+              "enemyMotionPackBlindReuseForbidden": true,
+              "socialOrSupportReadabilityRequired": true,
+              "ownerOrPartyIdentityReadable": true
+            }
+          }
         }
       },
       "composableBaseMaterialLibrary": {
