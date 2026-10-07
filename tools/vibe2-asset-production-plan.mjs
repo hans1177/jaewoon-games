@@ -379,9 +379,22 @@ export function evaluateCrossPlatform3dMasterGlb({repoRoot=process.cwd(),source=
   const primitives=Array.isArray(inv.primitives)?inv.primitives:[];
   const normalizedRole=clean(source?.role||resolvedRole).toUpperCase().replace(/[\\s-]+/g,'_');
   const explicitCharacterRole=resolvedFamily==='CHARACTER'&&normalizedRole&&!['CHARACTER','HUMANOID','ACTOR'].includes(normalizedRole);
+  const explicitCreatureRole=resolvedFamily==='CREATURE'&&normalizedRole&&!['CREATURE','MONSTER','ACTOR'].includes(normalizedRole);
   const roleMotionRequirement=explicitCharacterRole?createVibeNpcRoleMotionRequirement({role:normalizedRole}):null;
   const resolvedNpcRole=clean(roleMotionRequirement?.role).toUpperCase();
   const requiredRoleMotionClips=explicitCharacterRole?freezeList(VIBE_NPC_ROLE_MOTION_REQUIREMENTS.roleRequiredClips?.[resolvedNpcRole]||[]):freezeList([]);
+  const creatureRoleMotionClips=Object.freeze({
+    ENEMY:Object.freeze(['IDLE','LOCOMOTION','ATTACK','HIT_OR_STAGGER','DEATH']),
+    ELITE:Object.freeze(['IDLE','LOCOMOTION','ATTACK','SPECIAL_ATTACK','HIT_OR_STAGGER','DEATH']),
+    MINI_BOSS:Object.freeze(['IDLE','LOCOMOTION','ATTACK','SPECIAL_ATTACK','THREAT_OR_INTRO','HIT_OR_STAGGER','DEATH']),
+    BOSS:Object.freeze(['IDLE','LOCOMOTION','ATTACK','SPECIAL_ATTACK','THREAT_OR_INTRO','HIT_OR_STAGGER','DEATH']),
+    RAID_BOSS:Object.freeze(['IDLE','LOCOMOTION','ATTACK','SPECIAL_ATTACK','THREAT_OR_INTRO','HIT_OR_STAGGER','DEATH']),
+    PET:Object.freeze(['IDLE','LOCOMOTION','REACT','HIT_OR_STAGGER','DEATH']),
+    MOUNT:Object.freeze(['IDLE','LOCOMOTION','REACT','HIT_OR_STAGGER']),
+    SUMMON:Object.freeze(['IDLE','ACTION_OR_ATTACK','DEATH'])
+  });
+  const resolvedCreatureRole=explicitCreatureRole&&creatureRoleMotionClips[normalizedRole]?normalizedRole:null;
+  const requiredCreatureMotionClips=resolvedCreatureRole?freezeList(creatureRoleMotionClips[resolvedCreatureRole]):freezeList([]);
   const animationNames=(inv.animations||[]).map(row=>clean(row?.name).toUpperCase().replace(/[^A-Z0-9]+/g,'_')).filter(Boolean);
   const clipAliases=clip=>{
     const key=clean(clip).toUpperCase();
@@ -389,6 +402,11 @@ export function evaluateCrossPlatform3dMasterGlb({repoRoot=process.cwd(),source=
       JOG_OR_RUN:['JOG','RUN','MOVE'],LOOK_AROUND:['LOOK','SCAN'],HIT:['HIT','HURT','STAGGER','DAMAGE'],DEATH:['DEATH','DEAD','DIE'],
       DEATH_SEQUENCE:['DEATH','DEAD','DIE'],ATTACK_LIGHT:['ATTACK','LIGHT_ATTACK'],ATTACK_HEAVY:['ATTACK','HEAVY_ATTACK'],ATTACK_ANTICIPATION:['ATTACK'],
       BASIC_ATTACK_SET:['ATTACK','BASIC_ATTACK'],SPECIAL_ATTACK_SET:['SPECIAL','SKILL','CAST','ABILITY'],GUARD_BREAK:['BREAK','STAGGER','GUARD_BREAK'],
+      IDLE:['IDLE'],LOCOMOTION:['WALK','RUN','JOG','MOVE','STRAFE','CLIMB','FLY','SWIM','HOP','CRAWL','LOCOMOTION'],
+      ATTACK:['ATTACK','BITE','CLAW','SWIPE','STRIKE','PUNCH','SLASH','CHARGE'],
+      SPECIAL_ATTACK:['SPECIAL','SKILL','CAST','ABILITY','POUNCE','WEB_CAST','BREATH','SLAM','SPIT'],
+      THREAT_OR_INTRO:['THREAT','INTRO','ROAR','ENRAGE','ALERT'],HIT_OR_STAGGER:['HIT','HURT','STAGGER','DAMAGE','FLINCH'],
+      REACT:['REACT','LOOK','EMOTE','INTERACT','HAPPY'],ACTION_OR_ATTACK:['ACTION','ATTACK','CAST','ABILITY','BITE','STRIKE'],
       WORK_IDLE:['IDLE','WORK'],WORK_LOOP:['WORK'],FARM_WORK_LOOP:['WORK','FARM'],TRADE_INTERACTION:['TRADE','INTERACT'],PRESENT_ITEM:['PRESENT','INTERACT'],
       REWARD_HANDOFF:['REWARD','INTERACT'],REACT_TO_PLAYER:['REACT','INTERACT'],REVIVE_HELP:['REVIVE','HELP'],COMBAT_READY:['COMBAT','READY','IDLE'],
       FAILED_ATTACK_RECOVERY:['RECOVERY','ATTACK'],RETURN_IDLE:['IDLE'],FACE_PLAYER:['TURN','INTERACT'],HEAD_GAZE:['LOOK','TURN']
@@ -396,6 +414,7 @@ export function evaluateCrossPlatform3dMasterGlb({repoRoot=process.cwd(),source=
     return unique([key,...(map[key]||[])]).map(value=>value.replace(/[^A-Z0-9]+/g,'_'));
   };
   const missingRoleMotionClips=requiredRoleMotionClips.filter(clip=>!clipAliases(clip).some(alias=>animationNames.some(name=>name===alias||name.includes(alias)||alias.includes(name))));
+  const missingCreatureRoleMotionClips=requiredCreatureMotionClips.filter(clip=>!clipAliases(clip).some(alias=>animationNames.some(name=>name===alias||name.includes(alias)||alias.includes(name))));
   const socketMatchers={
     HAND:[/(?:^|_)(?:RIGHT_)?HAND(?:_|$)/i,/(?:GRIP|WRIST)/i],BACK:[/(?:BACK|SPINE|CHEST)/i],HIP:[/(?:HIP|PELVIS|WAIST)/i],
     SHIELD:[/(?:SHIELD|OFFHAND|LEFT_HAND|HAND_L)/i],TOOL:[/(?:TOOL|WEAPON|GRIP|RIGHT_HAND|HAND_R)/i]
@@ -416,6 +435,7 @@ export function evaluateCrossPlatform3dMasterGlb({repoRoot=process.cwd(),source=
   if(primitives.some(row=>row.skinBound===true&&row.jointWeightDataValid!==true))blockers.push('MASTER_GLB_JOINT_WEIGHTS_REQUIRED');
   if(!(inv.animations||[]).length||Number(inv.invalidAnimationCount||0)>0||Number(inv.jointAnimationChannelCount||0)<=0||Number(inv.animatedJointCount||0)<=0)blockers.push('MASTER_GLB_ANIMATION_REQUIRED');
   if(explicitCharacterRole&&missingRoleMotionClips.length)blockers.push('MASTER_GLB_ROLE_MOTION_REQUIRED');
+  if(explicitCreatureRole&&missingCreatureRoleMotionClips.length)blockers.push('MASTER_GLB_CREATURE_ROLE_MOTION_REQUIRED');
   if(explicitCharacterRole&&missingAttachmentSocketBasis.length)blockers.push('MASTER_GLB_ATTACHMENT_SOCKET_BASIS_REQUIRED');
   const uniqueBlockers=unique(blockers);
   return freeze({
@@ -423,7 +443,8 @@ export function evaluateCrossPlatform3dMasterGlb({repoRoot=process.cwd(),source=
     status:uniqueBlockers.length?'MASTER_GLB_REPAIR_REQUIRED':'MASTER_GLB_STATIC_QA_PASS',
     family:resolvedFamily||null,role:resolvedRole||null,path:inspection?.path||null,sourceHash:inspection?.sourceHash||null,
     blockers:freezeList(uniqueBlockers),inspection,
-    roleMotionContractRequired:explicitCharacterRole,roleMotionRole:resolvedNpcRole||null,requiredRoleMotionClips,missingRoleMotionClips:freezeList(missingRoleMotionClips),
+    roleMotionContractRequired:explicitCharacterRole||explicitCreatureRole,roleMotionRole:resolvedNpcRole||resolvedCreatureRole||null,requiredRoleMotionClips,missingRoleMotionClips:freezeList(missingRoleMotionClips),
+    creatureRoleMotionRequired:explicitCreatureRole,requiredCreatureMotionClips,missingCreatureRoleMotionClips:freezeList(missingCreatureRoleMotionClips),
     attachmentSocketBasisRequired:explicitCharacterRole,attachmentSocketCoverage:freeze(attachmentSocketCoverage),missingAttachmentSocketBasis:freezeList(missingAttachmentSocketBasis),
     platformNativeBindingStillRequired:true,runtimeVerificationStillRequired:true,
     primitivePartAssemblyPrototypeOnly:true
@@ -1728,12 +1749,14 @@ function normalizeNativeDccAuthoringRecipe(recipe={},asset={},target='',required
   const targetMatch=!targets.length||targets.includes(targetName)||targets.includes(targetName.toUpperCase().toLowerCase());
   const safePath=value=>Boolean(value&&!path.isAbsolute(value)&&!value.split('/').includes('..'));
   const family=clean(recipe?.family||asset?.family||asset?.category).toUpperCase()||nativeDccFamilyForTypes(types);
+  const inferredActorRole=types.find(type=>isCrossPlatform3dActorType(type))||'';
+  const role=clean(recipe?.role||asset?.role||asset?.subfamily||inferredActorRole).toUpperCase().replace(/[\\s-]+/g,'_')||null;
   const masterGlbRequired=['CHARACTER','CREATURE'].includes(family)||types.some(isCrossPlatform3dActorType);
   const masterGlbOutput=outputs.find(value=>/\.glb$/i.test(value))||null;
   const safe=executor==='BLENDER_PYTHON'&&/\.py$/i.test(script)&&safePath(script)&&outputs.length>0&&outputs.every(safePath)&&(!evidenceJson||safePath(evidenceJson))&&(!preview||safePath(preview))&&(!masterGlbRequired||Boolean(masterGlbOutput));
   const license=clean(recipe?.license||asset?.license)||null;
   return freeze({
-    id,assetId:clean(asset?.id)||clean(recipe?.assetId)||null,family:family||null,license,executor,script,types:freezeList(types),targetPlatforms:freezeList(targets),args,outputs,evidenceJson,preview,editableSource,
+    id,assetId:clean(asset?.id)||clean(recipe?.assetId)||null,family:family||null,role,license,executor,script,types:freezeList(types),targetPlatforms:freezeList(targets),args,outputs,evidenceJson,preview,editableSource,
     typeMatch,targetMatch,safe,runMode:clean(recipe?.runMode||'VERIFY_ONLY').toUpperCase(),
     masterGlbRequired,masterGlbOutput,masterGlbFormat:masterGlbRequired?'GLB_2_0':null,
     primitivePartAssemblyPrototypeOnly:masterGlbRequired,
