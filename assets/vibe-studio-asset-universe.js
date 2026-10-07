@@ -3,6 +3,17 @@
 // Unifies asset semantics, compatibility, coverage, identity and 24H gap-fill planning.
 // It never promotes prepared assets without native runtime verification.
 
+import {
+  VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,
+  createVibeBodyIdentity,
+  createVibeAppearanceIdentity,
+  createVibeGaitIdentity,
+  createVibeCharacterCustomizationRecipe,
+  createVibeNpcCustomizationPopulation,
+  createVibePopulationPhysicalDiversity,
+  createVibePhysicalDiversityGate
+} from './vibe-character-identity-director.js';
+
 const text=value=>String(value??'').trim();
 const upper=value=>text(value).toUpperCase();
 const uniq=values=>[...new Set((values||[]).map(text).filter(Boolean))];
@@ -2792,6 +2803,117 @@ export const STUDIO_ASSET_FAMILY_OUTPUTS=Object.freeze({
   PROP:Object.freeze(['WORLD_MODEL','INTERACTION_VARIANT','INVENTORY_ICON_WHEN_ITEM','CRAFTING_ICON_WHEN_CRAFTABLE','DROP_MODEL_WHEN_COLLECTIBLE','COLLISION_PROXY','LOD0','LOD1','LOD2'])
 });
 
+export const STUDIO_GLTF_NPC_MORPHOLOGY_STANDARD=Object.freeze({
+  version:1,
+  status:'ACTIVE_EXECUTABLE_CONTRACT',
+  sourceContract:'assets/vibe-character-identity-director.js#VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT',
+  appliesToFamily:'CHARACTER',
+  appliesToRoles:Object.freeze([
+    'PLAYER','CIVILIAN_NPC','QUEST_NPC','MERCHANT_NPC','CRAFTER_NPC','TRAINER_NPC','GUARD_NPC','STORY_NPC',
+    'COMPANION','SUMMONED_COMPANION','STANDARD_ENEMY','ELITE_ENEMY','MINI_BOSS','STORY_BOSS','WORLD_BOSS','RAID_BOSS'
+  ]),
+  physicalIdentityAxes:Object.freeze([
+    'HEIGHT_CM_PRESENTATION','WEIGHT_KG_PRESENTATION','VISUAL_MASS','BODY_ARCHETYPE','SHOULDER_WIDTH','TORSO_LENGTH',
+    'TORSO_DEPTH','PELVIS_WIDTH','ARM_LENGTH','LEG_LENGTH','HAND_FOOT_SCALE','HEAD_BODY_RATIO','POSTURE','ASYMMETRY'
+  ]),
+  appearanceAxes:Object.freeze([
+    'HEAD_BASE','FACE_WIDTH','FACE_LENGTH','FOREHEAD','BROW_HEIGHT','BROW_ANGLE','EYE_SPACING','EYE_SIZE','EYE_TILT',
+    'NOSE_BRIDGE','NOSE_LENGTH','NOSE_WIDTH','CHEEKBONE','CHEEK_FULLNESS','MOUTH_WIDTH','LIP_VOLUME','JAW_WIDTH',
+    'JAW_DEPTH','CHIN_PROJECTION','EAR_SCALE','SKIN_TONE','SKIN_DETAIL','AGE_PRESENTATION','HAIR_STYLE','HAIR_TEXTURE',
+    'HAIR_COLOR','HAIR_HIGHLIGHT','HAIR_GRAYING','FACIAL_HAIR','SCAR_OR_MARK','ACCESSORY','OUTFIT_FIT_AND_WEAR'
+  ]),
+  motionIdentityAxes:Object.freeze([
+    'GAIT_CADENCE','STRIDE_LENGTH','FOOTFALL_MASS','VERTICAL_BOB','ARM_SWING','TORSO_COUNTER_MOTION','TURN_STYLE','START_STOP_WEIGHT'
+  ]),
+  productionRules:Object.freeze({
+    actualMeshOrBoneProportionVariationRequired:true,
+    wholeModelScaleOnlyForbidden:true,
+    colorOnlyIdentityForbidden:true,
+    bodyMassMayAffectPresentationButNotGameplayMass:true,
+    heightMayAffectVisualRigButNotAuthoritativeHitboxUnlessGameExplicitlyOwnsIt:true,
+    weightMayAffectMotionPresentationButNotDamageSpeedOrPhysicsAuthority:true,
+    clothingEquipmentMustRefitMorphology:true,
+    faceHairOutfitCombinationCloneSuppressionRequired:true,
+    nearbyNpcMinimumDistinctIdentityAxes:5,
+    backgroundNpcMayUseLodButMustKeepDistinctSilhouette:true,
+    heroCompanionBossGetsCloseupDetailPriority:true,
+    deterministicStableSeedRecipes:true
+  }),
+  populationQuality:Object.freeze({
+    physicalDiversityTargetPercent:80,
+    colorOnlyDuplicateForbidden:true,
+    sameHeadHairOutfitCombinationReuseLimitPerLocalCrowd:1,
+    roleRegionCultureOccupationMayBiasSelection:true,
+    runtimeCrowdReadabilityRequired:true
+  }),
+  protectedGameplay:Object.freeze(['COLLISION','HITBOX','MOVEMENT_SPEED','DAMAGE','COOLDOWN','SAVE_MEANING','PROGRESSION','ECONOMY','NETWORK_AUTHORITY']),
+  gameplayAuthority:false
+});
+
+export function createGltfNpcMorphologyProfile(character={},index=0){
+  const body=createVibeBodyIdentity(character,index);
+  const appearance=createVibeAppearanceIdentity(character,index);
+  const gait=createVibeGaitIdentity(character,index);
+  const customization=createVibeCharacterCustomizationRecipe(character,index);
+  return Object.freeze({
+    version:1,
+    character:text(character.name)||`npc-${index+1}`,
+    role:upper(character.role)||null,
+    species:upper(character.species||'HUMANOID'),
+    heightCm:body.heightCm,
+    weightKg:body.weightKg,
+    visualMass:body.visualMass,
+    frame:body.frame,
+    proportions:body.proportions,
+    posture:body.posture,
+    dominantSide:body.dominantSide,
+    face:appearance.face,
+    surface:appearance.surface,
+    individualMarks:appearance.individualMarks,
+    gait,
+    customization,
+    requiredDccEffects:Object.freeze([
+      'BONE_OR_MORPH_PROPORTION_VARIATION',
+      'CLOTHING_AND_EQUIPMENT_REFIT',
+      'FACE_HEAD_HAIR_IDENTITY_VARIATION',
+      'GAIT_AND_WEIGHT_PRESENTATION_VARIATION'
+    ]),
+    wholeModelScaleOnlyForbidden:true,
+    gameplayAuthority:false,
+    protectedGameplay:STUDIO_GLTF_NPC_MORPHOLOGY_STANDARD.protectedGameplay
+  });
+}
+
+export function createGltfNpcPopulationMorphologyPlan({count=32,seed='npc-population',roles=[],regions=[],species=[]}={}){
+  const population=createVibeNpcCustomizationPopulation({count,seed,roles,regions,species});
+  const characters=population.recipes.map((row,index)=>({
+    name:row.character,
+    role:row.role,
+    species:row.species,
+    heightCm:undefined,
+    weightKg:undefined,
+    frame:String(row.body?.archetype||'').toLowerCase(),
+    region:row.region
+  }));
+  const physical=createVibePopulationPhysicalDiversity(characters);
+  const gate=createVibePhysicalDiversityGate({characters});
+  return Object.freeze({
+    version:1,
+    seed:text(seed),
+    total:population.total,
+    unique:population.unique,
+    customizationDiversityPercent:population.diversityPercent,
+    physicalDiversityPercent:physical.score,
+    physicalCloneRatePercent:physical.cloneRate,
+    pass:population.diversityPercent>=80&&physical.pass&&gate.pass,
+    recipes:population.recipes,
+    physical,
+    physicalGate:gate,
+    minimumDistinctIdentityAxes:VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.npcPopulationRules.minimumDistinctIdentityAxesPerNearbyPair,
+    gameplayAuthority:false
+  });
+}
+
 export const STUDIO_GLTF_ACTOR_ROLE_PROFILES=Object.freeze({
   PLAYER:Object.freeze({families:Object.freeze(['CHARACTER']),requirements:Object.freeze(['HERO_READABLE_SILHOUETTE','FULL_LOCOMOTION','COMBAT_OR_INTERACTION_SET','HIT_DEATH_OR_DOWNED','EQUIPMENT_SOCKET_MAP','MOBILE_READABILITY'])}),
   CIVILIAN_NPC:Object.freeze({families:Object.freeze(['CHARACTER']),requirements:Object.freeze(['IDLE_VARIATION','WALK','LOOK_GESTURE','INTERACTION_POSE','ROLE_OUTFIT_OR_PROP_SOCKET'])}),
@@ -2856,6 +2978,7 @@ export const STUDIO_GLTF_MASTER_ASSET_STANDARD=Object.freeze({
   nativeRuntimeVerificationRequired:true,
   actorRoleProfileRequired:true,
   actorRoleProfiles:STUDIO_GLTF_ACTOR_ROLE_PROFILES,
+  npcMorphologyStandard:STUDIO_GLTF_NPC_MORPHOLOGY_STANDARD,
   bossNormalEnemyScaledOnlyForbidden:true,
   companionEnemyMotionBlindReuseForbidden:true,
   gameplayAuthority:false
@@ -2880,6 +3003,12 @@ export function evaluateGltfMasterAssetStandard({asset={},family='',platform='',
   const articulated=master.articulated!==false;
   const animated=master.animated!==false;
   const actorRoleProfile=createGltfActorRoleProfile({roles:master.actorRoles||asset?.actorRoles||asset?.roles||[],family:resolvedFamily});
+  const morphologyProfiles=Array.isArray(master.morphologyProfiles)?master.morphologyProfiles:Array.isArray(asset?.morphologyProfiles)?asset.morphologyProfiles:[];
+  const morphologyRequired=resolvedFamily==='CHARACTER';
+  const morphologyReady=!morphologyRequired||(
+    morphologyProfiles.length>0
+    &&morphologyProfiles.every(row=>Number.isFinite(Number(row?.heightCm))&&Number.isFinite(Number(row?.weightKg))&&text(row?.frame)&&row?.wholeModelScaleOnlyForbidden===true)
+  );
   const motionBinding=content.animationClips===true||Number(content.motionCount||0)>0
     ||master.compatibleMotionBinding===true||(Array.isArray(asset?.compatibleMotionSourceIds)&&asset.compatibleMotionSourceIds.length>0);
   const blockers=[];
@@ -2891,6 +3020,7 @@ export function evaluateGltfMasterAssetStandard({asset={},family='',platform='',
   if(!evidencePath||!previewPath)blockers.push('GLB_MASTER_EVIDENCE_REQUIRED');
   if(!actorRoleProfile.roles.length)blockers.push('GLB_MASTER_ACTOR_ROLE_REQUIRED');
   else if(!actorRoleProfile.valid)blockers.push('GLB_MASTER_ACTOR_ROLE_FAMILY_MISMATCH');
+  if(morphologyRequired&&!morphologyReady)blockers.push('GLB_MASTER_MORPHOLOGY_PROFILE_REQUIRED');
   if(content.mesh!==true)blockers.push('GLB_MASTER_MESH_REQUIRED');
   if(content.uv!==true)blockers.push('GLB_MASTER_UV_REQUIRED');
   if(content.materialSlots!==true&&content.materials!==true)blockers.push('GLB_MASTER_MATERIAL_REQUIRED');
@@ -2907,9 +3037,10 @@ export function evaluateGltfMasterAssetStandard({asset={},family='',platform='',
       format:'GLB',path:masterPath||null,artifactHash:artifactHash||null,sourceRecipe:sourceRecipe||null,sourceHash:sourceHash||null,
       evidencePath:evidencePath||null,previewPath:previewPath||null,articulated,animated,motionBinding,
       actorRoles:actorRoleProfile.roles,actorRoleProfile,
+      morphologyRequired,morphologyReady,morphologyProfiles:Object.freeze(morphologyProfiles.map(row=>Object.freeze({...row}))),
       contentEvidence:Object.freeze({...content}),platformVariantsRequireExactMasterHash:master.platformVariantsRequireExactMasterHash===true
     }),
-    actorRoleProfile,
+    actorRoleProfile,morphologyRequired,morphologyReady,
     primitivePartActorPrototypeOnly:true,nativeRuntimeVerificationStillRequired:true,gameplayAuthority:false
   });
 }
@@ -5522,6 +5653,7 @@ export function createStudioAssetUniversePlan({
     gapFill,
     gltfMasterAssetStandard:STUDIO_GLTF_MASTER_ASSET_STANDARD,
     gltfActorRoleProfiles:STUDIO_GLTF_ACTOR_ROLE_PROFILES,
+    gltfNpcMorphologyStandard:STUDIO_GLTF_NPC_MORPHOLOGY_STANDARD,
     creatureUniverse:Object.freeze({
       bodyPlanCount:CREATURE_BODY_PLANS.length,
       speciesCount:CREATURE_SPECIES.length,
