@@ -1,7 +1,7 @@
 {
   "version": 1,
   "authority": "PRIMARY_AI_AND_VIBE_JOINT",
-  "generatedAt": "2026-10-07T13:58:19.807Z",
+  "generatedAt": "2026-10-07T15:31:24.064Z",
   "decisions": [
     {
       "gameId": "ant-simulator",
@@ -19,6 +19,36 @@
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 64
+        },
+        "qa": {
+          "criticalRuntimeOrGateBlocker": true
+        },
+        "balance": {
+          "structuralCoreFailure": false
+        },
+        "graphicsAudio": {
+          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
+        }
+      },
+      "jointAuthority": "PRIMARY_AI_AND_VIBE",
+      "ownerApprovalGate": false
+    },
+    {
+      "gameId": "daechung-rpg",
+      "decision": "FOCUSED_REPAIR",
+      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "evidence": {
+        "planningGrowthMarketing": {
+          "packagePresent": true,
+          "joint": "AWAITING_VIBE"
+        },
+        "development": {
+          "activeTasks": 10,
+          "doneTasks": 0,
+          "failedTasks": 0,
+          "repeatedFailureSignal": 29
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": true
@@ -255,7 +285,7 @@
           "joint": "AWAITING_VIBE"
         },
         "development": {
-          "activeTasks": 5,
+          "activeTasks": 6,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 27
@@ -499,66 +529,6 @@
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 22
-        },
-        "qa": {
-          "criticalRuntimeOrGateBlocker": true
-        },
-        "balance": {
-          "structuralCoreFailure": false
-        },
-        "graphicsAudio": {
-          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
-        }
-      },
-      "jointAuthority": "PRIMARY_AI_AND_VIBE",
-      "ownerApprovalGate": false
-    },
-    {
-      "gameId": "daechung-rpg",
-      "decision": "FOCUSED_REPAIR",
-      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "evidence": {
-        "planningGrowthMarketing": {
-          "packagePresent": true,
-          "joint": "AWAITING_VIBE"
-        },
-        "development": {
-          "activeTasks": 5,
-          "doneTasks": 0,
-          "failedTasks": 0,
-          "repeatedFailureSignal": 28
-        },
-        "qa": {
-          "criticalRuntimeOrGateBlocker": true
-        },
-        "balance": {
-          "structuralCoreFailure": false
-        },
-        "graphicsAudio": {
-          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
-        }
-      },
-      "jointAuthority": "PRIMARY_AI_AND_VIBE",
-      "ownerApprovalGate": false
-    },
-    {
-      "gameId": "card-grid-duel",
-      "decision": "FOCUSED_REPAIR",
-      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "evidence": {
-        "planningGrowthMarketing": {
-          "packagePresent": false,
-          "state": "UNVERIFIED_NOT_NEGATIVE"
-        },
-        "development": {
-          "activeTasks": 1,
-          "doneTasks": 0,
-          "failedTasks": 0,
-          "repeatedFailureSignal": 53
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": true
