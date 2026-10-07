@@ -10,6 +10,7 @@ import {runInNewContext} from 'node:vm';
 import {EventEmitter} from 'node:events';
 import {createHash} from 'node:crypto';
 import {buildAllGameDynamicLibraryBindingPlan,buildAssetSupplyDecisionSummary} from '../tools/vibe2-asset-production-plan.mjs';
+import {validateDesignAuthoringContent,scoreDesignGateV2} from '../tools/company-design-gate-scoring-v2.mjs';
 
 const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
 const assertDesignSchema=runInNewContext(design.slice(design.indexOf('function assertSchemaValue('),design.indexOf('function normalizeSchemaValue('))+'\nassertSchemaValue');
@@ -300,14 +301,14 @@ test('seed scheduler prioritizes valid resumable checkpoints within the existing
 test('design library facts preserve compatibility and separate audit scores from runtime verification',async()=>{
   const source=design.slice(design.indexOf("const designAssetLibraryPath="),design.indexOf('const designLearningEvents='));
   const library={version:1,assets:[
-    {id:'web-character',family:'CHARACTER',platform:'WEB',targetPlatforms:['WEB'],license:'project-original',internalAuditScore:900},
-    {id:'reference-environment',family:'ENVIRONMENT',platform:'SHARED_REFERENCE',license:'project-original',referenceVisualAudit:{referenceUseOnly:true}},
+    {id:'web-character',family:'CHARACTER',role:'PLAYER',platform:'WEB',targetPlatforms:['WEB'],license:'project-original',internalAuditScore:900},
+    {id:'reference-environment',family:'ENVIRONMENT',role:'SCHOOL',platform:'SHARED_REFERENCE',license:'project-original',referenceVisualAudit:{referenceUseOnly:true}},
     {id:'blocked-creature',family:'CREATURE',platform:'WEB',license:'project-original',securityBlocked:true,internalAuditScore:1000,consumerGameIds:['g']}
   ]};
   const build=registry=>runInNewContext(source+'\ndesignAssetLibraryContext',{
     readJson:()=>registry,fs:{existsSync:()=>Boolean(registry),readFileSync:()=>JSON.stringify(registry)},createHash,
-    gameId:'g',seed:{DISTINCT_IDENTITY:'concept'},seedFlowAssetRequirements:['CHARACTER','ENVIRONMENT','CREATURE'].map(family=>({family})),
-    clean:value=>String(value??'').trim(),buildAllGameDynamicLibraryBindingPlan,buildAssetSupplyDecisionSummary
+    gameId:'g',seed:{DISTINCT_IDENTITY:'concept'},seedFlowAssetRequirements:[{family:'CHARACTER',role:'PLAYER'},{family:'ENVIRONMENT',role:'SCHOOL'},{family:'CREATURE',role:'GHOST'}],
+    clean:value=>String(value??'').trim(),uniq:values=>[...new Set(values.filter(Boolean))],buildAllGameDynamicLibraryBindingPlan,buildAssetSupplyDecisionSummary
   });
   const before=JSON.stringify(library),context=build(library);
   const web=context.platforms.WEB.candidates.find(row=>row.assetId==='web-character');
@@ -403,7 +404,8 @@ test('slice input keeps the owner original in a stable prefix and omits compatib
     clip:(value,n)=>{const s=typeof value==='string'?value:JSON.stringify(value);return s.slice(0,n);},
     DESIGN_AUTHORING_SLICES:[{id:'first',fields:['identity'],predict:1200},{id:'second',fields:['coreFun'],predict:1200}],
     designSliceSchema:fields=>({properties:Object.fromEntries(fields.map(field=>[field,{}]))}),repairStructureContract:fields=>fields,
-    designCheckpoint:{failedTask:'second',lastError:'OLLAMA_DESIGN_TIMEOUT 300000ms'},
+    designCheckpoint:{tasks:{},failedTask:'second',lastError:'OLLAMA_DESIGN_TIMEOUT 300000ms'},
+    createHash,validateDesignAuthoringContent,persistDesignCheckpoint(){},
     runCheckpointTask:async(phase,id,work)=>work(),callDesignerModel:async(system,user,schema,options)=>{
       calls.push({user,options});return Object.fromEntries(Object.keys(schema.properties).map(field=>[field,'authored']));
     },repairDesignRequiredFields:value=>({value}),factPack:{},enforceOwnerPreservationDesign:value=>value,assertSchemaValue:assertDesignSchema,DESIGN:{},console:{log(){}}
@@ -415,6 +417,65 @@ test('slice input keeps the owner original in a stable prefix and omits compatib
   assert.ok(calls.every(x=>!x.user.includes('GAME_SEED_DESIGN_DEPTH=')));
   assert.equal(calls[1].options.recoverOversized,true);
   assert.ok(calls[1].user.includes('"identity":"authored"'),'later work keeps prior authored continuity');
+});
+
+// 실제 초안에서 확인된 잘못된 내용이 저장 성공만으로 통과하지 않게 한다.
+test('authoring rejects observed multiplayer, platform, placeholder and duplicated-plan defects',()=>{
+  const plan={label:'PLAN_A',coreLoopShift:'같은 추격 행동과 같은 판정',mapTopologyRegionRoles:'학교와 병원을 같은 방식으로 순환',enemyEcosystemCounterplay:'같은 공격과 같은 대응',progressionEconomy:'같은 보상과 같은 해금'};
+  const draft={multiplayerMode:'SINGLE',platformProfiles:{UNITY:{internalReleaseTarget:'OPEN_CLOUD_PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE',validationEvidence:'Exact Rojo artifact identity'}},webCanonicalDesign:{worldAndTraversal:'WEB_2_5D_HORROR_ESCAPE_ROOM'},designAlternatives:[plan,{...plan,label:'PLAN_B'}]};
+  const reasons=validateDesignAuthoringContent({design:draft,seed:{MULTIPLAYER_DESIGN_MODE:'COMPETITIVE'}});
+  for(const code of ['DESIGN_MULTIPLAYER_CONTRADICTION','DESIGN_PLATFORM_NATIVE_CONTRADICTION','DESIGN_PLACEHOLDER_CONTENT','DESIGN_ALTERNATIVES_DUPLICATED'])assert.ok(reasons.some(row=>row.code===code),code);
+  const scored=scoreDesignGateV2({seed:{MULTIPLAYER_DESIGN_MODE:'COMPETITIVE'},designRecord:{content:draft}});
+  for(const row of reasons)assert.ok(scored.hardFailures.includes(row.code));
+  assert.ok(reasons.every(row=>row.fields.length&&row.bypassAllowed===false));
+});
+
+test('one complete playthrough preserves state continuity and needs duration evidence',()=>{
+  const states=['배정된 인간과 몬스터가 각 출발 지점에서 준비한다','첫 추격을 마치고 감염으로 양쪽 인원 구성이 바뀌었다','남은 인간과 몬스터가 마지막 정화와 감염 기회를 겨룬다','승패 또는 제한시간 종료 결과를 확인하고 다음 라운드를 준비한다'];
+  const playthrough=['OPENING','DEVELOPMENT','RESOLUTION'].map((phase,index)=>({phase,entryState:states[index],playerChoice:'주변의 동료와 추격자의 위치를 보고 이동 경로를 고른다',actionAndResponse:'원본 도구 조건을 확인한 뒤 입력하고 서버 판정과 적의 대응을 확인한다',exitState:states[index+1],nextDecision:'바뀐 인원과 도구 상태를 보고 다음 경로 또는 재시도를 선택한다'}));
+  const selectedDesignPlan={label:'PLAN_A',playthrough,durationRationale:'기존 240초 제한은 보존한다. 첫 접촉, 인원 변화, 결판에 필요한 시간을 실제 실행에서 확인하고 여러 라운드의 세션 길이와 구분한다.'};
+  assert.deepEqual(validateDesignAuthoringContent({design:{selectedDesignPlan}}),[]);
+  const broken=structuredClone(selectedDesignPlan);broken.playthrough[1].entryState='앞 장면과 관계없는 새 라운드의 처음 상태로 돌아간다';
+  assert.ok(validateDesignAuthoringContent({design:{selectedDesignPlan:broken}}).some(row=>row.code==='DESIGN_PLAYTHROUGH_DISCONNECTED'));
+  delete broken.playthrough;
+  assert.ok(validateDesignAuthoringContent({design:{selectedDesignPlan:broken}}).some(row=>row.code==='DESIGN_PLAYTHROUGH_MISSING'));
+});
+
+test('role-grounded asset selection beats an unrelated higher score without granting runtime verification',()=>{
+  const registry={assets:[
+    {id:'bed',family:'MOTION',role:'BED_LIE_DOWN',platform:'ROBLOX',license:'project-original',internalAuditScore:999},
+    {id:'walk',family:'MOTION',role:'WALK',platform:'ROBLOX',license:'project-original',internalAuditScore:10}
+  ]};
+  const explicit=buildAssetSupplyDecisionSummary({gameId:'g',target:'ROBLOX',requirements:[{family:'MOTION',role:'WALK'}],registry});
+  assert.equal(explicit.nextActions[0].assetId,'walk');
+  assert.deepEqual([...explicit.nextActions[0].roleEvidence.matchedRoles],['walk']);
+  assert.equal(explicit.runtimeVerificationGranted,false);
+  const unknown=buildAssetSupplyDecisionSummary({gameId:'g',target:'ROBLOX',requirements:[{family:'MOTION'}],registry});
+  assert.equal(unknown.nextActions[0].action,'HOLD');
+  assert.equal(unknown.nextActions[0].reason,'ROLE_REQUIREMENT_UNRESOLVED');
+  const missing=buildAssetSupplyDecisionSummary({gameId:'g',target:'ROBLOX',requirements:[{family:'MOTION',role:'RUN'}],registry});
+  assert.equal(missing.nextActions[0].action,'AUTHOR');
+  const current=buildAssetSupplyDecisionSummary({gameId:'g',target:'ROBLOX',requirements:[{family:'MOTION'}],registry:{assets:[{...registry.assets[0],consumerGameIds:['g']} ]}});
+  assert.equal(current.nextActions[0].assetId,'bed','existing consumers remain reusable and quality work is not globally stopped');
+});
+
+test('a bad cached slice is repaired before downstream authoring and the valid result is reused',async()=>{
+  const source=design.slice(design.indexOf('async function authorDesignInCheckpointedSlices('),design.indexOf('function mergeDesignerDesign('));
+  const checkpoint={tasks:{'designer_draft_slices::mode':{multiplayerMode:'SINGLE'}}};
+  let calls=0;
+  const author=runInNewContext(source+'\nauthorDesignInCheckpointedSlices',{
+    seed:{MULTIPLAYER_DESIGN_MODE:'COMPETITIVE'},seedDesignDepthContext:{},createHash,validateDesignAuthoringContent,
+    clip:(value,n)=>JSON.stringify(value).slice(0,n),clean:value=>String(value),
+    DESIGN_AUTHORING_SLICES:[{id:'mode',fields:['multiplayerMode'],predict:900}],designSliceSchema:()=>({type:'object',required:['multiplayerMode'],properties:{multiplayerMode:{type:'string'}},additionalProperties:false}),
+    repairStructureContract:()=>[],designCheckpoint:checkpoint,persistDesignCheckpoint(){},
+    runCheckpointTask:async(phase,id,work)=>checkpoint.tasks[`${phase}::${id}`]??(checkpoint.tasks[`${phase}::${id}`]=await work()),
+    callDesignerModel:async(system,user)=>{calls++;assert.match(user,/DESIGN_MULTIPLAYER_CONTRADICTION/);return {multiplayerMode:'COMPETITIVE'};},
+    repairDesignRequiredFields:value=>({value}),factPack:{},enforceOwnerPreservationDesign:value=>value,assertSchemaValue:assertDesignSchema,DESIGN:{},console:{log(){}}
+  });
+  assert.equal((await author({phase:'designer_draft',system:'s',sharedContext:'c'})).multiplayerMode,'COMPETITIVE');
+  assert.equal((await author({phase:'designer_draft',system:'s',sharedContext:'c'})).multiplayerMode,'COMPETITIVE');
+  assert.equal(calls,1);
+  assert.equal(Object.keys(checkpoint.sliceRepairFeedback).length,0);
 });
 
 test('transport repair reuses previous drafts only when every original input still matches',()=>{
@@ -430,3 +491,4 @@ test('transport repair reuses previous drafts only when every original input sti
   assert.equal(Boolean(eligible({...checkpointInputContext,evidence:{librarySha:'changed'}})),false);
   assert.equal(Boolean(eligible({...checkpointInputContext,seed:{seedId:'s',newOwnerRequest:'changed'}})),false);
 });
+

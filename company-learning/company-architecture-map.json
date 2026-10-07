@@ -1,5 +1,5 @@
 {
-  "version": 328,
+  "version": 329,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3822,7 +3822,14 @@
       "learning": "tools/vibe2-learning-motor.mjs",
       "scheduler": ".github/workflows/company-seed-design-runtime.yml",
       "policyAuthority": false,
-      "semanticMirrorForbidden": true
+      "semanticMirrorForbidden": true,
+      "authoringIntegrity": {
+        "centralContract": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.design.continuousIntelligentDesignEvolution.detailedBlueprint.authoringIntegrity",
+        "writer": "tools/company-design-cycle.mjs::authorDesignInCheckpointedSlices",
+        "validator": "tools/company-design-gate-scoring-v2.mjs::validateDesignAuthoringContent",
+        "assetSupply": "tools/vibe2-asset-production-plan.mjs::buildAssetSupplyDecisionSummary",
+        "existingCheckpointAndScorerOnly": true
+      }
     },
     "unityWebDevelopmentLane": {
       "centralContract": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.unityWebDevelopmentLane",

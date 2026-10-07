@@ -860,16 +860,34 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
   const assets=Array.isArray(registry?.assets)?registry.assets:[];
   const requiredFamilies=requiredAssetFamilies({request,requirements});
   const requiredFamilySet=new Set(requiredFamilies);
+  // 역할 근거를 먼저 비교한다. 내부 점수는 역할이 맞는 후보 사이의 추천 순서만 정한다.
+  const roleEvidenceById=new Map(),unresolvedFamilies=new Set();
+  const requestedRolesByFamily=new Map(requiredFamilies.map(family=>[family,unique((requirements||[]).filter(row=>clean(row?.family).toUpperCase()===family).flatMap(row=>[row.role,row.assetRole,row.systemRole,...(Array.isArray(row.roles)?row.roles:[])])).map(value=>value.toLowerCase().replace(/[\s-]+/g,'_'))]));
+  const requestText=clean(request).toLowerCase();
+  const roleEvidence=asset=>{
+    const family=clean(asset?.family||asset?.category).toUpperCase();
+    const roles=unique([asset.role,asset.subfamily,...(Array.isArray(asset.tags)?asset.tags:[])]).map(value=>value.toLowerCase().replace(/[\s-]+/g,'_'));
+    const required=requestedRolesByFamily.get(family)||[];
+    const explicit=required.filter(role=>roles.includes(role));
+    const inferred=roles.filter(role=>role.length>=3&&role!==family.toLowerCase()&&requestText.includes(role.replaceAll('_',' ')));
+    const matched=required.length?explicit:inferred;
+    const bound=currentAssetConsumerIds(asset).includes(id);
+    const evidence={requestedRoles:required,matchedRoles:matched,currentSourceBound:bound,verifiedRoleMatch:matched.length>0||bound};
+    roleEvidenceById.set(clean(asset.id),evidence);
+    return evidence;
+  };
   const currentAssets=[],currentAssetIds=new Set(),assetById=new Map(),currentFamilyCounts=new Map(),currentPrimaryByFamily=new Map(),bestReusableByFamily=new Map();
   let intendedOnlyCount=0;
   const compareReusable=(a,b)=>
-    Number(b?.internalAuditScore??b?.qualityScore??-1)-Number(a?.internalAuditScore??a?.qualityScore??-1)
+    (roleEvidenceById.get(clean(b?.id))?.matchedRoles.length||0)-(roleEvidenceById.get(clean(a?.id))?.matchedRoles.length||0)
+    ||Number(b?.internalAuditScore??b?.qualityScore??-1)-Number(a?.internalAuditScore??a?.qualityScore??-1)
     ||clean(a?.id).localeCompare(clean(b?.id));
   const betterReusable=(candidate,current)=>!current||compareReusable(candidate,current)<0;
   for(const asset of assets){
     const assetId=clean(asset?.id);
     if(!assetById.has(assetId))assetById.set(assetId,asset);
     const family=clean(asset?.family||asset?.category).toUpperCase();
+    const roleFit=roleEvidence(asset);
     const currentConsumerIds=currentAssetConsumerIds(asset);
     const current=currentConsumerIds.includes(id);
     if(current){
@@ -884,6 +902,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     }
     if((asset?.intendedConsumerGameIds||[]).map(clean).includes(id))intendedOnlyCount+=1;
     if(family&&requiredFamilySet.has(family)&&assetSupplyCandidateAllowed(asset,target)){
+      if(!roleFit.verifiedRoleMatch){if(!roleFit.requestedRoles.length||!clean(asset.role||asset.subfamily))unresolvedFamilies.add(family);continue;}
       const currentBest=bestReusableByFamily.get(family);
       if(betterReusable(asset,currentBest))bestReusableByFamily.set(family,asset);
     }
@@ -923,7 +942,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
           assetId:clean(asset?.id)||null,
           family,
           reason:mode==='USE_AS_IS'?'CURRENT_SOURCE_BOUND_READY':'CURRENT_SOURCE_BOUND_PLATFORM_OR_STYLE_ADAPT',
-          applicationMode:mode
+          applicationMode:mode,roleEvidence:roleEvidenceById.get(clean(asset?.id))
         });
       }
       continue;
@@ -936,10 +955,12 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
         assetId:clean(asset.id)||null,
         family,
         reason:mode==='USE_AS_IS'?'REUSABLE_LIBRARY_MATCH':'REUSABLE_LIBRARY_ADAPTATION',
-        applicationMode:mode
+        applicationMode:mode,roleEvidence:roleEvidenceById.get(clean(asset.id))
       });
     }else{
-      pushAction({action:'AUTHOR',assetId:null,family,reason:'CURRENT_GAME_DEMAND_NO_REUSABLE_ASSET'});
+      const roles=requestedRolesByFamily.get(family)||[];
+      const unresolved=unresolvedFamilies.has(family)||roles.length===0;
+      pushAction({action:unresolved?'HOLD':'AUTHOR',assetId:null,family,reason:unresolved?'ROLE_REQUIREMENT_UNRESOLVED':'CURRENT_GAME_DEMAND_NO_REUSABLE_ASSET',roleEvidence:{requestedRoles:roles,matchedRoles:[],verifiedRoleMatch:false}});
     }
   }
   const heldVolumeActions=(executionPlan?.nextVolumeActions||[]).filter(row=>
@@ -4617,3 +4638,4 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const result=buildVibeAssetProductionPlan({task,target:task.target,repoRoot});
   console.log(JSON.stringify({registrySync:result.registrySync,plan:result},null,2));
 }
+

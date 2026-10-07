@@ -1,5 +1,5 @@
 {
-  "version": 546,
+  "version": 547,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-07",
@@ -24557,7 +24557,43 @@
             "IMPLEMENTATION_SCOPE",
             "VALIDATION_PLAN"
           ],
-          "eachAlternativeMustCoverRequiredAxes": true
+          "eachAlternativeMustCoverRequiredAxes": true,
+          "authoringIntegrity": {
+            "version": 1,
+            "authority": "OWNER_DIRECTIVE_2026-10-08",
+            "status": "REQUIRES_REMOTE_QA_AND_RUNTIME_EVIDENCE",
+            "singleCommonOriginal": true,
+            "writer": "tools/company-design-cycle.mjs::authorDesignInCheckpointedSlices",
+            "validator": "tools/company-design-gate-scoring-v2.mjs::validateDesignAuthoringContent",
+            "required": [
+              "SHARED_RULE_ANCHORS_PER_SLICE",
+              "SLICE_CONTENT_VALIDATION_BEFORE_DOWNSTREAM_USE",
+              "OPENING_DEVELOPMENT_RESOLUTION_PLAYTHROUGH",
+              "EXACT_ADJACENT_SCENE_STATE_CONTINUITY",
+              "ROUND_AND_SESSION_DURATION_RATIONALE",
+              "STRATEGICALLY_DISTINCT_ALTERNATIVES",
+              "OWNER_MULTIPLAYER_INTENT_PRESERVED",
+              "NATIVE_PLATFORM_DEPLOYMENT_AND_VALIDATION",
+              "ROLE_GROUNDED_ASSET_SELECTION"
+            ],
+            "invalidContent": [
+              "PLACEHOLDER_PROSE",
+              "DUPLICATED_STRATEGIC_ALTERNATIVES",
+              "REPEATED_CONTENT_WITHOUT_ROLE_DIFFERENCE",
+              "PLATFORM_NATIVE_CONTRADICTION",
+              "OWNER_PLAY_MODE_CONTRADICTION"
+            ],
+            "repair": "EXISTING_SLICE_CHECKPOINT_AND_TARGETED_PRE_GATE_REPAIR",
+            "cachedSlicesRevalidated": true,
+            "changedRuleDependenciesInvalidateAffectedSlices": true,
+            "assetSupply": "tools/vibe2-asset-production-plan.mjs::buildAssetSupplyDecisionSummary",
+            "unknownRoleIsMissingAsset": false,
+            "auditScoreAloneProvesRoleFit": false,
+            "existingGameplayNumbersMayNotBeChangedByThisContract": true,
+            "externalModelRequired": false,
+            "newPipeline": false,
+            "runtimePassGrantedByDesignValidation": false
+          }
         },
         "antiMonotony": {
           "enabled": true,
