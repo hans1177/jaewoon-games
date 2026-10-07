@@ -100,11 +100,11 @@ const DOMAIN_PATTERNS=freeze({
   STATE_MACHINE:/state.?machine|state|phase|terminal|win|fail|softlock|goal.?state/i,
   COMBAT:/combat|attack|damage|weapon|skill|hit|enemy|boss/i,
   AI:/\bai\b|npc|opponent|pathfind|enemy.?intent|navigation|bot/i,
-  PROGRESSION:/progress|objective|quest|unlock|level|stage|wave|reward/i,
+  PROGRESSION:/progress|objective|quest|unlock|level|stage|wave|reward|mastery|discovery|build.?combination|파고들기|숙련|보상|발견|해금|조합/i,
   ECONOMY:/econom|currency|gold|coin|cost|price|shop|resource|reward/i,
   SAVE:/save|load|restore|persist|storage|checkpoint|migration|datastore/i,
   MOBILE_INPUT:/mobile|touch|pointer|swipe|drag|virtual.?stick|input/i,
-  UI_STATE:/\bui\b|hud|menu|panel|feedback|responsive/i,
+  UI_STATE:/\bui\b|hud|menu|panel|feedback|responsive|usability|quality.?of.?life|loadout|preset|loot.?filter|contextual.?shortcut|batch.?preview|메뉴|편의성|프리셋|일괄|바로가기|필터/i,
   DEBUGGING:/debug|failure|bug|repair|causal|responsibility|regression/i,
   RECOVERY:/recovery|recover|retry|requeue|bottleneck|stale|checkpoint|fallback|repair.?loop|resume.?exact/i,
   SECURITY:/security|malware|virus|attack|secret|token|credential|supply.?chain|prompt.?injection|exfiltrat|backdoor|privilege|tamper/i,
@@ -2735,3 +2735,4 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_IDLE_PRACTICE_REASON=${result.idlePracticeReason}`);
   console.log('VIBE2_GATE_WEAKENED=NO');
 }
+

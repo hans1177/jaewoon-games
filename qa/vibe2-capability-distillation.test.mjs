@@ -17,6 +17,18 @@ import {
   verifiedCapabilityGuidance
 } from '../tools/vibe2-capability-distillation.mjs';
 
+test('menu learning keeps source-checked reasoning and cannot promote an unreviewed plan or claim measured benefit',()=>{
+  const task={id:'menu-task',gameId:'demo',target:'web',goal:'reduce repeated equipment setup'};
+  const result={outcome:'PASS',codingMethod:{designBlueprintEvidence:{interfaceStatus:'STATIC_INTERFACE_PLAN_VALIDATED',interfaceHash:'plan-hash',tasks:[{patternId:'BUILD_PRESETS',friction:'repeated gear selection',adaptation:'reuse approved setup'}],runtimeVerified:true,playerBenefitMeasured:true}}};
+  const trace=buildObservableCodingTrace({task,result});
+  assert.equal(trace.decision.blueprint.runtimeVerified,false);assert.equal(trace.decision.blueprint.playerBenefitMeasured,false);
+  assert.equal(buildVerifiedCapabilityExperienceReview({task,result}),null);
+  const reviewed=buildVerifiedCapabilityExperienceReview({task,result,finalReviewPass:true,selected:true});
+  assert.ok(reviewed.reusablePatterns.some(row=>/UI_STATE:MENU_DESIGN:BUILD_PRESETS/.test(row)&&/measure user benefit again/.test(row)));
+  const failure=buildVerifiedCapabilityExperienceReview({task,result:{outcome:'FAIL',candidateFailure:{class:'INTERFACE_BLUEPRINT'},evidence:['source-generation-failure:INTERFACE_BLUEPRINT']}});
+  assert.ok(failure.avoidPatterns.some(row=>row.includes('INTERFACE_BLUEPRINT')));
+});
+
 const task={
   id:'task-capability-1',
   gameId:'bug-defense',
@@ -852,3 +864,4 @@ test('phase 4 strong generalization does not count a benchmark whose control lac
   assert.equal(record.capabilityLifecycle.unseenBenchmarkPassCount,0);
   assert.equal(record.capabilityLifecycle.strongGeneralizationVerified,false);
 });
+

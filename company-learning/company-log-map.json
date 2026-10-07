@@ -1,5 +1,5 @@
 {
-  "version": 182,
+  "version": 183,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3507,5 +3507,27 @@
     "gamePrimaryWorkBudgetAppliesTo": "ALL_GAME_PRIMARY_GAME_BUILD_UP_WORKERS_PRE_AND_POST_RELEASE",
     "modelCallTimeoutAndRetryUnchanged": true,
     "canonicalF0ThroughF9SequenceUnchanged": true
+  },
+  "spatialBlueprintEvidence": {
+    "required": [
+      "DESIGN_FINGERPRINT",
+      "DIMENSION_AND_UP_AXIS",
+      "REGIONS_OBJECTS_CONNECTIONS",
+      "EXACT_SOURCE_BINDINGS",
+      "STATIC_GEOMETRY_RESULT",
+      "EXACT_TARGET_RUNTIME_RESULT"
+    ],
+    "candidateManifest": [
+      "spatialBlueprintContract",
+      "spatialBlueprint",
+      "spatialBlueprintValidation",
+      "interfaceBlueprintContract",
+      "interfaceBlueprint",
+      "interfaceBlueprintValidation",
+      "codingMethod.designBlueprintEvidence"
+    ],
+    "staticPassIsRuntimePass": false,
+    "documentedReferenceIsVerifiedExperience": false,
+    "staticMenuRouteIsMeasuredUserBenefit": false
   }
 }

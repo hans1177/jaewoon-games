@@ -75,6 +75,9 @@ function capabilityPatterns(trace={}){
   if(execution.recoveryUsed===true)patterns.push('CAPABILITY:FAILURE_RECOVERY:RECOVERED_GENERATION');
   if(trace.verification?.causalReplayExecuted===true)patterns.push('CAPABILITY:ROOT_CAUSE_DEBUGGING:CAUSAL_REPLAY_VERIFIED');
   if(trace.verification?.fullRegressionPass===true)patterns.push('CAPABILITY:REGRESSION_REASONING:FULL_FAN_IN_BOUND');
+  if(decision.blueprint?.interfaceStatus==='STATIC_INTERFACE_PLAN_VALIDATED'){
+    for(const task of decision.blueprint.tasks||[])patterns.push(`UI_STATE:MENU_DESIGN:${task.patternId}: ${task.friction} -> ${task.adaptation}. Source-bound plan passed; measure user benefit again in the exact target runtime.`);
+  }
   patterns.push(...inferCapabilityDomains(trace).map(domain=>`CAPABILITY_DOMAIN:${domain}`));
   return unique(patterns).slice(0,16);
 }
@@ -115,6 +118,14 @@ export function buildObservableCodingTrace({task={},result={}}={}){
       goal:redactSensitive(task.goal||'',700)
     },
     decision:{
+      blueprint:{
+        interfaceStatus:clean(coding.designBlueprintEvidence?.interfaceStatus)||'NOT_REQUIRED',
+        spatialStatus:clean(coding.designBlueprintEvidence?.spatialStatus)||'NOT_REQUIRED',
+        interfaceHash:clean(coding.designBlueprintEvidence?.interfaceHash)||null,
+        spatialHash:clean(coding.designBlueprintEvidence?.spatialHash)||null,
+        tasks:(Array.isArray(coding.designBlueprintEvidence?.tasks)?coding.designBlueprintEvidence.tasks:[]).slice(0,4).map(row=>({patternId:redactSensitive(row?.patternId,80),friction:redactSensitive(row?.friction,160),adaptation:redactSensitive(row?.adaptation,160)})),
+        runtimeVerified:false,playerBenefitMeasured:false
+      },
       strategy:clean(coding.strategy)||null,
       responsibilityConfidence:clean(coding.responsibilityConfidence)||null,
       primaryTargets:safeArray(coding.primaryTargets,8),
@@ -930,3 +941,4 @@ export function verifiedCapabilityGuidance(retrieval={}){
   }
   return lines.join('\n');
 }
+
