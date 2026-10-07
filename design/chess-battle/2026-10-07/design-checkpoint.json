@@ -3,31 +3,16 @@
   "gameId": "chess-battle",
   "date": "2026-10-07",
   "seedId": "OWNER-ENROLL-CHESS-BATTLE-20260913",
-  "fingerprint": "53d9e82884b120bbecfa57070ac302b1c89a1d926f93252568bf85b2dc62f3c1",
+  "fingerprint": "e17526964104794f8abbebbd19fc556de5ee17cf4b8badb6fa0193208683c7e1",
   "policyDigest": "aad7bd8d6356c32ef9901c564bd28988a1baeaa71fef1cc4092f0bae1fadd6d4",
   "engineDigest": "b9210bc1b2af3c8698fcb315f81bb063b6d2e4e2e48175d5bd511a9fb8fb97fe",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
   "tasks": {},
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 0,
-      "failures": 12,
-      "timeouts": 11,
-      "jsonFailures": 1,
-      "totalMs": 1022189,
-      "lastMs": 62318,
-      "lastError": "OLLAMA_DESIGN_HTTP_500 {\"error\":\"prediction aborted, token repeat limit reached\"}",
-      "updatedAt": "2026-10-07T10:45:45.197Z"
-    }
-  },
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-07T10:27:56.723Z",
-  "updatedAt": "2026-10-07T10:45:45.205Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=OPTIONAL_EXTERNAL_AI_DISABLED local=OLLAMA_DESIGN_HTTP_500 {\"error\":\"prediction aborted, token repeat limit reached\"}"
+  "createdAt": "2026-10-07T11:04:56.318Z",
+  "updatedAt": "2026-10-07T11:04:56.347Z"
 }
