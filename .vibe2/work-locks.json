@@ -1,5 +1,39 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1immg8e",
+      "worker": "vibe2",
+      "taskId": "village-dungeons-roblox-second-gate-rebuild-v1",
+      "gameId": "village-dungeons",
+      "files": [
+        "roblox-games/village-dungeons/client/Game.client.luau",
+        "roblox-games/village-dungeons/shared/GameConfig.luau",
+        "roblox-games/village-dungeons/server/Game.server.luau",
+        "assets/roblox/world-ghosts/native/spider/spider.glb",
+        "assets/roblox/world-ghosts/native/spider/spider.png",
+        "assets/roblox/world-ghosts/native/spider/evidence.json",
+        "assets/generated/roblox/village-dungeons/background/asset.glb",
+        "assets/generated/roblox/village-dungeons/background/preview.png",
+        "assets/generated/roblox/village-dungeons/background/evidence.json",
+        "assets/generated/roblox/village-dungeons/item/asset.glb",
+        "assets/generated/roblox/village-dungeons/item/preview.png",
+        "assets/generated/roblox/village-dungeons/item/evidence.json",
+        "assets/generated/roblox/village-dungeons/prop/asset.glb",
+        "assets/generated/roblox/village-dungeons/prop/preview.png",
+        "assets/generated/roblox/village-dungeons/prop/evidence.json"
+      ],
+      "baseSha": "be6b77be052e960f9944e713b44d573e89fd9100",
+      "runId": "37573706549",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-07T05:46:10.244Z",
+      "expiresAt": "2026-10-07T06:31:10.244Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:village-dungeons-roblox-second-gate-rebuild-v1"
+      ]
+    }
+  ]
 }
