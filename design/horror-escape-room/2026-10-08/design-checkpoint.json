@@ -196,25 +196,63 @@
       "steamExpansionDecision": "게임 내부에서 인물과 몬스터의 역할 선호를 기반으로 한 AI 충원과 감염 전환 시스템을 확장",
       "multiplayerMode": "SINGLE",
       "multiplayerExpansionDecision": "SINGLE_MULTIPLAYER_MODE_EXPANSION_DECISION_NOT_APPLICABLE_OR_NOT_REQUESTED_OR_NOT_SUPPORTED_OR_NOT_RELEVANT_OR_NOT_NEEDED_OR_NOT_AVAILABLE_OR_NOT_SUPPORTED_OR_NOT_RELEVANT_OR_NOT_NEEDED_OR_NOT_AVAILABLE_OR_NOT_SUPPORTED_OR_NOT_RELEVANT_OR_NOT_NEEDED_OR_NOT_AVAILABLE_OR_NOT_SUPPORTED_OR_NOT_RELEVANT_OR_NOT_NEEDED_OR_NOT_AVAILABLE_OR_NOT_SUPPORTED_OR_NOT_RELEVANT_OR_NOT_NEEDED_OR_NOT_AVAILABLE_OR_NOT_SUPPORTED_OR_NOT_RELEVANT_OR_NOT_NEEDED_OR_NOT_AVAILABLE_OR_NOT_SUPPORTED_OR_NOT_RELEVANT_OR_NOT_N"
+    },
+    "designer_draft_slices::alternatives": {
+      "designAlternatives": [
+        {
+          "label": "PLAN_A",
+          "concept": "기존 디자이너의 원본 설계를 기반으로, 4대4 AI 충원, 감염 전환, 인간 정화, 확장형 인간 로스터 등 기존 시스템을 유지하며, 감염 공격과 정화의 실시간 변화를 강화한 플레이어 경험을 제공한다.",
+          "playerFantasy": "감염된 인간은 고유 도구·대시·정화로 생존/반격하며, 몬스터는 에너지를 소모하는 명시적 감염 공격으로 인간을 감염한다. 감염된 인간은 몬스터로 전환하고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격을 시작한다.",
+          "genreDirection": "공포 3D, 현실적인 인간 비율, 비정상적인 몬스터 체형, 8인 감염 추격전",
+          "coreLoopShift": "인간4/몬스터4 배정, 빈자리 AI 충원, 감염 공격, 정화 공격, 승패 판정",
+          "mapTopologyRegionRoles": "학교·폐병원·폐놀이공원 순환, 맵 이벤트",
+          "landmarksTraversal": "감염 전환, 인간 정화, 대시/몬스터 능력, 저장",
+          "enemyEcosystemCounterplay": "대시/몬스터 능력, 모바일 UI, 저장",
+          "bossSignatureMoments": "감염 전환, 인간 정화, 대시, 몬스터 능력, 저장",
+          "progressionEconomy": "인간 직업과 몬스터를 동일한 데이터 구조에 계속 추가하며, 각 캐릭터는 플레이 방식이 달라지게 확장한다",
+          "questStoryEventFlow": "감염 공격, 정화 공격, 대시, 몬스터 능력, 저장",
+          "failureRetryRecovery": "감염 전환, 정화, 대시, 몬스터 능력, 저장",
+          "platformAdaptation": "모바일 이동과 큰 상호작용 버튼, PC 키보드·게임패드 보조 입력을 사용한다",
+          "implementationScope": "기존 원본 설계 유지, 로블·유니티·웹의 구현 차이를 디자이너가 원본에 맞춰 설계한다",
+          "validationPlan": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract, Mobile input/UI contract, Save/rejoin contract when applicable, Multiplayer state-sync contract when applicable, Headless exact-artifact regression, Open Cloud private/restricted publish"
+        },
+        {
+          "label": "PLAN_B",
+          "concept": "기존 디자이너의 원본 설계를 기반으로, 4대4 AI 충원, 감염 전환, 인간 정화, 확장형 인간 로스터 등 기존 시스템을 유지하며, 감염 공격과 정화의 실시간 변화를 강화한 플레이어 경험을 제공한다.",
+          "playerFantasy": "감염된 인간은 고유 도구·대시·정화로 생존/반격하며, 몬스터는 에너지를 소모하는 명시적 감염 공격으로 인간을 감염한다. 감염된 인간은 몬스터로 전환하고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격을 시작한다.",
+          "genreDirection": "공포 3D, 현실적인 인간 비율, 비정상적인 몬스터 체형, 8인 감염 추격전",
+          "coreLoopShift": "인간4/몬스터4 배정, 빈자리 AI 충원, 감염 공격, 정화 공격, 승패 판정",
+          "mapTopologyRegionRoles": "학교·폐병원·폐놀이공원 순환, 맵 이벤트",
+          "landmarksTraversal": "감염 전환, 인간 정화, 대시/몬스터 능력, 저장",
+          "enemyEcosystemCounterplay": "대시/몬스터 능력, 모바일 UI, 저장",
+          "bossSignatureMoments": "감염 전환, 인간 정화, 대시, 몬스터 능력, 저장",
+          "progressionEconomy": "인간 직업과 몬스터를 동일한 데이터 구조에 계속 추가하며, 각 캐릭터는 플레이 방식이 달라지게 확장한다",
+          "questStoryEventFlow": "감염 공격, 정화 공격, 대시, 몬스터 능력, 저장",
+          "failureRetryRecovery": "감염 전환, 정화, 대시, 몬스터 능력, 저장",
+          "platformAdaptation": "모바일 이동과 큰 상호작용 버튼, PC 키보드·게임패드 보조 입력을 사용한다",
+          "implementationScope": "기존 원본 설계 유지, 로블·유니티·웹의 구현 차이를 디자이너가 원본에 맞춰 설계한다",
+          "validationPlan": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract, Mobile input/UI contract, Save/rejoin contract when applicable, Multiplayer state-sync contract when applicable, Headless exact-artifact regression, Open Cloud private/restricted publish"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1339005,
-      "lastMs": 109712,
+      "totalMs": 1467275,
+      "lastMs": 128270,
       "lastError": null,
-      "updatedAt": "2026-10-07T20:47:26.541Z"
+      "updatedAt": "2026-10-07T20:49:34.812Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T20:25:07.525Z",
-  "updatedAt": "2026-10-07T20:47:26.541Z",
+  "updatedAt": "2026-10-07T20:49:34.812Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -407,7 +445,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-07T20:47:26.541Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T20:49:34.812Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
