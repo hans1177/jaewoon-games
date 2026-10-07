@@ -4348,6 +4348,21 @@ test('asset library automation indexes audit domain seed and quality lookups ins
   assert.doesNotMatch(plannerSource,/maintenance\.nextQualityActions\.find\(action=>allInternalReuseCandidates\.some/);
 });
 
+test('consumer overlay checks ephemeral domain index before full domain classification',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const source=fs.readFileSync(path.resolve(here,'../assets/vibe-studio-asset-universe.js'),'utf8');
+  const start=source.indexOf('export function buildInternalAssetLibraryAutomationPlan');
+  const end=source.indexOf('export const INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT',start);
+  const plannerSource=source.slice(start,end);
+  const cacheLookup=plannerSource.indexOf('INTERNAL_ASSET_LIBRARY_PLAN_INDEX_CACHE.get(basePlan)');
+  const fullDomainLoop=plannerSource.indexOf('for(const asset of assets){');
+  const cacheWrite=plannerSource.indexOf('INTERNAL_ASSET_LIBRARY_PLAN_INDEX_CACHE.set(plan,candidatesByDomain)');
+  assert.ok(cacheLookup>=0);
+  assert.ok(fullDomainLoop>cacheLookup);
+  assert.ok(cacheWrite>fullDomainLoop);
+  assert.match(plannerSource,/executionOverlayReusedDomainIndex:true/);
+});
+
 test('library synchronization reuses the automation plan system depth audit',()=>{
   const assets=[
     {id:'prop-depth',family:'PROP',subfamily:'CONTAINER',role:'CONTAINER',companyCommonBase:true,catalogActive:true,license:'project-original'},
@@ -5189,14 +5204,20 @@ test('consumer overlay reuse matches a full execution recompute while preserving
   const basePlan=buildInternalAssetLibraryAutomationPlan({assets:staticAssets,consumerGames});
   const fullExecution=buildInternalAssetLibraryAutomationPlan({assets:dynamicAssets,consumerGames});
   const reusedExecution=buildInternalAssetLibraryAutomationPlan({assets:dynamicAssets,consumerGames,basePlan});
+  const detachedExecution=buildInternalAssetLibraryAutomationPlan({assets:dynamicAssets,consumerGames,basePlan:{...basePlan}});
 
   assert.equal(reusedExecution.executionOverlayReusedBasePlan,true);
+  assert.equal(reusedExecution.executionOverlayReusedDomainIndex,true);
+  assert.equal(detachedExecution.executionOverlayReusedBasePlan,undefined);
+  assert.equal(detachedExecution.executionOverlayReusedDomainIndex,undefined);
   assert.deepEqual(reusedExecution.nextQualityActions,fullExecution.nextQualityActions);
   assert.deepEqual(reusedExecution.nextVolumeActions,fullExecution.nextVolumeActions);
   assert.deepEqual(reusedExecution.maintenance,fullExecution.maintenance);
   assert.deepEqual(reusedExecution.autonomousNextAction,fullExecution.autonomousNextAction);
   assert.deepEqual(reusedExecution.domains,fullExecution.domains);
   assert.deepEqual(reusedExecution.uiSubsystems,fullExecution.uiSubsystems);
+  assert.deepEqual(detachedExecution.nextQualityActions,fullExecution.nextQualityActions);
+  assert.deepEqual(detachedExecution.nextVolumeActions,fullExecution.nextVolumeActions);
   assert.equal(reusedExecution.nextQualityActions[0].assetId,'prop-b');
   assert.equal(reusedExecution.nextQualityActions[0].consumerPriority,2);
 });
