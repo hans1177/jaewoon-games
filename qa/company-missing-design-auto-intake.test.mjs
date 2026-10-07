@@ -28,9 +28,18 @@ test('owner design reset stages every relative module before switching to the ru
   const switchIndex=workflow.indexOf('git checkout -B owner-all-games-design-reset-runtime');
   const resetCopyIndex=workflow.indexOf('cp tools/company-all-games-design-reset.mjs /tmp/company-all-games-design-reset.mjs');
   const contractCopyIndex=workflow.indexOf('cp tools/company-game-seed-contract.mjs /tmp/company-game-seed-contract.mjs');
+  const bootstrapCopyIndex=workflow.indexOf('cp tools/company-game-seed-bootstrap.mjs /tmp/company-game-seed-bootstrap.mjs');
+  const seedStateCopyIndex=workflow.indexOf('cp tools/game-seed-state.mjs /tmp/game-seed-state.mjs');
+  const profileCopyIndex=workflow.indexOf('cp tools/game-seed-platform-profile.mjs /tmp/game-seed-platform-profile.mjs');
+  const flowArchitectCopyIndex=workflow.indexOf('cp tools/company-vibe2-game-flow-architect.mjs /tmp/company-vibe2-game-flow-architect.mjs');
   assert.ok(resetCopyIndex>0&&resetCopyIndex<switchIndex);
   assert.ok(contractCopyIndex>resetCopyIndex&&contractCopyIndex<switchIndex);
+  assert.ok(bootstrapCopyIndex>contractCopyIndex&&bootstrapCopyIndex<switchIndex);
+  assert.ok(seedStateCopyIndex>bootstrapCopyIndex&&seedStateCopyIndex<switchIndex);
+  assert.ok(profileCopyIndex>seedStateCopyIndex&&profileCopyIndex<switchIndex);
+  assert.ok(flowArchitectCopyIndex>profileCopyIndex&&flowArchitectCopyIndex<switchIndex);
   assert.match(workflow,/- 'tools\/company-game-seed-contract\.mjs'/);
+  assert.doesNotMatch(workflow,/- 'tools\/company-all-games-design-reset\.mjs'/);
 });
 
 test('owner design reset fetches only the two refs required by the runtime handoff',()=>{
