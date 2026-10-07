@@ -2812,7 +2812,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-07T14:11:33.247Z",
+      "updatedAt": "2026-10-07T14:13:52.062Z",
       "robloxSourceCommit": "e492b08b78ba6acba24d58650adac583ec183339",
       "robloxSourceBootstrapPassedAt": "2026-10-07T14:02:09.971Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -3575,7 +3575,26 @@
         "authority": "roblox-open-cloud-pre-f9-validation-candidate"
       },
       "robloxRuntimeFoundationPassed": false,
-      "robloxRuntimeFoundationEvidence": null,
+      "robloxRuntimeFoundationEvidence": {
+        "version": 1,
+        "gameId": "horror-escape-room",
+        "sourceRevision": "e492b08b78ba6acba24d58650adac583ec183339",
+        "artifactIdentity": "sha256:403c118e9251e710b3013be4c6aa895f0cf2923cc7d9e34d7fd4209b5fd53947",
+        "artifactRunId": 37633353051,
+        "universeId": "10768961379",
+        "placeId": "130054603482321",
+        "candidateVersionNumber": 10,
+        "httpStatus": 429,
+        "failureStage": "CREATE",
+        "failureClass": "INFRASTRUCTURE_OR_EVIDENCE_ONLY",
+        "error": "ROBLOX_OPEN_CLOUD_ENGINE_CREATE_HTTP_429:{\"code\":\"RESOURCE_EXHAUSTED\",\"message\":\"Luau task creation rate limit exceeded. Retry after the indicated delay.\"}",
+        "externalCapacityDeferred": true,
+        "retryAfterSeconds": 1491,
+        "retryNotBefore": "2026-10-07T14:38:42.634Z",
+        "observedAt": "2026-10-07T14:13:52.062Z",
+        "workflowRunId": 37634646670,
+        "authority": "roblox-open-cloud-engine-probe-failure"
+      },
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxRuntimePassed": false,
@@ -3586,7 +3605,7 @@
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
-      "robloxMultiplayerQaPassed": false,
+      "robloxMultiplayerQaPassed": true,
       "robloxIndependentQaPassed": false,
       "robloxIndependentQaPassedAt": null,
       "robloxRegressionPassed": false,
@@ -3605,17 +3624,17 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE",
       "routingBlockers": [
-        "roblox-runtime-foundation-awaiting-observation"
+        "roblox-open-cloud-engine-probe-transient-retry"
       ],
       "robloxExactRevisionPassed": true,
       "robloxMultiplayerQaEvidence": {
         "version": 2,
         "gameId": "horror-escape-room",
-        "sourceRevision": "be6b77be052e960f9944e713b44d573e89fd9100",
-        "artifactIdentity": "sha256:565dfabc8acdccc6a22e28eafb53ff34ae354b297727187e9f9a8393e68a03f3",
-        "candidateVersionNumber": 9,
+        "sourceRevision": "e492b08b78ba6acba24d58650adac583ec183339",
+        "artifactIdentity": "sha256:403c118e9251e710b3013be4c6aa895f0cf2923cc7d9e34d7fd4209b5fd53947",
+        "candidateVersionNumber": 10,
         "passed": true,
         "codeContractPassed": true,
         "checks": {
@@ -3627,9 +3646,9 @@
         },
         "runtimeTwoClientExecutionRequired": false,
         "authority": "roblox-static-two-client-source-contract",
-        "verifiedAt": "2026-10-07T13:39:57.561Z"
+        "verifiedAt": "2026-10-07T14:13:52.062Z"
       },
-      "robloxMultiplayerQaPassedAt": "2026-10-07T08:40:55.655Z",
+      "robloxMultiplayerQaPassedAt": "2026-10-07T14:13:52.062Z",
       "robloxStudioRuntimeSession": {
         "version": 1,
         "sessionId": "36961339568:horror-escape-room:36961212185:36961212185",
@@ -46449,7 +46468,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-07T14:13:29.792Z",
+  "updatedAt": "2026-10-07T14:13:52.062Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
