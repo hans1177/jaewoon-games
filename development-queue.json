@@ -94,7 +94,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-07T14:05:05.629Z",
+      "updatedAt": "2026-10-07T14:10:57.344Z",
       "robloxSourceCommit": "bc6ca4bf24042fa809d7cba0ce918295cd8dd86b",
       "robloxSourceBootstrapPassedAt": "2026-10-07T13:52:13.540Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -1135,7 +1135,26 @@
         "authority": "roblox-open-cloud-pre-f9-validation-candidate"
       },
       "robloxRuntimeFoundationPassed": false,
-      "robloxRuntimeFoundationEvidence": null,
+      "robloxRuntimeFoundationEvidence": {
+        "version": 1,
+        "gameId": "daechung-rpg",
+        "sourceRevision": "bc6ca4bf24042fa809d7cba0ce918295cd8dd86b",
+        "artifactIdentity": "sha256:0c3b395e04d63ab0a16e61b4c01b1630c2ad9256f9a529618f8f424486d6f41d",
+        "artifactRunId": 37632390643,
+        "universeId": "10768961338",
+        "placeId": "79150944093879",
+        "candidateVersionNumber": 9,
+        "httpStatus": 429,
+        "failureStage": "CREATE",
+        "failureClass": "INFRASTRUCTURE_OR_EVIDENCE_ONLY",
+        "error": "ROBLOX_OPEN_CLOUD_ENGINE_CREATE_HTTP_429:{\"code\":\"RESOURCE_EXHAUSTED\",\"message\":\"Luau task creation rate limit exceeded. Retry after the indicated delay.\"}",
+        "externalCapacityDeferred": true,
+        "retryAfterSeconds": 1665,
+        "retryNotBefore": "2026-10-07T14:38:41.843Z",
+        "observedAt": "2026-10-07T14:10:57.344Z",
+        "workflowRunId": 37633755929,
+        "authority": "roblox-open-cloud-engine-probe-failure"
+      },
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxRuntimePassed": false,
@@ -1146,7 +1165,7 @@
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
-      "robloxMultiplayerQaPassed": false,
+      "robloxMultiplayerQaPassed": true,
       "robloxIndependentQaPassed": false,
       "robloxIndependentQaPassedAt": null,
       "robloxRegressionPassed": false,
@@ -1165,17 +1184,17 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE",
       "routingBlockers": [
-        "roblox-runtime-foundation-awaiting-observation"
+        "roblox-open-cloud-engine-probe-transient-retry"
       ],
       "robloxExactRevisionPassed": true,
       "robloxMultiplayerQaEvidence": {
         "version": 2,
         "gameId": "daechung-rpg",
-        "sourceRevision": "269d4a741562a4e6e1f93d1360952ab2bc6affb5",
-        "artifactIdentity": "sha256:5983948268b44253a704447a353f7fd639fec53ffadce396e7992b4f21dd1f2b",
-        "candidateVersionNumber": 8,
+        "sourceRevision": "bc6ca4bf24042fa809d7cba0ce918295cd8dd86b",
+        "artifactIdentity": "sha256:0c3b395e04d63ab0a16e61b4c01b1630c2ad9256f9a529618f8f424486d6f41d",
+        "candidateVersionNumber": 9,
         "passed": true,
         "codeContractPassed": true,
         "checks": {
@@ -1187,9 +1206,9 @@
         },
         "runtimeTwoClientExecutionRequired": false,
         "authority": "roblox-static-two-client-source-contract",
-        "verifiedAt": "2026-10-07T13:39:57.561Z"
+        "verifiedAt": "2026-10-07T14:10:57.344Z"
       },
-      "robloxMultiplayerQaPassedAt": "2026-10-07T08:40:55.655Z",
+      "robloxMultiplayerQaPassedAt": "2026-10-07T14:10:57.344Z",
       "robloxStudioRuntimeSession": {
         "version": 1,
         "sessionId": "36977432837:daechung-rpg:36958178395:36958178395",
@@ -45788,7 +45807,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-07T14:10:25.480Z",
+  "updatedAt": "2026-10-07T14:10:57.344Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
