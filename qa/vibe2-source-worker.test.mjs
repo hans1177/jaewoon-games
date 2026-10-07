@@ -429,13 +429,23 @@ test('large non-full source request is compacted before local model generation w
     responsibleFiles:[relative],allowFullRewrite:false,responseFiles:[response]
   });
   assert.equal(result.generation.attempts,1);
-  assert.ok(result.generation.requestPromptBytes<16000);
+  assert.ok(result.generation.requestPromptBytes<32000);
   assert.ok(result.generation.requestPromptBytes<result.generation.initialPromptBytes);
-  assert.equal(result.generation.contextWindow,12288);
+  assert.equal(result.generation.contextWindow,32768);
   assert.equal(result.candidate.edits.length,1);
   assert.equal(result.candidate.edits[0].path,relative);
 });
 
+test('Web and Roblox source generation share the raised prompt capacity without changing the worker flow',()=>{
+  const workerSource=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  assert.match(workerSource,/const STANDARD_GAME_SOURCE_CONTEXT_WINDOW=32768;/);
+  assert.match(workerSource,/const SOURCE_CANDIDATE_INITIAL_PROMPT_BYTES=32000;/);
+  assert.match(workerSource,/const FOCUSED_WEB_REPAIR_CONTEXT_WINDOW=STANDARD_GAME_SOURCE_CONTEXT_WINDOW;/);
+  assert.match(workerSource,/const JSON_FOCUSED_REPLACE_CONTEXT_WINDOW=STANDARD_GAME_SOURCE_CONTEXT_WINDOW;/);
+  assert.match(workerSource,/const ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW=STANDARD_GAME_SOURCE_CONTEXT_WINDOW;/);
+  assert.match(workerSource,/const JSON_FINAL_CONTEXT_WINDOW=STANDARD_GAME_SOURCE_CONTEXT_WINDOW;/);
+  assert.match(workerSource,/const JSON_FOCUSED_REPLACE_TIMEOUT_MS=DEFAULT_TIMEOUT_MS;/);
+});
 test('source candidate prompt compaction never applies to asset-development lane',async t=>{
   const cwd=tempRoot();t.after(()=>fs.rmSync(cwd,{recursive:true,force:true}));
   const sourceRoot=path.join(cwd,'unity-games/demo');
@@ -3904,6 +3914,9 @@ test('generation failure classification keeps causal retry reasons distinct',()=
   assert.equal(generationFailureClass(new Error('변경 없는 edit: index.html')),'NO_OP');
   assert.equal(generationFailureClass(new Error('Ollama 응답 시간 초과: 240000ms')),'TIMEOUT');
   assert.equal(generationFailureClass(new Error('SEMANTIC_DIFF_BUDGET_VIOLATION:UNRELATED_SYSTEM:ECONOMY')),'SEMANTIC_DIFF_BUDGET');
+  const dynamicAssetBindingError=new Error('ALL_GAME_DYNAMIC_ASSET_BINDING_REQUIRED:ALL_GAME_APPLICABLE_ASSET_FAMILY_NOT_BOUND:UI');
+  assert.equal(generationFailureClass(dynamicAssetBindingError),'GENERATED_ASSET_BINDING');
+  assert.equal(shouldRetryGenerationError(dynamicAssetBindingError),true);
   assert.equal(shouldRetryGenerationError(new Error('SEMANTIC_DIFF_BUDGET_VIOLATION:UNRELATED_SYSTEM:ECONOMY')),true);
   assert.equal(generationFailureClass(new Error('책임 파일 범위 밖 수정 금지: config.js')),'INVALID_PATH');
   assert.equal(generationFailureClass(new Error('잘못된 상대 경로:')),'INVALID_PATH');
