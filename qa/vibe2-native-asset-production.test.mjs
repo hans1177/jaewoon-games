@@ -1839,6 +1839,28 @@ test('usable same-game asset is applied before new authoring and weak regions de
   assert.match(prompt,/Random clutter, texture noise/);
 });
 
+test('same-game primitive actor cannot bypass GLB master authoring',()=>{
+  const plan=buildVibeAssetProductionPlan({
+    target:'roblox',
+    manifest:{assets:[{
+      id:'legacy-part-wolf',path:'roblox-games/legacy/assets/wolf.rbxmx',types:['enemy'],tags:['wolf','enemy'],
+      license:'project-original',platforms:['roblox'],sameGameExistingRoblox:true,sourceHash:'legacy-wolf',robloxAssetId:'555'
+    }]},
+    presetCatalog:{version:1,presets:[{id:'legacy',name:'Legacy',genre:'survival',keywords:['wolf'],actorAssets:['legacy-part-wolf'],effectAssets:[],toolCandidates:[],platformProfiles:{roblox:{},unity:{},webValidation:{}}}]},
+    task:{gameId:'legacy',goal:'wolf enemy 몬스터 외형을 실제 3D로 개선'}
+  });
+  const enemy=plan.decisions.find(row=>row.type==='enemy');
+  assert.ok(enemy);
+  assert.equal(enemy.applyFirst.enabled,false);
+  assert.ok(enemy.applyFirst.donorCandidates.some(row=>row.id==='legacy-part-wolf'));
+  const legacy=enemy.applyFirst.donorCandidates.find(row=>row.id==='legacy-part-wolf');
+  assert.equal(legacy.gltfMasterRequired,true);
+  assert.equal(legacy.gltfMasterPass,false);
+  assert.ok(legacy.gltfMasterBlockers.includes('GLB_MASTER_REQUIRED'));
+  assert.equal(plan.nativeAuthoringExecution.dcc.gltfMasterRequired,true);
+  assert.ok(plan.nativeAuthoringExecution.dcc.gltfMasterMissingTypes.includes('enemy'));
+});
+
 test('precision production continues from inspection through authoring and application',()=>{
   const asset={
     id:'hero-body',family:'CHARACTER',types:['character'],tags:['character'],
