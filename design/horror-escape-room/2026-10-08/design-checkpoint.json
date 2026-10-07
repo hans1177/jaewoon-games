@@ -190,25 +190,31 @@
         "audioIdentity": "감염 전환, 정화, 대시, 고유 능력 세트 추가",
         "gameplayFeedbackSync": "감염 공격, 정화 공격, 대시, 몬스터 능력, 저장"
       }
+    },
+    "designer_draft_slices::market-multiplayer": {
+      "marketTargetDirection": "게임 내부에서 인물과 몬스터의 역할 선호를 기반으로 한 AI 충원과 감염 전환 시스템을 확장",
+      "steamExpansionDecision": "게임 내부에서 인물과 몬스터의 역할 선호를 기반으로 한 AI 충원과 감염 전환 시스템을 확장",
+      "multiplayerMode": "SINGLE",
+      "multiplayerExpansionDecision": "SINGLE_MULTIPLAYER_MODE_EXPANSION_DECISION_NOT_APPLICABLE_OR_NOT_REQUESTED_OR_NOT_SUPPORTED_OR_NOT_RELEVANT_OR_NOT_NEEDED_OR_NOT_AVAILABLE_OR_NOT_SUPPORTED_OR_NOT_RELEVANT_OR_NOT_NEEDED_OR_NOT_AVAILABLE_OR_NOT_SUPPORTED_OR_NOT_RELEVANT_OR_NOT_NEEDED_OR_NOT_AVAILABLE_OR_NOT_SUPPORTED_OR_NOT_RELEVANT_OR_NOT_NEEDED_OR_NOT_AVAILABLE_OR_NOT_SUPPORTED_OR_NOT_RELEVANT_OR_NOT_NEEDED_OR_NOT_AVAILABLE_OR_NOT_SUPPORTED_OR_NOT_RELEVANT_OR_NOT_NEEDED_OR_NOT_AVAILABLE_OR_NOT_SUPPORTED_OR_NOT_RELEVANT_OR_NOT_N"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1229293,
-      "lastMs": 122969,
+      "totalMs": 1339005,
+      "lastMs": 109712,
       "lastError": null,
-      "updatedAt": "2026-10-07T20:45:36.828Z"
+      "updatedAt": "2026-10-07T20:47:26.541Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T20:25:07.525Z",
-  "updatedAt": "2026-10-07T20:45:36.829Z",
+  "updatedAt": "2026-10-07T20:47:26.541Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -401,7 +407,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-07T20:45:36.828Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T20:47:26.541Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
