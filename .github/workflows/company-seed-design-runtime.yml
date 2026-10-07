@@ -132,11 +132,40 @@ jobs:
           console.log(`OWNER_ACTIVE_DESIGN_RESET_IDS=${active.map(x=>x.gameId).join(',')}`);
           NODE
 
-      - name: Auto-enroll active games missing design into canonical GAME_SEED intake
+      - name: Auto-enroll and persist active GAME_SEED intake
         shell: bash
         run: |
           set -euo pipefail
-          node tools/company-all-games-design-reset.mjs --auto-missing-design-intake
+          git config user.name 'jaewoon-seed-design-intake'
+          git config user.email 'seed-design-intake@users.noreply.github.com'
+          persisted=0
+          for attempt in 1 2 3 4; do
+            echo "GAME_SEED_RUNTIME_PERSIST_ATTEMPT=$attempt/4"
+            git fetch origin "$COMPANY_RUNTIME_BRANCH"
+            git show "origin/$COMPANY_RUNTIME_BRANCH:game-seed-state.json" > /tmp/company-runtime-seed-state-before.json
+            cp /tmp/company-runtime-seed-state-before.json game-seed-state.json
+            node tools/company-all-games-design-reset.mjs --auto-missing-design-intake | tee /tmp/homepage-novel-grammar-intake.txt
+            if cmp -s /tmp/company-runtime-seed-state-before.json game-seed-state.json; then
+              persisted=1
+              echo 'HOMEPAGE_NOVEL_GRAMMAR_RUNTIME_PERSIST=NO_CHANGE'
+              break
+            fi
+            blob="$(git hash-object -w game-seed-state.json)"
+            runtime_index="/tmp/company-runtime-seed-index-$attempt"
+            rm -f "$runtime_index"
+            GIT_INDEX_FILE="$runtime_index" git read-tree "origin/$COMPANY_RUNTIME_BRANCH^{tree}"
+            GIT_INDEX_FILE="$runtime_index" git update-index --add --cacheinfo 100644 "$blob" game-seed-state.json
+            runtime_tree="$(GIT_INDEX_FILE="$runtime_index" git write-tree)"
+            runtime_parent="$(git rev-parse "origin/$COMPANY_RUNTIME_BRANCH")"
+            runtime_commit="$(printf '%s\n' 'runtime: persist homepage novel grammar intake' | git commit-tree "$runtime_tree" -p "$runtime_parent")"
+            if git push origin "$runtime_commit:refs/heads/$COMPANY_RUNTIME_BRANCH"; then
+              persisted=1
+              echo 'HOMEPAGE_NOVEL_GRAMMAR_RUNTIME_PERSIST=YES'
+              break
+            fi
+            sleep $((attempt * 2))
+          done
+          test "$persisted" = 1
           echo 'MISSING_DESIGN_AUTO_CREATE=CANONICAL_GAME_SEED_PIPELINE'
 
       - name: Validate shared worker policy log and architecture context
