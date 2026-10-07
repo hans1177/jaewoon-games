@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Canonical shared Roblox/homepage marketing thumbnail.
+  Game: line-defense
+  Source artwork: ../homepage-covers/line-defense.webp
+  Policy: company-learning/platform-release-roadmap.json#robloxHomepageThumbnailSyncContract
+  This wrapper intentionally reuses the existing 960x540 game-specific homepage cover.
+  It does not create independent Roblox-only art and does not alter gameplay, balance, save data,
+  publication identity, or runtime authority. The 1920x1080 viewBox supplies the canonical 16:9
+  upload surface while preserveAspectRatio keeps the source artwork composition intact.
+-->
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1920"
+     height="1080"
+     viewBox="0 0 1920 1080"
+     role="img"
+     aria-labelledby="title description">
+  <title id="title">CAT FRONTLINE · 골목 군단 대전</title>
+  <desc id="description">재화를 모아 유닛을 소환하고 상대 아지트를 부수는 모바일 라인 디펜스. 기존 동일 마케팅 커버를 Roblox와 홈페이지에서 함께 사용하는 canonical 래퍼.</desc>
+  <metadata>
+    gameId=line-defense;
+    authority=CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET;
+    source=../homepage-covers/line-defense.webp;
+    sourceKind=EXISTING_GAME_SPECIFIC_MARKETING_ARTWORK;
+    aspectRatio=16:9;
+    uploadRender=PNG_1920x1080;
+    independentRobloxArtwork=false;
+    gameplayMutation=false;
+    publicationTargetMutation=false;
+    generatedFor=ROBLOX_THUMBNAIL_PERSONALIZATION_AND_HOMEPAGE_CARD;
+  </metadata>
+  <rect x="0" y="0" width="1920" height="1080" fill="#111111"/>
+  <image href="../homepage-covers/line-defense.webp"
+         x="0"
+         y="0"
+         width="1920"
+         height="1080"
+         preserveAspectRatio="xMidYMid slice"/>
+</svg>
