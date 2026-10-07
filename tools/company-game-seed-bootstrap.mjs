@@ -316,7 +316,7 @@ function activeSeed(seed){
 }
 function learningNode(platform,category=''){
   const root=state.seedMaterialLearning||{};
-  const platformNode=root.platforms?.[platform]||root.byPlatform?.platform||{};
+  const platformNode=root.platforms?.[platform]||root.byPlatform?.[platform]||{};
   const categoryNode=platformNode.categories?.[category]||root.categories?.[category]||{};
   return {root,platformNode,categoryNode};
 }
@@ -538,7 +538,7 @@ function normalizeGameplaySketch(target,p,coreLoop,gameName){
     },
     threeSentenceTest:{
       whatGame:clean(threeRaw.whatGame)||`${gameName}은 ${coreLoop[0]||'핵심 행동'}을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ${target.category} 게임이다.`,
-      whatDifferent:clean(threeRaw.whatDifferent)||`대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다.`,
+      whatDifferent:clean(threeRaw.whatDifferent)||`대표 선택와 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다.`,
       whatGrowthUnlocks:clean(threeRaw.whatGrowthUnlocks)||'성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다.'
     },
     genreAdaptationRule:clean(identityRaw.genreAdaptationRule)||`${target.category}의 핵심 재미를 최우선으로 두고 RPG식 시스템을 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다.`
