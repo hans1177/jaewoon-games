@@ -1,3 +1,5 @@
+// 파일명: qa/company-design-pre-gate-resume.test.mjs
+// 임포트
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -5,8 +7,105 @@ import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {runInNewContext} from 'node:vm';
+import {EventEmitter} from 'node:events';
 
 const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
+
+// 내부 모델 시간 제한·준비·재개 회귀 검증
+test('local authoring owns a bounded five-minute budget independently of external timeout',async()=>{
+  const config=design.split('\n').filter(line=>/^const (?:modelCallTimeoutMs|localDesignerCallTimeoutMs)=/.test(line)).join('\n');
+  for(const [value,expected] of [[undefined,300000],['300000',300000],['900000',300000],['1',30000],['invalid',300000]]){
+    const budgets=runInNewContext(config+'\n({external:modelCallTimeoutMs,local:localDesignerCallTimeoutMs})',{process:{env:{COMPANY_MODEL_CALL_TIMEOUT_MS:'90000',COMPANY_LOCAL_DESIGN_CALL_TIMEOUT_MS:value}}});
+    assert.equal(budgets.external,90000);
+    assert.equal(budgets.local,expected);
+  }
+  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
+  const calls=[],stats=[];
+  const author=runInNewContext(source+'\ncallLocalDesignerModel',{
+    localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'local',
+    designerRoute:{id:'external'},designCheckpoint:{},modelCallStats:stats,console:{log(){}},
+    requestLocalDesignerRaw:async(prompt,options)=>{calls.push(options);return '{"identity":"4v4 infection"}';},
+    parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,assertSchemaValue(){},recordModelHealth(){},persistDesignCheckpoint(){}
+  });
+  for(const timeoutMs of [90000,120000])assert.equal((await author('system','user',{}, {timeoutMs})).identity,'4v4 infection');
+  assert.deepEqual(calls.map(row=>row.timeoutMs),[300000,300000]);
+  assert.deepEqual(stats.map(row=>row.timeoutMs),[300000,300000]);
+});
+
+test('local transport accepts a late completed response and rejects incomplete output without a false success',async()=>{
+  const source=design.slice(design.indexOf('async function requestLocalDesignerRaw('),design.indexOf('async function callLocalDesignerModel('));
+  for(const mode of ['complete','incomplete','timeout']){
+    let timer,delay,requestBody,destroyed=false;
+    const logs=[];
+    const request=runInNewContext(source+'\nrequestLocalDesignerRaw',{
+      localDesignerCallTimeoutMs:300000,localDesignerModel:'local',Buffer,
+      clean:value=>String(value??'').trim(),clip:value=>String(value),console:{log:value=>logs.push(value)},
+      setTimeout:(fn,ms)=>{timer=fn;delay=ms;return 1;},clearTimeout(){},
+      http:{request:(options,onResponse)=>{
+        assert.equal(options.hostname,'127.0.0.1');
+        const req=new EventEmitter();
+        req.destroy=()=>{req.destroyed=true;destroyed=true;};
+        req.end=body=>{
+          requestBody=JSON.parse(body);
+          queueMicrotask(()=>{
+            if(mode==='timeout'){timer();return;}
+            const res=new EventEmitter();res.statusCode=200;res.setEncoding=()=>{};onResponse(res);
+            res.emit('data',JSON.stringify({done:mode==='complete',response:'{"identity":"4v4 infection"}',load_duration:1000000,prompt_eval_count:800,prompt_eval_duration:95000000000,eval_count:1000,eval_duration:65000000000}));
+            res.emit('end');
+          });
+        };
+        return req;
+      }}
+    });
+    if(mode==='complete')assert.equal(await request('private design input'),'{"identity":"4v4 infection"}');
+    else await assert.rejects(request('private design input'),mode==='timeout'?/OLLAMA_DESIGN_TIMEOUT 300000ms/:/OLLAMA_DESIGN_INCOMPLETE_RESPONSE/);
+    assert.equal(delay,300000);assert.equal(destroyed,true);
+    assert.equal(requestBody.keep_alive,'10m');assert.equal(requestBody.think,false);
+    assert.equal(logs.some(row=>row.includes('private design input')),false);
+    assert.equal(logs.some(row=>row.includes('DESIGN_LOCAL_TIMING=')),mode==='complete');
+  }
+});
+
+test('workflow warms the same local context before declaring authoring ready and fails closed',async()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  const start=workflow.indexOf('      - name: Prepare Vibe local design fallback');
+  const end=workflow.indexOf('      - name: Run seed-backed DESIGN_ONLY pipeline',start);
+  const step=workflow.slice(start,end);
+  const script=step.match(/<<'NODE'\n([\s\S]*?)\n          NODE/)[1].replace(/^          /gm,'');
+  assert.ok(step.indexOf('DESIGN_LOCAL_WARMUP=READY')<step.indexOf("echo 'ready=true'"));
+  assert.match(workflow,/COMPANY_LOCAL_DESIGN_CALL_TIMEOUT_MS: '300000'/);
+  for(const scenario of ['ready','http','incomplete','error','timeout']){
+    const logs=[];
+    const run=runInNewContext('(async()=>{'+script+'})',{
+      process:{env:{COMPANY_VIBE_LOCAL_MODEL:'local'}},console:{log:value=>logs.push(value)},
+      AbortSignal:{timeout:ms=>{assert.equal(ms,120000);return 'warmup-budget';}},
+      fetch:async(url,options)=>{
+        assert.equal(url,'http://127.0.0.1:11434/api/generate');
+        const body=JSON.parse(options.body);
+        assert.equal(body.model,'local');assert.equal(body.prompt,'');assert.equal(body.options.num_ctx,8192);assert.equal(body.options.num_predict,0);
+        if(scenario==='timeout')throw new Error('warmup timeout');
+        return {ok:scenario!=='http',status:503,json:async()=>({done:scenario!=='incomplete',error:scenario==='error'?'model missing':undefined})};
+      }
+    });
+    if(scenario==='ready')await run();else await assert.rejects(run(),/DESIGN_LOCAL_WARMUP|warmup timeout/);
+    assert.equal(logs.length,scenario==='ready'?1:0);
+  }
+});
+
+test('a local timeout preserves finished slices and resumes only the failed slice',async()=>{
+  const source=design.slice(design.indexOf('async function runCheckpointTask('),design.indexOf('function isParallelPressure('));
+  const checkpoint={tasks:{'designer_draft_slices::identity-core':{identity:'4v4 infection'}}};
+  let saves=0,calls=0;
+  const run=runInNewContext(source+'\nrunCheckpointTask',{designCheckpoint:checkpoint,persistDesignCheckpoint:()=>saves++,console:{log(){}},clean:String});
+  assert.equal((await run('designer_draft_slices','identity-core',()=>{throw new Error('must not replay');})).identity,'4v4 infection');
+  await assert.rejects(run('designer_draft_slices','systems-progression',async()=>{calls++;throw new Error('OLLAMA_DESIGN_TIMEOUT 300000ms');}),/OLLAMA_DESIGN_TIMEOUT/);
+  assert.equal(checkpoint.failedTask,'systems-progression');
+  assert.equal(Object.keys(checkpoint.tasks).length,1);
+  await run('designer_draft_slices','systems-progression',async()=>{calls++;return {progression:'preserved'};});
+  assert.equal(calls,2);assert.equal(saves,2);assert.equal(checkpoint.failedTask,null);
+  assert.equal(checkpoint.tasks['designer_draft_slices::identity-core'].identity,'4v4 infection');
+  assert.match(design,/81b77ec5e350f8737109235df27ddb3a375a99cf53bfce58e356fcdea285920b/);
+});
 
 test('PRE_GATE_BLOCKED resume regenerates only targeted repair checkpoints',()=>{
   assert.match(design,/const priorCheckpointStatus=clean\(designCheckpoint\?\.status\)\.toUpperCase\(\)/);
