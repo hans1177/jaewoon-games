@@ -68,6 +68,16 @@ test('asset homepage automatically publishes new entries, preserves selection, e
 });
 
 
+test('asset library unchanged registry poll skips duplicate signature serialization',()=>{
+ const script=fs.readFileSync('assets/asset-library.js','utf8');
+ assert.match(script,/registryChanged=registry!==nextRegistry&&registrySignature\(registry\)!==registrySignature\(nextRegistry\)/);
+ assert.match(script,/const changed=!manifest\|\|manifest\.sourceFingerprint!==nextManifest\.sourceFingerprint\|\|registryChanged/);
+ const refreshStart=script.indexOf('async function refresh(');
+ const refreshEnd=script.indexOf('function switchKind',refreshStart);
+ const refreshSource=script.slice(refreshStart,refreshEnd);
+ assert.equal((refreshSource.match(/registrySignature\(/g)||[]).length,2);
+});
+
 test('asset library UI preindexes search manifest lookups and category counts',()=>{
  const script=fs.readFileSync('assets/asset-library.js','utf8');
  assert.match(script,/function manifestRows\(\)/);
