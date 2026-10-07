@@ -859,20 +859,42 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
   const id=clean(gameId);
   const assets=Array.isArray(registry?.assets)?registry.assets:[];
   const requiredFamilies=requiredAssetFamilies({request,requirements});
-  const currentAssets=assets.filter(asset=>currentAssetConsumerIds(asset).includes(id));
-  const intendedOnlyAssets=assets.filter(asset=>(asset.intendedConsumerGameIds||[]).map(clean).includes(id)&&!currentAssetConsumerIds(asset).includes(id));
-  const currentByFamily=new Map();
-  for(const asset of currentAssets){
-    const family=clean(asset.family||asset.category).toUpperCase();if(!family)continue;
-    const rows=currentByFamily.get(family)||[];rows.push(asset);currentByFamily.set(family,rows);
+  const requiredFamilySet=new Set(requiredFamilies);
+  const currentAssets=[],currentAssetIds=new Set(),assetById=new Map(),currentFamilyCounts=new Map(),currentPrimaryByFamily=new Map(),bestReusableByFamily=new Map();
+  let intendedOnlyCount=0;
+  const compareReusable=(a,b)=>
+    Number(b?.internalAuditScore??b?.qualityScore??-1)-Number(a?.internalAuditScore??a?.qualityScore??-1)
+    ||clean(a?.id).localeCompare(clean(b?.id));
+  const betterReusable=(candidate,current)=>!current||compareReusable(candidate,current)<0;
+  for(const asset of assets){
+    const assetId=clean(asset?.id);
+    if(!assetById.has(assetId))assetById.set(assetId,asset);
+    const family=clean(asset?.family||asset?.category).toUpperCase();
+    const currentConsumerIds=currentAssetConsumerIds(asset);
+    const current=currentConsumerIds.includes(id);
+    if(current){
+      currentAssets.push(asset);
+      currentAssetIds.add(assetId);
+      if(family){
+        currentFamilyCounts.set(family,(currentFamilyCounts.get(family)||0)+1);
+        const primary=currentPrimaryByFamily.get(family);
+        if(!primary||assetId.localeCompare(clean(primary.id))<0)currentPrimaryByFamily.set(family,asset);
+      }
+      continue;
+    }
+    if((asset?.intendedConsumerGameIds||[]).map(clean).includes(id))intendedOnlyCount+=1;
+    if(family&&requiredFamilySet.has(family)&&assetSupplyCandidateAllowed(asset,target)){
+      const currentBest=bestReusableByFamily.get(family);
+      if(betterReusable(asset,currentBest))bestReusableByFamily.set(family,asset);
+    }
   }
   const qualityActions=(executionPlan?.nextQualityActions||[]).filter(action=>
     (action.consumerGameIds||[]).map(clean).includes(id)
-    ||currentAssets.some(asset=>clean(asset.id)===clean(action.assetId))
+    ||currentAssetIds.has(clean(action.assetId))
   );
   const repairsByFamily=new Map();
   for(const action of qualityActions){
-    const family=clean(action.family||assets.find(asset=>clean(asset.id)===clean(action.assetId))?.family).toUpperCase();
+    const family=clean(action.family||assetById.get(clean(action.assetId))?.family).toUpperCase();
     const rows=repairsByFamily.get(family)||[];rows.push(action);repairsByFamily.set(family,rows);
   }
   const actions=[],actionKeys=new Set();
@@ -892,13 +914,13 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     });
   }
   for(const family of requiredFamilies){
-    const used=(currentByFamily.get(family)||[]).sort((a,b)=>clean(a.id).localeCompare(clean(b.id)));
-    if(used.length){
+    const usedCount=currentFamilyCounts.get(family)||0;
+    if(usedCount){
       if(!(repairsByFamily.get(family)||[]).length){
-        const asset=used[0],mode=internalAssetPlatformApplicationMode(asset,target);
+        const asset=currentPrimaryByFamily.get(family),mode=internalAssetPlatformApplicationMode(asset,target);
         pushAction({
           action:mode==='USE_AS_IS'?'USE':'ADAPT',
-          assetId:clean(asset.id)||null,
+          assetId:clean(asset?.id)||null,
           family,
           reason:mode==='USE_AS_IS'?'CURRENT_SOURCE_BOUND_READY':'CURRENT_SOURCE_BOUND_PLATFORM_OR_STYLE_ADAPT',
           applicationMode:mode
@@ -906,13 +928,9 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       }
       continue;
     }
-    const candidates=assets.filter(asset=>
-      clean(asset.family||asset.category).toUpperCase()===family
-      &&!currentAssetConsumerIds(asset).includes(id)
-      &&assetSupplyCandidateAllowed(asset,target)
-    ).sort((a,b)=>Number(b.internalAuditScore??b.qualityScore??-1)-Number(a.internalAuditScore??a.qualityScore??-1)||clean(a.id).localeCompare(clean(b.id)));
-    if(candidates.length){
-      const asset=candidates[0],mode=internalAssetPlatformApplicationMode(asset,target);
+    const asset=bestReusableByFamily.get(family);
+    if(asset){
+      const mode=internalAssetPlatformApplicationMode(asset,target);
       pushAction({
         action:mode==='USE_AS_IS'?'USE':'ADAPT',
         assetId:clean(asset.id)||null,
@@ -925,7 +943,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     }
   }
   const heldVolumeActions=(executionPlan?.nextVolumeActions||[]).filter(row=>
-    !assetDomainFamilies(row?.domain).some(family=>requiredFamilies.includes(family))
+    !assetDomainFamilies(row?.domain).some(family=>requiredFamilySet.has(family))
   ).map(row=>Object.freeze({
     action:'HOLD',
     family:assetDomainFamilies(row?.domain)[0]||null,
@@ -935,17 +953,17 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     reason:'REFERENCE_VOLUME_ONLY_NO_CURRENT_GAME_DEMAND'
   }));
   if(!actions.length)pushAction({action:'HOLD',assetId:null,family:null,reason:'NO_CURRENT_GAME_DEMAND_OR_SAFE_INDEPENDENT_WORK'});
-  const familyKeys=unique([...requiredFamilies,...currentByFamily.keys(),...repairsByFamily.keys()]).sort();
+  const familyKeys=unique([...requiredFamilies,...currentFamilyCounts.keys(),...repairsByFamily.keys()]).sort();
   const families=Object.fromEntries(familyKeys.map(family=>[family,Object.freeze({
-    used:(currentByFamily.get(family)||[]).length,
-    missing:requiredFamilies.includes(family)&&(currentByFamily.get(family)||[]).length===0?1:0,
+    used:currentFamilyCounts.get(family)||0,
+    missing:requiredFamilySet.has(family)&&(currentFamilyCounts.get(family)||0)===0?1:0,
     repair:(repairsByFamily.get(family)||[]).length
   })]));
   return Object.freeze({
     version:1,
     gameId:id||null,
     currentConsumers:currentAssets.length,
-    intendedOnly:intendedOnlyAssets.length,
+    intendedOnly:intendedOnlyCount,
     requiredFamilies:Object.freeze(requiredFamilies),
     families:Object.freeze(families),
     nextActions:Object.freeze(actions.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.supplyDecisionSummaryActionLimit)),

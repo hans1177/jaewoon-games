@@ -5365,3 +5365,52 @@ test('demand-bound asset supply uses five decisions and holds quantity-only libr
   assert.equal(summary.productionVerificationGranted,false);
   assert.equal(summary.runtimeVerificationGranted,false);
 });
+
+test('asset supply summary preserves selection semantics with one-pass registry indexes',()=>{
+  const registry={assets:[
+    {id:'z-current-creature',family:'CREATURE',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',sourceBoundConsumerGameIds:['demo'],internalAuditScore:700},
+    {id:'a-current-creature',family:'CREATURE',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',sourceBoundConsumerGameIds:['demo'],internalAuditScore:650},
+    {id:'material-current',family:'MATERIAL',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',sourceBoundConsumerGameIds:['demo'],internalAuditScore:500},
+    {id:'a-weapon',family:'WEAPON',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',internalAuditScore:900},
+    {id:'z-weapon',family:'WEAPON',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',internalAuditScore:900},
+    {id:'low-weapon',family:'WEAPON',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',internalAuditScore:100},
+    {id:'intended-ui',family:'UI',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',intendedConsumerGameIds:['demo'],internalAuditScore:999}
+  ]};
+  const summary=buildAssetSupplyDecisionSummary({
+    gameId:'demo',
+    target:'roblox',
+    request:'custom asset demand',
+    requirements:[{family:'CREATURE'},{family:'WEAPON'},{family:'MATERIAL'}],
+    registry,
+    executionPlan:{
+      nextQualityActions:[{assetId:'material-current',consumerGameIds:[],sourceFiles:['assets/material-current.luau']}],
+      nextVolumeActions:[]
+    }
+  });
+  assert.equal(summary.currentConsumers,3);
+  assert.equal(summary.intendedOnly,1);
+  assert.equal(summary.families.CREATURE.used,2);
+  assert.equal(summary.families.MATERIAL.repair,1);
+  assert.ok(summary.nextActions.some(row=>row.family==='CREATURE'&&row.assetId==='a-current-creature'&&['USE','ADAPT'].includes(row.action)));
+  assert.ok(summary.nextActions.some(row=>row.family==='WEAPON'&&row.assetId==='a-weapon'&&['USE','ADAPT'].includes(row.action)));
+  assert.ok(summary.nextActions.some(row=>row.family===null&&row.assetId==='material-current'&&row.action==='IMPROVE'));
+});
+
+test('asset supply summary indexes registry and quality lookups instead of nested full scans',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const source=fs.readFileSync(path.resolve(here,'../tools/vibe2-asset-production-plan.mjs'),'utf8');
+  const start=source.indexOf('export function buildAssetSupplyDecisionSummary');
+  const end=source.indexOf('function sourceConsumerEligibleGame',start);
+  const summarySource=source.slice(start,end);
+  assert.match(summarySource,/currentAssetIds=new Set\(\)/);
+  assert.match(summarySource,/assetById=new Map\(\)/);
+  assert.match(summarySource,/currentFamilyCounts=new Map\(\)/);
+  assert.match(summarySource,/currentPrimaryByFamily=new Map\(\)/);
+  assert.match(summarySource,/bestReusableByFamily=new Map\(\)/);
+  assert.match(summarySource,/currentAssetIds\.has\(clean\(action\.assetId\)\)/);
+  assert.match(summarySource,/assetById\.get\(clean\(action\.assetId\)\)/);
+  assert.doesNotMatch(summarySource,/assets\.filter\(/);
+  assert.doesNotMatch(summarySource,/currentAssets\.some\(/);
+  assert.doesNotMatch(summarySource,/assets\.find\(/);
+});
+
