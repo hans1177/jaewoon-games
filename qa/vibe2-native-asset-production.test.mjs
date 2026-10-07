@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {assetProductionGuidance,buildAllGameDynamicLibraryBindingPlan,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType,crossPlatform3dActorFamilyForType} from '../tools/vibe2-asset-production-plan.mjs';
-import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate,buildInternalAssetSourceUsageContract,inspectRobloxNativeCandidateQuality} from '../tools/vibe2-source-worker.mjs';
+import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate,buildInternalAssetSourceUsageContract,inspectRobloxNativeCandidateQuality,executeDeclaredNativeDccAuthoringVerification} from '../tools/vibe2-source-worker.mjs';
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
@@ -413,6 +413,38 @@ test('source GLB inventory uses real binary structure and leaves absent morphs o
   for(const term of ['BASIC GLB TO DETAILED ASSET','IMAGE-TO-ASSET CREATION','BASIC MAP TO DETAILED WORLD'])assert.ok(guidance.includes(term));
 });
 
+function writeJsonOnlyGlb(file,document){
+  const raw=Buffer.from(JSON.stringify(document),'utf8');
+  const paddedLength=Math.ceil(raw.length/4)*4;
+  const json=Buffer.alloc(paddedLength,0x20);raw.copy(json);
+  const total=12+8+json.length;
+  const out=Buffer.alloc(total);
+  out.writeUInt32LE(0x46546c67,0);out.writeUInt32LE(2,4);out.writeUInt32LE(total,8);
+  out.writeUInt32LE(json.length,12);out.writeUInt32LE(0x4e4f534a,16);json.copy(out,20);
+  fs.writeFileSync(file,out);
+}
+
+test('master GLB rejects broken accessor skin node and animation sampler lineage',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'broken-master-glb-'));
+  try{
+    const file=path.join(root,'broken.glb');
+    writeJsonOnlyGlb(file,{
+      asset:{version:'2.0'},
+      accessors:[{count:3},{count:3},{count:3},{count:3},{count:2},{count:2}],
+      materials:[{name:'body'}],
+      meshes:[{name:'body',primitives:[{material:0,attributes:{POSITION:0,NORMAL:1,TEXCOORD_0:2,JOINTS_0:3,WEIGHTS_0:4}}]}],
+      nodes:[{mesh:0},{name:'joint'}],
+      skins:[{joints:[1]}],
+      animations:[{samplers:[{input:5,output:99}],channels:[{sampler:0,target:{node:1,path:'rotation'}}]}]
+    });
+    const result=evaluateCrossPlatform3dMasterGlb({repoRoot:root,family:'CREATURE',role:'BOSS',source:{path:'broken.glb'}});
+    assert.equal(result.pass,false);
+    assert.ok(result.blockers.includes('MASTER_GLB_ACCESSOR_BINDING_REQUIRED'));
+    assert.ok(result.blockers.includes('MASTER_GLB_SKIN_BINDING_REQUIRED'));
+    assert.ok(result.blockers.includes('MASTER_GLB_ANIMATION_REQUIRED'));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('3D character creature and boss master assets require a structurally complete GLB',()=>{
   const spider=evaluateCrossPlatform3dMasterGlb({
     family:'CREATURE',role:'BOSS',
@@ -463,6 +495,39 @@ test('actor DCC recipe without GLB cannot satisfy the 3D master contract',()=>{
   assert.ok(plan.nativeAuthoringExecution.dcc.uncoveredTypes.includes('boss'));
   assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes.some(row=>row.id==='boss-fbx-only'),false);
   assert.notEqual(plan.nativeAuthoringExecution.dcc.executionStatus,'READY_FOR_EXISTING_AUTHORING_EXECUTOR');
+});
+
+test('DCC verification selects the declared master GLB even when a blend output is listed first',()=>{
+  const root=tempRoot();
+  try{
+    const base='assets/demo/boss/native';
+    fs.mkdirSync(path.join(root,base),{recursive:true});
+    fs.mkdirSync(path.join(root,'assets/demo'),{recursive:true});
+    fs.writeFileSync(path.join(root,'assets/demo/build.py'),'# fixture\n','utf8');
+    fs.writeFileSync(path.join(root,base,'source.blend'),'fixture','utf8');
+    fs.copyFileSync('assets/roblox/world-ghosts/native/spider/spider.glb',path.join(root,base,'master.glb'));
+    fs.writeFileSync(path.join(root,base,'preview.png'),'preview','utf8');
+    fs.writeFileSync(path.join(root,base,'evidence.json'),JSON.stringify({productionVerified:false}),'utf8');
+    const fake=path.join(root,'fake-blender.sh');
+    fs.writeFileSync(fake,'#!/bin/sh\nexit 0\n','utf8');fs.chmodSync(fake,0o755);
+    const order={
+      target:'roblox',evidence:['asset-production-parallel:v1'],
+      assetProduction:{nativeAuthoringExecution:{dcc:{executionRecipes:[{
+        id:'declared-master',assetId:'declared-master',family:'CREATURE',license:'project-original',
+        executor:'BLENDER_PYTHON',runMode:'VERIFY_ONLY',script:'assets/demo/build.py',editableSource:'assets/demo/build.py',
+        types:['boss'],targetPlatforms:['roblox'],args:[],
+        outputs:[base+'/source.blend',base+'/master.glb',base+'/preview.png',base+'/evidence.json'],
+        evidenceJson:base+'/evidence.json',preview:base+'/preview.png',
+        masterGlbRequired:true,masterGlbOutput:base+'/master.glb'
+      }]}}}
+    };
+    const result=executeDeclaredNativeDccAuthoringVerification({cwd:root,order,blenderExecutable:fake,persistCandidateOutputs:false});
+    assert.equal(result.executed,true);
+    assert.equal(result.recipes[0].nativeArtifact,base+'/master.glb');
+    assert.equal(result.recipes[0].masterGlb,base+'/master.glb');
+    assert.equal(result.recipes[0].masterGlbHash,result.recipes[0].artifactHash);
+    assert.equal(result.recipes[0].masterGlbStaticQaPass,true);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
 test('apply-first rejects a 3D enemy that has no compliant master GLB',()=>{
@@ -1688,12 +1753,35 @@ test('Roblox source quality blocks multi-part doll NPCs even when they have join
   assert.ok(pathOnlyQuality.masterGlbPathOnlyFindings.some(row=>row.class==='MASTER_GLB_PATH_ONLY_ACTOR_BINDING_RISK'));
   assert.equal(pathOnlyQuality.masterGlbBindingHardFailure,'CROSS_PLATFORM_MASTER_GLB_STATIC_QA_REQUIRED');
 
-  const nativeNpc=primitiveNpc.replaceAll('Instance.new("Part")','Instance.new("MeshPart")');
+  const meshPartOnlyNpc=[
+    'local function createNpc()',
+    '  local npc = Instance.new("Model")',
+    '  npc.Name = "NPC"',
+    '  local torso = Instance.new("MeshPart")',
+    '  torso.Parent = npc',
+    '  return npc',
+    'end'
+  ].join('\n');
+  const meshPartOnlyQuality=inspectRobloxNativeCandidateQuality({
+    candidate:{edits:[{path:'server/Game.server.luau',replace:meshPartOnlyNpc}]},
+    sourceRoot:'roblox-games/demo'
+  });
+  assert.ok(meshPartOnlyQuality.nativeActorBindingFindings.some(row=>row.class==='NPC_NATIVE_ACTOR_BINDING_MISSING_RISK'));
+
+  const importedNpc=[
+    'local template = ReplicatedStorage:WaitForChild("NpcRig")',
+    'local function createNpc()',
+    '  local npc = template:Clone()',
+    '  npc.Name = "NPC"',
+    '  return npc',
+    'end'
+  ].join('\n');
   const nativeQuality=inspectRobloxNativeCandidateQuality({
-    candidate:{edits:[{path:'server/Game.server.luau',replace:nativeNpc}]},
+    candidate:{edits:[{path:'server/Game.server.luau',replace:importedNpc}]},
     sourceRoot:'roblox-games/demo'
   });
   assert.equal(nativeQuality.npcFinalActorFindings.length,0);
+  assert.equal(nativeQuality.nativeActorBindingFindings.length,0);
 });
 
 test('Roblox asset adaptation rejects a composed Part doll NPC as a final presentation',()=>{

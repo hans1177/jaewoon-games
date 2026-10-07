@@ -958,13 +958,17 @@ test('studio asset universe requires GLB 2.0 masters for final 3D character and 
   assert.ok(blocked.blockers.includes('CROSS_PLATFORM_MASTER_GLB_HASH_REQUIRED'));
   assert.ok(blocked.blockers.includes('CROSS_PLATFORM_MASTER_GLB_STATIC_QA_REQUIRED'));
 
+  const library=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  assert.deepEqual(library.universalCoverage.crossPlatform3dMasterGlbContract.appliesToRoles,library.rules.crossPlatform3dMasterGlbRoles);
+  assert.deepEqual(library.universalCoverage.crossPlatform3dMasterGlbContract.roleFamilies,library.rules.crossPlatform3dMasterGlbRoleFamilies);
+
   const wildlife=createSurvivalWildlifeAssetProfile({species:'WOLF',platform:'ROBLOX'});
   assert.equal(wildlife.masterGlbRequired,true);
   assert.equal(wildlife.masterAssetFormat,'GLB_2_0');
 });
 
 test('company asset promotion is impossible without actual native runtime consumer evidence',()=>{
-  const asset={id:'wolf-runtime',family:'CREATURE',platform:'ROBLOX',path:'assets/wolf.roblox',license:'project-original',sourceHash:'wolf-v1',masterGlb:'assets/wolf.glb',masterGlbHash:'wolf-master-v1',masterGlbStaticQaPass:true};
+  const asset={id:'wolf-runtime',family:'CREATURE',platform:'ROBLOX',path:'assets/wolf.roblox',license:'project-original',sourceHash:'wolf-v1',artifactHash:'wolf-native-v1',masterGlb:'assets/wolf.glb',masterGlbHash:'wolf-master-v1',masterGlbStaticQaPass:true};
   const blocked=evaluateCompanyAssetPromotion({
     asset,consumer:{gameId:'survival',platform:'ROBLOX'},
     runtimeEvidence:{platform:'ROBLOX',sourceHash:'wolf-v1',nativeBindingPass:true,visualRuntimePass:true}
@@ -974,7 +978,8 @@ test('company asset promotion is impossible without actual native runtime consum
   assert.equal(blocked.promotion,null);
 
   const evidence={
-    id:'studio-run-1',assetId:'wolf-runtime',platform:'ROBLOX',gameId:'survival',sourceHash:'wolf-v1',
+    id:'studio-run-1',assetId:'wolf-runtime',platform:'ROBLOX',gameId:'survival',sourceHash:'wolf-v1',artifactHash:'wolf-native-v1',
+    masterGlbHash:'wolf-master-v1',derivedFromMasterGlbHash:'wolf-master-v1',
     nativeBindingPass:true,visualRuntimePass:true,mobilePerformancePass:true,regressionPass:true,licenseProvenancePass:true
   };
   const hashless=evaluateCompanyAssetPromotion({
@@ -983,6 +988,13 @@ test('company asset promotion is impossible without actual native runtime consum
   });
   assert.equal(hashless.eligible,false);
   assert.ok(hashless.blockers.includes('RUNTIME_ASSET_HASH_REQUIRED'));
+  assert.ok(hashless.blockers.includes('RUNTIME_MASTER_GLB_HASH_REQUIRED'));
+  assert.ok(hashless.blockers.includes('RUNTIME_MASTER_GLB_LINEAGE_REQUIRED'));
+  assert.ok(hashless.blockers.includes('RUNTIME_NATIVE_ARTIFACT_HASH_REQUIRED'));
+
+  const wrongLineage=evaluateCompanyAssetPromotion({asset,consumer:{gameId:'survival'},runtimeEvidence:{...evidence,derivedFromMasterGlbHash:'other-master'}});
+  assert.equal(wrongLineage.eligible,false);
+  assert.ok(wrongLineage.blockers.includes('RUNTIME_MASTER_GLB_LINEAGE_MISMATCH'));
 
   const ready=evaluateCompanyAssetPromotion({asset,consumer:{gameId:'survival'},runtimeEvidence:evidence});
   assert.equal(ready.eligible,true);
@@ -1002,7 +1014,7 @@ test('company asset promotion is impossible without actual native runtime consum
     consumer:{gameId:'survival',platform:'ROBLOX'},
     runtimeEvidence:{
       id:'studio-run-2',platform:'ROBLOX',gameId:'survival',assetIds:['wolf-derived'],
-      assets:[{assetId:'wolf-derived',sourceHash:'source-v1',artifactHash:'artifact-v2'}],
+      assets:[{assetId:'wolf-derived',sourceHash:'source-v1',artifactHash:'artifact-v2',masterGlbHash:'wolf-derived-master-v1',derivedFromMasterGlbHash:'wolf-derived-master-v1'}],
       nativeBindingPass:true,visualRuntimePass:true,mobilePerformancePass:true,regressionPass:true,licenseProvenancePass:true
     }
   });
@@ -1017,7 +1029,7 @@ test('company asset promotion is impossible without actual native runtime consum
       assets:[{
         assetId:'generated-boss',family:'CREATURE',path:'assets/roblox/survival/native/boss.rbxm',
         license:'project-original',sourceHash:'generated-source',artifactHash:'generated-artifact',
-        masterGlb:'assets/roblox/survival/master/boss.glb',masterGlbHash:'generated-boss-master',masterGlbStaticQaPass:true,
+        masterGlb:'assets/roblox/survival/master/boss.glb',masterGlbHash:'generated-boss-master',derivedFromMasterGlbHash:'generated-boss-master',masterGlbStaticQaPass:true,
         generatedByDeclaredRecipe:true,persistedForCandidate:true
       }],
       nativeBindingPass:true,visualRuntimePass:true,mobilePerformancePass:true,regressionPass:true,licenseProvenancePass:true

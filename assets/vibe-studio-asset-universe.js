@@ -4647,17 +4647,20 @@ export function createStudioTestbedPlan({assetIds=[],platform='UNITY',mobile=tru
 export function evaluateCompanyAssetPromotion({asset={},consumer={},runtimeEvidence={}}={}){
   const id=text(asset?.id),family=upper(asset?.family||asset?.category),platform=upper(runtimeEvidence?.platform||consumer?.platform||asset?.platformVariant||asset?.platform);
   const license=text(asset?.license);
-  const sourceHash=text(asset?.sourceHash||asset?.sourceSha256||asset?.contentHash||asset?.sha256);
-  const artifactHash=text(asset?.artifactHash||asset?.derivedSha256||asset?.contentHash||asset?.sha256);
-  const artifactPath=text(asset?.path||runtimeEvidence?.artifactPath);
+  const sourceHash=text(asset?.editableSourceHash||asset?.sourceHash||asset?.sourceSha256||asset?.masterGlbSourceHash||asset?.contentHash||asset?.sha256);
+  const artifactHash=text(asset?.nativeArtifactHash||asset?.artifactHash||asset?.derivedSha256||asset?.contentHash||asset?.sha256);
+  const artifactPath=text(runtimeEvidence?.artifactPath||asset?.path);
   const masterGlbRequired=['CHARACTER','CREATURE'].includes(family);
   const masterGlb=text(asset?.masterGlb||asset?.meshArtifact||asset?.masterSourcePath);
   const masterGlbHash=text(asset?.masterGlbHash||asset?.masterSourceHash||asset?.masterGlbSha256);
-  const masterGlbStaticQaPass=asset?.masterGlbStaticQaPass===true||runtimeEvidence?.masterGlbStaticQaPass===true;
+  const masterGlbStaticQaPass=asset?.masterGlbStaticQaPass===true;
   const consumerGameId=text(consumer?.gameId||runtimeEvidence?.gameId);
   const runtimeAssetId=text(runtimeEvidence?.assetId);
-  const runtimeSourceHash=text(runtimeEvidence?.sourceHash);
-  const runtimeArtifactHash=text(runtimeEvidence?.artifactHash);
+  const runtimeSourceHash=text(runtimeEvidence?.editableSourceHash||runtimeEvidence?.sourceHash);
+  const runtimeMasterGlbHash=text(runtimeEvidence?.masterGlbHash);
+  const runtimeDerivedFromMasterGlbHash=text(runtimeEvidence?.derivedFromMasterGlbHash);
+  const runtimeArtifactHash=text(runtimeEvidence?.nativeArtifactHash||runtimeEvidence?.artifactHash);
+  const promotedArtifactHash=artifactHash||runtimeArtifactHash;
   const blockers=[];
   if(!id)blockers.push('ASSET_ID_REQUIRED');
   if(!STUDIO_ASSET_FAMILIES.includes(family))blockers.push('SUPPORTED_ASSET_FAMILY_REQUIRED');
@@ -4669,6 +4672,12 @@ export function evaluateCompanyAssetPromotion({asset={},consumer={},runtimeEvide
     if(!/\.glb$/i.test(masterGlb))blockers.push('CROSS_PLATFORM_MASTER_GLB_REQUIRED');
     if(!masterGlbHash)blockers.push('CROSS_PLATFORM_MASTER_GLB_HASH_REQUIRED');
     if(!masterGlbStaticQaPass)blockers.push('CROSS_PLATFORM_MASTER_GLB_STATIC_QA_REQUIRED');
+    if(!runtimeSourceHash)blockers.push('RUNTIME_EDITABLE_SOURCE_HASH_REQUIRED');
+    if(!runtimeMasterGlbHash)blockers.push('RUNTIME_MASTER_GLB_HASH_REQUIRED');
+    else if(masterGlbHash&&runtimeMasterGlbHash!==masterGlbHash)blockers.push('RUNTIME_MASTER_GLB_HASH_MISMATCH');
+    if(!runtimeDerivedFromMasterGlbHash)blockers.push('RUNTIME_MASTER_GLB_LINEAGE_REQUIRED');
+    else if(masterGlbHash&&runtimeDerivedFromMasterGlbHash!==masterGlbHash)blockers.push('RUNTIME_MASTER_GLB_LINEAGE_MISMATCH');
+    if(!runtimeArtifactHash)blockers.push('RUNTIME_NATIVE_ARTIFACT_HASH_REQUIRED');
   }
   if(!consumerGameId)blockers.push('RUNTIME_CONSUMER_GAME_REQUIRED');
   if(runtimeEvidence?.nativeBindingPass!==true)blockers.push('NATIVE_BINDING_PASS_REQUIRED');
@@ -4683,20 +4692,22 @@ export function evaluateCompanyAssetPromotion({asset={},consumer={},runtimeEvide
   if(runtimeArtifactHash&&artifactHash&&runtimeArtifactHash!==artifactHash)blockers.push('RUNTIME_ARTIFACT_HASH_MISMATCH');
   const eligible=blockers.length===0;
   return Object.freeze({
-    version:1,eligible,blockers:Object.freeze(blockers),assetId:id||null,family:family||null,platform:platform||null,consumerGameId:consumerGameId||null,
+    version:2,eligible,blockers:Object.freeze(blockers),assetId:id||null,family:family||null,platform:platform||null,consumerGameId:consumerGameId||null,
     promotion:eligible?Object.freeze({
       id,family,category:family,platform,status:'VERIFIED_COMPANY_ASSET',path:artifactPath,license,
-      sourceHash,artifactHash:artifactHash||null,
-      ...(masterGlbRequired?{masterGlb,masterGlbHash,masterGlbStaticQaPass:true,masterGlbContractVersion:CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.version}:{}),
+      sourceHash,editableSourceHash:sourceHash,artifactHash:promotedArtifactHash||null,nativeArtifactHash:promotedArtifactHash||null,
+      ...(masterGlbRequired?{masterGlb,masterGlbHash,derivedFromMasterGlbHash:masterGlbHash,masterGlbStaticQaPass:true,masterGlbContractVersion:CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.version}:{}),
       productionVerified:true,verifiedCompanyReusable:true,runtimeVerificationState:'VERIFIED_NATIVE_RUNTIME',
       artReviewState:'RUNTIME_VERIFIED',consumerGameIds:Object.freeze([consumerGameId]),
       promotionEvidence:Object.freeze({
         assetId:id,nativeBindingPass:true,visualRuntimePass:true,mobilePerformancePass:true,regressionPass:true,licenseProvenancePass:true,
-        sourceHash,artifactHash:artifactHash||null,runtimeEvidenceId:text(runtimeEvidence?.id||runtimeEvidence?.runId)||null
+        sourceHash,editableSourceHash:sourceHash,masterGlbHash:masterGlbHash||null,derivedFromMasterGlbHash:masterGlbRequired?masterGlbHash:null,
+        artifactHash:promotedArtifactHash||null,nativeArtifactHash:promotedArtifactHash||null,runtimeEvidenceId:text(runtimeEvidence?.id||runtimeEvidence?.runId)||null
       })
     }):null,
     preparedArtifactMayNotSelfPromote:true,
     runtimeConsumerRequired:true,
+    exactEditableMasterNativeRuntimeLineageRequired:masterGlbRequired,
     gameplayAuthority:false
   });
 }
@@ -4734,8 +4745,10 @@ export function promoteVerifiedCompanyAssetsFromRuntimeEvidence({registry={},con
       platform:upper(runtimeEvidence?.platform||consumer?.platform),
       path:text(descriptor?.path),
       license:text(descriptor?.license),
-      sourceHash:text(descriptor?.sourceHash),
-      artifactHash:text(descriptor?.artifactHash),
+      sourceHash:text(descriptor?.editableSourceHash||descriptor?.sourceHash),
+      editableSourceHash:text(descriptor?.editableSourceHash||descriptor?.sourceHash),
+      artifactHash:text(descriptor?.nativeArtifactHash||descriptor?.artifactHash),
+      nativeArtifactHash:text(descriptor?.nativeArtifactHash||descriptor?.artifactHash),
       masterGlb:text(descriptor?.masterGlb),
       masterGlbHash:text(descriptor?.masterGlbHash),
       masterGlbStaticQaPass:descriptor?.masterGlbStaticQaPass===true,

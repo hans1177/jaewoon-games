@@ -170,42 +170,98 @@ export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
   const materials=document.materials||[];
   const nodes=document.nodes||[];
   const skins=document.skins||[];
+  const accessors=document.accessors||[];
+  const validAccessor=index=>Number.isInteger(index)&&index>=0&&index<accessors.length&&Number.isFinite(Number(accessors[index]?.count))&&Number(accessors[index]?.count)>0;
+  const accessorCount=index=>validAccessor(index)?Number(accessors[index].count):0;
   const jointNodeIndices=new Set(skins.flatMap(skin=>(skin.joints||[]).filter(index=>Number.isInteger(index)&&index>=0&&index<nodes.length)));
-  const primitives=(document.meshes||[]).flatMap((mesh,meshIndex)=>(mesh.primitives||[]).map((primitive,primitiveIndex)=>({
-    meshIndex,primitiveIndex,name:clean(mesh.name)||`mesh-${meshIndex}`,materialIndex:primitive.material??null,
-    hasMaterial:Number.isInteger(primitive.material)&&primitive.material>=0&&primitive.material<materials.length,
-    hasNormals:Number.isInteger(primitive.attributes?.NORMAL),hasUv:Number.isInteger(primitive.attributes?.TEXCOORD_0),
-    hasJointWeights:Number.isInteger(primitive.attributes?.JOINTS_0)&&Number.isInteger(primitive.attributes?.WEIGHTS_0),
-    morphTargetCount:Array.isArray(primitive.targets)?primitive.targets.length:0,
-    declaredMorphNames:Array.isArray(mesh.extras?.targetNames)?mesh.extras.targetNames:[]
-  })));
+  const meshSkinBindings=nodes.map((node,nodeIndex)=>({
+    nodeIndex,
+    meshIndex:Number.isInteger(node?.mesh)&&node.mesh>=0&&node.mesh<(document.meshes||[]).length?node.mesh:null,
+    skinIndex:Number.isInteger(node?.skin)&&node.skin>=0&&node.skin<skins.length?node.skin:null
+  })).filter(row=>row.meshIndex!==null&&row.skinIndex!==null);
+  const skinBoundMeshIndices=new Set(meshSkinBindings.map(row=>row.meshIndex));
+  const primitives=(document.meshes||[]).flatMap((mesh,meshIndex)=>(mesh.primitives||[]).map((primitive,primitiveIndex)=>{
+    const position=primitive.attributes?.POSITION;
+    const normal=primitive.attributes?.NORMAL;
+    const uv=primitive.attributes?.TEXCOORD_0;
+    const joints=primitive.attributes?.JOINTS_0;
+    const weights=primitive.attributes?.WEIGHTS_0;
+    const positionCount=accessorCount(position);
+    const normalCount=accessorCount(normal);
+    const uvCount=accessorCount(uv);
+    const jointCount=accessorCount(joints);
+    const weightCount=accessorCount(weights);
+    const jointWeightPairPresent=Number.isInteger(joints)&&Number.isInteger(weights);
+    const jointWeightPairValid=jointWeightPairPresent&&validAccessor(joints)&&validAccessor(weights)&&jointCount===positionCount&&weightCount===positionCount;
+    return {
+      meshIndex,primitiveIndex,name:clean(mesh.name)||`mesh-${meshIndex}`,materialIndex:primitive.material??null,
+      hasMaterial:Number.isInteger(primitive.material)&&primitive.material>=0&&primitive.material<materials.length,
+      hasPosition:validAccessor(position),
+      hasNormals:validAccessor(normal)&&normalCount===positionCount,
+      hasUv:validAccessor(uv)&&uvCount===positionCount,
+      hasJointWeights:jointWeightPairValid,
+      skinBound:skinBoundMeshIndices.has(meshIndex),
+      attributeAccessorReferencesValid:[position,normal,uv].every(validAccessor)&&(!jointWeightPairPresent||jointWeightPairValid),
+      attributeCountsConsistent:positionCount>0&&normalCount===positionCount&&uvCount===positionCount&&(!jointWeightPairPresent||(jointCount===positionCount&&weightCount===positionCount)),
+      positionCount,normalCount,uvCount,jointCount,weightCount,
+      morphTargetCount:Array.isArray(primitive.targets)?primitive.targets.length:0,
+      declaredMorphNames:Array.isArray(mesh.extras?.targetNames)?mesh.extras.targetNames:[]
+    };
+  }));
   if(!primitives.length)issues.push('MESH_AUTHORING_REQUIRED');
+  if(primitives.some(row=>row.hasPosition!==true||row.attributeAccessorReferencesValid!==true||row.attributeCountsConsistent!==true))issues.push('GLB_ACCESSOR_BINDING_INVALID');
   if([...document.buffers||[],...document.images||[]].some(row=>row.uri&&!String(row.uri).startsWith('data:')))issues.push('EXTERNAL_RESOURCE_MATERIALIZATION_REQUIRED');
+  const skinRows=skins.map((skin,index)=>{
+    const joints=Array.isArray(skin.joints)?skin.joints:[];
+    const validJointCount=joints.filter(joint=>Number.isInteger(joint)&&joint>=0&&joint<nodes.length).length;
+    const inverseBindMatrices=skin.inverseBindMatrices;
+    const inverseBindMatricesValid=inverseBindMatrices===undefined||(validAccessor(inverseBindMatrices)&&accessorCount(inverseBindMatrices)===joints.length);
+    return {index,name:skin.name||`skin-${index}`,jointCount:joints.length,validJointCount,invalidJointCount:joints.length-validJointCount,inverseBindMatricesValid};
+  });
+  if(skinRows.some(row=>row.jointCount<=0||row.invalidJointCount>0||row.inverseBindMatricesValid!==true))issues.push('GLB_SKIN_BINDING_INVALID');
+  if(skins.length&&!meshSkinBindings.length)issues.push('GLB_MESH_SKIN_NODE_BINDING_REQUIRED');
   const animations=(document.animations||[]).map((animation,index)=>{
     const channels=Array.isArray(animation.channels)?animation.channels:[];
-    const jointChannels=channels.filter(channel=>
-      Number.isInteger(channel?.target?.node)
-      &&jointNodeIndices.has(channel.target.node)
-      &&['rotation','translation','scale'].includes(clean(channel?.target?.path).toLowerCase())
-    );
-    const animatedJoints=unique(jointChannels.map(channel=>String(channel.target.node)));
+    const samplers=Array.isArray(animation.samplers)?animation.samplers:[];
+    const channelRows=channels.map((channel,channelIndex)=>{
+      const samplerIndex=channel?.sampler;
+      const sampler=Number.isInteger(samplerIndex)&&samplerIndex>=0&&samplerIndex<samplers.length?samplers[samplerIndex]:null;
+      const inputAccessor=sampler?.input;
+      const outputAccessor=sampler?.output;
+      const inputCount=accessorCount(inputAccessor);
+      const outputCount=accessorCount(outputAccessor);
+      const targetNode=channel?.target?.node;
+      const targetPath=clean(channel?.target?.path).toLowerCase();
+      const transformPath=['rotation','translation','scale'].includes(targetPath);
+      const interpolation=clean(sampler?.interpolation||'LINEAR').toUpperCase();
+      const outputMultiplier=interpolation==='CUBICSPLINE'?3:1;
+      const sampleCountsCompatible=!transformPath||(inputCount>0&&outputCount===inputCount*outputMultiplier);
+      const samplerValid=Boolean(sampler&&validAccessor(inputAccessor)&&validAccessor(outputAccessor)&&sampleCountsCompatible);
+      const targetValid=Number.isInteger(targetNode)&&targetNode>=0&&targetNode<nodes.length&&['rotation','translation','scale','weights'].includes(targetPath);
+      const jointTarget=targetValid&&jointNodeIndices.has(targetNode)&&transformPath;
+      return {channelIndex,samplerIndex,targetNode,targetPath,inputCount,outputCount,interpolation,samplerValid,targetValid,jointTarget,valid:samplerValid&&targetValid};
+    });
+    const validChannels=channelRows.filter(row=>row.valid);
+    const jointChannels=validChannels.filter(row=>row.jointTarget);
+    const animatedJoints=unique(jointChannels.map(row=>String(row.targetNode)));
     return {
-      index,name:animation.name||`animation-${index}`,channelCount:channels.length,
+      index,name:animation.name||`animation-${index}`,channelCount:channels.length,samplerCount:samplers.length,
+      validChannelCount:validChannels.length,invalidChannelCount:channelRows.length-validChannels.length,
       jointChannelCount:jointChannels.length,animatedJointCount:animatedJoints.length,
-      jointMotionPaths:unique(jointChannels.map(channel=>clean(channel?.target?.path).toLowerCase()))
+      jointMotionPaths:unique(jointChannels.map(row=>row.targetPath)),
+      valid:channels.length>0&&samplers.length>0&&validChannels.length===channels.length,
+      channels:channelRows
     };
   });
+  if(animations.some(row=>row.valid!==true))issues.push('GLB_ANIMATION_SAMPLER_BINDING_INVALID');
   const inventory={
-    meshCount:(document.meshes||[]).length,nodeCount:nodes.length,jointNodeCount:jointNodeIndices.size,primitives,
+    meshCount:(document.meshes||[]).length,nodeCount:nodes.length,jointNodeCount:jointNodeIndices.size,meshSkinBindingCount:meshSkinBindings.length,primitives,
     materials:materials.map((material,index)=>({index,name:material.name||`material-${index}`,hasBaseColorTexture:Boolean(material.pbrMetallicRoughness?.baseColorTexture),hasNormalTexture:Boolean(material.normalTexture)})),
-    skins:skins.map((skin,index)=>{
-      const joints=Array.isArray(skin.joints)?skin.joints:[];
-      const validJointCount=joints.filter(joint=>Number.isInteger(joint)&&joint>=0&&joint<nodes.length).length;
-      return {index,name:skin.name||`skin-${index}`,jointCount:joints.length,validJointCount,invalidJointCount:joints.length-validJointCount};
-    }),
+    skins:skinRows,
     animations,
+    invalidAnimationCount:animations.filter(row=>row.valid!==true).length,
     jointAnimationChannelCount:animations.reduce((sum,row)=>sum+row.jointChannelCount,0),
-    animatedJointCount:new Set((document.animations||[]).flatMap(animation=>(animation.channels||[]).map(channel=>channel?.target?.node).filter(node=>jointNodeIndices.has(node)))).size,
+    animatedJointCount:new Set(animations.flatMap(animation=>animation.channels.filter(channel=>channel.valid&&channel.jointTarget).map(channel=>channel.targetNode))).size,
     requiredExtensions:document.extensionsRequired||[]
   };
   const requiredAuthoring=[];
@@ -237,9 +293,11 @@ export function evaluateCrossPlatform3dMasterGlb({repoRoot=process.cwd(),source=
   if(primitives.some(row=>row.hasNormals!==true))blockers.push('MASTER_GLB_NORMALS_REQUIRED');
   if(primitives.some(row=>row.hasUv!==true))blockers.push('MASTER_GLB_UV0_REQUIRED');
   if(!(inv.materials||[]).length||primitives.some(row=>row.hasMaterial!==true))blockers.push('MASTER_GLB_MATERIAL_REQUIRED');
-  if(!(inv.skins||[]).length||Number(inv.jointNodeCount||0)<=0||(inv.skins||[]).some(row=>Number(row.jointCount||0)<=0||Number(row.invalidJointCount||0)>0))blockers.push('MASTER_GLB_SKIN_SKELETON_REQUIRED');
-  if(!primitives.some(row=>row.hasJointWeights===true))blockers.push('MASTER_GLB_JOINT_WEIGHTS_REQUIRED');
-  if(!(inv.animations||[]).length||Number(inv.jointAnimationChannelCount||0)<=0||Number(inv.animatedJointCount||0)<=0)blockers.push('MASTER_GLB_ANIMATION_REQUIRED');
+  if(primitives.some(row=>row.hasPosition!==true||row.attributeAccessorReferencesValid!==true||row.attributeCountsConsistent!==true))blockers.push('MASTER_GLB_ACCESSOR_BINDING_REQUIRED');
+  if(!(inv.skins||[]).length||Number(inv.jointNodeCount||0)<=0||(inv.skins||[]).some(row=>Number(row.jointCount||0)<=0||Number(row.invalidJointCount||0)>0||row.inverseBindMatricesValid!==true))blockers.push('MASTER_GLB_SKIN_SKELETON_REQUIRED');
+  if(Number(inv.meshSkinBindingCount||0)<=0||!primitives.some(row=>row.skinBound===true&&row.hasJointWeights===true))blockers.push('MASTER_GLB_SKIN_BINDING_REQUIRED');
+  if(!primitives.some(row=>row.hasJointWeights===true&&row.attributeCountsConsistent===true&&row.skinBound===true))blockers.push('MASTER_GLB_JOINT_WEIGHTS_REQUIRED');
+  if(!(inv.animations||[]).length||Number(inv.invalidAnimationCount||0)>0||Number(inv.jointAnimationChannelCount||0)<=0||Number(inv.animatedJointCount||0)<=0)blockers.push('MASTER_GLB_ANIMATION_REQUIRED');
   const uniqueBlockers=unique(blockers);
   return freeze({
     version:1,required:true,pass:uniqueBlockers.length===0,

@@ -580,7 +580,10 @@ function runPresentationStaticQa({root,data={},changed=[]}={}){
         require('NO_SINGLE_PRIMITIVE_PLACEHOLDER',!singlePrimitiveOnly);
         const npcFactorySignal=/(?:create|build|spawn|make)\w*(?:Npc|NPC|Villager|Resident|Merchant|Vendor|QuestGiver|Guard|Worker|Civilian|Companion|Ally|Elite|MiniBoss|HumanoidBoss|Boss)\s*\(|Name\s*=\s*["'](?:NPC|Npc|Villager|Resident|Merchant|Vendor|QuestGiver|Guard|Worker|Civilian|Companion|Ally|Elite|MiniBoss|HumanoidBoss|Boss)["']/i.test(text);
         const npcPrimitiveBodyPartCount=(text.match(/(?:local\s+)?\w*(?:head|torso|chest|body|pelvis|arm|leg|hand|foot)\w*\s*=\s*Instance\.new\s*\(\s*["'](?:Part|WedgePart|CornerWedgePart|TrussPart)["']\s*\)/gi)||[]).length;
-        const npcNativeActorBinding=/(?:Instance\.new\s*\(\s*["']MeshPart["']\s*\)|\bSpecialMesh\b|\bClone\s*\(|MeshId\s*=|WaitForChild\s*\(\s*["'][^"']*(?:Npc|NPC|Character|Companion|Elite|Boss|Rig|Model)[^"']*["']\s*\))/i.test(text);
+        const npcMeshInstance=/(?:Instance\.new\s*\(\s*["']MeshPart["']\s*\)|\bSpecialMesh\b)/i.test(text);
+        const npcMeshIdentity=/(?:MeshId\s*=|TextureID\s*=|ApplyMesh\s*\(|SurfaceAppearance)/i.test(text);
+        const npcImportedActorReuse=/(?:\bClone\s*\(|WaitForChild\s*\(\s*["'][^"']*(?:Npc|NPC|Character|Companion|Elite|Boss|Rig|Model)[^"']*["']\s*\)|FindFirstChild\s*\(\s*["'][^"']*(?:Npc|NPC|Character|Companion|Elite|Boss|Rig|Model)[^"']*["']\s*\)|LoadAsset\w*\s*\()/i.test(text);
+        const npcNativeActorBinding=(npcMeshInstance&&npcMeshIdentity)||npcImportedActorReuse;
         const primitiveFinalActor=npcFactorySignal&&npcPrimitiveBodyPartCount>=2;
         require('ROBLOX_NPC_NO_PRIMITIVE_DOLL_FINAL',!primitiveFinalActor);
         require('PRIMITIVE_ONLY_FINAL_3D_ACTOR',!primitiveFinalActor);
