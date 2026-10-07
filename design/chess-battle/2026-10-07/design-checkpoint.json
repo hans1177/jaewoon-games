@@ -12,21 +12,21 @@
   "tasks": {},
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
+      "calls": 10,
       "successes": 0,
-      "failures": 9,
+      "failures": 10,
       "timeouts": 2,
-      "jsonFailures": 7,
-      "totalMs": 387558,
-      "lastMs": 29487,
+      "jsonFailures": 8,
+      "totalMs": 417063,
+      "lastMs": 29505,
       "lastError": "schema required missing: root.identity",
-      "updatedAt": "2026-10-07T11:34:38.806Z"
+      "updatedAt": "2026-10-07T11:35:13.463Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T11:27:39.569Z",
-  "updatedAt": "2026-10-07T11:34:43.955Z",
+  "updatedAt": "2026-10-07T11:35:18.609Z",
   "failedPhase": "designer_draft",
   "failedTask": "identity-core",
   "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=OPTIONAL_EXTERNAL_AI_DISABLED local=schema required missing: root.identity"
