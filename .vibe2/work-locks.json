@@ -1,5 +1,38 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-2f5x1x",
+      "worker": "vibe2",
+      "taskId": "bug-defense-studio-evolution-unity-web-usability-v1",
+      "gameId": "bug-defense",
+      "files": [
+        "unity-games/bug-defense/Assets/Editor/UnityWebFloorBuild.cs",
+        "unity-games/bug-defense/Assets/Scripts/UnityWebFloorGame.cs",
+        "assets/roblox/world-ghosts/native/spider/spider.glb",
+        "assets/roblox/world-ghosts/native/spider/spider.png",
+        "assets/roblox/world-ghosts/native/spider/evidence.json",
+        "assets/generated/unity/bug-defense/background/asset.glb",
+        "assets/generated/unity/bug-defense/background/preview.png",
+        "assets/generated/unity/bug-defense/background/evidence.json",
+        "assets/generated/unity/bug-defense/item/asset.glb",
+        "assets/generated/unity/bug-defense/item/preview.png",
+        "assets/generated/unity/bug-defense/item/evidence.json",
+        "assets/generated/unity/bug-defense/prop/asset.glb",
+        "assets/generated/unity/bug-defense/prop/preview.png",
+        "assets/generated/unity/bug-defense/prop/evidence.json"
+      ],
+      "baseSha": "1e0310f1897ba1ed1191683475d695cd17c60acc",
+      "runId": "37570169280",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-07T04:32:03.726Z",
+      "expiresAt": "2026-10-07T05:17:03.726Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:bug-defense-studio-evolution-unity-web-usability-v1"
+      ]
+    }
+  ]
 }
