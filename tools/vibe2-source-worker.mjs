@@ -656,6 +656,7 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
       assetId:clean(row?.assetId||row?.id)||null,
       path:posix(row?.gltfMasterPath||row?.nativeArtifact)||null,
       artifactHash:clean(row?.gltfMasterArtifactHash||row?.artifactHash)||null,
+      sourceRecipe:posix(row?.script||row?.editableSource)||null,
       compliant:row?.gltfMasterCompliant===true
     }))),
     dccCoveredTypes:Object.freeze([...dccCoveredTypes]),
@@ -5700,8 +5701,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     if(nativeAssetAuthoring.gltfMasterRequired===true){
       console.log('GLB_MASTER_ASSET='+(nativeAssetAuthoring.gltfMasterReady===true?'READY':'REPAIR_REQUIRED'));
       console.log('GLB_MASTER_HASH='+(nativeAssetAuthoring.gltfMasterRecipes||[]).map(row=>row.artifactHash||'MISSING').join(','));
-      console.log('GLB_MASTER_RECIPE='+(nativeAssetAuthoring.gltfMasterRecipes||[]).map(row=>row.assetId||'UNKNOWN').join(','));
-      console.log('GLB_MASTER_CONTENTS='+(nativeAssetAuthoring.gltfMasterReady===true?'MESH_RIG_SKIN_BOUND':'INCOMPLETE'));
+      console.log('GLB_MASTER_RECIPE='+(nativeAssetAuthoring.gltfMasterRecipes||[]).map(row=>row.sourceRecipe||'MISSING').join(','));
+      console.log('GLB_MASTER_CONTENTS='+(nativeAssetAuthoring.gltfMasterReady===true?'STATIC_GLTF_MESH_RIG_READY_PROMOTION_CONTENT_RECHECK_REQUIRED':'INCOMPLETE'));
       console.log('GLB_MASTER_PLATFORM_VARIANT=NATIVE_DERIVATION_REQUIRED');
       console.log('GLB_MASTER_RUNTIME=PENDING_NATIVE_RUNTIME');
     }
