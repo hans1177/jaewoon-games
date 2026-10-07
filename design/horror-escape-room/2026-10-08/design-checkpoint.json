@@ -74,21 +74,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 8,
+      "calls": 11,
+      "successes": 9,
       "failures": 2,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1474611,
-      "lastMs": 119772,
+      "totalMs": 1606426,
+      "lastMs": 131815,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-07T23:46:46.913Z"
+      "updatedAt": "2026-10-07T23:48:58.731Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T22:49:57.276Z",
-  "updatedAt": "2026-10-07T23:46:46.915Z",
+  "updatedAt": "2026-10-07T23:48:58.735Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -915,6 +915,23 @@
         "evidenceLevel": null,
         "minimumRequired": null,
         "evidence": {
+          "path": "progressionDirection",
+          "value": "SYSTEM_INTERCONNECTIONS_EXPANSION"
+        },
+        "requiredAction": "progressionDirection의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "progressionDirection"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
           "path": "contentExpansionPlan[0].milestone",
           "value": "INFECTED_STATE_CHANGE"
         },
@@ -1115,16 +1132,16 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 5
+    "designer_draft_slices::systems-progression": 6
   },
   "localAuthoringSplits": {
     "49f1514db76fae55de9fcb06d1f658b591c08e5abcf7bfe16c3ac299987c1be4": true,
     "15ea3c6684012894904262e5f5fe04407eb9b9068c739c8d8aeb1c86cbd5a80b": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-07T23:46:46.913Z",
-  "failedPhase": "designer_draft_slices",
+  "lastSuccessfulModelCallAt": "2026-10-07T23:48:58.731Z",
+  "failedPhase": "designer_draft",
   "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
