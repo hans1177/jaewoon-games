@@ -1674,10 +1674,19 @@ test('Roblox source quality blocks multi-part doll NPCs even when they have join
   assert.equal(quality.npcFinalActorHardFailure,'PRIMITIVE_ONLY_FINAL_3D_ACTOR');
 
   const pathOnlyQuality=inspectRobloxNativeCandidateQuality({
-    candidate:{edits:[{path:'server/Game.server.luau',replace:'local MasterGlb = "assets/master/npc.glb"\n'+primitiveNpc}]},
+    candidate:{edits:[{path:'server/Game.server.luau',replace:[
+      'local MasterGlb = "assets/master/npc.glb"',
+      'local function createNpc()',
+      '  local npc = Instance.new("Model")',
+      '  npc.Name = "NPC"',
+      '  return npc',
+      'end'
+    ].join("\n")}]},
     sourceRoot:'roblox-games/demo'
   });
-  assert.ok(pathOnlyQuality.npcFinalActorFindings.some(row=>row.class==='NPC_PRIMITIVE_FINAL_ACTOR_RISK'));
+  assert.equal(pathOnlyQuality.npcFinalActorFindings.length,0);
+  assert.ok(pathOnlyQuality.masterGlbPathOnlyFindings.some(row=>row.class==='MASTER_GLB_PATH_ONLY_ACTOR_BINDING_RISK'));
+  assert.equal(pathOnlyQuality.masterGlbBindingHardFailure,'CROSS_PLATFORM_MASTER_GLB_STATIC_QA_REQUIRED');
 
   const nativeNpc=primitiveNpc.replaceAll('Instance.new("Part")','Instance.new("MeshPart")');
   const nativeQuality=inspectRobloxNativeCandidateQuality({

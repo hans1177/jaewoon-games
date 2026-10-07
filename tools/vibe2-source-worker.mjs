@@ -2251,8 +2251,10 @@ export function inspectRobloxNativeCandidateQuality({candidate={},sourceRoot=''}
     const npcFactorySignal=/(?:create|build|spawn|make)\w*(?:Npc|NPC|Villager|Resident|Merchant|Vendor|QuestGiver|Guard|Worker|Civilian|Companion|Ally|Elite|MiniBoss|HumanoidBoss|Boss)\s*\(|Name\s*=\s*["'](?:NPC|Npc|Villager|Resident|Merchant|Vendor|QuestGiver|Guard|Worker|Civilian|Companion|Ally|Elite|MiniBoss|HumanoidBoss|Boss)["']/i.test(row.text);
     const primitiveBodyPartCount=(row.text.match(/(?:local\s+)?\w*(?:head|torso|chest|body|pelvis|arm|leg|hand|foot)\w*\s*=\s*Instance\.new\s*\(\s*["'](?:Part|WedgePart|CornerWedgePart|TrussPart)["']\s*\)/gi)||[]).length;
     const nativeActorAssetSignal=/(?:Instance\.new\s*\(\s*["']MeshPart["']\s*\)|\bSpecialMesh\b|:\s*Clone\s*\(|\bClone\s*\(|MeshId\s*=|WaitForChild\s*\(\s*["'][^"']*(?:Npc|NPC|Character|Companion|Elite|Boss|Rig|Model)[^"']*["']\s*\))/i.test(row.text);
+    const masterGlbPathSignal=/(?:GeneratedNativeAssetPath|MasterGlb|\.glb\b)/i.test(row.text);
     const primitiveNpcDoll=npcFactorySignal&&primitiveBodyPartCount>=2;
     if(primitiveNpcDoll)findings.push({file:row.path,class:'NPC_PRIMITIVE_FINAL_ACTOR_RISK'});
+    if(npcFactorySignal&&masterGlbPathSignal&&!nativeActorAssetSignal)findings.push({file:row.path,class:'MASTER_GLB_PATH_ONLY_ACTOR_BINDING_RISK'});
     if(actorSignal&&customActorSignal&&rootMotionSignal&&!articulationSignal)findings.push({file:row.path,class:'ROOT_ONLY_ARTICULATED_MOTION_RISK'});
     if(actorSignal&&customActorSignal&&weldSignal&&!articulationSignal)findings.push({file:row.path,class:'WELD_CONSTRAINT_ONLY_CHARACTER_RISK'});
     if(actorSignal&&customActorSignal&&/(?:Humanoid|AnimationController|Motor6D|\bBone\b)/.test(row.text)&&!animatorSignal)findings.push({file:row.path,class:'MISSING_ANIMATOR_BINDING_RISK'});
@@ -2269,8 +2271,10 @@ export function inspectRobloxNativeCandidateQuality({candidate={},sourceRoot=''}
     securityRelevantFindings:Object.freeze(findings.filter(row=>['CLIENT_DATASTORE_AUTHORITY','CLIENT_AUTHORITATIVE_GAMEPLAY_MUTATION','REMOTE_INPUT_VALIDATION_WEAK','UNBOUNDED_DATASTORE_RETRY'].includes(row.class))),
     motionQualityFindings:Object.freeze(findings.filter(row=>['ROOT_ONLY_ARTICULATED_MOTION_RISK','WELD_CONSTRAINT_ONLY_CHARACTER_RISK','MISSING_ANIMATOR_BINDING_RISK','LOCOMOTION_BLEND_SPEED_SYNC_MISSING_RISK'].includes(row.class))),
     npcFinalActorFindings:Object.freeze(findings.filter(row=>row.class==='NPC_PRIMITIVE_FINAL_ACTOR_RISK')),
+    masterGlbPathOnlyFindings:Object.freeze(findings.filter(row=>row.class==='MASTER_GLB_PATH_ONLY_ACTOR_BINDING_RISK')),
     motionQualityHardFailure:'ROBLOX_CHARACTER_MOTION_MANNEQUIN',
     npcFinalActorHardFailure:'PRIMITIVE_ONLY_FINAL_3D_ACTOR',
+    masterGlbBindingHardFailure:'CROSS_PLATFORM_MASTER_GLB_STATIC_QA_REQUIRED',
     sourceRoot:clean(sourceRoot)||null
   });
 }
@@ -5662,6 +5666,9 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const robloxNativeCandidateQuality=target==='roblox'?inspectRobloxNativeCandidateQuality({candidate,sourceRoot}):{required:false,findingCount:0,findings:[],securityRelevantFindings:[],automaticGameWideBlock:false};
   if(target==='roblox'&&assetDevelopmentTask(order)&&robloxNativeCandidateQuality.npcFinalActorFindings?.length){
     throw new Error('PRIMITIVE_ONLY_FINAL_3D_ACTOR:NPC_PRIMITIVE_FINAL_ACTOR:'+robloxNativeCandidateQuality.npcFinalActorFindings.map(row=>row.file).join(','));
+  }
+  if(target==='roblox'&&assetDevelopmentTask(order)&&robloxNativeCandidateQuality.masterGlbPathOnlyFindings?.length){
+    throw new Error('CROSS_PLATFORM_MASTER_GLB_STATIC_QA_REQUIRED:MASTER_GLB_PATH_ONLY_ACTOR_BINDING:'+robloxNativeCandidateQuality.masterGlbPathOnlyFindings.map(row=>row.file).join(','));
   }
   const mannequinFindings=(robloxNativeCandidateQuality.motionQualityFindings||[]).filter(row=>[
     'ROOT_ONLY_ARTICULATED_MOTION_RISK','WELD_CONSTRAINT_ONLY_CHARACTER_RISK','MISSING_ANIMATOR_BINDING_RISK'

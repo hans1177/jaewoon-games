@@ -317,10 +317,14 @@ export function createVibeNpcRoleMotionRequirement({role='GENERAL_NPC'}={}){
       state,Object.freeze([...(overrides[state]||NPC_COMMON_STATE_MOTION_BINDINGS[state]||[])])
     ])
   ));
+  const requiredClips=Object.freeze(uniq([
+    ...(NPC_ROLE_MOTION_CLIPS[resolved]||NPC_COMMON_ACTOR_MOTION_CLIPS),
+    ...Object.values(stateBindings).flat()
+  ]));
   return Object.freeze({
     version:VIBE_NPC_ROLE_MOTION_REQUIREMENTS.version,
     role:resolved,
-    requiredClips:Object.freeze([...(NPC_ROLE_MOTION_CLIPS[resolved]||NPC_COMMON_ACTOR_MOTION_CLIPS)]),
+    requiredClips,
     stateBindings,
     continuity:VIBE_NPC_ROLE_MOTION_REQUIREMENTS.continuity,
     masterActor:VIBE_NPC_ROLE_MOTION_REQUIREMENTS.masterActor,
