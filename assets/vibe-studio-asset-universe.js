@@ -2102,44 +2102,6 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
   const actualVerifiedAudioAssetCount=verifiedAudioFileCount(assets);
   const auditCache=new WeakMap();
   const maintenance=buildInternalAssetMaintenanceSnapshot({assets:inventoryAssets,uiAtomIds,audioRoleIds,previous:previousMaintenance,consumerGames,auditCache});
-  const volumeDomains=Object.keys(COMMON_LIBRARY_LOOSE_VOLUME_BANDS);
-  const depthDomains=Object.keys(COMMON_LIBRARY_SYSTEM_DEPTH_EXPECTATIONS);
-  const indexedDomains=uniq([...volumeDomains,...depthDomains]);
-  const domainAssetsByDomain=new Map(volumeDomains.map(domain=>[domain,[]]));
-  const commonDepthAssetsByDomain=new Map(depthDomains.map(domain=>[domain,[]]));
-  const candidatesByDomain=new Map(volumeDomains.map(domain=>[domain,[]]));
-  const domainsByAsset=new WeakMap();
-  const rolesByAsset=new WeakMap();
-  for(const asset of assets){
-    const roles=internalAssetMaintenanceRoleTokens(asset);
-    rolesByAsset.set(asset,roles);
-    const candidate={
-      id:text(asset.id||asset.assetId||asset.atomId),packId:text(asset.packId)||null,
-      family:upper(asset.family||asset.category)||null,platform:upper(asset.platform)||null,
-      roles,quality:internalAssetMaintenanceQuality(asset,auditCache.get(asset)),
-      grade:text(asset.internalAuditGrade)||null
-    };
-    const commonDepthEligible=asset?.companyCommonBase===true||String(asset?.reuseScope||'').includes('COMPANY');
-    const matchedDomains=[];
-    for(const domain of indexedDomains){
-      if(!commonDepthDomainMatch(domain,asset))continue;
-      matchedDomains.push(domain);
-      domainAssetsByDomain.get(domain)?.push(asset);
-      if(candidate.id)candidatesByDomain.get(domain)?.push(candidate);
-      if(commonDepthEligible)commonDepthAssetsByDomain.get(domain)?.push(asset);
-    }
-    domainsByAsset.set(asset,Object.freeze(matchedDomains));
-  }
-  // 실행용 consumer overlay는 같은 inventory의 구조 플랜을 재사용하고 동적 소비자 우선순위만 다시 계산한다.
-  const rankedCandidateCache=new Map();
-  const internalReuseCandidatesForAction=(domain,role='')=>{
-    const requested=upper(role).replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'');
-    const key=upper(domain)+'|'+requested;
-    if(!rankedCandidateCache.has(key))rankedCandidateCache.set(key,(candidatesByDomain.get(upper(domain))||[])
-      .map(row=>({...row,roleMatch:requested&&row.roles.includes(requested)?1:0}))
-      .sort((a,b)=>b.roleMatch-a.roleMatch||Number(b.quality??-1)-Number(a.quality??-1)||a.id.localeCompare(b.id)));
-    return rankedCandidateCache.get(key);
-  };
   const basePlanReusable=Boolean(
     basePlan
     &&Number(basePlan.version)===Number(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version)
@@ -2149,26 +2111,25 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     &&Number(basePlan.maintenance?.packCount)===Number(maintenance.packCount)
     &&Number(basePlan.maintenance?.familyCount)===Number(maintenance.familyCount)
     &&Array.isArray(basePlan.nextVolumeActions)
+    &&basePlan.executionReuseCandidateIdsByKey
+    &&typeof basePlan.executionReuseCandidateIdsByKey==='object'
   );
   if(basePlanReusable){
     const qualityActionRankByAssetId=new Map((maintenance.nextQualityActions||[]).map((action,index)=>[text(action.assetId),index]));
     const nextVolumeActions=(basePlan.nextVolumeActions||[]).map((row,index)=>{
-      const allInternalReuseCandidates=internalReuseCandidatesForAction(row.domain,row.role);
-      const internalReuseCandidatePreview=allInternalReuseCandidates.slice(0,4).map(candidate=>Object.freeze({
-        id:candidate.id,quality:candidate.quality,grade:candidate.grade
-      }));
+      const requested=upper(row.role).replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+      const key=upper(row.domain)+'|'+requested;
+      const candidateIds=basePlan.executionReuseCandidateIdsByKey[key]||[];
       let detailImprovementAssetId=null,detailImprovementRank=Infinity;
-      for(const candidate of allInternalReuseCandidates){
-        const rank=qualityActionRankByAssetId.get(candidate.id);
+      for(const candidateId of candidateIds){
+        const rank=qualityActionRankByAssetId.get(candidateId);
         if(rank!==undefined&&rank<detailImprovementRank){
-          detailImprovementAssetId=candidate.id;detailImprovementRank=rank;
+          detailImprovementAssetId=candidateId;detailImprovementRank=rank;
           if(rank===0)break;
         }
       }
       return Object.freeze({
         ...row,
-        internalReuseCandidateCount:allInternalReuseCandidates.length,
-        internalReuseCandidatePreview:Object.freeze(internalReuseCandidatePreview),
         detailImprovementAssetId,
         libraryFreshnessFingerprint:maintenance.inventoryFingerprint,
         qualityFreshnessFingerprint:maintenance.qualityFingerprint,
@@ -2206,9 +2167,47 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
       nextQualityActions:maintenance.nextQualityActions,
       maintenance,
       autonomousNextAction,
-      executionOverlayReusedBasePlan:true
+      executionOverlayReusedBasePlan:true,
+      executionOverlaySkippedDomainRescan:true
     });
   }
+  const volumeDomains=Object.keys(COMMON_LIBRARY_LOOSE_VOLUME_BANDS);
+  const depthDomains=Object.keys(COMMON_LIBRARY_SYSTEM_DEPTH_EXPECTATIONS);
+  const indexedDomains=uniq([...volumeDomains,...depthDomains]);
+  const domainAssetsByDomain=new Map(volumeDomains.map(domain=>[domain,[]]));
+  const commonDepthAssetsByDomain=new Map(depthDomains.map(domain=>[domain,[]]));
+  const candidatesByDomain=new Map(volumeDomains.map(domain=>[domain,[]]));
+  const domainsByAsset=new WeakMap();
+  const rolesByAsset=new WeakMap();
+  for(const asset of assets){
+    const roles=internalAssetMaintenanceRoleTokens(asset);
+    rolesByAsset.set(asset,roles);
+    const candidate={
+      id:text(asset.id||asset.assetId||asset.atomId),packId:text(asset.packId)||null,
+      family:upper(asset.family||asset.category)||null,platform:upper(asset.platform)||null,
+      roles,quality:internalAssetMaintenanceQuality(asset,auditCache.get(asset)),
+      grade:text(asset.internalAuditGrade)||null
+    };
+    const commonDepthEligible=asset?.companyCommonBase===true||String(asset?.reuseScope||'').includes('COMPANY');
+    const matchedDomains=[];
+    for(const domain of indexedDomains){
+      if(!commonDepthDomainMatch(domain,asset))continue;
+      matchedDomains.push(domain);
+      domainAssetsByDomain.get(domain)?.push(asset);
+      if(candidate.id)candidatesByDomain.get(domain)?.push(candidate);
+      if(commonDepthEligible)commonDepthAssetsByDomain.get(domain)?.push(asset);
+    }
+    domainsByAsset.set(asset,Object.freeze(matchedDomains));
+  }
+  const rankedCandidateCache=new Map();
+  const internalReuseCandidatesForAction=(domain,role='')=>{
+    const requested=upper(role).replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+    const key=upper(domain)+'|'+requested;
+    if(!rankedCandidateCache.has(key))rankedCandidateCache.set(key,(candidatesByDomain.get(upper(domain))||[])
+      .map(row=>({...row,roleMatch:requested&&row.roles.includes(requested)?1:0}))
+      .sort((a,b)=>b.roleMatch-a.roleMatch||Number(b.quality??-1)-Number(a.quality??-1)||a.id.localeCompare(b.id)));
+    return rankedCandidateCache.get(key);
+  };
   const depth=auditCommonLibrarySystemDepth({assets,domainCandidatesByDomain:commonDepthAssetsByDomain});
   const depthByDomain=new Map(depth.rows.map(row=>[row.domain,row]));
   const seedIdeasByDomain=new Map(volumeDomains.map(domain=>[domain,[]]));
@@ -2495,6 +2494,9 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
       resolutionOrder:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.reuseResolutionOrder
     });
   });
+  const executionReuseCandidateIdsByKey=Object.freeze(Object.fromEntries(
+    [...rankedCandidateCache.entries()].map(([key,rows])=>[key,Object.freeze(rows.map(row=>row.id))])
+  ));
   const qualityFirst=maintenance.nextQualityActions.length>0||volumeReady;
   const autonomousNextAction=qualityFirst
     ?Object.freeze({
@@ -2535,6 +2537,7 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     volumeBlockingDomains:Object.freeze(volumeBlockingDomains),
     uiBlockingSubsystems:Object.freeze(uiBlockingSubsystems),
     nextVolumeActions:Object.freeze(nextVolumeActions),
+    executionReuseCandidateIdsByKey,
     nextQualityActions:maintenance.nextQualityActions,
     autonomousOperatingContract:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.autonomousOperatingContract,
     autonomousMaintenanceContract:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.autonomousMaintenanceContract,
