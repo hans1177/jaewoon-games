@@ -32,6 +32,14 @@ test('stale same-game source trees are coalesced as superseded work instead of f
   assert.match(workflow,/source-tree-superseded/);
 });
 
+test('village-dungeons consumes the selected VFX family through a live ParticleEmitter',()=>{
+  const source=fs.readFileSync('roblox-games/village-dungeons/client/Game.client.luau','utf8');
+  assert.equal(robloxStudioAssetFamilyBoundInText(source,'VFX'),true);
+  assert.match(source,/StudioVfxAtom/);
+  assert.match(source,/ParticleEmitter/);
+  assert.match(source,/emitter:Emit\(10\)/);
+});
+
 test('asset failure survives worker recording and exact-source persistence while stale results preserve siblings',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const nodeStep=name=>{
