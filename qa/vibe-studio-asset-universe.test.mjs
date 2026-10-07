@@ -5333,6 +5333,29 @@ test('real horror-escape-room source fixture resolves project pack identity and 
   assert.ok(result.summary.gameSummaries[0].currentConsumers>=2);
 });
 
+test('source consumer scan coalesces nested project roots instead of reading the same files twice',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-consumer-root-coalesce-'));
+  try{
+    const client=path.join(root,'roblox-games','demo','client');
+    fs.mkdirSync(client,{recursive:true});
+    fs.writeFileSync(path.join(client,'Game.client.luau'),'return "ONLY_ONCE"');
+    const result=synchronizeSourceBoundAssetConsumers({
+      repoRoot:root,
+      registry:{assets:[]},
+      gameCatalog:{games:[{
+        id:'demo',
+        lifecycleState:'ACTIVE',
+        productionClass:'DEVELOPMENT_CONFIRMED',
+        robloxProjectPath:'roblox-games/demo',
+        targetSourcePath:'roblox-games/demo/client'
+      }]}
+    });
+    assert.equal(result.summary.scannedGameCount,1);
+    assert.equal(result.summary.scannedFileCount,1);
+    assert.equal(result.summary.gameSummaries[0].scannedFileCount,1);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('source consumer snapshot scans quoted usage tokens only once after removing binding boilerplate',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const source=fs.readFileSync(path.resolve(here,'../tools/vibe2-asset-production-plan.mjs'),'utf8');
