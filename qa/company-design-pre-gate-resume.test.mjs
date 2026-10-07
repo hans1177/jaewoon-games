@@ -1,3 +1,5 @@
+// 파일명: qa/company-design-pre-gate-resume.test.mjs
+// 임포트
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -5,6 +7,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {runInNewContext} from 'node:vm';
+import {EventEmitter} from 'node:events';
 
 const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
 
@@ -174,4 +177,190 @@ test('seed scheduler prioritizes valid resumable checkpoints within the existing
   assert.match(sort,/Number\(strictPassFor\(a\)\)-Number\(strictPassFor\(b\)\)[\s\S]*platformPriority\(a\)-platformPriority\(b\)[\s\S]*checkpointResumePriority\(a\)-checkpointResumePriority\(b\)/);
   assert.match(workflow,/designEvolutionDueFor/);
   assert.match(workflow,/PERIODIC_DEEP_HEALTH_REVIEW/);
+});
+
+// 초기 설계 회귀검사: 실제 책임 함수에서 요청 인자와 분할 경로를 실행한다.
+test('initial full and split design retain complete MAIN A B c @ grammar and expanded budgets',async()=>{
+  const start=design.indexOf('async function generateDesignerDraft(');
+  const end=design.indexOf('function scoreCurrentDesign(',start);
+  assert.ok(start>0&&end>start);
+  const section=design.slice(start,end);
+  const grammar={causalDNAs:[{id:'cause',principle:'인과'.repeat(6500)}],gameplaySystemFusion:{formula:'MAIN × A × B × c',main:'MAIN_SENTINEL',axes:['A_SENTINEL','B_SENTINEL'],subElements:['c_SENTINEL']},delveLayer:{formulaSuffix:'+ @',elements:['DELVE_TAIL_SENTINEL']}};
+  const serialized=JSON.stringify(grammar);
+  assert.ok(serialized.length>12000);
+  const fullSchema={required:['identity','coreLoop']},baseSchema={required:['identity']},gateSchema={required:['systemInterconnections']};
+  for(const split of [false,true])for(const preservation of [false,true]){
+    const calls=[];
+    const sketch={version:4,novelGameGrammar:grammar,pacingPlan:{first5Minutes:'FIRST_CYCLE_SENTINEL'}};
+    const seed={GAMEPLAY_SKETCH:sketch,SAVE_POLICY:'PRESERVE_EXISTING_SAVE'};
+    const generate=runInNewContext(section+'\ngenerateDesignerDraft',{
+      ownerPreservationDesign:preservation,seedGameplaySketch:sketch,seed,
+      seedDesignDepthContext:{novelGameGrammar:grammar,pacingPlan:sketch.pacingPlan},
+      evidence:{gameSeed:seed,seedDesignDepth:{novelGameGrammar:grammar}},strictDesignerFeedback:{hardFailures:['KEEP_FAILURE']},designEvolutionBrief:{},factPack:{},
+      DESIGN:fullSchema,DESIGN_BASE:baseSchema,DESIGN_GATE:gateSchema,
+      DESIGN_BASE_FIELDS:baseSchema.required,DESIGN_GATE_FIELDS:gateSchema.required,
+      repairStructureContract:fields=>['STRUCTURE:'+fields.join(',')],
+      repairDesignRequiredFields:value=>({value}),enforceOwnerPreservationDesign:value=>value,
+      mergeDesignerDesign:(base,gate)=>({...base,...gate}),
+      clean:value=>String(value??'').trim(),
+      clip:(value,limit)=>{const text=typeof value==='string'?value:JSON.stringify(value);return text.slice(0,limit);},
+      console:{log(){}},
+      callDesignerModel:async(system,user,schema,options)=>{
+        calls.push({system,user,schema,options});
+        if(split&&calls.length===1)throw new Error('force existing split path');
+        return schema===gateSchema?{systemInterconnections:['STATE_EXCHANGE']}:{identity:'IDENTITY_PRESERVED'};
+      }
+    });
+    const result=await generate();
+    assert.equal(result.identity,'IDENTITY_PRESERVED');
+    assert.equal(calls.length,split?3:1);
+    assert.deepEqual(calls.map(row=>row.options.predict),split?[12288,4096,12288]:[12288]);
+    for(const call of calls){
+      assert.equal(call.options.numCtx,32768);
+      assert.equal(call.options.timeoutMs,120000);
+      assert.equal(call.options.maxAttempts,2);
+      const line=call.user.split('\n').find(row=>row.startsWith('GAMEPLAY_GRAMMAR='));
+      assert.equal(line,'GAMEPLAY_GRAMMAR='+serialized);
+      assert.match(call.user,/FIRST_CYCLE_SENTINEL/);
+      assert.match(call.user,/KEEP_FAILURE/);
+      assert.match(call.user,/PRE_GATE_STRUCTURE_CONTRACT=/);
+      assert.equal(call.system,calls[0].system);
+      assert.match(call.system,/c는 A\/B와 동급 대축으로 승격하지 말고/);
+      assert.match(call.system,/A\/B\/c 게임문법과 PLAN_A\/PLAN_B\/PLAN_C 설계 대안 이름을 혼동하지 않는다/);
+      assert.match(call.system,/변경 전 상태·변경 후 상태/);
+      assert.match(call.system,/저장\/재입장 확인/);
+      assert.match(call.system,/런타임 통과 증거로 주장하지 않는다/);
+      if(preservation)assert.match(call.system,/기존 세계관·지역·스토리·퀘스트·전투·제작·진행·밸런스·드랍·세이브·hit\/cooldown 의미를 절대 재설계하지 않는다/);
+    }
+    if(split)assert.match(calls[2].user,/BASE_DESIGN=\{"identity":"IDENTITY_PRESERVED"\}/);
+    assert.equal(seed.GAMEPLAY_SKETCH.novelGameGrammar,grammar);
+  }
+});
+
+test('legacy seed without novel grammar remains authorable in the existing initial path',async()=>{
+  const section=design.slice(design.indexOf('async function generateDesignerDraft('),design.indexOf('function scoreCurrentDesign('));
+  let request;
+  const generate=runInNewContext(section+'\ngenerateDesignerDraft',{
+    ownerPreservationDesign:false,seedGameplaySketch:null,seed:{},seedDesignDepthContext:{version:1},evidence:{},strictDesignerFeedback:{},factPack:{},
+    DESIGN:{required:['identity']},repairStructureContract:()=>[],repairDesignRequiredFields:value=>({value}),enforceOwnerPreservationDesign:value=>value,
+    clip:(value,limit)=>JSON.stringify(value).slice(0,limit),console:{log(){}},
+    callDesignerModel:async(system,user)=>{request=user;return {identity:'legacy'};}
+  });
+  assert.equal((await generate()).identity,'legacy');
+  assert.match(request,/GAMEPLAY_GRAMMAR=null\n/);
+});
+
+test('local authoring sends expanded bounded capacities and rejects token-truncated JSON',async()=>{
+  const section=design.slice(design.indexOf('async function requestLocalDesignerRaw('),design.indexOf('async function callLocalDesignerModel('));
+  for(const scenario of [
+    {predict:12288,numCtx:32768,wantPredict:12288,wantCtx:32768,done:'stop'},
+    {predict:99999,numCtx:99999,wantPredict:16384,wantCtx:32768,done:'stop'},
+    {predict:12288,numCtx:32768,wantPredict:12288,wantCtx:32768,done:'length'}
+  ]){
+    let payload,destroyed=false;
+    const call=runInNewContext(section+'\nrequestLocalDesignerRaw',{
+      localDesignerModel:'fixture-local',Buffer,setTimeout,clearTimeout,
+      clean:value=>String(value??'').trim(),clip:(value,limit)=>String(value).slice(0,limit),
+      http:{request(options,onResponse){
+        assert.equal(options.hostname,'127.0.0.1');
+        assert.equal(options.path,'/api/generate');
+        const req=new EventEmitter();req.destroyed=false;
+        req.destroy=()=>{req.destroyed=true;destroyed=true;};
+        req.end=body=>{
+          payload=JSON.parse(body);
+          queueMicrotask(()=>{
+            const res=new EventEmitter();res.statusCode=200;res.setEncoding=()=>{};
+            onResponse(res);
+            res.emit('data',JSON.stringify({response:'{"complete":true}',done:true,done_reason:scenario.done}));
+            res.emit('end');
+          });
+        };
+        return req;
+      }}
+    });
+    const pending=call('grammar and detail',{predict:scenario.predict,numCtx:scenario.numCtx});
+    if(scenario.done==='length')await assert.rejects(pending,/OLLAMA_DESIGN_OUTPUT_TRUNCATED/);
+    else assert.equal(await pending,'{"complete":true}');
+    assert.equal(payload.options.num_predict,scenario.wantPredict);
+    assert.equal(payload.options.num_ctx,scenario.wantCtx);
+    assert.equal(payload.think,false);
+    assert.equal(payload.stream,false);
+    assert.equal(destroyed,true);
+  }
+});
+
+test('optional external authoring retains larger output budget and fails closed on truncation',async()=>{
+  const section=design.slice(design.indexOf('async function callModel('),design.indexOf('async function callExternalDesignerModel('));
+  const fullSchema={type:'object'};
+  for(const scenario of [{predict:12288,want:12288,finish:'STOP'},{predict:99999,want:16384,finish:'STOP'},{predict:12288,want:12288,finish:'MAX_TOKENS'}]){
+    let payload,normalizedCount=0;
+    const call=runInNewContext(section+'\ncallModel',{
+      DESIGN:fullSchema,DESIGN_BASE:{},DESIGN_GATE:{},modelCallTimeoutMs:90000,
+      geminiApiKey:'fixture-only',geminiUnavailableModels:new Map(),geminiCandidatesFor:model=>[model],
+      geminiThinkingConfigFor:()=>({thinkingLevel:'low'}),geminiMinuteRetryDelayMs:()=>0,isDailyGeminiQuotaError:()=>false,
+      clean:value=>String(value??'').trim(),clip:(value,limit)=>String(value).slice(0,limit),
+      parseJsonObject:JSON.parse,normalizeSchemaValue:value=>{normalizedCount++;return value;},assertSchemaValue(){},
+      recordModelHealth(){},persistDesignCheckpoint(){},designCheckpoint:{},modelCallStats:[],console:{log(){}},AbortSignal,
+      fetch:async(url,options)=>{payload=JSON.parse(options.body);return {ok:true,json:async()=>({candidates:[{finishReason:scenario.finish,content:{parts:[{text:'{"complete":true}'}]}}]})};}
+    });
+    const pending=call('fixture','system','user',fullSchema,{predict:scenario.predict,maxAttempts:1});
+    if(scenario.finish==='MAX_TOKENS'){
+      await assert.rejects(pending,/GEMINI_OUTPUT_TRUNCATED/);
+      assert.equal(normalizedCount,0);
+    }else{
+      assert.equal((await pending).complete,true);
+      assert.equal(normalizedCount,1);
+    }
+    assert.equal(payload.generationConfig.maxOutputTokens,scenario.want);
+    assert.equal(payload.generationConfig.responseMimeType,'application/json');
+  }
+});
+
+test('detailed design fields survive normalization without changing required field or array gates',()=>{
+  const schemaSection=design.slice(design.indexOf('const MEMBER_TEXT='),design.indexOf('function enforceOwnerPreservationDesign('));
+  const validationSection=design.slice(design.indexOf('function assertSchemaValue('),design.indexOf('function geminiMinuteRetryDelayMs('));
+  const {DESIGN,normalizeSchemaValue,assertSchemaValue}=runInNewContext(schemaSection+'\n'+validationSection+'\n({DESIGN,normalizeSchemaValue,assertSchemaValue})');
+  const examples=[
+    [DESIGN.properties.identity,'가'.repeat(1500)],
+    [DESIGN.properties.coreFun,'가'.repeat(1500)],
+    [DESIGN.properties.coreLoop.items,'가'.repeat(600)],
+    [DESIGN.properties.signatureSystems.items.properties.playerChoice,'가'.repeat(800)],
+    [DESIGN.properties.systemInterconnections.items.properties.stateChange,'가'.repeat(800)],
+    [DESIGN.properties.progressionEconomyBalance.properties.resourceFlow,'가'.repeat(1200)],
+    [DESIGN.properties.contentExpansionPlan.items.properties.systemImpact,'가'.repeat(800)],
+    [DESIGN.properties.implementationTraceability.items.properties.validationEvidence,'가'.repeat(800)]
+  ];
+  for(const [schema,value] of examples){
+    const repairs=[];
+    assert.equal(normalizeSchemaValue(value,schema,'field',repairs),value);
+    assert.equal(repairs.length,0);
+    assert.doesNotThrow(()=>assertSchemaValue(value,schema));
+    assert.throws(()=>assertSchemaValue('가'.repeat(schema.maxLength+1),schema),/schema maxLength mismatch/);
+  }
+  assert.equal(DESIGN.additionalProperties,false);
+  assert.equal(DESIGN.properties.coreLoop.minItems,3);
+  assert.equal(DESIGN.properties.signatureSystems.minItems,2);
+  assert.equal(DESIGN.properties.systemInterconnections.minItems,3);
+  assert.equal(DESIGN.properties.contentExpansionPlan.minItems,3);
+  assert.equal(DESIGN.properties.implementationTraceability.minItems,3);
+  assert.ok(DESIGN.required.includes('designIntegrityPlan'));
+  assert.ok(DESIGN.required.includes('stabilityPriorityPlan'));
+});
+
+test('expanded authoring keeps hard failures authoritative and repairs only requested fields',()=>{
+  const start=design.indexOf('function preGatePass(');
+  const end=design.indexOf('function repairPacket(',start);
+  const pass=runInNewContext(design.slice(start,end)+'\npreGatePass',{DESIGN_GATE_PASS_MINIMUM:80});
+  assert.equal(pass({totalScore:80,hardFailures:[]}),true);
+  assert.equal(pass({totalScore:100,hardFailures:['ACTUAL_FAILURE']}),false);
+  assert.equal(pass({totalScore:79,hardFailures:[]}),false);
+  assert.equal(pass({totalScore:100}),false);
+  const repair=design.slice(design.indexOf('for(let repairAttempt=1;'),design.indexOf('const designSemanticText='));
+  assert.match(repair,/const fields=repairFields\(preGate\)/);
+  assert.match(repair,/const schema=designSliceSchema\(fields\)/);
+  assert.match(repair,/지정 필드 외 내용은 반환하지 않는다/);
+  assert.match(repair,/GAMEPLAY_GRAMMAR=\$\{JSON\.stringify\(seedDesignDepthContext\.novelGameGrammar\|\|null\)\}/);
+  assert.match(repair,/predict:Math\.min\(6144,1100\+fields\.length\*350\)/);
+  assert.match(repair,/numCtx:32768/);
+  assert.match(repair,/preGate=scoreCurrentDesign/);
 });
