@@ -3365,7 +3365,8 @@
       "GLB_MASTER_RECIPE=",
       "GLB_MASTER_CONTENTS=",
       "GLB_MASTER_PLATFORM_VARIANT=",
-      "GLB_MASTER_RUNTIME="
+      "GLB_MASTER_RUNTIME=",
+      "GLB_MASTER_ACTOR_ROLE="
     ],
     "failureClasses": [
       "GLB_MASTER_REQUIRED",
@@ -3384,12 +3385,15 @@
       "PLATFORM_VARIANT_MASTER_LINEAGE_MISSING",
       "GLB_MASTER_SCALE_AXIS_REQUIRED",
       "GLB_MASTER_ATTACHMENT_BINDING_REQUIRED",
-      "GLB_MASTER_LOD_PLAN_REQUIRED"
+      "GLB_MASTER_LOD_PLAN_REQUIRED",
+      "GLB_MASTER_ACTOR_ROLE_REQUIRED"
     ],
     "glbPresenceAloneCannotProveRuntimePass": true,
     "sourceRecipeAndHashBindingRequired": true,
     "nativeRuntimeAndMobileEvidenceStillRequired": true,
     "primitivePrototypeCannotEmitFinalAssetPass": true,
-    "repeatedFailureDedupeRequired": true
+    "repeatedFailureDedupeRequired": true,
+    "roleProfileEvidenceRequired": true,
+    "roleProfileMayNotClaimGameplayAuthority": true
   }
 }
