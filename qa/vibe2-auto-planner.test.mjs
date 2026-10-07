@@ -1324,9 +1324,11 @@ test('Roblox gameplay design focus prioritizes server and shared responsibility 
   assert.ok(task);
   assert.equal(task.studioQualityEvolution.focusPillar,'CORE_FUN');
   assert.equal(task.studioQualityEvolution.gameplaySourceDeltaRequired,true);
-  assert.ok(task.responsibleFiles.some(file=>file.endsWith('/server/Game.server.luau')));
-  assert.ok(task.responsibleFiles.some(file=>file.endsWith('/shared/GameConfig.luau')));
-  assert.equal(task.responsibleFiles.some(file=>file.endsWith('/client/Game.client.luau')),false);
+  const primaryOwners=task.responsibleFiles.slice(0,2);
+  assert.ok(primaryOwners.some(file=>file.endsWith('/server/Game.server.luau')));
+  assert.ok(primaryOwners.some(file=>file.endsWith('/shared/GameConfig.luau')));
+  assert.equal(primaryOwners.some(file=>file.endsWith('/client/Game.client.luau')),false);
+  assert.ok(task.responsibleFiles.some(file=>file.endsWith('/client/Game.client.luau')));
 });
 
 test('first studio build-up cycle establishes presentation baseline even when noisy nonvisual signals exist',()=>{
