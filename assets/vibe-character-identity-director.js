@@ -557,8 +557,50 @@ export function createVibeNpcCustomizationPopulation({count=64,seed='npc-populat
   });
 }
 
-export function createVibePopulationPhysicalDiversity(characters=[]){const rows=characters.map((c,i)=>createVibeMotionIdentity(c,i)),keys=rows.map(x=>JSON.stringify([x.body.heightCm,x.body.weightKg,x.body.frame,x.body.proportions,x.body.posture,x.physical.walk.cadence,x.physical.walk.armSwing,x.appearance.face.shape,x.appearance.surface])),unique=uniq(keys).length,score=Math.round(unique/Math.max(1,rows.length)*100);return Object.freeze({score,unique,total:rows.length,cloneRate:Math.round((rows.length-unique)/Math.max(1,rows.length)*100),pass:score>=80})}
+export function createVibePopulationPhysicalDiversity(characters=[]){
+  const rows=characters.map((character,index)=>createVibeMotionIdentity(character,index));
+  const keys=rows.map(identity=>JSON.stringify([
+    identity.body.heightCm,identity.body.weightKg,identity.body.scaleClass,identity.body.frame,identity.body.proportions,identity.body.posture,
+    identity.physical.walk.cadence,identity.physical.walk.armSwing,identity.appearance.face.shape,identity.appearance.face.featureBalance,
+    identity.appearance.surface.hairOrCrest,identity.appearance.surface.ageCue,identity.appearance.individualMarks
+  ]));
+  const unique=uniq(keys).length,score=Math.round(unique/Math.max(1,rows.length)*100);
+  return Object.freeze({
+    score,unique,total:rows.length,cloneRate:Math.round((rows.length-unique)/Math.max(1,rows.length)*100),
+    heightRangeCm:rows.length?Object.freeze([Math.min(...rows.map(row=>row.body.heightCm)),Math.max(...rows.map(row=>row.body.heightCm))]):Object.freeze([0,0]),
+    weightRangeKg:rows.length?Object.freeze([Math.min(...rows.map(row=>row.body.weightKg)),Math.max(...rows.map(row=>row.body.weightKg))]):Object.freeze([0,0]),
+    pass:score>=80
+  });
+}
 export function createVibePhysicalDiversityGate({characters=[]}={}){
+  const rows=characters.map((character,index)=>createVibeMotionIdentity(character,index)),issues=[];
+  for(let i=0;i<rows.length;i++)for(let j=i+1;j<rows.length;j++){
+    const a=rows[i],b=rows[j];
+    const same=[
+      Math.abs(a.body.heightCm-b.body.heightCm)<3,
+      Math.abs(a.body.weightKg-b.body.weightKg)<5,
+      a.body.scaleClass===b.body.scaleClass,
+      a.body.frame===b.body.frame,
+      a.body.proportions.shoulders===b.body.proportions.shoulders,
+      a.body.proportions.torso===b.body.proportions.torso,
+      a.body.proportions.arms===b.body.proportions.arms,
+      a.body.proportions.legs===b.body.proportions.legs,
+      a.body.proportions.headBodyRatio===b.body.proportions.headBodyRatio,
+      a.body.posture===b.body.posture,
+      a.physical.walk.cadence===b.physical.walk.cadence,
+      a.physical.walk.armSwing===b.physical.walk.armSwing,
+      a.appearance.face.shape===b.appearance.face.shape,
+      a.appearance.face.featureBalance===b.appearance.face.featureBalance,
+      a.appearance.surface.hairOrCrest===b.appearance.surface.hairOrCrest,
+      a.appearance.surface.ageCue===b.appearance.surface.ageCue
+    ].filter(Boolean).length;
+    if(same>=12)issues.push(`${a.name}:${b.name}:physical-appearance-clone`);
+  }
+  return Object.freeze({
+    pass:!issues.length,issues:Object.freeze(issues),checkedAxes:16,
+    rule:'major NPCs companions elites and bosses must differ across height weight body proportions face hair surface posture and gait; palette-only size-only or face-only clones are forbidden'
+  });
+}
   const rows=characters.map((c,i)=>createVibeMotionIdentity(c,i)),issues=[];
   for(let i=0;i<rows.length;i++)for(let j=i+1;j<rows.length;j++){
     const a=rows[i],b=rows[j];
@@ -590,5 +632,31 @@ export function createVibePhysicalDiversityGate({characters=[]}={}){
   });
 }
 export function scoreVibeMotionOriginality(characters=[]){const signatures=characters.map((c,i)=>createVibeMotionIdentity(c,i)),keys=signatures.map(s=>JSON.stringify([s.archetypes,s.body,s.signature.move,s.signature.attack,s.physical.walk])),unique=uniq(keys).length,score=Math.round((unique/Math.max(1,characters.length))*100);return Object.freeze({score,unique,total:characters.length,duplicates:characters.length-unique,needsDiversification:score<80})}
-export function planVibeCharacterIdentityAutopilot({characters=[],eventMap={}}={}){const plans=characters.map((c,i)=>{const identity=createVibeMotionIdentity(c,i),events=eventMap[c.name]||['idle','move','attack','hit','death'];return Object.freeze({character:c.name,identity,persona:createVibeCharacterPersona(c,i),npcRoleProfile:createVibeNpcRoleProfile({role:c.role||'GENERAL_NPC'}),assetMorph:createVibeCharacterAssetMorphPlan(c,i),customization:createVibeCharacterCustomizationRecipe(c,i),signatureMove:createVibeSignatureMove(c,i),gameplayLinks:createVibeGameplayMotionLinks({events,character:c,index:i})})});return Object.freeze({version:5,customizationBreadth:VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,plans:Object.freeze(plans.map(row=>Object.freeze({...row,behaviorBrain:resolveVibeCharacterBehaviorIntent({persona:row.persona,context:{}})}))),physicalDiversity:createVibePopulationPhysicalDiversity(characters),personaDiversity:createVibePopulationPersonaDiversity(characters),diversityGate:createVibePhysicalDiversityGate({characters}),originality:scoreVibeMotionOriginality(characters),policy:Object.freeze({developmentAI:false,serverAI:'game-runtime-only',deterministic:true,eventDriven:true,gameplayLinked:true,noRuleMutation:true,avoidGenericMotion:true,variationMustPreserveTiming:true,noWholeSpriteScaleHack:true,playerAndNpcShareCustomizationAssetPool:true,colorOnlyNpcCloneForbidden:true})})}
-if(typeof window!=='undefined'){Object.assign(window,{VIBE_NPC_ROLE_PRODUCTION_CONTRACT,createJaewoonVibeNpcRoleProfile:createVibeNpcRoleProfile,inferJaewoonVibeCharacterArchetypes:inferVibeCharacterArchetypes,createJaewoonVibeBodyIdentity:createVibeBodyIdentity,createJaewoonVibeAppearanceIdentity:createVibeAppearanceIdentity,createJaewoonVibeEquipmentFitIdentity:createVibeEquipmentFitIdentity,createJaewoonVibeGaitIdentity:createVibeGaitIdentity,createJaewoonVibePhysicalActionLanguage:createVibePhysicalActionLanguage,createJaewoonVibeMotionIdentity:createVibeMotionIdentity,createJaewoonVibeGameplayMotionLinks:createVibeGameplayMotionLinks,createJaewoonVibeSignatureMove:createVibeSignatureMove,createJaewoonVibeCharacterAssetMorphPlan:createVibeCharacterAssetMorphPlan,createJaewoonVibeCharacterCustomizationRecipe:createVibeCharacterCustomizationRecipe,createJaewoonVibeNpcCustomizationPopulation:createVibeNpcCustomizationPopulation,createJaewoonVibePopulationPhysicalDiversity:createVibePopulationPhysicalDiversity,createJaewoonVibePhysicalDiversityGate:createVibePhysicalDiversityGate,scoreJaewoonVibeMotionOriginality:scoreVibeMotionOriginality,createJaewoonVibeCharacterPersona:createVibeCharacterPersona,resolveJaewoonVibeCharacterBehaviorIntent:resolveVibeCharacterBehaviorIntent,createJaewoonVibePopulationPersonaDiversity:createVibePopulationPersonaDiversity,planJaewoonVibeCharacterIdentityAutopilot:planVibeCharacterIdentityAutopilot})}
+export function planVibeCharacterIdentityAutopilot({characters=[],eventMap={}}={}){
+  const plans=characters.map((character,index)=>{
+    const identity=createVibeMotionIdentity(character,index),events=eventMap[character.name]||['idle','move','attack','hit','death'];
+    return Object.freeze({
+      character:character.name,
+      identity,
+      persona:createVibeCharacterPersona(character,index),
+      npcRoleProfile:createVibeNpcRoleProfile({role:character.role||'GENERAL_NPC',character,index}),
+      assetMorph:createVibeCharacterAssetMorphPlan(character,index),
+      customization:createVibeCharacterCustomizationRecipe(character,index),
+      signatureMove:createVibeSignatureMove(character,index),
+      gameplayLinks:createVibeGameplayMotionLinks({events,character,index})
+    });
+  });
+  return Object.freeze({
+    version:6,customizationBreadth:VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,npcRoleProduction:VIBE_NPC_ROLE_PRODUCTION_CONTRACT,
+    plans:Object.freeze(plans.map(row=>Object.freeze({...row,behaviorBrain:resolveVibeCharacterBehaviorIntent({persona:row.persona,context:{}})}))),
+    physicalDiversity:createVibePopulationPhysicalDiversity(characters),personaDiversity:createVibePopulationPersonaDiversity(characters),
+    diversityGate:createVibePhysicalDiversityGate({characters}),originality:scoreVibeMotionOriginality(characters),
+    policy:Object.freeze({
+      developmentAI:false,serverAI:'game-runtime-only',deterministic:true,eventDriven:true,gameplayLinked:true,noRuleMutation:true,
+      avoidGenericMotion:true,variationMustPreserveTiming:true,noWholeSpriteScaleHack:true,playerAndNpcShareCustomizationAssetPool:true,
+      colorOnlyNpcCloneForbidden:true,sizeOnlyNpcCloneForbidden:true,faceOnlyNpcCloneForbidden:true,
+      npcHeightWeightBodyProportionAppearanceGaitDiversityRequired:true
+    })
+  });
+}
+if(typeof window!=='undefined'){Object.assign(window,{VIBE_NPC_ROLE_PRODUCTION_CONTRACT,createJaewoonVibeNpcRoleProfile:createVibeNpcRoleProfile,createJaewoonVibeNpcPhysicalProfile:createVibeNpcPhysicalProfile,inferJaewoonVibeCharacterArchetypes:inferVibeCharacterArchetypes,createJaewoonVibeBodyIdentity:createVibeBodyIdentity,createJaewoonVibeAppearanceIdentity:createVibeAppearanceIdentity,createJaewoonVibeEquipmentFitIdentity:createVibeEquipmentFitIdentity,createJaewoonVibeGaitIdentity:createVibeGaitIdentity,createJaewoonVibePhysicalActionLanguage:createVibePhysicalActionLanguage,createJaewoonVibeMotionIdentity:createVibeMotionIdentity,createJaewoonVibeGameplayMotionLinks:createVibeGameplayMotionLinks,createJaewoonVibeSignatureMove:createVibeSignatureMove,createJaewoonVibeCharacterAssetMorphPlan:createVibeCharacterAssetMorphPlan,createJaewoonVibeCharacterCustomizationRecipe:createVibeCharacterCustomizationRecipe,createJaewoonVibeNpcCustomizationPopulation:createVibeNpcCustomizationPopulation,createJaewoonVibePopulationPhysicalDiversity:createVibePopulationPhysicalDiversity,createJaewoonVibePhysicalDiversityGate:createVibePhysicalDiversityGate,scoreJaewoonVibeMotionOriginality:scoreVibeMotionOriginality,createJaewoonVibeCharacterPersona:createVibeCharacterPersona,resolveJaewoonVibeCharacterBehaviorIntent:resolveVibeCharacterBehaviorIntent,createJaewoonVibePopulationPersonaDiversity:createVibePopulationPersonaDiversity,planJaewoonVibeCharacterIdentityAutopilot:planVibeCharacterIdentityAutopilot})}
