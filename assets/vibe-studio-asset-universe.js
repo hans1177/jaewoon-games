@@ -2778,8 +2778,8 @@ export const STUDIO_ASSET_QUALITY_AXIS_APPLICABILITY=Object.freeze({
   PROP:Object.freeze(['SILHOUETTE_FORM','MODELING_STRUCTURE','MATERIAL_TEXTURE','COLOR_LIGHTING','WORLD_STYLE_COHERENCE','DETAIL_DENSITY','GAME_CAMERA_READABILITY','ORIGINALITY_IDENTITY','MOBILE_PERFORMANCE','ACTUAL_GAME_BINDING','PRODUCTION_VERIFICATION'])
 });
 export const STUDIO_ASSET_FAMILY_OUTPUTS=Object.freeze({
-  CHARACTER:Object.freeze(['WORLD_MODEL','RIG','MATERIAL_SET','MOTION_SET','PORTRAIT_OR_ICON','LOD0','LOD1','LOD2']),
-  CREATURE:Object.freeze(['WORLD_MODEL','BODY_PLAN_RIG','MATERIAL_SET','SPECIES_MOTION_SET','ICON','LOD0','LOD1','LOD2']),
+  CHARACTER:Object.freeze(['GLB_MASTER','WORLD_MODEL','RIG','MATERIAL_SET','MOTION_SET','PORTRAIT_OR_ICON','LOD0','LOD1','LOD2']),
+  CREATURE:Object.freeze(['GLB_MASTER','WORLD_MODEL','BODY_PLAN_RIG','MATERIAL_SET','SPECIES_MOTION_SET','ICON','LOD0','LOD1','LOD2']),
   BUILDING:Object.freeze(['WORLD_MODEL','MODULAR_PARTS','INTERIOR_WHEN_APPLICABLE','MATERIAL_SET','COLLISION_NAV_PROXY','LOD0','LOD1','LOD2']),
   ENVIRONMENT:Object.freeze(['TERRAIN_OR_KIT','LANDMARK','SET_DRESSING','MATERIAL_SET','PLACEMENT_RULES','LOD_OR_STREAMING_VARIANTS']),
   WEAPON:Object.freeze(['EQUIPPED_MODEL','WORLD_DROP_MODEL','INVENTORY_ICON','CRAFTING_ICON_WHEN_CRAFTABLE','MATERIAL_SET','GRIP_SOCKET_MAP','LOD0','LOD1','LOD2']),
@@ -2791,6 +2791,74 @@ export const STUDIO_ASSET_FAMILY_OUTPUTS=Object.freeze({
   MOTION:Object.freeze(['SOURCE_MOTION','PLATFORM_RETARGET','CONTACT_MAP','BLEND_VARIANTS','MOTION_LOD']),
   PROP:Object.freeze(['WORLD_MODEL','INTERACTION_VARIANT','INVENTORY_ICON_WHEN_ITEM','CRAFTING_ICON_WHEN_CRAFTABLE','DROP_MODEL_WHEN_COLLECTIBLE','COLLISION_PROXY','LOD0','LOD1','LOD2'])
 });
+
+export const STUDIO_GLTF_MASTER_ASSET_STANDARD=Object.freeze({
+  version:1,
+  status:'ACTIVE_EXECUTABLE_CONTRACT',
+  scope:'ARTICULATED_OR_RENDERED_3D_CHARACTER_CREATURE_AND_BOSS_MASTER_ASSET',
+  appliesToFamilies:Object.freeze(['CHARACTER','CREATURE']),
+  includesEliteAndBoss:true,
+  masterFormat:'GLB',
+  gltfVersion:'2.0',
+  masterBeforePlatformVariants:true,
+  commonMasterRole:'CROSS_PLATFORM_AUTHORING_SOURCE_NOT_FINAL_RUNTIME_BINARY',
+  requiredMasterContents:Object.freeze([
+    'MESH','UV','MATERIAL_SLOTS','RIG_AND_SKIN_WHEN_ARTICULATED',
+    'ANIMATION_CLIPS_OR_EXPLICIT_COMPATIBLE_MOTION_BINDING_WHEN_ANIMATED',
+    'STABLE_SCALE_ORIGIN_AND_AXIS','ATTACHMENT_SOCKET_METADATA_OR_BINDING_MAP','LOD_SOURCE_OR_DERIVATION_PLAN'
+  ]),
+  primitivePartActorPrototypeOnly:true,
+  primitivePartActorCannotClaimFinalAsset:true,
+  platformVariantMustPreserveMasterHash:true,
+  directCrossPlatformFinalBinaryReuseForbidden:true,
+  nativeRuntimeVerificationRequired:true,
+  gameplayAuthority:false
+});
+
+const GLTF_MASTER_SHA256=/^[a-f0-9]{64}$/i;
+
+export function evaluateGltfMasterAssetStandard({asset={},family='',platform='',required=null}={}){
+  const resolvedFamily=upper(family||asset?.family||asset?.category);
+  const requiredByFamily=STUDIO_GLTF_MASTER_ASSET_STANDARD.appliesToFamilies.includes(resolvedFamily);
+  const mustRequire=required===null?requiredByFamily:required===true;
+  if(!mustRequire)return Object.freeze({version:1,required:false,pass:true,blockers:Object.freeze([]),family:resolvedFamily||null,master:null});
+  const master=asset?.gltfMaster&&typeof asset.gltfMaster==='object'?asset.gltfMaster:{};
+  const sourceFiles=Array.isArray(asset?.sourceFiles)?asset.sourceFiles.map(value=>text(value).replace(/^\//,'')):[];
+  const masterPath=text(master.path||asset?.meshArtifact||asset?.modelDownloadPath||(/\.glb$/i.test(text(asset?.path))?asset.path:'')).replace(/^\//,'');
+  const sourceRecipe=text(master.sourceRecipe||asset?.sourceRecipe||sourceFiles.find(value=>/\.py$/i.test(value))).replace(/^\//,'');
+  const evidencePath=text(master.evidencePath||asset?.gltfEvidencePath||sourceFiles.find(value=>/evidence\.json$/i.test(value))).replace(/^\//,'');
+  const previewPath=text(master.previewPath||asset?.viewerPreviewPath||sourceFiles.find(value=>/\.(?:png|webp|jpg|jpeg)$/i.test(value))).replace(/^\//,'');
+  const artifactHash=text(master.artifactHash||asset?.gltfMasterArtifactHash||asset?.artifactHash||asset?.derivedSha256);
+  const sourceHash=text(master.sourceHash||asset?.sourceHash||asset?.sourceSha256);
+  const content=master.contentEvidence&&typeof master.contentEvidence==='object'?master.contentEvidence:{};
+  const articulated=master.articulated!==false;
+  const animated=master.animated!==false;
+  const motionBinding=content.animationClips===true||Number(content.motionCount||0)>0
+    ||master.compatibleMotionBinding===true||(Array.isArray(asset?.compatibleMotionSourceIds)&&asset.compatibleMotionSourceIds.length>0);
+  const blockers=[];
+  if(!masterPath)blockers.push('GLB_MASTER_REQUIRED');
+  else if(!/\.glb$/i.test(masterPath)||upper(master.format||'GLB')!=='GLB')blockers.push('GLB_MASTER_FORMAT_INVALID');
+  if(!GLTF_MASTER_SHA256.test(artifactHash))blockers.push('GLB_MASTER_ARTIFACT_HASH_REQUIRED');
+  if(!sourceRecipe||!/\.py$/i.test(sourceRecipe))blockers.push('GLB_MASTER_SOURCE_RECIPE_REQUIRED');
+  if(!GLTF_MASTER_SHA256.test(sourceHash))blockers.push('GLB_MASTER_SOURCE_HASH_REQUIRED');
+  if(!evidencePath||!previewPath)blockers.push('GLB_MASTER_EVIDENCE_REQUIRED');
+  if(content.mesh!==true)blockers.push('GLB_MASTER_MESH_REQUIRED');
+  if(content.uv!==true)blockers.push('GLB_MASTER_UV_REQUIRED');
+  if(content.materialSlots!==true&&content.materials!==true)blockers.push('GLB_MASTER_MATERIAL_REQUIRED');
+  if(articulated&&content.rig!==true)blockers.push('GLB_MASTER_RIG_REQUIRED');
+  if(articulated&&content.skin!==true)blockers.push('GLB_MASTER_SKIN_REQUIRED');
+  if(animated&&!motionBinding)blockers.push('GLB_MASTER_MOTION_BINDING_REQUIRED');
+  if(master.platformVariantsRequireExactMasterHash!==true)blockers.push('PLATFORM_VARIANT_MASTER_LINEAGE_MISSING');
+  return Object.freeze({
+    version:1,required:true,pass:blockers.length===0,blockers:Object.freeze(blockers),family:resolvedFamily||null,
+    platform:upper(platform)||null,master:Object.freeze({
+      format:'GLB',path:masterPath||null,artifactHash:artifactHash||null,sourceRecipe:sourceRecipe||null,sourceHash:sourceHash||null,
+      evidencePath:evidencePath||null,previewPath:previewPath||null,articulated,animated,motionBinding,
+      contentEvidence:Object.freeze({...content}),platformVariantsRequireExactMasterHash:master.platformVariantsRequireExactMasterHash===true
+    }),
+    primitivePartActorPrototypeOnly:true,nativeRuntimeVerificationStillRequired:true,gameplayAuthority:false
+  });
+}
 
 export const CREATURE_BODY_PLANS=Object.freeze([
   'SMALL_HUMANOID_BIPED','STANDARD_HUMANOID_MONSTER','HEAVY_BIPED','DIGITIGRADE_BIPED','HUNCHED_BIPED',
@@ -2923,6 +2991,8 @@ export function createSurvivalWildlifeAssetProfile({species='BEAR',platform='ROB
       lodRequired:true,
       groundContactShadowRequired:true
     }),
+    gltfMasterRequired:true,
+    gltfMasterFormat:'GLB',
     productionVerified:false,
     runtimeVerificationRequired:true,
     exactThirdPartyAssetCopy:false
@@ -4545,6 +4615,7 @@ export function createCreatureSpeciesBlueprint({
       signatureSkill:text(signatureSkill),audioIdentity:text(audioIdentity),hitDeathIdentity:text(hitDeathIdentity)
     }),
     platform:upper(platform),complete:missing.length===0,missing:Object.freeze(missing),
+    gltfMasterRequired:true,gltfMasterFormat:'GLB',
     colorOnlySpeciesVariantAllowed:false,gameplayStatsAuthority:false
   });
 }
@@ -4579,6 +4650,7 @@ export function createStudioTestbedPlan({assetIds=[],platform='UNITY',mobile=tru
 
 export function evaluateCompanyAssetPromotion({asset={},consumer={},runtimeEvidence={}}={}){
   const id=text(asset?.id),family=upper(asset?.family||asset?.category),platform=upper(runtimeEvidence?.platform||consumer?.platform||asset?.platformVariant||asset?.platform);
+  const gltfMaster=evaluateGltfMasterAssetStandard({asset,family,platform});
   const license=text(asset?.license);
   const sourceHash=text(asset?.sourceHash||asset?.sourceSha256||asset?.contentHash||asset?.sha256);
   const artifactHash=text(asset?.artifactHash||asset?.derivedSha256||asset?.contentHash||asset?.sha256);
@@ -4593,6 +4665,7 @@ export function evaluateCompanyAssetPromotion({asset={},consumer={},runtimeEvide
   if(!['ROBLOX','UNITY'].includes(platform))blockers.push('NATIVE_PLATFORM_REQUIRED');
   if(!license||/^unknown$/i.test(license)||/(?:CC-BY-NC|NONCOMMERCIAL|NO-COMMERCIAL|NC\b)/i.test(license))blockers.push('COMMERCIAL_MODIFIABLE_LICENSE_REQUIRED');
   if(!sourceHash)blockers.push('SOURCE_HASH_REQUIRED');
+  if(gltfMaster.required&&!gltfMaster.pass)blockers.push(...gltfMaster.blockers);
   if(!artifactPath)blockers.push('NATIVE_ARTIFACT_OR_SOURCE_PATH_REQUIRED');
   if(!consumerGameId)blockers.push('RUNTIME_CONSUMER_GAME_REQUIRED');
   if(runtimeEvidence?.nativeBindingPass!==true)blockers.push('NATIVE_BINDING_PASS_REQUIRED');
@@ -4608,10 +4681,12 @@ export function evaluateCompanyAssetPromotion({asset={},consumer={},runtimeEvide
   const eligible=blockers.length===0;
   return Object.freeze({
     version:1,eligible,blockers:Object.freeze(blockers),assetId:id||null,family:family||null,platform:platform||null,consumerGameId:consumerGameId||null,
+    gltfMaster,
     promotion:eligible?Object.freeze({
       id,family,category:family,platform,status:'VERIFIED_COMPANY_ASSET',path:artifactPath,license,
       sourceHash,artifactHash:artifactHash||null,productionVerified:true,verifiedCompanyReusable:true,runtimeVerificationState:'VERIFIED_NATIVE_RUNTIME',
       artReviewState:'RUNTIME_VERIFIED',consumerGameIds:Object.freeze([consumerGameId]),
+      ...(gltfMaster.required?{gltfMaster:Object.freeze({...asset.gltfMaster,productionVerified:true,nativeRuntimeVerificationRequired:false})}:{}),
       promotionEvidence:Object.freeze({
         assetId:id,nativeBindingPass:true,visualRuntimePass:true,mobilePerformancePass:true,regressionPass:true,licenseProvenancePass:true,
         sourceHash,artifactHash:artifactHash||null,runtimeEvidenceId:text(runtimeEvidence?.id||runtimeEvidence?.runId)||null
@@ -5389,6 +5464,7 @@ export function createStudioAssetUniversePlan({
     coverage,
     heatmap:gapFill.heatmap,
     gapFill,
+    gltfMasterAssetStandard:STUDIO_GLTF_MASTER_ASSET_STANDARD,
     creatureUniverse:Object.freeze({
       bodyPlanCount:CREATURE_BODY_PLANS.length,
       speciesCount:CREATURE_SPECIES.length,
