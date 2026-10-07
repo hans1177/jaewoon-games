@@ -9,12 +9,61 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "designer_draft_slices::identity-core": {
+      "identity": "인간 4명과 몬스터 4명이 시작하고, 몬스터의 명시적 감염 공격에 맞은 인간이 즉시 몬스터로 전환돼 판세가 계속 뒤집히는 8인 감염 추격전.",
+      "playerFantasy": "감염된 인간은 고유 도구·대시·정화로 생존/반격하며, 몬스터는 에너지를 소모하는 명시적 감염 공격으로 인간을 감염한다. 감염된 인간은 몬스터로 전환하고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격을 시작한다.",
+      "coreFun": "4대4에서 시작한 인원 구성이 감염 공격과 정화 때문에 실시간으로 바뀌며, 방금 전 동료가 다음 순간 고유 감염 스킬을 가진 몬스터로 나를 쫓는 긴장감. 인간4/몬스터4 배정, 빈자리 AI 충원. 인간은 고유 도구·대시·정화로 생존/반격, 몬스터는 명시적 감염 공격으로 인간을 감염. 감염된 인간은 몬스터로 전환하고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격. 인간 정화 공격은 몬스터를 라운드에서 제거. 한 진영이 0명이 되면 즉시 승패. 240초까지 양팀이 남으면 무승부.",
+      "coreLoop": [
+        "인간4/몬스터4 배정, 빈자리 AI 충원",
+        "인간은 고유 도구·대시·정화로 생존/반격",
+        "몬스터는 명시적 감염 공격으로 인간을 감염",
+        "감염된 인간은 몬스터로 전환하고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격",
+        "인간 정화 공격은 몬스터를 라운드에서 제거",
+        "한 진영이 0명이 되면 즉시 승패",
+        "240초까지 양팀이 남으면 무승부"
+      ],
+      "signatureSystems": [
+        {
+          "name": "4대4 AI 충원",
+          "purpose": "논리 인원 8명, 인간4/몬스터4를 실제 플레이어+AI로 항상 채운다.",
+          "playerChoice": "인간 직업 선택 및 AI 충원 조건"
+        },
+        {
+          "name": "감염 전환",
+          "purpose": "몬스터의 명시적 서버 권한 감염 공격이 적중한 인간이 탈락하지 않고 몬스터로 전환하며 인간 직업별 감염 스킬을 얻는다.",
+          "playerChoice": "감염 공격 적중 여부"
+        },
+        {
+          "name": "인간 정화",
+          "purpose": "인간이 정화 공격으로 몬스터를 라운드에서 제거한다.",
+          "playerChoice": "정화 공격 실행 여부"
+        },
+        {
+          "name": "확장형 인간 로스터",
+          "purpose": "각 인간은 고유 도구+패시브+감염 후 고유 능력 세트로 계속 추가한다.",
+          "playerChoice": "인간 추가 여부"
+        }
+      ]
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 219677,
+      "lastMs": 219677,
+      "lastError": null,
+      "updatedAt": "2026-10-07T20:28:47.205Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T20:25:07.525Z",
-  "updatedAt": "2026-10-07T20:25:07.526Z",
+  "updatedAt": "2026-10-07T20:28:47.206Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -206,5 +255,11 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-07T20:28:47.205Z",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
