@@ -374,8 +374,11 @@ export function persistedGeneratedAssetBindings(order={}){
   if(!assetDevelopmentTask(order)||!['roblox','unity'].includes(target)
     ||dcc?.executed!==true||dcc?.allRecipesPassed!==true
     ||dcc?.candidateUsable!==true||dcc?.persistedForCandidate!==true
+    ||dcc?.outputVerification?.required===true&&dcc.outputVerification.pass!==true
     ||!recipes.length)return Object.freeze([]);
+  const verifiedRows=Array.isArray(dcc?.outputVerification?.rows)?dcc.outputVerification.rows:[];
   const bindings=recipes.map((row,index)=>{
+    if(dcc?.outputVerification?.required===true&&verifiedRows[index]?.pass!==true)return null;
     const masterGlbRequired=row?.masterGlbRequired===true||['CHARACTER','CREATURE'].includes(clean(row?.family).toUpperCase());
     const masterGlb=posix(row?.masterGlb||(masterGlbRequired?row?.nativeArtifact:''));
     const masterGlbHash=clean(row?.masterGlbHash||row?.masterGlbInspection?.sourceHash);
@@ -426,6 +429,98 @@ function dccRepoPath(value=''){
   return relative;
 }
 function sha256File(file){return crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');}
+function candidateChangedText(candidate={}){
+  return[
+    ...(candidate.edits||[]).map(row=>row.replace),
+    ...(candidate.newFiles||[]).map(row=>row.content),
+    ...(candidate.replaceFiles||[]).map(row=>row.content)
+  ].map(value=>String(value??'')).join('\n');
+}
+export function verifyPersistedGeneratedAssetOutputs({cwd=process.cwd(),order={}}={}){
+  const target=clean(order?.target).toLowerCase();
+  const dcc=order?.assetProduction?.nativeAuthoringExecution?.dcc?.executionEvidence;
+  const recipes=Array.isArray(dcc?.recipes)?dcc.recipes:[];
+  const required=assetDevelopmentTask(order)&&dcc?.executed===true&&dcc?.persistedForCandidate===true&&recipes.length>0;
+  if(!required)return Object.freeze({version:1,required:false,pass:true,status:'NOT_REQUIRED',recipeCount:0,checkedFileCount:0,hashedFileCount:0,cacheHitCount:0,rows:Object.freeze([]),failures:Object.freeze([])});
+  const root=path.resolve(cwd),fileCache=new Map();
+  let hashedFileCount=0,cacheHitCount=0;
+  const inspect=(rawPath,{expectedHash='',hashRequired=false,kind='ARTIFACT'}={})=>{
+    let relative='';
+    try{relative=dccRepoPath(rawPath);}catch{
+      return Object.freeze({kind,path:posix(rawPath)||null,expectedHash:clean(expectedHash)||null,actualHash:null,exists:false,size:0,hashMatches:false,pass:false,reason:'INVALID_REPOSITORY_PATH'});
+    }
+    let cached=fileCache.get(relative);
+    if(cached)cacheHitCount+=1;
+    if(!cached){
+      const absolute=path.resolve(root,relative);
+      const inside=absolute.startsWith(root+path.sep);
+      let exists=false,size=0,actualHash=null;
+      if(inside){
+        try{
+          const stat=fs.statSync(absolute);
+          exists=stat.isFile()&&stat.size>0;
+          size=exists?stat.size:0;
+        }catch{}
+      }
+      cached={relative,absolute,inside,exists,size,actualHash};
+      fileCache.set(relative,cached);
+    }
+    if(hashRequired&&cached.exists&&!cached.actualHash){
+      cached.actualHash=sha256File(cached.absolute);
+      hashedFileCount+=1;
+    }
+    const expected=clean(expectedHash).toLowerCase();
+    const hashMatches=!hashRequired||Boolean(expected&&cached.actualHash&&cached.actualHash.toLowerCase()===expected);
+    const reason=!cached.inside?'OUTSIDE_REPOSITORY'
+      :!cached.exists?'FILE_MISSING_OR_EMPTY'
+        :hashRequired&&!expected?'EXPECTED_SHA256_MISSING'
+          :hashRequired&&!hashMatches?'SHA256_MISMATCH'
+            :null;
+    return Object.freeze({kind,path:relative,expectedHash:expected||null,actualHash:cached.actualHash||null,exists:cached.exists,size:cached.size,hashMatches,pass:reason===null,reason});
+  };
+  const rows=recipes.map((row,index)=>{
+    const family=clean(row?.family).toUpperCase();
+    const masterRequired=row?.masterGlbRequired===true||['CHARACTER','CREATURE'].includes(family);
+    const outputRows=Array.isArray(row?.outputs)?row.outputs:[];
+    const checks=[];
+    for(const output of outputRows){
+      const outputPath=typeof output==='string'?output:output?.path;
+      const outputHash=typeof output==='string'?'':output?.sha256||output?.artifactHash;
+      checks.push(inspect(outputPath,{expectedHash:outputHash,hashRequired:true,kind:'DECLARED_OUTPUT'}));
+    }
+    const nativeArtifact=posix(row?.nativeArtifact);
+    const artifactHash=clean(row?.artifactHash);
+    if(nativeArtifact&&!checks.some(check=>check.path===nativeArtifact))checks.push(inspect(nativeArtifact,{expectedHash:artifactHash,hashRequired:true,kind:'NATIVE_ARTIFACT'}));
+    const masterGlb=posix(row?.masterGlb||(masterRequired?row?.nativeArtifact:''));
+    const masterGlbHash=clean(row?.masterGlbHash||row?.masterGlbInspection?.sourceHash);
+    if(masterRequired&&masterGlb&&!checks.some(check=>check.path===masterGlb))checks.push(inspect(masterGlb,{expectedHash:masterGlbHash||artifactHash,hashRequired:true,kind:'MASTER_GLB'}));
+    const platformNativeArtifact=posix(row?.platformNativeArtifact),platformNativeArtifactHash=clean(row?.platformNativeArtifactHash);
+    if(masterRequired&&['roblox','unity'].includes(target)){
+      checks.push(inspect(platformNativeArtifact,{expectedHash:platformNativeArtifactHash,hashRequired:true,kind:'PLATFORM_NATIVE_ARTIFACT'}));
+    }
+    const editableSource=posix(row?.editableSource),editableSourceHash=clean(row?.editableSourceHash||row?.sourceHash);
+    checks.push(inspect(editableSource,{expectedHash:editableSourceHash,hashRequired:true,kind:'EDITABLE_SOURCE'}));
+    if(clean(row?.preview))checks.push(inspect(row.preview,{kind:'PREVIEW'}));
+    if(clean(row?.evidenceJson))checks.push(inspect(row.evidenceJson,{kind:'EVIDENCE_JSON'}));
+    const derivedFromMasterGlbHash=clean(row?.derivedFromMasterGlbHash);
+    const lineageReady=!masterRequired||target==='web'
+      ?Boolean(!masterRequired||masterGlbHash)
+      :Boolean(masterGlbHash&&derivedFromMasterGlbHash===masterGlbHash);
+    const failed=checks.filter(check=>check.pass!==true);
+    if(masterRequired&&!lineageReady)failed.push(Object.freeze({kind:'MASTER_GLB_LINEAGE',path:platformNativeArtifact||nativeArtifact||null,expectedHash:masterGlbHash||null,actualHash:derivedFromMasterGlbHash||null,exists:true,size:0,hashMatches:false,pass:false,reason:'MASTER_GLB_LINEAGE_MISMATCH'}));
+    return Object.freeze({
+      index,assetId:clean(row?.assetId||row?.id)||null,family:family||null,masterRequired,
+      pass:failed.length===0,checks:Object.freeze(checks),failures:Object.freeze(failed)
+    });
+  });
+  const failures=rows.flatMap(row=>row.failures.map(failure=>Object.freeze({index:row.index,assetId:row.assetId,...failure})));
+  return Object.freeze({
+    version:1,required:true,pass:failures.length===0,
+    status:failures.length?'PERSISTED_OUTPUT_INVALID':'PERSISTED_OUTPUT_VERIFIED',
+    recipeCount:recipes.length,checkedFileCount:fileCache.size,hashedFileCount,cacheHitCount,
+    rows:Object.freeze(rows),failures:Object.freeze(failures)
+  });
+}
 function gitStatusPaths(cwd){
   let raw='';
   try{raw=execFileSync('git',['status','--porcelain=v1','-z','--untracked-files=all'],{cwd,encoding:'utf8',timeout:15000,maxBuffer:16*1024*1024});}catch(error){throw new Error('NATIVE_DCC_GIT_STATUS_FAILED:'+clean(error?.message||error).slice(0,160));}
@@ -564,15 +659,11 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
     });
   }finally{fs.rmSync(tempRoot,{recursive:true,force:true});}
 }
-export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}){
+export function evaluateNativeAssetAuthoringCandidate({order={},candidate={},candidateText=''}={}){
   const contract=order?.assetProduction?.nativeAuthoringExecution;
   if(!contract?.enabled)return Object.freeze({required:false,status:'NOT_REQUIRED',runtimeVerified:false,companyPromotionEligible:false});
   const target=clean(order?.target).toLowerCase();
-  const text=[
-    ...(candidate.edits||[]).map(row=>row.replace),
-    ...(candidate.newFiles||[]).map(row=>row.content),
-    ...(candidate.replaceFiles||[]).map(row=>row.content)
-  ].map(value=>String(value??'')).join('\n');
+  const text=candidateText||candidateChangedText(candidate);
   const nativeSignals=target==='roblox'
     ?[
       /Instance\.new\s*\(\s*["'](?:Model|MeshPart|Part|Attachment|Motor6D|Bone|ParticleEmitter|Trail|Beam)["']/i,
@@ -611,10 +702,12 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
     const types=Array.isArray(row?.types)?row.types.map(value=>clean(value).toLowerCase()):[];
     return row?.masterGlbRequired===true||['CHARACTER','CREATURE'].includes(clean(row?.family).toUpperCase())||types.some(type=>masterGlbRequiredTypes.includes(type));
   }).every(row=>row?.masterGlbStaticQaPass===true&&/\.glb$/i.test(posix(row?.nativeArtifact)));
+  const dccOutputVerificationPass=dccEvidence?.outputVerification?.required===true?dccEvidence.outputVerification.pass===true:true;
   const dccAuthored=Boolean(
     !dccRequired||(
       dccTypeCoveragePass
       &&masterGlbEvidencePass
+      &&dccOutputVerificationPass
       &&dccEvidence?.executed===true
       &&dccEvidence?.allRecipesPassed===true
       &&dccEvidence?.candidateUsable===true
@@ -630,7 +723,9 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
   const unityActorBindingSignal=/(?:SkinnedMeshRenderer|Animator|Instantiate\s*\(|InstantiateMainSceneAsync|sharedMesh\s*=)/i.test(bindingText);
   const webActorLoaderSignal=/(?:GLTFLoader|loadAsync\s*\(|\.load\s*\(|fetch\s*\()/i.test(bindingText);
   const webActorBindingSignal=/(?:AnimationMixer|clipAction\s*\(|scene\.add\s*\(|requestAnimationFrame\s*\()/i.test(bindingText);
+  const outputVerificationRows=Array.isArray(dccEvidence?.outputVerification?.rows)?dccEvidence.outputVerification.rows:[];
   const generatedRecipeBindingChecks=Object.freeze((dccEvidence?.recipes||[]).map((row,index)=>{
+    const persistedOutputVerified=dccEvidence?.outputVerification?.required===true?outputVerificationRows[index]?.pass===true:true;
     const masterRequired=row?.masterGlbRequired===true||['CHARACTER','CREATURE'].includes(clean(row?.family).toUpperCase());
     const webUsesMaster=target==='web'&&masterRequired;
     const assetPath=webUsesMaster?posix(row?.masterGlb||row?.nativeArtifact):masterRequired?posix(row?.platformNativeArtifact):posix(row?.nativeArtifact);
@@ -638,7 +733,7 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
     const lineageReady=!masterRequired
       ||webUsesMaster&&row?.masterGlbStaticQaPass===true&&Boolean(clean(row?.masterGlbHash||row?.artifactHash))
       ||clean(row?.masterGlbHash)&&clean(row?.derivedFromMasterGlbHash)===clean(row?.masterGlbHash);
-    const artifactReady=Boolean(assetPath&&artifactHash&&lineageReady);
+    const artifactReady=Boolean(assetPath&&artifactHash&&lineageReady&&persistedOutputVerified);
     const identityBound=artifactReady&&bindingText.includes(assetPath)&&bindingText.includes(artifactHash);
     const runtimeBindingSignalPass=!masterRequired||(
       target==='unity'?(unityActorLoaderSignal&&unityActorBindingSignal)
@@ -647,7 +742,7 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
     );
     return Object.freeze({
       index,assetId:clean(row?.assetId||row?.id)||null,masterRequired,webUsesMaster,path:assetPath||null,artifactHash:artifactHash||null,
-      lineageReady,artifactReady,identityBound,runtimeBindingSignalPass,bound:artifactReady&&identityBound&&runtimeBindingSignalPass,
+      persistedOutputVerified,lineageReady,artifactReady,identityBound,runtimeBindingSignalPass,bound:artifactReady&&identityBound&&runtimeBindingSignalPass,
       runtimeSource:webUsesMaster?'MASTER_GLB':'PLATFORM_NATIVE_DERIVATIVE'
     });
   }));
@@ -684,6 +779,8 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
     masterGlbFormat:masterGlbRequired?'GLB_2_0':null,
     requiredNativeTextTypes:Object.freeze([...(contract?.nativeText?.requiredTypes||[])]),
     dccExecutionEvidencePresent:Boolean(dccEvidence),
+    dccOutputVerificationPass,
+    dccOutputVerification:dccEvidence?.outputVerification||null,
     dccExecutionEvidence:dccEvidence?Object.freeze({...dccEvidence}):null,
     generatedNativeArtifacts:Object.freeze(generatedNativeArtifacts),
     generatedRecipeBindingChecks,
@@ -704,14 +801,10 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
   });
 }
 
-export function collectNativeAssetRuntimePromotionCandidates({order={},candidate={}}={}){
+export function collectNativeAssetRuntimePromotionCandidates({order={},candidate={},candidateText=''}={}){
   const target=clean(order?.target).toLowerCase();
   if(!assetDevelopmentTask(order)||!['roblox','unity'].includes(target))return Object.freeze([]);
-  const changedText=[
-    ...(candidate.edits||[]).map(row=>row.replace),
-    ...(candidate.newFiles||[]).map(row=>row.content),
-    ...(candidate.replaceFiles||[]).map(row=>row.content)
-  ].map(value=>String(value??'')).join('\n');
+  const changedText=candidateText||candidateChangedText(candidate);
   if(!changedText.trim())return Object.freeze([]);
   const decisions=Array.isArray(order?.assetProduction?.decisions)?order.assetProduction.decisions:[];
   const rows=new Map();
@@ -750,7 +843,9 @@ export function collectNativeAssetRuntimePromotionCandidates({order={},candidate
     }
   }
   const dccEvidence=order?.assetProduction?.nativeAuthoringExecution?.dcc?.executionEvidence;
-  for(const recipe of Array.isArray(dccEvidence?.recipes)?dccEvidence.recipes:[]){
+  const outputVerificationRows=Array.isArray(dccEvidence?.outputVerification?.rows)?dccEvidence.outputVerification.rows:[];
+  for(const [recipeIndex,recipe] of (Array.isArray(dccEvidence?.recipes)?dccEvidence.recipes:[]).entries()){
+    if(dccEvidence?.outputVerification?.required===true&&outputVerificationRows[recipeIndex]?.pass!==true)continue;
     const id=clean(recipe?.assetId||recipe?.id);
     const assetPath=posix(recipe?.nativeArtifact);
     const sourceHash=clean(recipe?.sourceHash);
@@ -5443,7 +5538,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const responsibleFiles=normalizeResponsibleFiles(order,sourceRootRelative,target);
   const singleMotionPreflight=evaluateSingleMotionWorkUnit({order,sourceRoot,responsibleFiles});
   if(!singleMotionPreflight.pass)throw new Error(singleMotionPreflight.reason);
-  let dccEvidence=null;
+  let dccEvidence=null,dccOutputVerification=null;
   const dccRecipes=order?.assetProduction?.nativeAuthoringExecution?.dcc?.executionRecipes;
   if(singleMotionPreflight.required&&dccRecipes?.length)throw new Error('SINGLE_MOTION_DCC_CLIP_SCOPE_REQUIRED');
   if(applySource&&assetDevelopmentTask(order)&&Array.isArray(dccRecipes)&&dccRecipes.length){
@@ -5464,6 +5559,17 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       ...(order.assetProduction?.nativeAuthoringExecution||{}),
       dcc:{...(order.assetProduction?.nativeAuthoringExecution?.dcc||{}),executionEvidence:dccEvidence}
     }}};
+    dccOutputVerification=verifyPersistedGeneratedAssetOutputs({cwd,order});
+    if(dccOutputVerification.required===true&&dccOutputVerification.pass!==true){
+      const signature=dccOutputVerification.failures.slice(0,8).map(row=>[row.assetId||row.index,row.kind,row.path||'none',row.reason].join(':')).join(',');
+      throw new Error('NATIVE_DCC_PERSISTED_OUTPUT_INVALID:'+signature);
+    }
+    dccEvidence=Object.freeze({...dccEvidence,outputVerification:dccOutputVerification});
+    order={...order,assetProduction:{...(order.assetProduction||{}),nativeAuthoringExecution:{
+      ...(order.assetProduction?.nativeAuthoringExecution||{}),
+      dcc:{...(order.assetProduction?.nativeAuthoringExecution?.dcc||{}),executionEvidence:dccEvidence}
+    }}};
+    if(dccOutputVerification.required===true)console.log('NATIVE_DCC_PERSISTED_OUTPUT_VERIFICATION=PASS:recipes='+dccOutputVerification.recipeCount+':files='+dccOutputVerification.checkedFileCount+':hashed='+dccOutputVerification.hashedFileCount+':cacheHits='+dccOutputVerification.cacheHitCount);
   }
   const modelRouting=resolveAssetSourceModel(order,model);
   const effectiveModel=modelRouting.selectedModel;
@@ -5789,8 +5895,9 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   }
   const candidate=generated.candidate;
   const semanticDiffEnforcement=generated.candidateValidation||candidateValidator(candidate);
-  const nativeAssetAuthoring=evaluateNativeAssetAuthoringCandidate({order,candidate});
-  const runtimePromotionCandidates=collectNativeAssetRuntimePromotionCandidates({order,candidate});
+  const candidateText=candidateChangedText(candidate);
+  const nativeAssetAuthoring=evaluateNativeAssetAuthoringCandidate({order,candidate,candidateText});
+  const runtimePromotionCandidates=collectNativeAssetRuntimePromotionCandidates({order,candidate,candidateText});
   const presentationCandidateDelta=semanticDiffEnforcement?.presentationDelta||evaluatePresentationCandidateDelta({candidate,sourceRoot,contract:order?.presentationQuality||{}});
   const studioQualityCandidateDelta=semanticDiffEnforcement?.studioQualityDelta||evaluateStudioQualityCandidateDelta({candidate,sourceRoot,contract:order?.selectedTask?.studioQualityEvolution||order?.workPackage?.sharedContext?.studioQualityEvolution||null});
   const robloxNativeSourceInspection=buildRobloxNativeSourceInspection({order,context,responsibleFiles});
