@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "survival-build-up-g11-b78886a339a9",
-  "directiveFingerprint": "b78886a339a9bc898db35beb03a027fe538409debd496a351a04224ec3e27dbd",
-  "previousDirectiveFingerprint": "957be3c31f9bf8e6b9b54728cdeb352fbe0e522ea3e3c28074c3f0cfdc83dddc",
-  "forbiddenRepeatFingerprint": "957be3c31f9bf8e6b9b54728cdeb352fbe0e522ea3e3c28074c3f0cfdc83dddc",
+  "directiveId": "survival-build-up-g12-e6fc0bededa8",
+  "directiveFingerprint": "e6fc0bededa8e7706d759aff3226caca67305fd86df1ed07a6f3eba8d615b3ed",
+  "previousDirectiveFingerprint": "b78886a339a9bc898db35beb03a027fe538409debd496a351a04224ec3e27dbd",
+  "forbiddenRepeatFingerprint": "b78886a339a9bc898db35beb03a027fe538409debd496a351a04224ec3e27dbd",
   "gameId": "survival",
   "gameName": "나의 생존기",
-  "generation": 11,
+  "generation": 12,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,8 +14,107 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/survival",
-  "sourceTreeFingerprint": "a558125c30077069b9bf27c844402fc52cda839141a8e636828ad3628a0713d7",
-  "designFingerprint": "44ffc6a9e74fd73a9559a6145347b9e8c6868798288b43f49e9d92657cdbae83",
+  "sourceTreeFingerprint": "72041e6c1ac4e13e74eef2671a43d655b52d0da76937e377a3d24af04b75506d",
+  "designFingerprint": "8c608ffabccf721a1726defb16a9a5313a6b3ca0dfac195606f9d3e1cee4d028",
+  "identityReinforcement": {
+    "appliesToAllGenres": true,
+    "genre": "GAME_SPECIFIC",
+    "oneLineFantasy": "황무지의 고독한 생존자가 되어, 매일 밤 쏟아지는 위협을 나만의 독창적인 장비 조합으로 돌파하고, 다음 날을 위한 자원을 확보하며 점차 강해지는 성취감을 느낍니다.",
+    "representativeAction": "낮 시간 동안 제한된 구역을 탐색하여 자원을 채집하고 생존에 필요한 도구와 무기를 제작합니다.",
+    "representativeChoice": "어제 실패했던 구역을 다시 도전할지, 새로운 자원을 찾아 위험한 지역으로 이동할지 결정합니다.",
+    "signatureWorldRule": "Updates available resource inventory and unlocks new crafting recipes based on gathered materials.",
+    "signatureSystems": [
+      "일일 생존 기록 시스템",
+      "즉석 제작 및 개조 시스템"
+    ],
+    "growthIdentity": "로그라이트 요소인 영구적 능력치 강화와 매 세션의 빌드 최적화를 병행합니다. 생존 일수가 늘어날수록 더 희귀한 자원과 강력한 적이 등장하며, 플레이어는 점차 복잡한 제작 트리를 해금하여 자신만의 생존 스타일을 구축합니다.",
+    "threeSentenceTest": {
+      "whatGame": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.",
+      "whatDifferent": "플레이어의 매일 생존 결과를 데이터화하여 다음 날의 난이도와 자원 배치를 조정하고, 장기적인 성장 목표를 제시합니다.",
+      "whatGrowthUnlocks": "로그라이트 요소인 영구적 능력치 강화와 매 세션의 빌드 최적화를 병행합니다. 생존 일수가 늘어날수록 더 희귀한 자원과 강력한 적이 등장하며, 플레이어는 점차 복잡한 제작 트리를 해금하여 자신만의 생존 스타일을 구축합니다."
+    },
+    "causalGrammarEvidence": {
+      "worldRules": [],
+      "causalInspirations": [],
+      "systemInterconnections": [
+        {
+          "fromSystem": "Exploration/Gathering System",
+          "toSystem": "Crafting/Modification System",
+          "trigger": "Player collects resources during the day phase.",
+          "stateChange": "Updates available resource inventory and unlocks new crafting recipes based on gathered materials."
+        },
+        {
+          "fromSystem": "Crafting/Modification System",
+          "toSystem": "Combat/Survival System",
+          "trigger": "Player crafts or modifies weapons/traps before nightfall.",
+          "stateChange": "Modifies player's attack power, attack speed, or defensive capabilities for the upcoming wave."
+        },
+        {
+          "fromSystem": "Combat/Survival System",
+          "toSystem": "Daily Survival Log System",
+          "trigger": "Night wave ends (success or failure).",
+          "stateChange": "Records survival duration, kills, and resource usage to calculate the next day's difficulty and resource spawn rates."
+        }
+      ],
+      "expansionPlan": [
+        {
+          "milestone": "Early Survival (Days 1-7)",
+          "newGameplay": "Basic movement, simple melee weapon crafting, and wave defense.",
+          "systemImpact": "Establishes core loop and baseline resource economy."
+        },
+        {
+          "milestone": "Mid-Game Expansion (Days 8-20)",
+          "newGameplay": "Introduction of ranged weapons, trap synergies, and elite enemy types.",
+          "systemImpact": "Requires balancing of crafting complexity and combat difficulty."
+        },
+        {
+          "milestone": "Late-Game Challenge (Days 21+)",
+          "newGameplay": "Boss waves, complex environmental hazards, and advanced skill trees.",
+          "systemImpact": "Introduces high-tier resource sinks and meta-progression depth."
+        }
+      ],
+      "integrityNotes": [],
+      "formula": "MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @",
+      "existingGameGrammarMap": {
+        "mode": "EXISTING_GAME_RECONSTRUCTION_FROM_CURRENT_DESIGN_AND_INSPECTED_SOURCE",
+        "formula": "MAIN × A × B × c + @",
+        "main": "낮 시간 동안 제한된 구역을 탐색하여 자원을 채집하고 생존에 필요한 도구와 무기를 제작합니다.",
+        "majorAxes": [
+          {
+            "key": "A",
+            "name": "일일 생존 기록 시스템",
+            "source": "CURRENT_DESIGN_SIGNATURE_SYSTEM"
+          },
+          {
+            "key": "B",
+            "name": "즉석 제작 및 개조 시스템",
+            "source": "CURRENT_DESIGN_SIGNATURE_SYSTEM_OR_LOOP"
+          }
+        ],
+        "cSubElements": [
+          "Player collects resources during the day phase.",
+          "Player crafts or modifies weapons/traps before nightfall.",
+          "Night wave ends (success or failure)."
+        ],
+        "delveAtEvidence": [
+          "Early Survival (Days 1-7)",
+          "Basic movement, simple melee weapon crafting, and wave defense.",
+          "Mid-Game Expansion (Days 8-20)",
+          "Introduction of ranged weapons, trap synergies, and elite enemy types.",
+          "Late-Game Challenge (Days 21+)",
+          "Boss waves, complex environmental hazards, and advanced skill trees."
+        ],
+        "sourceTreeFingerprint": "72041e6c1ac4e13e74eef2671a43d655b52d0da76937e377a3d24af04b75506d",
+        "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
+        "identityRewriteRequired": false,
+        "existingBalanceSaveEconomyAndAuthorityPreserved": true
+      },
+      "rule": "NEW_CONTENT_MUST_PRESERVE_OR_DEEPEN_THE_APPROVED_CAUSAL_GRAMMAR_AND_MAIN_A_B_c_RELATIONSHIPS; c_IS_SUB_ELEMENT_NOT_MAJOR_AXIS; @ IS_DELVE_LAYER_NOT_GENERAL_SYSTEM; DECORATIVE_LORE_OR_PARALLEL_FEATURE_STACK_DOES_NOT_COUNT",
+      "familiarHumanConflictShouldRemainReadable": true
+    },
+    "buildUpRule": "EACH_BUILD_UP_MUST_STRENGTHEN_OR_PRESERVE_THE_REPRESENTATIVE_ACTION_CHOICE_WORLD_RULE_SIGNATURE_SYSTEM_OR_GROWTH_IDENTITY; GENERIC_FEATURE_COUNT_DOES_NOT_COUNT",
+    "genreAdaptationRule": "PRESERVE_THE_GENRE_PRIMARY_ACTION; DO_NOT_FORCE_RPG_STYLE_SYSTEMS_ON_PUZZLE_RACING_TYCOON_DEFENSE_SURVIVAL_ACTION_CARD_BOARD_STRATEGY_CASUAL_OR_OTHER_GENRES"
+  },
   "gameIdentityAndNonNegotiables": {
     "identity": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.",
     "coreFun": "실시간 액션의 긴박함과 자원 관리의 전략적 선택이 결합된 재미입니다. 적의 파상공세를 버텨내는 피지컬과, 어떤 장비를 제작하고 어떤 스킬을 선택할지 결정하는 빌드 구성의 쾌감이 핵심입니다.",
@@ -409,9 +508,9 @@
   "previousVersionDelta": {
     "previousGoal": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 10,
-    "previousSourceTreeFingerprint": "bcfa74221f8075a80055dcafde87f59728145c4d098192a582d645fef967ed4b",
-    "currentSourceTreeFingerprint": "a558125c30077069b9bf27c844402fc52cda839141a8e636828ad3628a0713d7",
+    "previousGeneration": 11,
+    "previousSourceTreeFingerprint": "a558125c30077069b9bf27c844402fc52cda839141a8e636828ad3628a0713d7",
+    "currentSourceTreeFingerprint": "72041e6c1ac4e13e74eef2671a43d655b52d0da76937e377a3d24af04b75506d",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -849,7 +948,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "적 역할이 이동·타깃 선택·공격 전조·공격 패턴·후퇴/회복 또는 특수상태에서 구별되게 하고 일일 생존 기록 시스템에 대한 카운터플레이가 실제 플레이에서 가능하게 한다.",
+      "directive": "적 역할이 이동·타이깃 선택·공격 전조·공격 패턴·후퇴/회복 또는 특수상태에서 구별되게 하고 일일 생존 기록 시스템에 대한 카운터플레이가 실제 플레이에서 가능하게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1522,7 +1621,9 @@
     "초반 10분과 중후반을 각각 점검해 초반 학습·첫 보상과 중후반 전략/콘텐츠 확장이 모두 실제 소스와 플레이 흐름에 존재하게 한다.",
     "콘텐츠 확장은 배경·지역·몹·아이템·퀘스트·스토리·보상·규칙 중 관련 요소를 서로 연결된 묶음으로 설계하고, 한 요소만 고립해서 개수만 늘리는 업데이트를 피한다.",
     "이전 세대와 이름·색·수치만 다른 복제 콘텐츠를 추가하지 말고 역할·행동·플레이어 선택·세계 이유·결과/보상·시스템 연결 중 최소 두 축 이상에서 실제 차이를 만든다.",
-    "새 스토리·퀘스트·지역·규칙은 이전 상태에서 왜 발생하고 완료 후 무엇이 달라지는지 게임 상태와 세계 흐름에 남겨 개연성과 진행 연결을 유지한다."
+    "새 스토리·퀘스트·지역·규칙은 이전 상태에서 왜 발생하고 완료 후 무엇이 달라지는지 게임 상태와 세계 흐름에 남겨 개연성과 진행 연결을 유지한다.",
+    "승인된 인과 문법이 있으면 새 지역·몬스터·NPC·아이템·세력은 같은 법칙을 복제하지 말고 서로 다른 방식으로 전달·왜곡·상속·분산·역전시켜 새 선택 구조를 만든다.",
+    "가벼운 D1 엽기/코믹 문법은 억지로 장대한 신화·정치 구조로 키우지 않는다. 단순한 농담 규칙이라도 실제 상태 변화와 후폭풍이 반복 가능하면 깊이 있는 정체성으로 인정한다."
   ],
   "autonomousContentExpansion": {
     "version": 2,
@@ -1541,6 +1642,8 @@
     ],
     "requestedPlatform": "ROBLOX",
     "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
+    "contentExpansionDeferredUntilRuntimeRepairPass": false,
+    "themeCoverageAdvanced": true,
     "dataCapacityBudget": {
       "state": "NORMAL",
       "limits": {
@@ -1552,7 +1655,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 116623,
+        "sourceBytes": 116625,
         "largestFileBytes": 48403,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1585,8 +1688,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 5,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=4; uncoveredBefore=5.",
+    "themeDepth": 6,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=5; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1596,7 +1699,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 5
+        "PRESENTATION_WORLD_COHESION": 6
       },
       "sequence": [
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1607,6 +1710,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1644,7 +1748,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 156,
+        "score": 138,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -1758,11 +1862,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 11,
-    "previousGeneration": 10,
+    "generation": 12,
+    "previousGeneration": 11,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "a558125c30077069b9bf27c844402fc52cda839141a8e636828ad3628a0713d7",
-    "priorSourceFingerprint": "bcfa74221f8075a80055dcafde87f59728145c4d098192a582d645fef967ed4b",
+    "sourceFingerprint": "72041e6c1ac4e13e74eef2671a43d655b52d0da76937e377a3d24af04b75506d",
+    "priorSourceFingerprint": "a558125c30077069b9bf27c844402fc52cda839141a8e636828ad3628a0713d7",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2007,9 +2111,9 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/survival/shared/GameConfig.luau",
-      "roblox-games/survival/server/Game.server.luau",
       "roblox-games/survival/client/Game.client.luau",
+      "roblox-games/survival/server/Game.server.luau",
+      "roblox-games/survival/shared/GameConfig.luau",
       "roblox-games/survival/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -2223,7 +2327,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "a558125c30077069b9bf27c844402fc52cda839141a8e636828ad3628a0713d7",
+    "sourceTreeFingerprint": "72041e6c1ac4e13e74eef2671a43d655b52d0da76937e377a3d24af04b75506d",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2314,7 +2418,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "a558125c30077069b9bf27c844402fc52cda839141a8e636828ad3628a0713d7",
+    "sourceTreeFingerprint": "72041e6c1ac4e13e74eef2671a43d655b52d0da76937e377a3d24af04b75506d",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2351,9 +2455,9 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/survival/shared/GameConfig.luau",
-      "roblox-games/survival/server/Game.server.luau",
       "roblox-games/survival/client/Game.client.luau",
+      "roblox-games/survival/server/Game.server.luau",
+      "roblox-games/survival/shared/GameConfig.luau",
       "roblox-games/survival/default.project.json"
     ],
     "sourceAnchors": [
@@ -2495,9 +2599,9 @@
     "gameId": "survival",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/survival/shared/GameConfig.luau",
-      "roblox-games/survival/server/Game.server.luau",
       "roblox-games/survival/client/Game.client.luau",
+      "roblox-games/survival/server/Game.server.luau",
+      "roblox-games/survival/shared/GameConfig.luau",
       "roblox-games/survival/default.project.json"
     ],
     "impact": {
@@ -2572,7 +2676,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "a558125c30077069b9bf27c844402fc52cda839141a8e636828ad3628a0713d7",
+      "sourceTreeFingerprint": "72041e6c1ac4e13e74eef2671a43d655b52d0da76937e377a3d24af04b75506d",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2608,6 +2712,14 @@
     "ROBLOX_EXPERIENCE_BUILD_UP_USES_EXTRA_NATIVE_STUDIO_ATTENTION",
     "AUTONOMOUS_CONTENT_EXPANSION_STAYS_INSIDE_EXISTING_BUILD_UP",
     "CONTENT_EXPANSION_MUST_BE_COHERENT_CONNECTED_AND_NON_CLONE",
+    "GAME_IDENTITY_THREE_SENTENCE_TEST_PRESERVED_OR_STRENGTHENED",
+    "REPRESENTATIVE_ACTION_CHOICE_SIGNATURE_WORLD_RULE_AND_GROWTH_IDENTITY_REVIEWED",
+    "GENRE_PRIMARY_ACTION_PRESERVED_WITHOUT_FORCED_RPG_SYSTEMS",
+    "APPROVED_CAUSAL_GAME_GRAMMAR_PRESERVED_OR_MUTATED_WITH_REAL_STATE_EFFECT",
+    "MAIN_A_B_MAJOR_AXES_AND_c_SUB_ELEMENTS_ROLE_PRESERVED",
+    "AT_DELVE_LAYER_IS_NOT_GENERAL_SYSTEM_AXIS",
+    "EXISTING_GAME_GRAMMAR_DISCOVERED_FROM_CURRENT_DESIGN_AND_SOURCE_BEFORE_EXPANSION",
+    "CHARACTER_MONSTER_REGION_STORY_SHARE_CAUSAL_WORLD_LAW_WHEN_APPLICABLE",
     "EXISTING_COMPLETENESS_RECHECK_REQUIRED_EVERY_BUILD_UP",
     "WEB_ROBLOX_UNITY_COMMON_EXPANSION_CONTRACT"
   ],
@@ -2619,7 +2731,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 12,
+    "nextGeneration": 13,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2686,5 +2798,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-06T08:24:46.418Z"
+  "generatedAt": "2026-10-07T02:59:15.269Z"
 }

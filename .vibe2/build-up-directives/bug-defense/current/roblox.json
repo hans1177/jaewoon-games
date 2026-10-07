@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "bug-defense-build-up-g14-c345c6c0d99e",
-  "directiveFingerprint": "c345c6c0d99eb71c7a1bf4d3d405b4c4ca052c9cc16429337fd8936be557e588",
-  "previousDirectiveFingerprint": "70bb8813620710a5d727ce0f0235778c7220ebdfa6bdd2a43dd576efa1724fd4",
-  "forbiddenRepeatFingerprint": "70bb8813620710a5d727ce0f0235778c7220ebdfa6bdd2a43dd576efa1724fd4",
+  "directiveId": "bug-defense-build-up-g15-30634dfa541d",
+  "directiveFingerprint": "30634dfa541dbdd59ce32864604f135f618f194a2ca5ab22a744e329b8b68293",
+  "previousDirectiveFingerprint": "c345c6c0d99eb71c7a1bf4d3d405b4c4ca052c9cc16429337fd8936be557e588",
+  "forbiddenRepeatFingerprint": "c345c6c0d99eb71c7a1bf4d3d405b4c4ca052c9cc16429337fd8936be557e588",
   "gameId": "bug-defense",
   "gameName": "곤충 디펜스",
-  "generation": 14,
+  "generation": 15,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,8 +14,107 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/bug-defense",
-  "sourceTreeFingerprint": "5289292d1110866e2cabd8aa0a109d2dfb381891640a13cee4a40bf77f1897a6",
-  "designFingerprint": "dc0d3a88bdb8dc41fc2458176ef52aa3e64af9da727e556a5b5d17d09aa6d393",
+  "sourceTreeFingerprint": "5d92a662c4da2478524e7f4a00ddd328488cb440c879baa0933930e306b5fd2d",
+  "designFingerprint": "ae055bdda61059ab555605882632dbef18ffa1f548001c6a3d96ef20bef875cc",
+  "identityReinforcement": {
+    "appliesToAllGenres": true,
+    "genre": "Strategy",
+    "oneLineFantasy": "플레이어는 정원의 수호자인 '생태계 관리자'가 되어, 침입하는 해충들로부터 소중한 식물들을 지켜내는 전략적 사령관의 역할을 수행합니다. 곤충들의 포식 본능을 활용해 적을 섬멸하고, 정원을 번성하게 만드는 성취감을 경험합니다.",
+    "representativeAction": "웨이브 시작 전 적의 침입 경로와 곤충 유형을 분석하여 방어 전략을 수립합니다.",
+    "representativeChoice": "플레이어는 적의 속성에 맞춰 특정 곤충을 배치할지, 아니면 범용적인 곤충을 다수 배치할지 결정해야 하며, 이 선택이 웨이브의 성공 여부를 결정합니다.",
+    "signatureWorldRule": "상성 우위 시 데미지 배율 적용 및 적의 이동 속도 감소 상태 부여",
+    "signatureSystems": [
+      "생태 상성 시스템",
+      "서식지 적응 시스템"
+    ],
+    "growthIdentity": "초반에는 단순한 해충을 막으며 기본 상성을 익히고, 중반부터는 복합 속성을 가진 보스급 해충이 등장하여 기존 배치를 재조정하게 만듭니다. 후반부에는 곤충의 진화 트리를 통해 플레이어만의 특화된 방어 라인을 구축하는 성장을 지향합니다.",
+    "threeSentenceTest": {
+      "whatGame": "곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.",
+      "whatDifferent": "곤충 간의 먹이사슬 관계를 게임 내 공격/방어 상성으로 구현하여 단순한 화력 집중이 아닌 전략적 배치를 유도합니다.",
+      "whatGrowthUnlocks": "초반에는 단순한 해충을 막으며 기본 상성을 익히고, 중반부터는 복합 속성을 가진 보스급 해충이 등장하여 기존 배치를 재조정하게 만듭니다. 후반부에는 곤충의 진화 트리를 통해 플레이어만의 특화된 방어 라인을 구축하는 성장을 지향합니다."
+    },
+    "causalGrammarEvidence": {
+      "worldRules": [],
+      "causalInspirations": [],
+      "systemInterconnections": [
+        {
+          "fromSystem": "생태 상성 시스템",
+          "toSystem": "전투 결과 계산",
+          "trigger": "적 유닛과 포식자 곤충의 충돌",
+          "stateChange": "상성 우위 시 데미지 배율 적용 및 적의 이동 속도 감소 상태 부여"
+        },
+        {
+          "fromSystem": "서식지 적응 시스템",
+          "toSystem": "포식자 곤충 능력치",
+          "trigger": "곤충 배치 완료 시점",
+          "stateChange": "배치된 지형 타입에 따라 공격 속도 또는 사거리 버프 활성화"
+        },
+        {
+          "fromSystem": "웨이브 관리 시스템",
+          "toSystem": "자원 경제 시스템",
+          "trigger": "웨이브 성공적 방어 완료",
+          "stateChange": "적 처치 보상으로 획득한 자원을 플레이어 잔액에 즉시 반영"
+        }
+      ],
+      "expansionPlan": [
+        {
+          "milestone": "계절 변화 및 서식지 동적 환경 업데이트",
+          "newGameplay": "봄, 여름, 가을, 겨울의 계절 주기가 도입되어 맵의 지형지물과 곤충의 이동 속도 및 공격력에 실시간 환경 보너스나 페널티를 부여하는 동적 환경 시스템을 구현합니다.",
+          "systemImpact": "기존의 정적인 타일 기반 배치 시스템에 계절별 환경 변수를 추가하여, 플레이어가 계절 변화에 맞춰 곤충 병종을 교체하거나 배치 위치를 재조정해야 하는 전략적 깊이를 더합니다."
+        },
+        {
+          "milestone": "곤충 병종 진화 및 특수 스킬 트리 확장",
+          "newGameplay": "전투 중 획득한 자원을 사용하여 특정 곤충을 2단계 이상 진화시키고, 진화 시 고유한 액티브 스킬(예: 광역 페로몬 살포, 독성 가시 발사)을 사용할 수 있는 시스템을 추가합니다.",
+          "systemImpact": "단순한 타워 배치 중심의 게임플레이에서 자원 관리와 스킬 타이밍이 중요한 액티브 전투 시스템으로 확장되며, 밸런스 엔진에 스킬 쿨타임 및 자원 소모 로직이 통합됩니다."
+        },
+        {
+          "milestone": "거대 보스 곤충 레이드 및 패턴 대응 모드",
+          "newGameplay": "특수 패턴을 가진 거대 보스 곤충이 특정 웨이브에 등장하여 특정 라인을 집중 공격하거나 방어선을 무력화하는 패턴을 수행하며, 플레이어는 이를 저지하기 위해 집중 화력을 투사해야 합니다.",
+          "systemImpact": "기존의 웨이브 디펜스 로직에 보스 상태 머신과 패턴 트리거 시스템이 추가되어, 단순 물량 공세가 아닌 보스 패턴 파악 및 대응이라는 퍼즐적 요소가 핵심 시스템으로 통합됩니다."
+        }
+      ],
+      "integrityNotes": [],
+      "formula": "MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @",
+      "existingGameGrammarMap": {
+        "mode": "EXISTING_GAME_RECONSTRUCTION_FROM_CURRENT_DESIGN_AND_INSPECTED_SOURCE",
+        "formula": "MAIN × A × B × c + @",
+        "main": "웨이브 시작 전 적의 침입 경로와 곤충 유형을 분석하여 방어 전략을 수립합니다.",
+        "majorAxes": [
+          {
+            "key": "A",
+            "name": "생태 상성 시스템",
+            "source": "CURRENT_DESIGN_SIGNATURE_SYSTEM"
+          },
+          {
+            "key": "B",
+            "name": "서식지 적응 시스템",
+            "source": "CURRENT_DESIGN_SIGNATURE_SYSTEM_OR_LOOP"
+          }
+        ],
+        "cSubElements": [
+          "적 유닛과 포식자 곤충의 충돌",
+          "곤충 배치 완료 시점",
+          "웨이브 성공적 방어 완료"
+        ],
+        "delveAtEvidence": [
+          "계절 변화 및 서식지 동적 환경 업데이트",
+          "봄, 여름, 가을, 겨울의 계절 주기가 도입되어 맵의 지형지물과 곤충의 이동 속도 및 공격력에 실시간 환경 보너스나 페널티를 부여하는 동적 환경 시스템을 구현합니다.",
+          "곤충 병종 진화 및 특수 스킬 트리 확장",
+          "전투 중 획득한 자원을 사용하여 특정 곤충을 2단계 이상 진화시키고, 진화 시 고유한 액티브 스킬(예: 광역 페로몬 살포, 독성 가시 발사)을 사용할 수 있는 시스템을 추가합니다.",
+          "거대 보스 곤충 레이드 및 패턴 대응 모드",
+          "특수 패턴을 가진 거대 보스 곤충이 특정 웨이브에 등장하여 특정 라인을 집중 공격하거나 방어선을 무력화하는 패턴을 수행하며, 플레이어는 이를 저지하기 위해 집중 화력을 투사해야 합니다."
+        ],
+        "sourceTreeFingerprint": "5d92a662c4da2478524e7f4a00ddd328488cb440c879baa0933930e306b5fd2d",
+        "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
+        "identityRewriteRequired": false,
+        "existingBalanceSaveEconomyAndAuthorityPreserved": true
+      },
+      "rule": "NEW_CONTENT_MUST_PRESERVE_OR_DEEPEN_THE_APPROVED_CAUSAL_GRAMMAR_AND_MAIN_A_B_c_RELATIONSHIPS; c_IS_SUB_ELEMENT_NOT_MAJOR_AXIS; @ IS_DELVE_LAYER_NOT_GENERAL_SYSTEM; DECORATIVE_LORE_OR_PARALLEL_FEATURE_STACK_DOES_NOT_COUNT",
+      "familiarHumanConflictShouldRemainReadable": true
+    },
+    "buildUpRule": "EACH_BUILD_UP_MUST_STRENGTHEN_OR_PRESERVE_THE_REPRESENTATIVE_ACTION_CHOICE_WORLD_RULE_SIGNATURE_SYSTEM_OR_GROWTH_IDENTITY; GENERIC_FEATURE_COUNT_DOES_NOT_COUNT",
+    "genreAdaptationRule": "PRESERVE_THE_GENRE_PRIMARY_ACTION; DO_NOT_FORCE_RPG_STYLE_SYSTEMS_ON_PUZZLE_RACING_TYCOON_DEFENSE_SURVIVAL_ACTION_CARD_BOARD_STRATEGY_CASUAL_OR_OTHER_GENRES"
+  },
   "gameIdentityAndNonNegotiables": {
     "identity": "곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.",
     "coreFun": "곤충의 공격 속성(독, 물리, 범위)과 적의 방어 속성(갑각, 비행, 군집)을 실시간으로 관찰하고, 가장 효율적인 포식자를 배치하여 적을 무력화하는 즉각적인 전략적 쾌감을 제공합니다. 배치 후 적이 상성에 따라 녹아내리는 시각적 피드백이 핵심 재미입니다.",
@@ -369,17 +468,17 @@
   "previousVersionDelta": {
     "previousGoal": "곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 13,
-    "previousSourceTreeFingerprint": "d1673a7280bba811cf9fa57e348fae11a979c4ee8480185b94de893c85dd1b04",
-    "currentSourceTreeFingerprint": "5289292d1110866e2cabd8aa0a109d2dfb381891640a13cee4a40bf77f1897a6",
+    "previousGeneration": 14,
+    "previousSourceTreeFingerprint": "5289292d1110866e2cabd8aa0a109d2dfb381891640a13cee4a40bf77f1897a6",
+    "currentSourceTreeFingerprint": "5d92a662c4da2478524e7f4a00ddd328488cb440c879baa0933930e306b5fd2d",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "",
-    "failureSignature": "",
+    "failureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+    "failureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
     "blockers": [],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -809,7 +908,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "적 역할이 이동·타깃 선택·공격 전조·공격 패턴·후퇴/회복 또는 특수상태에서 구별되게 하고 생태 상성 시스템에 대한 카운터플레이가 실제 플레이에서 가능하게 한다.",
+      "directive": "적 역할이 이동·타이깃 선택·공격 전조·공격 패턴·후퇴/회복 또는 특수상태에서 구별되게 하고 생태 상성 시스템에 대한 카운터플레이가 실제 플레이에서 가능하게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1487,7 +1586,9 @@
     "초반 10분과 중후반을 각각 점검해 초반 학습·첫 보상과 중후반 전략/콘텐츠 확장이 모두 실제 소스와 플레이 흐름에 존재하게 한다.",
     "콘텐츠 확장은 배경·지역·몹·아이템·퀘스트·스토리·보상·규칙 중 관련 요소를 서로 연결된 묶음으로 설계하고, 한 요소만 고립해서 개수만 늘리는 업데이트를 피한다.",
     "이전 세대와 이름·색·수치만 다른 복제 콘텐츠를 추가하지 말고 역할·행동·플레이어 선택·세계 이유·결과/보상·시스템 연결 중 최소 두 축 이상에서 실제 차이를 만든다.",
-    "새 스토리·퀘스트·지역·규칙은 이전 상태에서 왜 발생하고 완료 후 무엇이 달라지는지 게임 상태와 세계 흐름에 남겨 개연성과 진행 연결을 유지한다."
+    "새 스토리·퀘스트·지역·규칙은 이전 상태에서 왜 발생하고 완료 후 무엇이 달라지는지 게임 상태와 세계 흐름에 남겨 개연성과 진행 연결을 유지한다.",
+    "승인된 인과 문법이 있으면 새 지역·몬스터·NPC·아이템·세력은 같은 법칙을 복제하지 말고 서로 다른 방식으로 전달·왜곡·상속·분산·역전시켜 새 선택 구조를 만든다.",
+    "가벼운 D1 엽기/코믹 문법은 억지로 장대한 신화·정치 구조로 키우지 않는다. 단순한 농담 규칙이라도 실제 상태 변화와 후폭풍이 반복 가능하면 깊이 있는 정체성으로 인정한다."
   ],
   "autonomousContentExpansion": {
     "version": 2,
@@ -1506,6 +1607,8 @@
     ],
     "requestedPlatform": "ROBLOX",
     "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
+    "contentExpansionDeferredUntilRuntimeRepairPass": false,
+    "themeCoverageAdvanced": true,
     "dataCapacityBudget": {
       "state": "NORMAL",
       "limits": {
@@ -1550,8 +1653,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 3,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=4.",
+    "themeDepth": 4,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=4.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1561,13 +1664,12 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 7,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 3
+        "PRESENTATION_WORLD_COHESION": 4
       },
       "sequence": [
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
-        "WORLD_ECOLOGY_STORY_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1575,6 +1677,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
@@ -1608,7 +1711,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 192,
+        "score": 174,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -1726,11 +1829,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 14,
-    "previousGeneration": 13,
+    "generation": 15,
+    "previousGeneration": 14,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "5289292d1110866e2cabd8aa0a109d2dfb381891640a13cee4a40bf77f1897a6",
-    "priorSourceFingerprint": "d1673a7280bba811cf9fa57e348fae11a979c4ee8480185b94de893c85dd1b04",
+    "sourceFingerprint": "5d92a662c4da2478524e7f4a00ddd328488cb440c879baa0933930e306b5fd2d",
+    "priorSourceFingerprint": "5289292d1110866e2cabd8aa0a109d2dfb381891640a13cee4a40bf77f1897a6",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2136,9 +2239,9 @@
     "executionSurface": "ROBLOX",
     "mode": "EXISTING_SOURCE_REPAIR",
     "gameId": "bug-defense",
-    "genreProfile": "DEFENSE",
+    "genreProfile": "STRATEGY",
     "conceptIdentity": "곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.",
-    "coreAction": "배치·대응 선택",
+    "coreAction": "자원·배치·순서 선택",
     "ownerFeatureChanges": [],
     "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
     "systemConnection": "현재 실패 원인 → 기존 행동 복구",
@@ -2155,18 +2258,18 @@
     "progressionDirection": "초반에는 단순한 해충을 막으며 기본 상성을 익히고, 중반부터는 복합 속성을 가진 보스급 해충이 등장하여 기존 배치를 재조정하게 만듭니다. 후반부에는 곤충의 진화 트리를 통해 플레이어만의 특화된 방어 라인을 구축하는 성장을 지향합니다.",
     "ideas": [
       {
-        "id": "DEFENSE:SOURCE_REPAIR",
+        "id": "STRATEGY:SOURCE_REPAIR",
         "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
         "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
       }
     ],
     "selectedIdea": {
-      "id": "DEFENSE:SOURCE_REPAIR",
+      "id": "STRATEGY:SOURCE_REPAIR",
       "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
       "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
     },
     "ideaHistory": [
-      "DEFENSE:SOURCE_REPAIR"
+      "STRATEGY:SOURCE_REPAIR"
     ],
     "implementationPackages": [
       {
@@ -2191,7 +2294,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "5289292d1110866e2cabd8aa0a109d2dfb381891640a13cee4a40bf77f1897a6",
+    "sourceTreeFingerprint": "5d92a662c4da2478524e7f4a00ddd328488cb440c879baa0933930e306b5fd2d",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2227,9 +2330,9 @@
     "executionSurface": "ROBLOX",
     "mode": "EXISTING_SOURCE_REPAIR",
     "gameId": "bug-defense",
-    "genreProfile": "DEFENSE",
+    "genreProfile": "STRATEGY",
     "conceptIdentity": "곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.",
-    "coreAction": "배치·대응 선택",
+    "coreAction": "자원·배치·순서 선택",
     "ownerFeatureChanges": [],
     "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
     "systemConnection": "현재 실패 원인 → 기존 행동 복구",
@@ -2246,18 +2349,18 @@
     "progressionDirection": "초반에는 단순한 해충을 막으며 기본 상성을 익히고, 중반부터는 복합 속성을 가진 보스급 해충이 등장하여 기존 배치를 재조정하게 만듭니다. 후반부에는 곤충의 진화 트리를 통해 플레이어만의 특화된 방어 라인을 구축하는 성장을 지향합니다.",
     "ideas": [
       {
-        "id": "DEFENSE:SOURCE_REPAIR",
+        "id": "STRATEGY:SOURCE_REPAIR",
         "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
         "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
       }
     ],
     "selectedIdea": {
-      "id": "DEFENSE:SOURCE_REPAIR",
+      "id": "STRATEGY:SOURCE_REPAIR",
       "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
       "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
     },
     "ideaHistory": [
-      "DEFENSE:SOURCE_REPAIR"
+      "STRATEGY:SOURCE_REPAIR"
     ],
     "implementationPackages": [
       {
@@ -2282,7 +2385,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "5289292d1110866e2cabd8aa0a109d2dfb381891640a13cee4a40bf77f1897a6",
+    "sourceTreeFingerprint": "5d92a662c4da2478524e7f4a00ddd328488cb440c879baa0933930e306b5fd2d",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2540,11 +2643,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "5289292d1110866e2cabd8aa0a109d2dfb381891640a13cee4a40bf77f1897a6",
+      "sourceTreeFingerprint": "5d92a662c4da2478524e7f4a00ddd328488cb440c879baa0933930e306b5fd2d",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": null,
-      "failureSignature": null
+      "failureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+      "failureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2576,6 +2679,14 @@
     "ROBLOX_EXPERIENCE_BUILD_UP_USES_EXTRA_NATIVE_STUDIO_ATTENTION",
     "AUTONOMOUS_CONTENT_EXPANSION_STAYS_INSIDE_EXISTING_BUILD_UP",
     "CONTENT_EXPANSION_MUST_BE_COHERENT_CONNECTED_AND_NON_CLONE",
+    "GAME_IDENTITY_THREE_SENTENCE_TEST_PRESERVED_OR_STRENGTHENED",
+    "REPRESENTATIVE_ACTION_CHOICE_SIGNATURE_WORLD_RULE_AND_GROWTH_IDENTITY_REVIEWED",
+    "GENRE_PRIMARY_ACTION_PRESERVED_WITHOUT_FORCED_RPG_SYSTEMS",
+    "APPROVED_CAUSAL_GAME_GRAMMAR_PRESERVED_OR_MUTATED_WITH_REAL_STATE_EFFECT",
+    "MAIN_A_B_MAJOR_AXES_AND_c_SUB_ELEMENTS_ROLE_PRESERVED",
+    "AT_DELVE_LAYER_IS_NOT_GENERAL_SYSTEM_AXIS",
+    "EXISTING_GAME_GRAMMAR_DISCOVERED_FROM_CURRENT_DESIGN_AND_SOURCE_BEFORE_EXPANSION",
+    "CHARACTER_MONSTER_REGION_STORY_SHARE_CAUSAL_WORLD_LAW_WHEN_APPLICABLE",
     "EXISTING_COMPLETENESS_RECHECK_REQUIRED_EVERY_BUILD_UP",
     "WEB_ROBLOX_UNITY_COMMON_EXPANSION_CONTRACT"
   ],
@@ -2587,7 +2698,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 15,
+    "nextGeneration": 16,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2654,5 +2765,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-06T09:11:59.165Z"
+  "generatedAt": "2026-10-07T02:59:15.034Z"
 }

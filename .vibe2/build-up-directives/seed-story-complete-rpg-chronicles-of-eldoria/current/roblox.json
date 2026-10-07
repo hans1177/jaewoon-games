@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-story-complete-rpg-chronicles-of-eldoria-build-up-g20-2a77a0b6e88f",
-  "directiveFingerprint": "2a77a0b6e88fcb041306234cbd1e246abaa8f739537b55a498a8b4b19c0f1b57",
-  "previousDirectiveFingerprint": "26b04a9ee35194d8044da10e7fd7487637d0171cb01032248fd1bb08f7f42836",
-  "forbiddenRepeatFingerprint": "26b04a9ee35194d8044da10e7fd7487637d0171cb01032248fd1bb08f7f42836",
+  "directiveId": "seed-story-complete-rpg-chronicles-of-eldoria-build-up-g21-6fbc7afb5405",
+  "directiveFingerprint": "6fbc7afb5405937367c068d898bc3ad39c47d7c3f6c525b8a95f7499e3a49e36",
+  "previousDirectiveFingerprint": "2a77a0b6e88fcb041306234cbd1e246abaa8f739537b55a498a8b4b19c0f1b57",
+  "forbiddenRepeatFingerprint": "2a77a0b6e88fcb041306234cbd1e246abaa8f739537b55a498a8b4b19c0f1b57",
   "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
   "gameName": "엘도리아 연대기",
-  "generation": 20,
+  "generation": 21,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,8 +14,107 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria",
-  "sourceTreeFingerprint": "02216951f74632e6362cd479d8226c34a2c4a3c794911073350099e79eccf498",
-  "designFingerprint": "8d80e4210ad33ccb132a0b40a5de69a0c16517666e46ea6d86925fe417651363",
+  "sourceTreeFingerprint": "ee6d08b79a8dd3ee28db76952f2d75f9ab245c5f781c28a8de025bf61312a9b8",
+  "designFingerprint": "98f3aa3ea609a96c88afd987a94cdef8fe4eb9fa8abebc185ebaccb7d908e188",
+  "identityReinforcement": {
+    "appliesToAllGenres": true,
+    "genre": "Strategy",
+    "oneLineFantasy": "플레이어는 멸망해가는 세계 엘도리아의 마지막 수호자가 되어, 잃어버린 고대 유물을 복구하고 동료들과 함께 운명을 개척하는 영웅적 여정을 경험합니다. 자신의 결정에 따라 세계의 지형이 바뀌고 동료들의 신뢰도가 변하는 결과를 직접 목격합니다.",
+    "representativeAction": "월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.",
+    "representativeChoice": "플레이어는 매 턴마다 어떤 속성의 스킬을 우선 사용할지, 혹은 동료와 어떤 속성 연계를 발동시킬지 결정하며, 이 선택이 전투의 템포와 피해량을 즉각적으로 변화시킵니다.",
+    "signatureWorldRule": "탐험 시스템에서 사용할 수 있는 '유물 에너지'가 충전되어, 막혀있던 지형을 개척할 수 있는 상태로 변화합니다.",
+    "signatureSystems": [
+      "속성 공명 시스템",
+      "운명 개척 탐험 시스템"
+    ],
+    "growthIdentity": "플레이어는 초반에 기본적인 전투와 탐험을 익히며, 중반부에는 고대 유물을 활용한 전략적 선택의 비중이 커집니다. 후반부에는 축적된 스킬과 유물 조합을 통해 최종 보스에 도달하며, 모든 선택이 결합된 하나의 완결된 서사를 경험하게 됩니다.",
+    "threeSentenceTest": {
+      "whatGame": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.",
+      "whatDifferent": "전투 시 캐릭터의 스킬 속성을 조합하여 시너지를 발생시키고, 적의 방어 체계를 무력화하여 전략적 우위를 점하기 위해 설계되었습니다.",
+      "whatGrowthUnlocks": "플레이어는 초반에 기본적인 전투와 탐험을 익히며, 중반부에는 고대 유물을 활용한 전략적 선택의 비중이 커집니다. 후반부에는 축적된 스킬과 유물 조합을 통해 최종 보스에 도달하며, 모든 선택이 결합된 하나의 완결된 서사를 경험하게 됩니다."
+    },
+    "causalGrammarEvidence": {
+      "worldRules": [],
+      "causalInspirations": [],
+      "systemInterconnections": [
+        {
+          "fromSystem": "속성 공명 시스템",
+          "toSystem": "운명 개척 탐험 시스템",
+          "trigger": "전투에서 특정 속성 콤보로 승리할 경우",
+          "stateChange": "탐험 시스템에서 사용할 수 있는 '유물 에너지'가 충전되어, 막혀있던 지형을 개척할 수 있는 상태로 변화합니다."
+        },
+        {
+          "fromSystem": "운명 개척 탐험 시스템",
+          "toSystem": "스토리 진행 시스템",
+          "trigger": "플레이어가 특정 지형을 개척하여 숨겨진 장소에 도달할 경우",
+          "stateChange": "메인 스토리의 분기가 해금되거나 새로운 NPC와의 상호작용이 활성화되어 서사가 확장됩니다."
+        },
+        {
+          "fromSystem": "스토리 진행 시스템",
+          "toSystem": "속성 공명 시스템",
+          "trigger": "스토리의 특정 구간에서 고대 지식을 습득할 경우",
+          "stateChange": "캐릭터의 새로운 속성 스킬이 해금되거나 기존 스킬의 위력이 강화되어 전투 전략의 폭이 넓어집니다."
+        }
+      ],
+      "expansionPlan": [
+        {
+          "milestone": "고대 유적지 개방 및 환경 퍼즐 도입",
+          "newGameplay": "플레이어는 고대 유적지에서 유물 에너지를 수집하여 지형을 물리적으로 조작하는 퍼즐을 해결해야 합니다. 이는 단순 이동을 넘어 지형을 변형시켜 새로운 경로를 개척하는 능동적 탐험을 제공합니다.",
+          "systemImpact": "기존 탐험 시스템에 지형 변형 로직이 추가되어 월드 맵 매니저의 데이터 구조가 확장됩니다. 또한, 유물 에너지 자원 관리 시스템이 추가되어 플레이어의 자원 운용 전략이 중요해집니다."
+        },
+        {
+          "milestone": "동료 영입 및 속성 공명 연계 시스템",
+          "newGameplay": "새로운 동료 캐릭터가 합류함에 따라 전투 중 다중 캐릭터가 동시에 공격하는 속성 공명 시스템이 활성화됩니다. 플레이어는 캐릭터 간의 속성 조합을 실시간으로 고려하여 연계 공격을 설계해야 합니다.",
+          "systemImpact": "전투 엔진 내에 캐릭터 간 상태 공유 및 연계 트리거 시스템이 도입됩니다. 파티 구성에 따른 시너지 효과가 전투 결과에 직접적인 영향을 미치도록 전투 밸런스 수식이 재설계됩니다."
+        },
+        {
+          "milestone": "최종 결전 및 플레이어 선택 반영 엔딩",
+          "newGameplay": "지금까지의 모든 탐험 경로와 캐릭터 선택이 반영된 최종 보스전이 진행됩니다. 플레이어는 자신이 개척한 지형과 동료와의 유대 관계를 활용하여 보스의 약점을 공략하는 총력전을 수행합니다.",
+          "systemImpact": "퀘스트 매니저와 월드 상태 데이터가 최종 보스전의 난이도와 패턴에 동적으로 반영됩니다. 플레이어의 누적된 성장 데이터가 엔딩 분기에 직접적인 영향을 미치도록 서사 분기 시스템이 확장됩니다."
+        }
+      ],
+      "integrityNotes": [],
+      "formula": "MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @",
+      "existingGameGrammarMap": {
+        "mode": "EXISTING_GAME_RECONSTRUCTION_FROM_CURRENT_DESIGN_AND_INSPECTED_SOURCE",
+        "formula": "MAIN × A × B × c + @",
+        "main": "월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.",
+        "majorAxes": [
+          {
+            "key": "A",
+            "name": "속성 공명 시스템",
+            "source": "CURRENT_DESIGN_SIGNATURE_SYSTEM"
+          },
+          {
+            "key": "B",
+            "name": "운명 개척 탐험 시스템",
+            "source": "CURRENT_DESIGN_SIGNATURE_SYSTEM_OR_LOOP"
+          }
+        ],
+        "cSubElements": [
+          "전투에서 특정 속성 콤보로 승리할 경우",
+          "플레이어가 특정 지형을 개척하여 숨겨진 장소에 도달할 경우",
+          "스토리의 특정 구간에서 고대 지식을 습득할 경우"
+        ],
+        "delveAtEvidence": [
+          "고대 유적지 개방 및 환경 퍼즐 도입",
+          "플레이어는 고대 유적지에서 유물 에너지를 수집하여 지형을 물리적으로 조작하는 퍼즐을 해결해야 합니다. 이는 단순 이동을 넘어 지형을 변형시켜 새로운 경로를 개척하는 능동적 탐험을 제공합니다.",
+          "동료 영입 및 속성 공명 연계 시스템",
+          "새로운 동료 캐릭터가 합류함에 따라 전투 중 다중 캐릭터가 동시에 공격하는 속성 공명 시스템이 활성화됩니다. 플레이어는 캐릭터 간의 속성 조합을 실시간으로 고려하여 연계 공격을 설계해야 합니다.",
+          "최종 결전 및 플레이어 선택 반영 엔딩",
+          "지금까지의 모든 탐험 경로와 캐릭터 선택이 반영된 최종 보스전이 진행됩니다. 플레이어는 자신이 개척한 지형과 동료와의 유대 관계를 활용하여 보스의 약점을 공략하는 총력전을 수행합니다."
+        ],
+        "sourceTreeFingerprint": "ee6d08b79a8dd3ee28db76952f2d75f9ab245c5f781c28a8de025bf61312a9b8",
+        "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
+        "identityRewriteRequired": false,
+        "existingBalanceSaveEconomyAndAuthorityPreserved": true
+      },
+      "rule": "NEW_CONTENT_MUST_PRESERVE_OR_DEEPEN_THE_APPROVED_CAUSAL_GRAMMAR_AND_MAIN_A_B_c_RELATIONSHIPS; c_IS_SUB_ELEMENT_NOT_MAJOR_AXIS; @ IS_DELVE_LAYER_NOT_GENERAL_SYSTEM; DECORATIVE_LORE_OR_PARALLEL_FEATURE_STACK_DOES_NOT_COUNT",
+      "familiarHumanConflictShouldRemainReadable": true
+    },
+    "buildUpRule": "EACH_BUILD_UP_MUST_STRENGTHEN_OR_PRESERVE_THE_REPRESENTATIVE_ACTION_CHOICE_WORLD_RULE_SIGNATURE_SYSTEM_OR_GROWTH_IDENTITY; GENERIC_FEATURE_COUNT_DOES_NOT_COUNT",
+    "genreAdaptationRule": "PRESERVE_THE_GENRE_PRIMARY_ACTION; DO_NOT_FORCE_RPG_STYLE_SYSTEMS_ON_PUZZLE_RACING_TYCOON_DEFENSE_SURVIVAL_ACTION_CARD_BOARD_STRATEGY_CASUAL_OR_OTHER_GENRES"
+  },
   "gameIdentityAndNonNegotiables": {
     "identity": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.",
     "coreFun": "전투 중 스킬의 속성 조합을 선택하여 적의 약점을 공략하고, 탐험 중 발견한 고대 문자를 해석하여 지름길을 개척하는 반복적인 의사결정이 핵심입니다. 이러한 선택은 즉각적으로 전투의 승패와 캐릭터의 성장 방향을 결정짓는 가시적인 상태 변화로 이어집니다.",
@@ -256,19 +355,19 @@
   "previousVersionDelta": {
     "previousGoal": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 19,
-    "previousSourceTreeFingerprint": "96b46d2be1c8765a7086c272b3a9d8cce8f2782a76bf9dda5e18c4b177e89267",
-    "currentSourceTreeFingerprint": "02216951f74632e6362cd479d8226c34a2c4a3c794911073350099e79eccf498",
+    "previousGeneration": 20,
+    "previousSourceTreeFingerprint": "02216951f74632e6362cd479d8226c34a2c4a3c794911073350099e79eccf498",
+    "currentSourceTreeFingerprint": "ee6d08b79a8dd3ee28db76952f2d75f9ab245c5f781c28a8de025bf61312a9b8",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "F0_SOURCE_INTEGRITY",
-    "failureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
+    "failureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+    "failureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
     "blockers": [],
-    "runtimeObserved": true,
+    "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -696,7 +795,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "적 역할이 이동·타깃 선택·공격 전조·공격 패턴·후퇴/회복 또는 특수상태에서 구별되게 하고 속성 공명 시스템에 대한 카운터플레이가 실제 플레이에서 가능하게 한다.",
+      "directive": "적 역할이 이동·타이깃 선택·공격 전조·공격 패턴·후퇴/회복 또는 특수상태에서 구별되게 하고 속성 공명 시스템에 대한 카운터플레이가 실제 플레이에서 가능하게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1373,7 +1472,9 @@
     "초반 10분과 중후반을 각각 점검해 초반 학습·첫 보상과 중후반 전략/콘텐츠 확장이 모두 실제 소스와 플레이 흐름에 존재하게 한다.",
     "콘텐츠 확장은 배경·지역·몹·아이템·퀘스트·스토리·보상·규칙 중 관련 요소를 서로 연결된 묶음으로 설계하고, 한 요소만 고립해서 개수만 늘리는 업데이트를 피한다.",
     "이전 세대와 이름·색·수치만 다른 복제 콘텐츠를 추가하지 말고 역할·행동·플레이어 선택·세계 이유·결과/보상·시스템 연결 중 최소 두 축 이상에서 실제 차이를 만든다.",
-    "새 스토리·퀘스트·지역·규칙은 이전 상태에서 왜 발생하고 완료 후 무엇이 달라지는지 게임 상태와 세계 흐름에 남겨 개연성과 진행 연결을 유지한다."
+    "새 스토리·퀘스트·지역·규칙은 이전 상태에서 왜 발생하고 완료 후 무엇이 달라지는지 게임 상태와 세계 흐름에 남겨 개연성과 진행 연결을 유지한다.",
+    "승인된 인과 문법이 있으면 새 지역·몬스터·NPC·아이템·세력은 같은 법칙을 복제하지 말고 서로 다른 방식으로 전달·왜곡·상속·분산·역전시켜 새 선택 구조를 만든다.",
+    "가벼운 D1 엽기/코믹 문법은 억지로 장대한 신화·정치 구조로 키우지 않는다. 단순한 농담 규칙이라도 실제 상태 변화와 후폭풍이 반복 가능하면 깊이 있는 정체성으로 인정한다."
   ],
   "autonomousContentExpansion": {
     "version": 2,
@@ -1392,6 +1493,8 @@
     ],
     "requestedPlatform": "ROBLOX",
     "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
+    "contentExpansionDeferredUntilRuntimeRepairPass": false,
+    "themeCoverageAdvanced": true,
     "dataCapacityBudget": {
       "state": "NORMAL",
       "limits": {
@@ -1403,7 +1506,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 97942,
+        "sourceBytes": 97873,
         "largestFileBytes": 48300,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1436,15 +1539,15 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 5,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=4; uncoveredBefore=4.",
+    "themeDepth": 6,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=5; uncoveredBefore=4.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 6,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 5,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 6,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 11
@@ -1458,7 +1561,7 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1494,7 +1597,7 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 120,
+        "score": 102,
         "gapDomains": [
           "EQUIPMENT_LOADOUT"
         ]
@@ -1610,11 +1713,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 20,
-    "previousGeneration": 19,
+    "generation": 21,
+    "previousGeneration": 20,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "02216951f74632e6362cd479d8226c34a2c4a3c794911073350099e79eccf498",
-    "priorSourceFingerprint": "96b46d2be1c8765a7086c272b3a9d8cce8f2782a76bf9dda5e18c4b177e89267",
+    "sourceFingerprint": "ee6d08b79a8dd3ee28db76952f2d75f9ab245c5f781c28a8de025bf61312a9b8",
+    "priorSourceFingerprint": "02216951f74632e6362cd479d8226c34a2c4a3c794911073350099e79eccf498",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2074,7 +2177,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "02216951f74632e6362cd479d8226c34a2c4a3c794911073350099e79eccf498",
+    "sourceTreeFingerprint": "ee6d08b79a8dd3ee28db76952f2d75f9ab245c5f781c28a8de025bf61312a9b8",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2164,7 +2267,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "02216951f74632e6362cd479d8226c34a2c4a3c794911073350099e79eccf498",
+    "sourceTreeFingerprint": "ee6d08b79a8dd3ee28db76952f2d75f9ab245c5f781c28a8de025bf61312a9b8",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2422,16 +2525,16 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "current source Studio product-quality failure requires source repair before another observation",
-      "runtimeObserved": true
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
+      "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "02216951f74632e6362cd479d8226c34a2c4a3c794911073350099e79eccf498",
+      "sourceTreeFingerprint": "ee6d08b79a8dd3ee28db76952f2d75f9ab245c5f781c28a8de025bf61312a9b8",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "F0_SOURCE_INTEGRITY",
-      "failureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED"
+      "failureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+      "failureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2442,8 +2545,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "current source Studio product-quality failure requires source repair before another observation"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -2463,6 +2566,14 @@
     "ROBLOX_EXPERIENCE_BUILD_UP_USES_EXTRA_NATIVE_STUDIO_ATTENTION",
     "AUTONOMOUS_CONTENT_EXPANSION_STAYS_INSIDE_EXISTING_BUILD_UP",
     "CONTENT_EXPANSION_MUST_BE_COHERENT_CONNECTED_AND_NON_CLONE",
+    "GAME_IDENTITY_THREE_SENTENCE_TEST_PRESERVED_OR_STRENGTHENED",
+    "REPRESENTATIVE_ACTION_CHOICE_SIGNATURE_WORLD_RULE_AND_GROWTH_IDENTITY_REVIEWED",
+    "GENRE_PRIMARY_ACTION_PRESERVED_WITHOUT_FORCED_RPG_SYSTEMS",
+    "APPROVED_CAUSAL_GAME_GRAMMAR_PRESERVED_OR_MUTATED_WITH_REAL_STATE_EFFECT",
+    "MAIN_A_B_MAJOR_AXES_AND_c_SUB_ELEMENTS_ROLE_PRESERVED",
+    "AT_DELVE_LAYER_IS_NOT_GENERAL_SYSTEM_AXIS",
+    "EXISTING_GAME_GRAMMAR_DISCOVERED_FROM_CURRENT_DESIGN_AND_SOURCE_BEFORE_EXPANSION",
+    "CHARACTER_MONSTER_REGION_STORY_SHARE_CAUSAL_WORLD_LAW_WHEN_APPLICABLE",
     "EXISTING_COMPLETENESS_RECHECK_REQUIRED_EVERY_BUILD_UP",
     "WEB_ROBLOX_UNITY_COMMON_EXPANSION_CONTRACT"
   ],
@@ -2474,7 +2585,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 21,
+    "nextGeneration": 22,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2542,5 +2653,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-06T07:00:32.057Z"
+  "generatedAt": "2026-10-07T02:59:15.224Z"
 }

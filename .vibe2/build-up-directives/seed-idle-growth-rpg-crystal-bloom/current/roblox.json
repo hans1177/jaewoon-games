@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-idle-growth-rpg-crystal-bloom-build-up-g21-fd360808fb67",
-  "directiveFingerprint": "fd360808fb6797a010661f12dc36041b336c20f57e3bc5371c7ccf349805a881",
-  "previousDirectiveFingerprint": "982576f11ad80d4a6004b69392cd9be4c8634b263cb58b97a108eb469e83dda8",
-  "forbiddenRepeatFingerprint": "982576f11ad80d4a6004b69392cd9be4c8634b263cb58b97a108eb469e83dda8",
+  "directiveId": "seed-idle-growth-rpg-crystal-bloom-build-up-g22-823fe4a896c7",
+  "directiveFingerprint": "823fe4a896c7d2c54a6a3fed3f5d195c1f7558e9700a87573e4caa76ea0d5d42",
+  "previousDirectiveFingerprint": "fd360808fb6797a010661f12dc36041b336c20f57e3bc5371c7ccf349805a881",
+  "forbiddenRepeatFingerprint": "fd360808fb6797a010661f12dc36041b336c20f57e3bc5371c7ccf349805a881",
   "gameId": "seed-idle-growth-rpg-crystal-bloom",
   "gameName": "수정의 개화",
-  "generation": 21,
+  "generation": 22,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,8 +14,107 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-idle-growth-rpg-crystal-bloom",
-  "sourceTreeFingerprint": "8369bf759a698fe7d7381ba3d7e1137336518a7d1cc2078087a3a4742805b5cb",
-  "designFingerprint": "12a77dcf1e5acf3d99af0955643aa0910f2c90e72e49757f55bce387801a59e8",
+  "sourceTreeFingerprint": "a2a4ea5dfe3552943de655f4ccfbe84934f98daca9feb8f248bd6bc499fae273",
+  "designFingerprint": "90afbc7e4bee3b300a36f8c0673a426418cdbbf8075bfd5c9858a9a17f4bfb61",
+  "identityReinforcement": {
+    "appliesToAllGenres": true,
+    "genre": "Strategy",
+    "oneLineFantasy": "플레이어는 고대 마력 수정의 관리자이자 영웅들의 인도자가 되어, 오염된 대지를 정화하고 수정의 마력을 개화시켜 영웅들을 초월적인 존재로 성장시키는 판타지를 경험합니다.",
+    "representativeAction": "자동 전투를 통해 오염된 마력 파편과 영웅 성장 재화를 지속적으로 획득합니다.",
+    "representativeChoice": "화염, 냉기, 대지, 번개 중 어떤 원소 노드를 우선적으로 개화하여 현재 영웅 덱의 시너지를 극대화할지 결정합니다.",
+    "signatureWorldRule": "해당 원소와 일치하는 영웅들의 공명 스킬 데미지가 영구적으로 25% 증가하며, 진형 내 원소 연쇄 반응 슬롯이 추가로 활성화됩니다.",
+    "signatureSystems": [
+      "수정 개화 시스템 (Crystal Bloom System)",
+      "원소 공명 진형 (Elemental Resonance Formation)"
+    ],
+    "growthIdentity": "플레이어는 스테이지 진행에 따라 점진적으로 더 강력한 적을 조우하며, 수정의 다채로운 원소 가지를 해금하여 영웅들의 한계 레벨을 돌파합니다. 단순 수치 증가를 넘어 새로운 스킬 메커니즘과 원소 조합이 열리는 방향으로 진행됩니다.",
+    "threeSentenceTest": {
+      "whatGame": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.",
+      "whatDifferent": "플레이어가 획득한 마력 파편을 소모하여 수정의 가지를 뻗어나가며, 영웅 전체에게 적용되는 고유 원소 버프와 특수 효과를 선택적으로 활성화합니다.",
+      "whatGrowthUnlocks": "플레이어는 스테이지 진행에 따라 점진적으로 더 강력한 적을 조우하며, 수정의 다채로운 원소 가지를 해금하여 영웅들의 한계 레벨을 돌파합니다. 단순 수치 증가를 넘어 새로운 스킬 메커니즘과 원소 조합이 열리는 방향으로 진행됩니다."
+    },
+    "causalGrammarEvidence": {
+      "worldRules": [],
+      "causalInspirations": [],
+      "systemInterconnections": [
+        {
+          "fromSystem": "수정 개화 시스템 (Crystal Bloom System)",
+          "toSystem": "원소 공명 진형 (Elemental Resonance Formation)",
+          "trigger": "플레이어가 수정의 특정 원소 노드를 최종 개화 단계까지 도달시켰을 때",
+          "stateChange": "해당 원소와 일치하는 영웅들의 공명 스킬 데미지가 영구적으로 25% 증가하며, 진형 내 원소 연쇄 반응 슬롯이 추가로 활성화됩니다."
+        },
+        {
+          "fromSystem": "원소 공명 진형 (Elemental Resonance Formation)",
+          "toSystem": "수정 개화 시스템 (Crystal Bloom System)",
+          "trigger": "전투 중 원소 공명 연쇄 반응이 누적 100회 이상 발생하여 에너지가 충전되었을 때",
+          "stateChange": "수정 개화에 필요한 마력 파편 소모량이 다음 3회의 노드 업그레이드 동안 30% 감소하는 버프 상태로 전환됩니다."
+        },
+        {
+          "fromSystem": "수정 개화 시스템 (Crystal Bloom System)",
+          "toSystem": "원소 공명 진형 (Elemental Resonance Formation)",
+          "trigger": "플레이어가 수정의 원소 속성을 초기화하고 다른 원소 트리로 재분배할 때",
+          "stateChange": "기존에 활성화되어 있던 모든 원소 공명 버프가 해제되고, 새로 선택한 원소 속성에 대응하는 진형 시너지 효과로 즉시 재계산되어 적용됩니다."
+        }
+      ],
+      "expansionPlan": [
+        {
+          "milestone": "심연의 균열 콘텐츠 오픈 (플레이 시간 10시간 시점)",
+          "newGameplay": "요일별로 속성 면역을 가진 보스가 등장하는 심연의 균열 던전이 열리며, 플레이어는 특정 원소 조합만을 사용하여 보스를 공략해야 합니다.",
+          "systemImpact": "단일 원소 올인 전략을 쓰던 플레이어들이 다양한 원소 노드를 골고루 개화하도록 유도하여 수정 개화 시스템의 활용도를 다변화시킵니다."
+        },
+        {
+          "milestone": "고대 유물 각성 시스템 추가 (플레이 시간 25시간 시점)",
+          "newGameplay": "수정의 특정 노드와 공명하는 고대 유물을 장착하여, 영웅들의 액티브 스킬에 추가적인 원소 상태이상을 부여하는 시스템입니다.",
+          "systemImpact": "원소 공명 진형 시스템과 결합하여, 단순한 스킬 체인을 넘어 상태이상 연쇄 폭발을 일으키는 고차원적 전투 메커니즘을 제공합니다."
+        },
+        {
+          "milestone": "차원 정화 멀티 레이드 도입 (플레이 시간 50시간 시점)",
+          "newGameplay": "다른 플레이어의 수정 버프를 실시간으로 공유받아 거대한 차원수를 함께 토벌하는 비동기 협동 레이드 콘텐츠입니다.",
+          "systemImpact": "자신의 수정 개화 트리와 시너지가 맞는 다른 플레이어를 탐색하고 매칭하는 커뮤니티 활성화 및 덱 다양성 확보에 기여합니다."
+        }
+      ],
+      "integrityNotes": [],
+      "formula": "MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @",
+      "existingGameGrammarMap": {
+        "mode": "EXISTING_GAME_RECONSTRUCTION_FROM_CURRENT_DESIGN_AND_INSPECTED_SOURCE",
+        "formula": "MAIN × A × B × c + @",
+        "main": "자동 전투를 통해 오염된 마력 파편과 영웅 성장 재화를 지속적으로 획득합니다.",
+        "majorAxes": [
+          {
+            "key": "A",
+            "name": "수정 개화 시스템 (Crystal Bloom System)",
+            "source": "CURRENT_DESIGN_SIGNATURE_SYSTEM"
+          },
+          {
+            "key": "B",
+            "name": "원소 공명 진형 (Elemental Resonance Formation)",
+            "source": "CURRENT_DESIGN_SIGNATURE_SYSTEM_OR_LOOP"
+          }
+        ],
+        "cSubElements": [
+          "플레이어가 수정의 특정 원소 노드를 최종 개화 단계까지 도달시켰을 때",
+          "전투 중 원소 공명 연쇄 반응이 누적 100회 이상 발생하여 에너지가 충전되었을 때",
+          "플레이어가 수정의 원소 속성을 초기화하고 다른 원소 트리로 재분배할 때"
+        ],
+        "delveAtEvidence": [
+          "심연의 균열 콘텐츠 오픈 (플레이 시간 10시간 시점)",
+          "요일별로 속성 면역을 가진 보스가 등장하는 심연의 균열 던전이 열리며, 플레이어는 특정 원소 조합만을 사용하여 보스를 공략해야 합니다.",
+          "고대 유물 각성 시스템 추가 (플레이 시간 25시간 시점)",
+          "수정의 특정 노드와 공명하는 고대 유물을 장착하여, 영웅들의 액티브 스킬에 추가적인 원소 상태이상을 부여하는 시스템입니다.",
+          "차원 정화 멀티 레이드 도입 (플레이 시간 50시간 시점)",
+          "다른 플레이어의 수정 버프를 실시간으로 공유받아 거대한 차원수를 함께 토벌하는 비동기 협동 레이드 콘텐츠입니다."
+        ],
+        "sourceTreeFingerprint": "a2a4ea5dfe3552943de655f4ccfbe84934f98daca9feb8f248bd6bc499fae273",
+        "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
+        "identityRewriteRequired": false,
+        "existingBalanceSaveEconomyAndAuthorityPreserved": true
+      },
+      "rule": "NEW_CONTENT_MUST_PRESERVE_OR_DEEPEN_THE_APPROVED_CAUSAL_GRAMMAR_AND_MAIN_A_B_c_RELATIONSHIPS; c_IS_SUB_ELEMENT_NOT_MAJOR_AXIS; @ IS_DELVE_LAYER_NOT_GENERAL_SYSTEM; DECORATIVE_LORE_OR_PARALLEL_FEATURE_STACK_DOES_NOT_COUNT",
+      "familiarHumanConflictShouldRemainReadable": true
+    },
+    "buildUpRule": "EACH_BUILD_UP_MUST_STRENGTHEN_OR_PRESERVE_THE_REPRESENTATIVE_ACTION_CHOICE_WORLD_RULE_SIGNATURE_SYSTEM_OR_GROWTH_IDENTITY; GENERIC_FEATURE_COUNT_DOES_NOT_COUNT",
+    "genreAdaptationRule": "PRESERVE_THE_GENRE_PRIMARY_ACTION; DO_NOT_FORCE_RPG_STYLE_SYSTEMS_ON_PUZZLE_RACING_TYCOON_DEFENSE_SURVIVAL_ACTION_CARD_BOARD_STRATEGY_CASUAL_OR_OTHER_GENRES"
+  },
   "gameIdentityAndNonNegotiables": {
     "identity": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.",
     "coreFun": "수정의 개화에서 느끼는 핵심 재미는 실시간으로 변화하는 수정의 원소 속성을 선택하고, 이에 맞춰 영웅들의 스킬 체인을 구성하여 한계를 돌파하는 전략적 의사결정과 즉각적인 수치적 피드백에 있습니다.",
@@ -256,19 +355,19 @@
   "previousVersionDelta": {
     "previousGoal": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 20,
-    "previousSourceTreeFingerprint": "2ee2b5a19f3ab9e1315d41f0487551582bf22b400a5c57647c9c467efedc5552",
-    "currentSourceTreeFingerprint": "8369bf759a698fe7d7381ba3d7e1137336518a7d1cc2078087a3a4742805b5cb",
+    "previousGeneration": 21,
+    "previousSourceTreeFingerprint": "8369bf759a698fe7d7381ba3d7e1137336518a7d1cc2078087a3a4742805b5cb",
+    "currentSourceTreeFingerprint": "a2a4ea5dfe3552943de655f4ccfbe84934f98daca9feb8f248bd6bc499fae273",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "F0_SOURCE_INTEGRITY",
-    "failureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
+    "failureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+    "failureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
     "blockers": [],
-    "runtimeObserved": true,
+    "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -696,7 +795,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "적 역할이 이동·타깃 선택·공격 전조·공격 패턴·후퇴/회복 또는 특수상태에서 구별되게 하고 수정 개화 시스템 (Crystal Bloom System)에 대한 카운터플레이가 실제 플레이에서 가능하게 한다.",
+      "directive": "적 역할이 이동·타이깃 선택·공격 전조·공격 패턴·후퇴/회복 또는 특수상태에서 구별되게 하고 수정 개화 시스템 (Crystal Bloom System)에 대한 카운터플레이가 실제 플레이에서 가능하게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1373,7 +1472,9 @@
     "초반 10분과 중후반을 각각 점검해 초반 학습·첫 보상과 중후반 전략/콘텐츠 확장이 모두 실제 소스와 플레이 흐름에 존재하게 한다.",
     "콘텐츠 확장은 배경·지역·몹·아이템·퀘스트·스토리·보상·규칙 중 관련 요소를 서로 연결된 묶음으로 설계하고, 한 요소만 고립해서 개수만 늘리는 업데이트를 피한다.",
     "이전 세대와 이름·색·수치만 다른 복제 콘텐츠를 추가하지 말고 역할·행동·플레이어 선택·세계 이유·결과/보상·시스템 연결 중 최소 두 축 이상에서 실제 차이를 만든다.",
-    "새 스토리·퀘스트·지역·규칙은 이전 상태에서 왜 발생하고 완료 후 무엇이 달라지는지 게임 상태와 세계 흐름에 남겨 개연성과 진행 연결을 유지한다."
+    "새 스토리·퀘스트·지역·규칙은 이전 상태에서 왜 발생하고 완료 후 무엇이 달라지는지 게임 상태와 세계 흐름에 남겨 개연성과 진행 연결을 유지한다.",
+    "승인된 인과 문법이 있으면 새 지역·몬스터·NPC·아이템·세력은 같은 법칙을 복제하지 말고 서로 다른 방식으로 전달·왜곡·상속·분산·역전시켜 새 선택 구조를 만든다.",
+    "가벼운 D1 엽기/코믹 문법은 억지로 장대한 신화·정치 구조로 키우지 않는다. 단순한 농담 규칙이라도 실제 상태 변화와 후폭풍이 반복 가능하면 깊이 있는 정체성으로 인정한다."
   ],
   "autonomousContentExpansion": {
     "version": 2,
@@ -1392,6 +1493,8 @@
     ],
     "requestedPlatform": "ROBLOX",
     "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
+    "contentExpansionDeferredUntilRuntimeRepairPass": false,
+    "themeCoverageAdvanced": true,
     "dataCapacityBudget": {
       "state": "NORMAL",
       "limits": {
@@ -1403,7 +1506,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 97075,
+        "sourceBytes": 97006,
         "largestFileBytes": 47835,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1436,13 +1539,13 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 2,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=4.",
+    "themeDepth": 3,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=4.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 2,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 3,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 9,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -1461,7 +1564,7 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY"
       ],
@@ -1494,7 +1597,7 @@
     "scoredThemes": [
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 168,
+        "score": 150,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
@@ -1610,11 +1713,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 21,
-    "previousGeneration": 20,
+    "generation": 22,
+    "previousGeneration": 21,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "8369bf759a698fe7d7381ba3d7e1137336518a7d1cc2078087a3a4742805b5cb",
-    "priorSourceFingerprint": "2ee2b5a19f3ab9e1315d41f0487551582bf22b400a5c57647c9c467efedc5552",
+    "sourceFingerprint": "a2a4ea5dfe3552943de655f4ccfbe84934f98daca9feb8f248bd6bc499fae273",
+    "priorSourceFingerprint": "8369bf759a698fe7d7381ba3d7e1137336518a7d1cc2078087a3a4742805b5cb",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2074,7 +2177,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "8369bf759a698fe7d7381ba3d7e1137336518a7d1cc2078087a3a4742805b5cb",
+    "sourceTreeFingerprint": "a2a4ea5dfe3552943de655f4ccfbe84934f98daca9feb8f248bd6bc499fae273",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2164,7 +2267,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "8369bf759a698fe7d7381ba3d7e1137336518a7d1cc2078087a3a4742805b5cb",
+    "sourceTreeFingerprint": "a2a4ea5dfe3552943de655f4ccfbe84934f98daca9feb8f248bd6bc499fae273",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2422,16 +2525,16 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "current source Studio product-quality failure requires source repair before another observation",
-      "runtimeObserved": true
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
+      "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "8369bf759a698fe7d7381ba3d7e1137336518a7d1cc2078087a3a4742805b5cb",
+      "sourceTreeFingerprint": "a2a4ea5dfe3552943de655f4ccfbe84934f98daca9feb8f248bd6bc499fae273",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "F0_SOURCE_INTEGRITY",
-      "failureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED"
+      "failureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+      "failureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2442,8 +2545,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "current source Studio product-quality failure requires source repair before another observation"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -2463,6 +2566,14 @@
     "ROBLOX_EXPERIENCE_BUILD_UP_USES_EXTRA_NATIVE_STUDIO_ATTENTION",
     "AUTONOMOUS_CONTENT_EXPANSION_STAYS_INSIDE_EXISTING_BUILD_UP",
     "CONTENT_EXPANSION_MUST_BE_COHERENT_CONNECTED_AND_NON_CLONE",
+    "GAME_IDENTITY_THREE_SENTENCE_TEST_PRESERVED_OR_STRENGTHENED",
+    "REPRESENTATIVE_ACTION_CHOICE_SIGNATURE_WORLD_RULE_AND_GROWTH_IDENTITY_REVIEWED",
+    "GENRE_PRIMARY_ACTION_PRESERVED_WITHOUT_FORCED_RPG_SYSTEMS",
+    "APPROVED_CAUSAL_GAME_GRAMMAR_PRESERVED_OR_MUTATED_WITH_REAL_STATE_EFFECT",
+    "MAIN_A_B_MAJOR_AXES_AND_c_SUB_ELEMENTS_ROLE_PRESERVED",
+    "AT_DELVE_LAYER_IS_NOT_GENERAL_SYSTEM_AXIS",
+    "EXISTING_GAME_GRAMMAR_DISCOVERED_FROM_CURRENT_DESIGN_AND_SOURCE_BEFORE_EXPANSION",
+    "CHARACTER_MONSTER_REGION_STORY_SHARE_CAUSAL_WORLD_LAW_WHEN_APPLICABLE",
     "EXISTING_COMPLETENESS_RECHECK_REQUIRED_EVERY_BUILD_UP",
     "WEB_ROBLOX_UNITY_COMMON_EXPANSION_CONTRACT"
   ],
@@ -2474,7 +2585,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 22,
+    "nextGeneration": 23,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2542,5 +2653,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-06T07:00:31.944Z"
+  "generatedAt": "2026-10-07T02:59:15.091Z"
 }

@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-casual-realm-weaver-build-up-g21-d344c6b7a440",
-  "directiveFingerprint": "d344c6b7a4404f4d4afa5edb26e6d95f32863005fb527df8a1519fd5eaa99883",
-  "previousDirectiveFingerprint": "8aaa1e916fc5525a64ba3a02835ac303248fe9d4cf2e64b6cb2bea108bc3e6e1",
-  "forbiddenRepeatFingerprint": "8aaa1e916fc5525a64ba3a02835ac303248fe9d4cf2e64b6cb2bea108bc3e6e1",
+  "directiveId": "seed-casual-realm-weaver-build-up-g22-7502daf0359a",
+  "directiveFingerprint": "7502daf0359a19b2c67e1c92b31619ee024103447bec458caab094cd7fbe9055",
+  "previousDirectiveFingerprint": "d344c6b7a4404f4d4afa5edb26e6d95f32863005fb527df8a1519fd5eaa99883",
+  "forbiddenRepeatFingerprint": "d344c6b7a4404f4d4afa5edb26e6d95f32863005fb527df8a1519fd5eaa99883",
   "gameId": "seed-casual-realm-weaver",
   "gameName": "세계의 직조자",
-  "generation": 21,
+  "generation": 22,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,8 +14,107 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-casual-realm-weaver",
-  "sourceTreeFingerprint": "7614d83418bbeb04a8990d7f89f4c5ee34d4e799f1a2ff570ef2002fb4f0e40a",
-  "designFingerprint": "6edf8e9da980c1bd15cd77c0d36b854b17de55488bf39553d5f5107c00d26fa0",
+  "sourceTreeFingerprint": "a34cea4ff418d3cd35fe25c02956940bdb74c633d6e199b8b61a4ae5efc0d66e",
+  "designFingerprint": "8d2a4ae52d671b1912974b9f0a29d9e19323731153e212a6e3bc32e55b4d8d4b",
+  "identityReinforcement": {
+    "appliesToAllGenres": true,
+    "genre": "Puzzle",
+    "oneLineFantasy": "플레이어는 신비로운 '직조자'가 되어 황폐해진 세계에 생명과 색채를 불어넣는 창조주가 됩니다. 손가락 끝으로 세상을 잇고, 풍경이 조화롭게 완성되는 모습을 보며 정서적 안정을 느낍니다.",
+    "representativeAction": "화면에 제시된 무작위 지형 조각을 확인하고, 한 손가락 드래그로 원하는 위치에 배치합니다.",
+    "representativeChoice": "어떤 조각을 먼저 배치하여 연쇄 반응을 일으킬지, 혹은 더 큰 보상을 위해 특정 패턴을 완성할지 결정합니다.",
+    "signatureWorldRule": "입력된 좌표를 그리드 데이터로 변환하고, 인접한 조각들과의 속성 일치 여부를 계산하여 패턴 완성 상태를 업데이트함",
+    "signatureSystems": [
+      "직조 연결 시스템",
+      "생태계 복원 게이지"
+    ],
+    "growthIdentity": "스테이지가 진행될수록 지형의 복잡도가 증가하며, 새로운 속성을 가진 조각들이 추가됩니다. 플레이어는 점진적으로 더 넓고 화려한 세계를 직조하며, 수집한 조각으로 자신만의 커스텀 맵을 구성할 수 있습니다.",
+    "threeSentenceTest": {
+      "whatGame": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.",
+      "whatDifferent": "단순 배치를 넘어, 조각 간의 속성(색상, 형태)을 매칭하여 시너지를 발생시키기 위함입니다.",
+      "whatGrowthUnlocks": "스테이지가 진행될수록 지형의 복잡도가 증가하며, 새로운 속성을 가진 조각들이 추가됩니다. 플레이어는 점진적으로 더 넓고 화려한 세계를 직조하며, 수집한 조각으로 자신만의 커스텀 맵을 구성할 수 있습니다."
+    },
+    "causalGrammarEvidence": {
+      "worldRules": [],
+      "causalInspirations": [],
+      "systemInterconnections": [
+        {
+          "fromSystem": "입력 처리 시스템(Input Handler)",
+          "toSystem": "직조 연결 시스템(Pattern Weaver)",
+          "trigger": "플레이어가 화면을 터치하고 드래그하여 조각을 특정 위치에 배치하는 입력 이벤트 발생 시",
+          "stateChange": "입력된 좌표를 그리드 데이터로 변환하고, 인접한 조각들과의 속성 일치 여부를 계산하여 패턴 완성 상태를 업데이트함"
+        },
+        {
+          "fromSystem": "직조 연결 시스템(Pattern Weaver)",
+          "toSystem": "생태계 복원 게이지(Ecosystem Gauge)",
+          "trigger": "패턴 완성 로직이 성공적으로 실행되어 조각 간의 연결이 확정될 때",
+          "stateChange": "연결된 조각의 희귀도와 패턴 복잡도에 따라 복원 게이지 수치를 실시간으로 가산하여 시각적 피드백을 즉시 갱신함"
+        },
+        {
+          "fromSystem": "생태계 복원 게이지(Ecosystem Gauge)",
+          "toSystem": "보상 시스템(Reward Engine)",
+          "trigger": "스테이지 종료 시점에 복원 게이지가 목표 임계값을 초과하여 달성되었을 때",
+          "stateChange": "최종 게이지 수치를 기반으로 보상 등급을 산출하고, 플레이어 인벤토리에 생명의 씨앗 재화를 즉시 지급함"
+        }
+      ],
+      "expansionPlan": [
+        {
+          "milestone": "초기 런칭: 숲의 속삭임",
+          "newGameplay": "기본적인 3색 조각 매칭 및 5x5 그리드 퍼즐 제공",
+          "systemImpact": "기본 직조 연결 시스템 안정성 검증 및 초기 리텐션 데이터 수집"
+        },
+        {
+          "milestone": "중기 업데이트: 바다의 노래",
+          "newGameplay": "물 속성 조각 추가, 흐르는 지형 기믹 도입",
+          "systemImpact": "생태계 복원 게이지에 속성 상성 시스템 추가 및 전략적 깊이 확장"
+        },
+        {
+          "milestone": "장기 업데이트: 하늘의 정원",
+          "newGameplay": "비동기식 소셜 협동 모드 및 커스텀 맵 공유 기능",
+          "systemImpact": "보상 시스템에 소셜 재화 추가 및 커뮤니티 활성화 시스템 연동"
+        }
+      ],
+      "integrityNotes": [],
+      "formula": "MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @",
+      "existingGameGrammarMap": {
+        "mode": "EXISTING_GAME_RECONSTRUCTION_FROM_CURRENT_DESIGN_AND_INSPECTED_SOURCE",
+        "formula": "MAIN × A × B × c + @",
+        "main": "화면에 제시된 무작위 지형 조각을 확인하고, 한 손가락 드래그로 원하는 위치에 배치합니다.",
+        "majorAxes": [
+          {
+            "key": "A",
+            "name": "직조 연결 시스템",
+            "source": "CURRENT_DESIGN_SIGNATURE_SYSTEM"
+          },
+          {
+            "key": "B",
+            "name": "생태계 복원 게이지",
+            "source": "CURRENT_DESIGN_SIGNATURE_SYSTEM_OR_LOOP"
+          }
+        ],
+        "cSubElements": [
+          "플레이어가 화면을 터치하고 드래그하여 조각을 특정 위치에 배치하는 입력 이벤트 발생 시",
+          "패턴 완성 로직이 성공적으로 실행되어 조각 간의 연결이 확정될 때",
+          "스테이지 종료 시점에 복원 게이지가 목표 임계값을 초과하여 달성되었을 때"
+        ],
+        "delveAtEvidence": [
+          "초기 런칭: 숲의 속삭임",
+          "기본적인 3색 조각 매칭 및 5x5 그리드 퍼즐 제공",
+          "중기 업데이트: 바다의 노래",
+          "물 속성 조각 추가, 흐르는 지형 기믹 도입",
+          "장기 업데이트: 하늘의 정원",
+          "비동기식 소셜 협동 모드 및 커스텀 맵 공유 기능"
+        ],
+        "sourceTreeFingerprint": "a34cea4ff418d3cd35fe25c02956940bdb74c633d6e199b8b61a4ae5efc0d66e",
+        "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
+        "identityRewriteRequired": false,
+        "existingBalanceSaveEconomyAndAuthorityPreserved": true
+      },
+      "rule": "NEW_CONTENT_MUST_PRESERVE_OR_DEEPEN_THE_APPROVED_CAUSAL_GRAMMAR_AND_MAIN_A_B_c_RELATIONSHIPS; c_IS_SUB_ELEMENT_NOT_MAJOR_AXIS; @ IS_DELVE_LAYER_NOT_GENERAL_SYSTEM; DECORATIVE_LORE_OR_PARALLEL_FEATURE_STACK_DOES_NOT_COUNT",
+      "familiarHumanConflictShouldRemainReadable": true
+    },
+    "buildUpRule": "EACH_BUILD_UP_MUST_STRENGTHEN_OR_PRESERVE_THE_REPRESENTATIVE_ACTION_CHOICE_WORLD_RULE_SIGNATURE_SYSTEM_OR_GROWTH_IDENTITY; GENERIC_FEATURE_COUNT_DOES_NOT_COUNT",
+    "genreAdaptationRule": "PRESERVE_THE_GENRE_PRIMARY_ACTION; DO_NOT_FORCE_RPG_STYLE_SYSTEMS_ON_PUZZLE_RACING_TYCOON_DEFENSE_SURVIVAL_ACTION_CARD_BOARD_STRATEGY_CASUAL_OR_OTHER_GENRES"
+  },
   "gameIdentityAndNonNegotiables": {
     "identity": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.",
     "coreFun": "조각을 배치하고 연결할 때 발생하는 즉각적인 시각적 피드백과, 완성된 풍경이 생동감 있게 변하는 '생명력의 전이'를 경험하는 것입니다.",
@@ -265,19 +364,19 @@
   "previousVersionDelta": {
     "previousGoal": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 20,
-    "previousSourceTreeFingerprint": "21f734ebe747e073a82333ea403e0f85ac39e84db0d67014311c4b17536aaa51",
-    "currentSourceTreeFingerprint": "7614d83418bbeb04a8990d7f89f4c5ee34d4e799f1a2ff570ef2002fb4f0e40a",
+    "previousGeneration": 21,
+    "previousSourceTreeFingerprint": "7614d83418bbeb04a8990d7f89f4c5ee34d4e799f1a2ff570ef2002fb4f0e40a",
+    "currentSourceTreeFingerprint": "a34cea4ff418d3cd35fe25c02956940bdb74c633d6e199b8b61a4ae5efc0d66e",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "F0_SOURCE_INTEGRITY",
-    "failureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
+    "failureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+    "failureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
     "blockers": [],
-    "runtimeObserved": true,
+    "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -705,7 +804,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "적 역할이 이동·타깃 선택·공격 전조·공격 패턴·후퇴/회복 또는 특수상태에서 구별되게 하고 직조 연결 시스템에 대한 카운터플레이가 실제 플레이에서 가능하게 한다.",
+      "directive": "적 역할이 이동·타이깃 선택·공격 전조·공격 패턴·후퇴/회복 또는 특수상태에서 구별되게 하고 직조 연결 시스템에 대한 카운터플레이가 실제 플레이에서 가능하게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1383,7 +1482,9 @@
     "초반 10분과 중후반을 각각 점검해 초반 학습·첫 보상과 중후반 전략/콘텐츠 확장이 모두 실제 소스와 플레이 흐름에 존재하게 한다.",
     "콘텐츠 확장은 배경·지역·몹·아이템·퀘스트·스토리·보상·규칙 중 관련 요소를 서로 연결된 묶음으로 설계하고, 한 요소만 고립해서 개수만 늘리는 업데이트를 피한다.",
     "이전 세대와 이름·색·수치만 다른 복제 콘텐츠를 추가하지 말고 역할·행동·플레이어 선택·세계 이유·결과/보상·시스템 연결 중 최소 두 축 이상에서 실제 차이를 만든다.",
-    "새 스토리·퀘스트·지역·규칙은 이전 상태에서 왜 발생하고 완료 후 무엇이 달라지는지 게임 상태와 세계 흐름에 남겨 개연성과 진행 연결을 유지한다."
+    "새 스토리·퀘스트·지역·규칙은 이전 상태에서 왜 발생하고 완료 후 무엇이 달라지는지 게임 상태와 세계 흐름에 남겨 개연성과 진행 연결을 유지한다.",
+    "승인된 인과 문법이 있으면 새 지역·몬스터·NPC·아이템·세력은 같은 법칙을 복제하지 말고 서로 다른 방식으로 전달·왜곡·상속·분산·역전시켜 새 선택 구조를 만든다.",
+    "가벼운 D1 엽기/코믹 문법은 억지로 장대한 신화·정치 구조로 키우지 않는다. 단순한 농담 규칙이라도 실제 상태 변화와 후폭풍이 반복 가능하면 깊이 있는 정체성으로 인정한다."
   ],
   "autonomousContentExpansion": {
     "version": 2,
@@ -1402,6 +1503,8 @@
     ],
     "requestedPlatform": "ROBLOX",
     "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
+    "contentExpansionDeferredUntilRuntimeRepairPass": false,
+    "themeCoverageAdvanced": true,
     "dataCapacityBudget": {
       "state": "NORMAL",
       "limits": {
@@ -1413,7 +1516,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 97326,
+        "sourceBytes": 97287,
         "largestFileBytes": 48227,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1446,15 +1549,15 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 5,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=4; uncoveredBefore=4.",
+    "themeDepth": 6,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=5; uncoveredBefore=4.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 5,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 6,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 7,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 11
@@ -1468,7 +1571,7 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1504,7 +1607,7 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 120,
+        "score": 102,
         "gapDomains": [
           "EQUIPMENT_LOADOUT"
         ]
@@ -1620,11 +1723,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 21,
-    "previousGeneration": 20,
+    "generation": 22,
+    "previousGeneration": 21,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "7614d83418bbeb04a8990d7f89f4c5ee34d4e799f1a2ff570ef2002fb4f0e40a",
-    "priorSourceFingerprint": "21f734ebe747e073a82333ea403e0f85ac39e84db0d67014311c4b17536aaa51",
+    "sourceFingerprint": "a34cea4ff418d3cd35fe25c02956940bdb74c633d6e199b8b61a4ae5efc0d66e",
+    "priorSourceFingerprint": "7614d83418bbeb04a8990d7f89f4c5ee34d4e799f1a2ff570ef2002fb4f0e40a",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2085,7 +2188,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "7614d83418bbeb04a8990d7f89f4c5ee34d4e799f1a2ff570ef2002fb4f0e40a",
+    "sourceTreeFingerprint": "a34cea4ff418d3cd35fe25c02956940bdb74c633d6e199b8b61a4ae5efc0d66e",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2176,7 +2279,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "7614d83418bbeb04a8990d7f89f4c5ee34d4e799f1a2ff570ef2002fb4f0e40a",
+    "sourceTreeFingerprint": "a34cea4ff418d3cd35fe25c02956940bdb74c633d6e199b8b61a4ae5efc0d66e",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2434,16 +2537,16 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "current source Studio product-quality failure requires source repair before another observation",
-      "runtimeObserved": true
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
+      "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "7614d83418bbeb04a8990d7f89f4c5ee34d4e799f1a2ff570ef2002fb4f0e40a",
+      "sourceTreeFingerprint": "a34cea4ff418d3cd35fe25c02956940bdb74c633d6e199b8b61a4ae5efc0d66e",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "F0_SOURCE_INTEGRITY",
-      "failureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED"
+      "failureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+      "failureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2454,8 +2557,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "current source Studio product-quality failure requires source repair before another observation"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -2475,6 +2578,14 @@
     "ROBLOX_EXPERIENCE_BUILD_UP_USES_EXTRA_NATIVE_STUDIO_ATTENTION",
     "AUTONOMOUS_CONTENT_EXPANSION_STAYS_INSIDE_EXISTING_BUILD_UP",
     "CONTENT_EXPANSION_MUST_BE_COHERENT_CONNECTED_AND_NON_CLONE",
+    "GAME_IDENTITY_THREE_SENTENCE_TEST_PRESERVED_OR_STRENGTHENED",
+    "REPRESENTATIVE_ACTION_CHOICE_SIGNATURE_WORLD_RULE_AND_GROWTH_IDENTITY_REVIEWED",
+    "GENRE_PRIMARY_ACTION_PRESERVED_WITHOUT_FORCED_RPG_SYSTEMS",
+    "APPROVED_CAUSAL_GAME_GRAMMAR_PRESERVED_OR_MUTATED_WITH_REAL_STATE_EFFECT",
+    "MAIN_A_B_MAJOR_AXES_AND_c_SUB_ELEMENTS_ROLE_PRESERVED",
+    "AT_DELVE_LAYER_IS_NOT_GENERAL_SYSTEM_AXIS",
+    "EXISTING_GAME_GRAMMAR_DISCOVERED_FROM_CURRENT_DESIGN_AND_SOURCE_BEFORE_EXPANSION",
+    "CHARACTER_MONSTER_REGION_STORY_SHARE_CAUSAL_WORLD_LAW_WHEN_APPLICABLE",
     "EXISTING_COMPLETENESS_RECHECK_REQUIRED_EVERY_BUILD_UP",
     "WEB_ROBLOX_UNITY_COMMON_EXPANSION_CONTRACT"
   ],
@@ -2486,7 +2597,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 22,
+    "nextGeneration": 23,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2555,5 +2666,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-06T07:33:52.514Z"
+  "generatedAt": "2026-10-07T03:04:07.880Z"
 }

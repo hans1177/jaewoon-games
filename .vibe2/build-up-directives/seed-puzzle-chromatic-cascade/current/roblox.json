@@ -1,21 +1,120 @@
 {
   "version": 2,
-  "directiveId": "seed-puzzle-chromatic-cascade-build-up-g25-024dbdaae0c3",
-  "directiveFingerprint": "024dbdaae0c33b8617fbf7a9d3752486e6bd8373e20d2990033ee20dbd3da6d4",
-  "previousDirectiveFingerprint": "686e585ae80158b6a76eb4fa243fce352b87c36b446e7c1e224ca3c5b515d410",
-  "forbiddenRepeatFingerprint": "686e585ae80158b6a76eb4fa243fce352b87c36b446e7c1e224ca3c5b515d410",
+  "directiveId": "seed-puzzle-chromatic-cascade-build-up-g26-a332291963b4",
+  "directiveFingerprint": "a332291963b4eee53d9ae095e16adcb90b84b7be73ea565783a11a8df41d78ec",
+  "previousDirectiveFingerprint": "024dbdaae0c33b8617fbf7a9d3752486e6bd8373e20d2990033ee20dbd3da6d4",
+  "forbiddenRepeatFingerprint": "024dbdaae0c33b8617fbf7a9d3752486e6bd8373e20d2990033ee20dbd3da6d4",
   "gameId": "seed-puzzle-chromatic-cascade",
   "gameName": "색채의 연쇄",
-  "generation": 25,
+  "generation": 26,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "previousDirectiveOutcome": "running",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-puzzle-chromatic-cascade",
-  "sourceTreeFingerprint": "5025c53b0a1e1b9fff10e15c61f559d9bfbddb90b48cd0b2c55bfb0c2c88ed70",
-  "designFingerprint": "e383fd3085205e058d9568b5468ef540016e858bbc2d5d4d1c466789a93d0915",
+  "sourceTreeFingerprint": "06b9fe3c05efb3bb7d1fc21b435db2cace92e3eaf26fbd5c80f992828f17323d",
+  "designFingerprint": "dfcbc26bcb6613761dc7ece265f8c1b3a37bc9a42e5f44c2e3803aa92a880098",
+  "identityReinforcement": {
+    "appliesToAllGenres": true,
+    "genre": "Puzzle",
+    "oneLineFantasy": "플레이어는 보드 위의 무질서한 색채 에너지를 조율하고, 단 한 번의 정밀한 트리거로 화면 전체를 정화하는 위대한 '색채 조율사'가 되어 연쇄 반응의 쾌감을 만끽합니다.",
+    "representativeAction": "보드의 제한된 이동 횟수와 색채 장애물 배치를 분석하여 목표를 확인합니다.",
+    "representativeChoice": "플레이어는 제한된 튜닝 횟수 내에서 어떤 노드를 어떤 색상으로 전환해야 가장 길고 강력한 연쇄 동기화 경로를 확보할 수 있을지 전술적으로 결정해야 합니다.",
+    "signatureWorldRule": "연쇄 기폭 장치의 충전 게이지가 즉시 최대치로 상승하며, 기폭 시 폭발 반경이 1셀에서 3셀로 확장되는 강화 상태로 전이됩니다.",
+    "signatureSystems": [
+      "색채 주파수 튜너 (Chromatic Frequency Tuner)",
+      "연쇄 기폭 장치 (Cascade Detonator)"
+    ],
+    "growthIdentity": "플레이어는 스테이지를 클리어하며 튜너의 성능(색상 변환 범위, 충전 속도)을 업그레이드하고, 더 복잡하고 단단한 장애물이 등장하는 상위 구역으로 진입합니다. 단순한 수치 증가가 아닌, 새로운 색상 주파수와 복합 장애물 패턴이 등장하여 퍼즐의 깊이를 더합니다.",
+    "threeSentenceTest": {
+      "whatGame": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.",
+      "whatDifferent": "보드 위에 배치된 특정 노드의 색상 주파수를 강제로 변경하여 인접한 다른 색상들과의 동기화 체인을 능동적으로 형성하는 핵심 조작 시스템입니다.",
+      "whatGrowthUnlocks": "플레이어는 스테이지를 클리어하며 튜너의 성능(색상 변환 범위, 충전 속도)을 업그레이드하고, 더 복잡하고 단단한 장애물이 등장하는 상위 구역으로 진입합니다. 단순한 수치 증가가 아닌, 새로운 색상 주파수와 복합 장애물 패턴이 등장하여 퍼즐의 깊이를 더합니다."
+    },
+    "causalGrammarEvidence": {
+      "worldRules": [],
+      "causalInspirations": [],
+      "systemInterconnections": [
+        {
+          "fromSystem": "색채 주파수 튜너 (Chromatic Frequency Tuner)",
+          "toSystem": "연쇄 기폭 장치 (Cascade Detonator)",
+          "trigger": "플레이어가 노드의 색상을 변경하여 5개 이상의 동일 색상 노드가 인접하게 연결되는 순간",
+          "stateChange": "연쇄 기폭 장치의 충전 게이지가 즉시 최대치로 상승하며, 기폭 시 폭발 반경이 1셀에서 3셀로 확장되는 강화 상태로 전이됩니다."
+        },
+        {
+          "fromSystem": "연쇄 기폭 장치 (Cascade Detonator)",
+          "toSystem": "색채 주파수 튜너 (Chromatic Frequency Tuner)",
+          "trigger": "기폭 장치가 활성화되어 보드 상의 대규모 연쇄 폭발이 완전히 종료되고 보드가 안정화되었을 때",
+          "stateChange": "폭발한 노드의 수에 비례하여 색채 주파수 튜너의 잔여 튜닝 횟수가 일정 확률로 회복되거나 특수 주파수 탄환이 장전됩니다."
+        },
+        {
+          "fromSystem": "연쇄 기폭 장치 (Cascade Detonator)",
+          "toSystem": "보드 장애물 시스템 (Board Obstacle System)",
+          "trigger": "기폭 장치 폭발로 발생한 에너지 파동이 인접한 봉인된 색채 블록에 도달할 때",
+          "stateChange": "봉인된 블록의 내구도가 1 감소하며, 내구도가 0이 되면 해당 블록이 일반 색채 노드로 변환되어 새로운 동기화 체인에 참여할 수 있게 됩니다."
+        }
+      ],
+      "expansionPlan": [
+        {
+          "milestone": "제2구역: 프리즘의 심연 (Prism Abyss)",
+          "newGameplay": "빛을 굴절시켜 주변 노드의 색상을 매 턴마다 무작위로 변화시키는 '프리즘 블록' 기믹이 추가됩니다.",
+          "systemImpact": "플레이어는 색채 주파수 튜너를 사용할 때 프리즘의 굴절 방향을 예측하여 튜닝 경로를 설계해야 하므로 전술적 복잡도가 상승합니다."
+        },
+        {
+          "milestone": "제3구역: 불안정한 초신성 (Unstable Supernova)",
+          "newGameplay": "일정 횟수 이상 연쇄가 닿지 않으면 폭발하여 주변 노드를 무채색으로 오염시키는 '불안정 핵' 기믹이 도입됩니다.",
+          "systemImpact": "연쇄 기폭 장치를 최우선적으로 불안정 핵 주변에서 작동시켜야 하므로, 기폭 타이밍을 강제하는 위험 요소로 작용합니다."
+        },
+        {
+          "milestone": "제4구역: 공명하는 차원문 (Resonant Portal)",
+          "newGameplay": "보드의 양 끝을 연결하여 한쪽 끝에서 일어난 연쇄 폭발이 반대편으로 전이되는 '차원 포탈' 노드가 등장합니다.",
+          "systemImpact": "공간적 제약을 극복하는 초장거리 연쇄 체인 형성이 가능해져, 기폭 장치의 파괴력과 시각적 피드백이 극대화됩니다."
+        }
+      ],
+      "integrityNotes": [],
+      "formula": "MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @",
+      "existingGameGrammarMap": {
+        "mode": "EXISTING_GAME_RECONSTRUCTION_FROM_CURRENT_DESIGN_AND_INSPECTED_SOURCE",
+        "formula": "MAIN × A × B × c + @",
+        "main": "보드의 제한된 이동 횟수와 색채 장애물 배치를 분석하여 목표를 확인합니다.",
+        "majorAxes": [
+          {
+            "key": "A",
+            "name": "색채 주파수 튜너 (Chromatic Frequency Tuner)",
+            "source": "CURRENT_DESIGN_SIGNATURE_SYSTEM"
+          },
+          {
+            "key": "B",
+            "name": "연쇄 기폭 장치 (Cascade Detonator)",
+            "source": "CURRENT_DESIGN_SIGNATURE_SYSTEM_OR_LOOP"
+          }
+        ],
+        "cSubElements": [
+          "플레이어가 노드의 색상을 변경하여 5개 이상의 동일 색상 노드가 인접하게 연결되는 순간",
+          "기폭 장치가 활성화되어 보드 상의 대규모 연쇄 폭발이 완전히 종료되고 보드가 안정화되었을 때",
+          "기폭 장치 폭발로 발생한 에너지 파동이 인접한 봉인된 색채 블록에 도달할 때"
+        ],
+        "delveAtEvidence": [
+          "제2구역: 프리즘의 심연 (Prism Abyss)",
+          "빛을 굴절시켜 주변 노드의 색상을 매 턴마다 무작위로 변화시키는 '프리즘 블록' 기믹이 추가됩니다.",
+          "제3구역: 불안정한 초신성 (Unstable Supernova)",
+          "일정 횟수 이상 연쇄가 닿지 않으면 폭발하여 주변 노드를 무채색으로 오염시키는 '불안정 핵' 기믹이 도입됩니다.",
+          "제4구역: 공명하는 차원문 (Resonant Portal)",
+          "보드의 양 끝을 연결하여 한쪽 끝에서 일어난 연쇄 폭발이 반대편으로 전이되는 '차원 포탈' 노드가 등장합니다."
+        ],
+        "sourceTreeFingerprint": "06b9fe3c05efb3bb7d1fc21b435db2cace92e3eaf26fbd5c80f992828f17323d",
+        "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
+        "identityRewriteRequired": false,
+        "existingBalanceSaveEconomyAndAuthorityPreserved": true
+      },
+      "rule": "NEW_CONTENT_MUST_PRESERVE_OR_DEEPEN_THE_APPROVED_CAUSAL_GRAMMAR_AND_MAIN_A_B_c_RELATIONSHIPS; c_IS_SUB_ELEMENT_NOT_MAJOR_AXIS; @ IS_DELVE_LAYER_NOT_GENERAL_SYSTEM; DECORATIVE_LORE_OR_PARALLEL_FEATURE_STACK_DOES_NOT_COUNT",
+      "familiarHumanConflictShouldRemainReadable": true
+    },
+    "buildUpRule": "EACH_BUILD_UP_MUST_STRENGTHEN_OR_PRESERVE_THE_REPRESENTATIVE_ACTION_CHOICE_WORLD_RULE_SIGNATURE_SYSTEM_OR_GROWTH_IDENTITY; GENERIC_FEATURE_COUNT_DOES_NOT_COUNT",
+    "genreAdaptationRule": "PRESERVE_THE_GENRE_PRIMARY_ACTION; DO_NOT_FORCE_RPG_STYLE_SYSTEMS_ON_PUZZLE_RACING_TYCOON_DEFENSE_SURVIVAL_ACTION_CARD_BOARD_STRATEGY_CASUAL_OR_OTHER_GENRES"
+  },
   "gameIdentityAndNonNegotiables": {
     "identity": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.",
     "coreFun": "플레이어는 매 턴마다 어떤 색채 노드를 튜닝하여 주파수를 일치시킬지 선택하고, 동기화된 노드들이 연쇄적으로 폭발하며 보드 전체의 장애물을 제거하는 즉각적인 시각적 피드백과 전술적 성취감을 느낍니다.",
@@ -256,19 +355,19 @@
   "previousVersionDelta": {
     "previousGoal": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 24,
-    "previousSourceTreeFingerprint": "f9eac81e2a85d8446daab5d5a858860df1de8421f43956378d4be04af9231b7e",
-    "currentSourceTreeFingerprint": "5025c53b0a1e1b9fff10e15c61f559d9bfbddb90b48cd0b2c55bfb0c2c88ed70",
+    "previousGeneration": 25,
+    "previousSourceTreeFingerprint": "5025c53b0a1e1b9fff10e15c61f559d9bfbddb90b48cd0b2c55bfb0c2c88ed70",
+    "currentSourceTreeFingerprint": "06b9fe3c05efb3bb7d1fc21b435db2cace92e3eaf26fbd5c80f992828f17323d",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "F0_SOURCE_INTEGRITY",
-    "failureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
+    "failureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+    "failureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
     "blockers": [],
-    "runtimeObserved": true,
+    "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -696,7 +795,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "적 역할이 이동·타깃 선택·공격 전조·공격 패턴·후퇴/회복 또는 특수상태에서 구별되게 하고 색채 주파수 튜너 (Chromatic Frequency Tuner)에 대한 카운터플레이가 실제 플레이에서 가능하게 한다.",
+      "directive": "적 역할이 이동·타이깃 선택·공격 전조·공격 패턴·후퇴/회복 또는 특수상태에서 구별되게 하고 색채 주파수 튜너 (Chromatic Frequency Tuner)에 대한 카운터플레이가 실제 플레이에서 가능하게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1373,7 +1472,9 @@
     "초반 10분과 중후반을 각각 점검해 초반 학습·첫 보상과 중후반 전략/콘텐츠 확장이 모두 실제 소스와 플레이 흐름에 존재하게 한다.",
     "콘텐츠 확장은 배경·지역·몹·아이템·퀘스트·스토리·보상·규칙 중 관련 요소를 서로 연결된 묶음으로 설계하고, 한 요소만 고립해서 개수만 늘리는 업데이트를 피한다.",
     "이전 세대와 이름·색·수치만 다른 복제 콘텐츠를 추가하지 말고 역할·행동·플레이어 선택·세계 이유·결과/보상·시스템 연결 중 최소 두 축 이상에서 실제 차이를 만든다.",
-    "새 스토리·퀘스트·지역·규칙은 이전 상태에서 왜 발생하고 완료 후 무엇이 달라지는지 게임 상태와 세계 흐름에 남겨 개연성과 진행 연결을 유지한다."
+    "새 스토리·퀘스트·지역·규칙은 이전 상태에서 왜 발생하고 완료 후 무엇이 달라지는지 게임 상태와 세계 흐름에 남겨 개연성과 진행 연결을 유지한다.",
+    "승인된 인과 문법이 있으면 새 지역·몬스터·NPC·아이템·세력은 같은 법칙을 복제하지 말고 서로 다른 방식으로 전달·왜곡·상속·분산·역전시켜 새 선택 구조를 만든다.",
+    "가벼운 D1 엽기/코믹 문법은 억지로 장대한 신화·정치 구조로 키우지 않는다. 단순한 농담 규칙이라도 실제 상태 변화와 후폭풍이 반복 가능하면 깊이 있는 정체성으로 인정한다."
   ],
   "autonomousContentExpansion": {
     "version": 2,
@@ -1392,6 +1493,8 @@
     ],
     "requestedPlatform": "ROBLOX",
     "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
+    "contentExpansionDeferredUntilRuntimeRepairPass": false,
+    "themeCoverageAdvanced": true,
     "dataCapacityBudget": {
       "state": "NORMAL",
       "limits": {
@@ -1403,7 +1506,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 96924,
+        "sourceBytes": 96855,
         "largestFileBytes": 47908,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1435,14 +1538,14 @@
       ],
       "weakExistingContentMayPreemptNewContent": true
     },
-    "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 10,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=9; uncoveredBefore=4.",
+    "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
+    "themeDepth": 1,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=4.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 1,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 10,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 7,
@@ -1453,7 +1556,6 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1463,7 +1565,8 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY"
       ],
       "requiredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -1474,31 +1577,22 @@
         "MID_LATE_ENDGAME_COMPLETION",
         "PRESENTATION_WORLD_COHESION"
       ],
-      "distinctCovered": 3,
+      "distinctCovered": 4,
       "totalThemes": 7,
       "breadthCycleComplete": false,
       "missingThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "MID_LATE_ENDGAME_COMPLETION"
       ],
       "leastCoveredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "MID_LATE_ENDGAME_COMPLETION"
       ],
       "selectionPolicy": "SUCCESSFUL_ITERATIONS_PRIORITIZE_UNCOVERED_OR_LEAST_COVERED_COHERENT_THEMES; VERIFIED_FAILURE_MAY_DEEPEN_THE_SAME_CAUSAL_THEME"
     },
     "scoredThemes": [
-      {
-        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 30,
-        "gapDomains": [
-          "EQUIPMENT_LOADOUT"
-        ]
-      },
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
         "score": 26,
@@ -1522,6 +1616,13 @@
         "gapDomains": []
       },
       {
+        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "score": 12,
+        "gapDomains": [
+          "EQUIPMENT_LOADOUT"
+        ]
+      },
+      {
         "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "score": -106,
         "gapDomains": []
@@ -1538,13 +1639,13 @@
       }
     ],
     "coherentContentBundle": [
-      "SOURCE_AND_DISCOVERY: 아이템이 어디서 왜 나오는지 지역·몹·퀘스트·제작과 연결한다.",
-      "DISTINCT_USE_CASE: 데미지 숫자만 다른 복제 장비가 아니라 사거리·타이밍·상태·위험·보상·조합 역할이 달라야 한다.",
-      "INVENTORY_AND_EQUIP_FLOW: 획득→비교→장착·사용→교체→피드백이 같은 authoritative 상태를 사용한다.",
-      "CRAFT_OR_UPGRADE_CONNECTION: 재료·레시피·제작·강화 결과가 실제 플레이 선택을 바꾼다.",
-      "PROGRESSION_PURPOSE: 아이템이 특정 지역·적·빌드·퀘스트·해금과 연결되어 성장 경로에 의미를 가진다.",
-      "SYNERGY_AND_TRADEOFF: 장비·스킬·소모품 사이에 조합 또는 선택 비용이 있어 하나의 정답만 반복되지 않게 한다.",
-      "WORLD_PRESENTATION: 외형·이름·설명·획득 연출이 실제 기능과 세계 설정을 일치시킨다."
+      "ENEMY_ROLE_SET: 추격·견제·방어·지원·매복·지역 통제 등 서로 다른 전투 역할을 만든다.",
+      "BEHAVIOR_AND_COUNTERPLAY: 이름·HP·공격력만 다른 적이 아니라 이동·전조·공격·약점·대응 선택이 달라야 한다.",
+      "ENCOUNTER_COMPOSITION: 적 역할 조합과 지형·목표가 만나 새로운 판단을 만들게 한다.",
+      "ELITE_OR_BOSS_SIGNATURE: 보스·엘리트는 페이즈·공간 압박·전조·대응·보상 중 여러 축에서 일반 적과 구별한다.",
+      "ECOLOGICAL_WORLD_REASON: 적이 해당 지역·스토리·자원·세력 관계 안에 존재하는 이유를 연결한다.",
+      "DISTINCT_REWARD_PURPOSE: 처치 보상은 다음 장비·퀘스트·제작·지역 해금 중 실제 목적을 가진다.",
+      "VISUAL_TELEGRAPH: 실루엣·모션·VFX·음향·UI 전조가 행동 규칙과 일치해야 한다."
     ],
     "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
     "antiCloneContract": {
@@ -1610,11 +1711,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 25,
-    "previousGeneration": 24,
+    "generation": 26,
+    "previousGeneration": 25,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "5025c53b0a1e1b9fff10e15c61f559d9bfbddb90b48cd0b2c55bfb0c2c88ed70",
-    "priorSourceFingerprint": "f9eac81e2a85d8446daab5d5a858860df1de8421f43956378d4be04af9231b7e",
+    "sourceFingerprint": "06b9fe3c05efb3bb7d1fc21b435db2cace92e3eaf26fbd5c80f992828f17323d",
+    "priorSourceFingerprint": "5025c53b0a1e1b9fff10e15c61f559d9bfbddb90b48cd0b2c55bfb0c2c88ed70",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2074,7 +2175,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "5025c53b0a1e1b9fff10e15c61f559d9bfbddb90b48cd0b2c55bfb0c2c88ed70",
+    "sourceTreeFingerprint": "06b9fe3c05efb3bb7d1fc21b435db2cace92e3eaf26fbd5c80f992828f17323d",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2164,7 +2265,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "5025c53b0a1e1b9fff10e15c61f559d9bfbddb90b48cd0b2c55bfb0c2c88ed70",
+    "sourceTreeFingerprint": "06b9fe3c05efb3bb7d1fc21b435db2cace92e3eaf26fbd5c80f992828f17323d",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2422,16 +2523,16 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "current source Studio product-quality failure requires source repair before another observation",
-      "runtimeObserved": true
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
+      "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "5025c53b0a1e1b9fff10e15c61f559d9bfbddb90b48cd0b2c55bfb0c2c88ed70",
+      "sourceTreeFingerprint": "06b9fe3c05efb3bb7d1fc21b435db2cace92e3eaf26fbd5c80f992828f17323d",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "F0_SOURCE_INTEGRITY",
-      "failureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED"
+      "failureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+      "failureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2442,8 +2543,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "current source Studio product-quality failure requires source repair before another observation"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -2463,6 +2564,14 @@
     "ROBLOX_EXPERIENCE_BUILD_UP_USES_EXTRA_NATIVE_STUDIO_ATTENTION",
     "AUTONOMOUS_CONTENT_EXPANSION_STAYS_INSIDE_EXISTING_BUILD_UP",
     "CONTENT_EXPANSION_MUST_BE_COHERENT_CONNECTED_AND_NON_CLONE",
+    "GAME_IDENTITY_THREE_SENTENCE_TEST_PRESERVED_OR_STRENGTHENED",
+    "REPRESENTATIVE_ACTION_CHOICE_SIGNATURE_WORLD_RULE_AND_GROWTH_IDENTITY_REVIEWED",
+    "GENRE_PRIMARY_ACTION_PRESERVED_WITHOUT_FORCED_RPG_SYSTEMS",
+    "APPROVED_CAUSAL_GAME_GRAMMAR_PRESERVED_OR_MUTATED_WITH_REAL_STATE_EFFECT",
+    "MAIN_A_B_MAJOR_AXES_AND_c_SUB_ELEMENTS_ROLE_PRESERVED",
+    "AT_DELVE_LAYER_IS_NOT_GENERAL_SYSTEM_AXIS",
+    "EXISTING_GAME_GRAMMAR_DISCOVERED_FROM_CURRENT_DESIGN_AND_SOURCE_BEFORE_EXPANSION",
+    "CHARACTER_MONSTER_REGION_STORY_SHARE_CAUSAL_WORLD_LAW_WHEN_APPLICABLE",
     "EXISTING_COMPLETENESS_RECHECK_REQUIRED_EVERY_BUILD_UP",
     "WEB_ROBLOX_UNITY_COMMON_EXPANSION_CONTRACT"
   ],
@@ -2474,7 +2583,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 26,
+    "nextGeneration": 27,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2542,5 +2651,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-06T07:00:31.993Z"
+  "generatedAt": "2026-10-07T02:59:15.135Z"
 }
