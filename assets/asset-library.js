@@ -18,7 +18,7 @@ const cache=new Map();
 const localImage=value=>typeof value==='string'&&/^\/(assets|web-games)\/[a-zA-Z0-9_./-]+\.(png|jpe?g|webp|svg|avif)$/i.test(value)&&!value.split('/').includes('..')?value:'';
 const validSamplePath=value=>typeof value==='string'&&/^\/assets\/roblox\/world-ghosts\/native\/gallery\/(monster|environment)-[a-z0-9-]+\.json$/.test(value);
 function manifestRows(){
- if(manifestIndexes.sourceFingerprint===manifest?.sourceFingerprint)return manifestIndexes;
+ if(manifestIndexes.sourceFingerprint&&manifestIndexes.sourceFingerprint===manifest?.sourceFingerprint)return manifestIndexes;
  manifestIndexes={
   sourceFingerprint:manifest?.sourceFingerprint||null,
   monsters:new Map((manifest?.monsters||[]).map(row=>['roblox-world-ghost-'+row.id,row])),
