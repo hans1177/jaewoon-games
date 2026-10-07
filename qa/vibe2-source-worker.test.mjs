@@ -264,17 +264,29 @@ test('design-grounded Roblox gameplay BUILD_UP rejects presentation-only delta a
   assert.deepEqual(accepted.gameplayFiles,['server/Game.server.luau']);
 });
 
-test('Roblox gameplay BUILD_UP must touch the design source anchor when an exact anchor exists',()=>{
+test('Roblox gameplay BUILD_UP must apply the gameplay delta on the exact design source anchor',()=>{
   const directive={responsibleSystemsAndFiles:{sourceAnchors:[
     {file:'roblox-games/demo/server/Game.server.luau',symbol:'attack'},
     {file:'roblox-games/demo/shared/GameConfig.luau',symbol:'Damage'}
   ]}};
-  const unrelated={edits:[{path:'client/Game.client.luau',find:'remote:FireServer("attack")',replace:'remote:FireServer("attack", true)'}],newFiles:[],replaceFiles:[]};
-  const blocked=evaluateRobloxDesignAnchorGrounding({candidate:unrelated,directive,sourceRootRelative:'roblox-games/demo',required:true});
+  const unrelated={
+    edits:[
+      {path:'server/Game.server.luau',find:'local label = "ready"',replace:'local label = "armed"'},
+      {path:'client/Game.client.luau',find:'remote:FireServer("attack")',replace:'remote:FireServer("attack", true)'}
+    ],
+    newFiles:[],replaceFiles:[]
+  };
+  const blocked=evaluateRobloxDesignAnchorGrounding({
+    candidate:unrelated,directive,sourceRootRelative:'roblox-games/demo',required:true,
+    gameplayFiles:['client/Game.client.luau']
+  });
   assert.equal(blocked.pass,false);
-  assert.equal(blocked.reason,'ROBLOX_DESIGN_SOURCE_ANCHOR_NOT_TOUCHED');
+  assert.equal(blocked.reason,'ROBLOX_DESIGN_GAMEPLAY_ANCHOR_NOT_TOUCHED');
   const grounded={edits:[{path:'server/Game.server.luau',find:'local function attack(player)',replace:'local function attack(player, target)'}],newFiles:[],replaceFiles:[]};
-  const accepted=evaluateRobloxDesignAnchorGrounding({candidate:grounded,directive,sourceRootRelative:'roblox-games/demo',required:true});
+  const accepted=evaluateRobloxDesignAnchorGrounding({
+    candidate:grounded,directive,sourceRootRelative:'roblox-games/demo',required:true,
+    gameplayFiles:['server/Game.server.luau']
+  });
   assert.equal(accepted.pass,true);
   assert.deepEqual(accepted.matchedPaths,['server/Game.server.luau']);
 });
