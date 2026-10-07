@@ -25,31 +25,96 @@
         "한 진영이 0명이 되면 즉시 승패",
         "240초까지 양팀이 남으면 무승부"
       ]
+    },
+    "local_authoring_parts::17110d913d0eff23c0dc2c34185a8b2082fcd3cb5aa8a33347d7dfd45168c548:signatureSystems": {
+      "signatureSystems": [
+        {
+          "name": "4대4 AI 충원",
+          "purpose": "논리 인원 8명, 인간4/몬스터4를 실제 플레이어+AI로 항상 채운다.",
+          "playerChoice": "AI 충원 여부를 선택하여 인원 구성이 실시간으로 바뀌며, 방금 전 동료가 다음 순간 고유 감염 스킬을 가진 몬스터로 나를 쫓는 긴장감을 생성한다."
+        },
+        {
+          "name": "감염 전환",
+          "purpose": "몬스터의 명시적 서버 권한 감염 공격이 적중한 인간이 탈락하지 않고 몬스터로 전환하며 인간 직업별 감염 스킬을 얻는다.",
+          "playerChoice": "감염 공격이 적중되면 인간이 몬스터로 전환하고, 직업별 고유 감염 스킬을 사용하여 옛 팀 추격을 시작한다."
+        }
+      ]
+    },
+    "local_authoring_parts::b0562ba8bb121c6f29db549cd378dd345fb1669cdccd5e5f6382f3175e914676:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "인간4/몬스터4 배정, 빈자리 AI 충원",
+        "인간은 고유 도구·대시·정화로 생존/반격",
+        "몬스터는 에너지를 소모하는 명시적 감염 공격으로 인간을 감염",
+        "감염된 인간은 몬스터로 전환하고 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격",
+        "인간 정화 공격은 몬스터를 라운드에서 제거",
+        "한 진영이 0명이 되면 즉시 승패",
+        "240초까지 양팀이 남으면 무승부"
+      ],
+      "signatureSystems": [
+        {
+          "name": "4대4 AI 충원",
+          "purpose": "논리 인원 8명, 인간4/몬스터4를 실제 플레이어+AI로 항상 채운다.",
+          "playerChoice": "AI 충원 여부를 선택하여 인원 구성이 실시간으로 바뀌며, 방금 전 동료가 다음 순간 고유 감염 스킬을 가진 몬스터로 나를 쫓는 긴장감을 생성한다."
+        },
+        {
+          "name": "감염 전환",
+          "purpose": "몬스터의 명시적 서버 권한 감염 공격이 적중한 인간이 탈락하지 않고 몬스터로 전환하며 인간 직업별 감염 스킬을 얻는다.",
+          "playerChoice": "감염 공격이 적중되면 인간이 몬스터로 전환하고, 직업별 고유 감염 스킬을 사용하여 옛 팀 추격을 시작한다."
+        }
+      ]
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "인간 4명과 몬스터 4명이 시작하고, 몬스터의 명시적 감염 공격에 맞은 인간이 즉시 몬스터로 전환돼 판세가 계속 뒤집히는 8인 감염 추격전.",
+      "playerFantasy": "4대4 감염전에서 실시간으로 변하는 인원 구성으로, 감염 공격과 정화의 결과를 통해 역할을 재설정하는 플레이어 역할. 감염 스킬을 가진 몬스터와 정화 공격을 통해 인간을 전환시키는 전략적 선택을 가능하게 한다.",
+      "coreFun": "감염 공격과 정화의 결과로 인해 인원 구성이 실시간으로 바뀌며, 감염 스킬을 가진 몬스터와 정화 공격을 통해 인간을 전환시키는 전략적 선택을 가능하게 한다. 감염된 인간은 몬스터로 전환하고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격을 수행한다. 감염 전환과 정화는 실시간으로 이루어지며, 감염된 인간은 직업별 고유 감염 스킬을 사용한다.",
+      "coreLoop": [
+        "인간4/몬스터4 배정, 빈자리 AI 충원",
+        "인간은 고유 도구·대시·정화로 생존/반격",
+        "몬스터는 에너지를 소모하는 명시적 감염 공격으로 인간을 감염",
+        "감염된 인간은 몬스터로 전환하고 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격",
+        "인간 정화 공격은 몬스터를 라운드에서 제거",
+        "한 진영이 0명이 되면 즉시 승패",
+        "240초까지 양팀이 남으면 무승부"
+      ],
+      "signatureSystems": [
+        {
+          "name": "4대4 AI 충원",
+          "purpose": "논리 인원 8명, 인간4/몬스터4를 실제 플레이어+AI로 항상 채운다.",
+          "playerChoice": "AI 충원 여부를 선택하여 인원 구성이 실시간으로 바뀌며, 방금 전 동료가 다음 순간 고유 감염 스킬을 가진 몬스터로 나를 쫓는 긴장감을 생성한다."
+        },
+        {
+          "name": "감염 전환",
+          "purpose": "몬스터의 명시적 서버 권한 감염 공격이 적중한 인간이 탈락하지 않고 몬스터로 전환하며 인간 직업별 감염 스킬을 얻는다.",
+          "playerChoice": "감염 공격이 적중되면 인간이 몬스터로 전환하고, 직업별 고유 감염 스킬을 사용하여 옛 팀 추격을 시작한다."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 2,
+      "calls": 5,
+      "successes": 3,
       "failures": 2,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 396344,
-      "lastMs": 20269,
+      "totalMs": 422944,
+      "lastMs": 26600,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-07T20:12:36.064Z"
+      "updatedAt": "2026-10-07T20:13:02.664Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T20:05:59.714Z",
-  "updatedAt": "2026-10-07T20:12:36.064Z",
+  "updatedAt": "2026-10-07T20:13:02.666Z",
   "localAuthoringSplits": {
     "b0562ba8bb121c6f29db549cd378dd345fb1669cdccd5e5f6382f3175e914676": true,
     "17110d913d0eff23c0dc2c34185a8b2082fcd3cb5aa8a33347d7dfd45168c548": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-07T20:12:36.064Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T20:13:02.665Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
