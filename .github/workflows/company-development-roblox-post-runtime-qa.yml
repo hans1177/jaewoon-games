@@ -238,11 +238,17 @@ jobs:
             const candidate=item.robloxRuntimeCandidateEvidence||{};
             const sourceRevision=String(item.robloxSourceCommit||'').trim();
             const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
+            const retryNotBeforeMs=Date.parse(String(evidence.retryNotBefore||''));
+            const capacityRetryDue=
+              Number(evidence.httpStatus||0)!==429
+              ||!Number.isFinite(retryNotBeforeMs)
+              ||retryNotBeforeMs<=Date.now();
             return evidence.authority==='roblox-open-cloud-engine-probe-failure'
               &&transientStatuses.has(Number(evidence.httpStatus||0))
               &&evidence.sourceRevision===sourceRevision
               &&evidence.artifactIdentity===artifactIdentity
-              &&Number(evidence.candidateVersionNumber||0)===Number(candidate.versionNumber||0);
+              &&Number(evidence.candidateVersionNumber||0)===Number(candidate.versionNumber||0)
+              &&capacityRetryDue;
           });
           const ids=[...new Set(rows.map(item=>String(item.gameId||'').trim()).filter(Boolean))];
           fs.writeFileSync('/tmp/roblox-open-cloud-transient-retry-ids',ids.join('\n')+(ids.length?'\n':''));
@@ -358,6 +364,20 @@ jobs:
               &&item.robloxSharedTargetCurrent===false)return false;
             const sourceRevision=String(item.robloxSourceCommit||'').trim();
             const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
+            const priorCapacityEvidence=item.robloxRuntimeFoundationEvidence||{};
+            const retryNotBeforeMs=Date.parse(String(priorCapacityEvidence.retryNotBefore||''));
+            const exactCapacityWait=
+              priorCapacityEvidence.authority==='roblox-open-cloud-engine-probe-failure'
+              &&Number(priorCapacityEvidence.httpStatus||0)===429
+              &&priorCapacityEvidence.sourceRevision===sourceRevision
+              &&priorCapacityEvidence.artifactIdentity===artifactIdentity
+              &&Number(priorCapacityEvidence.candidateVersionNumber||0)===Number(c.versionNumber||0)
+              &&Number.isFinite(retryNotBeforeMs)
+              &&retryNotBeforeMs>Date.now();
+            if(exactCapacityWait){
+              console.log('ROBLOX_OPEN_CLOUD_RATE_LIMIT_WAIT='+item.gameId+':retryNotBefore='+priorCapacityEvidence.retryNotBefore);
+              return false;
+            }
             if(retryOpenCloudOnly&&requested&&item.gameId===requested){
               const transientEvidence=item.robloxRuntimeFoundationEvidence||{};
               const exactRetryStillCurrent=
@@ -1092,7 +1112,8 @@ jobs:
                 &&item.robloxRuntimeFoundationEvidence?.authority==='roblox-open-cloud-engine-probe-failure'
                 &&Number(item.robloxRuntimeFoundationEvidence?.candidateVersionNumber||0)===Number(candidate.versionNumber)
                 &&Number(item.robloxRuntimeFoundationEvidence?.httpStatus||0)===Number(engineProbe.status||0)
-                &&String(item.robloxRuntimeFoundationEvidence?.error||'')===String(engineProbe.error||'');
+                &&String(item.robloxRuntimeFoundationEvidence?.error||'')===String(engineProbe.error||'')
+                &&String(item.robloxRuntimeFoundationEvidence?.retryNotBefore||'')===String(engineProbe.retryNotBefore||'');
               item.robloxRuntimeFoundationPassed=false;
               item.robloxRuntimePassed=false;
               item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
@@ -1114,6 +1135,9 @@ jobs:
                   failureStage:String(engineProbe.failureStage||'PROBE'),
                   failureClass:infrastructureOnly?'INFRASTRUCTURE_OR_EVIDENCE_ONLY':'EXTERNAL_PROBE_BLOCKING_FAILURE',
                   error:String(engineProbe.error||'').slice(0,500),
+                  externalCapacityDeferred:engineProbe.externalCapacityDeferred===true,
+                  retryAfterSeconds:Number(engineProbe.retryAfterSeconds||0)||null,
+                  retryNotBefore:String(engineProbe.retryNotBefore||'').trim()||null,
                   observedAt:stamp,
                   workflowRunId:Number(process.env.GITHUB_RUN_ID||0),
                   authority:'roblox-open-cloud-engine-probe-failure',
@@ -1127,6 +1151,9 @@ jobs:
                 console.log('QUALITY_BUILDUP_AUTO_REQUEUE=NO');
                 console.log('EXTERNAL_RELEASE_PROBE_SUPPRESSED=NO');
                 console.log('RESUME_STAGE=TARGET_PLATFORM_RUNTIME_FOUNDATION');
+                if(engineProbe.externalCapacityDeferred===true&&engineProbe.retryNotBefore){
+                  console.log('ROBLOX_OPEN_CLOUD_EXACT_GATE_RETRY_DEFERRED='+item.gameId+':retryNotBefore='+engineProbe.retryNotBefore);
+                }
                 console.log('ROBLOX_OPEN_CLOUD_EXACT_GATE_RETRY_PENDING='+item.gameId+':HTTP_'+Number(engineProbe.status||0));
               }else{
                 console.log('ROBLOX_FOUNDATION_OPEN_CLOUD_PROBE_PERSISTENT_FAILURE='+item.gameId+':HTTP_'+Number(engineProbe.status||0));
