@@ -2091,7 +2091,7 @@ function uiSubsystemCount(ids=[],spec={}){
   }).length;
 }
 
-export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null,uiAtomIds=[],audioRoleIds=[],externalSources=[],previousMaintenance=null,consumerGames=[]}={}){
+export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null,uiAtomIds=[],audioRoleIds=[],externalSources=[],previousMaintenance=null,consumerGames=[],basePlan=null}={}){
   const inventoryAssets=assets;
   assets=(assets||[]).filter(asset=>asset?.catalogActive!==false
     &&!/(STALE|QUARANTIN|RETIRED|REJECTED)/.test(upper(asset?.catalogState)+' '+upper(asset?.status))
@@ -2129,6 +2129,85 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
       if(commonDepthEligible)commonDepthAssetsByDomain.get(domain)?.push(asset);
     }
     domainsByAsset.set(asset,Object.freeze(matchedDomains));
+  }
+  // 실행용 consumer overlay는 같은 inventory의 구조 플랜을 재사용하고 동적 소비자 우선순위만 다시 계산한다.
+  const rankedCandidateCache=new Map();
+  const internalReuseCandidatesForAction=(domain,role='')=>{
+    const requested=upper(role).replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+    const key=upper(domain)+'|'+requested;
+    if(!rankedCandidateCache.has(key))rankedCandidateCache.set(key,(candidatesByDomain.get(upper(domain))||[])
+      .map(row=>({...row,roleMatch:requested&&row.roles.includes(requested)?1:0}))
+      .sort((a,b)=>b.roleMatch-a.roleMatch||Number(b.quality??-1)-Number(a.quality??-1)||a.id.localeCompare(b.id)));
+    return rankedCandidateCache.get(key);
+  };
+  const basePlanReusable=Boolean(
+    basePlan
+    &&Number(basePlan.version)===Number(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version)
+    &&basePlan.maintenance?.qualityFingerprint===maintenance.qualityFingerprint
+    &&basePlan.maintenance?.typeRoleFingerprint===maintenance.typeRoleFingerprint
+    &&Number(basePlan.maintenance?.assetCount)===Number(maintenance.assetCount)
+    &&Number(basePlan.maintenance?.packCount)===Number(maintenance.packCount)
+    &&Number(basePlan.maintenance?.familyCount)===Number(maintenance.familyCount)
+    &&Array.isArray(basePlan.nextVolumeActions)
+  );
+  if(basePlanReusable){
+    const qualityActionRankByAssetId=new Map((maintenance.nextQualityActions||[]).map((action,index)=>[text(action.assetId),index]));
+    const nextVolumeActions=(basePlan.nextVolumeActions||[]).map((row,index)=>{
+      const allInternalReuseCandidates=internalReuseCandidatesForAction(row.domain,row.role);
+      const internalReuseCandidatePreview=allInternalReuseCandidates.slice(0,4).map(candidate=>Object.freeze({
+        id:candidate.id,quality:candidate.quality,grade:candidate.grade
+      }));
+      let detailImprovementAssetId=null,detailImprovementRank=Infinity;
+      for(const candidate of allInternalReuseCandidates){
+        const rank=qualityActionRankByAssetId.get(candidate.id);
+        if(rank!==undefined&&rank<detailImprovementRank){
+          detailImprovementAssetId=candidate.id;detailImprovementRank=rank;
+          if(rank===0)break;
+        }
+      }
+      return Object.freeze({
+        ...row,
+        internalReuseCandidateCount:allInternalReuseCandidates.length,
+        internalReuseCandidatePreview:Object.freeze(internalReuseCandidatePreview),
+        detailImprovementAssetId,
+        libraryFreshnessFingerprint:maintenance.inventoryFingerprint,
+        qualityFreshnessFingerprint:maintenance.qualityFingerprint,
+        worklistOrder:index+1
+      });
+    });
+    const qualityFirst=maintenance.nextQualityActions.length>0||basePlan.volumeReady===true;
+    const autonomousNextAction=qualityFirst
+      ?Object.freeze({
+        kind:'QUALITY_UP_1000',
+        phase:'QUALITY_UP_1000',
+        selection:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpSelection,
+        workingBandMin:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpWorkingBandMin,
+        target:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityTargetInternalAuditScore,
+        action:maintenance.nextQualityActions[0]||null,
+        continueWithoutHuman:true
+      })
+      :nextVolumeActions.length
+        ?Object.freeze({
+          kind:'CONSUME_PRIORITY_WORKLIST_ACTION',
+          phase:'VOLUME_UP',
+          action:nextVolumeActions[0],
+          continueAfterCompletion:true,
+          continueWithoutHuman:true
+        })
+        :Object.freeze({
+          kind:'REBUILD_VOLUME_WORKLIST',
+          phase:'VOLUME_UP',
+          continueWithoutHuman:true
+        });
+    return Object.freeze({
+      ...basePlan,
+      focusPhase:qualityFirst?'QUALITY_UP_1000':'VOLUME_UP',
+      nextVolumeActions:Object.freeze(nextVolumeActions),
+      nextQualityActions:maintenance.nextQualityActions,
+      maintenance,
+      autonomousNextAction,
+      executionOverlayReusedBasePlan:true
+    });
   }
   const depth=auditCommonLibrarySystemDepth({assets,domainCandidatesByDomain:commonDepthAssetsByDomain});
   const depthByDomain=new Map(depth.rows.map(row=>[row.domain,row]));
@@ -2170,16 +2249,7 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
       if(source.categories.some(category=>allowed.includes(category)))freeSourceIdsByDomain.get(domain).push(source.id);
     }
   }
-  // 검색: 같은 실행에서 자산 분류·품질·외부 후보를 한 번만 색인하고 역할별 순위를 재사용한다.
-  const rankedCandidateCache=new Map();
-  const internalReuseCandidatesForAction=(domain,role='')=>{
-    const requested=upper(role).replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'');
-    const key=upper(domain)+'|'+requested;
-    if(!rankedCandidateCache.has(key))rankedCandidateCache.set(key,(candidatesByDomain.get(upper(domain))||[])
-      .map(row=>({...row,roleMatch:requested&&row.roles.includes(requested)?1:0}))
-      .sort((a,b)=>b.roleMatch-a.roleMatch||Number(b.quality??-1)-Number(a.quality??-1)||a.id.localeCompare(b.id)));
-    return rankedCandidateCache.get(key);
-  };
+  // 검색 인덱스는 consumer overlay와 전체 구조 플랜이 같은 candidate snapshot을 공유한다.
   const normalizeIdentity=value=>upper(value).replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'');
   const existingIdentityTokens=new Set();
   const identityTokensByDomain=new Map(volumeDomains.map(domain=>[domain,new Set()]));
