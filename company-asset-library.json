@@ -1,5 +1,5 @@
 {
-  "version": 117,
+  "version": 118,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-07",
@@ -68890,7 +68890,7 @@
     }
   },
   "internalAssetLibraryAutomation": {
-    "version": 13,
+    "version": 14,
     "status": "ACTIVE_CATALOG_DRIVEN_INTERNAL_ASSET_AUTOMATION",
     "contract": "assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT",
     "syncFunction": "tools/vibe2-asset-production-plan.mjs#synchronizeCompanyCommonAssetRegistry",
@@ -68901,7 +68901,11 @@
     "hardMaximum": null,
     "overSoftLimitAction": "DEDUPLICATION_REVIEW_ONLY",
     "overSoftLimitBlocksUse": false,
-    "perDomainIdeaBudgetPerCycle": 64,
+    "perDomainIdeaBudgetPerCycle": 96,
+    "domainVolumeActionLimitPerDomain": 12,
+    "uiSubsystemVolumeActionLimitPerSubsystem": 8,
+    "maxVolumeWorklistActions": 256,
+    "taskReferenceOverlayWorklistLimit": 256,
     "volumeBeforeQuality": false,
     "reuseAdaptRecombineBeforeNewAuthoring": true,
     "newAuthoringPolicy": {
@@ -69560,7 +69564,7 @@
     "pipelineCreated": false,
     "wrapperCreated": false,
     "shadowSystemCreated": false,
-    "lastCatalogSynchronizedVersion": 117,
+    "lastCatalogSynchronizedVersion": 118,
     "focusPhase": "QUALITY_UP_1000",
     "qualityTarget": 1000,
     "volumeReady": false,
@@ -77283,7 +77287,7 @@
       "runtimeVerificationRequiredBeforeProductionPromotion": true
     },
     "eligibleFreeSourceCount": 22,
-    "freeSourceCandidateLimitPerAction": 16,
+    "freeSourceCandidateLimitPerAction": 24,
     "freeSourceCatalogSufficiencyCount": 12,
     "freeSourceCatalogReady": true,
     "freeSourceCatalogExpansionMode": "PAUSED_UNTIL_REAL_COVERAGE_GAP",
@@ -80003,7 +80007,7 @@
       "lastChangeFingerprint": "243b46f8",
       "catalogFingerprint": "139e07054babbef4db627f2709a6a89c4ecb218e8ad6093aef0a633275afd2c5",
       "catalogChanged": false,
-      "synchronizedRegistryVersion": 117
+      "synchronizedRegistryVersion": 118
     },
     "studioVariationAxes": {
       "BUILDING": [
