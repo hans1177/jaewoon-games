@@ -1380,7 +1380,7 @@ const NATIVE_DCC_AUTHORING=freeze([
   'blender-uv-material-texture-and-detail-pass',
   'blender-review-render-and-evidence'
 ]);
-const GLB_MASTER_DCC_TYPES=freezeList(['character','player','npc','enemy','boss','creature']);
+const GLB_MASTER_DCC_TYPES=freezeList(['character','player','npc','enemy','boss','creature','monster','animal']);
 
 const ASSET_MODEL_ROUTING=freeze({
   version:2,
@@ -1419,7 +1419,7 @@ function buildAssetModelRouting({task={},request='',decisions=[],highEndActive=f
 function nativeDccFamilyForTypes(types=[]){
   const joined=(types||[]).map(value=>clean(value).toLowerCase()).join(' ');
   if(/character|player|npc/.test(joined))return'CHARACTER';
-  if(/boss|enemy|creature|monster/.test(joined))return'CREATURE';
+  if(/boss|enemy|creature|monster|animal/.test(joined))return'CREATURE';
   if(/background|environment/.test(joined))return'ENVIRONMENT';
   if(/item|weapon|equipment/.test(joined))return'WEAPON';
   if(/animation|motion/.test(joined))return'MOTION';
@@ -2038,8 +2038,8 @@ function buildComposableBaseMaterialLoadout({companyRegistry={},studioUniversePl
 }
 function directAuthoringFor(target='',type=''){
   const resolvedTarget=clean(target).toLowerCase();
-  const actor=/character|player|enemy|boss|npc|creature|animation/i.test(clean(type));
-  const dcc=/character|player|enemy|boss|npc|creature|animation|background|environment|item|weapon|prop/i.test(clean(type));
+  const actor=/character|player|enemy|boss|npc|creature|monster|animal|animation/i.test(clean(type));
+  const dcc=/character|player|enemy|boss|npc|creature|monster|animal|animation|background|environment|item|weapon|prop/i.test(clean(type));
   const audio=/audio|sound|music|bgm|sfx/i.test(clean(type));
   if(resolvedTarget==='web'){
     if(audio) return freezeList(['web-audio-sfx']);
