@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import {repairDesignRequiredFields} from '../tools/company-design-prepromotion-repair.mjs';
 import {
   BUILD_UP_DOMAINS,
   HOLISTIC_CORE_DOMAINS,
@@ -13,6 +14,71 @@ import {
   directivePrompt,
   inspectGameSources
 } from '../tools/company-build-up-directive.mjs';
+
+
+test('web detailed original backfill preserves existing Roblox detailed platform design',()=>{
+  const robloxProfile={
+    platform:'ROBLOX',
+    inputModel:'ROBLOX_SENTINEL_INPUT',
+    sessionModel:'ROBLOX_SENTINEL_SESSION',
+    multiplayerRuntime:'ROBLOX_SENTINEL_RUNTIME',
+    performanceBudget:'ROBLOX_SENTINEL_PERFORMANCE',
+    uiUx:'ROBLOX_SENTINEL_UI',
+    saveAndNetwork:'ROBLOX_SENTINEL_SAVE',
+    platformContentAdaptation:'ROBLOX_SENTINEL_CONTENT',
+    internalReleaseTarget:'ROBLOX_SENTINEL_RELEASE',
+    validationEvidence:'ROBLOX_SENTINEL_EVIDENCE'
+  };
+  const robloxBuildProfile={version:77,targetPlatform:'ROBLOX',marker:'ROBLOX_BUILD_PROFILE_SENTINEL'};
+  const source={
+    identity:'정원 방어',
+    playerFantasy:'정원을 지키는 관리자',
+    coreFun:'곤충 상성을 읽고 배치한다',
+    coreLoop:['적 조합 확인','곤충 배치','전투 관찰','보상 선택'],
+    signatureSystems:[{name:'서식지 상성',purpose:'배치 위치에 의미를 만든다',playerChoice:'곤충과 위치 선택'}],
+    progressionDirection:'새 곤충과 지역을 열어 더 복잡한 조합을 상대한다',
+    multiplayerMode:'SINGLE',
+    platformProfiles:{
+      ROBLOX:robloxProfile,
+      UNITY:{
+        platform:'UNITY',
+        inputModel:'UNITY_INPUT',
+        sessionModel:'UNITY_SESSION',
+        multiplayerRuntime:'UNITY_RUNTIME',
+        performanceBudget:'UNITY_PERFORMANCE',
+        uiUx:'UNITY_UI',
+        saveAndNetwork:'UNITY_SAVE',
+        platformContentAdaptation:'UNITY_CONTENT',
+        internalReleaseTarget:'UNITY_RELEASE',
+        validationEvidence:'UNITY_EVIDENCE'
+      }
+    },
+    robloxBuildProfile
+  };
+  const repaired=repairDesignRequiredFields(source,{
+    seed:{
+      DISTINCT_IDENTITY:'정원 방어',
+      CORE_FUN_TO_LEARN:'곤충 상성을 읽고 배치한다',
+      CORE_LOOP:['적 조합 확인','곤충 배치','전투 관찰','보상 선택'],
+      MULTIPLAYER_DESIGN_MODE:'SINGLE',
+      INITIAL_TARGET_PLATFORM:'ROBLOX',
+      TARGET_SESSION_DIRECTION:'반복 웨이브 세션'
+    },
+    phase:'DRAFT'
+  });
+  assert.deepEqual(repaired.value.platformProfiles.ROBLOX,robloxProfile);
+  assert.deepEqual(repaired.value.robloxBuildProfile,robloxBuildProfile);
+  assert.equal(repaired.value.webCanonicalDesign.role,'WEB_DETAILED_GAME_ORIGINAL');
+  assert.equal(repaired.value.webCanonicalDesign.playerFlow.length>=4,true);
+  assert.deepEqual(repaired.value.platformExpansionPolicy.sharedLargeFrame,[
+    'CORE_IDENTITY',
+    'CORE_FUN_AND_REPRESENTATIVE_LOOP',
+    'WORLD_AND_PROGRESSION_DIRECTION',
+    'SAVE_PERSISTENCE_MEANING',
+    'MULTIPLAYER_INTENT'
+  ]);
+  assert.equal(repaired.value.platformExpansionPolicy.expansionLimit,'NO_ARTIFICIAL_PARITY_LIMIT_WITHIN_SHARED_LARGE_FRAME');
+});
 
 function design(){
   return {
@@ -43,17 +109,27 @@ test('detailed verified design fields survive into build-up and implementation p
   detailed.content.mobileUx='모바일 전투 중 엄지 영역과 메뉴 복귀 흐름을 분리한다.';
   detailed.content.uxAccessibilityPlan={hudPriorities:'체력과 현재 목표 우선',touchAndInput:'하단 우측 공격 버튼과 뒤로가기 버튼의 역할을 분리',readability:'작은 화면에서도 목표와 버튼 상태를 읽게 한다',accessibility:'진동과 음량을 분리 설정'};
   detailed.content.platformFitPlan={targetPlatform:'ROBLOX',inputModel:'터치/패드/키보드 동일 상태를 사용',performanceBudget:'모바일 전투 프레임 예산',sessionConstraints:'중단 후 복귀 가능'};
+  detailed.content.webCanonicalDesign={role:'WEB_DETAILED_GAME_ORIGINAL',designAuthority:'GAME_DESIGN_REFERENCE_NOT_SOURCE_CODE_AUTHORITY',playerFlow:['적 조합 확인','곤충 배치','전투 관찰','보상 후 다음 웨이브 준비'],worldAndTraversal:'정원 지역과 온실을 이동 선택과 위험 보상으로 연결',systemsAndContent:'서식지 상성과 포식 관계를 적·지역·보상에 연결',combatAndInteraction:'배치와 실시간 전투 반응을 한 상태 흐름으로 연결',progressionAndEconomy:'보상으로 새 곤충과 진화를 열고 다음 웨이브 선택을 바꿈',sessionFailureRecovery:'웨이브 실패 뒤 준비 상태로 복귀해 다시 배치',uiMenuAndOnboarding:'시작부터 배치와 첫 전투, 첫 진화까지 메뉴 흐름을 연결',inputCameraAccessibility:'터치 배치와 카메라 이동을 분리하고 작은 화면 가독성을 유지',presentationAndAudio:'포식 관계와 위험 신호를 모션·VFX·오디오로 구분',multiplayerPersistence:'SINGLE 의도와 저장 의미를 유지',expansionSpace:'WEB 자체 지역·적·퀘스트·연출 확장에 세부 parity 제한 없음'};
+  detailed.content.platformExpansionPolicy={mode:'SHARED_LARGE_FRAME_PLATFORM_NATIVE_EXPANSION',sharedLargeFrame:['CORE_IDENTITY','CORE_FUN_AND_REPRESENTATIVE_LOOP','WORLD_AND_PROGRESSION_DIRECTION','SAVE_PERSISTENCE_MEANING','MULTIPLAYER_INTENT'],expansionLimit:'NO_ARTIFICIAL_PARITY_LIMIT_WITHIN_SHARED_LARGE_FRAME',webRule:'WEB은 상세 원본 자체를 자유 확장',unityRule:'Unity는 공통 큰틀 안에서 네이티브 확장',robloxRule:'기존 Roblox 상세 설계를 그대로 유지하고 독립 확장'};
   detailed.content.contentVarietyPlan={regions:[{name:'정원 북쪽',traversal:'우회 경로',riskReward:'위험한 지름길',landmark:'온실',encounterPattern:'매복 해충',resourcePressure:'회복 자원 부족',storyContext:'침입 원인 추적'}],enemiesOrChallenges:[],objectives:[],antiMonotonyRule:'같은 처치 수치 복제를 금지'};
   detailed.content.narrativeDialoguePlan={applicable:true,worldRules:['포식 관계가 지역 질서를 바꾼다'],characterGoals:['관리인은 정원을 지키려 한다'],plotBeats:['침입 원인을 발견한다'],questStates:['퀘스트: 온실 단서 조사 -> 방어 -> 후속 지역 해금'],foreshadowing:[],payoffs:[],twists:[],dialogueRules:[],characterVoiceProfiles:[],sceneBeats:[]};
   detailed.content.selectedDesignPlan={label:'PLAN_A',rationale:'메뉴와 전투 상태를 하나의 진행 흐름으로 연결',identityPreserved:'정원 방어 정체성 유지',creativeDeviation:'온실 조사와 방어 연결',genreChange:false,reversibility:'기존 상태로 복귀 가능'};
   detailed.content.implementationTraceability=[{designElement:'메뉴 버튼 상태',responsibleSystem:'HUD/Menu state',validationEvidence:'버튼 활성/잠금과 실제 상태 일치'}];
   const directive=buildGameSpecificBuildUpDirective({gameId:'detail-lineage',gameName:'상세 설계',designRecord:detailed,sourceObservation,responsibleFiles:['roblox-games/detail-lineage/Game.luau']});
   assert.equal(directive.designImplementationContext.uxAccessibilityPlan.touchAndInput,detailed.content.uxAccessibilityPlan.touchAndInput);
+  assert.equal(directive.designImplementationContext.webCanonicalDesign.role,'WEB_DETAILED_GAME_ORIGINAL');
+  assert.equal(directive.designImplementationContext.platformExpansionPolicy.expansionLimit,'NO_ARTIFICIAL_PARITY_LIMIT_WITHIN_SHARED_LARGE_FRAME');
   assert.equal(directive.designImplementationContext.narrativeDialoguePlan.questStates[0],detailed.content.narrativeDialoguePlan.questStates[0]);
   assert.notEqual(directive.qualityGapMap.find(row=>row.domain==='QUESTS').state,'NOT_APPLICABLE');
   assert.match(directivePrompt(directive),/DESIGN_IMPLEMENTATION_CONTEXT:/);
   assert.match(directivePrompt(directive),/하단 우측 공격 버튼/);
   assert.match(directivePrompt(directive),/온실 단서 조사/);
+  assert.match(directivePrompt(directive),/WEB_DETAILED_GAME_ORIGINAL/);
+  assert.match(directivePrompt(directive),/NO_ARTIFICIAL_PARITY_LIMIT_WITHIN_SHARED_LARGE_FRAME/);
+  assert.match(directivePrompt(directive),/세부 parity 제한을 두지 않는다/);
+  const unityDirective=buildGameSpecificBuildUpDirective({gameId:'detail-lineage',gameName:'상세 설계',platform:'UNITY',designRecord:detailed,sourceObservation,responsibleFiles:['roblox-games/detail-lineage/Game.luau']});
+  assert.match(directivePrompt(unityDirective),/Unity 전용 시스템·콘텐츠·지역·물리·카메라·애니메이션·세션 구조·UX·연출 확장/);
+  assert.match(directivePrompt(unityDirective),/인위적 parity 제한을 두지 않는다/);
 });
 
 test('existing UI without entry or loading flow becomes a cross-platform build-up gap',()=>{
