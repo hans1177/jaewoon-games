@@ -36,20 +36,22 @@ function captures(revision='a'.repeat(40)){
 test('art pipeline uses verified asset acquisition before primitive fallback and requires golden scenes',()=>{
   const plan=createVibeArtPipeline({request:'로블록스 카툰 캐릭터 그래픽 고퀄 개선',target:'roblox',quality:2});
   assert.deepEqual([...plan.assetAcquisition.order],[...VIBE_ASSET_ACQUISITION_ORDER]);
-  assert.equal(plan.assetAcquisition.primitiveFallbackPrototypeOnly,true);
+  assert.equal(plan.assetAcquisition.primitiveFallbackPrototypeOnly,false);
+  assert.equal(plan.assetAcquisition.visibleGameplayPrimitiveFallbackForbidden,true);
   assert.equal(plan.runtimeVisualAcceptance.actualRuntimeCaptureRequired,true);
   assert.deepEqual([...plan.runtimeVisualAcceptance.goldenSceneRoles],[...VIBE_GOLDEN_SCENE_ROLES]);
   assert.equal(plan.policy.goldenSceneRuntimeEvidenceRequired,true);
   assert.equal(plan.policy.markerOnlyPresentationPassForbidden,true);
 });
 
-test('asset acquisition prefers existing verified company assets and keeps primitive fallback prototype-only',()=>{
+test('asset acquisition prefers existing verified company assets and forbids visible primitive fallback',()=>{
   const company=[{id:'verified-cartoon-rig'}];
   const plan=createVibeAssetAcquisitionPlan({companyAssets:company,repositoryAssets:[{id:'repo'}],stage:'INTERNAL_PLAYTEST'});
   assert.equal(plan.selectedSource,'VERIFIED_COMPANY_ASSET_AND_RIG_LIBRARY');
   assert.equal(plan.candidates[0].id,'verified-cartoon-rig');
   assert.equal(plan.primitiveFallbackAllowed,false);
-  assert.equal(plan.primitiveFallbackCreatesVisualDebt,true);
+  assert.equal(plan.primitiveFallbackCreatesVisualDebt,false);
+  assert.equal(plan.visibleGameplayPrimitiveFallbackForbidden,true);
 });
 
 
