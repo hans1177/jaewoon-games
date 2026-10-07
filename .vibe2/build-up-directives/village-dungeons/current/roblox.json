@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "village-dungeons-build-up-g32-d596d6b3518e",
-  "directiveFingerprint": "d596d6b3518e9f68c7b611c746e8fe4f641e19642158098995ee01f5c0dbe84d",
-  "previousDirectiveFingerprint": "14647dc5474f916cf218081afab484fd80bfe6e437264a4b1bdbbc633dedb022",
-  "forbiddenRepeatFingerprint": "14647dc5474f916cf218081afab484fd80bfe6e437264a4b1bdbbc633dedb022",
+  "directiveId": "village-dungeons-build-up-g31-14647dc5474f",
+  "directiveFingerprint": "14647dc5474f916cf218081afab484fd80bfe6e437264a4b1bdbbc633dedb022",
+  "previousDirectiveFingerprint": "f555e73dfe43c621d2ca549952495762b14c6c6bd24f12e444d78a9dafc73f2f",
+  "forbiddenRepeatFingerprint": "f555e73dfe43c621d2ca549952495762b14c6c6bd24f12e444d78a9dafc73f2f",
   "gameId": "village-dungeons",
   "gameName": "마을 던전 RPG",
-  "generation": 32,
+  "generation": 31,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "running",
+  "previousDirectiveOutcome": "queued",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/village-dungeons",
-  "sourceTreeFingerprint": "dc26f0713e3e43aa902020f28a67fe00658860372828a999bca726f56a0fa150",
+  "sourceTreeFingerprint": "93858aa8f8db381af7e42040f9f2960feba360c133fc2c5e9134f2e94adc0aab",
   "designFingerprint": "f02a6bf83bb83d719105bbbc3af24fd22a06db3f5cf025d4ebe281877628da5d",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -104,7 +104,7 @@
           "3단계: 무한의 미궁 시련 모드 및 고대 유물 연구소 콘텐츠 개방",
           "층마다 무작위 페널티와 버프가 부여되는 엔드게임 로그라이트형 연속 던전 돌파 콘텐츠가 도입된다."
         ],
-        "sourceTreeFingerprint": "dc26f0713e3e43aa902020f28a67fe00658860372828a999bca726f56a0fa150",
+        "sourceTreeFingerprint": "93858aa8f8db381af7e42040f9f2960feba360c133fc2c5e9134f2e94adc0aab",
         "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -117,47 +117,6 @@
   },
   "designImplementationContext": {
     "source": "LATEST_VERIFIED_DESIGN_FIELDS",
-    "coreFun": "적의 공격 궤적을 직관적으로 회피하고 연타 공격을 적중시키는 순간의 즉각적인 손맛과 제한된 던전 인벤토리에 어떤 전리품을 챙길지 결정하여 마을 시설의 기술 트리로 환원할 때 일어나는 명확한 전투 스펙 향상의 쾌감이다.",
-    "coreLoop": [
-      "마을 의뢰 게시판에서 자원 채취 및 특정 던전 몬스터 토벌 퀘스트를 수락하고 장비를 점검한다.",
-      "5개로 분기된 던전 중 하나를 선택 진입하여 한 손 조작 기반의 실시간 회피 및 평타/스킬 연계로 몬스터를 격퇴한다.",
-      "한정된 던전 배낭 슬롯에 귀환용 고가치 자원과 장비 강화 재료를 취사선택하여 보관한다.",
-      "포털을 통해 안전하게 마을로 귀환하여 의뢰를 완료하고 수집 자원으로 대장간과 주점을 업그레이드한다.",
-      "확장된 시설 버프와 신규 제작 무기를 바탕으로 더 깊은 던전 층계 및 보스전에 도전한다."
-    ],
-    "signatureSystems": [
-      {
-        "name": "마을 재건 시설 연동 시스템",
-        "purpose": "던전에서 획득한 고유 건축 목재와 광석을 마을 대장간·주점·연금 공방에 투자하여 영구적인 스탯 버프와 신규 스킬 트리를 해금한다.",
-        "playerChoice": "즉시 전투력을 높이는 무기 제련 시설을 우선 복구할 것인지, 소비 물약 효율과 던전 내 추가 부활 기회를 부여하는 연금소를 먼저 지을지 선택한다."
-      },
-      {
-        "name": "리스크 배낭 정밀 적재 시스템",
-        "purpose": "던전 내 인벤토리 슬롯을 극도로 제한하여 플레이어가 매 전투 승리 시마다 리스크와 리턴을 저울질하도록 유도한다.",
-        "playerChoice": "안전한 마을 귀환 주문서를 유지하기 위해 회복 물약을 버릴 것인지, 희귀 보스 드롭 재료를 위해 체력 회복 수단을 포기할 것인지 결정한다."
-      }
-    ],
-    "systemInterconnections": [
-      {
-        "fromSystem": "던전 전리품 수확 및 배낭 관리 시스템",
-        "toSystem": "마을 대장간 시설 업그레이드 시스템",
-        "trigger": "던전에서 특정 몬스터를 격퇴하고 고급 주괴를 배낭에 보관한 채 안전하게 마을로 귀환할 때 발생한다.",
-        "stateChange": "마을 대장간의 해금 레벨이 1단계 상승하며 기존 무기의 공격력 배율이 15% 영구 증가하고 화염 속성 인챈트가 활성화된다."
-      },
-      {
-        "fromSystem": "마을 주점 의뢰 완료 및 명성 관리 시스템",
-        "toSystem": "5개 던전 심층 게이트 개방 시스템",
-        "trigger": "주점 NPC가 제시한 던전 정찰 퀘스트 3종을 모두 클리어하여 마을 평판 수치가 임계치에 도달할 때 발생한다.",
-        "stateChange": "폐쇄되었던 지하 용암 동굴 던전의 제2계층 진입 잠금이 해제되고 해당 구역의 적 등장 테이블이 엘리트 등급으로 갱신된다."
-      },
-      {
-        "fromSystem": "전투 회피 성공 판정 및 콤보 시스템",
-        "toSystem": "던전 내 필살기 게이지 충전 시스템",
-        "trigger": "적의 붉은색 장판 공격 타이밍에 맞춰 플레이어가 회피 제스처를 성공적으로 수행할 때 발생한다.",
-        "stateChange": "플레이어의 회피 카운터가 1 누적되며 즉시 궁극기 분노 게이지가 25% 충전되고 다음 일반 타격 3회에 100% 치명타가 적용된다."
-      }
-    ],
-    "progressionDirection": "초반 세션에서는 단순 타격과 짧은 3분 던전 탐색으로 기초 장비를 맞추게 하며, 중반에는 5대 던전의 상성 속성(화염, 냉기, 독, 암흑, 번개)에 맞춘 장비 세트 파밍과 마을 상위 시설 건설로 전략적 깊이를 확장하고, 종반에는 심층 보스 타임어택과 극한의 장비 옵션 튜닝을 통해 지속적인 육성 만족도를 제공한다.",
     "progressionEconomyBalance": {
       "progressionLoop": "마을 퀘스트 수락 -> 3분 던전 런 파밍 -> 마을 복구 기여 -> 상위 장비 제작 및 다음 난이도 던전 해금의 선순환 구조를 확립한다.",
       "resourceFlow": "일반 던전 몬스터는 기본 골드와 기초 목재를 산출하고, 엘리트 및 보스 몬스터는 특수 주괴와 영혼석을 드롭하며, 마을 시설 강화 시 자원을 소모하여 영구적 능력치를 보상으로 돌려준다.",
@@ -612,9 +571,9 @@
   "previousVersionDelta": {
     "previousGoal": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 31,
-    "previousSourceTreeFingerprint": "93858aa8f8db381af7e42040f9f2960feba360c133fc2c5e9134f2e94adc0aab",
-    "currentSourceTreeFingerprint": "dc26f0713e3e43aa902020f28a67fe00658860372828a999bca726f56a0fa150",
+    "previousGeneration": 30,
+    "previousSourceTreeFingerprint": "8032dcbd87f449aafffe5bbabe996718b8bc960e680dd9b1c2ca4f8de4232cd8",
+    "currentSourceTreeFingerprint": "93858aa8f8db381af7e42040f9f2960feba360c133fc2c5e9134f2e94adc0aab",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -622,7 +581,7 @@
     "platform": "ROBLOX",
     "studioQualityFailure": null,
     "failureStage": "F0_SOURCE_INTEGRITY",
-    "failureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
+    "failureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_PENDING",
     "blockers": [],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -1793,8 +1752,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-    "themeDepth": 4,
-    "selectedThemeReason": "0 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=RULES_EVENTS_REPLAYABILITY_SYSTEM; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=3.",
+    "themeDepth": 3,
+    "selectedThemeReason": "0 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=RULES_EVENTS_REPLAYABILITY_SYSTEM; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=3.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1802,11 +1761,12 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY": 10,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 4,
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 3,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 12
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
@@ -1817,7 +1777,6 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM"
@@ -1849,7 +1808,7 @@
     "scoredThemes": [
       {
         "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": 128,
+        "score": 146,
         "gapDomains": []
       },
       {
@@ -1963,11 +1922,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 32,
-    "previousGeneration": 31,
+    "generation": 31,
+    "previousGeneration": 30,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "dc26f0713e3e43aa902020f28a67fe00658860372828a999bca726f56a0fa150",
-    "priorSourceFingerprint": "93858aa8f8db381af7e42040f9f2960feba360c133fc2c5e9134f2e94adc0aab",
+    "sourceFingerprint": "93858aa8f8db381af7e42040f9f2960feba360c133fc2c5e9134f2e94adc0aab",
+    "priorSourceFingerprint": "8032dcbd87f449aafffe5bbabe996718b8bc960e680dd9b1c2ca4f8de4232cd8",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2212,9 +2171,9 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/village-dungeons/shared/GameConfig.luau",
-      "roblox-games/village-dungeons/server/Game.server.luau",
       "roblox-games/village-dungeons/client/Game.client.luau",
+      "roblox-games/village-dungeons/server/Game.server.luau",
+      "roblox-games/village-dungeons/shared/GameConfig.luau",
       "roblox-games/village-dungeons/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -2429,7 +2388,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "dc26f0713e3e43aa902020f28a67fe00658860372828a999bca726f56a0fa150",
+    "sourceTreeFingerprint": "93858aa8f8db381af7e42040f9f2960feba360c133fc2c5e9134f2e94adc0aab",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2521,7 +2480,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "dc26f0713e3e43aa902020f28a67fe00658860372828a999bca726f56a0fa150",
+    "sourceTreeFingerprint": "93858aa8f8db381af7e42040f9f2960feba360c133fc2c5e9134f2e94adc0aab",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2558,9 +2517,9 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/village-dungeons/shared/GameConfig.luau",
-      "roblox-games/village-dungeons/server/Game.server.luau",
       "roblox-games/village-dungeons/client/Game.client.luau",
+      "roblox-games/village-dungeons/server/Game.server.luau",
+      "roblox-games/village-dungeons/shared/GameConfig.luau",
       "roblox-games/village-dungeons/default.project.json"
     ],
     "sourceAnchors": [
@@ -2702,9 +2661,9 @@
     "gameId": "village-dungeons",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/village-dungeons/shared/GameConfig.luau",
-      "roblox-games/village-dungeons/server/Game.server.luau",
       "roblox-games/village-dungeons/client/Game.client.luau",
+      "roblox-games/village-dungeons/server/Game.server.luau",
+      "roblox-games/village-dungeons/shared/GameConfig.luau",
       "roblox-games/village-dungeons/default.project.json"
     ],
     "impact": {
@@ -2779,11 +2738,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "dc26f0713e3e43aa902020f28a67fe00658860372828a999bca726f56a0fa150",
+      "sourceTreeFingerprint": "93858aa8f8db381af7e42040f9f2960feba360c133fc2c5e9134f2e94adc0aab",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "F0_SOURCE_INTEGRITY",
-      "failureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED"
+      "failureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_PENDING"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2834,7 +2793,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 33,
+    "nextGeneration": 32,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2896,5 +2855,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-07T13:41:22.634Z"
+  "generatedAt": "2026-10-07T06:08:05.440Z"
 }

@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "line-defense-build-up-g27-4bc8393511c6",
-  "directiveFingerprint": "4bc8393511c6edbadbe0a719266151bcb12997c3c4ce723e700628a484e2d8b3",
-  "previousDirectiveFingerprint": "53c0cba52e757859a029b20672baf2fe635d1fc4146edeabb41ff8bb5585dd93",
-  "forbiddenRepeatFingerprint": "53c0cba52e757859a029b20672baf2fe635d1fc4146edeabb41ff8bb5585dd93",
+  "directiveId": "line-defense-build-up-g28-14b2042dec20",
+  "directiveFingerprint": "14b2042dec20bc04ca2bdfd9bbcc9bff93c40a7505a6038d64e90a0d0d27d168",
+  "previousDirectiveFingerprint": "4bc8393511c6edbadbe0a719266151bcb12997c3c4ce723e700628a484e2d8b3",
+  "forbiddenRepeatFingerprint": "4bc8393511c6edbadbe0a719266151bcb12997c3c4ce723e700628a484e2d8b3",
   "gameId": "line-defense",
   "gameName": "골목 군단 대전",
-  "generation": 27,
+  "generation": 28,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,8 +14,8 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/line-defense",
-  "sourceTreeFingerprint": "cd81330dd46ce617fa983af8f599c487c35336d2a17c54053fa4830c698c6399",
-  "designFingerprint": "b140f16410b5a8668812daba629a9e8d717e5e035343692a40cd647170cebe5c",
+  "sourceTreeFingerprint": "01f259ee1b5a61cbf4dbaa1bef8a99cbc605530fd3cb75b0a78b4235e467c2e4",
+  "designFingerprint": "5b919663c08b8aaf3886a4060c0b65c999ca5c49ce0be774b0d9e6543f082e29",
   "identityReinforcement": {
     "appliesToAllGenres": true,
     "genre": "Strategy",
@@ -104,7 +104,7 @@
           "무한의 골목길 디펜스 모드 오픈",
           "끝없이 밀려오는 적들을 막아내며 자신의 한계에 도전하고 글로벌 랭킹을 겨루는 무한 모드가 도입됩니다."
         ],
-        "sourceTreeFingerprint": "cd81330dd46ce617fa983af8f599c487c35336d2a17c54053fa4830c698c6399",
+        "sourceTreeFingerprint": "01f259ee1b5a61cbf4dbaa1bef8a99cbc605530fd3cb75b0a78b4235e467c2e4",
         "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -117,6 +117,45 @@
   },
   "designImplementationContext": {
     "source": "LATEST_VERIFIED_DESIGN_FIELDS",
+    "coreFun": "매 웨이브마다 변화하는 적의 침공 경로를 관찰하고, 제한된 골목 자원을 활용하여 특정 유닛을 배치하거나 실시간으로 업그레이드 경로를 선택함으로써 즉각적인 전투력 변화와 방어 성공의 쾌감을 얻는 것입니다.",
+    "coreLoop": [
+      "적의 다음 침공 경로와 유닛 구성을 확인하고 아군 유닛을 골목길의 최적 위치에 배치하는 단계",
+      "전투 중 적을 처치하여 실시간으로 골목 자원을 획득하고 이를 유닛 업그레이드나 추가 배치에 투자하는 단계",
+      "웨이브를 클리어하고 획득한 전리품으로 군단 전체의 영구적 특성을 강화하여 더 높은 난이도에 도전하는 단계"
+    ],
+    "signatureSystems": [
+      {
+        "name": "골목길 시너지 배치 시스템",
+        "purpose": "특정 골목 구역에 유닛을 인접하게 배치할 때 발생하는 시너지 효과를 통해 플레이어에게 공간 배치 기반의 깊이 있는 전략적 선택을 제공합니다.",
+        "playerChoice": "단순히 강한 유닛을 배치할 것인지, 아니면 시너지 효과를 극대화하기 위해 특정 속성의 유닛들을 좁은 골목에 밀집 배치할 것인지 선택합니다."
+      },
+      {
+        "name": "실시간 재화 순환 엔진",
+        "purpose": "전투 중 획득하는 자원의 가치를 실시간으로 변동시켜 플레이어가 자원 수집과 소비의 타이밍을 극적으로 조율하도록 만듭니다.",
+        "playerChoice": "자원을 즉시 소모하여 하급 유닛을 다수 소환할 것인지, 아니면 이자를 받기 위해 자원을 저축한 후 고성능 유닛을 한 번에 소환할 것인지 결정합니다."
+      }
+    ],
+    "systemInterconnections": [
+      {
+        "fromSystem": "골목길 시너지 배치 시스템",
+        "toSystem": "실시간 재화 순환 엔진",
+        "trigger": "플레이어가 특정 골목 구역에 시너지 배치를 완성하여 적을 빠르게 처치할 때",
+        "stateChange": "적 처치 속도가 증가함에 따라 실시간 재화 획득 속도가 가속화되어 더 빠른 업그레이드가 가능해집니다."
+      },
+      {
+        "fromSystem": "실시간 재화 순환 엔진",
+        "toSystem": "골목길 시너지 배치 시스템",
+        "trigger": "플레이어가 저축한 자원을 일시에 소모하여 고성능 유닛을 소환할 때",
+        "stateChange": "새로운 고성능 유닛이 전장에 배치되면서 기존 유닛들과의 새로운 시너지 링크가 활성화되고 방어선 상태가 강화됩니다."
+      },
+      {
+        "fromSystem": "골목길 시너지 배치 시스템",
+        "toSystem": "골목길 시너지 배치 시스템",
+        "trigger": "배치된 유닛이 적의 강력한 공격을 받아 파괴되거나 후퇴할 때",
+        "stateChange": "해당 구역의 시너지 링크가 즉시 끊어지며 주변 유닛들의 공격 속도와 방어력이 감소하는 상태 변화가 발생합니다."
+      }
+    ],
+    "progressionDirection": "플레이어는 스테이지를 클리어하며 골목 대장 레벨을 올리고, 새로운 유닛 카드를 해금하며, 영구적인 골목 아지트 연구를 통해 군단의 기본 능력치를 점진적으로 확장해 나갑니다.",
     "progressionEconomyBalance": {
       "progressionLoop": "스테이지 클리어 -> 골목 자원 및 아지트 부품 획득 -> 아지트 연구 및 유닛 레벨업 -> 더 높은 난이도의 골목 스테이지 도전으로 이어지는 선순환 구조를 가집니다.",
       "resourceFlow": "전투 중 획득하는 '골목 자원'은 해당 전투 내에서만 소모되며, 전투 승리 보상인 '골목 골드'와 '아지트 부품'은 로비에서 유닛 성장 및 아지트 기능 강화에 영구적으로 사용됩니다.",
@@ -180,6 +219,8 @@
         "validationEvidence": "Exact APK/AAB source revision, install and launch, real touch gameplay, pause/resume, save/restore, performance, independent QA, regression, and package identity evidence."
       }
     },
+    "webCanonicalDesign": {},
+    "platformExpansionPolicy": {},
     "visualDirection": "친근하면서도 개성 넘치는 캐주얼 카툰풍의 3D 그래픽 스타일을 지향하며, 골목길의 아기자기한 소품들과 유머러스한 유닛 애니메이션을 통해 시각적 즐거움을 극대화합니다.",
     "mobileUx": "한 손 조작이 가능한 세로형 레이아웃을 기본으로 하며, 엄지손가락 범위 내에 주요 배치 버튼과 스킬 버튼을 배치하여 피로감을 최소화하고 직관적인 터치 피드백을 제공합니다.",
     "uxAccessibilityPlan": {
@@ -253,8 +294,8 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 228,
-      "progression": 258,
+      "combat": 226,
+      "progression": 245,
       "ai": 51,
       "save": 57,
       "multiplayer": 31,
@@ -266,12 +307,12 @@
       "audio": 4,
       "audioDynamics": 16,
       "ui": 62,
-      "uiFlow": 47,
+      "uiFlow": 45,
       "entryFlow": 6,
       "loadingFlow": 0,
       "input": 62,
       "map": 173,
-      "landmark": 69,
+      "landmark": 65,
       "interaction": 31,
       "inventory": 33,
       "equipment": 5,
@@ -294,7 +335,7 @@
       },
       {
         "file": "roblox-games/line-defense/shared/GameConfig.luau",
-        "score": 281
+        "score": 283
       },
       {
         "file": "roblox-games/line-defense/client/Game.client.luau",
@@ -575,9 +616,9 @@
   "previousVersionDelta": {
     "previousGoal": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 26,
-    "previousSourceTreeFingerprint": "022c3786c4ae523921cea8b75895be39373cf98d57646226e0e398623fa956d3",
-    "currentSourceTreeFingerprint": "cd81330dd46ce617fa983af8f599c487c35336d2a17c54053fa4830c698c6399",
+    "previousGeneration": 27,
+    "previousSourceTreeFingerprint": "cd81330dd46ce617fa983af8f599c487c35336d2a17c54053fa4830c698c6399",
+    "currentSourceTreeFingerprint": "01f259ee1b5a61cbf4dbaa1bef8a99cbc605530fd3cb75b0a78b4235e467c2e4",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1721,8 +1762,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 150114,
-        "largestFileBytes": 48056,
+        "sourceBytes": 120854,
+        "largestFileBytes": 48086,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1754,13 +1795,13 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 9,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=8; uncoveredBefore=4.",
+    "themeDepth": 10,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=9; uncoveredBefore=4.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 9,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 10,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -1772,7 +1813,7 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
@@ -1812,7 +1853,7 @@
     "scoredThemes": [
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 42,
+        "score": 24,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
@@ -1926,11 +1967,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 27,
-    "previousGeneration": 26,
+    "generation": 28,
+    "previousGeneration": 27,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "cd81330dd46ce617fa983af8f599c487c35336d2a17c54053fa4830c698c6399",
-    "priorSourceFingerprint": "022c3786c4ae523921cea8b75895be39373cf98d57646226e0e398623fa956d3",
+    "sourceFingerprint": "01f259ee1b5a61cbf4dbaa1bef8a99cbc605530fd3cb75b0a78b4235e467c2e4",
+    "priorSourceFingerprint": "cd81330dd46ce617fa983af8f599c487c35336d2a17c54053fa4830c698c6399",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2162,12 +2203,12 @@
     "반복 조작은 편의 기능으로 줄이되 핵심 플레이 선택과 위험/보상 판단을 자동화하지 않는다."
   ],
   "platformAdaptationDirectives": {
-    "WEB": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.: 동일 공통 목표 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 현재 canonical Web 경로에 구현한다. 실제 터치 입력, DOM/Canvas 프레임 변화, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 함께 검수한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "WEB": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.: WEB 상세 게임 원본과 공통 큰틀을 기준으로 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. WEB 자체 시스템·콘텐츠·지역·세션·UI·카메라·연출 확장에는 다른 플랫폼과의 세부 parity 제한을 두지 않는다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
     "ROBLOX": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.: 동일 공통 목표 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
-    "UNITY": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.: 동일 공통 목표 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 함께 검증한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
+    "UNITY": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.: WEB 상세 게임 원본에서 공통 큰틀만 이어받아 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 경험으로 재해석한다. Unity 전용 시스템·콘텐츠·지역·물리·카메라·애니메이션·세션 구조·UX·연출 확장에는 인위적 parity 제한을 두지 않는다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
     "FORTNITE_UEFN": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.: 동일 공통 목표 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UNITY_WEB": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.: 동일 공통 목표 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 현재 canonical Web 경로에 구현한다. 실제 터치 입력, DOM/Canvas 프레임 변화, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 함께 검수한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "UNITY_APP": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.: 동일 공통 목표 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 함께 검증한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
+    "UNITY_WEB": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.: WEB 상세 게임 원본과 공통 큰틀을 기준으로 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. WEB 자체 시스템·콘텐츠·지역·세션·UI·카메라·연출 확장에는 다른 플랫폼과의 세부 parity 제한을 두지 않는다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "UNITY_APP": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.: WEB 상세 게임 원본에서 공통 큰틀만 이어받아 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 경험으로 재해석한다. Unity 전용 시스템·콘텐츠·지역·물리·카메라·애니메이션·세션 구조·UX·연출 확장에는 인위적 parity 제한을 두지 않는다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
     "UNREAL": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.: 동일 공통 목표 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
     "UEFN": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.: 동일 공통 목표 \"골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
   },
@@ -2390,7 +2431,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "cd81330dd46ce617fa983af8f599c487c35336d2a17c54053fa4830c698c6399",
+    "sourceTreeFingerprint": "01f259ee1b5a61cbf4dbaa1bef8a99cbc605530fd3cb75b0a78b4235e467c2e4",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2480,7 +2521,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "cd81330dd46ce617fa983af8f599c487c35336d2a17c54053fa4830c698c6399",
+    "sourceTreeFingerprint": "01f259ee1b5a61cbf4dbaa1bef8a99cbc605530fd3cb75b0a78b4235e467c2e4",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2738,7 +2779,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "cd81330dd46ce617fa983af8f599c487c35336d2a17c54053fa4830c698c6399",
+      "sourceTreeFingerprint": "01f259ee1b5a61cbf4dbaa1bef8a99cbc605530fd3cb75b0a78b4235e467c2e4",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
@@ -2793,7 +2834,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 28,
+    "nextGeneration": 29,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2857,5 +2898,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-07T05:25:52.699Z"
+  "generatedAt": "2026-10-07T13:47:02.945Z"
 }
