@@ -682,13 +682,25 @@ test('post-runtime Open Cloud engine probes keep bounded cross-game parallelism 
  assert.match(workflow,/const probeConcurrency=Math\.max\(1,Math\.min\(8,candidates\.length\|\|1\)\)/);
  assert.match(workflow,/ROBLOX_OPEN_CLOUD_PARALLEL_MODE=MAX8_FILL_AVAILABLE/);
  assert.match(workflow,/ROBLOX_OPEN_CLOUD_429_SCOPE=PER_GAME_RETRY_ONLY/);
- assert.match(workflow,/networkRetryAttempts:6,networkRetryDelayMs:1000/);
+ assert.match(workflow,/networkRetryAttempts:3,networkRetryDelayMs:1000/);
+ assert.match(workflow,/networkRetryAttempts:2,networkRetryDelayMs:750/);
  assert.match(foundation,/const exponentialDelay=Math\.min\(30000,baseDelayMs\*Math\.max\(1,2\*\*Math\.max\(0,attempt-1\)\)\)/);
  assert.match(workflow,/ROBLOX_OPEN_CLOUD_ENGINE_PROBE_FAILURE=/);
  assert.match(workflow,/probes\[index\]=probe/);
  assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_PROBE_COUNT=/);
  assert.match(workflow,/writeFileSync\('\/tmp\/roblox-open-cloud-engine-probes\.json'/);
  assert.doesNotMatch(workflow,/Promise\.all\(candidates\.map/);
+});
+
+test('post-runtime Open Cloud retries are bounded so one transient candidate cannot occupy the batch for the full job timeout',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ const start=workflow.indexOf('      - name: Probe exact Roblox Open Cloud engine execution');
+ const end=workflow.indexOf('      - name: Read exact runtime sentinel and persist tester QA evidence',start);
+ const block=workflow.slice(start,end);
+ assert.match(block,/networkRetryAttempts:2,networkRetryDelayMs:750/);
+ assert.match(block,/networkRetryAttempts:3,networkRetryDelayMs:1000/);
+ assert.match(block,/maxPolls:45/);
+ assert.doesNotMatch(block,/networkRetryAttempts:6/);
 });
 
 test('post-runtime scan persists successful sibling probes before surfacing persistent peer failures',()=>{
