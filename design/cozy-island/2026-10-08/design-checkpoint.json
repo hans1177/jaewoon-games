@@ -218,25 +218,31 @@
       "mapTopologyRegionRoles": "서로 다른 적과 보상을 가진 5개 거점을 순차적으로 점령하는 역할",
       "landmarksTraversal": "직접 채집 → 주민 고용 → 병영 강화 → 자원 거점 선택 → 자동전투 → 협동 지원",
       "enemyEcosystemCounterplay": "자원 거점 점령 → 전략적 전투 → 병력 확장 → 왕국 확장 → 새로운 거점 확보"
+    },
+    "local_authoring_parts::0b5e63b100f952c69c2a93973751ad54f5ba0eee24b3cf198c5197d98e1845b0:bossSignatureMoments,progressionEconomy,questStoryEventFlow,failureRetryRecovery": {
+      "bossSignatureMoments": "직접 채집, 주민 고용, 병영 강화, 자원 거점 선택, 자동전투, 협동 지원",
+      "progressionEconomy": "직접 채집 → 주민 고용 → 병력 확장 → 자원 거점 확보 → 전략적 전투 → 왕국 확장",
+      "questStoryEventFlow": "직접 채집 → 주민 고용 → 병력 확장 → 자원 거점 선택 → 자동전투 → 협동 지원 → 왕국 확장",
+      "failureRetryRecovery": "자원 수집 부족 → 병력 확장 부족 → 전략적 전투 부족"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 9,
+      "calls": 11,
+      "successes": 10,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1939350,
-      "lastMs": 100896,
+      "totalMs": 2041744,
+      "lastMs": 102394,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-07T21:12:15.438Z"
+      "updatedAt": "2026-10-07T21:13:57.834Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T20:24:30.415Z",
-  "updatedAt": "2026-10-07T21:12:15.439Z",
+  "updatedAt": "2026-10-07T21:13:57.834Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -395,7 +401,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-07T21:12:15.439Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T21:13:57.834Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
