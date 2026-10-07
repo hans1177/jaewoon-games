@@ -2548,16 +2548,15 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
   const effectiveDesignRecord=JSON.parse(JSON.stringify(rawDesignRecord));
   effectiveDesignRecord.content=effectiveDesignRecord.content&&typeof effectiveDesignRecord.content==='object'?effectiveDesignRecord.content:{};
   if(platformLane==='roblox'){
-    const mode=clean(project?.playMode).toUpperCase();
-    const genre=clean(project?.genre);
-    const subgenre=clean(project?.subgenre);
-    if(mode)effectiveDesignRecord.content.multiplayerMode=mode;
-    effectiveDesignRecord.content.robloxBuildProfile={
-      ...(effectiveDesignRecord.content.robloxBuildProfile||{}),
-      ...(genre?{genre}:{}),
-      ...(subgenre?{subgenre}:{}),
-      ...(mode?{playMode:mode,multiplayerRequired:mode!=='SINGLE',networkingRequired:mode!=='SINGLE',multiplayerQaRequired:mode!=='SINGLE'}:{})
-    };
+    const canonicalMode=clean(effectiveDesignRecord.content.multiplayerMode).toUpperCase();
+    const projectMode=clean(project?.playMode).toUpperCase();
+    const profile=effectiveDesignRecord.content.platformProfiles?.ROBLOX;
+    const profileMode=clean(profile?.playMode||profile?.multiplayerMode).toUpperCase();
+    const fallbackMode=canonicalMode||profileMode||projectMode;
+    if(!canonicalMode&&fallbackMode)effectiveDesignRecord.content.multiplayerMode=fallbackMode;
+    if(projectMode&&canonicalMode&&projectMode!==canonicalMode){
+      taskInput={...taskInput,evidence:[...new Set([...(taskInput.evidence||[]),'build-up-platform-metadata-design-mismatch:ROBLOX_PLAY_MODE'])]};
+    }
   }
   const directive=applyRobloxQualityRepairDirective(buildGameSpecificBuildUpDirective({
     gameId:project.gameId,
