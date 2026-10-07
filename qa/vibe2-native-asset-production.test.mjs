@@ -968,6 +968,38 @@ test('generic environment and prop authoring declares task-specific Blender outp
   assert.equal(web.nativeAuthoringExecution.dcc.executionRecipes.length,0);
 });
 
+test('Web 3D actor work requires the shared Master GLB DCC path without forcing 2D Web actors',()=>{
+  const threeD=buildVibeAssetProductionPlan({
+    target:'web',
+    task:{gameId:'web-3d-actor-demo',goal:'3D NPC companion boss를 GLB 기반 WebGL actor로 구현'},
+    manifest:{assets:[]},
+    presetCatalog:{presets:[]}
+  });
+  for(const type of ['npc','companion','boss']){
+    const row=threeD.decisions.find(item=>item.type===type);
+    assert.ok(row,type);
+    assert.ok(row.directAuthoring.includes('blender-python-original-mesh-rig-and-glb'),type);
+    assert.ok(threeD.nativeAuthoringExecution.dcc.requiredTypes.includes(type),type);
+  }
+  assert.equal(threeD.nativeAuthoringExecution.authoringSurface,'WEB_NATIVE_SOURCE_WITH_SHARED_DCC_MASTER');
+  assert.equal(threeD.nativeAuthoringExecution.dcc.executionRequired,true);
+  assert.equal(threeD.nativeAuthoringExecution.dcc.crossPlatform3dMasterGlbRequired,true);
+  assert.equal(threeD.nativeAuthoringExecution.dcc.web3dActorMasterAuthoringRequired,true);
+  assert.ok(threeD.nativeAuthoringExecution.nativeText.requiredTypes.includes('npc'));
+
+  const twoD=buildVibeAssetProductionPlan({
+    target:'web',
+    task:{gameId:'web-2d-actor-demo',goal:'2D Canvas NPC 캐릭터와 UI를 기존 웹 게임에 적용'},
+    manifest:{assets:[]},
+    presetCatalog:{presets:[]}
+  });
+  const npc=twoD.decisions.find(item=>item.type==='npc');
+  assert.ok(npc);
+  assert.equal(npc.directAuthoring.includes('blender-python-original-mesh-rig-and-glb'),false);
+  assert.equal(twoD.nativeAuthoringExecution.dcc.executionRequired,false);
+  assert.equal(twoD.nativeAuthoringExecution.dcc.web3dActorMasterAuthoringRequired,false);
+});
+
 test('task-declared Blender recipe stays mandatory even when a reusable animation candidate is ready',()=>{
   const plan=buildVibeAssetProductionPlan({
     target:'roblox',
