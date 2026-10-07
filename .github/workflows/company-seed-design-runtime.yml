@@ -144,10 +144,10 @@ jobs:
             git fetch origin "$COMPANY_RUNTIME_BRANCH"
             git show "origin/$COMPANY_RUNTIME_BRANCH:game-seed-state.json" > /tmp/company-runtime-seed-state-before.json
             cp /tmp/company-runtime-seed-state-before.json game-seed-state.json
-            node tools/company-all-games-design-reset.mjs --auto-missing-design-intake | tee /tmp/homepage-novel-grammar-intake.txt
+            node tools/company-all-games-design-reset.mjs --auto-missing-design-intake | tee /tmp/canonical-novel-grammar-intake.txt
             if cmp -s /tmp/company-runtime-seed-state-before.json game-seed-state.json; then
               persisted=1
-              echo 'HOMEPAGE_NOVEL_GRAMMAR_RUNTIME_PERSIST=NO_CHANGE'
+              echo 'CANONICAL_NOVEL_GRAMMAR_RUNTIME_PERSIST=NO_CHANGE'
               break
             fi
             blob="$(git hash-object -w game-seed-state.json)"
@@ -157,10 +157,10 @@ jobs:
             GIT_INDEX_FILE="$runtime_index" git update-index --add --cacheinfo 100644 "$blob" game-seed-state.json
             runtime_tree="$(GIT_INDEX_FILE="$runtime_index" git write-tree)"
             runtime_parent="$(git rev-parse "origin/$COMPANY_RUNTIME_BRANCH")"
-            runtime_commit="$(printf '%s\n' 'runtime: persist homepage novel grammar intake' | git commit-tree "$runtime_tree" -p "$runtime_parent")"
+            runtime_commit="$(printf '%s\n' 'runtime: persist canonical novel grammar intake' | git commit-tree "$runtime_tree" -p "$runtime_parent")"
             if git push origin "$runtime_commit:refs/heads/$COMPANY_RUNTIME_BRANCH"; then
               persisted=1
-              echo 'HOMEPAGE_NOVEL_GRAMMAR_RUNTIME_PERSIST=YES'
+              echo 'CANONICAL_NOVEL_GRAMMAR_RUNTIME_PERSIST=YES'
               break
             fi
             sleep $((attempt * 2))
