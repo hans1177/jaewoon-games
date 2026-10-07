@@ -1,21 +1,120 @@
 {
   "version": 2,
-  "directiveId": "amusement-tycoon-build-up-g28-5c2db54a2dfb",
-  "directiveFingerprint": "5c2db54a2dfbbf989bf6a9d611811e591bbbcd165bd55f405f0c418dee9c11a0",
-  "previousDirectiveFingerprint": "6729eb44b3a91e8a63c3cf6120eadc1558d0823ebc1c5826646e68eb71cf0851",
-  "forbiddenRepeatFingerprint": "6729eb44b3a91e8a63c3cf6120eadc1558d0823ebc1c5826646e68eb71cf0851",
+  "directiveId": "amusement-tycoon-build-up-g29-412f782882f5",
+  "directiveFingerprint": "412f782882f5a3fcb0baf06bd83239de27dd8adaa0d66f1e490c1c7bc88719f0",
+  "previousDirectiveFingerprint": "5c2db54a2dfbbf989bf6a9d611811e591bbbcd165bd55f405f0c418dee9c11a0",
+  "forbiddenRepeatFingerprint": "5c2db54a2dfbbf989bf6a9d611811e591bbbcd165bd55f405f0c418dee9c11a0",
   "gameId": "amusement-tycoon",
   "gameName": "놀이공원 타이쿤",
-  "generation": 28,
+  "generation": 29,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "previousDirectiveOutcome": "running",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/amusement-tycoon",
-  "sourceTreeFingerprint": "fc3b182f8aacc624ea48d81813cc75c9503758454469e19b359a1b457a4e800e",
-  "designFingerprint": "480715967af5694d2d319b2a6da4beb2c7c73dd6dac4132bdb61af90631ce6d3",
+  "sourceTreeFingerprint": "20443db8eced97d58f3f6effabc7e2c504d4f197a8744ad50901cdb554d1a7a3",
+  "designFingerprint": "ed1951d95c804507ae8479c86fdfdfa65cfa87897afde0cf17f07125b657e4b4",
+  "identityReinforcement": {
+    "appliesToAllGenres": true,
+    "genre": "Strategy",
+    "oneLineFantasy": "플레이어는 쇠락해가는 놀이공원의 신임 총지배인이 되어, 버려진 부지를 세계 최고의 테마파크로 재건하는 창조적 경영자로서의 판타지를 경험합니다. 손님들의 환호성과 놀이기구의 역동적인 움직임을 보며 자신의 전략이 공원의 번영으로 이어지는 성취감을 느낍니다.",
+    "representativeAction": "공간 배치 및 놀이기구 건설: 제한된 자본을 사용하여 놀이기구와 편의시설을 배치하고 동선을 설계합니다.",
+    "representativeChoice": "플레이어는 길의 너비, 놀이기구 입구의 위치, 휴식 공간의 배치를 결정하여 손님의 이동 흐름을 직접 제어하고 최적화할 수 있습니다.",
+    "signatureWorldRule": "손님의 피로도 수치가 즉각적으로 상승하며 해당 놀이기구의 만족도 점수를 하락시켜 재방문 의사를 감소시킴",
+    "signatureSystems": [
+      "동선 최적화 시스템",
+      "감정 기반 만족도 엔진"
+    ],
+    "growthIdentity": "초반에는 소규모 놀이기구와 기본 시설을 통해 경영의 기초를 익히고, 중반에는 테마 구역 확장과 효율적인 동선 설계를 통해 수익을 극대화합니다. 후반부에는 대규모 랜드마크 건설과 고도화된 만족도 관리를 통해 세계 최고의 놀이공원으로 성장하는 것을 목표로 합니다.",
+    "threeSentenceTest": {
+      "whatGame": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.",
+      "whatDifferent": "손님의 이동 효율을 극대화하고 병목 현상을 방지하여 공원 전체의 수용 능력을 높이는 것이 목적입니다.",
+      "whatGrowthUnlocks": "초반에는 소규모 놀이기구와 기본 시설을 통해 경영의 기초를 익히고, 중반에는 테마 구역 확장과 효율적인 동선 설계를 통해 수익을 극대화합니다. 후반부에는 대규모 랜드마크 건설과 고도화된 만족도 관리를 통해 세계 최고의 놀이공원으로 성장하는 것을 목표로 합니다."
+    },
+    "causalGrammarEvidence": {
+      "worldRules": [],
+      "causalInspirations": [],
+      "systemInterconnections": [
+        {
+          "fromSystem": "손님 동선 최적화 관리 시스템",
+          "toSystem": "감정 기반 만족도 분석 엔진",
+          "trigger": "손님이 특정 놀이기구까지 이동하는 대기 시간이 설정된 임계치를 초과하여 불만족 상태가 감지될 때",
+          "stateChange": "손님의 피로도 수치가 즉각적으로 상승하며 해당 놀이기구의 만족도 점수를 하락시켜 재방문 의사를 감소시킴"
+        },
+        {
+          "fromSystem": "감정 기반 만족도 분석 엔진",
+          "toSystem": "공원 경제 수익 창출 시스템",
+          "trigger": "공원 내 손님들의 평균 만족도가 특정 임계값 이상으로 유지되어 공원 평판이 긍정적인 단계로 상승할 때",
+          "stateChange": "공원 입장료 수익 및 내부 상점 매출에 1.2배의 보너스 배율이 적용되어 경제적 선순환 구조가 강화됨"
+        },
+        {
+          "fromSystem": "공원 경제 수익 창출 시스템",
+          "toSystem": "놀이공원 구역 확장 건설 시스템",
+          "trigger": "플레이어가 누적된 수익을 사용하여 새로운 테마 구역을 구매하거나 도로를 건설하는 결정을 내릴 때",
+          "stateChange": "경로 탐색 알고리즘의 가용 노드가 확장되어 손님들이 더 효율적인 경로를 선택할 수 있는 전략적 선택지가 증가함"
+        }
+      ],
+      "expansionPlan": [
+        {
+          "milestone": "테마 구역 확장 및 시너지 시스템 도입",
+          "newGameplay": "특정 테마(우주, 중세, 미래)에 맞는 전용 놀이기구와 장식 아이템을 배치하여 구역을 꾸미는 건설 모드가 추가됩니다.",
+          "systemImpact": "기존 만족도 엔진에 테마 시너지 효과가 추가되어, 테마가 통일된 구역에 방문한 손님들의 만족도가 15% 추가 상승하는 로직이 반영됩니다."
+        },
+        {
+          "milestone": "계절 이벤트 및 한정 퀘스트 시스템",
+          "newGameplay": "할로윈, 크리스마스 등 시즌별 한정 놀이기구와 특별 퀘스트가 등장하여 단기적인 목표를 제공하는 이벤트 모드가 활성화됩니다.",
+          "systemImpact": "경제 시스템에 일시적인 수익 부스트와 특별 아이템 판매가 추가되어, 시즌 기간 동안 자금 흐름에 높은 변동성과 전략적 재미를 부여합니다."
+        },
+        {
+          "milestone": "글로벌 랭킹 및 경쟁 경영 챌린지",
+          "newGameplay": "자신의 공원 가치를 전 세계 플레이어와 비교하고, 주간 최고 수익 공원을 선정하는 챌린지 모드가 도입됩니다.",
+          "systemImpact": "기존 경영 시스템에 경쟁 요소가 결합되어, 효율적인 동선 설계와 수익 극대화에 대한 플레이어의 동기부여가 강화됩니다."
+        }
+      ],
+      "integrityNotes": [],
+      "formula": "MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @",
+      "existingGameGrammarMap": {
+        "mode": "EXISTING_GAME_RECONSTRUCTION_FROM_CURRENT_DESIGN_AND_INSPECTED_SOURCE",
+        "formula": "MAIN × A × B × c + @",
+        "main": "공간 배치 및 놀이기구 건설: 제한된 자본을 사용하여 놀이기구와 편의시설을 배치하고 동선을 설계합니다.",
+        "majorAxes": [
+          {
+            "key": "A",
+            "name": "동선 최적화 시스템",
+            "source": "CURRENT_DESIGN_SIGNATURE_SYSTEM"
+          },
+          {
+            "key": "B",
+            "name": "감정 기반 만족도 엔진",
+            "source": "CURRENT_DESIGN_SIGNATURE_SYSTEM_OR_LOOP"
+          }
+        ],
+        "cSubElements": [
+          "손님이 특정 놀이기구까지 이동하는 대기 시간이 설정된 임계치를 초과하여 불만족 상태가 감지될 때",
+          "공원 내 손님들의 평균 만족도가 특정 임계값 이상으로 유지되어 공원 평판이 긍정적인 단계로 상승할 때",
+          "플레이어가 누적된 수익을 사용하여 새로운 테마 구역을 구매하거나 도로를 건설하는 결정을 내릴 때"
+        ],
+        "delveAtEvidence": [
+          "테마 구역 확장 및 시너지 시스템 도입",
+          "특정 테마(우주, 중세, 미래)에 맞는 전용 놀이기구와 장식 아이템을 배치하여 구역을 꾸미는 건설 모드가 추가됩니다.",
+          "계절 이벤트 및 한정 퀘스트 시스템",
+          "할로윈, 크리스마스 등 시즌별 한정 놀이기구와 특별 퀘스트가 등장하여 단기적인 목표를 제공하는 이벤트 모드가 활성화됩니다.",
+          "글로벌 랭킹 및 경쟁 경영 챌린지",
+          "자신의 공원 가치를 전 세계 플레이어와 비교하고, 주간 최고 수익 공원을 선정하는 챌린지 모드가 도입됩니다."
+        ],
+        "sourceTreeFingerprint": "20443db8eced97d58f3f6effabc7e2c504d4f197a8744ad50901cdb554d1a7a3",
+        "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
+        "identityRewriteRequired": false,
+        "existingBalanceSaveEconomyAndAuthorityPreserved": true
+      },
+      "rule": "NEW_CONTENT_MUST_PRESERVE_OR_DEEPEN_THE_APPROVED_CAUSAL_GRAMMAR_AND_MAIN_A_B_c_RELATIONSHIPS; c_IS_SUB_ELEMENT_NOT_MAJOR_AXIS; @ IS_DELVE_LAYER_NOT_GENERAL_SYSTEM; DECORATIVE_LORE_OR_PARALLEL_FEATURE_STACK_DOES_NOT_COUNT",
+      "familiarHumanConflictShouldRemainReadable": true
+    },
+    "buildUpRule": "EACH_BUILD_UP_MUST_STRENGTHEN_OR_PRESERVE_THE_REPRESENTATIVE_ACTION_CHOICE_WORLD_RULE_SIGNATURE_SYSTEM_OR_GROWTH_IDENTITY; GENERIC_FEATURE_COUNT_DOES_NOT_COUNT",
+    "genreAdaptationRule": "PRESERVE_THE_GENRE_PRIMARY_ACTION; DO_NOT_FORCE_RPG_STYLE_SYSTEMS_ON_PUZZLE_RACING_TYCOON_DEFENSE_SURVIVAL_ACTION_CARD_BOARD_STRATEGY_CASUAL_OR_OTHER_GENRES"
+  },
   "gameIdentityAndNonNegotiables": {
     "identity": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.",
     "coreFun": "놀이공원 타이쿤의 핵심 재미는 '최적의 동선 설계'와 '손님 만족도 관리'입니다. 플레이어는 놀이기구의 위치를 조정하여 손님의 대기 시간을 줄이고, 상점 배치를 통해 수익을 극대화하는 선택을 반복합니다. 이러한 선택은 손님의 이동 경로와 행복도 수치에 즉각적인 변화를 주며, 결과적으로 공원의 일일 수익과 평판이라는 가시적인 성과로 이어집니다.",
@@ -312,17 +411,17 @@
   "previousVersionDelta": {
     "previousGoal": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 27,
-    "previousSourceTreeFingerprint": "8efebe003d91a25039c70161fa8f398b388f46d489694f5b71f39fff359c29b3",
-    "currentSourceTreeFingerprint": "fc3b182f8aacc624ea48d81813cc75c9503758454469e19b359a1b457a4e800e",
+    "previousGeneration": 28,
+    "previousSourceTreeFingerprint": "fc3b182f8aacc624ea48d81813cc75c9503758454469e19b359a1b457a4e800e",
+    "currentSourceTreeFingerprint": "20443db8eced97d58f3f6effabc7e2c504d4f197a8744ad50901cdb554d1a7a3",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "F0_SOURCE_INTEGRITY",
-    "failureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
+    "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+    "failureSignature": "ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED",
     "blockers": [],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -752,7 +851,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "적 역할이 이동·타깃 선택·공격 전조·공격 패턴·후퇴/회복 또는 특수상태에서 구별되게 하고 동선 최적화 시스템에 대한 카운터플레이가 실제 플레이에서 가능하게 한다.",
+      "directive": "적 역할이 이동·타이깃 선택·공격 전조·공격 패턴·후퇴/회복 또는 특수상태에서 구별되게 하고 동선 최적화 시스템에 대한 카운터플레이가 실제 플레이에서 가능하게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1429,7 +1528,9 @@
     "초반 10분과 중후반을 각각 점검해 초반 학습·첫 보상과 중후반 전략/콘텐츠 확장이 모두 실제 소스와 플레이 흐름에 존재하게 한다.",
     "콘텐츠 확장은 배경·지역·몹·아이템·퀘스트·스토리·보상·규칙 중 관련 요소를 서로 연결된 묶음으로 설계하고, 한 요소만 고립해서 개수만 늘리는 업데이트를 피한다.",
     "이전 세대와 이름·색·수치만 다른 복제 콘텐츠를 추가하지 말고 역할·행동·플레이어 선택·세계 이유·결과/보상·시스템 연결 중 최소 두 축 이상에서 실제 차이를 만든다.",
-    "새 스토리·퀘스트·지역·규칙은 이전 상태에서 왜 발생하고 완료 후 무엇이 달라지는지 게임 상태와 세계 흐름에 남겨 개연성과 진행 연결을 유지한다."
+    "새 스토리·퀘스트·지역·규칙은 이전 상태에서 왜 발생하고 완료 후 무엇이 달라지는지 게임 상태와 세계 흐름에 남겨 개연성과 진행 연결을 유지한다.",
+    "승인된 인과 문법이 있으면 새 지역·몬스터·NPC·아이템·세력은 같은 법칙을 복제하지 말고 서로 다른 방식으로 전달·왜곡·상속·분산·역전시켜 새 선택 구조를 만든다.",
+    "가벼운 D1 엽기/코믹 문법은 억지로 장대한 신화·정치 구조로 키우지 않는다. 단순한 농담 규칙이라도 실제 상태 변화와 후폭풍이 반복 가능하면 깊이 있는 정체성으로 인정한다."
   ],
   "autonomousContentExpansion": {
     "version": 2,
@@ -1448,6 +1549,8 @@
     ],
     "requestedPlatform": "ROBLOX",
     "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
+    "contentExpansionDeferredUntilRuntimeRepairPass": false,
+    "themeCoverageAdvanced": true,
     "dataCapacityBudget": {
       "state": "NORMAL",
       "limits": {
@@ -1459,7 +1562,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 104109,
+        "sourceBytes": 104070,
         "largestFileBytes": 48091,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1492,13 +1595,13 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 4,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=3.",
+    "themeDepth": 5,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=4; uncoveredBefore=3.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 6,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 4,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 5,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 10,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -1515,7 +1618,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
@@ -1548,7 +1651,7 @@
     "scoredThemes": [
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 132,
+        "score": 114,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
@@ -1664,11 +1767,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 28,
-    "previousGeneration": 27,
+    "generation": 29,
+    "previousGeneration": 28,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "fc3b182f8aacc624ea48d81813cc75c9503758454469e19b359a1b457a4e800e",
-    "priorSourceFingerprint": "8efebe003d91a25039c70161fa8f398b388f46d489694f5b71f39fff359c29b3",
+    "sourceFingerprint": "20443db8eced97d58f3f6effabc7e2c504d4f197a8744ad50901cdb554d1a7a3",
+    "priorSourceFingerprint": "fc3b182f8aacc624ea48d81813cc75c9503758454469e19b359a1b457a4e800e",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2128,7 +2231,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "fc3b182f8aacc624ea48d81813cc75c9503758454469e19b359a1b457a4e800e",
+    "sourceTreeFingerprint": "20443db8eced97d58f3f6effabc7e2c504d4f197a8744ad50901cdb554d1a7a3",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2218,7 +2321,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "fc3b182f8aacc624ea48d81813cc75c9503758454469e19b359a1b457a4e800e",
+    "sourceTreeFingerprint": "20443db8eced97d58f3f6effabc7e2c504d4f197a8744ad50901cdb554d1a7a3",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2481,11 +2584,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "fc3b182f8aacc624ea48d81813cc75c9503758454469e19b359a1b457a4e800e",
+      "sourceTreeFingerprint": "20443db8eced97d58f3f6effabc7e2c504d4f197a8744ad50901cdb554d1a7a3",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "F0_SOURCE_INTEGRITY",
-      "failureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED"
+      "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "failureSignature": "ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2517,6 +2620,14 @@
     "ROBLOX_EXPERIENCE_BUILD_UP_USES_EXTRA_NATIVE_STUDIO_ATTENTION",
     "AUTONOMOUS_CONTENT_EXPANSION_STAYS_INSIDE_EXISTING_BUILD_UP",
     "CONTENT_EXPANSION_MUST_BE_COHERENT_CONNECTED_AND_NON_CLONE",
+    "GAME_IDENTITY_THREE_SENTENCE_TEST_PRESERVED_OR_STRENGTHENED",
+    "REPRESENTATIVE_ACTION_CHOICE_SIGNATURE_WORLD_RULE_AND_GROWTH_IDENTITY_REVIEWED",
+    "GENRE_PRIMARY_ACTION_PRESERVED_WITHOUT_FORCED_RPG_SYSTEMS",
+    "APPROVED_CAUSAL_GAME_GRAMMAR_PRESERVED_OR_MUTATED_WITH_REAL_STATE_EFFECT",
+    "MAIN_A_B_MAJOR_AXES_AND_c_SUB_ELEMENTS_ROLE_PRESERVED",
+    "AT_DELVE_LAYER_IS_NOT_GENERAL_SYSTEM_AXIS",
+    "EXISTING_GAME_GRAMMAR_DISCOVERED_FROM_CURRENT_DESIGN_AND_SOURCE_BEFORE_EXPANSION",
+    "CHARACTER_MONSTER_REGION_STORY_SHARE_CAUSAL_WORLD_LAW_WHEN_APPLICABLE",
     "EXISTING_COMPLETENESS_RECHECK_REQUIRED_EVERY_BUILD_UP",
     "WEB_ROBLOX_UNITY_COMMON_EXPANSION_CONTRACT"
   ],
@@ -2528,7 +2639,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 29,
+    "nextGeneration": 30,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2596,5 +2707,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-06T08:24:46.329Z"
+  "generatedAt": "2026-10-07T03:05:39.556Z"
 }
