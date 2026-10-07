@@ -18,23 +18,24 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
+      "calls": 3,
       "successes": 1,
-      "failures": 1,
+      "failures": 2,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 249633,
-      "lastMs": 31536,
+      "totalMs": 376075,
+      "lastMs": 126442,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-07T20:10:09.351Z"
+      "updatedAt": "2026-10-07T20:12:15.795Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T20:05:59.714Z",
-  "updatedAt": "2026-10-07T20:10:09.351Z",
+  "updatedAt": "2026-10-07T20:12:15.795Z",
   "localAuthoringSplits": {
-    "b0562ba8bb121c6f29db549cd378dd345fb1669cdccd5e5f6382f3175e914676": true
+    "b0562ba8bb121c6f29db549cd378dd345fb1669cdccd5e5f6382f3175e914676": true,
+    "17110d913d0eff23c0dc2c34185a8b2082fcd3cb5aa8a33347d7dfd45168c548": true
   },
   "lastSuccessfulModelCallAt": "2026-10-07T20:10:09.351Z",
   "failedPhase": null,
