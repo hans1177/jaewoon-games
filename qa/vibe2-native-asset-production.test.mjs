@@ -443,6 +443,19 @@ function zeroSkinWeightsInGlb(sourceFile,targetFile){
   fs.writeFileSync(targetFile,bytes);
 }
 
+function anonymizeAnimationNamesInGlb(sourceFile,targetFile){
+  const bytes=Buffer.from(fs.readFileSync(sourceFile));
+  const jsonLength=bytes.readUInt32LE(12),document=JSON.parse(bytes.subarray(20,20+jsonLength).toString('utf8'));
+  for(const [index,animation] of (document.animations||[]).entries())animation.name='clip_'+String(index).padStart(4,'0');
+  const raw=Buffer.from(JSON.stringify(document),'utf8');
+  const paddedLength=Math.ceil(raw.length/4)*4,json=Buffer.alloc(paddedLength,0x20);raw.copy(json);
+  const remainder=bytes.subarray(20+jsonLength);
+  const total=12+8+json.length+remainder.length,out=Buffer.alloc(total);
+  out.writeUInt32LE(0x46546c67,0);out.writeUInt32LE(2,4);out.writeUInt32LE(total,8);
+  out.writeUInt32LE(json.length,12);out.writeUInt32LE(0x4e4f534a,16);json.copy(out,20);remainder.copy(out,20+json.length);
+  fs.writeFileSync(targetFile,out);
+}
+
 test('master GLB rejects broken accessor skin node and animation sampler lineage',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'broken-master-glb-'));
   try{
@@ -495,6 +508,9 @@ test('3D character creature and boss master assets require a structurally comple
   assert.ok(spider.inspection.inventory.primitives.filter(row=>row.skinBound).every(row=>row.jointWeightDataValid===true&&row.zeroWeightVertexCount===0&&row.weightSumOutOfRangeVertexCount===0&&row.invalidJointValueCount===0&&row.invalidJointBindingCount===0));
   assert.ok(spider.inspection.inventory.skins.every(row=>row.inverseBindMatricesValid===true));
   assert.ok(spider.inspection.inventory.animations.every(row=>row.channels.every(channel=>channel.timeAccessorValid===true)));
+  assert.equal(spider.creatureRoleMotionRequired,true);
+  assert.ok(spider.requiredCreatureMotionClips.includes('SPECIAL_ATTACK'));
+  assert.equal(spider.missingCreatureRoleMotionClips.length,0);
 
   const merchantOnCreature=evaluateCrossPlatform3dMasterGlb({family:'CHARACTER',role:'MERCHANT',source:{path:'assets/roblox/world-ghosts/native/spider/spider.glb'}});
   assert.equal(merchantOnCreature.pass,false);
@@ -510,6 +526,22 @@ test('3D character creature and boss master assets require a structurally comple
   const prop=evaluateCrossPlatform3dMasterGlb({family:'PROP',source:{path:'assets/roblox/world-ghosts/native/spider/spider.glb'}});
   assert.equal(prop.required,false);
   assert.equal(prop.pass,true);
+});
+
+test('creature boss GLB cannot pass with structurally valid but role-incomplete animation names',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'creature-role-motion-glb-'));
+  try{
+    const file=path.join(root,'role-incomplete.glb');
+    anonymizeAnimationNamesInGlb('assets/roblox/world-ghosts/native/spider/spider.glb',file);
+    const result=evaluateCrossPlatform3dMasterGlb({repoRoot:root,family:'CREATURE',role:'BOSS',source:{path:'role-incomplete.glb'}});
+    assert.equal(result.inspection.status,'INSPECTED_RECONSTRUCTION_INPUT');
+    assert.equal(result.pass,false);
+    assert.equal(result.creatureRoleMotionRequired,true);
+    assert.ok(result.requiredCreatureMotionClips.includes('THREAT_OR_INTRO'));
+    assert.ok(result.missingCreatureRoleMotionClips.includes('ATTACK'));
+    assert.ok(result.missingCreatureRoleMotionClips.includes('SPECIAL_ATTACK'));
+    assert.ok(result.blockers.includes('MASTER_GLB_CREATURE_ROLE_MOTION_REQUIRED'));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
 test('actor DCC recipe without GLB cannot satisfy the 3D master contract',()=>{
@@ -565,6 +597,7 @@ test('DCC verification selects the declared master GLB even when a blend output 
     const result=executeDeclaredNativeDccAuthoringVerification({cwd:root,order,blenderExecutable:fake,persistCandidateOutputs:false});
     assert.equal(result.executed,true);
     assert.equal(result.recipes[0].nativeArtifact,base+'/master.glb');
+    assert.equal(result.recipes[0].role,'BOSS');
     assert.equal(result.recipes[0].masterGlb,base+'/master.glb');
     assert.equal(result.recipes[0].masterGlbHash,result.recipes[0].artifactHash);
     assert.equal(result.recipes[0].derivedFromMasterGlbHash,null);
