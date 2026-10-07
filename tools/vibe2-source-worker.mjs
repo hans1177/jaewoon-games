@@ -490,10 +490,10 @@ export function verifyPersistedGeneratedAssetOutputs({cwd=process.cwd(),order={}
     }
     const nativeArtifact=posix(row?.nativeArtifact);
     const artifactHash=clean(row?.artifactHash);
-    if(nativeArtifact&&!checks.some(check=>check.path===nativeArtifact))checks.push(inspect(nativeArtifact,{expectedHash:artifactHash,hashRequired:true,kind:'NATIVE_ARTIFACT'}));
+    if(nativeArtifact)checks.push(inspect(nativeArtifact,{expectedHash:artifactHash,hashRequired:true,kind:'NATIVE_ARTIFACT'}));
     const masterGlb=posix(row?.masterGlb||(masterRequired?row?.nativeArtifact:''));
     const masterGlbHash=clean(row?.masterGlbHash||row?.masterGlbInspection?.sourceHash);
-    if(masterRequired&&masterGlb&&!checks.some(check=>check.path===masterGlb))checks.push(inspect(masterGlb,{expectedHash:masterGlbHash||artifactHash,hashRequired:true,kind:'MASTER_GLB'}));
+    if(masterRequired&&masterGlb)checks.push(inspect(masterGlb,{expectedHash:masterGlbHash||artifactHash,hashRequired:true,kind:'MASTER_GLB'}));
     const platformNativeArtifact=posix(row?.platformNativeArtifact),platformNativeArtifactHash=clean(row?.platformNativeArtifactHash);
     if(masterRequired&&['roblox','unity'].includes(target)){
       checks.push(inspect(platformNativeArtifact,{expectedHash:platformNativeArtifactHash,hashRequired:true,kind:'PLATFORM_NATIVE_ARTIFACT'}));
