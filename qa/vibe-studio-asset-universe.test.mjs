@@ -2254,7 +2254,7 @@ test('generic survival-origin world and combat assets are classified as company-
     assert.ok(members.length>1,packId);
     for(const row of members){
       assert.equal(row.companyCommonBase,true,row.id);
-      assert.equal(row.reuseScope,'COMPANY_ROBLOX_COMMON_BASE',row.id);
+      assert.equal(row.reuseScope,'COMPANY_COMMON_BASE',row.id);
       assert.equal(row.automaticCrossGameReuseAllowed,true,row.id);
       assert.equal(row.crossGameReuseRequiresCompatibilityPass,true,row.id);
       assert.equal(row.styleAdaptationRequiredPerGame,true,row.id);
@@ -2325,7 +2325,7 @@ test('company-common item registry exposes cross-game reusable item and resource
   const pack=registry.assets.find(row=>row.id==='roblox-common-items-v1');
   assert.ok(pack);
   assert.equal(pack.companyCommonBase,true);
-  assert.equal(pack.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
+  assert.equal(pack.reuseScope,'COMPANY_COMMON_BASE');
   assert.equal(pack.productionVerified,false);
   assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
   assert.equal(pack.assetCount,40);
@@ -2800,7 +2800,7 @@ test('company-common foliage registry preserves harvesting save collision and ne
   assert.ok(pack);
   assert.equal(pack.companyCommonBase,true);
   assert.equal(pack.family,'ENVIRONMENT');
-  assert.equal(pack.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
+  assert.equal(pack.reuseScope,'COMPANY_COMMON_BASE');
   assert.equal(pack.productionVerified,false);
   assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
   assert.equal(pack.gameplayAuthority,false);
@@ -2902,7 +2902,7 @@ test('company-common building registry preserves collision construction save and
   assert.ok(pack);
   assert.equal(pack.companyCommonBase,true);
   assert.equal(pack.family,'BUILDING');
-  assert.equal(pack.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
+  assert.equal(pack.reuseScope,'COMPANY_COMMON_BASE');
   assert.equal(pack.productionVerified,false);
   assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
   assert.equal(pack.gameplayAuthority,false);
@@ -3001,7 +3001,7 @@ test('company-common tool registry preserves combat gathering equipment save and
   assert.ok(pack);
   assert.equal(pack.companyCommonBase,true);
   assert.equal(pack.family,'WEAPON');
-  assert.equal(pack.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
+  assert.equal(pack.reuseScope,'COMPANY_COMMON_BASE');
   assert.equal(pack.productionVerified,false);
   assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
   assert.equal(pack.gameplayAuthority,false);
@@ -3107,7 +3107,7 @@ test('company-common character gear registry preserves equipment gameplay save a
   assert.ok(pack);
   assert.equal(pack.companyCommonBase,true);
   assert.equal(pack.family,'CHARACTER');
-  assert.equal(pack.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
+  assert.equal(pack.reuseScope,'COMPANY_COMMON_BASE');
   assert.equal(pack.productionVerified,false);
   assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
   assert.equal(pack.gameplayAuthority,false);

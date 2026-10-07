@@ -1936,7 +1936,7 @@ test('current Vibe operating system is fixed while detail-chain optimization rem
   assert.equal(externalAiExecution.externalAiDefaultEnabled,false);
   assert.equal(externalAiExecution.localAuthoringContinuesWithoutExternalAi,true);
   assert.equal(roadmap.developmentLifecycleMachine.modelQuotaContinuity.designProviderPolicy,'VIBE_LOCAL_WITH_OPTIONAL_EXTERNAL_AI');
-  assert.equal(roadmap.developmentLifecycleMachine.modelQuotaContinuity.externalAiAvailabilityMayBlockVibeDevelopment,false);
+  assert.equal(roadmap.developmentLifecycleMachine.modelQuotaContinuity.providerFailureSubstitution.externalAiAvailabilityMayBlockVibeDevelopment,false);
   assert.equal(fixed.ownerRoleDuringNormalOperation,'OCCASIONAL_DEVELOPMENT_FEEDBACK');
   assert.equal(fixed.feedbackChangeReturnsToExistingCycle,true);
   assert.equal(fixed.macroSystemStructureChangeInNormalDevelopment,false);

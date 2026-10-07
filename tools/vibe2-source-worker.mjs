@@ -2134,6 +2134,8 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     `directiveId=${clean(d.directiveId)} generation=${Number(d.generation||0)} developmentDepth=${Number(d.developmentDepth||1)} escalationStage=${clean(d.escalationStage)} primaryFocus=${clean(d.primaryFocus)}`,
     `gameIdentity=${clean(d?.gameIdentityAndNonNegotiables?.identity)}`,
     `designContext=${JSON.stringify(d?.designImplementationContext||{})}`,
+    `gameplayContract=${JSON.stringify({coreFun:d?.gameIdentityAndNonNegotiables?.coreFun,coreLoop:d?.gameIdentityAndNonNegotiables?.coreLoop,signatureSystems:d?.gameIdentityAndNonNegotiables?.signatureSystems,systemInterconnections:d?.designImplementationContext?.systemInterconnections,progressionDirection:d?.gameIdentityAndNonNegotiables?.progressionDirection,grammar:d?.identityReinforcement?.causalGrammarEvidence?.existingGameGrammarMap})}`,
+    'graphicsContract=Follow company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation: final gameplay world must be 2.5D or 3D; UI overlays may remain 2D. Bind compatible library models/materials/motion into actual render or scene consumers, not only manifests or preview paths. Registry bindings, dimension labels and source changes alone do not prove runtime graphics. Require current-source build and actual play evidence; report missing evidence as pending.',
     `primaryGoal=${clean(d.thisLoopPrimaryGoal)}`,
     ...production,
     `implementationUnit=${clean(ownedAnchors[0]?.intendedBehavior)||clean(d.thisLoopPrimaryGoal)}; observableResult=${clean(ownedAnchors[0]?.observableAcceptance)||clean(d?.effectivenessMeasurement?.expectedPlayerEffect)}`,
@@ -2182,11 +2184,11 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   if(!compact&&!responsiblePaths.length)return block;
   const keepPrefixes=focusedRobloxVisual?[
     'robloxProduction','gameProduction',
-    'directiveId=','gameIdentity=','designContext=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'visual=','platform=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
   ]:[
     'robloxProduction','gameProduction',
-    'directiveId=','gameIdentity=','designContext=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'nextVibeAction=','contentExpansionVersion=','contentTheme=','contentBreadth=','existingCompletenessReview=','contentBundle=',
     'antiClone=','continuity=','derivedRuleEvolution=','contentCompletionAcceptance=','contentRule=',
     ...(focusedPresentation?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
@@ -2222,7 +2224,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
 
   const essentialPrefixes=[
     ...['robloxProduction','gameProduction'].flatMap(prefix=>['CONCEPT','IDEA','CONNECTION','FILES','QUALITY','SCOPE','OWNER'].map(field=>prefix+field+'=')),
-    'directiveId=','gameIdentity=','designContext=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'contentTheme=','contentCompletionAcceptance=',
     ...(focusedPresentation||focusedRobloxVisual?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
     'platform=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
@@ -2496,7 +2498,9 @@ export function buildInternalAssetSourceUsageContract(order={}, {cwd=process.cwd
     family:clean(row?.family||row?.category).toUpperCase()||null,
     role:clean(row?.role||row?.systemRole||row?.requirementRole)||null,
     applicationMode:clean(row?.applicationMode||row?.mode)||null,
-    sourceFiles:Object.freeze(unique(row?.sourceFiles||row?.files||[]).map(posix).filter(Boolean).sort())
+    sourceFiles:Object.freeze(unique(row?.sourceFiles||row?.files||[]).map(posix).filter(Boolean).sort()),
+    nativeArtifacts:Object.freeze(unique(row?.nativeArtifacts||[]).map(posix).filter(Boolean).sort()),
+    fileRoles:Object.freeze(Object.fromEntries(Object.entries(row?.fileRoles||{}).map(([role,files])=>[role,Object.freeze(unique(files).map(posix).filter(Boolean).sort())])))
   })).filter(row=>row.assetId||row.requirementId);
   const sourceCandidates=[];
   const dynamicLibraryBinding=assetProduction?.allGameDynamicLibraryBinding||{};
@@ -2510,6 +2514,8 @@ export function buildInternalAssetSourceUsageContract(order={}, {cwd=process.cwd
         family:clean(row?.family||family).toUpperCase()||null,
         role:clean(row?.role)||null,
         sourceFiles:Object.freeze(unique(row?.sourceFiles||[]).map(posix).filter(Boolean)),
+        nativeArtifacts:Object.freeze(unique(row?.nativeArtifacts||[]).map(posix).filter(Boolean).sort()),
+        fileRoles:Object.freeze(Object.fromEntries(Object.entries(row?.fileRoles||{}).map(([role,files])=>[role,Object.freeze(unique(files).map(posix).filter(Boolean).sort())]))),
         path:posix(row?.path)||null,
         sourceTier:clean(row?.applicationMode)||null
       }));
@@ -2525,6 +2531,8 @@ export function buildInternalAssetSourceUsageContract(order={}, {cwd=process.cwd
         family:clean(row?.family||row?.category).toUpperCase()||null,
         role:clean(row?.role||row?.systemRole)||null,
         sourceFiles:Object.freeze(unique(row?.sourceFiles||[]).map(posix).filter(Boolean).sort()),
+        nativeArtifacts:Object.freeze(unique(row?.nativeArtifacts||[]).map(posix).filter(Boolean).sort()),
+        fileRoles:Object.freeze(Object.fromEntries(Object.entries(row?.fileRoles||{}).map(([role,files])=>[role,Object.freeze(unique(files).map(posix).filter(Boolean).sort())]))),
         path:posix(row?.path)||null,
         sourceTier:clean(row?.sourceTier)||null,
         sourceHash:clean(row?.sourceHash)||null,
@@ -2532,8 +2540,20 @@ export function buildInternalAssetSourceUsageContract(order={}, {cwd=process.cwd
       }));
     }
   }
-  const dedupedSources=[...new Map(sourceCandidates.map(row=>[row.assetId,row])).values()]
-    .sort((a,b)=>a.assetId.localeCompare(b.assetId));
+  // 같은 자산이 전체 목록/회차 선택에 함께 나타나도 모델·파일 역할 정보는 잃지 않는다.
+  const sourcesByAssetId=new Map();
+  for(const row of sourceCandidates){
+    const prior=sourcesByAssetId.get(row.assetId);
+    sourcesByAssetId.set(row.assetId,prior?Object.freeze({
+      ...prior,...row,
+      sourceFiles:Object.freeze(unique([...prior.sourceFiles,...row.sourceFiles]).sort()),
+      nativeArtifacts:Object.freeze(unique([...prior.nativeArtifacts,...row.nativeArtifacts]).sort()),
+      fileRoles:Object.freeze(Object.fromEntries(unique([...Object.keys(prior.fileRoles),...Object.keys(row.fileRoles)]).sort().map(role=>[
+        role,Object.freeze(unique([...(prior.fileRoles[role]||[]),...(row.fileRoles[role]||[])]).sort())
+      ])))
+    }):row);
+  }
+  const dedupedSources=[...sourcesByAssetId.values()].sort((a,b)=>a.assetId.localeCompare(b.assetId));
   const selectedFamilies=new Set([
     ...Object.keys(exactFamilies||{}),
     ...(flowSelections||[]).map(row=>row?.family),
@@ -2558,8 +2578,8 @@ export function buildInternalAssetSourceUsageContract(order={}, {cwd=process.cwd
   }
   const allSelectedPaths=unique([
     ...selectedCommonSourcePaths,
-    ...(flowSelections||[]).flatMap(row=>row?.sourceFiles||[]),
-    ...(dedupedSources||[]).flatMap(row=>row?.sourceFiles||[]),
+    ...(flowSelections||[]).flatMap(row=>[...(row?.sourceFiles||[]),...(row?.nativeArtifacts||[]),...Object.values(row?.fileRoles||{}).flat()]),
+    ...(dedupedSources||[]).flatMap(row=>[...(row?.sourceFiles||[]),...(row?.nativeArtifacts||[]),...Object.values(row?.fileRoles||{}).flat()]),
     ...(dedupedSources||[]).map(row=>row?.path)
   ].map(posix).filter(file=>
     file
@@ -2583,8 +2603,8 @@ export function buildInternalAssetSourceUsageContract(order={}, {cwd=process.cwd
     evaluatedAssetCount:Number(dynamicLibraryBinding?.evaluatedAssetCount||0),
     compatibleCandidateCount:Number(dynamicLibraryBinding?.compatibleCandidateCount||0),
     exactFamilies,
-    flowSelections:flowSelections.map(row=>({requirementId:row.requirementId,assetId:row.assetId,family:row.family,role:row.role,applicationMode:row.applicationMode,sourceFiles:[...row.sourceFiles]})),
-    sourceCandidates:dedupedSources.map(row=>({assetId:row.assetId,type:row.type,family:row.family,role:row.role,sourceFiles:[...row.sourceFiles],path:row.path,sourceTier:row.sourceTier,sourceHash:row.sourceHash,artifactHash:row.artifactHash}))
+    flowSelections:flowSelections.map(row=>({requirementId:row.requirementId,assetId:row.assetId,family:row.family,role:row.role,applicationMode:row.applicationMode,sourceFiles:[...row.sourceFiles],nativeArtifacts:[...row.nativeArtifacts],fileRoles:row.fileRoles})),
+    sourceCandidates:dedupedSources.map(row=>({assetId:row.assetId,type:row.type,family:row.family,role:row.role,sourceFiles:[...row.sourceFiles],nativeArtifacts:[...row.nativeArtifacts],fileRoles:row.fileRoles,path:row.path,sourceTier:row.sourceTier,sourceHash:row.sourceHash,artifactHash:row.artifactHash}))
   };
   const fingerprint=crypto.createHash('sha256').update(JSON.stringify(payload)).digest('hex');
   const usageMatrix=Object.freeze([
@@ -2936,12 +2956,28 @@ function internalAssetSourceUsageGuidance(order={}){
     .filter(row=>row.sourceFiles.length||row.path)
     .map(row=>row.assetId+'@'+([...(row.sourceFiles||[]),row.path].filter(Boolean).join('|')))
     .join('; ');
+  // 공유 파일의 역할은 자산마다 반복하지 않고 경로별 한 번만 전달한다.
+  const roleFiles=new Map();
+  for(const row of [...contract.sourceCandidates,...contract.flowSelections]){
+    for(const [role,files] of Object.entries(row.fileRoles||{})){
+      if(!roleFiles.has(role))roleFiles.set(role,new Set());
+      for(const file of files)roleFiles.get(role).add(file);
+    }
+    if((row.nativeArtifacts||[]).length){
+      if(!roleFiles.has('nativeArtifacts'))roleFiles.set('nativeArtifacts',new Set());
+      for(const file of row.nativeArtifacts)roleFiles.get('nativeArtifacts').add(file);
+    }
+  }
+  const fileRows=[...roleFiles].sort(([a],[b])=>a.localeCompare(b)).map(([role,files])=>role+'='+[...files].sort().join('|')).join('; ');
   return [
     '[INTERNAL ASSET SOURCE CONSUMPTION CONTRACT]',
     'syncFingerprint='+contract.fingerprint+'; libraryVersion='+contract.libraryVersion+'; selectionFingerprint='+(contract.selectionFingerprint||'NONE')+'; syncMode='+contract.synchronization.mode,
     'Exact selected family IDs only: '+(exactRows||'NONE'),
     'Exact flow selections: '+(flowRows||'NONE'),
     'Selected source/API references: '+(sourceRows||'NONE'),
+    'Selected file roles (each shared path once per role): '+(fileRows||'LEGACY_SOURCE_FIELDS'),
+    'All registry assets are shared by family. Legacy pack IDs and directories describe source lineage, not game-exclusive ownership. Consumer game IDs are usage history only. Preserve role/style/license/platform compatibility.',
+    'File application: authoring files rebuild assets; runtimeCode files expose factories; models are importable artifacts; previews/references are visual guidance; textures are material inputs; catalogs/support are metadata; quality is displayed by internalAuditScore rather than a separate evidence asset category. Never substitute a preview image for a required native model. Import only applicable compatible models through the existing target pipeline, keep gameplay responsibility unchanged, and do not claim runtime pass from file classification.',
     'Source consumption sequence: '+contract.sourceConsumptionSequence.join(' -> ')+'.',
     'Do not invent an asset ID, pack, factory, source file, or role that is absent from the supplied selection/context. Do not copy the full company library into game source or prompt context.',
     'Selection order is FIT-FIRST, QUALITY-WITHIN-FIT: safety/license/platform -> existing game state applicability -> exact family/role/body-plan -> responsible source/API compatibility -> game identity/style adaptability -> existing binding/integration cost -> effective quality after adaptation -> diversity tie-break.',
@@ -3521,7 +3557,8 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
   const precisionProduction=order.assetProduction?.precisionProduction;
   const precisionProductionBlock=precisionProduction?[
     '[PRECISION PRODUCTION CHAIN BEGIN]',
-    JSON.stringify(precisionProduction),
+    JSON.stringify({mode:precisionProduction.mode,application:precisionProduction.application,sequence:precisionProduction.sequence,authoringOutputsRequired:precisionProduction.authoringOutputsRequired,continuation:precisionProduction.continuation,qualityDNA:precisionProduction.qualityDNA?.commonRules}),
+    'Asset-library authoring owns reusable source assets. The current game source owner owns target conversion/import AND binding into the existing render/scene/material/rig/motion consumer in the same responsibility. Existing target runtime QA owns verification. Reuse compatible native variants; conversion must preserve source and artifact identity. A local GLB path is not a Roblox uploaded asset ID. Keep required permissions/import gaps explicit. Do not create a conversion queue, duplicate graphics root, wrapper, or parallel owner for the same file. Prepared/exported/registered assets are not applied assets. Missing source or tooling returns the affected scope to its existing task; do not restart unrelated production.',
     'Continue through INSPECT -> DEFINE_REPAIR -> AUTHOR -> APPLY within the current task whenever the responsible source and authoring capability are available. Inspection and repair planning are not terminal outputs. Produce or rebuild editable source plus the target-native derivative, then bind it directly into the existing responsible game system. Build detail in four readable scales: GAME_CAMERA silhouette/function, MID_RANGE structure/parts, CLOSEUP construction/material identity, CONTACT joints/grips/doors/footing/interaction. Every micro-detail needs a functional, construction, contact, weathering, damage, or cultural cause; random clutter/noise is not detail. Do not create a shadow asset path, wrapper binding, or duplicate responsibility. If the authoring tool is genuinely unavailable, leave the exact AUTHOR stage pending with required source/output contract and do not claim the asset was produced.',
     '[PRECISION PRODUCTION CHAIN END]'
   ].join('\n'):'';
@@ -4741,10 +4778,10 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
       ?FULL_WEB_EXPANSION_CONTEXT_WINDOW
       :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_CONTEXT_WINDOW:(robloxRebuildFocused?JSON_CONTEXT_WINDOW:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW))):(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(sourceCandidatePressureInitial?SOURCE_CANDIDATE_COMPACT_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW)))));
     // 압축·부분 수정·확장 재시도에서도 원본 관찰과 잠금/수정 범위를 보존하고 실제 전송량으로 예산을 잡는다.
-    for(const label of ['IMAGE ASSET OBSERVATION','ASSET DETAIL REPAIR','RUNTIME VISUAL REVIEW','SINGLE MOTION WORK UNIT','INTERNAL MOTION COACHING','ROBLOX SOURCE COACHING','INTERNAL ASSET TEACHER PRACTICE']){
+    for(const label of ['PRECISION PRODUCTION CHAIN','IMAGE ASSET OBSERVATION','ASSET DETAIL REPAIR','RUNTIME VISUAL REVIEW','SINGLE MOTION WORK UNIT','INTERNAL MOTION COACHING','ROBLOX SOURCE COACHING','INTERNAL ASSET TEACHER PRACTICE']){
       const block=prompt.match(new RegExp('\\['+label+' BEGIN\\][\\s\\S]*?\\['+label+' END\\]'))?.[0]||'';
       if(!block||attemptPrompt.includes(block))continue;
-      const retryBlock=['SINGLE MOTION WORK UNIT','INTERNAL MOTION COACHING','ROBLOX SOURCE COACHING','INTERNAL ASSET TEACHER PRACTICE'].includes(label)?block:retry?boundedLargeExcerpt(block,RETRY_OBSERVATION_CHUNK_BYTES).content:block;
+      const retryBlock=['PRECISION PRODUCTION CHAIN','SINGLE MOTION WORK UNIT','INTERNAL MOTION COACHING','ROBLOX SOURCE COACHING','INTERNAL ASSET TEACHER PRACTICE'].includes(label)?block:retry?boundedLargeExcerpt(block,RETRY_OBSERVATION_CHUNK_BYTES).content:block;
       attemptPrompt+='\n'+retryBlock;
       if(retry&&retryBlock!==block)console.log(`VIBE2_RETRY_OBSERVATION_COMPACTED=${label}:${Buffer.byteLength(block,'utf8')}->${Buffer.byteLength(retryBlock,'utf8')}`);
     }

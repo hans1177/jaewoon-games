@@ -1,5 +1,5 @@
 {
-  "version": 545,
+  "version": 546,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-07",
@@ -15366,7 +15366,7 @@
       "crossPlatformAssetImportRequiresExplicitCompatibility": true
     },
     "webPresentationQuality": {
-      "target": "POLISHED_COMMERCIAL_MOBILE_WEB_2D_OR_2_5D",
+      "target": "POLISHED_COMMERCIAL_MOBILE_WEB_2_5D_OR_3D",
       "prototypeOnlyGraphicsForbiddenAtFinalPass": true,
       "primitiveOrGeometricPlaceholderCannotSatisfyGraphicsPass": true,
       "characterEnemyAndCoreObjectVisualIdentityRequired": true,
@@ -15974,12 +15974,12 @@
       "existing2DGamesRequireSpatialPresentationRebuild": true
     },
     "graphicsProductionUnification": {
-      "version": 7,
+      "version": 8,
       "authority": "OWNER_DIRECTIVE_2026-09-23",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
       "externalWorkUnit": "GRAPHICS_PRODUCTION",
       "purpose": "ONE_GAME_ONE_COHERENT_GRAPHICS_PRODUCTION_ROOT_INSTEAD_OF_SCATTERED_TOP_LEVEL_VISUAL_TASKS",
-      "scope": "PER_GAME_CANDIDATE_REVISION_ACROSS_ROBLOX_AND_UNITY_NATIVE_PRESENTATION",
+      "scope": "PER_GAME_CANDIDATE_REVISION_ACROSS_WEB_ROBLOX_AND_UNITY_PRESENTATION",
       "developmentAdmissionGate": false,
       "runsInParallelWithNativeDevelopment": true,
       "soleProductionCoordinator": "assets/vibe-art-pipeline.js",
@@ -16045,7 +16045,16 @@
         "graphicsMayNotCreateIndependentAudioDepartmentAuthority": true,
         "gameplayAuthorityExpansionForbidden": true,
         "qaSecurityReleaseAuthorityExpansionForbidden": true,
-        "releaseAuthorityExpansionForbidden": true
+        "releaseAuthorityExpansionForbidden": true,
+        "assetSourceOwner": "ASSET_DEVELOPMENT",
+        "platformConversionOwner": "VIBE2_VIBE3_GAME_SOURCE_IMPLEMENTATION_OWNER",
+        "gameBindingOwner": "VIBE2_VIBE3_GAME_SOURCE_IMPLEMENTATION_OWNER",
+        "runtimeVerificationOwner": "EXISTING_TARGET_RUNTIME_QA",
+        "conversionAndBindingSameOwner": true,
+        "preparedAssetIsNotAppliedAsset": true,
+        "existingResponsibleFilesOnly": true,
+        "failureReturnsToSameTaskAndResponsibleScope": true,
+        "newConversionQueueForbidden": true
       },
       "outputContract": {
         "passState": "GRAPHICS_PASS",
