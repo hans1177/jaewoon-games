@@ -554,20 +554,25 @@ jobs:
             --evidence="$evidence" \
             "${directive_args[@]}"
           node --test qa/company-development-roblox-source-reconcile.test.mjs qa/company-development-roblox-package.test.mjs qa/company-development-roblox-independent-promotion.test.mjs
+          node -e "const e=require(process.argv[1]);const assetRebind=e.existingSourcePreserved===true&&e.generationMode==='EXISTING_SOURCE_STUDIO_ASSET_REBIND';const foundationRepair=e.existingSourcePreserved===true&&e.generationMode==='EXISTING_SOURCE_FOUNDATION_REPAIR';const learningOk=e.vibe3LearningApplied===true&&e.verifiedExternalLearningFirst===true&&Number(e.verifiedExternalLearningCoveragePct||0)===100&&Number(e.verifiedExternalLearningRetrievedCount||0)>0&&Number(e.verifiedExternalLearningRetrievedCount||0)===Number(e.verifiedExternalLearningAppliedCount||0)&&Array.isArray(e.verifiedExternalLearningIds)&&e.verifiedExternalLearningIds.length===Number(e.verifiedExternalLearningAppliedCount||0)&&String(e.verifiedExternalLearningFingerprint||'').length>0;if(!learningOk)process.exit(3);if(foundationRepair){if(e.studioAssetBindingApplied!==true||e.foundationRepairApplied!==true||e.verifiedExternalLearningAppliedToExistingSource!==true)process.exit(2);console.log('ROBLOX_EXISTING_SOURCE_FOUNDATION_REPAIR_EVIDENCE=PASS');}else if(assetRebind){if(e.studioAssetBindingApplied!==true||e.verifiedExternalLearningAppliedToExistingSource!==true)process.exit(2);console.log('ROBLOX_EXISTING_SOURCE_ASSET_REBIND_EVIDENCE=PASS');}else{console.log('ROBLOX_VIBE3_LEARNING_EVIDENCE=PASS');}" "$evidence"
           git diff --check
           git add "$TARGET_SOURCE"
-          git diff --cached --quiet && { echo "no Roblox source change: $GAME_ID" >&2; exit 1; }
+          if git diff --cached --quiet; then
+            echo "no_change=true" >> "$GITHUB_OUTPUT"
+            echo "safe=$safe" >> "$GITHUB_OUTPUT"
+            echo "ROBLOX_SOURCE_CANDIDATE=NO_CHANGE:$GAME_ID"
+            exit 0
+          fi
           git commit -m "development: bootstrap Roblox ${GAME_ID}"
           git push origin "HEAD:$branch"
           echo "branch=$branch" >> "$GITHUB_OUTPUT"
           echo "safe=$safe" >> "$GITHUB_OUTPUT"
           echo "ROBLOX_SOURCE_CANDIDATE=PASS:$GAME_ID"
           echo 'ROBLOX_SOURCE_MODEL_USED=NO'
-          node -e "const e=require(process.argv[1]);const assetRebind=e.existingSourcePreserved===true&&e.generationMode==='EXISTING_SOURCE_STUDIO_ASSET_REBIND';const foundationRepair=e.existingSourcePreserved===true&&e.generationMode==='EXISTING_SOURCE_FOUNDATION_REPAIR';const learningOk=e.vibe3LearningApplied===true&&e.verifiedExternalLearningFirst===true&&Number(e.verifiedExternalLearningCoveragePct||0)===100&&Number(e.verifiedExternalLearningRetrievedCount||0)>0&&Number(e.verifiedExternalLearningRetrievedCount||0)===Number(e.verifiedExternalLearningAppliedCount||0)&&Array.isArray(e.verifiedExternalLearningIds)&&e.verifiedExternalLearningIds.length===Number(e.verifiedExternalLearningAppliedCount||0)&&String(e.verifiedExternalLearningFingerprint||'').length>0;if(!learningOk)process.exit(3);if(foundationRepair){if(e.studioAssetBindingApplied!==true||e.foundationRepairApplied!==true||e.verifiedExternalLearningAppliedToExistingSource!==true)process.exit(2);console.log('ROBLOX_EXISTING_SOURCE_FOUNDATION_REPAIR_EVIDENCE=PASS');}else if(assetRebind){if(e.studioAssetBindingApplied!==true||e.verifiedExternalLearningAppliedToExistingSource!==true)process.exit(2);console.log('ROBLOX_EXISTING_SOURCE_ASSET_REBIND_EVIDENCE=PASS');}else{console.log('ROBLOX_VIBE3_LEARNING_EVIDENCE=PASS');}" "$evidence"
 
       - name: Attempt validated Roblox source promotion through PR
         id: merge
-        if: steps.generate.outcome == 'success' && steps.generate.outputs.superseded != 'true'
+        if: steps.generate.outcome == 'success' && steps.generate.outputs.superseded != 'true' && steps.generate.outputs.no_change != 'true'
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
@@ -618,6 +623,7 @@ jobs:
           PR_URL: ${{ steps.merge.outputs.pr_url }}
           SOURCE_REVISION: ${{ steps.merge.outputs.source_revision }}
           SUPERSEDED: ${{ steps.generate.outputs.superseded }}
+          NO_CHANGE: ${{ steps.generate.outputs.no_change }}
         shell: bash
         run: |
           set -euo pipefail
@@ -628,16 +634,19 @@ jobs:
           const id=process.env.GAME_ID;
           const safe=String(id).replace(/[^a-zA-Z0-9._-]+/g,'-');
           const superseded=process.env.SUPERSEDED==='true';
-          const generated=!superseded&&process.env.GENERATE_OUTCOME==='success';
+          const noChange=process.env.NO_CHANGE==='true';
+          const generated=!superseded&&!noChange&&process.env.GENERATE_OUTCOME==='success';
           const promoted=generated&&process.env.MERGE_OUTCOME==='success';
           const candidateReady=generated&&Boolean(String(process.env.SOURCE_BRANCH||'').trim());
-          const failure=superseded?'source-plan-contract-superseded':!generated?'source-generation-failed':!promoted?'source-promotion-pending':null;
+          let failure=superseded?'source-plan-contract-superseded':!generated?'source-generation-failed':!promoted?'source-promotion-pending':null;
+          if(noChange)failure=null;
           const bootstrapEvidencePath=path.join('/tmp',`roblox-source-bootstrap-${safe}.json`);
           const bootstrapEvidence=fs.existsSync(bootstrapEvidencePath)?JSON.parse(fs.readFileSync(bootstrapEvidencePath,'utf8')):{};
           const result={
             gameId:id,
             pass:promoted,
             superseded,
+            noChange,
             candidateReady,
             candidateBranch:process.env.SOURCE_BRANCH||null,
             sourcePath:process.env.TARGET_SOURCE,
@@ -650,7 +659,7 @@ jobs:
             failure,
           };
           fs.writeFileSync(path.join('/tmp/roblox-worker/results',`${safe}.json`),JSON.stringify(result,null,2)+'\n');
-          console.log(`ROBLOX_WORKER_RESULT=${id}:${superseded?'SUPERSEDED':promoted?'MERGED':candidateReady?'PROMOTION_PENDING':'FAIL'}`);
+          console.log(`ROBLOX_WORKER_RESULT=${id}:${superseded?'SUPERSEDED':noChange?'NO_CHANGE':promoted?'MERGED':candidateReady?'PROMOTION_PENDING':'FAIL'}`);
           NODE
 
       - name: Upload isolated Roblox worker result
@@ -846,6 +855,36 @@ jobs:
             if(!item)throw new Error(`queue item missing: ${result.gameId}`);
             const target=expectedById.get(result.gameId)||{};
             const secondaryOwnerFocus=target.secondaryOwnerFocus===true;
+            if(result.noChange===true){
+              const studioPass=item.robloxInternalVibePlayEvidence?.pass===true
+                &&item.robloxInternalVibePlayEvidence?.artifactIdentity===item.robloxBuildArtifactIdentity;
+              const f9Pass=item.robloxF9ReleaseRegressionPassed===true;
+              const f0Pass=item.robloxFoundationF0Passed===true;
+              const nextStep=f9Pass?'POST_F9_CONTINUOUS_EVOLUTION':studioPass?'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG':f0Pass?'VIBE_INTERNAL_PLAY':'TARGET_PLATFORM_TECHNICAL_VALIDATION';
+              const nextState=f9Pass?'F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION':studioPass?'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG':f0Pass?'F0_SOURCE_PREFLIGHT_PASSED':'TARGET_PLATFORM_REPAIR_REQUIRED';
+              if(secondaryOwnerFocus){
+                Object.assign(item,{
+                  ownerFocusRobloxSourceBootstrapPassedAt:stamp,
+                  ownerFocusRobloxSourceBootstrapFailedAt:null,
+                  ownerFocusRobloxSourceCandidateBranch:null,
+                  ownerFocusRobloxSourceCandidateReadyAt:null,
+                  ownerFocusRobloxAssetPipelineState:'SOURCE_READY',
+                  updatedAt:stamp,
+                });
+              }else{
+                Object.assign(item,robloxSelectionPatch(item),{
+                  status:'ACTIVE',currentStep:nextStep,canonicalState:nextState,
+                  robloxSourceBootstrapPassedAt:stamp,robloxSourceBootstrapFailedAt:null,
+                  robloxSourceCandidateBranch:null,robloxSourceCandidateReadyAt:null,
+                  robloxFailureStage:null,robloxFailureSignature:null,
+                  routingBlockers:f9Pass||studioPass?[]:f0Pass?['roblox-runtime-evidence-pending']:['roblox-f0-revalidation-pending'],
+                  updatedAt:stamp,
+                });
+              }
+              passCount++;
+              console.log('ROBLOX_SOURCE_NO_CHANGE_DOWNSTREAM_EVIDENCE_PRESERVED='+item.gameId+':'+String(item.robloxSourceCommit||item.ownerFocusRobloxSourceCommit||'MISSING'));
+              continue;
+            }
             if(secondaryOwnerFocus){
               if(result.pass===true){
                 Object.assign(item,{

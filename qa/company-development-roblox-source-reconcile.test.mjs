@@ -510,7 +510,8 @@ test('existing Roblox library rebind preserves gameplay server and updates only 
     for(const family of ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES){
       assert.match(client,new RegExp('\\b'+family+'\\s*='));
     }
-    applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning});
+    const reapplied=applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning});
+    assert.deepEqual([...reapplied.changedFiles],[],'idempotent existing-source binding must report no source delta');
     const configAgain=fs.readFileSync(path.join(root,'shared','GameConfig.luau'),'utf8');
     const clientAgain=fs.readFileSync(path.join(root,'client','Game.client.luau'),'utf8');
     assert.equal((configAgain.match(/STUDIO_ASSET_BINDING_BEGIN/g)||[]).length,1);
@@ -519,6 +520,22 @@ test('existing Roblox library rebind preserves gameplay server and updates only 
   }finally{
     fs.rmSync(tmp,{recursive:true,force:true});
   }
+});
+
+test('Roblox no-op source maintenance preserves repo evidence and skips promotion churn',()=>{
+  const bootstrap=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(bootstrap,/const changedFiles=\[\]/);
+  assert.match(bootstrap,/if\(afterConfig!==beforeConfig\).*changedFiles\.push\(configFile\)/);
+  assert.match(bootstrap,/sourceDelta=Array\.isArray\(applied\.changedFiles\)&&applied\.changedFiles\.length>0/);
+  assert.match(bootstrap,/ROBLOX_SOURCE_BOOTSTRAP_REPO_EVIDENCE=PRESERVED_NO_SOURCE_DELTA/);
+  assert.match(workflow,/echo "no_change=true" >> "\$GITHUB_OUTPUT"/);
+  assert.match(workflow,/ROBLOX_SOURCE_CANDIDATE=NO_CHANGE:/);
+  assert.match(workflow,/steps\.generate\.outputs\.no_change != 'true'/);
+  assert.match(workflow,/const noChange=process\.env\.NO_CHANGE==='true'/);
+  assert.match(workflow,/if\(result\.noChange===true\)\{/);
+  assert.match(workflow,/ROBLOX_SOURCE_NO_CHANGE_DOWNSTREAM_EVIDENCE_PRESERVED=/);
+  assert.doesNotMatch(workflow,/no Roblox source change: \$GAME_ID" >&2; exit 1/);
 });
 
 test('Roblox runtime persistence uses game source-tree identity instead of unrelated main SHA churn',()=>{
