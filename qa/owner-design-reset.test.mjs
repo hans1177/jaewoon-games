@@ -13,6 +13,13 @@ test('active owner reset seeds stay DESIGN_ONLY inputs even when catalog develop
   const promoted=[];
   for(const request of active){
     assert.ok(request.gameId);
+    if(request.designRequest){
+      assert.ok(request.designRequest.instruction);
+      assert.ok(!request.seed,'owner brief must not contain a pre-authored seed design');
+      const game=(catalog.games||[]).find(row=>row.id===request.gameId);
+      if(game?.productionClass==='DEVELOPMENT_CONFIRMED')promoted.push(request.gameId);
+      continue;
+    }
     assert.ok(request.seed);
     assert.equal(request.seed.status,'ACTIVE');
     assert.equal(request.seed.productionClass,'DESIGN_ONLY');
@@ -63,7 +70,8 @@ test('seed design runtime keeps owner reset review parallel with active developm
   assert.match(workflow,/materializeOwnerDesignResetSeeds/);
   assert.match(workflow,/ensureOwnerDesignResetSeed/);
   assert.match(workflow,/activeResetIds/);
-  assert.match(workflow,/activeResetPending\.length\?activeResetSeeds:active/);
+  assert.match(workflow,/ownerResetPriority\(a\)-ownerResetPriority\(b\)/);
+  assert.match(workflow,/OWNER_RESET_SCHEDULING=PRIORITY_NOT_EXCLUSIVE/);
   assert.match(workflow,/OWNER_ACTIVE_DESIGN_RESET_TARGETS=/);
   assert.match(workflow,/OWNER_ACTIVE_DESIGN_RESET_PENDING=/);
 });
@@ -110,4 +118,76 @@ test('design runtime binds design intelligence into engine digest and static QA'
   assert.match(workflow,/tools\/vibe2-design-intelligence\.mjs/);
   assert.match(workflow,/node --check tools\/vibe2-design-intelligence\.mjs/);
   assert.match(workflow,/node --test qa\/vibe2-design-intelligence\.test\.mjs/);
+});
+
+
+test('owner brief loads the original without authoring A/B/c/@ and survives runtime refresh',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'owner-brief-'));
+  try{
+    const relative='design/x/2026-10-07/design-revised.json';
+    fs.mkdirSync(path.dirname(path.join(dir,relative)),{recursive:true});
+    const original={gameId:'x',gameName:'Original X',version:7,gameCategory:'CASUAL',content:{identity:'Original four versus four infection',coreFun:'Convert humans through explicit infection attacks',coreLoop:['Start four versus four','Infect or purify','Resolve teams'],multiplayerMode:'COMPETITIVE',platformProfiles:{ROBLOX:{inputModel:'touch'}}}};
+    fs.writeFileSync(path.join(dir,relative),JSON.stringify(original));
+    const file=path.join(dir,'queue.json');
+    fs.writeFileSync(file,JSON.stringify({requests:[{gameId:'x',gameName:'X',status:'ACTIVE',revision:'R2',designRequest:{instruction:'Designer authors the new design from the original.',originalPlatform:'ROBLOX',baselineSource:relative}}]}));
+    const stale={seeds:[{gameId:'x',ownerResetRevision:'R1',CORE_LOOP:['stale freeze and thaw']}]};
+    const first=materializeOwnerDesignResetSeeds(stale,{file});
+    assert.deepEqual(first.changed,['x']);
+    const seed=stale.seeds[0];
+    assert.deepEqual(seed.CORE_LOOP,original.content.coreLoop);
+    assert.deepEqual(seed.originalDesignContext.content,original.content);
+    assert.equal(seed.GAMEPLAY_SKETCH.novelGameGrammar,undefined);
+    assert.equal(seed.designInputMode,'OWNER_BRIEF_AND_ORIGINAL_ONLY');
+    assert.equal(seed.productionClass,'DESIGN_ONLY');
+    assert.equal(ensureOwnerDesignResetSeed(stale,'x',{file}).changed,false);
+    const refreshed={seeds:[{gameId:'x',ownerResetRevision:'R1',CORE_LOOP:['stale freeze and thaw']}]};
+    materializeOwnerDesignResetSeeds(refreshed,{file});
+    assert.deepEqual(refreshed.seeds[0].CORE_LOOP,original.content.coreLoop);
+    const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+    const refresh=workflow.indexOf('cp /tmp/company-runtime-seed-state-before.json game-seed-state.json');
+    const reapply=workflow.indexOf('OWNER_REQUESTS_REAPPLIED_AFTER_RUNTIME_REFRESH',refresh);
+    const auto=workflow.indexOf('node tools/company-all-games-design-reset.mjs --auto-missing-design-intake',refresh);
+    assert.ok(refresh>=0&&reapply>refresh&&auto>reapply);
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
+
+test('missing design is admitted as a brief without invented mechanics or grammar',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'owner-brief-empty-'));
+  try{
+    const file=path.join(dir,'queue.json');
+    fs.writeFileSync(file,JSON.stringify({requests:[{gameId:'x',gameName:'X',status:'ACTIVE',revision:'R1',designRequest:{instruction:'Design this game from my request.'}}]}));
+    const state={seeds:[]};
+    const result=ensureOwnerDesignResetSeed(state,'x',{file});
+    assert.equal(result.changed,true);
+    assert.equal(result.seed.DESIGN_BASELINE_SOURCE,null);
+    assert.equal(result.seed.OWNER_LATEST_DESIGN_REQUEST,'Design this game from my request.');
+    assert.equal(result.seed.GAMEPLAY_SKETCH.novelGameGrammar,undefined);
+    const intake=fs.readFileSync('tools/company-all-games-design-reset.mjs','utf8');
+    const body=intake.match(/function upgradeCanonicalNovelGrammarSeed\(seed,game,timestamp\)\{([\s\S]*?)\n\}/)[1];
+    const upgrade=new Function('seed','game','timestamp',body);
+    assert.equal(upgrade(result.seed,{},'now'),false,'brief must not reach automatic grammar generation');
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
+
+test('owner brief cannot read a different game or escape the original design directory',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'owner-brief-scope-'));
+  try{
+    const file=path.join(dir,'queue.json');
+    for(const baselineSource of ['../secret.json','design/y/2026-10-07/design-revised.json']){
+      fs.writeFileSync(file,JSON.stringify({requests:[{gameId:'x',status:'ACTIVE',designRequest:{instruction:'Design X',baselineSource}}]}));
+      assert.throws(()=>ensureOwnerDesignResetSeed({seeds:[]},'x',{file}),/OWNER_DESIGN_BASELINE_PATH_INVALID/);
+    }
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
+
+test('already developed games can re-enter the same designer from an owner brief',()=>{
+  const cycle=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
+  const line=cycle.split('\n').find(row=>row.includes('DESIGN_ONLY_CLASS_REQUIRED'));
+  assert.ok(line);
+  const predicate=line.slice(line.indexOf('if(')+3,line.indexOf(')throw new Error'));
+  const blocked=new Function('catalogGame','seed','clean','return '+predicate);
+  const clean=v=>String(v??'').trim();
+  assert.equal(blocked({productionClass:'DEVELOPMENT_CONFIRMED'},{designInputMode:'OWNER_BRIEF_AND_ORIGINAL_ONLY'},clean),false);
+  assert.equal(blocked({productionClass:'DEVELOPMENT_CONFIRMED'},{},clean),true);
+  assert.match(cycle,/OWNER_ORIGINAL_DESIGN_INPUT=/);
 });

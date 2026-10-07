@@ -132,6 +132,8 @@ function normalizedCanonicalSketch(game,seed){
   return{category,coreLoop,sketch:normalizeGameplaySketch(target,proposal,coreLoop,gameName)};
 }
 function upgradeCanonicalNovelGrammarSeed(seed,game,timestamp){
+  // Owner briefs are authored by the existing designer; never replace them with automatic grammar.
+  if(seed?.designInputMode==='OWNER_BRIEF_AND_ORIGINAL_ONLY')return false;
   if(completeNovelGrammarV4(seed))return false;
   const normalized=normalizedCanonicalSketch(game,seed);
   seed.GAME_CATEGORY=normalized.category;
