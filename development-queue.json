@@ -6134,7 +6134,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-07T05:52:43.390Z",
+      "updatedAt": "2026-10-07T05:53:12.218Z",
       "robloxSourceCommit": "2cc4a7b31a540925a89d10880b1a17e82e3ede2c",
       "robloxSourceBootstrapPassedAt": "2026-10-07T05:22:52.107Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -6145,21 +6145,20 @@
       "robloxBuildArtifactIdentity": "sha256:1e9b01b125f1206b8d33d22740d79212253c3adc1c70d44a0527e4f6eb18c9e0",
       "robloxBuildPassedAt": "2026-10-07T05:50:17.253Z",
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": true,
+      "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": "2026-10-07T05:50:17.253Z",
-      "robloxBuildPreflightFailedAt": null,
+      "robloxBuildPreflightFailedAt": "2026-10-07T05:53:12.218Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "bug-defense",
-        "pass": true,
-        "state": "PASS",
-        "checkedAt": "2026-10-07T05:50:10.866Z",
-        "sourceRevision": "2cc4a7b31a540925a89d10880b1a17e82e3ede2c",
-        "artifactIdentity": "sha256:1e9b01b125f1206b8d33d22740d79212253c3adc1c70d44a0527e4f6eb18c9e0",
-        "secondaryOwnerFocus": false,
+        "pass": false,
+        "state": "BLOCKED",
+        "checkedAt": "2026-10-07T05:52:33.245Z",
         "facts": {
-          "pass": true,
-          "blockers": [],
+          "pass": false,
+          "blockers": [
+            "roblox-platform-required"
+          ],
           "leads": {
             "planning": "llama3.2:1b",
             "graphics": "llama3.2:1b",
@@ -6170,9 +6169,9 @@
           "sharedModel": "llama3.2:1b",
           "distinctLeadCount": 1,
           "secondaryOwnerFocus": false,
-          "robloxLaneEligible": true,
+          "robloxLaneEligible": false,
           "directRoblox": false,
-          "concurrentRoblox": true,
+          "concurrentRoblox": false,
           "build": {
             "sourceRevision": "2cc4a7b31a540925a89d10880b1a17e82e3ede2c",
             "artifactIdentity": "sha256:1e9b01b125f1206b8d33d22740d79212253c3adc1c70d44a0527e4f6eb18c9e0",
@@ -6185,16 +6184,10 @@
             "buildOrPackagePassed": true
           }
         },
-        "leadReviews": [
-          {
-            "role": "shared-review",
-            "model": "llama3.2:1b",
-            "decision": "PASS",
-            "blockers": [],
-            "note": "BUILD_EVIDENCE contains a contradiction: `sourceValidationPassed` is `true` but `sourceEligibilityAuthority` is `exact-immutable-roblox-package` which implies `sourceRevision` must be `>= 2cc4a7b31a540925a89d10880b1a17e82e3ede2c`."
-          }
+        "leadReviews": [],
+        "blockers": [
+          "roblox-platform-required"
         ],
-        "blockers": [],
         "authority": "roblox-vibe-shared-model-build-preflight"
       },
       "robloxFoundationF0Passed": true,
@@ -6796,10 +6789,10 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
+      "robloxFailureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
       "routingBlockers": [
-        "roblox-runtime-foundation-awaiting-observation"
+        "roblox-build-preflight-blocked"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -34127,7 +34120,7 @@
       "robloxBuildAssetLibraryVersion": 120
     }
   ],
-  "updatedAt": "2026-10-07T05:52:43.390Z",
+  "updatedAt": "2026-10-07T05:53:12.218Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
