@@ -1,5 +1,5 @@
 {
-  "version": 79,
+  "version": 80,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -625,6 +625,21 @@
       "rawTelemetryDirectTrainingForbidden": true
     },
     "failureAction": "ASSET_REPAIR_REQUIRED_OR_LIBRARY_QUARANTINE_BY_SCOPE"
+  },
+  "npcRoleProductionSecurity": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.studioAssetUniverse.npcRoleProduction",
+    "protections": {
+      "visualHeightWeightCannotMutateAuthoritativeGameplayScale": true,
+      "visualBodyMassCannotMutateCollisionOrHitbox": true,
+      "visualBodyTypeCannotMutateMovementSpeedDamageHealthRewardsOrCooldown": true,
+      "roleProfileCannotExpandAiTargetSelectionOrCombatAuthority": true,
+      "bossAppearanceCannotAuthorizeBalancePhaseRewardOrDamageChanges": true,
+      "colorOnlySizeOnlyOrFaceOnlyCloneCannotClaimDistinctNpc": true,
+      "primitivePartOrWeldOnlyNpcCannotPromoteAsFinalActor": true,
+      "masterGlbAndPlatformRuntimeVerificationRemainRequired": true
+    },
+    "failureAction": "NPC_ASSET_REPAIR_REQUIRED_WITH_GAMEPLAY_AUTHORITY_UNCHANGED"
   },
   "referenceImageWorldObservationSecurity": {
     "version": 1,
