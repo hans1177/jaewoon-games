@@ -12,6 +12,8 @@ import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeathe
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
 import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource} from '../tools/company-development-roblox-bootstrap.mjs';
 
+const actorGltfMaster=(masterPath,sourceRecipe='assets/build-actor.py')=>({version:1,format:'GLB',gltfVersion:'2.0',path:masterPath,artifactHash:'b'.repeat(64),sourceRecipe,sourceHash:'a'.repeat(64),evidencePath:masterPath.replace(/\.glb$/i,'-evidence.json'),previewPath:masterPath.replace(/\.glb$/i,'-preview.png'),contentEvidence:{mesh:true,uv:true,materialSlots:true,rig:true,skin:true,animationClips:true,stableScaleOriginAxis:true,attachmentOrBindingMap:true,lodDerivationPlan:true,motionCount:6},platformVariantsRequireExactMasterHash:true});
+
 test('Roblox internal asset selection is genre-agnostic for the same game and library',()=>{
   const assetLibrary=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
   const a=buildRobloxStudioAssetBootstrapPlan({gameId:'bug-defense',profile:{genre:'Strategy',subgenre:'Tower Defense'},assetLibrary});
@@ -1796,12 +1798,12 @@ test('usable same-game asset is applied before new authoring and weak regions de
   const sameGame={
     id:'existing-wolf',path:'roblox-games/apply-first-demo/assets/wolf.glb',types:['enemy'],
     tags:['wolf','enemy'],license:'project-original',platforms:['roblox'],
-    sameGameExistingRoblox:true,sourceHash:'wolf-v1',robloxAssetId:'123456'
+    sameGameExistingRoblox:true,sourceHash:'wolf-v1',robloxAssetId:'123456',gltfMaster:actorGltfMaster('roblox-games/apply-first-demo/assets/wolf.glb')
   };
   const company={
     id:'company-wolf',path:'assets/roblox/wolf.glb',types:['enemy'],
     tags:['wolf','enemy'],license:'project-original',platforms:['roblox'],
-    companyVerified:true,sourceHash:'company-wolf-v1'
+    companyVerified:true,sourceHash:'company-wolf-v1',gltfMaster:actorGltfMaster('assets/roblox/wolf.glb')
   };
   const plan=buildVibeAssetProductionPlan({
     target:'roblox',
@@ -1880,8 +1882,8 @@ test('precision production continues from inspection through authoring and appli
 
 test('low-quality asset rescue preserves strong axes and escalates to full authoring only after targeted derivation',()=>{
   const manifest={assets:[
-    {id:'base-hero',path:'roblox-games/rescue-demo/assets/hero.glb',types:['character'],tags:['character','hero'],license:'project-original',platforms:['roblox'],sameGameExistingRoblox:true,sourceHash:'hero-base',robloxAssetId:'111',rigType:'R15',retargetable:true},
-    {id:'donor-hero',path:'assets/roblox/hero-donor.glb',types:['character'],tags:['character','hero'],license:'project-original',platforms:['roblox'],companyVerified:true,sourceHash:'hero-donor',rigType:'R15',retargetable:true,
+    {id:'base-hero',path:'roblox-games/rescue-demo/assets/hero.glb',types:['character'],tags:['character','hero'],license:'project-original',platforms:['roblox'],sameGameExistingRoblox:true,sourceHash:'hero-base',robloxAssetId:'111',rigType:'R15',retargetable:true,gltfMaster:actorGltfMaster('roblox-games/rescue-demo/assets/hero.glb')},
+    {id:'donor-hero',path:'assets/roblox/hero-donor.glb',types:['character'],tags:['character','hero'],license:'project-original',platforms:['roblox'],companyVerified:true,sourceHash:'hero-donor',rigType:'R15',retargetable:true,gltfMaster:actorGltfMaster('assets/roblox/hero-donor.glb'),
       platformVariants:{ROBLOX:{path:'assets/roblox/hero-donor.glb'}}}
   ]};
   const plan=buildVibeAssetProductionPlan({
