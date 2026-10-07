@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {assetProductionGuidance,buildAllGameDynamicLibraryBindingPlan,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType,crossPlatform3dActorFamilyForType} from '../tools/vibe2-asset-production-plan.mjs';
-import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate,buildInternalAssetSourceUsageContract,inspectRobloxNativeCandidateQuality,executeDeclaredNativeDccAuthoringVerification} from '../tools/vibe2-source-worker.mjs';
+import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate,buildInternalAssetSourceUsageContract,inspectRobloxNativeCandidateQuality,executeDeclaredNativeDccAuthoringVerification,collectNativeAssetRuntimePromotionCandidates,persistedGeneratedAssetBindings} from '../tools/vibe2-source-worker.mjs';
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
@@ -424,6 +424,25 @@ function writeJsonOnlyGlb(file,document){
   fs.writeFileSync(file,out);
 }
 
+function zeroSkinWeightsInGlb(sourceFile,targetFile){
+  const bytes=Buffer.from(fs.readFileSync(sourceFile));
+  const jsonLength=bytes.readUInt32LE(12),json=JSON.parse(bytes.subarray(20,20+jsonLength).toString('utf8'));
+  let offset=20+jsonLength,binOffset=-1;
+  while(offset<bytes.length){
+    const length=bytes.readUInt32LE(offset),type=bytes.readUInt32LE(offset+4);
+    if(type===0x004e4942){binOffset=offset+8;break;}
+    offset+=8+length;
+  }
+  assert.ok(binOffset>=0);
+  const primitive=json.meshes.flatMap(mesh=>mesh.primitives).find(row=>Number.isInteger(row.attributes?.WEIGHTS_0));
+  assert.ok(primitive);
+  const accessor=json.accessors[primitive.attributes.WEIGHTS_0],view=json.bufferViews[accessor.bufferView];
+  const componentBytes={5121:1,5123:2,5126:4}[accessor.componentType],elementBytes=componentBytes*4,stride=view.byteStride||elementBytes;
+  const start=binOffset+(view.byteOffset||0)+(accessor.byteOffset||0);
+  for(let i=0;i<accessor.count;i++)bytes.fill(0,start+i*stride,start+i*stride+elementBytes);
+  fs.writeFileSync(targetFile,bytes);
+}
+
 test('master GLB rejects broken accessor skin node and animation sampler lineage',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'broken-master-glb-'));
   try{
@@ -445,6 +464,18 @@ test('master GLB rejects broken accessor skin node and animation sampler lineage
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('master GLB rejects zero skin-weight data even when JOINTS and WEIGHTS accessors exist',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'zero-weight-master-glb-'));
+  try{
+    const file=path.join(root,'zero-weight.glb');
+    zeroSkinWeightsInGlb('assets/roblox/world-ghosts/native/spider/spider.glb',file);
+    const result=evaluateCrossPlatform3dMasterGlb({repoRoot:root,family:'CREATURE',role:'BOSS',source:{path:'zero-weight.glb'}});
+    assert.equal(result.pass,false);
+    assert.ok(result.blockers.includes('MASTER_GLB_JOINT_WEIGHTS_REQUIRED'));
+    assert.ok(result.inspection.issues.includes('GLB_SKIN_WEIGHT_DATA_INVALID'));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('3D character creature and boss master assets require a structurally complete GLB',()=>{
   const spider=evaluateCrossPlatform3dMasterGlb({
     family:'CREATURE',role:'BOSS',
@@ -460,7 +491,8 @@ test('3D character creature and boss master assets require a structurally comple
   assert.ok(spider.inspection.inventory.jointAnimationChannelCount>0);
   assert.ok(spider.inspection.inventory.animatedJointCount>0);
   assert.ok(spider.inspection.inventory.primitives.every(row=>row.hasNormals&&row.hasUv&&row.hasMaterial));
-  assert.ok(spider.inspection.inventory.primitives.some(row=>row.hasJointWeights));
+  assert.ok(spider.inspection.inventory.primitives.every(row=>row.actorBindingValid===true));
+  assert.ok(spider.inspection.inventory.primitives.filter(row=>row.skinBound).every(row=>row.jointWeightDataValid===true&&row.zeroWeightVertexCount===0&&row.invalidJointValueCount===0));
 
   const missing=evaluateCrossPlatform3dMasterGlb({family:'CREATURE',role:'ENEMY',source:{path:'../outside.glb'}});
   assert.equal(missing.pass,false);
@@ -526,12 +558,31 @@ test('DCC verification selects the declared master GLB even when a blend output 
     assert.equal(result.recipes[0].nativeArtifact,base+'/master.glb');
     assert.equal(result.recipes[0].masterGlb,base+'/master.glb');
     assert.equal(result.recipes[0].masterGlbHash,result.recipes[0].artifactHash);
+    assert.equal(result.recipes[0].derivedFromMasterGlbHash,null);
+    assert.equal(result.recipes[0].platformNativeDerivativeRequired,true);
     assert.equal(result.recipes[0].masterGlbStaticQaPass,true);
     assert.equal(result.recipes[0].masterGlbQaAuthority,'tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb');
     assert.ok(result.recipes[0].masterGlbInspection.meshSkinBindingCount>0);
     assert.ok(result.recipes[0].masterGlbInspection.jointAnimationChannelCount>0);
     assert.ok(result.recipes[0].masterGlbInspection.animatedJointCount>0);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('master GLB evidence is never exposed as a platform-native binding or promotion candidate',()=>{
+  const masterPath='assets/generated/roblox/demo/creature/actor.glb',masterHash='a'.repeat(64),sourceHash='b'.repeat(64);
+  const order={target:'roblox',assetProductionLane:true,assetProduction:{nativeAuthoringExecution:{dcc:{executionEvidence:{
+    executed:true,allRecipesPassed:true,candidateUsable:true,persistedForCandidate:true,recipes:[{
+      assetId:'actor-master',family:'CREATURE',license:'project-original',nativeArtifact:masterPath,artifactHash:masterHash,sourceHash,editableSourceHash:sourceHash,
+      masterGlbRequired:true,masterGlb:masterPath,masterGlbHash:masterHash,derivedFromMasterGlbHash:null,masterGlbStaticQaPass:true,
+      masterGlbQaAuthority:'tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb',persistedForCandidate:true
+    }]
+  }}}}};
+  assert.deepEqual([...persistedGeneratedAssetBindings(order)],[]);
+  const rows=collectNativeAssetRuntimePromotionCandidates({
+    order,
+    candidate:{edits:[{path:'server/Game.server.luau',replace:`local MasterGlb="${masterPath}"\nlocal MasterHash="${masterHash}"`}]}
+  });
+  assert.deepEqual([...rows],[]);
 });
 
 test('apply-first rejects a 3D enemy that has no compliant master GLB',()=>{

@@ -2840,7 +2840,11 @@ export const CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT=Object.freeze({
     skinAndSkeletonRequired:true,
     jointWeightsRequired:true,
     animationRequired:true,
-    jointAnimationChannelRequired:true
+    jointAnimationChannelRequired:true,
+    accessorBufferRangeRequired:true,
+    nonzeroJointWeightDataRequired:true,
+    everyActorMeshMustBindSkinOrJoint:true,
+    animationSamplerAccessorShapeRequired:true
   }),
   actorPackageRequirements:Object.freeze({
     attachmentSocketBasisRequired:true,
@@ -2849,6 +2853,8 @@ export const CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT=Object.freeze({
     mobilePlatformLodRequired:true,
     roleStateMotionBindingRequired:true,
     masterStaticQaIsNotPlatformRuntimeQa:true,
+    masterGlbCannotBePromotedAsPlatformNativeArtifact:true,
+    exactMasterToNativeHashLineageRequired:true,
     productionVerifiedRequiresPlatformNativeRuntime:true
   }),
   platformUse:Object.freeze({
@@ -4662,6 +4668,7 @@ export function evaluateCompanyAssetPromotion({asset={},consumer={},runtimeEvide
   const artifactPath=text(runtimeEvidence?.artifactPath||asset?.path);
   const masterGlb=text(asset?.masterGlb||asset?.meshArtifact||asset?.masterSourcePath);
   const masterGlbHash=text(asset?.masterGlbHash||asset?.masterSourceHash||asset?.masterGlbSha256);
+  const declaredDerivedFromMasterGlbHash=text(asset?.derivedFromMasterGlbHash);
   const masterGlbStaticQaPass=asset?.masterGlbStaticQaPass===true;
   const masterGlbQaAuthority=text(asset?.masterGlbQaAuthority);
   const consumerGameId=text(consumer?.gameId||runtimeEvidence?.gameId);
@@ -4683,6 +4690,10 @@ export function evaluateCompanyAssetPromotion({asset={},consumer={},runtimeEvide
     if(!masterGlbHash)blockers.push('CROSS_PLATFORM_MASTER_GLB_HASH_REQUIRED');
     if(!masterGlbStaticQaPass)blockers.push('CROSS_PLATFORM_MASTER_GLB_STATIC_QA_REQUIRED');
     if(masterGlbQaAuthority!=='tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb')blockers.push('CROSS_PLATFORM_MASTER_GLB_QA_AUTHORITY_REQUIRED');
+    if(!artifactHash)blockers.push('PLATFORM_NATIVE_ARTIFACT_HASH_REQUIRED');
+    if(artifactPath&&masterGlb&&artifactPath===masterGlb)blockers.push('PLATFORM_NATIVE_DERIVATIVE_REQUIRED');
+    if(!declaredDerivedFromMasterGlbHash)blockers.push('PLATFORM_NATIVE_DERIVATION_HASH_REQUIRED');
+    else if(masterGlbHash&&declaredDerivedFromMasterGlbHash!==masterGlbHash)blockers.push('PLATFORM_NATIVE_DERIVATION_HASH_MISMATCH');
     if(!runtimeSourceHash)blockers.push('RUNTIME_EDITABLE_SOURCE_HASH_REQUIRED');
     if(!runtimeMasterGlbHash)blockers.push('RUNTIME_MASTER_GLB_HASH_REQUIRED');
     else if(masterGlbHash&&runtimeMasterGlbHash!==masterGlbHash)blockers.push('RUNTIME_MASTER_GLB_HASH_MISMATCH');
@@ -4707,12 +4718,12 @@ export function evaluateCompanyAssetPromotion({asset={},consumer={},runtimeEvide
     promotion:eligible?Object.freeze({
       id,family,category:family,platform,status:'VERIFIED_COMPANY_ASSET',path:artifactPath,license,
       sourceHash,editableSourceHash:sourceHash,artifactHash:promotedArtifactHash||null,nativeArtifactHash:promotedArtifactHash||null,
-      ...(masterGlbRequired?{masterGlb,masterGlbHash,derivedFromMasterGlbHash:masterGlbHash,masterGlbStaticQaPass:true,masterGlbQaAuthority,masterGlbContractVersion:CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.version}:{}),
+      ...(masterGlbRequired?{masterGlb,masterGlbHash,derivedFromMasterGlbHash:declaredDerivedFromMasterGlbHash,masterGlbStaticQaPass:true,masterGlbQaAuthority,masterGlbContractVersion:CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT.version}:{}),
       productionVerified:true,verifiedCompanyReusable:true,runtimeVerificationState:'VERIFIED_NATIVE_RUNTIME',
       artReviewState:'RUNTIME_VERIFIED',consumerGameIds:Object.freeze([consumerGameId]),
       promotionEvidence:Object.freeze({
         assetId:id,nativeBindingPass:true,visualRuntimePass:true,mobilePerformancePass:true,regressionPass:true,licenseProvenancePass:true,
-        sourceHash,editableSourceHash:sourceHash,masterGlbHash:masterGlbHash||null,derivedFromMasterGlbHash:masterGlbRequired?masterGlbHash:null,
+        sourceHash,editableSourceHash:sourceHash,masterGlbHash:masterGlbHash||null,derivedFromMasterGlbHash:masterGlbRequired?declaredDerivedFromMasterGlbHash:null,
         masterGlbQaAuthority:masterGlbRequired?masterGlbQaAuthority:null,
         artifactHash:promotedArtifactHash||null,nativeArtifactHash:promotedArtifactHash||null,runtimeEvidenceId:text(runtimeEvidence?.id||runtimeEvidence?.runId)||null
       })
@@ -4763,6 +4774,7 @@ export function promoteVerifiedCompanyAssetsFromRuntimeEvidence({registry={},con
       nativeArtifactHash:text(descriptor?.nativeArtifactHash||descriptor?.artifactHash),
       masterGlb:text(descriptor?.masterGlb),
       masterGlbHash:text(descriptor?.masterGlbHash),
+      derivedFromMasterGlbHash:text(descriptor?.derivedFromMasterGlbHash),
       masterGlbStaticQaPass:descriptor?.masterGlbStaticQaPass===true,
       masterGlbQaAuthority:text(descriptor?.masterGlbQaAuthority),
       status:'PREPARED_DECLARED_GENERATED_ASSET',
