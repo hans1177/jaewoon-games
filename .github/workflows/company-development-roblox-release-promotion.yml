@@ -544,7 +544,9 @@ jobs:
           compare_status="$(gh api "repos/$GITHUB_REPOSITORY/compare/$SOURCE_REVISION...$(git rev-parse HEAD)" --jq '.status')"
           [[ "$compare_status" == ahead || "$compare_status" == identical ]]
           if [ "$PUBLISH_STAGE" != 'final' ]; then
-            git diff --quiet "$SOURCE_REVISION" HEAD -- "$SOURCE_ROOT"
+            source_runtime_tree="$(git ls-tree -r "$SOURCE_REVISION" -- "$SOURCE_ROOT" | awk -F '\t' -v excluded="$SOURCE_ROOT/roblox-source-bootstrap.json" '$2 != excluded' | sha256sum | awk '{print $1}')"
+            latest_runtime_tree="$(git ls-tree -r HEAD -- "$SOURCE_ROOT" | awk -F '\t' -v excluded="$SOURCE_ROOT/roblox-source-bootstrap.json" '$2 != excluded' | sha256sum | awk '{print $1}')"
+            [ "$source_runtime_tree" = "$latest_runtime_tree" ]
           fi
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
@@ -726,8 +728,8 @@ jobs:
             git fetch --no-tags --depth=1 origin main
             git -C ../runtime fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
             git -C ../runtime show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-latest-publish-queue.json
-            export PUBLISH_SOURCE_TREE="$(git rev-parse "$SOURCE_REVISION:$SOURCE_ROOT")"
-            export PUBLISH_LATEST_SOURCE_TREE="$(git rev-parse "origin/main:$SOURCE_ROOT")"
+            export PUBLISH_SOURCE_TREE="$(git ls-tree -r "$SOURCE_REVISION" -- "$SOURCE_ROOT" | awk -F '\t' -v excluded="$SOURCE_ROOT/roblox-source-bootstrap.json" '$2 != excluded' | sha256sum | awk '{print $1}')"
+            export PUBLISH_LATEST_SOURCE_TREE="$(git ls-tree -r origin/main -- "$SOURCE_ROOT" | awk -F '\t' -v excluded="$SOURCE_ROOT/roblox-source-bootstrap.json" '$2 != excluded' | sha256sum | awk '{print $1}')"
             : > /tmp/roblox-final-release-publish.log
             set +e
             node --input-type=module <<'NODE' 2>&1 | tee /tmp/roblox-final-release-publish.log
