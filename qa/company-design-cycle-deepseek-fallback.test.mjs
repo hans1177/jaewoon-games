@@ -97,6 +97,14 @@ test('initial design prompt has generous capacity and concrete causal grammar de
   assert.match(design,/c는 최소 3개 이상의 서브요소/);
   assert.match(design,/@는 해금 조건·발견 단서·숙련 보상·재방문 가치·고급 조합/);
   assert.match(design,/실제 플레이 5분·15분·30분 흐름/);
+  assert.match(design,/메뉴와 UI도 게임 규칙의 일부로 설계한다/);
+  assert.match(design,/버튼 이름\/위치\/역할·활성\/비활성\/잠금/);
+  assert.match(design,/튜토리얼\/온보딩은 첫 입력, 첫 성공, 첫 실패, 첫 성장, 첫 메뉴 사용/);
+  assert.match(design,/보스는 진입 조건·페이즈·패턴 전환 조건/);
+  assert.match(design,/메인\/사이드\/동료\/세력\/지역\/숨김\/월드 이벤트/);
+  assert.match(design,/contentExpansionPlan은 한 번의 완성 목록이 아니라 검증 회차가 반복될수록/);
+  assert.match(design,/단순 수치 증가나 기능 개수 늘리기를 진화로 간주하지 않는다/);
+  assert.match(design,/새 c 변주와 @ 파고들기/);
   assert.match(design,/DESIGN_BASE,\{predict:1800,temperature:0\.3,numCtx:12288/);
   assert.match(design,/DESIGN_GATE,\{predict:4800,temperature:0\.2,numCtx:16384/);
 });
