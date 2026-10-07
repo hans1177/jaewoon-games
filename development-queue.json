@@ -10242,7 +10242,7 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T05:12:43.771Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -10272,7 +10272,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T05:12:43.771Z"
       },
-      "updatedAt": "2026-10-07T09:50:54.898Z",
+      "updatedAt": "2026-10-07T09:51:25.111Z",
       "robloxSourceCommit": "51d3d00e868380dbd79733707b2c10cff697924e",
       "robloxSourceBootstrapPassedAt": "2026-10-07T04:50:31.619Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -10978,7 +10978,7 @@
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
-      "robloxMultiplayerQaPassed": false,
+      "robloxMultiplayerQaPassed": true,
       "robloxIndependentQaPassed": false,
       "robloxIndependentQaPassedAt": null,
       "robloxRegressionPassed": false,
@@ -10997,9 +10997,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED",
       "routingBlockers": [
-        "roblox-runtime-foundation-awaiting-observation"
+        "roblox-first-frame-grounding-unobserved"
       ],
       "robloxExactRevisionPassed": true,
       "robloxMultiplayerQaEvidence": {
@@ -11007,7 +11007,7 @@
         "gameId": "cozy-island",
         "sourceRevision": "51d3d00e868380dbd79733707b2c10cff697924e",
         "artifactIdentity": "sha256:cef54ad7f8848ef2badd9547c5c2e0b75011ae75916fd488558a034cde037e0a",
-        "candidateVersionNumber": 37573396777,
+        "candidateVersionNumber": 5,
         "passed": true,
         "codeContractPassed": true,
         "checks": {
@@ -11019,7 +11019,7 @@
         },
         "runtimeTwoClientExecutionRequired": false,
         "authority": "roblox-static-two-client-source-contract",
-        "verifiedAt": "2026-10-07T08:40:55.655Z"
+        "verifiedAt": "2026-10-07T09:51:25.111Z"
       },
       "robloxMultiplayerQaPassedAt": "2026-10-07T05:15:52.296Z",
       "platformAdapter": "tools/company-development-unity-platform.mjs",
@@ -12613,7 +12613,36 @@
         "verifiedPromotionAllowed": false,
         "gameplayAuthority": false
       },
-      "robloxCloudImageEvidence": null
+      "robloxCloudImageEvidence": null,
+      "robloxFirstFrameGroundingEvidence": {
+        "observed": true,
+        "runtimeWorldReady": false,
+        "startupWaitSeconds": 8.18,
+        "basePartCount": 1,
+        "spawnCount": 0,
+        "spawnsInBounds": false,
+        "markerSpawnCount": 0,
+        "spawnGroundingObserved": false,
+        "unsupportedSpawns": 0,
+        "floatingSpawns": 0,
+        "maximumSpawnGroundGap": 0,
+        "meshPartCount": 0,
+        "graphicsEvidenceScope": "ENGINE_SCENE_STRUCTURE_NOT_RENDERED_SCREENSHOT",
+        "finiteWorldBounds": true,
+        "boundsSize": {
+          "x": 2044,
+          "y": 252,
+          "z": 2044
+        },
+        "landmarkCount": 0,
+        "objectiveCount": 0,
+        "terrainPresent": true,
+        "lightingAtmospherePresent": false,
+        "streamingEnabled": false,
+        "scanCapped": false,
+        "worldGeometryPresent": true,
+        "sameLuauExecutionSession": true
+      }
     },
     {
       "gameId": "fantasy-survival",
@@ -45411,7 +45440,7 @@
       "robloxCloudImageEvidence": null
     }
   ],
-  "updatedAt": "2026-10-07T09:51:06.316Z",
+  "updatedAt": "2026-10-07T09:51:25.111Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
