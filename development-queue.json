@@ -2713,8 +2713,8 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-10-02T01:24:10.538Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -2744,28 +2744,28 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-07T05:15:04.720Z",
+      "updatedAt": "2026-10-07T05:21:14.806Z",
       "robloxSourceCommit": "be6b77be052e960f9944e713b44d573e89fd9100",
       "robloxSourceBootstrapPassedAt": "2026-10-07T05:15:04.720Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
-      "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": null,
-      "robloxBuildArtifactIdentity": null,
-      "robloxBuildPassedAt": null,
+      "robloxBuildOrPackagePassed": true,
+      "robloxBuildSourceRevision": "be6b77be052e960f9944e713b44d573e89fd9100",
+      "robloxBuildArtifactIdentity": "sha256:565dfabc8acdccc6a22e28eafb53ff34ae354b297727187e9f9a8393e68a03f3",
+      "robloxBuildPassedAt": "2026-10-07T05:21:14.806Z",
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": false,
-      "robloxBuildPreflightPassedAt": null,
+      "robloxBuildPreflightPassed": true,
+      "robloxBuildPreflightPassedAt": "2026-10-07T05:21:14.806Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "horror-escape-room",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-07T04:48:05.665Z",
-        "sourceRevision": "cddfbda37be15bd8ce93487e53dde67d45587ae9",
-        "artifactIdentity": "sha256:890817c1bc89e800eadd5ed262e333552eb370ccb87f63a9398406629ebdda34",
+        "checkedAt": "2026-10-07T05:21:11.626Z",
+        "sourceRevision": "be6b77be052e960f9944e713b44d573e89fd9100",
+        "artifactIdentity": "sha256:565dfabc8acdccc6a22e28eafb53ff34ae354b297727187e9f9a8393e68a03f3",
         "secondaryOwnerFocus": false,
         "facts": {
           "pass": true,
@@ -2784,8 +2784,8 @@
           "directRoblox": true,
           "concurrentRoblox": true,
           "build": {
-            "sourceRevision": "cddfbda37be15bd8ce93487e53dde67d45587ae9",
-            "artifactIdentity": "sha256:890817c1bc89e800eadd5ed262e333552eb370ccb87f63a9398406629ebdda34",
+            "sourceRevision": "be6b77be052e960f9944e713b44d573e89fd9100",
+            "artifactIdentity": "sha256:565dfabc8acdccc6a22e28eafb53ff34ae354b297727187e9f9a8393e68a03f3",
             "webValidationPassed": false,
             "musicValidationPassed": false,
             "nativeWebValidationPassed": false,
@@ -2801,17 +2801,689 @@
             "model": "llama3.2:1b",
             "decision": "PASS",
             "blockers": [],
-            "note": "No concrete build-stage blockers found."
+            "note": "No concrete build-stage blocker found in BUILD_EVIDENCE."
           }
         ],
         "blockers": [],
         "authority": "roblox-vibe-shared-model-build-preflight"
       },
-      "robloxFoundationF0Passed": false,
-      "robloxFoundationF0PassedAt": null,
-      "robloxFoundationF0Evidence": null,
-      "robloxHeadlessFastMvpPassed": false,
-      "robloxHeadlessFastMvpEvidence": null,
+      "robloxFoundationF0Passed": true,
+      "robloxFoundationF0PassedAt": "2026-10-07T05:21:14.806Z",
+      "robloxFoundationF0Evidence": {
+        "version": 5,
+        "gameId": "horror-escape-room",
+        "platform": "ROBLOX",
+        "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
+        "checkedAt": "2026-10-07T05:21:12.460Z",
+        "sourcePath": "roblox-games/horror-escape-room",
+        "sourceRevision": "be6b77be052e960f9944e713b44d573e89fd9100",
+        "artifactIdentity": "sha256:565dfabc8acdccc6a22e28eafb53ff34ae354b297727187e9f9a8393e68a03f3",
+        "rebuiltArtifactIdentity": "sha256:565dfabc8acdccc6a22e28eafb53ff34ae354b297727187e9f9a8393e68a03f3",
+        "artifactRunId": 37575388704,
+        "buildUpAssetSourceUsageFingerprint": "4f0543c310db57078a15f00852b38911a2d30c4f7e241a646d398cbc2dc7e806",
+        "assetSelectionFingerprint": "93c0a9d6106e7f331c4771f576a8ea28483edc02d8d27826b15980a94e54e1c9",
+        "observedAssetSelectionFingerprint": "93c0a9d6106e7f331c4771f576a8ea28483edc02d8d27826b15980a94e54e1c9",
+        "assetLibraryVersion": 120,
+        "observedAssetLibraryVersion": 120,
+        "nativeLanguageCompilePassed": true,
+        "nativeCompilerVersion": "0.739",
+        "playMode": "COMPETITIVE",
+        "saveExists": true,
+        "multiplayerApplicable": true,
+        "sourcePreflightPassed": true,
+        "f0SourceIntegrityPassed": true,
+        "sourceStartupMarkersPassed": true,
+        "gameStartPassed": false,
+        "serverBootPassed": false,
+        "worldFoundationPassed": false,
+        "characterFoundationPassed": false,
+        "physicsAndMovementPassed": false,
+        "runtimeFoundationPassed": false,
+        "actualRuntimeEvidence": false,
+        "internalReleaseReady": false,
+        "serverClientBoundaryPreflightPassed": true,
+        "remoteSecurityPreflightPassed": true,
+        "mobileControlUiPreflightPassed": true,
+        "coreProgressionMarkersPassed": true,
+        "combatOrRoundMarkersPassed": true,
+        "datastoreContractPassed": true,
+        "multiplayerSyncContractPassed": true,
+        "protectedStatePreserved": true,
+        "exactRevision": true,
+        "gameplayProductReadinessRequired": true,
+        "gameplayProductReadiness": {
+          "version": 1,
+          "gameId": "horror-escape-room",
+          "pass": true,
+          "blockers": [],
+          "requiredCapabilities": [
+            "CORE_GAMEPLAY_STATE",
+            "SESSION_FLOW",
+            "WORLD",
+            "CONTENT_ENTITY",
+            "COMBAT",
+            "ENEMY_AI",
+            "INFECTION",
+            "MULTIPLAYER",
+            "MOBILE_UI",
+            "SAVE",
+            "PROGRESSION"
+          ],
+          "implementedCapabilities": {
+            "CORE_GAMEPLAY_STATE": true,
+            "SESSION_FLOW": true,
+            "WORLD": true,
+            "CONTENT_ENTITY": true,
+            "COMBAT": true,
+            "ENEMY_AI": true,
+            "INFECTION": true,
+            "MULTIPLAYER": true,
+            "MOBILE_UI": true,
+            "SAVE": true,
+            "PROGRESSION": true
+          },
+          "coreLoopTrace": [
+            {
+              "index": 0,
+              "step": "인간4/몬스터4 배정, 빈자리 AI 충원",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI"
+              ],
+              "pass": true
+            },
+            {
+              "index": 1,
+              "step": "인간은 고유 도구·대시·정화로 생존/반격",
+              "capabilities": [
+                "INFECTION"
+              ],
+              "pass": true
+            },
+            {
+              "index": 2,
+              "step": "몬스터는 에너지를 소모하는 명시적 감염 공격으로 인간을 감염",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "INFECTION"
+              ],
+              "pass": true
+            },
+            {
+              "index": 3,
+              "step": "감염된 인간은 몬스터로 전환하고 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "INFECTION"
+              ],
+              "pass": true
+            },
+            {
+              "index": 4,
+              "step": "인간 정화 공격은 몬스터를 라운드에서 제거",
+              "capabilities": [
+                "SESSION_FLOW",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "INFECTION"
+              ],
+              "pass": true
+            },
+            {
+              "index": 5,
+              "step": "한 진영이 0명이 되면 즉시 승패",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": true
+            },
+            {
+              "index": 6,
+              "step": "240초까지 양팀이 남으면 무승부",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": true
+            }
+          ],
+          "signatureSystemTrace": [
+            {
+              "index": 0,
+              "name": "4대4 AI 충원",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI"
+              ],
+              "pass": true
+            },
+            {
+              "index": 1,
+              "name": "감염 전환",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "INFECTION"
+              ],
+              "pass": true
+            },
+            {
+              "index": 2,
+              "name": "인간 정화",
+              "capabilities": [
+                "SESSION_FLOW",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "INFECTION"
+              ],
+              "pass": true
+            },
+            {
+              "index": 3,
+              "name": "확장형 인간 로스터",
+              "capabilities": [
+                "INFECTION"
+              ],
+              "pass": true
+            },
+            {
+              "index": 4,
+              "name": "고전 몬스터 5종",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI"
+              ],
+              "pass": true
+            },
+            {
+              "index": 5,
+              "name": "3맵 순환",
+              "capabilities": [
+                "WORLD"
+              ],
+              "pass": true
+            }
+          ],
+          "placeholderDebt": {
+            "primitiveConstructionCount": 8,
+            "meshConstructionCount": 0,
+            "likelyPrimitiveHeavy": true,
+            "genericScopeHandlerCount": 0,
+            "meaningfulGameplayFunctionCount": 20
+          },
+          "studioQualitySheet": {
+            "Core": "PLAYABLE",
+            "Content": "PLAYABLE",
+            "World": "POLISHED",
+            "Combat": "PLAYABLE",
+            "AI": "PLAYABLE",
+            "Progression": "PLAYABLE",
+            "UI": "POLISHED",
+            "Graphics": "POLISHED",
+            "Motion": "POLISHED",
+            "Audio": "POLISHED",
+            "Mobile": "POLISHED",
+            "Performance": "PLAYABLE",
+            "Runtime": "N/A"
+          },
+          "studioReadiness": {
+            "ai": {
+              "applicable": true,
+              "signalCount": 5,
+              "pass": true
+            },
+            "combatFeel": {
+              "applicable": true,
+              "signalCount": 4,
+              "pass": false
+            },
+            "worldTopology": {
+              "applicable": true,
+              "signalCount": 5,
+              "pass": true
+            },
+            "firstTenMinutes": {
+              "signalCount": 5,
+              "pass": true
+            },
+            "midLateGame": {
+              "applicable": true,
+              "signalCount": 4,
+              "pass": true
+            },
+            "systemConnections": {
+              "rows": [
+                {
+                  "id": "WORLD_TO_CONTENT",
+                  "pass": true
+                }
+              ],
+              "pass": true
+            },
+            "placeholder": {
+              "pass": false,
+              "primitiveConstructionCount": 8,
+              "meshConstructionCount": 0,
+              "likelyPrimitiveHeavy": true,
+              "genericScopeHandlerCount": 0,
+              "meaningfulGameplayFunctionCount": 20
+            },
+            "criticalGaps": [
+              "COMBAT_FEEL_CHAIN",
+              "PRIMARY_PLACEHOLDER_DEBT"
+            ],
+            "f9SourceQualityReady": false
+          },
+          "runtimeRequirements": {
+            "worldRequired": true,
+            "minimumBasePartCount": 5,
+            "spawnRequired": true,
+            "landmarkRequired": true,
+            "objectiveRequired": false,
+            "serverBootRequired": true,
+            "simulationRequired": true,
+            "actualPlayRequired": true
+          },
+          "designFingerprint": "4e26d3363a7bf73a2a6f1926bb5ba83a5f745b1dc9f584b9b23a8adc2c359460",
+          "antiSkeletonPassed": true,
+          "designGenre": "Survival",
+          "sourceGenre": "Survival",
+          "designPlayMode": "COMPETITIVE",
+          "sourcePlayMode": "COMPETITIVE"
+        },
+        "studioQualitySheet": {
+          "Core": "PLAYABLE",
+          "Content": "PLAYABLE",
+          "World": "POLISHED",
+          "Combat": "PLAYABLE",
+          "AI": "PLAYABLE",
+          "Progression": "PLAYABLE",
+          "UI": "POLISHED",
+          "Graphics": "POLISHED",
+          "Motion": "POLISHED",
+          "Audio": "POLISHED",
+          "Mobile": "POLISHED",
+          "Performance": "PLAYABLE",
+          "Runtime": "N/A"
+        },
+        "checks": {
+          "exactSourceRevision": true,
+          "nativeLanguageCompilePassed": true,
+          "exactArtifact": true,
+          "buildUpAssetSourceUsageFingerprint": true,
+          "assetSelectionFingerprint": true,
+          "assetLibraryVersion": true,
+          "projectContract": true,
+          "robloxPolicy": true,
+          "duplicateDeclarationGuard": true,
+          "sourceStartupMarkers": true,
+          "foundationSentinelContract": true,
+          "characterPhysicsGuard": true,
+          "groundContactNotSynthetic": true,
+          "mobileFirst": true,
+          "serverClientBoundary": true,
+          "remoteSecurity": true,
+          "coreProgression": true,
+          "combatOrRound": true,
+          "saveRejoin": true,
+          "multiplayerSync": true,
+          "sessionEndRestart": true,
+          "errorGuards": true,
+          "gameplayProductReadiness": true,
+          "f0SourceIntegrity": true
+        },
+        "pass": true,
+        "state": "PASS",
+        "blockers": [],
+        "authority": "roblox-headless-source-preflight-f0"
+      },
+      "robloxHeadlessFastMvpPassed": true,
+      "robloxHeadlessFastMvpEvidence": {
+        "version": 5,
+        "gameId": "horror-escape-room",
+        "platform": "ROBLOX",
+        "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
+        "checkedAt": "2026-10-07T05:21:12.460Z",
+        "sourcePath": "roblox-games/horror-escape-room",
+        "sourceRevision": "be6b77be052e960f9944e713b44d573e89fd9100",
+        "artifactIdentity": "sha256:565dfabc8acdccc6a22e28eafb53ff34ae354b297727187e9f9a8393e68a03f3",
+        "rebuiltArtifactIdentity": "sha256:565dfabc8acdccc6a22e28eafb53ff34ae354b297727187e9f9a8393e68a03f3",
+        "artifactRunId": 37575388704,
+        "buildUpAssetSourceUsageFingerprint": "4f0543c310db57078a15f00852b38911a2d30c4f7e241a646d398cbc2dc7e806",
+        "assetSelectionFingerprint": "93c0a9d6106e7f331c4771f576a8ea28483edc02d8d27826b15980a94e54e1c9",
+        "observedAssetSelectionFingerprint": "93c0a9d6106e7f331c4771f576a8ea28483edc02d8d27826b15980a94e54e1c9",
+        "assetLibraryVersion": 120,
+        "observedAssetLibraryVersion": 120,
+        "nativeLanguageCompilePassed": true,
+        "nativeCompilerVersion": "0.739",
+        "playMode": "COMPETITIVE",
+        "saveExists": true,
+        "multiplayerApplicable": true,
+        "sourcePreflightPassed": true,
+        "f0SourceIntegrityPassed": true,
+        "sourceStartupMarkersPassed": true,
+        "gameStartPassed": false,
+        "serverBootPassed": false,
+        "worldFoundationPassed": false,
+        "characterFoundationPassed": false,
+        "physicsAndMovementPassed": false,
+        "runtimeFoundationPassed": false,
+        "actualRuntimeEvidence": false,
+        "internalReleaseReady": false,
+        "serverClientBoundaryPreflightPassed": true,
+        "remoteSecurityPreflightPassed": true,
+        "mobileControlUiPreflightPassed": true,
+        "coreProgressionMarkersPassed": true,
+        "combatOrRoundMarkersPassed": true,
+        "datastoreContractPassed": true,
+        "multiplayerSyncContractPassed": true,
+        "protectedStatePreserved": true,
+        "exactRevision": true,
+        "gameplayProductReadinessRequired": true,
+        "gameplayProductReadiness": {
+          "version": 1,
+          "gameId": "horror-escape-room",
+          "pass": true,
+          "blockers": [],
+          "requiredCapabilities": [
+            "CORE_GAMEPLAY_STATE",
+            "SESSION_FLOW",
+            "WORLD",
+            "CONTENT_ENTITY",
+            "COMBAT",
+            "ENEMY_AI",
+            "INFECTION",
+            "MULTIPLAYER",
+            "MOBILE_UI",
+            "SAVE",
+            "PROGRESSION"
+          ],
+          "implementedCapabilities": {
+            "CORE_GAMEPLAY_STATE": true,
+            "SESSION_FLOW": true,
+            "WORLD": true,
+            "CONTENT_ENTITY": true,
+            "COMBAT": true,
+            "ENEMY_AI": true,
+            "INFECTION": true,
+            "MULTIPLAYER": true,
+            "MOBILE_UI": true,
+            "SAVE": true,
+            "PROGRESSION": true
+          },
+          "coreLoopTrace": [
+            {
+              "index": 0,
+              "step": "인간4/몬스터4 배정, 빈자리 AI 충원",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI"
+              ],
+              "pass": true
+            },
+            {
+              "index": 1,
+              "step": "인간은 고유 도구·대시·정화로 생존/반격",
+              "capabilities": [
+                "INFECTION"
+              ],
+              "pass": true
+            },
+            {
+              "index": 2,
+              "step": "몬스터는 에너지를 소모하는 명시적 감염 공격으로 인간을 감염",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "INFECTION"
+              ],
+              "pass": true
+            },
+            {
+              "index": 3,
+              "step": "감염된 인간은 몬스터로 전환하고 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "INFECTION"
+              ],
+              "pass": true
+            },
+            {
+              "index": 4,
+              "step": "인간 정화 공격은 몬스터를 라운드에서 제거",
+              "capabilities": [
+                "SESSION_FLOW",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "INFECTION"
+              ],
+              "pass": true
+            },
+            {
+              "index": 5,
+              "step": "한 진영이 0명이 되면 즉시 승패",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": true
+            },
+            {
+              "index": 6,
+              "step": "240초까지 양팀이 남으면 무승부",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": true
+            }
+          ],
+          "signatureSystemTrace": [
+            {
+              "index": 0,
+              "name": "4대4 AI 충원",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI"
+              ],
+              "pass": true
+            },
+            {
+              "index": 1,
+              "name": "감염 전환",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "INFECTION"
+              ],
+              "pass": true
+            },
+            {
+              "index": 2,
+              "name": "인간 정화",
+              "capabilities": [
+                "SESSION_FLOW",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "INFECTION"
+              ],
+              "pass": true
+            },
+            {
+              "index": 3,
+              "name": "확장형 인간 로스터",
+              "capabilities": [
+                "INFECTION"
+              ],
+              "pass": true
+            },
+            {
+              "index": 4,
+              "name": "고전 몬스터 5종",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI"
+              ],
+              "pass": true
+            },
+            {
+              "index": 5,
+              "name": "3맵 순환",
+              "capabilities": [
+                "WORLD"
+              ],
+              "pass": true
+            }
+          ],
+          "placeholderDebt": {
+            "primitiveConstructionCount": 8,
+            "meshConstructionCount": 0,
+            "likelyPrimitiveHeavy": true,
+            "genericScopeHandlerCount": 0,
+            "meaningfulGameplayFunctionCount": 20
+          },
+          "studioQualitySheet": {
+            "Core": "PLAYABLE",
+            "Content": "PLAYABLE",
+            "World": "POLISHED",
+            "Combat": "PLAYABLE",
+            "AI": "PLAYABLE",
+            "Progression": "PLAYABLE",
+            "UI": "POLISHED",
+            "Graphics": "POLISHED",
+            "Motion": "POLISHED",
+            "Audio": "POLISHED",
+            "Mobile": "POLISHED",
+            "Performance": "PLAYABLE",
+            "Runtime": "N/A"
+          },
+          "studioReadiness": {
+            "ai": {
+              "applicable": true,
+              "signalCount": 5,
+              "pass": true
+            },
+            "combatFeel": {
+              "applicable": true,
+              "signalCount": 4,
+              "pass": false
+            },
+            "worldTopology": {
+              "applicable": true,
+              "signalCount": 5,
+              "pass": true
+            },
+            "firstTenMinutes": {
+              "signalCount": 5,
+              "pass": true
+            },
+            "midLateGame": {
+              "applicable": true,
+              "signalCount": 4,
+              "pass": true
+            },
+            "systemConnections": {
+              "rows": [
+                {
+                  "id": "WORLD_TO_CONTENT",
+                  "pass": true
+                }
+              ],
+              "pass": true
+            },
+            "placeholder": {
+              "pass": false,
+              "primitiveConstructionCount": 8,
+              "meshConstructionCount": 0,
+              "likelyPrimitiveHeavy": true,
+              "genericScopeHandlerCount": 0,
+              "meaningfulGameplayFunctionCount": 20
+            },
+            "criticalGaps": [
+              "COMBAT_FEEL_CHAIN",
+              "PRIMARY_PLACEHOLDER_DEBT"
+            ],
+            "f9SourceQualityReady": false
+          },
+          "runtimeRequirements": {
+            "worldRequired": true,
+            "minimumBasePartCount": 5,
+            "spawnRequired": true,
+            "landmarkRequired": true,
+            "objectiveRequired": false,
+            "serverBootRequired": true,
+            "simulationRequired": true,
+            "actualPlayRequired": true
+          },
+          "designFingerprint": "4e26d3363a7bf73a2a6f1926bb5ba83a5f745b1dc9f584b9b23a8adc2c359460",
+          "antiSkeletonPassed": true,
+          "designGenre": "Survival",
+          "sourceGenre": "Survival",
+          "designPlayMode": "COMPETITIVE",
+          "sourcePlayMode": "COMPETITIVE"
+        },
+        "studioQualitySheet": {
+          "Core": "PLAYABLE",
+          "Content": "PLAYABLE",
+          "World": "POLISHED",
+          "Combat": "PLAYABLE",
+          "AI": "PLAYABLE",
+          "Progression": "PLAYABLE",
+          "UI": "POLISHED",
+          "Graphics": "POLISHED",
+          "Motion": "POLISHED",
+          "Audio": "POLISHED",
+          "Mobile": "POLISHED",
+          "Performance": "PLAYABLE",
+          "Runtime": "N/A"
+        },
+        "checks": {
+          "exactSourceRevision": true,
+          "nativeLanguageCompilePassed": true,
+          "exactArtifact": true,
+          "buildUpAssetSourceUsageFingerprint": true,
+          "assetSelectionFingerprint": true,
+          "assetLibraryVersion": true,
+          "projectContract": true,
+          "robloxPolicy": true,
+          "duplicateDeclarationGuard": true,
+          "sourceStartupMarkers": true,
+          "foundationSentinelContract": true,
+          "characterPhysicsGuard": true,
+          "groundContactNotSynthetic": true,
+          "mobileFirst": true,
+          "serverClientBoundary": true,
+          "remoteSecurity": true,
+          "coreProgression": true,
+          "combatOrRound": true,
+          "saveRejoin": true,
+          "multiplayerSync": true,
+          "sessionEndRestart": true,
+          "errorGuards": true,
+          "gameplayProductReadiness": true,
+          "f0SourceIntegrity": true
+        },
+        "pass": true,
+        "state": "PASS",
+        "blockers": [],
+        "authority": "roblox-headless-source-preflight-f0"
+      },
       "robloxHeadlessFinalReviewPassed": false,
       "robloxRuntimeCandidateEvidence": null,
       "robloxRuntimeFoundationPassed": false,
@@ -2843,13 +3515,13 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
+      "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
+      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
       "routingBlockers": [
-        "roblox-build-package-revalidation-pending"
+        "roblox-runtime-candidate-deploy-pending"
       ],
-      "robloxExactRevisionPassed": false,
+      "robloxExactRevisionPassed": true,
       "robloxMultiplayerQaEvidence": {
         "version": 2,
         "gameId": "horror-escape-room",
@@ -44713,7 +45385,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-07T05:15:52.296Z",
+  "updatedAt": "2026-10-07T05:21:14.806Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
