@@ -12,20 +12,20 @@
   "lastSuccessfulModelCallAt": null,
   "failedPhase": "designer_draft",
   "failedTask": "identity-core",
-  "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
+  "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
+      "calls": 4,
       "successes": 0,
-      "failures": 3,
+      "failures": 4,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 667560,
-      "lastMs": 76137,
+      "totalMs": 743776,
+      "lastMs": 76216,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-07T21:13:04.914Z"
+      "updatedAt": "2026-10-07T21:14:21.131Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-07T21:13:04.914Z"
+  "updatedAt": "2026-10-07T21:14:21.135Z"
 }
