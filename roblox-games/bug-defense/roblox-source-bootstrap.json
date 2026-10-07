@@ -14,12 +14,12 @@
   "existingSourcePreserved": true,
   "gameplayAuthorityChanged": false,
   "serverSourceChanged": false,
-  "foundationRepairApplied": true,
+  "foundationRepairApplied": false,
   "generatedFiles": [
     "shared/GameConfig.luau",
     "client/Game.client.luau"
   ],
-  "generationMode": "EXISTING_SOURCE_FOUNDATION_REPAIR",
+  "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
   "modelUsed": false,
   "modelAttempts": 0,
   "modelContractFailures": [],
@@ -59,10 +59,10 @@
     "bindingVersion": 2,
     "applied": true,
     "source": "company-asset-library.json#baseMaterialLibrary",
-    "libraryVersion": 120,
-    "selectionFingerprint": "53793ca9bd5ef9fcddd9f18c36c0461daf7ae3e1ec2c5ab4130b8738b55f046c",
-    "buildUpAssetSourceUsageFingerprint": "4f0543c310db57078a15f00852b38911a2d30c4f7e241a646d398cbc2dc7e806",
-    "buildUpAssetSourceUsageLibraryVersion": 120,
+    "libraryVersion": 121,
+    "selectionFingerprint": "e59b1471a9d3727dd377a2927e884b4be7c3e94056031498c6014f03dfcd17c9",
+    "buildUpAssetSourceUsageFingerprint": "8a86555dfd6c0792b4244bfea59b644182092bcf9abf9487f506a7806a98a3bf",
+    "buildUpAssetSourceUsageLibraryVersion": 121,
     "selectedSourceContentHashes": [
       {
         "source": "company-asset-library.json#baseMaterialLibrary",
@@ -573,15 +573,15 @@
   "studioAssetPromotionEligible": false,
   "implementationNotes": [
     "existing Roblox gameplay source preserved",
-    "native foundation/input/runtime readiness scaffolding repaired without changing gameplay balance save schema or network authority",
+    "company library Studio asset binding updated in existing config and client presentation",
     "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
   ],
-  "buildUpDirectiveId": "bug-defense-build-up-g17-1c57577e8ab7",
-  "buildUpGeneration": 17,
+  "buildUpDirectiveId": "bug-defense-build-up-g18-99efb8fe1ea8",
+  "buildUpGeneration": 18,
   "buildUpGoal": "곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
-  "buildUpDirectiveFingerprint": "1c57577e8ab763690a1eaa3b2415d6f440a9f624d3b11d597b5d8a833839383a",
+  "buildUpDirectiveFingerprint": "99efb8fe1ea8f1c28b6c223a54be2643e82b7f30dac32000f12fe039f3d06398",
   "buildUpDirectiveConsumed": true,
   "buildUpDirectiveCompletionClaim": false,
   "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
-  "createdAt": "2026-10-07T05:20:27.767Z"
+  "createdAt": "2026-10-07T13:37:09.720Z"
 }
