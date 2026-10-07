@@ -14,12 +14,12 @@
   "existingSourcePreserved": true,
   "gameplayAuthorityChanged": false,
   "serverSourceChanged": false,
-  "foundationRepairApplied": false,
+  "foundationRepairApplied": true,
   "generatedFiles": [
     "shared/GameConfig.luau",
     "client/Game.client.luau"
   ],
-  "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
+  "generationMode": "EXISTING_SOURCE_FOUNDATION_REPAIR",
   "modelUsed": false,
   "modelAttempts": 0,
   "modelContractFailures": [],
@@ -565,15 +565,15 @@
   "studioAssetPromotionEligible": false,
   "implementationNotes": [
     "existing Roblox gameplay source preserved",
-    "company library Studio asset binding updated in existing config and client presentation",
+    "native foundation/input/runtime readiness scaffolding repaired without changing gameplay balance save schema or network authority",
     "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
   ],
-  "buildUpDirectiveId": "bug-defense-build-up-g14-c345c6c0d99e",
-  "buildUpGeneration": 14,
+  "buildUpDirectiveId": "bug-defense-build-up-g15-30634dfa541d",
+  "buildUpGeneration": 15,
   "buildUpGoal": "곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
-  "buildUpDirectiveFingerprint": "c345c6c0d99eb71c7a1bf4d3d405b4c4ca052c9cc16429337fd8936be557e588",
+  "buildUpDirectiveFingerprint": "30634dfa541dbdd59ce32864604f135f618f194a2ca5ab22a744e329b8b68293",
   "buildUpDirectiveConsumed": true,
   "buildUpDirectiveCompletionClaim": false,
   "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
-  "createdAt": "2026-10-07T02:56:37.789Z"
+  "createdAt": "2026-10-07T03:21:06.769Z"
 }
