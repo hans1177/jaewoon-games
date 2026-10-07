@@ -86,7 +86,7 @@ const STORY_LAB_1_WALLS=[
 const STORY_LAB_2={w:2480,h:1360,ladder:{x:168,y:680},boss:{x:1260,y:680},shutter:{x:2040,y:0,w:60,h:1360},sensor:{x:2264,y:488},corpse:{x:2260,y:680},report:{x:2264,y:880}};
 const LAVA_POOLS=[{x:7400,y:3450,r:120},{x:7950,y:4050,r:140},{x:8650,y:3320,r:105},{x:9300,y:3950,r:145},{x:9850,y:3500,r:115},{x:10650,y:4350,r:135},{x:11400,y:3650,r:125},{x:12700,y:4350,r:150}];
 const recipes=[
-{id:'bench',name:'제작대',where:'hand',cost:{wood:10,stone:6,fiber:4},desc:'상위 제작을 위한 기본 제작대',kind:'structure'},
+{id:'bench',name:'제작대',where:'hand',cost:{wood:3,stone:2,fiber:2},desc:'상위 제작을 위한 기본 제작대',kind:'structure'},
 {id:'storage-chest',name:'상자',where:'hand',cost:{wood:10},desc:'맨손 제작 · 청사진으로 위치를 정한 뒤 배치 · 아이템 보관',kind:'structure'},
 {id:'wood-wall',name:'나무벽',where:'hand',cost:{wood:3},desc:'맨손 제작 · 청사진 배치 · 3번 클릭하면 철벽/금벽 업그레이드',kind:'structure'},
 {id:'wood-door',name:'나무문',where:'hand',cost:{wood:6,fiber:2},desc:'맨손 제작 · 청사진으로 위치를 정한 뒤 배치 · 두 번 눌러 열고 닫기',kind:'structure'},
@@ -108,9 +108,9 @@ const recipes=[
 {id:'bandage',name:'섬유붕대',where:'hand',cost:{fiber:6},desc:'사용 시 체력 35 회복',kind:'consumable',heal:35},
 {id:'flag',name:'깃발',where:'hand',cost:{wood:5,fiber:4},desc:'설치한 위치가 지도에 표시됨 · 여러 개 설치 가능',kind:'structure'},
 {id:'torch',name:'마력 횃불',where:'hand',cost:{wood:4,stone:1,fiber:2},desc:'왼손 장비 · 내구도 5분 · 동굴 시야 확보',kind:'torch'},
-{id:'stone-sword',name:'돌검',where:'bench',cost:{wood:5,stone:9,fiber:2},desc:'공격력 18',kind:'weapon',power:18,range:75,cooldown:380},
-{id:'stone-axe',name:'돌도끼',where:'bench',cost:{wood:6,stone:8,fiber:3},desc:'나무 채집량 3배',kind:'tool',target:'tree',mult:3},
-{id:'stone-pick',name:'돌곡괭이',where:'bench',cost:{wood:6,stone:10,fiber:3},desc:'돌·철 채집량 3배',kind:'tool',target:'rock',mult:3},
+{id:'stone-sword',name:'돌검',where:'bench',cost:{wood:2,stone:3,fiber:1},desc:'공격력 18',kind:'weapon',power:18,range:75,cooldown:380},
+{id:'stone-axe',name:'돌도끼',where:'bench',cost:{wood:2,stone:3,fiber:1},desc:'나무 채집량 3배',kind:'tool',target:'tree',mult:3},
+{id:'stone-pick',name:'돌곡괭이',where:'bench',cost:{wood:2,stone:3,fiber:1},desc:'돌·철 채집량 3배',kind:'tool',target:'rock',mult:3},
 {id:'fiber-knife',name:'섬유칼',where:'bench',cost:{wood:4,stone:5,fiber:8},desc:'섬유 채집량 3배',kind:'tool',target:'fiber',mult:3},
 {id:'rune-shield',name:'룬 방패',where:'bench',cost:{wood:8,stone:12,fiber:6},desc:'받는 피해 30% 감소',kind:'armor',reduce:.30},
 {id:'forest-armor',name:'숲 갑옷',where:'bench',cost:{wood:5,stone:7,fiber:14},desc:'최대 체력 +40',kind:'armor',maxHp:40},
