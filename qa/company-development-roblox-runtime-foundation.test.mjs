@@ -163,6 +163,30 @@ test('foundation sentinel rejects checkpoints carried over from an older publish
 });
 
 
+test('local F0 artifact never enters runtime or cloud-image validation before private candidate deployment',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+  const start=workflow.indexOf('            if(localPreF9Candidate){');
+  const cloudImage=workflow.indexOf("            if(engineProbe?.imageEvidence?.imageContentPassed!==true){",start);
+  assert.ok(start>0&&cloudImage>start);
+  const guard=workflow.slice(start,cloudImage);
+  assert.match(guard,/ROBLOX_LOCAL_F0_STATE_REPAIRED_TO_PRIVATE_DEPLOY=/);
+  assert.match(guard,/ROBLOX_LOCAL_F0_WAITING_PRIVATE_DEPLOY=/);
+  assert.match(guard,/item\.currentStep='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'/);
+  assert.match(guard,/item\.robloxFailureStage='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'/);
+  assert.match(guard,/item\.robloxFailureSignature='ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING'/);
+  assert.match(guard,/item\.routingBlockers=\['roblox-runtime-candidate-deploy-pending'\]/);
+  assert.match(guard,/item\.robloxCloudImageEvidence=null/);
+  assert.match(guard,/localF0PrivateDeployIds\.push\(item\.gameId\)/);
+  assert.match(guard,/pending\+\+;\s*continue;/);
+  assert.match(workflow,/roblox-local-f0-private-deploy-ids/);
+  assert.match(workflow,/Resume repaired local F0 candidates through canonical Roblox runtime/);
+  assert.match(workflow,/gh workflow run company-development-roblox-runtime\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id"/);
+  assert.match(workflow,/ROBLOX_LOCAL_F0_RUNTIME_RESUME=DEDUPED_CURRENT_MAIN:/);
+  assert.match(workflow,/String\(run\.head_sha\|\|''\)===currentMain/);
+  assert.ok(workflow.indexOf('if(localPreF9Candidate){')<workflow.indexOf("if(engineProbe?.persistentFailure===true){"));
+});
+
+
 test('Open Cloud image check records thumbnail metadata as visual sanity without claiming runtime screenshot proof',async()=>{
  const ok=await probeRobloxOpenCloudImageEvidence({
   universeId:'1',apiKey:'k',networkRetryAttempts:1,networkRetryDelayMs:0,
@@ -1153,6 +1177,10 @@ test('Open Cloud engine reuses the same Luau session to capture map and world ev
   assert.equal(result.worldEvidence.streamingEnabled,true);
   const body=JSON.parse(calls[0].init.body);
   assert.match(body.script,/JAEWOON_OPEN_CLOUD_WORLD_BOUNDS_SIZE/);
+  assert.match(body.script,/startupWaitDeadline=startupWaitStarted\+8/);
+  assert.match(body.script,/while not runtimeWorldReady\(\) and os\.clock\(\)<startupWaitDeadline do task\.wait\(0\.25\) end/);
+  assert.match(body.script,/JAEWOON_OPEN_CLOUD_WORLD_RUNTIME_READY/);
+  assert.match(body.script,/JAEWOON_OPEN_CLOUD_WORLD_STARTUP_WAIT_SECONDS/);
   assert.match(body.script,/workspace:GetDescendants\(\)/);
   assert.match(body.script,/item:IsA\("SpawnLocation"\) or item:GetAttribute\("SpawnMarkerOnly"\)==true/);
   assert.match(body.script,/not isSpawn and item.CanCollide/);

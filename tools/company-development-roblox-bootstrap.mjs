@@ -1026,7 +1026,23 @@ ${frameVar}:SetAttribute("StudioAssetAtoms", table.concat(studioAssetFamily("UI"
 }
 
 function foundationCharacterSource(name,spawn){
-  return `local function ${name}(character)
+  return `-- native-foundation-spawn-grounding-v2
+${spawn}.Anchored = true
+${spawn}.CanCollide = true
+local nativeFoundationGroundingParams = RaycastParams.new()
+nativeFoundationGroundingParams.FilterType = Enum.RaycastFilterType.Exclude
+nativeFoundationGroundingParams.FilterDescendantsInstances = {${spawn}}
+nativeFoundationGroundingParams.RespectCanCollide = true
+nativeFoundationGroundingParams.IgnoreWater = true
+local nativeFoundationGroundingHit = workspace:Raycast(${spawn}.Position + Vector3.new(0, 64, 0), Vector3.new(0, -576, 0), nativeFoundationGroundingParams)
+if nativeFoundationGroundingHit and nativeFoundationGroundingHit.Normal.Y >= 0.55 then
+  ${spawn}.Position = Vector3.new(${spawn}.Position.X, nativeFoundationGroundingHit.Position.Y + ${spawn}.Size.Y * 0.5 + 0.05, ${spawn}.Position.Z)
+  ${spawn}:SetAttribute("FoundationSpawnGrounded", true)
+else
+  ${spawn}:SetAttribute("FoundationSpawnGrounded", false)
+end
+
+local function ${name}(character)
   local humanoid = character:WaitForChild("Humanoid", 10)
   local rootPart = character:WaitForChild("HumanoidRootPart", 10)
   if not humanoid or not rootPart then character:SetAttribute("FoundationFailure", "CHARACTER_FOUNDATION_FAILURE"); return end
@@ -1055,7 +1071,7 @@ function foundationCharacterSource(name,spawn){
   -- The existing spawn rests on verified world geometry; it cannot be its own ground proof.
   local spawnHit = workspace:Raycast(${spawn}.Position + Vector3.new(0, 64, 0), Vector3.new(0, -576, 0), params)
   if spawnHit and spawnHit.Normal.Y >= 0.55 then
-    ${spawn}.Position = Vector3.new(${spawn}.Position.X, spawnHit.Position.Y - ${spawn}.Size.Y * 0.5 + 0.05, ${spawn}.Position.Z)
+    ${spawn}.Position = Vector3.new(${spawn}.Position.X, spawnHit.Position.Y + ${spawn}.Size.Y * 0.5 + 0.05, ${spawn}.Position.Z)
   end
   local target = groundHit.Position + Vector3.new(0, clearance + 0.1, 0)
   character:PivotTo(character:GetPivot() + (target - rootPart.Position))
@@ -1178,7 +1194,8 @@ game:BindToClose(function() end)
 `;
     }
 
-    // Upgrade only the known faulty foundation owner, preserving custom gameplay functions.
+    // Upgrade the managed native-foundation owner in place while preserving custom gameplay outside it.
+    afterServer=afterServer.replace(/-- native-foundation-spawn-grounding-v2\n[\s\S]*?(?=local function bind(?:Native)?FoundationCharacter)/g,'');
     afterServer=afterServer.replace(/local function (bind(?:Native)?FoundationCharacter)\(character\)\n[\s\S]*?\nend(?=\s*local function bind(?:Native)?FoundationPlayer)/g,(body,name)=>{
       const legacy=`local function ${name}(character)
   local humanoid = character:WaitForChild("Humanoid")
@@ -1189,7 +1206,12 @@ game:BindToClose(function() end)
   character:SetAttribute("GROUND_CONTACT", groundHit ~= nil)
   character:SetAttribute("MOVEMENT_CONFIRMED", true)
 end`;
-      if(body.replace(/\s+/g,' ').trim()!==legacy.replace(/\s+/g,' ').trim())return body;
+      const normalized=body.replace(/\s+/g,' ').trim();
+      const legacyManaged=normalized===legacy.replace(/\s+/g,' ').trim();
+      const currentManaged=/NativeFoundationGroundingVersion/.test(body)
+        &&/local spawnHit = workspace:Raycast/.test(body)
+        &&/SPAWN_GROUND_MISSING/.test(body);
+      if(!legacyManaged&&!currentManaged)return body;
       return foundationCharacterSource(name,name==='bindNativeFoundationCharacter'?'nativeFoundationSpawn':'foundationSpawn');
     });
 

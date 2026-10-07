@@ -1081,3 +1081,15 @@ test('verified learning refresh debt coalesces into one exact existing batch swe
   assert.doesNotMatch(block,/while IFS= read -r game_id/);
   assert.doesNotMatch(block,/-f game_id=/);
 });
+
+
+test('foundation repair grounds managed spawn before player binding and corrects spawn center math',()=>{
+  const bootstrap=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  assert.match(bootstrap,/native-foundation-spawn-grounding-v2/);
+  assert.match(bootstrap,/nativeFoundationGroundingHit\.Position\.Y \+ \$\{spawn\}\.Size\.Y \* 0\.5 \+ 0\.05/);
+  assert.match(bootstrap,/spawnHit\.Position\.Y \+ \$\{spawn\}\.Size\.Y \* 0\.5 \+ 0\.05/);
+  assert.doesNotMatch(bootstrap,/spawnHit\.Position\.Y - \$\{spawn\}\.Size\.Y \* 0\.5/);
+  assert.match(bootstrap,/FoundationSpawnGrounded/);
+  assert.match(bootstrap,/const currentManaged=\/NativeFoundationGroundingVersion\//);
+  assert.match(bootstrap,/if\(!legacyManaged&&!currentManaged\)return body/);
+});
