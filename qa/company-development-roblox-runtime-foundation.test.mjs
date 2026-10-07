@@ -399,6 +399,32 @@ test('Open Cloud engine probe retries transient HTTP throttling without weakenin
  assert.equal(persistentCalls,3);
 });
 
+test('Open Cloud engine task polling is fail-closed within a bounded wall clock',async()=>{
+ let calls=0;
+ const result=await probeRobloxOpenCloudEngine({
+  universeId:'1',placeId:'2',versionNumber:20,apiKey:'k',
+  pollIntervalMs:0,maxPolls:120,pollWallTimeoutMs:50,
+  networkRetryAttempts:1,networkRetryDelayMs:0,
+  fetchImpl:async()=>{
+   calls++;
+   if(calls===1)return {ok:true,status:200,text:async()=>JSON.stringify({path:'universes/1/places/2/versions/20/luau-execution-sessions/s/tasks/t',state:'PROCESSING'})};
+   await new Promise(resolve=>setTimeout(resolve,15));
+   return {ok:true,status:200,text:async()=>JSON.stringify({state:'PROCESSING'})};
+  },
+ });
+ assert.equal(result.engineExecuted,false);
+ assert.equal(result.state,'PROCESSING');
+ assert.equal(result.pollWallTimedOut,true);
+ assert.equal(result.pollWallTimeoutMs,50);
+ assert.ok(result.pollCount>0&&result.pollCount<120);
+ assert.ok(result.pollElapsedMs>=50);
+ const source=fs.readFileSync('tools/company-development-roblox-runtime-foundation.mjs','utf8');
+ assert.match(source,/pollWallTimeoutMs=90000/);
+ assert.match(source,/const pollDeadlineAt=pollStartedAt\+pollWallMs/);
+ assert.match(source,/const taskPollRetryAttempts=Math\.max\(1,Math\.min\(2,Number\(networkRetryAttempts\)\|\|4\)\)/);
+ assert.match(source,/requestTimeoutMs:Math\.min\(taskPollRequestTimeoutMs,Math\.max\(1000,pollDeadlineAt-Date\.now\(\)\)\)/);
+});
+
 test('Open Cloud engine probe binds exact place version without granting runtime acceptance',async()=>{
  const calls=[];
  const responses=[
