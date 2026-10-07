@@ -4424,6 +4424,7 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.uiSubsystemVolumeActionLimitPerSubsystem,256);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maxVolumeWorklistActions,16384);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.taskReferenceOverlayWorklistLimit,8192);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.supplyDecisionSummaryActionLimit,2048);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction,512);
   assert.deepEqual(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maintenanceListLimits,{
     semanticDuplicateReviewGroups:512,
@@ -4741,6 +4742,7 @@ test('catalog-driven company asset registry synchronization is persistent only w
     assert.equal(first.registry.internalAssetLibraryAutomation.uiSubsystemVolumeActionLimitPerSubsystem,256);
     assert.equal(first.registry.internalAssetLibraryAutomation.maxVolumeWorklistActions,16384);
     assert.equal(first.registry.internalAssetLibraryAutomation.taskReferenceOverlayWorklistLimit,8192);
+    assert.equal(first.registry.internalAssetLibraryAutomation.supplyDecisionSummaryActionLimit,2048);
     assert.equal(first.registry.internalAssetLibraryAutomation.freeSourceCandidateLimitPerAction,512);
     assert.deepEqual(first.registry.internalAssetLibraryAutomation.maintenanceListLimits,{
       semanticDuplicateReviewGroups:512,

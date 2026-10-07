@@ -1634,6 +1634,7 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
   uiSubsystemVolumeActionLimitPerSubsystem:256,
   maxVolumeWorklistActions:16384,
   taskReferenceOverlayWorklistLimit:8192,
+  supplyDecisionSummaryActionLimit:2048,
   maintenanceListLimits:Object.freeze({
     semanticDuplicateReviewGroups:512,
     donorCandidates:1024,
@@ -2424,6 +2425,7 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     uiSubsystemVolumeActionLimitPerSubsystem:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.uiSubsystemVolumeActionLimitPerSubsystem,
     maxVolumeWorklistActions:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maxVolumeWorklistActions,
     taskReferenceOverlayWorklistLimit:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.taskReferenceOverlayWorklistLimit,
+    supplyDecisionSummaryActionLimit:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.supplyDecisionSummaryActionLimit,
     maintenanceListLimits:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maintenanceListLimits,
     eligibleFreeSourceCount:eligibleFreeSources.length,
     freeSourceCandidateLimitPerAction:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction,
