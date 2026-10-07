@@ -3,118 +3,208 @@
   "gameId": "horror-escape-room",
   "date": "2026-10-08",
   "seedId": "OWNER-DESIGN-HORROR-ESCAPE-ROOM",
-  "fingerprint": "18bbb876e5b1286b1714bd002c695153c6e51b63b7fdd645cbfb292836644c0e",
+  "fingerprint": "088199e6aff9298b70713c9bef24c179764f17a7b0dae23f0697b7d966f620a5",
   "policyDigest": "223f74bb658bbab4921a06b74e652d4e7fc27d174188c3b4b3488e9b3d026f6f",
-  "engineDigest": "723e2687bc264a6d89930fd69e4069aea7c3de0c3a1ac1cd73a5392ee9cc5971",
+  "engineDigest": "cc088ad7a8676ded2864387d1c00a39b024f9e9a4e72f50308346406aea805a9",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::b0562ba8bb121c6f29db549cd378dd345fb1669cdccd5e5f6382f3175e914676:identity,playerFantasy,coreFun": {
-      "identity": "인간 4명과 몬스터 4명이 시작하고, 몬스터의 명시적 감염 공격에 맞은 인간이 즉시 몬스터로 전환돼 판세가 계속 뒤집히는 8인 감염 추격전.",
-      "playerFantasy": "4대4 감염전에서 실시간으로 변하는 인원 구성으로, 감염 공격과 정화의 결과를 통해 역할을 재설정하는 플레이어 역할. 감염 스킬을 가진 몬스터와 정화 공격을 통해 인간을 전환시키는 전략적 선택을 가능하게 한다.",
-      "coreFun": "감염 공격과 정화의 결과로 인해 인원 구성이 실시간으로 바뀌며, 감염 스킬을 가진 몬스터와 정화 공격을 통해 인간을 전환시키는 전략적 선택을 가능하게 한다. 감염된 인간은 몬스터로 전환하고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격을 수행한다. 감염 전환과 정화는 실시간으로 이루어지며, 감염된 인간은 직업별 고유 감염 스킬을 사용한다."
-    },
-    "local_authoring_parts::17110d913d0eff23c0dc2c34185a8b2082fcd3cb5aa8a33347d7dfd45168c548:coreLoop": {
-      "coreLoop": [
-        "인간4/몬스터4 배정, 빈자리 AI 충원",
-        "인간은 고유 도구·대시·정화로 생존/반격",
-        "몬스터는 에너지를 소모하는 명시적 감염 공격으로 인간을 감염",
-        "감염된 인간은 몬스터로 전환하고 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격",
-        "인간 정화 공격은 몬스터를 라운드에서 제거",
-        "한 진영이 0명이 되면 즉시 승패",
-        "240초까지 양팀이 남으면 무승부"
-      ]
-    },
-    "local_authoring_parts::17110d913d0eff23c0dc2c34185a8b2082fcd3cb5aa8a33347d7dfd45168c548:signatureSystems": {
-      "signatureSystems": [
-        {
-          "name": "4대4 AI 충원",
-          "purpose": "논리 인원 8명, 인간4/몬스터4를 실제 플레이어+AI로 항상 채운다.",
-          "playerChoice": "AI 충원 여부를 선택하여 인원 구성이 실시간으로 바뀌며, 방금 전 동료가 다음 순간 고유 감염 스킬을 가진 몬스터로 나를 쫓는 긴장감을 생성한다."
-        },
-        {
-          "name": "감염 전환",
-          "purpose": "몬스터의 명시적 서버 권한 감염 공격이 적중한 인간이 탈락하지 않고 몬스터로 전환하며 인간 직업별 감염 스킬을 얻는다.",
-          "playerChoice": "감염 공격이 적중되면 인간이 몬스터로 전환하고, 직업별 고유 감염 스킬을 사용하여 옛 팀 추격을 시작한다."
-        }
-      ]
-    },
-    "local_authoring_parts::b0562ba8bb121c6f29db549cd378dd345fb1669cdccd5e5f6382f3175e914676:coreLoop,signatureSystems": {
-      "coreLoop": [
-        "인간4/몬스터4 배정, 빈자리 AI 충원",
-        "인간은 고유 도구·대시·정화로 생존/반격",
-        "몬스터는 에너지를 소모하는 명시적 감염 공격으로 인간을 감염",
-        "감염된 인간은 몬스터로 전환하고 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격",
-        "인간 정화 공격은 몬스터를 라운드에서 제거",
-        "한 진영이 0명이 되면 즉시 승패",
-        "240초까지 양팀이 남으면 무승부"
-      ],
-      "signatureSystems": [
-        {
-          "name": "4대4 AI 충원",
-          "purpose": "논리 인원 8명, 인간4/몬스터4를 실제 플레이어+AI로 항상 채운다.",
-          "playerChoice": "AI 충원 여부를 선택하여 인원 구성이 실시간으로 바뀌며, 방금 전 동료가 다음 순간 고유 감염 스킬을 가진 몬스터로 나를 쫓는 긴장감을 생성한다."
-        },
-        {
-          "name": "감염 전환",
-          "purpose": "몬스터의 명시적 서버 권한 감염 공격이 적중한 인간이 탈락하지 않고 몬스터로 전환하며 인간 직업별 감염 스킬을 얻는다.",
-          "playerChoice": "감염 공격이 적중되면 인간이 몬스터로 전환하고, 직업별 고유 감염 스킬을 사용하여 옛 팀 추격을 시작한다."
-        }
-      ]
-    },
-    "designer_draft_slices::identity-core": {
-      "identity": "인간 4명과 몬스터 4명이 시작하고, 몬스터의 명시적 감염 공격에 맞은 인간이 즉시 몬스터로 전환돼 판세가 계속 뒤집히는 8인 감염 추격전.",
-      "playerFantasy": "4대4 감염전에서 실시간으로 변하는 인원 구성으로, 감염 공격과 정화의 결과를 통해 역할을 재설정하는 플레이어 역할. 감염 스킬을 가진 몬스터와 정화 공격을 통해 인간을 전환시키는 전략적 선택을 가능하게 한다.",
-      "coreFun": "감염 공격과 정화의 결과로 인해 인원 구성이 실시간으로 바뀌며, 감염 스킬을 가진 몬스터와 정화 공격을 통해 인간을 전환시키는 전략적 선택을 가능하게 한다. 감염된 인간은 몬스터로 전환하고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격을 수행한다. 감염 전환과 정화는 실시간으로 이루어지며, 감염된 인간은 직업별 고유 감염 스킬을 사용한다.",
-      "coreLoop": [
-        "인간4/몬스터4 배정, 빈자리 AI 충원",
-        "인간은 고유 도구·대시·정화로 생존/반격",
-        "몬스터는 에너지를 소모하는 명시적 감염 공격으로 인간을 감염",
-        "감염된 인간은 몬스터로 전환하고 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격",
-        "인간 정화 공격은 몬스터를 라운드에서 제거",
-        "한 진영이 0명이 되면 즉시 승패",
-        "240초까지 양팀이 남으면 무승부"
-      ],
-      "signatureSystems": [
-        {
-          "name": "4대4 AI 충원",
-          "purpose": "논리 인원 8명, 인간4/몬스터4를 실제 플레이어+AI로 항상 채운다.",
-          "playerChoice": "AI 충원 여부를 선택하여 인원 구성이 실시간으로 바뀌며, 방금 전 동료가 다음 순간 고유 감염 스킬을 가진 몬스터로 나를 쫓는 긴장감을 생성한다."
-        },
-        {
-          "name": "감염 전환",
-          "purpose": "몬스터의 명시적 서버 권한 감염 공격이 적중한 인간이 탈락하지 않고 몬스터로 전환하며 인간 직업별 감염 스킬을 얻는다.",
-          "playerChoice": "감염 공격이 적중되면 인간이 몬스터로 전환하고, 직업별 고유 감염 스킬을 사용하여 옛 팀 추격을 시작한다."
-        }
-      ]
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
-      "failures": 2,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 422944,
-      "lastMs": 26600,
-      "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-07T20:13:02.664Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-07T20:05:59.714Z",
-  "updatedAt": "2026-10-07T20:13:02.666Z",
-  "localAuthoringSplits": {
-    "b0562ba8bb121c6f29db549cd378dd345fb1669cdccd5e5f6382f3175e914676": true,
-    "17110d913d0eff23c0dc2c34185a8b2082fcd3cb5aa8a33347d7dfd45168c548": true
-  },
-  "lastSuccessfulModelCallAt": "2026-10-07T20:13:02.665Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
-  "effectiveDesignerModel": "ollama:qwen3:1.7b",
-  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
+  "createdAt": "2026-10-07T20:25:07.525Z",
+  "updatedAt": "2026-10-07T20:25:07.526Z",
+  "assetLibraryContext": {
+    "source": "company-asset-library.json",
+    "status": "AVAILABLE",
+    "version": 121,
+    "sha256": "5b9e5a2facc4d7a8bf5cc66605645f9355eb102fd7af1f09d98206ade99d2f9c",
+    "inventoryCount": 717,
+    "candidateSummaryOnly": true,
+    "auditScoreIsNotRuntimeQuality": true,
+    "productionVerificationGranted": false,
+    "platforms": {
+      "WEB": {
+        "evaluatedAssetCount": 717,
+        "eligibleAssetCount": 713,
+        "requiredFamilies": [
+          "AUDIO",
+          "CREATURE",
+          "MOTION",
+          "VFX",
+          "WEAPON"
+        ],
+        "candidates": [
+          {
+            "family": "AUDIO",
+            "action": "AUTHOR",
+            "assetId": null
+          },
+          {
+            "family": "CREATURE",
+            "action": "ADAPT",
+            "assetId": "roblox-insect-spider-hd",
+            "applicationMode": "STYLE_ADAPT"
+          },
+          {
+            "family": "MOTION",
+            "action": "ADAPT",
+            "assetId": "roblox-common-motion-bed-lie-down",
+            "applicationMode": "STYLE_ADAPT"
+          },
+          {
+            "family": "VFX",
+            "action": "ADAPT",
+            "assetId": "roblox-common-vfx-attack-telegraph-pulse",
+            "applicationMode": "STYLE_ADAPT"
+          },
+          {
+            "family": "WEAPON",
+            "action": "ADAPT",
+            "assetId": "roblox-common-tool-axe",
+            "applicationMode": "STYLE_ADAPT"
+          }
+        ]
+      },
+      "UNITY": {
+        "evaluatedAssetCount": 717,
+        "eligibleAssetCount": 713,
+        "requiredFamilies": [
+          "AUDIO",
+          "CREATURE",
+          "MOTION",
+          "VFX",
+          "WEAPON"
+        ],
+        "candidates": [
+          {
+            "family": "AUDIO",
+            "action": "AUTHOR",
+            "assetId": null
+          },
+          {
+            "family": "CREATURE",
+            "action": "ADAPT",
+            "assetId": "roblox-insect-spider-hd",
+            "applicationMode": "STYLE_ADAPT"
+          },
+          {
+            "family": "MOTION",
+            "action": "ADAPT",
+            "assetId": "roblox-common-motion-bed-lie-down",
+            "applicationMode": "STYLE_ADAPT"
+          },
+          {
+            "family": "VFX",
+            "action": "ADAPT",
+            "assetId": "roblox-common-vfx-attack-telegraph-pulse",
+            "applicationMode": "STYLE_ADAPT"
+          },
+          {
+            "family": "WEAPON",
+            "action": "ADAPT",
+            "assetId": "roblox-common-tool-axe",
+            "applicationMode": "STYLE_ADAPT"
+          }
+        ]
+      },
+      "ROBLOX": {
+        "evaluatedAssetCount": 717,
+        "eligibleAssetCount": 713,
+        "requiredFamilies": [
+          "AUDIO",
+          "CREATURE",
+          "MOTION",
+          "VFX",
+          "WEAPON"
+        ],
+        "candidates": [
+          {
+            "family": "AUDIO",
+            "action": "AUTHOR",
+            "assetId": null
+          },
+          {
+            "family": "CREATURE",
+            "action": "ADAPT",
+            "assetId": "roblox-insect-spider-hd",
+            "applicationMode": "STYLE_ADAPT"
+          },
+          {
+            "family": "MOTION",
+            "action": "USE",
+            "assetId": "roblox-common-motion-bed-lie-down",
+            "applicationMode": "USE_AS_IS"
+          },
+          {
+            "family": "VFX",
+            "action": "USE",
+            "assetId": "roblox-common-vfx-attack-telegraph-pulse",
+            "applicationMode": "USE_AS_IS"
+          },
+          {
+            "family": "WEAPON",
+            "action": "USE",
+            "assetId": "roblox-common-tool-axe",
+            "applicationMode": "USE_AS_IS"
+          }
+        ]
+      }
+    },
+    "assetFacts": {
+      "roblox-insect-spider-hd": {
+        "family": "CREATURE",
+        "role": "INSECT_ARACHNID",
+        "sourcePath": "/assets/roblox/world-ghosts/native/spider/spider.png",
+        "platform": "SHARED_NATIVE_SOURCE",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 909.6,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "GLB_VALIDATED_NATIVE_RUNTIME_PENDING",
+        "productionVerified": false
+      },
+      "roblox-common-motion-bed-lie-down": {
+        "family": "MOTION",
+        "role": "BED_LIE_DOWN",
+        "sourcePath": "/assets/roblox/common-motion-v1/RobloxCommonMotion.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 917.1,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
+      },
+      "roblox-common-vfx-attack-telegraph-pulse": {
+        "family": "VFX",
+        "role": "ATTACK_TELEGRAPH_PRESENTATION",
+        "sourcePath": "/assets/roblox/common-vfx-v1/RobloxCommonVFX.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 913.1,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
+      },
+      "roblox-common-tool-axe": {
+        "family": "WEAPON",
+        "role": "AXE",
+        "sourcePath": "/assets/roblox/common-tools-v1/RobloxCommonTools.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 888,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
+      }
+    }
+  }
 }
