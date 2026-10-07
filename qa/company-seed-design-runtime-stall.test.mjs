@@ -239,7 +239,7 @@ test('design engine expires checkpointed 429 quarantine at provider retry window
 });
 
 
-test('missing designs are automatically enrolled and homepage v4 intake is persisted before fanout',()=>{
+test('active canonical GAME_SEED intake is persisted before fanout without homepage coupling',()=>{
   const triggerSection=workflow.slice(0,workflow.indexOf('\npermissions:'));
   assert.ok(triggerSection.includes("- 'tools/company-all-games-design-reset.mjs'"));
   assert.ok(triggerSection.includes("- 'game-catalog.json'"));
@@ -251,10 +251,11 @@ test('missing designs are automatically enrolled and homepage v4 intake is persi
   assert.match(workflow,/GIT_INDEX_FILE="\$runtime_index" git read-tree "origin\/\$COMPANY_RUNTIME_BRANCH\^\{tree\}"/);
   assert.match(workflow,/git commit-tree "\$runtime_tree" -p "\$runtime_parent"/);
   assert.match(workflow,/git push origin "\$runtime_commit:refs\/heads\/\$COMPANY_RUNTIME_BRANCH"/);
-  assert.match(workflow,/HOMEPAGE_NOVEL_GRAMMAR_RUNTIME_PERSIST=YES/);
+  assert.match(workflow,/CANONICAL_NOVEL_GRAMMAR_RUNTIME_PERSIST=YES/);
   assert.match(workflow,/Ensure target missing-design GAME_SEED exists/);
   assert.match(workflow,/--auto-missing-design-intake --game-id="\$GAME_ID"/);
   assert.match(workflow,/MISSING_DESIGN_AUTO_CREATE=CANONICAL_GAME_SEED_PIPELINE/);
+  assert.doesNotMatch(workflow,/homepage-novel-grammar|HOMEPAGE_NOVEL_GRAMMAR/);
 });
 
 
