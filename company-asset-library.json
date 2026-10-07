@@ -68901,7 +68901,7 @@
     "hardMaximum": null,
     "overSoftLimitAction": "DEDUPLICATION_REVIEW_ONLY",
     "overSoftLimitBlocksUse": false,
-    "perDomainIdeaBudgetPerCycle": 24,
+    "perDomainIdeaBudgetPerCycle": 64,
     "volumeBeforeQuality": false,
     "reuseAdaptRecombineBeforeNewAuthoring": true,
     "newAuthoringPolicy": {
@@ -77283,7 +77283,7 @@
       "runtimeVerificationRequiredBeforeProductionPromotion": true
     },
     "eligibleFreeSourceCount": 22,
-    "freeSourceCandidateLimitPerAction": 8,
+    "freeSourceCandidateLimitPerAction": 16,
     "freeSourceCatalogSufficiencyCount": 12,
     "freeSourceCatalogReady": true,
     "freeSourceCatalogExpansionMode": "PAUSED_UNTIL_REAL_COVERAGE_GAP",
