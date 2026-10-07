@@ -859,20 +859,37 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
   const id=clean(gameId);
   const assets=Array.isArray(registry?.assets)?registry.assets:[];
   const requiredFamilies=requiredAssetFamilies({request,requirements});
-  const currentAssets=assets.filter(asset=>currentAssetConsumerIds(asset).includes(id));
-  const intendedOnlyAssets=assets.filter(asset=>(asset.intendedConsumerGameIds||[]).map(clean).includes(id)&&!currentAssetConsumerIds(asset).includes(id));
-  const currentByFamily=new Map();
-  for(const asset of currentAssets){
-    const family=clean(asset.family||asset.category).toUpperCase();if(!family)continue;
-    const rows=currentByFamily.get(family)||[];rows.push(asset);currentByFamily.set(family,rows);
+  const currentAssets=[],currentAssetIds=new Set(),currentByFamily=new Map(),reusableByFamily=new Map(),assetById=new Map();
+  let intendedOnlyCount=0;
+  for(const asset of assets){
+    const assetId=clean(asset.id);
+    if(assetId&&!assetById.has(assetId))assetById.set(assetId,asset);
+    const family=clean(asset.family||asset.category).toUpperCase();
+    const currentConsumerIds=currentAssetConsumerIds(asset);
+    const isCurrent=currentConsumerIds.includes(id);
+    if(isCurrent){
+      currentAssets.push(asset);
+      if(assetId)currentAssetIds.add(assetId);
+      if(family){
+        const rows=currentByFamily.get(family)||[];rows.push(asset);currentByFamily.set(family,rows);
+      }
+      continue;
+    }
+    if((asset.intendedConsumerGameIds||[]).map(clean).includes(id))intendedOnlyCount+=1;
+    if(family&&assetSupplyCandidateAllowed(asset,target)){
+      const rows=reusableByFamily.get(family)||[];rows.push(asset);reusableByFamily.set(family,rows);
+    }
   }
+  const candidateOrder=(a,b)=>Number(b.internalAuditScore??b.qualityScore??-1)-Number(a.internalAuditScore??a.qualityScore??-1)||clean(a.id).localeCompare(clean(b.id));
+  for(const rows of currentByFamily.values())rows.sort((a,b)=>clean(a.id).localeCompare(clean(b.id)));
+  for(const rows of reusableByFamily.values())rows.sort(candidateOrder);
   const qualityActions=(executionPlan?.nextQualityActions||[]).filter(action=>
     (action.consumerGameIds||[]).map(clean).includes(id)
-    ||currentAssets.some(asset=>clean(asset.id)===clean(action.assetId))
+    ||currentAssetIds.has(clean(action.assetId))
   );
   const repairsByFamily=new Map();
   for(const action of qualityActions){
-    const family=clean(action.family||assets.find(asset=>clean(asset.id)===clean(action.assetId))?.family).toUpperCase();
+    const family=clean(action.family||assetById.get(clean(action.assetId))?.family).toUpperCase();
     const rows=repairsByFamily.get(family)||[];rows.push(action);repairsByFamily.set(family,rows);
   }
   const actions=[],actionKeys=new Set();
@@ -892,7 +909,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     });
   }
   for(const family of requiredFamilies){
-    const used=(currentByFamily.get(family)||[]).sort((a,b)=>clean(a.id).localeCompare(clean(b.id)));
+    const used=currentByFamily.get(family)||[];
     if(used.length){
       if(!(repairsByFamily.get(family)||[]).length){
         const asset=used[0],mode=internalAssetPlatformApplicationMode(asset,target);
@@ -906,11 +923,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       }
       continue;
     }
-    const candidates=assets.filter(asset=>
-      clean(asset.family||asset.category).toUpperCase()===family
-      &&!currentAssetConsumerIds(asset).includes(id)
-      &&assetSupplyCandidateAllowed(asset,target)
-    ).sort((a,b)=>Number(b.internalAuditScore??b.qualityScore??-1)-Number(a.internalAuditScore??a.qualityScore??-1)||clean(a.id).localeCompare(clean(b.id)));
+    const candidates=reusableByFamily.get(family)||[];
     if(candidates.length){
       const asset=candidates[0],mode=internalAssetPlatformApplicationMode(asset,target);
       pushAction({
@@ -945,7 +958,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     version:1,
     gameId:id||null,
     currentConsumers:currentAssets.length,
-    intendedOnly:intendedOnlyAssets.length,
+    intendedOnly:intendedOnlyCount,
     requiredFamilies:Object.freeze(requiredFamilies),
     families:Object.freeze(families),
     nextActions:Object.freeze(actions.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.supplyDecisionSummaryActionLimit)),
@@ -1141,6 +1154,11 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
     packLinks.set(gameId,linked);
   }
   const bindings=[],relations=[];
+  const consumerSummaryByGameId=new Map(snapshots.map(({game})=>[
+    clean(game.id||game.gameId),
+    {currentConsumers:0,intendedOnly:0,families:new Map()}
+  ]));
+  let intendedOnlyAssetCount=0;
   for(const asset of next.assets){
     const meta=sourceMetaByAsset.get(asset);
     const assetBindings=[],packId=meta.packId,isPack=meta.isPack,family=meta.family,identities=meta.identities;
@@ -1194,8 +1212,26 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
       delete asset.sourceConsumerBindings;
       delete asset.sourceConsumerState;
     }
+    const staticConsumerIds=unique(asset.consumerGameIds||[]);
+    const intendedConsumerIds=unique(asset.intendedConsumerGameIds||[]);
+    const currentConsumerIds=unique([...staticConsumerIds,...currentBoundGames]);
+    const currentConsumerSet=new Set(currentConsumerIds);
+    for(const gameId of currentConsumerIds){
+      const aggregate=consumerSummaryByGameId.get(gameId);
+      if(!aggregate)continue;
+      aggregate.currentConsumers+=1;
+      const familyKey=family||'UNCLASSIFIED';
+      aggregate.families.set(familyKey,(aggregate.families.get(familyKey)||0)+1);
+    }
+    for(const gameId of intendedConsumerIds){
+      if(currentConsumerSet.has(gameId))continue;
+      const aggregate=consumerSummaryByGameId.get(gameId);
+      if(aggregate)aggregate.intendedOnly+=1;
+    }
+    if(intendedConsumerIds.length&&currentConsumerIds.length===0)intendedOnlyAssetCount+=1;
+
     const relationGames=new Set(currentBoundGames);
-    for(const gameId of unique(asset.consumerGameIds||[])){
+    for(const gameId of staticConsumerIds){
       if(relationGames.has(gameId))continue;
       relations.push(Object.freeze({
         assetId:clean(asset.id),gameId,family,
@@ -1206,7 +1242,7 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
       }));
       relationGames.add(gameId);
     }
-    for(const gameId of unique(asset.intendedConsumerGameIds||[])){
+    for(const gameId of intendedConsumerIds){
       if(relationGames.has(gameId))continue;
       relations.push(Object.freeze({
         assetId:clean(asset.id),gameId,family,classification:'INTENDED_ONLY',
@@ -1230,19 +1266,15 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
   const relationStates={};for(const row of relations)relationStates[row.classification]=(relationStates[row.classification]||0)+1;
   const gameSummaries=snapshots.map(({game,snapshot})=>{
     const gameId=clean(game.id||game.gameId);
-    const current=next.assets.filter(asset=>currentAssetConsumerIds(asset).includes(gameId));
-    const intendedOnly=next.assets.filter(asset=>(asset.intendedConsumerGameIds||[]).map(clean).includes(gameId)&&!currentAssetConsumerIds(asset).includes(gameId));
-    const families={};
-    for(const asset of current){
-      const currentFamily=clean(asset.family||asset.category).toUpperCase()||'UNCLASSIFIED';
-      families[currentFamily]=families[currentFamily]||{used:0,missing:0,repair:0};
-      families[currentFamily].used+=1;
-    }
+    const aggregate=consumerSummaryByGameId.get(gameId)||{currentConsumers:0,intendedOnly:0,families:new Map()};
+    const families=Object.fromEntries([...aggregate.families.entries()]
+      .sort(([a],[b])=>a.localeCompare(b))
+      .map(([name,used])=>[name,Object.freeze({used,missing:0,repair:0})]));
     return Object.freeze({
-      gameId,currentConsumers:current.length,intendedOnly:intendedOnly.length,
+      gameId,currentConsumers:aggregate.currentConsumers,intendedOnly:aggregate.intendedOnly,
       sourceFingerprint:snapshot.sourceFingerprint,
       scannedFileCount:snapshot.scannedFileCount,
-      families:Object.freeze(Object.fromEntries(Object.entries(families).sort(([a],[b])=>a.localeCompare(b)).map(([name,value])=>[name,Object.freeze(value)]))),
+      families:Object.freeze(families),
       nextActions:Object.freeze([])
     });
   });
@@ -1258,7 +1290,7 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
     runtimeVerifiedConsumerCount:Number(relationStates.RUNTIME_VERIFIED_CONSUMER||0),
     actualSourceBoundCount:Number(relationStates.ACTUAL_SOURCE_BOUND||0),
     intendedOnlyRelationCount:Number(relationStates.INTENDED_ONLY||0),
-    intendedOnlyAssetCount:next.assets.filter(asset=>(asset.intendedConsumerGameIds||[]).length&&currentAssetConsumerIds(asset).length===0).length,
+    intendedOnlyAssetCount,
     modes:Object.freeze(modes),
     gameSummaries:Object.freeze(gameSummaries),
     currentConsumerFields:Object.freeze(['consumerGameIds','sourceBoundConsumerGameIds']),
