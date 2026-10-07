@@ -135,25 +135,49 @@
           "validationEvidence": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract, Mobile input/UI contract, Save/rejoin contract when applicable, Multiplayer state-sync contract when applicable"
         }
       }
+    },
+    "designer_draft_slices::web-canonical": {
+      "webCanonicalDesign": {
+        "role": "WEB_DETAILED_GAME_ORIGINAL",
+        "designAuthority": "GAME_DESIGN_REFERENCE_NOT_SOURCE_CODE_AUTHORITY",
+        "playerFlow": [
+          "직접 채집",
+          "주민 고용",
+          "병력 확장",
+          "자원 거점 선택",
+          "자동전투",
+          "협동 지원"
+        ],
+        "worldAndTraversal": "COZY_CHIBI_STORYBOOK",
+        "systemsAndContent": "COZY_CHIBI_KINGDOM_WORLD_V8",
+        "combatAndInteraction": "COOP",
+        "progressionAndEconomy": "COZY_CHIBI_KINGDOM_PROGRESSION_V2",
+        "sessionFailureRecovery": "COZY_CHIBI_KINGDOM_SESSION_V2",
+        "uiMenuAndOnboarding": "COZY_CHIBI_KINGDOM_UI_V2",
+        "inputCameraAccessibility": "COZY_CHIBI_KINGDOM_INPUT_V2",
+        "presentationAndAudio": "COZY_CHIBI_KINGDOM_PRESENTATION_V2",
+        "multiplayerPersistence": "COZY_CHIBI_KINGDOM_MULTIPLAYER_V2",
+        "expansionSpace": "COZY_CHIBI_KINGDOM_EXPANSION_V2"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 604002,
-      "lastMs": 250541,
+      "totalMs": 794561,
+      "lastMs": 190559,
       "lastError": null,
-      "updatedAt": "2026-10-07T20:34:34.460Z"
+      "updatedAt": "2026-10-07T20:37:45.020Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T20:24:30.415Z",
-  "updatedAt": "2026-10-07T20:34:34.461Z",
+  "updatedAt": "2026-10-07T20:37:45.021Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -312,7 +336,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-07T20:34:34.460Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T20:37:45.020Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
