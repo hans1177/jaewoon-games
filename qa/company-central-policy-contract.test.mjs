@@ -555,6 +555,13 @@ test('development WIP is policy-unbounded while execution capacity and gates rem
   assert.equal(roadmap.developmentSpeedExecution.globalSelectedPlatformDevelopmentWipMax,null);
   assert.equal(roadmap.developmentSpeedExecution.internalArtificialConcurrencyCapsForbidden,true);
   assert.equal(roadmap.developmentSpeedExecution.externalMatrixBatchMax,256);
+  const webFlow=roadmap.developmentSpeedExecution.webGameFlow;
+  assert.equal(webFlow.version,2);
+  assert.equal(webFlow.targetConcurrentGames,3);
+  assert.equal(webFlow.counting,'DISTINCT_GAMES_WITH_ACTIVE_SOURCE_WORK');
+  assert.equal(webFlow.refillBeforeWeightedPlatformMix,true);
+  assert.equal(webFlow.sameGameIndependentFilesMayRemainParallel,true);
+  assert.equal(roadmap.robloxDevelopmentInvestment.minimumPlatformDevelopment.WEB,'THREE_DISTINCT_ACTIVE_GAMES_WHEN_ELIGIBLE_AND_CAPACITY_AVAILABLE');
   assert.equal(roadmap.developmentLifecycleMachine.selfRecoveryAndBottleneckRelief.invariants.noGateBypass,true);
   assert.equal(directive.executionPause.strictDesignReviewParallel,true);
   assert.equal(directive.stageGateScoringV2.designScoreRole,'PARALLEL_QUALITY_SIGNAL_NOT_DEVELOPMENT_ADMISSION');
