@@ -11,7 +11,7 @@ import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySema
 import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile,synchronizeAssetCustomization,createAssetDetailReviewPlan,createAssetRuntimeVisualReviewPlan,auditCommonLibrarySystemDepth,createCompanySeedAssetIdeationPlan,buildInternalAssetLibraryAutomationPlan,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT,INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES,INTERNAL_PROGRESSION_COMPLEXITY_PROFILES,resolveInternalAssetStyleExpressionProfile,INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS,STUDIO_3D_ACTOR_ROLE_FAMILIES} from '../assets/vibe-studio-asset-universe.js';
 import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {auditVibeRuntimeVisualEvidence,auditVibeRuntimeBeforeAfterComparison} from '../assets/vibe-visual-quality-gate.js';
-import {VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,VIBE_NPC_ROLE_PRODUCTION_CONTRACT,createVibeNpcCustomizationPopulation} from '../assets/vibe-character-identity-director.js';
+import {VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,VIBE_NPC_ROLE_PRODUCTION_CONTRACT,VIBE_NPC_ROLE_MOTION_REQUIREMENTS,createVibeNpcRoleMotionRequirement,createVibeNpcCustomizationPopulation} from '../assets/vibe-character-identity-director.js';
 import {buildRobloxStudioAssetBootstrapPlan} from './company-development-roblox-bootstrap.mjs';
 
 const clean=value=>String(value??'').trim();
@@ -188,8 +188,10 @@ export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
     const componentByteSize=componentBytes[accessor.componentType],componentCount=componentCounts[accessor.type],count=Number(accessor.count||0);
     if(!Number.isInteger(viewIndex)||!view||!componentByteSize||!componentCount||!Number.isInteger(count)||count<=0)return{valid:false,index};
     const bufferIndex=Number(view.buffer),payload=bufferPayload(bufferIndex),elementBytes=componentByteSize*componentCount,stride=Number(view.byteStride||elementBytes);
-    const byteOffset=Number(view.byteOffset||0)+Number(accessor.byteOffset||0),end=byteOffset+(count-1)*stride+elementBytes;
-    return{valid:Boolean(payload)&&stride>=elementBytes&&byteOffset>=0&&end<=Number(payload?.length||0),index,count,type:accessor.type,componentType:accessor.componentType,normalized:accessor.normalized===true,componentByteSize,componentCount,elementBytes,stride,byteOffset,end,payload};
+    const viewByteOffset=Number(view.byteOffset||0),viewByteLength=Number(view.byteLength||0),accessorByteOffset=Number(accessor.byteOffset||0);
+    const byteOffset=viewByteOffset+accessorByteOffset,end=byteOffset+(count-1)*stride+elementBytes,viewEnd=viewByteOffset+viewByteLength;
+    const bufferViewRangeValid=Number.isInteger(viewByteLength)&&viewByteLength>0&&viewByteOffset>=0&&accessorByteOffset>=0&&viewEnd<=Number(payload?.length||0)&&end<=viewEnd;
+    return{valid:Boolean(payload)&&stride>=elementBytes&&bufferViewRangeValid,index,count,type:accessor.type,componentType:accessor.componentType,normalized:accessor.normalized===true,componentByteSize,componentCount,elementBytes,stride,byteOffset,end,viewByteOffset,viewByteLength,viewEnd,bufferViewRangeValid,payload};
   };
   const validAccessor=index=>accessorInfo(index).valid;
   const accessorCount=index=>validAccessor(index)?Number(accessors[index].count):0;
@@ -210,6 +212,16 @@ export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
     if(info.componentType===5121&&info.normalized)return value/255;
     if(info.componentType===5123&&info.normalized)return value/65535;
     return NaN;
+  };
+  const accessorStrictlyIncreasing=info=>{
+    if(!info?.valid||info.type!=='SCALAR'||info.componentType!==5126||info.count<=0)return false;
+    let previous=-Infinity;
+    for(let i=0;i<info.count;i++){
+      const value=readAccessorComponent(info,i,0);
+      if(!Number.isFinite(value)||value<=previous)return false;
+      previous=value;
+    }
+    return true;
   };
   const jointNodeIndices=new Set(skins.flatMap(skin=>(skin.joints||[]).filter(index=>Number.isInteger(index)&&index>=0&&index<nodes.length)));
   const parents=new Map();
@@ -243,20 +255,26 @@ export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
       &&(weightInfo.componentType===5126||([5121,5123].includes(weightInfo.componentType)&&weightInfo.normalized===true));
     const bindings=meshNodeBindings.filter(row=>row.meshIndex===meshIndex),skinBindings=bindings.filter(row=>row.skinIndex!==null);
     const skinBound=skinBoundMeshIndices.has(meshIndex),rigidJointAttached=!skinBound&&bindings.some(row=>row.rigidJointAttached===true);
-    const maxJointCount=skinBindings.length?Math.max(...skinBindings.map(row=>(skins[row.skinIndex]?.joints||[]).length)):0;
-    let zeroWeightVertexCount=0,invalidJointValueCount=0;
+    let zeroWeightVertexCount=0,weightSumOutOfRangeVertexCount=0,invalidJointValueCount=0,invalidJointBindingCount=0;
     if(jointWeightPairValid&&skinBound){
       for(let vertex=0;vertex<weightInfo.count;vertex++){
         let sum=0;
         for(let component=0;component<4;component++){
           const weight=normalizedWeightValue(weightInfo,readAccessorComponent(weightInfo,vertex,component)),joint=readAccessorComponent(jointInfo,vertex,component);
           if(Number.isFinite(weight))sum+=Math.max(0,weight);
-          if(weight>1e-6&&(!Number.isInteger(joint)||joint<0||joint>=maxJointCount))invalidJointValueCount++;
+          if(weight>1e-6){
+            if(!Number.isInteger(joint)||joint<0)invalidJointValueCount++;
+            for(const binding of skinBindings){
+              const skinJointCount=(skins[binding.skinIndex]?.joints||[]).length;
+              if(!Number.isInteger(joint)||joint<0||joint>=skinJointCount)invalidJointBindingCount++;
+            }
+          }
         }
         if(!(sum>1e-6))zeroWeightVertexCount++;
+        else if(sum<0.98||sum>1.02)weightSumOutOfRangeVertexCount++;
       }
     }
-    const jointWeightDataValid=!skinBound||(jointWeightPairValid&&zeroWeightVertexCount===0&&invalidJointValueCount===0);
+    const jointWeightDataValid=!skinBound||(jointWeightPairValid&&zeroWeightVertexCount===0&&weightSumOutOfRangeVertexCount===0&&invalidJointValueCount===0&&invalidJointBindingCount===0);
     const actorBindingValid=(skinBound&&jointWeightDataValid)||rigidJointAttached;
     return{
       meshIndex,primitiveIndex,name:clean(mesh.name)||`mesh-${meshIndex}`,materialIndex:primitive.material??null,
@@ -265,7 +283,7 @@ export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
       hasNormals:normalInfo.valid&&normalCount===positionCount,
       hasUv:uvInfo.valid&&uvCount===positionCount,
       hasJointWeights:jointWeightPairValid,
-      skinBound,rigidJointAttached,actorBindingValid,jointWeightDataValid,zeroWeightVertexCount,invalidJointValueCount,
+      skinBound,rigidJointAttached,actorBindingValid,jointWeightDataValid,zeroWeightVertexCount,weightSumOutOfRangeVertexCount,invalidJointValueCount,invalidJointBindingCount,
       attributeAccessorReferencesValid:positionInfo.valid&&normalInfo.valid&&uvInfo.valid&&attributeShapesValid&&(!jointWeightPairPresent||jointWeightPairValid),
       attributeCountsConsistent:positionCount>0&&normalCount===positionCount&&uvCount===positionCount&&(!jointWeightPairPresent||(jointCount===positionCount&&weightCount===positionCount)),
       positionCount,normalCount,uvCount,jointCount,weightCount,
@@ -279,9 +297,9 @@ export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
   const skinRows=skins.map((skin,index)=>{
     const joints=Array.isArray(skin.joints)?skin.joints:[];
     const validJointCount=joints.filter(joint=>Number.isInteger(joint)&&joint>=0&&joint<nodes.length).length;
-    const inverseBindMatrices=skin.inverseBindMatrices;
-    const inverseBindMatricesValid=inverseBindMatrices===undefined||(validAccessor(inverseBindMatrices)&&accessorCount(inverseBindMatrices)===joints.length);
-    return {index,name:skin.name||`skin-${index}`,jointCount:joints.length,validJointCount,invalidJointCount:joints.length-validJointCount,inverseBindMatricesValid};
+    const inverseBindMatrices=skin.inverseBindMatrices,ibmInfo=accessorInfo(inverseBindMatrices);
+    const inverseBindMatricesValid=inverseBindMatrices===undefined||(ibmInfo.valid&&ibmInfo.type==='MAT4'&&ibmInfo.componentType===5126&&ibmInfo.count===joints.length);
+    return {index,name:skin.name||`skin-${index}`,jointCount:joints.length,validJointCount,invalidJointCount:joints.length-validJointCount,inverseBindMatricesValid,inverseBindMatricesType:inverseBindMatrices===undefined?null:ibmInfo.type||null,inverseBindMatricesComponentType:inverseBindMatrices===undefined?null:ibmInfo.componentType||null};
   });
   if(skinRows.some(row=>row.jointCount<=0||row.invalidJointCount>0||row.inverseBindMatricesValid!==true))issues.push('GLB_SKIN_BINDING_INVALID');
   if(skins.length&&!meshSkinBindings.length)issues.push('GLB_MESH_SKIN_NODE_BINDING_REQUIRED');
@@ -305,10 +323,11 @@ export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
       const outputMultiplier=interpolation==='CUBICSPLINE'?3:1;
       const sampleCountsCompatible=!transformPath||(inputCount>0&&outputCount===inputCount*outputMultiplier);
       const expectedOutputType=targetPath==='rotation'?'VEC4':targetPath==='translation'||targetPath==='scale'?'VEC3':null;
-      const samplerValid=Boolean(sampler&&inputInfo.valid&&outputInfo.valid&&inputInfo.type==='SCALAR'&&sampleCountsCompatible&&(!transformPath||outputInfo.type===expectedOutputType));
+      const timeAccessorValid=Boolean(inputInfo.valid&&inputInfo.type==='SCALAR'&&inputInfo.componentType===5126&&accessorStrictlyIncreasing(inputInfo));
+      const samplerValid=Boolean(sampler&&timeAccessorValid&&outputInfo.valid&&sampleCountsCompatible&&(!transformPath||outputInfo.type===expectedOutputType));
       const targetValid=Number.isInteger(targetNode)&&targetNode>=0&&targetNode<nodes.length&&['rotation','translation','scale','weights'].includes(targetPath);
       const jointTarget=targetValid&&jointNodeIndices.has(targetNode)&&transformPath;
-      return {channelIndex,samplerIndex,targetNode,targetPath,inputCount,outputCount,interpolation,samplerValid,targetValid,jointTarget,valid:samplerValid&&targetValid};
+      return {channelIndex,samplerIndex,targetNode,targetPath,inputCount,outputCount,interpolation,timeAccessorValid,samplerValid,targetValid,jointTarget,valid:samplerValid&&targetValid};
     });
     const validChannels=channelRows.filter(row=>row.valid);
     const jointChannels=validChannels.filter(row=>row.jointTarget);
@@ -323,8 +342,10 @@ export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
     };
   });
   if(animations.some(row=>row.valid!==true))issues.push('GLB_ANIMATION_SAMPLER_BINDING_INVALID');
+  if(animations.some(row=>row.channels.some(channel=>channel.timeAccessorValid!==true)))issues.push('GLB_ANIMATION_TIME_ACCESSOR_INVALID');
   const inventory={
     meshCount:(document.meshes||[]).length,nodeCount:nodes.length,jointNodeCount:jointNodeIndices.size,meshNodeBindingCount:meshNodeBindings.length,meshSkinBindingCount:meshSkinBindings.length,rigidJointAttachedMeshNodeCount:meshNodeBindings.filter(row=>row.skinIndex===null&&row.rigidJointAttached===true).length,binaryChunkBytes:Number(binaryChunk?.length||0),primitives,
+    nodes:nodes.map((node,index)=>({index,name:clean(node?.name)||`node-${index}`,joint:jointNodeIndices.has(index)})),
     materials:materials.map((material,index)=>({index,name:material.name||`material-${index}`,hasBaseColorTexture:Boolean(material.pbrMetallicRoughness?.baseColorTexture),hasNormalTexture:Boolean(material.normalTexture)})),
     skins:skinRows,
     animations,
@@ -356,6 +377,32 @@ export function evaluateCrossPlatform3dMasterGlb({repoRoot=process.cwd(),source=
   const blockers=[];
   const inv=inspection?.inventory||{};
   const primitives=Array.isArray(inv.primitives)?inv.primitives:[];
+  const normalizedRole=clean(source?.role||resolvedRole).toUpperCase().replace(/[\\s-]+/g,'_');
+  const explicitCharacterRole=resolvedFamily==='CHARACTER'&&normalizedRole&&!['CHARACTER','HUMANOID','ACTOR'].includes(normalizedRole);
+  const roleMotionRequirement=explicitCharacterRole?createVibeNpcRoleMotionRequirement({role:normalizedRole}):null;
+  const resolvedNpcRole=clean(roleMotionRequirement?.role).toUpperCase();
+  const requiredRoleMotionClips=explicitCharacterRole?freezeList(VIBE_NPC_ROLE_MOTION_REQUIREMENTS.roleRequiredClips?.[resolvedNpcRole]||[]):freezeList([]);
+  const animationNames=(inv.animations||[]).map(row=>clean(row?.name).toUpperCase().replace(/[^A-Z0-9]+/g,'_')).filter(Boolean);
+  const clipAliases=clip=>{
+    const key=clean(clip).toUpperCase();
+    const map={
+      JOG_OR_RUN:['JOG','RUN','MOVE'],LOOK_AROUND:['LOOK','SCAN'],HIT:['HIT','HURT','STAGGER','DAMAGE'],DEATH:['DEATH','DEAD','DIE'],
+      DEATH_SEQUENCE:['DEATH','DEAD','DIE'],ATTACK_LIGHT:['ATTACK','LIGHT_ATTACK'],ATTACK_HEAVY:['ATTACK','HEAVY_ATTACK'],ATTACK_ANTICIPATION:['ATTACK'],
+      BASIC_ATTACK_SET:['ATTACK','BASIC_ATTACK'],SPECIAL_ATTACK_SET:['SPECIAL','SKILL','CAST','ABILITY'],GUARD_BREAK:['BREAK','STAGGER','GUARD_BREAK'],
+      WORK_IDLE:['IDLE','WORK'],WORK_LOOP:['WORK'],FARM_WORK_LOOP:['WORK','FARM'],TRADE_INTERACTION:['TRADE','INTERACT'],PRESENT_ITEM:['PRESENT','INTERACT'],
+      REWARD_HANDOFF:['REWARD','INTERACT'],REACT_TO_PLAYER:['REACT','INTERACT'],REVIVE_HELP:['REVIVE','HELP'],COMBAT_READY:['COMBAT','READY','IDLE'],
+      FAILED_ATTACK_RECOVERY:['RECOVERY','ATTACK'],RETURN_IDLE:['IDLE'],FACE_PLAYER:['TURN','INTERACT'],HEAD_GAZE:['LOOK','TURN']
+    };
+    return unique([key,...(map[key]||[])]).map(value=>value.replace(/[^A-Z0-9]+/g,'_'));
+  };
+  const missingRoleMotionClips=requiredRoleMotionClips.filter(clip=>!clipAliases(clip).some(alias=>animationNames.some(name=>name===alias||name.includes(alias)||alias.includes(name))));
+  const socketMatchers={
+    HAND:[/(?:^|_)(?:RIGHT_)?HAND(?:_|$)/i,/(?:GRIP|WRIST)/i],BACK:[/(?:BACK|SPINE|CHEST)/i],HIP:[/(?:HIP|PELVIS|WAIST)/i],
+    SHIELD:[/(?:SHIELD|OFFHAND|LEFT_HAND|HAND_L)/i],TOOL:[/(?:TOOL|WEAPON|GRIP|RIGHT_HAND|HAND_R)/i]
+  };
+  const nodeNames=(inv.nodes||[]).map(row=>clean(row?.name));
+  const attachmentSocketCoverage=Object.fromEntries(Object.entries(socketMatchers).map(([socket,matchers])=>[socket,nodeNames.some(name=>matchers.some(re=>re.test(name)))]));
+  const missingAttachmentSocketBasis=explicitCharacterRole?Object.entries(attachmentSocketCoverage).filter(([,present])=>!present).map(([socket])=>socket):[];
   if(!/\.glb$/i.test(clean(inspection?.path)))blockers.push('MASTER_GLB_PATH_REQUIRED');
   if(inspection?.status!=='INSPECTED_RECONSTRUCTION_INPUT')blockers.push(...(inspection?.issues||['MASTER_GLB_INSPECTION_REQUIRED']));
   if(!Number(inv.meshCount||0)||!primitives.length)blockers.push('MASTER_GLB_MESH_REQUIRED');
@@ -368,12 +415,16 @@ export function evaluateCrossPlatform3dMasterGlb({repoRoot=process.cwd(),source=
   if(primitives.some(row=>row.actorBindingValid!==true))blockers.push('MASTER_GLB_ACTOR_MESH_BINDING_REQUIRED');
   if(primitives.some(row=>row.skinBound===true&&row.jointWeightDataValid!==true))blockers.push('MASTER_GLB_JOINT_WEIGHTS_REQUIRED');
   if(!(inv.animations||[]).length||Number(inv.invalidAnimationCount||0)>0||Number(inv.jointAnimationChannelCount||0)<=0||Number(inv.animatedJointCount||0)<=0)blockers.push('MASTER_GLB_ANIMATION_REQUIRED');
+  if(explicitCharacterRole&&missingRoleMotionClips.length)blockers.push('MASTER_GLB_ROLE_MOTION_REQUIRED');
+  if(explicitCharacterRole&&missingAttachmentSocketBasis.length)blockers.push('MASTER_GLB_ATTACHMENT_SOCKET_BASIS_REQUIRED');
   const uniqueBlockers=unique(blockers);
   return freeze({
     version:1,required:true,pass:uniqueBlockers.length===0,
     status:uniqueBlockers.length?'MASTER_GLB_REPAIR_REQUIRED':'MASTER_GLB_STATIC_QA_PASS',
     family:resolvedFamily||null,role:resolvedRole||null,path:inspection?.path||null,sourceHash:inspection?.sourceHash||null,
     blockers:freezeList(uniqueBlockers),inspection,
+    roleMotionContractRequired:explicitCharacterRole,roleMotionRole:resolvedNpcRole||null,requiredRoleMotionClips,missingRoleMotionClips:freezeList(missingRoleMotionClips),
+    attachmentSocketBasisRequired:explicitCharacterRole,attachmentSocketCoverage:freeze(attachmentSocketCoverage),missingAttachmentSocketBasis:freezeList(missingAttachmentSocketBasis),
     platformNativeBindingStillRequired:true,runtimeVerificationStillRequired:true,
     primitivePartAssemblyPrototypeOnly:true
   });
@@ -1957,7 +2008,7 @@ function matchedForType(selector={},type='',manifest={},target='',repoRoot=proce
   const normalize=(row,adaptationBaseOnly=false)=>{
     const asset=byId.get(clean(row.id))||row;
     const actorFamily=clean(asset?.family||asset?.category).toUpperCase();
-    const masterGlbQa=evaluateCrossPlatform3dMasterGlb({repoRoot,source:asset,family:actorFamily,role:type});
+    const masterGlbQa=evaluateCrossPlatform3dMasterGlb({repoRoot,source:asset,family:actorFamily,role:asset?.role||asset?.subfamily||type});
     const crossPlatformMasterSource=asset?.crossPlatformMasterSource===true;
     const resolvedPath=crossPlatformMasterSource&&masterGlbQa.pass===true?clean(masterGlbQa.path):clean(row.path||asset.path);
     const actorLineageRequired=masterGlbQa.required===true;

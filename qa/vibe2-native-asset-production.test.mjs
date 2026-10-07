@@ -492,7 +492,16 @@ test('3D character creature and boss master assets require a structurally comple
   assert.ok(spider.inspection.inventory.animatedJointCount>0);
   assert.ok(spider.inspection.inventory.primitives.every(row=>row.hasNormals&&row.hasUv&&row.hasMaterial));
   assert.ok(spider.inspection.inventory.primitives.every(row=>row.actorBindingValid===true));
-  assert.ok(spider.inspection.inventory.primitives.filter(row=>row.skinBound).every(row=>row.jointWeightDataValid===true&&row.zeroWeightVertexCount===0&&row.invalidJointValueCount===0));
+  assert.ok(spider.inspection.inventory.primitives.filter(row=>row.skinBound).every(row=>row.jointWeightDataValid===true&&row.zeroWeightVertexCount===0&&row.weightSumOutOfRangeVertexCount===0&&row.invalidJointValueCount===0&&row.invalidJointBindingCount===0));
+  assert.ok(spider.inspection.inventory.skins.every(row=>row.inverseBindMatricesValid===true));
+  assert.ok(spider.inspection.inventory.animations.every(row=>row.channels.every(channel=>channel.timeAccessorValid===true)));
+
+  const merchantOnCreature=evaluateCrossPlatform3dMasterGlb({family:'CHARACTER',role:'MERCHANT',source:{path:'assets/roblox/world-ghosts/native/spider/spider.glb'}});
+  assert.equal(merchantOnCreature.pass,false);
+  assert.ok(merchantOnCreature.blockers.includes('MASTER_GLB_ROLE_MOTION_REQUIRED'));
+  assert.ok(merchantOnCreature.blockers.includes('MASTER_GLB_ATTACHMENT_SOCKET_BASIS_REQUIRED'));
+  assert.ok(merchantOnCreature.missingRoleMotionClips.length>0);
+  assert.ok(merchantOnCreature.missingAttachmentSocketBasis.length>0);
 
   const missing=evaluateCrossPlatform3dMasterGlb({family:'CREATURE',role:'ENEMY',source:{path:'../outside.glb'}});
   assert.equal(missing.pass,false);
@@ -629,6 +638,46 @@ test('Web 3D actor authoring requires exact Master GLB path and hash binding in 
   assert.equal(missingHash.generatedAssetBindingRequired,true);
   assert.equal(missingHash.generatedAssetBindingApplied,false);
   assert.equal(missingHash.status,'GENERATED_ASSET_BINDING_REQUIRED');
+
+  const commentOnly=evaluateNativeAssetAuthoringCandidate({
+    order,
+    candidate:{edits:[{path:'web-games/demo/index.html',replace:[
+      "const MASTER_GLB = '"+masterPath+"';",
+      "const MASTER_GLB_SHA256 = '"+masterHash+"';",
+      "// const loader = new GLTFLoader(); loader.load(MASTER_GLB); const mixer = new THREE.AnimationMixer(scene); requestAnimationFrame(render);",
+      "document.body.dataset.asset = MASTER_GLB_SHA256;"
+    ].join('\\n')}]}
+  });
+  assert.equal(commentOnly.generatedAssetBindingApplied,false);
+  assert.ok(commentOnly.generatedAssetRuntimeBindingFailures.length>0);
+});
+
+test('native actor binding validates every DCC recipe one-to-one and cannot hide a missing derivative',()=>{
+  const masterA='assets/generated/unity/demo/a/master.glb',masterB='assets/generated/unity/demo/b/master.glb';
+  const nativeA='unity-games/demo/Assets/Generated/a.prefab',hashA='a'.repeat(64),masterHashA='b'.repeat(64),masterHashB='c'.repeat(64),sourceHash='d'.repeat(64);
+  const order={target:'unity',assetProductionLane:true,assetProduction:{nativeAuthoringExecution:{
+    enabled:true,dcc:{requiredTypes:['npc','boss'],executionEvidence:{
+      executed:true,allRecipesPassed:true,candidateUsable:true,persistedForCandidate:true,
+      editableSource:'assets/demo/build.py',nativeArtifact:masterA,artifactHash:masterHashA,preview:'assets/demo/preview.png',
+      recipes:[
+        {assetId:'npc-a',family:'CHARACTER',types:['npc'],nativeArtifact:masterA,artifactHash:masterHashA,masterGlbRequired:true,masterGlb:masterA,masterGlbHash:masterHashA,masterGlbStaticQaPass:true,platformNativeArtifact:nativeA,platformNativeArtifactHash:hashA,derivedFromMasterGlbHash:masterHashA},
+        {assetId:'boss-b',family:'CREATURE',types:['boss'],nativeArtifact:masterB,artifactHash:masterHashB,masterGlbRequired:true,masterGlb:masterB,masterGlbHash:masterHashB,masterGlbStaticQaPass:true,platformNativeArtifact:null,platformNativeArtifactHash:null,derivedFromMasterGlbHash:masterHashB}
+      ]
+    }},nativeText:{requiredTypes:['npc','boss']}
+  }}};
+  const result=evaluateNativeAssetAuthoringCandidate({order,candidate:{edits:[{path:'unity-games/demo/Assets/Game.cs',replace:[
+    'var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("'+nativeA+'");',
+    'const string Hash = "'+hashA+'";',
+    'var actor = Instantiate(prefab);',
+    'var skin = actor.GetComponentInChildren<SkinnedMeshRenderer>();',
+    'var animator = actor.GetComponentInChildren<Animator>();'
+  ].join('\\n')}]}});
+  assert.equal(result.dccAuthored,true);
+  assert.equal(result.generatedAssetBindingRequired,true);
+  assert.equal(result.generatedAssetBindingApplied,false);
+  assert.equal(result.missingGeneratedArtifactRecipes.length,1);
+  assert.equal(result.missingGeneratedArtifactRecipes[0].assetId,'boss-b');
+  assert.equal(result.status,'GENERATED_ASSET_BINDING_REQUIRED');
 });
 
 test('master GLB evidence is never exposed as a platform-native binding or promotion candidate',()=>{

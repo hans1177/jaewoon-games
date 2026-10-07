@@ -624,12 +624,12 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
       &&clean(dccEvidence?.preview)
     )
   );
-  const generatedNativeArtifacts=unique((dccEvidence?.recipes||[]).map(row=>{
-    const masterRequired=row?.masterGlbRequired===true||['CHARACTER','CREATURE'].includes(clean(row?.family).toUpperCase());
-    const webUsesMaster=target==='web'&&masterRequired;
-    return webUsesMaster?posix(row?.masterGlb||row?.nativeArtifact):masterRequired?posix(row?.platformNativeArtifact):posix(row?.nativeArtifact);
-  }).filter(Boolean));
-  const generatedAssetIdentityBindings=(dccEvidence?.recipes||[]).filter(row=>{
+  const bindingText=text.replace(/\/\*[\s\S]*?\*\//g,' ').replace(/<!--[\s\S]*?-->/g,' ').replace(/^\s*\/\/.*$/gm,' ');
+  const unityActorLoaderSignal=/(?:AssetDatabase\.LoadAssetAtPath|Resources\.Load|Addressables\.(?:LoadAssetAsync|InstantiateAsync)|GltfImport|GltfAsset|GLTFast|UniGLTF)/i.test(bindingText);
+  const unityActorBindingSignal=/(?:SkinnedMeshRenderer|Animator|Instantiate\s*\(|InstantiateMainSceneAsync|sharedMesh\s*=)/i.test(bindingText);
+  const webActorLoaderSignal=/(?:GLTFLoader|loadAsync\s*\(|\.load\s*\(|fetch\s*\()/i.test(bindingText);
+  const webActorBindingSignal=/(?:AnimationMixer|clipAction\s*\(|scene\.add\s*\(|requestAnimationFrame\s*\()/i.test(bindingText);
+  const generatedRecipeBindingChecks=Object.freeze((dccEvidence?.recipes||[]).map((row,index)=>{
     const masterRequired=row?.masterGlbRequired===true||['CHARACTER','CREATURE'].includes(clean(row?.family).toUpperCase());
     const webUsesMaster=target==='web'&&masterRequired;
     const assetPath=webUsesMaster?posix(row?.masterGlb||row?.nativeArtifact):masterRequired?posix(row?.platformNativeArtifact):posix(row?.nativeArtifact);
@@ -637,23 +637,31 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
     const lineageReady=!masterRequired
       ||webUsesMaster&&row?.masterGlbStaticQaPass===true&&Boolean(clean(row?.masterGlbHash||row?.artifactHash))
       ||clean(row?.masterGlbHash)&&clean(row?.derivedFromMasterGlbHash)===clean(row?.masterGlbHash);
-    return lineageReady&&assetPath&&artifactHash&&text.includes(assetPath)&&text.includes(artifactHash);
-  }).map(row=>{
-    const masterRequired=row?.masterGlbRequired===true||['CHARACTER','CREATURE'].includes(clean(row?.family).toUpperCase());
-    const webUsesMaster=target==='web'&&masterRequired;
+    const artifactReady=Boolean(assetPath&&artifactHash&&lineageReady);
+    const identityBound=artifactReady&&bindingText.includes(assetPath)&&bindingText.includes(artifactHash);
+    const runtimeBindingSignalPass=!masterRequired
+      ||target==='unity'?(unityActorLoaderSignal&&unityActorBindingSignal)
+      :target==='web'?(webActorLoaderSignal&&webActorBindingSignal)
+      :true;
     return Object.freeze({
-      path:webUsesMaster?posix(row.masterGlb||row.nativeArtifact):masterRequired?posix(row.platformNativeArtifact):posix(row.nativeArtifact),
-      artifactHash:webUsesMaster?clean(row.masterGlbHash||row.artifactHash):masterRequired?clean(row.platformNativeArtifactHash):clean(row.artifactHash),
+      index,assetId:clean(row?.assetId||row?.id)||null,masterRequired,webUsesMaster,path:assetPath||null,artifactHash:artifactHash||null,
+      lineageReady,artifactReady,identityBound,runtimeBindingSignalPass,bound:artifactReady&&identityBound&&runtimeBindingSignalPass,
       runtimeSource:webUsesMaster?'MASTER_GLB':'PLATFORM_NATIVE_DERIVATIVE'
     });
-  });
+  }));
+  const generatedNativeArtifacts=unique(generatedRecipeBindingChecks.map(row=>row.path).filter(Boolean));
+  const generatedAssetIdentityBindings=generatedRecipeBindingChecks.filter(row=>row.bound).map(row=>Object.freeze({
+    path:row.path,artifactHash:row.artifactHash,runtimeSource:row.runtimeSource,assetId:row.assetId
+  }));
+  const missingGeneratedArtifactRecipes=Object.freeze(generatedRecipeBindingChecks.filter(row=>!row.artifactReady).map(row=>Object.freeze({index:row.index,assetId:row.assetId,path:row.path})));
+  const generatedAssetRuntimeBindingFailures=Object.freeze(generatedRecipeBindingChecks.filter(row=>row.artifactReady&&!row.runtimeBindingSignalPass).map(row=>Object.freeze({index:row.index,assetId:row.assetId,path:row.path,target})));
   const boundGeneratedArtifacts=generatedAssetIdentityBindings.map(row=>row.path);
   const webMasterGlbRuntimeBindingRequired=dccRequired&&dccAuthored&&target==='web'&&masterGlbRequired;
   const generatedAssetBindingRequired=dccRequired&&dccAuthored&&(['roblox','unity'].includes(target)||webMasterGlbRuntimeBindingRequired);
   const generatedAssetBindingApplied=!generatedAssetBindingRequired||(
     nativeTextAuthored
-    &&generatedAssetIdentityBindings.length===generatedNativeArtifacts.length
-    &&generatedNativeArtifacts.length>0
+    &&generatedRecipeBindingChecks.length>0
+    &&generatedRecipeBindingChecks.every(row=>row.bound)
   );
   const dccStatus=!dccRequired?'NOT_REQUIRED':dccAuthored?'DCC_AUTHORED_RUNTIME_REQUIRED':dccEvidence?.executed===true?'DCC_RECIPE_EXECUTED_PERSISTENCE_REQUIRED':clean(contract?.dcc?.executionStatus)||'DCC_AUTHORING_EXECUTOR_REQUIRED';
   const nativeTextStatus=!nativeTextRequired?'NOT_REQUIRED':nativeTextAuthored?(target==='web'?'WEB_NATIVE_SOURCE_AUTHORED_RUNTIME_REQUIRED':'NATIVE_SOURCE_AUTHORED_RUNTIME_REQUIRED'):'NATIVE_AUTHORING_DELTA_REQUIRED';
@@ -676,7 +684,10 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
     dccExecutionEvidencePresent:Boolean(dccEvidence),
     dccExecutionEvidence:dccEvidence?Object.freeze({...dccEvidence}):null,
     generatedNativeArtifacts:Object.freeze(generatedNativeArtifacts),
+    generatedRecipeBindingChecks,
     generatedAssetIdentityBindings:Object.freeze(generatedAssetIdentityBindings),
+    missingGeneratedArtifactRecipes,
+    generatedAssetRuntimeBindingFailures,
     boundGeneratedArtifacts:Object.freeze(boundGeneratedArtifacts),
     generatedAssetBindingRequired,
     generatedAssetBindingApplied,
