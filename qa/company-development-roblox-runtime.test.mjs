@@ -1331,3 +1331,16 @@ test('existing asset rebind migrates removed studioUi consumers and remains idem
   assert.match(horror,/chaseTint:SetAttribute\("StudioAssetAtoms", table\.concat\(studioAssetFamily\("UI"\), ","\)\)/);
   assert.doesNotMatch(horror,/table\.concat\(studioUi\s*,/);
 });
+
+
+test('director drains stale queued Roblox native work when a current-main batch replacement exists',()=>{
+  const director=fs.readFileSync(new URL('../.github/workflows/director-supervisor.yml',import.meta.url),'utf8');
+  assert.match(director,/dedupeByTitle\('\.github\/workflows\/company-development-roblox-runtime-continuation\.yml',true\)/);
+  assert.match(director,/const currentRobloxBatchReplacementActive=runs\.some/);
+  assert.match(director,/String\(r\.head_sha\|\|''\)===currentMain/);
+  assert.match(director,/String\(r\.display_title\|\|''\)==='Roblox runtime · batch'/);
+  assert.match(director,/String\(r\.display_title\|\|''\)\.startsWith\('Roblox shared preflight · '\)/);
+  assert.match(director,/ROBLOX_STALE_UNSTARTED_NATIVE_WORK_REPLACED_BY_CURRENT_BATCH/);
+  assert.match(director,/queued\.has\(String\(r\.status\|\|''\)\.toLowerCase\(\)\)/);
+  assert.match(director,/DIRECTOR_RUNNER_DRAIN_ACTIVE_PRESERVED=/);
+});
