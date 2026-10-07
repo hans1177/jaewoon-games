@@ -1811,6 +1811,7 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
 });
 const INTERNAL_ASSET_LIBRARY_PLAN_INDEX_CACHE=new WeakMap();
 const INTERNAL_ASSET_LIBRARY_PLAN_AUDIT_CACHE=new WeakMap();
+const INTERNAL_ASSET_LIBRARY_PLAN_MAINTENANCE_CACHE=new WeakMap();
 
 function stableAssetMaintenanceHash(value=''){
   let hash=2166136261;
@@ -1841,6 +1842,33 @@ function internalAssetAuditInputKey(asset={}){
     asset?.internalAuditEvidence||null
   ]);
 }
+function internalAssetMaintenanceStaticInputKey(asset={}){
+  return JSON.stringify([
+    text(asset?.packId),
+    upper(asset?.family||asset?.category),
+    upper(asset?.subfamily||asset?.type),
+    INTERNAL_ASSET_MAINTENANCE_ROLE_FIELDS.map(field=>asset?.[field]??null),
+    asset?.internalAuditScore??null,
+    text(asset?.internalAuditGrade),
+    internalAssetAuditInputKey(asset),
+    text(asset?.sourceHash||asset?.sourceSha256),
+    asset?.sourceFiles||null,
+    asset?.path||null,
+    asset?.catalogVersion??null,
+    asset?.catalogActive??null,
+    upper(asset?.catalogState),
+    upper(asset?.status),
+    asset?.rightsPass??null,
+    asset?.productionVerified===true,
+    upper(asset?.runtimeVerificationState)
+  ]);
+}
+function internalAssetMaintenanceContextKey(uiAtomIds=[],audioRoleIds=[]){
+  return JSON.stringify([
+    uniq((uiAtomIds||[]).map(upper)).sort(),
+    uniq((audioRoleIds||[]).map(upper)).sort()
+  ]);
+}
 function internalAssetMaintenanceQuality(asset={},audit=null){
   const currentAudit=audit&&typeof audit==='object'?audit:scoreInternalAssetAudit1000({asset});
   if(currentAudit.measuredAxisCount>0&&!currentAudit.blockers.includes('INSUFFICIENT_AUDIT_EVIDENCE'))return Number(currentAudit.score);
@@ -1865,122 +1893,203 @@ const INTERNAL_ASSET_DETAIL_REPAIR_STEPS=Object.freeze({
   PROVENANCE_MAINTAINABILITY:['CHECK_SOURCE_LICENSE_HASH_AND_DERIVATIVE_LINEAGE','KEEP_REPRODUCIBLE_AUTHORING_RECIPE'],
   INTEGRATION_READINESS:['CHECK_NATIVE_IMPORT_MATERIAL_RIG_AND_SOCKET_BINDINGS','KEEP_RUNTIME_VERIFICATION_SEPARATE_FROM_INTERNAL_AUDIT']
 });
-export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],audioRoleIds=[],previous=null,consumerGames=[],auditCache=null}={}){
+export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],audioRoleIds=[],previous=null,consumerGames=[],auditCache=null,staticCache=null,cacheSink=null}={}){
   const gamesById=new Map(consumerGames.filter(game=>upper(game.lifecycleState||game.canonical?.lifecycle?.state||'ACTIVE')==='ACTIVE').map(game=>[text(game.id||game.gameId),game]));
+  const cachedRowsByAssetId=staticCache?.rowsByAssetId instanceof Map?staticCache.rowsByAssetId:null;
+  const rowsByAssetId=new Map();
+  let uniqueIds=true,reusedStaticRowCount=0;
   const rows=(assets||[]).map(asset=>{
-    const family=upper(asset?.family||asset?.category);
-    const roles=internalAssetMaintenanceRoleTokens(asset);
-    const cachedAudit=auditCache&&typeof auditCache.get==='function'?auditCache.get(asset):null;
-    const audit=cachedAudit||scoreInternalAssetAudit1000({asset});
-    if(!cachedAudit&&auditCache&&typeof auditCache.set==='function')auditCache.set(asset,audit);
-    const measuredAuditAxes=audit.applicableAxes.filter(axis=>{
-      const value=internalAssetAuditEvidenceValue(asset.internalAuditEvidence||{},axis);
-      return typeof value==='number'&&Number.isFinite(value);
-    });
-    const quality=internalAssetMaintenanceQuality(asset,audit);
-    const declaredQuality=typeof asset?.internalAuditScore==='number'&&Number.isFinite(asset.internalAuditScore)
-      ?Math.round(clamp(asset.internalAuditScore,0,INTERNAL_ASSET_AUDIT_MAX)*10)/10:null;
+    const id=text(asset?.id||asset?.assetId||asset?.atomId);
+    if(!id)return null;
+    const staticKey=internalAssetMaintenanceStaticInputKey(asset);
+    const cached=cachedRowsByAssetId?.get(id);
+    let staticRow;
+    if(cached&&cached.key===staticKey){
+      staticRow=cached.row;
+      reusedStaticRowCount+=1;
+    }else{
+      const family=upper(asset?.family||asset?.category);
+      const roles=internalAssetMaintenanceRoleTokens(asset);
+      const cachedAudit=auditCache&&typeof auditCache.get==='function'?auditCache.get(asset):null;
+      const audit=cachedAudit||scoreInternalAssetAudit1000({asset});
+      if(!cachedAudit&&auditCache&&typeof auditCache.set==='function')auditCache.set(asset,audit);
+      const measuredAuditAxes=audit.applicableAxes.filter(axis=>{
+        const value=internalAssetAuditEvidenceValue(asset.internalAuditEvidence||{},axis);
+        return typeof value==='number'&&Number.isFinite(value);
+      });
+      const quality=internalAssetMaintenanceQuality(asset,audit);
+      const declaredQuality=typeof asset?.internalAuditScore==='number'&&Number.isFinite(asset.internalAuditScore)
+        ?Math.round(clamp(asset.internalAuditScore,0,INTERNAL_ASSET_AUDIT_MAX)*10)/10:null;
+      staticRow=Object.freeze({
+        id,
+        packId:text(asset?.packId),
+        family,
+        subfamily:upper(asset?.subfamily||asset?.type),
+        roles:Object.freeze(roles),
+        quality,
+        declaredQuality,
+        qualityEvidenceGrounded:quality!==null,
+        qualityGrade:quality!==null?(text(asset?.internalAuditGrade)||internalAssetAuditGrade(quality)):null,
+        auditAxes:audit.axes,
+        measuredAuditAxes:Object.freeze(measuredAuditAxes),
+        sourceHash:text(asset?.sourceHash||asset?.sourceSha256)||null,
+        sourceFiles:Object.freeze(uniq(asset?.sourceFiles||[asset?.path]).sort()),
+        catalogVersion:asset?.catalogVersion??null,
+        reuseEligible:asset?.catalogActive!==false
+          &&!/(STALE|QUARANTIN|RETIRED|REJECTED)/.test(upper(asset?.catalogState)+' '+upper(asset?.status))
+          &&asset?.rightsPass!==false,
+        catalogState:upper(asset?.catalogState),
+        catalogActive:asset?.catalogActive!==false,
+        status:upper(asset?.status),
+        productionVerified:asset?.productionVerified===true,
+        runtimeVerificationState:upper(asset?.runtimeVerificationState)
+      });
+    }
+    if(rowsByAssetId.has(id))uniqueIds=false;
+    rowsByAssetId.set(id,Object.freeze({key:staticKey,row:staticRow}));
     const currentConsumers=currentAssetConsumerGameIds(asset);
+    const consumerPriority=Math.max(0,...currentConsumers.map(gameId=>{
+      const game=gamesById.get(text(gameId));if(!game)return 0;
+      const state=upper(game.productionClass||game.canonical?.production?.class);
+      const roblox=upper(asset.platform)==='ROBLOX'||(asset.platforms||[]).some(p=>upper(p)==='ROBLOX');
+      return roblox&&state==='RELEASE_CONFIRMED'?3:roblox&&state==='DEVELOPMENT_CONFIRMED'?2:1;
+    }));
     return Object.freeze({
-      id:text(asset?.id||asset?.assetId||asset?.atomId),
-      packId:text(asset?.packId),
-      family,
-      subfamily:upper(asset?.subfamily||asset?.type),
-      roles:Object.freeze(roles),
+      id:staticRow.id,
+      packId:staticRow.packId,
+      family:staticRow.family,
+      subfamily:staticRow.subfamily,
+      roles:staticRow.roles,
       consumerGameIds:Object.freeze(currentConsumers),
-      consumerPriority:Math.max(0,...currentConsumers.map(id=>{
-        const game=gamesById.get(text(id));if(!game)return 0;
-        const state=upper(game.productionClass||game.canonical?.production?.class);
-        const roblox=upper(asset.platform)==='ROBLOX'||(asset.platforms||[]).some(p=>upper(p)==='ROBLOX');
-        return roblox&&state==='RELEASE_CONFIRMED'?3:roblox&&state==='DEVELOPMENT_CONFIRMED'?2:1;
-      })),
-      quality,
-      declaredQuality,
-      qualityEvidenceGrounded:quality!==null,
-      qualityGrade:quality!==null?(text(asset?.internalAuditGrade)||internalAssetAuditGrade(quality)):null,
-      auditAxes:audit.axes,
-      measuredAuditAxes:Object.freeze(measuredAuditAxes),
-      sourceHash:text(asset?.sourceHash||asset?.sourceSha256)||null,
-      sourceFiles:Object.freeze(uniq(asset?.sourceFiles||[asset?.path]).sort()),
-      catalogVersion:asset?.catalogVersion??null,
-      reuseEligible:asset?.catalogActive!==false
-        &&!/(STALE|QUARANTIN|RETIRED|REJECTED)/.test(upper(asset?.catalogState)+' '+upper(asset?.status))
-        &&asset?.rightsPass!==false,
-      catalogState:upper(asset?.catalogState),
-      catalogActive:asset?.catalogActive!==false,
-      status:upper(asset?.status),
-      productionVerified:asset?.productionVerified===true,
-      runtimeVerificationState:upper(asset?.runtimeVerificationState)
+      consumerPriority,
+      quality:staticRow.quality,
+      declaredQuality:staticRow.declaredQuality,
+      qualityEvidenceGrounded:staticRow.qualityEvidenceGrounded,
+      qualityGrade:staticRow.qualityGrade,
+      auditAxes:staticRow.auditAxes,
+      measuredAuditAxes:staticRow.measuredAuditAxes,
+      sourceHash:staticRow.sourceHash,
+      sourceFiles:staticRow.sourceFiles,
+      catalogVersion:staticRow.catalogVersion,
+      reuseEligible:staticRow.reuseEligible,
+      catalogState:staticRow.catalogState,
+      catalogActive:staticRow.catalogActive,
+      status:staticRow.status,
+      productionVerified:staticRow.productionVerified,
+      runtimeVerificationState:staticRow.runtimeVerificationState
     });
-  }).filter(row=>row.id).sort((a,b)=>a.id.localeCompare(b.id));
-  const typeRoleTokens=new Set();
-  for(const row of rows){
-    if(row.family)typeRoleTokens.add('FAMILY:'+row.family);
-    if(row.packId)typeRoleTokens.add('PACK:'+row.packId);
-    if(row.subfamily)typeRoleTokens.add('SUBFAMILY:'+row.family+':'+row.subfamily);
-    for(const role of row.roles)typeRoleTokens.add('ROLE:'+row.family+':'+role);
+  }).filter(Boolean).sort((a,b)=>a.id.localeCompare(b.id));
+  const contextKey=internalAssetMaintenanceContextKey(uiAtomIds,audioRoleIds);
+  const staticAggregateReusable=Boolean(
+    staticCache
+    &&staticCache.uniqueIds===true
+    &&uniqueIds
+    &&staticCache.contextKey===contextKey
+    &&Number(staticCache.assetCount)===rows.length
+    &&reusedStaticRowCount===rows.length
+  );
+  let sortedTypeRoleTokens,qualityRows,typeRoleFingerprint,qualityFingerprint,staleRowIds,semanticDuplicateReviewGroups,donorCandidates,qualityRepairStaticCandidates;
+  let packCount,familyCount,declaredOnlyQualityCount;
+  if(staticAggregateReusable){
+    sortedTypeRoleTokens=staticCache.typeRoleTokens;
+    qualityRows=staticCache.qualityRows;
+    typeRoleFingerprint=staticCache.typeRoleFingerprint;
+    qualityFingerprint=staticCache.qualityFingerprint;
+    staleRowIds=staticCache.staleRowIds;
+    semanticDuplicateReviewGroups=staticCache.semanticDuplicateReviewGroups;
+    donorCandidates=staticCache.qualityDonorCandidates;
+    qualityRepairStaticCandidates=staticCache.qualityRepairStaticCandidates;
+    packCount=staticCache.packCount;
+    familyCount=staticCache.familyCount;
+    declaredOnlyQualityCount=staticCache.declaredOnlyQualityCount;
+  }else{
+    const typeRoleTokens=new Set();
+    for(const row of rows){
+      if(row.family)typeRoleTokens.add('FAMILY:'+row.family);
+      if(row.packId)typeRoleTokens.add('PACK:'+row.packId);
+      if(row.subfamily)typeRoleTokens.add('SUBFAMILY:'+row.family+':'+row.subfamily);
+      for(const role of row.roles)typeRoleTokens.add('ROLE:'+row.family+':'+role);
+    }
+    for(const id of uiAtomIds||[])typeRoleTokens.add('UI_ATOM:'+upper(id));
+    for(const id of audioRoleIds||[])typeRoleTokens.add('AUDIO_ROLE:'+upper(id));
+    sortedTypeRoleTokens=Object.freeze([...typeRoleTokens].sort());
+    typeRoleFingerprint=stableAssetMaintenanceHash(JSON.stringify(sortedTypeRoleTokens));
+    qualityRows=Object.freeze(rows.filter(row=>row.quality!==null).map(row=>Object.freeze({id:row.id,quality:row.quality,grade:row.qualityGrade,family:row.family,packId:row.packId})).sort((a,b)=>a.id.localeCompare(b.id)));
+    qualityFingerprint=stableAssetMaintenanceHash(JSON.stringify(rows.map(row=>({
+      id:row.id,quality:row.quality,grade:row.qualityGrade,axes:row.auditAxes,
+      sourceHash:row.sourceHash,sourceFiles:row.sourceFiles,catalogVersion:row.catalogVersion,reuseEligible:row.reuseEligible
+    }))));
+    staleRowIds=Object.freeze(rows.filter(row=>row.catalogActive===false||row.catalogState==='STALE_CATALOG_ROW_REVIEW').map(row=>row.id));
+    const semanticGroups=new Map();
+    for(const row of rows){
+      const primaryRole=row.roles[0]||'';
+      const key=[row.family,row.subfamily,primaryRole].join('|');
+      if(!row.family||!row.subfamily||!primaryRole)continue;
+      const group=semanticGroups.get(key)||[];
+      group.push(row.id);semanticGroups.set(key,group);
+    }
+    semanticDuplicateReviewGroups=Object.freeze([...semanticGroups.entries()]
+      .filter(([,ids])=>ids.length>1)
+      .map(([key,ids])=>Object.freeze({key,assetIds:Object.freeze([...ids].sort()),count:ids.length}))
+      .sort((a,b)=>b.count-a.count||a.key.localeCompare(b.key))
+      .slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maintenanceListLimits.semanticDuplicateReviewGroups));
+    const reuseEligibleIds=new Set(rows.filter(row=>row.reuseEligible).map(row=>row.id));
+    donorCandidates=Object.freeze(qualityRows
+      .filter(row=>reuseEligibleIds.has(row.id))
+      .sort((a,b)=>Number(b.quality)-Number(a.quality)||a.id.localeCompare(b.id))
+      .slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maintenanceListLimits.donorCandidates)
+      .map(row=>Object.freeze({...row})));
+    qualityRepairStaticCandidates=Object.freeze(rows.filter(row=>row.reuseEligible).map(row=>{
+      const axes=Object.entries(row.auditAxes).sort(([a,av],[b,bv])=>av-bv||INTERNAL_ASSET_AUDIT_WEIGHTS[b]-INTERNAL_ASSET_AUDIT_WEIGHTS[a]||a.localeCompare(b));
+      const weakest=axes[0];
+      const measured=row.measuredAuditAxes.includes(weakest?.[0]);
+      const sourceFiles=row.sourceFiles.map(file=>file.replace(/^\//,''))
+        .filter(file=>file.startsWith('assets/')&&!file.split('/').includes('..')&&!/(^|\/)quality-evidence\.json$/.test(file));
+      const kind=!measured?'INSPECT_ASSET_QUALITY':weakest?.[1]<1?'IMPROVE_ASSET_DETAIL':'REAUDIT_ASSET_QUALITY';
+      const currentAxisScore=measured?Math.round((weakest?.[1]||0)*100):null;
+      return Object.freeze({
+        assetId:row.id,packId:row.packId||null,family:row.family,
+        sourceFiles:Object.freeze(sourceFiles),sourceHash:row.sourceHash,
+        sourceInspectionRequired:sourceFiles.length===0,
+        weakestAxis:measured?weakest?.[0]||null:null,
+        currentAxisScore,targetAxisScore:100,kind,
+        detailSteps:Object.freeze(measured?[...(INTERNAL_ASSET_DETAIL_REPAIR_STEPS[weakest?.[0]]||[])]:['INSPECT_CURRENT_SOURCE_AND_SAME_CONDITION_CAPTURES','RECORD_APPLICABLE_AXIS_MEASUREMENTS_WITHOUT_INVENTING_SCORES']),
+        preserveAxes:Object.freeze(axes.filter(([,value])=>value>=.9).map(([axis])=>axis)),
+        familyExpectations:INTERNAL_ASSET_FAMILY_EXPECTATIONS[row.family]?.expectations||Object.freeze([]),
+        comparisonViews:Object.freeze(row.family==='AUDIO'?['EVENT','LOOP_SEAM','MOBILE_MIX']:['GAME_CAMERA','MID_RANGE','CLOSEUP','CONTACT_OR_STATE']),
+        completionRequires:Object.freeze(['RESPONSIBLE_SOURCE_DIFF_WHEN_REPAIR_REQUIRED','FRESH_SAME_CONDITION_COMPARISON','NO_STRONG_AXIS_REGRESSION','MOBILE_BUDGET_CHECK'])
+      });
+    }));
+    packCount=new Set(rows.map(row=>row.packId).filter(Boolean)).size;
+    familyCount=new Set(rows.map(row=>row.family).filter(Boolean)).size;
+    declaredOnlyQualityCount=rows.filter(row=>row.declaredQuality!==null&&row.qualityEvidenceGrounded!==true).length;
   }
-  for(const id of uiAtomIds||[])typeRoleTokens.add('UI_ATOM:'+upper(id));
-  for(const id of audioRoleIds||[])typeRoleTokens.add('AUDIO_ROLE:'+upper(id));
-  const sortedTypeRoleTokens=[...typeRoleTokens].sort();
   const inventoryFingerprint=stableAssetMaintenanceHash(JSON.stringify(rows));
-  const typeRoleFingerprint=stableAssetMaintenanceHash(JSON.stringify(sortedTypeRoleTokens));
-  const qualityRows=rows.filter(row=>row.quality!==null).map(row=>({id:row.id,quality:row.quality,grade:row.qualityGrade,family:row.family,packId:row.packId})).sort((a,b)=>a.id.localeCompare(b.id));
-  const qualityFingerprint=stableAssetMaintenanceHash(JSON.stringify(rows.map(row=>({
-    id:row.id,quality:row.quality,grade:row.qualityGrade,axes:row.auditAxes,
-    sourceHash:row.sourceHash,sourceFiles:row.sourceFiles,catalogVersion:row.catalogVersion,reuseEligible:row.reuseEligible
-  }))));
-  const staleRowIds=rows.filter(row=>row.catalogActive===false||row.catalogState==='STALE_CATALOG_ROW_REVIEW').map(row=>row.id);
-  const semanticGroups=new Map();
-  for(const row of rows){
-    const primaryRole=row.roles[0]||'';
-    const key=[row.family,row.subfamily,primaryRole].join('|');
-    if(!row.family||!row.subfamily||!primaryRole)continue;
-    const group=semanticGroups.get(key)||[];
-    group.push(row.id);semanticGroups.set(key,group);
-  }
-  const semanticDuplicateReviewGroups=[...semanticGroups.entries()]
-    .filter(([,ids])=>ids.length>1)
-    .map(([key,ids])=>Object.freeze({key,assetIds:Object.freeze([...ids].sort()),count:ids.length}))
-    .sort((a,b)=>b.count-a.count||a.key.localeCompare(b.key))
-    .slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maintenanceListLimits.semanticDuplicateReviewGroups);
-  const reuseEligibleIds=new Set(rows.filter(row=>row.reuseEligible).map(row=>row.id));
-  const donorCandidates=qualityRows
-    .filter(row=>reuseEligibleIds.has(row.id))
-    .sort((a,b)=>Number(b.quality)-Number(a.quality)||a.id.localeCompare(b.id))
-    .slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maintenanceListLimits.donorCandidates)
-    .map(row=>Object.freeze({...row}));
+  const rowById=new Map(rows.map(row=>[row.id,row]));
+  const qualityRepairCandidates=qualityRepairStaticCandidates.map(candidate=>({candidate,row:rowById.get(candidate.assetId)}))
+    .filter(entry=>entry.row)
+    .sort((a,b)=>b.row.consumerPriority-a.row.consumerPriority
+      ||(a.candidate.kind==='REAUDIT_ASSET_QUALITY')-(b.candidate.kind==='REAUDIT_ASSET_QUALITY')
+      ||Number(a.candidate.currentAxisScore??-1)-Number(b.candidate.currentAxisScore??-1)
+      ||a.candidate.assetId.localeCompare(b.candidate.assetId));
   const qualityRepairActions=[],repairKeys=new Set();
-  const qualityRepairCandidates=rows.filter(row=>row.reuseEligible).map(row=>{
-    const axes=Object.entries(row.auditAxes).sort(([a,av],[b,bv])=>av-bv||INTERNAL_ASSET_AUDIT_WEIGHTS[b]-INTERNAL_ASSET_AUDIT_WEIGHTS[a]||a.localeCompare(b));
-    const weakest=axes[0];
-    const measured=row.measuredAuditAxes.includes(weakest?.[0]);
-    const sourceFiles=row.sourceFiles.map(file=>file.replace(/^\//,''))
-      .filter(file=>file.startsWith('assets/')&&!file.split('/').includes('..')&&!/(^|\/)quality-evidence\.json$/.test(file));
-    const kind=!measured?'INSPECT_ASSET_QUALITY':weakest?.[1]<1?'IMPROVE_ASSET_DETAIL':'REAUDIT_ASSET_QUALITY';
-    const currentAxisScore=measured?Math.round((weakest?.[1]||0)*100):null;
-    return{row,axes,weakest,measured,sourceFiles,kind,currentAxisScore};
-  }).sort((a,b)=>b.row.consumerPriority-a.row.consumerPriority
-    ||(a.kind==='REAUDIT_ASSET_QUALITY')-(b.kind==='REAUDIT_ASSET_QUALITY')
-    ||Number(a.currentAxisScore??-1)-Number(b.currentAxisScore??-1)
-    ||a.row.id.localeCompare(b.row.id));
-  for(const candidate of qualityRepairCandidates){
-    const {row,axes,weakest,measured,sourceFiles,kind,currentAxisScore}=candidate;
-    const repairKey=[sourceFiles.join('|')||row.id,kind,weakest?.[0]||'UNMEASURED'].join(':');
+  for(const {candidate,row} of qualityRepairCandidates){
+    const repairKey=[candidate.sourceFiles.join('|')||candidate.assetId,candidate.kind,candidate.weakestAxis||'UNMEASURED'].join(':');
     if(repairKeys.has(repairKey))continue;
     repairKeys.add(repairKey);
     qualityRepairActions.push(Object.freeze({
-      kind,assetId:row.id,packId:row.packId||null,family:row.family,consumerGameIds:row.consumerGameIds,consumerPriority:row.consumerPriority,
-      sourceFiles:Object.freeze(sourceFiles),sourceHash:row.sourceHash,
-      sourceInspectionRequired:sourceFiles.length===0,
-      weakestAxis:measured?weakest?.[0]||null:null,
-      currentAxisScore,
-      targetAxisScore:100,
-      detailSteps:Object.freeze(measured?[...(INTERNAL_ASSET_DETAIL_REPAIR_STEPS[weakest?.[0]]||[])]:['INSPECT_CURRENT_SOURCE_AND_SAME_CONDITION_CAPTURES','RECORD_APPLICABLE_AXIS_MEASUREMENTS_WITHOUT_INVENTING_SCORES']),
-      preserveAxes:Object.freeze(axes.filter(([,value])=>value>=.9).map(([axis])=>axis)),
-      familyExpectations:INTERNAL_ASSET_FAMILY_EXPECTATIONS[row.family]?.expectations||Object.freeze([]),
-      comparisonViews:Object.freeze(row.family==='AUDIO'?['EVENT','LOOP_SEAM','MOBILE_MIX']:['GAME_CAMERA','MID_RANGE','CLOSEUP','CONTACT_OR_STATE']),
-      completionRequires:Object.freeze(['RESPONSIBLE_SOURCE_DIFF_WHEN_REPAIR_REQUIRED','FRESH_SAME_CONDITION_COMPARISON','NO_STRONG_AXIS_REGRESSION','MOBILE_BUDGET_CHECK']),
+      kind:candidate.kind,assetId:candidate.assetId,packId:candidate.packId,family:candidate.family,
+      consumerGameIds:row.consumerGameIds,consumerPriority:row.consumerPriority,
+      sourceFiles:candidate.sourceFiles,sourceHash:candidate.sourceHash,
+      sourceInspectionRequired:candidate.sourceInspectionRequired,
+      weakestAxis:candidate.weakestAxis,
+      currentAxisScore:candidate.currentAxisScore,
+      targetAxisScore:candidate.targetAxisScore,
+      detailSteps:candidate.detailSteps,
+      preserveAxes:candidate.preserveAxes,
+      familyExpectations:candidate.familyExpectations,
+      comparisonViews:candidate.comparisonViews,
+      completionRequires:candidate.completionRequires,
       libraryFreshnessFingerprint:inventoryFingerprint,qualityFreshnessFingerprint:qualityFingerprint,
       productionPromotionAllowed:false,gameplayAuthority:false
     }));
@@ -2002,25 +2111,25 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
   }
   if(staleRowIds.length)refreshReasons.push('STALE_ROWS_PRESENT');
   if(semanticDuplicateReviewGroups.length)refreshReasons.push('SEMANTIC_DUPLICATE_REVIEW_AVAILABLE');
-  return Object.freeze({
+  const snapshot=Object.freeze({
     version:1,
     status:'SELF_MAINTENANCE_READY',
     inventoryFingerprint,
     typeRoleFingerprint,
     qualityFingerprint,
     assetCount:rows.length,
-    packCount:new Set(rows.map(row=>row.packId).filter(Boolean)).size,
-    familyCount:new Set(rows.map(row=>row.family).filter(Boolean)).size,
+    packCount,
+    familyCount,
     typeRoleTokenCount:sortedTypeRoleTokens.length,
     scoredAssetCount:qualityRows.length,
-    declaredOnlyQualityCount:rows.filter(row=>row.declaredQuality!==null&&row.qualityEvidenceGrounded!==true).length,
+    declaredOnlyQualityCount,
     ungroundedDeclaredScoresAreInformationalOnly:true,
-    typeRoleTokens:Object.freeze(sortedTypeRoleTokens),
+    typeRoleTokens:Object.freeze([...sortedTypeRoleTokens]),
     newTypeRoleTokens:Object.freeze(newTypeRoleTokens.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maintenanceListLimits.deltaTokens)),
     removedTypeRoleTokens:Object.freeze(removedTypeRoleTokens.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maintenanceListLimits.deltaTokens)),
-    staleRowIds:Object.freeze(staleRowIds.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maintenanceListLimits.deltaTokens)),
-    semanticDuplicateReviewGroups:Object.freeze(semanticDuplicateReviewGroups),
-    qualityDonorCandidates:Object.freeze(donorCandidates),
+    staleRowIds:Object.freeze([...staleRowIds].slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maintenanceListLimits.deltaTokens)),
+    semanticDuplicateReviewGroups:Object.freeze([...semanticDuplicateReviewGroups]),
+    qualityDonorCandidates:Object.freeze([...donorCandidates]),
     nextQualityActions:Object.freeze(qualityRepairActions.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maintenanceListLimits.qualityActions)),
     refreshRequired:refreshReasons.length>0,
     refreshReasons:Object.freeze(refreshReasons),
@@ -2032,8 +2141,19 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
     continueWithoutHuman:true,
     continueWithoutChatgpt:true
   });
+  if(cacheSink&&typeof cacheSink==='object')cacheSink.value=Object.freeze({
+    contextKey,uniqueIds,assetCount:rows.length,rowsByAssetId,
+    typeRoleTokens:Object.freeze([...sortedTypeRoleTokens]),
+    typeRoleFingerprint,qualityRows,qualityFingerprint,
+    staleRowIds:Object.freeze([...staleRowIds]),
+    semanticDuplicateReviewGroups:Object.freeze([...semanticDuplicateReviewGroups]),
+    qualityDonorCandidates:Object.freeze([...donorCandidates]),
+    qualityRepairStaticCandidates:Object.freeze([...qualityRepairStaticCandidates]),
+    packCount,familyCount,declaredOnlyQualityCount,
+    reusedStaticRowCount,staticAggregateReused:staticAggregateReusable
+  });
+  return snapshot;
 }
-
 function looseVolumeState(count,band={}){
   const value=Math.max(0,Number(count)||0);
   if(value<Number(band.minimum||0))return'SYSTEM_DEPTH_VOLUME_REQUIRED';
@@ -2103,6 +2223,8 @@ function uiSubsystemCount(ids=[],spec={}){
 
 export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null,uiAtomIds=[],audioRoleIds=[],externalSources=[],previousMaintenance=null,consumerGames=[],basePlan=null}={}){
   const inventoryAssets=assets;
+  const cachedMaintenance=basePlan&&INTERNAL_ASSET_LIBRARY_PLAN_MAINTENANCE_CACHE.get(basePlan);
+  const maintenanceCacheSink={};
   const cachedAuditByAssetId=basePlan&&INTERNAL_ASSET_LIBRARY_PLAN_AUDIT_CACHE.get(basePlan);
   const localAuditCache=new WeakMap();
   let reusedAuditCount=0;
@@ -2118,7 +2240,10 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     },
     set(asset,audit){localAuditCache.set(asset,audit);}
   };
-  const maintenance=buildInternalAssetMaintenanceSnapshot({assets:inventoryAssets,uiAtomIds,audioRoleIds,previous:previousMaintenance,consumerGames,auditCache});
+  const maintenance=buildInternalAssetMaintenanceSnapshot({
+    assets:inventoryAssets,uiAtomIds,audioRoleIds,previous:previousMaintenance,consumerGames,auditCache,
+    staticCache:cachedMaintenance,cacheSink:maintenanceCacheSink
+  });
   const cachedCandidatesByDomain=basePlan&&INTERNAL_ASSET_LIBRARY_PLAN_INDEX_CACHE.get(basePlan);
   const basePlanReusable=Boolean(
     cachedCandidatesByDomain instanceof Map
@@ -2199,8 +2324,10 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
       autonomousNextAction,
       executionOverlayReusedBasePlan:true,
       executionOverlayReusedDomainIndex:true,
-      executionOverlayReusedAuditCache:reusedAuditCount>0,
-      executionOverlayReusedAuditCount:reusedAuditCount
+      executionOverlayReusedAuditCache:reusedAuditCount>0||Number(maintenanceCacheSink.value?.reusedStaticRowCount||0)>0,
+      executionOverlayReusedAuditCount:Math.max(reusedAuditCount,Number(maintenanceCacheSink.value?.reusedStaticRowCount||0)),
+      executionOverlayReusedMaintenanceStatic:maintenanceCacheSink.value?.staticAggregateReused===true,
+      executionOverlayReusedMaintenanceRowCount:Number(maintenanceCacheSink.value?.reusedStaticRowCount||0)
     });
   }
   assets=(assets||[]).filter(asset=>asset?.catalogActive!==false
@@ -2641,6 +2768,7 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
   }
   INTERNAL_ASSET_LIBRARY_PLAN_INDEX_CACHE.set(plan,candidatesByDomain);
   INTERNAL_ASSET_LIBRARY_PLAN_AUDIT_CACHE.set(plan,auditByAssetId);
+  if(maintenanceCacheSink.value)INTERNAL_ASSET_LIBRARY_PLAN_MAINTENANCE_CACHE.set(plan,maintenanceCacheSink.value);
   return plan;
 }
 

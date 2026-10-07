@@ -4336,7 +4336,9 @@ test('asset library automation indexes audit domain seed and quality lookups ins
   const plannerSource=source.slice(start,end);
   assert.match(plannerSource,/const localAuditCache=new WeakMap\(\)/);
   assert.match(plannerSource,/INTERNAL_ASSET_LIBRARY_PLAN_AUDIT_CACHE\.get\(basePlan\)/);
+  assert.match(plannerSource,/INTERNAL_ASSET_LIBRARY_PLAN_MAINTENANCE_CACHE\.get\(basePlan\)/);
   assert.match(plannerSource,/cached\.key===internalAssetAuditInputKey\(asset\)/);
+  assert.match(plannerSource,/executionOverlayReusedMaintenanceStatic:/);
   assert.match(plannerSource,/domainAssetsByDomain=new Map/);
   assert.match(plannerSource,/commonDepthAssetsByDomain=new Map/);
   assert.match(plannerSource,/domainsByAsset=new WeakMap/);
@@ -4363,6 +4365,24 @@ test('consumer overlay checks ephemeral domain index before full domain classifi
   assert.ok(fullDomainLoop>cacheLookup);
   assert.ok(cacheWrite>fullDomainLoop);
   assert.match(plannerSource,/executionOverlayReusedDomainIndex:true/);
+});
+
+test('maintenance overlay cache reuses static aggregates before semantic and donor rebuilds',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const source=fs.readFileSync(path.resolve(here,'../assets/vibe-studio-asset-universe.js'),'utf8');
+  const start=source.indexOf('export function buildInternalAssetMaintenanceSnapshot');
+  const end=source.indexOf('function looseVolumeState',start);
+  const maintenanceSource=source.slice(start,end);
+  const reuseCheck=maintenanceSource.indexOf('if(staticAggregateReusable)');
+  const semanticRebuild=maintenanceSource.indexOf('const semanticGroups=new Map()');
+  const repairRebuild=maintenanceSource.indexOf('qualityRepairStaticCandidates=Object.freeze');
+  assert.ok(reuseCheck>=0);
+  assert.ok(semanticRebuild>reuseCheck);
+  assert.ok(repairRebuild>reuseCheck);
+  assert.match(maintenanceSource,/staticCache\.qualityFingerprint/);
+  assert.match(maintenanceSource,/staticCache\.semanticDuplicateReviewGroups/);
+  assert.match(maintenanceSource,/staticCache\.qualityDonorCandidates/);
+  assert.match(maintenanceSource,/staticCache\.qualityRepairStaticCandidates/);
 });
 
 test('library synchronization reuses the automation plan system depth audit',()=>{
@@ -5261,14 +5281,20 @@ test('consumer overlay reuse matches a full execution recompute while preserving
     :asset);
   const changedAuditFull=buildInternalAssetLibraryAutomationPlan({assets:changedAuditAssets,consumerGames});
   const changedAuditCached=buildInternalAssetLibraryAutomationPlan({assets:changedAuditAssets,consumerGames,basePlan});
+  const changedSourceAssets=dynamicAssets.map(asset=>asset.id==='prop-b'?{...asset,sourceHash:'changed-source'}:asset);
+  const changedSourceFull=buildInternalAssetLibraryAutomationPlan({assets:changedSourceAssets,consumerGames});
+  const changedSourceCached=buildInternalAssetLibraryAutomationPlan({assets:changedSourceAssets,consumerGames,basePlan});
 
   assert.equal(reusedExecution.executionOverlayReusedBasePlan,true);
   assert.equal(reusedExecution.executionOverlayReusedDomainIndex,true);
   assert.equal(reusedExecution.executionOverlayReusedAuditCache,true);
   assert.equal(reusedExecution.executionOverlayReusedAuditCount,dynamicAssets.length);
+  assert.equal(reusedExecution.executionOverlayReusedMaintenanceStatic,true);
+  assert.equal(reusedExecution.executionOverlayReusedMaintenanceRowCount,dynamicAssets.length);
   assert.equal(detachedExecution.executionOverlayReusedBasePlan,undefined);
   assert.equal(detachedExecution.executionOverlayReusedDomainIndex,undefined);
   assert.equal(detachedExecution.executionOverlayReusedAuditCache,undefined);
+  assert.equal(detachedExecution.executionOverlayReusedMaintenanceStatic,undefined);
   assert.deepEqual(reusedExecution.nextQualityActions,fullExecution.nextQualityActions);
   assert.deepEqual(reusedExecution.nextVolumeActions,fullExecution.nextVolumeActions);
   assert.deepEqual(reusedExecution.maintenance,fullExecution.maintenance);
@@ -5279,6 +5305,9 @@ test('consumer overlay reuse matches a full execution recompute while preserving
   assert.deepEqual(detachedExecution.nextVolumeActions,fullExecution.nextVolumeActions);
   assert.deepEqual(changedAuditCached.nextQualityActions,changedAuditFull.nextQualityActions);
   assert.deepEqual(changedAuditCached.maintenance,changedAuditFull.maintenance);
+  assert.deepEqual(changedSourceCached.nextQualityActions,changedSourceFull.nextQualityActions);
+  assert.deepEqual(changedSourceCached.maintenance,changedSourceFull.maintenance);
+  assert.equal(changedSourceCached.executionOverlayReusedBasePlan,undefined);
   assert.equal(changedAuditCached.nextQualityActions[0].assetId,'prop-b');
   assert.equal(changedAuditCached.nextQualityActions[0].currentAxisScore,20);
   assert.equal(reusedExecution.nextQualityActions[0].assetId,'prop-b');
