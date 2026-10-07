@@ -15,17 +15,17 @@
   "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=OPTIONAL_EXTERNAL_AI_DISABLED local=OLLAMA_DESIGN_TIMEOUT 90000ms",
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
+      "calls": 7,
       "successes": 0,
-      "failures": 6,
-      "timeouts": 5,
+      "failures": 7,
+      "timeouts": 6,
       "jsonFailures": 1,
-      "totalMs": 619154,
-      "lastMs": 90055,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 90000ms",
-      "updatedAt": "2026-10-07T00:38:59.737Z"
+      "totalMs": 739255,
+      "lastMs": 120101,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
+      "updatedAt": "2026-10-07T00:57:50.606Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-07T00:55:50.362Z"
+  "updatedAt": "2026-10-07T00:57:50.606Z"
 }
