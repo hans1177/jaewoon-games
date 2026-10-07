@@ -5312,6 +5312,10 @@ test('game-specific BUILD_UP directive survives compact generation retries',()=>
 
 test('game-specific BUILD_UP worker guidance carries detailed verified design into the actual implementation prompt',()=>{
   const designContext={
+    sharedGameDesign:{identity:'정원 방어 상세 설계',coreFun:'같은 핵심 재미',multiplayerMode:'COOP'},
+    sharedDesignFingerprint:'a'.repeat(64),
+    selectedPlatformProfile:'ROBLOX',
+    platformDesignProfile:{platform:'ROBLOX',inputModel:'touch-gamepad'},
     uxAccessibilityPlan:{touchAndInput:'하단 우측 공격 버튼과 뒤로가기 버튼의 역할을 분리'},
     narrativeDialoguePlan:{questStates:['퀘스트: 온실 단서 조사 -> 방어 -> 후속 지역 해금']},
     implementationTraceability:[{designElement:'메뉴 버튼 상태',responsibleSystem:'HUD/Menu state',validationEvidence:'버튼 활성/잠금과 실제 상태 일치'}]
@@ -5328,6 +5332,12 @@ test('game-specific BUILD_UP worker guidance carries detailed verified design in
       primaryFocus:'USABILITY',
       gameIdentityAndNonNegotiables:{identity:'정원 방어 상세 설계'},
       designImplementationContext:designContext,
+      crossPlatformDesignContract:{
+        version:1,oneSharedGameDesign:true,commonCoreFingerprint:'a'.repeat(64),
+        platformProfileMayAdaptImplementationOnly:true,
+        platformProfileMayChangeCoreRulesBalanceProgressionEconomySaveOrMultiplayerMeaning:false,
+        webUnityRobloxCommonCoreMustMatch:true
+      },
       thisLoopPrimaryGoal:'메뉴와 퀘스트 상태를 실제 플레이 흐름에 연결',
       primaryGoalReason:'검증된 상세 설계를 구현 책임까지 보존',
       responsibleSystemsAndFiles:{sourceAnchors:[{
@@ -5358,6 +5368,12 @@ test('game-specific BUILD_UP worker guidance carries detailed verified design in
   assert.match(prompt,/하단 우측 공격 버튼과 뒤로가기 버튼의 역할을 분리/);
   assert.match(prompt,/온실 단서 조사/);
   assert.match(prompt,/메뉴 버튼 상태/);
+  assert.match(prompt,/sharedGameDesign/);
+  assert.match(prompt,/sharedDesignFingerprint/);
+  assert.match(prompt,/selectedPlatformProfile/);
+  assert.match(prompt,/sharedDesign=/);
+  assert.match(prompt,/webUnityRobloxCommonCoreMustMatch/);
+  assert.match(prompt,/같은 핵심 재미/);
 
   const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.match(source,/sourceAnchors=.*CURRENT=/);
@@ -5367,7 +5383,9 @@ test('game-specific BUILD_UP worker guidance carries detailed verified design in
   assert.match(source,/previousEffectiveness=/);
   assert.match(source,/nextVibeAction=/);
   assert.match(source,/designContext=/);
+  assert.match(source,/sharedDesign=/);
   assert.match(source,/'designContext='/);
+  assert.match(source,/'sharedDesign='/);
   assert.match(source,/contentExpansionVersion=/);
   assert.match(source,/contentTheme=/);
   assert.match(source,/contentBreadth=/);
@@ -5387,6 +5405,7 @@ test('focused replace-only compacts build-up directive without losing exact goal
     'directiveId=demo-g7 generation=7 developmentDepth=4 escalationStage=BUILD_UP primaryFocus=PRESENTATION',
     'gameIdentity=정원 방어 전투',
     'designContext='+JSON.stringify({uxAccessibilityPlan:{touchAndInput:'하단 우측 공격 버튼과 뒤로가기 버튼의 역할을 분리'},narrativeDialoguePlan:{questStates:['온실 단서 조사 후 방어하고 후속 지역 해금']}}),
+    'sharedDesign='+JSON.stringify({version:1,oneSharedGameDesign:true,commonCoreFingerprint:'b'.repeat(64),webUnityRobloxCommonCoreMustMatch:true}),
     'primaryGoal=벌 돌진 전조를 실제 렌더에서 더 분명하게 만든다.',
     'sourceAnchors=Assets/Scripts/Player.cs:12 SYMBOL Render CURRENT=weak INTENDED=clear ACCEPT=visible',
     'expectedPlayerEffect=공격 전조를 즉시 구분',
@@ -5425,6 +5444,8 @@ test('focused replace-only compacts build-up directive without losing exact goal
   assert.match(focused.prompt,/directiveId=demo-g7/);
   assert.match(focused.prompt,/primaryGoal=벌 돌진 전조/);
   assert.match(focused.prompt,/designContext=/);
+  assert.match(focused.prompt,/sharedDesign=/);
+  assert.match(focused.prompt,/webUnityRobloxCommonCoreMustMatch/);
   assert.match(focused.prompt,/하단 우측 공격 버튼과 뒤로가기 버튼의 역할을 분리/);
   assert.match(focused.prompt,/sourceAnchors=Assets\/Scripts\/Player\.cs/);
   assert.match(focused.prompt,/expectedPlayerEffect=공격 전조를 즉시 구분/);
