@@ -19,72 +19,16 @@ const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
 const clip=(v,n=14000)=>{const s=typeof v==='string'?v:JSON.stringify(v);return s.length>n?s.slice(0,n):s;};
 const uniq=values=>[...new Set((values||[]).map(clean).filter(Boolean))];
 function kstDate(){const p=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());const g=t=>p.find(x=>x.type===t)?.value||'';return`${g('year')}-${g('month')}-${g('day')}`;}
-function hash(value){let h=2166136261;for(const ch of String(value)){h^=ch.codePointAt(0);h=Math.imul(h,16777619);}return h>>>0;}
 
 const directive=readJson('company-directive.json',{});
-const ai=directive.ai||{};
-const geminiApiKey=clean(process.env.GEMINI_API_KEY);
 const localDesignerModel=clean(process.env.COMPANY_VIBE_LOCAL_MODEL||'qwen3:1.7b');
 const localDesignerFallbackReady=clean(process.env.COMPANY_LOCAL_DESIGN_FALLBACK_READY).toLowerCase()==='true';
-const externalAiEnabled=clean(process.env.COMPANY_EXTERNAL_AI_ENABLED||'false').toLowerCase()==='true';
-const authorizedDesignerModels=uniq([
-  clean(ai.gameDesigner?.geminiModel),
-  ...(ai.gameDesigner?.geminiFallbackModels||[])
-]);
-const geminiDesignerModel=clean(process.env.COMPANY_GEMINI_DESIGNER_MODEL||ai.gameDesigner?.geminiModel||'gemini-3.8-flash');
-const configuredDesignerFallbacks=uniq(clean(process.env.COMPANY_GEMINI_FALLBACK_MODELS||'').split(','));
-const geminiFallbackModelList=configuredDesignerFallbacks.length?configuredDesignerFallbacks:authorizedDesignerModels;
-const externalDesignerConfigured=authorizedDesignerModels.includes(geminiDesignerModel)
-  &&geminiFallbackModelList.every(model=>authorizedDesignerModels.includes(model));
-const geminiUnavailableModels=new Map();
-function isDailyGeminiQuotaError(error){
-  return /GenerateRequestsPerDayPerProjectPerModel-FreeTier|requests per day|daily quota/i.test(clean(error?.message||error));
-}
-function persistentGeminiUnavailableStatus(error){
-  const message=clean(error?.message||error);
-  if(isDailyGeminiQuotaError(message))return 429;
-  if(/no longer available to new users|NOT_FOUND|\b404\b/i.test(message))return 404;
-  if(/PERMISSION_DENIED|\b403\b/i.test(message))return 403;
-  return 0;
-}
-function geminiProviderRetryWindowMs(error){
-  const message=clean(error?.message||error);
-  if(!isDailyGeminiQuotaError(message))return 0;
-  const seconds=Number(message.match(/Please retry in\s+(\d+(?:\.\d+)?)s/i)?.[1]||message.match(/retryDelay[^0-9]*(\d+(?:\.\d+)?)s/i)?.[1]);
-  return Number.isFinite(seconds)&&seconds>0?Math.ceil(seconds*1000):60*60*1000;
-}
-function geminiQuotaRetryWindowActive(row){
-  const updated=Date.parse(clean(row?.updatedAt));
-  if(!Number.isFinite(updated))return true;
-  return Date.now()<updated+geminiProviderRetryWindowMs(row?.lastError);
-}
-function kstDateForTimestamp(value){
-  const time=Date.parse(clean(value));if(!Number.isFinite(time))return '';
-  const p=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(time));
-  const g=t=>p.find(x=>x.type===t)?.value||'';
-  return `${g('year')}-${g('month')}-${g('day')}`;
-}
-function geminiCandidatesFor(primary){
-  const ordered=uniq([primary,...geminiFallbackModelList]);
-  const available=ordered.filter(model=>!geminiUnavailableModels.has(model));
-  if(available.length)return available;
-  throw new Error(`GEMINI_NO_AVAILABLE_MODELS ${[...geminiUnavailableModels.entries()].map(([model,status])=>`${model}:${status}`).join(',')}`);
-}
-function quarantineGeminiModel(model,status){
-  if(![403,404,429].includes(Number(status)))return;
-  geminiUnavailableModels.set(model,Number(status));
-  console.log(`GEMINI_MODEL_QUARANTINED=${model}|status=${status}`);
-}
-function geminiThinkingConfigFor(model){
-  return {thinkingLevel:'low'};
-}
 // Department evidence is computed from the same deterministic gate; no AI review lanes.
 const leadModels={},departmentReviewModels={};
 const reviewModelCount=0,modelPhaseConcurrency=1,maxLoadedModelLanes=1;
 const phaseConcurrency={};
 const modelKeepAlive='PROVIDER_SPECIFIC';
-const modelCallTimeoutMs=Math.min(120000,Math.max(30000,Number(process.env.COMPANY_MODEL_CALL_TIMEOUT_MS||90000)));
-// 내부 모델 작성 예산: 외부 공급자 제한과 분리하고 준비 단계의 모델 로딩 시간은 제외한다.
+// 내부 모델 작성 예산: 준비 단계의 모델 로딩 시간은 제외한다.
 const localDesignerCallTimeoutMs=Math.min(300000,Math.max(30000,Number(process.env.COMPANY_LOCAL_DESIGN_CALL_TIMEOUT_MS)||300000));
 
 const gameId=clean(process.env.ARTBOOK_GAME_ID||process.env.GAME_ID||process.argv.find(x=>x.startsWith('--game='))?.split('=')[1]);
@@ -164,14 +108,12 @@ const catalog=readJson('game-catalog.json',{games:[]});
 const catalogGame=(catalog.games||[]).find(x=>x.id===gameId)||null;
 if(catalogGame&&clean(catalogGame.productionClass)&&clean(catalogGame.productionClass)!=='DESIGN_ONLY'&&seed.designInputMode!=='OWNER_BRIEF_AND_ORIGINAL_ONLY')throw new Error(`DESIGN_ONLY_CLASS_REQUIRED: ${catalogGame.productionClass}`);
 const game={id:gameId,name:clean(catalogGame?.name||seed.gameName||gameId),description:clean(catalogGame?.description||seed.DISTINCT_IDENTITY),genre:clean(catalogGame?.genre||seed.GAME_CATEGORY),productionClass:'DESIGN_ONLY',productionTier:3,productionTarget:'DESIGN_BASELINE',webPath:catalogGame?.webPath||null,unityProjectPath:catalogGame?.unityProjectPath||null};
-const designerRoute={provider:'GEMINI',model:geminiDesignerModel,id:`gemini:${geminiDesignerModel}`};
-const designerFailoverRoutes=[designerRoute];
-let activeDesignerRoute=designerRoute;
+const designerRoute={provider:'VIBE_LOCAL_OLLAMA',model:localDesignerModel,id:`ollama:${localDesignerModel}`};
+const activeDesignerRoute=designerRoute;
 const designerModel=designerRoute.id;
-const coordinatorModel=geminiDesignerModel;
-console.log('GEMINI_THINKING_LEVEL=LOW');
-console.log('GAME_DESIGNER_PROVIDER='+(externalAiEnabled&&geminiApiKey&&externalDesignerConfigured?'OPTIONAL_GEMINI_WITH_VIBE_FALLBACK':'VIBE_LOCAL_OLLAMA'));
-console.log('DESIGN_EXTERNAL_AI_REQUIRED=NO');
+const coordinatorModel=localDesignerModel;
+console.log('GAME_DESIGNER_PROVIDER=VIBE_LOCAL_OLLAMA');
+console.log('DESIGN_EXTERNAL_AI_ALLOWED=NO');
 console.log(`GAME_DESIGNER_MODEL=${designerModel}`);
 console.log('DESIGN_AI_REVIEW_LANES=NONE');
 const base=path.join('design',gameId,date);fs.mkdirSync(base,{recursive:true});
@@ -253,7 +195,8 @@ const checkpointCompatibleEngineDigests=new Set([
   '2ee13c831a912a1446b625b0b30f5e2fd64a6acf6fa19754420ecde80b0abc5f',
   '84ba02b00c0f6c91c9731f1ecabc12b55accadd2f2673cabdf5badc742e64dbf',
   '9aae351acc02880ef280b371a21ead70b013c820010af4eeb88e23fe059d71b3',
-  '81b77ec5e350f8737109235df27ddb3a375a99cf53bfce58e356fcdea285920b'
+  '81b77ec5e350f8737109235df27ddb3a375a99cf53bfce58e356fcdea285920b',
+  '4392f6c8aaf3b4a62d3195d1aa9afdb76cd0ba1f633317503035d6af19a057b9'
 ]);
 const checkpointV3CompatibleEngineMigrationEligible=designCheckpoint?.contractVersion===DESIGN_CHECKPOINT_CONTRACT_VERSION
   &&clean(designCheckpoint?.gameId)===gameId
@@ -332,19 +275,6 @@ if(priorCheckpointStatus==='PRE_GATE_BLOCKED'&&Object.prototype.hasOwnProperty.c
   designCheckpoint.updatedAt=new Date().toISOString();
   writeJson(checkpointPath,designCheckpoint);
   console.log(`DESIGN_PRE_GATE_REPAIR_RETRY_GENERATION=${designCheckpoint.preGateRepairGeneration}|invalidated=${invalidated}|fullCycleRestart=NO`);
-}
-for(const [rawModel,row] of Object.entries(designCheckpoint.modelHealth||{})){
-  const status=persistentGeminiUnavailableStatus(row?.lastError);
-  if(!status)continue;
-  if(status===429&&!geminiQuotaRetryWindowActive(row)){
-    const model=clean(rawModel).replace(/^gemini:/,'');
-    if(model)console.log(`GEMINI_MODEL_QUARANTINE_EXPIRED=${model}|status=429|scope=PROVIDER_RETRY_WINDOW`);
-    continue;
-  }
-  const model=clean(rawModel).replace(/^gemini:/,'');
-  if(!model)continue;
-  geminiUnavailableModels.set(model,status);
-  console.log(`GEMINI_MODEL_QUARANTINE_RESTORED=${model}|status=${status}|scope=CHECKPOINT|${date}`);
 }
 const PROGRESS_STAGE_ORDER=['BOOTSTRAP','DESIGNER_DRAFT','PRE_GATE','PRE_GATE_REPAIR','DEPARTMENT_REVIEWS','DESIGNER_REVISION','COMPLETE'];
 function writeProgress(stage=designCheckpoint.currentPhase||'BOOTSTRAP',extra={}){
@@ -511,7 +441,7 @@ async function authorDesignInCheckpointedSlices({phase,system,sharedContext,curr
       system,
       `전체 설계를 한 번에 출력하지 말고 현재 필드 묶음만 상세하게 작성하라. 다른 필드는 출력하지 않는다. MAIN/A/B/c/@와 causalDNA 연결은 현재 필드가 담당하는 범위에서 실제 상태 변화로 유지한다. 이미 작성된 설계와 모순시키지 않는다.\nSLICE_ID=${slice.id}\nSLICE_FIELDS=${JSON.stringify(slice.fields)}\nSTRUCTURE_CONTRACT=${JSON.stringify(repairStructureContract(slice.fields))}\nGAME_SEED_DESIGN_DEPTH=${clip(seedDesignDepthContext,7500)}\nSHARED_CONTEXT=${clip(sharedContext,6500)}\nCURRENT_SLICE=${clip(existing,3500)}\nPRIOR_GENERATED_DESIGN=${clip(merged,6500)}`,
       schema,
-      {predict:slice.predict,temperature:phase.includes('revision')?0.16:0.24,numCtx:8192,timeoutMs:modelCallTimeoutMs,maxAttempts:2}
+      {predict:slice.predict,temperature:phase.includes('revision')?0.16:0.24,numCtx:8192,timeoutMs:localDesignerCallTimeoutMs,maxAttempts:2}
     ));
     Object.assign(merged,result);
   }
@@ -876,127 +806,15 @@ function normalizeSchemaValue(value,schema,label='root',repairs=[]){
   return value;
 }
 
-function geminiMinuteRetryDelayMs(error,candidateModel){
-  const message=clean(error?.message||error);
-  if(Number(error?.geminiStatus||0)!==429)return 0;
-  const explicit=message.match(/retryDelay[^0-9]*(\d+(?:\.\d+)?)s/i)?.[1]||message.match(/Please retry in\s+(\d+(?:\.\d+)?)s/i)?.[1];
-  if(!explicit)return 0;
-  const seconds=Math.min(70,Math.max(5,Math.ceil(Number(explicit))));
-  const stagger=(hash(`${gameId}:${candidateModel}`)%5)*1000;
-  return seconds*1000+stagger;
-}
-
-async function callModel(model,system,user,schema,{predict=1100,temperature=0.25,repairRequired=null,numCtx=8192,timeoutMs=null,maxAttempts=3,candidateModels=null}={}){
-  const callStarted=Date.now();
-  const requestedModel=model;
-  const candidates=Array.isArray(candidateModels)&&candidateModels.length?uniq(candidateModels).filter(candidate=>!geminiUnavailableModels.has(candidate)):geminiCandidatesFor(requestedModel);
-  if(!candidates.length)throw new Error(`GEMINI_NO_AVAILABLE_CANDIDATES ${requestedModel}`);
-  const effectiveTimeoutMs=Math.min(120000,Math.max(30000,Number(timeoutMs||modelCallTimeoutMs)));
-  const attemptLimit=Math.min(3,Math.max(1,Number(maxAttempts||3)));
-  let lastError=null;
-  for(const candidateModel of candidates){
-    let minuteRateRetries=0;
-    for(let attempt=1;attempt<=attemptLimit;attempt++){
-      try{
-        const prompt=user+(attempt>1&&lastError?`\nPREVIOUS_VALIDATION_ERROR=${clean(lastError?.message)}\n오류를 수정하고 JSON 객체만 반환한다.`:'')+'\n출력은 스키마에 맞는 JSON 객체만 반환한다.';
-        const response=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(candidateModel)}:generateContent?key=${encodeURIComponent(geminiApiKey)}`,{
-          method:'POST',
-          headers:{'content-type':'application/json'},
-          body:JSON.stringify({
-            systemInstruction:{parts:[{text:system}]},
-            contents:[{role:'user',parts:[{text:prompt}]}],
-            generationConfig:{
-              temperature:attempt===1?temperature:0,
-              maxOutputTokens:Math.min(8192,Math.max(schema===DESIGN?4096:(schema===DESIGN_BASE||schema===DESIGN_GATE?2200:768),Number(predict||1100))),
-              responseMimeType:'application/json',
-              responseJsonSchema:schema,
-              thinkingConfig:geminiThinkingConfigFor(candidateModel)
-            }
-          }),
-          signal:AbortSignal.timeout(effectiveTimeoutMs)
-        });
-        if(!response.ok){
-          const bodyText=clip(await response.text(),1600);
-          const error=new Error(`gemini ${response.status}: ${bodyText}`);
-          error.geminiStatus=response.status;
-          throw error;
-        }
-        const body=await response.json();
-        const candidate=Array.isArray(body.candidates)?body.candidates[0]:null;
-        const finishReason=clean(candidate?.finishReason);
-        const raw=clean((body.candidates||[]).flatMap(item=>item?.content?.parts||[]).map(part=>part?.text||'').join(''));
-        if(!raw)throw new Error(`GEMINI_EMPTY_RESPONSE finishReason=${finishReason||'UNKNOWN'}`);
-        if(finishReason==='MAX_TOKENS')throw new Error(`GEMINI_OUTPUT_TRUNCATED model=${candidateModel} chars=${raw.length}`);
-        const parsed=parseJsonObject(raw);
-        const repairs=[];
-        let normalized=normalizeSchemaValue(parsed,schema,'root',repairs);
-        if(typeof repairRequired==='function'){
-          const grounded=repairRequired(normalized);
-          if(grounded?.value)normalized=grounded.value;
-          if(Array.isArray(grounded?.repairs)&&grounded.repairs.length)for(const item of grounded.repairs)repairs.push(`grounded-required:${item.field}:${item.source}`);
-        }
-        assertSchemaValue(normalized,schema);
-        const elapsedMs=Date.now()-callStarted;
-        recordModelHealth(`gemini:${candidateModel}`,{success:true,elapsedMs});
-        designCheckpoint.lastSuccessfulModelCallAt=new Date().toISOString();
-        designCheckpoint.geminiModelResolution=designCheckpoint.geminiModelResolution&&typeof designCheckpoint.geminiModelResolution==='object'?designCheckpoint.geminiModelResolution:{};
-        designCheckpoint.geminiModelResolution[requestedModel]=candidateModel;
-        modelCallStats.push({model:`gemini:${candidateModel}`,requestedModel:`gemini:${requestedModel}`,provider:'GEMINI',attempt,elapsedMs,predict,mode:'gemini-json-schema',timeoutMs:effectiveTimeoutMs,schemaRepairs:repairs.length});
-        persistDesignCheckpoint();
-        if(candidateModel!==requestedModel)console.log(`GEMINI_MODEL_FAILOVER_RESOLVED=${requestedModel}->${candidateModel}`);
-        console.log(`GEMINI_CALL_MS=${candidateModel}|${elapsedMs}|attempt=${attempt}|timeout=${effectiveTimeoutMs}`);
-        return normalized;
-      }catch(error){
-        lastError=error;
-        recordModelHealth(`gemini:${candidateModel}`,{success:false,elapsedMs:Date.now()-callStarted,error});
-        persistDesignCheckpoint();
-        const status=Number(error?.geminiStatus||0);
-        if(status===429&&isDailyGeminiQuotaError(error)){
-          quarantineGeminiModel(candidateModel,status);
-          const nextCandidate=candidates.slice(candidates.indexOf(candidateModel)+1).find(model=>!geminiUnavailableModels.has(model))||null;
-          console.log(`GEMINI_DAILY_QUOTA_EXHAUSTED=${candidateModel}|retry=NO|next=${nextCandidate||'NONE'}`);
-          console.log(`GEMINI_MODEL_FAILOVER=${requestedModel}|${candidateModel}->${nextCandidate||'NONE'}|status=${status}`);
-          break;
-        }
-        const minuteRetryMs=geminiMinuteRetryDelayMs(error,candidateModel);
-        if(status===429&&minuteRetryMs>0&&minuteRateRetries<2){
-          minuteRateRetries+=1;
-          console.log(`GEMINI_RATE_LIMIT_WAIT=${candidateModel}|${minuteRetryMs}|retry=${minuteRateRetries}`);
-          await new Promise(r=>setTimeout(r,minuteRetryMs));
-          attempt-=1;
-          continue;
-        }
-        if(status===429||status===404||status===403){
-          quarantineGeminiModel(candidateModel,status);
-          const nextCandidate=candidates.slice(candidates.indexOf(candidateModel)+1).find(model=>!geminiUnavailableModels.has(model))||null;
-          console.log(`GEMINI_MODEL_FAILOVER=${requestedModel}|${candidateModel}->${nextCandidate||'NONE'}|status=${status}`);
-          break;
-        }
-        if(attempt<attemptLimit){
-          await new Promise(r=>setTimeout(r,600*attempt));
-          continue;
-        }
-        break;
-      }
-    }
-  }
-  throw new Error(`GEMINI_CALL_FAILED ${requestedModel}: ${clean(lastError?.message)}`);
-}
-
-async function callExternalDesignerModel(route,system,user,schema,options={}){
-  if(route.provider!=='GEMINI')throw new Error(`GEMINI_PROVIDER_ROUTE_INVALID ${route.provider}`);
-  if(!geminiApiKey)throw new Error('GEMINI_API_KEY_UNAVAILABLE');
-  return callModel(route.model,system,user,schema,options);
-}
 // 내부 디자이너 요청·실행 시간 로그
-async function requestLocalDesignerRaw(prompt,{predict=1600,temperature=0.1,numCtx=8192,timeoutMs=localDesignerCallTimeoutMs}={}){
+async function requestLocalDesignerRaw(prompt,{predict=1600,temperature=0.1,numCtx=8192,timeoutMs=localDesignerCallTimeoutMs,schema=null}={}){
   const body=JSON.stringify({
     model:localDesignerModel,
     prompt,
     stream:false,
     think:false,
     keep_alive:'10m',
-    format:'json',
+    format:schema||'json',
     options:{
       num_predict:Math.min(8192,Math.max(512,Number(predict||1600))),
       temperature:Number.isFinite(Number(temperature))?Number(temperature):0.1,
@@ -1026,6 +844,7 @@ async function requestLocalDesignerRaw(prompt,{predict=1600,temperature=0.1,numC
           const raw=clean(row?.response);
           if(!raw)throw new Error('OLLAMA_DESIGN_EMPTY_RESPONSE');
           console.log(`DESIGN_LOCAL_TIMING=loadMs:${Math.round(Number(row.load_duration||0)/1e6)}|promptTokens:${Number(row.prompt_eval_count||0)}|promptMs:${Math.round(Number(row.prompt_eval_duration||0)/1e6)}|generatedTokens:${Number(row.eval_count||0)}|generationMs:${Math.round(Number(row.eval_duration||0)/1e6)}`);
+          if(row.done_reason==='length')throw new Error('OLLAMA_DESIGN_OUTPUT_TRUNCATED');
           finish(null,raw);
         }catch(error){finish(error);}
       });
@@ -1041,8 +860,41 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
   const started=Date.now();
   const prompt=`${system}\n\n${user}\n\nLOCAL_AUTHORING_RULES=JSON_OBJECT_ONLY;DO_NOT_DECIDE_GATE_PASS_FAIL;PRESERVE_OWNER_INTENT;REPAIR_ONLY_REQUESTED_SCOPE`;
   console.log(`DESIGN_LOCAL_AUTHORING_BUDGET_MS=${timeoutMs}|predict=${predict}|context=${numCtx}|promptChars=${prompt.length}`);
+  const identity=createHash('sha256').update(JSON.stringify({system,user,schema})).digest('hex');
+  let directCall=true;
   try{
-    const raw=await requestLocalDesignerRaw(prompt,{predict,temperature,numCtx,timeoutMs});
+    let raw;
+    let splitRequired=designCheckpoint.localAuthoringSplits?.[identity]===true;
+    if(!splitRequired){
+      try{
+        raw=await requestLocalDesignerRaw(prompt,{predict,temperature,numCtx,timeoutMs,schema});
+      }catch(error){
+        const fields=Object.keys(schema?.properties||{});
+        if(error?.message!=='OLLAMA_DESIGN_OUTPUT_TRUNCATED'||schema?.type!=='object'||fields.length<2)throw error;
+        recordModelHealth(`ollama:${localDesignerModel}`,{success:false,elapsedMs:Date.now()-started,error});
+        designCheckpoint.localAuthoringSplits={...designCheckpoint.localAuthoringSplits,[identity]:true};
+        persistDesignCheckpoint();
+        splitRequired=true;
+      }
+    }
+    if(splitRequired){
+      directCall=false;
+      // 잘린 결과는 저장하지 않고 같은 필수 필드를 더 작은 체크포인트로 완성한다.
+      const fields=Object.keys(schema.properties);
+      console.log(`DESIGN_LOCAL_SPLIT_TRUNCATED_FIELDS=${fields.length}`);
+      const midpoint=Math.ceil(fields.length/2);
+      const merged={};
+      for(const part of [fields.slice(0,midpoint),fields.slice(midpoint)]){
+        const partSchema={...schema,required:(schema.required||[]).filter(field=>part.includes(field)),properties:Object.fromEntries(part.map(field=>[field,schema.properties[field]]))};
+        const value=await runCheckpointTask('local_authoring_parts',`${identity}:${part.join(',')}`,()=>callLocalDesignerModel(
+          system,`${user}\nLOCAL_REQUIRED_FIELDS=${JSON.stringify(part)}\n이번 응답은 LOCAL_REQUIRED_FIELDS만 출력하고 나머지 필드는 다음 응답에서 완성한다. 필수 구조와 설계 깊이는 유지한다.`,
+          partSchema,{predict,temperature,numCtx}
+        ));
+        Object.assign(merged,value);
+      }
+      assertSchemaValue(merged,schema);
+      raw=JSON.stringify(merged);
+    }
     const parsed=parseJsonObject(raw);
     const repairs=[];
     let normalized=normalizeSchemaValue(parsed,schema,'root',repairs);
@@ -1053,46 +905,25 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
     }
     assertSchemaValue(normalized,schema);
     const elapsedMs=Date.now()-started;
-    recordModelHealth(`ollama:${localDesignerModel}`,{success:true,elapsedMs});
-    modelCallStats.push({model:`ollama:${localDesignerModel}`,requestedModel:designerRoute.id,provider:'VIBE_LOCAL_OLLAMA',attempt:1,elapsedMs,predict,mode:'ollama-json',timeoutMs,schemaRepairs:repairs.length});
+    if(directCall){
+      recordModelHealth(`ollama:${localDesignerModel}`,{success:true,elapsedMs});
+      modelCallStats.push({model:`ollama:${localDesignerModel}`,requestedModel:designerRoute.id,provider:'VIBE_LOCAL_OLLAMA',attempt:1,elapsedMs,predict,mode:'ollama-json-schema',timeoutMs,schemaRepairs:repairs.length});
+    }
     designCheckpoint.lastSuccessfulModelCallAt=new Date().toISOString();
-    console.log(`DESIGN_AUTHORING_FAILOVER=VIBE_LOCAL_OLLAMA|${localDesignerModel}|ms=${elapsedMs}`);
+    console.log(`DESIGN_AUTHORING_PROVIDER=VIBE_LOCAL_OLLAMA|${localDesignerModel}|ms=${elapsedMs}`);
     return normalized;
   }catch(error){
-    recordModelHealth(`ollama:${localDesignerModel}`,{success:false,elapsedMs:Date.now()-started,error});
+    if(directCall)recordModelHealth(`ollama:${localDesignerModel}`,{success:false,elapsedMs:Date.now()-started,error});
     persistDesignCheckpoint();
     throw error;
   }
 }
 async function callDesignerModel(system,user,schema,options={}){
-  let geminiError=null;
-  if(externalAiEnabled&&geminiApiKey&&externalDesignerConfigured){
-    try{
-      const value=await callExternalDesignerModel(designerRoute,system,user,schema,options);
-      activeDesignerRoute=designerRoute;
-      designCheckpoint.effectiveDesignerModel=designerRoute.id;
-      designCheckpoint.effectiveDesignerProvider='GEMINI';
-      persistDesignCheckpoint();
-      return value;
-    }catch(error){
-      geminiError=error;
-      console.log(`DESIGN_AUTHORING_GEMINI_UNAVAILABLE=${clip(clean(error?.message||error),500)}`);
-    }
-  }else{
-    const reason=!externalAiEnabled?'OPTIONAL_EXTERNAL_AI_DISABLED':!geminiApiKey?'NO_API_KEY':'UNAUTHORIZED_MODEL_CONFIG';
-    geminiError=new Error(reason);
-    console.log('DESIGN_AUTHORING_EXTERNAL_SKIPPED='+reason);
-  }
-  try{
-    const value=await callLocalDesignerModel(system,user,schema,options);
-    activeDesignerRoute={provider:'VIBE_LOCAL_OLLAMA',model:localDesignerModel,id:`ollama:${localDesignerModel}`};
-    designCheckpoint.effectiveDesignerModel=activeDesignerRoute.id;
-    designCheckpoint.effectiveDesignerProvider='VIBE_LOCAL_OLLAMA';
-    persistDesignCheckpoint();
-    return value;
-  }catch(localError){
-    throw new Error(`DESIGN_AUTHORING_PROVIDERS_FAILED gemini=${clip(clean(geminiError?.message||geminiError),350)} local=${clip(clean(localError?.message||localError),350)}`);
-  }
+  const value=await callLocalDesignerModel(system,user,schema,options);
+  designCheckpoint.effectiveDesignerModel=designerRoute.id;
+  designCheckpoint.effectiveDesignerProvider='VIBE_LOCAL_OLLAMA';
+  persistDesignCheckpoint();
+  return value;
 }
 
 async function generateDesignerDraft(){
@@ -1380,5 +1211,5 @@ console.log(`DESIGN_LEARNING_CONTEXT_CANDIDATES=${designLearningEvents.length}`)
 console.log(`DESIGN_ONLY_VIBE2_LEARNING_CONTEXT=${designLearningEvents.length>0?'YES':'NO'}`);
 console.log('DESIGN_LEARNING_POSITIVE_TRAINING_ELIGIBLE=NO_UNTIL_VALIDATED_RUNTIME');
 console.log('PAID_AI_ALLOWED=NO');
-console.log(`AI_PROVIDER=${designCheckpoint.effectiveDesignerProvider||'VIBE_LOCAL_WITH_OPTIONAL_EXTERNAL_AI'}`);
+console.log(`AI_PROVIDER=${designCheckpoint.effectiveDesignerProvider||'VIBE_LOCAL_OLLAMA'}`);
 console.log('DESIGN_GATE_PROVIDER=DETERMINISTIC_EVIDENCE_ENGINE');

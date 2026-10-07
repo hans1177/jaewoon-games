@@ -94,10 +94,10 @@ test('workflow reuses verified checkpoints before local authoring and never requ
   const recoverAt=workflow.indexOf('Recover verified deterministic design checkpoint before external model wait');
   const authorAt=workflow.indexOf('Resolve local design authoring from the current checkpoint');
   assert(recoverAt>=0&&authorAt>recoverAt);
-  assert.match(workflow,/DESIGN_EXTERNAL_AI_REQUIRED=NO/);
+  assert.match(workflow,/DESIGN_EXTERNAL_AI_ALLOWED=NO/);
   assert.match(workflow,/DESIGN_AI_REVIEW_LANES=NONE/);
   assert.match(workflow,/DESIGN_GATE_AUTHORITY=DETERMINISTIC_EVIDENCE/);
-  assert.match(workflow,/GEMINI_API_KEY_REQUIRED_FOR_GATE=NO/);
+  assert.doesNotMatch(workflow,/secrets\.GEMINI_API_KEY/);
   assert.doesNotMatch(workflow,/test -n .*GEMINI_API_KEY.*GEMINI_API_KEY_REQUIRED/);
   assert.match(workflow,/steps\.deterministic_recovery\.outputs\.materialized != 'true'/);
   assert.match(baseline,/deterministic-design-pre-gate-pass-required/);

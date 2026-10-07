@@ -263,7 +263,7 @@ test('autonomous runtime pins verified design engines, canaries two games, then 
   assert.match(seedDesignWorkflow,/pending_total=/);
   assert.match(seedDesignWorkflow,/pending\.slice\(0,preservationOnly\?1:2\)/);
   assert.match(seedDesignWorkflow,/const selected=canaryVerified\?pending:pending\.slice\(0,preservationOnly\?1:2\)/);
-  assert.match(seedDesignWorkflow,/Math\.min\(preservationOnly\?1:\(canaryVerified\?designWipMax:1\)/);
+  assert.match(seedDesignWorkflow,/Math\.min\(designWipMax,targets\.length\|\|1\)/);
   assert.match(seedDesignWorkflow,/GAME_DESIGN_GATE_BYPASS=NO/);
   assert.match(seedDesignWorkflow,/mark-design-engine-canary:/);
   assert.match(seedDesignWorkflow,/DESIGN_ENGINE_CANARY=VERIFIED/);
@@ -286,12 +286,12 @@ test('autonomous runtime pins verified design engines, canaries two games, then 
   assert.match(seedDesignWorkflow,/WEB_DEVELOPMENT_START=NO/);
   assert.match(seedDesignWorkflow,/timeout-minutes: 45/);
   assert.match(seedDesignWorkflow,/COMPANY_MODEL_PHASE_CONCURRENCY: '2'/);
-  assert.match(seedDesignWorkflow,/COMPANY_MODEL_CALL_TIMEOUT_MS: '90000'/);
-  assert.match(seedDesignWorkflow,/GEMINI_API_KEY: \$\{\{ secrets\.GEMINI_API_KEY \}\}/);
-  assert.match(seedDesignWorkflow,/DESIGN_AI_PROVIDER=VIBE_LOCAL_WITH_OPTIONAL_EXTERNAL_AI/);
-  assert.match(seedDesignWorkflow,/COMPANY_GEMINI_DESIGNER_MODEL: 'gemini-3\.5-flash-lite'/);
-  assert.match(seedDesignWorkflow,/gemini-3\.5-flash-lite/);
-  assert.match(seedDesignWorkflow,/GEMINI_API_KEY_REQUIRED_FOR_GATE=NO/);
+  assert.match(seedDesignWorkflow,/COMPANY_LOCAL_DESIGN_CALL_TIMEOUT_MS: '300000'/);
+  assert.doesNotMatch(seedDesignWorkflow,/secrets\.GEMINI_API_KEY/);
+  assert.match(seedDesignWorkflow,/DESIGN_AI_PROVIDER=VIBE_LOCAL_OLLAMA/);
+  assert.doesNotMatch(seedDesignWorkflow,/COMPANY_GEMINI_DESIGNER_MODEL:/);
+  assert.doesNotMatch(seedDesignWorkflow,/COMPANY_GEMINI_FALLBACK_MODELS:/);
+  assert.match(seedDesignWorkflow,/DESIGN_EXTERNAL_AI_ALLOWED=NO/);
 
   assert.match(designSeedNormalize,/DESIGN_SEED_REFERENCE_GAMES_OPTIONAL_EMPTY=/);
   assert.match(designSeedNormalize,/ENSURE_REFERENCE_INPUTS_WITHOUT_INVENTING_REFERENCE_GAME/);
@@ -337,17 +337,17 @@ test('autonomous runtime pins verified design engines, canaries two games, then 
   assert.match(design,/fiveDepartmentLeadReviewCompleted:false/);
   assert.match(design,/meetingRequired:false/);
   assert.match(design,/rebuttalRounds:0/);
-  assert.match(design,/AbortSignal\.timeout\(effectiveTimeoutMs\)/);
-  assert.match(design,/const geminiUnavailableModels=new Map\(\)/);
-  assert.match(design,/function quarantineGeminiModel/);
-  assert.match(design,/GEMINI_MODEL_QUARANTINED=/);
+  assert.match(design,/localDesignerCallTimeoutMs/);
+  assert.doesNotMatch(design,/geminiUnavailableModels/);
+  assert.doesNotMatch(design,/function quarantineGeminiModel/);
+  assert.match(design,/localAuthoringSplits/);
   assert.match(design,/DESIGN_AI_REVIEW_LANES=NONE/);
-  assert.match(design,/AI_PROVIDER=\$\{designCheckpoint\.effectiveDesignerProvider\|\|'VIBE_LOCAL_WITH_OPTIONAL_EXTERNAL_AI'\}/);
+  assert.match(design,/AI_PROVIDER=\$\{designCheckpoint\.effectiveDesignerProvider\|\|'VIBE_LOCAL_OLLAMA'\}/);
   const checkpointInitialization=design.indexOf('let designCheckpoint=readJson(checkpointPath,null);');
-  const checkpointProviderLog=design.indexOf("console.log(\`AI_PROVIDER=\${designCheckpoint.effectiveDesignerProvider||'VIBE_LOCAL_WITH_OPTIONAL_EXTERNAL_AI'}\`);");
+  const checkpointProviderLog=design.indexOf("console.log(\`AI_PROVIDER=\${designCheckpoint.effectiveDesignerProvider||'VIBE_LOCAL_OLLAMA'}\`);");
   assert.ok(checkpointInitialization>=0&&checkpointProviderLog>checkpointInitialization,'AI provider logging happens only after checkpoint initialization');
-  assert.match(design,/generativelanguage\.googleapis\.com/);
-  assert.match(design,/responseJsonSchema:schema/);
+  assert.doesNotMatch(design,/generativelanguage\.googleapis\.com/);
+  assert.match(design,/format:schema\|\|'json'/);
   assert.match(design,/VIBE_LOCAL_OLLAMA/);
   assert.match(design,/OLLAMA_DESIGN_TIMEOUT/);
   assert.equal(directive.ai.providerMode,'GEMINI_PRIMARY_VIBE_LOCAL_FALLBACK');
@@ -355,8 +355,9 @@ test('autonomous runtime pins verified design engines, canaries two games, then 
   assert.equal(directive.ai.openAiProviderAllowed,false);
   assert.equal(directive.ai.ollamaProviderAllowed,true);
   assert.equal(directive.ai.localModelFallbackAllowed,true);
-  assert.deepEqual(directive.ai.gameDesigner.providerPriority,['GEMINI','VIBE_LOCAL_OLLAMA']);
-  assert.equal(directive.ai.gameDesigner.cloudFailureFallsBackToLocal,true);
+  assert.deepEqual(directive.ai.gameDesigner.providerPriority,['VIBE_LOCAL_OLLAMA']);
+  assert.equal(directive.ai.gameDesigner.externalProvidersAllowed,false);
+  assert.equal(directive.ai.gameDesigner.cloudFailureFallsBackToLocal,false);
   assert.deepEqual(directive.ai.gameDesigner.localFallbackModels,['qwen3:1.7b']);
   assert.doesNotMatch(design,/Math\.max\(900,Math\.ceil\(1400\*roles\.length\/ROLES\.length\)\)/);
 });
@@ -417,20 +418,16 @@ test('obsolete free-concept and direct prototype entrypoints remain removed',()=
   assert.equal(fs.existsSync('.github/workflows/company-game-seed-bootstrap.yml'),true);
 });
 
-test('optional external authoring uses authorized models without department review lanes',()=>{
-  const fallbackMatch=seedDesignWorkflow.match(/COMPANY_GEMINI_FALLBACK_MODELS:\s*'([^']+)'/);
-  assert.ok(fallbackMatch);
-  const workflowFallbacks=fallbackMatch[1].split(',').map(v=>v.trim()).filter(Boolean);
+test('design authoring uses only Vibe internal models without external secrets or department review lanes',()=>{
   const roles=['planning','graphics','development','qa','audio'];
-  const inactiveDepartmentLeads=roles.map(role=>directive.ai.departmentLeadModels[role]);
-  assert.deepEqual(inactiveDepartmentLeads,Array(5).fill('llama3.2:1b'));
-  assert.doesNotMatch(seedDesignWorkflow,/COMPANY_GEMINI_LEAD_MODELS|COMPANY_GEMINI_LEAD_FALLBACK_LANES/);
-  assert.match(seedDesignWorkflow,/COMPANY_EXTERNAL_AI_ENABLED:.*'false'/);
-  const authorizedDesigner=new Set([directive.ai.gameDesigner.geminiModel,...directive.ai.gameDesigner.geminiFallbackModels]);
-  for(const model of workflowFallbacks)assert.ok(authorizedDesigner.has(model),`unauthorized designer fallback: ${model}`);
-  assert.match(design,/authorizedDesignerModels\.includes\(geminiDesignerModel\)/);
-  assert.match(design,/geminiFallbackModelList\.every\(model=>authorizedDesignerModels\.includes\(model\)\)/);
-  assert.match(design,/externalAiEnabled&&geminiApiKey&&externalDesignerConfigured/);
-  assert.match(design,/UNAUTHORIZED_MODEL_CONFIG/);
-  assert.match(seedDesignWorkflow,/DESIGN_EXTERNAL_AI_WAIT=DISABLED/);
+  assert.deepEqual(roles.map(role=>directive.ai.departmentLeadModels[role]),Array(5).fill('llama3.2:1b'));
+  assert.deepEqual(directive.ai.gameDesigner.providerPriority,['VIBE_LOCAL_OLLAMA']);
+  assert.equal(directive.ai.gameDesigner.externalProvidersAllowed,false);
+  assert.equal(directive.ai.gameDesigner.geminiModel,null);
+  assert.deepEqual(directive.ai.gameDesigner.geminiFallbackModels,[]);
+  assert.doesNotMatch(seedDesignWorkflow,/COMPANY_EXTERNAL_AI_ENABLED:|COMPANY_GEMINI_|secrets\.GEMINI_API_KEY/);
+  assert.doesNotMatch(design,/externalAiEnabled|callExternalDesignerModel|generativelanguage|process\.env\.GEMINI_API_KEY/);
+  assert.match(design,/GAME_DESIGNER_PROVIDER=VIBE_LOCAL_OLLAMA/);
+  assert.match(seedDesignWorkflow,/DESIGN_EXTERNAL_AI_ALLOWED=NO/);
+  assert.match(seedDesignWorkflow,/DESIGN_AI_REVIEW_LANES=NONE/);
 });

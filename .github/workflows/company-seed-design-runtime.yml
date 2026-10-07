@@ -36,12 +36,7 @@ concurrency:
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
   COMPANY_MODEL_PHASE_CONCURRENCY: '2'
-  COMPANY_MODEL_CALL_TIMEOUT_MS: '90000'
   COMPANY_LOCAL_DESIGN_CALL_TIMEOUT_MS: '300000'
-  # Model identity is remappable by central policy. Prefer models with remaining free-tier quota before exhausted daily lanes.
-  COMPANY_GEMINI_DESIGNER_MODEL: 'gemini-3.5-flash-lite'
-  COMPANY_GEMINI_FALLBACK_MODELS: 'gemini-3.8-flash,gemini-3.7-flash,gemini-3.6-flash,gemini-3.5-flash,gemini-3.5-flash-lite,gemini-3.1-pro-preview,gemini-2.5-pro,gemini-2.5-flash,gemini-2.5-flash-lite,gemini-3.1-flash-lite'
-  COMPANY_EXTERNAL_AI_ENABLED: ${{ vars.COMPANY_EXTERNAL_AI_ENABLED || 'false' }}
   COMPANY_VIBE_LOCAL_MODEL: 'qwen3:1.7b'
 
 jobs:
@@ -350,7 +345,8 @@ jobs:
           const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
           const get=t=>parts.find(x=>x.type===t)?.value||'';const date=`${get('year')}-${get('month')}-${get('day')}`;
           const targets=selected.map(seed=>{const evolution=designEvolutionDueFor(seed);return{game_id:seed.gameId,game_name:seed.gameName||seed.gameId,seed_id:seed.seedId,category:seed.GAME_CATEGORY,target_platform:String(seed.INITIAL_TARGET_PLATFORM||'').toUpperCase(),date,multiplayer_mode:seed.MULTIPLAYER_DESIGN_MODE||'SINGLE',target_session_minutes:Number(seed.TARGET_SESSION_MINUTES||30),design_evolution_due:evolution.due,design_evolution_reason:evolution.reason,baseline_review_at:Number(evolution.baselineReviewAt||0)};});
-          const parallelMax=Math.max(1,Math.min(preservationOnly?1:(canaryVerified?designWipMax:1),targets.length||1));
+          // 대표 검증 대상도 독립 게임별로 병렬 실행하고 성공 증거로만 다음 배치를 연다.
+          const parallelMax=Math.max(1,Math.min(designWipMax,targets.length||1));
           console.log(`run=${targets.length?'true':'false'}`);
           console.log(`targets=${JSON.stringify(targets)}`);
           console.log(`parallel_max=${parallelMax}`);
@@ -508,9 +504,9 @@ jobs:
           node --check tools/company-baseline-gate.mjs
           node --check tools/company-minimum-design-contract.mjs
           node --test qa/company-minimum-design-contract.test.mjs
-          echo 'DESIGN_AI_PROVIDER=VIBE_LOCAL_WITH_OPTIONAL_EXTERNAL_AI'
+          echo 'DESIGN_AI_PROVIDER=VIBE_LOCAL_OLLAMA'
           echo 'DESIGN_GATE_AUTHORITY=DETERMINISTIC_EVIDENCE'
-          echo 'GEMINI_API_KEY_REQUIRED_FOR_GATE=NO'
+          echo 'DESIGN_EXTERNAL_AI_ALLOWED=NO'
       - name: Recover verified deterministic design checkpoint before external model wait
         id: deterministic_recovery
         if: steps.target.outputs.should_run == 'true'
@@ -534,7 +530,7 @@ jobs:
           exit 0
 
       - name: Resolve local design authoring from the current checkpoint
-        id: gemini_quota
+        id: local_authoring
         if: steps.target.outputs.should_run == 'true' && steps.deterministic_recovery.outputs.materialized != 'true'
         env:
           ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
@@ -542,7 +538,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node --input-type=module <<'NODE' | tee /tmp/gemini-quota-governor.txt
+          node --input-type=module <<'NODE' | tee /tmp/local-design-authoring.txt
           import fs from 'node:fs';
           import path from 'node:path';
           const clean=value=>String(value??'').trim();
@@ -551,18 +547,18 @@ jobs:
           try{checkpoint=JSON.parse(fs.readFileSync(checkpointPath,'utf8'));}catch{}
           // A cycle not recovered above can require a local repair after current-policy validation.
           const localAuthoringNeeded=true;
-          console.log('DESIGN_PROVIDER_GOVERNOR=READY_WITH_LOCAL_FAILOVER');
-          console.log('DESIGN_EXTERNAL_AI_REQUIRED=NO');
+          console.log('DESIGN_PROVIDER_GOVERNOR=READY_LOCAL_ONLY');
+          console.log('DESIGN_EXTERNAL_AI_ALLOWED=NO');
           console.log('DESIGN_AI_REVIEW_REQUIRED=NO');
           console.log('DESIGN_AI_REVIEW_LANES=NONE');
           console.log(`DESIGN_LOCAL_AUTHORING_FALLBACK_NEEDED=${localAuthoringNeeded?'YES':'NO'}`);
-          console.log(`GEMINI_QUOTA_CHECKPOINT_PRESERVED=${fs.existsSync(checkpointPath)?'YES':'NO'}`);
-          console.log('GEMINI_QUOTA_FULL_CYCLE_RESTART=NO');
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`run_model_cycle=true\nquota_state=EXTERNAL_AI_OPTIONAL\nlocal_fallback_needed=${localAuthoringNeeded?'true':'false'}\n`);
+          console.log(`DESIGN_LOCAL_CHECKPOINT_PRESERVED=${fs.existsSync(checkpointPath)?'YES':'NO'}`);
+          console.log('DESIGN_LOCAL_FULL_CYCLE_RESTART=NO');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`run_model_cycle=true\nquota_state=LOCAL_ONLY\nlocal_fallback_needed=${localAuthoringNeeded?'true':'false'}\n`);
           NODE
       - name: Restore Vibe local design fallback cache
         id: design_local_cache
-        if: steps.target.outputs.should_run == 'true' && steps.deterministic_recovery.outputs.materialized != 'true' && steps.gemini_quota.outputs.local_fallback_needed == 'true'
+        if: steps.target.outputs.should_run == 'true' && steps.deterministic_recovery.outputs.materialized != 'true' && steps.local_authoring.outputs.local_fallback_needed == 'true'
         uses: actions/cache@v4
         with:
           path: |
@@ -573,7 +569,7 @@ jobs:
 
       - name: Prepare Vibe local design fallback
         id: design_local
-        if: steps.target.outputs.should_run == 'true' && steps.deterministic_recovery.outputs.materialized != 'true' && steps.gemini_quota.outputs.local_fallback_needed == 'true'
+        if: steps.target.outputs.should_run == 'true' && steps.deterministic_recovery.outputs.materialized != 'true' && steps.local_authoring.outputs.local_fallback_needed == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -637,11 +633,10 @@ jobs:
 
       - name: Run seed-backed DESIGN_ONLY pipeline without artbook
         id: design_pipeline
-        if: steps.target.outputs.should_run == 'true' && steps.deterministic_recovery.outputs.materialized != 'true' && steps.gemini_quota.outputs.run_model_cycle == 'true'
+        if: steps.target.outputs.should_run == 'true' && steps.deterministic_recovery.outputs.materialized != 'true' && steps.local_authoring.outputs.run_model_cycle == 'true'
         env:
           ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           COMPANY_LOCAL_DESIGN_FALLBACK_READY: ${{ steps.design_local.outputs.ready || 'false' }}
         shell: bash
         run: |
