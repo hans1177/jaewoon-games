@@ -1,5 +1,5 @@
 {
-  "version": 175,
+  "version": 176,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -815,7 +815,24 @@
     ],
     "preparedSemanticMayNotClaimVerified": true,
     "actualNativeRuntimeEvidenceRequiredForPromotion": true,
-    "unresolvedRequiredCompatibilityEdgeBlocksPromotion": true
+    "unresolvedRequiredCompatibilityEdgeBlocksPromotion": true,
+    "articulated3DActorGlbEvidence": {
+      "requiredForFamilies": [
+        "CHARACTER",
+        "CREATURE"
+      ],
+      "bossRoleIncluded": true,
+      "requiredFields": [
+        "MASTER_GLB_PATH",
+        "MASTER_GLB_SHA256",
+        "MASTER_GLB_STRUCTURE_RESULT",
+        "RIG_AND_SKIN_RESULT_WHEN_ARTICULATED",
+        "PLATFORM_NATIVE_VARIANT_RESULT",
+        "EXACT_RUNTIME_CONSUMER_RESULT"
+      ],
+      "primitiveOnlyFinalActorCannotPass": true,
+      "sharedMasterDoesNotProvePlatformRuntime": true
+    }
   },
   "universalAssetCoverageEvidenceContract": {
     "version": 1,
@@ -1678,14 +1695,16 @@
       "staleIdentityCannotProveSynchronized": true,
       "allRegisteredLibrariesAccountedFor": true,
       "sourceAndRuntimeAndDeploymentEvidenceRequiredForConversionCompletion": true,
-      "platformEvidenceCannotSubstituteForAnotherPlatform": true
+      "platformEvidenceCannotSubstituteForAnotherPlatform": true,
+      "articulated3DActorMasterGlbEvidenceRequired": true
     },
     "hardFailureClasses": [
       "UNIVERSAL_ASSET_LOOKUP_MISSING",
       "APPLICABLE_ASSET_FAMILY_NOT_BOUND",
       "ASSET_MARKER_ONLY_NO_VISIBLE_USE",
       "PRIMITIVE_ONLY_VISUAL_UPGRADE",
-      "MAP_ENVIRONMENT_ASSET_COVERAGE_MISSING"
+      "MAP_ENVIRONMENT_ASSET_COVERAGE_MISSING",
+      "ARTICULATED_3D_ACTOR_MASTER_GLB_MISSING"
     ]
   },
   "existingGameHolisticBackfillEvidenceContract": {
