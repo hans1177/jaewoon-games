@@ -1262,6 +1262,11 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     reuseResolutionOrder:libraryPlan.reuseResolutionOrder,
     freeOriginalVolumePolicy:libraryPlan.freeOriginalVolumePolicy,
     referenceImageIdeaOverlay:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.referenceImageIdeaOverlay,
+    perDomainIdeaBudgetPerCycle:libraryPlan.perDomainIdeaBudgetPerCycle,
+    domainVolumeActionLimitPerDomain:libraryPlan.domainVolumeActionLimitPerDomain,
+    uiSubsystemVolumeActionLimitPerSubsystem:libraryPlan.uiSubsystemVolumeActionLimitPerSubsystem,
+    maxVolumeWorklistActions:libraryPlan.maxVolumeWorklistActions,
+    taskReferenceOverlayWorklistLimit:libraryPlan.taskReferenceOverlayWorklistLimit,
     eligibleFreeSourceCount:libraryPlan.eligibleFreeSourceCount,
     freeSourceCandidateLimitPerAction:libraryPlan.freeSourceCandidateLimitPerAction,
     freeSourceCatalogSufficiencyCount:libraryPlan.freeSourceCatalogSufficiencyCount,
@@ -3125,7 +3130,7 @@ export function buildVibeAssetProductionPlan({
       (executionLibraryPlan.nextVolumeActions||[])
         .filter(row=>clean(row?.domain).toUpperCase()===clean(domain).toUpperCase())
         .flatMap(row=>row?.freeSourceCandidateIds||[])
-    ).slice(0,Number(executionLibraryPlan.freeSourceCandidateLimitPerAction||libraryAutomation.freeSourceCandidateLimitPerAction||8));
+    ).slice(0,Number(executionLibraryPlan.freeSourceCandidateLimitPerAction||libraryAutomation.freeSourceCandidateLimitPerAction||24));
     return freeze({
       kind:'REFERENCE_IMAGE_VOLUME',
       domain,
@@ -3163,7 +3168,7 @@ export function buildVibeAssetProductionPlan({
       ?[
         ...taskLocalReferenceVolumeActions,
         ...activeNextVolumeActions.filter(row=>!referenceDrivenAssetIdeas.some(idea=>idea.ideaId===row?.ideaId))
-      ].slice(0,96).map((row,index)=>{
+      ].slice(0,Number(executionLibraryPlan.taskReferenceOverlayWorklistLimit||libraryAutomation.taskReferenceOverlayWorklistLimit||256)).map((row,index)=>{
         const domain=clean(row?.domain).toUpperCase();
         return freeze({
           ...row,
