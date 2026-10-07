@@ -1,8 +1,8 @@
 {
-  "version": 113,
+  "version": 114,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
-  "updatedAt": "2026-10-05",
+  "updatedAt": "2026-10-07",
   "publicInspectionSurface": true,
   "productionPassAuthority": false,
   "rules": {
@@ -102,7 +102,18 @@
     "volumeExpansionNewAuthoringAllowed": true,
     "volumeTargetBandsAreGuidanceNotHardCreationCaps": true,
     "newAuthoringMustAddDistinctCoverageOrQualityValue": true,
-    "colorOnlyOrDuplicateSpamDoesNotCountAsNewVolume": true
+    "colorOnlyOrDuplicateSpamDoesNotCountAsNewVolume": true,
+    "gltfMasterRequiredFor3dCharacterCreatureBoss": true,
+    "gltfMasterFormat": "GLB",
+    "gltfMasterBeforePlatformVariants": true,
+    "gltfMasterSourceRecipeRequired": true,
+    "gltfMasterSourceAndArtifactHashRequired": true,
+    "gltfMasterEvidenceAndPreviewRequired": true,
+    "articulatedGltfRigAndSkinRequired": true,
+    "animatedActorRequiresEmbeddedClipsOrCompatibleMotionBinding": true,
+    "primitivePartActorPrototypeOnly": true,
+    "primitivePartActorCannotClaimFinalAsset": true,
+    "platformVariantMustPreserveGltfMasterLineage": true
   },
   "platformPacks": [
     {
@@ -1076,7 +1087,69 @@
       "internalUseAllowed": true,
       "lowScoreWouldStillBeUsable": true,
       "higherCompatibleInternalScoreAutoPreferred": true,
-      "productionVerificationSeparate": true
+      "productionVerificationSeparate": true,
+      "gltfMaster": {
+        "version": 1,
+        "format": "GLB",
+        "gltfVersion": "2.0",
+        "path": "assets/roblox/world-ghosts/native/spider/spider.glb",
+        "artifactHash": "c37af6808a539f646eb77dac65bc339717700e932c25f2928fa5c54135a15525",
+        "sourceRecipe": "assets/roblox/world-ghosts/build-spider.py",
+        "sourceHash": "643f695ffc87c4e6e1bc84db8b96b475fa222f6276efc3ce24e748277c092633",
+        "evidencePath": "assets/roblox/world-ghosts/native/spider/evidence.json",
+        "previewPath": "assets/roblox/world-ghosts/native/spider/spider.png",
+        "contentEvidence": {
+          "mesh": true,
+          "uv": true,
+          "materialSlots": true,
+          "rig": true,
+          "skin": true,
+          "animationClips": true,
+          "stableScaleOriginAxis": true,
+          "attachmentOrBindingMap": true,
+          "lodDerivationPlan": true,
+          "boneCount": 45,
+          "motionCount": 12
+        },
+        "role": "CROSS_PLATFORM_AUTHORING_MASTER",
+        "platformVariantsRequireExactMasterHash": true,
+        "productionVerified": false,
+        "nativeRuntimeVerificationRequired": true
+      },
+      "authoringRecipes": [
+        {
+          "id": "insect-spider-hd-glb-master-v1",
+          "assetId": "roblox-insect-spider-hd-v1",
+          "family": "CREATURE",
+          "license": "project-original",
+          "executor": "BLENDER_PYTHON",
+          "script": "assets/roblox/world-ghosts/build-spider.py",
+          "editableSource": "assets/roblox/world-ghosts/build-spider.py",
+          "types": [
+            "creature",
+            "enemy",
+            "boss"
+          ],
+          "targetPlatforms": [
+            "ROBLOX",
+            "UNITY"
+          ],
+          "args": [
+            "--output",
+            "assets/roblox/world-ghosts/native/spider",
+            "--render"
+          ],
+          "outputs": [
+            "assets/roblox/world-ghosts/native/spider/spider.glb",
+            "assets/roblox/world-ghosts/native/spider/spider.png",
+            "assets/roblox/world-ghosts/native/spider/evidence.json"
+          ],
+          "evidenceJson": "assets/roblox/world-ghosts/native/spider/evidence.json",
+          "preview": "assets/roblox/world-ghosts/native/spider/spider.png",
+          "runMode": "VERIFY_ONLY",
+          "gltfMasterRequired": true
+        }
+      ]
     },
     {
       "id": "ladybug-sprite",
@@ -66310,6 +66383,18 @@
         "combatVfxCameraUiFeedback": true
       },
       "nativeRuntimePassRequiredForVerifiedCount": true
+    },
+    "gltfMasterAssetStandard": {
+      "status": "ACTIVE",
+      "masterFormat": "GLB",
+      "requiredFamilies": [
+        "CHARACTER",
+        "CREATURE"
+      ],
+      "includesEliteAndBoss": true,
+      "commonMasterBeforePlatformVariants": true,
+      "primitivePrototypeDoesNotCountAsVerified": true,
+      "nativeRuntimeConsumerStillRequiredForPromotion": true
     }
   },
   "baseMaterialLibrary": {
