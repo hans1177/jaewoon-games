@@ -3421,7 +3421,10 @@ end
 if p.Character then task.defer(bindFootsteps,p.Character)end
 p.CharacterAdded:Connect(bindFootsteps)
 
-local function monsterEffectProfile(ability)
+-- 전투 이펙트
+local combatEffects={}
+
+function combatEffects.monsterEffectProfile(ability)
  local formInfo=nil
  for _,row in ipairs(C.MonsterForms or{})do
   if row.Ability==ability then formInfo=row;break end
@@ -3430,7 +3433,7 @@ local function monsterEffectProfile(ability)
  return formInfo or{},profile
 end
 
-local function abilityVfxPart(name,size,cframe,color,shape)
+function combatEffects.abilityVfxPart(name,size,cframe,color,shape)
  local part=Instance.new("Part")
  part.Name=name
  part.Size=size
@@ -3448,26 +3451,26 @@ local function abilityVfxPart(name,size,cframe,color,shape)
  return part
 end
 
-local function abilityPulse(name,pos,color,startSize,endSize,duration)
- local part=abilityVfxPart(name,startSize,CFrame.new(pos),color,Enum.PartType.Ball)
+function combatEffects.abilityPulse(name,pos,color,startSize,endSize,duration)
+ local part=combatEffects.abilityVfxPart(name,startSize,CFrame.new(pos),color,Enum.PartType.Ball)
  TweenService:Create(part,TweenInfo.new(duration,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Size=endSize,Transparency=1}):Play()
  Debris:AddItem(part,duration+.1)
  return part
 end
 
-local function abilityStreak(name,origin,look,color,offset,length,width,duration)
+function combatEffects.abilityStreak(name,origin,look,color,offset,length,width,duration)
  local flat=Vector3.new(look.X,0,look.Z)
  if flat.Magnitude<.01 then flat=Vector3.new(0,0,-1)else flat=flat.Unit end
  local right=flat:Cross(Vector3.yAxis)
  local pos=origin+right*(offset or 0)+Vector3.new(0,1.7,0)+flat*((length or 9)*.5)
- local part=abilityVfxPart(name,Vector3.new(width or .22,width or .22,length or 9),CFrame.lookAt(pos,pos+flat),color)
+ local part=combatEffects.abilityVfxPart(name,Vector3.new(width or .22,width or .22,length or 9),CFrame.lookAt(pos,pos+flat),color)
  TweenService:Create(part,TweenInfo.new(duration or .34,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Transparency=1,Size=Vector3.new((width or .22)*.35,(width or .22)*.35,(length or 9)*1.25)}):Play()
  Debris:AddItem(part,(duration or .34)+.1)
  return part
 end
 
-local function abilityRing(name,pos,color,startDiameter,endDiameter,duration)
- local part=abilityVfxPart(name,Vector3.new(.16,startDiameter,startDiameter),CFrame.new(pos)*CFrame.Angles(0,0,math.rad(90)),color,Enum.PartType.Cylinder)
+function combatEffects.abilityRing(name,pos,color,startDiameter,endDiameter,duration)
+ local part=combatEffects.abilityVfxPart(name,Vector3.new(.16,startDiameter,startDiameter),CFrame.new(pos)*CFrame.Angles(0,0,math.rad(90)),color,Enum.PartType.Cylinder)
  part.Transparency=.05
  local light=Instance.new("PointLight");light.Color=color;light.Range=10;light.Brightness=2.5;light.Parent=part
  TweenService:Create(part,TweenInfo.new(duration,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Size=Vector3.new(.05,endDiameter,endDiameter),Transparency=1}):Play()
@@ -3476,8 +3479,8 @@ local function abilityRing(name,pos,color,startDiameter,endDiameter,duration)
  return part
 end
 
-local function abilitySparkBurst(name,pos,color,count,speed,duration)
- local anchor=abilityVfxPart(name,Vector3.new(.18,.18,.18),CFrame.new(pos),color,Enum.PartType.Ball)
+function combatEffects.abilitySparkBurst(name,pos,color,count,speed,duration)
+ local anchor=combatEffects.abilityVfxPart(name,Vector3.new(.18,.18,.18),CFrame.new(pos),color,Enum.PartType.Ball)
  anchor.Transparency=1
  local emitter=Instance.new("ParticleEmitter")
  emitter.Name=name.."Emitter"
@@ -3507,91 +3510,91 @@ local function abilitySparkBurst(name,pos,color,count,speed,duration)
  Debris:AddItem(anchor,duration+.2)
 end
 
-local function playMonsterAbilityEffect(snapshot)
+function combatEffects.playMonsterAbilityEffect(snapshot)
  if typeof(snapshot)~="table"then return end
  markCombatSkinAttack(snapshot.UserId,snapshot.Origin,.82)
  local ability=tostring(snapshot.Ability or"")
  local origin=typeof(snapshot.Origin)=="Vector3"and snapshot.Origin or Vector3.zero
  local look=typeof(snapshot.Look)=="Vector3"and snapshot.Look or Vector3.new(0,0,-1)
- local formInfo,profile=monsterEffectProfile(ability)
+ local formInfo,profile=combatEffects.monsterEffectProfile(ability)
  local color=formInfo.EffectColor or Color3.fromRGB(190,100,220)
  local accent=formInfo.AccentColor or color
  if snapshot.Infected==true then
   color=Color3.fromRGB(220,70,112);accent=Color3.fromRGB(144,76,226)
-  abilitySparkBurst("InfectedAbilitySparks",origin+Vector3.new(0,1.3,0),color,22,13,.6)
-  abilityRing("InfectedAbilityHalo",origin+Vector3.new(0,.3,0),accent,1.5,16,.48)
+  combatEffects.abilitySparkBurst("InfectedAbilitySparks",origin+Vector3.new(0,1.3,0),color,22,13,.6)
+  combatEffects.abilityRing("InfectedAbilityHalo",origin+Vector3.new(0,.3,0),accent,1.5,16,.48)
   if ability=="FALSE_ALARM"then
-   abilityPulse("FalseAlarmBurst",origin+Vector3.new(0,1.2,0),color,Vector3.new(2,2,2),Vector3.new(16,6,16),.42)
-   abilityRing("FalseAlarmRing",origin+Vector3.new(0,.25,0),accent,3,28,.62)
+   combatEffects.abilityPulse("FalseAlarmBurst",origin+Vector3.new(0,1.2,0),color,Vector3.new(2,2,2),Vector3.new(16,6,16),.42)
+   combatEffects.abilityRing("FalseAlarmRing",origin+Vector3.new(0,.25,0),accent,3,28,.62)
   elseif ability=="BLACKOUT"then
-   abilityPulse("BlackoutCore",origin+Vector3.new(0,1.5,0),Color3.fromRGB(48,24,78),Vector3.new(2,2,2),Vector3.new(18,12,18),.55)
-   abilityRing("BlackoutRing",origin+Vector3.new(0,.25,0),accent,3,30,.68)
+   combatEffects.abilityPulse("BlackoutCore",origin+Vector3.new(0,1.5,0),Color3.fromRGB(48,24,78),Vector3.new(2,2,2),Vector3.new(18,12,18),.55)
+   combatEffects.abilityRing("BlackoutRing",origin+Vector3.new(0,.25,0),accent,3,30,.68)
   elseif ability=="RUSH"then
-   abilityRing("RushRing",origin+Vector3.new(0,.25,0),color,2,12,.35)
-   for _,offset in ipairs({-1.8,-.9,0,.9,1.8})do abilityStreak("RushTrail",origin,look,accent,offset,13,.3,.48)end
+   combatEffects.abilityRing("RushRing",origin+Vector3.new(0,.25,0),color,2,12,.35)
+   for _,offset in ipairs({-1.8,-.9,0,.9,1.8})do combatEffects.abilityStreak("RushTrail",origin,look,accent,offset,13,.3,.48)end
   elseif ability=="HUNT_FLASH"then
-   abilityPulse("HuntFlashCore",origin+Vector3.new(0,1.5,0),Color3.fromRGB(250,238,226),Vector3.new(2,2,2),Vector3.new(18,12,18),.24)
-   abilityRing("HuntFlashRing",origin+Vector3.new(0,.25,0),color,2,22,.42)
+   combatEffects.abilityPulse("HuntFlashCore",origin+Vector3.new(0,1.5,0),Color3.fromRGB(250,238,226),Vector3.new(2,2,2),Vector3.new(18,12,18),.24)
+   combatEffects.abilityRing("HuntFlashRing",origin+Vector3.new(0,.25,0),color,2,22,.42)
   elseif ability=="BREACH"then
-   abilityPulse("BreachBurst",origin+Vector3.new(0,1.2,0),color,Vector3.new(1,1,1),Vector3.new(8,6,8),.28)
-   abilityRing("BreachRing",origin+Vector3.new(0,.25,0),accent,2,12,.35)
-   for _,offset in ipairs({-1.2,-.6,0,.6,1.2})do abilityStreak("BreachTrail",origin,look,accent,offset,15,.26,.42)end
+   combatEffects.abilityPulse("BreachBurst",origin+Vector3.new(0,1.2,0),color,Vector3.new(1,1,1),Vector3.new(8,6,8),.28)
+   combatEffects.abilityRing("BreachRing",origin+Vector3.new(0,.25,0),accent,2,12,.35)
+   for _,offset in ipairs({-1.2,-.6,0,.6,1.2})do combatEffects.abilityStreak("BreachTrail",origin,look,accent,offset,15,.26,.42)end
   end
   return
  end
- abilitySparkBurst("MonsterAbilitySparks",origin+Vector3.new(0,1.35,0),color,24,14,.62)
- abilityRing("MonsterAbilityHalo",origin+Vector3.new(0,.3,0),accent,1.5,15,.46)
+ combatEffects.abilitySparkBurst("MonsterAbilitySparks",origin+Vector3.new(0,1.35,0),color,24,14,.62)
+ combatEffects.abilityRing("MonsterAbilityHalo",origin+Vector3.new(0,.3,0),accent,1.5,15,.46)
  if ability=="BAT_DASH"then
-  abilityPulse("BatDashBurst",origin+Vector3.new(0,1.8,0),color,Vector3.new(1.5,1.5,1.5),Vector3.new(9,5,9),.36)
-  abilityRing("BatDashRing",origin+Vector3.new(0,.25,0),accent,2,13,.42)
+  combatEffects.abilityPulse("BatDashBurst",origin+Vector3.new(0,1.8,0),color,Vector3.new(1.5,1.5,1.5),Vector3.new(9,5,9),.36)
+  combatEffects.abilityRing("BatDashRing",origin+Vector3.new(0,.25,0),accent,2,13,.42)
   for i=-3,3 do
-   local streak=abilityStreak("BatShadow",origin,look,i%2==0 and color or accent,i*1.05,8+math.abs(i)*1.2,.28,.42)
+   local streak=combatEffects.abilityStreak("BatShadow",origin,look,i%2==0 and color or accent,i*1.05,8+math.abs(i)*1.2,.28,.42)
    streak.CFrame=streak.CFrame*CFrame.Angles(0,0,math.rad(i*9))
   end
  elseif ability=="POWER_CHARGE"then
-  abilityPulse("ElectricChargeCore",origin+Vector3.new(0,1.6,0),color,Vector3.new(1,1,1),Vector3.new(10,10,10),.42)
-  abilityRing("ElectricChargeRing",origin+Vector3.new(0,.25,0),accent,2,14,.4)
+  combatEffects.abilityPulse("ElectricChargeCore",origin+Vector3.new(0,1.6,0),color,Vector3.new(1,1,1),Vector3.new(10,10,10),.42)
+  combatEffects.abilityRing("ElectricChargeRing",origin+Vector3.new(0,.25,0),accent,2,14,.4)
   for i=1,8 do
    local angle=(i/8)*math.pi*2
    local dir=Vector3.new(math.cos(angle),0,math.sin(angle))
-   abilityStreak("ElectricArc",origin,dir,color,0,5,.16,.3)
+   combatEffects.abilityStreak("ElectricArc",origin,dir,color,0,5,.16,.3)
   end
  elseif ability=="RAGE_RUN"then
-  abilityPulse("RageDust",origin+Vector3.new(0,.8,0),accent,Vector3.new(1,1,1),Vector3.new(8,3.5,8),.4)
-  abilityRing("RageRing",origin+Vector3.new(0,.25,0),color,2,11,.36)
-  for _,offset in ipairs({-1.2,0,1.2})do abilityStreak("WolfClaw",origin,look,color,offset,10,.2,.45)end
+  combatEffects.abilityPulse("RageDust",origin+Vector3.new(0,.8,0),accent,Vector3.new(1,1,1),Vector3.new(8,3.5,8),.4)
+  combatEffects.abilityRing("RageRing",origin+Vector3.new(0,.25,0),color,2,11,.36)
+  for _,offset in ipairs({-1.2,0,1.2})do combatEffects.abilityStreak("WolfClaw",origin,look,color,offset,10,.2,.45)end
  elseif ability=="CURSE_SLOW"then
   local radius=tonumber(profile.Radius)or 22
-  abilityPulse("CurseSandCore",origin+Vector3.new(0,.5,0),color,Vector3.new(1,1,1),Vector3.new(radius*1.8,1.6,radius*1.8),.7)
-  abilityRing("CurseRing",origin+Vector3.new(0,.22,0),accent,3,radius*2,.7)
+  combatEffects.abilityPulse("CurseSandCore",origin+Vector3.new(0,.5,0),color,Vector3.new(1,1,1),Vector3.new(radius*1.8,1.6,radius*1.8),.7)
+  combatEffects.abilityRing("CurseRing",origin+Vector3.new(0,.22,0),accent,3,radius*2,.7)
   for i=1,12 do
    local a=(i/12)*math.pi*2
    local pos=origin+Vector3.new(math.cos(a)*4,.5,math.sin(a)*4)
-   local grain=abilityVfxPart("CurseSand",Vector3.new(.45,.45,.45),CFrame.new(pos),i%2==0 and color or accent,Enum.PartType.Ball)
+   local grain=combatEffects.abilityVfxPart("CurseSand",Vector3.new(.45,.45,.45),CFrame.new(pos),i%2==0 and color or accent,Enum.PartType.Ball)
    TweenService:Create(grain,TweenInfo.new(.7,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{CFrame=CFrame.new(origin+Vector3.new(math.cos(a)*radius,2+((i%3)*.4),math.sin(a)*radius)),Transparency=1}):Play()
    Debris:AddItem(grain,.8)
   end
  elseif ability=="SHADOW_STEP"then
   local target=typeof(snapshot.Target)=="Vector3"and snapshot.Target or(origin+look*(tonumber(profile.Distance)or 18))
-  abilityPulse("ShadowGateOrigin",origin+Vector3.new(0,1.8,0),color,Vector3.new(2,4,2),Vector3.new(7,8,7),.5)
-  abilityPulse("ShadowGateTarget",target+Vector3.new(0,1.8,0),color,Vector3.new(2,4,2),Vector3.new(7,8,7),.5)
-  for i=-2,2 do abilityStreak("ShadowThread",origin,look,accent,i*.65,tonumber(profile.Distance)or 18,.16,.5)end
+  combatEffects.abilityPulse("ShadowGateOrigin",origin+Vector3.new(0,1.8,0),color,Vector3.new(2,4,2),Vector3.new(7,8,7),.5)
+  combatEffects.abilityPulse("ShadowGateTarget",target+Vector3.new(0,1.8,0),color,Vector3.new(2,4,2),Vector3.new(7,8,7),.5)
+  for i=-2,2 do combatEffects.abilityStreak("ShadowThread",origin,look,accent,i*.65,tonumber(profile.Distance)or 18,.16,.5)end
  end
 end
 
-local function playMonsterAttackEffect(snapshot)
+function combatEffects.playMonsterAttackEffect(snapshot)
  if typeof(snapshot)~="table"then return end
  local origin=typeof(snapshot.Origin)=="Vector3"and snapshot.Origin or Vector3.zero
  local look=typeof(snapshot.Look)=="Vector3"and snapshot.Look or Vector3.new(0,0,-1)
  markCombatSkinAttack(snapshot.UserId,origin,.58)
  local blood=Color3.fromRGB(224,60,86)
- abilitySparkBurst("MonsterAttackSparks",origin+Vector3.new(0,1.4,0),blood,18,12,.42)
- abilityPulse("MonsterAttackBurst",origin+Vector3.new(0,1.45,0),blood,Vector3.new(.8,.8,.8),Vector3.new(5,5,5),.24)
- abilityRing("MonsterAttackRing",origin+Vector3.new(0,.24,0),blood,1.5,7,.28)
- for _,offset in ipairs({-1,-.5,0,.5,1})do abilityStreak("MonsterClaw",origin,look,blood,offset,7,.18,.28)end
+ combatEffects.abilitySparkBurst("MonsterAttackSparks",origin+Vector3.new(0,1.4,0),blood,18,12,.42)
+ combatEffects.abilityPulse("MonsterAttackBurst",origin+Vector3.new(0,1.45,0),blood,Vector3.new(.8,.8,.8),Vector3.new(5,5,5),.24)
+ combatEffects.abilityRing("MonsterAttackRing",origin+Vector3.new(0,.24,0),blood,1.5,7,.28)
+ for _,offset in ipairs({-1,-.5,0,.5,1})do combatEffects.abilityStreak("MonsterClaw",origin,look,blood,offset,7,.18,.28)end
 end
 
-local function playHumanAbilityEffect(snapshot)
+function combatEffects.playHumanAbilityEffect(snapshot)
  if typeof(snapshot)~="table"then return end
  local ability=tostring(snapshot.Ability or"")
  local action=tostring(snapshot.Action or"")
@@ -3606,27 +3609,27 @@ local function playHumanAbilityEffect(snapshot)
   SECURITY=Color3.fromRGB(105,186,230),
  }
  local color=palette[formId]or Color3.fromRGB(116,201,220)
- abilitySparkBurst("HumanAbilitySparks",origin+Vector3.new(0,1.25,0),color,20,12,.52)
- abilityRing("HumanAbilityHalo",origin+Vector3.new(0,.22,0),color,1.5,13,.4)
+ combatEffects.abilitySparkBurst("HumanAbilitySparks",origin+Vector3.new(0,1.25,0),color,20,12,.52)
+ combatEffects.abilityRing("HumanAbilityHalo",origin+Vector3.new(0,.22,0),color,1.5,13,.4)
  if ability=="SIGNAL_JAM"then
-  abilityPulse("SignalJam",origin+Vector3.new(0,1.2,0),color,Vector3.new(1,1,1),Vector3.new(24,4,24),.55)
-  abilityRing("SignalJamRing",origin+Vector3.new(0,.2,0),color,3,28,.58)
-  task.delay(.12,function()abilityPulse("SignalJamEcho",origin+Vector3.new(0,1.2,0),color,Vector3.new(2,1,2),Vector3.new(27,2,27),.5)end)
+  combatEffects.abilityPulse("SignalJam",origin+Vector3.new(0,1.2,0),color,Vector3.new(1,1,1),Vector3.new(24,4,24),.55)
+  combatEffects.abilityRing("SignalJamRing",origin+Vector3.new(0,.2,0),color,3,28,.58)
+  task.delay(.12,function()combatEffects.abilityPulse("SignalJamEcho",origin+Vector3.new(0,1.2,0),color,Vector3.new(2,1,2),Vector3.new(27,2,27),.5)end)
  elseif ability=="OVERLOAD"then
-  abilityPulse("HumanOverload",origin+Vector3.new(0,.8,0),color,Vector3.new(1,1,1),Vector3.new(16,3,16),.42)
-  abilityRing("HumanOverloadRing",origin+Vector3.new(0,.2,0),color,2,18,.4)
+  combatEffects.abilityPulse("HumanOverload",origin+Vector3.new(0,.8,0),color,Vector3.new(1,1,1),Vector3.new(16,3,16),.42)
+  combatEffects.abilityRing("HumanOverloadRing",origin+Vector3.new(0,.2,0),color,2,18,.4)
   for i=1,8 do
    local a=i/8*math.pi*2
-   abilityStreak("OverloadArc",origin,Vector3.new(math.cos(a),0,math.sin(a)),color,0,5,.16,.3)
+   combatEffects.abilityStreak("OverloadArc",origin,Vector3.new(math.cos(a),0,math.sin(a)),color,0,5,.16,.3)
   end
  elseif ability=="IMPACT_BAG"then
   local dir=target-origin
-  abilityPulse("ImpactBagBurst",origin+Vector3.new(0,1.2,0),color,Vector3.new(1,1,1),Vector3.new(7,5,7),.32)
-  abilityRing("ImpactBagRing",origin+Vector3.new(0,.2,0),color,2,10,.34)
-  if dir.Magnitude>.1 then abilityStreak("ImpactBagTrail",origin,dir.Unit,color,0,math.min(14,dir.Magnitude),.35,.34)end
+  combatEffects.abilityPulse("ImpactBagBurst",origin+Vector3.new(0,1.2,0),color,Vector3.new(1,1,1),Vector3.new(7,5,7),.32)
+  combatEffects.abilityRing("ImpactBagRing",origin+Vector3.new(0,.2,0),color,2,10,.34)
+  if dir.Magnitude>.1 then combatEffects.abilityStreak("ImpactBagTrail",origin,dir.Unit,color,0,math.min(14,dir.Magnitude),.35,.34)end
  elseif ability=="CAMERA_FLASH"then
-  abilityPulse("CameraFlash",origin+Vector3.new(0,1.5,0),color,Vector3.new(2,2,2),Vector3.new(22,13,22),.24)
-  abilityRing("CameraFlashRing",origin+Vector3.new(0,.2,0),Color3.fromRGB(255,255,246),2,22,.3)
+  combatEffects.abilityPulse("CameraFlash",origin+Vector3.new(0,1.5,0),color,Vector3.new(2,2,2),Vector3.new(22,13,22),.24)
+  combatEffects.abilityRing("CameraFlashRing",origin+Vector3.new(0,.2,0),Color3.fromRGB(255,255,246),2,22,.3)
   local character=p.Character
   local localRoot=character and character:FindFirstChild("HumanoidRootPart")
   local profile=C.HumanAbilities and C.HumanAbilities.CAMERA_FLASH
@@ -3641,14 +3644,14 @@ local function playHumanAbilityEffect(snapshot)
  elseif ability=="SHOCK_BATON"then
   local dir=target-origin
   if dir.Magnitude>.1 then
-   abilityRing("BatonShockRing",target+Vector3.new(0,.25,0),color,1,8,.28)
-   for i=-2,2 do abilityStreak("BatonArc",origin,dir.Unit,color,i*.22,math.min(9,dir.Magnitude),.2,.3)end
+   combatEffects.abilityRing("BatonShockRing",target+Vector3.new(0,.25,0),color,1,8,.28)
+   for i=-2,2 do combatEffects.abilityStreak("BatonArc",origin,dir.Unit,color,i*.22,math.min(9,dir.Magnitude),.2,.3)end
   end
  elseif action=="PURIFY"then
-  abilityPulse("AIPurify",target+Vector3.new(0,1,0),color,Vector3.new(.8,.8,.8),Vector3.new(4,4,4),.25)
+  combatEffects.abilityPulse("AIPurify",target+Vector3.new(0,1,0),color,Vector3.new(.8,.8,.8),Vector3.new(4,4,4),.25)
  elseif action=="DASH"then
   local dir=target-origin
-  if dir.Magnitude>.1 then abilityStreak("AIHumanDash",origin,dir.Unit,color,0,math.min(12,dir.Magnitude),.25,.32)end
+  if dir.Magnitude>.1 then combatEffects.abilityStreak("AIHumanDash",origin,dir.Unit,color,0,math.min(12,dir.Magnitude),.25,.32)end
  end
 end
 
@@ -3674,15 +3677,15 @@ remote.OnClientEvent:Connect(function(kind,snapshot)
   return
  end
  if kind=="MONSTER_ABILITY_EFFECT"then
-  playMonsterAbilityEffect(snapshot)
+  combatEffects.playMonsterAbilityEffect(snapshot)
   return
  end
  if kind=="MONSTER_ATTACK_EFFECT"then
-  playMonsterAttackEffect(snapshot)
+  combatEffects.playMonsterAttackEffect(snapshot)
   return
  end
  if kind=="HUMAN_ABILITY_EFFECT"or kind=="AI_HUMAN_ACTION_EFFECT"then
-  playHumanAbilityEffect(snapshot)
+  combatEffects.playHumanAbilityEffect(snapshot)
   return
  end
  if kind=="RESULT_CEREMONY_STAGE"then
