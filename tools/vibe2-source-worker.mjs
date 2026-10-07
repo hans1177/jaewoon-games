@@ -23,6 +23,7 @@ import {bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} fro
 import {createRobloxWalkTeachingRecipe,createStudioMotionActionProfile} from '../assets/vibe-motion-director.js';
 import {createAssetProductionTeachingRecipe} from '../assets/vibe-studio-asset-universe.js';
 import {detectRobloxStudioAssetSystems,robloxStudioAssetFamilyBoundInText,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from './company-development-roblox-bootstrap.mjs';
+import {evaluateCrossPlatform3dMasterGlb} from './vibe2-asset-production-plan.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -385,7 +386,9 @@ export function persistedGeneratedAssetBindings(order={}){
       assetId:clean(row?.assetId||row?.id)||null,
       family:clean(row?.family).toUpperCase()||null,
       sourceHash:clean(row?.sourceHash)||null,
-      license:clean(row?.license)||null
+      license:clean(row?.license)||null,
+      masterGlbRequired:row?.masterGlbRequired===true,
+      masterGlbStaticQaPass:row?.masterGlbStaticQaPass===true
     });
   }).filter(Boolean);
   return bindings.length===recipes.length?Object.freeze(bindings):Object.freeze([]);
@@ -490,14 +493,32 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
         const preview=recipe?.preview?dccRepoPath(recipe.preview):null;
         if(preview){const file=path.resolve(cwd,preview);if(!fs.existsSync(file)||!fs.statSync(file).isFile()||fs.statSync(file).size<=0)throw new Error('NATIVE_DCC_PREVIEW_MISSING:'+preview);}
         const nativeArtifact=generated.find(row=>/\.(?:glb|gltf|fbx|blend)$/i.test(row.path))||generated[0];
+        const family=clean(recipe?.family).toUpperCase()||null;
+        const masterGlbRequired=recipe?.masterGlbRequired===true||['CHARACTER','CREATURE'].includes(family);
+        let masterGlbQa=null;
+        if(masterGlbRequired){
+          if(!/\.glb$/i.test(nativeArtifact.path))throw new Error('CROSS_PLATFORM_MASTER_GLB_REQUIRED:'+clean(recipe?.id));
+          masterGlbQa=evaluateCrossPlatform3dMasterGlb({repoRoot:cwd,source:{path:nativeArtifact.path},family});
+          if(masterGlbQa.pass!==true)throw new Error('CROSS_PLATFORM_MASTER_GLB_QA_FAILED:'+clean(recipe?.id)+':'+(masterGlbQa.blockers||[]).join(','));
+        }
         const priorNative=preOutput.get(nativeArtifact.path);
         const reproducesExistingNativeArtifact=Boolean(priorNative&&priorNative.sha256===nativeArtifact.sha256);
         recipeSucceeded=true;
         results.push(Object.freeze({
-          id:clean(recipe?.id)||path.basename(script,'.py'),assetId:clean(recipe?.assetId)||null,family:clean(recipe?.family).toUpperCase()||null,license:clean(recipe?.license)||null,executor:'BLENDER_PYTHON',script,editableSource:dccRepoPath(recipe?.editableSource||script),
+          id:clean(recipe?.id)||path.basename(script,'.py'),assetId:clean(recipe?.assetId)||null,family,license:clean(recipe?.license)||null,executor:'BLENDER_PYTHON',script,editableSource:dccRepoPath(recipe?.editableSource||script),
           types:Object.freeze([...(Array.isArray(recipe?.types)?recipe.types:[])]),targetPlatforms:Object.freeze([...(Array.isArray(recipe?.targetPlatforms)?recipe.targetPlatforms:[])]),
           outputs:Object.freeze(generated),evidenceJson,preview,nativeArtifact:nativeArtifact.path,artifactHash:nativeArtifact.sha256,sourceHash:sha256File(scriptAbs),
           evidenceState:evidence?.runtimeVerificationState||null,productionVerified:evidence?.productionVerified===true,
+          masterGlbRequired,masterGlbStaticQaPass:masterGlbRequired?masterGlbQa?.pass===true:null,
+          masterGlbContractVersion:masterGlbRequired?1:null,
+          masterGlbInspection:masterGlbRequired?Object.freeze({
+            status:masterGlbQa?.status||null,
+            meshCount:Number(masterGlbQa?.inspection?.inventory?.meshCount||0),
+            materialCount:Number(masterGlbQa?.inspection?.inventory?.materials?.length||0),
+            skinCount:Number(masterGlbQa?.inspection?.inventory?.skins?.length||0),
+            animationCount:Number(masterGlbQa?.inspection?.inventory?.animations?.length||0),
+            sourceHash:masterGlbQa?.sourceHash||null
+          }):null,
           reproducesExistingNativeArtifact,persistedForCandidate:persist,candidateUsable:persist||reproducesExistingNativeArtifact,
           stdoutTail:String(stdout||'').slice(-2000),runtimeVerified:false,companyPromotionEligible:false
         }));
@@ -569,9 +590,16 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
     return types.length?types:requiredDccTypes;
   }));
   const dccTypeCoveragePass=!dccRequired||requiredDccTypes.every(type=>dccCoveredTypes.includes(clean(type).toLowerCase()));
+  const masterGlbRequiredTypes=requiredDccTypes.filter(type=>/^(?:character|player|npc|enemy|boss|creature|monster)$/.test(clean(type).toLowerCase()));
+  const masterGlbRequired=masterGlbRequiredTypes.length>0;
+  const masterGlbEvidencePass=!masterGlbRequired||(dccEvidence?.recipes||[]).filter(row=>{
+    const types=Array.isArray(row?.types)?row.types.map(value=>clean(value).toLowerCase()):[];
+    return row?.masterGlbRequired===true||['CHARACTER','CREATURE'].includes(clean(row?.family).toUpperCase())||types.some(type=>masterGlbRequiredTypes.includes(type));
+  }).every(row=>row?.masterGlbStaticQaPass===true&&/\.glb$/i.test(posix(row?.nativeArtifact)));
   const dccAuthored=Boolean(
     !dccRequired||(
       dccTypeCoveragePass
+      &&masterGlbEvidencePass
       &&dccEvidence?.executed===true
       &&dccEvidence?.allRecipesPassed===true
       &&dccEvidence?.candidateUsable===true
@@ -608,6 +636,10 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
     requiredDccTypes:Object.freeze([...requiredDccTypes]),
     dccCoveredTypes:Object.freeze([...dccCoveredTypes]),
     dccTypeCoveragePass,
+    masterGlbRequired,
+    masterGlbRequiredTypes:Object.freeze([...masterGlbRequiredTypes]),
+    masterGlbEvidencePass,
+    masterGlbFormat:masterGlbRequired?'GLB_2_0':null,
     requiredNativeTextTypes:Object.freeze([...(contract?.nativeText?.requiredTypes||[])]),
     dccExecutionEvidencePresent:Boolean(dccEvidence),
     dccExecutionEvidence:dccEvidence?Object.freeze({...dccEvidence}):null,
@@ -2175,6 +2207,7 @@ function robloxNativeWorkerGuidance(order={},context={},responsibleFiles=[]) {
     directive.observableAcceptanceScenario?`END_TO_END_ACCEPTANCE=${clean(directive.observableAcceptanceScenario)}`:'END_TO_END_ACCEPTANCE=input/touch -> local handler -> Remote when required -> server validation -> authoritative state change -> client feedback',
     'Use Roblox-native Luau and the existing server/client/module responsibility. Do not translate Unity/Web implementation literally.',
     'Read the existing RemoteEvent/RemoteFunction, touch input, character/respawn, rig/animation, DataStore/save, UI state, and multiplayer sync flow before changing behavior.',
+    '3D MASTER ASSET: CHARACTER/CREATURE/ENEMY/BOSS must originate from a repository-bound GLB 2.0 master with mesh, normals, UV0, materials, skeleton/skin weights and animation. Part/Wedge/Ball/Cylinder assembly is prototype-only and cannot be claimed as a finished 3D actor. Roblox must bind a native derivative/import from that master and preserve the master path/hash lineage.',
     'CHARACTER MOTION QUALITY: for PLAYER/HUMANOID_NPC/CREATURE, inspect the existing rig before motion changes. An articulated actor must use R15 or a compatible Motor6D/Bone rig plus Humanoid or AnimationController and Animator. WeldConstraint-only articulated bodies and single rigid Parts are not a finished character motion solution.',
     'MOTION SOURCE ORDER: reuse verified same-game/same-archetype motion first, then compatible verified company motion, then license-verified repository/external motion with retarget cleanup. Author new keyframes only for the remaining verified coverage gap.',
     'SMOOTHNESS: use AnimationTrack cross-fade/weight blending, speed-synchronized Walk/Jog/Run playback, start/stop/turn continuity, and upper/lower-body layering when supported. Do not snap Attack back to Idle.',
