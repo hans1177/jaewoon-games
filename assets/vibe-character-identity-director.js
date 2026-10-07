@@ -85,7 +85,10 @@ export const VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT=Object.freeze({
     backgroundNpcMayUseLodButMustKeepDistinctSilhouette:true,
     deterministicRecipeFromStableSeed:true,
     speciesPartCompatibilityRequired:true,
-    gameplayStatsUnaffected:true
+    gameplayStatsUnaffected:true,
+    roleProfileRequired:true,
+    colorOnlyRoleVariantForbidden:true,
+    roleSpecificSilhouetteEquipmentStanceAndMotionRequired:true
   }),
   production:Object.freeze({
     preferExistingMorphPartRigAndMaterialLibrary:true,
@@ -95,13 +98,89 @@ export const VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT=Object.freeze({
     editableDccSourceRequiredForNewMorphs:true,
     platformNativeVariantsRequired:true,
     mobileLodRequired:true,
-    runtimeVerificationRequiredBeforeProductionPromotion:true
+    runtimeVerificationRequiredBeforeProductionPromotion:true,
+    final3dNpcMasterGlbRequired:true,
+    primitivePartOrWeldOnlyNpcPrototypeOnly:true,
+    platformNativeRigAndAnimationBindingRequired:true
   }),
   gameplayAuthority:false,
   balanceAuthority:false,
   saveAuthority:false,
   networkAuthority:false
 });
+
+export const VIBE_NPC_ROLE_PRODUCTION_CONTRACT=Object.freeze({
+  version:1,
+  status:'ACTIVE_MACHINE_READABLE_NPC_ROLE_PRODUCTION',
+  final3dMasterFormat:'GLB_2_0',
+  roles:Object.freeze([
+    'PLAYER','GENERAL_NPC','COMPANION','ALLY','STORY_CHARACTER','CIVILIAN','MERCHANT','QUEST_GIVER','GUARD',
+    'WORKER','ARTISAN','FARMER','HEALER','TRAINER','RIVAL','HOSTILE_HUMANOID','NAMED_ELITE','HUMANOID_BOSS'
+  ]),
+  commonFinalRequirements:Object.freeze([
+    'DISTINCT_SILHOUETTE','ROLE_EQUIPMENT_OR_PROP_LANGUAGE','ROLE_STANCE_AND_GAIT','IDLE_AND_INTERACTION_MOTION',
+    'SKINNED_RIG','ACTIVE_JOINT_MOTION','MOBILE_LOD','PLATFORM_NATIVE_BINDING'
+  ]),
+  sharedMasterGlbReuseAllowed:true,
+  sharedMasterDoesNotPermitColorOnlyRoleClone:true,
+  roleDifferentiationAxes:Object.freeze(['SILHOUETTE','BODY_PROPORTION','OUTFIT_EQUIPMENT','STANCE_GAIT','IDLE_INTERACTION_MOTION','FACE_GESTURE','WEAR_HISTORY']),
+  minimumDistinctRoleAxes:3,
+  primitivePartOrWeldOnlyFinalNpcForbidden:true,
+  rootTransformOnlyVisibleMotionForbidden:true,
+  gameplayAuthority:false,
+  balanceAuthority:false,
+  aiAuthority:false
+});
+
+const NPC_ROLE_ALIASES=Object.freeze({
+  NPC:'GENERAL_NPC',VILLAGER:'CIVILIAN',RESIDENT:'CIVILIAN',SHOPKEEPER:'MERCHANT',VENDOR:'MERCHANT',
+  QUEST:'QUEST_GIVER',QUESTGIVER:'QUEST_GIVER',SOLDIER:'GUARD',COMPANION_NPC:'COMPANION',PARTY_MEMBER:'COMPANION',
+  FRIENDLY:'ALLY',ENEMY:'HOSTILE_HUMANOID',HUMANOID_ENEMY:'HOSTILE_HUMANOID',ELITE:'NAMED_ELITE',
+  BOSS:'HUMANOID_BOSS',NPC_BOSS:'HUMANOID_BOSS',CHARACTER_BOSS:'HUMANOID_BOSS'
+});
+
+const NPC_ROLE_PROFILES=Object.freeze({
+  PLAYER:Object.freeze({detailTier:'HERO',identity:Object.freeze(['PLAYER_READABLE_SILHOUETTE','EQUIPPED_GEAR','STANCE_IDENTITY']),motion:Object.freeze(['IDLE','WALK','RUN','TURN','INTERACT','ACTION','HIT','DEATH'])}),
+  GENERAL_NPC:Object.freeze({detailTier:'STANDARD',identity:Object.freeze(['ROLE_SILHOUETTE','OCCUPATION_OR_CONTEXT_GEAR','GAIT_IDENTITY']),motion:Object.freeze(['IDLE','WALK','TURN','GREET','INTERACT'])}),
+  COMPANION:Object.freeze({detailTier:'HERO',identity:Object.freeze(['PARTY_SILHOUETTE','SIGNATURE_GEAR','RELATIONSHIP_READABLE_POSTURE']),motion:Object.freeze(['IDLE','LOCOMOTION','FOLLOW','ASSIST','INTERACT','REVIVE_PRESENTATION','HIT','DOWNED_OR_DEATH'])}),
+  ALLY:Object.freeze({detailTier:'HERO',identity:Object.freeze(['ALLY_SILHOUETTE','COMBAT_OR_SUPPORT_GEAR','ALLY_STANCE']),motion:Object.freeze(['IDLE','LOCOMOTION','ASSIST','INTERACT','COMBAT_READY','HIT','DEATH'])}),
+  STORY_CHARACTER:Object.freeze({detailTier:'HERO_CLOSEUP',identity:Object.freeze(['NAMED_SILHOUETTE','PERSONAL_OUTFIT','FACE_AND_GESTURE_IDENTITY']),motion:Object.freeze(['IDLE','LOCOMOTION','DIALOGUE_GESTURE','EMOTION_REACTION','INTERACT','SCENE_ACTION'])}),
+  CIVILIAN:Object.freeze({detailTier:'STANDARD_LOD',identity:Object.freeze(['OCCUPATION_SILHOUETTE','LOCAL_OUTFIT','SOCIAL_GAIT']),motion:Object.freeze(['IDLE','WALK','TALK','SOCIAL_OR_WORK_LOOP','THREAT_REACTION_WHEN_APPLICABLE'])}),
+  MERCHANT:Object.freeze({detailTier:'STANDARD_PLUS',identity:Object.freeze(['SHOP_ROLE_SILHOUETTE','GOODS_OR_TOOL_PROP','MERCHANT_GESTURE']),motion:Object.freeze(['IDLE','GREET','PRESENT_GOODS','TRADE_REACTION','INTERACT'])}),
+  QUEST_GIVER:Object.freeze({detailTier:'STANDARD_PLUS',identity:Object.freeze(['QUEST_ROLE_SILHOUETTE','IDENTITY_PROP','DIRECTING_GESTURE']),motion:Object.freeze(['IDLE','GREET','EXPLAIN','POINT_OR_DIRECT','REWARD_REACTION','INTERACT'])}),
+  GUARD:Object.freeze({detailTier:'STANDARD_PLUS',identity:Object.freeze(['GUARD_SILHOUETTE','ARMOR_OR_WEAPON','ALERT_STANCE']),motion:Object.freeze(['IDLE_ALERT','PATROL','TURN','CHALLENGE','COMBAT_READY','HIT','DEATH'])}),
+  WORKER:Object.freeze({detailTier:'STANDARD',identity:Object.freeze(['WORK_ROLE_SILHOUETTE','WORK_PROP','WEAR_HISTORY']),motion:Object.freeze(['IDLE','LOCOMOTION','WORK_LOOP','CARRY_OR_TOOL_CONTACT','INTERACT'])}),
+  ARTISAN:Object.freeze({detailTier:'STANDARD_PLUS',identity:Object.freeze(['CRAFT_ROLE_SILHOUETTE','CRAFT_TOOL','WORKSHOP_WEAR']),motion:Object.freeze(['IDLE','LOCOMOTION','CRAFT_LOOP','TOOL_CONTACT','PRESENT_RESULT','INTERACT'])}),
+  FARMER:Object.freeze({detailTier:'STANDARD',identity:Object.freeze(['FARM_ROLE_SILHOUETTE','FARM_TOOL','FIELD_WEAR']),motion:Object.freeze(['IDLE','WALK','FARM_WORK_LOOP','CARRY','INTERACT'])}),
+  HEALER:Object.freeze({detailTier:'STANDARD_PLUS',identity:Object.freeze(['HEALER_SILHOUETTE','MEDICAL_OR_MAGIC_PROP','CALM_STANCE']),motion:Object.freeze(['IDLE','LOCOMOTION','GREET','HEAL_PRESENTATION','ASSIST','INTERACT'])}),
+  TRAINER:Object.freeze({detailTier:'STANDARD_PLUS',identity:Object.freeze(['TRAINER_SILHOUETTE','DISCIPLINE_GEAR','DEMONSTRATION_STANCE']),motion:Object.freeze(['IDLE','LOCOMOTION','DEMONSTRATE','CORRECT','INTERACT'])}),
+  RIVAL:Object.freeze({detailTier:'HERO',identity:Object.freeze(['RIVAL_SIGNATURE_SILHOUETTE','SIGNATURE_GEAR','CONTRASTING_STANCE']),motion:Object.freeze(['IDLE','LOCOMOTION','TAUNT','COMBAT_READY','ATTACK_PRESENTATION','HIT','DEATH'])}),
+  HOSTILE_HUMANOID:Object.freeze({detailTier:'COMBAT',identity:Object.freeze(['HOSTILE_SILHOUETTE','COMBAT_GEAR','THREAT_STANCE']),motion:Object.freeze(['IDLE_ALERT','LOCOMOTION','ATTACK_ANTICIPATION','ATTACK','RECOVERY','HIT','DEATH'])}),
+  NAMED_ELITE:Object.freeze({detailTier:'HERO_COMBAT',identity:Object.freeze(['ELITE_SIGNATURE_SILHOUETTE','ELITE_GEAR','SIGNATURE_STANCE']),motion:Object.freeze(['INTRO_OR_TAUNT','IDLE_ALERT','LOCOMOTION','ATTACK_SET','SPECIAL_PRESENTATION','HIT','STUN_OR_BREAK','DEATH'])}),
+  HUMANOID_BOSS:Object.freeze({detailTier:'BOSS',identity:Object.freeze(['BOSS_UNIQUE_SILHOUETTE','DEDICATED_GEAR_OR_BODY_DETAIL','BOSS_STANCE']),motion:Object.freeze(['INTRO','IDLE_ALERT','LOCOMOTION','BASIC_ATTACK_SET','SPECIAL_ATTACK_SET','PHASE_CHANGE','ENRAGE','STUN_OR_GUARD_BREAK','RECOVERY','DEATH_SEQUENCE'])})
+});
+
+export function createVibeNpcRoleProfile({role='GENERAL_NPC'}={}){
+  const raw=String(role||'GENERAL_NPC').trim().toUpperCase().replace(/[\s-]+/g,'_');
+  const normalized=NPC_ROLE_ALIASES[raw]||raw;
+  const resolved=NPC_ROLE_PROFILES[normalized]?normalized:'GENERAL_NPC';
+  const profile=NPC_ROLE_PROFILES[resolved];
+  return Object.freeze({
+    version:VIBE_NPC_ROLE_PRODUCTION_CONTRACT.version,
+    role:resolved,
+    detailTier:profile.detailTier,
+    identity:Object.freeze([...profile.identity]),
+    motion:Object.freeze([...profile.motion]),
+    masterGlbRequired:true,
+    masterFormat:VIBE_NPC_ROLE_PRODUCTION_CONTRACT.final3dMasterFormat,
+    roleSpecificVisualMotionRequired:true,
+    colorOnlyRoleVariantForbidden:true,
+    primitivePartOrWeldOnlyFinalNpcForbidden:true,
+    platformRuntimeVerificationRequired:true,
+    gameplayAuthority:false,
+    aiAuthority:false
+  });
+}
 
 export function inferVibeCharacterArchetypes({role='',species='',weapon='',traits=[]}={}){const t=`${role} ${species} ${weapon} ${(traits||[]).join(' ')}`.toLowerCase(),out=[];if(/sword|melee|warrior|검|전사/.test(t))out.push('melee');if(/bow|gun|ranged|archer|활|궁수|총/.test(t))out.push('ranged');if(/heal|support|힐|치유/.test(t))out.push('healer');if(/insect|mantis|ant|bee|spider|scorpion|벌레|사마귀|개미|벌|거미|전갈/.test(t))out.push('insect');if(/fly|wing|bird|bee|날개|비행|새/.test(t))out.push('flying');if(/heavy|giant|tank|boss|거대|중갑|보스/.test(t))out.push('heavy');if(/magic|mage|staff|wizard|마법|지팡이/.test(t))out.push('magic');return Object.freeze(out.length?uniq(out):['melee'])}
 
@@ -292,15 +371,19 @@ export function createVibeCharacterCustomizationRecipe(character={},index=0){
 }
 export function createVibeNpcCustomizationPopulation({count=64,seed='npc-population',roles=[],regions=[],species=[]}={}){
   const total=Math.max(1,Math.min(512,Number(count)||64));
-  const rolePool=roles.length?roles:['CIVILIAN','MERCHANT','WORKER','GUARD','SCHOLAR','TRAVELER','ARTISAN','FARMER'];
+  const rolePool=roles.length?roles:['CIVILIAN','MERCHANT','QUEST_GIVER','WORKER','GUARD','ARTISAN','FARMER','STORY_CHARACTER','COMPANION'];
   const regionPool=regions.length?regions:['UNIVERSAL'];
   const speciesPool=species.length?species:['humanoid'];
-  const recipes=Array.from({length:total},(_,index)=>createVibeCharacterCustomizationRecipe({
-    name:`${seed}-${index+1}`,
-    role:rolePool[index%rolePool.length],
-    region:regionPool[Math.floor(index/rolePool.length)%regionPool.length],
-    species:speciesPool[index%speciesPool.length]
-  },index));
+  const recipes=Array.from({length:total},(_,index)=>{
+    const role=rolePool[index%rolePool.length];
+    const base=createVibeCharacterCustomizationRecipe({
+      name:`${seed}-${index+1}`,
+      role,
+      region:regionPool[Math.floor(index/rolePool.length)%regionPool.length],
+      species:speciesPool[index%speciesPool.length]
+    },index);
+    return Object.freeze({...base,npcRoleProfile:createVibeNpcRoleProfile({role})});
+  });
   const identityKeys=recipes.map(row=>JSON.stringify([
     row.body.archetype,row.head.baseFamily,row.eyes.leftColor,row.eyes.rightColor,row.hair.style,row.hair.primaryColor,
     row.surface.detail,row.surface.agePresentation,row.speciesParts.ear,row.speciesParts.horn,row.accessory,row.outfit.layerTheme,
@@ -317,6 +400,8 @@ export function createVibeNpcCustomizationPopulation({count=64,seed='npc-populat
     recipes:Object.freeze(recipes),
     target:VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.target,
     sameAssetPoolAsPlayerCustomization:true,
+    roleContract:VIBE_NPC_ROLE_PRODUCTION_CONTRACT,
+    roleCoverage:Object.freeze(uniq(recipes.map(row=>row.npcRoleProfile.role))),
     colorOnlyDuplicateForbidden:true,
     productionVerified:false,
     gameplayAuthority:false
@@ -326,5 +411,5 @@ export function createVibeNpcCustomizationPopulation({count=64,seed='npc-populat
 export function createVibePopulationPhysicalDiversity(characters=[]){const rows=characters.map((c,i)=>createVibeMotionIdentity(c,i)),keys=rows.map(x=>JSON.stringify([x.body.heightCm,x.body.weightKg,x.body.frame,x.body.proportions,x.body.posture,x.physical.walk.cadence,x.physical.walk.armSwing,x.appearance.face.shape,x.appearance.surface])),unique=uniq(keys).length,score=Math.round(unique/Math.max(1,rows.length)*100);return Object.freeze({score,unique,total:rows.length,cloneRate:Math.round((rows.length-unique)/Math.max(1,rows.length)*100),pass:score>=80})}
 export function createVibePhysicalDiversityGate({characters=[]}={}){const rows=characters.map((c,i)=>createVibeMotionIdentity(c,i)),issues=[];for(let i=0;i<rows.length;i++)for(let j=i+1;j<rows.length;j++){const a=rows[i],b=rows[j],same=[a.body.frame===b.body.frame,a.body.proportions.limbs===b.body.proportions.limbs,a.body.posture===b.body.posture,a.physical.walk.cadence===b.physical.walk.cadence,a.physical.walk.armSwing===b.physical.walk.armSwing,a.appearance.face.shape===b.appearance.face.shape].filter(Boolean).length;if(same>=5)issues.push(`${a.name}:${b.name}:physical-clone`)}return Object.freeze({pass:!issues.length,issues:Object.freeze(issues),rule:'major characters must differ across several body appearance and gait axes, not only palette'})}
 export function scoreVibeMotionOriginality(characters=[]){const signatures=characters.map((c,i)=>createVibeMotionIdentity(c,i)),keys=signatures.map(s=>JSON.stringify([s.archetypes,s.body,s.signature.move,s.signature.attack,s.physical.walk])),unique=uniq(keys).length,score=Math.round((unique/Math.max(1,characters.length))*100);return Object.freeze({score,unique,total:characters.length,duplicates:characters.length-unique,needsDiversification:score<80})}
-export function planVibeCharacterIdentityAutopilot({characters=[],eventMap={}}={}){const plans=characters.map((c,i)=>{const identity=createVibeMotionIdentity(c,i),events=eventMap[c.name]||['idle','move','attack','hit','death'];return Object.freeze({character:c.name,identity,persona:createVibeCharacterPersona(c,i),assetMorph:createVibeCharacterAssetMorphPlan(c,i),customization:createVibeCharacterCustomizationRecipe(c,i),signatureMove:createVibeSignatureMove(c,i),gameplayLinks:createVibeGameplayMotionLinks({events,character:c,index:i})})});return Object.freeze({version:5,customizationBreadth:VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,plans:Object.freeze(plans.map(row=>Object.freeze({...row,behaviorBrain:resolveVibeCharacterBehaviorIntent({persona:row.persona,context:{}})}))),physicalDiversity:createVibePopulationPhysicalDiversity(characters),personaDiversity:createVibePopulationPersonaDiversity(characters),diversityGate:createVibePhysicalDiversityGate({characters}),originality:scoreVibeMotionOriginality(characters),policy:Object.freeze({developmentAI:false,serverAI:'game-runtime-only',deterministic:true,eventDriven:true,gameplayLinked:true,noRuleMutation:true,avoidGenericMotion:true,variationMustPreserveTiming:true,noWholeSpriteScaleHack:true,playerAndNpcShareCustomizationAssetPool:true,colorOnlyNpcCloneForbidden:true})})}
-if(typeof window!=='undefined'){Object.assign(window,{inferJaewoonVibeCharacterArchetypes:inferVibeCharacterArchetypes,createJaewoonVibeBodyIdentity:createVibeBodyIdentity,createJaewoonVibeAppearanceIdentity:createVibeAppearanceIdentity,createJaewoonVibeEquipmentFitIdentity:createVibeEquipmentFitIdentity,createJaewoonVibeGaitIdentity:createVibeGaitIdentity,createJaewoonVibePhysicalActionLanguage:createVibePhysicalActionLanguage,createJaewoonVibeMotionIdentity:createVibeMotionIdentity,createJaewoonVibeGameplayMotionLinks:createVibeGameplayMotionLinks,createJaewoonVibeSignatureMove:createVibeSignatureMove,createJaewoonVibeCharacterAssetMorphPlan:createVibeCharacterAssetMorphPlan,createJaewoonVibeCharacterCustomizationRecipe:createVibeCharacterCustomizationRecipe,createJaewoonVibeNpcCustomizationPopulation:createVibeNpcCustomizationPopulation,createJaewoonVibePopulationPhysicalDiversity:createVibePopulationPhysicalDiversity,createJaewoonVibePhysicalDiversityGate:createVibePhysicalDiversityGate,scoreJaewoonVibeMotionOriginality:scoreVibeMotionOriginality,createJaewoonVibeCharacterPersona:createVibeCharacterPersona,resolveJaewoonVibeCharacterBehaviorIntent:resolveVibeCharacterBehaviorIntent,createJaewoonVibePopulationPersonaDiversity:createVibePopulationPersonaDiversity,planJaewoonVibeCharacterIdentityAutopilot:planVibeCharacterIdentityAutopilot})}
+export function planVibeCharacterIdentityAutopilot({characters=[],eventMap={}}={}){const plans=characters.map((c,i)=>{const identity=createVibeMotionIdentity(c,i),events=eventMap[c.name]||['idle','move','attack','hit','death'];return Object.freeze({character:c.name,identity,persona:createVibeCharacterPersona(c,i),npcRoleProfile:createVibeNpcRoleProfile({role:c.role||'GENERAL_NPC'}),assetMorph:createVibeCharacterAssetMorphPlan(c,i),customization:createVibeCharacterCustomizationRecipe(c,i),signatureMove:createVibeSignatureMove(c,i),gameplayLinks:createVibeGameplayMotionLinks({events,character:c,index:i})})});return Object.freeze({version:5,customizationBreadth:VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,plans:Object.freeze(plans.map(row=>Object.freeze({...row,behaviorBrain:resolveVibeCharacterBehaviorIntent({persona:row.persona,context:{}})}))),physicalDiversity:createVibePopulationPhysicalDiversity(characters),personaDiversity:createVibePopulationPersonaDiversity(characters),diversityGate:createVibePhysicalDiversityGate({characters}),originality:scoreVibeMotionOriginality(characters),policy:Object.freeze({developmentAI:false,serverAI:'game-runtime-only',deterministic:true,eventDriven:true,gameplayLinked:true,noRuleMutation:true,avoidGenericMotion:true,variationMustPreserveTiming:true,noWholeSpriteScaleHack:true,playerAndNpcShareCustomizationAssetPool:true,colorOnlyNpcCloneForbidden:true})})}
+if(typeof window!=='undefined'){Object.assign(window,{VIBE_NPC_ROLE_PRODUCTION_CONTRACT,createJaewoonVibeNpcRoleProfile:createVibeNpcRoleProfile,inferJaewoonVibeCharacterArchetypes:inferVibeCharacterArchetypes,createJaewoonVibeBodyIdentity:createVibeBodyIdentity,createJaewoonVibeAppearanceIdentity:createVibeAppearanceIdentity,createJaewoonVibeEquipmentFitIdentity:createVibeEquipmentFitIdentity,createJaewoonVibeGaitIdentity:createVibeGaitIdentity,createJaewoonVibePhysicalActionLanguage:createVibePhysicalActionLanguage,createJaewoonVibeMotionIdentity:createVibeMotionIdentity,createJaewoonVibeGameplayMotionLinks:createVibeGameplayMotionLinks,createJaewoonVibeSignatureMove:createVibeSignatureMove,createJaewoonVibeCharacterAssetMorphPlan:createVibeCharacterAssetMorphPlan,createJaewoonVibeCharacterCustomizationRecipe:createVibeCharacterCustomizationRecipe,createJaewoonVibeNpcCustomizationPopulation:createVibeNpcCustomizationPopulation,createJaewoonVibePopulationPhysicalDiversity:createVibePopulationPhysicalDiversity,createJaewoonVibePhysicalDiversityGate:createVibePhysicalDiversityGate,scoreJaewoonVibeMotionOriginality:scoreVibeMotionOriginality,createJaewoonVibeCharacterPersona:createVibeCharacterPersona,resolveJaewoonVibeCharacterBehaviorIntent:resolveVibeCharacterBehaviorIntent,createJaewoonVibePopulationPersonaDiversity:createVibePopulationPersonaDiversity,planJaewoonVibeCharacterIdentityAutopilot:planVibeCharacterIdentityAutopilot})}
