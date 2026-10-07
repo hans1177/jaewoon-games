@@ -34,25 +34,79 @@
           "playerChoice": "감염 공격으로 몬스터 전환"
         }
       ]
+    },
+    "designer_draft_slices::systems-progression": {
+      "systemInterconnections": [
+        {
+          "fromSystem": "OWNER-DESIGNER-ORIGINAL-20261007-2",
+          "toSystem": "SLICE_ID-systems-progression",
+          "trigger": "감염 전환",
+          "stateChange": "몬스터 전환 및 고유 스킬 획득"
+        },
+        {
+          "fromSystem": "SLICE_ID-systems-progression",
+          "toSystem": "SLICE_FIELDS-systems-progression",
+          "trigger": "정화 공격",
+          "stateChange": "몬스터 제거 및 승패 결정"
+        },
+        {
+          "fromSystem": "SLICE_ID-systems-progression",
+          "toSystem": "SLICE_FIELDS-systems-progression",
+          "trigger": "인간 정화",
+          "stateChange": "몬스터 라운드 제거"
+        }
+      ],
+      "progressionDirection": "새 인간 직업과 몬스터를 동일한 데이터 구조에 계속 추가하고, 각 캐릭터는 플레이 방식이 달라지게 확장한다",
+      "progressionEconomyBalance": {
+        "progressionLoop": "인간4/몬스터4 배정 → AI 충원 → 감염 공격 → 몬스터 전환 → 고유 스킬 획득 → 정화 공격 → 몬스터 제거 → 승패 결정",
+        "resourceFlow": "인간은 고유 도구·대시·정화로 생존/반격, 몬스터는 에너지를 소모하는 명시적 감염 공격으로 인간을 감염",
+        "balanceRules": "감염 공격은 몬스터를 라운드에서 제거, 정화 공격은 몬스터를 라운드에서 제거, 승패 결정은 라운드의 종료"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "인간4/몬스터4 배정",
+          "newGameplay": "AI 양팀 충원",
+          "systemImpact": "논리 인원 8명, 인간4/몬스터4를 실제 플레이어+AI로 항상 채운다"
+        },
+        {
+          "milestone": "감염 공격으로 몬스터 전환",
+          "newGameplay": "고유 감염 스킬 획득",
+          "systemImpact": "몬스터의 명시적 서버 권한 감염 공격이 적중한 인간이 탈락하지 않고 몬스터로 전환하며 인간 직업별 감염 스킬을 얻는다"
+        },
+        {
+          "milestone": "정화 공격으로 몬스터 제거",
+          "newGameplay": "몬스터 라운드 제거",
+          "systemImpact": "인간 정화 공격으로 몬스터를 라운드에서 제거"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "한 진영이 0명이 되면 즉시 승패",
+          "240초까지 양팀이 남으면 무승부"
+        ],
+        "retryFlow": "감염 공격 → 몬스터 전환 → 고유 스킬 획득 → 정화 공격 → 몬스터 제거 → 승패 결정",
+        "riskPressure": "감염 공격은 몬스터를 라운드에서 제거, 정화 공격은 몬스터를 라운드에서 제거, 승패 결정은 라운드의 종료",
+        "recoveryRules": "감염 공격은 몬스터를 라운드에서 제거, 정화 공격은 몬스터를 라운드에서 제거, 승패 결정은 라운드의 종료"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 265569,
-      "lastMs": 265569,
+      "totalMs": 560378,
+      "lastMs": 294809,
       "lastError": null,
-      "updatedAt": "2026-10-07T22:09:25.043Z"
+      "updatedAt": "2026-10-07T22:14:19.857Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T22:04:59.348Z",
-  "updatedAt": "2026-10-07T22:09:25.046Z",
+  "updatedAt": "2026-10-07T22:14:19.861Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -766,11 +820,12 @@
     "assetFacts": {}
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "6ea33f41e92e8ba660d56bd3c93339c49de9ce4681f0b6dd6a845a3debac343f"
   },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
-  "lastSuccessfulModelCallAt": "2026-10-07T22:09:25.043Z",
+  "lastSuccessfulModelCallAt": "2026-10-07T22:14:19.857Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
