@@ -499,7 +499,7 @@ jobs:
                 if(engineAttempt.status==='rejected')throw engineAttempt.reason;
                 const result=engineAttempt.value;
                 const probe={gameId:item.gameId,versionNumber:Number(c.versionNumber),...result,imageEvidence};
-                console.log('ROBLOX_OPEN_CLOUD_ENGINE_PROBE='+JSON.stringify(probe));
+                console.log((probe.persistentFailure===true?'ROBLOX_OPEN_CLOUD_ENGINE_PROBE_FAILURE=':'ROBLOX_OPEN_CLOUD_ENGINE_PROBE=')+JSON.stringify(probe));
                 console.log('ROBLOX_OPEN_CLOUD_IMAGE_CHECK='+item.gameId+':'+String(imageEvidence?.state||'UNKNOWN')+':count='+Number(imageEvidence?.thumbnailCount||0));
                 probes[index]=probe;
               }catch(error){
