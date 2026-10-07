@@ -1381,6 +1381,29 @@ const NATIVE_DCC_AUTHORING=freeze([
   'blender-review-render-and-evidence'
 ]);
 const GLB_MASTER_DCC_TYPES=freezeList(['character','player','npc','enemy','boss','creature','monster','animal']);
+function gltfActorRolesForType(type='',request=''){
+  const kind=clean(type).toLowerCase(),text=(clean(request)+' '+kind).toLowerCase();
+  if(/raid[ _-]?boss|레이드[ _-]?보스/.test(text))return freezeList(['RAID_BOSS']);
+  if(/world[ _-]?boss|월드[ _-]?보스/.test(text))return freezeList(['WORLD_BOSS']);
+  if(/mini[ _-]?boss|미니[ _-]?보스|중간[ _-]?보스/.test(text))return freezeList(['MINI_BOSS']);
+  if(/boss|보스/.test(text))return freezeList(['STORY_BOSS']);
+  if(/elite|정예|챔피언/.test(text))return freezeList(['ELITE_ENEMY']);
+  if(/mount|탈것/.test(text))return freezeList(['MOUNT_COMPANION']);
+  if(/pet|펫/.test(text))return freezeList(['PET_COMPANION']);
+  if(/summon|소환/.test(text))return freezeList(['SUMMONED_COMPANION']);
+  if(/companion|party[ _-]?member|동료|파티원/.test(text))return freezeList(['COMPANION']);
+  if(/merchant|vendor|shopkeeper|상인|판매/.test(text))return freezeList(['MERCHANT_NPC']);
+  if(/quest[ _-]?(?:giver|npc)|퀘스트[ _-]?npc|의뢰[ _-]?npc/.test(text))return freezeList(['QUEST_NPC']);
+  if(/crafter|blacksmith|artisan|제작|대장장이|장인/.test(text))return freezeList(['CRAFTER_NPC']);
+  if(/trainer|teacher|교관|훈련/.test(text))return freezeList(['TRAINER_NPC']);
+  if(/guard|경비|수비/.test(text))return freezeList(['GUARD_NPC']);
+  if(/story[ _-]?npc|주요[ _-]?npc|스토리[ _-]?npc/.test(text))return freezeList(['STORY_NPC']);
+  if(kind==='npc')return freezeList(['CIVILIAN_NPC']);
+  if(kind==='player'||kind==='character')return freezeList(['PLAYER']);
+  if(kind==='animal')return freezeList(['WILDLIFE']);
+  if(['enemy','creature','monster'].includes(kind))return freezeList(['STANDARD_ENEMY']);
+  return freezeList([]);
+}
 
 const ASSET_MODEL_ROUTING=freeze({
   version:2,
@@ -1446,14 +1469,15 @@ function normalizeNativeDccAuthoringRecipe(recipe={},asset={},target='',required
   const safePath=value=>Boolean(value&&!path.isAbsolute(value)&&!value.split('/').includes('..'));
   const family=clean(recipe?.family||asset?.family||asset?.category).toUpperCase()||nativeDccFamilyForTypes(types);
   const gltfMasterRequired=recipe?.gltfMasterRequired===true||['CHARACTER','CREATURE'].includes(family)||types.some(type=>GLB_MASTER_DCC_TYPES.includes(type));
+  const actorRoles=unique([...(Array.isArray(recipe?.actorRoles)?recipe.actorRoles:[]),...(Array.isArray(asset?.actorRoles)?asset.actorRoles:[]),...(Array.isArray(asset?.gltfMaster?.actorRoles)?asset.gltfMaster.actorRoles:[])].map(value=>clean(value).toUpperCase()).filter(Boolean));
   const gltfMasterOutput=outputs.find(value=>/\.glb$/i.test(value))||null;
-  const gltfMasterCompliant=!gltfMasterRequired||Boolean(gltfMasterOutput);
+  const gltfMasterCompliant=!gltfMasterRequired||Boolean(gltfMasterOutput&&actorRoles.length);
   const safe=executor==='BLENDER_PYTHON'&&/\.py$/i.test(script)&&safePath(script)&&outputs.length>0&&outputs.every(safePath)&&(!evidenceJson||safePath(evidenceJson))&&(!preview||safePath(preview))&&gltfMasterCompliant;
   const license=clean(recipe?.license||asset?.license)||null;
   return freeze({
     id,assetId:clean(asset?.id)||clean(recipe?.assetId)||null,family:family||null,license,executor,script,types:freezeList(types),targetPlatforms:freezeList(targets),args,outputs,evidenceJson,preview,editableSource,
     typeMatch,targetMatch,safe,runMode:clean(recipe?.runMode||'VERIFY_ONLY').toUpperCase(),
-    gltfMasterRequired,gltfMasterOutput,gltfMasterCompliant,gltfMasterFormat:gltfMasterRequired?'GLB':null,
+    gltfMasterRequired,gltfMasterOutput,gltfMasterCompliant,gltfMasterFormat:gltfMasterRequired?'GLB':null,actorRoles:freezeList(actorRoles),
     runtimeVerificationRequired:true,companyPromotionAllowed:false
   });
 }
@@ -1512,6 +1536,7 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
   const nativeTextTypes=internalMotion?['motion']:decisions.filter(row=>needsAuthoring(row)&&(row.directAuthoring||[]).some(kind=>nativeTextKinds.includes(kind))).map(row=>row.type);
   const uniqueDccTypes=unique([...automaticDccTypes,...declaredDccTypes]);
   const gltfMasterRequiredTypes=uniqueDccTypes.filter(type=>GLB_MASTER_DCC_TYPES.includes(type));
+  const gltfActorRoleRequirements=Object.freeze(Object.fromEntries(gltfMasterRequiredTypes.map(type=>[type,gltfActorRolesForType(type,task?.goal||task?.request||'')])));
   const uniqueNativeTextTypes=unique(nativeTextTypes);
   const selectedCandidateIds=new Set(decisions.flatMap(row=>[
     ...(row?.reuseCandidates||[]),
@@ -1576,6 +1601,7 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
       gltfMasterRequired:gltfMasterRequiredTypes.length>0,
       gltfMasterStandard:STUDIO_GLTF_MASTER_ASSET_STANDARD,
       gltfMasterRequiredTypes:freezeList(gltfMasterRequiredTypes),
+      gltfActorRoleRequirements,
       gltfMasterCoveredTypes:freezeList(gltfMasterCoveredTypes),
       gltfMasterMissingTypes:freezeList(gltfMasterMissingTypes),
       gltfMasterFormat:'GLB',
