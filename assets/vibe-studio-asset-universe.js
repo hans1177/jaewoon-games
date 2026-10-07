@@ -1947,7 +1947,7 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
     }
     if(rowsByAssetId.has(id))uniqueIds=false;
     rowsByAssetId.set(id,Object.freeze({key:staticKey,row:staticRow}));
-    const currentConsumers=currentAssetConsumerIds(asset);
+    const currentConsumers=currentAssetConsumerGameIds(asset);
     const consumerPriority=Math.max(0,...currentConsumers.map(gameId=>{
       const game=gamesById.get(text(gameId));if(!game)return 0;
       const state=upper(game.productionClass||game.canonical?.production?.class);
