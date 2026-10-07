@@ -1629,11 +1629,17 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
   hardMaximum:null,
   overSoftLimitAction:'DEDUPLICATION_REVIEW_ONLY',
   overSoftLimitBlocksUse:false,
-  perDomainIdeaBudgetPerCycle:512,
-  domainVolumeActionLimitPerDomain:64,
-  uiSubsystemVolumeActionLimitPerSubsystem:48,
-  maxVolumeWorklistActions:2048,
-  taskReferenceOverlayWorklistLimit:1024,
+  perDomainIdeaBudgetPerCycle:4096,
+  domainVolumeActionLimitPerDomain:512,
+  uiSubsystemVolumeActionLimitPerSubsystem:256,
+  maxVolumeWorklistActions:16384,
+  taskReferenceOverlayWorklistLimit:8192,
+  maintenanceListLimits:Object.freeze({
+    semanticDuplicateReviewGroups:512,
+    donorCandidates:1024,
+    deltaTokens:4096,
+    qualityActions:2048
+  }),
   preferDistinctRoleStateGenreCombination:true,
   ideaDeduplicationFields:Object.freeze(['id','assetId','atomId','role','roles','sourceIdeaId','ideaId']),
   repeatedDistinctVariationProposalForbidden:true,
@@ -1644,7 +1650,7 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
   qualityUpSelection:'WEAKEST_INTERNAL_AUDIT_AXIS_FIRST',
   focusPhases:Object.freeze(['VOLUME_UP','QUALITY_UP_1000']),
   volumeActionConsumption:'PERSISTED_PRIORITY_WORKLIST_FIRST',
-  freeSourceCandidateLimitPerAction:96,
+  freeSourceCandidateLimitPerAction:512,
   freeSourceCatalogSufficiencyCount:12,
   styleExpressionRequiredForAllDomains:true,
   styleExpressionContractRef:'assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_STYLE_EXPRESSION_AXES',
@@ -1922,11 +1928,11 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
     .filter(([,ids])=>ids.length>1)
     .map(([key,ids])=>Object.freeze({key,assetIds:Object.freeze([...ids].sort()),count:ids.length}))
     .sort((a,b)=>b.count-a.count||a.key.localeCompare(b.key))
-    .slice(0,48);
+    .slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maintenanceListLimits.semanticDuplicateReviewGroups);
   const donorCandidates=qualityRows
     .filter(row=>rows.some(asset=>asset.id===row.id&&asset.reuseEligible))
     .sort((a,b)=>Number(b.quality)-Number(a.quality)||a.id.localeCompare(b.id))
-    .slice(0,64)
+    .slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maintenanceListLimits.donorCandidates)
     .map(row=>Object.freeze({...row}));
   const qualityRepairActions=[],repairKeys=new Set();
   for(const row of rows.filter(row=>row.reuseEligible).sort((a,b)=>b.consumerPriority-a.consumerPriority)){
@@ -1984,12 +1990,12 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
     typeRoleTokenCount:sortedTypeRoleTokens.length,
     scoredAssetCount:qualityRows.length,
     typeRoleTokens:Object.freeze(sortedTypeRoleTokens),
-    newTypeRoleTokens:Object.freeze(newTypeRoleTokens.slice(0,192)),
-    removedTypeRoleTokens:Object.freeze(removedTypeRoleTokens.slice(0,192)),
-    staleRowIds:Object.freeze(staleRowIds.slice(0,192)),
+    newTypeRoleTokens:Object.freeze(newTypeRoleTokens.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maintenanceListLimits.deltaTokens)),
+    removedTypeRoleTokens:Object.freeze(removedTypeRoleTokens.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maintenanceListLimits.deltaTokens)),
+    staleRowIds:Object.freeze(staleRowIds.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maintenanceListLimits.deltaTokens)),
     semanticDuplicateReviewGroups:Object.freeze(semanticDuplicateReviewGroups),
     qualityDonorCandidates:Object.freeze(donorCandidates),
-    nextQualityActions:Object.freeze(qualityRepairActions.slice(0,96)),
+    nextQualityActions:Object.freeze(qualityRepairActions.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maintenanceListLimits.qualityActions)),
     refreshRequired:refreshReasons.length>0,
     refreshReasons:Object.freeze(refreshReasons),
     currentLibraryAlwaysWins:true,
@@ -2418,6 +2424,7 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     uiSubsystemVolumeActionLimitPerSubsystem:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.uiSubsystemVolumeActionLimitPerSubsystem,
     maxVolumeWorklistActions:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maxVolumeWorklistActions,
     taskReferenceOverlayWorklistLimit:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.taskReferenceOverlayWorklistLimit,
+    maintenanceListLimits:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.maintenanceListLimits,
     eligibleFreeSourceCount:eligibleFreeSources.length,
     freeSourceCandidateLimitPerAction:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction,
     freeSourceCatalogSufficiencyCount:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCatalogSufficiencyCount,
