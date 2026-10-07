@@ -11,12 +11,13 @@ const baseRequired=['SERVER_BOOT','MODULE_GRAPH_READY','WORLD_READY','SPAWN_READ
 const foundationCausalOrder=['SERVER_BOOT','MODULE_GRAPH_READY','WORLD_READY','SPAWN_READY','CHARACTER_READY','GROUND_CONTACT'];
 export const ROBLOX_LUAU_EXECUTION_WRITE_SCOPE='universe.place.luau-execution-session:write';
 
-const transientNetworkCodes=new Set(['EAI_AGAIN','ENOTFOUND','ECONNRESET','ETIMEDOUT','ECONNREFUSED','UND_ERR_CONNECT_TIMEOUT','UND_ERR_SOCKET']);
+const transientNetworkCodes=new Set(['EAI_AGAIN','ENOTFOUND','ECONNRESET','ETIMEDOUT','ECONNREFUSED','UND_ERR_CONNECT_TIMEOUT','UND_ERR_SOCKET','ABORT_ERR']);
 const transientHttpStatuses=new Set([408,429,500,502,503,504]);
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,Math.max(0,Number(ms)||0)));
 function isTransientNetworkError(error){
   const code=clean(error?.cause?.code||error?.code).toUpperCase();
-  return transientNetworkCodes.has(code);
+  const name=clean(error?.name).toUpperCase();
+  return transientNetworkCodes.has(code)||name==='TIMEOUTERROR'||name==='ABORTERROR';
 }
 function transientHttpDelayMs(response,baseDelayMs,attempt){
   const retryAfter=clean(response?.headers?.get?.('retry-after'));
@@ -28,11 +29,13 @@ function transientHttpDelayMs(response,baseDelayMs,attempt){
 async function fetchWithNetworkRetry(fetchImpl,url,init={},options={}){
   const attempts=Math.max(1,Math.min(6,Number(options.attempts)||4));
   const delayMs=Math.max(0,Number(options.delayMs)||0);
+  const requestTimeoutMs=Math.max(1000,Math.min(30000,Number(options.requestTimeoutMs)||12000));
   const label=clean(options.label)||'ROBLOX_OPEN_CLOUD';
   let lastError=null;
   for(let attempt=1;attempt<=attempts;attempt++){
     try{
-      const response=await fetchImpl(url,init);
+      const requestInit=init?.signal?init:{...init,signal:AbortSignal.timeout(requestTimeoutMs)};
+      const response=await fetchImpl(url,requestInit);
       const status=Number(response?.status||0);
       if(transientHttpStatuses.has(status)&&attempt<attempts){
         console.warn(label+'_HTTP_RETRY='+attempt+'/'+attempts+':HTTP_'+status);
@@ -44,7 +47,7 @@ async function fetchWithNetworkRetry(fetchImpl,url,init={},options={}){
     }catch(error){
       lastError=error;
       if(!isTransientNetworkError(error)||attempt>=attempts)throw error;
-      console.warn(label+'_NETWORK_RETRY='+attempt+'/'+attempts+':'+clean(error?.cause?.code||error?.code||'TRANSIENT'));
+      console.warn(label+'_NETWORK_RETRY='+attempt+'/'+attempts+':'+clean(error?.cause?.code||error?.code||error?.name||'TRANSIENT'));
       if(delayMs>0)await sleep(delayMs*attempt);
     }
   }
