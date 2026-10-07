@@ -183,7 +183,8 @@ async function refresh(force=false){
  try{
   const [nextManifest,nextRegistry]=await Promise.all([request(MANIFEST).then(response=>response.json()),readRegistry()]);
   if(nextManifest.schemaVersion!==1||nextManifest.sampledBy!=='OFFICIAL_LUAU'||!Array.isArray(nextManifest.monsters)||!Array.isArray(nextManifest.environments)||!Array.isArray(nextManifest.commonMotions))throw Error('미리보기 목록을 확인하고 있어.');
-  const changed=!manifest||manifest.sourceFingerprint!==nextManifest.sourceFingerprint||registrySignature(registry)!==registrySignature(nextRegistry);
+  const registryChanged=registry!==nextRegistry&&registrySignature(registry)!==registrySignature(nextRegistry);
+  const changed=!manifest||manifest.sourceFingerprint!==nextManifest.sourceFingerprint||registryChanged;
   manifest=nextManifest;registry=nextRegistry;syncFeaturedButtons();
   $('assetCount').textContent=registry.assets.length.toLocaleString('ko-KR');
   $('allCount').textContent=registry.assets.length;
