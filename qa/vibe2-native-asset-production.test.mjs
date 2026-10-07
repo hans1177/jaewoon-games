@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {assetProductionGuidance,buildAllGameDynamicLibraryBindingPlan,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType,crossPlatform3dActorFamilyForType} from '../tools/vibe2-asset-production-plan.mjs';
-import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate,buildInternalAssetSourceUsageContract,inspectRobloxNativeCandidateQuality,executeDeclaredNativeDccAuthoringVerification,collectNativeAssetRuntimePromotionCandidates,persistedGeneratedAssetBindings} from '../tools/vibe2-source-worker.mjs';
+import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate,buildInternalAssetSourceUsageContract,inspectRobloxNativeCandidateQuality,executeDeclaredNativeDccAuthoringVerification,evaluateNativeAssetAuthoringCandidate,collectNativeAssetRuntimePromotionCandidates,persistedGeneratedAssetBindings} from '../tools/vibe2-source-worker.mjs';
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
@@ -566,6 +566,69 @@ test('DCC verification selects the declared master GLB even when a blend output 
     assert.ok(result.recipes[0].masterGlbInspection.jointAnimationChannelCount>0);
     assert.ok(result.recipes[0].masterGlbInspection.animatedJointCount>0);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('Web 3D actor authoring requires exact Master GLB path and hash binding in Web source',()=>{
+  const masterPath='assets/generated/web/demo/npc/master.glb';
+  const masterHash='a'.repeat(64);
+  const sourceHash='b'.repeat(64);
+  const order={
+    target:'web',
+    assetProductionLane:true,
+    assetProduction:{nativeAuthoringExecution:{
+      enabled:true,
+      platformReauthoringRequired:true,
+      dcc:{
+        requiredTypes:['npc'],
+        executionStatus:'READY_FOR_EXISTING_AUTHORING_EXECUTOR',
+        executionEvidence:{
+          executed:true,allRecipesPassed:true,candidateUsable:true,persistedForCandidate:true,
+          editableSource:'assets/demo/build-npc.py',nativeArtifact:masterPath,artifactHash:masterHash,preview:'assets/generated/web/demo/npc/preview.png',
+          recipes:[{
+            assetId:'web-npc-master',family:'CHARACTER',license:'project-original',types:['npc'],
+            nativeArtifact:masterPath,artifactHash:masterHash,sourceHash,editableSourceHash:sourceHash,
+            masterGlbRequired:true,masterGlb:masterPath,masterGlbHash:masterHash,masterGlbStaticQaPass:true,
+            persistedForCandidate:true
+          }]
+        }
+      },
+      nativeText:{requiredTypes:['npc']}
+    }}
+  };
+  const good=evaluateNativeAssetAuthoringCandidate({
+    order,
+    candidate:{edits:[{path:'web-games/demo/index.html',replace:[
+      "const MASTER_GLB = '"+masterPath+"';",
+      "const MASTER_GLB_SHA256 = '"+masterHash+"';",
+      "const loader = new GLTFLoader();",
+      "loader.load(MASTER_GLB, gltf => {",
+      "  const mixer = new THREE.AnimationMixer(gltf.scene);",
+      "  const action = mixer.clipAction(gltf.animations[0]); action.play();",
+      "  requestAnimationFrame(function render(){ mixer.update(1/60); requestAnimationFrame(render); });",
+      "});"
+    ].join('\n')}]}
+  });
+  assert.equal(good.dccAuthored,true);
+  assert.equal(good.webMasterGlbRuntimeBindingRequired,true);
+  assert.equal(good.generatedAssetBindingRequired,true);
+  assert.equal(good.generatedAssetBindingApplied,true);
+  assert.deepEqual([...good.generatedNativeArtifacts],[masterPath]);
+  assert.equal(good.generatedAssetIdentityBindings[0].runtimeSource,'MASTER_GLB');
+
+  const missingHash=evaluateNativeAssetAuthoringCandidate({
+    order,
+    candidate:{edits:[{path:'web-games/demo/index.html',replace:[
+      "const MASTER_GLB = '"+masterPath+"';",
+      "const loader = new GLTFLoader();",
+      "loader.load(MASTER_GLB, gltf => {",
+      "  const mixer = new THREE.AnimationMixer(gltf.scene);",
+      "  requestAnimationFrame(function render(){ mixer.update(1/60); requestAnimationFrame(render); });",
+      "});"
+    ].join('\n')}]}
+  });
+  assert.equal(missingHash.generatedAssetBindingRequired,true);
+  assert.equal(missingHash.generatedAssetBindingApplied,false);
+  assert.equal(missingHash.status,'GENERATED_ASSET_BINDING_REQUIRED');
 });
 
 test('master GLB evidence is never exposed as a platform-native binding or promotion candidate',()=>{
