@@ -627,6 +627,8 @@ function synchronizeCatalogRows({registry,catalog}){
   const packId=clean(catalog.packId);
   const pack=registry.assets.find(row=>row.id===packId);
   if(!pack)return{packId,changed:false,count:0,rowIds:[]};
+  const packBefore=JSON.stringify(pack);
+  let changed=false;
   const {key,rows}=commonCatalogRows(catalog);
   const currentRows=registry.assets.filter(row=>row.packId===packId&&row.id!==packId);
   const prefix=inferRegistryIdPrefix(packId,currentRows);
@@ -641,6 +643,7 @@ function synchronizeCatalogRows({registry,catalog}){
     const id=prefix+slug;
     activeIds.add(id);rowIds.push(id);
     let row=registry.assets.find(asset=>asset.id===id);
+    const rowBefore=row?JSON.stringify(row):null;
     const verifiedState=row?{
       productionVerified:row.productionVerified===true,
       verifiedCompanyReusable:row.verifiedCompanyReusable===true,
@@ -652,6 +655,7 @@ function synchronizeCatalogRows({registry,catalog}){
       for(const field of ['internalAuditScore','internalAuditGrade','internalAuditEvidence','sourceHash','sourceSha256','runtimeEvidence','verificationEvidence'])delete row[field];
       row.consumerGameIds=[];
       registry.assets.push(row);
+      changed=true;
     }
     row.packId=packId;
     row.catalogActive=true;
@@ -680,10 +684,12 @@ function synchronizeCatalogRows({registry,catalog}){
     }
     if(Array.isArray(row.systemRoles))hint.systemRoles=[...row.systemRoles];
     row.bindingHint=hint;
+    if(rowBefore!==null&&rowBefore!==JSON.stringify(row))changed=true;
   }
 
   for(const row of currentRows){
     if(catalogIdentity(row)&&!activeIds.has(row.id)){
+      if(row.catalogActive!==false||row.catalogState!=='STALE_CATALOG_ROW_REVIEW'||row.automaticDeletionForbidden!==true)changed=true;
       row.catalogActive=false;
       row.catalogState='STALE_CATALOG_ROW_REVIEW';
       row.automaticDeletionForbidden=true;
@@ -721,7 +727,8 @@ function synchronizeCatalogRows({registry,catalog}){
     ]);
     if(declared.length)pack.presentationComponentCount=declared.length;
   }
-  return{packId,count,rowIds,key};
+  if(packBefore!==JSON.stringify(pack))changed=true;
+  return{packId,changed,count,rowIds,key};
 }
 
 function catalogFingerprint(catalogs=[]){
@@ -1537,9 +1544,22 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   };
 
 
-  const comparableKeys=unique([...Object.keys(original),...Object.keys(next)]).filter(key=>key!=='version'&&key!=='updatedAt').sort();
-  const changedSections=comparableKeys.filter(key=>JSON.stringify(original[key])!==JSON.stringify(next[key]));
-  // changedSections가 version/updatedAt을 제외한 모든 top-level section을 이미 비교하므로 전체 3MB 재직렬화는 중복이다.
+  const mutableSections=[
+    'assets',
+    'internalAssetCompositionContract',
+    'companyCommonSeedAssetIdeation',
+    'commonLibrarySystemDepthAudit',
+    'internalAssetLibraryAutomation',
+    'characterNpcCustomization',
+    'npcRoleProduction'
+  ];
+  const catalogAssetsChanged=syncRows.some(row=>row.changed===true);
+  const changedSections=mutableSections.filter(key=>
+    key==='assets'
+      ?catalogAssetsChanged
+      :JSON.stringify(original[key])!==JSON.stringify(next[key])
+  );
+  // 이 함수가 쓰지 않는 대형 top-level은 original과 같은 참조이므로 재직렬화하지 않는다.
   const changed=changedSections.length>0;
   if(changed){
     next.version=Math.max(0,Number(original.version)||0)+1;
