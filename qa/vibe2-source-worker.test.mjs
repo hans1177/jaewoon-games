@@ -416,12 +416,12 @@ test('large non-full source request is compacted before local model generation w
     'You are the Vibe2 game source worker. Return JSON only.',
     'Engine: unity',
     'Goal: improve the existing responsible game source without changing save or gameplay authority',
-    'OVERSIZED_PLANNING_CONTEXT='+('duplicate planning detail '.repeat(1800)),
+    'OVERSIZED_PLANNING_CONTEXT='+('duplicate planning detail '.repeat(3200)),
     'Allowed edit paths: '+relative,
     '=== FILE '+relative+' [EDITABLE] ===',
     source
   ].join('\n');
-  assert.ok(Buffer.byteLength(prompt,'utf8')>16000);
+  assert.ok(Buffer.byteLength(prompt,'utf8')>64000);
   const response=path.join(cwd,'answer.json');
   write(response,JSON.stringify({edits:[{path:relative,find:'public int State = 1;',replace:'public int State = 2;'}]}));
   const result=await generateCandidateWithRecovery({
@@ -429,7 +429,7 @@ test('large non-full source request is compacted before local model generation w
     responsibleFiles:[relative],allowFullRewrite:false,responseFiles:[response]
   });
   assert.equal(result.generation.attempts,1);
-  assert.ok(result.generation.requestPromptBytes<32000);
+  assert.ok(result.generation.requestPromptBytes<64000);
   assert.ok(result.generation.requestPromptBytes<result.generation.initialPromptBytes);
   assert.equal(result.generation.contextWindow,32768);
   assert.equal(result.candidate.edits.length,1);
@@ -2505,6 +2505,7 @@ test('JSON source generation uses bounded context and structured output mode',()
   assert.match(source,/const format=completionMode==='JSON_REPLACE_ONLY'[\s\S]*?\(\/\^JSON_\/\.test\(completionMode\)\?'json':null\)/);
   assert.match(source,/const FOCUSED_WEB_REPAIR_CONTEXT_BYTES=48000;/);
   assert.match(source,/const FULL_WEB_CONTEXT_WINDOW=32768;/);
+  assert.match(source,/const FULL_WEB_EXPANSION_CONTEXT_WINDOW=32768;/);
 });
 
 test('deterministic diagnostic repair handles interval cleanup without model generation',()=>{
@@ -4295,7 +4296,7 @@ test('zero-output model stalls use first-output deadline and stop after two empt
   const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.match(workerSource,/MODEL_FIRST_OUTPUT_TIMEOUT_MS=Math\.max\(30000,Math\.min\(DEFAULT_TIMEOUT_MS,Number\(process\.env\.VIBE2_MODEL_FIRST_OUTPUT_TIMEOUT_MS\|\|120000\)\)\)/);
   assert.match(workerSource,/ZERO_OUTPUT_RETRY_TIMEOUT_MS=120000/);
-  assert.match(workerSource,/SOURCE_CANDIDATE_INITIAL_PROMPT_BYTES=32000/);
+  assert.match(workerSource,/SOURCE_CANDIDATE_INITIAL_PROMPT_BYTES=64000/);
   assert.match(workerSource,/SOURCE_CANDIDATE_COMPACT_CONTEXT_WINDOW=STANDARD_GAME_SOURCE_CONTEXT_WINDOW/);
   assert.match(workerSource,/sourceCandidatePressureInitial=!allowFullRewrite[\s\S]*?&&!assetDevelopmentLane/);
   assert.match(workerSource,/Ollama 첫 출력 시간 초과/);
@@ -5854,6 +5855,11 @@ test('Studio initial prompt compacts repeated directive prose within the base mo
   assert.equal((initial.match(/^sourceAnchors=/gm)||[]).length,3);
   assert.ok(Buffer.byteLength(initial,'utf8')<50000);
   assert.equal(sourcePromptContextWindow(initial,{baseContextWindow:16384,maxPredict:3072}),16384);
+});
+
+test('source prompt context grows to 64K only when the prompt actually exceeds the standard 32K budget',()=>{
+  const huge='x'.repeat(120000);
+  assert.equal(sourcePromptContextWindow(huge,{baseContextWindow:32768,maxPredict:3072}),65536);
 });
 
 test('zero-output focused retry compacts oversized goal into the canonical 8K context budget',()=>{
