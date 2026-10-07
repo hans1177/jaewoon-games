@@ -1,5 +1,5 @@
 {
-  "version": 81,
+  "version": 82,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -630,7 +630,13 @@
       "npcVisualHeightWeightCannotImplicitlyChangeHitboxOrCollision": true,
       "npcColorOnlySizeOnlyOrFaceOnlyCloneCannotPromote": true,
       "npcRoleVariationMustPreserveMasterGlbProvenance": true,
-      "companionEliteBossVisualVariationCannotGrantUndeclaredGameplayAdvantages": true
+      "companionEliteBossVisualVariationCannotGrantUndeclaredGameplayAdvantages": true,
+      "masterGlbJointWeightsAndJointAnimationChannelsRequired": true,
+      "masterGlbPathStringAloneCannotClaimNativeBinding": true,
+      "rootOnlyActorMotionCannotPromote": true,
+      "characterMotionMannequinCannotPromote": true,
+      "bossScaleOnlyCannotPromote": true,
+      "platformRuntimeEvidenceIndependentPerTarget": true
     },
     "failureAction": "ASSET_REPAIR_REQUIRED_OR_LIBRARY_QUARANTINE_BY_SCOPE"
   },
@@ -645,7 +651,11 @@
       "bossAppearanceCannotAuthorizeBalancePhaseRewardOrDamageChanges": true,
       "colorOnlySizeOnlyOrFaceOnlyCloneCannotClaimDistinctNpc": true,
       "primitivePartOrWeldOnlyNpcCannotPromoteAsFinalActor": true,
-      "masterGlbAndPlatformRuntimeVerificationRemainRequired": true
+      "masterGlbAndPlatformRuntimeVerificationRemainRequired": true,
+      "roleStateMotionBindingMustUseExistingGameState": true,
+      "animatorAndActiveJointMotionRequired": true,
+      "rootTransformOnlyNpcCannotPromote": true,
+      "masterGlbPathOnlyNpcCannotPromote": true
     },
     "failureAction": "NPC_ASSET_REPAIR_REQUIRED_WITH_GAMEPLAY_AUTHORITY_UNCHANGED"
   },

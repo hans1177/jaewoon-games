@@ -1,5 +1,5 @@
 {
-  "version": 544,
+  "version": 545,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-07",
@@ -18720,6 +18720,7 @@
             "MATERIALS",
             "SKELETON",
             "SKIN_WEIGHTS",
+            "JOINT_WEIGHTS",
             "ANIMATION"
           ],
           "rules": {
@@ -18738,7 +18739,21 @@
             "serviceNpcCompanionPetMountAndSummonIncluded": true,
             "roleSpecificSilhouetteEquipmentStanceGaitAndMotionRequired": true,
             "minimumDistinctRoleAxes": 3,
-            "humanoidBossMayUseCharacterFamilyWithBossRole": true
+            "humanoidBossMayUseCharacterFamilyWithBossRole": true,
+            "jointAnimationChannelsRequired": true,
+            "attachmentSocketBasisRequired": true,
+            "attachmentSocketBasis": [
+              "HAND",
+              "BACK",
+              "HIP",
+              "SHIELD",
+              "TOOL"
+            ],
+            "mobileLodRequired": true,
+            "roleStateMotionBindingRequired": true,
+            "rootOnlyMotionFailsCharacterMotionMannequin": true,
+            "masterGlbPathStringAloneCannotProveBinding": true,
+            "bossScaleOnlyFinalActorForbidden": true
           },
           "implementationBindings": [
             "company-asset-library.json",
@@ -18747,22 +18762,36 @@
             "tools/vibe2-source-worker.mjs"
           ],
           "hardFailures": [
+            "MASTER_GLB_MISSING",
+            "MASTER_GLB_PATH_REQUIRED",
+            "MASTER_GLB_MESH_REQUIRED",
+            "MASTER_GLB_NORMALS_REQUIRED",
+            "MASTER_GLB_UV0_REQUIRED",
+            "MASTER_GLB_MATERIAL_REQUIRED",
+            "MASTER_GLB_SKIN_SKELETON_REQUIRED",
+            "MASTER_GLB_JOINT_WEIGHTS_REQUIRED",
+            "MASTER_GLB_ANIMATION_REQUIRED",
             "CROSS_PLATFORM_MASTER_GLB_REQUIRED",
             "CROSS_PLATFORM_MASTER_GLB_HASH_REQUIRED",
             "CROSS_PLATFORM_MASTER_GLB_STATIC_QA_REQUIRED",
             "PRIMITIVE_ONLY_FINAL_3D_ACTOR",
+            "CHARACTER_MOTION_MANNEQUIN",
             "NPC_PHYSICAL_APPEARANCE_CLONE"
           ],
           "appliesToRoles": [
             "PLAYER",
             "GENERAL_NPC",
             "NPC",
+            "VILLAGER",
             "COMPANION",
+            "PARTY_MEMBER",
             "ALLY",
+            "FRIENDLY_CHARACTER",
             "STORY_CHARACTER",
             "CIVILIAN",
             "MERCHANT",
             "VENDOR",
+            "SERVICE_NPC",
             "QUEST_GIVER",
             "GUARD",
             "WORKER",
@@ -18776,23 +18805,29 @@
             "HUMANOID_BOSS",
             "ENEMY",
             "ELITE",
+            "MINI_BOSS",
             "CREATURE",
             "PET",
             "MOUNT",
             "SUMMON",
-            "BOSS"
+            "BOSS",
+            "RAID_BOSS"
           ],
           "roleFamilies": {
             "CHARACTER": [
               "PLAYER",
               "GENERAL_NPC",
               "NPC",
+              "VILLAGER",
               "COMPANION",
+              "PARTY_MEMBER",
               "ALLY",
+              "FRIENDLY_CHARACTER",
               "STORY_CHARACTER",
               "CIVILIAN",
               "MERCHANT",
               "VENDOR",
+              "SERVICE_NPC",
               "QUEST_GIVER",
               "GUARD",
               "WORKER",
@@ -18808,11 +18843,13 @@
             "CREATURE": [
               "ENEMY",
               "ELITE",
+              "MINI_BOSS",
               "CREATURE",
               "PET",
               "MOUNT",
               "SUMMON",
-              "BOSS"
+              "BOSS",
+              "RAID_BOSS"
             ]
           },
           "npcPhysicalAppearanceDiversity": {
@@ -18877,11 +18914,17 @@
           "implementation": "assets/vibe-character-identity-director.js",
           "appliesToRoles": [
             "GENERAL_NPC",
+            "NPC",
+            "VILLAGER",
             "COMPANION",
+            "PARTY_MEMBER",
             "ALLY",
+            "FRIENDLY_CHARACTER",
             "STORY_CHARACTER",
             "CIVILIAN",
             "MERCHANT",
+            "VENDOR",
+            "SERVICE_NPC",
             "QUEST_GIVER",
             "GUARD",
             "WORKER",
@@ -18966,8 +19009,19 @@
             "NPC_PHYSICAL_CLONE",
             "NPC_ROLE_PRESENTATION_CLONE",
             "NPC_PRIMITIVE_FINAL_ACTOR",
-            "NPC_MASTER_GLB_MISSING"
-          ]
+            "NPC_MASTER_GLB_MISSING",
+            "PRIMITIVE_ONLY_FINAL_3D_ACTOR",
+            "CHARACTER_MOTION_MANNEQUIN",
+            "CROSS_PLATFORM_MASTER_GLB_STATIC_QA_REQUIRED"
+          ],
+          "roleMotionRequirements": {
+            "implementation": "assets/vibe-character-identity-director.js#VIBE_NPC_ROLE_MOTION_REQUIREMENTS",
+            "stateMotionBindingRequired": true,
+            "animationTrackCrossFadeRequired": true,
+            "locomotionPlaybackSpeedSyncRequired": true,
+            "activeJointMotionRequired": true,
+            "rootTransformOnlyMotionForbidden": true
+          }
         },
         "clothingAndArmor": {
           "layerSlots": [

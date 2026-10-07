@@ -1,5 +1,5 @@
 {
-  "version": 116,
+  "version": 117,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-07",
@@ -112,12 +112,17 @@
     "crossPlatform3dMasterGlbRoles": [
       "PLAYER",
       "GENERAL_NPC",
+      "NPC",
+      "VILLAGER",
       "COMPANION",
+      "PARTY_MEMBER",
       "ALLY",
+      "FRIENDLY_CHARACTER",
       "STORY_CHARACTER",
       "CIVILIAN",
       "MERCHANT",
       "VENDOR",
+      "SERVICE_NPC",
       "QUEST_GIVER",
       "GUARD",
       "WORKER",
@@ -131,11 +136,13 @@
       "HUMANOID_BOSS",
       "ENEMY",
       "ELITE",
+      "MINI_BOSS",
       "CREATURE",
       "PET",
       "MOUNT",
       "SUMMON",
-      "BOSS"
+      "BOSS",
+      "RAID_BOSS"
     ],
     "crossPlatform3dMasterGlbRequiredContents": [
       "MESH",
@@ -144,6 +151,7 @@
       "MATERIALS",
       "SKELETON",
       "SKIN_WEIGHTS",
+      "JOINT_WEIGHTS",
       "ANIMATION"
     ],
     "masterGlbRequiredBeforePlatformNativeVariant": true,
@@ -159,12 +167,17 @@
       "CHARACTER": [
         "PLAYER",
         "GENERAL_NPC",
+        "NPC",
+        "VILLAGER",
         "COMPANION",
+        "PARTY_MEMBER",
         "ALLY",
+        "FRIENDLY_CHARACTER",
         "STORY_CHARACTER",
         "CIVILIAN",
         "MERCHANT",
         "VENDOR",
+        "SERVICE_NPC",
         "QUEST_GIVER",
         "GUARD",
         "WORKER",
@@ -180,11 +193,13 @@
       "CREATURE": [
         "ENEMY",
         "ELITE",
+        "MINI_BOSS",
         "CREATURE",
         "PET",
         "MOUNT",
         "SUMMON",
-        "BOSS"
+        "BOSS",
+        "RAID_BOSS"
       ]
     },
     "npcRolePhysicalDiversityRequired": true,
@@ -194,7 +209,11 @@
     "npcNearbyPairMinimumDistinctIdentityAxes": 5,
     "npcHeroCompanionEliteBossTargetDistinctIdentityAxes": 8,
     "npcColorOnlySizeOnlyOrFaceOnlyCloneForbidden": true,
-    "npcVisualDiversityCannotChangeGameplayStatsHitboxCollisionByDefault": true
+    "npcVisualDiversityCannotChangeGameplayStatsHitboxCollisionByDefault": true,
+    "masterGlbJointAnimationChannelRequired": true,
+    "masterGlbPathOnlyCannotClaimNativeBinding": true,
+    "characterMotionMannequinCannotClaimFinalActor": true,
+    "bossScaleOnlyCannotClaimFinalActor": true
   },
   "platformPacks": [
     {
@@ -66467,20 +66486,38 @@
       ],
       "appliesToRoles": [
         "PLAYER",
+        "GENERAL_NPC",
         "NPC",
+        "VILLAGER",
         "COMPANION",
+        "PARTY_MEMBER",
         "ALLY",
+        "FRIENDLY_CHARACTER",
+        "STORY_CHARACTER",
         "CIVILIAN",
+        "MERCHANT",
         "VENDOR",
+        "SERVICE_NPC",
         "QUEST_GIVER",
+        "GUARD",
+        "WORKER",
+        "ARTISAN",
+        "FARMER",
+        "HEALER",
         "TRAINER",
+        "RIVAL",
+        "HOSTILE_HUMANOID",
+        "NAMED_ELITE",
+        "HUMANOID_BOSS",
         "ENEMY",
         "ELITE",
+        "MINI_BOSS",
         "CREATURE",
         "PET",
         "MOUNT",
         "SUMMON",
-        "BOSS"
+        "BOSS",
+        "RAID_BOSS"
       ],
       "requiredBeforePlatformNativeVariant": true,
       "structuralQa": [
@@ -66491,7 +66528,8 @@
         "MATERIALS",
         "SKIN_SKELETON",
         "JOINT_WEIGHTS",
-        "ANIMATION"
+        "ANIMATION",
+        "JOINT_ANIMATION_CHANNEL"
       ],
       "platformBindings": {
         "ROBLOX": "NATIVE_IMPORT_OR_REAUTHOR_FROM_MASTER_GLB",
@@ -66503,26 +66541,57 @@
       "roleFamilies": {
         "CHARACTER": [
           "PLAYER",
+          "GENERAL_NPC",
           "NPC",
+          "VILLAGER",
           "COMPANION",
+          "PARTY_MEMBER",
           "ALLY",
+          "FRIENDLY_CHARACTER",
+          "STORY_CHARACTER",
           "CIVILIAN",
+          "MERCHANT",
           "VENDOR",
+          "SERVICE_NPC",
           "QUEST_GIVER",
-          "TRAINER"
+          "GUARD",
+          "WORKER",
+          "ARTISAN",
+          "FARMER",
+          "HEALER",
+          "TRAINER",
+          "RIVAL",
+          "HOSTILE_HUMANOID",
+          "NAMED_ELITE",
+          "HUMANOID_BOSS"
         ],
         "CREATURE": [
           "ENEMY",
           "ELITE",
+          "MINI_BOSS",
           "CREATURE",
           "PET",
           "MOUNT",
           "SUMMON",
-          "BOSS"
+          "BOSS",
+          "RAID_BOSS"
         ]
       },
       "roleSpecificAppearanceAndMotionVariantsAllowed": true,
-      "colorOnlyRoleCloneDoesNotCountAsDistinctActor": true
+      "colorOnlyRoleCloneDoesNotCountAsDistinctActor": true,
+      "requiredContents": [
+        "MESH",
+        "NORMALS",
+        "UV0",
+        "MATERIALS",
+        "SKELETON",
+        "SKIN_WEIGHTS",
+        "JOINT_WEIGHTS",
+        "ANIMATION"
+      ],
+      "masterGlbPathOnlyCannotClaimNativeBinding": true,
+      "rootOnlyMotionCannotClaimFinalActor": true,
+      "productionVerifiedRequiresNativeRuntime": true
     }
   },
   "baseMaterialLibrary": {
@@ -69491,7 +69560,7 @@
     "pipelineCreated": false,
     "wrapperCreated": false,
     "shadowSystemCreated": false,
-    "lastCatalogSynchronizedVersion": 116,
+    "lastCatalogSynchronizedVersion": 117,
     "focusPhase": "QUALITY_UP_1000",
     "qualityTarget": 1000,
     "volumeReady": false,
@@ -79934,7 +80003,7 @@
       "lastChangeFingerprint": "243b46f8",
       "catalogFingerprint": "139e07054babbef4db627f2709a6a89c4ecb218e8ad6093aef0a633275afd2c5",
       "catalogChanged": false,
-      "synchronizedRegistryVersion": 116
+      "synchronizedRegistryVersion": 117
     },
     "studioVariationAxes": {
       "BUILDING": [
