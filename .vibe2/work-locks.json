@@ -3,38 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-r7hraw",
-      "worker": "vibe2",
-      "taskId": "line-defense-studio-evolution-unity-web-usability-v1",
-      "gameId": "line-defense",
-      "files": [
-        "unity-games/line-defense/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/line-defense/Assets/Scripts/UnityWebFloorGame.cs",
-        "assets/roblox/world-ghosts/native/spider/spider.glb",
-        "assets/roblox/world-ghosts/native/spider/spider.png",
-        "assets/roblox/world-ghosts/native/spider/evidence.json",
-        "assets/generated/unity/line-defense/background/asset.glb",
-        "assets/generated/unity/line-defense/background/preview.png",
-        "assets/generated/unity/line-defense/background/evidence.json",
-        "assets/generated/unity/line-defense/item/asset.glb",
-        "assets/generated/unity/line-defense/item/preview.png",
-        "assets/generated/unity/line-defense/item/evidence.json",
-        "assets/generated/unity/line-defense/prop/asset.glb",
-        "assets/generated/unity/line-defense/prop/preview.png",
-        "assets/generated/unity/line-defense/prop/evidence.json"
-      ],
-      "baseSha": "45c7d351e031a8b26182ac94eb0dff3cc074b869",
-      "runId": "37692010949",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-07T22:25:10.620Z",
-      "expiresAt": "2026-10-07T23:10:10.620Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:line-defense-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
       "id": "wl-i6ziup",
       "worker": "vibe2",
       "taskId": "internal-motion-kappa-walk-v1",
@@ -320,6 +288,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:internal-motion-bai-wuchang-walk-v1"
+      ]
+    },
+    {
+      "id": "wl-1kil2gc",
+      "worker": "vibe2",
+      "taskId": "internal-motion-futakuchi-walk-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "assets/roblox/world-ghosts/motions/futakuchi/init.luau"
+      ],
+      "baseSha": "317228761bb76ed549e3f49df35ba01460b3d1b7",
+      "runId": "37698231987",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-07T23:10:38.036Z",
+      "expiresAt": "2026-10-07T23:55:38.036Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:internal-motion-futakuchi-walk-v1"
       ]
     }
   ]
