@@ -391,7 +391,8 @@ export function persistedGeneratedAssetBindings(order={}){
       masterGlbRequired:row?.masterGlbRequired===true,
       masterGlb:posix(row?.masterGlb||(row?.masterGlbRequired===true?row?.nativeArtifact:''))||null,
       masterGlbHash:clean(row?.masterGlbHash||row?.masterGlbInspection?.sourceHash)||null,
-      masterGlbStaticQaPass:row?.masterGlbStaticQaPass===true
+      masterGlbStaticQaPass:row?.masterGlbStaticQaPass===true,
+      masterGlbQaAuthority:clean(row?.masterGlbQaAuthority)||null
     });
   }).filter(Boolean);
   return bindings.length===recipes.length?Object.freeze(bindings):Object.freeze([]);
@@ -520,6 +521,7 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
           outputs:Object.freeze(generated),evidenceJson,preview,nativeArtifact:nativeArtifact.path,artifactHash:nativeArtifact.sha256,sourceHash:editableSourceHash,editableSourceHash,
           evidenceState:evidence?.runtimeVerificationState||null,productionVerified:evidence?.productionVerified===true,
           masterGlbRequired,masterGlb,masterGlbHash,derivedFromMasterGlbHash:masterGlbHash,masterGlbStaticQaPass:masterGlbRequired?masterGlbQa?.pass===true:null,
+          masterGlbQaAuthority:masterGlbRequired?'tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb':null,
           masterGlbContractVersion:masterGlbRequired?1:null,
           masterGlbInspection:masterGlbRequired?Object.freeze({
             status:masterGlbQa?.status||null,
@@ -710,6 +712,7 @@ export function collectNativeAssetRuntimePromotionCandidates({order={},candidate
       rows.set(id,Object.freeze({
         assetId:id,family:family||null,license,path:assetPath||null,robloxAssetId:robloxAssetId||null,sourceHash,editableSourceHash:sourceHash,artifactHash:artifactHash||null,
         masterGlb:masterGlb||null,masterGlbHash:masterGlbHash||null,derivedFromMasterGlbHash:masterGlbHash||null,masterGlbStaticQaPass:asset?.masterGlbStaticQaPass===true,
+        masterGlbQaAuthority:clean(asset?.masterGlbQaAuthority)||null,
         bindingEvidence:Object.freeze(evidence),candidateSourceBindingVerified:true,runtimeVerificationRequired:true,promotionState:'PENDING_EXACT_NATIVE_RUNTIME'
       }));
     }
@@ -728,6 +731,7 @@ export function collectNativeAssetRuntimePromotionCandidates({order={},candidate
     rows.set(id,Object.freeze({
       assetId:id,family,license,path:assetPath,robloxAssetId:null,sourceHash,editableSourceHash:clean(recipe?.editableSourceHash||sourceHash),artifactHash,
       masterGlb:masterGlb||null,masterGlbHash:masterGlbHash||null,derivedFromMasterGlbHash:masterGlbHash||null,masterGlbStaticQaPass:recipe?.masterGlbStaticQaPass===true,
+      masterGlbQaAuthority:clean(recipe?.masterGlbQaAuthority)||null,
       bindingEvidence:Object.freeze(['GENERATED_NATIVE_ARTIFACT_PATH','ENGINE_NATIVE_SOURCE']),
       candidateSourceBindingVerified:true,runtimeVerificationRequired:true,promotionState:'PENDING_EXACT_NATIVE_RUNTIME',
       generatedByDeclaredRecipe:true,persistedForCandidate:dccEvidence?.persistedForCandidate===true

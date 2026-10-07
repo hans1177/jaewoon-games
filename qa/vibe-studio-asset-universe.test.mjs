@@ -968,7 +968,7 @@ test('studio asset universe requires GLB 2.0 masters for final 3D character and 
 });
 
 test('company asset promotion is impossible without actual native runtime consumer evidence',()=>{
-  const asset={id:'wolf-runtime',family:'CREATURE',platform:'ROBLOX',path:'assets/wolf.roblox',license:'project-original',sourceHash:'wolf-v1',artifactHash:'wolf-native-v1',masterGlb:'assets/wolf.glb',masterGlbHash:'wolf-master-v1',masterGlbStaticQaPass:true};
+  const asset={id:'wolf-runtime',family:'CREATURE',platform:'ROBLOX',path:'assets/wolf.roblox',license:'project-original',sourceHash:'wolf-v1',artifactHash:'wolf-native-v1',masterGlb:'assets/wolf.glb',masterGlbHash:'wolf-master-v1',masterGlbStaticQaPass:true,masterGlbQaAuthority:'tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb'};
   const blocked=evaluateCompanyAssetPromotion({
     asset,consumer:{gameId:'survival',platform:'ROBLOX'},
     runtimeEvidence:{platform:'ROBLOX',sourceHash:'wolf-v1',nativeBindingPass:true,visualRuntimePass:true}
@@ -996,11 +996,16 @@ test('company asset promotion is impossible without actual native runtime consum
   assert.equal(wrongLineage.eligible,false);
   assert.ok(wrongLineage.blockers.includes('RUNTIME_MASTER_GLB_LINEAGE_MISMATCH'));
 
+  const missingQaAuthority=evaluateCompanyAssetPromotion({asset:{...asset,masterGlbQaAuthority:''},consumer:{gameId:'survival'},runtimeEvidence:evidence});
+  assert.equal(missingQaAuthority.eligible,false);
+  assert.ok(missingQaAuthority.blockers.includes('CROSS_PLATFORM_MASTER_GLB_QA_AUTHORITY_REQUIRED'));
+
   const ready=evaluateCompanyAssetPromotion({asset,consumer:{gameId:'survival'},runtimeEvidence:evidence});
   assert.equal(ready.eligible,true);
   assert.equal(ready.promotion.verifiedCompanyReusable,true);
   assert.equal(ready.promotion.productionVerified,true);
   assert.equal(ready.promotion.runtimeVerificationState,'VERIFIED_NATIVE_RUNTIME');
+  assert.equal(ready.promotion.masterGlbQaAuthority,'tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb');
 
   const promoted=promoteVerifiedCompanyAssetRegistry({registry:{version:28,assets:[]},asset,consumer:{gameId:'survival'},runtimeEvidence:evidence});
   assert.equal(promoted.updated,true);
@@ -1008,7 +1013,7 @@ test('company asset promotion is impossible without actual native runtime consum
   assert.equal(promoted.registry.assets.length,1);
   assert.equal(promoted.registry.assets[0].status,'VERIFIED_COMPANY_ASSET');
 
-  const derivedAsset={id:'wolf-derived',family:'CREATURE',platform:'ROBLOX',path:'assets/wolf-derived.roblox',license:'project-original-derivative',sourceSha256:'source-v1',derivedSha256:'artifact-v2',masterGlb:'assets/wolf-derived.glb',masterGlbHash:'wolf-derived-master-v1',masterGlbStaticQaPass:true};
+  const derivedAsset={id:'wolf-derived',family:'CREATURE',platform:'ROBLOX',path:'assets/wolf-derived.roblox',license:'project-original-derivative',sourceSha256:'source-v1',derivedSha256:'artifact-v2',masterGlb:'assets/wolf-derived.glb',masterGlbHash:'wolf-derived-master-v1',masterGlbStaticQaPass:true,masterGlbQaAuthority:'tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb'};
   const exactBatch=promoteVerifiedCompanyAssetsFromRuntimeEvidence({
     registry:{version:28,assets:[derivedAsset]},
     consumer:{gameId:'survival',platform:'ROBLOX'},
@@ -1029,7 +1034,7 @@ test('company asset promotion is impossible without actual native runtime consum
       assets:[{
         assetId:'generated-boss',family:'CREATURE',path:'assets/roblox/survival/native/boss.rbxm',
         license:'project-original',sourceHash:'generated-source',artifactHash:'generated-artifact',
-        masterGlb:'assets/roblox/survival/master/boss.glb',masterGlbHash:'generated-boss-master',derivedFromMasterGlbHash:'generated-boss-master',masterGlbStaticQaPass:true,
+        masterGlb:'assets/roblox/survival/master/boss.glb',masterGlbHash:'generated-boss-master',derivedFromMasterGlbHash:'generated-boss-master',masterGlbStaticQaPass:true,masterGlbQaAuthority:'tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb',
         generatedByDeclaredRecipe:true,persistedForCandidate:true
       }],
       nativeBindingPass:true,visualRuntimePass:true,mobilePerformancePass:true,regressionPass:true,licenseProvenancePass:true
@@ -1041,6 +1046,7 @@ test('company asset promotion is impossible without actual native runtime consum
   assert.equal(generatedBatch.registry.assets[0].verifiedCompanyReusable,true);
   assert.equal(generatedBatch.registry.assets[0].path,'assets/roblox/survival/native/boss.rbxm');
   assert.equal(generatedBatch.registry.assets[0].masterGlb,'assets/roblox/survival/master/boss.glb');
+  assert.equal(generatedBatch.registry.assets[0].masterGlbQaAuthority,'tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb');
 
   const noIdentity=promoteVerifiedCompanyAssetsFromRuntimeEvidence({
     registry:{version:28,assets:[derivedAsset]},

@@ -527,6 +527,7 @@ test('DCC verification selects the declared master GLB even when a blend output 
     assert.equal(result.recipes[0].masterGlb,base+'/master.glb');
     assert.equal(result.recipes[0].masterGlbHash,result.recipes[0].artifactHash);
     assert.equal(result.recipes[0].masterGlbStaticQaPass,true);
+    assert.equal(result.recipes[0].masterGlbQaAuthority,'tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb');
     assert.ok(result.recipes[0].masterGlbInspection.meshSkinBindingCount>0);
     assert.ok(result.recipes[0].masterGlbInspection.jointAnimationChannelCount>0);
     assert.ok(result.recipes[0].masterGlbInspection.animatedJointCount>0);
