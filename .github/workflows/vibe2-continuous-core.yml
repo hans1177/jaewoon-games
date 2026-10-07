@@ -1310,7 +1310,7 @@ jobs:
           node --input-type=module - "$contract_root/tools/vibe2-source-worker.mjs" <<'NODE'
           import fs from 'node:fs';
           import {pathToFileURL} from 'node:url';
-          const {robloxDeterministicPresentationEligible}=await import(pathToFileURL(process.argv[2]).href);
+          const {robloxDeterministicPresentationEligible,assetDevelopmentTask}=await import(pathToFileURL(process.argv[2]).href);
           const order=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));
           const out=process.env.GITHUB_OUTPUT;
           const put=(k,v)=>fs.appendFileSync(out,`${k}=${String(v??'').replaceAll('\n',' ')}\n`);
@@ -1332,7 +1332,7 @@ jobs:
           put('model_cache_family',modelCacheFamily);
           put('model_cache_key',modelCacheKey);
           const dccRecipes=Array.isArray(order.assetProduction?.nativeAuthoringExecution?.dcc?.executionRecipes)?order.assetProduction.nativeAuthoringExecution.dcc.executionRecipes:[];
-          put('dcc_recipe_count',dccRecipes.length);
+          put('dcc_recipe_count',assetDevelopmentTask(order)?dccRecipes.length:0);
           put('source_root',order.source?.root||'');
           put('work_lock_required',order.compiledWorkContract?.workLock?.requiredBeforeSourceWrite===true?'true':'false');
           put('work_lock_base_sha',order.compiledWorkContract?.workLock?.baseSha||'');
@@ -1415,6 +1415,7 @@ jobs:
           echo 'VIBE2_OLLAMA_RUNTIME_SOURCE=SHARED_PREPARE_OLLAMA'
 
       - name: Prepare declared native DCC authoring runtime
+        timeout-minutes: 5
         if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.order.outputs.dcc_recipe_count != '0'
         shell: bash
         run: |
