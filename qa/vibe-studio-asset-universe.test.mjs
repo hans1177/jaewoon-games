@@ -3430,9 +3430,11 @@ test('flexible internal asset reuse keeps low-score assets usable and adapts goo
   assert.ok(INTERNAL_ASSET_ADAPTATION_AXES.UI.includes('LAYOUT'));
   assert.ok(INTERNAL_ASSET_ADAPTATION_AXES.CREATURE.includes('HORN'));
 
+  const uiAuditAxes=scoreInternalAssetAudit1000({asset:{family:'UI'}}).applicableAxes;
+  const uiEvidence=value=>Object.fromEntries(uiAuditAxes.map(axis=>[axis,value]));
   const low={
     id:'low-ui',family:'UI',subfamily:'HUD',platform:'ROBLOX',status:'REPO_ASSET',
-    license:'project-original',internalAuditScore:520,sourceFiles:['low.luau']
+    license:'project-original',internalAuditScore:520,internalAuditEvidence:uiEvidence(52),sourceFiles:['low.luau']
   };
   const lowReuse=evaluateInternalAssetReuse({
     asset:low,
@@ -3446,7 +3448,7 @@ test('flexible internal asset reuse keeps low-score assets usable and adapts goo
 
   const highStyleMismatch={
     id:'high-ui',family:'UI',subfamily:'HUD',platform:'ROBLOX',status:'REPO_ASSET',
-    license:'project-original',internalAuditScore:940,sourceFiles:['high.luau'],
+    license:'project-original',internalAuditScore:940,internalAuditEvidence:uiEvidence(94),sourceFiles:['high.luau'],
     styleFamily:'SCI_FI',themeAdaptationRequiredPerGame:true
   };
   const adapted=evaluateInternalAssetReuse({
@@ -4054,7 +4056,8 @@ test('company common seed asset ideation reads all company seed artbooks and pro
   assert.ok(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.triggers.includes('COMPANY_COMMON_SEED_CONTENT_CHANGED'));
   assert.ok(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.preBinding.includes('BUILD_COMPANY_COMMON_SEED_ASSET_IDEA_PLAN'));
   assert.ok(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.packRevision.includes('REPRIORITIZE_FROM_COMPANY_COMMON_SEED_DEMAND'));
-  assert.ok(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.packRevision.includes('VOLUME_UP_BEFORE_QUALITY_UP'));
+  assert.ok(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.packRevision.includes('QUALITY_FIRST_EXISTING_ASSET_REPAIR_BEFORE_DEMAND_BOUND_VOLUME'));
+  assert.equal(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.packRevision.includes('VOLUME_UP_BEFORE_QUALITY_UP'),false);
 
   const contract=registry.companyCommonSeedAssetIdeation;
   assert.ok(contract);
@@ -4115,7 +4118,7 @@ test('material and VFX system depth become complete without claiming runtime pro
   assert.equal(registry.assets.find(row=>row.id==='roblox-common-materials-v1').productionVerified,false);
   assert.equal(registry.commonLibrarySystemDepthAudit.latestVolumeUp.vfxCount,27);
   assert.equal(registry.commonLibrarySystemDepthAudit.latestVolumeUp.materialCount,25);
-  assert.equal(registry.commonLibrarySystemDepthAudit.latestVolumeUp.volumeBeforeQuality,true);
+  assert.equal(registry.commonLibrarySystemDepthAudit.latestVolumeUp.volumeBeforeQuality,false);
 });
 
 
@@ -4209,9 +4212,11 @@ test('foliage system depth is complete after company-seed volume-up',()=>{
 
 
 test('internal asset maintenance refreshes on type role and quality evolution without deleting assets',()=>{
+  const weaponAuditAxes=scoreInternalAssetAudit1000({asset:{family:'WEAPON'}}).applicableAxes;
+  const weaponEvidence=value=>Object.fromEntries(weaponAuditAxes.map(axis=>[axis,value]));
   const baseAssets=[
-    {id:'weapon-a',family:'WEAPON',subfamily:'SWORD',role:'MELEE',internalAuditScore:910,internalAuditGrade:'HERO',catalogActive:true},
-    {id:'weapon-b',family:'WEAPON',subfamily:'SWORD',role:'MELEE',internalAuditScore:970,internalAuditGrade:'ELITE',catalogActive:true},
+    {id:'weapon-a',family:'WEAPON',subfamily:'SWORD',role:'MELEE',internalAuditScore:910,internalAuditEvidence:weaponEvidence(91),internalAuditGrade:'HERO',catalogActive:true},
+    {id:'weapon-b',family:'WEAPON',subfamily:'SWORD',role:'MELEE',internalAuditScore:970,internalAuditEvidence:weaponEvidence(97),internalAuditGrade:'ELITE',catalogActive:true},
     {id:'old-prop',family:'PROP',subfamily:'CHEST',role:'CONTAINER',catalogActive:false,catalogState:'STALE_CATALOG_ROW_REVIEW'}
   ];
   const first=buildInternalAssetMaintenanceSnapshot({assets:baseAssets,uiAtomIds:['INVENTORY_SLOT'],audioRoleIds:['UI_CONFIRM']});
@@ -4223,8 +4228,8 @@ test('internal asset maintenance refreshes on type role and quality evolution wi
   assert.ok(first.staleRowIds.includes('old-prop'));
   assert.ok(first.semanticDuplicateReviewGroups.some(row=>row.assetIds.includes('weapon-a')&&row.assetIds.includes('weapon-b')));
 
-  const evolvedAssets=baseAssets.map(row=>row.id==='weapon-a'?{...row,internalAuditScore:985,internalAuditGrade:'MASTERPIECE'}:row)
-    .concat([{id:'weapon-c',family:'WEAPON',subfamily:'SPEAR',role:'POLEARM',internalAuditScore:940,internalAuditGrade:'HERO',catalogActive:true}]);
+  const evolvedAssets=baseAssets.map(row=>row.id==='weapon-a'?{...row,internalAuditScore:985,internalAuditEvidence:weaponEvidence(98.5),internalAuditGrade:'MASTERPIECE'}:row)
+    .concat([{id:'weapon-c',family:'WEAPON',subfamily:'SPEAR',role:'POLEARM',internalAuditScore:940,internalAuditEvidence:weaponEvidence(94),internalAuditGrade:'HERO',catalogActive:true}]);
   const second=buildInternalAssetMaintenanceSnapshot({assets:evolvedAssets,uiAtomIds:['INVENTORY_SLOT','EQUIPMENT_SLOT'],audioRoleIds:['UI_CONFIRM'],previous:first});
   assert.equal(second.refreshRequired,true);
   assert.ok(second.refreshReasons.includes('INVENTORY_CHANGED'));
@@ -4234,6 +4239,19 @@ test('internal asset maintenance refreshes on type role and quality evolution wi
   assert.equal(second.qualityDonorCandidates[0].id,'weapon-a');
   assert.equal(second.continueWithoutHuman,true);
   assert.equal(second.continueWithoutChatgpt,true);
+});
+
+test('declared internal score without sufficient axis evidence is informational only',()=>{
+  const asset={id:'score-only',family:'UI',subfamily:'HUD',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',internalAuditScore:999,sourceFiles:['assets/ui.luau']};
+  const reuse=evaluateInternalAssetReuse({asset,gameDna:{targetPlatform:'ROBLOX'},requirement:{family:'UI',subfamily:'HUD'}});
+  assert.equal(reuse.declaredQuality,999);
+  assert.equal(reuse.qualityEvidenceGrounded,false);
+  assert.equal(reuse.baseQuality,0);
+  const snapshot=buildInternalAssetMaintenanceSnapshot({assets:[asset]});
+  assert.equal(snapshot.scoredAssetCount,0);
+  assert.equal(snapshot.declaredOnlyQualityCount,1);
+  assert.equal(snapshot.ungroundedDeclaredScoresAreInformationalOnly,true);
+  assert.equal(snapshot.nextQualityActions[0].kind,'INSPECT_ASSET_QUALITY');
 });
 
 test('internal maintenance excludes inactive donors and binds detail repairs to current audit axes',()=>{
@@ -4452,7 +4470,7 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
   const seedPlan=createCompanySeedAssetIdeationPlan({seeds,assets:registry.assets});
   const plan=buildInternalAssetLibraryAutomationPlan({assets:registry.assets,seedPlan,uiAtomIds:ui.atoms.map(row=>row.atomId),externalSources:registry.externalSources});
 
-  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,16);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,17);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.countPolicy,'LOOSE_TARGET_BANDS_NOT_HARD_CAPS');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.persistentWorklistField,'internalAssetLibraryAutomation.nextVolumeActions');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.volumeActionConsumption,'PERSISTED_PRIORITY_WORKLIST_FIRST');
@@ -4696,7 +4714,7 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
 });
 
 test('internal asset breadth profiles support simple-to-deep progression and quality-before-volume',()=>{
-  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,16);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,17);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityTargetInternalAuditScore,1000);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpStartsOnlyAfterRecommendedVolume,false);
 
@@ -4770,7 +4788,7 @@ test('catalog-driven company asset registry synchronization is persistent only w
     assert.ok(stale);
     assert.equal(stale.catalogState,'STALE_CATALOG_ROW_REVIEW');
     assert.equal(stale.automaticDeletionForbidden,true);
-    assert.equal(first.registry.internalAssetLibraryAutomation.version,16);
+    assert.equal(first.registry.internalAssetLibraryAutomation.version,17);
     assert.equal(first.registry.internalAssetLibraryAutomation.autoRegistrySync,true);
     assert.ok(Array.isArray(first.registry.internalAssetLibraryAutomation.nextVolumeActions));
     assert.ok(first.registry.internalAssetLibraryAutomation.nextVolumeActions.length>0);
@@ -4862,7 +4880,7 @@ test('canonical company asset registry becomes dry-run idempotent after current 
   assert.equal(result.persisted,false);
   assert.equal(result.persistError,null);
   assert.equal(result.registry.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion,result.registry.version);
-  assert.equal(result.registry.internalAssetLibraryAutomation.version,16);
+  assert.equal(result.registry.internalAssetLibraryAutomation.version,17);
   assert.ok(Array.isArray(result.registry.internalAssetLibraryAutomation.nextVolumeActions));
   assert.deepEqual(result.registry.internalAssetLibraryAutomation.nextVolumeActions,result.automationPlan.nextVolumeActions);
   assert.equal(result.registry.internalAssetLibraryAutomation.audioStudioBreadth.status,'ACTIVE_STUDIO_AUDIO_BREADTH');
