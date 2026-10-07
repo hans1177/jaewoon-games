@@ -792,7 +792,8 @@ local function bindNativeFoundationCharacter(character)
   raycastParams.FilterType = Enum.RaycastFilterType.Exclude
   raycastParams.FilterDescendantsInstances = {character}
   local groundHit = workspace:Raycast(rootPart.Position, Vector3.new(0, -10, 0), raycastParams)
-  character:SetAttribute("GROUND_CONTACT", groundHit ~= nil)
+  local groundContact = groundHit ~= nil and groundHit.Instance ~= nil
+  character:SetAttribute("GROUND_CONTACT", groundContact)
   character:SetAttribute("MOVEMENT_CONFIRMED", false)
   humanoid.Running:Connect(function(speed)
     character:SetAttribute("MOVEMENT_CONFIRMED", speed > 0.1 and humanoid.FloorMaterial ~= Enum.Material.Air)
