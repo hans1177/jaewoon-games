@@ -14,7 +14,7 @@ import { execFileSync } from 'node:child_process';
 import { learningGuidance } from '../tools/vibe2-learning-motor.mjs';
 import { buildInternalMotionCoaching, singleMotionResponseSchema } from '../tools/vibe2-motion-coaching.mjs';
 import { validateCandidateSyntax } from '../tools/vibe2-source-worker.mjs';
-import { evaluateSingleMotionWorkUnit, SINGLE_MOTION_DEPTH_AXES, generateCandidateWithRecovery, runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, attachSelectedInternalAssetApiContext, evaluateRobloxInternalAssetFamilyBindingCandidate, evaluateAllGameDynamicAssetBindingCandidate, assertAllGameDynamicAssetBindingContract, ROBLOX_INTERNAL_ASSET_FAMILIES } from '../tools/vibe2-source-worker.mjs';
+import { evaluateSingleMotionWorkUnit, SINGLE_MOTION_DEPTH_AXES, generateCandidateWithRecovery, runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateRobloxDesignAnchorGrounding, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, attachSelectedInternalAssetApiContext, evaluateRobloxInternalAssetFamilyBindingCandidate, evaluateAllGameDynamicAssetBindingCandidate, assertAllGameDynamicAssetBindingContract, ROBLOX_INTERNAL_ASSET_FAMILIES } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { buildVibeAssetProductionPlan, assetProductionGuidance } from '../tools/vibe2-asset-production-plan.mjs';
 import { createVibeContinuousQueue } from '../assets/vibe-continuous-queue.js';
@@ -262,6 +262,21 @@ test('design-grounded Roblox gameplay BUILD_UP rejects presentation-only delta a
   assert.equal(accepted.pass,true);
   assert.equal(accepted.gameplayUnits,1);
   assert.deepEqual(accepted.gameplayFiles,['server/Game.server.luau']);
+});
+
+test('Roblox gameplay BUILD_UP must touch the design source anchor when an exact anchor exists',()=>{
+  const directive={responsibleSystemsAndFiles:{sourceAnchors:[
+    {file:'roblox-games/demo/server/Game.server.luau',symbol:'attack'},
+    {file:'roblox-games/demo/shared/GameConfig.luau',symbol:'Damage'}
+  ]}};
+  const unrelated={edits:[{path:'client/Game.client.luau',find:'remote:FireServer("attack")',replace:'remote:FireServer("attack", true)'}],newFiles:[],replaceFiles:[]};
+  const blocked=evaluateRobloxDesignAnchorGrounding({candidate:unrelated,directive,sourceRootRelative:'roblox-games/demo',required:true});
+  assert.equal(blocked.pass,false);
+  assert.equal(blocked.reason,'ROBLOX_DESIGN_SOURCE_ANCHOR_NOT_TOUCHED');
+  const grounded={edits:[{path:'server/Game.server.luau',find:'local function attack(player)',replace:'local function attack(player, target)'}],newFiles:[],replaceFiles:[]};
+  const accepted=evaluateRobloxDesignAnchorGrounding({candidate:grounded,directive,sourceRootRelative:'roblox-games/demo',required:true});
+  assert.equal(accepted.pass,true);
+  assert.deepEqual(accepted.matchedPaths,['server/Game.server.luau']);
 });
 
 test('single motion work unit planner carries the exact binding without silently shrinking an invalid batch',t=>{
