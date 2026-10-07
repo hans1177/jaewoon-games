@@ -528,7 +528,7 @@ test('Master GLB static QA alone never grants production verification',()=>{
   assert.ok(candidate);
   assert.equal(candidate.masterGlbStaticQaPass,true);
   assert.equal(candidate.productionVerified,false);
-  assert.equal(plan.policy?.nativeRuntimeVerificationRequiredBeforePromotion!==false,true);
+  assert.equal(plan.generatedAssetOutputContract.nativeRuntimeVerificationRequiredBeforeVerifiedPromotion,true);
 });
 
 test('customization and detailed style instructions reach the existing asset work order input',()=>{
