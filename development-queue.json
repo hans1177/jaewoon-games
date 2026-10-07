@@ -18184,14 +18184,14 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-07T21:58:30.346Z",
+      "updatedAt": "2026-10-07T22:07:09.771Z",
       "robloxSourceCommit": "7820fbd659472498b55cd9bca89b456b7f018ed4",
       "robloxSourceBootstrapPassedAt": "2026-10-07T14:02:09.971Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -18200,22 +18200,23 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "7820fbd659472498b55cd9bca89b456b7f018ed4",
       "robloxBuildArtifactIdentity": "sha256:7bb3ac6879cb36413276272c8031db5344fd831476f9dfb590520b31d5d36054",
-      "robloxBuildPassedAt": "2026-10-07T21:58:30.346Z",
+      "robloxBuildPassedAt": "2026-10-07T22:07:09.771Z",
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": false,
-      "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-07T21:58:30.346Z",
+      "robloxBuildPreflightPassed": true,
+      "robloxBuildPreflightPassedAt": "2026-10-07T22:07:09.771Z",
+      "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "monster-adventure",
-        "pass": false,
-        "state": "BLOCKED",
-        "checkedAt": "2026-10-07T21:52:42.037Z",
+        "pass": true,
+        "state": "PASS",
+        "checkedAt": "2026-10-07T22:05:53.898Z",
+        "sourceRevision": "7820fbd659472498b55cd9bca89b456b7f018ed4",
+        "artifactIdentity": "sha256:7bb3ac6879cb36413276272c8031db5344fd831476f9dfb590520b31d5d36054",
+        "secondaryOwnerFocus": false,
         "facts": {
-          "pass": false,
-          "blockers": [
-            "roblox-platform-required"
-          ],
+          "pass": true,
+          "blockers": [],
           "leads": {
             "planning": "llama3.2:1b",
             "graphics": "llama3.2:1b",
@@ -18226,9 +18227,9 @@
           "sharedModel": "llama3.2:1b",
           "distinctLeadCount": 1,
           "secondaryOwnerFocus": false,
-          "robloxLaneEligible": false,
+          "robloxLaneEligible": true,
           "directRoblox": false,
-          "concurrentRoblox": false,
+          "concurrentRoblox": true,
           "build": {
             "sourceRevision": "7820fbd659472498b55cd9bca89b456b7f018ed4",
             "artifactIdentity": "sha256:7bb3ac6879cb36413276272c8031db5344fd831476f9dfb590520b31d5d36054",
@@ -18241,17 +18242,597 @@
             "buildOrPackagePassed": true
           }
         },
-        "leadReviews": [],
-        "blockers": [
-          "roblox-platform-required"
+        "leadReviews": [
+          {
+            "role": "shared-review",
+            "model": "llama3.2:1b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": "No concrete build-stage blockers found."
+          }
         ],
+        "blockers": [],
         "authority": "roblox-vibe-shared-model-build-preflight"
       },
       "robloxFoundationF0Passed": false,
       "robloxFoundationF0PassedAt": null,
-      "robloxFoundationF0Evidence": null,
+      "robloxFoundationF0Evidence": {
+        "version": 5,
+        "gameId": "monster-adventure",
+        "platform": "ROBLOX",
+        "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
+        "checkedAt": "2026-10-07T22:05:54.651Z",
+        "sourcePath": "roblox-games/monster-adventure",
+        "sourceRevision": "7820fbd659472498b55cd9bca89b456b7f018ed4",
+        "artifactIdentity": "sha256:7bb3ac6879cb36413276272c8031db5344fd831476f9dfb590520b31d5d36054",
+        "rebuiltArtifactIdentity": "sha256:7bb3ac6879cb36413276272c8031db5344fd831476f9dfb590520b31d5d36054",
+        "artifactRunId": 37693112290,
+        "buildUpAssetSourceUsageFingerprint": "8a86555dfd6c0792b4244bfea59b644182092bcf9abf9487f506a7806a98a3bf",
+        "assetSelectionFingerprint": "1e7ae86b9d401ac5f71db11b8ab0eeb5aa529705da72c669fed46a29c7750a19",
+        "observedAssetSelectionFingerprint": "1e7ae86b9d401ac5f71db11b8ab0eeb5aa529705da72c669fed46a29c7750a19",
+        "assetLibraryVersion": 121,
+        "observedAssetLibraryVersion": 121,
+        "nativeLanguageCompilePassed": true,
+        "nativeCompilerVersion": "0.739",
+        "playMode": "SINGLE",
+        "saveExists": true,
+        "multiplayerApplicable": false,
+        "sourcePreflightPassed": false,
+        "f0SourceIntegrityPassed": true,
+        "sourceStartupMarkersPassed": true,
+        "gameStartPassed": false,
+        "serverBootPassed": false,
+        "worldFoundationPassed": false,
+        "characterFoundationPassed": false,
+        "physicsAndMovementPassed": false,
+        "runtimeFoundationPassed": false,
+        "actualRuntimeEvidence": false,
+        "internalReleaseReady": false,
+        "serverClientBoundaryPreflightPassed": true,
+        "remoteSecurityPreflightPassed": true,
+        "mobileControlUiPreflightPassed": true,
+        "coreProgressionMarkersPassed": true,
+        "combatOrRoundMarkersPassed": true,
+        "datastoreContractPassed": true,
+        "multiplayerSyncContractPassed": true,
+        "protectedStatePreserved": false,
+        "exactRevision": true,
+        "gameplayProductReadinessRequired": true,
+        "gameplayProductReadiness": {
+          "version": 1,
+          "gameId": "monster-adventure",
+          "pass": false,
+          "blockers": [
+            "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+            "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+            "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+            "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+            "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+            "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+            "MISSING_GAMEPLAY_CAPABILITY:INVENTORY",
+            "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+            "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+            "GENERIC_SCOPE_HANDLER_SKELETON"
+          ],
+          "requiredCapabilities": [
+            "CORE_GAMEPLAY_STATE",
+            "WORLD",
+            "CONTENT_ENTITY",
+            "COMBAT",
+            "ENEMY_AI",
+            "GATHERING",
+            "INVENTORY",
+            "PROGRESSION",
+            "BOSS",
+            "MOBILE_UI",
+            "SAVE",
+            "SESSION_FLOW"
+          ],
+          "implementedCapabilities": {
+            "CORE_GAMEPLAY_STATE": false,
+            "WORLD": false,
+            "CONTENT_ENTITY": false,
+            "COMBAT": false,
+            "ENEMY_AI": false,
+            "GATHERING": false,
+            "INVENTORY": false,
+            "PROGRESSION": false,
+            "BOSS": false,
+            "MOBILE_UI": true,
+            "SAVE": true,
+            "SESSION_FLOW": false
+          },
+          "coreLoopTrace": [
+            {
+              "index": 0,
+              "step": "탐험 단계: 월드 맵에서 이동하며 몬스터를 조우하거나 자원을 수집하는 선택을 수행합니다.",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "GATHERING"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "step": "전투 단계: 턴제 전투 시스템을 통해 몬스터의 스킬을 선택하고 속성 상성을 활용하여 적을 제압합니다.",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "step": "성장 단계: 전투 보상으로 얻은 경험치와 재료를 사용하여 몬스터를 레벨업하거나 진화시켜 다음 도전을 준비합니다.",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "PROGRESSION"
+              ],
+              "pass": false
+            }
+          ],
+          "signatureSystemTrace": [
+            {
+              "index": 0,
+              "name": "속성 상성 전투 시스템",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "name": "몬스터 진화 트리 시스템",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "PROGRESSION"
+              ],
+              "pass": false
+            }
+          ],
+          "placeholderDebt": {
+            "primitiveConstructionCount": 0,
+            "meshConstructionCount": 0,
+            "likelyPrimitiveHeavy": false,
+            "genericScopeHandlerCount": 6,
+            "meaningfulGameplayFunctionCount": 0
+          },
+          "studioQualitySheet": {
+            "Core": "MISSING",
+            "Content": "MISSING",
+            "World": "MISSING",
+            "Combat": "MISSING",
+            "AI": "MISSING",
+            "Progression": "MISSING",
+            "UI": "POLISHED",
+            "Graphics": "ROUGH",
+            "Motion": "POLISHED",
+            "Audio": "MISSING",
+            "Mobile": "POLISHED",
+            "Performance": "MISSING",
+            "Runtime": "N/A"
+          },
+          "studioReadiness": {
+            "ai": {
+              "applicable": true,
+              "signalCount": 0,
+              "pass": false
+            },
+            "combatFeel": {
+              "applicable": true,
+              "signalCount": 2,
+              "pass": false
+            },
+            "worldTopology": {
+              "applicable": true,
+              "signalCount": 1,
+              "pass": false
+            },
+            "firstTenMinutes": {
+              "signalCount": 3,
+              "pass": false
+            },
+            "midLateGame": {
+              "applicable": true,
+              "signalCount": 3,
+              "pass": true
+            },
+            "systemConnections": {
+              "rows": [
+                {
+                  "id": "WORLD_TO_CONTENT",
+                  "pass": false
+                }
+              ],
+              "pass": false
+            },
+            "placeholder": {
+              "pass": true,
+              "primitiveConstructionCount": 0,
+              "meshConstructionCount": 0,
+              "likelyPrimitiveHeavy": false,
+              "genericScopeHandlerCount": 6,
+              "meaningfulGameplayFunctionCount": 0
+            },
+            "criticalGaps": [
+              "AI_STATE_DEPTH",
+              "COMBAT_FEEL_CHAIN",
+              "WORLD_TOPOLOGY_AND_LANDMARKS",
+              "FIRST_10_MINUTES_FLOW",
+              "SYSTEM_CONNECTION_CHAIN"
+            ],
+            "f9SourceQualityReady": false
+          },
+          "runtimeRequirements": {
+            "worldRequired": true,
+            "minimumBasePartCount": 5,
+            "spawnRequired": true,
+            "landmarkRequired": true,
+            "objectiveRequired": false,
+            "serverBootRequired": true,
+            "simulationRequired": true,
+            "actualPlayRequired": true
+          },
+          "designFingerprint": "093b772a88d77a7ddb583fdff3ab585f41b0f32b19930b0da4e9e6e8f3f3c4b2",
+          "antiSkeletonPassed": false,
+          "designGenre": "Strategy",
+          "sourceGenre": "Strategy",
+          "designPlayMode": "SINGLE",
+          "sourcePlayMode": "SINGLE"
+        },
+        "studioQualitySheet": {
+          "Core": "MISSING",
+          "Content": "MISSING",
+          "World": "MISSING",
+          "Combat": "MISSING",
+          "AI": "MISSING",
+          "Progression": "MISSING",
+          "UI": "POLISHED",
+          "Graphics": "ROUGH",
+          "Motion": "POLISHED",
+          "Audio": "MISSING",
+          "Mobile": "POLISHED",
+          "Performance": "MISSING",
+          "Runtime": "N/A"
+        },
+        "checks": {
+          "exactSourceRevision": true,
+          "nativeLanguageCompilePassed": true,
+          "exactArtifact": true,
+          "buildUpAssetSourceUsageFingerprint": true,
+          "assetSelectionFingerprint": true,
+          "assetLibraryVersion": true,
+          "projectContract": true,
+          "robloxPolicy": true,
+          "duplicateDeclarationGuard": true,
+          "sourceStartupMarkers": true,
+          "foundationSentinelContract": true,
+          "characterPhysicsGuard": true,
+          "groundContactNotSynthetic": true,
+          "mobileFirst": true,
+          "serverClientBoundary": true,
+          "remoteSecurity": true,
+          "coreProgression": true,
+          "combatOrRound": true,
+          "saveRejoin": true,
+          "multiplayerSync": true,
+          "sessionEndRestart": true,
+          "errorGuards": true,
+          "gameplayProductReadiness": false,
+          "f0SourceIntegrity": true
+        },
+        "pass": false,
+        "state": "BLOCKED",
+        "blockers": [
+          "gameplayProductReadiness"
+        ],
+        "authority": "roblox-headless-source-preflight-f0"
+      },
       "robloxHeadlessFastMvpPassed": false,
-      "robloxHeadlessFastMvpEvidence": null,
+      "robloxHeadlessFastMvpEvidence": {
+        "version": 5,
+        "gameId": "monster-adventure",
+        "platform": "ROBLOX",
+        "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
+        "checkedAt": "2026-10-07T22:05:54.651Z",
+        "sourcePath": "roblox-games/monster-adventure",
+        "sourceRevision": "7820fbd659472498b55cd9bca89b456b7f018ed4",
+        "artifactIdentity": "sha256:7bb3ac6879cb36413276272c8031db5344fd831476f9dfb590520b31d5d36054",
+        "rebuiltArtifactIdentity": "sha256:7bb3ac6879cb36413276272c8031db5344fd831476f9dfb590520b31d5d36054",
+        "artifactRunId": 37693112290,
+        "buildUpAssetSourceUsageFingerprint": "8a86555dfd6c0792b4244bfea59b644182092bcf9abf9487f506a7806a98a3bf",
+        "assetSelectionFingerprint": "1e7ae86b9d401ac5f71db11b8ab0eeb5aa529705da72c669fed46a29c7750a19",
+        "observedAssetSelectionFingerprint": "1e7ae86b9d401ac5f71db11b8ab0eeb5aa529705da72c669fed46a29c7750a19",
+        "assetLibraryVersion": 121,
+        "observedAssetLibraryVersion": 121,
+        "nativeLanguageCompilePassed": true,
+        "nativeCompilerVersion": "0.739",
+        "playMode": "SINGLE",
+        "saveExists": true,
+        "multiplayerApplicable": false,
+        "sourcePreflightPassed": false,
+        "f0SourceIntegrityPassed": true,
+        "sourceStartupMarkersPassed": true,
+        "gameStartPassed": false,
+        "serverBootPassed": false,
+        "worldFoundationPassed": false,
+        "characterFoundationPassed": false,
+        "physicsAndMovementPassed": false,
+        "runtimeFoundationPassed": false,
+        "actualRuntimeEvidence": false,
+        "internalReleaseReady": false,
+        "serverClientBoundaryPreflightPassed": true,
+        "remoteSecurityPreflightPassed": true,
+        "mobileControlUiPreflightPassed": true,
+        "coreProgressionMarkersPassed": true,
+        "combatOrRoundMarkersPassed": true,
+        "datastoreContractPassed": true,
+        "multiplayerSyncContractPassed": true,
+        "protectedStatePreserved": false,
+        "exactRevision": true,
+        "gameplayProductReadinessRequired": true,
+        "gameplayProductReadiness": {
+          "version": 1,
+          "gameId": "monster-adventure",
+          "pass": false,
+          "blockers": [
+            "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+            "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+            "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+            "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+            "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+            "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+            "MISSING_GAMEPLAY_CAPABILITY:INVENTORY",
+            "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+            "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+            "GENERIC_SCOPE_HANDLER_SKELETON"
+          ],
+          "requiredCapabilities": [
+            "CORE_GAMEPLAY_STATE",
+            "WORLD",
+            "CONTENT_ENTITY",
+            "COMBAT",
+            "ENEMY_AI",
+            "GATHERING",
+            "INVENTORY",
+            "PROGRESSION",
+            "BOSS",
+            "MOBILE_UI",
+            "SAVE",
+            "SESSION_FLOW"
+          ],
+          "implementedCapabilities": {
+            "CORE_GAMEPLAY_STATE": false,
+            "WORLD": false,
+            "CONTENT_ENTITY": false,
+            "COMBAT": false,
+            "ENEMY_AI": false,
+            "GATHERING": false,
+            "INVENTORY": false,
+            "PROGRESSION": false,
+            "BOSS": false,
+            "MOBILE_UI": true,
+            "SAVE": true,
+            "SESSION_FLOW": false
+          },
+          "coreLoopTrace": [
+            {
+              "index": 0,
+              "step": "탐험 단계: 월드 맵에서 이동하며 몬스터를 조우하거나 자원을 수집하는 선택을 수행합니다.",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "GATHERING"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "step": "전투 단계: 턴제 전투 시스템을 통해 몬스터의 스킬을 선택하고 속성 상성을 활용하여 적을 제압합니다.",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "step": "성장 단계: 전투 보상으로 얻은 경험치와 재료를 사용하여 몬스터를 레벨업하거나 진화시켜 다음 도전을 준비합니다.",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "PROGRESSION"
+              ],
+              "pass": false
+            }
+          ],
+          "signatureSystemTrace": [
+            {
+              "index": 0,
+              "name": "속성 상성 전투 시스템",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "name": "몬스터 진화 트리 시스템",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "PROGRESSION"
+              ],
+              "pass": false
+            }
+          ],
+          "placeholderDebt": {
+            "primitiveConstructionCount": 0,
+            "meshConstructionCount": 0,
+            "likelyPrimitiveHeavy": false,
+            "genericScopeHandlerCount": 6,
+            "meaningfulGameplayFunctionCount": 0
+          },
+          "studioQualitySheet": {
+            "Core": "MISSING",
+            "Content": "MISSING",
+            "World": "MISSING",
+            "Combat": "MISSING",
+            "AI": "MISSING",
+            "Progression": "MISSING",
+            "UI": "POLISHED",
+            "Graphics": "ROUGH",
+            "Motion": "POLISHED",
+            "Audio": "MISSING",
+            "Mobile": "POLISHED",
+            "Performance": "MISSING",
+            "Runtime": "N/A"
+          },
+          "studioReadiness": {
+            "ai": {
+              "applicable": true,
+              "signalCount": 0,
+              "pass": false
+            },
+            "combatFeel": {
+              "applicable": true,
+              "signalCount": 2,
+              "pass": false
+            },
+            "worldTopology": {
+              "applicable": true,
+              "signalCount": 1,
+              "pass": false
+            },
+            "firstTenMinutes": {
+              "signalCount": 3,
+              "pass": false
+            },
+            "midLateGame": {
+              "applicable": true,
+              "signalCount": 3,
+              "pass": true
+            },
+            "systemConnections": {
+              "rows": [
+                {
+                  "id": "WORLD_TO_CONTENT",
+                  "pass": false
+                }
+              ],
+              "pass": false
+            },
+            "placeholder": {
+              "pass": true,
+              "primitiveConstructionCount": 0,
+              "meshConstructionCount": 0,
+              "likelyPrimitiveHeavy": false,
+              "genericScopeHandlerCount": 6,
+              "meaningfulGameplayFunctionCount": 0
+            },
+            "criticalGaps": [
+              "AI_STATE_DEPTH",
+              "COMBAT_FEEL_CHAIN",
+              "WORLD_TOPOLOGY_AND_LANDMARKS",
+              "FIRST_10_MINUTES_FLOW",
+              "SYSTEM_CONNECTION_CHAIN"
+            ],
+            "f9SourceQualityReady": false
+          },
+          "runtimeRequirements": {
+            "worldRequired": true,
+            "minimumBasePartCount": 5,
+            "spawnRequired": true,
+            "landmarkRequired": true,
+            "objectiveRequired": false,
+            "serverBootRequired": true,
+            "simulationRequired": true,
+            "actualPlayRequired": true
+          },
+          "designFingerprint": "093b772a88d77a7ddb583fdff3ab585f41b0f32b19930b0da4e9e6e8f3f3c4b2",
+          "antiSkeletonPassed": false,
+          "designGenre": "Strategy",
+          "sourceGenre": "Strategy",
+          "designPlayMode": "SINGLE",
+          "sourcePlayMode": "SINGLE"
+        },
+        "studioQualitySheet": {
+          "Core": "MISSING",
+          "Content": "MISSING",
+          "World": "MISSING",
+          "Combat": "MISSING",
+          "AI": "MISSING",
+          "Progression": "MISSING",
+          "UI": "POLISHED",
+          "Graphics": "ROUGH",
+          "Motion": "POLISHED",
+          "Audio": "MISSING",
+          "Mobile": "POLISHED",
+          "Performance": "MISSING",
+          "Runtime": "N/A"
+        },
+        "checks": {
+          "exactSourceRevision": true,
+          "nativeLanguageCompilePassed": true,
+          "exactArtifact": true,
+          "buildUpAssetSourceUsageFingerprint": true,
+          "assetSelectionFingerprint": true,
+          "assetLibraryVersion": true,
+          "projectContract": true,
+          "robloxPolicy": true,
+          "duplicateDeclarationGuard": true,
+          "sourceStartupMarkers": true,
+          "foundationSentinelContract": true,
+          "characterPhysicsGuard": true,
+          "groundContactNotSynthetic": true,
+          "mobileFirst": true,
+          "serverClientBoundary": true,
+          "remoteSecurity": true,
+          "coreProgression": true,
+          "combatOrRound": true,
+          "saveRejoin": true,
+          "multiplayerSync": true,
+          "sessionEndRestart": true,
+          "errorGuards": true,
+          "gameplayProductReadiness": false,
+          "f0SourceIntegrity": true
+        },
+        "pass": false,
+        "state": "BLOCKED",
+        "blockers": [
+          "gameplayProductReadiness"
+        ],
+        "authority": "roblox-headless-source-preflight-f0"
+      },
       "robloxHeadlessFinalReviewPassed": false,
       "robloxRuntimeCandidateEvidence": null,
       "robloxRuntimeFoundationPassed": false,
@@ -18283,11 +18864,11 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
+      "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+      "robloxFailureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+      "robloxFailureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
       "routingBlockers": [
-        "roblox-build-preflight-blocked"
+        "roblox-f0-gameplay-product-readiness-failed"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -18485,10 +19066,3308 @@
       },
       "robloxPromotionBlockers": [],
       "robloxPublicReleaseEvidence": null,
-      "robloxQualityBuildUpRequired": false,
-      "robloxQualityBuildUpSourceRevision": null,
-      "robloxQualityFailureClass": null,
-      "robloxQualityBuildUpEvidence": null,
+      "robloxQualityBuildUpRequired": true,
+      "robloxQualityBuildUpSourceRevision": "7820fbd659472498b55cd9bca89b456b7f018ed4",
+      "robloxQualityFailureClass": "GAMEPLAY_PRODUCT_READINESS",
+      "robloxQualityBuildUpEvidence": {
+        "version": 1,
+        "gameId": "monster-adventure",
+        "sourceRevision": "7820fbd659472498b55cd9bca89b456b7f018ed4",
+        "artifactIdentity": "sha256:7bb3ac6879cb36413276272c8031db5344fd831476f9dfb590520b31d5d36054",
+        "authority": "roblox-f0-gameplay-product-readiness-failure",
+        "workflowRunId": 37693112290,
+        "testedAt": "2026-10-07T22:07:09.771Z",
+        "qualityFailureKinds": [
+          "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+          "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+          "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+          "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+          "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+          "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+          "MISSING_GAMEPLAY_CAPABILITY:INVENTORY",
+          "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+          "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+          "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+          "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+          "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+          "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+          "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+          "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+          "GENERIC_SCOPE_HANDLER_SKELETON"
+        ],
+        "repairSurfaces": [
+          "CORE_GAMEPLAY",
+          "WORLD_MAP",
+          "COMBAT_FEEL",
+          "PROGRESSION_CONTENT"
+        ],
+        "qualityFailureDetails": [
+          {
+            "id": "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P0",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "monster-adventure",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:INVENTORY",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "GATHERING",
+                "INVENTORY",
+                "PROGRESSION",
+                "BOSS",
+                "MOBILE_UI",
+                "SAVE",
+                "SESSION_FLOW"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "GATHERING": false,
+                "INVENTORY": false,
+                "PROGRESSION": false,
+                "BOSS": false,
+                "MOBILE_UI": true,
+                "SAVE": true,
+                "SESSION_FLOW": false
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "탐험 단계: 월드 맵에서 이동하며 몬스터를 조우하거나 자원을 수집하는 선택을 수행합니다.",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "GATHERING"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "전투 단계: 턴제 전투 시스템을 통해 몬스터의 스킬을 선택하고 속성 상성을 활용하여 적을 제압합니다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "성장 단계: 전투 보상으로 얻은 경험치와 재료를 사용하여 몬스터를 레벨업하거나 진화시켜 다음 도전을 준비합니다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "속성 상성 전투 시스템",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "몬스터 진화 트리 시스템",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 2,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "FIRST_10_MINUTES_FLOW",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "093b772a88d77a7ddb583fdff3ab585f41b0f32b19930b0da4e9e6e8f3f3c4b2",
+              "antiSkeletonPassed": false,
+              "designGenre": "Strategy",
+              "sourceGenre": "Strategy",
+              "designPlayMode": "SINGLE",
+              "sourcePlayMode": "SINGLE"
+            }
+          },
+          {
+            "id": "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P0",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "monster-adventure",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:INVENTORY",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "GATHERING",
+                "INVENTORY",
+                "PROGRESSION",
+                "BOSS",
+                "MOBILE_UI",
+                "SAVE",
+                "SESSION_FLOW"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "GATHERING": false,
+                "INVENTORY": false,
+                "PROGRESSION": false,
+                "BOSS": false,
+                "MOBILE_UI": true,
+                "SAVE": true,
+                "SESSION_FLOW": false
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "탐험 단계: 월드 맵에서 이동하며 몬스터를 조우하거나 자원을 수집하는 선택을 수행합니다.",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "GATHERING"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "전투 단계: 턴제 전투 시스템을 통해 몬스터의 스킬을 선택하고 속성 상성을 활용하여 적을 제압합니다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "성장 단계: 전투 보상으로 얻은 경험치와 재료를 사용하여 몬스터를 레벨업하거나 진화시켜 다음 도전을 준비합니다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "속성 상성 전투 시스템",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "몬스터 진화 트리 시스템",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 2,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "FIRST_10_MINUTES_FLOW",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "093b772a88d77a7ddb583fdff3ab585f41b0f32b19930b0da4e9e6e8f3f3c4b2",
+              "antiSkeletonPassed": false,
+              "designGenre": "Strategy",
+              "sourceGenre": "Strategy",
+              "designPlayMode": "SINGLE",
+              "sourcePlayMode": "SINGLE"
+            }
+          },
+          {
+            "id": "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P0",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "monster-adventure",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:INVENTORY",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "GATHERING",
+                "INVENTORY",
+                "PROGRESSION",
+                "BOSS",
+                "MOBILE_UI",
+                "SAVE",
+                "SESSION_FLOW"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "GATHERING": false,
+                "INVENTORY": false,
+                "PROGRESSION": false,
+                "BOSS": false,
+                "MOBILE_UI": true,
+                "SAVE": true,
+                "SESSION_FLOW": false
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "탐험 단계: 월드 맵에서 이동하며 몬스터를 조우하거나 자원을 수집하는 선택을 수행합니다.",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "GATHERING"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "전투 단계: 턴제 전투 시스템을 통해 몬스터의 스킬을 선택하고 속성 상성을 활용하여 적을 제압합니다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "성장 단계: 전투 보상으로 얻은 경험치와 재료를 사용하여 몬스터를 레벨업하거나 진화시켜 다음 도전을 준비합니다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "속성 상성 전투 시스템",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "몬스터 진화 트리 시스템",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 2,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "FIRST_10_MINUTES_FLOW",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "093b772a88d77a7ddb583fdff3ab585f41b0f32b19930b0da4e9e6e8f3f3c4b2",
+              "antiSkeletonPassed": false,
+              "designGenre": "Strategy",
+              "sourceGenre": "Strategy",
+              "designPlayMode": "SINGLE",
+              "sourcePlayMode": "SINGLE"
+            }
+          },
+          {
+            "id": "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "monster-adventure",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:INVENTORY",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "GATHERING",
+                "INVENTORY",
+                "PROGRESSION",
+                "BOSS",
+                "MOBILE_UI",
+                "SAVE",
+                "SESSION_FLOW"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "GATHERING": false,
+                "INVENTORY": false,
+                "PROGRESSION": false,
+                "BOSS": false,
+                "MOBILE_UI": true,
+                "SAVE": true,
+                "SESSION_FLOW": false
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "탐험 단계: 월드 맵에서 이동하며 몬스터를 조우하거나 자원을 수집하는 선택을 수행합니다.",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "GATHERING"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "전투 단계: 턴제 전투 시스템을 통해 몬스터의 스킬을 선택하고 속성 상성을 활용하여 적을 제압합니다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "성장 단계: 전투 보상으로 얻은 경험치와 재료를 사용하여 몬스터를 레벨업하거나 진화시켜 다음 도전을 준비합니다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "속성 상성 전투 시스템",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "몬스터 진화 트리 시스템",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 2,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "FIRST_10_MINUTES_FLOW",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "093b772a88d77a7ddb583fdff3ab585f41b0f32b19930b0da4e9e6e8f3f3c4b2",
+              "antiSkeletonPassed": false,
+              "designGenre": "Strategy",
+              "sourceGenre": "Strategy",
+              "designPlayMode": "SINGLE",
+              "sourcePlayMode": "SINGLE"
+            }
+          },
+          {
+            "id": "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "monster-adventure",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:INVENTORY",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "GATHERING",
+                "INVENTORY",
+                "PROGRESSION",
+                "BOSS",
+                "MOBILE_UI",
+                "SAVE",
+                "SESSION_FLOW"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "GATHERING": false,
+                "INVENTORY": false,
+                "PROGRESSION": false,
+                "BOSS": false,
+                "MOBILE_UI": true,
+                "SAVE": true,
+                "SESSION_FLOW": false
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "탐험 단계: 월드 맵에서 이동하며 몬스터를 조우하거나 자원을 수집하는 선택을 수행합니다.",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "GATHERING"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "전투 단계: 턴제 전투 시스템을 통해 몬스터의 스킬을 선택하고 속성 상성을 활용하여 적을 제압합니다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "성장 단계: 전투 보상으로 얻은 경험치와 재료를 사용하여 몬스터를 레벨업하거나 진화시켜 다음 도전을 준비합니다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "속성 상성 전투 시스템",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "몬스터 진화 트리 시스템",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 2,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "FIRST_10_MINUTES_FLOW",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "093b772a88d77a7ddb583fdff3ab585f41b0f32b19930b0da4e9e6e8f3f3c4b2",
+              "antiSkeletonPassed": false,
+              "designGenre": "Strategy",
+              "sourceGenre": "Strategy",
+              "designPlayMode": "SINGLE",
+              "sourcePlayMode": "SINGLE"
+            }
+          },
+          {
+            "id": "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "monster-adventure",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:INVENTORY",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "GATHERING",
+                "INVENTORY",
+                "PROGRESSION",
+                "BOSS",
+                "MOBILE_UI",
+                "SAVE",
+                "SESSION_FLOW"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "GATHERING": false,
+                "INVENTORY": false,
+                "PROGRESSION": false,
+                "BOSS": false,
+                "MOBILE_UI": true,
+                "SAVE": true,
+                "SESSION_FLOW": false
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "탐험 단계: 월드 맵에서 이동하며 몬스터를 조우하거나 자원을 수집하는 선택을 수행합니다.",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "GATHERING"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "전투 단계: 턴제 전투 시스템을 통해 몬스터의 스킬을 선택하고 속성 상성을 활용하여 적을 제압합니다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "성장 단계: 전투 보상으로 얻은 경험치와 재료를 사용하여 몬스터를 레벨업하거나 진화시켜 다음 도전을 준비합니다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "속성 상성 전투 시스템",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "몬스터 진화 트리 시스템",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 2,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "FIRST_10_MINUTES_FLOW",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "093b772a88d77a7ddb583fdff3ab585f41b0f32b19930b0da4e9e6e8f3f3c4b2",
+              "antiSkeletonPassed": false,
+              "designGenre": "Strategy",
+              "sourceGenre": "Strategy",
+              "designPlayMode": "SINGLE",
+              "sourcePlayMode": "SINGLE"
+            }
+          },
+          {
+            "id": "MISSING_GAMEPLAY_CAPABILITY:INVENTORY",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "monster-adventure",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:INVENTORY",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "GATHERING",
+                "INVENTORY",
+                "PROGRESSION",
+                "BOSS",
+                "MOBILE_UI",
+                "SAVE",
+                "SESSION_FLOW"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "GATHERING": false,
+                "INVENTORY": false,
+                "PROGRESSION": false,
+                "BOSS": false,
+                "MOBILE_UI": true,
+                "SAVE": true,
+                "SESSION_FLOW": false
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "탐험 단계: 월드 맵에서 이동하며 몬스터를 조우하거나 자원을 수집하는 선택을 수행합니다.",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "GATHERING"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "전투 단계: 턴제 전투 시스템을 통해 몬스터의 스킬을 선택하고 속성 상성을 활용하여 적을 제압합니다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "성장 단계: 전투 보상으로 얻은 경험치와 재료를 사용하여 몬스터를 레벨업하거나 진화시켜 다음 도전을 준비합니다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "속성 상성 전투 시스템",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "몬스터 진화 트리 시스템",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 2,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "FIRST_10_MINUTES_FLOW",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "093b772a88d77a7ddb583fdff3ab585f41b0f32b19930b0da4e9e6e8f3f3c4b2",
+              "antiSkeletonPassed": false,
+              "designGenre": "Strategy",
+              "sourceGenre": "Strategy",
+              "designPlayMode": "SINGLE",
+              "sourcePlayMode": "SINGLE"
+            }
+          },
+          {
+            "id": "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "monster-adventure",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:INVENTORY",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "GATHERING",
+                "INVENTORY",
+                "PROGRESSION",
+                "BOSS",
+                "MOBILE_UI",
+                "SAVE",
+                "SESSION_FLOW"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "GATHERING": false,
+                "INVENTORY": false,
+                "PROGRESSION": false,
+                "BOSS": false,
+                "MOBILE_UI": true,
+                "SAVE": true,
+                "SESSION_FLOW": false
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "탐험 단계: 월드 맵에서 이동하며 몬스터를 조우하거나 자원을 수집하는 선택을 수행합니다.",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "GATHERING"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "전투 단계: 턴제 전투 시스템을 통해 몬스터의 스킬을 선택하고 속성 상성을 활용하여 적을 제압합니다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "성장 단계: 전투 보상으로 얻은 경험치와 재료를 사용하여 몬스터를 레벨업하거나 진화시켜 다음 도전을 준비합니다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "속성 상성 전투 시스템",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "몬스터 진화 트리 시스템",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 2,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "FIRST_10_MINUTES_FLOW",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "093b772a88d77a7ddb583fdff3ab585f41b0f32b19930b0da4e9e6e8f3f3c4b2",
+              "antiSkeletonPassed": false,
+              "designGenre": "Strategy",
+              "sourceGenre": "Strategy",
+              "designPlayMode": "SINGLE",
+              "sourcePlayMode": "SINGLE"
+            }
+          },
+          {
+            "id": "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "monster-adventure",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:INVENTORY",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "GATHERING",
+                "INVENTORY",
+                "PROGRESSION",
+                "BOSS",
+                "MOBILE_UI",
+                "SAVE",
+                "SESSION_FLOW"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "GATHERING": false,
+                "INVENTORY": false,
+                "PROGRESSION": false,
+                "BOSS": false,
+                "MOBILE_UI": true,
+                "SAVE": true,
+                "SESSION_FLOW": false
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "탐험 단계: 월드 맵에서 이동하며 몬스터를 조우하거나 자원을 수집하는 선택을 수행합니다.",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "GATHERING"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "전투 단계: 턴제 전투 시스템을 통해 몬스터의 스킬을 선택하고 속성 상성을 활용하여 적을 제압합니다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "성장 단계: 전투 보상으로 얻은 경험치와 재료를 사용하여 몬스터를 레벨업하거나 진화시켜 다음 도전을 준비합니다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "속성 상성 전투 시스템",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "몬스터 진화 트리 시스템",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 2,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "FIRST_10_MINUTES_FLOW",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "093b772a88d77a7ddb583fdff3ab585f41b0f32b19930b0da4e9e6e8f3f3c4b2",
+              "antiSkeletonPassed": false,
+              "designGenre": "Strategy",
+              "sourceGenre": "Strategy",
+              "designPlayMode": "SINGLE",
+              "sourcePlayMode": "SINGLE"
+            }
+          },
+          {
+            "id": "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "monster-adventure",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:INVENTORY",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "GATHERING",
+                "INVENTORY",
+                "PROGRESSION",
+                "BOSS",
+                "MOBILE_UI",
+                "SAVE",
+                "SESSION_FLOW"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "GATHERING": false,
+                "INVENTORY": false,
+                "PROGRESSION": false,
+                "BOSS": false,
+                "MOBILE_UI": true,
+                "SAVE": true,
+                "SESSION_FLOW": false
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "탐험 단계: 월드 맵에서 이동하며 몬스터를 조우하거나 자원을 수집하는 선택을 수행합니다.",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "GATHERING"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "전투 단계: 턴제 전투 시스템을 통해 몬스터의 스킬을 선택하고 속성 상성을 활용하여 적을 제압합니다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "성장 단계: 전투 보상으로 얻은 경험치와 재료를 사용하여 몬스터를 레벨업하거나 진화시켜 다음 도전을 준비합니다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "속성 상성 전투 시스템",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "몬스터 진화 트리 시스템",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 2,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "FIRST_10_MINUTES_FLOW",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "093b772a88d77a7ddb583fdff3ab585f41b0f32b19930b0da4e9e6e8f3f3c4b2",
+              "antiSkeletonPassed": false,
+              "designGenre": "Strategy",
+              "sourceGenre": "Strategy",
+              "designPlayMode": "SINGLE",
+              "sourcePlayMode": "SINGLE"
+            }
+          },
+          {
+            "id": "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "monster-adventure",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:INVENTORY",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "GATHERING",
+                "INVENTORY",
+                "PROGRESSION",
+                "BOSS",
+                "MOBILE_UI",
+                "SAVE",
+                "SESSION_FLOW"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "GATHERING": false,
+                "INVENTORY": false,
+                "PROGRESSION": false,
+                "BOSS": false,
+                "MOBILE_UI": true,
+                "SAVE": true,
+                "SESSION_FLOW": false
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "탐험 단계: 월드 맵에서 이동하며 몬스터를 조우하거나 자원을 수집하는 선택을 수행합니다.",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "GATHERING"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "전투 단계: 턴제 전투 시스템을 통해 몬스터의 스킬을 선택하고 속성 상성을 활용하여 적을 제압합니다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "성장 단계: 전투 보상으로 얻은 경험치와 재료를 사용하여 몬스터를 레벨업하거나 진화시켜 다음 도전을 준비합니다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "속성 상성 전투 시스템",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "몬스터 진화 트리 시스템",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 2,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "FIRST_10_MINUTES_FLOW",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "093b772a88d77a7ddb583fdff3ab585f41b0f32b19930b0da4e9e6e8f3f3c4b2",
+              "antiSkeletonPassed": false,
+              "designGenre": "Strategy",
+              "sourceGenre": "Strategy",
+              "designPlayMode": "SINGLE",
+              "sourcePlayMode": "SINGLE"
+            }
+          },
+          {
+            "id": "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "monster-adventure",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:INVENTORY",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "GATHERING",
+                "INVENTORY",
+                "PROGRESSION",
+                "BOSS",
+                "MOBILE_UI",
+                "SAVE",
+                "SESSION_FLOW"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "GATHERING": false,
+                "INVENTORY": false,
+                "PROGRESSION": false,
+                "BOSS": false,
+                "MOBILE_UI": true,
+                "SAVE": true,
+                "SESSION_FLOW": false
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "탐험 단계: 월드 맵에서 이동하며 몬스터를 조우하거나 자원을 수집하는 선택을 수행합니다.",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "GATHERING"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "전투 단계: 턴제 전투 시스템을 통해 몬스터의 스킬을 선택하고 속성 상성을 활용하여 적을 제압합니다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "성장 단계: 전투 보상으로 얻은 경험치와 재료를 사용하여 몬스터를 레벨업하거나 진화시켜 다음 도전을 준비합니다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "속성 상성 전투 시스템",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "몬스터 진화 트리 시스템",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 2,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "FIRST_10_MINUTES_FLOW",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "093b772a88d77a7ddb583fdff3ab585f41b0f32b19930b0da4e9e6e8f3f3c4b2",
+              "antiSkeletonPassed": false,
+              "designGenre": "Strategy",
+              "sourceGenre": "Strategy",
+              "designPlayMode": "SINGLE",
+              "sourcePlayMode": "SINGLE"
+            }
+          },
+          {
+            "id": "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "monster-adventure",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:INVENTORY",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "GATHERING",
+                "INVENTORY",
+                "PROGRESSION",
+                "BOSS",
+                "MOBILE_UI",
+                "SAVE",
+                "SESSION_FLOW"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "GATHERING": false,
+                "INVENTORY": false,
+                "PROGRESSION": false,
+                "BOSS": false,
+                "MOBILE_UI": true,
+                "SAVE": true,
+                "SESSION_FLOW": false
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "탐험 단계: 월드 맵에서 이동하며 몬스터를 조우하거나 자원을 수집하는 선택을 수행합니다.",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "GATHERING"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "전투 단계: 턴제 전투 시스템을 통해 몬스터의 스킬을 선택하고 속성 상성을 활용하여 적을 제압합니다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "성장 단계: 전투 보상으로 얻은 경험치와 재료를 사용하여 몬스터를 레벨업하거나 진화시켜 다음 도전을 준비합니다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "속성 상성 전투 시스템",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "몬스터 진화 트리 시스템",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 2,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "FIRST_10_MINUTES_FLOW",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "093b772a88d77a7ddb583fdff3ab585f41b0f32b19930b0da4e9e6e8f3f3c4b2",
+              "antiSkeletonPassed": false,
+              "designGenre": "Strategy",
+              "sourceGenre": "Strategy",
+              "designPlayMode": "SINGLE",
+              "sourcePlayMode": "SINGLE"
+            }
+          },
+          {
+            "id": "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "monster-adventure",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:INVENTORY",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "GATHERING",
+                "INVENTORY",
+                "PROGRESSION",
+                "BOSS",
+                "MOBILE_UI",
+                "SAVE",
+                "SESSION_FLOW"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "GATHERING": false,
+                "INVENTORY": false,
+                "PROGRESSION": false,
+                "BOSS": false,
+                "MOBILE_UI": true,
+                "SAVE": true,
+                "SESSION_FLOW": false
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "탐험 단계: 월드 맵에서 이동하며 몬스터를 조우하거나 자원을 수집하는 선택을 수행합니다.",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "GATHERING"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "전투 단계: 턴제 전투 시스템을 통해 몬스터의 스킬을 선택하고 속성 상성을 활용하여 적을 제압합니다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "성장 단계: 전투 보상으로 얻은 경험치와 재료를 사용하여 몬스터를 레벨업하거나 진화시켜 다음 도전을 준비합니다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "속성 상성 전투 시스템",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "몬스터 진화 트리 시스템",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 2,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "FIRST_10_MINUTES_FLOW",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "093b772a88d77a7ddb583fdff3ab585f41b0f32b19930b0da4e9e6e8f3f3c4b2",
+              "antiSkeletonPassed": false,
+              "designGenre": "Strategy",
+              "sourceGenre": "Strategy",
+              "designPlayMode": "SINGLE",
+              "sourcePlayMode": "SINGLE"
+            }
+          },
+          {
+            "id": "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "monster-adventure",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:INVENTORY",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "GATHERING",
+                "INVENTORY",
+                "PROGRESSION",
+                "BOSS",
+                "MOBILE_UI",
+                "SAVE",
+                "SESSION_FLOW"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "GATHERING": false,
+                "INVENTORY": false,
+                "PROGRESSION": false,
+                "BOSS": false,
+                "MOBILE_UI": true,
+                "SAVE": true,
+                "SESSION_FLOW": false
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "탐험 단계: 월드 맵에서 이동하며 몬스터를 조우하거나 자원을 수집하는 선택을 수행합니다.",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "GATHERING"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "전투 단계: 턴제 전투 시스템을 통해 몬스터의 스킬을 선택하고 속성 상성을 활용하여 적을 제압합니다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "성장 단계: 전투 보상으로 얻은 경험치와 재료를 사용하여 몬스터를 레벨업하거나 진화시켜 다음 도전을 준비합니다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "속성 상성 전투 시스템",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "몬스터 진화 트리 시스템",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 2,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "FIRST_10_MINUTES_FLOW",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "093b772a88d77a7ddb583fdff3ab585f41b0f32b19930b0da4e9e6e8f3f3c4b2",
+              "antiSkeletonPassed": false,
+              "designGenre": "Strategy",
+              "sourceGenre": "Strategy",
+              "designPlayMode": "SINGLE",
+              "sourcePlayMode": "SINGLE"
+            }
+          },
+          {
+            "id": "GENERIC_SCOPE_HANDLER_SKELETON",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "monster-adventure",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:INVENTORY",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "GATHERING",
+                "INVENTORY",
+                "PROGRESSION",
+                "BOSS",
+                "MOBILE_UI",
+                "SAVE",
+                "SESSION_FLOW"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "GATHERING": false,
+                "INVENTORY": false,
+                "PROGRESSION": false,
+                "BOSS": false,
+                "MOBILE_UI": true,
+                "SAVE": true,
+                "SESSION_FLOW": false
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "탐험 단계: 월드 맵에서 이동하며 몬스터를 조우하거나 자원을 수집하는 선택을 수행합니다.",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "GATHERING"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "전투 단계: 턴제 전투 시스템을 통해 몬스터의 스킬을 선택하고 속성 상성을 활용하여 적을 제압합니다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "성장 단계: 전투 보상으로 얻은 경험치와 재료를 사용하여 몬스터를 레벨업하거나 진화시켜 다음 도전을 준비합니다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "속성 상성 전투 시스템",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "몬스터 진화 트리 시스템",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 2,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "FIRST_10_MINUTES_FLOW",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "093b772a88d77a7ddb583fdff3ab585f41b0f32b19930b0da4e9e6e8f3f3c4b2",
+              "antiSkeletonPassed": false,
+              "designGenre": "Strategy",
+              "sourceGenre": "Strategy",
+              "designPlayMode": "SINGLE",
+              "sourcePlayMode": "SINGLE"
+            }
+          }
+        ]
+      },
       "unityMobilePerformancePassed": false,
       "unityMobilePerformanceEvidence": null,
       "unityGeneratedAssetRuntimeBindingPassed": false,
@@ -42589,7 +46468,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-07T22:05:38.194Z",
+  "updatedAt": "2026-10-07T22:07:09.771Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
