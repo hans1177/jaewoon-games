@@ -1,3 +1,5 @@
+// 파일명: tools/company-design-gate-scoring-v2.mjs
+// 역할: 설계 점수와 실제 작성 내용의 모순·누락을 같은 검증 경로에서 판정한다.
 const clean=value=>String(value??'').replace(/\s+/g,' ').trim();
 const list=value=>Array.isArray(value)?value:[];
 const distinct=values=>[...new Set(values.map(clean).filter(Boolean))];
@@ -63,6 +65,73 @@ const level=(basic,connected,proven=false)=>{
   if(!connected)return 60;
   return proven?100:80;
 };
+
+// 설계 내용 검증: 분할 작성 직후와 최종 점수 판정에서 동일하게 사용한다.
+export function validateDesignAuthoringContent({design={},seed={},fields=Object.keys(design)}={}){
+  const selected=new Set(fields);
+  const reasons=[];
+  const reject=(code,axis,affected,evidence,requiredAction)=>{
+    if(!affected.some(field=>selected.has(field)))return;
+    reasons.push({...rejectionReason({code,axis,evidence,requiredAction}),fields:affected});
+  };
+  const proseFields=['identity','playerFantasy','coreFun','coreLoop','signatureSystems','systemInterconnections','progressionDirection','progressionEconomyBalance','contentExpansionPlan','failureRetryRisk','platformFitPlan','platformProfiles','webCanonicalDesign','platformExpansionPolicy','visualDirection','mobileUx','uxAccessibilityPlan','artAudioDirection','marketTargetDirection','multiplayerExpansionDecision','designAlternatives','selectedDesignPlan','contentVarietyPlan','technicalAssumptions','implementationTraceability'];
+  const enumKeys=new Set(['name','label','role','phase','platform','targetPlatform','designAuthority','mode','sharedLargeFrame','expansionLimit','internalReleaseTarget','fromSystem','toSystem','responsibleSystem']);
+  const scan=(value,path,root)=>{
+    if(Array.isArray(value)){value.forEach((item,index)=>scan(item,`${path}[${index}]`,root));return;}
+    if(value&&typeof value==='object'){
+      for(const [key,item] of Object.entries(value))if(!enumKeys.has(key))scan(item,`${path}.${key}`,root);
+      return;
+    }
+    if(typeof value!=='string')return;
+    const text=clean(value);
+    // 기존 표현 개선 계약이 생성하는 추적 ID는 설명용 임시 표식이 아니다.
+    if(/^implementationTraceability\[\d+\]\.designElement$/.test(path)&&['ASSET_ADAPTATION','LIVING_MOTION_AND_ANIMATION_FEEL','VFX_AUDIO_CAMERA_POLISH_MOBILE'].includes(text))return;
+    if(/^[A-Z][A-Z0-9]*(?:_[A-Z0-9]+){2,}$/.test(text)||/^(?:TODO|TBD|PLACEHOLDER|미정|작성 예정|추후 작성)$/i.test(text)){
+      reject('DESIGN_PLACEHOLDER_CONTENT','IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY',[root],{path,value:text.slice(0,160)},`${path}의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.`);
+    }
+  };
+  for(const field of proseFields)if(selected.has(field))scan(design[field],field,field);
+  const declared=clean(seed.MULTIPLAYER_DESIGN_MODE||seed.INITIAL_PLAY_MODE).toUpperCase();
+  if(design.multiplayerMode&&['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(declared)&&design.multiplayerMode!==declared){
+    reject('DESIGN_MULTIPLAYER_CONTRADICTION','CATEGORY_IDENTITY',['multiplayerMode','multiplayerExpansionDecision'],{expected:declared,actual:design.multiplayerMode},'오너 입력의 플레이 모드를 보존한다. 인공지능 충원으로 혼자 플레이할 수 있어도 멀티 의도를 SINGLE로 바꾸지 않는다.');
+  }
+  const profiles=design.platformProfiles||{};
+  for(const [platform,foreign] of [['UNITY',/(?:OPEN_CLOUD(?:_|\b)|\b(?:Rojo|ScreenGui|RemoteEvent|Roblox DataStore)\b)/i],['ROBLOX',/\b(?:APK|AAB|Unity Input System|UnityEditor)\b/i]]){
+    for(const key of ['internalReleaseTarget','validationEvidence']){
+      const value=clean(profiles[platform]?.[key]);
+      if(foreign.test(value))reject('DESIGN_PLATFORM_NATIVE_CONTRADICTION','PLATFORM_FIT_DESIGN',['platformProfiles'],{platform,key,value},`${platform}의 배포·검증 항목을 해당 플랫폼의 실제 산출물과 실행 증거로 작성한다. 다른 플랫폼 항목을 복사하지 않는다.`);
+    }
+  }
+  const shared=design.platformExpansionPolicy?.sharedLargeFrame;
+  const expectedFrame=['CORE_IDENTITY','CORE_FUN_AND_REPRESENTATIVE_LOOP','WORLD_AND_PROGRESSION_DIRECTION','SAVE_PERSISTENCE_MEANING','MULTIPLAYER_INTENT'];
+  if(shared&&expectedFrame.some(item=>!shared.includes(item)))reject('DESIGN_SHARED_FRAME_INCOMPLETE','PLATFORM_FIT_DESIGN',['platformExpansionPolicy'],{shared},'공통 정체성·핵심 루프·세계/성장·저장 의미·멀티 의도를 각각 보존한다. 같은 항목을 반복하지 않는다.');
+  const alternatives=list(design.designAlternatives);
+  const strategicKeys=['coreLoopShift','mapTopologyRegionRoles','enemyEcosystemCounterplay','progressionEconomy'];
+  const normalize=value=>clean(value).toLowerCase().replace(/[\s\p{P}\p{S}]/gu,'');
+  for(let i=0;i<alternatives.length;i++)for(let j=i+1;j<alternatives.length;j++){
+    const different=strategicKeys.filter(key=>normalize(alternatives[i][key])!==normalize(alternatives[j][key]));
+    if(different.length<2)reject('DESIGN_ALTERNATIVES_DUPLICATED','IDEA_AND_DISTINCTNESS',['designAlternatives','selectedDesignPlan'],{plans:[alternatives[i].label,alternatives[j].label],differentAxes:different},'원본 규칙을 보존하면서 루프·동선·대응법·성장 중 최소 두 항목의 실제 플레이 접근이 다른 대안을 작성하고 선택 근거를 갱신한다.');
+  }
+  const chosen=design.selectedDesignPlan;
+  if(chosen){
+    if(alternatives.length&&!alternatives.some(plan=>plan.label===chosen.label))reject('DESIGN_SELECTION_UNGROUNDED','IDEA_AND_DISTINCTNESS',['selectedDesignPlan'],{label:chosen.label},'실제로 작성한 대안 중 하나를 선택하고 선택 이유를 적는다.');
+    const steps=list(chosen.playthrough);
+    const phases=['OPENING','DEVELOPMENT','RESOLUTION'];
+    const valid=phases.every((phase,index)=>steps[index]?.phase===phase)&&steps.length===3&&steps.every(step=>objectReady(step,['entryState','playerChoice','actionAndResponse','exitState','nextDecision'],12));
+    if(!valid||!textReady(chosen.durationRationale,30))reject('DESIGN_PLAYTHROUGH_MISSING','CORE_LOOP_DESIGN',['selectedDesignPlan'],{phases:steps.map(step=>step.phase)},'시작·전개·결말 각각의 진입 상태, 선택, 입력/판정/대응, 결과 상태, 다음 선택을 작성하고 한 판과 전체 세션 길이의 근거를 구분한다. 기존 시간·밸런스 수치는 임의 변경하지 않는다.');
+    if(valid){
+      const broken=steps.slice(1).map((step,index)=>({phase:step.phase,previous:steps[index].exitState,current:step.entryState})).filter(row=>normalize(row.previous)!==normalize(row.current));
+      if(broken.length)reject('DESIGN_PLAYTHROUGH_DISCONNECTED','CORE_LOOP_DESIGN',['selectedDesignPlan'],{broken},'앞 단계 exitState를 다음 단계 entryState로 그대로 이어 같은 한 판의 상태 전이를 증명한다.');
+    }
+  }
+  for(const [root,rows] of [['contentVarietyPlan',[...list(design.contentVarietyPlan?.regions),...list(design.contentVarietyPlan?.enemiesOrChallenges)]],['failureRetryRisk',[design.failureRetryRisk]]]){
+    for(const row of rows){
+      const values=Object.values(row||{}).filter(value=>typeof value==='string'&&clean(value).length>=20).map(normalize);
+      if(values.some(value=>values.filter(other=>other===value).length>=3))reject('DESIGN_REPEATED_CONTENT','CONTENT_EXPANSION_PLAN',[root],{name:row?.name||root},'서로 다른 항목을 같은 설명으로 채우지 않는다. 동선·전조·대응·위험·보상·복구가 각각 어떤 규칙인지 작성한다.');
+    }
+  }
+  return reasons;
+}
 
 export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},robloxGenreProfile={}}={}){
   const design=designRecord?.content&&typeof designRecord.content==='object'?designRecord.content:{};
@@ -150,8 +219,8 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
   const scores=Object.fromEntries(Object.entries(DESIGN_GATE_WEIGHTS).map(([axis,weight])=>[axis,weighted(evidenceLevels[axis],weight)]));
   const totalScore=Math.round(Object.values(scores).reduce((sum,value)=>sum+Number(value||0),0)*100)/100;
   const criticalAxisFailures=Object.keys(DESIGN_GATE_WEIGHTS).filter(axis=>Number(evidenceLevels[axis]||0)<DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT);
-  const hardFailures=[];
-  const rejectionReasons=[];
+  const rejectionReasons=validateDesignAuthoringContent({design,seed});
+  const hardFailures=rejectionReasons.map(reason=>reason.code);
   const ownerPreservationSeed=seed?.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true&&clean(seed?.OWNER_REBUILD_MODE).toUpperCase()==='PRESERVATION_PRESENTATION_UPGRADE';
   if(ownerPreservationSeed){
     const preservation=design?.preservationContract;
@@ -181,7 +250,7 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
   }
   if(seedGrammar&&!grammarCarryOk){
     hardFailures.push('NOVEL_GRAMMAR_DILUTED');
-    rejectionReasons.push(rejectionReason({code:'NOVEL_GRAMMAR_DILUTED',axis:'IDEA_AND_DISTINCTNESS',evidenceLevel:evidenceLevels.IDEA_AND_DISTINCTNESS,minimumRequired:DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT,evidence:{requiredCausalIds:grammarIds,carriedCausalIds,primaryVerbCarried,worldRuleCarried,mainName,mainCarried,majorAxisNames,carriedMajorAxes,subElementNames,carriedSubElements,delveNames,carriedDelveElements,emergentGenreName,emergentGenreCarried},requiredAction:'GAMEPLAY_SKETCH v4의 emergentGenre와 MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @ 구조를 기존 설계 필드에 다시 연결한다. MAIN은 중심 행동, A/B는 대축, c는 서브요소, @는 파고들기 요소로 구분하고 causalDNA가 이 관계를 실제 상태 변화로 바꾸게 한다.'}));
+    rejectionReasons.push(rejectionReason({code:'NOVEL_GRAMMAR_DILUTED',axis:'IDEA_AND_DISTINCTNESS',evidenceLevel:evidenceLevels.IDEA_AND_DISTINCTNESS,minimumRequired:DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT,evidence:{requiredCausalIds:grammarIds,carriedCausalIds:carriedGrammarIds,primaryVerbCarried,worldRuleCarried,mainName,mainCarried,majorAxisNames,carriedMajorAxes,subElementNames,carriedSubElements,delveNames,carriedDelveElements,emergentGenreName,emergentGenreCarried},requiredAction:'GAMEPLAY_SKETCH v4의 emergentGenre와 MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @ 구조를 기존 설계 필드에 다시 연결한다. MAIN은 중심 행동, A/B는 대축, c는 서브요소, @는 파고들기 요소로 구분하고 causalDNA가 이 관계를 실제 상태 변화로 바꾸게 한다.'}));
   }
   if(Number(evidenceLevels.IDEA_AND_DISTINCTNESS)<60||Number(evidenceLevels.CORE_LOOP_DESIGN)<60){
     hardFailures.push('CORE_FUN_WEAK');
@@ -207,6 +276,7 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
     revalidated,
     thirtyMinuteHardGateApplied:false,
     materialContractOk,
-    grammarCarryEvidence:seedGrammar?{formula:'MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @',requiredCausalIds:grammarIds,carriedCausalIds,primaryVerbCarried,worldRuleCarried,mainName,mainCarried,majorAxisNames,carriedMajorAxes,subElementNames,carriedSubElements,delveNames,carriedDelveElements,emergentGenreName,emergentGenreCarried,categoryRole:seedGrammar?.emergentGenre?.categoryRole||null}:null,
+    grammarCarryEvidence:seedGrammar?{formula:'MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @',requiredCausalIds:grammarIds,carriedCausalIds:carriedGrammarIds,primaryVerbCarried,worldRuleCarried,mainName,mainCarried,majorAxisNames,carriedMajorAxes,subElementNames,carriedSubElements,delveNames,carriedDelveElements,emergentGenreName,emergentGenreCarried,categoryRole:seedGrammar?.emergentGenre?.categoryRole||null}:null,
   };
 }
+

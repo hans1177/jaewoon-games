@@ -1,5 +1,5 @@
 {
-  "version": 181,
+  "version": 182,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -616,7 +616,23 @@
       "DESIGN_EVOLUTION_REASON",
       "BASELINE_REVIEW_AT",
       "DEEP_REVIEW_DUE"
-    ]
+    ],
+    "authoringIntegrity": {
+      "centralContract": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.design.continuousIntelligentDesignEvolution.detailedBlueprint.authoringIntegrity",
+      "markers": [
+        "DESIGN_SLICE_CONTENT_VALID",
+        "DESIGN_SLICE_CONTENT_REPAIR"
+      ],
+      "evidence": [
+        "FAILED_CONTENT_PATH",
+        "REPAIR_FIELDS",
+        "SLICE_DEPENDENCY_HASH",
+        "PLAYTHROUGH_STATE_TRANSITIONS",
+        "DURATION_RATIONALE",
+        "ASSET_ROLE_EVIDENCE"
+      ],
+      "rawPrivateReasoningLogged": false
+    }
   },
   "gameErrorRepairLogContract": {
     "version": 2,
