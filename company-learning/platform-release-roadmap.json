@@ -1,5 +1,5 @@
 {
-  "version": 545,
+  "version": 546,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-07",
@@ -17,7 +17,7 @@
     },
     "minimumPlatformDevelopment": {
       "UNITY": "ONE_SLOT_WHEN_CAPACITY_AND_ELIGIBLE",
-      "WEB": "TWO_DISTINCT_ACTIVE_GAMES_WHEN_ELIGIBLE_AND_CAPACITY_AVAILABLE"
+      "WEB": "THREE_DISTINCT_ACTIVE_GAMES_WHEN_ELIGIBLE_AND_CAPACITY_AVAILABLE"
     },
     "smallCapacitySelection": "WEIGHTED_OBSERVED_SERVICE_ROTATION",
     "robloxGamePriority": [
@@ -1340,10 +1340,10 @@
       "qualityOrEvidenceGateWeakeningForbidden": true
     },
     "webGameFlow": {
-      "version": 1,
-      "authority": "OWNER_DIRECTIVE_2026-10-06",
+      "version": 2,
+      "authority": "OWNER_DIRECTIVE_2026-10-07",
       "enabled": true,
-      "targetConcurrentGames": 2,
+      "targetConcurrentGames": 3,
       "scope": "GAME_PRIMARY_WEB",
       "counting": "DISTINCT_GAMES_WITH_ACTIVE_SOURCE_WORK",
       "refillBeforeWeightedPlatformMix": true,

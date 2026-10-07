@@ -33,30 +33,30 @@ import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-
 
 const continuousWorkflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
 
-// 웹 상시 두 게임: 실제 예약·완료·대기 복구를 거쳐 서로 다른 게임을 유지한다.
-test('canonical web target fills two distinct games and refills a released game without cancelling native work',()=>{
-  const policy={developmentSpeedExecution:{webGameFlow:{enabled:true,targetConcurrentGames:2}}};
+// 웹 기준 3게임: 실제 예약·완료·대기 복구를 거쳐 서로 다른 게임 3개를 유지하되 같은 게임 독립 작업 수는 기존대로 변동한다.
+test('canonical web target fills three distinct games while worker count may vary and refills a released game',()=>{
+  const policy={developmentSpeedExecution:{webGameFlow:{enabled:true,targetConcurrentGames:3}}};
   const task=(id,gameId,target='web',extra={})=>({id,gameId,target,goal:'develop',department:'development',type:'implementation',status:'queued',sourceRoot:`${target}-games/${gameId}`,responsibleFiles:[`${id}.js`],...extra});
   const reservation={id:'web-two:1',runId:'live-web',reservedAt:new Date().toISOString()};
-  const queue=createVibeContinuousQueue({maxConcurrentTasks:8,tasks:[task('a-1','a'),task('a-2','a'),task('b','b'),task('c','c'),task('roblox','r','roblox'),task('unity','u','unity')]});
-  const first=reserveVibeTaskBatch(queue,{maxConcurrentTasks:8,lane:'game-primary',policy,reservation});
-  assert.deepEqual([...first.selection.webGameFlow.activeGameIds].sort(),['a','b']);
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:9,tasks:[task('a-1','a'),task('a-2','a'),task('b','b'),task('c','c'),task('d','d'),task('roblox','r','roblox'),task('unity','u','unity')]});
+  const first=reserveVibeTaskBatch(queue,{maxConcurrentTasks:9,lane:'game-primary',policy,reservation});
+  assert.deepEqual([...first.selection.webGameFlow.activeGameIds].sort(),['a','b','c']);
   assert.equal(first.tasks.filter(t=>t.gameId==='a').length,2);
   assert.ok(first.tasks.some(t=>t.target==='roblox')&&first.tasks.some(t=>t.target==='unity'));
-  assert.equal(first.queue.tasks.find(t=>t.id==='c').status,'queued');
+  assert.equal(first.queue.tasks.find(t=>t.id==='d').status,'queued');
   const waiting=markVibeTaskAwaiting(first.queue,{taskId:'b',blocker:'candidate-awaiting-qa-and-deployment'});
   const next=reserveVibeTaskBatch(waiting,{maxConcurrentTasks:8,lane:'game-primary',policy,reservation});
-  assert.deepEqual(next.tasks.map(t=>t.id),['c']);
-  assert.deepEqual([...next.selection.webGameFlow.activeGameIds].sort(),['a','c']);
+  assert.deepEqual(next.tasks.map(t=>t.id),['d']);
+  assert.deepEqual([...next.selection.webGameFlow.activeGameIds].sort(),['a','c','d']);
   assert.equal(next.queue.tasks.find(t=>t.id==='b').status,'running');
   assert.equal(next.queue.tasks.find(t=>t.id==='roblox').status,'running');
 });
 
 test('web target preserves holds, exact file conflicts and existing excess work while reporting real shortage',()=>{
-  const policy={developmentSpeedExecution:{webGameFlow:{enabled:true,targetConcurrentGames:2}},ownerCanonicalRules:{ownerExclusiveDevelopment:{status:'ACTIVE',gameIds:['held']}}};
+  const policy={developmentSpeedExecution:{webGameFlow:{enabled:true,targetConcurrentGames:3}},ownerCanonicalRules:{ownerExclusiveDevelopment:{status:'ACTIVE',gameIds:['held']}}};
   const tasks=['held','a','b','c'].map(id=>({id,gameId:id,target:'web',goal:'develop',department:'development',type:'implementation',status:'queued',sourceRoot:`web-games/${id}`,responsibleFiles:['index.html']}));
   const one=reserveVibeTaskBatch({tasks:tasks.slice(0,2),maxConcurrentTasks:4},{policy});
-  assert.deepEqual(one.tasks.map(t=>t.id),['a']);assert.equal(one.selection.webGameFlow.shortfall,1);
+  assert.deepEqual(one.tasks.map(t=>t.id),['a']);assert.equal(one.selection.webGameFlow.shortfall,2);
   const reservation={id:'current',runId:'current',reservedAt:new Date().toISOString()};
   const excess=tasks.slice(1).map(t=>({...t,status:'running',reservationId:'current',reservationRunId:'current',reservedAt:reservation.reservedAt}));
   const next=reserveVibeTaskBatch({tasks:[...excess,{...tasks[1],id:'new',gameId:'new',sourceRoot:'web-games/new'}],maxConcurrentTasks:8},{policy,reservation});
@@ -65,11 +65,11 @@ test('web target preserves holds, exact file conflicts and existing excess work 
   assert.deepEqual(locked.tasks.map(t=>t.id),['b']);
 });
 
-test('web two-game floor is reserved before ordinary platform weight and never applies to learning or assets',()=>{
-  const policy={developmentSpeedExecution:{webGameFlow:{enabled:true,targetConcurrentGames:2}}};
+test('web three-game baseline is reserved before ordinary platform weight and never applies to learning or assets',()=>{
+  const policy={developmentSpeedExecution:{webGameFlow:{enabled:true,targetConcurrentGames:3}}};
   const tasks=['roblox','unity','web'].flatMap(target=>Array.from({length:8},(_,i)=>({id:`${target}-${i}`,gameId:`${target}-${i}`,target,goal:'develop',department:'development',type:'implementation',status:'queued',sourceRoot:`${target}-games/${target}-${i}`,responsibleFiles:['index.js']})));
   const result=reserveVibeTaskBatch({tasks,maxConcurrentTasks:9},{policy,maxConcurrentTasks:9});
-  assert.equal(new Set(result.tasks.filter(t=>t.target==='web').map(t=>t.gameId)).size,2);
+  assert.equal(new Set(result.tasks.filter(t=>t.target==='web').map(t=>t.gameId)).size,3);
   assert.equal(result.tasks.filter(t=>t.target==='unity').length,1);
   assert.equal(result.tasks.filter(t=>t.target==='roblox').length,6);
   const assets=reserveVibeTaskBatch({tasks:tasks.filter(t=>t.target==='web').map(t=>({...t,assetProductionLane:true})),maxConcurrentTasks:8},{policy,lane:'asset-development',maxConcurrentTasks:8});
