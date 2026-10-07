@@ -500,7 +500,7 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
           ||generated.find(row=>/\.(?:gltf|fbx|blend)$/i.test(row.path))
           ||generated[0];
         const family=clean(recipe?.family).toUpperCase()||null;
-        const role=clean(recipe?.role).toUpperCase()||null;
+        const role=clean(recipe?.role||(Array.isArray(recipe?.types)?recipe.types.find(type=>isCrossPlatform3dActorType(type)):'')).toUpperCase().replace(/[\\s-]+/g,'_')||null;
         const masterGlbRequired=recipe?.masterGlbRequired===true||['CHARACTER','CREATURE'].includes(family);
         let masterGlbQa=null;
         if(masterGlbRequired){
