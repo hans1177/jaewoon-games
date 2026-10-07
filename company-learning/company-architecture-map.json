@@ -2968,6 +2968,7 @@
           "studioUniverse": "assets/vibe-studio-asset-universe.js",
           "planner": "tools/vibe2-asset-production-plan.mjs",
           "sourceWorker": "tools/vibe2-source-worker.mjs",
+          "roleProfileOwner": "assets/vibe-character-identity-director.js",
           "masterFormat": "GLB_2_0",
           "appliesToFamilies": [
             "CHARACTER",
@@ -2982,6 +2983,8 @@
           "sharedMasterSourceOnly": true,
           "platformNativeVariantAndRuntimeEvidenceStillRequired": true,
           "primitiveOnlyFinalActorForbidden": true,
+          "roleSpecificVisualAndMotionRequired": true,
+          "minimumDistinctRoleAxes": 3,
           "newWorkerQueueOrPipeline": false
         },
         "npcRoleProduction": {
