@@ -598,25 +598,31 @@
     },
     "local_authoring_parts::9b37311e7910ea4a4cdd4f04e3d0159b84d75889d5dff99a8620dc98d668d9a6:toId": {
       "toId": "WORLD_STATE_CHANGE"
+    },
+    "local_authoring_parts::9b37311e7910ea4a4cdd4f04e3d0159b84d75889d5dff99a8620dc98d668d9a6:stateKeys": {
+      "stateKeys": [
+        "RUN_RESULT",
+        "PLAYER_ACTION"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 41,
-      "successes": 41,
+      "calls": 42,
+      "successes": 42,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2395672,
-      "lastMs": 48713,
+      "totalMs": 2445199,
+      "lastMs": 49527,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:09:05.186Z"
+      "updatedAt": "2026-10-08T19:09:54.715Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:29:09.382Z",
-  "updatedAt": "2026-10-08T19:09:05.187Z",
+  "updatedAt": "2026-10-08T19:09:54.715Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3014,7 +3020,7 @@
       "progressionDirection": "FIGHT-UPGRADES-SURVIVE-PROGRESSION"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T19:09:05.186Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:09:54.715Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
