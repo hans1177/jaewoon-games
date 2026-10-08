@@ -715,25 +715,38 @@
       "toSystem": "identity-core-1-system-1012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345",
       "trigger": "Scout a small area and identify the target egg and patrol risk.",
       "stateChange": "Scout a small area and identify the target egg and patrol risk."
+    },
+    "local_authoring_parts::343fda8275335bb8fb1bf471c2d3866b4a0d46d527c00acf164656b2049e3139:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "identity-core-1",
+      "toId": "identity-core-2",
+      "stateKeys": [
+        "identity-core-1-1",
+        "identity-core-1-2",
+        "identity-core-1-3",
+        "identity-core-1-4",
+        "identity-core-1-5",
+        "identity-core-1-6"
+      ],
+      "fromSystem": "identity-core-1-system-1012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 24,
-      "successes": 24,
+      "calls": 25,
+      "successes": 25,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2117618,
-      "lastMs": 75294,
+      "totalMs": 2224644,
+      "lastMs": 107026,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:26:17.065Z"
+      "updatedAt": "2026-10-08T09:49:36.243Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:50:59.270Z",
-  "updatedAt": "2026-10-08T09:47:49.214Z",
+  "updatedAt": "2026-10-08T09:49:36.243Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2742,7 +2755,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T08:26:17.066Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:49:36.243Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
