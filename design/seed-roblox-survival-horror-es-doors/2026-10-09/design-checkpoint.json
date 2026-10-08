@@ -527,25 +527,43 @@
     },
     "local_authoring_parts::e4a41a3bf40f6b0c3564e5002e31c8c1c839b69bfba6f3bf9b4f9f343212fdc9:trigger": {
       "trigger": "플레이어가 시작 단계에서 명확한 목표와 제한된 이동, 장애물 또는 시각적 퀴즈로 구성된 레벨을 수행하며 선택의 결과가 월드 상태에 직접적인 영향을 미친다."
+    },
+    "local_authoring_parts::e4a41a3bf40f6b0c3564e5002e31c8c1c839b69bfba6f3bf9b4f9f343212fdc9:stateChange": {
+      "stateChange": "플레이어가 시작 단계에서 명확한 목표와 제한된 이동, 장애물 또는 시각적 퀴즈로 구성된 레벨을 수행하며 선택의 결과가 월드 상태에 직접적인 영향을 미친다."
+    },
+    "local_authoring_parts::a7e30fb386eace896fb045e02bcf1fed20b028e0289a6cf98dc5d4575e3144fc:systemInterconnections:3": {
+      "fromId": "SIGNATURE_SYSTEM_0",
+      "toId": "NEXT_LEVEL_PATTERN",
+      "stateKeys": [
+        "LEVEL_STATE",
+        "NEXT_LEVEL_PATTERN"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_0",
+      "toSystem": "NEXT_LEVEL_PATTERN",
+      "trigger": "플레이어가 시작 단계에서 명확한 목표와 제한된 이동, 장애물 또는 시각적 퀴즈로 구성된 레벨을 수행하며 선택의 결과가 월드 상태에 직접적인 영향을 미친다.",
+      "stateChange": "플레이어가 시작 단계에서 명확한 목표와 제한된 이동, 장애물 또는 시각적 퀴즈로 구성된 레벨을 수행하며 선택의 결과가 월드 상태에 직접적인 영향을 미친다."
+    },
+    "local_authoring_parts::415a83d723708e7478d2424e3555f7b78fb78897717a3375dfe627eff8c44300:fromId": {
+      "fromId": "SIGNATURE_SYSTEM_0"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 38,
-      "successes": 38,
+      "calls": 40,
+      "successes": 40,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1340858,
-      "lastMs": 34749,
+      "totalMs": 1409769,
+      "lastMs": 33333,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:51:58.808Z"
+      "updatedAt": "2026-10-08T18:53:07.723Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:29:37.860Z",
-  "updatedAt": "2026-10-08T18:51:58.808Z",
+  "updatedAt": "2026-10-08T18:53:07.723Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2735,7 +2753,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:51:58.808Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:53:07.723Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
