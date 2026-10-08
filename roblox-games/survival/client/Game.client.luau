@@ -702,22 +702,69 @@ for index, action in ipairs(Config.Actions) do
   button.Parent = list
   button.Activated:Connect(function() remote:FireServer(action.Id) end)
 end
+-- 멀티플레이: 기존 승인 액션 목록은 유지하고 서버 판정 동료 지원만 추가한다.
+local participantCount = 1
+local coopAssists = 0
+local teammateEnemyHealth = 100
+local assistButton = Instance.new("TextButton")
+assistButton.Name = "CoopAssist"
+assistButton.LayoutOrder = #Config.Actions + 1
+assistButton.Size = UDim2.new(1, -4, 0, 56)
+assistButton.TextWrapped = true
+assistButton.TextScaled = true
+assistButton.TextColor3 = Color3.fromRGB(245, 248, 255)
+assistButton.Parent = list
+assistButton.Activated:Connect(function()
+  if participantCount >= 2 then remote:FireServer("coop-assist") end
+end)
+
 local watched = {"Score","Coins","Level","Progress","Health","Wave","Position","Objective","Combo","EnemyHealth","PuzzleChain","Towers","BaseHealth","SocialBond","SharedObjective","RoundScore","CurrentDay","DayPhase","ResourceWood","ResourceStone","InventoryItems","EquippedToolTier","RecipeUnlock","SurvivalRecord","EnemyKills","LastApprovedScope"}
 local function render()
   local phase = (player:GetAttribute("DayPhase") or 0) == 1 and "밤" or "낮"
   status.Text = string.format(
-    "%d일 %s · HP %d · Wave %d · 목재 %d / 돌 %d · 장비 T%d",
+    "%d일 %s · HP %d · W%d · 동료 %d명\n목재 %d · 돌 %d · 장비 T%d · 지원 %d",
     player:GetAttribute("CurrentDay") or 1,
     phase,
     player:GetAttribute("Health") or 100,
     player:GetAttribute("Wave") or 1,
+    participantCount,
     player:GetAttribute("ResourceWood") or 0,
     player:GetAttribute("ResourceStone") or 0,
-    player:GetAttribute("EquippedToolTier") or 0
+    player:GetAttribute("EquippedToolTier") or 0,
+    coopAssists
   )
+  assistButton.Active = participantCount >= 2
+  assistButton.BackgroundColor3 = assistButton.Active and Color3.fromRGB(57, 113, 91) or Color3.fromRGB(77, 82, 94)
+  assistButton.Text = assistButton.Active
+    and string.format("동료 지원 공격 · 적 HP %d", teammateEnemyHealth)
+    or "협동 지원 · 동료 입장 대기"
 end
 for _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end
 render()
+
+-- 서버가 확인한 같은 세션 참가자·전투 결과만 표시하며 클라이언트 값으로 피해나 보상을 정하지 않는다.
+remote.OnClientEvent:Connect(function(eventName, snapshot)
+  if eventName ~= "MULTIPLAYER_SYNC" or typeof(snapshot) ~= "table" then return end
+  participantCount = math.max(1, math.floor(tonumber(snapshot.ParticipantCount) or 1))
+  teammateEnemyHealth = 100
+  if typeof(snapshot.Participants) == "table" then
+    for _, member in ipairs(snapshot.Participants) do
+      if typeof(member) == "table" then
+        if member.UserId == player.UserId then
+          coopAssists = math.max(0, math.floor(tonumber(member.CoopAssists) or 0))
+        else
+          teammateEnemyHealth = math.max(0, math.floor(tonumber(member.EnemyHealth) or 100))
+        end
+      end
+    end
+  end
+  gui:SetAttribute("ParticipantCount", participantCount)
+  gui:SetAttribute("MultiplayerSyncAt", os.clock())
+  gui:SetAttribute("MultiplayerSnapshotVersion", tonumber(snapshot.Version) or 1)
+  gui:SetAttribute("CoopLastActorUserId", tonumber(snapshot.ChangedUserId) or 0)
+  render()
+end)
+remote:FireServer("coop-sync")
 
 if #Config.Actions > 0 then
   ContextActionService:BindAction("VibePrimaryAction", function(_, inputState)
