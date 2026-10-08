@@ -429,25 +429,40 @@
       "name": "ACTION_SURVIVAL_ROGUELITE",
       "purpose": "A dynamic, evolving survival gameplay system where players strategically manage their build, navigate escalating threats, and convert survival outcomes into progression choices.",
       "playerChoice": "Strategically upgrade your build, manage resources, and adapt to the evolving threat landscape to maximize survival and progression."
+    },
+    "local_authoring_parts::ac1867ac0735fd1d840837010adabd69eb96ab8cc9909a84826967510240ff11:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "PlayerAction: 'Fight through an escalating horde in a short real-time survival r",
+        "PlayerAction: 'Collect run rewards or experience and choose upgrades, perks, w"
+      ],
+      "stateOutputs": [
+        "WorldState: ACTION_SURVIVAL_ROGUELITE progression state",
+        "PlayerChoice: Upgrade, Perk, Weapon, Skill selection"
+      ],
+      "name": "ACTION_SURVIVAL_ROGUELITE",
+      "purpose": "A dynamic, evolving survival gameplay system where players strategically manage their build, navigate escalating threats, and convert survival outcomes into progression choices.",
+      "playerChoice": "Strategically upgrade your build, manage resources, and adapt to the evolving threat landscape to maximize survival and progression."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1214369,
-      "lastMs": 104924,
+      "totalMs": 1320404,
+      "lastMs": 106035,
       "lastError": null,
-      "updatedAt": "2026-10-08T09:02:50.514Z"
+      "updatedAt": "2026-10-08T09:04:36.551Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:42:36.090Z",
-  "updatedAt": "2026-10-08T09:02:50.514Z",
+  "updatedAt": "2026-10-08T09:04:36.551Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2682,7 +2697,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T09:02:50.514Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:04:36.551Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
