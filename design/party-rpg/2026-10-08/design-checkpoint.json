@@ -923,25 +923,34 @@
           "systemImpact": "보드 상태, 플레이어의 선택 결과, 목표, 보상 시스템, 장애물 패턴이 초기 상태로 설정되고, 이에 따라 다음 월드 상태와 접근 가능성에 영향을 미치는 방식으로 구체적으로 구현된다."
         }
       ]
+    },
+    "local_authoring_parts::11e234b1c63135f59d8243269c0b8be346437f37d5e33bfca70877fc0313bbc1:failureStates": {
+      "failureStates": [
+        "failureRetryRisk.failureStates[0]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "failureRetryRisk.failureStates[1]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "failureRetryRisk.failureStates[2]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "failureRetryRisk.failureStates[3]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "failureRetryRisk.failureStates[4]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 55,
-      "successes": 55,
+      "calls": 56,
+      "successes": 56,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4193289,
-      "lastMs": 63527,
+      "totalMs": 4295341,
+      "lastMs": 102052,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:45:21.224Z"
+      "updatedAt": "2026-10-08T10:47:03.281Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:34:25.615Z",
-  "updatedAt": "2026-10-08T10:45:21.227Z",
+  "updatedAt": "2026-10-08T10:47:03.281Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3335,7 +3344,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:45:21.227Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:47:03.281Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
