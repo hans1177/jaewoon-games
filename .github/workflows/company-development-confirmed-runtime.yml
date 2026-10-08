@@ -97,6 +97,8 @@ jobs:
             | min // $current
           ' /tmp/development-coordinator-runs.json)"
           echo "DEVELOPMENT_COORDINATOR_SCAN_INCLUDES_PUSH_AND_DISPATCH=YES"
+          echo "DEVELOPMENT_COORDINATOR_EXACT_CONTROL_REVISION=$GITHUB_SHA"
+          echo "DEVELOPMENT_COORDINATOR_OLDER_MAIN_RUNS_MAY_NOT_BLOCK_NEW_REVISION=YES"
           echo "DEVELOPMENT_COORDINATOR_OLDEST_ACTIVE_RUN=$oldest_active_id"
           if [[ "$oldest_active_id" != "$GITHUB_RUN_ID" ]]; then
             echo 'proceed=false' >> "$GITHUB_OUTPUT"
