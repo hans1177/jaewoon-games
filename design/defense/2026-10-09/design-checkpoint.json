@@ -552,25 +552,28 @@
         "riskPressure": "Repeated failure to adapt to new enemy compositions or optimize resource use may lead to decreased game engagement and increased replay loss due to repeated state mismatches.",
         "recoveryRules": "Players can retry by recalibrating tower placements, reallocating resources, or revising strategic choices based on detected patterns and risk assessments."
       }
+    },
+    "local_authoring_parts::b1f15945a5fb13ebb4259c31529fa5336e380e9c413c2641677a7f209073c8df:fromId": {
+      "fromId": "ENEMY_WAVE_STATE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 12,
+      "calls": 14,
+      "successes": 13,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1518232,
-      "lastMs": 137301,
+      "totalMs": 1612036,
+      "lastMs": 93804,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T18:12:04.840Z"
+      "updatedAt": "2026-10-08T18:13:38.652Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:46:46.549Z",
-  "updatedAt": "2026-10-08T18:12:04.846Z",
+  "updatedAt": "2026-10-08T18:13:38.652Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2962,10 +2965,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:12:04.842Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:13:38.652Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
