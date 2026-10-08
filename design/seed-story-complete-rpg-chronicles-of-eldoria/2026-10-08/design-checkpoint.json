@@ -724,25 +724,55 @@
         "Narrative Progress Status"
       ],
       "fromSystem": "ELDORIAN_CORE_01"
+    },
+    "local_authoring_parts::edd917b652295138a27741e7dbf7d109ea30b08f873819a56ac7f84d80b61b33:toSystem,trigger,stateChange": {
+      "toSystem": "ELDORIAN_CORE_02",
+      "trigger": "Quest Completion Status",
+      "stateChange": "Quest Progression Status"
+    },
+    "local_authoring_parts::5d5eb8a968f14333d332e05d6e6872541077d425d497562b69ae475951b98324:systemInterconnections:3": {
+      "fromId": "ELDORIAN_CORE_01",
+      "toId": "ELDORIAN_CORE_02",
+      "stateKeys": [
+        "Exploration Status",
+        "Character Interaction Status",
+        "Quest Completion Status",
+        "Narrative Progress Status"
+      ],
+      "fromSystem": "ELDORIAN_CORE_01",
+      "toSystem": "ELDORIAN_CORE_02",
+      "trigger": "Quest Completion Status",
+      "stateChange": "Quest Progression Status"
+    },
+    "local_authoring_parts::087e4a712b126f7d5296942e2837a89ce12f4fe2dc9efebfd7dd0c1fc5d1d0ac:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "ELDORIAN_CORE_01",
+      "toId": "ELDORIAN_CORE_02",
+      "stateKeys": [
+        "Exploration Status",
+        "Character Interaction Status",
+        "Quest Completion Status",
+        "Narrative Progress Status"
+      ],
+      "fromSystem": "ELDORIAN_CORE_01"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 25,
-      "successes": 22,
+      "calls": 27,
+      "successes": 24,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2616251,
-      "lastMs": 14649,
+      "totalMs": 2685064,
+      "lastMs": 36066,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T16:10:44.045Z"
+      "updatedAt": "2026-10-08T16:11:52.862Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:23:19.708Z",
-  "updatedAt": "2026-10-08T16:10:44.045Z",
+  "updatedAt": "2026-10-08T16:11:52.862Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2978,7 +3008,7 @@
     "designer_draft_slices::identity-core": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T16:10:44.045Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:11:52.862Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
