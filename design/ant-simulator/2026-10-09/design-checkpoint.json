@@ -78,25 +78,303 @@
       "name": "WORLD_STATE_TRANSITION",
       "purpose": "월드 상태 변환 및 자원 관리를 통한 전략적 의사소통",
       "playerChoice": "월드 상태, 자원, 위험, 그리고 다음 선택에 따른 실제 입력 수행"
+    },
+    "local_authoring_parts::a35c8b4ca689f9aaf154889536b2b316d668901863db1cdbb44f9b6c966058b3:signatureSystems:3": {
+      "id": "ANT_SIMULATION_SIGNATURE_SYSTEM_04",
+      "grammarRole": "c",
+      "stateInputs": [
+        "실제 입력을 통해 월드 상태, 자원, 위험, 그리고 다음 선택에 따라 진행되는 반복 가능한 루프 적용",
+        "플레이어가 개미 종족 중 하나를 선택하여 월드 진입 후 목표 확인"
+      ],
+      "stateOutputs": [
+        "보상/위험의 실질적인 압박감 제공 및 숙련으로 이어지는 플레이 사례 포함",
+        "월드 상태와 자원 관리 기능 구현"
+      ],
+      "name": "WORLD_STATE_TRANSITION",
+      "purpose": "월드 상태 변환 및 자원 관리를 통한 전략적 의사소통",
+      "playerChoice": "월드 상태, 자원, 위험, 그리고 다음 선택에 따른 실제 입력 수행"
+    },
+    "local_authoring_parts::a35c8b4ca689f9aaf154889536b2b316d668901863db1cdbb44f9b6c966058b3:signatureSystems:4": {
+      "id": "ANT_SIMULATION_SIGNATURE_SYSTEM_04",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "실제 입력을 통해 월드 상태, 자원, 위험, 그리고 다음 선택에 따라 진행되는 반복 가능한 루프 적용",
+        "플레이어가 개미 종족 중 하나를 선택하여 월드 진입 후 목표 확인"
+      ],
+      "stateOutputs": [
+        "보상/위험의 실질적인 압박감 제공 및 숙련으로 이어지는 플레이 사례 포함",
+        "월드 상태와 자원 관리 기능 구현"
+      ],
+      "name": "WORLD_STATE_TRANSITION",
+      "purpose": "월드 상태 변환 및 자원 관리를 통한 전략적 의사소통",
+      "playerChoice": "월드 상태, 자원, 위험, 그리고 다음 선택에 따른 실제 입력 수행"
+    },
+    "local_authoring_parts::b1b18ca800a7724c1e7d5f9076ce8b8f94201414ed3bad7ac496d493fb9d3112:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "ANT_SIMULATION_SIGNATURE_SYSTEM_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "플레이어가 개미 종족 중 하나를 선택하여 월드 진입 후 목표 확인",
+            "실제 입력을 통해 월드 상태, 자원, 위험, 그리고 다음 선택에 따라 진행되는 반복 가능한 루프 적용"
+          ],
+          "stateOutputs": [
+            "보상/위험의 실질적인 압박감 제공 및 숙련으로 이어지는 플레이 사례 포함"
+          ],
+          "name": "OPENING_WORLD_STATE_TRANSITION",
+          "purpose": "월드 진입 시 초기 상태 변환 및 기본 플레이 패턴 구축",
+          "playerChoice": "개미 종족 선택 및 월드 진입 결정"
+        },
+        {
+          "id": "ANT_SIMULATION_SIGNATURE_SYSTEM_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "실제 입력을 통해 월드 상태, 자원, 위험, 그리고 다음 선택에 따라 진행되는 반복 가능한 루프 적용",
+            "플레이어가 개미 종족 중 하나를 선택하여 월드 진입 후 목표 확인"
+          ],
+          "stateOutputs": [
+            "보상/위험의 실질적인 압박감 제공 및 숙련으로 이어지는 플레이 사례 포함",
+            "월드 상태와 자원 관리 기능 구현"
+          ],
+          "name": "WORLD_STATE_TRANSITION",
+          "purpose": "월드 상태 변환 및 자원 관리를 통한 전략적 의사소통",
+          "playerChoice": "월드 상태, 자원, 위험, 그리고 다음 선택에 따른 실제 입력 수행"
+        },
+        {
+          "id": "ANT_SIMULATION_SIGNATURE_SYSTEM_03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "실제 입력을 통해 월드 상태, 자원, 위험, 그리고 다음 선택에 따라 진행되는 반복 가능한 루프 적용",
+            "플레이어가 개미 종족 중 하나를 선택하여 월드 진입 후 목표 확인"
+          ],
+          "stateOutputs": [
+            "보상/위험의 실질적인 압박감 제공 및 숙련으로 이어지는 플레이 사례 포함",
+            "월드 상태와 자원 관리 기능 구현"
+          ],
+          "name": "WORLD_STATE_TRANSITION",
+          "purpose": "월드 상태 변환 및 자원 관리를 통한 전략적 의사소통",
+          "playerChoice": "월드 상태, 자원, 위험, 그리고 다음 선택에 따른 실제 입력 수행"
+        },
+        {
+          "id": "ANT_SIMULATION_SIGNATURE_SYSTEM_04",
+          "grammarRole": "c",
+          "stateInputs": [
+            "실제 입력을 통해 월드 상태, 자원, 위험, 그리고 다음 선택에 따라 진행되는 반복 가능한 루프 적용",
+            "플레이어가 개미 종족 중 하나를 선택하여 월드 진입 후 목표 확인"
+          ],
+          "stateOutputs": [
+            "보상/위험의 실질적인 압박감 제공 및 숙련으로 이어지는 플레이 사례 포함",
+            "월드 상태와 자원 관리 기능 구현"
+          ],
+          "name": "WORLD_STATE_TRANSITION",
+          "purpose": "월드 상태 변환 및 자원 관리를 통한 전략적 의사소통",
+          "playerChoice": "월드 상태, 자원, 위험, 그리고 다음 선택에 따른 실제 입력 수행"
+        },
+        {
+          "id": "ANT_SIMULATION_SIGNATURE_SYSTEM_04",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "실제 입력을 통해 월드 상태, 자원, 위험, 그리고 다음 선택에 따라 진행되는 반복 가능한 루프 적용",
+            "플레이어가 개미 종족 중 하나를 선택하여 월드 진입 후 목표 확인"
+          ],
+          "stateOutputs": [
+            "보상/위험의 실질적인 압박감 제공 및 숙련으로 이어지는 플레이 사례 포함",
+            "월드 상태와 자원 관리 기능 구현"
+          ],
+          "name": "WORLD_STATE_TRANSITION",
+          "purpose": "월드 상태 변환 및 자원 관리를 통한 전략적 의사소통",
+          "playerChoice": "월드 상태, 자원, 위험, 그리고 다음 선택에 따른 실제 입력 수행"
+        }
+      ]
+    },
+    "local_authoring_parts::0ea32d5198bb307750c530e0573fa535b603621edd5b6159da4790fdf884f896:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "플레이어가 개미 종족 중 하나를 선택하여 월드 진입 후 목표 확인 -> 행동 선택 -> 상태변화 -> 보상/위험 적용 -> 다음 목표/지역/전략 결정",
+        "실제 입력을 통해 월드 상태, 자원, 위험, 그리고 다음 선택에 따라 진행되는 반복 가능한 루프 적용",
+        "보상/위험의 실질적인 압박감 제공 및 숙련으로 이어지는 플레이 사례 포함"
+      ],
+      "signatureSystems": [
+        {
+          "id": "ANT_SIMULATION_SIGNATURE_SYSTEM_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "플레이어가 개미 종족 중 하나를 선택하여 월드 진입 후 목표 확인",
+            "실제 입력을 통해 월드 상태, 자원, 위험, 그리고 다음 선택에 따라 진행되는 반복 가능한 루프 적용"
+          ],
+          "stateOutputs": [
+            "보상/위험의 실질적인 압박감 제공 및 숙련으로 이어지는 플레이 사례 포함"
+          ],
+          "name": "OPENING_WORLD_STATE_TRANSITION",
+          "purpose": "월드 진입 시 초기 상태 변환 및 기본 플레이 패턴 구축",
+          "playerChoice": "개미 종족 선택 및 월드 진입 결정"
+        },
+        {
+          "id": "ANT_SIMULATION_SIGNATURE_SYSTEM_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "실제 입력을 통해 월드 상태, 자원, 위험, 그리고 다음 선택에 따라 진행되는 반복 가능한 루프 적용",
+            "플레이어가 개미 종족 중 하나를 선택하여 월드 진입 후 목표 확인"
+          ],
+          "stateOutputs": [
+            "보상/위험의 실질적인 압박감 제공 및 숙련으로 이어지는 플레이 사례 포함",
+            "월드 상태와 자원 관리 기능 구현"
+          ],
+          "name": "WORLD_STATE_TRANSITION",
+          "purpose": "월드 상태 변환 및 자원 관리를 통한 전략적 의사소통",
+          "playerChoice": "월드 상태, 자원, 위험, 그리고 다음 선택에 따른 실제 입력 수행"
+        },
+        {
+          "id": "ANT_SIMULATION_SIGNATURE_SYSTEM_03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "실제 입력을 통해 월드 상태, 자원, 위험, 그리고 다음 선택에 따라 진행되는 반복 가능한 루프 적용",
+            "플레이어가 개미 종족 중 하나를 선택하여 월드 진입 후 목표 확인"
+          ],
+          "stateOutputs": [
+            "보상/위험의 실질적인 압박감 제공 및 숙련으로 이어지는 플레이 사례 포함",
+            "월드 상태와 자원 관리 기능 구현"
+          ],
+          "name": "WORLD_STATE_TRANSITION",
+          "purpose": "월드 상태 변환 및 자원 관리를 통한 전략적 의사소통",
+          "playerChoice": "월드 상태, 자원, 위험, 그리고 다음 선택에 따른 실제 입력 수행"
+        },
+        {
+          "id": "ANT_SIMULATION_SIGNATURE_SYSTEM_04",
+          "grammarRole": "c",
+          "stateInputs": [
+            "실제 입력을 통해 월드 상태, 자원, 위험, 그리고 다음 선택에 따라 진행되는 반복 가능한 루프 적용",
+            "플레이어가 개미 종족 중 하나를 선택하여 월드 진입 후 목표 확인"
+          ],
+          "stateOutputs": [
+            "보상/위험의 실질적인 압박감 제공 및 숙련으로 이어지는 플레이 사례 포함",
+            "월드 상태와 자원 관리 기능 구현"
+          ],
+          "name": "WORLD_STATE_TRANSITION",
+          "purpose": "월드 상태 변환 및 자원 관리를 통한 전략적 의사소통",
+          "playerChoice": "월드 상태, 자원, 위험, 그리고 다음 선택에 따른 실제 입력 수행"
+        },
+        {
+          "id": "ANT_SIMULATION_SIGNATURE_SYSTEM_04",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "실제 입력을 통해 월드 상태, 자원, 위험, 그리고 다음 선택에 따라 진행되는 반복 가능한 루프 적용",
+            "플레이어가 개미 종족 중 하나를 선택하여 월드 진입 후 목표 확인"
+          ],
+          "stateOutputs": [
+            "보상/위험의 실질적인 압박감 제공 및 숙련으로 이어지는 플레이 사례 포함",
+            "월드 상태와 자원 관리 기능 구현"
+          ],
+          "name": "WORLD_STATE_TRANSITION",
+          "purpose": "월드 상태 변환 및 자원 관리를 통한 전략적 의사소통",
+          "playerChoice": "월드 상태, 자원, 위험, 그리고 다음 선택에 따른 실제 입력 수행"
+        }
+      ]
+    },
+    "local_authoring_parts::0ea32d5198bb307750c530e0573fa535b603621edd5b6159da4790fdf884f896:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::5c696c16ab54587deb41cce24727042efdc38a9d41a66ac141f905c8895dfd86:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "플레이어가 개미 종족 중 하나를 선택하여 월드 진입 후 목표 확인 -> 행동 선택 -> 상태변화 -> 보상/위험 적용 -> 다음 목표/지역/전략 결정",
+        "실제 입력을 통해 월드 상태, 자원, 위험, 그리고 다음 선택에 따라 진행되는 반복 가능한 루프 적용",
+        "보상/위험의 실질적인 압박감 제공 및 숙련으로 이어지는 플레이 사례 포함"
+      ],
+      "signatureSystems": [
+        {
+          "id": "ANT_SIMULATION_SIGNATURE_SYSTEM_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "플레이어가 개미 종족 중 하나를 선택하여 월드 진입 후 목표 확인",
+            "실제 입력을 통해 월드 상태, 자원, 위험, 그리고 다음 선택에 따라 진행되는 반복 가능한 루프 적용"
+          ],
+          "stateOutputs": [
+            "보상/위험의 실질적인 압박감 제공 및 숙련으로 이어지는 플레이 사례 포함"
+          ],
+          "name": "OPENING_WORLD_STATE_TRANSITION",
+          "purpose": "월드 진입 시 초기 상태 변환 및 기본 플레이 패턴 구축",
+          "playerChoice": "개미 종족 선택 및 월드 진입 결정"
+        },
+        {
+          "id": "ANT_SIMULATION_SIGNATURE_SYSTEM_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "실제 입력을 통해 월드 상태, 자원, 위험, 그리고 다음 선택에 따라 진행되는 반복 가능한 루프 적용",
+            "플레이어가 개미 종족 중 하나를 선택하여 월드 진입 후 목표 확인"
+          ],
+          "stateOutputs": [
+            "보상/위험의 실질적인 압박감 제공 및 숙련으로 이어지는 플레이 사례 포함",
+            "월드 상태와 자원 관리 기능 구현"
+          ],
+          "name": "WORLD_STATE_TRANSITION",
+          "purpose": "월드 상태 변환 및 자원 관리를 통한 전략적 의사소통",
+          "playerChoice": "월드 상태, 자원, 위험, 그리고 다음 선택에 따른 실제 입력 수행"
+        },
+        {
+          "id": "ANT_SIMULATION_SIGNATURE_SYSTEM_03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "실제 입력을 통해 월드 상태, 자원, 위험, 그리고 다음 선택에 따라 진행되는 반복 가능한 루프 적용",
+            "플레이어가 개미 종족 중 하나를 선택하여 월드 진입 후 목표 확인"
+          ],
+          "stateOutputs": [
+            "보상/위험의 실질적인 압박감 제공 및 숙련으로 이어지는 플레이 사례 포함",
+            "월드 상태와 자원 관리 기능 구현"
+          ],
+          "name": "WORLD_STATE_TRANSITION",
+          "purpose": "월드 상태 변환 및 자원 관리를 통한 전략적 의사소통",
+          "playerChoice": "월드 상태, 자원, 위험, 그리고 다음 선택에 따른 실제 입력 수행"
+        },
+        {
+          "id": "ANT_SIMULATION_SIGNATURE_SYSTEM_04",
+          "grammarRole": "c",
+          "stateInputs": [
+            "실제 입력을 통해 월드 상태, 자원, 위험, 그리고 다음 선택에 따라 진행되는 반복 가능한 루프 적용",
+            "플레이어가 개미 종족 중 하나를 선택하여 월드 진입 후 목표 확인"
+          ],
+          "stateOutputs": [
+            "보상/위험의 실질적인 압박감 제공 및 숙련으로 이어지는 플레이 사례 포함",
+            "월드 상태와 자원 관리 기능 구현"
+          ],
+          "name": "WORLD_STATE_TRANSITION",
+          "purpose": "월드 상태 변환 및 자원 관리를 통한 전략적 의사소통",
+          "playerChoice": "월드 상태, 자원, 위험, 그리고 다음 선택에 따른 실제 입력 수행"
+        },
+        {
+          "id": "ANT_SIMULATION_SIGNATURE_SYSTEM_04",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "실제 입력을 통해 월드 상태, 자원, 위험, 그리고 다음 선택에 따라 진행되는 반복 가능한 루프 적용",
+            "플레이어가 개미 종족 중 하나를 선택하여 월드 진입 후 목표 확인"
+          ],
+          "stateOutputs": [
+            "보상/위험의 실질적인 압박감 제공 및 숙련으로 이어지는 플레이 사례 포함",
+            "월드 상태와 자원 관리 기능 구현"
+          ],
+          "name": "WORLD_STATE_TRANSITION",
+          "purpose": "월드 상태 변환 및 자원 관리를 통한 전략적 의사소통",
+          "playerChoice": "월드 상태, 자원, 위험, 그리고 다음 선택에 따른 실제 입력 수행"
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 351939,
-      "lastMs": 42355,
+      "totalMs": 491909,
+      "lastMs": 37567,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:50:48.579Z"
+      "updatedAt": "2026-10-08T17:53:08.557Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:44:56.607Z",
-  "updatedAt": "2026-10-08T17:50:48.579Z",
+  "updatedAt": "2026-10-08T17:53:08.567Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2150,12 +2428,74 @@
     },
     "assetFacts": {}
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:50:48.579Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_MAIN_A_B_c_DELVE_REQUIRED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "counts": {
+            "MAIN": 1,
+            "A": 1,
+            "B": 1,
+            "c": 1,
+            "DELVE": 1
+          },
+          "systemCount": 5,
+          "statesReady": false
+        },
+        "requiredAction": "메인 중심 행동, A/B 서로 다른 두 축, c 보조 변주, @ 발견·숙련을 기존 규칙에 맞춰 최소 5개 고유 시스템과 실제 상태 입력·출력으로 작성한다. 기존 밸런스·저장·진행은 유지한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션 | 게임 규칙: 입력/선택 -> 상태변화 -> 보상/위험/다음 선택, 모바일에서도 즉시 이해되는 반복 가능한 루프 | 플랫폼: ROBLOX | 기능: 생존, 탐험, 전략, 대응, 재도전 | 주체: 개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하는 플레이어 | 구조: 중심 행동 MAIN, 두 대축 A/B, 보조 요소 c, 발견·숙련·재방문 @ | 원본 규칙 유지 및 확장 가능 | 설계 깊이: 학문적 규칙, 상태 변화, 인과 관계, 조합 활용 | 진입 절차: 월드 진입 → 목표 확인 → 행동 선택 → 상태 변환 → 보상/위험 적용 → 다음 목표/지역/전략 결정 | 저장 의미: 상태와 결과로 저장된 진행 사례 | 이동 방식: 실제 입력으로 월드·대상·자원·위험·진행 상태 변경 | 위험/보상: 실질적인 압박감 제공 | 게임 유형: 오픈월드 멀티플레이, 생존, 시뮬레이션 | 메뉴: 월드 선택, 자원 관리, 전략 수립, 보상 확인 | 반복 문장: ",
+      "playerFantasy": "개미 시뮬레이터에서 플레이어는 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키며 생존하는 오픈월드 멀티플레이 게임입니다. 이 게임에서는 실제 입력을 통해 월드 상태, 자원, 위험, 그리고 다음 선택에 따라 진행되는 반복 가능한 루프가 적용됩니다. 플레이어는 월드 진입 후 목표 확인 이후 행동 선택을 하여 상태변화 및 보상/위험의 결과를 경험하며, 이를 바탕으로 다음 목표와 전략 결정을 합니다.",
+      "coreFun": "개미 시뮬레이터에서 플레이어는 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키며 생존하는 오픈월드 멀티플레이 게임입니다. 이 게임에서는 실제 입력을 통해 월드 상태, 자원, 위험, 그리고 다음 선택에 따라 진행되는 반복 가능한 루프가 적용됩니다. 플레이어는 월드 진입 후 목표 확인 이후 행동 선택을 하여 상태변화 및 보상/위험의 결과를 경험하며, 이를 바탕으로 다음 목표와 전략 결정을 합니다.",
+      "coreLoop": [
+        "플레이어가 개미 종족 중 하나를 선택하여 월드 진입 후 목표 확인 -> 행동 선택 -> 상태변화 -> 보상/위험 적용 -> 다음 목표/지역/전략 결정",
+        "실제 입력을 통해 월드 상태, 자원, 위험, 그리고 다음 선택에 따라 진행되는 반복 가능한 루프 적용",
+        "보상/위험의 실질적인 압박감 제공 및 숙련으로 이어지는 플레이 사례 포함"
+      ],
+      "multiplayerMode": "COOP"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T17:53:08.560Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_MAIN_A_B_c_DELVE_REQUIRED,DESIGN_RULE_STATE_MISSING",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
