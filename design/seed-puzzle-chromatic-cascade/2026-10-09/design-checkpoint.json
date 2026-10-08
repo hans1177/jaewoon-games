@@ -73,25 +73,38 @@
       "name": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
       "purpose": "Player choice and strategic planning in a puzzle context.",
       "playerChoice": "Selecting optimal moves that lead to progress and avoid pitfalls in the game state transition process."
+    },
+    "local_authoring_parts::6e91fb9b02d8e7d49bc7bf3a966266b2f2064e8306cfec04b4cb418a868eba3a:signatureSystems:3": {
+      "id": "CORE-04",
+      "grammarRole": "c",
+      "stateInputs": [
+        "START_BOARD"
+      ],
+      "stateOutputs": [
+        "END_BOARD"
+      ],
+      "name": "색채의 연쇄의 핵심 재미를 실제 플레이 선택으로 재정의",
+      "purpose": "주요 인물의 목표와 두려움, 그리고 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결되어 있으며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 콘텐츠를 다르게 사용하게 한다",
+      "playerChoice": "새 행동·경로·조합·관계·발견 또는 대응법을 선택하여 다양한 콘텐츠를 다르게 사용하게 함"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 362333,
-      "lastMs": 90230,
+      "totalMs": 403107,
+      "lastMs": 40774,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:29:07.978Z"
+      "updatedAt": "2026-10-08T21:29:48.753Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:23:05.545Z",
-  "updatedAt": "2026-10-08T21:29:07.978Z",
+  "updatedAt": "2026-10-08T21:29:48.753Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2128,7 +2141,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:29:07.978Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:29:48.753Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
