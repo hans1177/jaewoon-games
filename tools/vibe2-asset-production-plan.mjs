@@ -4386,6 +4386,16 @@ export function buildVibeAssetProductionPlan({
   const nativeMenuGameplaySources=nativeMenuSources.filter(row=>resolvedTarget==='roblox'
     ?row.file.includes('/server/')
     :!/\/(?:RuntimeBootstrap|[^/]*(?:View|Menu|Screen|UI))\.cs$/i.test(row.file));
+  // 게임별 현재 UI 소비자는 Roblox 클라이언트/공용 메뉴 또는 Unity 실제 GUI 책임 파일이다.
+  // 서버 원본에 구매/퀘스트가 존재해도 서버만 선택된 작업에 GUI 구현을 지시하지 않는다.
+  const nativeMenuUiConsumers=nativeMenuSources.filter(row=>{
+    if(resolvedTarget==='roblox'){
+      return (row.file.includes('/client/')||row.file.includes('/shared/'))
+        &&/(?:Instance\.new\(["'](?:ScreenGui|TextButton|ScrollingFrame)["']\)|Create(?:Panel|TabButton|Shop|Inventory|Character)|GuiService|\.Activated:Connect\s*\()/.test(row.content);
+    }
+    return resolvedTarget==='unity'
+      &&/(?:\bOnGUI\s*\(|\bGUILayout\.|\bUIDocument\b|\bUnityEngine\.UI\b)/.test(row.content);
+  });
   const menuRoleOwnerProof=freeze({
     CHARACTER:/SetAttribute\s*\(\s*["'](?:MaxHP|Level|ClassId)["']|\b(?:class|struct)\s+PlayerState\b|\bGetMaxHp\s*\(/,
     INVENTORY:/SetAttribute\s*\(\s*["'](?:WeaponTier|Inventory|ItemCount)["']|\bownedWeapons\s*=|\bownedArmors\s*=|\b(?:AddItem|RemoveItem|GrantItem)\s*\(/,
@@ -4425,8 +4435,9 @@ export function buildVibeAssetProductionPlan({
             &&/Gold[^\n]*-\s*(?:cost|price|amount)|Gold[^\n]*-\s*n\(|\.gold\s*-=/.test(row.content)
           ||/\.gold\s*-=/i.test(row.content)
         )));
-    const existingNativeUiSource=gameSystemSource.length
-      ?nativeMenuSources.filter(row=>methodHints.some(method=>row.content.includes(method))):[];
+    const eligibleNativeUiSource=gameSystemSource.length?nativeMenuUiConsumers:[];
+    const existingNativeUiSource=eligibleNativeUiSource.filter(row=>
+      methodHints.some(method=>row.content.includes(method)));
     const status=existingNativeUiSource.length?'NATIVE_UI_SOURCE_PRESENT_RUNTIME_QA_REQUIRED'
       :gameSystemSource.length?'EXISTING_SYSTEM_NATIVE_UI_BINDING_REQUIRED':'IDEA_ONLY_GAME_SYSTEM_NOT_CONFIRMED';
     return freeze({
@@ -4440,6 +4451,7 @@ export function buildVibeAssetProductionPlan({
       platform:resolvedTarget.toUpperCase(),
       gameSystemSourceRefs:freezeList(gameSystemSource.map(row=>freeze({path:row.file,sha256:row.sha256}))),
       existingNativeUiRefs:freezeList(existingNativeUiSource.map(row=>freeze({path:row.file,sha256:row.sha256}))),
+      nativeUiConsumerRefs:freezeList(eligibleNativeUiSource.map(row=>freeze({path:row.file,sha256:row.sha256}))),
       status,nextAction:existingNativeUiSource.length?'VERIFY_NATIVE_RUNTIME_MOBILE_UI_AND_STATE_SYNCHRONIZATION'
         :gameSystemSource.length?'BIND_EXISTING_GAME_RESPONSIBLE_SOURCE'
           :'CHECK_GAME_SYSTEM_BEFORE_UI_ADDITION',
@@ -4499,6 +4511,7 @@ export function buildVibeAssetProductionPlan({
     objectKindsDetected:freezeList(objectInteractionRows.map(row=>row.kind)),
     objectSourceBoundCount:objectInteractionRows.filter(row=>row.clientConsumerRefs.length>0).length,
     nativeSourceBoundCandidateCount:menuFeatureSuggestions.filter(row=>row.existingNativeUiRefs.length>0).length,
+    nativeUiConsumerCandidateCount:menuFeatureSuggestions.filter(row=>row.nativeUiConsumerRefs.length>0).length,
     runtimeVerifiedCount:0,newQueueCreated:false,shadowUiPipelineCreated:false,
     implementationOwner:'VIBE2_VIBE3_EXISTING_GAME_SOURCE',dataOwner:'GAMEPLAY_AND_SERVER',
     missingGameSystemCannotBeInvented:true,existingGameplayAndSaveMustRemain:true
@@ -5087,6 +5100,7 @@ export function assetProductionGuidance(plan={}){
         features:plan.genreMenuRecommendations.candidateFeatures.map(row=>({
           role:row.role,factory:row.factory,sourceSha256:row.companyUiSourceSha256,
           gameSources:row.gameSystemSourceRefs,implementedNativeSources:row.existingNativeUiRefs,
+          editableNativeUiConsumers:row.nativeUiConsumerRefs,
           status:row.status,nextAction:row.nextAction
         }))
       })+
