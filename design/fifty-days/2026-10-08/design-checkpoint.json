@@ -649,25 +649,44 @@
         "upgradeChoices"
       ],
       "fromSystem": "CORE_LOOP_DESIGN"
+    },
+    "local_authoring_parts::e1a413dee985e794b136415c525e0785fae8da3ffc677c629dae26982e126bd7:toSystem,trigger,stateChange": {
+      "toSystem": "CORE_LOOP_DESIGN",
+      "trigger": "coreFun→signatureSystems[3]",
+      "stateChange": "currentBuild, enemyPressure, runRewards, upgradeChoices → nextProgressionChoice, updatedBuild, survivedWave, convertedRunResult"
+    },
+    "local_authoring_parts::5a011a010fad85f2ba17563f408551dacc6fecca3944e9029f703c19fd43b557:systemInterconnections:3": {
+      "fromId": "coreFun",
+      "toId": "signatureSystems[3]",
+      "stateKeys": [
+        "currentBuild",
+        "enemyPressure",
+        "runRewards",
+        "upgradeChoices"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN",
+      "toSystem": "CORE_LOOP_DESIGN",
+      "trigger": "coreFun→signatureSystems[3]",
+      "stateChange": "currentBuild, enemyPressure, runRewards, upgradeChoices → nextProgressionChoice, updatedBuild, survivedWave, convertedRunResult"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 18,
+      "calls": 19,
+      "successes": 19,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 829876,
-      "lastMs": 31800,
+      "totalMs": 862427,
+      "lastMs": 32551,
       "lastError": null,
-      "updatedAt": "2026-10-08T07:56:58.252Z"
+      "updatedAt": "2026-10-08T07:57:30.804Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:43:08.319Z",
-  "updatedAt": "2026-10-08T07:56:58.252Z",
+  "updatedAt": "2026-10-08T07:57:30.805Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3017,7 +3036,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T07:56:58.252Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T07:57:30.805Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
