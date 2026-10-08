@@ -3501,7 +3501,8 @@ test('central owner Codex no-use contract keeps canonical Vibe and deterministic
   assert.match(workflow,/VIBE2_GAME_SOURCE_PROVIDER: LOCAL_OLLAMA/);
   assert.match(workflow,/VIBE2_ROBLOX_DETERMINISTIC_SOURCE: 'true'/);
   assert.ok(workflow.includes('test "$VIBE2_CODEX_ROLE" = "DISABLED"'));
-  assert.match(workflow,/test "\\$VIBE2_CODEX_ROLE" = "DISABLED"/);
+  assert.ok(workflow.includes('VIBE2_CODEX_ROLE: DISABLED'));
+  assert.ok(workflow.includes('test "$VIBE2_CODEX_ROLE" = "DISABLED"'));
   assert.ok(workflow.includes('CODEX_USE_FORBIDDEN=$VIBE2_CODEX_ROLE'));
   assert.ok(!workflow.includes('VIBE2_CODEX_ROLE: SYSTEM_TOOLING_CI_TEST_INFRA_ONLY'));
   assert.equal(policy.finalDevelopmentLock.sequenceLock.status,'LOCKED');
