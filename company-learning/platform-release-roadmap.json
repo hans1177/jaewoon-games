@@ -1,5 +1,5 @@
 {
-  "version": 551,
+  "version": 552,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-07",
@@ -24395,7 +24395,7 @@
       "ownerMayRequestEitherPlatformFirst": true,
       "vibeMayCreateDesignAutomatically": true,
       "sharedCoreRequired": true,
-      "oneIdenticalPlatformDesignForbidden": true,
+      "oneIdenticalPlatformDesignForbidden": false,
       "structure": {
         "commonCore": "design-revised.json#content",
         "robloxProfile": "design-revised.json#content.platformProfiles.ROBLOX",
@@ -24640,6 +24640,20 @@
               "finalConsumer": "tools/company-baseline-gate.mjs",
               "preparedSeedFieldsRequiredAfterVerifiedAuthorship": false,
               "bootstrapCreativeChecks": "DIAGNOSTIC_ONLY_THEN_EXISTING_DESIGNER_SLICE_REPAIR"
+            },
+            "generationEfficiency": {
+              "duplicatePlatformAuthoringCalls": false,
+              "derivedFields": [
+                "webCanonicalDesign",
+                "platformExpansionPolicy"
+              ],
+              "derivedFieldsAreNotNewAuthoredGameplay": true,
+              "grammarRuleAtomicOnContentRepair": true,
+              "splitAfterRealTimeoutOrTruncation": true,
+              "validSiblingFieldsReused": true,
+              "playFlowBeforeAssets": true,
+              "finalStrictReviewRequired": true,
+              "runtimeSpeedImprovement": "UNVERIFIED_UNTIL_CURRENT_ENGINE_RUN"
             }
           }
         },
@@ -25008,7 +25022,28 @@
           }
         }
       },
-      "upperPlatformAdmissionRequires": "UPPER_PLATFORM_DEVELOPMENT_READY"
+      "upperPlatformAdmissionRequires": "UPPER_PLATFORM_DEVELOPMENT_READY",
+      "singleOriginalContract": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-10-08",
+        "source": "design/<gameId>/<date>/design-revised.json#content",
+        "originalsPerGame": 1,
+        "existingRobloxOriginalPreserved": true,
+        "author": "GAME_DESIGNER_AI",
+        "grammar": [
+          "MAIN",
+          "A",
+          "B",
+          "c",
+          "@"
+        ],
+        "platformRedesignForbidden": true,
+        "platformProfilesRole": "IMPLEMENTATION_INPUT_PRESENTATION_PERFORMANCE_SAVE_TRANSPORT_AND_RUNTIME_VALIDATION_ONLY",
+        "webCanonicalDesignRole": "DERIVED_COMPATIBILITY_VIEW_OF_THE_SAME_ORIGINAL",
+        "platformGameplayChangesReturnToSharedOriginal": true,
+        "platformFailureBlocksOtherPlatforms": false,
+        "newAdmissionGate": false
+      }
     },
     "development": {
       "concurrentTargets": [

@@ -15,6 +15,7 @@ import {activeSeedForGame,normalizeSeedState} from '../tools/game-seed-state.mjs
 import {ownerDesignResetSeedForGame} from '../tools/owner-design-reset.mjs';
 import {makeAutoMissingDesignSeed,latestUsableDesign,autoEnrollMissingDesignSeeds} from '../tools/company-all-games-design-reset.mjs';
 import {validateGameSeed} from '../tools/company-game-seed-contract.mjs';
+import {normalizeWebCanonicalAndExpansionPolicy} from '../tools/company-design-prepromotion-repair.mjs';
 
 const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
 const assertDesignSchema=runInNewContext(design.slice(design.indexOf('function assertSchemaValue('),design.indexOf('function normalizeSchemaValue('))+'\nassertSchemaValue');
@@ -234,6 +235,55 @@ test('truncated local output splits required fields and resumes only the unfinis
   assert.deepEqual(calls,['a,b,c,d','a,b','c,d','c,d']);
   assert.equal(stats.length,2,'assembling checkpointed parts is not another model call');
   assert.equal(health.filter(row=>row.success===false).length,2);
+});
+
+test('long seed descriptions keep a usable output budget after splitting',async()=>{
+  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
+  const taskSource=design.slice(design.indexOf('async function runCheckpointTask('),design.indexOf('function isParallelPressure('));
+  const fields=['identity','playerFantasy','coreFun'];
+  const schema={type:'object',required:fields,properties:Object.fromEntries(fields.map(field=>[field,{type:'string',maxLength:1000}])),additionalProperties:false};
+  const checkpoint={tasks:{}},calls=[];
+  const author=runInNewContext(taskSource+'\n'+source+'\ncallLocalDesignerModel',{
+    createHash,designAssetLibraryContext:{status:'UNAVAILABLE'},localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'local',
+    designerRoute:{id:'ollama:local'},designCheckpoint:checkpoint,modelCallStats:[],console:{log(){}},clean:String,
+    parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,assertSchemaValue:assertDesignSchema,recordModelHealth(){},persistDesignCheckpoint(){},
+    requestLocalDesignerRaw:async(prompt,{schema:contract,predict})=>{
+      const requested=Object.keys(contract.properties);calls.push({fields:requested,predict});
+      if(requested.length>1||predict<900)throw new Error('OLLAMA_DESIGN_OUTPUT_TRUNCATED');
+      return JSON.stringify({[requested[0]]:'model-authored description '.repeat(25)});
+    }
+  });
+  const result=await author('designer','owner original',schema,{predict:1200});
+  assert.deepEqual(Object.keys(result),fields);
+  assert.equal(calls.length,3,'no doomed multi-description request before the useful calls');
+  assert.deepEqual(calls.map(row=>row.predict),[1200,1200,1200],'subdivision must not shrink the useful field budget to 600/512');
+  assert.ok(Object.values(result).every(value=>value.length>512),'the authored content is preserved instead of clipped');
+});
+
+test('an indivisible truncated field expands once and resumes at the learned budget without double-counting time',async()=>{
+  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
+  const schema={type:'object',required:['identity'],properties:{identity:{type:'string',maxLength:1000}},additionalProperties:false};
+  const checkpoint={tasks:{}},calls=[],health=[],stats=[];let now=0,forceTruncated=false;
+  const author=runInNewContext(source+'\ncallLocalDesignerModel',{
+    createHash,Date:class extends Date{constructor(){super(now);}static now(){return now;}},designAssetLibraryContext:{status:'UNAVAILABLE'},localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'local',
+    designerRoute:{id:'ollama:local'},designCheckpoint:checkpoint,modelCallStats:stats,console:{log(){}},clean:String,
+    parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,assertSchemaValue:assertDesignSchema,recordModelHealth:(model,row)=>health.push(row),persistDesignCheckpoint(){},
+    requestLocalDesignerRaw:async(prompt,{predict,timeoutMs})=>{
+      calls.push({prompt,predict,timeoutMs});now+=predict<2000?100:70;
+      if(predict<2000||forceTruncated)throw new Error('OLLAMA_DESIGN_OUTPUT_TRUNCATED');
+      return '{"identity":"designer-authored original"}';
+    }
+  });
+  assert.equal((await author('designer','original',schema,{predict:1200})).identity,'designer-authored original');
+  assert.equal((await author('designer','original',schema,{predict:1200})).identity,'designer-authored original');
+  assert.deepEqual(calls.map(row=>row.predict),[1200,2400,2400]);
+  assert.equal(calls[0].prompt,calls[1].prompt,'retry reuses the same owner/rule context prefix');
+  assert.ok(calls.every(row=>row.timeoutMs===300000));
+  assert.deepEqual(health.map(row=>[row.success,row.elapsedMs]),[[false,100],[true,70],[true,70]]);
+  assert.deepEqual(stats.map(row=>row.elapsedMs),[70,70]);
+  forceTruncated=true;
+  await assert.rejects(author('designer','over-cap request',schema,{predict:8192}),/OLLAMA_DESIGN_OUTPUT_TRUNCATED/);
+  assert.equal(calls.length,4,'the existing output ceiling still fails without inventing content');
 });
 
 test('workflow warms the same local context before declaring authoring ready and fails closed',async()=>{
@@ -826,7 +876,7 @@ test('repair keeps valid sibling fields and asks the designer only for the contr
     playableRequirements:designPlayabilityRequirements({}),currentRuleSourceContext:{},currentRuleSource:'',
     seed:{MULTIPLAYER_DESIGN_MODE:'COMPETITIVE'},seedDesignDepthContext:{},createHash,validateDesignAuthoringContent,
     clip:(value,n)=>JSON.stringify(value).slice(0,n),clean:String,
-    DESIGN_AUTHORING_SLICES:[{id:'partial',fields:['identity','multiplayerMode'],predict:1200}],
+    DESIGN_AUTHORING_SLICES:[{id:'partial',fields:['identity','multiplayerMode'],predict:1200},{id:'web-canonical',fields:['webCanonicalDesign'],derived:true},{id:'platform-expansion',fields:['platformExpansionPolicy'],derived:true}],
     designSliceSchema:fields=>({type:'object',required:fields,properties:Object.fromEntries(fields.map(field=>[field,{type:'string'}])),additionalProperties:false}),
     repairStructureContract:()=>[],designCheckpoint:checkpoint,persistDesignCheckpoint(){},
     runCheckpointTask:async(phase,id,work)=>checkpoint.tasks[`${phase}::${id}`]??(checkpoint.tasks[`${phase}::${id}`]=await work()),
@@ -857,7 +907,7 @@ test('mandatory multiplayer upgrades legacy single input but preserves existing 
   }
 });
 
-test('isolated grammar fields retain the current role without supplying authored rules',async()=>{
+test('grammar content repair keeps a whole rule atomic without supplying authored rules',async()=>{
   const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
   const checkpoint={tasks:{}},calls=[];
   const author=runInNewContext(source+'\ncallLocalDesignerModel',{
@@ -868,14 +918,13 @@ test('isolated grammar fields retain the current role without supplying authored
     requestLocalDesignerRaw:async(prompt,{schema})=>{
       const role=prompt.match(/CURRENT_GRAMMAR_ROLE=(MAIN|A|B|c|DELVE)/)?.[1];
       assert.ok(role);calls.push(role);
-      const field=Object.keys(schema.properties)[0];
-      return JSON.stringify({[field]:field==='grammarRole'?role:`designer-generated-${role}`});
+      return JSON.stringify(Object.fromEntries(Object.keys(schema.properties).map(field=>[field,field==='grammarRole'?role:`designer-generated-${role}`])));
     }
   });
   const schema={type:'object',required:['signatureSystems'],properties:{signatureSystems:{type:'array',minItems:5,items:{type:'object',required:['id','grammarRole'],properties:{id:{type:'string'},grammarRole:{type:'string',enum:['MAIN','A','B','c','DELVE']}},additionalProperties:false}}},additionalProperties:false};
   const result=await author('designer','original game rules',schema,{isolateFields:true});
   assert.deepEqual(Array.from(result.signatureSystems,row=>row.id),['MAIN','A','B','c','DELVE'].map(role=>`designer-generated-${role}`));
-  assert.equal(calls.length,10);
+  assert.equal(calls.length,5,'one designer call per whole rule, including content repair');
 });
 
 test('bootstrap creative diagnostics do not stop designer intake or fake a design pass and copying still fails',()=>{
@@ -893,4 +942,40 @@ test('bootstrap creative diagnostics do not stop designer intake or fake a desig
     seed.COPY_SOURCE_CODE=true;fs.writeFileSync(file,JSON.stringify(state));
     const forbidden=run();assert.notEqual(forbidden.status,0);assert.match(forbidden.stderr,/direct.copy/);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+// 최종 점수 수리도 실패한 필드와 실제로 낮은 점수 축에만 한정한다.
+test('final repair preserves healthy fields and never asks for a second platform original',()=>{
+  const source=design.slice(design.indexOf('function repairFields('),design.indexOf('function repairStructureContract('));
+  const repair=runInNewContext(source+'\nrepairFields',{
+    uniq:values=>[...new Set(values)],
+    AXIS_FIELDS:{CATEGORY_IDENTITY:['identity','coreFun','multiplayerMode'],PLATFORM_FIT_DESIGN:['platformProfiles','webCanonicalDesign','platformExpansionPolicy']},
+    DESIGN:{required:['identity','coreFun','coreLoop','signatureSystems','multiplayerMode','platformProfiles','webCanonicalDesign','platformExpansionPolicy','contentVarietyPlan','progressionEconomyBalance','failureRetryRisk','uxAccessibilityPlan','artAudioDirection']}
+  });
+  assert.deepEqual(Array.from(repair({rejectionReasons:[{axis:'CATEGORY_IDENTITY',fields:['multiplayerMode']}]})),['multiplayerMode']);
+  const fields=Array.from(repair({criticalAxisFailures:['PLATFORM_FIT_DESIGN']}));
+  assert.ok(fields.includes('platformProfiles'));
+  assert.ok(fields.includes('signatureSystems'));
+  assert.ok(!fields.includes('webCanonicalDesign'));
+  assert.ok(!fields.includes('platformExpansionPolicy'));
+});
+
+test('platform views derive from the authored original without changing rules or hiding invalid content',()=>{
+  const fixture=playableFixture();
+  const original=structuredClone(fixture.design);
+  fixture.design.webCanonicalDesign={role:'WEB_DETAILED_GAME_ORIGINAL',combatAndInteraction:'별도 원본에서 감염 대신 단순 처치 게임으로 바꾼다'};
+  const repairs=[];
+  normalizeWebCanonicalAndExpansionPolicy(fixture.design,fixture.seed,fixture.design.multiplayerMode,repairs);
+  assert.deepEqual(fixture.design.signatureSystems,original.signatureSystems);
+  assert.deepEqual(fixture.design.contentVarietyPlan,original.contentVarietyPlan);
+  assert.deepEqual(fixture.design.selectedDesignPlan,original.selectedDesignPlan);
+  assert.equal(fixture.design.webCanonicalDesign.role,'SHARED_DESIGN_WEB_APPLICATION');
+  assert.doesNotMatch(fixture.design.webCanonicalDesign.combatAndInteraction,/단순 처치 게임/);
+  assert.deepEqual(validateDesignAuthoringContent({...fixture,fields:['webCanonicalDesign','platformExpansionPolicy']}),[]);
+  const stable=JSON.stringify(fixture.design);
+  normalizeWebCanonicalAndExpansionPolicy(fixture.design,fixture.seed,fixture.design.multiplayerMode,[]);
+  assert.equal(JSON.stringify(fixture.design),stable);
+  fixture.design.signatureSystems[0].purpose='추후 작성';
+  normalizeWebCanonicalAndExpansionPolicy(fixture.design,fixture.seed,fixture.design.multiplayerMode,[]);
+  assert.ok(validateDesignAuthoringContent(fixture).some(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT'));
 });

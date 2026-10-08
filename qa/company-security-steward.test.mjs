@@ -101,6 +101,47 @@ test('central authority mutation requires direct review but is not attack quaran
   assert.equal(store.incidents[0].learningPromotion,'HOLD_POLICY_REVIEW_ONLY');
 });
 
+test('exact design-only policy changes need no security review while actual boundary changes remain reviewed',()=>{
+  const file='company-learning/platform-release-roadmap.json';
+  const before={version:1,directNativeDualPlatformDevelopment:{design:{oneIdenticalPlatformDesignForbidden:true}}};
+  const after=structuredClone(before);
+  after.version=2;
+  after.directNativeDualPlatformDevelopment.design={oneIdenticalPlatformDesignForbidden:false,singleOriginalContract:{authority:'OWNER_DIRECTIVE_2026-10-08',originalsPerGame:1,platformRedesignForbidden:true}};
+  const patch=`diff --git a/${file} b/${file}\n+++ b/${file}\n@@ -1,0 +2,3 @@\n+  "oneIdenticalPlatformDesignForbidden": false,\n+  "authority": "OWNER_DIRECTIVE_2026-10-08",\n+  "platformRedesignForbidden": true\n`;
+  const scan=value=>scanSecurityPatch({patch,changedFiles:[file],centralPolicySnapshots:{[file]:{before,after:value}}});
+  const safe=scan(after);
+  assert.equal(safe.verdict,'PASS');
+  assert.equal(safe.securityContractChanged,false);
+  assert.equal(safe.productionDesignDiagnostics[0].classification,'DESIGN_CONTENT_ONLY_NO_SECURITY_REVIEW');
+  assert.equal(scanSecurityPatch({patch,changedFiles:[file]}).verdict,'REVIEW');
+  assert.equal(scanSecurityPatch({patch,changedFiles:[file],centralPolicySnapshots:{[file]:{before:'broken',after}}}).verdict,'REVIEW');
+  for(const change of [
+    value=>{value.workerSelfAcceptance=true;},
+    value=>{value.directNativeDualPlatformDevelopment.design.executionAuthority=true;},
+    value=>{value.directNativeDualPlatformDevelopment.design.permissions={write:true};},
+    value=>{value.directNativeDualPlatformDevelopment.design.security={authority:'OWNER_DIRECTIVE_2026-10-08'};},
+    value=>{value.directNativeDualPlatformDevelopment.design.singleOriginalContract.authority='EXTERNAL_WORKER';}
+  ]){
+    const mixed=structuredClone(after);change(mixed);
+    const result=scan(mixed);
+    assert.equal(result.verdict,'REVIEW');
+    assert.equal(result.securityContractChanged,true);
+  }
+  const secretPatch=patch+'+token='+'ghp_'+'A'.repeat(36)+'\n';
+  assert.equal(scanSecurityPatch({patch:secretPatch,changedFiles:[file],centralPolicySnapshots:{[file]:{before,after}}}).verdict,'QUARANTINE');
+});
+
+test('removing authority and changing security implementation keep security contracts active',()=>{
+  const file='company-learning/company-architecture-map.json';
+  const report=scanSecurityPatch({patch:`diff --git a/${file} b/${file}\n+++ b/${file}\n@@ -1 +0,0 @@\n-  "gameSourceWriteAllowed": false\n`,changedFiles:[file],centralPolicySnapshots:{[file]:{before:{gameSourceWriteAllowed:false},after:{}}}});
+  assert.equal(report.verdict,'REVIEW');
+  assert.equal(report.securityContractChanged,true);
+  assert.match(report.findings[0].snippet,/removed:gameSourceWriteAllowed/);
+  for(const file of ['tools/company-security-steward.mjs','.github/workflows/company-security-immune.yml','company-learning/security-immune-system.json']){
+    assert.equal(scanSecurityPatch({changedFiles:[file]}).securityContractChanged,true);
+  }
+});
+
 test('policy review findings are grouped per scan and file without auto-resolving review',()=>{
   const finding=(line,evidenceSha256,file='company-learning/platform-release-roadmap.json')=>({
     rule:'CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW',
@@ -478,7 +519,9 @@ test('security workflow scans changed candidates without scheduled duplicate rep
   assert.match(securityWorkflow,/Resolve impact-scoped security contract work/);
   assert.match(securityWorkflow,/SECURITY_PATCH_SCAN_ALWAYS=YES/);
   assert.match(securityWorkflow,/contract_changed=NO/);
-  assert.match(securityWorkflow,/if: \$\{\{ steps\.scope\.outputs\.contract_changed == 'YES' \}\}/);
+  assert.match(securityWorkflow,/if: \$\{\{ steps\.scope\.outputs\.contract_changed == 'YES' \|\| steps\.scan\.outputs\.security_contract_changed == 'YES' \}\}/);
+  assert.ok(securityWorkflow.indexOf('Scan changed attack surface')<securityWorkflow.indexOf('Verify immune-system contracts only when security authority changed'));
+  assert.match(securityWorkflow,/--base="\$BASE_SHA" --head="\$HEAD_SHA"/);
   assert.match(securityWorkflow,/Verify immune-system contracts only when security authority changed/);
   assert.match(securityWorkflow,/Scan changed attack surface/);
   assert.match(securityWorkflow,/workflow_dispatch:/);

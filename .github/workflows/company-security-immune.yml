@@ -110,7 +110,7 @@ jobs:
           set -euo pipefail
           git diff --name-only "$BASE_SHA...$HEAD_SHA" > /tmp/security-scope-files.txt 2>/dev/null || git diff --name-only "$BASE_SHA" "$HEAD_SHA" > /tmp/security-scope-files.txt
           contract_changed=NO
-          if grep -Eq '^(\.github/workflows/company-security-immune\.yml|tools/company-security-[^/]+\.mjs|qa/company-security-[^/]+\.test\.mjs|tools/company-shared-context\.mjs|tools/company-constitution-enforcer\.mjs|company-learning/(security-immune-system|platform-release-roadmap|company-log-map|company-architecture-map)\.json|company-directive\.json)$' /tmp/security-scope-files.txt; then
+          if grep -Eq '^(\.github/workflows/company-security-immune\.yml|tools/company-security-[^/]+\.mjs|qa/company-security-[^/]+\.test\.mjs|tools/company-shared-context\.mjs|tools/company-constitution-enforcer\.mjs|company-learning/security-immune-system\.json|company-directive\.json)$' /tmp/security-scope-files.txt; then
             contract_changed=YES
           fi
           echo "contract_changed=$contract_changed" >> "$GITHUB_OUTPUT"
@@ -119,15 +119,6 @@ jobs:
 
       - name: Synchronize security context
         run: node tools/company-shared-context.mjs --output=/tmp/security-shared-context.json
-
-      - name: Verify immune-system contracts only when security authority changed
-        if: ${{ steps.scope.outputs.contract_changed == 'YES' }}
-        run: |
-          set -euo pipefail
-          node --check tools/company-security-steward.mjs
-          node --check tools/company-security-incident.mjs
-          node --check tools/company-security-learning.mjs
-          node --test qa/company-security-steward.test.mjs
 
       - name: Scan changed attack surface
         id: scan
@@ -141,7 +132,7 @@ jobs:
           cp /tmp/security-scope-files.txt /tmp/security-files.txt
 
           set +e
-          node tools/company-security-steward.mjs             --patch=/tmp/security.patch             --files=/tmp/security-files.txt             --output=/tmp/security-report.json | tee /tmp/security-scan.log
+          node tools/company-security-steward.mjs             --base="$BASE_SHA" --head="$HEAD_SHA"             --patch=/tmp/security.patch             --files=/tmp/security-files.txt             --output=/tmp/security-report.json | tee /tmp/security-scan.log
           scan_code=$?
           set -e
 
@@ -150,6 +141,8 @@ jobs:
           const r=JSON.parse(fs.readFileSync('/tmp/security-report.json','utf8'));
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`verdict=${r.verdict}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`highest=${r.highestSeverity}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`security_contract_changed=${r.securityContractChanged?'YES':'NO'}\n`);
+          console.log('SECURITY_DESIGN_DIAGNOSTICS='+JSON.stringify(r.productionDesignDiagnostics||[]));
           const findings=r.findings||[];
           const reviewOnly=r.verdict==='REVIEW'&&findings.length>0&&findings.every(row=>row.disposition==='REVIEW'&&row.rule==='CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`findings=${findings.length}\n`);
@@ -161,6 +154,15 @@ jobs:
             0|2) ;;
             *) exit "$scan_code" ;;
           esac
+
+      - name: Verify immune-system contracts only when security authority changed
+        if: ${{ steps.scope.outputs.contract_changed == 'YES' || steps.scan.outputs.security_contract_changed == 'YES' }}
+        run: |
+          set -euo pipefail
+          node --check tools/company-security-steward.mjs
+          node --check tools/company-security-incident.mjs
+          node --check tools/company-security-learning.mjs
+          node --test qa/company-security-steward.test.mjs
 
       - uses: actions/upload-artifact@v4
         id: upload

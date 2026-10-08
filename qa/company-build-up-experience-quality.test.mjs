@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import {runInNewContext} from 'node:vm';
 import {
   EXPERIENCE_BUILD_UP_TRACKS,
   PLATFORM_EXPERIENCE_PROFILES,
@@ -282,4 +283,17 @@ test('all-game multiplayer requirement creates local implementation work without
       assert.match(directivePrompt(directive),/전 게임 멀티 필수/);
     }
   }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+// 기존 작업 지시 캐시도 플랫폼별 독립 설계 지시를 계속 재사용하지 않는다.
+test('planner refreshes legacy split-design directives without a new admission gate',()=>{
+  const planner=fs.readFileSync('tools/vibe2-auto-planner.mjs','utf8');
+  const source=planner.slice(planner.indexOf('  const activeDirectiveSemanticCompatible='),planner.indexOf('  const productionPolicy=',planner.indexOf('  const activeDirectiveSemanticCompatible=')));
+  const compatible=(mode,required=true)=>runInNewContext(source+'\nactiveDirectiveSemanticCompatible',{
+    projectRequiresMultiplayer:true,activeDirectiveMultiplayerState:'GAP',multiplayerPolicy:{required:true,version:1},singleOriginalRequired:required,
+    activeDirectiveTask:{buildUpDirective:{multiplayerImplementation:{policyVersion:1},designImplementationContext:{platformExpansionPolicy:{mode}}}}
+  });
+  assert.equal(compatible('SHARED_LARGE_FRAME_PLATFORM_NATIVE_EXPANSION'),false);
+  assert.equal(compatible('SINGLE_ORIGINAL_PLATFORM_IMPLEMENTATION'),true);
+  assert.equal(compatible('SHARED_LARGE_FRAME_PLATFORM_NATIVE_EXPANSION',false),true);
 });

@@ -183,8 +183,8 @@ test('Unity prose and unsafe API source cannot pass a code drill',()=>{
 
 test('repair uses public execution feedback without leaking hidden checks or reference answers',async()=>{
   const drill={id:'opaque',platform:'unity',scenario:'Implement the requested state transition.',broken:'BROKEN',reference:'PRIVATE_REFERENCE',feedbackTests:['PUBLIC_EXAMPLE'],tests:['PRIVATE_ACCEPTANCE']};
-  const prompts=[],formats=[];
-  const request=async (prompt,options)=>{prompts.push(prompt);formats.push(options.format);return JSON.stringify({...practiceAnswer,code:prompts.length===1?'WRONG':'FIXED'});};
+  const prompts=[],formats=[],turns=[];
+  const request=async (prompt,options)=>{prompts.push(prompt);formats.push(options.format);turns.push(options.messages);return JSON.stringify({...practiceAnswer,code:prompts.length===1?'WRONG':'FIXED'});};
   const evaluate=(answer)=>({pass:answer.code==='FIXED',codeVerification:{pass:answer.code==='FIXED',baselineRejected:true,referencePassed:true,reason:answer.code==='FIXED'?'VERIFIED_LOGIC_ONLY':'REGRESSION_OR_FIXTURE_FAILED'}});
   const result=await runPracticeRepairSession({order:{executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE]'},drill,request,evaluate});
   assert.equal(result.repairEvidence.firstAttemptPass,false);
@@ -196,6 +196,13 @@ test('repair uses public execution feedback without leaking hidden checks or ref
   assert.match(prompts[0],/Sandbox contract: no using directives/);
   for(const prompt of prompts){assert(!prompt.includes('PRIVATE_REFERENCE'));assert(!prompt.includes('PRIVATE_ACCEPTANCE'));}
   assert(prompts[1].includes('WRONG'));
+  assert.equal(turns[0],null);
+  assert.deepEqual(turns[1].map(row=>row.role),['user','assistant','user']);
+  assert.equal(JSON.parse(turns[1][1].content).code,'WRONG');
+  assert.match(turns[1][2].content,/PUBLIC EXECUTION DIAGNOSTICS/);
+  assert(!turns[1][0].content.includes('BROKEN'));
+  assert(!JSON.stringify(turns).includes('PRIVATE_ACCEPTANCE'));
+  assert(!JSON.stringify(turns).includes('PRIVATE_REFERENCE'));
   assert(!JSON.stringify(result.repairEvidence).includes('FIXED'));
 });
 
@@ -227,7 +234,7 @@ test('repeated failing implementation is measured and public repair instructions
     evaluate:(_,options)=>({pass:false,codeVerification:{reason:'REGRESSION_OR_FIXTURE_FAILED',baselineRejected:true,referencePassed:true,diagnostics:[options.drill.tests[0]==='public'?'PRACTICE_CASE_1_CHECK_2: s.Gold==4':'HIDDEN_SECRET']}})});
   assert.deepEqual(result.repairEvidence.attempts.map(row=>row.unchangedFailedImplementation),[false,true,true]);
   assert(prompts[2].includes('Repeating it is not a repair'));
-  assert(prompts[1].indexOf('PRACTICE_CASE_1_CHECK_2')>prompts[1].indexOf('YOUR PREVIOUS CODE'));
+  assert(prompts[1].indexOf('PRACTICE_CASE_1_CHECK_2')>prompts[1].indexOf('same failing code'));
   assert(!prompts.join('\n').includes('HIDDEN_SECRET'));
   assert.equal(result.repairEvidence.finalPass,false);
 });
