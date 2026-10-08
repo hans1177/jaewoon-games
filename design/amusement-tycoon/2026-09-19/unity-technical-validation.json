@@ -5,12 +5,12 @@
   "pass": true,
   "validated": true,
   "target": "UNITY_ANDROID_TECHNICAL_VALIDATION",
-  "checkedAt": "2026-10-05T23:25:26.010Z",
+  "checkedAt": "2026-10-08T04:38:32.161Z",
   "sourceBinding": {
-    "upstreamBuildRunId": 37322027324,
-    "sourceCommit": "1e97954fcf37eeff816d01d9336e469de5d045a1",
-    "sourceTreeSha": "c7f1908b4390620f81f785f8ba4d87ca9115e9ca",
-    "apkSha256": "f8ef2854dd829ae49850173c0637d22f5d88dbffc9ca5f18e16323e0119a8716",
+    "upstreamBuildRunId": 37725886882,
+    "sourceCommit": "cf304e39ae9e7ef56873fc8f98e90b5a3aa354d4",
+    "sourceTreeSha": "ca52f4cd86cbdf98d367cc7f77967d05f343176e",
+    "apkSha256": "c7ae3537e92fd6ba20b839fb6384b42906c05eae86c6f05d853028c396b0efe3",
     "sameBinding": true
   },
   "foundationAdapter": {
@@ -125,7 +125,7 @@
     "MEMORY_HEAT_LOADING": {
       "state": "PASS_WITH_LIMITATION",
       "provider": "ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO",
-      "maxAllocatedMemoryBytes": 62791744,
+      "maxAllocatedMemoryBytes": 64082971,
       "loading": "PASS",
       "heat": "EMULATOR_ONLY_NOT_PHYSICAL_DEVICE",
       "limitation": "Physical-device thermal behavior remains a RELEASE_CONFIRMED device-validation concern."
@@ -177,9 +177,9 @@
     "Physical-device thermal behavior is not inferred from emulator evidence."
   ],
   "provenance": {
-    "buildInfo": "/tmp/unity-build/amusement-tycoon-android-cloud-37322027324-1/build-info.json",
-    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-37322027324/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
-    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-37322027324/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
+    "buildInfo": "/tmp/unity-build/amusement-tycoon-android-cloud-37725886882-1/build-info.json",
+    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-37725886882/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
+    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-37725886882/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
     "projectPath": "unity-games/amusement-tycoon"
   }
 }
