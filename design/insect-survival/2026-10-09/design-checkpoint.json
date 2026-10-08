@@ -12,25 +12,32 @@
   "tasks": {
     "local_authoring_parts::33e067983b8270aaca9838f72e3144a96439c3e9d5f042721ad1f87275ec8c93:identity": {
       "identity": "작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 생존 게임으로 완전히 처음부터 다시 설계한다. 그 중심 행동은 'Explore a dangerous small-scale habitat and identify food, material and insect threats.'이며, 두 대축 A/B는 'Take a risk to gather or fight, then convert the result into survival tools or a safer route.'와 'Use what was learned about the ecosystem to survive stronger pressure and reach the next meaningful objective.'로 구성된다. 보조 요소 c는 이들을 변주하며, 파고들기 @는 발견·숙련·재방문의 깊이를 나타낸다. 세계 규칙은 플레이어의 선택 결과가 다음 상태에 영향을 주는 방식으로 설계되어야 한다."
+    },
+    "local_authoring_parts::33e067983b8270aaca9838f72e3144a96439c3e9d5f042721ad1f87275ec8c93:playerFantasy": {
+      "playerFantasy": "플레이어는 곤충 생존기를 경험하는 독자의 시점에서, 위험과 선택 사이의 균형을 맞추며, 먹이사슬과 생태계의 복잡성에 직면해야 한다. 그는 단순히 살아남기보다, 진입할 수 있는 세계의 정체성과 관계를 탐색하며, 이 모든 것이 자신의 존재와 의미로 연결된다."
+    },
+    "local_authoring_parts::0192de5fe13809f8137ac28c8054c6f27f982bd4bb4494f47aedfaa42bb9daf1:identity,playerFantasy": {
+      "identity": "작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 생존 게임으로 완전히 처음부터 다시 설계한다. 그 중심 행동은 'Explore a dangerous small-scale habitat and identify food, material and insect threats.'이며, 두 대축 A/B는 'Take a risk to gather or fight, then convert the result into survival tools or a safer route.'와 'Use what was learned about the ecosystem to survive stronger pressure and reach the next meaningful objective.'로 구성된다. 보조 요소 c는 이들을 변주하며, 파고들기 @는 발견·숙련·재방문의 깊이를 나타낸다. 세계 규칙은 플레이어의 선택 결과가 다음 상태에 영향을 주는 방식으로 설계되어야 한다.",
+      "playerFantasy": "플레이어는 곤충 생존기를 경험하는 독자의 시점에서, 위험과 선택 사이의 균형을 맞추며, 먹이사슬과 생태계의 복잡성에 직면해야 한다. 그는 단순히 살아남기보다, 진입할 수 있는 세계의 정체성과 관계를 탐색하며, 이 모든 것이 자신의 존재와 의미로 연결된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 78008,
-      "lastMs": 78008,
+      "totalMs": 91522,
+      "lastMs": 13514,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:46:56.852Z"
+      "updatedAt": "2026-10-08T17:47:10.367Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:45:38.832Z",
-  "updatedAt": "2026-10-08T17:46:56.852Z",
+  "updatedAt": "2026-10-08T17:47:10.373Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2262,7 +2269,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:46:56.852Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:47:10.373Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
