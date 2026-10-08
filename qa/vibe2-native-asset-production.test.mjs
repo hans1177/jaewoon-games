@@ -126,6 +126,84 @@ test('Vibe source worker applies genre menu suggestions only to exact SHA-matche
   assert.doesNotMatch(unrelated,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
 });
 
+test('Vibe discovers only actual object-specific prompts with source identity, never imaginary object systems',()=>{
+  const root=tempRoot();
+  try{
+    const gameDir=path.join(root,'roblox-games','interaction-demo');
+    fs.mkdirSync(path.join(gameDir,'server'),{recursive:true});
+    fs.mkdirSync(path.join(gameDir,'client'),{recursive:true});
+    const server=path.join(gameDir,'server','Game.server.luau');
+    const client=path.join(gameDir,'client','Game.client.luau');
+    fs.writeFileSync(server,[
+      'local function prompt(target,objectText,actionText,kind,interactionId)',
+      '  return Instance.new("ProximityPrompt")',
+      'end',
+      'prompt(portal,"지하문","들어가기","ENTRY_PORTAL","Portal1")',
+      'prompt(chest,"보물상자","열기","TREASURE_CHEST","Chest1")',
+      'prompt(altar,"제단","조사","EVENT_ALTAR","Altar1")'
+    ].join('\n'));
+    fs.writeFileSync(client,[
+      'local function refreshObjectInteraction() end',
+      'ProximityPromptService.PromptShown:Connect(refreshObjectInteraction)',
+      'ObjectContext:SetAttribute("BoundInteractionKind","TREASURE_CHEST")'
+    ].join('\n'));
+    const ui=path.join(root,'assets','roblox','common-ui-v1','RobloxCommonUI.luau');
+    fs.mkdirSync(path.dirname(ui),{recursive:true});
+    fs.writeFileSync(ui,[
+      'function RobloxCommonUI.CreateWorldPropInteractionPrompt(options) end',
+      'function RobloxCommonUI.CreateContainerInteractionPrompt(options) end',
+      'function RobloxCommonUI.CreateReadInspectPanel(options) end'
+    ].join('\n'));
+    const order={repoRoot:root,target:'roblox',task:{
+      gameId:'interaction-demo',genre:'RPG',
+      goal:'포탈 상자 제단의 오브젝트별 상호작용과 UI 동기화'
+    },manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}};
+    const plan=buildVibeAssetProductionPlan(order);
+    const actual=plan.genreMenuRecommendations.objectInteractions;
+    assert.deepEqual(actual.map(row=>row.kind),['ENTRY_PORTAL','EVENT_ALTAR','TREASURE_CHEST']);
+    assert.equal(plan.genreMenuRecommendations.objectSourceBoundCount,3);
+    assert.ok(!actual.some(row=>row.kind==='WEAPON_MERCHANT'||row.kind==='BOSS_COMPANION'));
+    assert.ok(actual.every(row=>row.status==='SERVER_OBJECT_AND_CLIENT_UI_SOURCE_BOUND_RUNTIME_QA_REQUIRED'));
+    assert.ok(actual.every(row=>row.nativeRuntimeVerified===false&&row.serverGameplayAuthorityRetained===true));
+    assert.ok(actual.every(row=>row.gameSourceRefs[0].sha256===createHash('sha256').update(fs.readFileSync(server)).digest('hex')));
+    assert.ok(actual.every(row=>row.clientConsumerRefs[0].sha256===createHash('sha256').update(fs.readFileSync(client)).digest('hex')));
+    assert.match(assetProductionGuidance(plan),/EXISTING OBJECT-SPECIFIC INTERACTION SYNCHRONIZATION/);
+    fs.unlinkSync(client);
+    const serverOnly=buildVibeAssetProductionPlan(order).genreMenuRecommendations.objectInteractions;
+    assert.ok(serverOnly.every(row=>row.status==='SERVER_OBJECT_SOURCE_PRESENT_UI_BINDING_REQUIRED'));
+    assert.ok(serverOnly.every(row=>row.clientConsumerRefs.length===0));
+    fs.unlinkSync(server);
+    const noOwners=buildVibeAssetProductionPlan(order).genreMenuRecommendations.objectInteractions;
+    assert.deepEqual(noOwners,[]);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('Vibe emits exact-source-bound object interaction guidance for editable server owners only',()=>{
+  const file='roblox-games/daechung-rpg/server/Game.server.luau';
+  const content=fs.readFileSync(file,'utf8'),sha256=createHash('sha256').update(content).digest('hex');
+  const object={
+    kind:'TREASURE_CHEST',factory:'CreateContainerInteractionPrompt',
+    purpose:'PER_PLAYER_OPENED_CHEST_STATE',
+    status:'SERVER_OBJECT_SOURCE_PRESENT_UI_BINDING_REQUIRED',
+    gameSourceRefs:[{path:file,sha256}],clientConsumerRefs:[],
+    nativeRuntimeVerified:false,serverGameplayAuthorityRetained:true
+  };
+  const order={target:'roblox',goal:'보물상자 오브젝트 상호작용 동기화',assetProduction:{
+    genreMenuRecommendations:{signals:['RPG_PROGRESSION'],candidateFeatures:[],objectInteractions:[object]}
+  }};
+  const valid=buildPrompt(order,{files:[{path:file,content,editable:true}]},[file]);
+  assert.match(valid,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
+  assert.match(valid,/TREASURE_CHEST/);
+  assert.match(valid,/CreateContainerInteractionPrompt/);
+  assert.match(valid,/Preserve per-object InteractionKind, InteractionId/);
+  const stale=buildPrompt(order,{files:[{path:file,content:content+'\n-- stale',editable:true}]},[file]);
+  assert.doesNotMatch(stale,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
+  const notEditable=buildPrompt(order,{files:[{path:file,content,editable:false}]},[file]);
+  assert.doesNotMatch(notEditable,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
+  const unknown=buildPrompt({...order,assetProduction:{genreMenuRecommendations:{signals:['RPG_PROGRESSION'],
+    candidateFeatures:[],objectInteractions:[]}}},{files:[{path:file,content,editable:true}]},[file]);
+  assert.doesNotMatch(unknown,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
+});
 test('OBJ static validation reads actual polygons and material references without self-approving production',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'obj-geometry-'));
   const assetDir=path.join(root,'assets');
