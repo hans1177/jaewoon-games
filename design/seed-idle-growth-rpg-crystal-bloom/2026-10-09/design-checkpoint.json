@@ -892,25 +892,50 @@
     },
     "local_authoring_parts::7d3fd30e20c2312c3827221adfc3d26789faa3d8e4da0244a765231f36b86e54:riskPressure": {
       "riskPressure": "플레이어가 자동으로 적군을 공격하는 과정에서 'PLAYER_FIGHT_AUTO' 상태가 발생하면, 이 상태가 'PROGRESSION_RESOURCES' 리소스 생성에 기초한 상태 교환을 수행해야 한다. 플레이어가 리소서 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다."
+    },
+    "local_authoring_parts::7d3fd30e20c2312c3827221adfc3d26789faa3d8e4da0244a765231f36b86e54:recoveryRules": {
+      "recoveryRules": "플레이어가 자동으로 적군을 공격하는 과정에서 'PLAYER_FIGHT_AUTO' 상태가 발생하면, 이 상태가 'PROGRESSION_RESOURCES' 리소스 생성에 기초한 상태 교환을 수행해야 한다. 플레이어가 리소스 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다."
+    },
+    "local_authoring_parts::e18c1c899cf5b69184f67091000a9fb6f2e5359b05fb15f7ef1868471807376f:failureRetryRisk": {
+      "failureStates": [
+        "플레이어가 자동으로 적군을 공격하는 과정에서 'PLAYER_FIGHT_AUTO' 상태가 발생하면, 이 상태가 'PROGRESSION_RESOURCES' 리소스 생성에 기초한 상태 교환을 수행해야 한다.",
+        "플레이어가 리소스 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다.",
+        "플레이어가 자동으로 적군을 공격하는 과정에서 'PLAYER_FIGHT_AUTO' 상태가 발생하여 'PROGRESSION_RESOURCES' 리소스 생성에 기초한 상태 교환을 수행해야 한다."
+      ],
+      "retryFlow": "플레이어가 자동으로 적군을 공격하는 과정에서 'PLAYER_FIGHT_AUTO' 상태가 발생하면, 이 상태가 'PROGRESSION_RESOURCES' 리소스 생성에 기초한 상태 교환을 수행해야 한다.",
+      "riskPressure": "플레이어가 자동으로 적군을 공격하는 과정에서 'PLAYER_FIGHT_AUTO' 상태가 발생하면, 이 상태가 'PROGRESSION_RESOURCES' 리소스 생성에 기초한 상태 교환을 수행해야 한다. 플레이어가 리소서 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다.",
+      "recoveryRules": "플레이어가 자동으로 적군을 공격하는 과정에서 'PLAYER_FIGHT_AUTO' 상태가 발생하면, 이 상태가 'PROGRESSION_RESOURCES' 리소스 생성에 기초한 상태 교환을 수행해야 한다. 플레이어가 리소스 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다."
+    },
+    "local_authoring_parts::f08c92865585e5ba91e788d235edf1390b7dc2fca5c17773d586711a6c4f0550:failureRetryRisk": {
+      "failureRetryRisk": {
+        "failureStates": [
+          "플레이어가 자동으로 적군을 공격하는 과정에서 'PLAYER_FIGHT_AUTO' 상태가 발생하면, 이 상태가 'PROGRESSION_RESOURCES' 리소스 생성에 기초한 상태 교환을 수행해야 한다.",
+          "플레이어가 리소스 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다.",
+          "플레이어가 자동으로 적군을 공격하는 과정에서 'PLAYER_FIGHT_AUTO' 상태가 발생하여 'PROGRESSION_RESOURCES' 리소스 생성에 기초한 상태 교환을 수행해야 한다."
+        ],
+        "retryFlow": "플레이어가 자동으로 적군을 공격하는 과정에서 'PLAYER_FIGHT_AUTO' 상태가 발생하면, 이 상태가 'PROGRESSION_RESOURCES' 리소스 생성에 기초한 상태 교환을 수행해야 한다.",
+        "riskPressure": "플레이어가 자동으로 적군을 공격하는 과정에서 'PLAYER_FIGHT_AUTO' 상태가 발생하면, 이 상태가 'PROGRESSION_RESOURCES' 리소스 생성에 기초한 상태 교환을 수행해야 한다. 플레이어가 리소서 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다.",
+        "recoveryRules": "플레이어가 자동으로 적군을 공격하는 과정에서 'PLAYER_FIGHT_AUTO' 상태가 발생하면, 이 상태가 'PROGRESSION_RESOURCES' 리소스 생성에 기초한 상태 교환을 수행해야 한다. 플레이어가 리소스 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 66,
-      "successes": 66,
+      "calls": 67,
+      "successes": 67,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2368790,
-      "lastMs": 37207,
+      "totalMs": 2406187,
+      "lastMs": 37397,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:24:37.918Z"
+      "updatedAt": "2026-10-08T19:25:15.316Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:45:08.916Z",
-  "updatedAt": "2026-10-08T19:24:37.918Z",
+  "updatedAt": "2026-10-08T19:25:15.325Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3145,414 +3170,6 @@
   "sliceRepairFeedback": {
     "designer_draft_slices::systems-progression": [
       {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[0].trigger",
-          "value": "AUTO_FIGHT_TRIGGER"
-        },
-        "requiredAction": "systemInterconnections[0].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[0].stateChange",
-          "value": "RESOURCE_GENERATION_AND_PROGRESSION"
-        },
-        "requiredAction": "systemInterconnections[0].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[1].trigger",
-          "value": "AUTO_FIGHT_TRIGGER"
-        },
-        "requiredAction": "systemInterconnections[1].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[1].stateChange",
-          "value": "RESOURCE_COLLECTION_AND_DEEPENED_FIGHT"
-        },
-        "requiredAction": "systemInterconnections[1].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[2].trigger",
-          "value": "AUTO_FIGHT_TRIGGER"
-        },
-        "requiredAction": "systemInterconnections[2].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[2].stateChange",
-          "value": "DEEPENED_FIGHT_AND_RESOURCE_REUSE"
-        },
-        "requiredAction": "systemInterconnections[2].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[3].trigger",
-          "value": "AUTO_FIGHT_TRIGGER"
-        },
-        "requiredAction": "systemInterconnections[3].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[3].stateChange",
-          "value": "RESOURCE_REUSE_AND_PROGRESSION"
-        },
-        "requiredAction": "systemInterconnections[3].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[4].trigger",
-          "value": "AUTO_FIGHT_TRIGGER"
-        },
-        "requiredAction": "systemInterconnections[4].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[4].stateChange",
-          "value": "PROGRESSION_AND_DEEPENED_FIGHT"
-        },
-        "requiredAction": "systemInterconnections[4].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "progressionEconomyBalance.resourceFlow",
-          "value": "AUTO_FIGHT_GENERATES_RESOURCES"
-        },
-        "requiredAction": "progressionEconomyBalance.resourceFlow의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "progressionEconomyBalance"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "progressionEconomyBalance.balanceRules",
-          "value": "RESOURCE_COLLECTION_AND_DEEPENED_FIGHT"
-        },
-        "requiredAction": "progressionEconomyBalance.balanceRules의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "progressionEconomyBalance"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[0].milestone",
-          "value": "AUTO_FIGHT_GENERATION"
-        },
-        "requiredAction": "contentExpansionPlan[0].milestone의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[0].newGameplay",
-          "value": "AUTO_FIGHT_GENERATES_RESOURCES"
-        },
-        "requiredAction": "contentExpansionPlan[0].newGameplay의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[0].systemImpact",
-          "value": "AUTO_FIGHT_GENERATES_RESOURCES"
-        },
-        "requiredAction": "contentExpansionPlan[0].systemImpact의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[1].milestone",
-          "value": "RESOURCE_COLLECTION_AND_DEEPENED_FIGHT"
-        },
-        "requiredAction": "contentExpansionPlan[1].milestone의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[1].newGameplay",
-          "value": "RESOURCE_COLLECTION_AND_DEEPENED_FIGHT"
-        },
-        "requiredAction": "contentExpansionPlan[1].newGameplay의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[1].systemImpact",
-          "value": "RESOURCE_COLLECTION_AND_DEEPENED_FIGHT"
-        },
-        "requiredAction": "contentExpansionPlan[1].systemImpact의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[2].milestone",
-          "value": "DEEPENED_FIGHT_AND_RESOURCE_REUSE"
-        },
-        "requiredAction": "contentExpansionPlan[2].milestone의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[2].newGameplay",
-          "value": "DEEPENED_FIGHT_AND_RESOURCE_REUSE"
-        },
-        "requiredAction": "contentExpansionPlan[2].newGameplay의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[2].systemImpact",
-          "value": "DEEPENED_FIGHT_AND_RESOURCE_REUSE"
-        },
-        "requiredAction": "contentExpansionPlan[2].systemImpact의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "failureRetryRisk.retryFlow",
-          "value": "RESOURCE_COLLECTION_AND_DEEPENED_FIGHT"
-        },
-        "requiredAction": "failureRetryRisk.retryFlow의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "failureRetryRisk"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "failureRetryRisk.riskPressure",
-          "value": "PROGRESSION_AND_DEEPENED_FIGHT"
-        },
-        "requiredAction": "failureRetryRisk.riskPressure의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "failureRetryRisk"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "failureRetryRisk.recoveryRules",
-          "value": "RESOURCE_COLLECTION_AND_DEEPENED_FIGHT"
-        },
-        "requiredAction": "failureRetryRisk.recoveryRules의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "failureRetryRisk"
-        ]
-      },
-      {
         "code": "DESIGN_STATE_EXCHANGE_BROKEN",
         "kind": "HARD_GATE",
         "axis": "CORE_LOOP_DESIGN",
@@ -3560,9 +3177,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "PLAYER_FIGHT_AUTO→PROGRESSION_RESOURCES의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "AUTO_FIGHT→PROGRESSION_RESOURCES의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: PLAYER_FIGHT_AUTO→PROGRESSION_RESOURCES의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: AUTO_FIGHT→PROGRESSION_RESOURCES의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3577,9 +3194,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "PLAYER_FIGHT_AUTO→PROGRESSION_RESOURCES의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "AUTO_FIGHT→PROGRESSION_RESOURCES의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: PLAYER_FIGHT_AUTO→PROGRESSION_RESOURCES의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: AUTO_FIGHT→PROGRESSION_RESOURCES의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3594,9 +3211,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "PLAYER_FIGHT_AUTO→PROGRESSION_RESOURCES의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "AUTO_FIGHT→PROGRESSION_RESOURCES→PROGRESSION_RESOURCES의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: PLAYER_FIGHT_AUTO→PROGRESSION_RESOURCES의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: AUTO_FIGHT→PROGRESSION_RESOURCES→PROGRESSION_RESOURCES의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3611,9 +3228,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "PLAYER_FIGHT_AUTO→PROGRESSION_RESOURCES의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "AUTO_FIGHT→PROGRESSION_RESOURCES→PROGRESSION_RESOURCES의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: PLAYER_FIGHT_AUTO→PROGRESSION_RESOURCES의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: AUTO_FIGHT→PROGRESSION_RESOURCES→PROGRESSION_RESOURCES의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3628,9 +3245,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "PLAYER_FIGHT_AUTO→PROGRESSION_RESOURCES의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "AUTO_FIGHT→PROGRESSION_RESOURCES→PROGRESSION_RESOURCES의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: PLAYER_FIGHT_AUTO→PROGRESSION_RESOURCES의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: AUTO_FIGHT→PROGRESSION_RESOURCES→PROGRESSION_RESOURCES의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3658,17 +3275,49 @@
   },
   "sliceRepairAttempts": {
     "designer_draft_slices::identity-core": 1,
-    "designer_draft_slices::systems-progression": 1
+    "designer_draft_slices::systems-progression": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
-      "progressionDirection": "{\"from\": \"AUTO_FIGHT\", \"to\": \"RESOURCE_COLLECTION\"}"
+      "progressionDirection": "{\"from\": \"AUTO_FIGHT\", \"to\": \"RESOURCE_COLLECTION\"}",
+      "progressionEconomyBalance": {
+        "progressionLoop": "프로세스 루프에서 'resourceFlow' 상태가 발생하여 'balanceRules' 상태 교환을 수행해야 한다. 플레이어가 리소스 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다.",
+        "resourceFlow": "플레이어가 리소스 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다.",
+        "balanceRules": "플레이어가 리소스 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "플레이어가 리소스 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다.",
+          "newGameplay": "플레이어가 리소스 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다.",
+          "systemImpact": "플레이어가 리소스 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다."
+        },
+        {
+          "milestone": "플레이어가 리소스 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다.",
+          "newGameplay": "플레이어가 리소스 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다.",
+          "systemImpact": "플레이어가 리소스 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다."
+        },
+        {
+          "milestone": "플레이어가 리소스 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다.",
+          "newGameplay": "플레이어가 리소스 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다.",
+          "systemImpact": "플레이어가 리소스 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "플레이어가 자동으로 적군을 공격하는 과정에서 'PLAYER_FIGHT_AUTO' 상태가 발생하면, 이 상태가 'PROGRESSION_RESOURCES' 리소스 생성에 기초한 상태 교환을 수행해야 한다.",
+          "플레이어가 리소스 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다.",
+          "플레이어가 자동으로 적군을 공격하는 과정에서 'PLAYER_FIGHT_AUTO' 상태가 발생하여 'PROGRESSION_RESOURCES' 리소스 생성에 기초한 상태 교환을 수행해야 한다."
+        ],
+        "retryFlow": "플레이어가 자동으로 적군을 공격하는 과정에서 'PLAYER_FIGHT_AUTO' 상태가 발생하면, 이 상태가 'PROGRESSION_RESOURCES' 리소스 생성에 기초한 상태 교환을 수행해야 한다.",
+        "riskPressure": "플레이어가 자동으로 적군을 공격하는 과정에서 'PLAYER_FIGHT_AUTO' 상태가 발생하면, 이 상태가 'PROGRESSION_RESOURCES' 리소스 생성에 기초한 상태 교환을 수행해야 한다. 플레이어가 리소서 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다.",
+        "recoveryRules": "플레이어가 자동으로 적군을 공격하는 과정에서 'PLAYER_FIGHT_AUTO' 상태가 발생하면, 이 상태가 'PROGRESSION_RESOURCES' 리소스 생성에 기초한 상태 교환을 수행해야 한다. 플레이어가 리소스 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다."
+      }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T19:24:37.918Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T19:25:15.320Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
