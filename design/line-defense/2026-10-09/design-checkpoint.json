@@ -19,25 +19,40 @@
     "local_authoring_parts::27f25f3f529a9379a48a3f3301c3a2692961c045b2082117d3a36c5bfff68a75:identity,playerFantasy": {
       "identity": "골목 군단 대전 - Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 결과로 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임입니다. 플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이, 선택 결과가 다음 월드 상태를 바꾸는 단일 방어 전략, 그리고 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다. 이 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공합니다.",
       "playerFantasy": "골목 군단 대전에서 플레이어는 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이라는 중심 행동을 수행하며, 선택 결과가 다음 월드 상태를 바꾸는 단일 방어 전략 게임입니다. 이 게임에서는 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열립니다. 모바일에서도 즉시 이해되는 입력과 피드백을 제공하여, 플레이어의 심리적 참여와 시스템 내 유연성 사이의 균형을 유지합니다."
+    },
+    "local_authoring_parts::27f25f3f529a9379a48a3f3301c3a2692961c045b2082117d3a36c5bfff68a75:coreFun": {
+      "coreFun": "골목 군단 대전에서 플레이어는 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이라는 중심 행동을 수행하며, 선택 결과가 다음 월드 상태를 바꾸는 단일 방어 전략 게임입니다. 이 게임에서는 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열립니다. 모바일에서도 즉시 이해되는 입력과 피드백을 제공하여, 플레이어의 심리적 참여와 시스템 내 유연성 사이의 균형을 유지합니다."
+    },
+    "local_authoring_parts::6a281d0c378bd4f617d576589683fde7f4178ebe1d42557adb02b2e665ac05d9:identity,playerFantasy,coreFun": {
+      "identity": "골목 군단 대전 - Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 결과로 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임입니다. 플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이, 선택 결과가 다음 월드 상태를 바꾸는 단일 방어 전략, 그리고 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다. 이 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공합니다.",
+      "playerFantasy": "골목 군단 대전에서 플레이어는 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이라는 중심 행동을 수행하며, 선택 결과가 다음 월드 상태를 바꾸는 단일 방어 전략 게임입니다. 이 게임에서는 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열립니다. 모바일에서도 즉시 이해되는 입력과 피드백을 제공하여, 플레이어의 심리적 참여와 시스템 내 유연성 사이의 균형을 유지합니다.",
+      "coreFun": "골목 군단 대전에서 플레이어는 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이라는 중심 행동을 수행하며, 선택 결과가 다음 월드 상태를 바꾸는 단일 방어 전략 게임입니다. 이 게임에서는 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열립니다. 모바일에서도 즉시 이해되는 입력과 피드백을 제공하여, 플레이어의 심리적 참여와 시스템 내 유연성 사이의 균형을 유지합니다."
+    },
+    "local_authoring_parts::20f4f5a91e0826e5d32ba8632008607e2cc12930a58b2fa7d02e5103baa6fb7c:coreLoop": {
+      "coreLoop": [
+        "INPUT: Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "SELECT: Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "OUTPUT: Status change in the battlefield, increased resource pool, and new defensive strategy options."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 180203,
-      "lastMs": 38266,
+      "totalMs": 265481,
+      "lastMs": 38582,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:02:31.460Z"
+      "updatedAt": "2026-10-08T21:03:56.742Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:59:31.174Z",
-  "updatedAt": "2026-10-08T21:02:31.461Z",
+  "updatedAt": "2026-10-08T21:03:56.742Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2232,7 +2247,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:02:31.461Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:03:56.742Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
