@@ -714,25 +714,55 @@
         "puzzleConstraint"
       ],
       "fromSystem": "MAIN/A/B/c/@"
+    },
+    "local_authoring_parts::137710ee84e15cb6fbf7bd54bb1eeabf0bb2a393c6be6c175118a5a14e99bd45:toSystem,trigger,stateChange": {
+      "toSystem": "MAIN/A/B/c/@",
+      "trigger": "Player selects and configures the initial game state",
+      "stateChange": "Status changes to 'active' and rewards are granted"
+    },
+    "local_authoring_parts::5af0f7446abd5af11cd2f449520bfcbb04af65842903f4b63178cf02d04d10e2:systemInterconnections:1": {
+      "fromId": "MAIN",
+      "toId": "A",
+      "stateKeys": [
+        "goal",
+        "moves",
+        "obstacles",
+        "puzzleConstraint"
+      ],
+      "fromSystem": "MAIN/A/B/c/@",
+      "toSystem": "MAIN/A/B/c/@",
+      "trigger": "Player selects and configures the initial game state",
+      "stateChange": "Status changes to 'active' and rewards are granted"
+    },
+    "local_authoring_parts::ed3e645d731be6b869ce302e15fd52add238c59db4b656610136f9207f9677a9:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "MAIN",
+      "toId": "A",
+      "stateKeys": [
+        "goal",
+        "moves",
+        "obstacles",
+        "puzzleConstraint"
+      ],
+      "fromSystem": "MAIN/A/B/c/@"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 24,
-      "successes": 24,
+      "calls": 26,
+      "successes": 26,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2428288,
-      "lastMs": 91276,
+      "totalMs": 2607908,
+      "lastMs": 89857,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:14:37.818Z"
+      "updatedAt": "2026-10-08T10:17:37.445Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:42:25.133Z",
-  "updatedAt": "2026-10-08T10:14:37.818Z",
+  "updatedAt": "2026-10-08T10:17:37.446Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2929,7 +2959,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:14:37.818Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:17:37.445Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
