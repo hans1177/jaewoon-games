@@ -73,25 +73,38 @@
       "name": "DEFENSE_STRATEGY_CORE_B",
       "purpose": "MANAGE DEFENSE STRATEGIES BASED ON PLAYER CHOICE AND GAME CONTEXT",
       "playerChoice": "SELECT BETWEEN 'SURVIVE THE WAVE AND USE THE RESULT TO PREPARE A DIFFERENT COUNTER FOR THE NEXT THREAT' OR 'SPEND LIMITED RESOURCES ON PLACEMENT, RESONANCE OR UPGRADES'"
+    },
+    "local_authoring_parts::d6b5a8ab2db6305085392b5c9473fa2467a5d60a79c32b45398e208d81651f0b:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "CURRENT_SELECTION"
+      ],
+      "stateOutputs": [
+        "NEXT_WORLD_STATE"
+      ],
+      "name": "DEFENSE_STRATEGY_CORE_C",
+      "purpose": "MANAGE DEFENSE STRATEGIES BASED ON PLAYER CHOICE AND GAME CONTEXT",
+      "playerChoice": "SELECT BETWEEN 'SURVIVE THE WAVE AND USE THE RESULT TO PREPARE A DIFFERENT COUNTER FOR THE NEXT THREAT' OR 'SPEND LIMITED RESOURCES ON PLACEMENT, RESONANCE OR UPGRADES'"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 536231,
-      "lastMs": 70224,
+      "totalMs": 605949,
+      "lastMs": 69718,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:49:23.140Z"
+      "updatedAt": "2026-10-08T18:50:32.859Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:40:26.814Z",
-  "updatedAt": "2026-10-08T18:49:23.140Z",
+  "updatedAt": "2026-10-08T18:50:32.859Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2282,7 +2295,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:49:23.140Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:50:32.859Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
