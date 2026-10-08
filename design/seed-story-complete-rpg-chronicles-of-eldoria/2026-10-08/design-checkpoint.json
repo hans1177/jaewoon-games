@@ -100,25 +100,221 @@
       "name": "C",
       "purpose": "EXPLORATION_PROGRESS, CHARACTER_INTERACTION, STORY_PROGRESS, INFORMATION_ACQUISITION의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용을 통해, 플레이어의 선택과 세계 규칙의 상호작용을 통해 구현되는 반복 가능한 핵심 루프를 구체화한다.",
       "playerChoice": "EXPLORATION_PROGRESS, CHARACTER_INTERACTION, STORY_PROGRESS, INFORMATION_ACQUISITION"
+    },
+    "local_authoring_parts::e23854294e83dfae9204af6b0a3ea753d517f13ea2ceb846834753c633485326:signatureSystems:4": {
+      "id": "DELVE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "EXPLORATION_PROGRESS",
+        "CHARACTER_INTERACTION",
+        "STORY_PROGRESS",
+        "INFORMATION_ACQUISITION"
+      ],
+      "stateOutputs": [
+        "WORLD_STATE_TRANSITION",
+        "PLAYER_GROWTH_EFFECT"
+      ],
+      "name": "DELVE",
+      "purpose": "EXPLORATION_PROGRESS, CHARACTER_INTERACTION, STORY_PROGRESS, INFORMATION_ACQUISITION의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용을 통해, 플레이어의 선택과 세계 규칙의 상호작용을 통해 구현되는 반복 가능한 핵심 루프를 구체화한다.",
+      "playerChoice": "EXPLORATION_PROGRESS, CHARACTER_INTERACTION, STORY_PROGRESS, INFORMATION_ACQUISITION"
+    },
+    "local_authoring_parts::8023bfc20135e18dc2d284678eebb9a33f3b997c220c0f063fba9b3411f6da47:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "EXPLORE_AREA",
+            "MEET_CHARACTERS",
+            "ACCEPT_OR_ADVANCE_STORY_QUESTS",
+            "DISCOVER_INFORMATION"
+          ],
+          "stateOutputs": [
+            "CHANGED_WORLD_STATE",
+            "GROWTH_EFFECT"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "ACTION_RESULT_DELAYED_TO_EFFECTIVE_FUTURE",
+          "playerChoice": "ACTION_RESULT_DELAYED_TO_EFFECTIVE_FUTURE"
+        },
+        {
+          "id": "MANDATE_LEGITIMACY",
+          "grammarRole": "A",
+          "stateInputs": [
+            "PLAYER_LEGITIMACY",
+            "REGION_CONTROL",
+            "MONARCHY_LEGITIMATION"
+          ],
+          "stateOutputs": [
+            "POLITICAL_STABILITY",
+            "CIVIL_WAR_OR_STABILITY",
+            "MONARCHY_LEGITIMATION_EFFECT"
+          ],
+          "name": "MANDATE_LEGITIMACY",
+          "purpose": "PLAYER_LEGITIMACY과 REGION_CONTROL이 실제 통치 가능성을 결정하는 인과법칙",
+          "playerChoice": "PLAYER_LEGITIMACY_AND_REGION_CONTROL"
+        },
+        {
+          "id": "B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "PLAYER_LEGITIMACY_AND_REGION_CONTROL"
+          ],
+          "stateOutputs": [
+            "POLITICAL_STABILITY",
+            "CIVIL_WAR_OR_STABILITY",
+            "MONARCHY_LEGITIMATION_EFFECT"
+          ],
+          "name": "B",
+          "purpose": "PLAYER_LEGITIMACY_AND_REGION_CONTROL determines actual political stability and legitimacy in the game world",
+          "playerChoice": "PLAYER_LEGITIMACY_AND_REGION_CONTROL"
+        },
+        {
+          "id": "C",
+          "grammarRole": "c",
+          "stateInputs": [
+            "EXPLORATION_PROGRESS",
+            "CHARACTER_INTERACTION",
+            "STORY_PROGRESS",
+            "INFORMATION_ACQUISITION"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_TRANSITION",
+            "PLAYER_GROWTH_EFFECT"
+          ],
+          "name": "C",
+          "purpose": "EXPLORATION_PROGRESS, CHARACTER_INTERACTION, STORY_PROGRESS, INFORMATION_ACQUISITION의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용을 통해, 플레이어의 선택과 세계 규칙의 상호작용을 통해 구현되는 반복 가능한 핵심 루프를 구체화한다.",
+          "playerChoice": "EXPLORATION_PROGRESS, CHARACTER_INTERACTION, STORY_PROGRESS, INFORMATION_ACQUISITION"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "EXPLORATION_PROGRESS",
+            "CHARACTER_INTERACTION",
+            "STORY_PROGRESS",
+            "INFORMATION_ACQUISITION"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_TRANSITION",
+            "PLAYER_GROWTH_EFFECT"
+          ],
+          "name": "DELVE",
+          "purpose": "EXPLORATION_PROGRESS, CHARACTER_INTERACTION, STORY_PROGRESS, INFORMATION_ACQUISITION의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용을 통해, 플레이어의 선택과 세계 규칙의 상호작용을 통해 구현되는 반복 가능한 핵심 루프를 구체화한다.",
+          "playerChoice": "EXPLORATION_PROGRESS, CHARACTER_INTERACTION, STORY_PROGRESS, INFORMATION_ACQUISITION"
+        }
+      ]
+    },
+    "local_authoring_parts::953e1d8af8cbd97fbfd5420f8642915f1a24305711da6865422ec7a1bd9acfa2:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.",
+        "Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter.",
+        "Progress through the complete story arc to a final boss and a real ending, with optional post-game or sequel hooks kept separate from the base conclusion."
+      ],
+      "signatureSystems": [
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "EXPLORE_AREA",
+            "MEET_CHARACTERS",
+            "ACCEPT_OR_ADVANCE_STORY_QUESTS",
+            "DISCOVER_INFORMATION"
+          ],
+          "stateOutputs": [
+            "CHANGED_WORLD_STATE",
+            "GROWTH_EFFECT"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "ACTION_RESULT_DELAYED_TO_EFFECTIVE_FUTURE",
+          "playerChoice": "ACTION_RESULT_DELAYED_TO_EFFECTIVE_FUTURE"
+        },
+        {
+          "id": "MANDATE_LEGITIMACY",
+          "grammarRole": "A",
+          "stateInputs": [
+            "PLAYER_LEGITIMACY",
+            "REGION_CONTROL",
+            "MONARCHY_LEGITIMATION"
+          ],
+          "stateOutputs": [
+            "POLITICAL_STABILITY",
+            "CIVIL_WAR_OR_STABILITY",
+            "MONARCHY_LEGITIMATION_EFFECT"
+          ],
+          "name": "MANDATE_LEGITIMACY",
+          "purpose": "PLAYER_LEGITIMACY과 REGION_CONTROL이 실제 통치 가능성을 결정하는 인과법칙",
+          "playerChoice": "PLAYER_LEGITIMACY_AND_REGION_CONTROL"
+        },
+        {
+          "id": "B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "PLAYER_LEGITIMACY_AND_REGION_CONTROL"
+          ],
+          "stateOutputs": [
+            "POLITICAL_STABILITY",
+            "CIVIL_WAR_OR_STABILITY",
+            "MONARCHY_LEGITIMATION_EFFECT"
+          ],
+          "name": "B",
+          "purpose": "PLAYER_LEGITIMACY_AND_REGION_CONTROL determines actual political stability and legitimacy in the game world",
+          "playerChoice": "PLAYER_LEGITIMACY_AND_REGION_CONTROL"
+        },
+        {
+          "id": "C",
+          "grammarRole": "c",
+          "stateInputs": [
+            "EXPLORATION_PROGRESS",
+            "CHARACTER_INTERACTION",
+            "STORY_PROGRESS",
+            "INFORMATION_ACQUISITION"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_TRANSITION",
+            "PLAYER_GROWTH_EFFECT"
+          ],
+          "name": "C",
+          "purpose": "EXPLORATION_PROGRESS, CHARACTER_INTERACTION, STORY_PROGRESS, INFORMATION_ACQUISITION의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용을 통해, 플레이어의 선택과 세계 규칙의 상호작용을 통해 구현되는 반복 가능한 핵심 루프를 구체화한다.",
+          "playerChoice": "EXPLORATION_PROGRESS, CHARACTER_INTERACTION, STORY_PROGRESS, INFORMATION_ACQUISITION"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "EXPLORATION_PROGRESS",
+            "CHARACTER_INTERACTION",
+            "STORY_PROGRESS",
+            "INFORMATION_ACQUISITION"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_TRANSITION",
+            "PLAYER_GROWTH_EFFECT"
+          ],
+          "name": "DELVE",
+          "purpose": "EXPLORATION_PROGRESS, CHARACTER_INTERACTION, STORY_PROGRESS, INFORMATION_ACQUISITION의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용을 통해, 플레이어의 선택과 세계 규칙의 상호작용을 통해 구현되는 반복 가능한 핵심 루프를 구체화한다.",
+          "playerChoice": "EXPLORATION_PROGRESS, CHARACTER_INTERACTION, STORY_PROGRESS, INFORMATION_ACQUISITION"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 935738,
-      "lastMs": 107423,
+      "totalMs": 1043586,
+      "lastMs": 107848,
       "lastError": null,
-      "updatedAt": "2026-10-08T09:11:25.282Z"
+      "updatedAt": "2026-10-08T09:13:13.131Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:55:49.512Z",
-  "updatedAt": "2026-10-08T09:11:25.282Z",
+  "updatedAt": "2026-10-08T09:13:13.134Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2350,7 +2546,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T09:11:25.282Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:13:13.134Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
