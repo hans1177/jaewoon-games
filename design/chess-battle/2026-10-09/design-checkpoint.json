@@ -95,25 +95,204 @@
       "name": "EvolvingStrategicMapper",
       "purpose": "Mapping the dynamic strategic context to player experience through evolving board configuration and strategic path generation.",
       "playerChoice": "Player chooses a move that alters the board's spatial relationships, triggering new strategies and growth opportunities based on threat information and current board state."
+    },
+    "local_authoring_parts::553c507bbe3d7772a3ec47d1dd8b5b5ef0d90d807fcf0d162972359c5ea24c7d:signatureSystems:4": {
+      "id": "signatureSystems[4]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "boardState",
+        "threatInfo"
+      ],
+      "stateOutputs": [
+        "strategyPath",
+        "growthPotential"
+      ],
+      "name": "EvolvingStrategicMapper",
+      "purpose": "Mapping the dynamic strategic context to player experience through evolving board configuration and strategic path generation.",
+      "playerChoice": "Player chooses a move that alters the board's spatial relationships, triggering new strategies and growth opportunities based on threat information and current board state."
+    },
+    "local_authoring_parts::ccc29b620dde8015f6157929c6c1509e4af8913fbbe5a055f5f558a147551b29:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "boardState",
+            "threatInfo"
+          ],
+          "stateOutputs": [
+            "strategyPath",
+            "growthPotential"
+          ],
+          "name": "WorldStateMapper",
+          "purpose": "Mapping the dynamic world state to player experience through evolving board configuration and strategic path generation.",
+          "playerChoice": "Player chooses a move that alters the board's spatial relationships, triggering new strategies and growth opportunities based on threat information and current board state."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "boardState",
+            "threatInfo"
+          ],
+          "stateOutputs": [
+            "strategyPath",
+            "growthPotential"
+          ],
+          "name": "DynamicWorldMapper",
+          "purpose": "Mapping the dynamic world state to player experience through evolving board configuration and strategic path generation.",
+          "playerChoice": "Player chooses a move that alters the board's spatial relationships, triggering new strategies and growth opportunities based on threat information and current board state."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "boardState",
+            "threatInfo"
+          ],
+          "stateOutputs": [
+            "strategyPath",
+            "growthPotential"
+          ],
+          "name": "DynamicStrategicMapper",
+          "purpose": "Mapping the dynamic strategic context to player experience through evolving board configuration and strategic path generation.",
+          "playerChoice": "Player chooses a move that alters the board's spatial relationships, triggering new strategies and growth opportunities based on threat information and current board state."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "boardState",
+            "threatInfo"
+          ],
+          "stateOutputs": [
+            "strategyPath",
+            "growthPotential"
+          ],
+          "name": "EvolvingStrategicMapper",
+          "purpose": "Mapping the dynamic strategic context to player experience through evolving board configuration and strategic path generation.",
+          "playerChoice": "Player chooses a move that alters the board's spatial relationships, triggering new strategies and growth opportunities based on threat information and current board state."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "boardState",
+            "threatInfo"
+          ],
+          "stateOutputs": [
+            "strategyPath",
+            "growthPotential"
+          ],
+          "name": "EvolvingStrategicMapper",
+          "purpose": "Mapping the dynamic strategic context to player experience through evolving board configuration and strategic path generation.",
+          "playerChoice": "Player chooses a move that alters the board's spatial relationships, triggering new strategies and growth opportunities based on threat information and current board state."
+        }
+      ]
+    },
+    "local_authoring_parts::c1a686a8ccd912ee91423ad6c9c85274dbcee8d2b5b4bb0ab2b7c31fa7eaec49:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 연결",
+        "체스의 실제 플레이 공간은 PUZZLE 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성된다.",
+        "플레이어는 Read the board and enemy threat information.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다.",
+        "탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "boardState",
+            "threatInfo"
+          ],
+          "stateOutputs": [
+            "strategyPath",
+            "growthPotential"
+          ],
+          "name": "WorldStateMapper",
+          "purpose": "Mapping the dynamic world state to player experience through evolving board configuration and strategic path generation.",
+          "playerChoice": "Player chooses a move that alters the board's spatial relationships, triggering new strategies and growth opportunities based on threat information and current board state."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "boardState",
+            "threatInfo"
+          ],
+          "stateOutputs": [
+            "strategyPath",
+            "growthPotential"
+          ],
+          "name": "DynamicWorldMapper",
+          "purpose": "Mapping the dynamic world state to player experience through evolving board configuration and strategic path generation.",
+          "playerChoice": "Player chooses a move that alters the board's spatial relationships, triggering new strategies and growth opportunities based on threat information and current board state."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "boardState",
+            "threatInfo"
+          ],
+          "stateOutputs": [
+            "strategyPath",
+            "growthPotential"
+          ],
+          "name": "DynamicStrategicMapper",
+          "purpose": "Mapping the dynamic strategic context to player experience through evolving board configuration and strategic path generation.",
+          "playerChoice": "Player chooses a move that alters the board's spatial relationships, triggering new strategies and growth opportunities based on threat information and current board state."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "boardState",
+            "threatInfo"
+          ],
+          "stateOutputs": [
+            "strategyPath",
+            "growthPotential"
+          ],
+          "name": "EvolvingStrategicMapper",
+          "purpose": "Mapping the dynamic strategic context to player experience through evolving board configuration and strategic path generation.",
+          "playerChoice": "Player chooses a move that alters the board's spatial relationships, triggering new strategies and growth opportunities based on threat information and current board state."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "boardState",
+            "threatInfo"
+          ],
+          "stateOutputs": [
+            "strategyPath",
+            "growthPotential"
+          ],
+          "name": "EvolvingStrategicMapper",
+          "purpose": "Mapping the dynamic strategic context to player experience through evolving board configuration and strategic path generation.",
+          "playerChoice": "Player chooses a move that alters the board's spatial relationships, triggering new strategies and growth opportunities based on threat information and current board state."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 958980,
-      "lastMs": 106546,
+      "totalMs": 1064539,
+      "lastMs": 105559,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:14:34.836Z"
+      "updatedAt": "2026-10-08T18:16:20.396Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:58:35.822Z",
-  "updatedAt": "2026-10-08T18:14:34.836Z",
+  "updatedAt": "2026-10-08T18:16:20.398Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2242,7 +2421,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:14:34.836Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:16:20.398Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
