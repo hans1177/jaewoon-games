@@ -179,6 +179,8 @@
   function visualFileAuthority(file='') {
     const rel=posix(file),lower=rel.toLowerCase();
     if(!rel)return Object.freeze({file:rel,safe:false,reason:'EMPTY_PATH'});
+    // 메인: 시각 책임 후보여도 절대 경로·상위 폴더·URI로 저장소 범위를 벗어나면 거부한다.
+    if(rel.startsWith('/')||rel.startsWith('~')||/^[a-z][a-z0-9+.-]*:/i.test(rel)||rel.split('/').includes('..')||rel.includes('\0'))return Object.freeze({file:rel,safe:false,reason:'UNSAFE_VISUAL_PATH'});
     if(lower.startsWith('.github/')||lower.startsWith('.autonomous/')||lower.startsWith('company-learning/')||/\.(?:md|txt)$/.test(lower))return Object.freeze({file:rel,safe:false,reason:'NON_VISUAL_META'});
     const strongVisual=/\.(?:css|svg|shader|mat|anim|controller|prefab|unity)$/.test(lower)||/(?:^|[\/_-])(?:ui|hud|render|visual|sprite|animation|animator|effect|vfx|particle|shader|material|camera|environment)(?:[\/_\-.]|$)/.test(lower);
     const strongGameplay=/(?:gamecore|game-state|gamestate|playerstate|save|economy|balance|combat|quest|inventory|reward|damage|health|spawn)/.test(lower);
