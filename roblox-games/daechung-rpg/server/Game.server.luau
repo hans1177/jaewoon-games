@@ -36,6 +36,17 @@ local foundationSpawn
 local enemies={}
 local aiUsers={}
 local activeCompanions={}
+-- 메인: 기존 마을의 NPC 이동·대화 및 보스의 첫 조우 대사. 저장·퀘스트·전투 권한 불변.
+local livingResidents={}
+local nextNpcGreeting={}
+local bossSceneSeen={}
+local bossDialogue={
+ GOLDEN_ANTLER="이 초원의 오래된 길을 모른다면 물러서라.",
+ WHITE_FANG="나의 발자국을 따라올 수 있겠느냐?",
+ ANCIENT_HEART="이 숲의 기억을 함부로 흔들지 마라.",
+ RUIN_GUARDIAN="룬이 허락하지 않은 자는 이 문을 넘지 못한다.",
+ ABYSS_LORD="심연의 끝을 보려는가. 돌아갈 기회는 아직 있다."
+}
 local parties={}
 local clickTimes={}
 local lastRequest={}
@@ -694,6 +705,7 @@ local function advanceTrial(p,amount)
 end
 
 local function makeVillage()
+ table.clear(livingResidents)
  local f=Instance.new("Folder");f.Name="Village";f.Parent=world
  foundationSpawn=Instance.new("SpawnLocation");foundationSpawn.Name="VillageSpawn";foundationSpawn.Size=Vector3.new(12,1,12);foundationSpawn.Position=C.VillageCenter+Vector3.new(0,2,0);foundationSpawn.Anchored=true;foundationSpawn.Neutral=true;foundationSpawn.Transparency=1;foundationSpawn.CanCollide=true;foundationSpawn.Parent=f
  ppart(f,"VillageGround",Vector3.new(300,2,300),Vector3.new(0,0,0),Color3.fromRGB(93,141,85),Enum.Material.Grass)
@@ -749,8 +761,29 @@ local function makeVillage()
  prompt(master,"전직 교관","전직 시험").Triggered:Connect(startAdvancementTrial)
 
  for i=1,6 do
-  local a=i/6*math.pi*2;local npc=humanoidFigure(f,"Resident"..i,Vector3.new(math.cos(a)*43,6,math.sin(a)*43),Color3.fromRGB(110+i*8,105+i*5,96+i*4),Color3.fromRGB(72,70,68),.82)
-  label(npc,"주민",Color3.fromRGB(225,225,218),22)
+  local a=i/6*math.pi*2
+  local home=Vector3.new(math.cos(a)*43,6,math.sin(a)*43)
+  local market=Vector3.new(math.cos(a+.30)*43,6,math.sin(a+.30)*43)
+  local plaza=Vector3.new(math.cos(a+.16)*30,6,math.sin(a+.16)*30)
+  local npc=humanoidFigure(f,"Resident"..i,home,Color3.fromRGB(110+i*8,105+i*5,96+i*4),Color3.fromRGB(72,70,68),.82)
+  npc.CanCollide=false
+  label(npc,"주민 "..i,Color3.fromRGB(225,225,218),22)
+  table.insert(livingResidents,{part=npc,route={home,market,plaza},nextAnchor=2,restUntil=os.clock()+i*.5,speed=3.5+i*.25})
+  prompt(npc,"주민 "..i,"대화하기").Triggered:Connect(function(p)
+   local rp=root(p)
+   if n(p,"CurrentZone",0)~=0 or not rp or(rp.Position-npc.Position).Magnitude>12 then return end
+   local line
+   if i%3==1 then
+    line="주민: 보스와 싸울 땐 공격 전조를 먼저 봐. 해금한 보스 동료는 마을 외곽에서 두 번 선택하면 파티에 초대할 수 있어."
+   elseif i%3==2 then
+    local questId=n(p,"QuestPortal",0)
+    line=questId>0 and("주민: "..C.Portals[questId].Name.."에서 진행 중인 퀘스트가 있어. 이장과 다시 이야기해.")or"주민: 이장에게 말을 걸면 마을의 사건을 이어갈 수 있어."
+   else
+    line="주민: 장비는 마을 상인에게 준비하고, 어려우면 낮은 사냥터에서 훈련해."
+   end
+   p:SetAttribute("NPCSpeech",line)
+   msg(p,line);feedback(p,"NPC_DIALOGUE")
+  end)
  end
 
  local portalAngles={-80,-40,0,40,80}
@@ -1456,7 +1489,7 @@ local function bindPlayer(p)
 end
 Players.PlayerAdded:Connect(bindPlayer)
 for _,p in ipairs(Players:GetPlayers())do bindPlayer(p)end
-Players.PlayerRemoving:Connect(function(p)save(p);saveReady[p]=nil;clearPlayerCompanions(p);parties[p]=nil;clickTimes[p]=nil;lastRequest[p]=nil;lastBlockRequest[p]=nil;lastCombat[p]=nil;qaCaptureLast[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil end)
+Players.PlayerRemoving:Connect(function(p)save(p);saveReady[p]=nil;clearPlayerCompanions(p);parties[p]=nil;clickTimes[p]=nil;lastRequest[p]=nil;lastBlockRequest[p]=nil;lastCombat[p]=nil;qaCaptureLast[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;nextNpcGreeting[p]=nil;bossSceneSeen[p]=nil end)
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
 
 foundationRemote.OnServerEvent:Connect(function(p,name)
@@ -1478,6 +1511,37 @@ end)
 
 RunService.Heartbeat:Connect(function(dt)
  local now=os.clock()
+ -- 메인: 6명의 주민은 이미 존재하는 마을 앵커를 실제로 걸어 이동한다.
+ -- 주요 상점/퀘스트 NPC는 근거리 상호작용을 잃지 않도록 원래 위치를 유지한다.
+ for _,resident in ipairs(livingResidents)do
+  local part=resident.part
+  if part and part.Parent and now>=(resident.restUntil or 0)then
+   local target=resident.route[resident.nextAnchor]
+   local offset=Vector3.new(target.X-part.Position.X,0,target.Z-part.Position.Z)
+   if offset.Magnitude<.5 then
+    resident.nextAnchor=resident.nextAnchor%#resident.route+1
+    resident.restUntil=now+2.5
+   else
+    local direction=offset.Unit
+    local nextPos=part.Position+direction*math.min(offset.Magnitude,resident.speed*math.min(.08,dt))
+    part.CFrame=CFrame.lookAt(nextPos,nextPos+direction)
+   end
+  end
+ end
+ -- NPC가 플레이어를 만나면 먼저 말을 걸지만, 반복 발화는 플레이어마다 제한한다.
+ for _,player in ipairs(Players:GetPlayers())do
+  if n(player,"CurrentZone",0)==0 and player:GetAttribute("InCombat")~=true and now>=(nextNpcGreeting[player]or 0)then
+   local pr=root(player)
+   if pr then for _,resident in ipairs(livingResidents)do
+    if resident.part and resident.part.Parent and(pr.Position-resident.part.Position).Magnitude<15 then
+     nextNpcGreeting[player]=now+28
+     player:SetAttribute("NPCSpeech","주민: 안녕! 길이 막히면 이장에게 물어봐. 위험한 전투 전에는 장비도 확인해.")
+     feedback(player,"NPC_INITIATED_TALK")
+     break
+    end
+   end end
+  end
+ end
  for _,p in ipairs(Players:GetPlayers())do
   local h=hum(p);local r=root(p)
   if h and r and h.MoveDirection.Magnitude>.05 then
@@ -1498,6 +1562,17 @@ RunService.Heartbeat:Connect(function(dt)
     if n(p,"CurrentZone",0)==e.zone then local r=root(p);local h=hum(p);if r and h and h.Health>0 then local d=(r.Position-e.part.Position).Magnitude;if d<bd then target=p;bd=d end end end
    end
    if target then
+    -- 보스의 실제 첫 조우 사건만 대사/컷신 후보로 전달한다. 공격·보상·페이즈는 기존 전투 시스템 담당.
+    if e.boss==true and e.def and e.def.Id then
+     local id=tostring(e.def.Id)
+     bossSceneSeen[target]=bossSceneSeen[target]or{}
+     local rr=root(target)
+     if not bossSceneSeen[target][id]and bossDialogue[id]~=nil and rr and(rr.Position-e.part.Position).Magnitude<46 then
+      bossSceneSeen[target][id]=true
+      target:SetAttribute("BossIntroLine",e.def.Name.." : "..bossDialogue[id])
+      target:SetAttribute("BossIntroId",id)
+     end
+    end
     local tr=root(target);local d=tr and Vector3.new(tr.Position.X-e.part.Position.X,0,tr.Position.Z-e.part.Position.Z)
     local attackDef=e.def and e.def.Attack;local engage=(attackDef and attackDef.Range)or(e.def and e.def.Attacks and 18)or 5.5
     if d and d.Magnitude>math.max(4,engage*.78)and now>=(e.stunnedUntil or 0)and not e.attackPending then e.part.CFrame=e.part.CFrame+d.Unit*math.min(d.Magnitude,(e.speed or 7)*dt)end
