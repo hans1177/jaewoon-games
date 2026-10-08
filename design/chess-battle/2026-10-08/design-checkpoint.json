@@ -585,25 +585,28 @@
     },
     "local_authoring_parts::9b25b83f0ce3d9ca907d2151f57812f3361c3a3e6415e4490a9047d42e0c0d58:toSystem": {
       "toSystem": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다. 플레이어는 Read the board and enemy threat information.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 Read the board and enemy threat 정보.이며,두"
+    },
+    "local_authoring_parts::9b25b83f0ce3d9ca907d2151f57812f3361c3a3e6415e4490a9047d42e0c0d58:trigger": {
+      "trigger": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다. 플레이어는 Read the board and enemy threat information의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 Read the board and enemy threat information이며, 두 대축은 Commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using의"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 37,
-      "successes": 37,
+      "calls": 38,
+      "successes": 38,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3722855,
-      "lastMs": 94347,
+      "totalMs": 3819904,
+      "lastMs": 97049,
       "lastError": null,
-      "updatedAt": "2026-10-08T11:16:20.581Z"
+      "updatedAt": "2026-10-08T11:17:57.632Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:51:40.071Z",
-  "updatedAt": "2026-10-08T11:16:20.581Z",
+  "updatedAt": "2026-10-08T11:17:57.632Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3140,7 +3143,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T11:16:20.581Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T11:17:57.632Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
