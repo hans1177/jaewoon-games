@@ -287,25 +287,118 @@
           "playerChoice": "CHOOSE_NEXT_INVESTMENT_OR_UPGRADE_LEVEL_SKILL_EQUIP_GEAR_CLAIM_REWARDS_PLAYERS_FIGHT_AUTO_GENERATE_PROGRESSION_RESOURCES_BETWEEN_ACTIVE_SESSIONS_ASK_FOR_NEW_ROLES_OR_PATHS_UNLOCK_ANOTHER_GROWTH_LAYER_COLLECT_NEXT_IDLE_CYCLE_RETROFIT_THE_GAME_TO_MATCH_THE_WORLD_STATE_CHANGE_DURING_PLAYING_WITHOUT_LOSS_OF_PROGRESSION_DIRECTION_AND_CONTENT_EXPANSION_PLAN_ANNOTATION_SAVED_PROGRESS_VISIBLE_CONDITIONS_EXPLICIT_GUARANTEED_MILESTONES_DUPLICATE"
         }
       ]
+    },
+    "local_authoring_parts::a242a2e34b5695c6032d2eae57e2c745762f9636b017c41fdc9740b288355cd4:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::2d7b460cd810e8f85a6779612f3b6be9e0a2080ffaac22915ea91553f09a31d8:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE",
+        "PLAYERS FIGHT AUTO & GENERATE PROGRESSION RESOURCES BETWEEN ACTIVE SESSIONS",
+        "CLAIM REWARDS, UPGRAD LEVEL/SKILL, EQUIP GEAR, CHOOSE NEXT INVESTMENT"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "PLAYER_FRICTION",
+            "INFORMATION_HIERARCHY",
+            "CONTEXTUAL_ACTIONS"
+          ],
+          "stateOutputs": [
+            "BATCH_PREVIEW_AND_COMMIT",
+            "INTERRUPTION_AND_RETURN"
+          ],
+          "name": "IDLE_GROWTH_RPG_CORE_SYSTEM",
+          "purpose": "Establishes the core mechanics of idle growth through automatic progression and reward systems.",
+          "playerChoice": "CHOOSE_NEXT_INVESTMENT_OR_UPGRADE_LEVEL_SKILL_EQUIP_GEAR_CLAIM_REWARDS_PLAYERS_FIGHT_AUTO_GENERATE_PROGRESSION_RESOURCES_BETWEEN_ACTIVE_SESSIONS_ASK_FOR_NEW_ROLES_OR_PATHS_UNLOCK_ANOTHER_GROWTH_LAYER_COLLECT_NEXT_IDLE_CYCLE_RETROFIT_THE_GAME_TO_MATCH_THE_WORLD_STATE_CHANGE_DURING_PLAYING_WITHOUT_LOSS_OF_PROGRESSION_DIRECTION_AND_CONTENT_EXPANSION_PLAN_ANNOTATION_SAVED_PROGRESS_VISIBLE_CONDITIONS_EXPLICIT_GUARANTEED_MILESTONES_DUPLICATE_"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "PLAYER_FRICTION",
+            "INFORMATION_HIERARCHY",
+            "CONTEXTUAL_ACTIONS"
+          ],
+          "stateOutputs": [
+            "BATCH_PREVIEW_AND_COMMIT",
+            "INTERRUPTION_AND_RETURN"
+          ],
+          "name": "IDLE_GROWTH_RPG_CORE_SYSTEM",
+          "purpose": "Establishes the core mechanics of idle growth through automatic progression and reward systems.",
+          "playerChoice": "CHOOSE_NEXT_INVESTMENT_OR_UPGRADE_LEVEL_SKILL_EQUIP_GEAR_CLAIM_REWARDS_PLAYERS_FIGHT_AUTO_GENERATE_PROGRESSION_RESOURCES_BETWEEN_ACTIVE_SESSIONS_ASK_FOR_NEW_ROLES_OR_PATHS_UNLOCK_ANOTHER_GROWTH_LAYER_COLLECT_NEXT_IDLE_CYCLE_RETROFIT_THE_GAME_TO_MATCH_THE_WORLD_STATE_CHANGE_DURING_PLAYING_WITHOUT_LOSS_OF_PROGRESSION_DIRECTION_AND_CONTENT_EXPANSION_PLAN_ANNOTATION_SAVED_PROGRESS_VISIBLE_CONDITIONS_EXPLICIT_GUARANTEED_MILESTONES_DUPLICATE_"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "PLAYER_FRICTION",
+            "INFORMATION_HIERARCHY",
+            "CONTEXTUAL_ACTIONS"
+          ],
+          "stateOutputs": [
+            "BATCH_PREVIEW_AND_COMMIT",
+            "INTERRUPTION_AND_RETURN"
+          ],
+          "name": "IDLE_GROWTH_RPG_CORE_SYSTEM",
+          "purpose": "Establishes the core mechanics of idle growth through automatic progression and reward systems.",
+          "playerChoice": "CHOOSE_NEXT_INVESTMENT_OR_UPGRADE_LEVEL_SKILL_EQUIP_GEAR_CLAIM_REWARDS_PLAYERS_FIGHT_AUTO_GENERATE_PROGRESSION_RESOURCES_BETWEEN_ACTIVE_SESSIONS_ASK_FOR_NEW_ROLES_OR_PATHS_UNLOCK_ANOTHER_GROWTH_LAYER_COLLECT_NEXT_IDLE_CYCLE_RETROFIT_THE_GAME_TO_MATCH_THE_WORLD_STATE_CHANGE_DURING_PLAYING_WITHOUT_LOSS_OF_PROGRESSION_DIRECTION_AND_CONTENT_EXPANSION_PLAN_ANNOTATION_SAVED_PROGRESS_VISIBLE_CONDITIONS_EXPLICIT_GUARANTEED_MILESTONES_DUPLICATE"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "PLAYER_FRICTION",
+            "INFORMATION_HIERARCHY",
+            "CONTEXTUAL_ACTIONS"
+          ],
+          "stateOutputs": [
+            "BATCH_PREVIEW_AND_COMMIT",
+            "INTERRUPTION_AND_RETURN"
+          ],
+          "name": "IDLE_GROWTH_RPG_CONTENT_EXPANSION_PLAN",
+          "purpose": "Establishes the content expansion plan for idle growth through automatic progression and reward systems.",
+          "playerChoice": "CHOOSE_NEXT_INVESTMENT_OR_UPGRADE_LEVEL_SKILL_EQUIP_GEAR_CLAIM_REWARDS_PLAYERS_FIGHT_AUTO_GENERATE_PROGRESSION_RESOURCES_BETWEEN_ACTIVE_SESSIONS_ASK_FOR_NEW_ROLES_OR_PATHS_UNLOCK_ANOTHER_GROWTH_LAYER_COLLECT_NEXT_IDLE_CYCLE_RETROFIT_THE_GAME_TO_MATCH_THE_WORLD_STATE_CHANGE_DURING_PLAYING_WITHOUT_LOSS_OF_PROGRESSION_DIRECTION_AND_CONTENT_EXPANSION_PLAN_ANNOTATION_SAVED_PROGRESS_VISIBLE_CONDITIONS_EXPLICIT_GUARANTEED_MILESTONES_DUPLICATE"
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "PLAYER_FRICTION",
+            "INFORMATION_HIERARCHY",
+            "CONTEXTUAL_ACTIONS"
+          ],
+          "stateOutputs": [
+            "BATCH_PREVIEW_AND_COMMIT",
+            "INTERRUPTION_AND_RETURN"
+          ],
+          "name": "IDLE_GROWTH_RPG_CONTENT_EXPANSION_PLAN",
+          "purpose": "Establishes the content expansion plan for idle growth through automatic progression and reward systems.",
+          "playerChoice": "CHOOSE_NEXT_INVESTMENT_OR_UPGRADE_LEVEL_SKILL_EQUIP_GEAR_CLAIM_REWARDS_PLAYERS_FIGHT_AUTO_GENERATE_PROGRESSION_RESOURCES_BETWEEN_ACTIVE_SESSIONS_ASK_FOR_NEW_ROLES_OR_PATHS_UNLOCK_ANOTHER_GROWTH_LAYER_COLLECT_NEXT_IDLE_CYCLE_RETROFIT_THE_GAME_TO_MATCH_THE_WORLD_STATE_CHANGE_DURING_PLAYING_WITHOUT_LOSS_OF_PROGRESSION_DIRECTION_AND_CONTENT_EXPANSION_PLAN_ANNOTATION_SAVED_PROGRESS_VISIBLE_CONDITIONS_EXPLICIT_GUARANTEED_MILESTONES_DUPLICATE"
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 398700,
-      "lastMs": 42461,
+      "totalMs": 428594,
+      "lastMs": 29894,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:51:47.641Z"
+      "updatedAt": "2026-10-08T18:52:17.538Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:45:08.916Z",
-  "updatedAt": "2026-10-08T18:51:47.643Z",
+  "updatedAt": "2026-10-08T18:52:17.546Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2533,12 +2626,84 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:51:47.643Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems[2].playerChoice",
+          "value": "CHOOSE_NEXT_INVESTMENT_OR_UPGRADE_LEVEL_SKILL_EQUIP_GEAR_CLAIM_REWARDS_PLAYERS_FIGHT_AUTO_GENERATE_PROGRESSION_RESOURCES_BETWEEN_ACTIVE_SESSIONS_ASK_FOR_NEW_ROL"
+        },
+        "requiredAction": "signatureSystems[2].playerChoice의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems[3].playerChoice",
+          "value": "CHOOSE_NEXT_INVESTMENT_OR_UPGRADE_LEVEL_SKILL_EQUIP_GEAR_CLAIM_REWARDS_PLAYERS_FIGHT_AUTO_GENERATE_PROGRESSION_RESOURCES_BETWEEN_ACTIVE_SESSIONS_ASK_FOR_NEW_ROL"
+        },
+        "requiredAction": "signatureSystems[3].playerChoice의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems[4].playerChoice",
+          "value": "CHOOSE_NEXT_INVESTMENT_OR_UPGRADE_LEVEL_SKILL_EQUIP_GEAR_CLAIM_REWARDS_PLAYERS_FIGHT_AUTO_GENERATE_PROGRESSION_RESOURCES_BETWEEN_ACTIVE_SESSIONS_ASK_FOR_NEW_ROL"
+        },
+        "requiredAction": "signatureSystems[4].playerChoice의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "수정의 개화은 플레이어가 Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 IDLE_GROWTH_RPG 게임이다.\n\n플레이어의 Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.과 선택이 IDLE_GROWTH_RPG의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.\n\n성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.\n\n세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다.\n\n탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다.\n\n적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
+      "playerFantasy": "플레이어는 Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 IDLE_GROWTH_RPG 게임이다.\n\n플레이어의 Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.과 선택이 IDLE_GROWTH_RPG의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.\n\n성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.\n\n세계의 역사·생활·경제·지역 기능이 학문적으로 이해할 수 있는 방식으로 구체화되어 있으며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 시각 언어로 표현하고 있다.\n\n탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화하며, 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
+      "coreFun": "플레이어는 Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 IDLE_GROWTH_RPG 게임이다.\n\n플레이어의 Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.과 선택이 IDLE_GROWTH_RPG의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.\n\n성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.\n\n세계의 역사·생활·경제·지역 기능이 학문적으로 이해할 수 있는 방식으로 구체화되어 있으며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 시각 언어로 표현하고 있다.\n\n탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화하며, 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
+      "coreLoop": [
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE",
+        "PLAYERS FIGHT AUTO & GENERATE PROGRESSION RESOURCES BETWEEN ACTIVE SESSIONS",
+        "CLAIM REWARDS, UPGRAD LEVEL/SKILL, EQUIP GEAR, CHOOSE NEXT INVESTMENT"
+      ],
+      "multiplayerMode": "HYBRID"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T18:52:17.540Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
