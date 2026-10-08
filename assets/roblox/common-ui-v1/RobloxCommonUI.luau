@@ -2056,10 +2056,14 @@ function RobloxCommonUI.CreateShopFullScreen(options)
       card:SetAttribute("BoundFromGameState",true)
       card.Name="Product"..i
       card.LayoutOrder=i
-      card.Icon.Image=tostring(item.image or "")
-      card.Name.Text=tostring(item.name or item.title or "")
-      card.Description.Text=tostring(item.description or "")
-      card.Price.Text=item.price~=nil and tostring(item.price).."G"or"가격 미확인"
+      local icon=card:FindFirstChild("Icon")
+      local nameText=card:FindFirstChild("Name")
+      local description=card:FindFirstChild("Description")
+      local priceText=card:FindFirstChild("Price")
+      if icon then icon.Image=tostring(item.image or "")end
+      if nameText then nameText.Text=tostring(item.name or item.title or "")end
+      if description then description.Text=tostring(item.description or "")end
+      if priceText then priceText.Text=item.price~=nil and tostring(item.price).."G"or"가격 미확인"end
       local buy=card:FindFirstChild("Buy")
       if buy then
         local enabled=(item.canSell==true and type(options.onSell)=="function")
