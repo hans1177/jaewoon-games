@@ -38683,7 +38683,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-08T11:22:40.227Z",
+      "updatedAt": "2026-10-08T11:36:16.191Z",
       "robloxSourceCommit": "08bc09b3bdf05a2f839141763b40db6fd57707df",
       "robloxSourceBootstrapPassedAt": "2026-10-08T11:09:23.566Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -39310,7 +39310,26 @@
         "authority": "roblox-open-cloud-pre-f9-validation-candidate"
       },
       "robloxRuntimeFoundationPassed": false,
-      "robloxRuntimeFoundationEvidence": null,
+      "robloxRuntimeFoundationEvidence": {
+        "version": 1,
+        "gameId": "seed-single-defense-strat-celestial-bastion",
+        "sourceRevision": "08bc09b3bdf05a2f839141763b40db6fd57707df",
+        "artifactIdentity": "sha256:fef8c566d9a29921c0dc417f3e33cf0d8b414b8d1c769d9f728e6bf964bc5fd3",
+        "artifactRunId": 37767806725,
+        "universeId": "10768993555",
+        "placeId": "101172361809737",
+        "candidateVersionNumber": 9,
+        "httpStatus": 429,
+        "failureStage": "CREATE",
+        "failureClass": "INFRASTRUCTURE_OR_EVIDENCE_ONLY",
+        "error": "ROBLOX_OPEN_CLOUD_ENGINE_CREATE_HTTP_429:{\"code\":\"RESOURCE_EXHAUSTED\",\"message\":\"Luau task creation rate limit exceeded. Retry after the indicated delay.\"}",
+        "externalCapacityDeferred": true,
+        "retryAfterSeconds": 154,
+        "retryNotBefore": "2026-10-08T11:38:49.810Z",
+        "observedAt": "2026-10-08T11:36:16.191Z",
+        "workflowRunId": 37769638347,
+        "authority": "roblox-open-cloud-engine-probe-failure"
+      },
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxRuntimePassed": false,
@@ -39340,9 +39359,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE",
       "routingBlockers": [
-        "roblox-runtime-foundation-awaiting-observation"
+        "roblox-open-cloud-engine-probe-transient-retry"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -45792,7 +45811,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-08T11:35:09.933Z",
+  "updatedAt": "2026-10-08T11:36:16.191Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
