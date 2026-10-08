@@ -561,25 +561,45 @@
       "name": "방어 전략 조정",
       "purpose": "플레이어가 다음 적의 웨이브를 읽고, 방어 구조를 조정하여 위험을 줄이는 단일 방어 전략을 구현",
       "playerChoice": "방어 구조를 조정하여 위험 수치를 감소하는 선택"
+    },
+    "local_authoring_parts::f00b3bd29bfe079f5fd73865851617ab2cdebab8adf3e3757ca6dee5cd6a403f:signatureSystems:0": {
+      "id": "coreLoop",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "다음 적의 웨이브를 읽고, 방어 구조를 조정하여 위험을 줄이는 선택",
+        "방어 구조의 변화로 인해 위험 수치가 감소",
+        "적의 수가 감소하여 자원이 축적되고, 방어 구조를 업그레이드하거나 재조정할 수 있음",
+        "방어 구조가 악화되면, 방어 전략이 복잡해지고, 방어 전략이 악화될 수 있음",
+        "방어 전략을 재조정하거나, 방어 구조를 재설계하여 다음 웨이브를 대비할 수 있음"
+      ],
+      "stateOutputs": [
+        "방어 구조의 변화로 인해 위험 수치가 감소",
+        "적의 수가 감소하여 자원이 축적되고, 방어 구조를 업그레이드하거나 재조정할 수 있음",
+        "방어 전략이 복잡해지고, 방어 전략이 악화될 수 있음",
+        "방어 전략을 재조정하거나, 방어 구조를 재설계하여 다음 웨이브를 대비할 수 있음"
+      ],
+      "name": "coreLoop",
+      "purpose": "게임의 반복 가능한 핵심 루프를 구현하여 플레이어의 선택과 결과가 서로 영향을 주는 시스템을 강화",
+      "playerChoice": "다음 적의 웨이브를 읽고, 방어 구조를 조정하여 위험을 줄이는 선택"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 15,
-      "successes": 15,
+      "calls": 16,
+      "successes": 16,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1717056,
-      "lastMs": 108230,
+      "totalMs": 1838221,
+      "lastMs": 121165,
       "lastError": null,
-      "updatedAt": "2026-10-08T09:18:44.839Z"
+      "updatedAt": "2026-10-08T09:49:22.082Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:50:07.728Z",
-  "updatedAt": "2026-10-08T09:47:20.909Z",
+  "updatedAt": "2026-10-08T09:49:22.082Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2812,10 +2832,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T09:18:44.841Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:49:22.082Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
