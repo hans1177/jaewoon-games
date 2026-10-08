@@ -505,25 +505,88 @@
       "name": "ACTION_SURVIVAL_ROGUELITE",
       "purpose": "Explore a dangerous small-scale habitat and identify food, material and insect threats.",
       "playerChoice": "Take a risk to gather or fight, then convert the result into survival tools or a safer route. Use what was learned about the ecosystem to survive stronger pressure and reach the next meaningful objective."
+    },
+    "local_authoring_parts::c414f5024328a008f2a185eb1a9c663573e7f864c44815232b48d0a399a44f2a:signatureSystems:0": {
+      "id": "ACTION_SURVIVAL_ROGUELITE",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "gameState",
+        "playerInventory",
+        "environmentalConditions",
+        "riskLevel",
+        "targetObjective"
+      ],
+      "stateOutputs": [
+        "newGameState",
+        "updatedInventory",
+        "modifiedEnvironment",
+        "adjustedRiskLevel",
+        "progressionDirection"
+      ],
+      "name": "ACTION_SURVIVAL_ROGUELITE",
+      "purpose": "Explore a dangerous small-scale habitat and identify food, material and insect threats.",
+      "playerChoice": "Take a risk to gather or fight, then convert the result into survival tools or a safer route. Use what was learned about the ecosystem to survive stronger pressure and reach the next meaningful objective."
+    },
+    "local_authoring_parts::c414f5024328a008f2a185eb1a9c663573e7f864c44815232b48d0a399a44f2a:signatureSystems:1": {
+      "id": "ACTION_SURVIVAL_ROGUELITE",
+      "grammarRole": "A",
+      "stateInputs": [
+        "gameState",
+        "playerInventory",
+        "environmentalConditions",
+        "riskLevel",
+        "targetObjective"
+      ],
+      "stateOutputs": [
+        "newGameState",
+        "updatedInventory",
+        "modifiedEnvironment",
+        "adjustedRiskLevel",
+        "progressionDirection"
+      ],
+      "name": "ACTION_SURVIVAL_ROGUELITE",
+      "purpose": "Explore a dangerous small-scale habitat and identify food, material and insect threats.",
+      "playerChoice": "Take a risk to gather or fight, then convert the result into survival tools or a safer route. Use what was learned about the ecosystem to survive stronger pressure and reach the next meaningful objective."
+    },
+    "local_authoring_parts::c414f5024328a008f2a185eb1a9c663573e7f864c44815232b48d0a399a44f2a:signatureSystems:2": {
+      "id": "ACTION_SURVIVAL_ROGUELITE",
+      "grammarRole": "B",
+      "stateInputs": [
+        "gameState",
+        "playerInventory",
+        "environmentalConditions",
+        "riskLevel",
+        "targetObjective"
+      ],
+      "stateOutputs": [
+        "newGameState",
+        "updatedInventory",
+        "modifiedEnvironment",
+        "adjustedRiskLevel",
+        "progressionDirection"
+      ],
+      "name": "ACTION_SURVIVAL_ROGUELITE",
+      "purpose": "Explore a dangerous small-scale habitat and identify food, material and insect threats.",
+      "playerChoice": "Take a risk to gather or fight, then convert the result into survival tools or a safer route. Use what was learned about the ecosystem to survive stronger pressure and reach the next meaningful objective."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 15,
-      "successes": 15,
+      "calls": 18,
+      "successes": 18,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1556983,
-      "lastMs": 100405,
+      "totalMs": 1770473,
+      "lastMs": 71494,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:11:28.075Z"
+      "updatedAt": "2026-10-08T10:13:00.752Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:45:31.034Z",
-  "updatedAt": "2026-10-08T10:09:27.168Z",
+  "updatedAt": "2026-10-08T10:13:00.752Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2791,10 +2854,10 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T08:11:28.076Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:13:00.752Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
