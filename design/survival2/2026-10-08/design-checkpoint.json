@@ -102,25 +102,225 @@
       "name": "DELVE",
       "purpose": "Discover a new resource, find a new shelter, and acquire new equipment based on environmental danger, current supplies, and group readiness.",
       "playerChoice": "Discover a new resource, find a new shelter, and acquire new equipment based on environmental danger, current supplies, and group readiness."
+    },
+    "local_authoring_parts::d9eb839216d4f90e95d38656ec5f108abc92f9d96fd5625e7ee758ac3b777a7b:signatureSystems:4": {
+      "id": "SURVIVAL2-DELVE-4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "environmentalAndCreatureDanger",
+        "currentSupplies",
+        "groupReadiness"
+      ],
+      "stateOutputs": [
+        "newResource",
+        "newShelter",
+        "newEquipment"
+      ],
+      "name": "DELVE",
+      "purpose": "Discover a new resource, find a new shelter, and acquire new equipment based on environmental danger, current supplies, and group readiness.",
+      "playerChoice": "Discover a new resource, find a new shelter, and acquire new equipment based on environmental danger, current supplies, and group readiness."
+    },
+    "local_authoring_parts::52c667374e9078c7c2dc192274256df282f163788115ef5e20850e11ca7d2f8a:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SURVIVAL2-DELVE-1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "environmentalAndCreatureDanger",
+            "currentSupplies",
+            "groupReadiness"
+          ],
+          "stateOutputs": [
+            "newResource",
+            "newShelter",
+            "newEquipment"
+          ],
+          "name": "DELVE",
+          "purpose": "Explore the forest for a needed resource while reading environmental and creature danger.",
+          "playerChoice": "Explore the forest for a needed resource while reading environmental and creature danger."
+        },
+        {
+          "id": "SURVIVAL2-DELVE-1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "environmentalAndCreatureDanger",
+            "currentSupplies",
+            "groupReadiness"
+          ],
+          "stateOutputs": [
+            "newResource",
+            "newShelter",
+            "newEquipment"
+          ],
+          "name": "DELVE",
+          "purpose": "Explore the forest for a needed resource while reading environmental and creature danger.",
+          "playerChoice": "Explore the forest for a needed resource while reading environmental and creature danger."
+        },
+        {
+          "id": "SURVIVAL2-DELVE-2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "environmentalAndCreatureDanger",
+            "currentSupplies",
+            "groupReadiness"
+          ],
+          "stateOutputs": [
+            "newResource",
+            "newShelter",
+            "newEquipment"
+          ],
+          "name": "DELVE",
+          "purpose": "Explore the forest for a needed resource while reading environmental and creature danger.",
+          "playerChoice": "Explore the forest for a needed resource while reading environmental and creature danger."
+        },
+        {
+          "id": "SURVIVAL2-DELVE-3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "environmentalAndCreatureDanger",
+            "currentSupplies",
+            "groupReadiness"
+          ],
+          "stateOutputs": [
+            "newResource",
+            "newShelter",
+            "newEquipment"
+          ],
+          "name": "DELVE",
+          "purpose": "Discover a new resource, find a new shelter, and acquire new equipment based on environmental danger, current supplies, and group readiness.",
+          "playerChoice": "Discover a new resource, find a new shelter, and acquire new equipment based on environmental danger, current supplies, and group readiness."
+        },
+        {
+          "id": "SURVIVAL2-DELVE-4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "environmentalAndCreatureDanger",
+            "currentSupplies",
+            "groupReadiness"
+          ],
+          "stateOutputs": [
+            "newResource",
+            "newShelter",
+            "newEquipment"
+          ],
+          "name": "DELVE",
+          "purpose": "Discover a new resource, find a new shelter, and acquire new equipment based on environmental danger, current supplies, and group readiness.",
+          "playerChoice": "Discover a new resource, find a new shelter, and acquire new equipment based on environmental danger, current supplies, and group readiness."
+        }
+      ]
+    },
+    "local_authoring_parts::b6b38ef68fde0e5011811d69d1454cfc3ee9358706290106a53c59643f07f1e0:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Explore the forest for a needed resource while reading environmental and creature danger.의 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다.",
+        "대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다.",
+        "성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 높다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SURVIVAL2-DELVE-1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "environmentalAndCreatureDanger",
+            "currentSupplies",
+            "groupReadiness"
+          ],
+          "stateOutputs": [
+            "newResource",
+            "newShelter",
+            "newEquipment"
+          ],
+          "name": "DELVE",
+          "purpose": "Explore the forest for a needed resource while reading environmental and creature danger.",
+          "playerChoice": "Explore the forest for a needed resource while reading environmental and creature danger."
+        },
+        {
+          "id": "SURVIVAL2-DELVE-1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "environmentalAndCreatureDanger",
+            "currentSupplies",
+            "groupReadiness"
+          ],
+          "stateOutputs": [
+            "newResource",
+            "newShelter",
+            "newEquipment"
+          ],
+          "name": "DELVE",
+          "purpose": "Explore the forest for a needed resource while reading environmental and creature danger.",
+          "playerChoice": "Explore the forest for a needed resource while reading environmental and creature danger."
+        },
+        {
+          "id": "SURVIVAL2-DELVE-2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "environmentalAndCreatureDanger",
+            "currentSupplies",
+            "groupReadiness"
+          ],
+          "stateOutputs": [
+            "newResource",
+            "newShelter",
+            "newEquipment"
+          ],
+          "name": "DELVE",
+          "purpose": "Explore the forest for a needed resource while reading environmental and creature danger.",
+          "playerChoice": "Explore the forest for a needed resource while reading environmental and creature danger."
+        },
+        {
+          "id": "SURVIVAL2-DELVE-3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "environmentalAndCreatureDanger",
+            "currentSupplies",
+            "groupReadiness"
+          ],
+          "stateOutputs": [
+            "newResource",
+            "newShelter",
+            "newEquipment"
+          ],
+          "name": "DELVE",
+          "purpose": "Discover a new resource, find a new shelter, and acquire new equipment based on environmental danger, current supplies, and group readiness.",
+          "playerChoice": "Discover a new resource, find a new shelter, and acquire new equipment based on environmental danger, current supplies, and group readiness."
+        },
+        {
+          "id": "SURVIVAL2-DELVE-4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "environmentalAndCreatureDanger",
+            "currentSupplies",
+            "groupReadiness"
+          ],
+          "stateOutputs": [
+            "newResource",
+            "newShelter",
+            "newEquipment"
+          ],
+          "name": "DELVE",
+          "purpose": "Discover a new resource, find a new shelter, and acquire new equipment based on environmental danger, current supplies, and group readiness.",
+          "playerChoice": "Discover a new resource, find a new shelter, and acquire new equipment based on environmental danger, current supplies, and group readiness."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 813339,
-      "lastMs": 82782,
+      "totalMs": 895309,
+      "lastMs": 81970,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:10:56.458Z"
+      "updatedAt": "2026-10-08T13:12:18.429Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:57:22.913Z",
-  "updatedAt": "2026-10-08T13:10:56.458Z",
+  "updatedAt": "2026-10-08T13:12:18.432Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2348,7 +2548,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:10:56.458Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:12:18.432Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
