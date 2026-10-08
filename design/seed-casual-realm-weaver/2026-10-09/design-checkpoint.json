@@ -34,25 +34,51 @@
         "플레이어의 시작 행동과 선택이 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.",
         "성장은 수치 증가만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다."
       ]
+    },
+    "local_authoring_parts::0270bc34c9c4e5176c08e0a9d5f35379068441d20a0b0fad68121ca2d64d4455:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_01",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "START_STATE"
+      ],
+      "stateOutputs": [
+        "END_STATE"
+      ],
+      "name": "세계의 직조자 - 캐주얼 세계 창조 게임",
+      "purpose": "플레이어가 즉시 시작할 수 있는 단순한 한 손 tap 또는 swipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표로 시작하여, 다음 상태가 바뀌는 CASUAL 게임이다.",
+      "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+    },
+    "local_authoring_parts::0270bc34c9c4e5176c08e0a9d5f35379068441d20a0b0fad68121ca2d64d4455:signatureSystems:1": {
+      "id": "SIGNATURE_SYSTEM_02",
+      "grammarRole": "A",
+      "stateInputs": [
+        "START_STATE"
+      ],
+      "stateOutputs": [
+        "END_STATE"
+      ],
+      "name": "세계의 직조자 - 캐주얼 세계 창조 게임의 선택적 위험 및 보상 시스템",
+      "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축, 플레이어가 즉시 시작할 수 있는 단순한 한 손 tap 또는 swipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표로 시작하여, 다음 상태가 바뀌는 CASUAL 게임이다.",
+      "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 165298,
-      "lastMs": 26643,
+      "totalMs": 215531,
+      "lastMs": 25726,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:38:46.157Z"
+      "updatedAt": "2026-10-08T18:39:36.396Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:36:00.823Z",
-  "updatedAt": "2026-10-08T18:38:46.157Z",
+  "updatedAt": "2026-10-08T18:39:36.397Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1976,7 +2002,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:38:46.157Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:39:36.396Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
