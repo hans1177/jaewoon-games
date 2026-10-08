@@ -782,25 +782,42 @@
         "writeState: 'Transition to next world state based on player choices'"
       ],
       "fromSystem": "SURVIVAL_SYSTEM_01110101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101"
+    },
+    "local_authoring_parts::e582d5be760d8a0f75fa09023277bf849d1836702a1ee081ce48cec806496957:toSystem,trigger,stateChange": {
+      "toSystem": "SURVIVAL_SYSTEM_01110101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101",
+      "trigger": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure",
+      "stateChange": "Transition to next world state based on player choices"
+    },
+    "local_authoring_parts::56b1f904a6a2d9388c2fbe9305df2dfbda6f5e66db8b5bdf89ea1dbf39341a51:systemInterconnections:0": {
+      "fromId": "signatureSystems_0",
+      "toId": "signatureSystems_1",
+      "stateKeys": [
+        "readState: 'Fight through an escalating horde in a short real-time survival run'",
+        "writeState: 'Transition to next world state based on player choices'"
+      ],
+      "fromSystem": "SURVIVAL_SYSTEM_01110101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101",
+      "toSystem": "SURVIVAL_SYSTEM_01110101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101",
+      "trigger": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure",
+      "stateChange": "Transition to next world state based on player choices"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 27,
-      "successes": 27,
+      "calls": 28,
+      "successes": 28,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2872185,
-      "lastMs": 105224,
+      "totalMs": 2974883,
+      "lastMs": 102698,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:32:01.655Z"
+      "updatedAt": "2026-10-08T16:33:44.355Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:04:38.961Z",
-  "updatedAt": "2026-10-08T16:32:01.655Z",
+  "updatedAt": "2026-10-08T16:33:44.357Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3145,7 +3162,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:32:01.655Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:33:44.357Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
