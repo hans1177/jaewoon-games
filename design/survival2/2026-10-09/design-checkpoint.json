@@ -539,25 +539,43 @@
         "New game states, altered progression paths, and expanded player agency"
       ],
       "fromSystem": "SURVIVAL2-MAIN-01-system-interconnection-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-0"
+    },
+    "local_authoring_parts::dbe6b23fd6118cbbf6c7766d459b55e1173b417d9177f14ac10b46ebca285313:toSystem,trigger,stateChange": {
+      "toSystem": "SURVIVAL2-MAIN-02-system-interconnection-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-0",
+      "trigger": "Explore the forest for a needed resource while reading environmental and creature danger.",
+      "stateChange": "World state changes, new survival advantages, risk/reward dynamics, and next act are established through adaptive resource allocation and strategic decision-making."
+    },
+    "local_authoring_parts::9caae7329f7431210c76093cacbea23b7396c02daf9e3669438491553bd076e7:systemInterconnections:2": {
+      "fromId": "SURVIVAL2-MAIN-01",
+      "toId": "SURVIVAL2-MAIN-02",
+      "stateKeys": [
+        "World state changes, new survival advantages, risk/reward dynamics, and next act",
+        "Enhanced gameplay mechanics, improved survival conditions, and strategic depth",
+        "New game states, altered progression paths, and expanded player agency"
+      ],
+      "fromSystem": "SURVIVAL2-MAIN-01-system-interconnection-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-0",
+      "toSystem": "SURVIVAL2-MAIN-02-system-interconnection-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-0",
+      "trigger": "Explore the forest for a needed resource while reading environmental and creature danger.",
+      "stateChange": "World state changes, new survival advantages, risk/reward dynamics, and next act are established through adaptive resource allocation and strategic decision-making."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 17,
+      "calls": 18,
+      "successes": 18,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1680975,
-      "lastMs": 107430,
+      "totalMs": 1785778,
+      "lastMs": 104803,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:31:32.045Z"
+      "updatedAt": "2026-10-08T21:33:16.849Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:03:31.006Z",
-  "updatedAt": "2026-10-08T21:31:32.045Z",
+  "updatedAt": "2026-10-08T21:33:16.851Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2949,7 +2967,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T21:31:32.045Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:33:16.850Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
