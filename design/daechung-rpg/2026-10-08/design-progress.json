@@ -9,12 +9,24 @@
   "completedPhases": [],
   "completedPhaseCount": 0,
   "cachedTaskCount": 0,
-  "lastSuccessfulModelCallAt": null,
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T03:31:14.679Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_MULTIPLAYER_CONTRADICTION,DESIGN_RULE_ROLE_MISSING,DESIGN_RULE_ROLE_MISSING,DESIGN_RULE_STATE_MISSING",
   "designerSeed": null,
-  "modelHealth": {},
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 185389,
+      "lastMs": 185389,
+      "lastError": null,
+      "updatedAt": "2026-10-08T03:31:14.679Z"
+    }
+  },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T03:28:09.287Z"
+  "updatedAt": "2026-10-08T03:31:14.685Z"
 }
