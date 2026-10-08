@@ -89,6 +89,7 @@ on:
       - 'company-learning/vibe2-learning-motor.json'
       - 'company-learning/external-ai-distillation-policy.json'
       - 'qa/vibe2-auto-planner.test.mjs'
+      - 'qa/company-build-up-directive.test.mjs'
       - 'qa/company-build-up-experience-quality.test.mjs'
       - 'qa/vibe-roblox-co-development.test.mjs'
       - 'qa/vibe-visual-runtime-quality.test.mjs'
@@ -152,6 +153,7 @@ on:
       - 'tools/autonomous-safe-edit.mjs'
       - 'tools/vibe2-auto-planner.mjs'
       - 'tools/company-build-up-directive.mjs'
+      - 'qa/company-build-up-directive.test.mjs'
       - 'tools/company-roblox-production-plan.mjs'
       - 'qa/company-roblox-production-plan.test.mjs'
       - 'qa/company-roblox-production-handoff.test.mjs'
@@ -301,6 +303,7 @@ jobs:
           node --check tools/autonomous-safe-edit.mjs
           node --check tools/vibe2-auto-planner.mjs
           node --check tools/company-build-up-directive.mjs
+          node --check qa/company-build-up-directive.test.mjs
           node --check tools/company-roblox-production-plan.mjs
           node --check tools/vibe2-continuous-runner.mjs
           node --check tools/vibe2-asset-production-plan.mjs
@@ -400,6 +403,7 @@ jobs:
         run: |
           set -euo pipefail
           node --test qa/vibe2-auto-planner.test.mjs
+          node --test qa/company-build-up-directive.test.mjs
           node --test qa/company-build-up-experience-quality.test.mjs
           node --test qa/company-roblox-production-plan.test.mjs qa/company-roblox-production-handoff.test.mjs
           node --test qa/vibe-roblox-co-development.test.mjs

@@ -573,6 +573,160 @@ export function extractDesignContext(record={}){
   });
 }
 
+// 단일 디자이너 원본의 MAIN/A/B/c/@를 실제 플랫폼 소스에 연결한다.
+// 파일/함수 발견은 '구현 완료' 증거가 아니며 BUILD_UP/독립 런타임 QA의 책임을 바꾸지 않는다.
+export function buildDesignToPlatformCodingTrace({
+  gameId='',design={},platform='COMMON',sourceRoot='',sourceObservation={},
+  responsibleFiles=[],repoRoot=process.cwd(),multiplayerRequired=true
+}={}){
+  const id=clean(gameId);
+  if(!/^[a-z0-9][a-z0-9-]*$/.test(id))throw new Error('DESIGN_CODING_GAME_ID_INVALID');
+  const roots=Object.freeze({
+    ROBLOX:`roblox-games/${id}`,
+    UNITY_WEB:`unity-games/${id}`,
+    UNITY_APP:`unity-games/${id}`
+  });
+  const declared=clean(platform).toUpperCase();
+  const observedRoot=posix(clean(sourceRoot||sourceObservation?.sourceRoot));
+  const selected=declared==='ROBLOX'?'ROBLOX':
+    declared==='UNITY_WEB'?'UNITY_WEB':
+    declared==='UNITY_APP'||declared==='UNITY'?'UNITY_APP':
+    declared==='WEB'&&(observedRoot.split('|').includes(roots.UNITY_WEB))?'UNITY_WEB':
+    declared==='COMMON'&&observedRoot.split('|').includes(roots.ROBLOX)?'ROBLOX':
+    declared==='COMMON'&&observedRoot.split('|').includes(roots.UNITY_WEB)?'UNITY_APP':
+    'NOT_SELECTED_NATIVE_PLATFORM';
+  const designRoles=Array.isArray(design.signatureSystems)?design.signatureSystems:[];
+  const connections=Array.isArray(design.systemInterconnections)?design.systemInterconnections:[];
+  const roles=['MAIN','A','B','c','DELVE'];
+  const roleByName=new Map(roles.map(role=>[role,designRoles.filter(row=>row?.grammarRole===role)]));
+  const mode=clean(design.multiplayerMode).toUpperCase();
+  const modeReady=['COOP','COMPETITIVE','HYBRID'].includes(mode);
+  const selectedRoot=roots[selected]||'';
+  const rootReal=path.resolve(repoRoot);
+  const safeSourcePath=value=>{
+    const raw=posix(clean(value));
+    if(!selectedRoot||!raw)return'';
+    const candidate=raw.startsWith(selectedRoot+'/')?raw:`${selectedRoot}/${raw}`;
+    if(!candidate.startsWith(selectedRoot+'/')||!['.lua','.luau','.cs'].some(ext=>candidate.toLowerCase().endsWith(ext)))return'';
+    const full=path.resolve(rootReal,candidate);
+    const canonicalOwnerRoot=path.resolve(rootReal,selectedRoot);
+    if(!full.startsWith(canonicalOwnerRoot+path.sep)||!full.startsWith(rootReal+path.sep))return'';
+    try{
+      if(!fs.statSync(full).isFile())return'';
+      const real=fs.realpathSync(full);
+      const realOwnerRoot=fs.realpathSync(canonicalOwnerRoot);
+      if(!real.startsWith(realOwnerRoot+path.sep)||!real.startsWith(rootReal+path.sep))return'';
+      return candidate;
+    }catch{return'';}
+  };
+  const observedFiles=uniq([
+    ...(sourceObservation?.topFiles||[]).map(row=>row?.file),
+    ...(sourceObservation?.sourceAnchors||[]).map(row=>row?.file),
+    ...responsibleFiles
+  ].map(safeSourcePath).filter(Boolean));
+  // 정적 함수/행동 증거는 최소 소스 후보만 의미한다. 코멘트·태그·설정 파일만으로는 구현을 인정하지 않는다.
+  const codeSignalFiles=observedFiles.filter(file=>{
+    try{
+      const original=fs.readFileSync(path.resolve(rootReal,file),'utf8');
+      const source=original.split('\n').map(line=>{
+        const comment=file.endsWith('.cs')?'//':'--';
+        const at=line.indexOf(comment);
+        return at<0?line:line.slice(0,at);
+      }).join('\n');
+      if(file.endsWith('.cs')){
+        return /\b(?:void|Task|IEnumerator|bool|int|float|string|GameObject|Coroutine)\s+\w+\s*\(/.test(source);
+      }
+      return /\bfunction\s*[\w.:(]|\b(?:Instance\.new|FireAllClients|FireServer|UpdateAsync)\s*\(/.test(source);
+    }catch{return false;}
+  });
+  const symbols=(sourceObservation?.sourceAnchors||[]).map(row=>({
+    file:safeSourcePath(row?.file),symbol:clean(row?.symbol),kind:clean(row?.kind)
+  })).filter(row=>row.file&&row.symbol).slice(0,24);
+  const priority=(file,role)=>{
+    const name=file.toLowerCase();
+    if(selected==='ROBLOX'){
+      if(role==='c')return name.includes('/client/')?6:name.includes('/shared/')?3:0;
+      if(role==='DELVE')return name.includes('/server/')?6:name.includes('/shared/')?4:0;
+      return name.includes('/server/')?6:name.includes('/shared/')?4:name.includes('/client/')?1:0;
+    }
+    if(role==='c')return /visual|render|anim|present|camera|vfx/.test(name)?6:/runtime|bootstrap/.test(name)?3:1;
+    if(role==='DELVE')return /gamecore|save|progress|session/.test(name)?6:/runtime/.test(name)?4:1;
+    return /gamecore|floor|combat|gameplay/.test(name)?6:/runtime|bootstrap/.test(name)?5:1;
+  };
+  const bindings=roles.map(role=>{
+    const rows=roleByName.get(role)||[];
+    const system=rows[0]||{};
+    const everySystemAuthored=rows.length>0&&rows.every(row=>clean(row?.id)&&uniq(row?.stateInputs||[]).length&&uniq(row?.stateOutputs||[]).length);
+    const candidates=observedFiles
+      .map(file=>({file,score:priority(file,role)}))
+      .sort((a,b)=>b.score-a.score||a.file.localeCompare(b.file))
+      .slice(0,3).map(row=>row.file);
+    const inputKeys=uniq(system.stateInputs||[]);
+    const outputKeys=uniq(system.stateOutputs||[]);
+    const id=clean(system.id);
+    const roleIds=new Set(rows.map(row=>clean(row.id)).filter(Boolean));
+    const connected=connections.filter(edge=>roleIds.has(clean(edge?.fromId))||roleIds.has(clean(edge?.toId))).map(edge=>({
+      fromId:clean(edge.fromId),toId:clean(edge.toId),stateKeys:uniq(edge.stateKeys||[])
+    })).slice(0,12);
+    return Object.freeze({
+      role:role==='DELVE'?'@':role,grammarRole:role,systemId:id||null,
+      systemIds:[...roleIds],names:rows.map(row=>clean(row.name)).filter(Boolean),
+      name:clean(system.name)||null,
+      stateInputs:inputKeys,stateOutputs:outputKeys,connections:connected,
+      suggestedExistingOwnerFiles:candidates,
+      inspectedSymbols:symbols.filter(row=>candidates.includes(row.file)).slice(0,5),
+      designStatus:everySystemAuthored&&(['MAIN','A','B'].includes(role)?rows.length===1:rows.length>=1)?'AUTHORED':'DESIGN_REPAIR_REQUIRED',
+      codingStatus:!selectedRoot?'PLATFORM_NOT_SELECTED':!candidates.length?'SOURCE_OWNER_MISSING':
+        !candidates.some(file=>codeSignalFiles.includes(file))?'SOURCE_OWNER_ONLY_DECLARATIVE_OR_COMMENT':'SOURCE_OWNER_CANDIDATE_UNVERIFIED',
+      executableBehaviorVerified:false,
+      actualRuntimeVerified:false,
+      evidenceNeeded:'EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA'
+    });
+  });
+  const authoredRolesComplete=roles.every(role=>['MAIN','A','B'].includes(role)?(roleByName.get(role)||[]).length===1:(roleByName.get(role)||[]).length>=1)
+    &&bindings.every(row=>row.designStatus==='AUTHORED');
+  const mandatory=multiplayerRequired===true;
+  const unityDepth=design?.platformProfiles?.UNITY?.unityWebSpatialPresentation||{};
+  const spatialReady=['2.5D','3D'].includes(unityDepth.dimension)
+    &&['worldDepth','cameraAndOcclusion','lightingAndMaterials','mobileWebglEvidence']
+      .every(field=>clean(unityDepth[field]).length>=32);
+  const platforms=['ROBLOX','UNITY_WEB','UNITY_APP'].map(name=>Object.freeze({
+    platform:name,canonicalGameSourceRoot:roots[name],
+    sharedUnitySource:name!=='ROBLOX',
+    gameCodePlatformProfile:name==='ROBLOX'?'ROBLOX':'UNITY',
+    requiresSameServerTwoClientPlay:mandatory,
+    requiresNativeRuntimeResult:true,
+    ...name==='UNITY_WEB'?{minimumRenderedDimension:'2.5D',spatialDesignReady:spatialReady}: {},
+    inspectedInThisDirective:name===selected
+  }));
+  const observedCode=selectedRoot&&observedFiles.length>0;
+  const gapReasons=[
+    ...(!authoredRolesComplete?['DESIGN_MAIN_A_B_c_AT_INCOMPLETE']:[]),
+    ...(mandatory&&!modeReady?['MULTIPLAYER_DESIGN_MODE_MISSING']:[]),
+    ...(selected==='UNITY_WEB'&&!spatialReady?['UNITY_WEB_DESIGN_SPATIAL_DEPTH_MISSING']:[]),
+    ...(!selectedRoot?['PLATFORM_SOURCE_NOT_SELECTED']:!observedCode?['NATIVE_GAME_CODE_OWNER_MISSING']:[]),
+    ...(observedCode&&!codeSignalFiles.length?['EXECUTABLE_GAMEPLAY_SOURCE_NOT_FOUND']:[]),
+    ...bindings.filter(row=>row.designStatus!=='AUTHORED').map(row=>'DESIGN_ROLE_NOT_AUTHORED:'+row.role),
+    ...bindings.filter(row=>row.codingStatus==='SOURCE_OWNER_MISSING').map(row=>'GAME_CODE_OWNER_MISSING:'+row.role)
+  ];
+  return Object.freeze({
+    version:1,authority:'GAME_DESIGN_TO_EXISTING_PLATFORM_BUILD_UP_LINK',
+    gameId:id,requestedPlatform:declared,activePlatform:selected,
+    designFingerprint:sha(JSON.stringify(design)),sourceTreeFingerprint:clean(sourceObservation?.sourceTreeFingerprint)||null,
+    multiplayerMode:mode||null,multiplayerRequired:mandatory,minimumParticipants:mandatory?2:1,
+    platformCodingPlans:Object.freeze(platforms),
+    roleBindings:Object.freeze(bindings),
+    observedGameCodeFiles:Object.freeze(observedFiles),
+    executableCodeCandidateFiles:Object.freeze(codeSignalFiles),
+    gapReasons:Object.freeze(uniq(gapReasons)),
+    codingReviewState:gapReasons.length?'GAME_STAGE_LOCAL_REPAIR_REQUIRED':'SOURCE_CANDIDATES_PRESENT_NOT_IMPLEMENTATION_PASS',
+    sourceImplementationPassed:false,actualTwoClientPassed:false,actualWebglRenderPassed:false,independentQaPassed:false,
+    stageLocalAction:'IMPLEMENT_IN_EXISTING_GAME_SOURCE_THEN_VALIDATE_WITH_EXISTING_F0_TO_F9_AND_PLATFORM_RUNTIME',
+    schemaAndMarkersAloneCannotPass:true,newPipeline:false,changesDevelopmentAdmission:false,
+    saveBalanceAndExistingMultiplayerMeaningPreserved:true
+  });
+}
+
 function qualitySignalText(values=[]){return uniq(values).join(' | ').toLowerCase();}
 function focusFromSignals({signals=[],source={}}={}){
   const text=qualitySignalText(signals);
@@ -1348,6 +1502,8 @@ export function directivePrompt(d={}){
     `id=${d.directiveId}; generation=${d.generation}; depth=${d.developmentDepth}; stage=${d.escalationStage}; focus=${d.primaryFocus}`,
     `GAME_IDENTITY: ${d.gameIdentityAndNonNegotiables.identity}`,
     `DESIGN_IMPLEMENTATION_CONTEXT: ${JSON.stringify(d.designImplementationContext||{})}`,
+    `DESIGN_TO_PLATFORM_CODING_CHECK: ${JSON.stringify(d.designToPlatformCodingTrace||{})}`,
+    'CODING_IMPLEMENTATION_VERDICT: SOURCE_OWNER_CANDIDATES_ONLY. Do not mark a MAIN/A/B/c/@ role, native platform, multiplayer session or 2.5D graphics PASS from design fields or a source marker. Implement and independently replay actual input→authoritative state→result→reconnect, then rerun existing platform QA.',
     `MULTIPLAYER_IMPLEMENTATION: ${JSON.stringify(d.multiplayerImplementation||{})}`,
     ...(d.multiplayerImplementation?.required?[`전 게임 멀티 필수: 기존 서버 권한·클라이언트 입력/동기화 책임 소스에서 접속·참가·준비·시작·이탈·재접속과 목표·승패·보상 일치를 구현한다. 로컬 시뮬레이션이나 플래그만으로 구현 완료라 하지 않는다. 빠진 구현은 기존 BUILD_UP에서 계속 수정·재시도하며 다른 게임과 독립 작업은 계속 진행한다. 실제 2인 이상 같은 세션의 증거를 별도로 남긴다.`]:[]),
     `IDENTITY_ONE_LINE_FANTASY: ${d.identityReinforcement?.oneLineFantasy||d.gameIdentityAndNonNegotiables.identity}`,
@@ -1459,16 +1615,22 @@ export function buildGameSpecificBuildUpDirective({
   const identity=design.identity||clean(gameName)||id;
   const firstSignature=design.signatureSystems?.[0]||{};
   const firstConnection=design.systemInterconnections?.[0]||{};
-  const reconstructedMain=clean(design.coreLoop?.[0])||clean(design.coreFun)||anchor;
+  const authoredRole=role=>design.signatureSystems.find(system=>system.grammarRole===role);
+  const mainSystem=authoredRole('MAIN'),aSystem=authoredRole('A'),bSystem=authoredRole('B');
+  const cSystems=design.signatureSystems.filter(system=>system.grammarRole==='c');
+  const delveSystems=design.signatureSystems.filter(system=>system.grammarRole==='DELVE');
+  const authorMapped=Boolean(mainSystem&&aSystem&&bSystem&&cSystems.length&&delveSystems.length);
+  const reconstructedMain=clean(mainSystem?.name)||clean(design.coreLoop?.[0])||clean(design.coreFun)||anchor;
   const reconstructedMajorAxes=Object.freeze([
-    Object.freeze({key:'A',name:clean(design.signatureSystems?.[0]?.name)||secondary,source:'CURRENT_DESIGN_SIGNATURE_SYSTEM'}),
-    Object.freeze({key:'B',name:clean(design.signatureSystems?.[1]?.name)||clean(design.coreLoop?.[1])||'CURRENT_SECOND_MAJOR_SYSTEM',source:'CURRENT_DESIGN_SIGNATURE_SYSTEM_OR_LOOP'})
+    Object.freeze({key:'A',systemId:clean(aSystem?.id)||null,name:clean(aSystem?.name)||clean(design.signatureSystems?.[0]?.name)||secondary,source:authorMapped?'DESIGNER_AUTHORED_ROLE_A':'LEGACY_DESIGN_FALLBACK_UNVERIFIED'}),
+    Object.freeze({key:'B',systemId:clean(bSystem?.id)||null,name:clean(bSystem?.name)||clean(design.signatureSystems?.[1]?.name)||clean(design.coreLoop?.[1])||'CURRENT_SECOND_MAJOR_SYSTEM',source:authorMapped?'DESIGNER_AUTHORED_ROLE_B':'LEGACY_DESIGN_FALLBACK_UNVERIFIED'})
   ]);
-  const confirmedSubElements=uniq([
-    ...design.signatureSystems.slice(2).map(row=>row.name||row.purpose),
-    ...design.systemInterconnections.slice(0,4).map(row=>row.trigger)
-  ]).slice(0,6);
+  const confirmedSubElements=uniq(authorMapped
+    ?cSystems.map(row=>row.name||row.purpose)
+    :[...design.signatureSystems.slice(2).map(row=>row.name||row.purpose),...design.systemInterconnections.slice(0,4).map(row=>row.trigger)]
+  ).slice(0,6);
   const delveEvidence=uniq([
+    ...delveSystems.map(row=>row.name||row.purpose),
     ...design.contentExpansionPlan.flatMap(row=>[row.milestone,row.newGameplay]),
     ...design.narrativeWorldRules,
     ...design.designIntegrityNotes
@@ -1477,6 +1639,8 @@ export function buildGameSpecificBuildUpDirective({
     mode:'EXISTING_GAME_RECONSTRUCTION_FROM_CURRENT_DESIGN_AND_INSPECTED_SOURCE',
     formula:'MAIN × A × B × c + @',
     main:reconstructedMain,
+    source:authorMapped?'DESIGNER_AUTHORED_ROLE_IDS_AND_STATE_LINKS':'LEGACY_DESIGN_HEURISTIC_NOT_IMPLEMENTATION_EVIDENCE',
+    roleSystemIds:Object.freeze({MAIN:clean(mainSystem?.id)||null,A:clean(aSystem?.id)||null,B:clean(bSystem?.id)||null,c:cSystems.map(row=>clean(row.id)).filter(Boolean),AT:delveSystems.map(row=>clean(row.id)).filter(Boolean)}),
     majorAxes:reconstructedMajorAxes,
     cSubElements:Object.freeze(confirmedSubElements),
     delveAtEvidence:Object.freeze(delveEvidence),
@@ -1492,7 +1656,7 @@ export function buildGameSpecificBuildUpDirective({
     representativeAction:design.coreLoop?.[0]||design.coreFun||anchor,
     representativeChoice:clean(firstSignature.playerChoice)||design.coreLoop?.[1]||secondary,
     signatureWorldRule:clean(firstConnection.stateChange)||clean(firstConnection.trigger)||`${anchor}의 결과가 다음 월드·목표·위험·보상 상태를 바꾼다.`,
-    signatureSystems:Object.freeze(design.signatureSystems.slice(0,2).map(row=>row.name||row.purpose).filter(Boolean)),
+    signatureSystems:Object.freeze((authorMapped?design.signatureSystems:design.signatureSystems.slice(0,2)).map(row=>row.name||row.purpose).filter(Boolean)),
     growthIdentity:design.progressionDirection||'성장 후 새 행동·경로·조합·관계·발견·대응법을 연다.',
     threeSentenceTest:Object.freeze({
       whatGame:identity,
@@ -1541,6 +1705,12 @@ export function buildGameSpecificBuildUpDirective({
     whyThisAnchor:`${row.file}::${row.symbol||'UNKNOWN'}이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨`,
     observableAcceptance:`${row.file}에 실제 source delta가 있고 관련 QA/runtime에서 ${focus} 상태 변화와 expected player effect가 관찰되어야 함`
   }));
+  // 현재 게임·플랫폼의 설계 역할을 실제 코딩 책임 파일 후보와 연결한다.
+  // 여러 플랫폼을 한 파이프라인으로 합치지 않고 기존 BUILD_UP의 단계별 QA에 전달한다.
+  const designToPlatformCodingTrace=buildDesignToPlatformCodingTrace({
+    gameId:id,design,platform,sourceRoot,sourceObservation:source,
+    responsibleFiles:topFiles,repoRoot,multiplayerRequired
+  });
   const robloxNativeExecution=Object.freeze({
     version:1,
     required:true,
@@ -1749,6 +1919,7 @@ export function buildGameSpecificBuildUpDirective({
     sourceTreeFingerprint:source.sourceTreeFingerprint,
     designFingerprint:sha(JSON.stringify(design)),
     identityReinforcement,
+    designToPlatformCodingTrace,
     designImplementationContext:Object.freeze({
       source:'LATEST_VERIFIED_DESIGN_FIELDS',
       coreFun:design.coreFun,
