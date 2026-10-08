@@ -106,25 +106,236 @@
       "name": "DELVE_C",
       "purpose": "ACTION_SEQUENCE",
       "playerChoice": "ACTION_SEQUENCE"
+    },
+    "local_authoring_parts::695244b87cefe03728e863e05f64ff818da6c14818674d36fe8281179e8c80f1:signatureSystems:4": {
+      "id": "DELVE_C",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "EXPLORE_AREA",
+        "MEET_CHARACTERS",
+        "ACCEPT_OR_ADVANCE_STORY_QUESTS",
+        "DISCOVER_INFORMATION"
+      ],
+      "stateOutputs": [
+        "CHANGED_WORLD_STATE",
+        "GROWTH_EFFECT",
+        "ACTION_SEQUENCE"
+      ],
+      "name": "DELVE_C",
+      "purpose": "ACTION_SEQUENCE",
+      "playerChoice": "ACTION_SEQUENCE"
+    },
+    "local_authoring_parts::e16f656469fe945b4d988cba0f627348974f6fa77549c312cc01c5f45a1e91c2:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "EXPLORE_AREA",
+            "MEET_CHARACTERS",
+            "ACCEPT_OR_ADVANCE_STORY_QUESTS",
+            "DISCOVER_INFORMATION"
+          ],
+          "stateOutputs": [
+            "CHANGED_WORLD_STATE",
+            "GROWTH_EFFECT",
+            "ACTION_SEQUENCE"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "ACTION_SEQUENCE",
+          "playerChoice": "ACTION_SEQUENCE"
+        },
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "A",
+          "stateInputs": [
+            "EXPLORE_AREA",
+            "MEET_CHARACTERS",
+            "ACCEPT_OR_ADVANCE_STORY_QUESTS",
+            "DISCOVER_INFORMATION"
+          ],
+          "stateOutputs": [
+            "CHANGED_WORLD_STATE",
+            "GROWTH_EFFECT",
+            "ACTION_SEQUENCE"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "ACTION_SEQUENCE",
+          "playerChoice": "ACTION_SEQUENCE"
+        },
+        {
+          "id": "B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "EXPLORE_AREA",
+            "MEET_CHARACTERS",
+            "ACCEPT_OR_ADVANCE_STORY_QUESTS",
+            "DISCOVER_INFORMATION"
+          ],
+          "stateOutputs": [
+            "CHANGED_WORLD_STATE",
+            "GROWTH_EFFECT",
+            "ACTION_SEQUENCE"
+          ],
+          "name": "B",
+          "purpose": "ACTION_SEQUENCE",
+          "playerChoice": "ACTION_SEQUENCE"
+        },
+        {
+          "id": "DELVE_C",
+          "grammarRole": "c",
+          "stateInputs": [
+            "EXPLORE_AREA",
+            "MEET_CHARACTERS",
+            "ACCEPT_OR_ADVANCE_STORY_QUESTS",
+            "DISCOVER_INFORMATION"
+          ],
+          "stateOutputs": [
+            "CHANGED_WORLD_STATE",
+            "GROWTH_EFFECT",
+            "ACTION_SEQUENCE"
+          ],
+          "name": "DELVE_C",
+          "purpose": "ACTION_SEQUENCE",
+          "playerChoice": "ACTION_SEQUENCE"
+        },
+        {
+          "id": "DELVE_C",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "EXPLORE_AREA",
+            "MEET_CHARACTERS",
+            "ACCEPT_OR_ADVANCE_STORY_QUESTS",
+            "DISCOVER_INFORMATION"
+          ],
+          "stateOutputs": [
+            "CHANGED_WORLD_STATE",
+            "GROWTH_EFFECT",
+            "ACTION_SEQUENCE"
+          ],
+          "name": "DELVE_C",
+          "purpose": "ACTION_SEQUENCE",
+          "playerChoice": "ACTION_SEQUENCE"
+        }
+      ]
+    },
+    "local_authoring_parts::b51c4a7b15035a59b0211778210bbf26de0eb3a1d7b33852f65238d1888c6466:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.",
+        "Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter.",
+        "Progress through the complete story arc to a final boss and a real ending, with optional post-game or sequel hooks kept separate from the base conclusion."
+      ],
+      "signatureSystems": [
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "EXPLORE_AREA",
+            "MEET_CHARACTERS",
+            "ACCEPT_OR_ADVANCE_STORY_QUESTS",
+            "DISCOVER_INFORMATION"
+          ],
+          "stateOutputs": [
+            "CHANGED_WORLD_STATE",
+            "GROWTH_EFFECT",
+            "ACTION_SEQUENCE"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "ACTION_SEQUENCE",
+          "playerChoice": "ACTION_SEQUENCE"
+        },
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "A",
+          "stateInputs": [
+            "EXPLORE_AREA",
+            "MEET_CHARACTERS",
+            "ACCEPT_OR_ADVANCE_STORY_QUESTS",
+            "DISCOVER_INFORMATION"
+          ],
+          "stateOutputs": [
+            "CHANGED_WORLD_STATE",
+            "GROWTH_EFFECT",
+            "ACTION_SEQUENCE"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "ACTION_SEQUENCE",
+          "playerChoice": "ACTION_SEQUENCE"
+        },
+        {
+          "id": "B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "EXPLORE_AREA",
+            "MEET_CHARACTERS",
+            "ACCEPT_OR_ADVANCE_STORY_QUESTS",
+            "DISCOVER_INFORMATION"
+          ],
+          "stateOutputs": [
+            "CHANGED_WORLD_STATE",
+            "GROWTH_EFFECT",
+            "ACTION_SEQUENCE"
+          ],
+          "name": "B",
+          "purpose": "ACTION_SEQUENCE",
+          "playerChoice": "ACTION_SEQUENCE"
+        },
+        {
+          "id": "DELVE_C",
+          "grammarRole": "c",
+          "stateInputs": [
+            "EXPLORE_AREA",
+            "MEET_CHARACTERS",
+            "ACCEPT_OR_ADVANCE_STORY_QUESTS",
+            "DISCOVER_INFORMATION"
+          ],
+          "stateOutputs": [
+            "CHANGED_WORLD_STATE",
+            "GROWTH_EFFECT",
+            "ACTION_SEQUENCE"
+          ],
+          "name": "DELVE_C",
+          "purpose": "ACTION_SEQUENCE",
+          "playerChoice": "ACTION_SEQUENCE"
+        },
+        {
+          "id": "DELVE_C",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "EXPLORE_AREA",
+            "MEET_CHARACTERS",
+            "ACCEPT_OR_ADVANCE_STORY_QUESTS",
+            "DISCOVER_INFORMATION"
+          ],
+          "stateOutputs": [
+            "CHANGED_WORLD_STATE",
+            "GROWTH_EFFECT",
+            "ACTION_SEQUENCE"
+          ],
+          "name": "DELVE_C",
+          "purpose": "ACTION_SEQUENCE",
+          "playerChoice": "ACTION_SEQUENCE"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 820206,
-      "lastMs": 98089,
+      "totalMs": 917865,
+      "lastMs": 97659,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:36:59.948Z"
+      "updatedAt": "2026-10-08T13:38:37.608Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:23:19.708Z",
-  "updatedAt": "2026-10-08T13:36:59.948Z",
+  "updatedAt": "2026-10-08T13:38:37.611Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2356,7 +2567,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:36:59.948Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:38:37.611Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
