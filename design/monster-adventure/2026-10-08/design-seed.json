@@ -1,0 +1,119 @@
+{
+  "version": 1,
+  "gameId": "monster-adventure",
+  "date": "2026-10-08",
+  "seedId": "OWNER-ALL-DESIGN-RESET-MONSTER-ADVENTURE-20260917",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "ollama:qwen3:1.7b",
+  "singleAuthor": true,
+  "sourceStage": "identity-core",
+  "phase": "designer_draft",
+  "status": "AUTHORED_CANDIDATE",
+  "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
+  "originalSource": null,
+  "fingerprint": "3053c03e17341d8a172b242a64aa04ee6adb8fa82731951573fa80303575864e",
+  "engineDigest": "d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904",
+  "contentDigest": "9773a62599bb93666740c53de7e0b8a53978fda7a431b15bc272fed2b1486f69",
+  "externalSeedRequired": false,
+  "designPass": false,
+  "runtimePass": false,
+  "content": {
+    "identity": "몬스터 어드벤처는 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다. 플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 MAIN, 두 대축은 A/B, 보조 요소는 c, 발견·숙련·재방문은 @로 구분된다. 게임은 CASUAL의 핵심 재미를 최우선으로 두고 RPG식 시스템을 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다. MAIN/A/B/c/@와 규칙·상태·진행·멀티 의미는 이 원본에서만 작성한다. 플랫폼별 구현 제약은 같은 원본의 platformProfiles에 따라 적용된다. 기존 게임 원본은 보존하며, 멀티 모드는 디자이너가 직접 작성한다. 설계는 기존 검증과 보안을 유지하며, 실패·중단·재접속·저장은 원본 의미를 보존한다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 점수와 통과 판정은 결정론적 검증기가 담당한다. 게임은 단순 반복과 다른 경로·위험·결과를 만든다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 게임은 기존 장르 태그 하나가 플레이를 정의하지 않으며, 재료 인과문법과 MAIN×A×B×c가 서로 상태를 바꾸고 @ 파고들기 요소가 숨은 운용을 여는 복합장르다. 게임은 기존 장르 태그 하나가 플레이를 정의하지 않으며, 재료 인과문법과 MAIN×A×B×c가 서로 상태를 바꾸고 @ 파고들기 요소가 숨은 운용을 여는 복합장르다. 게임은 기존 장르 태그 하나가 플레이를 정의하지 않으며, 재료 인과문법과 MAIN×A×B×c가 서로 상태를 바꾸고 @ 파고들기 요소가 숨은 운용을 여는 복합장르다. 게임은 기존 장르 태그 하나가 플레이를 정의하지 않으며, 재료 인과문법과 MAIN×A×B×",
+    "playerFantasy": "몬스터 어드벤처는 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다. 플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 MAIN, 두 대축은 A/B, 보조 요소는 c, 발견·숙련·재방문은 @로 구분된다. 게임은 CASUAL의 핵심 재미를 최우선으로 두고 RPG식 시스템을 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다. MAIN/A/B/c/@와 규칙·상태·진행·멀티 의미는 이 원본에서만 작성한다. 플랫폼별 구현 제약은 같은 원본의 platformProfiles에 따라 적용된다. 기존 게임 원본은 보존하며, 멀티 모드는 디자이너가 직접 작성한다. 설계는 기존 검증과 보안을 유지하며, 실패·중단·재접속·저장은 원본 의미를 보존한다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 점수와 통과 판정은 결정론적 검증기가 담당한다. 게임은 단순 반복과 다른 경로·위험·결과를 만든다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 게임은 기존 장르 태그 하나가 플레이를 정의하지 않으며, 재료 인과문법과 MAIN×A×B×c가 서로 상태를 바꾸고 @ 파고들기 요소가 숨은 운용을 여는 복합장르다.",
+    "coreFun": "몬스터 어드벤처는 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다. 플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 MAIN, 두 대축은 A/B, 보조 요소는 c, 발견·숙련·재방문은 @로 구분된다. 게임은 CASUAL의 핵심 재미를 최우선으로 두고 RPG식 시스템을 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다. MAIN/A/B/c/@와 규칙·상태·진행·멀티 의미는 이 원본에서만 작성한다. 플랫폼별 구현 제약은 같은 원본의 platformProfiles에 따라 적용된다. 기존 게임 원본은 보존하며, 멀티 모드는 디자이너가 직접 작성한다. 설계는 기존 검증과 보안을 유지하며, 실패·중단·재접속·저장은 원본 의미를 보존한다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 점수와 통과 판정은 결정론적 검증기가 담당한다. 게임은 단순 반복과 다른 경로·위험·결과를 만든다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 게임은 기존 장르 태그 하나가 플레이를 정의하지 않으며, 재료 인과문법과 MAIN×A×B×c가 서로 상태를 바꾸고 @ 파고들기 요소가 숨은 운용을 여는 복합장르다.",
+    "coreLoop": [
+      "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+      "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+      "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+    ],
+    "signatureSystems": [
+      {
+        "id": "signatureSystems[0]",
+        "grammarRole": "MAIN",
+        "stateInputs": [
+          "HumanCount",
+          "MonsterCount",
+          "EliminatedCount"
+        ],
+        "stateOutputs": [
+          "Score",
+          "Distance",
+          "ProgressionBenefit"
+        ],
+        "name": "Core Progression System",
+        "purpose": "Enables players to progress through the game by accumulating score, distance, or progression benefits, while maintaining a clear and immediate feedback loop.",
+        "playerChoice": "Select a simple one-thumb tap or swipe input, and set a clear score, distance, or short-session goal to start the run."
+      },
+      {
+        "id": "signatureSystems[1]",
+        "grammarRole": "A",
+        "stateInputs": [
+          "Score",
+          "Distance",
+          "ProgressionBenefit"
+        ],
+        "stateOutputs": [
+          "NewScore",
+          "NewDistance",
+          "NewProgressionBenefit"
+        ],
+        "name": "Core Progression System",
+        "purpose": "Enables players to progress through the game by accumulating score, distance, or progression benefits, while maintaining a clear and immediate feedback loop.",
+        "playerChoice": "Select a simple one-thumb tap or swipe input, and set a clear score, distance, or short-session goal to start the run."
+      },
+      {
+        "id": "signatureSystems[2]",
+        "grammarRole": "B",
+        "stateInputs": [
+          "Score",
+          "Distance",
+          "ProgressionBenefit"
+        ],
+        "stateOutputs": [
+          "NewScore",
+          "NewDistance",
+          "NewProgressionBenefit"
+        ],
+        "name": "Core Progression System",
+        "purpose": "Enables players to progress through the game by accumulating score, distance, or progression benefits, while maintaining a clear and immediate feedback loop.",
+        "playerChoice": "Select a simple one-thumb tap or swipe input, and set a clear score, distance, or short-session goal to start the run."
+      },
+      {
+        "id": "signatureSystems[3]",
+        "grammarRole": "c",
+        "stateInputs": [
+          "Score",
+          "Distance",
+          "ProgressionBenefit"
+        ],
+        "stateOutputs": [
+          "NewScore",
+          "NewDistance",
+          "NewProgressionBenefit"
+        ],
+        "name": "Core Progression System",
+        "purpose": "Enables players to progress through the game by accumulating score, distance, or progression benefits, while maintaining a clear and immediate feedback loop. This system is designed to be intuitive and accessible, allowing players to achieve progression through simple actions such as setting goals and receiving rewards.",
+        "playerChoice": "Select a simple one-thumb tap or swipe input, and set a clear score, distance, or short-session goal to start the run. After completing the run, the system will automatically update the player's progress with new scores, distances, and progression benefits, ensuring a seamless and rewarding experience."
+      },
+      {
+        "id": "signatureSystems[4]",
+        "grammarRole": "DELVE",
+        "stateInputs": [
+          "Score",
+          "Distance",
+          "ProgressionBenefit"
+        ],
+        "stateOutputs": [
+          "NewScore",
+          "NewDistance",
+          "NewProgressionBenefit"
+        ],
+        "name": "Core Progression System",
+        "purpose": "Enables players to progress through the game by accumulating score, distance, or progression benefits, while maintaining a clear and immediate feedback loop. This system is designed to be intuitive and accessible, allowing players to achieve progression through simple actions such as setting goals and receiving rewards.",
+        "playerChoice": "Select a simple one-thumb tap or swipe input, and set a clear score, distance, or short-session goal to start the run. After completing the run, the system will automatically update the player's progress with new scores, distances, and progression benefits, ensuring a seamless and rewarding experience."
+      }
+    ],
+    "multiplayerMode": "HYBRID"
+  },
+  "updatedAt": "2026-10-08T11:06:48.322Z"
+}
