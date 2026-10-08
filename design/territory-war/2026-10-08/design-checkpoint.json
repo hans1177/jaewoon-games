@@ -459,25 +459,44 @@
       "name": "Border Pressure and Territory Objective",
       "purpose": "Monitor and respond to border pressure, select and pursue territory objectives, and manage movement and progression within the game world.",
       "playerChoice": "Read the current border pressure, choose a territory objective, select a movement path, and pursue target progression. Adjust strategies based on evolving border conditions and territorial goals."
+    },
+    "local_authoring_parts::1295005e04130c91a9967db83066128e99b729ef1f65509777ab76f89ceeef2f:signatureSystems:4": {
+      "id": "border-pressure-territory-objective",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "currentBorderPressure",
+        "selectedTerritoryObjective",
+        "movementPath",
+        "targetProgression"
+      ],
+      "stateOutputs": [
+        "borderPressureStatus",
+        "territoryObjectiveStatus",
+        "movementPathStatus",
+        "targetProgressionStatus"
+      ],
+      "name": "Border Pressure and Territory Objective",
+      "purpose": "Monitor and respond to border pressure, select and pursue territory objectives, and manage movement and progression within the game world.",
+      "playerChoice": "Read the current border pressure, choose a territory objective, select a movement path, and pursue target progression. Adjust strategies based on evolving border conditions and territorial goals."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 14,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1467682,
-      "lastMs": 100917,
+      "totalMs": 1567614,
+      "lastMs": 99932,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:40:50.646Z"
+      "updatedAt": "2026-10-08T12:42:30.579Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:16:22.910Z",
-  "updatedAt": "2026-10-08T12:40:50.646Z",
+  "updatedAt": "2026-10-08T12:42:30.585Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2522,7 +2541,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2538,10 +2557,10 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:40:50.646Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T12:42:30.581Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
