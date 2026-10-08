@@ -3,30 +3,18 @@
   "gameId": "cozy-island",
   "date": "2026-10-08",
   "seedId": "OWNER-DESIGN-COZY-ISLAND",
-  "fingerprint": "3af099f484711320e31a569ec28ee53c8bc355075fb2029fc104bb6f709876ca",
-  "policyDigest": "eba99114200a163e25cb5e254e56fd4e7d493b65219e8b179fe6ebac869985d5",
-  "engineDigest": "0804320df70a301050240b897d8a23674580b6ddd3c447416c9dc03cd439bfad",
+  "fingerprint": "1af5cb62b681cbf40f72989d0b999de0f1b8fccfc2e2a4da923190c04e2ae20e",
+  "policyDigest": "524921abde9db321009b633c6deac710193bc08f349f75e5f35d842ede53a716",
+  "engineDigest": "8dcc3fb07f12cee67ad39a733674fed643406c00244fe48abbf168d5a7fa165c",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
   "tasks": {},
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 0,
-      "failures": 4,
-      "timeouts": 1,
-      "jsonFailures": 0,
-      "totalMs": 522271,
-      "lastMs": 70178,
-      "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T04:44:22.222Z"
-    }
-  },
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-08T04:35:39.946Z",
-  "updatedAt": "2026-10-08T04:44:22.227Z",
+  "createdAt": "2026-10-08T05:18:52.503Z",
+  "updatedAt": "2026-10-08T05:18:52.545Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -576,16 +564,5 @@
       }
     },
     "assetFacts": {}
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "localAuthoringSplits": {
-    "51647205f1f3c5b9c48296e75f8ad269af0c548ccb5e9151471a3e40c0202bac": true,
-    "f91d785477481d4e957478181fa8ef66af7aa8a1b218e47d66cbbdea63a541fb": true,
-    "57655489ad6e53e418be627a7904bf18c183dee3724dde0263f466a455896790": true
-  },
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED"
+  }
 }

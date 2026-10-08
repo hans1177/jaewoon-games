@@ -2,7 +2,7 @@
   "version": 2,
   "gameId": "cozy-island",
   "date": "2026-10-08",
-  "engineDigest": "0804320df70a301050240b897d8a23674580b6ddd3c447416c9dc03cd439bfad",
+  "engineDigest": "8dcc3fb07f12cee67ad39a733674fed643406c00244fe48abbf168d5a7fa165c",
   "status": "IN_PROGRESS",
   "currentStage": "DESIGNER_DRAFT",
   "percent": 17,
@@ -10,23 +10,11 @@
   "completedPhaseCount": 0,
   "cachedTaskCount": 0,
   "lastSuccessfulModelCallAt": null,
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "designerSeed": null,
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 0,
-      "failures": 4,
-      "timeouts": 1,
-      "jsonFailures": 0,
-      "totalMs": 522271,
-      "lastMs": 70178,
-      "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T04:44:22.222Z"
-    }
-  },
+  "modelHealth": {},
   "slowPhases": {},
-  "updatedAt": "2026-10-08T04:44:22.227Z"
+  "updatedAt": "2026-10-08T05:18:52.596Z"
 }
