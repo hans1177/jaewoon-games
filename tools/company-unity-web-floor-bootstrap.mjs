@@ -115,6 +115,30 @@ const worldProposal=hasApprovedWorld
   :null;
 if(worldProposal&&worldProposal.status!=='STATIC_LAYOUT_PROPOSED')
   throw new Error('UNITY_WEB_PROCEDURAL_WORLD_PLACEMENT_REPAIR_REQUIRED:'+worldProposal.issues.join('|'));
+// 개별 게임의 확인된 설계·기존 빌드업 지시가 모두 없는 한 런타임 채집/드롭을 만들지 않는다.
+const worldInteractionRules=(()=>{
+  if(!hasApprovedWorld||approvedWorldRequest?.runtimeInteractionsApproved!==true)return null;
+  if(!buildUpDirectiveConsumed||buildUpDirective?.designContextMode!=='APPROVED_OR_MINIMUM_DESIGN'||
+     design?.verifiedRuntimeInteractionContract!==true)
+    throw new Error('UNITY_WEB_INTERACTION_VERIFIED_GAME_DESIGN_REQUIRED');
+  if(!/^SINGLE(?:_|$)/i.test(multiplayerMode))
+    throw new Error('UNITY_WEB_INTERACTION_CLIENT_AUTHORITY_FORBIDDEN_FOR_MULTIPLAYER');
+  const rules=approvedWorldRequest.interactionRules;
+  if(!rules||typeof rules!=='object'||Array.isArray(rules)||!Object.keys(rules).length)
+    throw new Error('UNITY_WEB_INTERACTION_EXPLICIT_RULES_REQUIRED');
+  const result={};
+  for(const [kind,rule]of Object.entries(rules)){
+    if(!['GATHER','MINE'].includes(kind)||!rule||typeof rule!=='object')
+      throw new Error('UNITY_WEB_INTERACTION_TYPE_UNSUPPORTED');
+    const ints=['maxHealth','hitDamage','minDrop','maxDrop','respawnSeconds'].every(key=>Number.isSafeInteger(rule[key]));
+    if(!ints||rule.maxHealth<1||rule.maxHealth>100000||rule.hitDamage<1||rule.hitDamage>rule.maxHealth||
+       rule.minDrop<1||rule.maxDrop<rule.minDrop||rule.maxDrop>100||rule.respawnSeconds<0||rule.respawnSeconds>86400||
+       !/^[a-zA-Z0-9_-]{1,60}$/.test(String(rule.rewardItemId||'')))
+      throw new Error('UNITY_WEB_INTERACTION_RULE_INVALID:'+kind);
+    result[kind]=rule;
+  }
+  return result;
+})();
 const worldData=worldProposal?{
   mobile:approvedWorldRequest.mobile!==false,
   version:1,seed:worldProposal.seed,width:worldProposal.size.width,height:worldProposal.size.height,
@@ -133,7 +157,13 @@ const worldData=worldProposal?{
   vegetation:worldProposal.vegetation.map(item=>({
     id:item.stableObjectId,
     x:item.x,z:item.z,elevation:+item.elevationY.toFixed(4),scale:item.scale,
-    kind:({ROCK:0,SCRUB:1,PINE:2,BROADLEAF:3,BUSH:4})[item.kind]??4
+    kind:({ROCK:0,SCRUB:1,PINE:2,BROADLEAF:3,BUSH:4})[item.kind]??4,
+    maxHealth:worldInteractionRules?.[item.interactionBinding.kind]?.maxHealth||0,
+    hitDamage:worldInteractionRules?.[item.interactionBinding.kind]?.hitDamage||0,
+    rewardItemId:worldInteractionRules?.[item.interactionBinding.kind]?.rewardItemId||'',
+    minDrop:worldInteractionRules?.[item.interactionBinding.kind]?.minDrop||0,
+    maxDrop:worldInteractionRules?.[item.interactionBinding.kind]?.maxDrop||0,
+    respawnSeconds:worldInteractionRules?.[item.interactionBinding.kind]?.respawnSeconds||0
   })),
   landmark:worldProposal.landmark?.cell||null,
   gameplayCollisionAuthority:false,saveMutation:false,engineRuntimeVerified:false
