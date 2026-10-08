@@ -490,25 +490,40 @@
       "name": "IDLE_GROWTH_RPG_CORE_LOOP",
       "purpose": "Players choose which hero or stat path receives the next investment, and push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle.",
       "playerChoice": "Choose which hero or stat path receives the next investment, push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle."
+    },
+    "local_authoring_parts::b92534698a8be3e790dd3d6e887c59212036e36dd2677dd444f529aabfa02e04:signatureSystems:1": {
+      "id": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM",
+      "grammarRole": "A",
+      "stateInputs": [
+        "READABLE_STATE: Heroes or characters fight automatically and continue generating",
+        "CHANGABLE_STATE: the next idle reward cycle"
+      ],
+      "stateOutputs": [
+        "READABLE_STATE: Claim rewards, upgrade levels or skills, equip gear",
+        "CHANGABLE_STATE: which hero or stat path receives the next investment"
+      ],
+      "name": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM",
+      "purpose": "Players choose which hero or stat path receives the next investment, and push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle.",
+      "playerChoice": "Choose which hero or stat path receives the next investment, push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 16,
+      "calls": 17,
+      "successes": 17,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1778373,
-      "lastMs": 104299,
+      "totalMs": 1878965,
+      "lastMs": 100592,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:22:15.035Z"
+      "updatedAt": "2026-10-08T16:23:55.628Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:45:52.443Z",
-  "updatedAt": "2026-10-08T16:22:15.035Z",
+  "updatedAt": "2026-10-08T16:23:55.628Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2776,7 +2791,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:22:15.035Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:23:55.628Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
