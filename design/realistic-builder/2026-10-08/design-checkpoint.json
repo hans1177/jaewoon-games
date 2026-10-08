@@ -546,25 +546,130 @@
       "name": "SIGNATURE_SYSTEM_DESIGN",
       "purpose": "게임 내에서 사용되는 규칙 ID와 읽는 상태·바꾸는 상태를 명확히 정의하여, 게임의 핵심 루프와 규칙 구조를 안정적으로 유지한다.",
       "playerChoice": "[\"Rule ID Assignment\",\"State Transition\"]"
+    },
+    "local_authoring_parts::4df48f7f1295ec79ae0b5f9d8de810d37ca9b564e913c0843f8b48e01dc9bb97:signatureSystems:4": {
+      "id": "RULE_05",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "READABLE_STATE",
+        "MODIFIABLE_STATE"
+      ],
+      "stateOutputs": [
+        "READABLE_STATE",
+        "MODIFIABLE_STATE"
+      ],
+      "name": "SIGNATURE_SYSTEM_DESIGN",
+      "purpose": "게임 내에서 사용되는 규칙 ID와 읽는 상태·바꾸는 상태를 명확히 정의하여, 게임의 핵심 루프와 규칙 구조를 안정적으로 유지한다.",
+      "playerChoice": "[\"Rule ID Assignment\",\"State Transition\"]"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "현실 건축가의 핵심 재미와 시스템 연결을 확정한 단일 Game Designer AI의 정체성입니다. 게임은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임입니다. 플레이어는 현실 건축가의 역할을 수행하며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 합니다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공합니다. 게임의 핵심 루프는 '입력/선택 -> 상태 변화 -> 보상/위험/다음 선택'을 포함하며, MAIN/A/B/c/@와 규칙·상태·진행·멀티 의미는 이 원본에서만 작성됩니다. 플랫폼별 구현 제약은 같은 원본의 platformProfiles에 따라 적용됩니다. 게임은 기존 설계를 보존하며, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않습니다. 점수와 통과 판정은 결정론적 검증기가 담당합니다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않습니다. 실패·중단·재접속·저장은 원본 의미를 보존합니다. 구현 버그와 설계 모순의 원인·수정 책임을 구분하고 안정성을 먼저 다룬다. 같은 증상을 설계와 구현이 독립적으로 중복 수정하지 않는다. 최소 두 실제 대안을 비교하고 선택안을 한 판의 시작·전개·결말로 재생합니다. 한 판과 전체 세션 시간을 구분하며 검증되지 않은 시간·품질·실행 결과를 확정하지 않습니다. 공공영역 고전의 원형은 게임에 맞게 재해석하고 현대 보호 작품은 추상적 기법만 참고합니다. 보호된 인물·대사·장면은 복제하지 않습니다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않습니다. 점수와 통과 판정은 결정론적 검증기가 담당합니다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않습니다.싘",
+      "playerFantasy": "현실 건축가에서 플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 플레이어는 현실 건축가의 역할을 수행하며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 하며, 모바일에서도 즉시 이해되는 입력과 피드백을 제공한다. 게임의 핵심 루프는 '입력/선택 -> 상태 변화 -> 보상/위험/다음 선택'을 포함하며, MAIN/A/B/c/@와 규칙·상태·진행·멀티 의미는 이 원본에서만 작성된다. 플랫폼별 구현 제약은 같은 원본의 platformProfiles에 따라 적용된다. 게임은 기존 설계를 보존하며, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 점수와 통과 판정은 결정론적 검증기가 담당한다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 실패·중단·재접속·저장은 원본 의미를 보존한다. 구현 버그와 설계 모순의 원인·수정 책임을 구분하고 안정성을 먼저 다룬다. 같은 증상을 설계와 구현이 독립적으로 중복 수정하지 않는다. 최소 두 실제 대안을 비교하고 선택안을 한 판의 시작·전개·결말로 재생한다. 한 판과 전체 세션 시간을 구분하며 검증되지 않은 시간·품질·실행 결과를 확정하지 않는다. 공공영역 고전의 원형은 게임에 맞게 재해석하고 현대 보호 작품은 추상적 기법만 참고한다. 보호된 인물·대사·장면은 복제하지 않는다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 점수와 통",
+      "coreFun": "현실 건축가에서 플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 플레이어는 현실 건축가의 역할을 수행하며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 하며, 모바일에서도 즉시 이해되는 입력과 피드백을 제공한다. 게임의 핵심 루프는 '입력/선택 -> 상태 변화 -> 보상/위험/다음 선택'을 포함하며, MAIN/A/B/c/@와 규칙·상태·진행·멀티 의미는 이 원본에서만 작성된다. 플랫폼별 구현 제약은 같은 원본의 platformProfiles에 따라 적용된다. 게임은 기존 설계를 보존하며, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 점수와 통과 판정은 결정론적 검증기가 담당한다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 실패·중단·재접속·저장은 원본 의미를 보존한다. 구현 버그와 설계 모순의 원인·수정 책임을 구분하고 안정성을 먼저 다룬다. 같은 증상을 설계와 구현이 독립적으로 중복 수정하지 않는다. 최소 두 실제 대안을 비교하고 선택안을 한 판의 시작·전개·결말로 재생한다. 한 판과 전체 세션 시간을 구분하며 검증되지 않은 시간·품질·실행 결과를 확정하지 않는다. 공공영역 고전의 원형은 게임에 맞게 재해석하고 현대 보호 작품은 추상적 기법만 참고한다. 보호된 인물·대사·장면은 복제하지 않는다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 점수와 통",
+      "coreLoop": [
+        "Input: Player selects a build and strategy",
+        "State: Build is upgraded or modified",
+        "Output: New build is tested in a survival scenario",
+        "Reward: Experience, resources, or progression",
+        "Risk: Increased difficulty, enemy pressure, or loss of resources"
+      ],
+      "multiplayerMode": "HYBRID",
+      "signatureSystems": [
+        {
+          "id": "RULE_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "READABLE_STATE",
+            "MODIFIABLE_STATE"
+          ],
+          "stateOutputs": [
+            "READABLE_STATE",
+            "MODIFIABLE_STATE"
+          ],
+          "name": "CORE_LOOP_DESIGN",
+          "purpose": "현실 건축가의 핵심 재미와 시스템 연결을 확정한 단일 Game Designer AI의 정체성입니다. 게임은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임입니다. 플레이어는 현실 건축가의 역할을 수행하며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 합니다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공합니다. 게임의 핵심 루프는 '입력/선택 -> 상태 변화 -> 보상/위험/다음 선택'을 포함하며, MAIN/A/B/c/@와 규칙·상태·진행·멀티 의미는 이 원",
+          "playerChoice": "[\"Build and Strategy Selection\",\"World State Transition\"]"
+        },
+        {
+          "id": "RULE_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "READABLE_STATE",
+            "MODIFIABLE_STATE"
+          ],
+          "stateOutputs": [
+            "READABLE_STATE",
+            "MODIFIABLE_STATE"
+          ],
+          "name": "SIGNATURE_SYSTEM_DESIGN",
+          "purpose": "게임 내에서 사용되는 규칙 ID와 읽는 상태·바꾸는 상태를 명확히 정의하여, 게임의 핵심 루프와 규칙 구조를 안정적으로 유지한다.",
+          "playerChoice": "[\"Rule ID Assignment\",\"State Transition\"]"
+        },
+        {
+          "id": "RULE_03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "READABLE_STATE",
+            "MODIFIABLE_STATE"
+          ],
+          "stateOutputs": [
+            "READABLE_STATE",
+            "MODIFIABLE_STATE"
+          ],
+          "name": "SIGNATURE_SYSTEM_DESIGN",
+          "purpose": "게임 내에서 사용되는 규칙 ID와 읽는 상태·바꾸는 상태를 명확히 정의하여, 게임의 핵심 루프와 규칙 구조를 안정적으로 유지한다.",
+          "playerChoice": "[\"Rule ID Assignment\",\"State Transition\"]"
+        },
+        {
+          "id": "RULE_04",
+          "grammarRole": "c",
+          "stateInputs": [
+            "READABLE_STATE",
+            "MODIFIABLE_STATE"
+          ],
+          "stateOutputs": [
+            "READABLE_STATE",
+            "MODIFIABLE_STATE"
+          ],
+          "name": "SIGNATURE_SYSTEM_DESIGN",
+          "purpose": "게임 내에서 사용되는 규칙 ID와 읽는 상태·바꾸는 상태를 명확히 정의하여, 게임의 핵심 루프와 규칙 구조를 안정적으로 유지한다.",
+          "playerChoice": "[\"Rule ID Assignment\",\"State Transition\"]"
+        },
+        {
+          "id": "RULE_05",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "READABLE_STATE",
+            "MODIFIABLE_STATE"
+          ],
+          "stateOutputs": [
+            "READABLE_STATE",
+            "MODIFIABLE_STATE"
+          ],
+          "name": "SIGNATURE_SYSTEM_DESIGN",
+          "purpose": "게임 내에서 사용되는 규칙 ID와 읽는 상태·바꾸는 상태를 명확히 정의하여, 게임의 핵심 루프와 규칙 구조를 안정적으로 유지한다.",
+          "playerChoice": "[\"Rule ID Assignment\",\"State Transition\"]"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 14,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1540700,
-      "lastMs": 95667,
+      "totalMs": 1637094,
+      "lastMs": 96394,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:17:20.843Z"
+      "updatedAt": "2026-10-08T13:18:57.239Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:51:40.085Z",
-  "updatedAt": "2026-10-08T13:17:20.843Z",
+  "updatedAt": "2026-10-08T13:18:57.246Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2915,49 +3020,21 @@
   "sliceDependencies": {
     "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
   },
-  "sliceRepairFeedback": {
-    "designer_draft_slices::identity-core": [
-      {
-        "code": "DESIGN_RULE_STATE_MISSING",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "signatureSystems",
-          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
-        },
-        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "signatureSystems"
-        ]
-      }
-    ]
-  },
+  "sliceRepairFeedback": {},
   "sliceRepairAttempts": {
     "designer_draft_slices::identity-core": 1
   },
-  "slicePartialResults": {
-    "designer_draft_slices::identity-core": {
-      "identity": "현실 건축가의 핵심 재미와 시스템 연결을 확정한 단일 Game Designer AI의 정체성입니다. 게임은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임입니다. 플레이어는 현실 건축가의 역할을 수행하며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 합니다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공합니다. 게임의 핵심 루프는 '입력/선택 -> 상태 변화 -> 보상/위험/다음 선택'을 포함하며, MAIN/A/B/c/@와 규칙·상태·진행·멀티 의미는 이 원본에서만 작성됩니다. 플랫폼별 구현 제약은 같은 원본의 platformProfiles에 따라 적용됩니다. 게임은 기존 설계를 보존하며, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않습니다. 점수와 통과 판정은 결정론적 검증기가 담당합니다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않습니다. 실패·중단·재접속·저장은 원본 의미를 보존합니다. 구현 버그와 설계 모순의 원인·수정 책임을 구분하고 안정성을 먼저 다룬다. 같은 증상을 설계와 구현이 독립적으로 중복 수정하지 않는다. 최소 두 실제 대안을 비교하고 선택안을 한 판의 시작·전개·결말로 재생합니다. 한 판과 전체 세션 시간을 구분하며 검증되지 않은 시간·품질·실행 결과를 확정하지 않습니다. 공공영역 고전의 원형은 게임에 맞게 재해석하고 현대 보호 작품은 추상적 기법만 참고합니다. 보호된 인물·대사·장면은 복제하지 않습니다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않습니다. 점수와 통과 판정은 결정론적 검증기가 담당합니다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않습니다.싘",
-      "playerFantasy": "현실 건축가에서 플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 플레이어는 현실 건축가의 역할을 수행하며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 하며, 모바일에서도 즉시 이해되는 입력과 피드백을 제공한다. 게임의 핵심 루프는 '입력/선택 -> 상태 변화 -> 보상/위험/다음 선택'을 포함하며, MAIN/A/B/c/@와 규칙·상태·진행·멀티 의미는 이 원본에서만 작성된다. 플랫폼별 구현 제약은 같은 원본의 platformProfiles에 따라 적용된다. 게임은 기존 설계를 보존하며, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 점수와 통과 판정은 결정론적 검증기가 담당한다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 실패·중단·재접속·저장은 원본 의미를 보존한다. 구현 버그와 설계 모순의 원인·수정 책임을 구분하고 안정성을 먼저 다룬다. 같은 증상을 설계와 구현이 독립적으로 중복 수정하지 않는다. 최소 두 실제 대안을 비교하고 선택안을 한 판의 시작·전개·결말로 재생한다. 한 판과 전체 세션 시간을 구분하며 검증되지 않은 시간·품질·실행 결과를 확정하지 않는다. 공공영역 고전의 원형은 게임에 맞게 재해석하고 현대 보호 작품은 추상적 기법만 참고한다. 보호된 인물·대사·장면은 복제하지 않는다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 점수와 통",
-      "coreFun": "현실 건축가에서 플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 플레이어는 현실 건축가의 역할을 수행하며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 하며, 모바일에서도 즉시 이해되는 입력과 피드백을 제공한다. 게임의 핵심 루프는 '입력/선택 -> 상태 변화 -> 보상/위험/다음 선택'을 포함하며, MAIN/A/B/c/@와 규칙·상태·진행·멀티 의미는 이 원본에서만 작성된다. 플랫폼별 구현 제약은 같은 원본의 platformProfiles에 따라 적용된다. 게임은 기존 설계를 보존하며, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 점수와 통과 판정은 결정론적 검증기가 담당한다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 실패·중단·재접속·저장은 원본 의미를 보존한다. 구현 버그와 설계 모순의 원인·수정 책임을 구분하고 안정성을 먼저 다룬다. 같은 증상을 설계와 구현이 독립적으로 중복 수정하지 않는다. 최소 두 실제 대안을 비교하고 선택안을 한 판의 시작·전개·결말로 재생한다. 한 판과 전체 세션 시간을 구분하며 검증되지 않은 시간·품질·실행 결과를 확정하지 않는다. 공공영역 고전의 원형은 게임에 맞게 재해석하고 현대 보호 작품은 추상적 기법만 참고한다. 보호된 인물·대사·장면은 복제하지 않는다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 점수와 통",
-      "coreLoop": [
-        "Input: Player selects a build and strategy",
-        "State: Build is upgraded or modified",
-        "Output: New build is tested in a survival scenario",
-        "Reward: Experience, resources, or progression",
-        "Risk: Increased difficulty, enemy pressure, or loss of resources"
-      ],
-      "multiplayerMode": "HYBRID"
-    }
-  },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:17:20.843Z",
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-08T13:18:57.241Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
-  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/realistic-builder/2026-10-08/design-seed.json",
+    "contentDigest": "5e79cfc120c89a95ae3a56b5c1f763f4a91ff9a02ab0cdcc58b1b829ccdc37d4",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
