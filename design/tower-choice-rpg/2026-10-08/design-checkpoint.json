@@ -528,25 +528,43 @@
       "name": "시그니처 세계 규칙",
       "purpose": "플레이어의 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE의 핵심 루프를 설계하며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견을 열어 같은 콘텐츠를 다르게 사용하게 한다.",
       "playerChoice": "플레이어는 선택의 결과가 다음 상태와 접근 가능성을 바꾸는 시그니처 세계 규칙에 참여하며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견을 열어 같은 콘텐츠를 다르게 사용하게 된다."
+    },
+    "local_authoring_parts::48be183b0933e49af08c24f17a46906d2754f7c7ca1df4f3ca3a7e80d8233dd5:signatureSystems:2": {
+      "id": "SIGNATURE_RULE_03",
+      "grammarRole": "B",
+      "stateInputs": [
+        "플레이어의 선택 결과",
+        "월드 상태 변화",
+        "시그니처 세계 규칙의 읽는 상태",
+        "시그니처 세계 규칙의 바꾸는 상태"
+      ],
+      "stateOutputs": [
+        "시그니처 세계 규칙의 읽는 상태",
+        "시그니처 세계 규칙의 바꾸는 상태",
+        "플레이어의 선택 결과에 따른 월드 상태 변화"
+      ],
+      "name": "시그니처 세계 규칙",
+      "purpose": "플레이어의 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE의 핵심 루프를 설계하며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견을 열어 같은 콘텐츠를 다르게 사용하게 한다.",
+      "playerChoice": "플레이어는 선택의 결과가 다음 상태와 접근 가능성을 바꾸는 시그니처 세계 규칙에 참여하며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견을 열어 같은 콘텐츠를 다르게 사용하게 된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 13,
+      "calls": 14,
+      "successes": 14,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1469292,
-      "lastMs": 115087,
+      "totalMs": 1585245,
+      "lastMs": 115953,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:25:33.206Z"
+      "updatedAt": "2026-10-08T08:27:29.161Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:01:03.860Z",
-  "updatedAt": "2026-10-08T08:25:33.207Z",
+  "updatedAt": "2026-10-08T08:27:29.161Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2810,7 +2828,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T08:25:33.206Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:27:29.161Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
