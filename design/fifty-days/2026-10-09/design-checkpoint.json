@@ -274,25 +274,203 @@
           "playerChoice": "Discover and adapt the world's hidden rules, create new play options, and expand the game's narrative through exploration and mastery."
         }
       ]
+    },
+    "local_authoring_parts::33f64c4b5493f5881c03f0899ddaf2feff542fa201377b12470b6b5085da5129:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::1559da9b185f2c79985979fec5a29845e61df212c309d15762a894253a8587be:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "입력/선택 → 상태변화 → 보상/위험/다음 선택",
+        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "RUN_RESULT",
+            "BUILD_STATE"
+          ],
+          "stateOutputs": [
+            "NEXT_PROGRESSION_CHOICE",
+            "MODIFIED_WORLD_STATE"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_CORE",
+          "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+          "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "RUN_RESULT",
+            "BUILD_STATE"
+          ],
+          "stateOutputs": [
+            "NEXT_PROGRESSION_CHOICE",
+            "MODIFIED_WORLD_STATE"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_A",
+          "purpose": "플레이어가 선택한 결과와 현재 건축 상태를 바탕으로 다음 진행 선택 및 세계 상태를 결정하는 주요 규칙.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "RUN_RESULT",
+            "BUILD_STATE"
+          ],
+          "stateOutputs": [
+            "NEXT_PROGRESSION_CHOICE",
+            "MODIFIED_WORLD_STATE"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_B",
+          "purpose": "플레이어가 선택한 결과와 현재 건축 상태를 바탕으로 다음 진행 선택 및 세계 상태를 결정하는 주요 규칙.",
+          "playerChoice": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "RUN_RESULT",
+            "BUILD_STATE"
+          ],
+          "stateOutputs": [
+            "NEXT_PROGRESSION_CHOICE",
+            "MODIFIED_WORLD_STATE"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_C",
+          "purpose": "플레이어가 선택한 결과와 현재 건축 상태를 바탕으로 다음 진행 선택 및 세계 상태를 결정하는 주요 규칙.",
+          "playerChoice": "Discover and adapt the world's hidden rules, create new play options, and expand the game's narrative through exploration and mastery."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "RUN_RESULT",
+            "BUILD_STATE"
+          ],
+          "stateOutputs": [
+            "NEXT_PROGRESSION_CHOICE",
+            "MODIFIED_WORLD_STATE"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_D",
+          "purpose": "플레이어가 선택한 결과와 현재 건축 상태를 바탕으로 다음 진행 선택 및 세계 상태를 결정하는 주요 규칙. 그러나 이러한 결정은 숙련의 과정에서 새로운 규칙과 대안을 탐색하여 게임의 층위를 확장하며, 발견 후 다음 질문으로 이어지게 된다.",
+          "playerChoice": "Discover and adapt the world's hidden rules, create new play options, and expand the game's narrative through exploration and mastery."
+        }
+      ],
+      "multiplayerMode": "COOP"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "50일을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다. 플레이어는 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임의 중심 행동은 'Fight'이며, 두 대축은 'Collect'와 'Combine'로 구성되며, 보조 요소는 '@'이다. 이는 ACTION_SURVIVAL_ROGUELITE의 핵심 루프인 '입력/선택 → 상태변화 → 보상/위험/다음 선택'을 실제적으로 구현할 수 있는 게임 구조이다. 게임의 시그니처 세계 규칙은 '행동의 결과가 지연되어 행위자·관계·후대에 되돌아온다.'와 같은 인과법칙으로 정립된다.",
+      "playerFantasy": "플레이어는 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임의 중심 행동은 'Fight'이며, 두 대축은 'Collect'와 'Combine'로 구성되며, 보조 요소는 '@'이다. 이는 ACTION_SURVIVAL_ROGUELITE의 핵심 루프인 '입력/선택 → 상태변화 → 보상/위험/다음 선택'을 실제적으로 구현할 수 있는 게임 구조이다.",
+      "coreFun": "플레이어는 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임의 중심 행동은 'Fight'이며, 두 대축은 'Collect'와 'Combine'로 구성되며, 보조 요소는 '@'이다. 이는 ACTION_SURVIVAL_ROGUELITE의 핵심 루프인 '입력/선택 → 상태변화 → 보상/위험/다음 선택'을 실제적으로 구현할 수 있는 게임 구조이다.",
+      "coreLoop": [
+        "입력/선택 → 상태변화 → 보상/위험/다음 선택",
+        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "RUN_RESULT",
+            "BUILD_STATE"
+          ],
+          "stateOutputs": [
+            "NEXT_PROGRESSION_CHOICE",
+            "MODIFIED_WORLD_STATE"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_CORE",
+          "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+          "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "RUN_RESULT",
+            "BUILD_STATE"
+          ],
+          "stateOutputs": [
+            "NEXT_PROGRESSION_CHOICE",
+            "MODIFIED_WORLD_STATE"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_A",
+          "purpose": "플레이어가 선택한 결과와 현재 건축 상태를 바탕으로 다음 진행 선택 및 세계 상태를 결정하는 주요 규칙.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "RUN_RESULT",
+            "BUILD_STATE"
+          ],
+          "stateOutputs": [
+            "NEXT_PROGRESSION_CHOICE",
+            "MODIFIED_WORLD_STATE"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_B",
+          "purpose": "플레이어가 선택한 결과와 현재 건축 상태를 바탕으로 다음 진행 선택 및 세계 상태를 결정하는 주요 규칙.",
+          "playerChoice": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "RUN_RESULT",
+            "BUILD_STATE"
+          ],
+          "stateOutputs": [
+            "NEXT_PROGRESSION_CHOICE",
+            "MODIFIED_WORLD_STATE"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_C",
+          "purpose": "플레이어가 선택한 결과와 현재 건축 상태를 바탕으로 다음 진행 선택 및 세계 상태를 결정하는 주요 규칙.",
+          "playerChoice": "Discover and adapt the world's hidden rules, create new play options, and expand the game's narrative through exploration and mastery."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "RUN_RESULT",
+            "BUILD_STATE"
+          ],
+          "stateOutputs": [
+            "NEXT_PROGRESSION_CHOICE",
+            "MODIFIED_WORLD_STATE"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_D",
+          "purpose": "플레이어가 선택한 결과와 현재 건축 상태를 바탕으로 다음 진행 선택 및 세계 상태를 결정하는 주요 규칙. 그러나 이러한 결정은 숙련의 과정에서 새로운 규칙과 대안을 탐색하여 게임의 층위를 확장하며, 발견 후 다음 질문으로 이어지게 된다.",
+          "playerChoice": "Discover and adapt the world's hidden rules, create new play options, and expand the game's narrative through exploration and mastery."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 638396,
-      "lastMs": 186178,
+      "totalMs": 794741,
+      "lastMs": 156345,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:56:16.753Z"
+      "updatedAt": "2026-10-08T17:58:53.102Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:45:38.274Z",
-  "updatedAt": "2026-10-08T17:56:16.755Z",
+  "updatedAt": "2026-10-08T17:58:53.110Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2487,12 +2665,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:56:16.755Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:58:53.104Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/fifty-days/2026-10-09/design-seed.json",
+    "contentDigest": "2f87532b37d9a83f8211870daf183d7de488531a87bfff1a20851fd93577c32d",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }

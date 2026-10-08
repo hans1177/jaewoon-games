@@ -8,25 +8,30 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 13,
-  "lastSuccessfulModelCallAt": "2026-10-08T17:56:16.755Z",
+  "cachedTaskCount": 16,
+  "lastSuccessfulModelCallAt": "2026-10-08T17:58:53.104Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
-  "designerSeed": null,
+  "designerSeed": {
+    "file": "design/fifty-days/2026-10-09/design-seed.json",
+    "contentDigest": "2f87532b37d9a83f8211870daf183d7de488531a87bfff1a20851fd93577c32d",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 638396,
-      "lastMs": 186178,
+      "totalMs": 794741,
+      "lastMs": 156345,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:56:16.753Z"
+      "updatedAt": "2026-10-08T17:58:53.102Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T17:56:16.756Z"
+  "updatedAt": "2026-10-08T17:58:53.111Z"
 }
