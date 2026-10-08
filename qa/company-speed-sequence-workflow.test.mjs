@@ -1,3 +1,5 @@
+// 파일명: qa/company-speed-sequence-workflow.test.mjs
+// 임포트
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -204,7 +206,7 @@ test('owner-focused concurrent native dispatch happens only after canonical sour
 
 test('control-plane planning uses slim runners while heavy design work keeps the game runner pool',()=>{
   assert.match(router,/\n  native-plan:\n[\s\S]{0,180}?runs-on: ubuntu-slim/);
-  assert.match(designRuntime,/\n  game-primary-gate:\n[\s\S]{0,180}?runs-on: ubuntu-slim/);
+  assert.doesNotMatch(designRuntime,/\n  game-primary-gate:|needs\.game-primary-gate/);
   assert.match(designRuntime,/\n  resolve-seed-targets:\n[\s\S]{0,240}?runs-on: ubuntu-slim/);
   assert.match(designRuntime,/\n  design-cycle:\n[\s\S]{0,500}?runs-on: ubuntu-latest/);
 });
