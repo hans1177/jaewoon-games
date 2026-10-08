@@ -364,7 +364,7 @@ jobs:
           # Cloudflare Pages serves each static asset only up to 25 MiB.
           # Fail before publication instead of exposing a homepage link to an undeployable bundle.
           python3 - "$out" "$GAME_ID" <<'PY'
-          import json, pathlib, sys
+          import hashlib, json, pathlib, sys
           root=pathlib.Path(sys.argv[1])
           game=sys.argv[2]
           build=root/'Build'
@@ -400,6 +400,24 @@ jobs:
               'files':files,
               'cloudflareSingleAssetMaxBytes':max_bytes,
           }
+          # Bind the approved world to this exact canonical Unity project build.
+          approved=pathlib.Path('unity-games')/game/'Assets/Resources/vibe-world-layout.json'
+          if approved.is_file():
+              blob=approved.read_bytes()
+              layout=json.loads(blob)
+              if layout.get('layoutStatus')!='STATIC_LAYOUT_PROPOSED' or layout.get('gameplayCollisionAuthority') is not False or layout.get('saveMutation') is not False:
+                  raise SystemExit('Unity Web approved environment source contract invalid')
+              manifest['approvedEnvironment']={
+                  'required':True,
+                  'layoutSha256':hashlib.sha256(blob).hexdigest(),
+                  'terrainCells':len(layout.get('heights') or []),
+                  'buildingCount':len(layout.get('buildings') or []),
+                  'vegetationCount':len(layout.get('vegetation') or []),
+                  'collisionAuthorityChanged':False,
+                  'saveMeaningChanged':False,
+              }
+          else:
+              manifest['approvedEnvironment']={'required':False}
           (root/'unity-web-deploy-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf-8')
           PY
 

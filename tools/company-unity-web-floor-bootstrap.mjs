@@ -1,6 +1,9 @@
+// 파일명: tools/company-unity-web-floor-bootstrap.mjs
+// 역할: 기존 Unity 프로젝트 생성·검증된 학습 바인딩·승인 환경 3D 정적 시각화의 표준 제작 진입점.
 import fs from 'node:fs';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
+import {createVibeProceduralWorldLayout} from '../assets/vibe-environment-director.js';
 
 const args=Object.fromEntries(process.argv.slice(2).filter(x=>x.startsWith('--')).map(raw=>{
   const i=raw.indexOf('=');
@@ -102,6 +105,43 @@ const verifiedLearningApplication=Object.freeze({
   runtimeQaAndLearningReturnRequired:true
 });
 
+// 월드 설계가 승인한 신규 3D 공간만 기존 유니티 소스로 생성한다. 기존 게임은 기본 렌더링을 그대로 유지한다.
+const approvedWorldRequest=design?.spatialLayout?.proceduralWorld;
+const hasApprovedWorld=approvedWorldRequest?.approvedDesign===true;
+if(hasApprovedWorld&&String(design.spatialLayout?.dimension||approvedWorldRequest.dimension).toUpperCase()!=='3D')
+  throw new Error('UNITY_WEB_PROCEDURAL_WORLD_DIMENSION_REQUIRES_NATIVE_3D_RENDERER');
+const worldProposal=hasApprovedWorld
+  ?createVibeProceduralWorldLayout({...approvedWorldRequest,dimension:'3D',approvedDesign:true,mobile:approvedWorldRequest.mobile!==false})
+  :null;
+if(worldProposal&&worldProposal.status!=='STATIC_LAYOUT_PROPOSED')
+  throw new Error('UNITY_WEB_PROCEDURAL_WORLD_PLACEMENT_REPAIR_REQUIRED:'+worldProposal.issues.join('|'));
+const worldData=worldProposal?{
+  mobile:approvedWorldRequest.mobile!==false,
+  version:1,seed:worldProposal.seed,width:worldProposal.size.width,height:worldProposal.size.height,
+  cellSize:worldProposal.size.cellSize,layoutStatus:worldProposal.status,
+  heights:worldProposal.terrain.map(tile=>+(tile.elevation*8).toFixed(4)),
+  types:worldProposal.terrain.map(tile=>({WATER:0,RIDGE:1,FOREST:2,DRY:3,PLAIN:4})[tile.biome]??4),
+  roads:worldProposal.roadCells.map(tile=>tile.z*worldProposal.size.width+tile.x),
+  buildings:worldProposal.buildings.map(item=>({
+    x:item.footprint[0].x,z:item.footprint[0].z,elevation:+item.foundation.levelY.toFixed(4),
+    door:({NORTH:0,SOUTH:1,EAST:2,WEST:3})[item.doorFacing]??0,
+    roof:item.modules.some(module=>module.endsWith('PITCHED_ROOF'))?1:0,
+    material:({STONE:1,METAL_GLASS:2,CLAY:3,TIMBER:0})[item.construction.primaryMaterial]??0,
+    size:2
+  })),
+  vegetation:worldProposal.vegetation.map(item=>({
+    x:item.x,z:item.z,elevation:+item.elevationY.toFixed(4),scale:item.scale,
+    kind:({ROCK:0,SCRUB:1,PINE:2,BROADLEAF:3,BUSH:4})[item.kind]??4
+  })),
+  landmark:worldProposal.landmark?.cell||null,
+  gameplayCollisionAuthority:false,saveMutation:false,engineRuntimeVerified:false
+}:null;
+const worldDataText=worldData?JSON.stringify(worldData)+'\n':null;
+const worldDataSha256=worldDataText?createHash('sha256').update(worldDataText).digest('hex'):null;
+// 새로운 월드 생성은 빈 프로젝트에서만 진행한다. 운영 중인 Unity 소스를 재생성기로 지우지 않는다.
+if(hasApprovedWorld&&fs.existsSync(path.join(output,'Assets/Scripts/UnityWebFloorGame.cs')))
+  throw new Error('UNITY_WEB_APPROVED_WORLD_EXISTING_SOURCE_MUST_BE_EDITED_NOT_REBOOTSTRAPPED');
+
 fs.rmSync(output,{recursive:true,force:true});
 for(const dir of [
   'Assets/Scripts','Assets/Editor','Assets/Art','Assets/Prefabs','Assets/Materials','Assets/Animations',
@@ -110,6 +150,10 @@ for(const dir of [
 fs.writeFileSync(path.join(output,'Packages/manifest.json'),JSON.stringify({dependencies:{'com.unity.modules.imgui':'1.0.0'}},null,2)+'\n');
 fs.writeFileSync(path.join(output,'ProjectSettings/ProjectVersion.txt'),'m_EditorVersion: 6000.6.0f1\nm_EditorVersionWithRevision: 6000.6.0f1 (f7f8ed4d1e24)\n');
 fs.writeFileSync(path.join(output,'Assets/link.xml'),'<linker><assembly fullname="UnityEngine.CoreModule" preserve="all" /></linker>\n');
+if(worldDataText){
+  fs.mkdirSync(path.join(output,'Assets/Resources'),{recursive:true});
+  fs.writeFileSync(path.join(output,'Assets/Resources/vibe-world-layout.json'),worldDataText);
+}
 fs.writeFileSync(path.join(output,'Assets/verified-external-learning.json'),JSON.stringify({
   version:1,
   gameId,
@@ -134,7 +178,9 @@ for(const [dir,value] of Object.entries({
   fs.writeFileSync(path.join(output,'Assets',dir,'unity-web-floor-domain.json'),JSON.stringify({gameId,...value},null,2)+'\n');
 }
 
+const nativeWorldRuntime=worldData?"\n    // 승인된 게임별 월드 데이터로 Unity WebGL 안에 지형·도로·건축·수목을 렌더한다.\n    // 표면 표현만 생성하며 기존 콜라이더·전투·저장·보상에는 접근하지 않는다.\n    [System.Serializable] private sealed class Lot\n    {\n        public int x,z,size,roof,material,door;\n        public float elevation;\n    }\n    [System.Serializable] private sealed class Plant\n    {\n        public int x,z,kind;\n        public float elevation,scale;\n    }\n    [System.Serializable] private sealed class Layout\n    {\n        public int version,width,height;\n        public bool mobile;\n        public float cellSize;\n        public float[] heights;\n        public int[] types,roads;\n        public Lot[] buildings;\n        public Plant[] vegetation;\n        public bool gameplayCollisionAuthority,saveMutation,engineRuntimeVerified;\n    }\n    private static Material WorldMaterial(Color color)\n    {\n        Shader shader=Shader.Find(\"Unlit/Color\");\n        if(shader==null)shader=Shader.Find(\"Standard\");\n        if(shader==null)throw new System.InvalidOperationException(\"WORLD_SHADER_UNAVAILABLE\");\n        var material=new Material(shader);material.color=color;material.enableInstancing=true;\n        return material;\n    }\n    private static void WorldMesh(Transform parent,string name,Mesh mesh,Material[] materials)\n    {\n        var child=new GameObject(name);child.transform.SetParent(parent,false);\n        child.AddComponent<MeshFilter>().sharedMesh=mesh;\n        child.AddComponent<MeshRenderer>().sharedMaterials=materials;\n    }\n    private static void WorldBox(List<CombineInstance> group,Mesh cube,Vector3 position,Vector3 scale)\n    {\n        group.Add(new CombineInstance{mesh=cube,transform=Matrix4x4.TRS(position,Quaternion.identity,scale)});\n    }\n    private bool BuildApprovedWorldVisuals()\n    {\n        TextAsset asset=Resources.Load<TextAsset>(\"vibe-world-layout\");\n        if(asset==null){Debug.LogError(\"UNITY_WEB_WORLD=REPAIR_REQUIRED reason=RESOURCE_MISSING\");return false;}\n        Layout data;\n        try{data=JsonUtility.FromJson<Layout>(asset.text);}\n        catch(System.Exception e){Debug.LogError(\"UNITY_WEB_WORLD=REPAIR_REQUIRED reason=INVALID_JSON type=\"+e.GetType().Name);return false;}\n        if(data==null||data.version!=1||data.width<12||data.height<12||data.width>72||data.height>72||\n           data.cellSize<=0f||data.heights==null||data.heights.Length!=data.width*data.height||\n           data.types==null||data.types.Length!=data.heights.Length||data.roads==null||\n           data.roads.Length>data.heights.Length||data.buildings==null||data.buildings.Length>56||\n           data.vegetation==null||data.vegetation.Length>160||\n           data.gameplayCollisionAuthority||data.saveMutation||data.engineRuntimeVerified||\n           (data.mobile&&(data.width>48||data.height>48||data.buildings.Length>22||data.vegetation.Length>64)))\n        {Debug.LogError(\"UNITY_WEB_WORLD=REPAIR_REQUIRED reason=LAYOUT_LIMIT_OR_AUTHORITY\");return false;}\n        GameObject root=null;\n        try\n        {\n            int width=data.width,height=data.height;\n            float cell=data.cellSize,x0=(width-1)*cell*.5f,z0=(height-1)*cell*.5f;\n            float center=data.heights[(height/2)*width+width/2];\n            root=new GameObject(\"ApprovedEnvironmentVisuals\");root.transform.SetParent(transform,false);\n            var vertices=new Vector3[data.heights.Length];\n            var groups=new List<int>[5];\n            for(int k=0;k<5;k++)groups[k]=new List<int>();\n            for(int z=0;z<height;z++)for(int x=0;x<width;x++)\n            {\n                int i=z*width+x;\n                vertices[i]=new Vector3(x*cell-x0,(data.heights[i]-center)*.18f-.08f,z*cell-z0);\n            }\n            for(int z=0;z<height-1;z++)for(int x=0;x<width-1;x++)\n            {\n                int i=z*width+x,type=Mathf.Clamp(data.types[i],0,4);\n                groups[type].Add(i);groups[type].Add(i+width);groups[type].Add(i+1);\n                groups[type].Add(i+1);groups[type].Add(i+width);groups[type].Add(i+width+1);\n            }\n            var surface=new Mesh();surface.vertices=vertices;surface.subMeshCount=5;\n            for(int k=0;k<5;k++)surface.SetTriangles(groups[k],k);\n            surface.RecalculateNormals();\n            WorldMesh(root.transform,\"Terrain\",surface,new[]{\n                WorldMaterial(new Color(.15f,.32f,.58f)),WorldMaterial(new Color(.49f,.48f,.45f)),\n                WorldMaterial(new Color(.14f,.42f,.20f)),WorldMaterial(new Color(.68f,.55f,.33f)),\n                WorldMaterial(new Color(.34f,.48f,.26f))\n            });\n            var roadV=new List<Vector3>();var roadT=new List<int>();\n            foreach(int i in data.roads)\n            {\n                if(i<0||i>=vertices.Length)throw new System.InvalidOperationException(\"WORLD_ROAD_OUT_OF_BOUNDS\");\n                Vector3 p=vertices[i];p.y+=.055f;float d=cell*.46f;int n=roadV.Count;\n                roadV.Add(p+new Vector3(-d,0,-d));roadV.Add(p+new Vector3(-d,0,d));\n                roadV.Add(p+new Vector3(d,0,-d));roadV.Add(p+new Vector3(d,0,d));\n                roadT.Add(n);roadT.Add(n+1);roadT.Add(n+2);\n                roadT.Add(n+2);roadT.Add(n+1);roadT.Add(n+3);\n            }\n            if(roadV.Count>0)\n            {\n                var roads=new Mesh();roads.vertices=roadV.ToArray();roads.triangles=roadT.ToArray();\n                WorldMesh(root.transform,\"Roads\",roads,new[]{WorldMaterial(new Color(.35f,.33f,.29f))});\n            }\n            var primitive=GameObject.CreatePrimitive(PrimitiveType.Cube);\n            Mesh cube=primitive.GetComponent<MeshFilter>().sharedMesh;\n            primitive.GetComponent<Collider>().enabled=false;\n            primitive.SetActive(false);Destroy(primitive);\n            var models=new List<CombineInstance>[9];\n            for(int k=0;k<9;k++)models[k]=new List<CombineInstance>();\n            foreach(Lot lot in data.buildings)\n            {\n                if(lot.x<0||lot.z<0||lot.x>=width-1||lot.z>=height-1||lot.size!=2)\n                    throw new System.InvalidOperationException(\"WORLD_BUILDING_OUT_OF_BOUNDS\");\n                float span=cell*lot.size*.85f;\n                float px=(lot.x+lot.size*.5f)*cell-x0,pz=(lot.z+lot.size*.5f)*cell-z0;\n                float y=(lot.elevation-center)*.18f-.08f;\n                WorldBox(models[Mathf.Clamp(lot.material,0,3)],cube,new Vector3(px,y+.8f,pz),new Vector3(span,1.6f,span));\n                WorldBox(models[4],cube,new Vector3(px,y+1.76f,pz),new Vector3(span+.4f,lot.roof == 1 ? 0.64f : 0.33f,span+.4f));\n                if(lot.roof==1)\n                    WorldBox(models[4],cube,new Vector3(px,y+2.19f,pz),new Vector3(span*.65f,.25f,span+.32f));\n                Vector3 door=new Vector3(px,y+.5f,pz);\n                if(lot.door==0)door.z-=span*.5f;\n                else if(lot.door==1)door.z+=span*.5f;\n                else if(lot.door==2)door.x+=span*.5f;\n                else door.x-=span*.5f;\n                WorldBox(models[5],cube,door,lot.door>=2?new Vector3(.12f,1f,.7f):new Vector3(.7f,1f,.12f));\n            }\n            foreach(Plant plant in data.vegetation)\n            {\n                if(plant.x<0||plant.z<0||plant.x>=width||plant.z>=height||\n                   plant.scale<=0||plant.scale>3)throw new System.InvalidOperationException(\"WORLD_PLANT_OUT_OF_BOUNDS\");\n                float x=plant.x*cell-x0,z=plant.z*cell-z0,y=(plant.elevation-center)*.18f-.08f;\n                if(plant.kind==0)\n                    WorldBox(models[8],cube,new Vector3(x,y+.35f*plant.scale,z),new Vector3(1.05f,.7f,.9f)*plant.scale);\n                else\n                {\n                    WorldBox(models[6],cube,new Vector3(x,y+.5f*plant.scale,z),new Vector3(.27f,1f,.27f)*plant.scale);\n                    WorldBox(models[7],cube,new Vector3(x,y+1.4f*plant.scale,z),\n                        new Vector3(plant.kind == 2 ? 1.1f : 1.7f,plant.kind == 2 ? 2.05f : 1.36f,1.3f)*plant.scale);\n                }\n            }\n            Color[] shades={\n                new Color(.57f,.37f,.24f), // 목재 벽\n                new Color(.58f,.59f,.61f), // 석조 벽\n                new Color(.65f,.76f,.80f), // 금속·유리 스타일\n                new Color(.70f,.53f,.34f), // 진흙·점토 벽\n                new Color(.30f,.24f,.28f), // 지붕\n                new Color(.42f,.27f,.16f), // 문\n                new Color(.28f,.19f,.12f), // 나무 기둥\n                new Color(.13f,.36f,.18f), // 잎\n                new Color(.43f,.43f,.43f)  // 암석\n            };\n            for(int k=0;k<9;k++)if(models[k].Count>0)\n            {\n                var baked=new Mesh();baked.indexFormat=UnityEngine.Rendering.IndexFormat.UInt32;\n                baked.CombineMeshes(models[k].ToArray(),true,true);\n                WorldMesh(root.transform,\"ModularVisuals_\"+k,baked,new[]{WorldMaterial(shades[k])});\n            }\n            var plane=GameObject.Find(\"Environment_\"+Mode);\n            if(plane!=null)\n            {\n                var visible=plane.GetComponent<MeshRenderer>();\n                if(visible!=null)visible.enabled=false;\n                // 기존 Plane Collider를 보존해 높이 메시가 게임 판정을 바꾸지 않게 한다.\n            }\n            Debug.Log(\"UNITY_WEB_WORLD=VISUAL_MESH_AUTHORED game=\"+GameId+\n                \" terrain=\"+data.heights.Length+\" buildings=\"+data.buildings.Length+\n                \" vegetation=\"+data.vegetation.Length+\" collider=UNCHANGED save=UNCHANGED native_qa=REQUIRED\");\n            return true;\n        }\n        catch(System.Exception error)\n        {\n            if(root!=null)Destroy(root);\n            Debug.LogError(\"UNITY_WEB_WORLD=REPAIR_REQUIRED reason=AUTHORING_FAILED type=\"+error.GetType().Name);\n            return false;\n        }\n    }\n":'';
 const runtime=`using UnityEngine;
+using System.Collections.Generic;
 
 public sealed class JaewoonNativeMotionActor : MonoBehaviour
 {
@@ -307,7 +353,8 @@ public sealed class UnityWebFloorGame : MonoBehaviour
     private GameObject enemy;
     private GameObject equipment;
     private float motionClock;
-
+    private bool approvedEnvironmentReady = ${worldData?'false':'true'};
+${nativeWorldRuntime}
     private void Awake()
     {
         Application.targetFrameRate = 60;
@@ -317,7 +364,8 @@ public sealed class UnityWebFloorGame : MonoBehaviour
         Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=" + GameId + " status=PASS");
         Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=character status=PASS");
         Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=enemy status=PASS");
-        Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=environment status=PASS");
+        Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=environment status=" +
+                   (approvedEnvironmentReady ? "PASS" : "REPAIR_REQUIRED reason=APPROVED_ENVIRONMENT_AUTHORING_FAILED"));
         Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=equipment status=PASS");
         int nativeMotionActors = BindNativeMotionActors();
         Debug.Log("JAEWOON_UNITY_WEB_QA MOTION game=" + GameId +
@@ -385,6 +433,7 @@ public sealed class UnityWebFloorGame : MonoBehaviour
         landmark.name = "Identity_" + Mode;
         landmark.transform.position = new Vector3(0f,1.5f,3f);
         landmark.transform.localScale = new Vector3(1.5f,1.5f,1.5f);
+        ${worldData?'approvedEnvironmentReady = BuildApprovedWorldVisuals();':''}
     }
 
     private void Update()
@@ -550,6 +599,12 @@ fs.writeFileSync(path.join(output,'unity-web-floor-source.json'),JSON.stringify(
   buildMethod:'UnityWebFloorBuild.BuildWeb',
   futureNativeBuildMethod:'UnityWebFloorBuild.Build',
   generatorFingerprint:fingerprint,
+  proceduralEnvironment:worldData?{
+    approval:'APPROVED_DESIGN_3D_ONLY',seed:worldData.seed,
+    status:'DATA_AUTHORED_RUNTIME_UNVERIFIED',layoutHash:worldDataSha256,
+    terrainCells:worldData.heights.length,buildingCount:worldData.buildings.length,vegetationCount:worldData.vegetation.length,
+    sameUnityProject:true,renderedInRuntime:false,visualMeshAuthoringSource:true,collisionAuthorityChanged:false,saveMeaningChanged:false
+  }:null,
   buildUpDirectiveId:buildUpDirectiveConsumed?buildUpDirective.directiveId:null,
   buildUpGeneration:buildUpDirectiveConsumed?buildUpDirective.generation:null,
   buildUpGoal:buildUpDirectiveConsumed?buildUpDirective.thisLoopPrimaryGoal:null,
@@ -588,3 +643,4 @@ console.log(`UNITY_WEB_VERIFIED_EXTERNAL_LEARNING_COUNT=${verifiedLearningApplic
 console.log(`UNITY_WEB_VERIFIED_EXTERNAL_LEARNING_REVISION=${verifiedLearningApplication.sourceRevision||'UNKNOWN'}`);
 console.log(`UNITY_WEB_BUILD_UP_DIRECTIVE=${buildUpDirectiveConsumed?buildUpDirective.directiveId:'NONE_BASELINE_ONLY'}`);
 console.log('UNITY_WEB_BUILD_UP_COMPLETION_CLAIM=NO');
+console.log('UNITY_WEB_PROCEDURAL_ENVIRONMENT='+ (worldData?'DESIGN_APPROVED_DATA_ONLY_NATIVE_RUNTIME_UNVERIFIED':'NOT_REQUESTED'));
