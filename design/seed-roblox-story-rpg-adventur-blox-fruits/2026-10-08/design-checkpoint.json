@@ -122,25 +122,280 @@
       "name": "Content Expansion",
       "purpose": "Player's final action to complete level progression, unlock new content, and establish game state through strategic decision-making and content expansion.",
       "playerChoice": "Complete level progression by consolidating existing content, unlocking new levels or rewards, and establishing a new game state through strategic decision-making and content expansion."
+    },
+    "local_authoring_parts::b8f5a524e4a3270204a92ec781ab03235d3cc86f5fda113ba8a00c4f127cfcc2:signatureSystems:4": {
+      "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "BOARD_STATE",
+        "PLAYER_ACTION",
+        "LEVEL_GOAL",
+        "OBSTACLES",
+        "COMBO_COUNT",
+        "REWARD_SYSTEM"
+      ],
+      "stateOutputs": [
+        "NEW_BOARD_STATE",
+        "PLAYER_REWARD",
+        "NEXT_LEVEL_PATTERN",
+        "PLAYER_CHOICE",
+        "GAME_STATE"
+      ],
+      "name": "Content Expansion",
+      "purpose": "Player's final action to complete level progression, unlock new content, and establish game state through strategic decision-making and content expansion.",
+      "playerChoice": "Complete level progression by consolidating existing content, unlocking new levels or rewards, and establishing a new game state through strategic decision-making and content expansion."
+    },
+    "local_authoring_parts::ff7229d4f85241b26d4c67d7dff451f0c41c6c625f8b9e6188479a1a1c52ed06:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION",
+            "LEVEL_GOAL",
+            "OBSTACLES",
+            "COMBO_COUNT",
+            "REWARD_SYSTEM"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "PLAYER_REWARD",
+            "NEXT_LEVEL_PATTERN",
+            "PLAYER_CHOICE",
+            "GAME_STATE"
+          ],
+          "name": "Board Dynamics",
+          "purpose": "Player's initial action to initiate level progression and establish game state through board interaction.",
+          "playerChoice": "Establish a new board state through strategic board interaction, creating combos, and using immediate feedback to solve the current objective and unlock new levels or rewards."
+        },
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION",
+            "LEVEL_GOAL",
+            "OBSTACLES",
+            "COMBO_COUNT",
+            "REWARD_SYSTEM"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "PLAYER_REWARD",
+            "NEXT_LEVEL_PATTERN",
+            "PLAYER_CHOICE",
+            "GAME_STATE"
+          ],
+          "name": "Board Dynamics",
+          "purpose": "Player's initial action to initiate level progression and establish game state through board interaction.",
+          "playerChoice": "Establish a new board state through strategic board interaction, creating combos, and using immediate feedback to solve the current objective and unlock new levels or rewards."
+        },
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION",
+            "LEVEL_GOAL",
+            "OBSTACLES",
+            "COMBO_COUNT",
+            "REWARD_SYSTEM"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "PLAYER_REWARD",
+            "NEXT_LEVEL_PATTERN",
+            "PLAYER_CHOICE",
+            "GAME_STATE"
+          ],
+          "name": "Board Dynamics",
+          "purpose": "Player's second action to continue level progression and establish game state through board interaction.",
+          "playerChoice": "Continue level progression by maintaining board state, managing obstacles, and using combo mechanics to sustain gameplay and unlock new levels or rewards."
+        },
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION",
+            "LEVEL_GOAL",
+            "OBSTACLES",
+            "COMBO_COUNT",
+            "REWARD_SYSTEM"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "PLAYER_REWARD",
+            "NEXT_LEVEL_PATTERN",
+            "PLAYER_CHOICE",
+            "GAME_STATE"
+          ],
+          "name": "Content Expansion",
+          "purpose": "Player's final action to complete level progression, unlock new content, and establish game state through strategic decision-making and content expansion.",
+          "playerChoice": "Complete level progression by consolidating existing content, unlocking new levels or rewards, and establishing a new game state through strategic decision-making and content expansion."
+        },
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION",
+            "LEVEL_GOAL",
+            "OBSTACLES",
+            "COMBO_COUNT",
+            "REWARD_SYSTEM"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "PLAYER_REWARD",
+            "NEXT_LEVEL_PATTERN",
+            "PLAYER_CHOICE",
+            "GAME_STATE"
+          ],
+          "name": "Content Expansion",
+          "purpose": "Player's final action to complete level progression, unlock new content, and establish game state through strategic decision-making and content expansion.",
+          "playerChoice": "Complete level progression by consolidating existing content, unlocking new levels or rewards, and establishing a new game state through strategic decision-making and content expansion."
+        }
+      ]
+    },
+    "local_authoring_parts::dc51f02a6d2d0857c4245e79fda49b842af87cf12c3f6f1098416fba0a26b7b0:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION",
+            "LEVEL_GOAL",
+            "OBSTACLES",
+            "COMBO_COUNT",
+            "REWARD_SYSTEM"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "PLAYER_REWARD",
+            "NEXT_LEVEL_PATTERN",
+            "PLAYER_CHOICE",
+            "GAME_STATE"
+          ],
+          "name": "Board Dynamics",
+          "purpose": "Player's initial action to initiate level progression and establish game state through board interaction.",
+          "playerChoice": "Establish a new board state through strategic board interaction, creating combos, and using immediate feedback to solve the current objective and unlock new levels or rewards."
+        },
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION",
+            "LEVEL_GOAL",
+            "OBSTACLES",
+            "COMBO_COUNT",
+            "REWARD_SYSTEM"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "PLAYER_REWARD",
+            "NEXT_LEVEL_PATTERN",
+            "PLAYER_CHOICE",
+            "GAME_STATE"
+          ],
+          "name": "Board Dynamics",
+          "purpose": "Player's initial action to initiate level progression and establish game state through board interaction.",
+          "playerChoice": "Establish a new board state through strategic board interaction, creating combos, and using immediate feedback to solve the current objective and unlock new levels or rewards."
+        },
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION",
+            "LEVEL_GOAL",
+            "OBSTACLES",
+            "COMBO_COUNT",
+            "REWARD_SYSTEM"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "PLAYER_REWARD",
+            "NEXT_LEVEL_PATTERN",
+            "PLAYER_CHOICE",
+            "GAME_STATE"
+          ],
+          "name": "Board Dynamics",
+          "purpose": "Player's second action to continue level progression and establish game state through board interaction.",
+          "playerChoice": "Continue level progression by maintaining board state, managing obstacles, and using combo mechanics to sustain gameplay and unlock new levels or rewards."
+        },
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION",
+            "LEVEL_GOAL",
+            "OBSTACLES",
+            "COMBO_COUNT",
+            "REWARD_SYSTEM"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "PLAYER_REWARD",
+            "NEXT_LEVEL_PATTERN",
+            "PLAYER_CHOICE",
+            "GAME_STATE"
+          ],
+          "name": "Content Expansion",
+          "purpose": "Player's final action to complete level progression, unlock new content, and establish game state through strategic decision-making and content expansion.",
+          "playerChoice": "Complete level progression by consolidating existing content, unlocking new levels or rewards, and establishing a new game state through strategic decision-making and content expansion."
+        },
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION",
+            "LEVEL_GOAL",
+            "OBSTACLES",
+            "COMBO_COUNT",
+            "REWARD_SYSTEM"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "PLAYER_REWARD",
+            "NEXT_LEVEL_PATTERN",
+            "PLAYER_CHOICE",
+            "GAME_STATE"
+          ],
+          "name": "Content Expansion",
+          "purpose": "Player's final action to complete level progression, unlock new content, and establish game state through strategic decision-making and content expansion.",
+          "playerChoice": "Complete level progression by consolidating existing content, unlocking new levels or rewards, and establishing a new game state through strategic decision-making and content expansion."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 472408,
-      "lastMs": 46191,
+      "totalMs": 573369,
+      "lastMs": 100961,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:16:08.997Z"
+      "updatedAt": "2026-10-08T12:17:49.959Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:08:16.555Z",
-  "updatedAt": "2026-10-08T12:16:08.997Z",
+  "updatedAt": "2026-10-08T12:17:49.962Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2177,7 +2432,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:16:08.997Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:17:49.962Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
