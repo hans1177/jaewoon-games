@@ -4364,7 +4364,7 @@ export function buildVibeAssetProductionPlan({
         if(entry.isDirectory()&&current.depth<3){
           queue.push({dir:file,depth:current.depth+1});
         }else if(entry.isFile()&&
-          (resolvedTarget==='roblox'?/\\.luau$|\\.lua$/i:/\\.cs$/i).test(entry.name)){
+          (resolvedTarget==='roblox'?/\.luau$|\.lua$/i:/\.cs$/i).test(entry.name)){
           nativeMenuPaths.push(file);
           if(nativeMenuPaths.length>=96)break;
         }
@@ -4385,25 +4385,25 @@ export function buildVibeAssetProductionPlan({
   // 서버/게임 상태 책임 소스의 실제 메서드나 저장 필드가 있어야 바인딩을 허용한다.
   const nativeMenuGameplaySources=nativeMenuSources.filter(row=>resolvedTarget==='roblox'
     ?row.file.includes('/server/')||row.file.includes('/shared/')
-    :!/\\/(?:RuntimeBootstrap|[^/]*(?:View|Menu|Screen|UI))\\.cs$/i.test(row.file));
+    :!/\/(?:RuntimeBootstrap|[^/]*(?:View|Menu|Screen|UI))\.cs$/i.test(row.file));
   const menuRoleOwnerProof=freeze({
-    CHARACTER:/SetAttribute\\s*\\(\\s*["'](?:MaxHP|Level|ClassId)["']|\\b(?:class|struct)\\s+PlayerState\\b|\\bGetMaxHp\\s*\\(/,
-    INVENTORY:/SetAttribute\\s*\\(\\s*["'](?:WeaponTier|Inventory|ItemCount)["']|\\bownedWeapons\\s*=|\\bownedArmors\\s*=|\\b(?:AddItem|RemoveItem|GrantItem)\\s*\\(/,
-    EQUIPMENT:/SetAttribute\\s*\\(\\s*["'](?:WeaponTier|ArmorTier)["']|\\bTryEquip(?:Weapon|Armor)\\s*\\(|\\bequippedWeaponId\\s*=/,
-    TRADE:/\\b(?:purchaseMerchantEquipment|TryBuyWeapon|TryBuyArmor|TrySellWeapon|TrySellArmor|PurchaseItem|SellItem)\\s*\\(/,
-    QUEST:/SetAttribute\\s*\\(\\s*["'](?:QuestPortal|QuestKills)["']|\\bmainQuestStep\\s*[;=]|\\b(?:AcceptQuest|CompleteQuest)\\s*\\(/,
-    PARTY:/SetAttribute\\s*\\(\\s*["'](?:PartyCount|PartyHuntActive)["']|\\b(?:AddPartyMember|RemovePartyMember|JoinParty)\\s*\\(/,
-    CODEX:/SetAttribute\\s*\\(\\s*["'](?:UnlockedCompanions|CodexEntry)["']|\\b(?:UnlockCodex|RecordDiscovery)\\s*\\(/,
-    CRAFT:/\\b(?:CraftItem|TryCraft|CompleteCraft|CraftRecipe)\\s*\\(/,
-    MAP:/\\b(?:DrawMap|BuildMap|CreateWorldMap|OpenRegionMap|UpdateMinimap)\\s*\\(/,
-    HOUSING:/\\b(?:PlaceBuilding|BuildStructure|TryBuild|PlaceFurniture)\\s*\\(/,
-    FARM:/\\b(?:PlantCrop|HarvestCrop|WaterCrop|TryHarvest)\\s*\\(/,
-    GROWTH:/SetAttribute\\s*\\(\\s*["'](?:Level|XP)["']|\\b(?:grantXP|GainExperience|AddExperience)\\s*\\(/,
-    DEFENSE:/\\b(?:SpawnWave|StartWave|AdvanceWave|BuildTower|PlaceTower)\\s*\\(/,
-    PUZZLE:/\\b(?:SolvePuzzle|MovePuzzleTile|CheckPuzzle|SubmitPuzzle)\\s*\\(/,
-    SURVIVAL:/SetAttribute\\s*\\(\\s*["'](?:Hunger|Thirst|Temperature)["']|\\b(?:ApplyHunger|ConsumeHunger|UpdateSurvival)\\s*\\(/,
-    DIALOGUE:/SetAttribute\\s*\\(\\s*["'](?:NPCSpeech|DialogueId)["']|\\b(?:StartDialogue|ShowDialogue)\\s*\\(/,
-    INTERACTION:/SetAttribute\\s*\\(\\s*["'](?:InteractionKind|ObjectInteractionKind)["']|\\b(?:HandleInteraction|TriggerInteraction)\\s*\\(/
+    CHARACTER:/SetAttribute\s*\(\s*["'](?:MaxHP|Level|ClassId)["']|\b(?:class|struct)\s+PlayerState\b|\bGetMaxHp\s*\(/,
+    INVENTORY:/SetAttribute\s*\(\s*["'](?:WeaponTier|Inventory|ItemCount)["']|\bownedWeapons\s*=|\bownedArmors\s*=|\b(?:AddItem|RemoveItem|GrantItem)\s*\(/,
+    EQUIPMENT:/SetAttribute\s*\(\s*["'](?:WeaponTier|ArmorTier)["']|\bTryEquip(?:Weapon|Armor)\s*\(|\bequippedWeaponId\s*=/,
+    TRADE:/\b(?:purchaseMerchantEquipment|TryBuyWeapon|TryBuyArmor|TrySellWeapon|TrySellArmor|PurchaseItem|SellItem)\s*\(/,
+    QUEST:/SetAttribute\s*\(\s*["'](?:QuestPortal|QuestKills)["']|\bmainQuestStep\s*[;=]|\b(?:AcceptQuest|CompleteQuest)\s*\(/,
+    PARTY:/SetAttribute\s*\(\s*["'](?:PartyCount|PartyHuntActive)["']|\b(?:AddPartyMember|RemovePartyMember|JoinParty)\s*\(/,
+    CODEX:/SetAttribute\s*\(\s*["'](?:UnlockedCompanions|CodexEntry)["']|\b(?:UnlockCodex|RecordDiscovery)\s*\(/,
+    CRAFT:/\b(?:CraftItem|TryCraft|CompleteCraft|CraftRecipe)\s*\(/,
+    MAP:/\b(?:DrawMap|BuildMap|CreateWorldMap|OpenRegionMap|UpdateMinimap)\s*\(/,
+    HOUSING:/\b(?:PlaceBuilding|BuildStructure|TryBuild|PlaceFurniture)\s*\(/,
+    FARM:/\b(?:PlantCrop|HarvestCrop|WaterCrop|TryHarvest)\s*\(/,
+    GROWTH:/SetAttribute\s*\(\s*["'](?:Level|XP)["']|\b(?:grantXP|GainExperience|AddExperience)\s*\(/,
+    DEFENSE:/\b(?:SpawnWave|StartWave|AdvanceWave|BuildTower|PlaceTower)\s*\(/,
+    PUZZLE:/\b(?:SolvePuzzle|MovePuzzleTile|CheckPuzzle|SubmitPuzzle)\s*\(/,
+    SURVIVAL:/SetAttribute\s*\(\s*["'](?:Hunger|Thirst|Temperature)["']|\b(?:ApplyHunger|ConsumeHunger|UpdateSurvival)\s*\(/,
+    DIALOGUE:/SetAttribute\s*\(\s*["'](?:NPCSpeech|DialogueId)["']|\b(?:StartDialogue|ShowDialogue)\s*\(/,
+    INTERACTION:/SetAttribute\s*\(\s*["'](?:InteractionKind|ObjectInteractionKind)["']|\b(?:HandleInteraction|TriggerInteraction)\s*\(/
   });
   const currentMenuIdeaIds=menuSeed.ideas.filter(idea=>idea.domain==='UI');
   const selectedMenuRoles=new Map([['NAV',new Set(['ALWAYS'])],['MOBILE_NAV',new Set(['ALWAYS'])]]);
