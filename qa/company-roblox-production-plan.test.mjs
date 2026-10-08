@@ -1,3 +1,5 @@
+// 파일명: qa/company-roblox-production-plan.test.mjs
+// 역할: 기존 바이브 공간·화면 도안의 실제 소스 바인딩과 절차적 월드 설계의 정적 계약 회귀 검사.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -187,6 +189,92 @@ test('central policy enables the real BUILD_UP directive and prompt with no new 
   assert.equal(make({platform:'WEB'}),null);
   assert.equal(make({platform:'UNITY'}),null);
   assert.equal(make({policy:{}}),null);
+});
+
+test('approved procedural world reaches actual Roblox and Unity production plans through existing source handoff',()=>{
+  const spec={approvedDesign:true,seed:'planner-integration',dimension:'3D',width:24,height:24,density:.7,climate:'WET',biome:'MOUNTAIN'};
+  const design={identity:'산악 마을 탐험',genre:'RPG',spatialLayout:{dimension:'3D',proceduralWorld:spec},coreLoop:['마을에서 출발','산길 탐험']};
+  for(const [platform,files] of [
+    ['ROBLOX',['roblox-games/mountain/server/World.server.luau','roblox-games/mountain/client/HUD.client.luau']],
+    ['UNITY_WEB',['unity-games/mountain/Assets/Scripts/World.cs','unity-games/mountain/Assets/Scripts/HUDView.cs']]
+  ]){
+    const activePolicy={...policy,status:'ACTIVE_EXECUTABLE_CONTRACT',platforms:['ROBLOX','UNITY','WEB'],spatialBlueprint:{enabled:true}};
+    const actual=buildRobloxProductionPlan({gameId:'mountain',platform,design,source:{sourceTreeFingerprint:'e2e-v1'},responsibleFiles:files,focus:'CORE_FUN',policy:activePolicy});
+    assert.ok(actual);
+    assert.equal(actual.mode,'CONNECTED_CONTENT_IMPLEMENTATION');
+    assert.equal(actual.spatialBlueprintContract?.macroSketch?.proceduralWorldStudy?.status,'STATIC_LAYOUT_PROPOSED');
+    const world=productionBlueprintContractsForFiles(actual,{responsibleFiles:[files[0]]});
+    const menu=productionBlueprintContractsForFiles(actual,{responsibleFiles:[files[1]]});
+    assert.equal(world.spatial.required,true);
+    assert.equal(menu.spatial.required,false);
+    assert.match(robloxProductionPromptLines(actual,{responsibleFiles:[files[0]]}).join('\n'),/planner-integration/);
+    assert.doesNotMatch(robloxProductionPromptLines(actual,{responsibleFiles:[files[1]]}).join('\n'),/planner-integration/);
+    assert.equal(actual.spatialBlueprintContract.runtimeVerified,false);
+    const repair=buildRobloxProductionPlan({gameId:'mountain',platform,design,source:{sourceTreeFingerprint:'e2e-v1'},responsibleFiles:files,focus:'STABILITY',policy:activePolicy});
+    assert.equal(repair.spatialBlueprintContract,null);
+  }
+});
+
+test('approved procedural landscapes reach only the existing world source worker and remain unverified proposals',()=>{
+  const world='roblox-games/landscape/server/World.luau',menu='roblox-games/landscape/client/Menu.luau';
+  const spec={approvedDesign:true,seed:'winter-village',dimension:'3D',width:24,height:24,density:.7,biome:'MOUNTAIN',climate:'COLD_WET'};
+  const design={identity:'산마을의 연결된 동선',spatialLayout:{dimension:'3D',proceduralWorld:spec}};
+  const input={design,mode:'CONNECTED_CONTENT_IMPLEMENTATION',enabled:true,files:[world,menu]};
+  const contract=buildSpatialBlueprintContract(input);
+  assert.equal(contract.required,true);
+  const study=contract.macroSketch.proceduralWorldStudy;
+  assert.equal(study.status,'STATIC_LAYOUT_PROPOSED',JSON.stringify(study.issues));
+  assert.equal(study.seed,'winter-village');
+  assert.equal(study.regionBiome,'MOUNTAIN');
+  assert.equal(study.climate,'COLD_WET');
+  assert.ok(study.routes.length>0);
+  assert.ok(study.routes.every(route=>route.cellSample.length===route.worldPointSample.length));
+  assert.ok(study.routes.every(route=>route.worldPointSample.every(point=>Number.isFinite(point.x)&&Number.isFinite(point.y)&&Number.isFinite(point.z))));
+  const twoD=buildSpatialBlueprintContract({...input,design:{...design,spatialLayout:{dimension:'2D',proceduralWorld:{...spec,dimension:'2D'}}}});
+  assert.equal(twoD.macroSketch.proceduralWorldStudy.status,'STATIC_LAYOUT_PROPOSED');
+  assert.ok(twoD.macroSketch.proceduralWorldStudy.routes.every(route=>route.worldPointSample.every(point=>Number.isFinite(point.y)&&!('z' in point))));
+  assert.ok(study.totalBuildings>0);
+  assert.ok(study.buildings.every(row=>row.modules.some(module=>module.endsWith('PITCHED_ROOF'))));
+  assert.equal(study.fullTerrainOrNativeMeshDelivered,false);
+  assert.equal(study.runtimeVerified,false);
+  assert.equal(study.sourceMutationPerformed,false);
+  assert.ok(JSON.stringify(study).length<10000,'bounded worker context must not include whole tile arrays');
+  assert.deepEqual(study,buildSpatialBlueprintContract(input).macroSketch.proceduralWorldStudy);
+  const plan={platform:'ROBLOX',implementationPackages:[{role:'SERVER_AUTHORITY',files:[world]},{role:'CLIENT_PRESENTATION',files:[menu]}],spatialBlueprintContract:contract};
+  const worldScoped=productionBlueprintContractsForFiles(plan,{responsibleFiles:[world]});
+  const menuScoped=productionBlueprintContractsForFiles(plan,{responsibleFiles:[menu]});
+  assert.equal(worldScoped.spatial.required,true);
+  assert.equal(worldScoped.spatial.macroSketch.proceduralWorldStudy.seed,'winter-village');
+  assert.equal(menuScoped.spatial.required,false);
+  assert.equal(menuScoped.spatial.macroSketch.proceduralWorldStudy,undefined);
+  assert.match(robloxProductionPromptLines(plan,{responsibleFiles:[world]}).join('\n'),/macroSketch\.proceduralWorldStudy/);
+  assert.doesNotMatch(robloxProductionPromptLines(plan,{responsibleFiles:[menu]}).join('\n'),/"seed":"winter-village"/);
+  const unapproved=buildSpatialBlueprintContract({...input,design:{...design,spatialLayout:{dimension:'3D',proceduralWorld:{...spec,approvedDesign:false}}}});
+  assert.equal(unapproved.macroSketch.proceduralWorldStudy,undefined);
+  const presentation=buildSpatialBlueprintContract({...input,mode:'EXISTING_PLAY_PRESENTATION'});
+  assert.equal(presentation.macroSketch.proceduralWorldStudy,undefined);
+  assert.equal(buildSpatialBlueprintContract({...input,mode:'EXISTING_SOURCE_REPAIR'}),null);
+  const blocked=buildSpatialBlueprintContract({...input,design:{...design,spatialLayout:{dimension:'3D',proceduralWorld:{...spec,reservedCells:Array.from({length:24},(_,z)=>({x:12,z}))}}}});
+  assert.equal(blocked.macroSketch.proceduralWorldStudy.status,'LAYOUT_REVIEW_REQUIRED');
+  assert.ok(blocked.macroSketch.proceduralWorldStudy.issues.some(code=>code.includes('REQUIRED_ROUTE_BLOCKED')||code.includes('REQUIRED_OBJECTIVE_UNREACHABLE')));
+  assert.equal(blocked.macroSketch.proceduralWorldStudy.runtimeVerified,false);
+});
+
+test('existing spatial worker plans seeded biome drainage connected roads and modular architecture without changing repair scope',()=>{
+  const worldSource='roblox-games/demo/server/World.luau';
+  const plan={platform:'ROBLOX',implementationPackages:[{role:'SERVER_AUTHORITY',files:[worldSource]}],
+    spatialBlueprintContract:{required:true,sourceFiles:[worldSource],macroSketch:{sourceAnchors:[]}}};
+  const prompt=robloxProductionPromptLines(plan,{responsibleFiles:[worldSource]});
+  const spatialRule=prompt.find(line=>line.startsWith('ROBLOX_PRODUCTION_SPATIAL_RULE='));
+  assert.match(spatialRule,/seeded gradient-noise elevation and drainage/);
+  assert.match(spatialRule,/connect walkable road and optional routes before placing any building/);
+  assert.match(spatialRule,/snap modular foundations\/walls\/openings\/roofs/);
+  assert.match(spatialRule,/face door openings toward a traversable road/);
+  assert.match(spatialRule,/landmark sightline from a decision point/);
+  assert.match(spatialRule,/mobile/);
+  assert.match(spatialRule,/not proof of native instancing or runtime visibility/);
+  assert.match(spatialRule,/Existing map repairs and presentation-only tasks must preserve/);
+  assert.equal(productionBlueprintContractsForFiles(plan,{responsibleFiles:['client/HUD.luau']}).spatial.required,false);
 });
 
 test('owner feature removal survives repeated evolution and only a newer explicit request replaces it',()=>{

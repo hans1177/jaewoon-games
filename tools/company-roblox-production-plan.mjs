@@ -3,6 +3,7 @@
 // 원칙: 제작 계획은 실제 구현·런타임 통과 증거가 아니며 기존 책임 소스만 연결한다.
 // 임포트
 import crypto from 'node:crypto';
+import {createVibeProceduralWorldLayout} from '../assets/vibe-environment-director.js';
 
 const clean=value=>String(value??'').replace(/\s+/g,' ').trim();
 const list=value=>Array.isArray(value)?value:[];
@@ -90,9 +91,25 @@ export function buildSpatialBlueprintContract({design={},source={},files=[],mode
   const spatialText=JSON.stringify([layout,design.identity,design.coreLoop,design.signatureSystems,design.visualDirection,design.contentVarietyPlan]);
   const spatial=/world|map|terrain|region|room|building|spawn|route|level|village|dungeon|세계|맵|지형|지역|방|건물|배치|동선|경로|마을|던전|서식|사냥|출입/i.test(spatialText);
   if(!spatial&&!Object.keys(layout).length)return null;
-  const declared=clean(layout.dimension||design.spatialDimension).toUpperCase();
+  const declared=clean(layout.dimension||design.spatialDimension||layout.proceduralWorld?.dimension).toUpperCase();
   const dimension=['2D','3D'].includes(declared)?declared:'SOURCE_BOUND_REQUIRED';
   const scope=mode==='EXISTING_PLAY_PRESENTATION'?'PRESERVE_LAYOUT_PRESENTATION_ONLY':'DESIGN_BOUND_SPATIAL_IMPLEMENTATION';
+  // 설계가 명시적으로 승인한 새 공간만 생성하며, 원본 월드나 충돌·저장은 수정하지 않는다.
+  const worldRequest=layout.proceduralWorld&&typeof layout.proceduralWorld==='object'?layout.proceduralWorld:null;
+  const worldProposal=mode==='CONNECTED_CONTENT_IMPLEMENTATION'&&worldRequest?.approvedDesign===true&&dimension!=='SOURCE_BOUND_REQUIRED'
+    ?createVibeProceduralWorldLayout({...worldRequest,dimension,mobile:worldRequest.mobile!==false}):null;
+  const proceduralWorldStudy=worldProposal?{
+    status:worldProposal.status,issues:worldProposal.issues||[],runtimeVerified:false,sourceMutationPerformed:false,
+    seed:worldProposal.seed||worldRequest.seed||null,dimension,coordinateSystem:worldProposal.coordinateSystem||null,
+    regionBiome:worldProposal.regionalBiome||null,climate:worldProposal.climate||null,
+    grid:worldProposal.size||null,drainage:worldProposal.drainage||null,riverType:worldProposal.riverType||null,
+    riverSample:(worldProposal.river||[]).slice(0,24),riverLength:worldProposal.river?.length||0,
+    routes:(worldProposal.roads||[]).map(row=>({id:row.id,from:row.from,to:row.to,totalCells:row.cells.length,cellSample:row.cells.slice(0,64),worldPointSample:row.worldPath.slice(0,64)})),
+    buildings:(worldProposal.buildings||[]).slice(0,12).map(row=>({id:row.id,zone:row.zone,position:row.position,footprint:row.footprint,modules:row.modules,doorFacing:row.doorFacing,roadAccess:row.roadAccess,gridSnap:row.gridSnap,sourceBindingRequired:true})),
+    totalBuildings:worldProposal.buildings?.length||0,vegetationTypes:(worldProposal.instancingPlan||[]).filter(row=>String(row.module).startsWith('NATURE:')).map(row=>({module:row.module,count:row.count})),
+    landmark:worldProposal.landmark||null,sightline:worldProposal.sightline||null,
+    budget:worldProposal.mobileBudget||null,fullTerrainOrNativeMeshDelivered:false
+  }:null;
   return {
     version:1,required:mode==='CONNECTED_CONTENT_IMPLEMENTATION',dimension,platform,scope,
     designFingerprint:hash(JSON.stringify({identity:design.identity,genre:design.genre,layout,visual:design.visualDirection,art:design.artAudioDirection,systems:design.systemInterconnections})),
@@ -100,7 +117,7 @@ export function buildSpatialBlueprintContract({design={},source={},files=[],mode
       authoredLayout:layout,coreRoute:list(design.coreLoop),systemConnections:list(design.systemInterconnections),
       actorRoles:list(design.signatureSystems),menuAndConvenience:design.uxAccessibilityPlan||{},mobileUx:clean(design.mobileUx),
       sourceAnchors:list(source.sourceAnchors).filter(row=>files.includes(row.file)).map(row=>({file:row.file,symbol:row.symbol,kind:row.kind})),
-      designTraceability:list(design.implementationTraceability)},
+      designTraceability:list(design.implementationTraceability),...(proceduralWorldStudy?{proceduralWorldStudy}:{})},
     sourceFiles:files,
     authoringOrder:['MACRO_REGIONS','TRAVERSAL_AND_OBJECTIVES','OBJECT_VOLUMES_AND_SUPPORT','INTERACTION_AND_STATE_CONNECTIONS','NATIVE_SOURCE'],
     preserve:['EXISTING_OBJECT_IDS','EXISTING_TRANSFORMS_UNLESS_DESIGN_REQUIRES_CHANGE','SPAWN_COUNTS','BALANCE','SAVE','SERVER_AUTHORITY'],
@@ -414,7 +431,10 @@ export function productionBlueprintContractsForFiles(plan,{responsibleFiles=[]}=
   const anchors=list(plan?.spatialBlueprintContract?.macroSketch?.sourceAnchors).filter(row=>owns(row.file||''));
   const spatialOwner=files.some(file=>/(?:world|environment|terrain|level|map|spawn|scene|game|index|bootstrap|init)[^/]*\.(?:[cm]?js|tsx?|jsx|html?|luau?|cs|unity|prefab)$/i.test(file.split('/').at(-1)))||anchors.some(row=>/world|region|terrain|spawn|layout|route|map|scene|환경|배치|지형/i.test(row.symbol||''));
   const interfaceOwner=packages.some(row=>['CLIENT_PRESENTATION','GAMEPLAY_AND_PRESENTATION'].includes(row.role))||files.some(file=>/ui|hud|menu|interface/i.test(file.split('/').at(-1)));
-  const scoped=(contract,owner)=>contract?{...contract,sourceFiles:files,required:contract.required===true&&owner&&files.length>0}:null;
+  const scoped=(contract,owner)=>contract?{
+    ...contract,sourceFiles:files,required:contract.required===true&&owner&&files.length>0,
+    ...(!owner&&contract.macroSketch?.proceduralWorldStudy?{macroSketch:{...contract.macroSketch,proceduralWorldStudy:undefined,authoredLayout:{...contract.macroSketch.authoredLayout,proceduralWorld:undefined}}}:{})
+  }:null;
   return{spatial:scoped(plan?.spatialBlueprintContract,spatialOwner),interface:scoped(plan?.interfaceBlueprintContract,interfaceOwner)};
 }
 export function robloxProductionPromptLines(plan,{prefix='',responsibleFiles=[]}={}){
@@ -438,7 +458,7 @@ export function robloxProductionPromptLines(plan,{prefix='',responsibleFiles=[]}
     ...(plan.spatialBlueprintContract?[
       prefix+'SPATIAL='+JSON.stringify(blueprints.spatial),
       prefix+'SPATIAL_SCHEMA='+JSON.stringify(SPATIAL_BLUEPRINT_SCHEMA),
-      prefix+'SPATIAL_RULE=When required=true, first author spatialBlueprint in the same candidate JSON, then implement it in existing source. Otherwise include a report only for relevant spatial changes. Scope the sketch to the owned task region and its existing entry/objective boundaries, not the entire game or sibling files. Use source dimensions, axis direction, units, player size and stable IDs. Draw regions before object bounds and typed connections. Preserve locations unless authorized. In 3D account for support, headroom, elevation, stairs, slopes, camera sightlines and swept clearance; in 2D distinguish top-down from side-view and layers. Bind each row to executable source. AABB checks are conservative and cannot prove curved terrain, ramps, jumps, engine physics or runtime PASS.'
+      prefix+'SPATIAL_RULE=When required=true, first author spatialBlueprint in the same candidate JSON, then implement it in existing source. Otherwise include a report only for relevant spatial changes. Scope the sketch to the owned task region and its existing entry/objective boundaries, not the entire game or sibling files. Use source dimensions, axis direction, units, player size and stable IDs. Draw regions before object bounds and typed connections. Preserve locations unless authorized. In 3D account for support, headroom, elevation, stairs, slopes, camera sightlines and swept clearance; in 2D distinguish top-down from side-view and layers. Bind each row to executable source. AABB checks are conservative and cannot prove curved terrain, ramps, jumps, engine physics or runtime PASS. For an explicitly approved new environment, derive seeded gradient-noise elevation and drainage by climate and biome; connect walkable road and optional routes before placing any building. Zone footprints by local function (housing, services and workshops), snap modular foundations/walls/openings/roofs to the existing grid, face door openings toward a traversable road, and preserve any reserved player/objective/interaction cells. Use local material and climate for architecture, keep a clear landmark sightline from a decision point, and budget cell/prop density, LOD and reusable mesh instances for mobile. These are authoring constraints, not proof of native instancing or runtime visibility; bind placements to real existing source and reject blocked routes instead of claiming PASS. An approved macroSketch.proceduralWorldStudy provides only bounded route and lot samples, not a full terrain mesh or a verified game implementation. If status is not STATIC_LAYOUT_PROPOSED, repair route or placement feasibility before using its layout; do not substitute the study for actual source implementation. Existing map repairs and presentation-only tasks must preserve established layout and gameplay state.'
     ]:[]),
     ...(plan.qualityContract?[prefix+'QUALITY='+JSON.stringify(plan.qualityContract)]:[]),
     ...list(plan.ownerFeatureChanges).map(change=>prefix+'OWNER='+JSON.stringify(change)+'; latest owner intent wins; REMOVE must not be restored by autonomous expansion; ADD/UPDATE must be preserved within this request scope.'),
