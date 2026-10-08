@@ -109,6 +109,49 @@ assert.equal(strong.thirtyMinuteHardGateApplied,false);
 assert.ok(strong.totalScore>=80);
 for(const value of Object.values(strong.evidenceLevels))assert.ok(DESIGN_DIRECT_SCORE_LEVELS.includes(value));
 
+// 동일한 원본 설계에서 다섯 생산 품질 평가 결과와 미충족 항목을 실제로 확인한다.
+const productionQuality=evaluateDesignProductionQuality(content);
+assert.equal(Object.keys(DESIGN_PRODUCTION_QUALITY_AXES).length,5);
+assert.equal(productionQuality.authority,'DESIGN_SOURCE_EVIDENCE_ONLY');
+assert.equal(productionQuality.runtimeVerified,false);
+assert.equal(productionQuality.cannotGrantNativeQaOrReleasePass,true);
+assert.equal(productionQuality.score,80);
+assert.equal(productionQuality.pass,true);
+assert.deepEqual(productionQuality.missing,[]);
+assert.ok(Object.values(productionQuality.dimensions).every(row=>row.evidenceLevel===80&&row.runtimeVerified===false&&row.pass));
+
+const qualityWeak=change=>{
+  const candidate=structuredClone(content);
+  change(candidate);
+  return {design:candidate,result:evaluateDesignProductionQuality(candidate)};
+};
+const versionWeak=qualityWeak(candidate=>{
+  candidate.platformProfiles.UNITY.platformContentAdaptation='Original Unity scene serves Android and WebGL.';
+});
+assert.ok(versionWeak.result.missing.includes('ENGINE_VERSION_FEASIBILITY.unityEditorVersionSource'));
+const codeWeak=qualityWeak(candidate=>{
+  candidate.implementationTraceability=candidate.implementationTraceability.map(row=>({...row,responsibleSystem:'generic gameplay state'}));
+});
+assert.equal(codeWeak.result.dimensions.CODE_IMPLEMENTABILITY.pass,false);
+const graphicWeak=qualityWeak(candidate=>{
+  candidate.platformProfiles.UNITY.unityWebSpatialPresentation.dimension='2D';
+});
+assert.equal(graphicWeak.result.dimensions.GRAPHICS_ENGINE_PRESENTATION.pass,false);
+const visualWeak=qualityWeak(candidate=>{
+  candidate.uxAccessibilityPlan.touchAndInput='Press any key to act.';
+});
+assert.equal(visualWeak.result.dimensions.VISUAL_UI_SYSTEM.pass,false);
+const menuWeak=qualityWeak(candidate=>{
+  candidate.uxAccessibilityPlan.menuStructure='Press Start and begin.';
+});
+assert.equal(menuWeak.result.dimensions.MENU_COMPOSITION.pass,false);
+const hardGated=scoreDesignGateV2({
+  seed,designRecord:{...designRecord,content:graphicWeak.design},cycleStatus,robloxGenreProfile:profile
+});
+assert.ok(hardGated.hardFailures.includes('DESIGN_GRAPHICS_ENGINE_PRESENTATION_WEAK'));
+assert.ok(hardGated.evidenceLevels.ART_AUDIO_DIRECTION<75);
+assert.equal(hardGated.productionQuality.runtimeVerified,false);
+
 const grammarSeed=structuredClone(seed);
 grammarSeed.GAMEPLAY_SKETCH={version:4,novelGameGrammar:{
   newPrimaryVerb:'오해를 설득해 현실로 만든다',
