@@ -36,25 +36,47 @@
         "RISK: 진영 0명 → 상태 변화: 승패 결정",
         "NEXT: 240초 남으면 무승부 → 상태 변화: 무승부 결정"
       ]
+    },
+    "local_authoring_parts::0d40dd508e2447a24f9068be67ca5bd0b5ac98eb9eaa4ca40ccd74a3ab996d7b:signatureSystems:0": {
+      "id": "INFECT_ATTACK",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "Energy",
+        "InfectAttackCost",
+        "InfectAttackCooldown",
+        "InfectRange"
+      ],
+      "stateOutputs": [
+        "MonsterCount",
+        "HumanCount",
+        "Energy",
+        "InfectAttackCooldown",
+        "InfectRange"
+      ],
+      "name": "감염 공격",
+      "purpose": "몬스터의 명시적 감염 공격이 적중한 인간이 탈락하지 않고 몬스터로 전환하며, 인간 직업별 감염 스킬을 얻는다.",
+      "playerChoice": "감염 스킬 선택"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 452259,
-      "lastMs": 71887,
+      "totalMs": 483271,
+      "lastMs": 31012,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:53:18.722Z"
+      "updatedAt": "2026-10-08T10:53:49.736Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:45:46.438Z",
-  "updatedAt": "2026-10-08T10:53:18.722Z",
+  "updatedAt": "2026-10-08T10:53:49.736Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -771,7 +793,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T10:53:18.722Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:53:49.736Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
