@@ -36,25 +36,38 @@
         "STATE CHANGE: Main state is transformed into a new defensive configuration based on player strategy and resource allocation.",
         "RESULT: The game progresses by shifting the battlefield dynamics, increasing difficulty, and introducing new strategic options."
       ]
+    },
+    "local_authoring_parts::5fa6618b763624c26acad80e5af75c25e790ba75a20de397ec0a71d545f86fb9:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "Main state"
+      ],
+      "stateOutputs": [
+        "New defensive configuration"
+      ],
+      "name": "Single Defense Strategy System",
+      "purpose": "Player's choice of 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.' transforms into 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.' and 'Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.'",
+      "playerChoice": "Transform the main state into a new defensive configuration based on player strategy and resource allocation."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 311957,
-      "lastMs": 46708,
+      "totalMs": 351767,
+      "lastMs": 39810,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:52:32.963Z"
+      "updatedAt": "2026-10-08T17:53:12.774Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:47:20.978Z",
-  "updatedAt": "2026-10-08T17:52:32.963Z",
+  "updatedAt": "2026-10-08T17:53:12.774Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2249,7 +2262,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:52:32.963Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:53:12.774Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
