@@ -5,6 +5,34 @@ import vm from 'node:vm';
 import {mergeRuntimeCatalogMissingGames} from '../tools/company-status-sync.mjs';
 import {buildHomepagePlatformExposure,verifiedCompletionHistory} from '../tools/company-homepage-platform-exposure-sync.mjs';
 
+test('개발 Unity WebGL의 /unity/ 경로가 없으면 기존 출력 루트의 실제 4종 빌드 파일을 검사한다',async()=>{
+  const source=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  const fetched=[];
+  const engine=vm.runInNewContext(source+';({setExposure(value){platformExposure=value},bindAvailableUnityWebSurfaces})',{
+    document:{readyState:'loading',addEventListener(){}},
+    AbortController,setTimeout,clearTimeout,
+    fetch:async(url,options={})=>{
+      const location=String(url);
+      fetched.push(location);
+      if(location.includes('/unity/index.html'))return{ok:false};
+      if(location.includes('/index.html'))return{ok:true,text:async()=>
+        '<div id="unity-container"></div><script src="Build/demo.loader.js"></script><script>createUnityInstance(canvas, {dataUrl:"Build/demo.data", frameworkUrl:"Build/demo.framework.js", codeUrl:"Build/demo.wasm"});</script>'};
+      if(location.includes('unity-web-deploy-manifest.json'))return{ok:false};
+      if(options.method==='HEAD')return{ok:true};
+      return{ok:false};
+    }
+  });
+  engine.setExposure({unityWebEnabled:true,games:[]});
+  const result=await engine.bindAvailableUnityWebSurfaces({games:[
+    {id:'demo',canonical:{sources:{unity:{projectPath:'unity-games/demo'}}}}
+  ]});
+  assert.equal(result.games[0].unityWebAvailable,true);
+  assert.equal(result.games[0].unityWebTestUrl,'/web-games/demo/');
+  assert.ok(fetched.some(url=>url.includes('/unity/index.html')));
+  assert.ok(fetched.some(url=>url.includes('/web-games/demo/index.html')));
+  assert.equal(fetched.filter(url=>url.includes('/Build/demo.')).length,4);
+});
+
 test('runnable native tests remain accessible before release and survive web-only withdrawal',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const snap=buildHomepagePlatformExposure({policy,queue:{items:[{
