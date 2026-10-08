@@ -138,25 +138,317 @@
       "name": "자원 거점 점령 시스템",
       "purpose": "자원 거점 선택과 점령을 위한 시스템으로, 각 거점은 서로 다른 자원과 보상을 제공하며, 플레이어는 자원을 수집하고 점령을 통해 왕국을 확장한다.",
       "playerChoice": "자원 거점 선택, 자원 수집, 점령 보상 획득, 협동 지원을 통해 왕국 확장"
+    },
+    "local_authoring_parts::2af85a898f21a82dabe8863aaa404e11d3ee42ad160f87a9fcaaba25a5843089:signatureSystems:4": {
+      "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "INPUT: 직접 채집 → STATE: 나무·식량 수집 상태",
+        "ACTION: 주민 고용 → STATE: 주민 자동화 상태",
+        "INPUT: 병사 모집 → STATE: 병영 강화 상태",
+        "ACTION: 자원 거점 선택 → STATE: 자원 거점 선택 상태",
+        "OUTPUT: 자동전투 시작 → STATE: 자동전투 상태",
+        "OUTPUT: 점령 보상 획득 → STATE: 점령 상태",
+        "ACTION: 협동 지원 → STATE: 협동 지원 상태"
+      ],
+      "stateOutputs": [
+        "STATE: 나무·식량 수집 상태 → OUTPUT: 직접 채집",
+        "STATE: 주민 자동화 상태 → OUTPUT: 주민 고용",
+        "STATE: 병영 강화 상태 → OUTPUT: 병사 모집",
+        "STATE: 자원 거점 선택 상태 → OUTPUT: 자원 거점 선택",
+        "STATE: 자동전투 상태 → OUTPUT: 자동전투 시작",
+        "STATE: 점령 상태 → OUTPUT: 점령 보상 획득",
+        "STATE: 협동 지원 상태 → OUTPUT: 협동 지원"
+      ],
+      "name": "자원 거점 점령 시스템",
+      "purpose": "자원 거점 선택과 점령을 위한 시스템으로, 각 거점은 서로 다른 자원과 보상을 제공하며, 플레이어는 자원을 수집하고 점령을 통해 왕국을 확장한다.",
+      "playerChoice": "자원 거점 선택, 자원 수집, 점령 보상 획득, 협동 지원을 통해 왕국 확장"
+    },
+    "local_authoring_parts::c12d561aa0c9ed7c283aa5fd2c0718338a1367a312e37bb14e6589f1e2d97b28:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무·식량 수집 상태",
+            "ACTION: 주민 고용 → STATE: 주민 자동화 상태",
+            "INPUT: 병사 모집 → STATE: 병영 강화 상태",
+            "ACTION: 자원 거점 선택 → STATE: 자원 거점 선택 상태",
+            "OUTPUT: 자동전투 시작 → STATE: 자동전투 상태",
+            "OUTPUT: 점령 보상 획득 → STATE: 점령 상태",
+            "ACTION: 협동 지원 → STATE: 협동 지원 상태"
+          ],
+          "stateOutputs": [
+            "STATE: 나무·식량 수집 상태 → OUTPUT: 직접 채집",
+            "STATE: 주민 자동화 상태 → OUTPUT: 주민 고용",
+            "STATE: 병영 강화 상태 → OUTPUT: 병사 모집",
+            "STATE: 자원 거점 선택 상태 → OUTPUT: 자원 거점 선택",
+            "STATE: 자동전투 상태 → OUTPUT: 자동전투 시작",
+            "STATE: 점령 상태 → OUTPUT: 점령 보상 획득",
+            "STATE: 협동 지원 상태 → OUTPUT: 협동 지원"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "자원 거점 선택과 점령을 위한 시스템으로, 각 거점은 서로 다른 자원과 보상을 제공하며, 플레이어는 자원을 수집하고 점령을 통해 왕국을 확장한다.",
+          "playerChoice": "자원 거점 선택, 자원 수집, 점령 보상 획득, 협동 지원을 통해 왕국 확장"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무·식량 수집 상태",
+            "ACTION: 주민 고용 → STATE: 주민 자동화 상태",
+            "INPUT: 병사 모집 → STATE: 병영 강화 상태",
+            "ACTION: 자원 거점 선택 → STATE: 자원 거점 선택 상태",
+            "OUTPUT: 자동전투 시작 → STATE: 자동전투 상태",
+            "OUTPUT: 점령 보상 획득 → STATE: 점령 상태",
+            "ACTION: 협동 지원 → STATE: 협동 지원 상태"
+          ],
+          "stateOutputs": [
+            "STATE: 나무·식량 수집 상태 → OUTPUT: 직접 채집",
+            "STATE: 주민 자동화 상태 → OUTPUT: 주민 고용",
+            "STATE: 병영 강화 상태 → OUTPUT: 병사 모집",
+            "STATE: 자원 거점 선택 상태 → OUTPUT: 자원 거점 선택",
+            "STATE: 자동전투 상태 → OUTPUT: 자동전투 시작",
+            "STATE: 점령 상태 → OUTPUT: 점령 보상 획득",
+            "STATE: 협동 지원 상태 → OUTPUT: 협동 지원"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "자원 거점 선택과 점령을 위한 시스템으로, 각 거점은 서로 다른 자원과 보상을 제공하며, 플레이어는 자원을 수집하고 점령을 통해 왕국을 확장한다.",
+          "playerChoice": "자원 거점 선택, 자원 수집, 점령 보상 획득, 협동 지원을 통해 왕국 확장"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무·식량 수집 상태",
+            "ACTION: 주민 고용 → STATE: 주민 자동화 상태",
+            "INPUT: 병사 모집 → STATE: 병영 강화 상태",
+            "ACTION: 자원 거점 선택 → STATE: 자원 거점 선택 상태",
+            "OUTPUT: 자동전투 시작 → STATE: 자동전투 상태",
+            "OUTPUT: 점령 보상 획득 → STATE: 점령 상태",
+            "ACTION: 협동 지원 → STATE: 협동 지원 상태"
+          ],
+          "stateOutputs": [
+            "STATE: 나무·식량 수집 상태 → OUTPUT: 직접 채집",
+            "STATE: 주민 자동화 상태 → OUTPUT: 주민 고용",
+            "STATE: 병영 강화 상태 → OUTPUT: 병사 모집",
+            "STATE: 자원 거점 선택 상태 → OUTPUT: 자원 거점 선택",
+            "STATE: 자동전투 상태 → OUTPUT: 자동전투 시작",
+            "STATE: 점령 상태 → OUTPUT: 점령 보상 획득",
+            "STATE: 협동 지원 상태 → OUTPUT: 협동 지원"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "자원 거점 선택과 점령을 위한 시스템으로, 각 거점은 서로 다른 자원과 보상을 제공하며, 플레이어는 자원을 수집하고 점령을 통해 왕국을 확장한다.",
+          "playerChoice": "자원 거점 선택, 자원 수집, 점령 보상 획득, 협동 지원을 통해 왕국 확장"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무·식량 수집 상태",
+            "ACTION: 주민 고용 → STATE: 주민 자동화 상태",
+            "INPUT: 병사 모집 → STATE: 병영 강화 상태",
+            "ACTION: 자원 거점 선택 → STATE: 자원 거점 선택 상태",
+            "OUTPUT: 자동전투 시작 → STATE: 자동전투 상태",
+            "OUTPUT: 점령 보상 획득 → STATE: 점령 상태",
+            "ACTION: 협동 지원 → STATE: 협동 지원 상태"
+          ],
+          "stateOutputs": [
+            "STATE: 나무·식량 수집 상태 → OUTPUT: 직접 채집",
+            "STATE: 주민 자동화 상태 → OUTPUT: 주민 고용",
+            "STATE: 병영 강화 상태 → OUTPUT: 병사 모집",
+            "STATE: 자원 거점 선택 상태 → OUTPUT: 자원 거점 선택",
+            "STATE: 자동전투 상태 → OUTPUT: 자동전투 시작",
+            "STATE: 점령 상태 → OUTPUT: 점령 보상 획득",
+            "STATE: 협동 지원 상태 → OUTPUT: 협동 지원"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "자원 거점 선택과 점령을 위한 시스템으로, 각 거점은 서로 다른 자원과 보상을 제공하며, 플레이어는 자원을 수집하고 점령을 통해 왕국을 확장한다.",
+          "playerChoice": "자원 거점 선택, 자원 수집, 점령 보상 획득, 협동 지원을 통해 왕국 확장"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무·식량 수집 상태",
+            "ACTION: 주민 고용 → STATE: 주민 자동화 상태",
+            "INPUT: 병사 모집 → STATE: 병영 강화 상태",
+            "ACTION: 자원 거점 선택 → STATE: 자원 거점 선택 상태",
+            "OUTPUT: 자동전투 시작 → STATE: 자동전투 상태",
+            "OUTPUT: 점령 보상 획득 → STATE: 점령 상태",
+            "ACTION: 협동 지원 → STATE: 협동 지원 상태"
+          ],
+          "stateOutputs": [
+            "STATE: 나무·식량 수집 상태 → OUTPUT: 직접 채집",
+            "STATE: 주민 자동화 상태 → OUTPUT: 주민 고용",
+            "STATE: 병영 강화 상태 → OUTPUT: 병사 모집",
+            "STATE: 자원 거점 선택 상태 → OUTPUT: 자원 거점 선택",
+            "STATE: 자동전투 상태 → OUTPUT: 자동전투 시작",
+            "STATE: 점령 상태 → OUTPUT: 점령 보상 획득",
+            "STATE: 협동 지원 상태 → OUTPUT: 협동 지원"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "자원 거점 선택과 점령을 위한 시스템으로, 각 거점은 서로 다른 자원과 보상을 제공하며, 플레이어는 자원을 수집하고 점령을 통해 왕국을 확장한다.",
+          "playerChoice": "자원 거점 선택, 자원 수집, 점령 보상 획득, 협동 지원을 통해 왕국 확장"
+        }
+      ]
+    },
+    "local_authoring_parts::036bdd60d2ce4070d1bb764d06333edb16c732e9ece5ba77a9db391eec7bfcb7:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT: 직접 채집 → STATE: 나무·식량 수집 상태",
+        "ACTION: 주민 고용 → STATE: 주민 자동화 상태",
+        "INPUT: 병사 모집 → STATE: 병영 강화 상태",
+        "ACTION: 자원 거점 선택 → STATE: 자원 거점 선택 상태",
+        "OUTPUT: 자동전투 시작 → STATE: 자동전투 상태",
+        "OUTPUT: 점령 보상 획득 → STATE: 점령 상태",
+        "ACTION: 협동 지원 → STATE: 협동 지원 상태"
+      ],
+      "signatureSystems": [
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무·식량 수집 상태",
+            "ACTION: 주민 고용 → STATE: 주민 자동화 상태",
+            "INPUT: 병사 모집 → STATE: 병영 강화 상태",
+            "ACTION: 자원 거점 선택 → STATE: 자원 거점 선택 상태",
+            "OUTPUT: 자동전투 시작 → STATE: 자동전투 상태",
+            "OUTPUT: 점령 보상 획득 → STATE: 점령 상태",
+            "ACTION: 협동 지원 → STATE: 협동 지원 상태"
+          ],
+          "stateOutputs": [
+            "STATE: 나무·식량 수집 상태 → OUTPUT: 직접 채집",
+            "STATE: 주민 자동화 상태 → OUTPUT: 주민 고용",
+            "STATE: 병영 강화 상태 → OUTPUT: 병사 모집",
+            "STATE: 자원 거점 선택 상태 → OUTPUT: 자원 거점 선택",
+            "STATE: 자동전투 상태 → OUTPUT: 자동전투 시작",
+            "STATE: 점령 상태 → OUTPUT: 점령 보상 획득",
+            "STATE: 협동 지원 상태 → OUTPUT: 협동 지원"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "자원 거점 선택과 점령을 위한 시스템으로, 각 거점은 서로 다른 자원과 보상을 제공하며, 플레이어는 자원을 수집하고 점령을 통해 왕국을 확장한다.",
+          "playerChoice": "자원 거점 선택, 자원 수집, 점령 보상 획득, 협동 지원을 통해 왕국 확장"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무·식량 수집 상태",
+            "ACTION: 주민 고용 → STATE: 주민 자동화 상태",
+            "INPUT: 병사 모집 → STATE: 병영 강화 상태",
+            "ACTION: 자원 거점 선택 → STATE: 자원 거점 선택 상태",
+            "OUTPUT: 자동전투 시작 → STATE: 자동전투 상태",
+            "OUTPUT: 점령 보상 획득 → STATE: 점령 상태",
+            "ACTION: 협동 지원 → STATE: 협동 지원 상태"
+          ],
+          "stateOutputs": [
+            "STATE: 나무·식량 수집 상태 → OUTPUT: 직접 채집",
+            "STATE: 주민 자동화 상태 → OUTPUT: 주민 고용",
+            "STATE: 병영 강화 상태 → OUTPUT: 병사 모집",
+            "STATE: 자원 거점 선택 상태 → OUTPUT: 자원 거점 선택",
+            "STATE: 자동전투 상태 → OUTPUT: 자동전투 시작",
+            "STATE: 점령 상태 → OUTPUT: 점령 보상 획득",
+            "STATE: 협동 지원 상태 → OUTPUT: 협동 지원"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "자원 거점 선택과 점령을 위한 시스템으로, 각 거점은 서로 다른 자원과 보상을 제공하며, 플레이어는 자원을 수집하고 점령을 통해 왕국을 확장한다.",
+          "playerChoice": "자원 거점 선택, 자원 수집, 점령 보상 획득, 협동 지원을 통해 왕국 확장"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무·식량 수집 상태",
+            "ACTION: 주민 고용 → STATE: 주민 자동화 상태",
+            "INPUT: 병사 모집 → STATE: 병영 강화 상태",
+            "ACTION: 자원 거점 선택 → STATE: 자원 거점 선택 상태",
+            "OUTPUT: 자동전투 시작 → STATE: 자동전투 상태",
+            "OUTPUT: 점령 보상 획득 → STATE: 점령 상태",
+            "ACTION: 협동 지원 → STATE: 협동 지원 상태"
+          ],
+          "stateOutputs": [
+            "STATE: 나무·식량 수집 상태 → OUTPUT: 직접 채집",
+            "STATE: 주민 자동화 상태 → OUTPUT: 주민 고용",
+            "STATE: 병영 강화 상태 → OUTPUT: 병사 모집",
+            "STATE: 자원 거점 선택 상태 → OUTPUT: 자원 거점 선택",
+            "STATE: 자동전투 상태 → OUTPUT: 자동전투 시작",
+            "STATE: 점령 상태 → OUTPUT: 점령 보상 획득",
+            "STATE: 협동 지원 상태 → OUTPUT: 협동 지원"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "자원 거점 선택과 점령을 위한 시스템으로, 각 거점은 서로 다른 자원과 보상을 제공하며, 플레이어는 자원을 수집하고 점령을 통해 왕국을 확장한다.",
+          "playerChoice": "자원 거점 선택, 자원 수집, 점령 보상 획득, 협동 지원을 통해 왕국 확장"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무·식량 수집 상태",
+            "ACTION: 주민 고용 → STATE: 주민 자동화 상태",
+            "INPUT: 병사 모집 → STATE: 병영 강화 상태",
+            "ACTION: 자원 거점 선택 → STATE: 자원 거점 선택 상태",
+            "OUTPUT: 자동전투 시작 → STATE: 자동전투 상태",
+            "OUTPUT: 점령 보상 획득 → STATE: 점령 상태",
+            "ACTION: 협동 지원 → STATE: 협동 지원 상태"
+          ],
+          "stateOutputs": [
+            "STATE: 나무·식량 수집 상태 → OUTPUT: 직접 채집",
+            "STATE: 주민 자동화 상태 → OUTPUT: 주민 고용",
+            "STATE: 병영 강화 상태 → OUTPUT: 병사 모집",
+            "STATE: 자원 거점 선택 상태 → OUTPUT: 자원 거점 선택",
+            "STATE: 자동전투 상태 → OUTPUT: 자동전투 시작",
+            "STATE: 점령 상태 → OUTPUT: 점령 보상 획득",
+            "STATE: 협동 지원 상태 → OUTPUT: 협동 지원"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "자원 거점 선택과 점령을 위한 시스템으로, 각 거점은 서로 다른 자원과 보상을 제공하며, 플레이어는 자원을 수집하고 점령을 통해 왕국을 확장한다.",
+          "playerChoice": "자원 거점 선택, 자원 수집, 점령 보상 획득, 협동 지원을 통해 왕국 확장"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무·식량 수집 상태",
+            "ACTION: 주민 고용 → STATE: 주민 자동화 상태",
+            "INPUT: 병사 모집 → STATE: 병영 강화 상태",
+            "ACTION: 자원 거점 선택 → STATE: 자원 거점 선택 상태",
+            "OUTPUT: 자동전투 시작 → STATE: 자동전투 상태",
+            "OUTPUT: 점령 보상 획득 → STATE: 점령 상태",
+            "ACTION: 협동 지원 → STATE: 협동 지원 상태"
+          ],
+          "stateOutputs": [
+            "STATE: 나무·식량 수집 상태 → OUTPUT: 직접 채집",
+            "STATE: 주민 자동화 상태 → OUTPUT: 주민 고용",
+            "STATE: 병영 강화 상태 → OUTPUT: 병사 모집",
+            "STATE: 자원 거점 선택 상태 → OUTPUT: 자원 거점 선택",
+            "STATE: 자동전투 상태 → OUTPUT: 자동전투 시작",
+            "STATE: 점령 상태 → OUTPUT: 점령 보상 획득",
+            "STATE: 협동 지원 상태 → OUTPUT: 협동 지원"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "자원 거점 선택과 점령을 위한 시스템으로, 각 거점은 서로 다른 자원과 보상을 제공하며, 플레이어는 자원을 수집하고 점령을 통해 왕국을 확장한다.",
+          "playerChoice": "자원 거점 선택, 자원 수집, 점령 보상 획득, 협동 지원을 통해 왕국 확장"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 363462,
-      "lastMs": 53801,
+      "totalMs": 429344,
+      "lastMs": 65882,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:31:45.239Z"
+      "updatedAt": "2026-10-08T15:32:51.121Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T15:25:41.713Z",
-  "updatedAt": "2026-10-08T15:31:45.239Z",
+  "updatedAt": "2026-10-08T15:32:51.123Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -711,7 +1003,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T15:31:45.239Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:32:51.123Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
