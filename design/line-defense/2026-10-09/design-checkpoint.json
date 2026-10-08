@@ -79,25 +79,218 @@
       "name": "ARMOR_STRIKE_DEFENSE_FIELD_BETA",
       "purpose": "플레이어가 주체가 되어 전투 유닛의 방어 계획을 재설계하여 새로운 전략을 실행하는 데 사용된다.",
       "playerChoice": "Enemy type is analyzed, and defense layout is adjusted. This action triggers the deployment of tower upgrades and new placement strategies to optimize future combat scenarios."
+    },
+    "local_authoring_parts::1f8caf8f10277a7214593abac2e9109f2cd675052811b5c28f4946c94b2879de:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_04",
+      "grammarRole": "c",
+      "stateInputs": [
+        "ENEMY_TYPE",
+        "DEFENSE_LAYOUT"
+      ],
+      "stateOutputs": [
+        "TOWER_UPGRADES",
+        "NEW_PLACEMENT_STRATEGY"
+      ],
+      "name": "ARMOR_STRIKE_DEFENSE_FIELD_ALPHA",
+      "purpose": "플레이어가 주체가 되어 전투 유닛의 방어 계획을 재설계하여 새로운 전략을 실행하는 데 사용된다.",
+      "playerChoice": "Enemy type is analyzed, and defense layout is adjusted. This action triggers the deployment of tower upgrades and new placement strategies to optimize future combat scenarios."
+    },
+    "local_authoring_parts::1f8caf8f10277a7214593abac2e9109f2cd675052811b5c28f4946c94b2879de:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_04",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "ENEMY_TYPE",
+        "DEFENSE_LAYOUT"
+      ],
+      "stateOutputs": [
+        "TOWER_UPGRADES",
+        "NEW_PLACEMENT_STRATEGY"
+      ],
+      "name": "ARMOR_STRIKE_DEFENSE_FIELD_ALPHA",
+      "purpose": "플레이어가 주체가 되어 전투 유닛의 방어 계획을 재설계하여 새로운 전략을 실행하는 데 사용된다.",
+      "playerChoice": "Enemy type is analyzed, and defense layout is adjusted. This action triggers the deployment of tower upgrades and new placement strategies to optimize future combat scenarios."
+    },
+    "local_authoring_parts::2a9bb9de7bb5ef29033ef9cafbfcb5d1e13bbdea542826769c7f0f390bfac7e4:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "ENEMY_WAVE",
+            "TOWER_PLACEMENT"
+          ],
+          "stateOutputs": [
+            "DEFENSE_LAYOUT",
+            "RESOURCE_POOL"
+          ],
+          "name": "WEAPON_FIRED_BATTLEFIELD",
+          "purpose": "플레이어가 주체가 되어 세계 상태와 다음 선택을 바꾼다.",
+          "playerChoice": "Enemy wave is read, and towers are placed to cover the threatened route. This action triggers a battlefield transformation that alters the defense layout and resource pool for future gameplay."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "ENEMY_TYPE",
+            "DEFENSE_LAYOUT"
+          ],
+          "stateOutputs": [
+            "TOWER_UPGRADES",
+            "NEW_PLACEMENT_STRATEGY"
+          ],
+          "name": "ARMOR_STRIKE_DEFENSE_FIELD",
+          "purpose": "플레이어가 주체가 되어 전투 유닛의 방어 계획을 재설계하여 새로운 전략을 실행하는 데 사용된다.",
+          "playerChoice": "Enemy type is analyzed, and defense layout is adjusted. This action triggers the deployment of tower upgrades and new placement strategies to optimize future combat scenarios."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "ENEMY_TYPE",
+            "DEFENSE_LAYOUT"
+          ],
+          "stateOutputs": [
+            "TOWER_UPGRADES",
+            "NEW_PLACEMENT_STRATEGY"
+          ],
+          "name": "ARMOR_STRIKE_DEFENSE_FIELD_BETA",
+          "purpose": "플레이어가 주체가 되어 전투 유닛의 방어 계획을 재설계하여 새로운 전략을 실행하는 데 사용된다.",
+          "playerChoice": "Enemy type is analyzed, and defense layout is adjusted. This action triggers the deployment of tower upgrades and new placement strategies to optimize future combat scenarios."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_04",
+          "grammarRole": "c",
+          "stateInputs": [
+            "ENEMY_TYPE",
+            "DEFENSE_LAYOUT"
+          ],
+          "stateOutputs": [
+            "TOWER_UPGRADES",
+            "NEW_PLACEMENT_STRATEGY"
+          ],
+          "name": "ARMOR_STRIKE_DEFENSE_FIELD_ALPHA",
+          "purpose": "플레이어가 주체가 되어 전투 유닛의 방어 계획을 재설계하여 새로운 전략을 실행하는 데 사용된다.",
+          "playerChoice": "Enemy type is analyzed, and defense layout is adjusted. This action triggers the deployment of tower upgrades and new placement strategies to optimize future combat scenarios."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_04",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "ENEMY_TYPE",
+            "DEFENSE_LAYOUT"
+          ],
+          "stateOutputs": [
+            "TOWER_UPGRADES",
+            "NEW_PLACEMENT_STRATEGY"
+          ],
+          "name": "ARMOR_STRIKE_DEFENSE_FIELD_ALPHA",
+          "purpose": "플레이어가 주체가 되어 전투 유닛의 방어 계획을 재설계하여 새로운 전략을 실행하는 데 사용된다.",
+          "playerChoice": "Enemy type is analyzed, and defense layout is adjusted. This action triggers the deployment of tower upgrades and new placement strategies to optimize future combat scenarios."
+        }
+      ]
+    },
+    "local_authoring_parts::616f3ec94ca607c2d8159458625cd8582083cbea017997b31f9bd54b2296ad0b:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "ENEMY_WAVE",
+            "TOWER_PLACEMENT"
+          ],
+          "stateOutputs": [
+            "DEFENSE_LAYOUT",
+            "RESOURCE_POOL"
+          ],
+          "name": "WEAPON_FIRED_BATTLEFIELD",
+          "purpose": "플레이어가 주체가 되어 세계 상태와 다음 선택을 바꾼다.",
+          "playerChoice": "Enemy wave is read, and towers are placed to cover the threatened route. This action triggers a battlefield transformation that alters the defense layout and resource pool for future gameplay."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "ENEMY_TYPE",
+            "DEFENSE_LAYOUT"
+          ],
+          "stateOutputs": [
+            "TOWER_UPGRADES",
+            "NEW_PLACEMENT_STRATEGY"
+          ],
+          "name": "ARMOR_STRIKE_DEFENSE_FIELD",
+          "purpose": "플레이어가 주체가 되어 전투 유닛의 방어 계획을 재설계하여 새로운 전략을 실행하는 데 사용된다.",
+          "playerChoice": "Enemy type is analyzed, and defense layout is adjusted. This action triggers the deployment of tower upgrades and new placement strategies to optimize future combat scenarios."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "ENEMY_TYPE",
+            "DEFENSE_LAYOUT"
+          ],
+          "stateOutputs": [
+            "TOWER_UPGRADES",
+            "NEW_PLACEMENT_STRATEGY"
+          ],
+          "name": "ARMOR_STRIKE_DEFENSE_FIELD_BETA",
+          "purpose": "플레이어가 주체가 되어 전투 유닛의 방어 계획을 재설계하여 새로운 전략을 실행하는 데 사용된다.",
+          "playerChoice": "Enemy type is analyzed, and defense layout is adjusted. This action triggers the deployment of tower upgrades and new placement strategies to optimize future combat scenarios."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_04",
+          "grammarRole": "c",
+          "stateInputs": [
+            "ENEMY_TYPE",
+            "DEFENSE_LAYOUT"
+          ],
+          "stateOutputs": [
+            "TOWER_UPGRADES",
+            "NEW_PLACEMENT_STRATEGY"
+          ],
+          "name": "ARMOR_STRIKE_DEFENSE_FIELD_ALPHA",
+          "purpose": "플레이어가 주체가 되어 전투 유닛의 방어 계획을 재설계하여 새로운 전략을 실행하는 데 사용된다.",
+          "playerChoice": "Enemy type is analyzed, and defense layout is adjusted. This action triggers the deployment of tower upgrades and new placement strategies to optimize future combat scenarios."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_04",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "ENEMY_TYPE",
+            "DEFENSE_LAYOUT"
+          ],
+          "stateOutputs": [
+            "TOWER_UPGRADES",
+            "NEW_PLACEMENT_STRATEGY"
+          ],
+          "name": "ARMOR_STRIKE_DEFENSE_FIELD_ALPHA",
+          "purpose": "플레이어가 주체가 되어 전투 유닛의 방어 계획을 재설계하여 새로운 전략을 실행하는 데 사용된다.",
+          "playerChoice": "Enemy type is analyzed, and defense layout is adjusted. This action triggers the deployment of tower upgrades and new placement strategies to optimize future combat scenarios."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 532363,
-      "lastMs": 73728,
+      "totalMs": 677426,
+      "lastMs": 72306,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:03:09.865Z"
+      "updatedAt": "2026-10-08T18:05:34.931Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:54:17.473Z",
-  "updatedAt": "2026-10-08T18:03:09.865Z",
+  "updatedAt": "2026-10-08T18:05:34.933Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2292,7 +2485,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:03:09.865Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:05:34.933Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
