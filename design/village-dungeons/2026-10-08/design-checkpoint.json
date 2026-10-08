@@ -593,25 +593,32 @@
     },
     "local_authoring_parts::7faffd58051cf9b127f2f1b3881e1b011e4e7e476d1a5e34def9adecc8a1d14e:toId": {
       "toId": "GAME_STATE"
+    },
+    "local_authoring_parts::7faffd58051cf9b127f2f1b3881e1b011e4e7e476d1a5e34def9adecc8a1d14e:stateKeys": {
+      "stateKeys": [
+        "GAME_STATE",
+        "PLAYER_CHOICE",
+        "SYSTEM_RULE"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 18,
+      "calls": 19,
+      "successes": 19,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1544128,
-      "lastMs": 40909,
+      "totalMs": 1588152,
+      "lastMs": 44024,
       "lastError": null,
-      "updatedAt": "2026-10-08T09:18:43.716Z"
+      "updatedAt": "2026-10-08T09:19:27.742Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:52:59.507Z",
-  "updatedAt": "2026-10-08T09:18:43.716Z",
+  "updatedAt": "2026-10-08T09:19:27.742Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2987,7 +2994,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T09:18:43.716Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:19:27.742Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
