@@ -88,25 +88,42 @@
       "name": "자원 거점 점령 시스템",
       "purpose": "5개 서로 다른 자원 거점을 순차적으로 점령하며 성장감을 확장하는 게임 규칙",
       "playerChoice": "자원 거점 선택 및 협동 지원 요청"
+    },
+    "local_authoring_parts::de41ad84b3bbcc7ebf4a785e49bd9061079fa8c56b4b87187175dc3859cd9502:signatureSystems:3": {
+      "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+      "grammarRole": "c",
+      "stateInputs": [
+        "자원 거점",
+        "협동 지원",
+        "점령 보상"
+      ],
+      "stateOutputs": [
+        "자원 거점",
+        "협동 지원",
+        "점령 보상"
+      ],
+      "name": "자원 거점 점령 시스템",
+      "purpose": "5개 서로 다른 자원 거점을 순차적으로 점령하며 성장감을 확장하는 게임 규칙",
+      "playerChoice": "자원 거점 선택 및 협동 지원 요청"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 571210,
-      "lastMs": 30575,
+      "totalMs": 604680,
+      "lastMs": 33470,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:22:36.922Z"
+      "updatedAt": "2026-10-08T10:23:10.393Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:13:05.670Z",
-  "updatedAt": "2026-10-08T10:22:36.922Z",
+  "updatedAt": "2026-10-08T10:23:10.393Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -661,7 +678,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T10:22:36.922Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:23:10.393Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
