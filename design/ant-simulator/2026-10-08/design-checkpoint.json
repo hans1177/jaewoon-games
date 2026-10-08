@@ -980,25 +980,45 @@
     },
     "local_authoring_parts::784efefb33159d68c362e2589cdce827b208df5d7bbce6f6599b91eca2b252d6:toId": {
       "toId": "systemInterconnections[1]"
+    },
+    "local_authoring_parts::784efefb33159d68c362e2589cdce827b208df5d7bbce6f6599b91eca2b252d6:stateKeys": {
+      "stateKeys": [
+        "currentWorldState",
+        "playerTarget",
+        "availableResources",
+        "potentialHazards",
+        "progressionStatus",
+        "updatedWorldState",
+        "newPlayerTarget",
+        "modifiedResources",
+        "reducedHazards",
+        "newProgressionStatus"
+      ]
+    },
+    "local_authoring_parts::784efefb33159d68c362e2589cdce827b208df5d7bbce6f6599b91eca2b252d6:fromSystem": {
+      "fromSystem": "GAMEPLAY_SKETCH v4 emergent grammar: emergentGenre.name/newPrimaryVerb를 identity 또는 coreFun에 유지하고 causalDNA id 최소 2개를 referenceHomagePlan 또는 narrativeDialoguePlan에 추적 가능하게 남긴다.MAIN"
+    },
+    "local_authoring_parts::784efefb33159d68c362e2589cdce827b208df5d7bbce6f6599b91eca2b252d6:toSystem": {
+      "toSystem": "GAMEPLAY_SKETCH v4 emergent grammar: emergentGenre.name/newPrimaryVerb를 identity 또는 coreFun에 유지하고 causalDNA id 최소 2개를 referenceHomagePlan 또는 narrativeDialoguePlan에 추적 가능하게 남긴다.MAIN"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 40,
-      "successes": 40,
+      "calls": 43,
+      "successes": 43,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1208987,
-      "lastMs": 4083,
+      "totalMs": 1233354,
+      "lastMs": 8609,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:24:12.796Z"
+      "updatedAt": "2026-10-08T15:24:37.167Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:29:02.212Z",
-  "updatedAt": "2026-10-08T15:24:12.797Z",
+  "updatedAt": "2026-10-08T15:24:37.167Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3289,7 +3309,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:24:12.796Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:24:37.167Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
