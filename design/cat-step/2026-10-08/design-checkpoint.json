@@ -603,25 +603,36 @@
       "toSystem": "Puzzle System",
       "trigger": "LEVEL_GOAL",
       "stateChange": "CLEAR_LEVEL_GOAL"
+    },
+    "local_authoring_parts::ce30e96b6f120e7264e138551b279fae8892223497466b1c834007decb39121a:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "cat-step-signature-systems-0",
+      "toId": "cat-step-signature-systems-1",
+      "stateKeys": [
+        "LEVEL_GOAL",
+        "LIMITED_MOVES",
+        "OBSTACLES",
+        "VISIBLE_PUZZLE_CONSTRAINT"
+      ],
+      "fromSystem": "Puzzle System, fromSystem: Puzzle System, trigger: LEVEL_GOAL, stateChange: CLEAR_LEVEL_GOAL"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 13,
+      "calls": 14,
+      "successes": 14,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 622298,
-      "lastMs": 31616,
+      "totalMs": 657811,
+      "lastMs": 35513,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:08:34.669Z"
+      "updatedAt": "2026-10-08T12:09:10.184Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:58:12.306Z",
-  "updatedAt": "2026-10-08T12:08:34.670Z",
+  "updatedAt": "2026-10-08T12:09:10.184Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2804,7 +2815,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:08:34.670Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:09:10.184Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
