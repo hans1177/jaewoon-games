@@ -332,25 +332,133 @@
           "playerChoice": "Start immediately with simple one-thumb tap or swipe input and clear score, distance, or session goal"
         }
       ]
+    },
+    "local_authoring_parts::df9aaeab66e9fd2e73cb491ff78513895f66f3043c1fbc1c2f118960950a67a3:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::750e60b6ba644224aaaee7cd4af31acd85d3108c42dd409069160ce54b16a815:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "signatureSystems": [
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "score",
+            "distance",
+            "session"
+          ],
+          "stateOutputs": [
+            "world_origin",
+            "rules",
+            "rewards",
+            "risks",
+            "growth"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "Player action that triggers world origin, rules, rewards, risks, and growth",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and clear score, distance, or session goal"
+        },
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "A",
+          "stateInputs": [
+            "score",
+            "distance",
+            "session"
+          ],
+          "stateOutputs": [
+            "world_origin",
+            "rules",
+            "rewards",
+            "risks",
+            "growth"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "Player action that triggers world origin, rules, rewards, risks, and growth",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and clear score, distance, or session goal"
+        },
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "B",
+          "stateInputs": [
+            "score",
+            "distance",
+            "session"
+          ],
+          "stateOutputs": [
+            "world_origin",
+            "rules",
+            "rewards",
+            "risks",
+            "growth"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "Player action that triggers world origin, rules, rewards, risks, and growth",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and clear score, distance, or session goal"
+        },
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "c",
+          "stateInputs": [
+            "score",
+            "distance",
+            "session"
+          ],
+          "stateOutputs": [
+            "world_origin",
+            "rules",
+            "rewards",
+            "risks",
+            "growth"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "Player action that triggers world origin, rules, rewards, risks, and growth",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and clear score, distance, or session goal"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "score",
+            "distance",
+            "session"
+          ],
+          "stateOutputs": [
+            "world_origin",
+            "rules",
+            "rewards",
+            "risks",
+            "growth"
+          ],
+          "name": "DELVE",
+          "purpose": "Player action that triggers world origin, rules, rewards, risks, and growth",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and clear score, distance, or session goal"
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 349538,
-      "lastMs": 38006,
+      "totalMs": 379749,
+      "lastMs": 30211,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:00:14.693Z"
+      "updatedAt": "2026-10-08T10:00:44.907Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T09:54:25.050Z",
-  "updatedAt": "2026-10-08T10:00:14.695Z",
+  "updatedAt": "2026-10-08T10:00:44.914Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2423,12 +2531,50 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T10:00:14.695Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "마을 던전 RPG은 플레이어가 즉시 시작할 수 있는 단순한 입력(1 손가락 터치 또는 스와이프)과 명확한 점수, 거리, 또는 짧은 세션 목표를 중심으로, 반복 가능한 핵심 루프와 즉시 이해 가능한 입력/피드백을 통해 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다. 플레이어는 시작 즉시 단순한 입력과 명확한 목표를 통해 세계의 원인과 규칙, 보상, 위험, 그리고 성장의 상태 변화를 경험하게 된다. 이는 주요 인물의 목표, 두려움, 비밀, 그리고 상대의 관계 변화를 통해 실제 플레이 선택과 세계 규칙의 연결을 형성한다. 이는 주요 인물의 목표, 두려움, 비밀, 그리고 상대의 관계 변화를 통해 실제 플레이 선택과 세계 규칙의 연결을 형성한다. 이는 주요 인물의 목표, 두려움, 비밀, 그리고 상대의 관계 변화를 통해 실제 플레이 선택과 세계 규칙의 연결을 형성한다. 이는 주요 인물의 목표, 두려움, 비밀, 그리고 상대의 관계 변화를 통해 실제 플레이 선택과 세계 규칙의 연결을 형성한다. 이는 주요 인물의 목표, 두려움, 비밀, 그리고 상대의 관계 변화를 통해 실제 플레이 선택과 세계 규칙의 연결을 형성한다. 이는 주요 인물의 목표, 두려움, 비밀, 그리고 상대의 관계 변화를 통해 실제 플레이 선택과 세계 규칙의 연결을 형성한다. 이는 주요 인물의 목표, 두려움, 비밀, 그리고 상대의 관계 변화를 통해 실제 플레이 선택과 세계 규칙의 연결을 형성한다. 이는 주요 인물의 목표, 두려움, 비밀, 그리고 상대의 관계 변화를 통해 실제 플레이 선택과 세계 규칙의 연결을 형성한다. 이는 주요 인물의 목표, 두려움, 비밀, 그리고 상대의 관계 변화를 통해 실제 플레이 선택과 세계 규칙의 연결을 형성한다. 이는 주요 인물의 목표, 두려움, 비밀, 그리고 상대의 관계 변화를 통해 실제 플레이 선택과 세계 규칙의 연결을 형성한다. 이는 주요 인물의 목표, 두려움, 비밀, 그리고 상대의 관계 변화를 통해 실제 플레이 선택과 세계 규칙의 연결을 형성한다. 이는 주요 인물의 목표,두",
+      "playerFantasy": "마을 던전 RPG에서 플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 세계 상태와 다음 선택을 바꾼다. 플레이어는 이 입력과 목표를 통해 세계의 원인과 규칙, 보상, 위험, 그리고 성장의 상태 변화를 경험하게 된다. 이는 주요 인물의 목표, 두려움, 비밀, 그리고 상대의 관계 변화를 통해 실제 플레이 선택과 세계 규칙의 연결을 형성한다.",
+      "coreFun": "마을 던전 RPG은 플레이어가 즉시 시작할 수 있는 단순한 입력(1 손가락 터치 또는 스와이프)과 명확한 점수, 거리, 또는 짧은 세션 목표를 중심으로, 반복 가능한 핵심 루프와 즉시 이해 가능한 입력/피드백을 통해 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다. 플레이어는 시작 즉시 단순한 입력과 명확한 목표를 통해 세계의 원인과 규칙, 보상, 위험, 그리고 성장의 상태 변화를 경험하게 된다. 이는 주요 인물의 목표, 두려움, 비밀, 그리고 상대의 관계 변화를 통해 실제 플레이 선택과 세계 규칙의 연결을 형성한다.",
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "multiplayerMode": "HYBRID"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T10:00:44.909Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
