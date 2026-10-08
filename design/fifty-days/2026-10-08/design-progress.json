@@ -8,11 +8,11 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 44,
-  "lastSuccessfulModelCallAt": "2026-10-08T10:07:18.296Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "cachedTaskCount": 46,
+  "lastSuccessfulModelCallAt": "2026-10-08T10:08:17.876Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "designerSeed": {
     "file": "design/fifty-days/2026-10-08/design-seed.json",
     "contentDigest": "a4deb3598483db0fb9af89fed72249308065d99f437b9e26592a7bb62d59fe97",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 30,
-      "successes": 30,
+      "calls": 31,
+      "successes": 31,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1473844,
-      "lastMs": 59668,
+      "totalMs": 1533419,
+      "lastMs": 59575,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:07:18.296Z"
+      "updatedAt": "2026-10-08T10:08:17.873Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T10:07:18.297Z"
+  "updatedAt": "2026-10-08T10:08:17.881Z"
 }
