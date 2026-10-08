@@ -912,25 +912,43 @@
         "TACTICAL_FLEXIBILITY"
       ],
       "fromSystem": "SINGLE_DEFENSE_STRATEGY_CORE"
+    },
+    "local_authoring_parts::500aa8d28d636819de89da3d6fc7966b2f6ec17550fa1c52ae8c4bda26d034f4:toSystem,trigger,stateChange": {
+      "toSystem": "SINGLE_DEFENSE_STRATEGY_CONTENT_EXPANSION",
+      "trigger": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+      "stateChange": "Defense coverage increases, resource accumulation accelerates, strategic flexibility expands"
+    },
+    "local_authoring_parts::1b01f43f6b8b6d94075f445a911cdc9502a7d5fdd960f0f0e9a2835b60bf5049:systemInterconnections:0": {
+      "fromId": "SIGNATURE_SYSTEM_0",
+      "toId": "SIGNATURE_SYSTEM_3",
+      "stateKeys": [
+        "DEFENSE_COVERAGE",
+        "RESOURCE_ACUMULATION",
+        "TACTICAL_FLEXIBILITY"
+      ],
+      "fromSystem": "SINGLE_DEFENSE_STRATEGY_CORE",
+      "toSystem": "SINGLE_DEFENSE_STRATEGY_CONTENT_EXPANSION",
+      "trigger": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+      "stateChange": "Defense coverage increases, resource accumulation accelerates, strategic flexibility expands"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 28,
-      "successes": 25,
+      "calls": 29,
+      "successes": 26,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2998193,
-      "lastMs": 54532,
+      "totalMs": 3052979,
+      "lastMs": 54786,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T23:19:19.535Z"
+      "updatedAt": "2026-10-08T23:20:14.323Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:50:18.458Z",
-  "updatedAt": "2026-10-08T23:19:19.535Z",
+  "updatedAt": "2026-10-08T23:20:14.326Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3270,7 +3288,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T23:19:19.535Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T23:20:14.326Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
