@@ -60,25 +60,38 @@
       "name": "RESULT_BASED_ON_RESULT",
       "purpose": "A의 결과가 MAIN의 목적·효율·위험 또는 사용법을 바꾼다.",
       "playerChoice": "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+    },
+    "local_authoring_parts::28b8a0962de0cf58b003d3ab18efa042b35fdac474b70ceab3d655de90909f29:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "START_INPUT"
+      ],
+      "stateOutputs": [
+        "UNLOCK_SMALL_PROGRESSION_BENEFIT"
+      ],
+      "name": "RESULT_BASED_ON_RESULT",
+      "purpose": "Finish or fail, receive a score or reward, unlock small progression benefit and retry with minimal friction",
+      "playerChoice": "Play a brief run with readable feedback, collect rewards, make small risk or route choice before end"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 443107,
-      "lastMs": 31935,
+      "totalMs": 690539,
+      "lastMs": 247432,
       "lastError": null,
-      "updatedAt": "2026-10-08T22:14:29.435Z"
+      "updatedAt": "2026-10-08T22:18:36.868Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T22:07:06.296Z",
-  "updatedAt": "2026-10-08T22:14:29.435Z",
+  "updatedAt": "2026-10-08T22:18:36.868Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2002,7 +2015,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T22:14:29.435Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T22:18:36.868Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
