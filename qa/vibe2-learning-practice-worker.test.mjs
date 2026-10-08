@@ -247,11 +247,40 @@ test('generation failures retain completed attempt evidence and remain failed',a
     drill:{platform:'unity',feedbackTests:['public'],tests:['hidden']},captureCandidates:true,
     request:async()=>{if(++calls===2)throw new Error('practice model output truncated');return JSON.stringify({...practiceAnswer,code:'FAILED_SOURCE'});},
     evaluate:()=>({pass:false,codeVerification:{reason:'REGRESSION_OR_FIXTURE_FAILED',baselineRejected:true,referencePassed:true}})});
-  assert.equal(calls,2);
+  assert.equal(calls,3);
   assert.equal(result.evaluation.pass,false);
   assert.equal(result.repairEvidence.attempts[1].feedback,'MODEL_REQUEST_FAILED');
   assert.equal(result.candidateHistory[0].code,'FAILED_SOURCE');
   assert.equal(result.candidateHistory[1].generationError,'practice model output truncated');
+});
+
+test('generation timeout retries a shorter mode without exposing hidden inputs or inventing success',async()=>{
+  for(const recovers of [true,false]){
+    const calls=[];
+    const result=await runPracticeRepairSession({order:{executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE]'},
+      drill:{platform:'unity',scenario:'PUBLIC_CONTRACT',feedbackTests:['PUBLIC_CASE'],tests:['HIDDEN_CASE'],reference:'PRIVATE_REFERENCE'},model:'qwen3:1.7b',captureCandidates:true,
+      request:async(prompt,options)=>{calls.push({prompt,...options});if(calls.length===1||!recovers)throw new Error('practice model timeout');return JSON.stringify({...practiceAnswer,code:'FIXED_SOURCE'});},
+      evaluate:answer=>({pass:answer.code==='FIXED_SOURCE',codeVerification:{reason:'VERIFIED_LOGIC_ONLY',baselineRejected:true,referencePassed:true}})});
+    assert.equal(calls.length,recovers?2:3);
+    assert.equal(calls[0].inference.think,true);
+    assert.equal(calls[1].inference.think,false);
+    assert.equal(calls[1].maxPredict,3072);
+    assert.equal(result.repairEvidence.firstAttemptPass,false);
+    assert.equal(result.repairEvidence.finalPass,recovers);
+    assert.equal(result.repairEvidence.generationFailures,recovers?1:3);
+    assert.equal(result.repairEvidence.generationBudgetFallbackUsed,true);
+    assert.equal(result.candidateHistory[0].generationError,'practice model timeout');
+    assert(!JSON.stringify(calls).includes('HIDDEN_CASE'));
+    assert(!JSON.stringify(calls).includes('PRIVATE_REFERENCE'));
+  }
+});
+
+test('unavailable model errors do not trigger inference-mode retries',async()=>{
+  let calls=0;
+  const result=await runPracticeRepairSession({order:{executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE]'},drill:{platform:'unity',feedbackTests:['public'],tests:[]},
+    request:async()=>{calls++;throw new Error('practice model HTTP 404');},evaluate:()=>({pass:false})});
+  assert.equal(calls,1);assert.equal(result.evaluation.pass,false);
+  assert.equal(result.repairEvidence.generationBudgetFallbackUsed,false);
 });
 
 test('repair budget is bounded and malformed responses remain failures',async()=>{
