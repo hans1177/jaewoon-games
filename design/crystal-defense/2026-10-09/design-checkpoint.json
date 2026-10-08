@@ -86,25 +86,181 @@
       "name": "DEFENSE_STRATEGY_CORE_C",
       "purpose": "MANAGE DEFENSE STRATEGIES BASED ON PLAYER CHOICE AND GAME CONTEXT",
       "playerChoice": "SELECT BETWEEN 'SURVIVE THE WAVE AND USE THE RESULT TO PREPARE A DIFFERENT COUNTER FOR THE NEXT THREAT' OR 'SPEND LIMITED RESOURCES ON PLACEMENT, RESONANCE OR UPGRADES'"
+    },
+    "local_authoring_parts::d6b5a8ab2db6305085392b5c9473fa2467a5d60a79c32b45398e208d81651f0b:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "CURRENT_SELECTION"
+      ],
+      "stateOutputs": [
+        "NEXT_WORLD_STATE"
+      ],
+      "name": "DEFENSE_STRATEGY_CORE_DELVE",
+      "purpose": "MANAGE DEFENSE STRATEGIES BASED ON PLAYER CHOICE AND GAME CONTEXT",
+      "playerChoice": "SELECT BETWEEN 'SURVIVE THE WAVE AND USE THE RESULT TO PREPARE A DIFFERENT COUNTER FOR THE NEXT THREAT' OR 'SPEND LIMITED RESOURCES ON PLACEMENT, RESONANCE OR UPGRADES'"
+    },
+    "local_authoring_parts::5373fac09cdc01b01e7047dfeccae856e4e767048c68d7ba03e278f8c260e759:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "CURRENT_SELECTION"
+          ],
+          "stateOutputs": [
+            "NEXT_WORLD_STATE"
+          ],
+          "name": "DEFENSE_STRATEGY_CORE",
+          "purpose": "MANAGE DEFENSE STRATEGIES BASED ON PLAYER CHOICE AND GAME CONTEXT",
+          "playerChoice": "SELECT BETWEEN 'SPEND LIMITED RESOURCES ON PLACEMENT, RESONANCE OR UPGRADES' OR 'SURVIVE THE WAVE AND USE THE RESULT TO PREPARE A DIFFERENT COUNTER FOR THE NEXT THREAT'"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "CURRENT_SELECTION"
+          ],
+          "stateOutputs": [
+            "NEXT_WORLD_STATE"
+          ],
+          "name": "DEFENSE_STRATEGY_CORE",
+          "purpose": "MANAGE DEFENSE STRATEGIES BASED ON PLAYER CHOICE AND GAME CONTEXT",
+          "playerChoice": "SELECT BETWEEN 'SPEND LIMITED RESOURCES ON PLACEMENT, RESONANCE OR UPGRADES' OR 'SURVIVE THE WAVE AND USE THE RESULT TO PREPARE A DIFFERENT COUNTER FOR THE NEXT THREAT'"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "CURRENT_SELECTION"
+          ],
+          "stateOutputs": [
+            "NEXT_WORLD_STATE"
+          ],
+          "name": "DEFENSE_STRATEGY_CORE_B",
+          "purpose": "MANAGE DEFENSE STRATEGIES BASED ON PLAYER CHOICE AND GAME CONTEXT",
+          "playerChoice": "SELECT BETWEEN 'SURVIVE THE WAVE AND USE THE RESULT TO PREPARE A DIFFERENT COUNTER FOR THE NEXT THREAT' OR 'SPEND LIMITED RESOURCES ON PLACEMENT, RESONANCE OR UPGRADES'"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "CURRENT_SELECTION"
+          ],
+          "stateOutputs": [
+            "NEXT_WORLD_STATE"
+          ],
+          "name": "DEFENSE_STRATEGY_CORE_C",
+          "purpose": "MANAGE DEFENSE STRATEGIES BASED ON PLAYER CHOICE AND GAME CONTEXT",
+          "playerChoice": "SELECT BETWEEN 'SURVIVE THE WAVE AND USE THE RESULT TO PREPARE A DIFFERENT COUNTER FOR THE NEXT THREAT' OR 'SPEND LIMITED RESOURCES ON PLACEMENT, RESONANCE OR UPGRADES'"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "CURRENT_SELECTION"
+          ],
+          "stateOutputs": [
+            "NEXT_WORLD_STATE"
+          ],
+          "name": "DEFENSE_STRATEGY_CORE_DELVE",
+          "purpose": "MANAGE DEFENSE STRATEGIES BASED ON PLAYER CHOICE AND GAME CONTEXT",
+          "playerChoice": "SELECT BETWEEN 'SURVIVE THE WAVE AND USE THE RESULT TO PREPARE A DIFFERENT COUNTER FOR THE NEXT THREAT' OR 'SPEND LIMITED RESOURCES ON PLACEMENT, RESONANCE OR UPGRADES'"
+        }
+      ]
+    },
+    "local_authoring_parts::406d12222a97de8b692f9bf0cc465f2e1d301e91c03ee693284c84d07365f2e4:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT: 플레이어가 '현재 선택'을 하며, 주요 인물의 목표·두려움·비밀을 기반으로 다음 상태를 결정해야 한다.",
+        "SELECT: 'SPEND LIMITED RESOURCES ON PLACEMENT, RESONANCE OR UPGRADES' 또는 'SURVIVE THE WAVE AND USE THE RESULT TO PREPARE A DIFFERENT COUNTER FOR THE NEXT THREAT' 중 하나를 선택한다.",
+        "OUTPUT: 선택 결과에 따라 세계 상태가 변환되고, 이는 주요 인물의 목표와 두려움이 실제 선택과 관계 변화로 나타난다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "CURRENT_SELECTION"
+          ],
+          "stateOutputs": [
+            "NEXT_WORLD_STATE"
+          ],
+          "name": "DEFENSE_STRATEGY_CORE",
+          "purpose": "MANAGE DEFENSE STRATEGIES BASED ON PLAYER CHOICE AND GAME CONTEXT",
+          "playerChoice": "SELECT BETWEEN 'SPEND LIMITED RESOURCES ON PLACEMENT, RESONANCE OR UPGRADES' OR 'SURVIVE THE WAVE AND USE THE RESULT TO PREPARE A DIFFERENT COUNTER FOR THE NEXT THREAT'"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "CURRENT_SELECTION"
+          ],
+          "stateOutputs": [
+            "NEXT_WORLD_STATE"
+          ],
+          "name": "DEFENSE_STRATEGY_CORE",
+          "purpose": "MANAGE DEFENSE STRATEGIES BASED ON PLAYER CHOICE AND GAME CONTEXT",
+          "playerChoice": "SELECT BETWEEN 'SPEND LIMITED RESOURCES ON PLACEMENT, RESONANCE OR UPGRADES' OR 'SURVIVE THE WAVE AND USE THE RESULT TO PREPARE A DIFFERENT COUNTER FOR THE NEXT THREAT'"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "CURRENT_SELECTION"
+          ],
+          "stateOutputs": [
+            "NEXT_WORLD_STATE"
+          ],
+          "name": "DEFENSE_STRATEGY_CORE_B",
+          "purpose": "MANAGE DEFENSE STRATEGIES BASED ON PLAYER CHOICE AND GAME CONTEXT",
+          "playerChoice": "SELECT BETWEEN 'SURVIVE THE WAVE AND USE THE RESULT TO PREPARE A DIFFERENT COUNTER FOR THE NEXT THREAT' OR 'SPEND LIMITED RESOURCES ON PLACEMENT, RESONANCE OR UPGRADES'"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "CURRENT_SELECTION"
+          ],
+          "stateOutputs": [
+            "NEXT_WORLD_STATE"
+          ],
+          "name": "DEFENSE_STRATEGY_CORE_C",
+          "purpose": "MANAGE DEFENSE STRATEGIES BASED ON PLAYER CHOICE AND GAME CONTEXT",
+          "playerChoice": "SELECT BETWEEN 'SURVIVE THE WAVE AND USE THE RESULT TO PREPARE A DIFFERENT COUNTER FOR THE NEXT THREAT' OR 'SPEND LIMITED RESOURCES ON PLACEMENT, RESONANCE OR UPGRADES'"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "CURRENT_SELECTION"
+          ],
+          "stateOutputs": [
+            "NEXT_WORLD_STATE"
+          ],
+          "name": "DEFENSE_STRATEGY_CORE_DELVE",
+          "purpose": "MANAGE DEFENSE STRATEGIES BASED ON PLAYER CHOICE AND GAME CONTEXT",
+          "playerChoice": "SELECT BETWEEN 'SURVIVE THE WAVE AND USE THE RESULT TO PREPARE A DIFFERENT COUNTER FOR THE NEXT THREAT' OR 'SPEND LIMITED RESOURCES ON PLACEMENT, RESONANCE OR UPGRADES'"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 605949,
-      "lastMs": 69718,
+      "totalMs": 675987,
+      "lastMs": 70038,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:50:32.859Z"
+      "updatedAt": "2026-10-08T18:51:42.899Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:40:26.814Z",
-  "updatedAt": "2026-10-08T18:50:32.859Z",
+  "updatedAt": "2026-10-08T18:51:42.902Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2295,7 +2451,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:50:32.859Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:51:42.902Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
