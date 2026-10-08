@@ -2728,16 +2728,141 @@ function RobloxCommonUI.CreateBuybackPanel(options)
   return root,parts
 end
 
+-- 도감: 게임이 실제로 알고 있는 발견 상태만 표시하고 게임의 등록·보상·저장 권한을 유지한다.
 function RobloxCommonUI.CreateCodexScreen(options)
   options=options or {}
   local theme=cloneTheme(options.theme)
   local root,body=surfaceShell(options,"CODEX_SCREEN","CODEX_SCREEN")
-  local nav=RobloxCommonUI.CreateSideNavigation({name="CodexCategories",items=options.categories or {"아이템","장비","몬스터","지역","인물","기록"},size=UDim2.new(0.26,-8,1,0),theme=theme});nav.Parent=body
-  local detail=Instance.new("Frame");detail.Name="CodexDetail";detail.Position=UDim2.new(0.26,8,0,0);detail.Size=UDim2.new(0.74,-8,1,0);detail.BackgroundColor3=theme.PanelInset;detail.BorderSizePixel=0;detail.Parent=body;corner(detail,theme.Corner)
-  commonText(detail,"Title",options.entryTitle or "발견한 항목",UDim2.fromOffset(16,12),UDim2.new(1,-32,0,38),theme.Text,20,true)
-  commonText(detail,"Body",options.entryBody or "설명 · 획득처 · 관련 제작 · 관련 퀘스트",UDim2.fromOffset(16,56),UDim2.new(1,-32,1,-72),theme.MutedText,14,false)
+  local categories=Instance.new("ScrollingFrame")
+  categories.Name="CodexCategories";categories.Position=UDim2.fromOffset(0,0)
+  categories.Size=UDim2.new(1,0,0,52);categories.BackgroundTransparency=1;categories.BorderSizePixel=0
+  categories.ScrollingDirection=Enum.ScrollingDirection.X
+  categories.AutomaticCanvasSize=Enum.AutomaticSize.X;categories.CanvasSize=UDim2.fromOffset(0,0)
+  categories.ScrollBarThickness=3;categories.Active=true;categories.Parent=body
+  commonList(categories,true,8)
+  local list=Instance.new("ScrollingFrame")
+  list.Name="CodexEntries";list.BackgroundTransparency=1;list.BorderSizePixel=0
+  list.ScrollBarThickness=4;list.ScrollingDirection=Enum.ScrollingDirection.Y
+  list.AutomaticCanvasSize=Enum.AutomaticSize.Y;list.CanvasSize=UDim2.fromOffset(0,0)
+  list.Active=true;list.Parent=body;commonList(list,false,6)
+  local detail=Instance.new("ScrollingFrame")
+  detail.Name="CodexDetail";detail.BackgroundColor3=theme.PanelInset;detail.BorderSizePixel=0
+  detail.ScrollBarThickness=4;detail.ScrollingDirection=Enum.ScrollingDirection.Y
+  detail.AutomaticCanvasSize=Enum.AutomaticSize.Y;detail.CanvasSize=UDim2.fromOffset(0,0)
+  detail.Active=true;detail.Parent=body;corner(detail,theme.Corner)
+  local title=commonText(detail,"Title","발견 기록 없음",
+    UDim2.fromOffset(12,12),UDim2.new(1,-24,0,36),theme.Text,18,true)
+  local info=commonText(detail,"Body","현재 게임에서 확인된 도감 항목이 없어.",
+    UDim2.fromOffset(12,60),UDim2.new(1,-24,0,140),theme.MutedText,13,false)
+  info.TextYAlignment=Enum.TextYAlignment.Top;info.TextWrapped=true
+  info.AutomaticSize=Enum.AutomaticSize.Y
+  local categoryButtons,entryButtons,shown={},{},{}
+  local entries,filters={},{}
+  local selectedCategory="전체"
+  local selectedId=nil
+  local function renderEntry()
+    local selected=nil
+    for _,row in ipairs(shown)do
+      if row.id==selectedId then selected=row;break end
+    end
+    if not selected then
+      selected=shown[1]
+      selectedId=selected and selected.id or nil
+    end
+    title.Text=selected and (selected.unlocked==true and tostring(selected.name or selected.title or "") or "미발견") or "발견 기록 없음"
+    info.Text=selected and (selected.unlocked==true and tostring(selected.description or selected.details or "") or "아직 발견하지 않은 항목이야.") or "현재 게임에서 확인된 도감 항목이 없어."
+    root:SetAttribute("SelectedCodexEntryId",tostring(selectedId or ""))
+    root:SetAttribute("SelectedCodexEntryUnlocked",selected~=nil and selected.unlocked==true)
+  end
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    entries=type(state.entries)=="table"and state.entries or {}
+    filters={"전체"}
+    local categoriesSeen={["전체"]=true}
+    for _,row in ipairs(entries)do
+      local category=tostring(row.category or "기타")
+      if not categoriesSeen[category]then
+        categoriesSeen[category]=true;filters[#filters+1]=category
+      end
+    end
+    if not categoriesSeen[selectedCategory]then selectedCategory="전체"end
+    for i,category in ipairs(filters)do
+      if not categoryButtons[i]then
+        local index=i
+        local button=RobloxCommonUI.CreateTabButton({name="CodexCategory"..i,text="",
+          size=UDim2.fromOffset(104,48),theme=theme})
+        button.LayoutOrder=i;button.Parent=categories;categoryButtons[i]=button
+        button.Activated:Connect(function()
+          local chosen=filters[index]
+          if not chosen then return end
+          selectedCategory=chosen;sync({entries=entries,revision=state.revision})
+        end)
+      end
+      local button=categoryButtons[i]
+      button.Visible=true;button.Text=category
+      button:SetAttribute("CodexCategory",category)
+      button:SetAttribute("Selected",category==selectedCategory)
+      button.BackgroundColor3=category==selectedCategory and theme.Primary or theme.PanelRaised
+    end
+    for i=#filters+1,#categoryButtons do categoryButtons[i].Visible=false end
+    shown={}
+    for _,row in ipairs(entries)do
+      if selectedCategory=="전체"or tostring(row.category or "기타")==selectedCategory then
+        shown[#shown+1]=row
+      end
+    end
+    for i,row in ipairs(shown)do
+      if not entryButtons[i]then
+        local index=i
+        local button=RobloxCommonUI.CreateTabButton({
+          name="CodexEntry"..i,text="",size=UDim2.new(1,-8,0,52),theme=theme
+        })
+        button.LayoutOrder=i;button.Parent=list;entryButtons[i]=button
+        button.Activated:Connect(function()
+          local current=shown[index]
+          if current and current.id~=nil then
+            selectedId=current.id;renderEntry()
+            if type(options.onSelect)=="function"then options.onSelect(current.id,current)end
+          end
+        end)
+      end
+      local button=entryButtons[i]
+      button.Visible=true;button.Name="CodexEntry"..i;button.LayoutOrder=i
+      button.Text=row.unlocked==true and tostring(row.name or row.title or "") or "미발견"
+      button.Active=row.id~=nil;button.AutoButtonColor=row.id~=nil
+      button:SetAttribute("BoundCodexEntryId",tostring(row.id or ""))
+      button:SetAttribute("BoundFromGameState",true)
+      button:SetAttribute("Discovered",row.unlocked==true)
+    end
+    for i=#shown+1,#entryButtons do entryButtons[i].Visible=false end
+    renderEntry()
+    root:SetAttribute("BoundCodexEntryCount",#entries)
+    root:SetAttribute("CodexStateRevision",tostring(state.revision or "UNKNOWN"))
+  end
+  local function layout()
+    local compact=body.AbsoluteSize.X<560
+    if compact then
+      list.Position=UDim2.fromOffset(0,60)
+      list.Size=UDim2.new(1,0,.42,-60)
+      detail.Position=UDim2.new(0,0,.42,8)
+      detail.Size=UDim2.new(1,0,.58,-8)
+    else
+      list.Position=UDim2.fromOffset(0,60)
+      list.Size=UDim2.new(.4,-6,1,-60)
+      detail.Position=UDim2.new(.4,6,0,60)
+      detail.Size=UDim2.new(.6,-6,1,-60)
+    end
+    root:SetAttribute("MobileStackedLayout",compact)
+  end
+  body:GetPropertyChangedSignal("AbsoluteSize"):Connect(layout)
+  layout()
+  sync(options.codex or {})
+  root:SetAttribute("TouchScrollable",true)
   root:SetAttribute("OwnsDiscoveryAuthority",false)
-  return root,{nav=nav,detail=detail}
+  root:SetAttribute("OwnsRewardAuthority",false)
+  root:SetAttribute("OwnsSaveAuthority",false)
+  root:SetAttribute("OwnsRemoteAuthority",false)
+  return root,{nav=categories,categories=categories,entries=list,detail=detail,Sync=sync}
 end
 
 function RobloxCommonUI.CreateCollectionProgress(options)
