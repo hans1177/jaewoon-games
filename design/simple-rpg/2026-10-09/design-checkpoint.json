@@ -19,25 +19,33 @@
     "local_authoring_parts::62697215b9bc3345bf11a14d7510e1b55fc1e7b6bd312d6ac38e85041ccc29c1:identity,playerFantasy": {
       "identity": "작은 모험 RPG - 시작 게임 단계에서 플레이어가 실제 수행하는 중심 행동과 선택, 세계 상태 변화에 대한 정체성입니다. 이 게임은 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 주요 행동을 중심으로, 입력→판정→상태 변화→보상→다음 선택의 순환적 루프를 형성합니다. 게임은 단순한 패턴 풀이보다는 시스템 내에서의 인과 관계와 진화 가능한 선택 구조를 강조하며, 플레이어에게 즉시 이해되는 피드백을 제공해야 합니다.",
       "playerFantasy": "작은 모험 RPG에서는 플레이어가 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행하면서, 입력→판정→상태 변화→보상→다음 선택의 순환적 루프를 형성합니다. 이 게임은 단순한 패턴 풀이보다는 시스템 내에서의 인과 관계와 진화 가능한 선택 구조를 강조하며, 플레이어에게 즉시 이해되는 피드백을 제공해야 합니다."
+    },
+    "local_authoring_parts::62697215b9bc3345bf11a14d7510e1b55fc1e7b6bd312d6ac38e85041ccc29c1:coreFun": {
+      "coreFun": "작은 모험 RPG에서는 플레이어가 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행하면서, 입력→판정→상태 변화→보상→다음 선택의 순환적 루프를 형성합니다. 이 게임은 단순한 패턴 풀이보다는 시스템 내에서의 인과 관계와 진화 가능한 선택 구조를 강조하며, 플레이어에게 즉시 이해되는 피드백을 제공해야 합니다."
+    },
+    "local_authoring_parts::09693c8e3f8f5a2c57b39fc31e10a2dc614ee2347b17e63b2202f4951e881dba:identity,playerFantasy,coreFun": {
+      "identity": "작은 모험 RPG - 시작 게임 단계에서 플레이어가 실제 수행하는 중심 행동과 선택, 세계 상태 변화에 대한 정체성입니다. 이 게임은 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 주요 행동을 중심으로, 입력→판정→상태 변화→보상→다음 선택의 순환적 루프를 형성합니다. 게임은 단순한 패턴 풀이보다는 시스템 내에서의 인과 관계와 진화 가능한 선택 구조를 강조하며, 플레이어에게 즉시 이해되는 피드백을 제공해야 합니다.",
+      "playerFantasy": "작은 모험 RPG에서는 플레이어가 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행하면서, 입력→판정→상태 변화→보상→다음 선택의 순환적 루프를 형성합니다. 이 게임은 단순한 패턴 풀이보다는 시스템 내에서의 인과 관계와 진화 가능한 선택 구조를 강조하며, 플레이어에게 즉시 이해되는 피드백을 제공해야 합니다.",
+      "coreFun": "작은 모험 RPG에서는 플레이어가 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행하면서, 입력→판정→상태 변화→보상→다음 선택의 순환적 루프를 형성합니다. 이 게임은 단순한 패턴 풀이보다는 시스템 내에서의 인과 관계와 진화 가능한 선택 구조를 강조하며, 플레이어에게 즉시 이해되는 피드백을 제공해야 합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 180464,
-      "lastMs": 33081,
+      "totalMs": 218156,
+      "lastMs": 37692,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:50:28.117Z"
+      "updatedAt": "2026-10-08T17:51:05.811Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:47:27.560Z",
-  "updatedAt": "2026-10-08T17:50:28.118Z",
+  "updatedAt": "2026-10-08T17:51:05.812Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2074,7 +2082,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:50:28.118Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:51:05.812Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
