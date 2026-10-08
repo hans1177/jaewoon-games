@@ -17,6 +17,7 @@ namespace JaewoonGames.DaechungRpg
         private MultiplayerSession _multiplayer;
         private float _qaHeartbeatAt;
         private float _qaMobileTargetAt;
+        private int _coopActionSeen;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void AutoStart()
@@ -83,6 +84,15 @@ namespace JaewoonGames.DaechungRpg
             if (_core == null) return;
             _multiplayer?.ObserveLocalState(_core.Player.currentRegionId, _enemy != null ? _enemy.id : "",
                 _enemyHp, _core.Player.currentHp);
+            if (_multiplayer != null)
+            {
+                _visuals?.SetCoopParty(_multiplayer.Connected && _multiplayer.ParticipantCount >= 2);
+                if (_coopActionSeen != _multiplayer.RemoteActionVersion)
+                {
+                    _coopActionSeen = _multiplayer.RemoteActionVersion;
+                    _visuals?.PlayCoopAction();
+                }
+            }
             if (Time.unscaledTime < _qaHeartbeatAt) return;
             _qaHeartbeatAt = Time.unscaledTime + 2f;
             var player = _core.Player;
