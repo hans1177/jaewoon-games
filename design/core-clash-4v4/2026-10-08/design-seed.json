@@ -11,109 +11,99 @@
   "status": "AUTHORED_CANDIDATE",
   "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
   "originalSource": null,
-  "fingerprint": "a2c46c8063f16660de827f925a4069381674be325362ba06596c82d217f6926b",
+  "fingerprint": "3986d6c9dfcd1846de5935093e290ea95e429bba5d00abf0c87aa487ba6874a1",
   "engineDigest": "d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904",
-  "contentDigest": "b7f7d67984826bdcac212852b903e0dc1437683df93e5f58bf5c14d1d18ab8fb",
+  "contentDigest": "a7f09c0b12aec93a381ff0ec8261d4c8e70dd6f2cd1551fa004c65400b2bd819",
   "externalSeedRequired": false,
   "designPass": false,
   "runtimePass": false,
   "content": {
-    "identity": "코어 전장 4대4의 핵심 재미와 시스템 연결을 확정한 단일 Game Designer AI의 정체성입니다. 게임은 반복 가능한 핵심 루프, 즉시 이해 가능한 입력/피드백, 그리고 다양한 상황별 대응을 포함합니다. 게임의 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, 선택은 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'으로 구성됩니다. 게임은 모바일에서도 즉시 이해 가능한 입력과 피드백을 제공합니다. 게임의 시스템은 MAIN/A/B/c/@와 관련된 다양한 상태 변화를 포함하며, 각 시스템은 구체적인 목적과 선택을 담고 있습니다. 게임의 규칙은 학문적 규칙과 실제 플레이를 결합하여, 게임의 깊이와 재미를 강화합니다. 게임의 플레이어 역할은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로, 선택은 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then create",
-    "playerFantasy": "코어 전장 4대4는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로, 플레이어가 즉시 이해 가능한 입력/피드백을 제공하는 반복 가능한 핵심 루프를 구축합니다. 플레이어는 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.' 두 가지 선택을 통해, 주어진 상황에서 최적의 전략을 선택하고, 그 결과가 다음 상태로 이어집니다. 이는 주어진 시간과 자원의 제약 하에, 플레이어가 즉시 이해할 수 있는 입력/피드백을 제공하며, 게임의 깊이와 재미를 강화합니다.",
-    "coreFun": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.과 Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용을 구체화한 게임의 중심 행동과 선택으로, 주어진 시간과 자원의 제약 하에, 플레이어가 즉시 이해할 수 있는 입력/피드백을 제공하며, 게임의 깊이와 재미를 강화합니다. 이는 주어진 상황에서 최적의 전략을 선택하고, 그 결과가 다음 상태로 이어지는 반복 가능한 핵심 루프를 구축합니다. 플레이어는 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.' 두 가지 선택을 통해, 주어진 상황에서 최적의 전략을 선택하고, 그 결과가 다음 상태로 이어집니다. 이는 주어진 시간과 자원의 제약 하에, 플레이어가 즉시 이해할 수 있는 입력/피드백을 제공하며, 게임의 깊이와 재미를 강화합니다. 게임의 시스템은 MAIN/A/B/c/@와 관련된 다양한 상태 변화를 포함하며, 각 시스템은 구체적인 목적과 선택을 담고 있습니다. 게임의 규칙은 학문적 규칙과 실제 플레이를 결",
+    "identity": "코어 전장 4대4은 플레이어가 반복적으로 수행하는 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 기반으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 이는 시그니처 세계 규칙과 핵심 루프를 통해 플레이어의 선택과 세계 상태의 변화를 연결하는 게임 구조이다. 게임의 핵심 재미는 반복적인 선택과 상태 변화, 위험·보상의 상호작용, 그리고 다양한 선택의 조합과 발전을 통해 구현된다. 게임의 플랫폼별 구현은 기존 원본의 성능, 연출, 배포, 검증 기준에 맞게 적용된다. 게임의 시스템은 MAIN/A/B/c/@와 관련된 상태 변화, 인과법칙, 보상, 위험, 그리고 플레이어의 선택을 포함하며, 이는 게임의 구조와 규칙을 정의한다. 게임의 설계는 기존 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 단순한 반복과 다른 경로·위험·결과를 만드는 ACTION_SURVIVAL_ROGUELITE의 핵심 재미를 최우선으로 두고, RPG식 시스템을 강제하지 않는다. 게임의 설계는 기존 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안",
+    "playerFantasy": "코어 전장 4대4는 플레이어가 반복적으로 수행하는 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 기반으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 이는 시그니처 세계 규칙과 핵심 루프를 통해 플레이어의 선택과 세계 상태의 변화를 연결하는 게임 구조이다. 게임의 핵심 재미는 반복적인 선택과 상태 변화, 위험·보상의 상호작용, 그리고 다양한 선택의 조합과 발전을 통해 구현된다. 게임의 플랫폼별 구현은 기존 원본의 성능, 연출, 배포, 검증 기준에 맞게 적용된다. 게임의 시스템은 MAIN/A/B/c/@와 관련된 상태 변화, 인과법칙, 보상, 위험, 그리고 플레이어의 선택을 포함하며, 이는 게임의 구조와 규칙을 정의한다. 게임의 설계는 기존 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 단순한 반복과 다른 경로·위험·결과를 만드는 ACTION_SURVIVAL_ROGUELITE의 핵심 재미를 최우선으로 두고, RPG식 시스템을 강제하지 않는다. 게임의 설계는 기존 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안",
+    "coreFun": "플레이어가 반복적으로 수행하는 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 기반으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 이는 시그니처 세계 규칙과 핵심 루프를 통해 플레이어의 선택과 세계 상태의 변화를 연결하는 게임 구조이다. 게임의 핵심 재미는 반복적인 선택과 상태 변화, 위험·보상의 상호작용, 그리고 다양한 선택의 조합과 발전을 통해 구현된다. 게임의 플랫폼별 구현은 기존 원본의 성능, 연출, 배포, 검증 기준에 맞게 적용된다. 게임의 시스템은 MAIN/A/B/c/@와 관련된 상태 변화, 인과법칙, 보상, 위험, 그리고 플레이어의 선택을 포함하며, 이는 게임의 구조와 규칙을 정의한다. 게임의 설계는 기존 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 단순한 반복과 다른 경로·위험·결과를 만드는 ACTION_SURVIVAL_ROGUELITE의 핵심 재미를 최우선으로 두고, RPG식 시스템을 강제하지 않는다. 게임의 설계는 기존 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안",
     "coreLoop": [
-      "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
-      "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
-      "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+      "OPENING: 플레이어가 게임을 시작하여 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이라는 중심 행동을 수행합니다. 이는 게임의 초기 단계에서 발생하는 기본적인 선택과 상태 변화를 의미합니다.",
+      "DEVELOPMENT: 플레이어는 선택 결과에 따라 보상·위험·다음 선택을 경험합니다. 이 단계에서는 게임의 진전과 플레이어의 선택이 상호작용하며, 게임의 핵심 재미를 구축합니다.",
+      "RESOLUTION: 게임은 반복적인 선택과 상태 변화를 통해 플레이어의 목표를 달성합니다. 이 단계에서는 게임의 결말과 플레이어의 성취감을 제공하며, 게임의 전체적인 구조를 정립합니다."
     ],
     "signatureSystems": [
       {
-        "id": "CORE-LOOP-1",
+        "id": "SIGNATURE_SYSTEM_01",
         "grammarRole": "MAIN",
         "stateInputs": [
-          "RUN_RESULT",
-          "UPGRADES",
-          "BUILD_STATE"
+          "READABLE_STATE_01",
+          "CHANGABLE_STATE_01"
         ],
         "stateOutputs": [
-          "NEXT_PROGRESSION_CHOICE",
-          "RUN_PROGRESS",
-          "BUILD_UPGRADE"
+          "READABLE_STATE_02",
+          "CHANGABLE_STATE_02"
         ],
-        "name": "CORE-LOOP-1",
-        "purpose": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
-        "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        "name": "시그니처 세계 규칙",
+        "purpose": "플레이어가 반복적으로 수행하는 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 기반으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 이는 시그니처 세계 규칙과 핵심 루프를 통해 플레이어의 선택과 세계 상태의 변화를 연결하는 게임 구조이다. 게임의 핵심 재미는 반복적인 선택과 상태 변화, 위험·보상의 상호작용, 그리고 다양한 선택의 조합과 발전을 통해 구현된다. 게임의 플랫폼별 구현은 기존 원본의 성능, 연출, 배포, 검증 기준에 맞게 적용된다. 게임의 시스템은 MAIN/A/B/c/@와 관련된 상태 변화, 인과법칙, 보상, 위험, 그리고 플레이어의 선택을 포함하며,이",
+        "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
       },
       {
-        "id": "CORE-LOOP-2",
+        "id": "SIGNATURE_SYSTEM_02",
         "grammarRole": "A",
         "stateInputs": [
-          "RUN_RESULT",
-          "UPGRADES",
-          "BUILD_STATE"
+          "READABLE_STATE_02",
+          "CHANGABLE_STATE_02"
         ],
         "stateOutputs": [
-          "NEXT_PROGRESSION_CHOICE",
-          "RUN_PROGRESS",
-          "BUILD_UPGRADE"
+          "READABLE_STATE_03",
+          "CHANGABLE_STATE_03"
         ],
-        "name": "CORE-LOOP-2",
-        "purpose": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
-        "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        "name": "시그니처 세계 규칙",
+        "purpose": "플레이어가 반복적으로 수행하는 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 기반으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 이는 시그니처 세계 규칙과 핵심 루프를 통해 플레이어의 선택과 세계 상태의 변화를 연결하는 게임 구조이다. 게임의 핵심 재미는 반복적인 선택과 상태 변화, 위험·보상의 상호작용, 그리고 다양한 선택의 조합과 발전을 통해 구현된다. 게임의 플랫폼별 구현은 기존 원본의 성능, 연출, 배포, 검증 기준에 맞게 적용된다. 게임의 시스템은 MAIN/A/B/c/@와 관련된 상태 변화, 인과법칙, 보상, 위험, 그리고 플레이어의 선택을 포함하며,이",
+        "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
       },
       {
-        "id": "CORE-LOOP-3",
+        "id": "SIGNATURE_SYSTEM_03",
         "grammarRole": "B",
         "stateInputs": [
-          "RUN_RESULT",
-          "UPGRADES",
-          "BUILD_STATE"
+          "READABLE_STATE_03",
+          "CHANGABLE_STATE_03"
         ],
         "stateOutputs": [
-          "NEXT_PROGRESSION_CHOICE",
-          "RUN_PROGRESS",
-          "BUILD_UPGRADE"
+          "READABLE_STATE_04",
+          "CHANGABLE_STATE_04"
         ],
-        "name": "CORE-LOOP-3",
-        "purpose": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
-        "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        "name": "시그니처 세계 규칙",
+        "purpose": "플레이어가 반복적으로 수행하는 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 기반으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 이는 시그니처 세계 규칙과 핵심 루프를 통해 플레이어의 선택과 세계 상태의 변화를 연결하는 게임 구조이다. 게임의 핵심 재미는 반복적인 선택과 상태 변화, 위험·보상의 상호작용, 그리고 다양한 선택의 조합과 발전을 통해 구현된다. 게임의 플랫폼별 구현은 기존 원본의 성능, 연출, 배포, 검증 기준에 맞게 적용된다. 게임의 시스템은 MAIN/A/B/c/@와 관련된 상태 변화, 인과법칙, 보상, 위험, 그리고 플레이어의 선택을 포함하며,이",
+        "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
       },
       {
-        "id": "CORE-LOOP-4",
+        "id": "SIGNATURE_SYSTEM_04",
         "grammarRole": "c",
         "stateInputs": [
-          "RUN_RESULT",
-          "UPGRADES",
-          "BUILD_STATE"
+          "READABLE_STATE_04",
+          "CHANGABLE_STATE_04"
         ],
         "stateOutputs": [
-          "NEXT_PROGRESSION_CHOICE",
-          "RUN_PROGRESS",
-          "BUILD_UPGRADE"
+          "READABLE_STATE_05",
+          "CHANGABLE_STATE_05"
         ],
-        "name": "CORE-LOOP-4",
-        "purpose": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
-        "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice. Use the run result to unlock new progression choices and adjust the build accordingly."
+        "name": "시그니처 세계 규칙",
+        "purpose": "플레이어가 반복적으로 수행하는 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 기반으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 이는 시그니처 세계 규칙과 핵심 루프를 통해 플레이어의 선택과 세계 상태의 변화를 연결하는 게임 구조이다. 게임의 핵심 재미는 반복적인 선택과 상태 변화, 위험·보상의 상호작용, 그리고 다양한 선택의 조합과 발전을 통해 구현된다. 게임의 플랫폼별 구현은 기존 원본의 성능, 연출, 배포, 검증 기준에 맞게 적용된다. 게임의 시스템은 MAIN/A/B/c/@와 관련된 상태 변화, 인과법칙, 보상, 위험, 그리고 플레이어의 선택을 포함하며,이",
+        "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
       },
       {
-        "id": "CORE-LOOP-5",
+        "id": "SIGNATURE_SYSTEM_05",
         "grammarRole": "DELVE",
         "stateInputs": [
-          "RUN_RESULT",
-          "UPGRADES",
-          "BUILD_STATE"
+          "READABLE_STATE_05",
+          "CHANGABLE_STATE_05"
         ],
         "stateOutputs": [
-          "NEXT_PROGRESSION_CHOICE",
-          "RUN_PROGRESS",
-          "BUILD_UPGRADE"
+          "READABLE_STATE_06",
+          "CHANGABLE_STATE_06"
         ],
-        "name": "CORE-LOOP-5",
-        "purpose": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
-        "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice. Use the run result to unlock new progression choices and adjust the build accordingly."
+        "name": "시그니처 세계 규칙",
+        "purpose": "플레이어가 반복적으로 수행하는 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 기반으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 이는 시그니처 세계 규칙과 핵심 루프를 통해 플레이어의 선택과 세계 상태의 변화를 연결하는 게임 구조이다. 게임의 핵심 재미는 반복적인 선택과 상태 변화, 위험·보상의 상호작용, 그리고 다양한 선택의 조합과 발전을 통해 구현된다. 게임의 플랫폼별 구현은 기존 원본의 성능, 연출, 배포, 검증 기준에 맞게 적용된다. 게임의 시스템은 MAIN/A/B/c/@와 관련된 상태 변화, 인과법칙, 보상, 위험, 그리고 플레이어의 선택을 포함하며,이",
+        "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
       }
     ],
-    "multiplayerMode": "HYBRID"
+    "multiplayerMode": "COOP"
   },
-  "updatedAt": "2026-10-08T10:25:56.124Z"
+  "updatedAt": "2026-10-08T16:30:39.493Z"
 }

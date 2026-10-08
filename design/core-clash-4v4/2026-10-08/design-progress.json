@@ -8,25 +8,30 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 29,
-  "lastSuccessfulModelCallAt": "2026-10-08T16:29:09.553Z",
+  "cachedTaskCount": 31,
+  "lastSuccessfulModelCallAt": "2026-10-08T16:30:39.489Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
-  "designerSeed": null,
+  "designerSeed": {
+    "file": "design/core-clash-4v4/2026-10-08/design-seed.json",
+    "contentDigest": "a7f09c0b12aec93a381ff0ec8261d4c8e70dd6f2cd1551fa004c65400b2bd819",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 24,
-      "successes": 24,
+      "calls": 25,
+      "successes": 25,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1462635,
-      "lastMs": 89596,
+      "totalMs": 1552568,
+      "lastMs": 89933,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:29:09.553Z"
+      "updatedAt": "2026-10-08T16:30:39.488Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T16:29:09.555Z"
+  "updatedAt": "2026-10-08T16:30:39.494Z"
 }
