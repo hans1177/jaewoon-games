@@ -2762,8 +2762,57 @@ end
 
 
 -- 하우징/샌드박스/정착지 시스템 깊이 v6
+-- 타이쿤/건축: 실제 배치 가능한 건축물 목록만 출력한다.
 function RobloxCommonUI.CreateBuildCatalogPanel(options)
-  return deepSystemPanel(options,"BUILD_CATALOG_PANEL","BUILD_CATALOG_PANEL","건축 목록",{"기초","벽/문/창","천장/지붕","계단/난간","가구","제작소","장식"})
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,body=surfaceShell(options,"BUILD_CATALOG_PANEL","BUILD_CATALOG_PANEL")
+  commonText(body,"Title",options.title or "건축 목록",UDim2.fromOffset(8,4),
+    UDim2.new(1,-16,0,36),theme.Text,18,true)
+  local list=Instance.new("ScrollingFrame")
+  list.Name="BuildCatalog";list.Position=UDim2.fromOffset(0,48);list.Size=UDim2.new(1,0,1,-48)
+  list.BackgroundTransparency=1;list.BorderSizePixel=0;list.ScrollBarThickness=4
+  list.Active=true;list.ScrollingDirection=Enum.ScrollingDirection.Y
+  list.AutomaticCanvasSize=Enum.AutomaticSize.Y;list.CanvasSize=UDim2.fromOffset(0,0)
+  list.Parent=body;commonList(list,false,8)
+  local empty=commonText(list,"EmptyBuilds","이 게임에서 확인된 건축물이 없어.",
+    UDim2.fromOffset(8,0),UDim2.new(1,-16,0,48),theme.MutedText,13,false)
+  empty.LayoutOrder=1
+  local buttons,rows={},{}
+  local function sync(items)
+    rows=type(items)=="table"and items or {}
+    for i,row in ipairs(rows)do
+      if not buttons[i]then
+        local index=i
+        local button=RobloxCommonUI.CreateTabButton({
+          name="Build"..i,text="",size=UDim2.new(1,-8,0,58),theme=theme
+        })
+        button.LayoutOrder=i+1;button.Parent=list;buttons[i]=button
+        button.Activated:Connect(function()
+          local current=rows[index]
+          if current and current.id~=nil and current.available==true
+            and type(options.onSelect)=="function"then options.onSelect(current.id,current)end
+        end)
+      end
+      local button=buttons[i]
+      button.Name="Build"..i;button.LayoutOrder=i+1;button.Visible=true
+      button.Text=tostring(row.name or "").." · "..tostring(row.costText or row.requirements or "")
+      button:SetAttribute("BoundBuildingId",tostring(row.id or ""))
+      button:SetAttribute("BoundFromGameState",true)
+      local enabled=row.id~=nil and row.available==true and type(options.onSelect)=="function"
+      button.Active=enabled;button.AutoButtonColor=enabled
+    end
+    for i=#rows+1,#buttons do buttons[i].Visible=false end
+    empty.Visible=#rows==0
+    root:SetAttribute("BoundBuildingCount",#rows)
+  end
+  sync(options.buildings or {})
+  root:SetAttribute("TouchScrollable",true)
+  root:SetAttribute("OwnsPlacementAuthority",false)
+  root:SetAttribute("OwnsEconomyAuthority",false)
+  root:SetAttribute("OwnsSaveAuthority",false)
+  root:SetAttribute("OwnsRemoteAuthority",false)
+  return root,{list=list,buttons=buttons,Sync=sync}
 end
 
 function RobloxCommonUI.CreateBuildPieceCard(options)
@@ -2911,10 +2960,58 @@ function RobloxCommonUI.CreateSettlementOverview(options)
   return root,parts
 end
 
+-- 농장: 실제 작물·토지·성장 상태를 관찰하고 소유한 게임 함수에만 수확 요청을 전달한다.
 function RobloxCommonUI.CreateFarmPlotPanel(options)
-  local root,parts=deepSystemPanel(options,"FARM_PLOT_PANEL","FARM_PLOT_PANEL","재배 구획",{"씨앗","성장 단계","물/관리","수확","계절/지역 조건"})
+  options=options or {}
+  local root,parts=deepSystemPanel(options,"FARM_PLOT_PANEL","FARM_PLOT_PANEL",
+    options.title or "재배 구획",{})
+  local theme=cloneTheme(options.theme)
+  local fields={
+    {"Seed","씨앗","seedName"},{"Growth","성장 단계","growthText"},
+    {"Water","물/관리","waterText"},{"Harvest","수확 상태","harvestText"},
+    {"Season","계절/환경","seasonText"}
+  }
+  local labels={}
+  for i,spec in ipairs(fields)do
+    local row=Instance.new("Frame")
+    row.Name=spec[1];row.Size=UDim2.new(1,0,0,38);row.LayoutOrder=i
+    row.BackgroundColor3=theme.Panel;row.BackgroundTransparency=.18;row.BorderSizePixel=0
+    row.Parent=parts.list;corner(row,8)
+    local caption=commonText(row,"Label",spec[2],UDim2.fromOffset(10,0),
+      UDim2.new(.45,-10,1,0),theme.MutedText,12,false)
+    local value=commonText(row,"Value","미확인",UDim2.new(.45,0,0,0),
+      UDim2.new(.55,-10,1,0),theme.Text,12,true)
+    value.TextXAlignment=Enum.TextXAlignment.Right
+    labels[i]=value
+  end
+  local harvest=RobloxCommonUI.CreatePrimaryButton({
+    name="Harvest",text="수확",size=UDim2.fromOffset(128,48),theme=theme
+  })
+  harvest.AnchorPoint=Vector2.new(1,1);harvest.Position=UDim2.new(1,-14,1,-12)
+  harvest.Visible=false;harvest.Parent=parts.inner
+  local state={}
+  local function sync(plot)
+    state=type(plot)=="table"and plot or {}
+    for i,spec in ipairs(fields)do
+      local value=state[spec[3]]
+      labels[i].Text=value~=nil and tostring(value)or"미확인"
+    end
+    local available=state.id~=nil and state.canHarvest==true and type(options.onHarvest)=="function"
+    harvest.Visible=available;harvest.Active=available;harvest.AutoButtonColor=available
+    root:SetAttribute("BoundPlotId",tostring(state.id or ""))
+    root:SetAttribute("PlotStateRevision",tostring(state.revision or "UNKNOWN"))
+  end
+  harvest.Activated:Connect(function()
+    if state.id~=nil and state.canHarvest==true and type(options.onHarvest)=="function"then
+      options.onHarvest(state.id,state)
+    end
+  end)
+  sync(options.plot or {})
   root:SetAttribute("OwnsFarmingAuthority",false)
-  return root,parts
+  root:SetAttribute("OwnsInventoryAuthority",false)
+  root:SetAttribute("OwnsSaveAuthority",false)
+  root:SetAttribute("OwnsRemoteAuthority",false)
+  return root,{inner=parts.inner,list=parts.list,labels=labels,harvest=harvest,Sync=sync}
 end
 
 function RobloxCommonUI.CreateAnimalHousingPanel(options)
@@ -4057,10 +4154,39 @@ function RobloxCommonUI.CreateBossPhaseStrip(options)
   return root,parts
 end
 
+-- 디펜스: 웨이브/정예/준비시간은 실제 전투 디렉터가 준 현재 상태만 표시한다.
 function RobloxCommonUI.CreateWaveForecastRibbon(options)
-  local root,parts=deepSystemPanel(options,"WAVE_FORECAST_RIBBON","WAVE_FORECAST_RIBBON","웨이브 예고",{"현재 웨이브","다음 구성","정예/보스","준비 시간"})
-  root:SetAttribute("OwnsSystemAuthority",false)
-  return root,parts
+  options=options or {}
+  local root,parts=deepSystemPanel(options,"WAVE_FORECAST_RIBBON","WAVE_FORECAST_RIBBON",
+    options.title or "웨이브 예고",{})
+  local theme=cloneTheme(options.theme)
+  local fields={
+    {"Current","현재 웨이브","currentWave"},
+    {"Next","다음 구성","nextEnemies"},
+    {"Boss","정예/보스","bossWarning"},
+    {"Prep","준비 시간","prepSeconds"}
+  }
+  local labels={}
+  for i,spec in ipairs(fields)do
+    local label=commonText(parts.list,spec[1],"",UDim2.fromOffset(0,0),
+      UDim2.new(1,0,0,38),theme.Text,13,i==1)
+    label.LayoutOrder=i;labels[i]=label
+  end
+  local function sync(wave)
+    wave=type(wave)=="table"and wave or {}
+    for i,spec in ipairs(fields)do
+      local value=wave[spec[3]]
+      labels[i].Text=spec[2].." · "..(value~=nil and tostring(value)or"미확인")
+    end
+    root:SetAttribute("BoundWaveId",tostring(wave.id or ""))
+    root:SetAttribute("WaveStateRevision",tostring(wave.revision or "UNKNOWN"))
+  end
+  sync(options.wave or {})
+  root:SetAttribute("OwnsWaveAuthority",false)
+  root:SetAttribute("OwnsEconomyAuthority",false)
+  root:SetAttribute("OwnsSaveAuthority",false)
+  root:SetAttribute("OwnsRemoteAuthority",false)
+  return root,{inner=parts.inner,list=parts.list,labels=labels,Sync=sync}
 end
 
 function RobloxCommonUI.CreateStatusEffectTimeline(options)
