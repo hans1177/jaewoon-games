@@ -200,9 +200,16 @@ local function label(target,text,color,maxDistance)
  local c=Instance.new("UICorner");c.CornerRadius=UDim.new(0,5);c.Parent=t
  return g
 end
-local function prompt(target,objectText,actionText)
+-- 오브젝트별 상호작용: 기존 ProximityPrompt 실행 권한은 서버에 남기고 식별/표시 정보만 동기화.
+local function prompt(target,objectText,actionText,kind,interactionId)
  local p=Instance.new("ProximityPrompt");p.ObjectText=objectText;p.ActionText=actionText;p.MaxActivationDistance=11;p.HoldDuration=.12
- p.RequiresLineOfSight=false;p.Parent=target;return p
+ p.RequiresLineOfSight=false
+ local id=tostring(interactionId or target.Name)
+ local objectKind=tostring(kind or "GENERIC")
+ target:SetAttribute("ObjectInteractionId",id);target:SetAttribute("ObjectInteractionKind",objectKind)
+ p:SetAttribute("InteractionId",id);p:SetAttribute("InteractionKind",objectKind)
+ p.Parent=target
+ return p
 end
 local function humanoidFigure(parent,name,pos,color,accent,scale)
  scale=math.clamp(scale or 1,.74,1.06)
@@ -764,24 +771,24 @@ local function makeVillage()
  local fountain=ppart(f,"Fountain",Vector3.new(14,3,14),Vector3.new(0,3,0),Color3.fromRGB(90,112,124),Enum.Material.Slate);label(fountain,"마을 광장",Color3.fromRGB(255,232,168),28)
 
  local chief=humanoidFigure(f,"VillageChief",Vector3.new(-18,6,10),Color3.fromRGB(142,98,68),Color3.fromRGB(80,67,54),1);label(chief,"이장",Color3.fromRGB(255,221,145),28)
- prompt(chief,"마을 이장","퀘스트 받기").Triggered:Connect(function(p)
+ prompt(chief,"마을 이장","퀘스트 받기","QUEST_NPC","VillageChief").Triggered:Connect(function(p)
   local level=n(p,"Level",1);local id=math.clamp(math.floor((level-1)/3)+1,1,5);local need=5+id
   p:SetAttribute("QuestPortal",id);p:SetAttribute("QuestKills",0);p:SetAttribute("QuestNeed",need)
   msg(p,string.format("%s 몬스터 %d마리 처치",C.Portals[id].Name,need));feedback(p,"QUEST_ACCEPT")
  end)
 
  local weapon=humanoidFigure(f,"WeaponMerchant",Vector3.new(22,6,8),Color3.fromRGB(85,92,112),Color3.fromRGB(170,120,65),.95);label(weapon,"무기상인",Color3.fromRGB(255,215,140),28)
- prompt(weapon,"무기상인","다음 무기 구매").Triggered:Connect(function(p)
+ prompt(weapon,"무기상인","다음 무기 구매","WEAPON_MERCHANT","WeaponMerchant").Triggered:Connect(function(p)
   purchaseMerchantEquipment(p,"WEAPON")
  end)
  local armor=humanoidFigure(f,"ArmorMerchant",Vector3.new(22,6,-10),Color3.fromRGB(92,112,102),Color3.fromRGB(80,91,77),.95);label(armor,"방어구상인",Color3.fromRGB(180,235,190),28)
- prompt(armor,"방어구상인","다음 방어구 구매").Triggered:Connect(function(p)
+ prompt(armor,"방어구상인","다음 방어구 구매","ARMOR_MERCHANT","ArmorMerchant").Triggered:Connect(function(p)
   purchaseMerchantEquipment(p,"ARMOR")
  end)
  local healer=humanoidFigure(f,"VillageHealer",Vector3.new(-18,6,-10),Color3.fromRGB(208,221,235),Color3.fromRGB(116,169,193),.95);label(healer,"치유사",Color3.fromRGB(180,232,255),28)
- prompt(healer,"치유사","회복").Triggered:Connect(function(p)local h=hum(p);if h then h.Health=h.MaxHealth;msg(p,"체력 완전 회복");feedback(p,"VILLAGE_HEAL")end end)
+ prompt(healer,"치유사","회복","HEALER","VillageHealer").Triggered:Connect(function(p)local h=hum(p);if h then h.Health=h.MaxHealth;msg(p,"체력 완전 회복");feedback(p,"VILLAGE_HEAL")end end)
  local master=humanoidFigure(f,"AdvancementMaster",Vector3.new(-24,6,14),Color3.fromRGB(112,88,145),Color3.fromRGB(67,56,82),.95);label(master,"전직 교관",Color3.fromRGB(225,196,255),30)
- prompt(master,"전직 교관","전직 시험").Triggered:Connect(startAdvancementTrial)
+ prompt(master,"전직 교관","전직 시험","ADVANCEMENT_NPC","AdvancementMaster").Triggered:Connect(startAdvancementTrial)
 
  for i=1,6 do
   local a=i/6*math.pi*2;local npc=humanoidFigure(f,"Resident"..i,Vector3.new(math.cos(a)*43,6,math.sin(a)*43),Color3.fromRGB(110+i*8,105+i*5,96+i*4),Color3.fromRGB(72,70,68),.82)
@@ -796,7 +803,9 @@ local function makeVillage()
   ppart(f,"PortalArchL"..i,Vector3.new(3,18,3),pad.Position+Vector3.new(-11,10,0),z.Color,Enum.Material.Slate)
   ppart(f,"PortalArchR"..i,Vector3.new(3,18,3),pad.Position+Vector3.new(11,10,0),z.Color,Enum.Material.Slate)
   label(pad,i.." · "..z.Name,z.Color,48)
-  prompt(pad,z.Name,"포탈 입장").Triggered:Connect(function(p)
+  local portalPrompt=prompt(pad,z.Name,"포탈 입장","ENTRY_PORTAL","Portal"..z.Id)
+  portalPrompt:SetAttribute("DestinationZone",z.Id)
+  portalPrompt.Triggered:Connect(function(p)
    if z.Id==1 and meadowPlayersInside()==0 and generateMeadowRun then
     local seed=(os.time()%1000000)*100+n(p,"RoomCode",1)+meadowRunCounter*13;generateMeadowRun(seed)
    end
@@ -847,7 +856,9 @@ local function makeZone(z)
  end
  if z.Theme~="MEADOW"then decorateZoneAssets(f,z)end
  local ret=ppart(f,"ReturnPortal",Vector3.new(26,2,18),z.Center+Vector3.new(0,2,190),Color3.fromRGB(112,180,205),Enum.Material.Neon);label(ret,"마을 귀환",Color3.fromRGB(180,235,255),36)
- prompt(ret,"마을","귀환").Triggered:Connect(function(p)
+ local returnPrompt=prompt(ret,"마을","귀환","RETURN_PORTAL","ReturnPortal"..z.Id)
+ returnPrompt:SetAttribute("DestinationZone",0)
+ returnPrompt.Triggered:Connect(function(p)
   local combat=os.clock()-(lastCombat[p]or 0)<C.CombatLockSeconds
   if combat or p:GetAttribute("InCombat")==true then msg(p,"전투 중에는 마을로 돌아갈 수 없어")return end
   p:SetAttribute("CurrentZone",0);p:SetAttribute("PartyHuntActive",false);teleportPlayer(p,C.VillageCenter);local h=hum(p);if h then h.Health=h.MaxHealth end;msg(p,"마을 귀환 · 체력 회복")
@@ -1055,17 +1066,23 @@ local function meadowRoom(parent,pos,kind,index,rng)
  end
  if kind=="EVENT"then
   local altar=ppart(parent,"MemoryAltar",Vector3.new(5,2,5),pos+Vector3.new(0,2,0),Color3.fromRGB(111,170,122),Enum.Material.Slate);label(altar,"기억 제단",Color3.fromRGB(199,255,204),28)
-  prompt(altar,"기억 제단","조사").Triggered:Connect(function(p)
+  local altarKey="MeadowAltar_"..tostring(meadowRunState.seed)
+  local altarPrompt=prompt(altar,"기억 제단","조사","EVENT_ALTAR","MeadowAltar"..index)
+  altarPrompt:SetAttribute("ClaimAttribute",altarKey)
+  altarPrompt.Triggered:Connect(function(p)
    if n(p,"CurrentZone",0)~=1 then return end
-   local key="MeadowAltar_"..tostring(meadowRunState.seed);if p:GetAttribute(key)==true then msg(p,"이미 조사한 제단")return end
-   p:SetAttribute(key,true);p:SetAttribute("Gold",n(p,"Gold",0)+25);msg(p,"기억 파편 발견 · 골드 +25");feedback(p,"SECRET_FOUND")
+   if p:GetAttribute(altarKey)==true then msg(p,"이미 조사한 제단")return end
+   p:SetAttribute(altarKey,true);p:SetAttribute("Gold",n(p,"Gold",0)+25);msg(p,"기억 파편 발견 · 골드 +25");feedback(p,"SECRET_FOUND")
   end)
  elseif kind=="TREASURE"then
   local chest=ppart(parent,"HiddenChest",Vector3.new(5,3,4),pos+Vector3.new(0,2.2,0),Color3.fromRGB(143,101,55),Enum.Material.WoodPlanks);label(chest,"낡은 보물상자",Color3.fromRGB(255,224,143),24)
-  prompt(chest,"보물상자","열기").Triggered:Connect(function(p)
+  local chestKey="MeadowChest_"..tostring(meadowRunState.seed)
+  local chestPrompt=prompt(chest,"보물상자","열기","TREASURE_CHEST","MeadowChest"..index)
+  chestPrompt:SetAttribute("ClaimAttribute",chestKey)
+  chestPrompt.Triggered:Connect(function(p)
    if n(p,"CurrentZone",0)~=1 then return end
-   local key="MeadowChest_"..tostring(meadowRunState.seed);if p:GetAttribute(key)==true then msg(p,"빈 상자")return end
-   p:SetAttribute(key,true);p:SetAttribute("Gold",n(p,"Gold",0)+40);msg(p,"숨은 보상 · 골드 +40");feedback(p,"SECRET_FOUND")
+   if p:GetAttribute(chestKey)==true then msg(p,"빈 상자")return end
+   p:SetAttribute(chestKey,true);p:SetAttribute("Gold",n(p,"Gold",0)+40);msg(p,"숨은 보상 · 골드 +40");feedback(p,"SECRET_FOUND")
   end)
  end
  return pad
@@ -1137,7 +1154,7 @@ generateMeadowRun=function(seed)
   local bossDef=hiddenBoss and z.HiddenBosses[rng:NextInteger(1,#z.HiddenBosses)]or nil
   meadowRunState.hiddenBossId=bossDef and bossDef.Id or""
   workspace:SetAttribute("MeadowHiddenBossId",bossDef and bossDef.Id or"")
-  local pr=prompt(stone,"수상한 룬석","조사")
+  local pr=prompt(stone,"수상한 룬석","조사","SECRET_RUNE","SecretRuneStone")
   pr.Triggered:Connect(function(p)
    if n(p,"CurrentZone",0)~=1 or stone:GetAttribute("Revealed")==true then return end
    stone:SetAttribute("Revealed",true);pr.Enabled=false
@@ -1357,6 +1374,10 @@ local function makeBossCompanionRoster()
    local part=enemyModel(roster,z,pos,true,spec);part.Name="Roster_"..def.Id;part.CanCollide=false;part:SetAttribute("CompanionId",def.Id);part:SetAttribute("RosterPreview",true)
    setCompanionLabel(part,"동료 · "..def.Name.." · 보스 격파 해금",def.Color)
    local cd=Instance.new("ClickDetector");cd.MaxActivationDistance=20;cd.Parent=part
+   part:SetAttribute("ObjectInteractionId","Companion"..def.Id)
+   part:SetAttribute("ObjectInteractionKind","BOSS_COMPANION")
+   cd:SetAttribute("InteractionId","Companion"..def.Id)
+   cd:SetAttribute("InteractionKind","BOSS_COMPANION")
    cd.MouseClick:Connect(function(p)
     if not companionUnlocked(p,def.Id)then msg(p,def.Name.." 보스를 먼저 격파해야 동료로 영입 가능")return end
     clickTimes[p]=clickTimes[p]or{};local now=os.clock();local last=clickTimes[p][def.Id]or 0;clickTimes[p][def.Id]=now
