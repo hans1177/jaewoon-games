@@ -35,25 +35,42 @@
         "OUTPUT: Status change in world state (e.g., increased resource pool, reduced threat level, new defensive configuration).",
         "ACTION: Growth through repeated cycles of selection and consequence."
       ]
+    },
+    "local_authoring_parts::4a4f4e5d612e26d21bb1f59693cbeef7ec7ca5576888e7616ccd20b25a1fe534:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "RESOURCE_POOL",
+        "THREAT_LEVEL",
+        "DEFENSIVE_CONFIG"
+      ],
+      "stateOutputs": [
+        "GROWTH_POINTS",
+        "NEW_DEFENSE_LAYOUT",
+        "REDUCED_THREAT"
+      ],
+      "name": "INHERITANCE_OF_WAVE_PRESSURE_AND_DEFENSE_ADAPTATION",
+      "purpose": "플레이어가 매번 선택에 따라 자원, 위험, 보상을 교환하며 성장하는 반복 가능한 루프로 진입합니다.",
+      "playerChoice": "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 307539,
-      "lastMs": 40454,
+      "totalMs": 344725,
+      "lastMs": 37186,
       "lastError": null,
-      "updatedAt": "2026-10-08T22:06:39.013Z"
+      "updatedAt": "2026-10-08T22:07:16.201Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T22:01:31.453Z",
-  "updatedAt": "2026-10-08T22:06:39.013Z",
+  "updatedAt": "2026-10-08T22:07:16.201Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2248,7 +2265,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T22:06:39.013Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T22:07:16.201Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
