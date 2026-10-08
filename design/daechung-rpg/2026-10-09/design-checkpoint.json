@@ -312,25 +312,128 @@
           "playerChoice": "1번 초원 랜덤 런에서 브레이크 없이 시작하여 보스 봉인이 해제된다."
         }
       ]
+    },
+    "local_authoring_parts::e34b949fa291758a039a72d50b227f0c3e37ce5fc8eaaa64970130b5001e2c9b:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::a66ba5d9d09645ce2e50f3068d8b29a286471d9b75b79ad9a105a94f30f9513b:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "마을에서 퀘스트와 장비 준비",
+        "포탈로 사냥터 이동",
+        "몬스터 직접 전투",
+        "보스 첫 처치로 AI 동료 해금",
+        "15마리 파티사냥과 기여도 보상",
+        "플레이어 + 보스 동료 최대 3명 편성",
+        "보스 공략 → 보스 동료 해금 → 파티 조합 확장",
+        "마을 귀환/회복/강화"
+      ],
+      "signatureSystems": [
+        {
+          "id": "RPG_STYLIZED_TOY_DARK_FANTASY",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "SkillSet",
+            "PartyComposition",
+            "LevelUpProgression"
+          ],
+          "name": "초원 런 보스 봉인 해제 조건",
+          "purpose": "보스 동료가 처음 격파되면 해당 보스의 실루엣 및 핵심 이펙트로 이루어진 런 시작 시, 초원 런 보스가 전투에 참여하게 된다.",
+          "playerChoice": "1번 초원 랜덤 런에서 브레이크 없이 시작하여 보스 봉인이 해제된다."
+        },
+        {
+          "id": "RPG_STYLIZED_TOY_DARK_FANTASY",
+          "grammarRole": "A",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "SkillSet",
+            "PartyComposition",
+            "LevelUpProgression"
+          ],
+          "name": "초원 런 보스 봉인 해제 조건",
+          "purpose": "보스 동료가 처음 격파되면 해당 보스의 실루eten 및 핵심 이펙트로 이루어진 런 시작 시, 초원 런 보스가 전투에 참여하게 된다.",
+          "playerChoice": "1번 초원 랜덤 런에서 브레이크 없이 시작하여 보스 봉인이 해제된다."
+        },
+        {
+          "id": "RPG_STYLIZED_TOY_DARK_FANTASY",
+          "grammarRole": "B",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "SkillSet",
+            "PartyComposition",
+            "LevelUpProgression"
+          ],
+          "name": "초원 런 보스 봉인 해제 조건",
+          "purpose": "보스 동료가 처음 격파되면 해당 보스의 실루eten 및 핵심 이펙트로 이루어진 런 시작 시, 초원 런 보스가 전투에 참여하게 된다.",
+          "playerChoice": "1번 초원 랜덤 런에서 브레이크 없이 시작하여 보스 봉인이 해제된다."
+        },
+        {
+          "id": "RPG_STYLIZED_TOY_DARK_FANTASY",
+          "grammarRole": "c",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "SkillSet",
+            "PartyComposition",
+            "LevelUpProgression"
+          ],
+          "name": "초원 런 보스 봉인 해제 조건",
+          "purpose": "보스 동료가 처음 격파되면 해당 보스의 실루eten 및 핵심 이펙트로 이루어진 런 시작 시, 초원 런 보스가 전투에 참여하게 된다.",
+          "playerChoice": "1번 초원 랜덤 런에서 브레이크 없이 시작하여 보스 봉인이 해제된다."
+        },
+        {
+          "id": "RPG_STYLIZED_TOY_DARK_FANTASY",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "SkillSet",
+            "PartyComposition",
+            "LevelUpProgression"
+          ],
+          "name": "초원 런 보스 봉인 해제 조건",
+          "purpose": "보스 동료가 처음 격파되면 해당 보스의 실루eten 및 핵심 이펙트로 이루어진 런 시작 시, 초원 런 보스가 전투에 참여하게 된다.",
+          "playerChoice": "1번 초원 랜덤 런에서 브레이크 없이 시작하여 보스 봉인이 해제된다."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 630581,
-      "lastMs": 58005,
+      "totalMs": 671647,
+      "lastMs": 41066,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:09:43.286Z"
+      "updatedAt": "2026-10-08T18:10:24.355Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:59:12.673Z",
-  "updatedAt": "2026-10-08T18:09:43.289Z",
+  "updatedAt": "2026-10-08T18:10:24.363Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1745,12 +1848,79 @@
     },
     "assetFacts": {}
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:09:43.289Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_MAIN_A_B_c_DELVE_REQUIRED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "counts": {
+            "MAIN": 1,
+            "A": 1,
+            "B": 1,
+            "c": 1,
+            "DELVE": 1
+          },
+          "systemCount": 5,
+          "statesReady": false
+        },
+        "requiredAction": "메인 중심 행동, A/B 서로 다른 두 축, c 보조 변주, @ 발견·숙련을 기존 규칙에 맞춰 최소 5개 고유 시스템과 실제 상태 입력·출력으로 작성한다. 기존 밸런스·저장·진행은 유지한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG. 플레이어는 4직업/전직 실루엣을 유지하며, AI 동료는 격파한 보스의 고유 실루엣과 핵심 이펙트를 축소·정리해 그대로 동료 정체성으로 사용한다. 게임은 로블로크 라우터 기반 2.5D 이상 구현이며, 캐릭터는 Roblox R15 직업형으로 제작된다. 전투 중 귀환 금지, 풀회복 가능, 보스 동료는 리더 레벨 자동 동기화되어 별도 장비 노가다가 없다. 보스 첫 처치 시 동료 해금 저장, 파티 조합 최대 3명, 보스 동료는 기본공격 1개, 고유 스킬 1개, 특성 1개만 사용하며, 각 보스 동료는 단순 스킬셋 형태로 운영된다. 게임 규칙은 입력→판정→상태 변화→보상 및 다음 선택 순서에 따라 설계되며, 상태 키는 실제 상태 키만 참조하고, 감염전은 HumanCount/MonsterCount/EliminatedCount와 능력 자원을 포함한다. 플레이어는 마을 편성 → 포탈 전투 → 보스 격파/영입 → 귀환의 세 단계를 거쳐 성장 재미를 경험하게 된다. 게임은 로블로크 기반 2.5D 이상 구현이며, 캐릭터는 Roblox R15 직업형으로 제작된다. 전투 중 귀환 금지, 풀회복 가능, 보스 동료는 리더 레벨 자동 동기화되어 별도 장비 노가다가 없다. 보스 첫 처치 시 동료 해금 저장, 파티 조합 최대 3명, 보스 동료는 기본공격 1개, 고유 스킬 1개, 특성 1개만 사용하며, 각 보스 동료는 단순 스킬셋 형태로 운영된다. 게임 규칙은 입력→판정→상태 변화→보상 및 다음 선택 순서에 따라 설계되며, 상태 키는 실제 상태 키만 참조하고, 감염전은 HumanCount/MonsterCount/EliminatedCount와 능력 자원을 포함한다.",
+      "playerFantasy": "AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG에서 플레이어는 4직업/전직 실루엣을 유지하며, AI 동료는 격파한 보스의 고유 실루eten과 핵심 이펙트를 축소·정리해 그대로 동료 정체성으로 사용한다. 게임은 로블로크 라우터 기반 2.5D 이상 구현이며, 캐릭터는 Roblox R15 직업형으로 제작된다. 전투 중 귀환 금지, 풀회복 가능, 보스 동료는 리더 레벨 자동 동기화되어 별도 장비 노가다가 없다. 보스 첫 처치 시 동료 해금 저장, 파티 조합 최대 3명, 보스 동료는 기본공격 1개, 고유 스킬 1개, 특성 1개만 사용하며, 각 보스 동료는 단순 스킬셋 형태로 운영된다.",
+      "coreFun": "AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG에서 플레이어는 4직업/전직 실루엣을 유지하며, AI 동료는 격파한 보스의 고유 실루eten과 핵심 이펙트를 축소·정리해 그대로 동료 정체성으로 사용한다. 게임은 로블로크 라우터 기반 2.5D 이상 구현이며, 캐릭터는 Roblox R15 직업형으로 제작된다. 전투 중 귀환 금지, 풀회복 가능, 보스 동료는 리더 레벨 자동 동기화되어 별도 장비 노가다가 없다. 보스 첫 처치 시 동료 해금 저장, 파티 조합 최대 3명, 보스 동료는 기본공격 1개, 고유 스킬 1개, 특성 1개만 사용하며, 각 보스 동료는 단순 스킬셋 형태로 운영된다.",
+      "coreLoop": [
+        "마을에서 퀘스트와 장비 준비",
+        "포탈로 사냥터 이동",
+        "몬스터 직접 전투",
+        "보스 첫 처치로 AI 동료 해금",
+        "15마리 파티사냥과 기여도 보상",
+        "플레이어 + 보스 동료 최대 3명 편성",
+        "보스 공략 → 보스 동료 해금 → 파티 조합 확장",
+        "마을 귀환/회복/강화"
+      ],
+      "multiplayerMode": "COOP"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T18:10:24.357Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_MAIN_A_B_c_DELVE_REQUIRED,DESIGN_RULE_STATE_MISSING",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
