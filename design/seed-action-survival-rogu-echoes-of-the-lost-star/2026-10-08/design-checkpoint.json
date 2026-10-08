@@ -27,25 +27,32 @@
       "identity": "잃어버린 별의 메아리 - 반복적 생존 로그라이트의 핵심 재미와 시스템 연결을 확정한 정체성과 시그니처 세계 규칙을 포함한 게임 정체성입니다. 게임은 플레이어가 반복적으로 수행하는 중심 행동과 선택을 바탕으로, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프를 구현합니다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공합니다. 게임의 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, 선택은 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'로 구성됩니다. 게임은 시그니처 세계 규칙과 MAIN/A/B/c/@의 관계를 실제 상태 변화로 구체화합니다. 게임은 기존 구현의 점수나 관문을 승계하지 않고, 설계 단계부터 다시 검토하여 고유한 핵심 재미와 시스템 연결을 확정합니다. 게임은 기존 게임 원본과 오너 의도를 최우선으로 보존하며, 요청된 설계 필드만 구체적으로 작성합니다. 게임은 플랫폼별로 입력·성능·연출·배포/검증만 네이티브에 맞게 적용됩니다. 게임은 실패·중단·재접속·저장을 원본 의미로 보존하며, 구현 버그와 설계 모순의 원인·수정 책임을 구분하고 안정성을 먼저 다룬다. 게임은 최소 두 실제 대안을 비교하고 선택안을 한 판의 시작·전개·결말로 재생합니다. 게임은 검증되지 않은 시간·품질·실행 결과를 확정하지 않습니다. 게임은 공공영역 고전의 원형은 게임에 맞게 재해석하고 현대 보호 작품은 추상적",
       "playerFantasy": "잃어버린 별의 메아리에서 플레이어는 반복적으로 수행하는 중심 행동과 선택을 바탕으로, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프를 구현합니다. 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, 선택은 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'로 구성됩니다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 기존 구현의 점수나 관문을 승계하지 않고, 설계 단계부터 다시 검토하여 고유한 핵심 재미와 시스템 연결을 확정합니다. 게임은 기존 게임 원본과 오너 의도를 최우선으로 보존하며, 요청된 설계 필드만 구체적으로 작성합니다. 게임은 플랫폼별로 입력·성능·연출·배포/검증만 네이티브에 맞게 적용됩니다. 게임은 실패·중단·재접속·저장을 원본 의미로 보존하며, 구현 버그와 설계 모순의 원인·수정 책임을 구분하고 안정성을 먼저 다룬다. 게임은 최소 두 실제 대안을 비교하고 선택안을 한 판의 시작·전개·결말로 재생합니다. 게임은 검증되지 않은 시간·품질·실행 결과를 확정하지 않습니다. 게임은 공공영역 고전의 원형은 게임에 맞게 재해석하고 현대 보호 작품은 추상적",
       "coreFun": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.과 Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용"
+    },
+    "local_authoring_parts::51a50d1dc6cd97fed681b48731df5c102251c59d1ffec95aee5098f70b8f9bfa:coreLoop": {
+      "coreLoop": [
+        "INPUT: 플레이어의 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다.",
+        "PROCESS: 선택은 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'로 구성된다.",
+        "OUTCOME: MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태를 만든다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 375301,
-      "lastMs": 52392,
+      "totalMs": 448853,
+      "lastMs": 73552,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:08:26.851Z"
+      "updatedAt": "2026-10-08T13:09:40.406Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:02:11.526Z",
-  "updatedAt": "2026-10-08T13:08:26.852Z",
+  "updatedAt": "2026-10-08T13:09:40.406Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2244,7 +2251,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:08:26.852Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:09:40.406Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
