@@ -189,6 +189,23 @@ test('central policy enables the real BUILD_UP directive and prompt with no new 
   assert.equal(make({policy:{}}),null);
 });
 
+test('existing spatial worker plans seeded biome drainage connected roads and modular architecture without changing repair scope',()=>{
+  const worldSource='roblox-games/demo/server/World.luau';
+  const plan={platform:'ROBLOX',implementationPackages:[{role:'SERVER_AUTHORITY',files:[worldSource]}],
+    spatialBlueprintContract:{required:true,sourceFiles:[worldSource],macroSketch:{sourceAnchors:[]}}};
+  const prompt=robloxProductionPromptLines(plan,{responsibleFiles:[worldSource]});
+  const spatialRule=prompt.find(line=>line.startsWith('ROBLOX_PRODUCTION_SPATIAL_RULE='));
+  assert.match(spatialRule,/seeded gradient-noise elevation and drainage/);
+  assert.match(spatialRule,/connect walkable road and optional routes before placing any building/);
+  assert.match(spatialRule,/snap modular foundations\/walls\/openings\/roofs/);
+  assert.match(spatialRule,/face door openings toward a traversable road/);
+  assert.match(spatialRule,/landmark sightline from a decision point/);
+  assert.match(spatialRule,/mobile/);
+  assert.match(spatialRule,/not proof of native instancing or runtime visibility/);
+  assert.match(spatialRule,/Existing map repairs and presentation-only tasks must preserve/);
+  assert.equal(productionBlueprintContractsForFiles(plan,{responsibleFiles:['client/HUD.luau']}).spatial.required,false);
+});
+
 test('owner feature removal survives repeated evolution and only a newer explicit request replaces it',()=>{
   const remove={requestId:'owner-1',featureId:'daily-reward',action:'REMOVE',requirement:'일일 보상 기능 제거'};
   const add={requestId:'owner-2',featureId:'party-play',action:'ADD',requirement:'협동 파티 기능 추가'};
