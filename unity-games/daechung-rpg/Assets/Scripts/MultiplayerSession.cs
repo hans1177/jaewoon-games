@@ -29,7 +29,7 @@ namespace JaewoonGames.DaechungRpg
         [Serializable] private sealed class JoinRequest { public string inviteCode; }
         [Serializable] private sealed class ServerUser { public string id; }
         [Serializable] private sealed class LoginResponse { public string access_token; public ServerUser user; }
-        [Serializable] private sealed class RoomResponse { public string roomId; public string inviteCode; public string status; }
+        [Serializable] private sealed class RoomResponse { public string roomId; public string gameId; public string inviteCode; public string status; }
         [Serializable] private sealed class Participant { public string userId; public string nickname; }
         [Serializable] private sealed class GameSnapshot
         {
@@ -37,6 +37,8 @@ namespace JaewoonGames.DaechungRpg
             public string enemyId;
             public int enemyHp;
             public int playerHp;
+            public float positionX;
+            public float positionY;
             public int sequence;
         }
         [Serializable] private sealed class StateMessage { public string type = "state"; public GameSnapshot state; }
@@ -72,6 +74,7 @@ namespace JaewoonGames.DaechungRpg
         private ClientWebSocket _socket;
         private CancellationTokenSource _socketCancellation;
         private readonly Queue<string> _incoming = new Queue<string>();
+        private readonly SemaphoreSlim _nativeSendGate = new SemaphoreSlim(1, 1);
 #endif
 
         private string _email = "";
@@ -83,7 +86,11 @@ namespace JaewoonGames.DaechungRpg
         private string _inviteCode = "";
         private string _status = "오프라인 · 로그인하면 협동 방에 접속할 수 있어";
         private string _peerName = "";
+        private string _peerId = "";
         private string _peerRegion = "";
+        private int _peerSequence = -1;
+        private float _peerX;
+        private float _peerY;
         private string _peerAction = "";
         private int _peerEnemyHp;
         private int _participantCount;
@@ -101,6 +108,11 @@ namespace JaewoonGames.DaechungRpg
         public int ParticipantCount => _participantCount;
         public int RemoteActionVersion { get; private set; }
         public string Status => _status;
+        public string PeerRegion => _peerRegion;
+        public Vector2 PeerPosition => new Vector2(_peerX, _peerY);
+        public bool HasFreshPartnerState => _connected && _participantCount >= 2
+            && !string.IsNullOrEmpty(_peerId) && _peerSequence >= 0
+            && Time.unscaledTime - _peerLastSeen <= 4f;
 
         // 모바일: 기존 Unity OnGUI 스크롤 영역에서만 호출하며 가로폭을 소비하지 않는다.
         public void DrawControls(float scale)
@@ -147,12 +159,15 @@ namespace JaewoonGames.DaechungRpg
             GUI.enabled = true;
         }
 
-        public void ObserveLocalState(string regionId, string enemyId, int enemyHp, int playerHp)
+        public void ObserveLocalState(string regionId, string enemyId, int enemyHp, int playerHp, Vector3 position)
         {
+            // 네트워크 좌표는 표현 전용. 게임의 충돌·이동·HP·저장 권한을 이동시키지 않는다.
             _local.regionId = regionId ?? "town";
             _local.enemyId = enemyId ?? "";
             _local.enemyHp = Mathf.Max(0, enemyHp);
             _local.playerHp = Mathf.Max(0, playerHp);
+            _local.positionX = Mathf.Clamp(position.x, -4.5f, 4.5f);
+            _local.positionY = Mathf.Clamp(position.y, -3f, 3f);
         }
 
         public void ObserveAttack(string regionId, string enemyId, int damage, int enemyHp)
@@ -223,9 +238,10 @@ namespace JaewoonGames.DaechungRpg
             catch (Exception) { }
             request.Dispose();
             _busy = false;
-            if (result == null || string.IsNullOrEmpty(result.roomId))
+            if (result == null || string.IsNullOrEmpty(result.roomId)
+                || result.gameId != GameId)
             {
-                _status = "방 정보가 올바르지 않아";
+                _status = "방 정보 또는 게임 종류가 일치하지 않아";
                 yield break;
             }
             LeaveSocket();
@@ -290,7 +306,11 @@ namespace JaewoonGames.DaechungRpg
                     _transportOpen = false;
                     _connected = false;
                     _participantCount = 0;
+                    _peerId = "";
                     _peerName = "";
+                    _peerRegion = "";
+                    _peerSequence = -1;
+                    _peerLastSeen = 0f;
                     _nextReconnectAt = Time.unscaledTime + 3f;
                     if (!_manualExit) _status = "네트워크 연결 끊김 · 복구 예정";
                     break;
@@ -306,13 +326,22 @@ namespace JaewoonGames.DaechungRpg
                     UpdateParticipants(message.players);
                     break;
                 case "state":
-                    if (message.userId == _selfId || message.state == null) break;
-                    _peerRegion = message.state.regionId ?? "";
-                    _peerEnemyHp = message.state.enemyHp;
+                    if (message.userId != _peerId || message.state == null) break;
+                    // WebSocket 재접속/중복 패킷이 동료를 이전 좌표로 되돌리지 않게 한다.
+                    if (message.state.sequence <= _peerSequence || message.state.sequence < 0) break;
+                    if (string.IsNullOrEmpty(message.state.regionId)
+                        || !GameCatalog.Regions.ContainsKey(message.state.regionId)) break;
+                    if (float.IsNaN(message.state.positionX) || float.IsInfinity(message.state.positionX)
+                        || float.IsNaN(message.state.positionY) || float.IsInfinity(message.state.positionY)) break;
+                    _peerSequence = message.state.sequence;
+                    _peerRegion = message.state.regionId;
+                    _peerEnemyHp = Mathf.Max(0, message.state.enemyHp);
+                    _peerX = Mathf.Clamp(message.state.positionX, -4.5f, 4.5f);
+                    _peerY = Mathf.Clamp(message.state.positionY, -3f, 3f);
                     _peerLastSeen = Time.unscaledTime;
                     break;
                 case "event":
-                    if (message.userId == _selfId) break;
+                    if (message.userId != _peerId || message.regionId != _local.regionId) break;
                     if (message.action == "attack" || message.action == "enemy_defeated")
                     {
                         _peerAction = (message.action ?? "") + " / " + (message.enemyId ?? "")
@@ -328,16 +357,28 @@ namespace JaewoonGames.DaechungRpg
         private void UpdateParticipants(Participant[] players)
         {
             _participantCount = players != null ? players.Length : 0;
-            _peerName = "";
-            if (players == null) return;
-            foreach (var p in players)
+            string nextId = "";
+            string nextName = "";
+            if (players != null)
             {
-                if (p != null && !string.IsNullOrEmpty(p.userId) && p.userId != _selfId)
+                foreach (var p in players)
                 {
-                    _peerName = p.nickname ?? "player";
+                    if (p == null || string.IsNullOrEmpty(p.userId) || p.userId == _selfId) continue;
+                    nextId = p.userId;
+                    nextName = p.nickname ?? "player";
                     break;
                 }
             }
+            if (_peerId != nextId)
+            {
+                // 재접속/퇴장 후 다른 사용자의 마지막 위치와 시퀀스를 재사용하지 않는다.
+                _peerId = nextId;
+                _peerRegion = "";
+                _peerAction = "";
+                _peerSequence = -1;
+                _peerLastSeen = 0f;
+            }
+            _peerName = nextName;
         }
 
         private void SendState()
@@ -366,7 +407,7 @@ namespace JaewoonGames.DaechungRpg
             _inviteCode = "";
             _status = "로그인 유지 · 방에서 나왔어";
             _participantCount = 0;
-            _peerName = "";
+            UpdateParticipants(null);
         }
 
         private void LeaveSocket()
@@ -430,14 +471,20 @@ namespace JaewoonGames.DaechungRpg
         private async Task SendNative(string data)
         {
             var socket = _socket;
+            var token = _socketCancellation != null ? _socketCancellation.Token : CancellationToken.None;
             if (socket == null || socket.State != WebSocketState.Open) return;
+            // Android ClientWebSocket은 한 번에 하나의 SendAsync만 허용한다.
+            // 공격 이벤트와 상태 전송이 겹쳐도 원본 WebSocket 흐름을 직렬 보존한다.
+            try { await _nativeSendGate.WaitAsync(token); }
+            catch (OperationCanceledException) { return; }
             try
             {
+                if (socket != _socket || socket.State != WebSocketState.Open || token.IsCancellationRequested) return;
                 var bytes = Encoding.UTF8.GetBytes(data);
-                await socket.SendAsync(new ArraySegment<byte>(bytes), WebSocketMessageType.Text,
-                    true, _socketCancellation != null ? _socketCancellation.Token : CancellationToken.None);
+                await socket.SendAsync(new ArraySegment<byte>(bytes), WebSocketMessageType.Text, true, token);
             }
             catch (Exception) { }
+            finally { _nativeSendGate.Release(); }
         }
 #endif
         private void OnDestroy() { LeaveSocket(); }
