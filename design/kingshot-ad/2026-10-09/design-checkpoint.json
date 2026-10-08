@@ -19,25 +19,42 @@
     "local_authoring_parts::e46cb3781c923bbe9eb6114aca3179a8f44457e62de221df487e5dac390ee7b1:identity,playerFantasy": {
       "identity": "킹샷 광고풍은 플레이어가 매번 새로운 전략을 선택하며, 이 선택이 다음 월드 상태로 영향을 미친다. 중심 행동은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이며, 선택 결과는 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'과 'Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.'와 연결된다. 시그니처 세계 규칙은 단일 방어 전략의 핵심 재미와 시스템 연결이다.",
       "playerFantasy": "플레이어는 매번 새로운 전략을 선택하며, 이 선택이 다음 월드 상태로 영향을 미친다. 중심 행동은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이며, 선택 결과는 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'과 'Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.'와 연결된다. 시그니처 세계 규칙은 단일 방어 전략의 핵심 재미와 시스템 연결이다."
+    },
+    "local_authoring_parts::e46cb3781c923bbe9eb6114aca3179a8f44457e62de221df487e5dac390ee7b1:coreFun": {
+      "coreFun": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 결과가 다음 월드 상태로 영향을 미친다. 이 선택은 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'과 'Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.'과 연결되어 단일 방어 전략의 핵심 재미와 시스템 연결을 확정한다."
+    },
+    "local_authoring_parts::361cd5ea71cbd013062f43ef8233ab42d30c3e89233d9fb555d936435180627c:identity,playerFantasy,coreFun": {
+      "identity": "킹샷 광고풍은 플레이어가 매번 새로운 전략을 선택하며, 이 선택이 다음 월드 상태로 영향을 미친다. 중심 행동은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이며, 선택 결과는 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'과 'Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.'와 연결된다. 시그니처 세계 규칙은 단일 방어 전략의 핵심 재미와 시스템 연결이다.",
+      "playerFantasy": "플레이어는 매번 새로운 전략을 선택하며, 이 선택이 다음 월드 상태로 영향을 미친다. 중심 행동은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이며, 선택 결과는 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'과 'Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.'와 연결된다. 시그니처 세계 규칙은 단일 방어 전략의 핵심 재미와 시스템 연결이다.",
+      "coreFun": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 결과가 다음 월드 상태로 영향을 미친다. 이 선택은 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'과 'Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.'과 연결되어 단일 방어 전략의 핵심 재미와 시스템 연결을 확정한다."
+    },
+    "local_authoring_parts::e35719942013da13729f438be2884f391c0eaa288d430e8d27298ea57b73f773:coreLoop": {
+      "coreLoop": [
+        "INPUT: Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "SELECT: Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "OUTPUT: Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
+        "STATE CHANGE: Main state is transformed into a new defensive configuration based on player strategy and resource allocation.",
+        "RESULT: The game progresses by shifting the battlefield dynamics, increasing difficulty, and introducing new strategic options."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 230371,
-      "lastMs": 33780,
+      "totalMs": 311957,
+      "lastMs": 46708,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:51:11.371Z"
+      "updatedAt": "2026-10-08T17:52:32.963Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:47:20.978Z",
-  "updatedAt": "2026-10-08T17:51:11.372Z",
+  "updatedAt": "2026-10-08T17:52:32.963Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2232,7 +2249,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:51:11.372Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:52:32.963Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
