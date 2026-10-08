@@ -34,25 +34,46 @@
         "입력: 새로운 전략 선택 → 상태변화: 방어 구조 재설계 → 보상: 전략적 지위 상승",
         "입력: 전략적 지위 변화 반영 → 상태변화: 방어 구조 재설계 → 보상: 전략적 지위 상승 및 웨이브 대응"
       ]
+    },
+    "local_authoring_parts::591ab7258593b1eb4330dfca0ba5bbf5f0be5a0f145b4dfedc3b5abc04097af6:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "적의 웨이브",
+        "방어 구조",
+        "자원",
+        "전략적 변화",
+        "전략적 지위"
+      ],
+      "stateOutputs": [
+        "방어 구조 재설계",
+        "자원 수집",
+        "전략적 변화 실행",
+        "전략적 지위 상승",
+        "전투 전략적 지위 변화"
+      ],
+      "name": "전략적 지위 변화 시스템",
+      "purpose": "플레이어가 매번 새로운 전략을 선택해 전투의 전략적 지위를 높이는 반복 가능한 핵심 루프를 구축하는 게임의 핵심 기능",
+      "playerChoice": "새로운 전략 선택"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 664345,
-      "lastMs": 68805,
+      "totalMs": 740230,
+      "lastMs": 75885,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:43:38.042Z"
+      "updatedAt": "2026-10-08T08:44:53.928Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:32:33.592Z",
-  "updatedAt": "2026-10-08T08:43:38.042Z",
+  "updatedAt": "2026-10-08T08:44:53.928Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2247,7 +2268,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:43:38.042Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:44:53.928Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
