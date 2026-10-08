@@ -138,6 +138,9 @@ const worldData=worldProposal?{
 }:null;
 const worldDataText=worldData?JSON.stringify(worldData)+'\n':null;
 const worldDataSha256=worldDataText?createHash('sha256').update(worldDataText).digest('hex'):null;
+// 새로운 월드 생성은 빈 프로젝트에서만 진행한다. 운영 중인 Unity 소스를 재생성기로 지우지 않는다.
+if(hasApprovedWorld&&fs.existsSync(path.join(output,'Assets/Scripts/UnityWebFloorGame.cs')))
+  throw new Error('UNITY_WEB_APPROVED_WORLD_EXISTING_SOURCE_MUST_BE_EDITED_NOT_REBOOTSTRAPPED');
 
 fs.rmSync(output,{recursive:true,force:true});
 for(const dir of [
