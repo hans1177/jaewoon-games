@@ -771,25 +771,28 @@
     },
     "local_authoring_parts::13e73a3b1e78b46352a42ee9d669d094c27be51b9d9b4f22dd0c94199791d64b:toSystem": {
       "toSystem": "Player-selected board patterns or obstacle combinations that determine the next level's state and objective."
+    },
+    "local_authoring_parts::13e73a3b1e78b46352a42ee9d669d094c27be51b9d9b4f22dd0c94199791d64b:trigger": {
+      "trigger": "Player selects a board pattern or obstacle combination that determines the next level's state and objective. The selection is validated through immediate feedback, and the resulting state is transitioned to the next level. This action establishes the core mechanism by which player choices drive the "
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 35,
-      "successes": 34,
+      "calls": 36,
+      "successes": 35,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2467113,
-      "lastMs": 63480,
+      "totalMs": 2537047,
+      "lastMs": 69934,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T10:36:36.306Z"
+      "updatedAt": "2026-10-08T10:37:46.242Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:01:25.970Z",
-  "updatedAt": "2026-10-08T10:36:36.306Z",
+  "updatedAt": "2026-10-08T10:37:46.242Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3035,7 +3038,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:36:36.306Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:37:46.242Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
