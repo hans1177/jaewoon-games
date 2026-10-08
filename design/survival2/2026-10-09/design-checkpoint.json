@@ -82,25 +82,41 @@
       "name": "Explore the forest for a needed resource while reading environmental and creature danger.",
       "purpose": "Resource allocation, shelter upgrades, preparation for higher risks.",
       "playerChoice": "Select from: Resource distribution, shelter enhancement, threat mitigation."
+    },
+    "local_authoring_parts::501f8b6e59042c85206df599f11130be65f53c6b1a3d67495152ecea55d67aba:signatureSystems:3": {
+      "id": "SURVIVAL2-C-01",
+      "grammarRole": "c",
+      "stateInputs": [
+        "Explore the forest for a needed resource while reading environmental andcreature",
+        "Craft a survival advantage, improve shelter or equipment and prepare for thenext"
+      ],
+      "stateOutputs": [
+        "World state changes, new survival advantages, risk/reward dynamics, and next act",
+        "Enhanced gameplay mechanics, improved survival conditions, and strategic depth",
+        "New game states, altered progression paths, and expanded player agency"
+      ],
+      "name": "Navigate through dynamic environments with changing dangers and resources.",
+      "purpose": "Player choice to move forward, explore, or retreat based on available tools and group composition.",
+      "playerChoice": "Move forward, explore, or retreat."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 663656,
-      "lastMs": 244406,
+      "totalMs": 765648,
+      "lastMs": 101992,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:14:34.691Z"
+      "updatedAt": "2026-10-08T21:16:16.685Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:03:31.006Z",
-  "updatedAt": "2026-10-08T21:14:34.691Z",
+  "updatedAt": "2026-10-08T21:16:16.685Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2330,7 +2346,7 @@
     "local_authoring_parts::501f8b6e59042c85206df599f11130be65f53c6b1a3d67495152ecea55d67aba:signatureSystems:0": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:14:34.691Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:16:16.685Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
