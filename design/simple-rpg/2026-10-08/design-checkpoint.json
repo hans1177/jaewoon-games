@@ -118,25 +118,269 @@
       "name": "Puzzle Progression System",
       "purpose": "Player-controlled puzzle progression through a grid or board level with clear objective and constraints, with emergent gameplay and dynamic state transitions.",
       "playerChoice": "Select and manage puzzle elements to achieve the goal, create combos, and adapt to new board patterns and constraints."
+    },
+    "local_authoring_parts::e7b89f1850722d16859a7f35f8dbe0cbbb50843d4c7a27e8b141c3818c115807:signatureSystems:4": {
+      "id": "DELVE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "boardPattern",
+        "goal",
+        "moves",
+        "obstacles",
+        "puzzleConstraint"
+      ],
+      "stateOutputs": [
+        "nextBoardPattern",
+        "newGoal",
+        "newMoves",
+        "newObstacles",
+        "newPuzzleConstraint"
+      ],
+      "name": "Puzzle Progression System",
+      "purpose": "Player-controlled puzzle progression through a grid or board level with clear objective and constraints, with emergent gameplay and dynamic state transitions.",
+      "playerChoice": "Select and manage puzzle elements to achieve the goal, create combos, and adapt to new board patterns and constraints."
+    },
+    "local_authoring_parts::16212583343d43c9f17651410eb7b80d235b36e6de883d86407d8e0c411ce3bf:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "MAIN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "boardPattern",
+            "goal",
+            "moves",
+            "obstacles",
+            "puzzleConstraint"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "newGoal",
+            "newMoves",
+            "newObstacles",
+            "newPuzzleConstraint"
+          ],
+          "name": "Board Puzzle System",
+          "purpose": "Player-controlled puzzle progression through a grid or board level with clear objective and constraints.",
+          "playerChoice": "Select moves, create combos, and manage obstacles to achieve the goal and unlock new levels or stages."
+        },
+        {
+          "id": "A",
+          "grammarRole": "A",
+          "stateInputs": [
+            "boardPattern",
+            "goal",
+            "moves",
+            "obstacles",
+            "puzzleConstraint"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "newGoal",
+            "newMoves",
+            "newObstacles",
+            "newPuzzleConstraint"
+          ],
+          "name": "Board Puzzle System",
+          "purpose": "Player-controlled puzzle progression through a grid or board level with clear objective and constraints.",
+          "playerChoice": "Select moves, create combos, and manage obstacles to achieve the goal and unlock new levels or stages."
+        },
+        {
+          "id": "B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "boardPattern",
+            "goal",
+            "moves",
+            "obstacles",
+            "puzzleConstraint"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "newGoal",
+            "newMoves",
+            "newObstacles",
+            "newPuzzleConstraint"
+          ],
+          "name": "Board Puzzle System",
+          "purpose": "Player-controlled puzzle progression through a grid or board level with clear objective and constraints.",
+          "playerChoice": "Select moves, create combos, and manage obstacles to achieve the goal and unlock new levels or stages."
+        },
+        {
+          "id": "c",
+          "grammarRole": "c",
+          "stateInputs": [
+            "boardPattern",
+            "goal",
+            "moves",
+            "obstacles",
+            "puzzleConstraint"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "newGoal",
+            "newMoves",
+            "newObstacles",
+            "newPuzzleConstraint"
+          ],
+          "name": "Puzzle Progression System",
+          "purpose": "Player-controlled puzzle progression through a grid or board level with clear objective and constraints, with emergent gameplay and dynamic state transitions.",
+          "playerChoice": "Select and manage puzzle elements to achieve the goal, create combos, and adapt to new board patterns and constraints."
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "boardPattern",
+            "goal",
+            "moves",
+            "obstacles",
+            "puzzleConstraint"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "newGoal",
+            "newMoves",
+            "newObstacles",
+            "newPuzzleConstraint"
+          ],
+          "name": "Puzzle Progression System",
+          "purpose": "Player-controlled puzzle progression through a grid or board level with clear objective and constraints, with emergent gameplay and dynamic state transitions.",
+          "playerChoice": "Select and manage puzzle elements to achieve the goal, create combos, and adapt to new board patterns and constraints."
+        }
+      ]
+    },
+    "local_authoring_parts::9c564ed4871baa9daee149f1e5847e7fd4c31370c87591a3c3a60ec304b1619a:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ],
+      "signatureSystems": [
+        {
+          "id": "MAIN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "boardPattern",
+            "goal",
+            "moves",
+            "obstacles",
+            "puzzleConstraint"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "newGoal",
+            "newMoves",
+            "newObstacles",
+            "newPuzzleConstraint"
+          ],
+          "name": "Board Puzzle System",
+          "purpose": "Player-controlled puzzle progression through a grid or board level with clear objective and constraints.",
+          "playerChoice": "Select moves, create combos, and manage obstacles to achieve the goal and unlock new levels or stages."
+        },
+        {
+          "id": "A",
+          "grammarRole": "A",
+          "stateInputs": [
+            "boardPattern",
+            "goal",
+            "moves",
+            "obstacles",
+            "puzzleConstraint"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "newGoal",
+            "newMoves",
+            "newObstacles",
+            "newPuzzleConstraint"
+          ],
+          "name": "Board Puzzle System",
+          "purpose": "Player-controlled puzzle progression through a grid or board level with clear objective and constraints.",
+          "playerChoice": "Select moves, create combos, and manage obstacles to achieve the goal and unlock new levels or stages."
+        },
+        {
+          "id": "B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "boardPattern",
+            "goal",
+            "moves",
+            "obstacles",
+            "puzzleConstraint"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "newGoal",
+            "newMoves",
+            "newObstacles",
+            "newPuzzleConstraint"
+          ],
+          "name": "Board Puzzle System",
+          "purpose": "Player-controlled puzzle progression through a grid or board level with clear objective and constraints.",
+          "playerChoice": "Select moves, create combos, and manage obstacles to achieve the goal and unlock new levels or stages."
+        },
+        {
+          "id": "c",
+          "grammarRole": "c",
+          "stateInputs": [
+            "boardPattern",
+            "goal",
+            "moves",
+            "obstacles",
+            "puzzleConstraint"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "newGoal",
+            "newMoves",
+            "newObstacles",
+            "newPuzzleConstraint"
+          ],
+          "name": "Puzzle Progression System",
+          "purpose": "Player-controlled puzzle progression through a grid or board level with clear objective and constraints, with emergent gameplay and dynamic state transitions.",
+          "playerChoice": "Select and manage puzzle elements to achieve the goal, create combos, and adapt to new board patterns and constraints."
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "boardPattern",
+            "goal",
+            "moves",
+            "obstacles",
+            "puzzleConstraint"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "newGoal",
+            "newMoves",
+            "newObstacles",
+            "newPuzzleConstraint"
+          ],
+          "name": "Puzzle Progression System",
+          "purpose": "Player-controlled puzzle progression through a grid or board level with clear objective and constraints, with emergent gameplay and dynamic state transitions.",
+          "playerChoice": "Select and manage puzzle elements to achieve the goal, create combos, and adapt to new board patterns and constraints."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 992625,
-      "lastMs": 99140,
+      "totalMs": 1093180,
+      "lastMs": 100555,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:43:50.625Z"
+      "updatedAt": "2026-10-08T08:45:31.182Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:27:17.966Z",
-  "updatedAt": "2026-10-08T08:43:50.626Z",
+  "updatedAt": "2026-10-08T08:45:31.185Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2173,7 +2417,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:43:50.625Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:45:31.185Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
