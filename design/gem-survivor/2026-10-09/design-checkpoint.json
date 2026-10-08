@@ -391,25 +391,38 @@
       "name": "KARMA RETURN",
       "purpose": "보석 생존전에서 매 순간의 선택이 다음 상태로 이어지는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 재미와 시스템 연결을 확정하는 단일 Game Designer AI이다.",
       "playerChoice": "Collect run rewards or experience and choose upgrades... 또는 Combine upgrades into a stronger build..."
+    },
+    "local_authoring_parts::ad92821576fbb3aab6f828a2ed469ac7932e2f2d1fd19051ab748f6a8252e83a:signatureSystems:3": {
+      "id": "KARMA_RETURN_C",
+      "grammarRole": "c",
+      "stateInputs": [
+        "플레이어가 'Fight through an escalating horde in a short real-time survival run while"
+      ],
+      "stateOutputs": [
+        "플레이어가 'Collect run rewards or experience and choose upgrades...' 또는 'Combine "
+      ],
+      "name": "KARMA RETURN C",
+      "purpose": "보석 생존전에서 매 순간의 선택이 다음 상태로 이어지는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 재미와 시스템 연결을 확정하는 단일 Game Designer AI이다.",
+      "playerChoice": "Collect run rewards or experience and choose upgrades... 또는 Combine upgrades into a stronger build..."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 13,
+      "calls": 14,
+      "successes": 14,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1261552,
-      "lastMs": 101300,
+      "totalMs": 1362081,
+      "lastMs": 100529,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:04:47.555Z"
+      "updatedAt": "2026-10-08T18:06:28.086Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:43:45.948Z",
-  "updatedAt": "2026-10-08T18:04:47.555Z",
+  "updatedAt": "2026-10-08T18:06:28.086Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2838,7 +2851,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:04:47.555Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:06:28.086Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
