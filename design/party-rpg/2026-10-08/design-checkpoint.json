@@ -639,25 +639,43 @@
     },
     "local_authoring_parts::f83264db58aba88deba3db5f85756469ff2f63e22c23ea4e0c4db2a9ac637e30:trigger": {
       "trigger": "systemInterconnections[1].stateChange"
+    },
+    "local_authoring_parts::f83264db58aba88deba3db5f85756469ff2f63e22c23ea4e0c4db2a9ac637e30:stateChange": {
+      "stateChange": "SIGNATURE_SYSTEM_1의 현재 상태를 BOARD_RULE_1으로 전달하여, BOARD_STATE, PLAYER_ACTION, LEVEL_GOAL, REWARD_SYSTEM, OBSTACLE_PATTERN의 값이 전달됨으로써, 다음 월드 상태와 접근 가능성에 영향을 미친다."
+    },
+    "local_authoring_parts::02cd9412b25c441c0340a5badc329265222cc389edd0f15d70df43855f6ed1fc:systemInterconnections:1": {
+      "fromId": "SIGNATURE_SYSTEM_1",
+      "toId": "BOARD_RULE_1",
+      "stateKeys": [
+        "BOARD_STATE",
+        "PLAYER_ACTION",
+        "LEVEL_GOAL",
+        "REWARD_SYSTEM",
+        "OBSTACLE_PATTERN"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_1",
+      "toSystem": "BOARD_RULE_1",
+      "trigger": "systemInterconnections[1].stateChange",
+      "stateChange": "SIGNATURE_SYSTEM_1의 현재 상태를 BOARD_RULE_1으로 전달하여, BOARD_STATE, PLAYER_ACTION, LEVEL_GOAL, REWARD_SYSTEM, OBSTACLE_PATTERN의 값이 전달됨으로써, 다음 월드 상태와 접근 가능성에 영향을 미친다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 24,
-      "successes": 24,
+      "calls": 25,
+      "successes": 25,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2067687,
-      "lastMs": 87214,
+      "totalMs": 2159114,
+      "lastMs": 91427,
       "lastError": null,
-      "updatedAt": "2026-10-08T09:08:53.375Z"
+      "updatedAt": "2026-10-08T09:10:24.804Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:34:25.615Z",
-  "updatedAt": "2026-10-08T09:08:53.375Z",
+  "updatedAt": "2026-10-08T09:10:24.805Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3051,7 +3069,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T09:08:53.375Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:10:24.805Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
