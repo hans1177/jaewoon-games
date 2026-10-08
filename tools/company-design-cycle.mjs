@@ -1217,12 +1217,15 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
             ));
             if(!grammarRole){rows.push(value);break;}
             const roleIssues=[];
-            if(!clean(value.id)||rows.some(row=>clean(row.id)===clean(value.id)))roleIssues.push('DESIGN_GRAMMAR_RULE_ID_REUSED');
-            if(rows.some(row=>['name','purpose','playerChoice'].filter(key=>clean(value[key])===clean(row[key])).length>=2))
+            const inputKeys=Array.isArray(value?.stateInputs)?value.stateInputs:[];
+            const outputKeys=Array.isArray(value?.stateOutputs)?value.stateOutputs:[];
+            if(value?.grammarRole!==grammarRole)roleIssues.push('DESIGN_GRAMMAR_ROLE_MISMATCH');
+            if(!clean(value?.id)||rows.some(row=>clean(row.id)===clean(value.id)))roleIssues.push('DESIGN_GRAMMAR_RULE_ID_REUSED');
+            if(rows.some(row=>['name','purpose','playerChoice'].filter(key=>clean(value?.[key])===clean(row[key])).length>=2))
               roleIssues.push('DESIGN_GRAMMAR_ROLE_CONTENT_CLONED');
-            if([...value.stateInputs,...value.stateOutputs].some(key=>/→|->|\b(?:INPUT|SELECT|OUTPUT|STATE)\s*:/i.test(clean(key))))
+            if([...inputKeys,...outputKeys].some(key=>/→|->|\b(?:INPUT|SELECT|OUTPUT|STATE)\s*:/i.test(clean(key))))
               roleIssues.push('DESIGN_STATE_KEY_IS_INSTRUCTION');
-            if(!value.stateInputs.length||!value.stateOutputs.length)roleIssues.push('DESIGN_RULE_STATE_MISSING');
+            if(!inputKeys.length||!outputKeys.length)roleIssues.push('DESIGN_RULE_STATE_MISSING');
             if(!roleIssues.length){
               if(designCheckpoint.sliceRepairFeedback)delete designCheckpoint.sliceRepairFeedback[itemTaskKey];
               rows.push(value);break;
