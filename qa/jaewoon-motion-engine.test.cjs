@@ -164,3 +164,32 @@ test('contact pause freezes walking while the rendered base follows gameplay', (
   assert.equal(paused.rotation, before.rotation);
   assert.deepEqual(gameplay, { x: 40, y: 0 });
 });
+
+// 메인: 물리/게임 스폰 좌표와 렌더 보간·잔상의 분리 회귀
+test('teleport snap discards old-position afterimages and refreshes zero-delta render sample', () => {
+  const gameplay = { x: 800, y: 340 };
+  const rig = new JaewoonMotionRig({ x: 10, y: 15, afterimageDuration: .4 });
+  for (let i = 0; i < 6; i++) rig.update(1 / 60);
+  assert.ok(rig.afterimages().length > 0);
+  rig.setBasePose(gameplay, { snap: true });
+  assert.deepEqual(rig.afterimages(), []);
+  assert.equal(rig.update(0).x, gameplay.x);
+  assert.equal(rig.channels.y.value, gameplay.y);
+  rig.update(1 / 60);
+  rig.update(1 / 60);
+  assert.ok(rig.afterimages().every(frame => frame.x === gameplay.x));
+  assert.deepEqual(gameplay, { x: 800, y: 340 });
+});
+
+test('offscreen LOD immediately evicts historical render poses and regular movement still interpolates', () => {
+  const rig = new JaewoonMotionRig();
+  rig.setBasePose({ x: 40 });
+  const frame = rig.update(1 / 60);
+  assert.ok(frame.x > 0 && frame.x < 40);
+  rig.update(1 / 60);
+  assert.ok(rig.history.length > 0);
+  rig.setLod({ tier: 'OFFSCREEN' });
+  assert.deepEqual(rig.history, []);
+  rig.setLod({ tier: 'NEAR' });
+  assert.deepEqual(rig.afterimages(), []);
+});
