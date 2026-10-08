@@ -436,25 +436,44 @@
       "name": "ACTION_SURVIVAL_ROGUELITE",
       "purpose": "Player engages in a short real-time survival run where they must fight an escalating horde while positioning around enemy pressure, collect rewards, and upgrade their build to survive harder waves or a boss.",
       "playerChoice": "Choose between collecting rewards or experience, upgrading weapons, perks, or skills to change the current build, or combining upgrades to create a stronger build, then convert the run result into the next progression choice."
+    },
+    "local_authoring_parts::847425197799cd8b86dd7d5c30c5a6f2c70c5e1ce079a9b6c40ad71c4dbc6514:signatureSystems:4": {
+      "id": "ACTION_DELVE_SIGNATURE_SYSTEM",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "PlayerPosition",
+        "EnemyPressure",
+        "RunProgression",
+        "BuildComposition"
+      ],
+      "stateOutputs": [
+        "PlayerPosition",
+        "EnemyPressure",
+        "RunProgression",
+        "BuildComposition"
+      ],
+      "name": "ACTION_DELVE_SIGNATURE_SYSTEM",
+      "purpose": "Player engages in a deep exploration of the world, uncovering hidden rules, systems, and interactions that shape the game's progression and meaning.",
+      "playerChoice": "Choose between exploring new areas, discovering hidden mechanisms, or uncovering deeper layers of the game world, with each choice leading to new states and deeper gameplay engagement."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 14,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1464801,
-      "lastMs": 107520,
+      "totalMs": 1566010,
+      "lastMs": 101209,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:26:36.386Z"
+      "updatedAt": "2026-10-08T13:28:17.596Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:02:11.526Z",
-  "updatedAt": "2026-10-08T13:26:36.386Z",
+  "updatedAt": "2026-10-08T13:28:17.602Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2674,7 +2693,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2689,10 +2708,10 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:26:36.386Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T13:28:17.597Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
