@@ -881,25 +881,28 @@
       "toSystem": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1",
       "trigger": "BOARD_STATE_UPDATED: 시스템 내부에서 BOARD_STATE의 값이 변경됨으로써, SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_0의 상태가 SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1의 상태로 전달됨. 이 과정에서 PLAYER_ACTION, LEVEL_GOAL, OBSTACLES, COMBO_COUNT, REWARD_SYSTEM의 값이 전달되어, SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1의 상태가 업데이트됨. 이 상태 변화는 BOARD_STATE의 변",
       "stateChange": "BOARD_STATE_UPDATED: 시스템 내부에서 BOARD_STATE의 값이 변경됨으로써, SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_0의 상태가 SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1의 상태로 전달됨. 이 과정에서 PLAYER_ACTION, LEVEL_GOAL, OBSTACLES, COMBO_COUNT, REWARD_SYSTEM의 값이 전달되어, SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1의 상태가 업데이트됨. 이 상태 변화는 BOARD_STATE의 변환을 통해 이루어지며, 이는 게임의 진행 방향을 결정하는 핵심 조건으로 작용함."
+    },
+    "local_authoring_parts::de4dd8901eea20ef6fae7772787a25842621c470f79b114b16a16e769ac8cfa2:fromId": {
+      "fromId": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_0"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 35,
-      "successes": 35,
+      "calls": 36,
+      "successes": 36,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3347908,
-      "lastMs": 98553,
+      "totalMs": 3436956,
+      "lastMs": 89048,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:18:55.688Z"
+      "updatedAt": "2026-10-08T16:20:24.740Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:08:16.555Z",
-  "updatedAt": "2026-10-08T16:18:55.690Z",
+  "updatedAt": "2026-10-08T16:20:24.740Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3172,7 +3175,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:18:55.690Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:20:24.740Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
