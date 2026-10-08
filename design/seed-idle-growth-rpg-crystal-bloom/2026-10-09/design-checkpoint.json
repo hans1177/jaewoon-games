@@ -48,25 +48,39 @@
       "name": "CORE_FANTASY",
       "purpose": "Establishes the core fantasy system that connects player choices to world state changes, enabling emergent gameplay through repeated cycles of entry, risk, reward, and progression.",
       "playerChoice": "SELECT_NEXT_INVESTMENT, CLAIM_REWARDS, UPGRAD_LEVEL_OR_SKILL, EQUIP_GEAR, CHOOSE_HERO_STAT_PATH"
+    },
+    "local_authoring_parts::9f944ca55a7dfa28fa21db656c62bae6d09bbf295f56857d09f7ff2be8bf12b2:signatureSystems:1": {
+      "id": "SIGNATURE_SYSTEM_02",
+      "grammarRole": "A",
+      "stateInputs": [
+        "WORLD_STATE",
+        "PLAYER_CHOICE"
+      ],
+      "stateOutputs": [
+        "NEW_WORLD_STATE"
+      ],
+      "name": "CORE_LOOP_DESIGN",
+      "purpose": "Establishes the core loop mechanism that connects player choices to world state changes, enabling progression through a series of interconnected stages.",
+      "playerChoice": "Player selects which hero or stat path receives the next investment, influencing both the game's narrative and progression mechanics."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 629423,
-      "lastMs": 101071,
+      "totalMs": 728024,
+      "lastMs": 98601,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:32:25.109Z"
+      "updatedAt": "2026-10-08T21:34:03.712Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:21:55.662Z",
-  "updatedAt": "2026-10-08T21:32:25.109Z",
+  "updatedAt": "2026-10-08T21:34:03.712Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2298,7 +2312,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:32:25.109Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:34:03.712Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
