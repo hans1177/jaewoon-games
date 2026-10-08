@@ -444,25 +444,134 @@
       "name": "IDLE_GROWTH_RPG_DEEPENED_FIGHT_SYSTEM",
       "purpose": "플레이어가 자동으로 적군을 공격하며, 이 과정에서 유용한 아이템을 수집하거나 프로gression 리소스를 생성하여 다음 월드 상태를 변경할 수 있다.",
       "playerChoice": "플레이어는 자동으로 적군을 공격하고, 이 과정에서 유용한 아이템을 수집하거나 프로gression 리소스를 생성하여 다음 월드 상태를 바꿀 수 있다."
+    },
+    "local_authoring_parts::ab72cc2406b2449515014a91730c2c4b4a8bf1659e07c0b95c8b9f85e6f94a26:signatureSystems:4": {
+      "id": "IDLE_GROWTH_RPG_DELVE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "PLAYER_FIGHT_AUTO",
+        "PROGRESSION_RESOURCES"
+      ],
+      "stateOutputs": [
+        "STATE_CHANGE",
+        "REWARD_CLAIM",
+        "NEXT_INVESTMENT_CHOICE"
+      ],
+      "name": "IDLE_GROWTH_RPG_DELVE",
+      "purpose": "플레이어가 자동으로 적군을 공격하며, 이 과정에서 유용한 아이템을 수집하거나 프로gression 리소스를 생성하여 다음 월드 상태를 바꿀 수 있다.",
+      "playerChoice": "플레이어는 자동으로 적군을 공격하고, 이 과정에서 유용한 아이템을 수집하거나 프로gression 리소스를 생성하여 다음 월드 상태를 변경할 수 있다."
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "수정의 개화은 플레이어가 Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 IDLE_GROWTH_RPG 게임이다.\n\n플레이어의 Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.과 선택이 IDLE_GROWTH_RPG의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.\n\n성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.\n\n세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다.\n\n탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다.\n\n적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
+      "playerFantasy": "플레이어는 Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 IDLE_GROWTH_RPG 게임이다.\n\n플레이어의 Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.과 선택이 IDLE_GROWTH_RPG의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.\n\n성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.\n\n세계의 역사·생활·경제·지역 기능이 학문적으로 이해할 수 있는 방식으로 구체화되어 있으며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 시각 언어로 표현하고 있다.\n\n탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화하며, 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
+      "coreFun": "플레이어는 Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 IDLE_GROWTH_RPG 게임이다.\n\n플레이어의 Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.과 선택이 IDLE_GROWTH_RPG의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.\n\n성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.\n\n세계의 역사·생활·경제·지역 기능이 학문적으로 이해할 수 있는 방식으로 구체화되어 있으며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 시각 언어로 표현하고 있다.\n\n탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화하며, 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
+      "coreLoop": [
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE",
+        "PLAYERS FIGHT AUTO & GENERATE PROGRESSION RESOURCES BETWEEN ACTIVE SESSIONS",
+        "CLAIM REWARDS, UPGRAD LEVEL/SKILL, EQUIP GEAR, CHOOSE NEXT INVESTMENT"
+      ],
+      "multiplayerMode": "HYBRID",
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "PLAYER_FIGHT_AUTO",
+            "PROGRESSION_RESOURCES"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE",
+            "REWARD_CLAIM",
+            "NEXT_INVESTMENT_CHOICE"
+          ],
+          "name": "IDLE_GROWTH_RPG_CORE_LOOP",
+          "purpose": "플레이어가 Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 IDLE_GROWTH_RPG 게임이다.",
+          "playerChoice": "플레이어는 자동으로 적군을 공격하고, 이 과정에서 유용한 아이템 또는 프로gression 리소스를 생성하여 다음 월드 상태를 바꿀 수 있다."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "PLAYER_FIGHT_AUTO",
+            "PROGRESSION_RESOURCES"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE",
+            "REWARD_CLAIM",
+            "NEXT_INVESTMENT_CHOICE"
+          ],
+          "name": "IDLE_GROWTH_RPG_CORE_LOOP_2",
+          "purpose": "플레이어가 자동으로 적군을 공격하고, 이 과정에서 유용한 아이템 또는 프로gression 리소스를 생성하여 다음 월드 상태를 바꿀 수 있다.",
+          "playerChoice": "플레이어는 자동으로 적군을 공격하며, 이 과정에서 유용한 아이템을 수집하거나 프로gression 리소스를 생성하여 다음 월드 상태를 변경할 수 있다."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "PLAYER_FIGHT_AUTO",
+            "PROGRESSION_RESOURCES"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE",
+            "REWARD_CLAIM",
+            "NEXT_INVESTMENT_CHOICE"
+          ],
+          "name": "IDLE_GROWTH_RPG_DEEPENED_FIGHT_SYSTEM",
+          "purpose": "플레이어가 자동으로 적군을 공격하며, 이 과정에서 유용한 아이템을 수집하거나 프로gression 리소스를 생성하여 다음 월드 상태를 변경할 수 있다.",
+          "playerChoice": "플레이어는 자동으로 적군을 공격하고, 이 과정에서 유용한 아이템을 수집하거나 프로gression 리소스를 생성하여 다음 월드 상태를 바꿀 수 있다."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "PLAYER_FIGHT_AUTO",
+            "PROGRESSION_RESOURCES"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE",
+            "REWARD_CLAIM",
+            "NEXT_INVESTMENT_CHOICE"
+          ],
+          "name": "IDLE_GROWTH_RPG_DEEPENED_FIGHT_SYSTEM",
+          "purpose": "플레이어가 자동으로 적군을 공격하며, 이 과정에서 유용한 아이템을 수집하거나 프로gression 리소스를 생성하여 다음 월드 상태를 변경할 수 있다.",
+          "playerChoice": "플레이어는 자동으로 적군을 공격하고, 이 과정에서 유용한 아이템을 수집하거나 프로gression 리소스를 생성하여 다음 월드 상태를 바꿀 수 있다."
+        },
+        {
+          "id": "IDLE_GROWTH_RPG_DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "PLAYER_FIGHT_AUTO",
+            "PROGRESSION_RESOURCES"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE",
+            "REWARD_CLAIM",
+            "NEXT_INVESTMENT_CHOICE"
+          ],
+          "name": "IDLE_GROWTH_RPG_DELVE",
+          "purpose": "플레이어가 자동으로 적군을 공격하며, 이 과정에서 유용한 아이템을 수집하거나 프로gression 리소스를 생성하여 다음 월드 상태를 바꿀 수 있다.",
+          "playerChoice": "플레이어는 자동으로 적군을 공격하고, 이 과정에서 유용한 아이템을 수집하거나 프로gression 리소스를 생성하여 다음 월드 상태를 변경할 수 있다."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 14,
+      "calls": 16,
+      "successes": 16,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 590871,
-      "lastMs": 40336,
+      "totalMs": 726437,
+      "lastMs": 96043,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:54:59.827Z"
+      "updatedAt": "2026-10-08T18:57:15.401Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:45:08.916Z",
-  "updatedAt": "2026-10-08T18:54:59.828Z",
+  "updatedAt": "2026-10-08T18:57:15.404Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2691,10 +2800,11 @@
     }
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "cd1193df13f238342df26feb794dbab3357e7a7d617d9b9e40d8f81785b60b49"
   },
   "sliceRepairFeedback": {
-    "designer_draft_slices::identity-core": [
+    "designer_draft_slices::systems-progression": [
       {
         "code": "DESIGN_PLACEHOLDER_CONTENT",
         "kind": "HARD_GATE",
@@ -2702,14 +2812,14 @@
         "evidenceLevel": null,
         "minimumRequired": null,
         "evidence": {
-          "path": "signatureSystems[2].playerChoice",
-          "value": "CHOOSE_NEXT_INVESTMENT_OR_UPGRADE_LEVEL_SKILL_EQUIP_GEAR_CLAIM_REWARDS_PLAYERS_FIGHT_AUTO_GENERATE_PROGRESSION_RESOURCES_BETWEEN_ACTIVE_SESSIONS_ASK_FOR_NEW_ROL"
+          "path": "systemInterconnections[0].trigger",
+          "value": "AUTO_FIGHT_TRIGGER"
         },
-        "requiredAction": "signatureSystems[2].playerChoice의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "requiredAction": "systemInterconnections[0].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
-          "signatureSystems"
+          "systemInterconnections"
         ]
       },
       {
@@ -2719,14 +2829,14 @@
         "evidenceLevel": null,
         "minimumRequired": null,
         "evidence": {
-          "path": "signatureSystems[3].playerChoice",
-          "value": "CHOOSE_NEXT_INVESTMENT_OR_UPGRADE_LEVEL_SKILL_EQUIP_GEAR_CLAIM_REWARDS_PLAYERS_FIGHT_AUTO_GENERATE_PROGRESSION_RESOURCES_BETWEEN_ACTIVE_SESSIONS_ASK_FOR_NEW_ROL"
+          "path": "systemInterconnections[0].stateChange",
+          "value": "RESOURCE_GENERATION_AND_PROGRESSION"
         },
-        "requiredAction": "signatureSystems[3].playerChoice의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "requiredAction": "systemInterconnections[0].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
-          "signatureSystems"
+          "systemInterconnections"
         ]
       },
       {
@@ -2736,38 +2846,496 @@
         "evidenceLevel": null,
         "minimumRequired": null,
         "evidence": {
-          "path": "signatureSystems[4].playerChoice",
-          "value": "CHOOSE_NEXT_INVESTMENT_OR_UPGRADE_LEVEL_SKILL_EQUIP_GEAR_CLAIM_REWARDS_PLAYERS_FIGHT_AUTO_GENERATE_PROGRESSION_RESOURCES_BETWEEN_ACTIVE_SESSIONS_ASK_FOR_NEW_ROL"
+          "path": "systemInterconnections[1].trigger",
+          "value": "AUTO_FIGHT_TRIGGER"
         },
-        "requiredAction": "signatureSystems[4].playerChoice의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "requiredAction": "systemInterconnections[1].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
-          "signatureSystems"
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[1].stateChange",
+          "value": "RESOURCE_COLLECTION_AND_DEEPENED_FIGHT"
+        },
+        "requiredAction": "systemInterconnections[1].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[2].trigger",
+          "value": "AUTO_FIGHT_TRIGGER"
+        },
+        "requiredAction": "systemInterconnections[2].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[2].stateChange",
+          "value": "DEEPENED_FIGHT_AND_RESOURCE_REUSE"
+        },
+        "requiredAction": "systemInterconnections[2].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[3].trigger",
+          "value": "AUTO_FIGHT_TRIGGER"
+        },
+        "requiredAction": "systemInterconnections[3].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[3].stateChange",
+          "value": "RESOURCE_REUSE_AND_PROGRESSION"
+        },
+        "requiredAction": "systemInterconnections[3].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[4].trigger",
+          "value": "AUTO_FIGHT_TRIGGER"
+        },
+        "requiredAction": "systemInterconnections[4].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[4].stateChange",
+          "value": "PROGRESSION_AND_DEEPENED_FIGHT"
+        },
+        "requiredAction": "systemInterconnections[4].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "progressionEconomyBalance.resourceFlow",
+          "value": "AUTO_FIGHT_GENERATES_RESOURCES"
+        },
+        "requiredAction": "progressionEconomyBalance.resourceFlow의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "progressionEconomyBalance"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "progressionEconomyBalance.balanceRules",
+          "value": "RESOURCE_COLLECTION_AND_DEEPENED_FIGHT"
+        },
+        "requiredAction": "progressionEconomyBalance.balanceRules의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "progressionEconomyBalance"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentExpansionPlan[0].milestone",
+          "value": "AUTO_FIGHT_GENERATION"
+        },
+        "requiredAction": "contentExpansionPlan[0].milestone의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentExpansionPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentExpansionPlan[0].newGameplay",
+          "value": "AUTO_FIGHT_GENERATES_RESOURCES"
+        },
+        "requiredAction": "contentExpansionPlan[0].newGameplay의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentExpansionPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentExpansionPlan[0].systemImpact",
+          "value": "AUTO_FIGHT_GENERATES_RESOURCES"
+        },
+        "requiredAction": "contentExpansionPlan[0].systemImpact의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentExpansionPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentExpansionPlan[1].milestone",
+          "value": "RESOURCE_COLLECTION_AND_DEEPENED_FIGHT"
+        },
+        "requiredAction": "contentExpansionPlan[1].milestone의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentExpansionPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentExpansionPlan[1].newGameplay",
+          "value": "RESOURCE_COLLECTION_AND_DEEPENED_FIGHT"
+        },
+        "requiredAction": "contentExpansionPlan[1].newGameplay의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentExpansionPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentExpansionPlan[1].systemImpact",
+          "value": "RESOURCE_COLLECTION_AND_DEEPENED_FIGHT"
+        },
+        "requiredAction": "contentExpansionPlan[1].systemImpact의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentExpansionPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentExpansionPlan[2].milestone",
+          "value": "DEEPENED_FIGHT_AND_RESOURCE_REUSE"
+        },
+        "requiredAction": "contentExpansionPlan[2].milestone의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentExpansionPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentExpansionPlan[2].newGameplay",
+          "value": "DEEPENED_FIGHT_AND_RESOURCE_REUSE"
+        },
+        "requiredAction": "contentExpansionPlan[2].newGameplay의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentExpansionPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentExpansionPlan[2].systemImpact",
+          "value": "DEEPENED_FIGHT_AND_RESOURCE_REUSE"
+        },
+        "requiredAction": "contentExpansionPlan[2].systemImpact의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentExpansionPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "failureRetryRisk.retryFlow",
+          "value": "RESOURCE_COLLECTION_AND_DEEPENED_FIGHT"
+        },
+        "requiredAction": "failureRetryRisk.retryFlow의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "failureRetryRisk"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "failureRetryRisk.riskPressure",
+          "value": "PROGRESSION_AND_DEEPENED_FIGHT"
+        },
+        "requiredAction": "failureRetryRisk.riskPressure의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "failureRetryRisk"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "failureRetryRisk.recoveryRules",
+          "value": "RESOURCE_COLLECTION_AND_DEEPENED_FIGHT"
+        },
+        "requiredAction": "failureRetryRisk.recoveryRules의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "failureRetryRisk"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "PLAYER_FIGHT_AUTO→PROGRESSION_RESOURCES의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: PLAYER_FIGHT_AUTO→PROGRESSION_RESOURCES의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "PLAYER_FIGHT_AUTO→PROGRESSION_RESOURCES의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: PLAYER_FIGHT_AUTO→PROGRESSION_RESOURCES의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "PLAYER_FIGHT_AUTO→PROGRESSION_RESOURCES의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: PLAYER_FIGHT_AUTO→PROGRESSION_RESOURCES의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "PLAYER_FIGHT_AUTO→PROGRESSION_RESOURCES의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: PLAYER_FIGHT_AUTO→PROGRESSION_RESOURCES의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "PLAYER_FIGHT_AUTO→PROGRESSION_RESOURCES의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: PLAYER_FIGHT_AUTO→PROGRESSION_RESOURCES의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
         ]
       }
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 1,
+    "designer_draft_slices::systems-progression": 1
   },
   "slicePartialResults": {
-    "designer_draft_slices::identity-core": {
-      "identity": "수정의 개화은 플레이어가 Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 IDLE_GROWTH_RPG 게임이다.\n\n플레이어의 Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.과 선택이 IDLE_GROWTH_RPG의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.\n\n성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.\n\n세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다.\n\n탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다.\n\n적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
-      "playerFantasy": "플레이어는 Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 IDLE_GROWTH_RPG 게임이다.\n\n플레이어의 Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.과 선택이 IDLE_GROWTH_RPG의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.\n\n성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.\n\n세계의 역사·생활·경제·지역 기능이 학문적으로 이해할 수 있는 방식으로 구체화되어 있으며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 시각 언어로 표현하고 있다.\n\n탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화하며, 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
-      "coreFun": "플레이어는 Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 IDLE_GROWTH_RPG 게임이다.\n\n플레이어의 Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.과 선택이 IDLE_GROWTH_RPG의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.\n\n성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.\n\n세계의 역사·생활·경제·지역 기능이 학문적으로 이해할 수 있는 방식으로 구체화되어 있으며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 시각 언어로 표현하고 있다.\n\n탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화하며, 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
-      "coreLoop": [
-        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE",
-        "PLAYERS FIGHT AUTO & GENERATE PROGRESSION RESOURCES BETWEEN ACTIVE SESSIONS",
-        "CLAIM REWARDS, UPGRAD LEVEL/SKILL, EQUIP GEAR, CHOOSE NEXT INVESTMENT"
-      ],
-      "multiplayerMode": "HYBRID"
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "{\"from\": \"AUTO_FIGHT\", \"to\": \"RESOURCE_COLLECTION\"}"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:54:59.827Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T18:57:15.401Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
-  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/seed-idle-growth-rpg-crystal-bloom/2026-10-09/design-seed.json",
+    "contentDigest": "beecb78beca5744c634dccc1051dbb542202cb75c9deea221c9348992bbc6777",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
