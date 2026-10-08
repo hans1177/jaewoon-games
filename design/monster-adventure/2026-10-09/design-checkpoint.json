@@ -48,25 +48,39 @@
       "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
       "purpose": "Plays as an immediate action that transforms the world state by initiating the game loop and unlocking progression opportunities through casual gameplay.",
       "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+    },
+    "local_authoring_parts::5a9e47c91c997d3e48f52d520cde28558006b2c796b475e57a2b8f8da5a062cc:signatureSystems:1": {
+      "id": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "START_INPUT",
+        "SCORE_DISTANCE_SHORT_SESSION"
+      ],
+      "stateOutputs": [
+        "END_WORLD_STATE"
+      ],
+      "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+      "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+      "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 491735,
-      "lastMs": 87749,
+      "totalMs": 503118,
+      "lastMs": 11383,
       "lastError": null,
-      "updatedAt": "2026-10-08T23:49:55.500Z"
+      "updatedAt": "2026-10-08T23:50:06.885Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:19:07.722Z",
-  "updatedAt": "2026-10-08T23:49:55.502Z",
+  "updatedAt": "2026-10-08T23:50:06.885Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2164,8 +2178,8 @@
     "local_authoring_parts::5a9e47c91c997d3e48f52d520cde28558006b2c796b475e57a2b8f8da5a062cc:signatureSystems:1": 3
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T23:49:55.500Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:A",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
+  "lastSuccessfulModelCallAt": "2026-10-08T23:50:06.885Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
