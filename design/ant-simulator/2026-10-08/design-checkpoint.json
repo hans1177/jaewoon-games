@@ -634,25 +634,69 @@
       "toSystem": "SYSTEM_WORLD_STATE_TRANSFORMATION_NETWORK_01_01_01_02_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_",
       "trigger": "[시스템 상태 변화 트리거] 월드 상태 변화를 유도하는 입력을 받는다.",
       "stateChange": "[시스템 상태 변화] 월드 상태 변화를 반영한 상태 변화를 적용한다."
+    },
+    "local_authoring_parts::6ba9c06831b9fc13365edd5b1765350e5e8b82a399b44ba210e68e8e4432c5a3:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "systemInterconnections[1]",
+      "toId": "systemInterconnections[2]",
+      "stateKeys": [
+        "currentWorldState",
+        "playerTarget",
+        "availableResources",
+        "potentialHazards",
+        "progressionStatus"
+      ],
+      "fromSystem": "SYSTEM_WORLD_STATE_TRANSFORMATION_NETWORK_01_01_01_02_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_"
+    },
+    "local_authoring_parts::6ba9c06831b9fc13365edd5b1765350e5e8b82a399b44ba210e68e8e4432c5a3:toSystem,trigger,stateChange": {
+      "toSystem": "SYSTEM_WORLD_STATE_TRANSFORMATION_NETWORK_01_01_01_02_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_",
+      "trigger": "[시스템 상태 변화 트리거] 월드 상태 변화를 유도하는 입력을 받는다.",
+      "stateChange": "[시스템 상태 변화] 월드 상태 변화를 반영한 상태 변화를 적용한다."
+    },
+    "local_authoring_parts::8be916bc75e1452851a23f352d0149623c97ad98dccd306e7e2ec144976a554c:systemInterconnections:1": {
+      "fromId": "systemInterconnections[1]",
+      "toId": "systemInterconnections[2]",
+      "stateKeys": [
+        "currentWorldState",
+        "playerTarget",
+        "availableResources",
+        "potentialHazards",
+        "progressionStatus"
+      ],
+      "fromSystem": "SYSTEM_WORLD_STATE_TRANSFORMATION_NETWORK_01_01_01_02_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_",
+      "toSystem": "SYSTEM_WORLD_STATE_TRANSFORMATION_NETWORK_01_01_01_02_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_",
+      "trigger": "[시스템 상태 변화 트리거] 월드 상태 변화를 유도하는 입력을 받는다.",
+      "stateChange": "[시스템 상태 변화] 월드 상태 변화를 반영한 상태 변화를 적용한다."
+    },
+    "local_authoring_parts::fb1ab81f32c7a3f16bdb84c95274489b297dcc40c1faf776d3e4d4115c9f11e9:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "systemInterconnections[2]",
+      "toId": "systemInterconnections[3]",
+      "stateKeys": [
+        "currentWorldState",
+        "playerTarget",
+        "availableResources",
+        "potentialHazards",
+        "progressionStatus"
+      ],
+      "fromSystem": "SYSTEM_WORLD_STATE_TRANSFORMATION_NETWORK_01_01_01_02_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 13,
+      "calls": 16,
+      "successes": 16,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 437840,
-      "lastMs": 20838,
+      "totalMs": 519690,
+      "lastMs": 32626,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:36:20.250Z"
+      "updatedAt": "2026-10-08T12:37:42.108Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:29:02.212Z",
-  "updatedAt": "2026-10-08T12:36:20.251Z",
+  "updatedAt": "2026-10-08T12:37:42.108Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2858,7 +2902,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:36:20.251Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:37:42.108Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
