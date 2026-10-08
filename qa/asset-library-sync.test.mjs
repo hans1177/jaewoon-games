@@ -225,3 +225,24 @@ test('Vibe common character equipment inventory and trading screens sync exact o
  assert.match(trade,/Sync=sync/);
  assert.doesNotMatch(trade,/DataStoreService|SetAsync|UpdateAsync|FireServer|RemoteEvent/);
 });
+
+test('system-menu drawer is a functional touch-safe synchronized menu, not a static suggestion card',()=>{
+ const source=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const begin=source.indexOf('function RobloxCommonUI.CreateMenuSystemSwitcherDrawer(options)');
+ const end=source.indexOf('function RobloxCommonUI.CreateNavigationBreadcrumbBackstack(options)',begin);
+ const body=source.slice(begin,end);
+ assert.ok(begin>=0&&end>begin);
+ assert.match(body,/Instance.new\("ScrollingFrame"\)/);
+ assert.match(body,/scroller\.AutomaticCanvasSize=Enum\.AutomaticSize\.Y/);
+ assert.match(body,/button\.Activated:Connect\(function\(\)/);
+ assert.match(body,/root:SetAttribute\("BoundSystemCount",#rows\)/);
+ assert.match(body,/root:SetAttribute\("CurrentSystemId",selectedId\)/);
+ assert.match(body,/button:SetAttribute\("MinimumTouchHeight",48\)/);
+ assert.match(body,/options\.onSelect\(id,current\)/);
+ assert.match(body,/if type\(current\)=="table"and current\.enabled==false then return end/);
+ assert.match(body,/return root,\{inner=inner,list=scroller,labels=buttons,buttons=buttons,Sync=sync\}/);
+ for(const role of ['OwnsSystemAuthority','OwnsNavigationAuthority','OwnsSaveAuthority','OwnsRemoteAuthority']){
+   assert.match(body,new RegExp('root:SetAttribute\\("'+role+'",false\\)'));
+ }
+ assert.doesNotMatch(body,/DataStoreService|SetAsync|FireServer|RemoteEvent|RenderStepped|RunService/);
+});
