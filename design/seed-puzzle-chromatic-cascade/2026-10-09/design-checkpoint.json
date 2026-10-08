@@ -717,25 +717,52 @@
     },
     "local_authoring_parts::f708626fd790a094e6a93685e9c0266486063e790395f3775f431ce1db968392:riskPressure": {
       "riskPressure": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정에서는, CORE-01 시스템의 START_BOARD 상태를 다른 시스템으로 전환하기 위한 재도전 로직이 실행됩니다."
+    },
+    "local_authoring_parts::f708626fd790a094e6a93685e9c0266486063e790395f3775f431ce1db968392:recoveryRules": {
+      "recoveryRules": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정에서는, CORE-01 시스템의 START_BOARD 상태를 다른 시스템으로 전환하기 위한 재도전 로직이 실행됩니다."
+    },
+    "local_authoring_parts::0cbb3645ffbf165fc75756fbd3fc7f78225d4b03644d724f7c1144f002a716b3:failureRetryRisk": {
+      "failureStates": [
+        "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정",
+        "CORE-01 시스템의 START_BOARD 상태를 CORE-02 시스템의 START_MATCH 상태로 전환합니다.",
+        "CORE-01 시스템의 START_BOARD 상태를 CORE-03 시스템의 START_MATCH 상태로 전환합니다.",
+        "CORE-01 시스템의 START_BOARD 상태를 CORE-04 시스템의 START_MATCH 상태로 전환합니다."
+      ],
+      "retryFlow": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정에서는, CORE-01 시스템의 START_BOARD 상태를 다른 시스템으로 전환하기 위한 재도전 로직이 실행됩니다.",
+      "riskPressure": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정에서는, CORE-01 시스템의 START_BOARD 상태를 다른 시스템으로 전환하기 위한 재도전 로직이 실행됩니다.",
+      "recoveryRules": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정에서는, CORE-01 시스템의 START_BOARD 상태를 다른 시스템으로 전환하기 위한 재도전 로직이 실행됩니다."
+    },
+    "local_authoring_parts::0a5efaa1e59df9833d337f918a2e74d643ee40d692a91bb668e110577705c8cc:failureRetryRisk": {
+      "failureRetryRisk": {
+        "failureStates": [
+          "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정",
+          "CORE-01 시스템의 START_BOARD 상태를 CORE-02 시스템의 START_MATCH 상태로 전환합니다.",
+          "CORE-01 시스템의 START_BOARD 상태를 CORE-03 시스템의 START_MATCH 상태로 전환합니다.",
+          "CORE-01 시스템의 START_BOARD 상태를 CORE-04 시스템의 START_MATCH 상태로 전환합니다."
+        ],
+        "retryFlow": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정에서는, CORE-01 시스템의 START_BOARD 상태를 다른 시스템으로 전환하기 위한 재도전 로직이 실행됩니다.",
+        "riskPressure": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정에서는, CORE-01 시스템의 START_BOARD 상태를 다른 시스템으로 전환하기 위한 재도전 로직이 실행됩니다.",
+        "recoveryRules": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정에서는, CORE-01 시스템의 START_BOARD 상태를 다른 시스템으로 전환하기 위한 재도전 로직이 실행됩니다."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 58,
-      "successes": 58,
+      "calls": 59,
+      "successes": 59,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2163167,
-      "lastMs": 34339,
+      "totalMs": 2197380,
+      "lastMs": 34213,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:59:08.940Z"
+      "updatedAt": "2026-10-08T21:59:43.154Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:23:05.545Z",
-  "updatedAt": "2026-10-08T21:59:08.940Z",
+  "updatedAt": "2026-10-08T21:59:43.163Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2775,288 +2802,15 @@
   "sliceRepairFeedback": {
     "designer_draft_slices::systems-progression": [
       {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "code": "DESIGN_REPEATED_CONTENT",
         "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "axis": "CONTENT_EXPANSION_PLAN",
         "evidenceLevel": null,
         "minimumRequired": null,
         "evidence": {
-          "path": "systemInterconnections[1].trigger",
-          "value": "BOARD_LAYOUT_CHANGE"
+          "name": "failureRetryRisk"
         },
-        "requiredAction": "systemInterconnections[1].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[2].stateChange",
-          "value": "NEW_CONTENT_USAGE"
-        },
-        "requiredAction": "systemInterconnections[2].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[3].trigger",
-          "value": "ROUNDED_PLAY_LOOP"
-        },
-        "requiredAction": "systemInterconnections[3].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[3].stateChange",
-          "value": "REPEATED_PLAY_PATTERN"
-        },
-        "requiredAction": "systemInterconnections[3].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[0].milestone",
-          "value": "MATCH_SELECTION_01"
-        },
-        "requiredAction": "contentExpansionPlan[0].milestone의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[0].systemImpact",
-          "value": "BOARD_LAYOUT_CHANGE"
-        },
-        "requiredAction": "contentExpansionPlan[0].systemImpact의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[1].milestone",
-          "value": "PATTERN_COMBINATION_01"
-        },
-        "requiredAction": "contentExpansionPlan[1].milestone의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[2].milestone",
-          "value": "CONTENT_REDEFINITION_01"
-        },
-        "requiredAction": "contentExpansionPlan[2].milestone의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[2].newGameplay",
-          "value": "NEW_CONTENT_USAGE"
-        },
-        "requiredAction": "contentExpansionPlan[2].newGameplay의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[2].systemImpact",
-          "value": "PLAYER_CHOICE_MODIFICATION"
-        },
-        "requiredAction": "contentExpansionPlan[2].systemImpact의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[3].milestone",
-          "value": "ROUNDED_PLAY_LOOP_01"
-        },
-        "requiredAction": "contentExpansionPlan[3].milestone의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[3].newGameplay",
-          "value": "REPEATED_PLAY_PATTERN"
-        },
-        "requiredAction": "contentExpansionPlan[3].newGameplay의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[3].systemImpact",
-          "value": "INPUT_FEEDBACK_IMPROVEMENT"
-        },
-        "requiredAction": "contentExpansionPlan[3].systemImpact의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[4].milestone",
-          "value": "PLAY_PATTERN_EXTENSION_01"
-        },
-        "requiredAction": "contentExpansionPlan[4].milestone의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[4].newGameplay",
-          "value": "EXTENDED_PLAY_SEQUENCE"
-        },
-        "requiredAction": "contentExpansionPlan[4].newGameplay의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[4].systemImpact",
-          "value": "GAMEPLAY_SKETCH_ENHANCEMENT"
-        },
-        "requiredAction": "contentExpansionPlan[4].systemImpact의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "failureRetryRisk.failureStates[1]",
-          "value": "NO_MATCH_FOUND"
-        },
-        "requiredAction": "failureRetryRisk.failureStates[1]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "requiredAction": "서로 다른 항목을 같은 설명으로 채우지 않는다. 동선·전조·대응·위험·보상·복구가 각각 어떤 규칙인지 작성한다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3071,9 +2825,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "CORE-01→CORE-02의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "systemInterconnections[0]→CORE-02의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: CORE-01→CORE-02의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: systemInterconnections[0]→CORE-02의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3088,9 +2842,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "CORE-01→CORE-03의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "systemInterconnections[1]→CORE-02의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: CORE-01→CORE-03의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: systemInterconnections[1]→CORE-02의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3105,9 +2859,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "CORE-01→CORE-04의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "systemInterconnections[2]→CORE-03의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: CORE-01→CORE-04의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: systemInterconnections[2]→CORE-03의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3122,9 +2876,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "CORE-01→CORE-05의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "systemInterconnections[3]→CORE-04의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: CORE-01→CORE-05의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: systemInterconnections[3]→CORE-04의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3139,9 +2893,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "CORE-02→CORE-03의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "systemInterconnections[4]→CORE-02의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: CORE-02→CORE-03의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: systemInterconnections[4]→CORE-02의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3168,7 +2922,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 1
+    "designer_draft_slices::systems-progression": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3177,13 +2931,30 @@
         "progressionLoop": "REPEATABLE",
         "resourceFlow": "CONSISTENT",
         "balanceRules": "BALANCED"
-      }
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정",
+          "newGameplay": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정에서, CORE-01 시스템의 START_BOARD 상태를 CORE-02 시스템의 START_MATCH 상태로 전환합니다.",
+          "systemImpact": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정에서, CORE-01 시스템의 START_BOARD 상태를 CORE-02 시스템의 START_MATCH 상태로 전환합니다."
+        },
+        {
+          "milestone": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정",
+          "newGameplay": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정에서, CORE-01 시스템의 START_BOARD 상태를 CORE-02 시스템의 START_MATCH 상태로 전환합니다.",
+          "systemImpact": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정에서, CORE-01 시스템의 START_BOARD 상태를 CORE-02 시스템의 START_MATCH 상태로 전환합니다."
+        },
+        {
+          "milestone": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정",
+          "newGameplay": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정에서, CORE-01 시스템의 START_BOARD 상태를 CORE-02 시스템의 START_MATCH 상태로 전환합니다.",
+          "systemImpact": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정에서, CORE-01 시스템의 START_BOARD 상태를 CORE-02 시스템의 START_MATCH 상태로 전환합니다."
+        }
+      ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T21:59:08.940Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T21:59:43.158Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_REPEATED_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
