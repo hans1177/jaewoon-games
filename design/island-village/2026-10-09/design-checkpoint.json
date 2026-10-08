@@ -513,25 +513,43 @@
     },
     "local_authoring_parts::b8c5e768534e9b43b619daf5aa7dbc066e28334e99a89506ff3107d3d3b3af89:toSystem": {
       "toSystem": "RESOURCE_TO_VILLAGE_PROGRESSION"
+    },
+    "local_authoring_parts::b8c5e768534e9b43b619daf5aa7dbc066e28334e99a89506ff3107d3d3b3af89:trigger": {
+      "trigger": "VILLAGE_RESOURCES→NEW_VILLAGE_FUNCTION의 상태 변화가 실제 발생했으며, 이 과정에서 주민들의 생활 연결망이 확장되는 방식으로 이루어진다."
+    },
+    "local_authoring_parts::b8c5e768534e9b43b619daf5aa7dbc066e28334e99a89506ff3107d3d3b3af89:stateChange": {
+      "stateChange": "VILLAGE_RESOURCES→NEW_VILLAGE_FUNCTION의 상태 변화가 실제 발생했으며, 이 과정에서 주민들의 생활 연결망이 확장되는 방식으로 이루어진다."
+    },
+    "local_authoring_parts::a312896bb68cfb24b86b54c3e9887a5980cf4f77559a35d63a7c8e4ee05ccaf8:systemInterconnections:2": {
+      "fromId": "VILLAGE_RESOURCES→NEW_VILLAGE_FUNCTION",
+      "toId": "NEW_VILLAGE_FUNCTION",
+      "stateKeys": [
+        "VILLAGE_RESOURCES",
+        "NEW_VILLAGE_FUNCTION"
+      ],
+      "fromSystem": "RESOURCE_TO_VILLAGE_PROGRESSION",
+      "toSystem": "RESOURCE_TO_VILLAGE_PROGRESSION",
+      "trigger": "VILLAGE_RESOURCES→NEW_VILLAGE_FUNCTION의 상태 변화가 실제 발생했으며, 이 과정에서 주민들의 생활 연결망이 확장되는 방식으로 이루어진다.",
+      "stateChange": "VILLAGE_RESOURCES→NEW_VILLAGE_FUNCTION의 상태 변화가 실제 발생했으며, 이 과정에서 주민들의 생활 연결망이 확장되는 방식으로 이루어진다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 30,
-      "successes": 30,
+      "calls": 32,
+      "successes": 32,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1871099,
-      "lastMs": 56374,
+      "totalMs": 1990103,
+      "lastMs": 59871,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:17:17.266Z"
+      "updatedAt": "2026-10-08T18:19:16.274Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:46:05.904Z",
-  "updatedAt": "2026-10-08T18:17:17.266Z",
+  "updatedAt": "2026-10-08T18:19:16.276Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3003,7 +3021,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:17:17.266Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:19:16.276Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
