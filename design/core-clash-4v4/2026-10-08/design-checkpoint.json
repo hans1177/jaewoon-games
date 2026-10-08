@@ -863,25 +863,30 @@
         "resourceFlow": "BALANCED",
         "balanceRules": "AUTOMATIC"
       }
+    },
+    "local_authoring_parts::f7b000afed5554e4edd3e530f5e61cf5688f322fb7ee351a180d059e46cfa93c:contentExpansionPlan:0": {
+      "milestone": "contentExpansionPlan",
+      "newGameplay": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
+      "systemImpact": "A dynamic, multi-layered gameplay system that enables players to engage in a continuous cycle of survival, progression, and strategic decision-making. The system is designed to be both intuitive and deep, offering a wide range of gameplay options and meaningful interactions across different scenarios and build combinations. The progression is structured in a sequential manner, with each step building upon the previous one, and the system is balanced to ensure that players can enjoy the game both"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 28,
-      "successes": 26,
+      "calls": 29,
+      "successes": 27,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 2394573,
-      "lastMs": 300090,
+      "totalMs": 2635695,
+      "lastMs": 241122,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T10:38:19.489Z"
+      "updatedAt": "2026-10-08T10:42:20.613Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:15:41.984Z",
-  "updatedAt": "2026-10-08T10:38:19.489Z",
+  "updatedAt": "2026-10-08T10:42:20.613Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3084,7 +3089,7 @@
     "designer_draft_slices::identity-core": 3
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T10:33:19.398Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:42:20.613Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
