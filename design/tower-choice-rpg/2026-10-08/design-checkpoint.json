@@ -119,25 +119,270 @@
       "name": "ACTION_SURVIVAL_ROGUELITE",
       "purpose": "A dynamic, evolving system that enables players to explore, experiment, and build upon their gameplay experience through a series of interconnected choices and outcomes. Players actively choose and refine their gameplay strategies, combining upgrades, skills, and builds to adapt to the evolving challenges of the game.",
       "playerChoice": "Players actively choose and refine their gameplay strategies, combining upgrades, skills, and builds to adapt to the evolving challenges of the game."
+    },
+    "local_authoring_parts::56165647cf1962516db38b91eff0d2fdce979420d85d635189679399c9f34083:signatureSystems:4": {
+      "id": "DELVE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "INPUT_AND_MENU_TRANSITIONS",
+        "CONTEXT_LOSS",
+        "ERROR_RECOVERY",
+        "STATE_AND_COST_REGRESSION"
+      ],
+      "stateOutputs": [
+        "ACTION_SURVIVAL_ROGUELITE",
+        "NEW_ACTION",
+        "NEW_ROUTE",
+        "BUILD_COMBINATION",
+        "WORLD_RELATIONSHIP",
+        "OPTIONAL_MASTERY"
+      ],
+      "name": "ACTION_SURVIVAL_ROGUELITE",
+      "purpose": "A dynamic, evolving system that enables players to explore, experiment, and build upon their gameplay experience through a series of interconnected choices and outcomes. Players actively choose and refine their gameplay strategies, combining upgrades, skills, and builds to adapt to the evolving challenges of the game.",
+      "playerChoice": "Players actively choose and refine their gameplay strategies, combining upgrades, skills, and builds to adapt to the evolving challenges of the game."
+    },
+    "local_authoring_parts::ec9cab0b60cfb3367f5355a03929490a0e346c646950f2e6d9bdb4f703dbd8c8:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "MAIN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT_AND_MENU_TRANSITIONS",
+            "CONTEXT_LOSS",
+            "ERROR_RECOVERY",
+            "STATE_AND_COST_REGRESSION"
+          ],
+          "stateOutputs": [
+            "ACTION_SURVIVAL_ROGUELITE",
+            "NEW_ACTION",
+            "NEW_ROUTE",
+            "BUILD_COMBINATION",
+            "WORLD_RELATIONSHIP",
+            "OPTIONAL_MASTERY"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE",
+          "purpose": "A dynamic, evolving system that enables players to explore, experiment, and build upon their gameplay experience through a series of interconnected choices and outcomes.",
+          "playerChoice": "Players actively choose and refine their gameplay strategies, combining upgrades, skills, and builds to adapt to the evolving challenges of the game."
+        },
+        {
+          "id": "MAIN",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT_AND_MENU_TRANSITIONS",
+            "CONTEXT_LOSS",
+            "ERROR_RECOVERY",
+            "STATE_AND_COST_REGRESSION"
+          ],
+          "stateOutputs": [
+            "ACTION_SURVIVAL_ROGUELITE",
+            "NEW_ACTION",
+            "NEW_ROUTE",
+            "BUILD_COMBINATION",
+            "WORLD_RELATIONSHIP",
+            "OPTIONAL_MASTERY"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE",
+          "purpose": "A dynamic, evolving system that enables players to explore, experiment, and build upon their gameplay experience through a series of interconnected choices and outcomes.",
+          "playerChoice": "Players actively choose and refine their gameplay strategies, combining upgrades, skills, and builds to adapt to the evolving challenges of the game."
+        },
+        {
+          "id": "B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT_AND_MENU_TRANSITIONS",
+            "CONTEXT_LOSS",
+            "ERROR_RECOVERY",
+            "STATE_AND_COST_REGRESSION"
+          ],
+          "stateOutputs": [
+            "ACTION_SURVIVAL_ROGUELITE",
+            "NEW_ACTION",
+            "NEW_ROUTE",
+            "BUILD_COMBINATION",
+            "WORLD_RELATIONSHIP",
+            "OPTIONAL_MASTERY"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE",
+          "purpose": "A dynamic, evolving system that enables players to explore, experiment, and build upon their gameplay experience through a series of interconnected choices and outcomes. Players actively choose and refine their gameplay strategies, combining upgrades, skills, and builds to adapt to the evolving challenges of the game.",
+          "playerChoice": "Players actively choose and refine their gameplay strategies, combining upgrades, skills, and builds to adapt to the evolving challenges of the game."
+        },
+        {
+          "id": "c",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT_AND_MENU_TRANSITIONS",
+            "CONTEXT_LOSS",
+            "ERROR_RECOVERY",
+            "STATE_AND_COST_REGRESSION"
+          ],
+          "stateOutputs": [
+            "ACTION_SURVIVAL_ROGUELITE",
+            "NEW_ACTION",
+            "NEW_ROUTE",
+            "BUILD_COMBINATION",
+            "WORLD_RELATIONSHIP",
+            "OPTIONAL_MASTERY"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE",
+          "purpose": "A dynamic, evolving system that enables players to explore, experiment, and build upon their gameplay experience through a series of interconnected choices and outcomes. Players actively choose and refine their gameplay strategies, combining upgrades, skills, and builds to adapt to the evolving challenges of the game.",
+          "playerChoice": "Players actively choose and refine their gameplay strategies, combining upgrades, skills, and builds to adapt to the evolving challenges of the game."
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT_AND_MENU_TRANSITIONS",
+            "CONTEXT_LOSS",
+            "ERROR_RECOVERY",
+            "STATE_AND_COST_REGRESSION"
+          ],
+          "stateOutputs": [
+            "ACTION_SURVIVAL_ROGUELITE",
+            "NEW_ACTION",
+            "NEW_ROUTE",
+            "BUILD_COMBINATION",
+            "WORLD_RELATIONSHIP",
+            "OPTIONAL_MASTERY"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE",
+          "purpose": "A dynamic, evolving system that enables players to explore, experiment, and build upon their gameplay experience through a series of interconnected choices and outcomes. Players actively choose and refine their gameplay strategies, combining upgrades, skills, and builds to adapt to the evolving challenges of the game.",
+          "playerChoice": "Players actively choose and refine their gameplay strategies, combining upgrades, skills, and builds to adapt to the evolving challenges of the game."
+        }
+      ]
+    },
+    "local_authoring_parts::5d6833cab5b9ffcaa5d83538984709cc199161157d9cc237d0434a6a78ab7d76:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT_AND_MENU_TRANSITIONS",
+        "CONTEXT_LOSS",
+        "ERROR_RECOVERY",
+        "STATE_AND_COST_REGRESSION"
+      ],
+      "signatureSystems": [
+        {
+          "id": "MAIN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT_AND_MENU_TRANSITIONS",
+            "CONTEXT_LOSS",
+            "ERROR_RECOVERY",
+            "STATE_AND_COST_REGRESSION"
+          ],
+          "stateOutputs": [
+            "ACTION_SURVIVAL_ROGUELITE",
+            "NEW_ACTION",
+            "NEW_ROUTE",
+            "BUILD_COMBINATION",
+            "WORLD_RELATIONSHIP",
+            "OPTIONAL_MASTERY"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE",
+          "purpose": "A dynamic, evolving system that enables players to explore, experiment, and build upon their gameplay experience through a series of interconnected choices and outcomes.",
+          "playerChoice": "Players actively choose and refine their gameplay strategies, combining upgrades, skills, and builds to adapt to the evolving challenges of the game."
+        },
+        {
+          "id": "MAIN",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT_AND_MENU_TRANSITIONS",
+            "CONTEXT_LOSS",
+            "ERROR_RECOVERY",
+            "STATE_AND_COST_REGRESSION"
+          ],
+          "stateOutputs": [
+            "ACTION_SURVIVAL_ROGUELITE",
+            "NEW_ACTION",
+            "NEW_ROUTE",
+            "BUILD_COMBINATION",
+            "WORLD_RELATIONSHIP",
+            "OPTIONAL_MASTERY"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE",
+          "purpose": "A dynamic, evolving system that enables players to explore, experiment, and build upon their gameplay experience through a series of interconnected choices and outcomes.",
+          "playerChoice": "Players actively choose and refine their gameplay strategies, combining upgrades, skills, and builds to adapt to the evolving challenges of the game."
+        },
+        {
+          "id": "B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT_AND_MENU_TRANSITIONS",
+            "CONTEXT_LOSS",
+            "ERROR_RECOVERY",
+            "STATE_AND_COST_REGRESSION"
+          ],
+          "stateOutputs": [
+            "ACTION_SURVIVAL_ROGUELITE",
+            "NEW_ACTION",
+            "NEW_ROUTE",
+            "BUILD_COMBINATION",
+            "WORLD_RELATIONSHIP",
+            "OPTIONAL_MASTERY"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE",
+          "purpose": "A dynamic, evolving system that enables players to explore, experiment, and build upon their gameplay experience through a series of interconnected choices and outcomes. Players actively choose and refine their gameplay strategies, combining upgrades, skills, and builds to adapt to the evolving challenges of the game.",
+          "playerChoice": "Players actively choose and refine their gameplay strategies, combining upgrades, skills, and builds to adapt to the evolving challenges of the game."
+        },
+        {
+          "id": "c",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT_AND_MENU_TRANSITIONS",
+            "CONTEXT_LOSS",
+            "ERROR_RECOVERY",
+            "STATE_AND_COST_REGRESSION"
+          ],
+          "stateOutputs": [
+            "ACTION_SURVIVAL_ROGUELITE",
+            "NEW_ACTION",
+            "NEW_ROUTE",
+            "BUILD_COMBINATION",
+            "WORLD_RELATIONSHIP",
+            "OPTIONAL_MASTERY"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE",
+          "purpose": "A dynamic, evolving system that enables players to explore, experiment, and build upon their gameplay experience through a series of interconnected choices and outcomes. Players actively choose and refine their gameplay strategies, combining upgrades, skills, and builds to adapt to the evolving challenges of the game.",
+          "playerChoice": "Players actively choose and refine their gameplay strategies, combining upgrades, skills, and builds to adapt to the evolving challenges of the game."
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT_AND_MENU_TRANSITIONS",
+            "CONTEXT_LOSS",
+            "ERROR_RECOVERY",
+            "STATE_AND_COST_REGRESSION"
+          ],
+          "stateOutputs": [
+            "ACTION_SURVIVAL_ROGUELITE",
+            "NEW_ACTION",
+            "NEW_ROUTE",
+            "BUILD_COMBINATION",
+            "WORLD_RELATIONSHIP",
+            "OPTIONAL_MASTERY"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE",
+          "purpose": "A dynamic, evolving system that enables players to explore, experiment, and build upon their gameplay experience through a series of interconnected choices and outcomes. Players actively choose and refine their gameplay strategies, combining upgrades, skills, and builds to adapt to the evolving challenges of the game.",
+          "playerChoice": "Players actively choose and refine their gameplay strategies, combining upgrades, skills, and builds to adapt to the evolving challenges of the game."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 939550,
-      "lastMs": 107373,
+      "totalMs": 1046414,
+      "lastMs": 106864,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:16:43.444Z"
+      "updatedAt": "2026-10-08T08:18:30.310Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:01:03.860Z",
-  "updatedAt": "2026-10-08T08:16:43.444Z",
+  "updatedAt": "2026-10-08T08:18:30.313Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2336,7 +2581,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:16:43.444Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:18:30.313Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
