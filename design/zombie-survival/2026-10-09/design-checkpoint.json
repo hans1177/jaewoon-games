@@ -102,25 +102,225 @@
       "name": "SURVIVAL_ROGUELITE_DEEPENMENT",
       "purpose": "플레이어가 매일 선택을 내리며 30일간 좀비 아포칼립스 생존 게임에서 살아남아야 하는 역할을 수행합니다.",
       "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. Collect run rewards or experience and choose upgrades... Combine upgrades into a stronger build..."
+    },
+    "local_authoring_parts::59969b989d4d746889a963c91edb605d3e28cb444e495439311b220b445eaccd:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_04",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "INPUT",
+        "SELECT",
+        "OUTPUT",
+        "STATE"
+      ],
+      "stateOutputs": [
+        "RESULT",
+        "NEXT_CHOICE"
+      ],
+      "name": "SURVIVAL_ROGUELITE_DEEPENMENT",
+      "purpose": "플레이어가 매일 선택을 내리며 30일간 좀비 아포칼립스 생존 게임에서 살아남아야 하는 역할을 수행합니다.",
+      "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. Collect run rewards or experience and choose upgrades... Combine upgrades into a stronger build..."
+    },
+    "local_authoring_parts::631ac2ac64beea1f12544936df0235e654796872a70972c3d9399475d1f988d9:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "NEXT_CHOICE"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE",
+          "purpose": "플레이어가 매일 선택을 내리며 30일간 좀비 아포칼립스 생존 게임에서 살아남아야 하는 역할을 수행합니다.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades... Combine upgrades into a stronger build..."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "NEXT_CHOICE"
+          ],
+          "name": "SURVIVAL_ROGUELITE_BENCHMARK",
+          "purpose": "플레이어가 매일 선택을 내리며 30일간 좀비 아포칼립스 생존 게임에서 살아남아야 하는 역할을 수행합니다.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades... Combine upgrades into a stronger build..."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "NEXT_CHOICE"
+          ],
+          "name": "SURVIVAL_ROGUELITE_DEEPENMENT",
+          "purpose": "플레이어가 매일 선택을 내리며 30일간 좀비 아포칼립스 생존 게임에서 살아남아야 하는 역할을 수행합니다.",
+          "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. Collect run rewards or experience and choose upgrades... Combine upgrades into a stronger build..."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_03",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "NEXT_CHOICE"
+          ],
+          "name": "SURVIVAL_ROGUELITE_DEEPENMENT",
+          "purpose": "플레이어가 매일 선택을 내리며 30일간 좀비 아포칼립스 생존 게임에서 살아남아야 하는 역할을 수행합니다.",
+          "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. Collect run rewards or experience and choose upgrades... Combine upgrades into a stronger build..."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_04",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "NEXT_CHOICE"
+          ],
+          "name": "SURVIVAL_ROGUELITE_DEEPENMENT",
+          "purpose": "플레이어가 매일 선택을 내리며 30일간 좀비 아포칼립스 생존 게임에서 살아남아야 하는 역할을 수행합니다.",
+          "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. Collect run rewards or experience and choose upgrades... Combine upgrades into a stronger build..."
+        }
+      ]
+    },
+    "local_authoring_parts::ad84096cc82193509426cb3b1e1c13ed5776cb164c6e2d58cf095f70cc38751b:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "입력 -> 선택 -> 상태변화 -> 보상/위험/다음 선택",
+        "플레이어가 매일 선택을 내리며 30일간 좀비 아포칼립스 생존 게임에서 살아남아야 하는 역할을 수행합니다.",
+        "보조 요소 c는 MAIN/A/B의 관계를 상황별로 변주하며, @ 파고들기는 발견·숙련·재방문 깊이로 역할을 구분합니다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "NEXT_CHOICE"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE",
+          "purpose": "플레이어가 매일 선택을 내리며 30일간 좀비 아포칼립스 생존 게임에서 살아남아야 하는 역할을 수행합니다.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades... Combine upgrades into a stronger build..."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "NEXT_CHOICE"
+          ],
+          "name": "SURVIVAL_ROGUELITE_BENCHMARK",
+          "purpose": "플레이어가 매일 선택을 내리며 30일간 좀비 아포칼립스 생존 게임에서 살아남아야 하는 역할을 수행합니다.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades... Combine upgrades into a stronger build..."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "NEXT_CHOICE"
+          ],
+          "name": "SURVIVAL_ROGUELITE_DEEPENMENT",
+          "purpose": "플레이어가 매일 선택을 내리며 30일간 좀비 아포칼립스 생존 게임에서 살아남아야 하는 역할을 수행합니다.",
+          "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. Collect run rewards or experience and choose upgrades... Combine upgrades into a stronger build..."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_03",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "NEXT_CHOICE"
+          ],
+          "name": "SURVIVAL_ROGUELITE_DEEPENMENT",
+          "purpose": "플레이어가 매일 선택을 내리며 30일간 좀비 아포칼립스 생존 게임에서 살아남아야 하는 역할을 수행합니다.",
+          "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. Collect run rewards or experience and choose upgrades... Combine upgrades into a stronger build..."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_04",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "NEXT_CHOICE"
+          ],
+          "name": "SURVIVAL_ROGUELITE_DEEPENMENT",
+          "purpose": "플레이어가 매일 선택을 내리며 30일간 좀비 아포칼립스 생존 게임에서 살아남아야 하는 역할을 수행합니다.",
+          "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. Collect run rewards or experience and choose upgrades... Combine upgrades into a stronger build..."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 750822,
-      "lastMs": 101855,
+      "totalMs": 852050,
+      "lastMs": 101228,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:06:08.846Z"
+      "updatedAt": "2026-10-08T18:07:50.075Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:53:37.989Z",
-  "updatedAt": "2026-10-08T18:06:08.846Z",
+  "updatedAt": "2026-10-08T18:07:50.079Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2319,7 +2519,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:06:08.846Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:07:50.079Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
