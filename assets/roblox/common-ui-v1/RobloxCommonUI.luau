@@ -2096,29 +2096,174 @@ function RobloxCommonUI.CreateMapFullScreen(options)
   return root,{map=map,legend=legend}
 end
 
+-- 퀘스트/제작 공용창은 게임 책임 소스에서 받은 데이터만 그린다.
+-- 인벤토리/보상/제작 결과를 UI에서 생성하지 않으며, 미확인 퀘스트/제작법 기본 항목은 없다.
 function RobloxCommonUI.CreateQuestLog(options)
   options=options or {}
   local theme=cloneTheme(options.theme)
   local root,body=surfaceShell(options,"QUEST_LOG","QUEST_LOG")
-  local filters=RobloxCommonUI.CreateFilterBar({filters=options.filters or {"진행중","완료","실패","전체"},size=UDim2.new(1,0,0,48),theme=theme});filters.Parent=body
-  local list=Instance.new("ScrollingFrame");list.Name="QuestList";list.Position=UDim2.fromOffset(0,58);list.Size=UDim2.new(1,0,1,-58);list.BackgroundTransparency=1;list.BorderSizePixel=0;list.AutomaticCanvasSize=Enum.AutomaticSize.Y;list.CanvasSize=UDim2.new();list.Parent=body;commonList(list,false,8)
-  local cards={}
-  for i=1,(tonumber(options.previewCount) or 4) do local c=RobloxCommonUI.CreateQuestCard({name="Quest"..i,title="퀘스트 "..i,description="목표와 진행 상태",size=UDim2.new(1,-8,0,92),theme=theme});c.LayoutOrder=i;c.Parent=list;cards[i]=c end
+  local filterNames=options.filters or {"진행중","완료","실패","전체"}
+  local activeFilter=math.clamp(tonumber(options.selectedIndex)or #filterNames,1,math.max(1,#filterNames))
+  local filters,filterButtons=RobloxCommonUI.CreateFilterBar({
+    filters=filterNames,selectedIndex=activeFilter,size=UDim2.new(1,0,0,52),theme=theme
+  })
+  filters.Parent=body
+  local list=Instance.new("ScrollingFrame")
+  list.Name="QuestList";list.Position=UDim2.fromOffset(0,60);list.Size=UDim2.new(1,0,1,-60)
+  list.BackgroundTransparency=1;list.BorderSizePixel=0;list.ScrollBarThickness=4
+  list.ScrollingDirection=Enum.ScrollingDirection.Y;list.AutomaticCanvasSize=Enum.AutomaticSize.Y
+  list.CanvasSize=UDim2.fromOffset(0,0);list.Active=true;list.Parent=body
+  commonList(list,false,8)
+  local empty=commonText(list,"EmptyQuests","현재 게임 상태에서 확인된 퀘스트가 없어.",
+    UDim2.fromOffset(8,4),UDim2.new(1,-16,0,48),theme.MutedText,13,false)
+  empty.LayoutOrder=1
+  local cards,controls,rows,shown={},{},{},{}
+  local function questState(row)
+    local status=string.upper(tostring(row.status or ""))
+    if status=="ACTIVE"or status=="IN_PROGRESS"or status=="진행중"or row.active==true then return "진행중"end
+    if status=="COMPLETE"or status=="COMPLETED"or status=="DONE"or status=="완료"or row.completed==true then return "완료"end
+    if status=="FAILED"or status=="실패"then return "실패"end
+    return "미확인"
+  end
+  local function sync(items)
+    rows=type(items)=="table"and items or {}
+    shown={}
+    local chosen=filterNames[activeFilter]
+    for _,row in ipairs(rows)do
+      if chosen=="전체"or chosen==nil or chosen==questState(row)then shown[#shown+1]=row end
+    end
+    for i,row in ipairs(shown)do
+      if not cards[i]then
+        local card,title,detail,reward=RobloxCommonUI.CreateQuestCard({
+          name="Quest"..i,title="",detail="",rewardText="",size=UDim2.new(1,-8,0,100),theme=theme
+        })
+        local track=RobloxCommonUI.CreatePrimaryButton({
+          name="Track",text="추적",size=UDim2.fromOffset(88,48),minWidth=88,minHeight=48,theme=theme
+        })
+        track.Position=UDim2.new(1,-98,0,8);track.Parent=card
+        local index=i
+        track.Activated:Connect(function()
+          local current=shown[index]
+          if current and current.id~=nil and current.canTrack==true and type(options.onTrack)=="function"then
+            options.onTrack(current.id,current)
+          end
+        end)
+        card.Parent=list;cards[i]=card;controls[i]={title=title,detail=detail,reward=reward,track=track}
+      end
+      local card=cards[i]
+      local view=controls[i]
+      card.Name="Quest"..i;card.LayoutOrder=i+1;card.Visible=true
+      card:SetAttribute("BoundQuestId",tostring(row.id or ""))
+      card:SetAttribute("BoundFromGameState",true)
+      card:SetAttribute("QuestStatus",questState(row))
+      view.title.Text=tostring(row.title or row.name or "")
+      view.detail.Text=tostring(row.progressText or row.detail or row.description or "")
+      view.reward.Text=tostring(row.rewardText or "")
+      local canTrack=row.id~=nil and row.canTrack==true and type(options.onTrack)=="function"
+      view.track.Visible=canTrack
+      view.track.Active=canTrack
+      view.track.AutoButtonColor=canTrack
+    end
+    for i=#shown+1,#cards do cards[i].Visible=false end
+    empty.Visible=#shown==0
+    root:SetAttribute("BoundQuestCount",#shown)
+    root:SetAttribute("SelectedQuestFilter",tostring(chosen or "전체"))
+  end
+  for index,button in ipairs(filterButtons)do
+    local id=index
+    button.Activated:Connect(function()activeFilter=id;sync(rows)end)
+  end
+  sync(options.quests or {})
+  root:SetAttribute("TouchScrollable",true)
   root:SetAttribute("OwnsQuestAuthority",false)
-  return root,{filters=filters,cards=cards}
+  root:SetAttribute("OwnsRewardAuthority",false)
+  root:SetAttribute("OwnsSaveAuthority",false)
+  root:SetAttribute("OwnsRemoteAuthority",false)
+  return root,{filters=filters,cards=cards,list=list,Sync=sync}
 end
 
 function RobloxCommonUI.CreateCraftingFullScreen(options)
   options=options or {}
   local theme=cloneTheme(options.theme)
   local root,body=surfaceShell(options,"CRAFTING_FULL_SCREEN","CRAFTING_FULL_SCREEN")
-  local search=RobloxCommonUI.CreateSearchField({size=UDim2.new(0.45,0,0,48),theme=theme,placeholder="제작법 검색"});search.Parent=body
-  local filters=RobloxCommonUI.CreateFilterBar({filters=options.filters or {"전체","제작 가능","무기","방어구","도구","기타"},size=UDim2.new(1,0,0,48),theme=theme});filters.Position=UDim2.fromOffset(0,58);filters.Parent=body
-  local list=Instance.new("ScrollingFrame");list.Name="Recipes";list.Position=UDim2.fromOffset(0,116);list.Size=UDim2.new(1,0,1,-116);list.BackgroundTransparency=1;list.BorderSizePixel=0;list.AutomaticCanvasSize=Enum.AutomaticSize.Y;list.CanvasSize=UDim2.new();list.Parent=body;commonList(list,false,8)
-  local cards={}
-  for i=1,(tonumber(options.previewCount) or 4) do local c=RobloxCommonUI.CreateCraftingRecipeCard({name="Recipe"..i,title="제작 항목 "..i,size=UDim2.new(1,-8,0,96),theme=theme});c.LayoutOrder=i;c.Parent=list;cards[i]=c end
+  local search=RobloxCommonUI.CreateSearchField({
+    size=UDim2.new(1,0,0,48),theme=theme,placeholder="제작법 검색"
+  })
+  search.Parent=body
+  local filterNames=options.filters or {"전체","제작 가능","무기","방어구","도구","기타"}
+  local activeFilter=1
+  local filters,filterButtons=RobloxCommonUI.CreateFilterBar({
+    filters=filterNames,size=UDim2.new(1,0,0,52),theme=theme
+  })
+  filters.Position=UDim2.fromOffset(0,58);filters.Parent=body
+  local list=Instance.new("ScrollingFrame")
+  list.Name="Recipes";list.Position=UDim2.fromOffset(0,118);list.Size=UDim2.new(1,0,1,-118)
+  list.BackgroundTransparency=1;list.BorderSizePixel=0;list.ScrollBarThickness=4
+  list.ScrollingDirection=Enum.ScrollingDirection.Y;list.AutomaticCanvasSize=Enum.AutomaticSize.Y
+  list.CanvasSize=UDim2.fromOffset(0,0);list.Active=true;list.Parent=body
+  commonList(list,false,8)
+  local empty=commonText(list,"EmptyRecipes","현재 게임 상태에서 확인된 제작법이 없어.",
+    UDim2.fromOffset(8,4),UDim2.new(1,-16,0,48),theme.MutedText,13,false)
+  empty.LayoutOrder=1
+  local cards,controls,rows,shown={},{},{},{}
+  local function sync(items)
+    rows=type(items)=="table"and items or {}
+    shown={}
+    local query=string.lower(tostring(search.Text or ""))
+    local selected=filterNames[activeFilter]
+    for _,row in ipairs(rows)do
+      local name=tostring(row.name or row.itemName or "")
+      local matchesQuery=query==""or string.find(string.lower(name),query,1,true)
+      local matchesFilter=selected=="전체"or selected==nil
+        or(selected=="제작 가능"and row.craftable==true)
+        or(selected==tostring(row.category or ""))
+      if matchesQuery and matchesFilter then shown[#shown+1]=row end
+    end
+    for i,row in ipairs(shown)do
+      if not cards[i]then
+        local card,icon,action=RobloxCommonUI.CreateCraftingRecipeCard({
+          name="Recipe"..i,itemName="",ingredientsText="",size=UDim2.new(1,-8,0,108),theme=theme
+        })
+        card.Parent=list;cards[i]=card;controls[i]={icon=icon,action=action}
+        local index=i
+        action.Activated:Connect(function()
+          local current=shown[index]
+          if current and current.id~=nil and current.craftable==true and type(options.onCraft)=="function"then
+            options.onCraft(current.id,current)
+          end
+        end)
+      end
+      local card=cards[i]
+      local view=controls[i]
+      card.Name="Recipe"..i;card.LayoutOrder=i+1;card.Visible=true
+      card:SetAttribute("BoundRecipeId",tostring(row.id or ""))
+      card:SetAttribute("BoundFromGameState",true)
+      local name=card:FindFirstChild("Name")
+      local ingredients=card:FindFirstChild("Ingredients")
+      if name then name.Text=tostring(row.name or row.itemName or "")end
+      if ingredients then ingredients.Text=tostring(row.ingredientsText or row.requirements or "")end
+      view.icon.Image=tostring(row.image or "")
+      local canCraft=row.id~=nil and row.craftable==true and type(options.onCraft)=="function"
+      view.action.Active=canCraft;view.action.AutoButtonColor=canCraft
+      view.action.Text=canCraft and "제작"or"제작 불가"
+    end
+    for i=#shown+1,#cards do cards[i].Visible=false end
+    empty.Visible=#shown==0
+    root:SetAttribute("BoundRecipeCount",#shown)
+    root:SetAttribute("SelectedRecipeFilter",tostring(selected or "전체"))
+  end
+  for index,button in ipairs(filterButtons)do
+    local id=index
+    button.Activated:Connect(function()activeFilter=id;sync(rows)end)
+  end
+  search:GetPropertyChangedSignal("Text"):Connect(function()sync(rows)end)
+  sync(options.recipes or {})
+  root:SetAttribute("TouchScrollable",true)
   root:SetAttribute("OwnsCraftAuthority",false)
-  return root,{search=search,filters=filters,cards=cards}
+  root:SetAttribute("OwnsInventoryAuthority",false)
+  root:SetAttribute("OwnsSaveAuthority",false)
+  root:SetAttribute("OwnsRemoteAuthority",false)
+  return root,{search=search,filters=filters,cards=cards,list=list,Sync=sync}
 end
 
 function RobloxCommonUI.CreateShopFullScreen(options)
