@@ -412,25 +412,38 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::2f9a30b5f3935203f15c86ec4740638269ffebca80575b284915630c1e644499:signatureSystems:0": {
+      "id": "CORE_4_4",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "OPENING: 플레이어가 게임을 시작하여 'Fight through an escalating horde in a short real-time "
+      ],
+      "stateOutputs": [
+        "OPENING: 플레이어가 게임을 시작하여 'Fight through an escalating horde in a short real-time "
+      ],
+      "name": "CORE_4_4",
+      "purpose": "플레이어가 반복적으로 수행하는 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 기반으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 이는 시그니처 세계 규칙과 핵심 루프를 통해 플레이어의 선택과 세계 상태의 변화를 연결하는 게임 구조이다.",
+      "playerChoice": "플레이어가 반복적으로 수행하는 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 기반으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 이는 시그니처 세계 규칙과 핵심 루프를 통해 플레이어의 선택과 세계 상태의 변화를 연결하는 게임 구조이다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 493896,
-      "lastMs": 33165,
+      "totalMs": 544895,
+      "lastMs": 50999,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:50:39.193Z"
+      "updatedAt": "2026-10-08T12:51:30.200Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:42:25.217Z",
-  "updatedAt": "2026-10-08T12:50:39.200Z",
+  "updatedAt": "2026-10-08T12:51:30.200Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2750,10 +2763,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:50:39.196Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:51:30.200Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
