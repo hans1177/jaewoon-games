@@ -70,25 +70,43 @@
       "name": "World Rule System",
       "purpose": "Establishes the fundamental rules and interactions that govern gameplay progression, decision-making, and system integration.",
       "playerChoice": "Players make strategic choices to navigate levels, solve puzzles, and achieve goals, with each action influencing the state of the game and triggering feedback loops."
+    },
+    "local_authoring_parts::75b5d58c2af28efbaee51ec092fae2b12a94362bfacc61685f1570a91ef9b739:signatureSystems:2": {
+      "id": "STAR_FRONTIER_SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "LEVEL_GOAL",
+        "LIMITED_MOVES",
+        "OBSTACLES",
+        "VISIBLE_PUZZLE_CONSTRAINT"
+      ],
+      "stateOutputs": [
+        "MATCHES_FOUND",
+        "COMBO_CREDITS",
+        "BOARD_FEEDBACK"
+      ],
+      "name": "World Rule System",
+      "purpose": "Establishes the fundamental rules and interactions that govern gameplay progression.",
+      "playerChoice": "Player makes strategic moves to achieve goals, create combos, and utilize feedback to solve puzzles and unlock new stages."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 568914,
-      "lastMs": 95802,
+      "totalMs": 664167,
+      "lastMs": 95253,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:38:23.000Z"
+      "updatedAt": "2026-10-08T21:39:58.255Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:28:53.783Z",
-  "updatedAt": "2026-10-08T21:38:23.000Z",
+  "updatedAt": "2026-10-08T21:39:58.255Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2125,7 +2143,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:38:23.000Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:39:58.255Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
