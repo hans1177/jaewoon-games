@@ -354,6 +354,12 @@ export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
     }
   }
   if(!boundedPrimitiveCount)issues.push('GLB_VISIBLE_GEOMETRY_REQUIRED');
+  // 메인: 면적이 없는 삼각형 또는 연산 오버플로는 유효한 렌더 표면이 아니다.
+  // 기존 비삼각형 프리미티브는 검사 기록만 남기고 충돌·질량 권위로 해석하지 않는다.
+  if(visibleTriangleCount>0&&surface.measuredTriangles===0)issues.push('GLB_TRIANGLE_SURFACE_DEGENERATE');
+  if(!Number.isFinite(surface.area)||surface.centroidSum.some(value=>!Number.isFinite(value))
+    ||surface.squareSum.some(value=>!Number.isFinite(value))
+    ||sceneBounds.max.some((value,axis)=>!Number.isFinite(value-sceneBounds.min[axis])))issues.push('GLB_SURFACE_STATS_NONFINITE');
   const spatial=boundedPrimitiveCount&&[...sceneBounds.min,...sceneBounds.max].every(Number.isFinite)?{
     coordinateSystem:'GLTF_RIGHT_HANDED_Y_UP_METERS',scope:'STATIC_NODE_TRANSFORM_BOUNDS_NOT_ANIMATION_OR_SKIN_DEFORMATION',
     bounds:sceneBounds,size:sceneBounds.max.map((v,i)=>v-sceneBounds.min[i]),
