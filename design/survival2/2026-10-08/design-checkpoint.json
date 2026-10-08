@@ -64,25 +64,55 @@
       "name": "KARMA_RETURN",
       "purpose": "Action's result delays to affect behavior, relationships, and future rules.",
       "playerChoice": "Return or push deeper based on current supplies and group readiness."
+    },
+    "local_authoring_parts::c997b41a191fe7bf2c01d57a0804c1be3422748cd479a94082d714ef91496ee2:signatureSystems:2": {
+      "id": "MANIFEST_CROSS_SYSTEM_RULE",
+      "grammarRole": "B",
+      "stateInputs": [
+        "current supplies",
+        "group readiness"
+      ],
+      "stateOutputs": [
+        "return",
+        "push deeper"
+      ],
+      "name": "MANIFEST_CROSS_SYSTEM_RULE",
+      "purpose": "Action's result delays to affect behavior, relationships, and future rules.",
+      "playerChoice": "return or push deeper based on current supplies and group readiness"
+    },
+    "local_authoring_parts::c997b41a191fe7bf2c01d57a0804c1be3422748cd479a94082d714ef91496ee2:signatureSystems:3": {
+      "id": "MANIFEST_CROSS_SYSTEM_RULE",
+      "grammarRole": "c",
+      "stateInputs": [
+        "current supplies",
+        "group readiness"
+      ],
+      "stateOutputs": [
+        "return",
+        "push deeper"
+      ],
+      "name": "MANIFEST_CROSS_SYSTEM_RULE",
+      "purpose": "Action's result delays to affect behavior, relationships, and future rules.",
+      "playerChoice": "return or push deeper based on current supplies and group readiness"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 454838,
-      "lastMs": 27148,
+      "totalMs": 581860,
+      "lastMs": 96399,
       "lastError": null,
-      "updatedAt": "2026-10-08T07:51:21.337Z"
+      "updatedAt": "2026-10-08T07:53:28.363Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:43:46.463Z",
-  "updatedAt": "2026-10-08T07:51:21.337Z",
+  "updatedAt": "2026-10-08T07:53:28.363Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2310,7 +2340,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T07:51:21.337Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T07:53:28.363Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
