@@ -890,25 +890,57 @@
       "toSystem": "wild-survival-weather",
       "trigger": "weatherStorm",
       "stateChange": "weather affects player decisions and resource availability"
+    },
+    "local_authoring_parts::f33217394cad945f187f4daeeb7e4f421f16c7df241749c6b54e4fc1bf611bf7:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "wild-survival-core",
+      "toId": "wild-survival-weather",
+      "stateKeys": [
+        "월드 상태",
+        "대상",
+        "자원",
+        "위험",
+        "진행 상태"
+      ],
+      "fromSystem": "wild-survival-core-to-wild-survival-weather"
+    },
+    "local_authoring_parts::f33217394cad945f187f4daeeb7e4f421f16c7df241749c6b54e4fc1bf611bf7:toSystem,trigger,stateChange": {
+      "toSystem": "wild-survival-weather",
+      "trigger": "weatherStorm",
+      "stateChange": "weather affects player decisions and resource availability"
+    },
+    "local_authoring_parts::feda502764787b7f0bc781177d196f9e7691a29b7676a1c3ac03b170d97a4073:systemInterconnections:4": {
+      "fromId": "wild-survival-core",
+      "toId": "wild-survival-weather",
+      "stateKeys": [
+        "월드 상태",
+        "대상",
+        "자원",
+        "위험",
+        "진행 상태"
+      ],
+      "fromSystem": "wild-survival-core-to-wild-survival-weather",
+      "toSystem": "wild-survival-weather",
+      "trigger": "weatherStorm",
+      "stateChange": "weather affects player decisions and resource availability"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 29,
-      "successes": 29,
+      "calls": 31,
+      "successes": 31,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1161460,
-      "lastMs": 5921,
+      "totalMs": 1179767,
+      "lastMs": 5366,
       "lastError": null,
-      "updatedAt": "2026-10-08T09:47:41.760Z"
+      "updatedAt": "2026-10-08T09:48:00.072Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:16:20.952Z",
-  "updatedAt": "2026-10-08T09:47:41.762Z",
+  "updatedAt": "2026-10-08T09:48:00.078Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3010,9 +3042,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "wild-survival-core→wild-survival-resources의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "wild-survival-core→wild-survival-weather의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: wild-survival-core→wild-survival-resources의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: wild-survival-core→wild-survival-weather의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3073,7 +3105,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 2
+    "designer_draft_slices::systems-progression": 3
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3123,10 +3155,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T09:47:41.762Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T09:48:00.075Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
