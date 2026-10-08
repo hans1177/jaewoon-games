@@ -8,25 +8,30 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 19,
-  "lastSuccessfulModelCallAt": "2026-10-08T13:13:14.874Z",
+  "cachedTaskCount": 21,
+  "lastSuccessfulModelCallAt": "2026-10-08T13:14:58.340Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
-  "designerSeed": null,
+  "designerSeed": {
+    "file": "design/star-frontier/2026-10-08/design-seed.json",
+    "contentDigest": "3636214c9ab29514b3db1bfef07c7a3a04e2c646f20b9f138fe012a3fa3fdbaf",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 14,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1197071,
-      "lastMs": 94893,
+      "totalMs": 1300533,
+      "lastMs": 103462,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:13:14.874Z"
+      "updatedAt": "2026-10-08T13:14:58.338Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T13:13:14.875Z"
+  "updatedAt": "2026-10-08T13:14:58.364Z"
 }
