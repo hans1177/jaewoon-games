@@ -248,25 +248,105 @@
           "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. 또는 Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
         }
       ]
+    },
+    "local_authoring_parts::993b8b8f10e5862c1af343353684a213024509eae9bd97b7636bc6d43cb04cde:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::6abfeea4e274889d3e4f636d7a00d7ec38230daf74362204f561b4d348f45466:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "INPUT: 플레이어가 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 수행하며 즉시 상태 변화를 유발합니다.",
+        "SELECT: 선택 결과는 다음 월드 상태에 영향을 미칩니다. 이 선택은 주로 두 가지 방식 중 하나로 이루어집니다 - 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.' 또는 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'",
+        "OUTPUT: 위험 및 보상을 기반으로 한 다음 선택의 가능성과 새로운 상태 변화를 생성합니다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT: 플레이어가 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 위험 및 보상을 기반으로 한 다음 선택의 가능성과 새로운 상태 변화를 생성합니다."
+          ],
+          "name": "MATERIAL_CAUSAL_GRAMMAR",
+          "purpose": "플레이어가 주체로 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 수행하며 즉시 상태 변화를 유발합니다.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. 또는 Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        },
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT: 플레이어가 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 위험 및 보상을 기반으로 한 다음 선택의 가능성과 새로운 상태 변화를 생성합니다."
+          ],
+          "name": "MATERIAL_CAUSAL_GRAMMAR",
+          "purpose": "플레이어가 주체로 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 수행하며 즉시 상태 변화를 유발합니다.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. 또는 Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        },
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR_B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT: 플레이어가 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 위험 및 보상을 기반으로 한 다음 선택의 가능성과 새로운 상태 변화를 생성합니다."
+          ],
+          "name": "MATERIAL_CAUSAL_GRAMMAR_B",
+          "purpose": "플레이어가 주체로 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 수행하며 즉시 상태 변화를 유발합니다.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. 또는 Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        },
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR_C",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT: 플레이어가 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 위험 및 보상을 기반으로 한 다음 선택의 가능성과 새로운 상태 변화를 생성합니다."
+          ],
+          "name": "MATERIAL_CAUSAL_GRAMMAR_C",
+          "purpose": "플레이어가 주체로 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 수행하며 즉시 상태 변화를 유발합니다.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. 또는 Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        },
+        {
+          "id": "MATERIAL_DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT: 플레이어가 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short",
+            "INPUT: 플레이어가 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 위험 및 보상을 기반으로 한 다음 선택의 가능성과 새로운 상태 변화를 생성합니다.",
+            "OUTPUT: 위험 및 보상을 기반으로 한 다음 선택의 가능성과 새로운 상태 변화를 생성합니다."
+          ],
+          "name": "MATERIAL_DELVE",
+          "purpose": "플레이어가 주체로 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 수행하며 즉시 상태 변화를 유발합니다.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. 또는 Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 767245,
-      "lastMs": 118358,
+      "totalMs": 861498,
+      "lastMs": 94253,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:52:16.014Z"
+      "updatedAt": "2026-10-08T18:53:50.270Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:39:28.729Z",
-  "updatedAt": "2026-10-08T18:52:16.016Z",
+  "updatedAt": "2026-10-08T18:53:50.279Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2461,12 +2541,244 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:52:16.016Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_MAIN_A_B_c_DELVE_REQUIRED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "counts": {
+            "MAIN": 1,
+            "A": 1,
+            "B": 1,
+            "c": 1,
+            "DELVE": 1
+          },
+          "systemCount": 5,
+          "statesReady": false
+        },
+        "requiredAction": "메인 중심 행동, A/B 서로 다른 두 축, c 보조 변주, @ 발견·숙련을 기존 규칙에 맞춰 최소 5개 고유 시스템과 실제 상태 입력·출력으로 작성한다. 기존 밸런스·저장·진행은 유지한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR.stateInputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR.stateOutputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR.stateOutputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR.stateInputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR.stateOutputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR.stateOutputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR_B.stateInputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR_B.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR_B.stateOutputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR_B.stateOutputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR_C.stateInputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR_C.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR_C.stateOutputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR_C.stateOutputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.MATERIAL_DELVE.stateInputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.MATERIAL_DELVE.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.MATERIAL_DELVE.stateOutputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.MATERIAL_DELVE.stateOutputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "Harbor Days은 플레이어가 주체로 '진입'하는 단일 게임이며, 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'입니다. 이 행동은 즉시 상태 변화를 유발하며, 선택 결과는 다음 월드 상태에 영향을 미칩니다. 게임은 ACTION_SURVIVAL_ROGUELITE 장르의 핵심 루프인 반복 가능한 선택-위험-보상 시스템을 기반으로 설계됩니다. MAIN/A/B/c/@와 관련된 시스템은 모두 실제 게임 상태 변화로 구현되어 있습니다.",
+      "playerFantasy": "Harbor Days은 플레이어가 주체로 '진입'하는 단일 게임이며, 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'입니다. 이 행동은 즉시 상태 변화를 유발하며, 선택 결과는 다음 월드 상태에 영향을 미칩니다. 게임은 ACTION_SURVIVAL_ROGUELITE 장르의 핵심 루프인 반복 가능한 선택-위험-보상 시스템을 기반으로 설계됩니다. MAIN/A/B/c/@와 관련된 시스템은 모두 실제 게임 상태 변화로 구현되어 있습니다.",
+      "coreFun": "Harbor Days은 플레이어가 주체로 '진입'하는 단일 게임이며, 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'입니다. 이 행동은 즉시 상태 변화를 유발하며, 선택 결과는 다음 월드 상태에 영향을 미칩니다. 게임은 ACTION_SURVIVAL_ROGUELITE 장르의 핵심 루프인 반복 가능한 선택-위험-보상 시스템을 기반으로 설계됩니다. MAIN/A/B/c/@와 관련된 시스템은 모두 실제 게임 상태 변화로 구현되어 있습니다.",
+      "coreLoop": [
+        "INPUT: 플레이어가 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 수행하며 즉시 상태 변화를 유발합니다.",
+        "SELECT: 선택 결과는 다음 월드 상태에 영향을 미칩니다. 이 선택은 주로 두 가지 방식 중 하나로 이루어집니다 - 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.' 또는 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'",
+        "OUTPUT: 위험 및 보상을 기반으로 한 다음 선택의 가능성과 새로운 상태 변화를 생성합니다."
+      ],
+      "multiplayerMode": "HYBRID"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T18:53:50.272Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_MAIN_A_B_c_DELVE_REQUIRED,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_RULE_STATE_MISSING",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
