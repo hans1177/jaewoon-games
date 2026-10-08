@@ -797,25 +797,41 @@
         "DefensiveStrategy"
       ],
       "fromSystem": "EnemyDefenseSynergy,toSystem\":\"EnemyDefenseSynergy\",\"trigger\":\"enemyWaveType\",\"stateChange\":\"defensiveStrategy\"}</think> رمزية: {"
+    },
+    "local_authoring_parts::61110c41800e6cd36867eab20facfe1439ca52a36ba28c6d2b92dd456c3a937c:toSystem,trigger,stateChange": {
+      "toSystem": "EnemyDefenseSynergy",
+      "trigger": "enemyWaveType",
+      "stateChange": "defensiveStrategy"
+    },
+    "local_authoring_parts::1115cc5b2fdeedcda9816180d6f21e38d3348200f29c3aa1b42baca017bfe53e:systemInterconnections:4": {
+      "fromId": "enemyWaveType",
+      "toId": "defensiveStrategy",
+      "stateKeys": [
+        "DefensiveStrategy"
+      ],
+      "fromSystem": "EnemyDefenseSynergy,toSystem\":\"EnemyDefenseSynergy\",\"trigger\":\"enemyWaveType\",\"stateChange\":\"defensiveStrategy\"}</think> رمزية: {",
+      "toSystem": "EnemyDefenseSynergy",
+      "trigger": "enemyWaveType",
+      "stateChange": "defensiveStrategy"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 30,
-      "successes": 30,
+      "calls": 31,
+      "successes": 31,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1814670,
-      "lastMs": 93477,
+      "totalMs": 1904110,
+      "lastMs": 89440,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:24:22.041Z"
+      "updatedAt": "2026-10-08T16:25:51.483Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:10:25.792Z",
-  "updatedAt": "2026-10-08T16:24:22.041Z",
+  "updatedAt": "2026-10-08T16:25:51.490Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3117,7 +3133,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 2
+    "designer_draft_slices::systems-progression": 3
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3168,10 +3184,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:24:22.041Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T16:25:51.486Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
