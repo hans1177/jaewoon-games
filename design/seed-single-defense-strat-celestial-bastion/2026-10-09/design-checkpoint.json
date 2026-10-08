@@ -334,25 +334,38 @@
       "name": "STRATEGIC_DETERMINATION_SYSTEM",
       "purpose": "Player makes strategic decisions that directly impact the world state.",
       "playerChoice": "TOWER_PLACEMENT_STRATEGY_IMPLEMENTATION"
+    },
+    "local_authoring_parts::c42e31b266579b6af7b286050911194c23d2e5cb8aa2b8a01181cf7969096c51:signatureSystems:1": {
+      "id": "SIGNATURE_SYSTEM_02",
+      "grammarRole": "A",
+      "stateInputs": [
+        "ENEMY_WAVE_READING"
+      ],
+      "stateOutputs": [
+        "TOWER_PLACEMENT_STRATEGY"
+      ],
+      "name": "ENEMY_WAVE_ANALYSIS_SYSTEM",
+      "purpose": "Player analyzes the enemy wave and determines the optimal placement strategy for towers or defenders.",
+      "playerChoice": "TOWER_PLACEMENT_STRATEGY_IMPLEMENTATION"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 926632,
-      "lastMs": 104077,
+      "totalMs": 996117,
+      "lastMs": 69485,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:08:06.045Z"
+      "updatedAt": "2026-10-08T19:09:15.532Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:52:39.359Z",
-  "updatedAt": "2026-10-08T19:08:06.045Z",
+  "updatedAt": "2026-10-08T19:09:15.532Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2607,7 +2620,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T19:08:06.045Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:09:15.532Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
