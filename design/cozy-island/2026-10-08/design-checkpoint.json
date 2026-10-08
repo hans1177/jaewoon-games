@@ -105,25 +105,228 @@
       "name": "자원 거점 점령 시스템",
       "purpose": "5개 서로 다른 자원 거점을 순차적으로 점령하며 성장감을 확장하는 게임 규칙",
       "playerChoice": "자원 거점 선택 및 협동 지원 요청"
+    },
+    "local_authoring_parts::de41ad84b3bbcc7ebf4a785e49bd9061079fa8c56b4b87187175dc3859cd9502:signatureSystems:4": {
+      "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "자원 거점",
+        "협동 지원",
+        "점령 보상"
+      ],
+      "stateOutputs": [
+        "자원 거점",
+        "협동 지원",
+        "점령 보상"
+      ],
+      "name": "자원 거점 점령 시스템",
+      "purpose": "5개 서로 다른 자원 거점을 순차적으로 점령하며 성장감을 확장하는 게임 규칙",
+      "playerChoice": "자원 거점 선택 및 협동 지원 요청"
+    },
+    "local_authoring_parts::26d2e3a269a116d0350223ab7628096dab370047b280b2050b992481e7a766ad:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "나무·식량",
+            "주민",
+            "병력"
+          ],
+          "stateOutputs": [
+            "자원 거점",
+            "협동 지원",
+            "점령 보상"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "5개 서로 다른 자원 거점을 순차적으로 점령하며 성장감을 확장하는 게임 규칙",
+          "playerChoice": "자원 거점 선택 및 협동 지원 요청"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "A",
+          "stateInputs": [
+            "나무·식량",
+            "주민",
+            "병력"
+          ],
+          "stateOutputs": [
+            "자원 거점",
+            "협동 지원",
+            "점령 보상"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "5개 서로 다른 자원 거점을 순차적으로 점령하며 성장감을 확장하는 게임 규칙",
+          "playerChoice": "자원 거점 선택 및 협동 지원 요청"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "B",
+          "stateInputs": [
+            "나무·식량",
+            "주민",
+            "병력"
+          ],
+          "stateOutputs": [
+            "자원 거점",
+            "협동 지원",
+            "점령 보상"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "5개 서로 다른 자원 거점을 순차적으로 점령하며 성장감을 확장하는 게임 규칙",
+          "playerChoice": "자원 거점 선택 및 협동 지원 요청"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "c",
+          "stateInputs": [
+            "자원 거점",
+            "협동 지원",
+            "점령 보상"
+          ],
+          "stateOutputs": [
+            "자원 거점",
+            "협동 지원",
+            "점령 보상"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "5개 서로 다른 자원 거점을 순차적으로 점령하며 성장감을 확장하는 게임 규칙",
+          "playerChoice": "자원 거점 선택 및 협동 지원 요청"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "자원 거점",
+            "협동 지원",
+            "점령 보상"
+          ],
+          "stateOutputs": [
+            "자원 거점",
+            "협동 지원",
+            "점령 보상"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "5개 서로 다른 자원 거점을 순차적으로 점령하며 성장감을 확장하는 게임 규칙",
+          "playerChoice": "자원 거점 선택 및 협동 지원 요청"
+        }
+      ]
+    },
+    "local_authoring_parts::70cc70e1eb7631a528a68ec0a24419c2948f10f334cce641b902555775af6972:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "나무·식량 직접 채집",
+        "주민 고용과 벌목/농업 자동화",
+        "병영 강화와 병사 모집",
+        "다음 자원 거점 선택",
+        "보이는 자동전투와 점령 보상",
+        "협동 지원으로 강한 거점 공략"
+      ],
+      "signatureSystems": [
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "나무·식량",
+            "주민",
+            "병력"
+          ],
+          "stateOutputs": [
+            "자원 거점",
+            "협동 지원",
+            "점령 보상"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "5개 서로 다른 자원 거점을 순차적으로 점령하며 성장감을 확장하는 게임 규칙",
+          "playerChoice": "자원 거점 선택 및 협동 지원 요청"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "A",
+          "stateInputs": [
+            "나무·식량",
+            "주민",
+            "병력"
+          ],
+          "stateOutputs": [
+            "자원 거점",
+            "협동 지원",
+            "점령 보상"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "5개 서로 다른 자원 거점을 순차적으로 점령하며 성장감을 확장하는 게임 규칙",
+          "playerChoice": "자원 거점 선택 및 협동 지원 요청"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "B",
+          "stateInputs": [
+            "나무·식량",
+            "주민",
+            "병력"
+          ],
+          "stateOutputs": [
+            "자원 거점",
+            "협동 지원",
+            "점령 보상"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "5개 서로 다른 자원 거점을 순차적으로 점령하며 성장감을 확장하는 게임 규칙",
+          "playerChoice": "자원 거점 선택 및 협동 지원 요청"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "c",
+          "stateInputs": [
+            "자원 거점",
+            "협동 지원",
+            "점령 보상"
+          ],
+          "stateOutputs": [
+            "자원 거점",
+            "협동 지원",
+            "점령 보상"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "5개 서로 다른 자원 거점을 순차적으로 점령하며 성장감을 확장하는 게임 규칙",
+          "playerChoice": "자원 거점 선택 및 협동 지원 요청"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "자원 거점",
+            "협동 지원",
+            "점령 보상"
+          ],
+          "stateOutputs": [
+            "자원 거점",
+            "협동 지원",
+            "점령 보상"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "5개 서로 다른 자원 거점을 순차적으로 점령하며 성장감을 확장하는 게임 규칙",
+          "playerChoice": "자원 거점 선택 및 협동 지원 요청"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 604680,
-      "lastMs": 33470,
+      "totalMs": 645676,
+      "lastMs": 40996,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:23:10.393Z"
+      "updatedAt": "2026-10-08T10:23:51.390Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:13:05.670Z",
-  "updatedAt": "2026-10-08T10:23:10.393Z",
+  "updatedAt": "2026-10-08T10:23:51.392Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -678,7 +881,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T10:23:10.393Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:23:51.392Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
