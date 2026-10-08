@@ -73,25 +73,194 @@
       "name": "DEFENSE_ADAPTATION_SYSTEM",
       "purpose": "The player's decision to adapt the defense to enemy types and wave compositions, protect the objective, and clear the stage or boss directly alters the world state, increasing pressure and resource availability.",
       "playerChoice": "Adapt the defense to enemy types and wave compositions, protect the objective, and clear the stage or boss to unlock harder defense choices."
+    },
+    "local_authoring_parts::47a5c8b640dc6471db229995f4906ba7a25536e325ca450ea0cfadbca341f1b5:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_03",
+      "grammarRole": "c",
+      "stateInputs": [
+        "ENEMY_WAVE_READING"
+      ],
+      "stateOutputs": [
+        "TOWER_PLACEMENT_STRATEGY"
+      ],
+      "name": "DEFENSE_ADAPTATION_REACTION",
+      "purpose": "The player's decision to adapt the defense to enemy types and wave compositions, protect the objective, and clear the stage or boss directly alters the world state, increasing pressure and resource availability.",
+      "playerChoice": "Adapt the defense to enemy types and wave compositions, protect the objective, and clear the stage or boss to unlock harder defense choices."
+    },
+    "local_authoring_parts::47a5c8b640dc6471db229995f4906ba7a25536e325ca450ea0cfadbca341f1b5:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_04",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "ENEMY_WAVE_READING"
+      ],
+      "stateOutputs": [
+        "TOWER_PLACEMENT_STRATEGY"
+      ],
+      "name": "DEFENSE_ADAPTATION_REACTION",
+      "purpose": "The player's decision to adapt the defense to enemy types and wave compositions, protect the objective, and clear the stage or boss directly alters the world state, increasing pressure and resource availability.",
+      "playerChoice": "Adapt the defense to enemy types and wave compositions, protect the objective, and clear the stage or boss to unlock harder defense choices."
+    },
+    "local_authoring_parts::6810711455df85223d3426116b5f9a409eeee0b47eb52186b13ee3b6dd8c536a:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "ENEMY_WAVE_READING"
+          ],
+          "stateOutputs": [
+            "TOWER_PLACEMENT_STRATEGY"
+          ],
+          "name": "STRATEGIC_DETERRENCE_SYSTEM",
+          "purpose": "The player's decision to read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route directly alters the world state, increasing pressure and resource availability.",
+          "playerChoice": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "ENEMY_WAVE_READING"
+          ],
+          "stateOutputs": [
+            "TOWER_PLACEMENT_STRATEGY"
+          ],
+          "name": "DEFENSE_ADAPTATION_SYSTEM",
+          "purpose": "The player's decision to adapt the defense to enemy types and wave compositions, protect the objective, and clear the stage or boss directly alters the world state, increasing pressure and resource availability.",
+          "playerChoice": "Adapt the defense to enemy types and wave compositions, protect the objective, and clear the stage or boss to unlock harder defense choices."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "ENEMY_WAVE_READING"
+          ],
+          "stateOutputs": [
+            "TOWER_PLACEMENT_STRATEGY"
+          ],
+          "name": "DEFENSE_ADAPTATION_SYSTEM",
+          "purpose": "The player's decision to adapt the defense to enemy types and wave compositions, protect the objective, and clear the stage or boss directly alters the world state, increasing pressure and resource availability.",
+          "playerChoice": "Adapt the defense to enemy types and wave compositions, protect the objective, and clear the stage or boss to unlock harder defense choices."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_03",
+          "grammarRole": "c",
+          "stateInputs": [
+            "ENEMY_WAVE_READING"
+          ],
+          "stateOutputs": [
+            "TOWER_PLACEMENT_STRATEGY"
+          ],
+          "name": "DEFENSE_ADAPTATION_REACTION",
+          "purpose": "The player's decision to adapt the defense to enemy types and wave compositions, protect the objective, and clear the stage or boss directly alters the world state, increasing pressure and resource availability.",
+          "playerChoice": "Adapt the defense to enemy types and wave compositions, protect the objective, and clear the stage or boss to unlock harder defense choices."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_04",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "ENEMY_WAVE_READING"
+          ],
+          "stateOutputs": [
+            "TOWER_PLACEMENT_STRATEGY"
+          ],
+          "name": "DEFENSE_ADAPTATION_REACTION",
+          "purpose": "The player's decision to adapt the defense to enemy types and wave compositions, protect the objective, and clear the stage or boss directly alters the world state, increasing pressure and resource availability.",
+          "playerChoice": "Adapt the defense to enemy types and wave compositions, protect the objective, and clear the stage or boss to unlock harder defense choices."
+        }
+      ]
+    },
+    "local_authoring_parts::531226cf19b94227d5cfd1b0d00eb603c271ef10ee8a4153230850f0b623c091:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT: Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "STATE CHANGE: The world state shifts to reflect new defensive strategies, increasing pressure and resource availability.",
+        "OUTPUT: Player earns resources and spends them on upgrades, placements, or tactical changes before pressure increases."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "ENEMY_WAVE_READING"
+          ],
+          "stateOutputs": [
+            "TOWER_PLACEMENT_STRATEGY"
+          ],
+          "name": "STRATEGIC_DETERRENCE_SYSTEM",
+          "purpose": "The player's decision to read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route directly alters the world state, increasing pressure and resource availability.",
+          "playerChoice": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "ENEMY_WAVE_READING"
+          ],
+          "stateOutputs": [
+            "TOWER_PLACEMENT_STRATEGY"
+          ],
+          "name": "DEFENSE_ADAPTATION_SYSTEM",
+          "purpose": "The player's decision to adapt the defense to enemy types and wave compositions, protect the objective, and clear the stage or boss directly alters the world state, increasing pressure and resource availability.",
+          "playerChoice": "Adapt the defense to enemy types and wave compositions, protect the objective, and clear the stage or boss to unlock harder defense choices."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "ENEMY_WAVE_READING"
+          ],
+          "stateOutputs": [
+            "TOWER_PLACEMENT_STRATEGY"
+          ],
+          "name": "DEFENSE_ADAPTATION_SYSTEM",
+          "purpose": "The player's decision to adapt the defense to enemy types and wave compositions, protect the objective, and clear the stage or boss directly alters the world state, increasing pressure and resource availability.",
+          "playerChoice": "Adapt the defense to enemy types and wave compositions, protect the objective, and clear the stage or boss to unlock harder defense choices."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_03",
+          "grammarRole": "c",
+          "stateInputs": [
+            "ENEMY_WAVE_READING"
+          ],
+          "stateOutputs": [
+            "TOWER_PLACEMENT_STRATEGY"
+          ],
+          "name": "DEFENSE_ADAPTATION_REACTION",
+          "purpose": "The player's decision to adapt the defense to enemy types and wave compositions, protect the objective, and clear the stage or boss directly alters the world state, increasing pressure and resource availability.",
+          "playerChoice": "Adapt the defense to enemy types and wave compositions, protect the objective, and clear the stage or boss to unlock harder defense choices."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_04",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "ENEMY_WAVE_READING"
+          ],
+          "stateOutputs": [
+            "TOWER_PLACEMENT_STRATEGY"
+          ],
+          "name": "DEFENSE_ADAPTATION_REACTION",
+          "purpose": "The player's decision to adapt the defense to enemy types and wave compositions, protect the objective, and clear the stage or boss directly alters the world state, increasing pressure and resource availability.",
+          "playerChoice": "Adapt the defense to enemy types and wave compositions, protect the objective, and clear the stage or boss to unlock harder defense choices."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 444401,
-      "lastMs": 42661,
+      "totalMs": 593965,
+      "lastMs": 102762,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:00:03.796Z"
+      "updatedAt": "2026-10-08T19:02:33.362Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:52:39.359Z",
-  "updatedAt": "2026-10-08T19:00:03.796Z",
+  "updatedAt": "2026-10-08T19:02:33.365Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2286,7 +2455,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T19:00:03.796Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:02:33.365Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
