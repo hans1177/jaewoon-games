@@ -67,25 +67,40 @@
       "name": "Material Causal Grammar",
       "purpose": "Plays out the player's exploration of a dangerous small-scale habitat, where risks are taken and resources are acquired through gathering or fighting.",
       "playerChoice": "Take a risk to gather or fight, then convert the result into survival tools or a safer route."
+    },
+    "local_authoring_parts::e94bb5eff494224c7d3824c4414777b9a1a99d73261cd5f233ddcdc830354435:signatureSystems:2": {
+      "id": "MATERIAL_CAUSAL_GRAMMAR_B",
+      "grammarRole": "B",
+      "stateInputs": [
+        "INPUT: Explore a dangerous small-scale habitat and identify food, material and昆虫",
+        "SELECT: Take a risk to gather or fight, then convert the result into survival工具或"
+      ],
+      "stateOutputs": [
+        "STATE CHANGE: Main status is modified by A/B/c interactions",
+        "ACTION: Continue exploring with new knowledge and resources"
+      ],
+      "name": "Material Causal Grammar B",
+      "purpose": "Plays out the player's exploration of a dangerous small-scale habitat, where risks are taken and resources are acquired through gathering or fighting.",
+      "playerChoice": "Take a risk to gather or fight, then convert the result into survival tools or a safer route."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 184156,
-      "lastMs": 22756,
+      "totalMs": 276823,
+      "lastMs": 92667,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:48:43.012Z"
+      "updatedAt": "2026-10-08T17:50:15.681Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:45:38.832Z",
-  "updatedAt": "2026-10-08T17:48:43.013Z",
+  "updatedAt": "2026-10-08T17:50:15.681Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2317,7 +2332,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:48:43.012Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:50:15.681Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
