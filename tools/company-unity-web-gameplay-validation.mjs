@@ -4,6 +4,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
+import crypto from 'node:crypto';
 
 const args=Object.fromEntries(process.argv.slice(2).map(v=>{
   const m=v.match(/^--([^=]+)=(.*)$/);
@@ -229,6 +230,11 @@ try{
 
   // 실제 게임 진행 화면의 픽셀을 읽는다. 콘솔 PASS나 단순 스크린샷 파일 존재는 시각 QA가 아니다.
   const liveCapture=await page.screenshot({fullPage:false});
+  const liveCaptureSha256=crypto.createHash('sha256').update(liveCapture).digest('hex');
+  if(screenshot){
+    fs.mkdirSync(path.dirname(screenshot),{recursive:true});
+    fs.writeFileSync(screenshot,liveCapture);
+  }
   const visualPixels=await page.evaluate(async encoded=>{
     const bytes=Uint8Array.from(atob(encoded),character=>character.charCodeAt(0));
     const bitmap=await createImageBitmap(new Blob([bytes],{type:'image/png'}));
@@ -303,11 +309,6 @@ try{
   const fatal=[...consoleErrors,...pageErrors,...failedRequests].filter(x=>/abort|out of memory|wasm.*error|failed to fetch|build error|exception/i.test(x));
   if(fatal.length)throw new Error(`UNITY_WEB_FATAL_RUNTIME_ERROR:${fatal.slice(0,5).join(' | ')}`);
 
-  if(screenshot){
-    fs.mkdirSync(path.dirname(screenshot),{recursive:true});
-    await page.screenshot({path:screenshot,fullPage:false});
-  }
-
   const evidence={
     version:1,
     engine:'UNITY_WEB',
@@ -341,7 +342,8 @@ try{
     saveRestore:{pass:true,persistentChangedKeys,restoredKeys},
     visualQa:{
       pass:!visualBlocked,source:'REAL_GAMEPLAY_SCREENSHOT_PIXEL_READBACK',
-      screenshotObserved:true,magentaShaderLikelyMissing:shaderLikelyMissing,
+      screenshotObserved:true,captureSha256:liveCaptureSha256,capturePersisted:Boolean(screenshot),
+      magentaShaderLikelyMissing:shaderLikelyMissing,
       blankOrFrozenFrame,visualPixels,mobileUiBounds,realDeviceVerified:false,
     },
     nativeRenderBudget:{
