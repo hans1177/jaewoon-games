@@ -221,9 +221,11 @@ try{
     };
     requestAnimationFrame(onFrame);
   }));
-  if(framePacing.frameCount<25||!Number.isFinite(framePacing.medianFrameMs)||
-     framePacing.medianFrameMs>38||framePacing.p95FrameMs>100)
-    throw new Error('UNITY_WEB_QA_FRAME_PACING_FAILED:'+JSON.stringify(framePacing));
+  // 모바일 소프트웨어 브라우저의 프레임 성능 실패는 끝까지 관찰하고
+  // 실제 이동·공격·보상·저장 증거를 보존한다. 상위 QA PASS와 별개인 테스트 공개 근거다.
+  const framePacingFailed=framePacing.frameCount<25||!Number.isFinite(framePacing.medianFrameMs)||
+    framePacing.medianFrameMs>38||framePacing.p95FrameMs>100;
+  const performanceBlocked=framePacingFailed||bootMilliseconds>90000;
 
   await canvas.focus();
   await page.keyboard.press('KeyR');
@@ -270,7 +272,8 @@ try{
       geometryMarker:approvedEnvironment.required===true?worldMeshMarker:null,
       collisionPhysicsVerified:false,
     },
-    pass:true,
+    pass:!performanceBlocked,
+    playableBrowserTest:true,
     boot:{pass:true},
     input:{pass:true,qaMode:'REAL_GAME_FUNCTION_INPUT_AND_REAL_BROWSER_TOUCH',mobileInputObserved,canvasFocusedBeforeKeyboard:true,gameplayStartInput},
     gameplay:{
@@ -297,7 +300,11 @@ try{
       actualBrowserTouchDispatched:true,
       realGameTouchHandlerObserved:mobileInputObserved,
     },
-    performance:{pass:bootMilliseconds<=90000&&fatal.length===0&&framePacing.medianFrameMs<=38&&framePacing.p95FrameMs<=100,bootMilliseconds,fatalRuntimeErrorCount:fatal.length,framePacing,measurementSurface:'PLAYWRIGHT_MOBILE_BROWSER_EMULATION',realDeviceVerified:false},
+    performance:{pass:bootMilliseconds<=90000&&fatal.length===0&&framePacing.medianFrameMs<=38&&framePacing.p95FrameMs<=100&&framePacing.frameCount>=25,
+      reason:framePacingFailed?'UNITY_WEB_QA_FRAME_PACING_FAILED':
+        bootMilliseconds>90000?'UNITY_WEB_QA_BOOT_SLOW_FAILED':null,
+      bootMilliseconds,fatalRuntimeErrorCount:fatal.length,framePacing,
+      measurementSurface:'PLAYWRIGHT_MOBILE_BROWSER_EMULATION',realDeviceVerified:false},
     noCriticalRuntimeError:fatal.length===0,
     markers,
     generatedAt:new Date().toISOString(),
@@ -306,8 +313,13 @@ try{
     fs.mkdirSync(path.dirname(output),{recursive:true});
     fs.writeFileSync(output,JSON.stringify(evidence,null,2)+'\n');
   }
-  console.log('UNITY_WEB_GAMEPLAY_QA=PASS');
   await browser.close();
+  if(performanceBlocked){
+    console.error('UNITY_WEB_GAMEPLAY_QA=REPAIR_REQUIRED:PERFORMANCE');
+    if(framePacingFailed)throw new Error('UNITY_WEB_QA_FRAME_PACING_FAILED:'+JSON.stringify(framePacing));
+    throw new Error('UNITY_WEB_QA_BOOT_SLOW_FAILED:'+bootMilliseconds);
+  }
+  console.log('UNITY_WEB_GAMEPLAY_QA=PASS');
 } finally {
   await new Promise(resolve=>server.close(resolve));
 }
