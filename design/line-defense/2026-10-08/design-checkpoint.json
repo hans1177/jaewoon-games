@@ -621,25 +621,33 @@
       "toSystem": "EnemyDefenseSynergy",
       "trigger": "enemyWaveType",
       "stateChange": "defensiveStrategy"
+    },
+    "local_authoring_parts::b7a74c59fc7d82670aa0a265411536fefc8956b911dbd921377be5b99179451b:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "enemyWaveType",
+      "toId": "defensiveStrategy",
+      "stateKeys": [
+        "DefensiveStrategy"
+      ],
+      "fromSystem": "EnemyDefenseSynergy"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 15,
-      "successes": 15,
+      "calls": 16,
+      "successes": 16,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 786301,
-      "lastMs": 32274,
+      "totalMs": 820330,
+      "lastMs": 34029,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:23:32.261Z"
+      "updatedAt": "2026-10-08T12:24:06.293Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:10:25.792Z",
-  "updatedAt": "2026-10-08T12:23:32.262Z",
+  "updatedAt": "2026-10-08T12:24:06.294Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2992,7 +3000,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:23:32.262Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:24:06.294Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
