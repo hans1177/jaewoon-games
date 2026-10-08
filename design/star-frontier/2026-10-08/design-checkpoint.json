@@ -1094,25 +1094,44 @@
         "시그니처_규칙_2"
       ],
       "fromSystem": "별길 개척자 - 게임_시그니처_1"
+    },
+    "local_authoring_parts::cad121faad8793f4cb27503c9edf88e4ad33705b94aa774abf7bf120d4b74432:toSystem,trigger,stateChange": {
+      "toSystem": "별길 개척자 - 게임_시그니처_2",
+      "trigger": "게임_시작_목표_2 설정, 제한_이동_수_2 선택, 장애물_집합_2 해결, 시그니처_규칙_4 적용",
+      "stateChange": "게임_결과_상태_2 변화, 선택_바뀐_상태_2 변화, 게임_진행_상태_2 변화, 시그니처_규칙_4 적용"
+    },
+    "local_authoring_parts::a9478980297c13585117f840b028ac898356bcafc2efcdebcca6b3a869cc0ac6:systemInterconnections:4": {
+      "fromId": "별길 개척자-게임_시그니처_1",
+      "toId": "별길 개척자-게임_시그니처_2",
+      "stateKeys": [
+        "게임_결과_상태",
+        "선택_바뀐_상태",
+        "게임_진행_상태",
+        "시그니처_규칙_2"
+      ],
+      "fromSystem": "별길 개척자 - 게임_시그니처_1",
+      "toSystem": "별길 개척자 - 게임_시그니처_2",
+      "trigger": "게임_시작_목표_2 설정, 제한_이동_수_2 선택, 장애물_집합_2 해결, 시그니처_규칙_4 적용",
+      "stateChange": "게임_결과_상태_2 변화, 선택_바뀐_상태_2 변화, 게임_진행_상태_2 변화, 시그니처_규칙_4 적용"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 37,
-      "successes": 36,
+      "calls": 38,
+      "successes": 37,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2977128,
-      "lastMs": 58266,
+      "totalMs": 3039353,
+      "lastMs": 62225,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T15:30:17.273Z"
+      "updatedAt": "2026-10-08T15:31:19.500Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:53:17.663Z",
-  "updatedAt": "2026-10-08T15:30:17.273Z",
+  "updatedAt": "2026-10-08T15:31:19.510Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3257,7 +3276,7 @@
   },
   "sliceRepairAttempts": {
     "designer_draft_slices::identity-core": 1,
-    "designer_draft_slices::systems-progression": 2
+    "designer_draft_slices::systems-progression": 3
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3297,10 +3316,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:30:17.273Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T15:31:19.504Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {

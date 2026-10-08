@@ -8,11 +8,11 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 51,
-  "lastSuccessfulModelCallAt": "2026-10-08T15:30:17.273Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "cachedTaskCount": 53,
+  "lastSuccessfulModelCallAt": "2026-10-08T15:31:19.504Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "designerSeed": {
     "file": "design/star-frontier/2026-10-08/design-seed.json",
     "contentDigest": "3636214c9ab29514b3db1bfef07c7a3a04e2c646f20b9f138fe012a3fa3fdbaf",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 37,
-      "successes": 36,
+      "calls": 38,
+      "successes": 37,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2977128,
-      "lastMs": 58266,
+      "totalMs": 3039353,
+      "lastMs": 62225,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T15:30:17.273Z"
+      "updatedAt": "2026-10-08T15:31:19.500Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T15:30:17.274Z"
+  "updatedAt": "2026-10-08T15:31:19.511Z"
 }
