@@ -5,12 +5,12 @@
   "pass": true,
   "validated": true,
   "target": "UNITY_ANDROID_TECHNICAL_VALIDATION",
-  "checkedAt": "2026-10-06T01:33:22.555Z",
+  "checkedAt": "2026-10-08T04:38:12.011Z",
   "sourceBinding": {
-    "upstreamBuildRunId": 37342040308,
-    "sourceCommit": "df0b4e4772f7269d25c1760cad7a347e381d1942",
-    "sourceTreeSha": "a874f9f9d1449dc4396e53bcd65e6bf3beafc234",
-    "apkSha256": "fb37273461bd3ab34cc813bef1ccba82c71d1a9f1843eb6afa94a08fa43c517b",
+    "upstreamBuildRunId": 37725747808,
+    "sourceCommit": "ccf9626cb32b0d2904d5796c5f32b9a0d5e884bb",
+    "sourceTreeSha": "dc00e4153858d1bb29509923f26ccff76f402629",
+    "apkSha256": "97b5230807cd5045840af07cf5502738cc99dcbe261fd405c09d3bccc38a855b",
     "sameBinding": true
   },
   "foundationAdapter": {
@@ -118,14 +118,14 @@
       "totalFramesRendered": 127,
       "jankyFrames": 0,
       "jankyFrameRatePct": 0,
-      "minFps": 10.4,
-      "avgFps": 13.98,
+      "minFps": 10.9,
+      "avgFps": 14.080000000000002,
       "scope": "ANDROID_16_EMULATOR_TECHNICAL_VALIDATION"
     },
     "MEMORY_HEAT_LOADING": {
       "state": "PASS_WITH_LIMITATION",
       "provider": "ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO",
-      "maxAllocatedMemoryBytes": 52717730,
+      "maxAllocatedMemoryBytes": 53743275,
       "loading": "PASS",
       "heat": "EMULATOR_ONLY_NOT_PHYSICAL_DEVICE",
       "limitation": "Physical-device thermal behavior remains a RELEASE_CONFIRMED device-validation concern."
@@ -177,9 +177,9 @@
     "Physical-device thermal behavior is not inferred from emulator evidence."
   ],
   "provenance": {
-    "buildInfo": "/tmp/unity-build/bug-defense-android-cloud-37342040308-1/build-info.json",
-    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-37342040308/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
-    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-37342040308/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
+    "buildInfo": "/tmp/unity-build/bug-defense-android-cloud-37725747808-1/build-info.json",
+    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-37725747808/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
+    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-37725747808/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
     "projectPath": "unity-games/bug-defense"
   }
 }
