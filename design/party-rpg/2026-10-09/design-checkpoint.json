@@ -534,25 +534,28 @@
       "toSystem": "BOARD_STATE",
       "trigger": "시스템 간 상태 변화가 발생하며, SIGNATURE_SYSTEM_0에서 BOARD_STATE로 전환되어야 한다.",
       "stateChange": "시스템 간 상태 변화가 발생하며, SIGNATURE_SYSTEM_0에서 BOARD_STATE로 전환되어야 한다."
+    },
+    "local_authoring_parts::9a0a9f70e58e177153888032966519e4814c74acad408cced9d713128e2016c8:fromId": {
+      "fromId": "SIGNATURE_SYSTEM_4 → BOARD_STATE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 39,
-      "successes": 39,
+      "calls": 40,
+      "successes": 40,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2841139,
-      "lastMs": 45315,
+      "totalMs": 2884110,
+      "lastMs": 42971,
       "lastError": null,
-      "updatedAt": "2026-10-08T23:50:52.282Z"
+      "updatedAt": "2026-10-08T23:51:35.258Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:31:40.536Z",
-  "updatedAt": "2026-10-08T23:50:52.284Z",
+  "updatedAt": "2026-10-08T23:51:35.258Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2992,7 +2995,7 @@
       "progressionDirection": "{\"from\": \"START_GAME\", \"to\": \"MATCH_GAME\"}"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T23:50:52.284Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T23:51:35.258Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
