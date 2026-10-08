@@ -49,25 +49,42 @@
       "name": "WAVE_DEFENSE_READABILITY",
       "purpose": "Establishes the core gameplay mechanism for wave-based defense, ensuring readability and meaningful placement choices.",
       "playerChoice": "Player chooses which insect to target, based on threat level, and allocates resources to optimize defense strategy."
+    },
+    "local_authoring_parts::1260bee3ee39bd05f3753bed97da3f92b7004ba4dcc2d0e42108cf18c179d99e:signatureSystems:1": {
+      "id": "SIGNATURE_SYSTEM_2",
+      "grammarRole": "A",
+      "stateInputs": [
+        "INCOMING_INSECT_WAVE",
+        "THREAT_LEVEL",
+        "REWARD_VALUE"
+      ],
+      "stateOutputs": [
+        "MODIFIED_DEFENDER_LAYOUT",
+        "RESOURCES_ALLOCATED",
+        "NEXT_SELECTION"
+      ],
+      "name": "WAVE_DEFENSE_MASTERY",
+      "purpose": "Establishes the core gameplay mechanism for wave-based defense, ensuring mastery through strategic decision-making and reward-based progression.",
+      "playerChoice": "Player chooses which insect to target, based on threat level and reward value, and allocates resources to optimize defense strategy with a focus on long-term progression."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 479548,
-      "lastMs": 32259,
+      "totalMs": 587190,
+      "lastMs": 107642,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:55:19.140Z"
+      "updatedAt": "2026-10-08T12:57:06.783Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:47:19.560Z",
-  "updatedAt": "2026-10-08T12:55:19.140Z",
+  "updatedAt": "2026-10-08T12:57:06.784Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2266,7 +2283,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:55:19.140Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:57:06.783Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
