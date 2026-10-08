@@ -3792,7 +3792,9 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
     row.status!=='IDEA_ONLY_GAME_SYSTEM_NOT_CONFIRMED'
     &&[...(row.existingNativeUiRefs||[]),...(row.gameSystemSourceRefs||[])].some(ref=>
       responsibleFiles.includes(ref.path)
-      &&context.files.some(file=>file.path===ref.path&&file.editable!==false)
+      &&context.files.some(file=>file.path===ref.path&&file.editable!==false
+        &&file.truncated!==true&&typeof file.content==='string'
+        &&crypto.createHash('sha256').update(file.content).digest('hex')===ref.sha256)
     )
   ).map(row=>({
     role:row.role,factory:row.factory,
