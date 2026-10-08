@@ -705,25 +705,34 @@
     },
     "local_authoring_parts::9076a4459c23dd549bf26977019513ae1e67cb56864f65af3c68960f01bc28f3:toId": {
       "toId": "BOARD_RULE_4"
+    },
+    "local_authoring_parts::9076a4459c23dd549bf26977019513ae1e67cb56864f65af3c68960f01bc28f3:stateKeys": {
+      "stateKeys": [
+        "BOARD_STATE",
+        "PLAYER_ACTION",
+        "LEVEL_GOAL",
+        "REWARD_SYSTEM",
+        "OBSTACLE_PATTERN"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 34,
-      "successes": 34,
+      "calls": 35,
+      "successes": 35,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2805401,
-      "lastMs": 56914,
+      "totalMs": 2863888,
+      "lastMs": 58487,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:22:13.185Z"
+      "updatedAt": "2026-10-08T10:23:11.673Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:34:25.615Z",
-  "updatedAt": "2026-10-08T10:22:13.185Z",
+  "updatedAt": "2026-10-08T10:23:11.673Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3117,7 +3126,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:22:13.185Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:23:11.673Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
