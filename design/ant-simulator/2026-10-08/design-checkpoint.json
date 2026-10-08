@@ -928,25 +928,42 @@
     },
     "local_authoring_parts::b15e3f548867f7aae511ba9b21c2a211b5058c0858755a94b0055ad6b665cfaa:toId": {
       "toId": "systemInterconnections[0]"
+    },
+    "local_authoring_parts::b15e3f548867f7aae511ba9b21c2a211b5058c0858755a94b0055ad6b665cfaa:stateKeys": {
+      "stateKeys": [
+        "currentWorldState",
+        "playerTarget",
+        "availableResources",
+        "potentialHazards",
+        "progressionStatus",
+        "updatedWorldState",
+        "newPlayerTarget",
+        "modifiedResources",
+        "reducedHazards",
+        "newProgressionStatus"
+      ]
+    },
+    "local_authoring_parts::b15e3f548867f7aae511ba9b21c2a211b5058c0858755a94b0055ad6b665cfaa:fromSystem": {
+      "fromSystem": "GAMEPLAY_SKETCH v4 emergent grammar: emergentGenre.name/newPrimaryVerb를 identity 또는 coreFun에 유지하고 causalDNA id 최소 2개를 referenceHomagePlan 또는 narrativeDialoguePlan에 추적 가능하게 남긴다.MAIN"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 33,
-      "successes": 33,
+      "calls": 35,
+      "successes": 35,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1150911,
-      "lastMs": 3916,
+      "totalMs": 1166547,
+      "lastMs": 8917,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:23:14.707Z"
+      "updatedAt": "2026-10-08T15:23:30.346Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:29:02.212Z",
-  "updatedAt": "2026-10-08T15:23:14.707Z",
+  "updatedAt": "2026-10-08T15:23:30.346Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3237,7 +3254,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:23:14.707Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:23:30.346Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
