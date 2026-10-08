@@ -34,25 +34,44 @@
         "INPUT: PLAYER CHOICE -> STATE CHANGE: POSITIONING AROUND ENEMY PRESSURE -> REWARD: RUN RESULT -> NEXT CHOICE: NEXT PROGRESSION CHOICE",
         "INPUT: PLAYER CHOICE -> STATE CHANGE: COMBINE UPGRADES INTO STRONGER BUILD -> REWARD: RUN RESULT -> NEXT CHOICE: CONVERSION TO NEXT PROGRESSION CHOICE"
       ]
+    },
+    "local_authoring_parts::95276374758fa281687583338f9be8887f29042698f42d4d465c7b101cfb11bb:signatureSystems:0": {
+      "id": "realistic-builder-delve-1",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "PLAYER CHOICE",
+        "ENEMY PRESSURE",
+        "RUN REWARDS/UPGRADES/WEAPONS/PERKS/SKILLS",
+        "BUILD STRONGER BUILD"
+      ],
+      "stateOutputs": [
+        "FIGHT THROUGH HORDE",
+        "POSITIONING AROUND ENEMY PRESSURE",
+        "RUN RESULT",
+        "CONVERSION TO NEXT PROGRESSION CHOICE"
+      ],
+      "name": "REALISTIC-BUILDER-DELVE-1",
+      "purpose": "ACTION_SURVIVAL_ROGUELITE",
+      "playerChoice": "FIGHT THROUGH HORDE IN SHORT REAL-TIME SURVIVAL RUN WHILE POSITIONING AROUND ENEMY PRESSURE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 544195,
-      "lastMs": 68888,
+      "totalMs": 617044,
+      "lastMs": 72849,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:23:53.855Z"
+      "updatedAt": "2026-10-08T08:25:06.705Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:14:49.595Z",
-  "updatedAt": "2026-10-08T08:23:53.855Z",
+  "updatedAt": "2026-10-08T08:25:06.705Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2404,7 +2423,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:23:53.855Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:25:06.705Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
