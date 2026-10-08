@@ -103,25 +103,227 @@
       "name": "Progression Dynamics System C",
       "purpose": "Enables dynamic progression through evolving gameplay mechanics, adaptive challenge layers, and emergent narrative progression",
       "playerChoice": "Select and refine the next progression choice based on evolving build, enemy pressure, and run outcomes"
+    },
+    "local_authoring_parts::6b15d78b384341a682209a39831de825921bcadb8d1d6ebac009a5d6d774c86f:signatureSystems:4": {
+      "id": "signatureSystems[4]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "currentBuild",
+        "enemyPressure",
+        "runRewards"
+      ],
+      "stateOutputs": [
+        "nextProgressionChoice",
+        "modifiedBuild",
+        "updatedRunResult"
+      ],
+      "name": "Progression Dynamics System D",
+      "purpose": "Enables dynamic progression through evolving gameplay mechanics, adaptive challenge layers, and emergent narrative progression. It allows players to refine their progression choices based on evolving build, enemy pressure, and run outcomes, creating a self-sustaining loop of survival, strategy, and progression.",
+      "playerChoice": "Refine the next progression choice based on evolving build, enemy pressure, and run outcomes, while maintaining the core gameplay mechanics and progression structure."
+    },
+    "local_authoring_parts::cbacf5b57b6852e2f623706dd30f7ea206bc769114dfcbf0701b6cac6ebacfe2:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "currentBuild",
+            "enemyPressure",
+            "runRewards",
+            "upgradeChoices"
+          ],
+          "stateOutputs": [
+            "nextProgressionChoice",
+            "modifiedBuild",
+            "updatedRunResult"
+          ],
+          "name": "Build Evolution System",
+          "purpose": "Facilitates dynamic build progression through iterative upgrades, survival challenges, and strategic decision-making",
+          "playerChoice": "Select upgrades, perks, weapons, or skills that alter the current build and influence the next progression choice"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "currentBuild",
+            "enemyPressure",
+            "runRewards"
+          ],
+          "stateOutputs": [
+            "nextProgressionChoice",
+            "modifiedBuild",
+            "updatedRunResult"
+          ],
+          "name": "Progression Dynamics System",
+          "purpose": "Enables dynamic progression through evolving gameplay mechanics, adaptive challenge layers, and emergent narrative progression",
+          "playerChoice": "Select and refine the next progression choice based on evolving build, enemy pressure, and run outcomes"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "currentBuild",
+            "enemyPressure",
+            "runRewards"
+          ],
+          "stateOutputs": [
+            "nextProgressionChoice",
+            "modifiedBuild",
+            "updatedRunResult"
+          ],
+          "name": "Progression Dynamics System B",
+          "purpose": "Enables dynamic progression through evolving gameplay mechanics, adaptive challenge layers, and emergent narrative progression",
+          "playerChoice": "Select and refine the next progression choice based on evolving build, enemy pressure, and run outcomes"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "currentBuild",
+            "enemyPressure",
+            "runRewards"
+          ],
+          "stateOutputs": [
+            "nextProgressionChoice",
+            "modifiedBuild",
+            "updatedRunResult"
+          ],
+          "name": "Progression Dynamics System C",
+          "purpose": "Enables dynamic progression through evolving gameplay mechanics, adaptive challenge layers, and emergent narrative progression",
+          "playerChoice": "Select and refine the next progression choice based on evolving build, enemy pressure, and run outcomes"
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "currentBuild",
+            "enemyPressure",
+            "runRewards"
+          ],
+          "stateOutputs": [
+            "nextProgressionChoice",
+            "modifiedBuild",
+            "updatedRunResult"
+          ],
+          "name": "Progression Dynamics System D",
+          "purpose": "Enables dynamic progression through evolving gameplay mechanics, adaptive challenge layers, and emergent narrative progression. It allows players to refine their progression choices based on evolving build, enemy pressure, and run outcomes, creating a self-sustaining loop of survival, strategy, and progression.",
+          "playerChoice": "Refine the next progression choice based on evolving build, enemy pressure, and run outcomes, while maintaining the core gameplay mechanics and progression structure."
+        }
+      ]
+    },
+    "local_authoring_parts::a3e4537187970011e0874dcf9dfdc0195a14762f36ba215658031010f4b25574:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "currentBuild",
+            "enemyPressure",
+            "runRewards",
+            "upgradeChoices"
+          ],
+          "stateOutputs": [
+            "nextProgressionChoice",
+            "modifiedBuild",
+            "updatedRunResult"
+          ],
+          "name": "Build Evolution System",
+          "purpose": "Facilitates dynamic build progression through iterative upgrades, survival challenges, and strategic decision-making",
+          "playerChoice": "Select upgrades, perks, weapons, or skills that alter the current build and influence the next progression choice"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "currentBuild",
+            "enemyPressure",
+            "runRewards"
+          ],
+          "stateOutputs": [
+            "nextProgressionChoice",
+            "modifiedBuild",
+            "updatedRunResult"
+          ],
+          "name": "Progression Dynamics System",
+          "purpose": "Enables dynamic progression through evolving gameplay mechanics, adaptive challenge layers, and emergent narrative progression",
+          "playerChoice": "Select and refine the next progression choice based on evolving build, enemy pressure, and run outcomes"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "currentBuild",
+            "enemyPressure",
+            "runRewards"
+          ],
+          "stateOutputs": [
+            "nextProgressionChoice",
+            "modifiedBuild",
+            "updatedRunResult"
+          ],
+          "name": "Progression Dynamics System B",
+          "purpose": "Enables dynamic progression through evolving gameplay mechanics, adaptive challenge layers, and emergent narrative progression",
+          "playerChoice": "Select and refine the next progression choice based on evolving build, enemy pressure, and run outcomes"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "currentBuild",
+            "enemyPressure",
+            "runRewards"
+          ],
+          "stateOutputs": [
+            "nextProgressionChoice",
+            "modifiedBuild",
+            "updatedRunResult"
+          ],
+          "name": "Progression Dynamics System C",
+          "purpose": "Enables dynamic progression through evolving gameplay mechanics, adaptive challenge layers, and emergent narrative progression",
+          "playerChoice": "Select and refine the next progression choice based on evolving build, enemy pressure, and run outcomes"
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "currentBuild",
+            "enemyPressure",
+            "runRewards"
+          ],
+          "stateOutputs": [
+            "nextProgressionChoice",
+            "modifiedBuild",
+            "updatedRunResult"
+          ],
+          "name": "Progression Dynamics System D",
+          "purpose": "Enables dynamic progression through evolving gameplay mechanics, adaptive challenge layers, and emergent narrative progression. It allows players to refine their progression choices based on evolving build, enemy pressure, and run outcomes, creating a self-sustaining loop of survival, strategy, and progression.",
+          "playerChoice": "Refine the next progression choice based on evolving build, enemy pressure, and run outcomes, while maintaining the core gameplay mechanics and progression structure."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1083982,
-      "lastMs": 95559,
+      "totalMs": 1188404,
+      "lastMs": 104422,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:51:59.535Z"
+      "updatedAt": "2026-10-08T08:53:43.958Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:33:55.519Z",
-  "updatedAt": "2026-10-08T08:51:59.535Z",
+  "updatedAt": "2026-10-08T08:53:43.960Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2320,7 +2522,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:51:59.535Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:53:43.960Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
