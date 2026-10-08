@@ -272,25 +272,113 @@
           "playerChoice": "Analyze enemy threat patterns and adjust defender positions and resource distribution to optimize survival rates and strategy evolution."
         }
       ]
+    },
+    "local_authoring_parts::70e1a2841a65f2c9dd075b86ce66021befbf238cf80f86a2da44472b94bb2240:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::9c585ca383b888ec43aa32120f796897d4affee3fc6231a2104715ebe33490c2:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "INPUT: Read the incoming insect wave and its threat pattern.\nSTATE CHANGE: World state shifts based on player's interpretation of the wave's structure and danger level.\nOUTPUT: Player selects defensive strategy (place/adjust defenders, spend resources).\nACTION: Player makes strategic decision that alters world state for future encounters.",
+        "INPUT: Survive the wave, learn from leaks or losses.\nSTATE CHANGE: Player gains knowledge about enemy patterns and resource allocation.\nOUTPUT: Player prepares new defense strategy using learned information.\nACTION: Player implements new strategy that modifies world state for subsequent waves.",
+        "INPUT: Use reward to prepare a materially different next defense decision.\nSTATE CHANGE: Player configures defenses with optimized resource distribution.\nOUTPUT: Player achieves improved survival rate in upcoming waves.\nACTION: Player executes new strategy that reconfigures world state for future battles."
+      ],
+      "signatureSystems": [
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "threat pattern",
+            "defender configuration"
+          ],
+          "stateOutputs": [
+            "resource allocation",
+            "enemy behavior analysis"
+          ],
+          "name": "KARMA RETURN",
+          "purpose": "Player's strategic decision impacts future world state through delayed consequences.",
+          "playerChoice": "Adjust defender positions and resource distribution based on enemy threat patterns, with long-term effects on survival rates and strategy evolution."
+        },
+        {
+          "id": "MANDATE_LEGITIMACY",
+          "grammarRole": "A",
+          "stateInputs": [
+            "threat pattern",
+            "defender configuration"
+          ],
+          "stateOutputs": [
+            "resource allocation",
+            "enemy behavior analysis"
+          ],
+          "name": "MANDATE LEGITIMACY",
+          "purpose": "Player's strategic decision impacts future world state through delayed consequences.",
+          "playerChoice": "Adjust defender positions and resource distribution based on enemy threat patterns, with long-term effects on survival rates and strategy evolution."
+        },
+        {
+          "id": "INVESTIGATE_THREAT_PATTERN",
+          "grammarRole": "B",
+          "stateInputs": [
+            "threat pattern",
+            "defender configuration"
+          ],
+          "stateOutputs": [
+            "resource allocation",
+            "enemy behavior analysis"
+          ],
+          "name": "INVESTIGATE_THREAT_PATTERN",
+          "purpose": "Player's strategic decision impacts future world state through delayed consequences.",
+          "playerChoice": "Investigate the enemy threat pattern and adjust defender positions and resource distribution to optimize survival rates and strategy evolution."
+        },
+        {
+          "id": "INVESTIGATE_THREAT_PATTERN",
+          "grammarRole": "c",
+          "stateInputs": [
+            "threat pattern",
+            "defender configuration"
+          ],
+          "stateOutputs": [
+            "resource allocation",
+            "enemy behavior analysis"
+          ],
+          "name": "INVESTIGATE_THREAT_PATTERN",
+          "purpose": "Player's strategic decision impacts future world state through delayed consequences.",
+          "playerChoice": "Investigate the enemy threat pattern and adjust defender positions and resource distribution to optimize survival rates and strategy evolution."
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "threat pattern",
+            "defender configuration"
+          ],
+          "stateOutputs": [
+            "resource allocation",
+            "enemy behavior analysis"
+          ],
+          "name": "ENEMY_BEHAVIOR_ANALYSIS",
+          "purpose": "Player's strategic decision impacts future world state through delayed consequences.",
+          "playerChoice": "Analyze enemy threat patterns and adjust defender positions and resource distribution to optimize survival rates and strategy evolution."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 903285,
-      "lastMs": 97221,
+      "totalMs": 991117,
+      "lastMs": 87832,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:47:03.664Z"
+      "updatedAt": "2026-10-08T18:48:31.500Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:32:00.339Z",
-  "updatedAt": "2026-10-08T18:47:03.666Z",
+  "updatedAt": "2026-10-08T18:48:31.511Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2485,12 +2573,74 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:47:03.666Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_MAIN_A_B_c_DELVE_REQUIRED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "counts": {
+            "MAIN": 1,
+            "A": 1,
+            "B": 1,
+            "c": 1,
+            "DELVE": 1
+          },
+          "systemCount": 5,
+          "statesReady": false
+        },
+        "requiredAction": "메인 중심 행동, A/B 서로 다른 두 축, c 보조 변주, @ 발견·숙련을 기존 규칙에 맞춰 최소 5개 고유 시스템과 실제 상태 입력·출력으로 작성한다. 기존 밸런스·저장·진행은 유지한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계한다.\n\n플레이어 역할: 곤충 디펜스에서 플레이어는 Read the incoming insect wave and its threat pattern.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다.\n\n대표 행동: Read the incoming insect wave and its threat pattern.\n\n대표 선택: Place or adjust defenders and spend limited resources on the highest-value counter.\n\n시그니처 세계 규칙: 플레이어의 Read the incoming insect wave and its threat pattern.와 선택이 SINGLE_DEFENSE_STRATEGY의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.\n\n기본 정체성 문장: 이 게임은 곤충의 생태, 위협, 방어 전략에 기반한 단일 전략 게임이다.",
+      "playerFantasy": "곤충 디펜스에서 플레이어는 Read the incoming insect wave and its threat pattern.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복하며, 이 과정에서 세계 상태가 즉각적으로 변형되어 새로운 행동·관계·발견을 열어 나간다.",
+      "coreFun": "플레이어는 Read the incoming insect wave and its threat pattern.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복하며, 이 과정에서 세계 상태가 즉각적으로 변형되어 새로운 행동·관계·발견을 열어 나간다.",
+      "coreLoop": [
+        "INPUT: Read the incoming insect wave and its threat pattern.\nSTATE CHANGE: World state shifts based on player's interpretation of the wave's structure and danger level.\nOUTPUT: Player selects defensive strategy (place/adjust defenders, spend resources).\nACTION: Player makes strategic decision that alters world state for future encounters.",
+        "INPUT: Survive the wave, learn from leaks or losses.\nSTATE CHANGE: Player gains knowledge about enemy patterns and resource allocation.\nOUTPUT: Player prepares new defense strategy using learned information.\nACTION: Player implements new strategy that modifies world state for subsequent waves.",
+        "INPUT: Use reward to prepare a materially different next defense decision.\nSTATE CHANGE: Player configures defenses with optimized resource distribution.\nOUTPUT: Player achieves improved survival rate in upcoming waves.\nACTION: Player executes new strategy that reconfigures world state for future battles."
+      ],
+      "multiplayerMode": "HYBRID"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T18:48:31.503Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_MAIN_A_B_c_DELVE_REQUIRED,DESIGN_RULE_STATE_MISSING",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
