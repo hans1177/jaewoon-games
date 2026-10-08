@@ -51,6 +51,27 @@ test('Unity Web performance QA samples live gameplay frames instead of treating 
   assert.match(source,/performance:\{pass:bootMilliseconds<=90000&&fatal.length===0&&framePacing\.medianFrameMs<=38/);
 });
 
+test('실제 플레이 가능한 개발 WebGL만 공개하되 저성능 QA 실패는 PASS로 조작하지 않는다',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/unity-web-first-stage-build.yml',import.meta.url),'utf8');
+  const frameAt=source.indexOf('const framePacingFailed=');
+  const saveAt=source.indexOf("fs.writeFileSync(output,JSON.stringify(evidence");
+  const failAt=source.indexOf("throw new Error('UNITY_WEB_QA_FRAME_PACING_FAILED:");
+  assert.ok(frameAt>=0&&saveAt>frameAt&&failAt>saveAt,'store honest failure evidence before rejecting FPS QA');
+  assert.match(source,/pass:!framePacingFailed/);
+  assert.match(source,/playableBrowserTest:true/);
+  assert.match(source,/reason:framePacingFailed\?'UNITY_WEB_QA_FRAME_PACING_FAILED':null/);
+  assert.equal((workflow.match(/continue-on-error: \$\{\{ steps\.request\.outputs\.game_id == 'daechung-rpg' \}\}/g)||[]).length,3);
+  assert.match(workflow,/const playable=checks\.every\(e=>e\.playableBrowserTest===true/);
+  assert.match(workflow,/if\(!playable\)throw new Error\('UNITY_WEB_REAL_BROWSER_PLAYABILITY_REQUIRED'\)/);
+  assert.match(workflow,/const gatePass=checks\.every\(e=>e\.pass===true&&e\.performance\?\.pass===true\)/);
+  assert.match(workflow,/actualBrowserPlay:gatePass\?'PASS':'PLAYABLE_TEST_ONLY'/);
+  assert.match(workflow,/validationSurfaceOnly:!gatePass/);
+  assert.match(workflow,/if: steps\.readiness\.outputs\.pass != 'true'/);
+  assert.match(workflow,/UNITY_WEB_FLOOR_STATE=REPAIR_REQUIRED/);
+  assert.match(workflow,/UNITY_WEB_SOURCE_SUPERSEDED_BY_NEW_MAIN_REBUILD_REQUIRED/);
+  assert.match(workflow,/UNITY_WEB_SOURCE_SUPERSEDED_DURING_PREVIEW_REBUILD_REQUIRED/);
+});
+
 test('Unity Web gameplay validation focuses the real canvas before keyboard input',()=>{
   assert.match(source,/const canvas=page\.locator\('canvas'\)\.first\(\)/);
   assert.match(source,/await canvas\.focus\(\);\s*await page\.keyboard\.press\('Digit1'\)/s);
