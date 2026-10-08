@@ -1,3 +1,5 @@
+// 파일명: qa/company-system-ai-learning.test.mjs
+// 임포트: 기존 System AI 검증 계약
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
