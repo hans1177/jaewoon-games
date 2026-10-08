@@ -200,7 +200,7 @@ test('Vibe emits exact-source-bound object interaction guidance for editable ser
   const relative='server/Game.server.luau';
   const actualWorker=buildPrompt(scoped,{files:[{path:relative,content,editable:true}]},[relative]);
   assert.match(actualWorker,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
-  assert.match(actualWorker,/"editPath":"server\\/Game\\.server\\.luau"/);
+  assert.match(actualWorker,/"editPath":"server\/Game\.server\.luau"/);
   const wrongGame=buildPrompt({...scoped,source:{root:'roblox-games/other-game'}},
     {files:[{path:relative,content,editable:true}]},[relative]);
   assert.doesNotMatch(wrongGame,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
