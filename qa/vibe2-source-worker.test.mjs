@@ -388,6 +388,11 @@ test('design-grounded Roblox gameplay BUILD_UP rejects presentation-only delta a
   assert.equal(blocked.pass,false);
   assert.equal(blocked.reason,'GAMEPLAY_SOURCE_DELTA_REQUIRED');
   assert.equal(blocked.gameplayUnits,0);
+  const serverCosmetic={edits:[{path:'server/Game.server.luau',find:'local label = "ready"',replace:'local label = "armed"'}],newFiles:[],replaceFiles:[]};
+  const serverCosmeticBlocked=evaluateStudioQualityCandidateDelta({candidate:serverCosmetic,contract});
+  assert.equal(serverCosmeticBlocked.pass,false);
+  assert.equal(serverCosmeticBlocked.reason,'GAMEPLAY_SOURCE_DELTA_REQUIRED');
+  assert.equal(serverCosmeticBlocked.gameplayUnits,0);
   const gameplay={edits:[{path:'server/Game.server.luau',find:'player:SetAttribute("Progress", 0)',replace:'player:SetAttribute("Progress", 1)'}],newFiles:[],replaceFiles:[]};
   const accepted=evaluateStudioQualityCandidateDelta({candidate:gameplay,contract});
   assert.equal(accepted.pass,true);
