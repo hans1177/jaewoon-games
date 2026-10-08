@@ -106,25 +106,236 @@
       "name": "Enemy Wave Strategy System",
       "purpose": "Manages the dynamic adaptation of defense strategy based on enemy wave composition, placement, and resource availability.",
       "playerChoice": "Select optimal defender placements and resource allocation before pressure increases, ensuring strategic flexibility and tactical efficiency in evolving combat scenarios."
+    },
+    "local_authoring_parts::621dfa785e2fbbdef32e5af1a0438fb2d2de09cace41cf1a6083a425f39a2d6a:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "enemyWaveType",
+        "defenderPlacement",
+        "resourcePool",
+        "pressureLevel"
+      ],
+      "stateOutputs": [
+        "towerPlacement",
+        "resourceSpent",
+        "nextEnemyWave"
+      ],
+      "name": "Enemy Wave Strategy System",
+      "purpose": "Manages the dynamic adaptation of defense strategy based on enemy wave composition, placement, and resource availability.",
+      "playerChoice": "Select optimal defender placements and resource allocation before pressure increases, ensuring strategic flexibility and tactical efficiency in evolving combat scenarios."
+    },
+    "local_authoring_parts::d0a5c2acd5808bc01bae144fe09e3ceb4a08e9f9bf4e7ff602f3fc22bd19bf36:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "enemyWaveType",
+            "defenderPlacement",
+            "resourcePool",
+            "pressureLevel"
+          ],
+          "stateOutputs": [
+            "towerPlacement",
+            "resourceSpent",
+            "nextEnemyWave"
+          ],
+          "name": "Enemy Wave Strategy System",
+          "purpose": "Manages the dynamic adaptation of defense strategy based on enemy wave composition, placement, and resource availability.",
+          "playerChoice": "Select optimal defender placements and resource allocation before pressure increases, ensuring strategic flexibility and tactical efficiency in evolving combat scenarios."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "A",
+          "stateInputs": [
+            "enemyWaveType",
+            "defenderPlacement",
+            "resourcePool",
+            "pressureLevel"
+          ],
+          "stateOutputs": [
+            "towerPlacement",
+            "resourceSpent",
+            "nextEnemyWave"
+          ],
+          "name": "Enemy Wave Strategy System",
+          "purpose": "Manages the dynamic adaptation of defense strategy based on enemy wave composition, placement, and resource availability.",
+          "playerChoice": "Select optimal defender placements and resource allocation before pressure increases, ensuring strategic flexibility and tactical efficiency in evolving combat scenarios."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "enemyWaveType",
+            "defenderPlacement",
+            "resourcePool",
+            "pressureLevel"
+          ],
+          "stateOutputs": [
+            "towerPlacement",
+            "resourceSpent",
+            "nextEnemyWave"
+          ],
+          "name": "Enemy Wave Strategy System",
+          "purpose": "Manages the dynamic adaptation of defense strategy based on enemy wave composition, placement, and resource availability.",
+          "playerChoice": "Select optimal defender placements and resource allocation before pressure increases, ensuring strategic flexibility and tactical efficiency in evolving combat scenarios."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "enemyWaveType",
+            "defenderPlacement",
+            "resourcePool",
+            "pressureLevel"
+          ],
+          "stateOutputs": [
+            "towerPlacement",
+            "resourceSpent",
+            "nextEnemyWave"
+          ],
+          "name": "Enemy Wave Strategy System",
+          "purpose": "Manages the dynamic adaptation of defense strategy based on enemy wave composition, placement, and resource availability.",
+          "playerChoice": "Select optimal defender placements and resource allocation before pressure increases, ensuring strategic flexibility and tactical efficiency in evolving combat scenarios."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "enemyWaveType",
+            "defenderPlacement",
+            "resourcePool",
+            "pressureLevel"
+          ],
+          "stateOutputs": [
+            "towerPlacement",
+            "resourceSpent",
+            "nextEnemyWave"
+          ],
+          "name": "Enemy Wave Strategy System",
+          "purpose": "Manages the dynamic adaptation of defense strategy based on enemy wave composition, placement, and resource availability.",
+          "playerChoice": "Select optimal defender placements and resource allocation before pressure increases, ensuring strategic flexibility and tactical efficiency in evolving combat scenarios."
+        }
+      ]
+    },
+    "local_authoring_parts::1a582aa339921d9457d8edaa1e5004fb0b3bb2a2a214ce24065fc9450213d187:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "enemyWaveType",
+            "defenderPlacement",
+            "resourcePool",
+            "pressureLevel"
+          ],
+          "stateOutputs": [
+            "towerPlacement",
+            "resourceSpent",
+            "nextEnemyWave"
+          ],
+          "name": "Enemy Wave Strategy System",
+          "purpose": "Manages the dynamic adaptation of defense strategy based on enemy wave composition, placement, and resource availability.",
+          "playerChoice": "Select optimal defender placements and resource allocation before pressure increases, ensuring strategic flexibility and tactical efficiency in evolving combat scenarios."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "A",
+          "stateInputs": [
+            "enemyWaveType",
+            "defenderPlacement",
+            "resourcePool",
+            "pressureLevel"
+          ],
+          "stateOutputs": [
+            "towerPlacement",
+            "resourceSpent",
+            "nextEnemyWave"
+          ],
+          "name": "Enemy Wave Strategy System",
+          "purpose": "Manages the dynamic adaptation of defense strategy based on enemy wave composition, placement, and resource availability.",
+          "playerChoice": "Select optimal defender placements and resource allocation before pressure increases, ensuring strategic flexibility and tactical efficiency in evolving combat scenarios."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "enemyWaveType",
+            "defenderPlacement",
+            "resourcePool",
+            "pressureLevel"
+          ],
+          "stateOutputs": [
+            "towerPlacement",
+            "resourceSpent",
+            "nextEnemyWave"
+          ],
+          "name": "Enemy Wave Strategy System",
+          "purpose": "Manages the dynamic adaptation of defense strategy based on enemy wave composition, placement, and resource availability.",
+          "playerChoice": "Select optimal defender placements and resource allocation before pressure increases, ensuring strategic flexibility and tactical efficiency in evolving combat scenarios."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "enemyWaveType",
+            "defenderPlacement",
+            "resourcePool",
+            "pressureLevel"
+          ],
+          "stateOutputs": [
+            "towerPlacement",
+            "resourceSpent",
+            "nextEnemyWave"
+          ],
+          "name": "Enemy Wave Strategy System",
+          "purpose": "Manages the dynamic adaptation of defense strategy based on enemy wave composition, placement, and resource availability.",
+          "playerChoice": "Select optimal defender placements and resource allocation before pressure increases, ensuring strategic flexibility and tactical efficiency in evolving combat scenarios."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "enemyWaveType",
+            "defenderPlacement",
+            "resourcePool",
+            "pressureLevel"
+          ],
+          "stateOutputs": [
+            "towerPlacement",
+            "resourceSpent",
+            "nextEnemyWave"
+          ],
+          "name": "Enemy Wave Strategy System",
+          "purpose": "Manages the dynamic adaptation of defense strategy based on enemy wave composition, placement, and resource availability.",
+          "playerChoice": "Select optimal defender placements and resource allocation before pressure increases, ensuring strategic flexibility and tactical efficiency in evolving combat scenarios."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 884479,
-      "lastMs": 102112,
+      "totalMs": 986547,
+      "lastMs": 102068,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:40:01.065Z"
+      "updatedAt": "2026-10-08T12:41:43.135Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:25:16.552Z",
-  "updatedAt": "2026-10-08T12:40:01.065Z",
+  "updatedAt": "2026-10-08T12:41:43.137Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2319,7 +2530,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:40:01.065Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:41:43.137Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
