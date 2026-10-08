@@ -313,7 +313,8 @@ test('autonomous runtime pins verified design engines, canaries three games, the
   assert.match(design,/repairAttempt<=2/);
   assert.match(design,/function scoreCurrentDesign/);
   assert.match(design,/Deterministic scoring is intentionally never served from checkpoint cache/);
-  assert.match(design,/DESIGN_PRE_GATE_BLOCKED/);
+  assert.match(design,/DESIGN_PRE_GATE=REMOVED/);
+  assert.doesNotMatch(design,/designCheckpoint\.status='PRE_GATE_BLOCKED'/);
   assert.match(design,/DESIGN_AUTHORING_SLICES=Object\.freeze/);
   assert.match(design,/authorDesignInCheckpointedSlices/);
   assert.match(design,/DESIGN_CHECKPOINTED_SLICES_COMPLETE=/);
@@ -363,7 +364,9 @@ test('autonomous runtime pins verified design engines, canaries three games, the
 });
 
 test('DESIGN_ONLY uses one designer plus deterministic department evidence without AI meetings',()=>{
-  assert.match(design,/GAME_SEED_REQUIRED/);
+  assert.doesNotMatch(design,/GAME_SEED_REQUIRED:/);
+  assert.match(design,/DESIGNER_SEED_INPUT_CREATED/);
+  assert.match(design,/DESIGNER_SEED_AUTHORED/);
   assert.match(design,/sameModelAsDraft:false/);
   assert.match(design,/fiveDepartmentLeadReviewCompleted:false/);
   assert.match(design,/DESIGN_ONLY_REVIEW_MODE=DETERMINISTIC_DEPARTMENT_EVIDENCE/);

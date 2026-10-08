@@ -1,5 +1,5 @@
 {
-  "version": 549,
+  "version": 550,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-07",
@@ -6444,7 +6444,7 @@
       }
     }
   },
-  "updatedAt": "2026-10-05",
+  "updatedAt": "2026-10-08T02:14:34.456Z",
   "priorityTiers": [
     {
       "tier": 1,
@@ -24610,7 +24610,36 @@
             "originalNumericRulesPreserved": true,
             "designTraceIsNotGameplayRuntimeEvidence": true,
             "qa": "qa/company-design-pre-gate-resume.test.mjs",
-            "remoteQa": ".github/workflows/vibe2-core-qa.yml"
+            "remoteQa": ".github/workflows/vibe2-core-qa.yml",
+            "designerSeed": {
+              "author": "GAME_DESIGNER_AI",
+              "creation": "EXISTING_IDENTITY_CORE_SLICE",
+              "externalPreparedSeedRequired": false,
+              "missingSeedAction": "CREATE_ROUTING_INPUT_FROM_OWNER_BRIEF_OR_ORIGINAL_OR_CATALOG",
+              "intakeSketchIsAuthoredSeed": false,
+              "output": "design/<gameId>/<date>/design-seed.json",
+              "fields": [
+                "identity",
+                "playerFantasy",
+                "coreFun",
+                "coreLoop",
+                "signatureSystems",
+                "multiplayerMode"
+              ],
+              "detailUsesSameRuleAnchors": true,
+              "invalidSeedAction": "EXISTING_SLICE_REPAIR",
+              "resumeReusesValidatedSeed": true,
+              "sourceModelAndDigestRequired": true,
+              "seedCreationGrantsDesignOrRuntimePass": false,
+              "newPipeline": false,
+              "preAuthoringSeedContractGate": false,
+              "preAuthoringCatalogClassGate": false,
+              "draftScoreAdmissionGate": false,
+              "contentRepairDuringAuthoring": true,
+              "finalStrictReviewRequired": true,
+              "finalConsumer": "tools/company-baseline-gate.mjs",
+              "preparedSeedFieldsRequiredAfterVerifiedAuthorship": false
+            }
           }
         },
         "antiMonotony": {
