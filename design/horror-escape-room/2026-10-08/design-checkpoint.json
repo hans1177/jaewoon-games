@@ -102,25 +102,310 @@
       "name": "감염 공격",
       "purpose": "몬스터의 명시적 감염 공격이 적중한 인간이 탈락하지 않고 몬스터로 전환하며, 인간 직업별 감염 스킬을 얻는다.",
       "playerChoice": "감염 스킬 선택"
+    },
+    "local_authoring_parts::0d40dd508e2447a24f9068be67ca5bd0b5ac98eb9eaa4ca40ccd74a3ab996d7b:signatureSystems:3": {
+      "id": "DELVE",
+      "grammarRole": "c",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "Energy",
+        "InfectAttackCost",
+        "InfectAttackCooldown",
+        "InfectRange"
+      ],
+      "stateOutputs": [
+        "HumanCount",
+        "MonsterCount",
+        "Energy",
+        "InfectAttackCost",
+        "InfectAttackCooldown",
+        "InfectRange"
+      ],
+      "name": "재방문",
+      "purpose": "감염된 인간이 몬스터로 전환하고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격을 진행하며, 감염 스킬을 가진 몬스터와의 추격을 재생한다.",
+      "playerChoice": "감염 스킬 선택"
+    },
+    "local_authoring_parts::0d40dd508e2447a24f9068be67ca5bd0b5ac98eb9eaa4ca40ccd74a3ab996d7b:signatureSystems:4": {
+      "id": "DELVE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "Energy",
+        "InfectAttackCost",
+        "InfectAttackCooldown",
+        "InfectRange"
+      ],
+      "stateOutputs": [
+        "HumanCount",
+        "MonsterCount",
+        "Energy",
+        "InfectAttackCost",
+        "InfectAttackCooldown",
+        "InfectRange"
+      ],
+      "name": "재방문",
+      "purpose": "감염된 인간이 몬스터로 전환하고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격을 진행하며, 감염 스킬을 가진 몬스터와의 추격을 재생한다.",
+      "playerChoice": "감염 스킬 선택"
+    },
+    "local_authoring_parts::864d671bc3fee89ab6800e5cd72f9e15759144b436820f68d3794e809a5c3f52:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "INFECT_ATTACK",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "Energy",
+            "InfectAttackCost",
+            "InfectAttackCooldown",
+            "InfectRange"
+          ],
+          "stateOutputs": [
+            "MonsterCount",
+            "HumanCount",
+            "Energy",
+            "InfectAttackCooldown",
+            "InfectRange"
+          ],
+          "name": "감염 공격",
+          "purpose": "몬스터의 명시적 감염 공격이 적중한 인간이 탈락하지 않고 몬스터로 전환하며, 인간 직업별 감염 스킬을 얻는다.",
+          "playerChoice": "감염 스킬 선택"
+        },
+        {
+          "id": "INFECT_ATTACK",
+          "grammarRole": "A",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "Energy",
+            "InfectAttackCost",
+            "InfectAttackCooldown",
+            "InfectRange"
+          ],
+          "stateOutputs": [
+            "MonsterCount",
+            "HumanCount",
+            "Energy",
+            "InfectAttackCooldown",
+            "InfectRange"
+          ],
+          "name": "감염 공격",
+          "purpose": "몬스터의 명시적 감염 공격이 적중한 인간이 탈락하지 않고 몬스터로 전환하며, 인간 직업별 감염 스킬을 얻는다.",
+          "playerChoice": "감염 스킬 선택"
+        },
+        {
+          "id": "INFECT_ATTACK",
+          "grammarRole": "B",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "Energy",
+            "InfectAttackCost",
+            "InfectAttackCooldown",
+            "InfectRange"
+          ],
+          "stateOutputs": [
+            "MonsterCount",
+            "HumanCount",
+            "Energy",
+            "InfectAttackCooldown",
+            "InfectRange"
+          ],
+          "name": "감염 공격",
+          "purpose": "몬스터의 명시적 감염 공격이 적중한 인간이 탈락하지 않고 몬스터로 전환하며, 인간 직업별 감염 스킬을 얻는다.",
+          "playerChoice": "감염 스킬 선택"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "c",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "Energy",
+            "InfectAttackCost",
+            "InfectAttackCooldown",
+            "InfectRange"
+          ],
+          "stateOutputs": [
+            "HumanCount",
+            "MonsterCount",
+            "Energy",
+            "InfectAttackCost",
+            "InfectAttackCooldown",
+            "InfectRange"
+          ],
+          "name": "재방문",
+          "purpose": "감염된 인간이 몬스터로 전환하고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격을 진행하며, 감염 스킬을 가진 몬스터와의 추격을 재생한다.",
+          "playerChoice": "감염 스킬 선택"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "Energy",
+            "InfectAttackCost",
+            "InfectAttackCooldown",
+            "InfectRange"
+          ],
+          "stateOutputs": [
+            "HumanCount",
+            "MonsterCount",
+            "Energy",
+            "InfectAttackCost",
+            "InfectAttackCooldown",
+            "InfectRange"
+          ],
+          "name": "재방문",
+          "purpose": "감염된 인간이 몬스터로 전환하고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격을 진행하며, 감염 스킬을 가진 몬스터와의 추격을 재생한다.",
+          "playerChoice": "감염 스킬 선택"
+        }
+      ]
+    },
+    "local_authoring_parts::3b13451c6feb33038cdf331a44e4ea6274f5876e9269cb9691fe740ed9a1edb9:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT: 역할 선호 선택 + AI 충원 → 상태 변화: 역할 변화 및 AI 충원",
+        "SELECT: 감염 스킬 선택 → 상태 변화: 감염 공격 및 정화",
+        "REWARD: 승패 결정 → 상태 변화: 역할 변화 및 AI 충원",
+        "RISK: 진영 0명 → 상태 변화: 승패 결정",
+        "NEXT: 240초 남으면 무승부 → 상태 변화: 무승부 결정"
+      ],
+      "signatureSystems": [
+        {
+          "id": "INFECT_ATTACK",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "Energy",
+            "InfectAttackCost",
+            "InfectAttackCooldown",
+            "InfectRange"
+          ],
+          "stateOutputs": [
+            "MonsterCount",
+            "HumanCount",
+            "Energy",
+            "InfectAttackCooldown",
+            "InfectRange"
+          ],
+          "name": "감염 공격",
+          "purpose": "몬스터의 명시적 감염 공격이 적중한 인간이 탈락하지 않고 몬스터로 전환하며, 인간 직업별 감염 스킬을 얻는다.",
+          "playerChoice": "감염 스킬 선택"
+        },
+        {
+          "id": "INFECT_ATTACK",
+          "grammarRole": "A",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "Energy",
+            "InfectAttackCost",
+            "InfectAttackCooldown",
+            "InfectRange"
+          ],
+          "stateOutputs": [
+            "MonsterCount",
+            "HumanCount",
+            "Energy",
+            "InfectAttackCooldown",
+            "InfectRange"
+          ],
+          "name": "감염 공격",
+          "purpose": "몬스터의 명시적 감염 공격이 적중한 인간이 탈락하지 않고 몬스터로 전환하며, 인간 직업별 감염 스킬을 얻는다.",
+          "playerChoice": "감염 스킬 선택"
+        },
+        {
+          "id": "INFECT_ATTACK",
+          "grammarRole": "B",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "Energy",
+            "InfectAttackCost",
+            "InfectAttackCooldown",
+            "InfectRange"
+          ],
+          "stateOutputs": [
+            "MonsterCount",
+            "HumanCount",
+            "Energy",
+            "InfectAttackCooldown",
+            "InfectRange"
+          ],
+          "name": "감염 공격",
+          "purpose": "몬스터의 명시적 감염 공격이 적중한 인간이 탈락하지 않고 몬스터로 전환하며, 인간 직업별 감염 스킬을 얻는다.",
+          "playerChoice": "감염 스킬 선택"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "c",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "Energy",
+            "InfectAttackCost",
+            "InfectAttackCooldown",
+            "InfectRange"
+          ],
+          "stateOutputs": [
+            "HumanCount",
+            "MonsterCount",
+            "Energy",
+            "InfectAttackCost",
+            "InfectAttackCooldown",
+            "InfectRange"
+          ],
+          "name": "재방문",
+          "purpose": "감염된 인간이 몬스터로 전환하고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격을 진행하며, 감염 스킬을 가진 몬스터와의 추격을 재생한다.",
+          "playerChoice": "감염 스킬 선택"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "Energy",
+            "InfectAttackCost",
+            "InfectAttackCooldown",
+            "InfectRange"
+          ],
+          "stateOutputs": [
+            "HumanCount",
+            "MonsterCount",
+            "Energy",
+            "InfectAttackCost",
+            "InfectAttackCooldown",
+            "InfectRange"
+          ],
+          "name": "재방문",
+          "purpose": "감염된 인간이 몬스터로 전환하고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격을 진행하며, 감염 스킬을 가진 몬스터와의 추격을 재생한다.",
+          "playerChoice": "감염 스킬 선택"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 559706,
-      "lastMs": 41140,
+      "totalMs": 658139,
+      "lastMs": 54495,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:55:06.173Z"
+      "updatedAt": "2026-10-08T10:56:44.608Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:45:46.438Z",
-  "updatedAt": "2026-10-08T10:55:06.173Z",
+  "updatedAt": "2026-10-08T10:56:44.610Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -837,7 +1122,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T10:55:06.173Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:56:44.610Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
