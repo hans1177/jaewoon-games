@@ -39,25 +39,42 @@
         "보스 공략 → 보스 동료 해금 → 파티 조합 확장",
         "마을 귀환/회복/강화"
       ]
+    },
+    "local_authoring_parts::cff72b2cb2702d1008dd91f55c86168080cdf2e3f2bb5e13a75ea80e99d59d6c:signatureSystems:0": {
+      "id": "초원 시드형 로그라이크 런",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "플레이어의 런 선택",
+        "보스의 런 선택",
+        "초원의 진행 상태"
+      ],
+      "stateOutputs": [
+        "랜덤 런 생성",
+        "플레이어의 런 공유",
+        "보스의 런 참여"
+      ],
+      "name": "초원 시드형 로그라이크 런",
+      "purpose": "초원 기본 몬스터 10종은 서로 다른 전조·사거리·패링 가능 여부·특수공격을 가진다. 비밀 숲에서 백색 송곳니 또는 고목의 심장 히든 보스가 확률 출현한다.",
+      "playerChoice": "플레이어는 런 시작부터 실루엣을 선택하고, 보스는 런 참여 시 실루엣을 선택한다. 런은 플레이어와 보스의 실루엣을 기반으로 조합된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 410282,
-      "lastMs": 66285,
+      "totalMs": 457080,
+      "lastMs": 46798,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:03:59.342Z"
+      "updatedAt": "2026-10-08T12:04:46.142Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:57:09.033Z",
-  "updatedAt": "2026-10-08T12:03:59.342Z",
+  "updatedAt": "2026-10-08T12:04:46.142Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1476,7 +1493,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:03:59.342Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:04:46.142Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
