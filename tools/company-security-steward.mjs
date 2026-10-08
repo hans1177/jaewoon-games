@@ -11,6 +11,9 @@ const clean=v=>String(v??'').trim();
 const sha256=v=>crypto.createHash('sha256').update(String(v)).digest('hex');
 const severityRank={LOW:1,MEDIUM:2,HIGH:3,CRITICAL:4};
 const BLOCK_AT='HIGH';
+const CENTRAL_POLICY_FILES=new Set(['platform-release-roadmap','company-log-map','company-architecture-map'].map(name=>`company-learning/${name}.json`));
+const SECURITY_CONTRACT_FILE=/^(?:\.github\/workflows\/company-security-immune\.yml|tools\/company-security-[^/]+\.mjs|qa\/company-security-[^/]+\.test\.mjs|tools\/company-shared-context\.mjs|tools\/company-constitution-enforcer\.mjs|company-learning\/security-immune-system\.json|company-directive\.json)$/;
+const SECURITY_BOUNDARY_KEY=/security|secret|credential|permission|quarantine|bypass|sourceOfTruth|authority|writeAllowed|writeAuthority|centralPolicyWrite|selfAcceptance|execution|executable|trusted|accessControl|remoteInput|serverValidation/i;
 const TRUSTED_INSTALL_DOMAINS=new Set(['ollama.com']);
 const SUSPICIOUS_BIN=/\.(?:exe|msi|scr|com|bat|cmd|ps1|dll|so|dylib|jar|apk|ipa|deb|rpm|elf)$/i;
 const SECRET_RULES=[
@@ -111,12 +114,52 @@ export function scanExternalInstruction(text=''){
   }
   return hits;
 }
-export function scanSecurityPatch({patch='',changedFiles=[]}={}){
+function jsonChanges(before,after,path=[]){
+  if(JSON.stringify(before)===JSON.stringify(after))return[];
+  const object=value=>value!==null&&typeof value==='object';
+  if(object(before)||object(after)){
+    if((before!==undefined&&!object(before))||(after!==undefined&&!object(after)))return[{path,before,after}];
+    return [...new Set([...Object.keys(before||{}),...Object.keys(after||{})])].flatMap(key=>jsonChanges(before?.[key],after?.[key],[...path,key]));
+  }
+  return[{path,before,after}];
+}
+function productionDesignChange({path,before,after}){
+  if(path.length===1&&['version','updatedAt','updatedDate'].includes(path[0]))return true;
+  if(path[0]!=='directNativeDualPlatformDevelopment'||path[1]!=='design')return false;
+  const keys=path.slice(2);
+  // 설계 소유자의 날짜 표시는 권한 부여가 아니다. 실행/쓰기/보안 권한 키는 계속 검토한다.
+  if(keys.slice(0,-1).some(key=>SECURITY_BOUNDARY_KEY.test(key)))return false;
+  if(keys.at(-1)==='authority'&&[before,after].every(value=>value===undefined||/^OWNER_DIRECTIVE_\d{4}-\d{2}-\d{2}$/.test(String(value))))return true;
+  return !keys.some(key=>SECURITY_BOUNDARY_KEY.test(key));
+}
+function classifyCentralSnapshots(snapshots={}){
+  const result=new Map();
+  for(const [file,snapshot] of Object.entries(snapshots)){
+    if(!CENTRAL_POLICY_FILES.has(file))continue;
+    try{
+      const before=typeof snapshot.before==='string'?JSON.parse(snapshot.before):snapshot.before;
+      const after=typeof snapshot.after==='string'?JSON.parse(snapshot.after):snapshot.after;
+      if(!before||!after||Array.isArray(before)||Array.isArray(after)||typeof before!=='object'||typeof after!=='object')continue;
+      const changes=jsonChanges(before,after);
+      result.set(file,{changes,designOnly:changes.length>0&&file==='company-learning/platform-release-roadmap.json'&&changes.every(productionDesignChange)});
+    }catch{/* 원본 비교가 불가능하면 기존 검토 분류를 유지한다. */}
+  }
+  return result;
+}
+export function scanSecurityPatch({patch='',changedFiles=[],centralPolicySnapshots={}}={}){
   const rows=parseAddedLines(patch);const findings=[];
+  const central=classifyCentralSnapshots(centralPolicySnapshots);
   for(const file of changedFiles){
     if(SUSPICIOUS_BIN.test(file))findings.push(finding({rule:'EXECUTABLE_OR_BINARY_ARTIFACT_ADDED',severity:'HIGH',file,line:0,text:file,category:'malware'}));
   }
-  for(const row of rows)findings.push(...scanLine(row));
+  for(const row of rows)findings.push(...scanLine(row).filter(item=>item.rule!=='CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW'||central.get(row.file)?.designOnly!==true));
+  // 권한 키 변경과 삭제로 제한을 없애는 변경도 추가 줄 검사와 같은 검토를 받는다.
+  for(const [file,entry] of central)if(!entry.designOnly){
+    for(const change of entry.changes){
+      if(!change.path.some(key=>SECURITY_BOUNDARY_KEY.test(key)||(change.after===undefined&&/forbidden/i.test(key))))continue;
+      findings.push(finding({rule:'CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW',severity:'HIGH',file,text:`${change.after===undefined?'removed':'changed'}:${change.path.join('.')}`,category:'policy-integrity',disposition:'REVIEW'}));
+    }
+  }
   const dedup=new Map();
   for(const x of findings)dedup.set([x.rule,x.file,x.line,x.evidenceSha256].join('|'),x);
   const list=[...dedup.values()].sort((a,b)=>severityRank[b.severity]-severityRank[a.severity]||a.file.localeCompare(b.file)||a.line-b.line);
@@ -130,6 +173,8 @@ export function scanSecurityPatch({patch='',changedFiles=[]}={}){
     findings:list,
     reviewFindings:list.filter(x=>clean(x.disposition)==='REVIEW').length,
     quarantineFindings:list.filter(x=>clean(x.disposition)!=='REVIEW'&&(severityRank[x.severity]||0)>=severityRank[BLOCK_AT]).length,
+    securityContractChanged:changedFiles.some(file=>SECURITY_CONTRACT_FILE.test(file))||list.some(item=>item.category==='policy-integrity'),
+    productionDesignDiagnostics:[...central].filter(([,entry])=>entry.designOnly).map(([file,entry])=>({file,changedFields:entry.changes.length,classification:'DESIGN_CONTENT_ONLY_NO_SECURITY_REVIEW'})),
     rawSecretStored:false,rawMalwareStored:false,
     checkedAt:new Date().toISOString()
   };
@@ -163,15 +208,30 @@ function gitChangedFiles(base='',head=''){
   const tracked=execFileSync('git',args,{encoding:'utf8'}).split('\n').map(clean).filter(Boolean);
   return base&&head?tracked:[...new Set([...tracked,...gitUntrackedFiles()])];
 }
+function centralSnapshots(files,base='',head=''){
+  const snapshots={};let beforeRef=base||'HEAD';
+  if(base&&head){try{beforeRef=execFileSync('git',['merge-base',base,head],{encoding:'utf8'}).trim();}catch{}}
+  for(const file of files.filter(file=>CENTRAL_POLICY_FILES.has(file))){
+    try{
+      snapshots[file]={
+        before:execFileSync('git',['show',`${beforeRef}:${file}`],{encoding:'utf8',maxBuffer:20*1024*1024}),
+        after:head?execFileSync('git',['show',`${head}:${file}`],{encoding:'utf8',maxBuffer:20*1024*1024}):fs.readFileSync(file,'utf8')
+      };
+    }catch{/* 비교가 없으면 기존 전체 권한 검토를 적용한다. */}
+  }
+  return snapshots;
+}
 export function scanWorkingTreeSecurity(){
-  return scanSecurityPatch({patch:gitPatch(),changedFiles:gitChangedFiles()});
+  const changedFiles=gitChangedFiles();
+  return scanSecurityPatch({patch:gitPatch(),changedFiles,centralPolicySnapshots:centralSnapshots(changedFiles)});
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const args=parseArgs();
   const patchFile=clean(args.patch),filesFile=clean(args.files);
   const patch=patchFile?fs.readFileSync(patchFile,'utf8'):gitPatch(clean(args.base),clean(args.head));
   const changedFiles=filesFile?fs.readFileSync(filesFile,'utf8').split('\n').map(clean).filter(Boolean):gitChangedFiles(clean(args.base),clean(args.head));
-  const report=scanSecurityPatch({patch,changedFiles});
+  const snapshots=!patchFile||(args.base&&args.head)?centralSnapshots(changedFiles,clean(args.base),clean(args.head)):{};
+  const report=scanSecurityPatch({patch,changedFiles,centralPolicySnapshots:snapshots});
   if(clean(args.output))fs.writeFileSync(args.output,JSON.stringify(report,null,2)+'\n','utf8');
   console.log('VIBE_SECURITY_VERDICT='+report.verdict);
   console.log('VIBE_SECURITY_HIGHEST='+report.highestSeverity);
