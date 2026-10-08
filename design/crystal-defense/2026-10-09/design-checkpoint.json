@@ -452,25 +452,28 @@
     },
     "local_authoring_parts::30886a9e4afbcf08e282f35c01233cbeb417cf55f903531998f13425ad7db88f:toSystem": {
       "toSystem": "GAME_CONTEXT"
+    },
+    "local_authoring_parts::30886a9e4afbcf08e282f35c01233cbeb417cf55f903531998f13425ad7db88f:trigger": {
+      "trigger": "플레이어가 '현재 선택'을 하며, 주요 인물의 목표·두려움·비밀을 기반으로 다음 상태를 결정해야 한다. 이 과정에서 'PLAYER_CHOICE'가 게임 컨텍스트로 전환되고, 결과적으로 'NEXT_WORLD_STATE'가 생성된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 23,
-      "successes": 23,
+      "calls": 24,
+      "successes": 24,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1628467,
-      "lastMs": 56884,
+      "totalMs": 1692408,
+      "lastMs": 63941,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:07:35.670Z"
+      "updatedAt": "2026-10-08T19:08:39.612Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:40:26.814Z",
-  "updatedAt": "2026-10-08T19:07:35.670Z",
+  "updatedAt": "2026-10-08T19:08:39.612Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2967,7 +2970,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T19:07:35.670Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:08:39.612Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
