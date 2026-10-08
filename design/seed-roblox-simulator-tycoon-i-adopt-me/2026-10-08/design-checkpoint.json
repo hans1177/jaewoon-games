@@ -556,25 +556,44 @@
       "name": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
       "purpose": "Player chooses to read the next enemy wave and place defensive structures to protect the objective.",
       "playerChoice": "Select a defensive strategy that covers the threatened route, considering enemy types and wave composition, and adapt it to the current map state and resource availability."
+    },
+    "local_authoring_parts::bcb76d57757b9f8829e16a4cd294c8ba124e36fea0331d53193d11e93989eb66:signatureSystems:3": {
+      "id": "READ_NEXT_ENEMY_WAVE_C",
+      "grammarRole": "c",
+      "stateInputs": [
+        "EnemyWaveType",
+        "PlayerSelection",
+        "CurrentMapState",
+        "ResourcePool"
+      ],
+      "stateOutputs": [
+        "NextMapState",
+        "ResourcePoolUpdate",
+        "DefenseStrategyUpdated",
+        "GameProgression"
+      ],
+      "name": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+      "purpose": "Player chooses to read the next enemy wave and place defensive structures to protect the objective.",
+      "playerChoice": "Select a defensive strategy that covers the threatened route, considering enemy types and wave composition, and adapt it to the current map state and resource availability."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 23,
-      "successes": 23,
+      "calls": 24,
+      "successes": 24,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2321449,
-      "lastMs": 103673,
+      "totalMs": 2424589,
+      "lastMs": 103140,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:51:17.365Z"
+      "updatedAt": "2026-10-08T15:53:00.507Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:52:01.924Z",
-  "updatedAt": "2026-10-08T15:51:17.366Z",
+  "updatedAt": "2026-10-08T15:53:00.507Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2805,7 +2824,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:51:17.365Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:53:00.507Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
