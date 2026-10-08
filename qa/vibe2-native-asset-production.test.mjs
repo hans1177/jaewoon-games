@@ -2976,6 +2976,18 @@ test('GLB surface inspection rejects collinear meshes that have no renderable tr
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('GLB world bounds must fit the rendering float32 transform range',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'glb-transform-range-'));
+  try{
+    const result=writeInspectionTriangle(root,document=>{
+      document.nodes[1].scale=[3e38,3e38,3e38];
+    });
+    assert.equal(result.status,'AUTHORING_REQUIRED');
+    assert(result.issues.includes('GLB_WORLD_TRANSFORM_FLOAT32_OVERFLOW'),JSON.stringify(result.issues));
+    assert.equal(result.runtimeVerified,false);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('GLB production inspection rejects poisoned payloads and malformed import bindings',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'glb-payload-'));
   const cases=[
