@@ -447,25 +447,94 @@
         "reward_condition_met"
       ],
       "fromSystem": "CORE_LOOP_DESIGN_CORE_FUN_MAIN_A_B_C_DELVE_0_TO_1_EFFECTIVE_STATE_CHANGE_0_ORIGINAL_SYSTEM_BASELINE_2026-09-25_GENERATED_BY_AUTO_MISSING_DESIGN_INTAKE_2026-09-25_WILDSURVIVAL_CORE_"
+    },
+    "local_authoring_parts::95336c69ed374bb485ca6e1a8a9560b93539e64a17047323e182d79626e2b1f7:toSystem,trigger,stateChange": {
+      "toSystem": "CORE_LOOP_DESIGN_CORE_FUN_A",
+      "trigger": "world_state_transformed",
+      "stateChange": "reward_condition_met"
+    },
+    "local_authoring_parts::8d13f01e96a09083a5e9b7d526e9f3f54411d53a23ef73d79bb2747efae0f96b:systemInterconnections:0": {
+      "fromId": "wild-survival_signature_systems_0",
+      "toId": "wild-survival_signature_systems_1",
+      "stateKeys": [
+        "world_state_transformed",
+        "reward_condition_met"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN_CORE_FUN_MAIN_A_B_C_DELVE_0_TO_1_EFFECTIVE_STATE_CHANGE_0_ORIGINAL_SYSTEM_BASELINE_2026-09-25_GENERATED_BY_AUTO_MISSING_DESIGN_INTAKE_2026-09-25_WILDSURVIVAL_CORE_",
+      "toSystem": "CORE_LOOP_DESIGN_CORE_FUN_A",
+      "trigger": "world_state_transformed",
+      "stateChange": "reward_condition_met"
+    },
+    "local_authoring_parts::9aacb481c11d511184a717f475f0e08f2e389c9776728c84b58e503bd7ed0111:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "wild-survival_signature_systems_0",
+      "toId": "wild-survival_signature_systems_1",
+      "stateKeys": [
+        "world_state_transformed",
+        "reward_condition_met"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN_CORE_FUN_MAIN_A_B_C_DELVE_0_TO_1_EFFECTIVE_STATE_CHANGE_0_ORIGINAL_SYSTEM_BASELINE_2026-09-25_GENERATED_BY_AUTO_MISSING_DESIGN_INTAKE_2026-09-25_WILDSURVIVAL_CORE"
+    },
+    "local_authoring_parts::9aacb481c11d511184a717f475f0e08f2e389c9776728c84b58e503bd7ed0111:toSystem,trigger,stateChange": {
+      "toSystem": "CORE_LOOP_DESIGN_CORE_FUN_A",
+      "trigger": "world_state_transformed",
+      "stateChange": "reward_condition_met"
+    },
+    "local_authoring_parts::8d13f01e96a09083a5e9b7d526e9f3f54411d53a23ef73d79bb2747efae0f96b:systemInterconnections:1": {
+      "fromId": "wild-survival_signature_systems_0",
+      "toId": "wild-survival_signature_systems_1",
+      "stateKeys": [
+        "world_state_transformed",
+        "reward_condition_met"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN_CORE_FUN_MAIN_A_B_C_DELVE_0_TO_1_EFFECTIVE_STATE_CHANGE_0_ORIGINAL_SYSTEM_BASELINE_2026-09-25_GENERATED_BY_AUTO_MISSING_DESIGN_INTAKE_2026-09-25_WILDSURVIVAL_CORE",
+      "toSystem": "CORE_LOOP_DESIGN_CORE_FUN_A",
+      "trigger": "world_state_transformed",
+      "stateChange": "reward_condition_met"
+    },
+    "local_authoring_parts::3ca2366bd7d01b7b570a8c99f1715878e181719fbc4e6e256c98947a36cedc34:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "wild-survival_signature_systems_0",
+      "toId": "wild-survival_signature_systems_1",
+      "stateKeys": [
+        "world_state_transformed",
+        "reward_condition_met"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN_CORE_FUN_MAIN_A_B_C_DELVE_0_TO_1_EFFECTIVE_STATE_CHANGE_0_ORIGINAL_SYSTEM_BASELINE_2026-09-25_GENERATED_BY_AUTO_MISSING_DESIGN_INTAKE_2026-09-25_WILDSURVIVAL_CORE"
+    },
+    "local_authoring_parts::3ca2366bd7d01b7b570a8c99f1715878e181719fbc4e6e256c98947a36cedc34:toSystem,trigger,stateChange": {
+      "toSystem": "CORE_LOOP_DESIGN_CORE_FUN_A",
+      "trigger": "world_state_transformed",
+      "stateChange": "reward_condition_met"
+    },
+    "local_authoring_parts::8d13f01e96a09083a5e9b7d526e9f3f54411d53a23ef73d79bb2747efae0f96b:systemInterconnections:2": {
+      "fromId": "wild-survival_signature_systems_0",
+      "toId": "wild-survival_signature_systems_1",
+      "stateKeys": [
+        "world_state_transformed",
+        "reward_condition_met"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN_CORE_FUN_MAIN_A_B_C_DELVE_0_TO_1_EFFECTIVE_STATE_CHANGE_0_ORIGINAL_SYSTEM_BASELINE_2026-09-25_GENERATED_BY_AUTO_MISSING_DESIGN_INTAKE_2026-09-25_WILDSURVIVAL_CORE",
+      "toSystem": "CORE_LOOP_DESIGN_CORE_FUN_A",
+      "trigger": "world_state_transformed",
+      "stateChange": "reward_condition_met"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 17,
+      "successes": 17,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 979040,
-      "lastMs": 150514,
+      "totalMs": 1102288,
+      "lastMs": 17688,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:07:41.474Z"
+      "updatedAt": "2026-10-08T18:09:44.731Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:51:22.381Z",
-  "updatedAt": "2026-10-08T18:07:41.474Z",
+  "updatedAt": "2026-10-08T18:09:44.732Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2668,7 +2737,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:07:41.474Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:09:44.732Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
