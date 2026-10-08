@@ -316,8 +316,9 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
   const terrain=[];
   for(let z=0;z<h;z++)for(let x=0;x<w;x++){
     const nx=x/w,nz=z/h,ridge=Math.abs(octave(nx*3,nz*3,0x102a));
-    const elevation=Math.max(.05,Math.min(.95,.48+.5*octave(nx*4,nz*4,0x22bb)+.16*ridge));
-    const moisture=Math.max(0,Math.min(1,.52+.58*octave(nx*3+11,nz*3-7,0x397a)+(String(climate).toUpperCase().includes('WET')?.2:0)));
+    const regionalBiome=String(biome).toUpperCase(),wet=/WET|SWAMP|JUNGLE|RAIN/.test(regionalBiome+' '+climate),dry=/DESERT|ARID|DRY/.test(regionalBiome+' '+climate),mountain=/MOUNTAIN|ALPINE|RIDGE/.test(regionalBiome);
+    const elevation=Math.max(.05,Math.min(.95,.48+.5*octave(nx*4,nz*4,0x22bb)+.16*ridge+(mountain?.12:0)));
+    const moisture=Math.max(0,Math.min(1,.52+.58*octave(nx*3+11,nz*3-7,0x397a)+(wet?.2:0)-(dry?.25:0)));
     const type=elevation<.26?'WATER':elevation>.77?'RIDGE':moisture>.66?'FOREST':moisture<.28?'DRY':'PLAIN';
     terrain.push({x,z,elevation:+elevation.toFixed(4),moisture:+moisture.toFixed(4),biome:type});
   }
@@ -325,11 +326,19 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     const {x,z}=tile,diffs=[[x-1,z],[x+1,z],[x,z-1],[x,z+1]].filter(([a,b])=>within(a,b));
     const rise=Math.max(0,...diffs.map(([a,b])=>Math.abs(tile.elevation-terrain[at(a,b)].elevation)*8));
     tile.slopeDegrees=+(Math.atan2(rise,cellSize)*180/Math.PI).toFixed(2);
-    tile.drainageTo=diffs.map(([a,b])=>terrain[at(a,b)]).filter(other=>other.elevation<tile.elevation).sort((a,b)=>a.elevation-b.elevation||a.z-b.z||a.x-b.x)[0]?.x===undefined?null:null;
     const lower=diffs.map(([a,b])=>terrain[at(a,b)]).filter(t=>t.elevation<tile.elevation).sort((a,b)=>a.elevation-b.elevation||a.z-b.z||a.x-b.x)[0];
     tile.drainageTo=lower?{x:lower.x,z:lower.z}:null;
   }
-  const passable=(x,z)=>within(x,z)&&!blocked.has(at(x,z))&&terrain[at(x,z)].biome!=='WATER';
+  // 침식으로 고도를 바꾸지 않고, 경사가 낮아지는 기존 셀만 잇는 하천 후보를 만든다.
+  const river=[],sources=terrain.filter(t=>t.elevation>.57&&t.biome!=='WATER').sort((a,b)=>b.elevation-a.elevation||a.z-b.z||a.x-b.x);
+  const riverStart=sources[Math.floor((proceduralCellHash(hash,4,7)/4294967296)*Math.min(18,sources.length))];
+  const riverVisited=new Set();let downstream=riverStart;
+  while(downstream&&river.length<Math.max(w,h)&&!riverVisited.has(at(downstream.x,downstream.z))){
+    river.push({x:downstream.x,z:downstream.z});riverVisited.add(at(downstream.x,downstream.z));
+    const next=downstream.drainageTo;downstream=next?terrain[at(next.x,next.z)]:null;
+  }
+  const waterway=new Set(river.map(c=>at(c.x,c.z)));
+  const passable=(x,z)=>within(x,z)&&!blocked.has(at(x,z))&&!waterway.has(at(x,z))&&terrain[at(x,z)].biome!=='WATER';
   const nearest=(x,z)=>{
     for(let radius=0;radius<Math.max(w,h);radius++)for(let dz=-radius;dz<=radius;dz++)for(let dx=-radius;dx<=radius;dx++){
       if(Math.abs(dx)+Math.abs(dz)!==radius)continue;
@@ -391,15 +400,17 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     for(const [dx,dz] of [[1,0],[-1,0],[0,1],[0,-1]]){
       const x=rx+dx-(dx<0?1:0),z=rz+dz-(dz<0?1:0),footprint=[];
       for(let d=0;d<2;d++)for(let e=0;e<2;e++)footprint.push({x:x+d,z:z+e});
-      if(footprint.some(c=>!within(c.x,c.z)||occupied.has(at(c.x,c.z))||sightCells.has(at(c.x,c.z))||terrain[at(c.x,c.z)].biome==='WATER'||terrain[at(c.x,c.z)].slopeDegrees>maxSlopeDegrees))continue;
+      if(footprint.some(c=>!within(c.x,c.z)||occupied.has(at(c.x,c.z))||waterway.has(at(c.x,c.z))||sightCells.has(at(c.x,c.z))||terrain[at(c.x,c.z)].biome==='WATER'||terrain[at(c.x,c.z)].slopeDegrees>maxSlopeDegrees))continue;
+      const footing=footprint.map(c=>terrain[at(c.x,c.z)].elevation*8);
+      if(Math.max(...footing)-Math.min(...footing)>Math.tan(maxSlopeDegrees*Math.PI/180)*cellSize)continue;
       const roll=proceduralCellHash(hash,x,z)/4294967296;
       if(roll>density)continue;
       footprint.forEach(c=>occupied.add(at(c.x,c.z)));
       const distance=Math.hypot(x-(hub?.x??w/2),z-(hub?.z??h/2));
       const zone=distance<Math.min(w,h)*.23?'COMMERCIAL':x>w*.75?'WORKSHOP':'RESIDENTIAL';
       const roof=String(climate).toUpperCase().includes('WET')?'PITCHED_ROOF':'ROOF';
-      const pivot={x:x*cellSize,z:z*cellSize},doorFacing=dx!==0?(dx>0?'WEST':'EAST'):(dz>0?'NORTH':'SOUTH');
-      const building={id:'LOT_'+buildings.length,zone,style,footprint,position:pivot,modules:[style+':FOUNDATION',style+':WALL',style+':DOOR',style+':'+roof],doorFacing,roadAccess:{x:rx,z:rz},gridSnap:cellSize,sourceBindingRequired:true};
+      const pivot={x:x*cellSize,y:Math.max(...footing),z:z*cellSize},doorFacing=dx!==0?(dx>0?'WEST':'EAST'):(dz>0?'NORTH':'SOUTH');
+      const building={id:'LOT_'+buildings.length,zone,style,footprint,position:pivot,foundation:{terrainMinY:Math.min(...footing),terrainMaxY:Math.max(...footing),levelY:pivot.y},modules:[style+':FOUNDATION',style+':WALL',style+':DOOR',style+':'+roof],doorFacing,roadAccess:{x:rx,z:rz},gridSnap:cellSize,sourceBindingRequired:true};
       buildings.push(building);
       addInstance('FOUNDATION',x,z);
       addInstance('DOOR',x,z);
@@ -424,7 +435,7 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
   const result={
     version:1,status:issues.length?'LAYOUT_REVIEW_REQUIRED':'STATIC_LAYOUT_PROPOSED',issues:Object.freeze(issues),
     seed:String(seed),dimension,coordinateSystem:dimension==='3D'?'Y_UP_HEIGHTFIELD':'XY_TOP_DOWN',
-    size:{width:w,height:h,cellSize},terrain:Object.freeze(terrain),roads:Object.freeze(routes),roadCells:Object.freeze([...roadSet].sort((a,b)=>a-b).map(id=>({x:id%w,z:Math.floor(id/w)}))),
+    size:{width:w,height:h,cellSize},terrain:Object.freeze(terrain),river:Object.freeze(river),roads:Object.freeze(routes),roadCells:Object.freeze([...roadSet].sort((a,b)=>a-b).map(id=>({x:id%w,z:Math.floor(id/w)}))),
     routeGraph,buildings:Object.freeze(buildings),instancingPlan:Object.freeze([...instanceGroups.values()]),landmark:Object.freeze({cell:landmark,reason:'VISIBLE_NAVIGATION_ANCHOR'}),
     sightline:Object.freeze(sightline),drainage:'EIGHT_NEIGHBOR_DOWNHILL',noise:'SEEDED_2D_GRADIENT_FBM',snapRules:Object.freeze({moduleGrid:cellSize,entrancesFaceConnectedRoad:true,foundationsFollowTerrain:true}),
     mobileBudget:Object.freeze({cellCount:terrain.length,buildingLimit:maxBuildings,instanceGroupCount:instanceGroups.size,actualDrawCallsMeasured:false}),
