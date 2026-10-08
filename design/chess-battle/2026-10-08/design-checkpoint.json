@@ -710,25 +710,33 @@
     },
     "local_authoring_parts::f6438d08b0652e164b5c8f2d22103ad47933490f1a878b6011126386f22c4933:newGameplay": {
       "newGameplay": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계하는 과정에서, 플레이어는 세계 상태와 다음 선택을 바꾼다. 중심 행동은 'Read the board and enemy threat information'이며, 두 대축은 'Commit a move or ability that changes control of key spaces'와 'resolve the tactical exchange while using the new board state'로 구성된다."
+    },
+    "local_authoring_parts::f6438d08b0652e164b5c8f2d22103ad47933490f1a878b6011126386f22c4933:systemImpact": {
+      "systemImpact": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계하는 과정에서, 플레이어는 세계 상태와 다음 선택을 바꾼다. 중심 행동은 'Read the board and enemy threat information'이며, 두 대축은 'Commit a move or ability that changes control of key spaces'와 'resolve the tactical exchange while using the new board state'로 구성된다."
+    },
+    "local_authoring_parts::a2e29224cdd3b48a614c35c919aa958a00df0cd015fdd22a858146615a395152:contentExpansionPlan:0": {
+      "milestone": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계하는 과정에서, 플레이어가 세계 상태와 다음 선택을 바꾼다. 중심 행동은 'Read the board and enemy threat information'이며, 두 대축은 'Commit a move or ability that changes control of key spaces'와 'resolve ",
+      "newGameplay": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계하는 과정에서, 플레이어는 세계 상태와 다음 선택을 바꾼다. 중심 행동은 'Read the board and enemy threat information'이며, 두 대축은 'Commit a move or ability that changes control of key spaces'와 'resolve the tactical exchange while using the new board state'로 구성된다.",
+      "systemImpact": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계하는 과정에서, 플레이어는 세계 상태와 다음 선택을 바꾼다. 중심 행동은 'Read the board and enemy threat information'이며, 두 대축은 'Commit a move or ability that changes control of key spaces'와 'resolve the tactical exchange while using the new board state'로 구성된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 48,
-      "successes": 48,
+      "calls": 49,
+      "successes": 49,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4764747,
-      "lastMs": 97607,
+      "totalMs": 4862052,
+      "lastMs": 97305,
       "lastError": null,
-      "updatedAt": "2026-10-08T11:33:42.499Z"
+      "updatedAt": "2026-10-08T11:35:19.806Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:51:40.071Z",
-  "updatedAt": "2026-10-08T11:33:42.499Z",
+  "updatedAt": "2026-10-08T11:35:19.807Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3265,7 +3273,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T11:33:42.499Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T11:35:19.807Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
