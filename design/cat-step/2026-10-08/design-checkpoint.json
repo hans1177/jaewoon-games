@@ -52,25 +52,43 @@
       "name": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
       "purpose": "Player's core action to initiate gameplay and establish the initial state.",
       "playerChoice": "Select and configure the initial game state based on the goal, limited moves, obstacles, or puzzle constraint."
+    },
+    "local_authoring_parts::1eab6a604897492068ce884c309c6a5c41115d1ee55fd8d0b8ade67b48a2e4f5:signatureSystems:1": {
+      "id": "A",
+      "grammarRole": "A",
+      "stateInputs": [
+        "goal",
+        "moves",
+        "obstacles",
+        "puzzleConstraint"
+      ],
+      "stateOutputs": [
+        "status",
+        "rewards",
+        "nextStage"
+      ],
+      "name": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+      "purpose": "Player's core action to initiate gameplay and establish the initial state.",
+      "playerChoice": "Select and configure the initial game state based on the goal, limited moves, obstacles, or puzzle constraint."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 549117,
-      "lastMs": 100452,
+      "totalMs": 650035,
+      "lastMs": 100918,
       "lastError": null,
-      "updatedAt": "2026-10-08T07:51:34.281Z"
+      "updatedAt": "2026-10-08T07:53:15.200Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:42:25.133Z",
-  "updatedAt": "2026-10-08T07:51:34.281Z",
+  "updatedAt": "2026-10-08T07:53:15.200Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2107,7 +2125,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T07:51:34.281Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T07:53:15.200Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
