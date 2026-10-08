@@ -36255,13 +36255,13 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-08T20:36:15.460Z",
+      "updatedAt": "2026-10-08T21:52:31.273Z",
       "robloxSourceCommit": "6f0bb2d9121b8530dcf10bd8eb2220c7c52c7f81",
       "robloxSourceBootstrapPassedAt": "2026-10-08T12:50:41.556Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -36958,7 +36958,7 @@
       "unitySourceCommit": "cffebe13c27c2d181ca3915e05745171d2f533a4",
       "unityBuildRunId": 37815511744,
       "unityRuntimeSmokeRunId": 37824113880,
-      "unityIndependentQaRunId": 37824607456,
+      "unityIndependentQaRunId": 37845616509,
       "unityRegressionRunId": 37825225111,
       "unityF0ThroughF9Evidence": {
         "version": 2,
@@ -36991,11 +36991,11 @@
             "authority": "EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION"
           },
           "F5": {
-            "state": "PASS",
+            "state": "FAIL",
             "authority": "EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION_PLUS_INDEPENDENT_QA"
           },
           "F6": {
-            "state": "PASS",
+            "state": "FAIL",
             "authority": "EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION_PLUS_INDEPENDENT_QA"
           },
           "F7": {
@@ -37005,7 +37005,7 @@
             "authoritativeSync": false
           },
           "F8": {
-            "state": "PASS",
+            "state": "FAIL",
             "authority": "EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION_PLUS_INDEPENDENT_QA"
           },
           "F9": {
@@ -37014,7 +37014,7 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-10-08T18:54:11.951Z"
+        "verifiedAt": "2026-10-08T21:52:31.273Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -37037,15 +37037,15 @@
         "regressionPassed": false,
         "rawStageResults": {
           "runtime": true,
-          "independentQa": true,
+          "independentQa": false,
           "regression": false
         },
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
         "exactRevision": true,
-        "lastSuccessfulStage": "F8_GAMEPLAY_SYSTEMS",
-        "failureStage": "F9_RELEASE_REGRESSION",
-        "failureSignature": "aa88813b99b1153d3858f8be845eee9826207f07dcf952ae41a5cce710dece63"
+        "lastSuccessfulStage": "F4_PHYSICS_AND_MOVEMENT",
+        "failureStage": "F5_INPUT_CAMERA_UI",
+        "failureSignature": "c7661d58a75f354b663869eb924abb9e3396a6c02f6fe225be2ce71672b192ec"
       },
       "executionEvidence": {
         "version": 4,
@@ -37061,17 +37061,17 @@
         "regressionPassed": false,
         "rawStageResults": {
           "runtime": true,
-          "independentQa": true,
+          "independentQa": false,
           "regression": false
         },
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
         "exactRevision": true,
-        "lastSuccessfulStage": "F8_GAMEPLAY_SYSTEMS",
-        "failureStage": "F9_RELEASE_REGRESSION",
-        "failureSignature": "aa88813b99b1153d3858f8be845eee9826207f07dcf952ae41a5cce710dece63"
+        "lastSuccessfulStage": "F4_PHYSICS_AND_MOVEMENT",
+        "failureStage": "F5_INPUT_CAMERA_UI",
+        "failureSignature": "c7661d58a75f354b663869eb924abb9e3396a6c02f6fe225be2ce71672b192ec"
       },
-      "resumeStage": "F9_RELEASE_REGRESSION",
+      "resumeStage": "F5_INPUT_CAMERA_UI",
       "failureCount": 1,
       "contractCanaryPassed": false,
       "robloxValidationTarget": {
@@ -43297,7 +43297,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-08T21:25:44.177Z",
+  "updatedAt": "2026-10-08T21:52:33.224Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
