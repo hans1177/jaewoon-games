@@ -995,6 +995,26 @@ test('design-to-native trace is fail-closed for absent owners, incomplete roles 
       repoRoot:root,multiplayerRequired:true});
     assert.ok(wrongGame.gapReasons.includes('NATIVE_GAME_CODE_OWNER_MISSING'));
     assert.equal(wrongGame.observedGameCodeFiles.length,0);
+    const other='unity-games/other-game/Assets/Scripts/GameCore.cs';
+    fs.mkdirSync(path.dirname(path.join(root,other)),{recursive:true});
+    fs.writeFileSync(path.join(root,other),'class Remote { void Attack(){} }\\n');
+    const escaped=sourceRoot+'/../other-game/Assets/Scripts/GameCore.cs';
+    const swapped=buildDesignToPlatformCodingTrace({
+      gameId,design:d,platform:'UNITY_WEB',repoRoot:root,sourceRoot,
+      sourceObservation:{sourceRoot,sourceTreeFingerprint:'fake',topFiles:[{file:escaped}],sourceAnchors:[]},
+      responsibleFiles:[escaped],multiplayerRequired:true
+    });
+    assert.equal(swapped.observedGameCodeFiles.length,0,'another game cannot count as this game code');
+    if(process.platform!=='win32'){
+      const shortcut=path.join(root,sourceRoot,'Assets','Scripts','Remote.cs');
+      fs.symlinkSync(path.join(root,other),shortcut);
+      const linked=buildDesignToPlatformCodingTrace({
+        gameId,design:d,platform:'UNITY_WEB',repoRoot:root,sourceRoot,
+        sourceObservation:{sourceRoot,sourceTreeFingerprint:'fake',topFiles:[{file:sourceRoot+'/Assets/Scripts/Remote.cs'}],sourceAnchors:[]},
+        responsibleFiles:[sourceRoot+'/Assets/Scripts/Remote.cs'],multiplayerRequired:true
+      });
+      assert.equal(linked.observedGameCodeFiles.length,0,'cross-game symlink cannot count as current game code');
+    }
     const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
     assert.match(worker,/designCodeRole=/);
     assert.match(worker,/designCodeVerification=/);
