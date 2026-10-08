@@ -170,6 +170,14 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
     if(different.length<2)reject('DESIGN_ALTERNATIVES_DUPLICATED','IDEA_AND_DISTINCTNESS',['designAlternatives','selectedDesignPlan'],{plans:[alternatives[i].label,alternatives[j].label],differentAxes:different},'원본 규칙을 보존하면서 루프·동선·대응법·성장 중 최소 두 항목의 실제 플레이 접근이 다른 대안을 작성하고 선택 근거를 갱신한다.');
   }
   const requirements=designPlayabilityRequirements(seed,sourceText);
+  // 정식 플레이 상세 계약이 생략되는 보존형 설계도 상태 키에 행동 설명을 넣지 못한다.
+  if(selected.has('signatureSystems'))for(const row of list(design.signatureSystems))for(const field of ['stateInputs','stateOutputs']){
+    if(list(row[field]).some(key=>/→|->|\b(?:INPUT|SELECT|OUTPUT|STATE)\s*:/i.test(clean(key)))){
+      const keyPath=`signatureSystems.${row.id}.${field}`;
+      const detail='플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다';
+      reject('DESIGN_STATE_KEY_IS_INSTRUCTION','CORE_LOOP_DESIGN',['signatureSystems'],{path:keyPath,detail},`${keyPath}: ${detail}. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.`);
+    }
+  }
   const detailed=requirements.required&&(requirePlayableContract||seed.designInputMode==='OWNER_BRIEF_AND_ORIGINAL_ONLY'||design.designIntegrityPlan?.authoringVersion===2||list(design.signatureSystems).some(row=>row.grammarRole));
   const chosen=design.selectedDesignPlan;
   if(chosen){
@@ -203,9 +211,6 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
         if(count<1||(['MAIN','A','B'].includes(role)&&count!==1))invalid('DESIGN_RULE_ROLE_MISSING',['signatureSystems'],'signatureSystems',`${role} 역할과 그 상태 입출력을 명확히 구분해야 한다`);
       }
       if(!distinctIds(systems)||systems.some(row=>!list(row.stateInputs).length||!list(row.stateOutputs).length))invalid('DESIGN_RULE_STATE_MISSING',['signatureSystems'],'signatureSystems','중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다');
-      for(const row of systems)for(const field of ['stateInputs','stateOutputs']){
-        if(list(row[field]).some(key=>/→|->|\b(?:INPUT|SELECT|OUTPUT|STATE)\s*:/i.test(clean(key))))invalid('DESIGN_STATE_KEY_IS_INSTRUCTION',['signatureSystems'],`signatureSystems.${row.id}.${field}`,'플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다');
-      }
     }
     if(selected.has('systemInterconnections')){
       const edges=list(design.systemInterconnections),graph=new Map(systems.map(row=>[row.id,[]]));
