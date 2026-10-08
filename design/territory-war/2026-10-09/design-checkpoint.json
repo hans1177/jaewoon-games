@@ -931,25 +931,43 @@
     },
     "local_authoring_parts::ffade94a4eecd3d36cb83ac716c6cc637bdf16a530bb53ecf68a9f5a8327a338:toSystem": {
       "toSystem": "BOUNDARY_PRESSURE_ANALYSIS_SYSTEM_0123456789ABCDEF0123456789ABCDEFABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    },
+    "local_authoring_parts::ffade94a4eecd3d36cb83ac716c6cc637bdf16a530bb53ecf68a9f5a8327a338:trigger": {
+      "trigger": "플레이어는 현재 경계 압박을 읽고 지역 특성과 전선 변화를 결합하여 새로운 전략을 세운다."
+    },
+    "local_authoring_parts::ffade94a4eecd3d36cb83ac716c6cc637bdf16a530bb53ecf68a9f5a8327a338:stateChange": {
+      "stateChange": "플레이어는 현재 경계 압박을 읽고 지역 특성과 전선 변화를 결합하여 새로운 전략을 세운다."
+    },
+    "local_authoring_parts::bef621d61fb395ede4f1d2ac03ec06295d8edf7e80edaae1ae685219aba39d6a:systemInterconnections:1": {
+      "fromId": "border_pressure_to_territory_objective_connection_1",
+      "toId": "territory_objective",
+      "stateKeys": [
+        "border_pressure",
+        "territory_objective"
+      ],
+      "fromSystem": "BOUNDARY_PRESSURE_ANALYSIS_SYSTEM_0123456789ABCDEF0123456789ABCDEFABCDEFGHIJKLMNOPQRSTUVWXYZ",
+      "toSystem": "BOUNDARY_PRESSURE_ANALYSIS_SYSTEM_0123456789ABCDEF0123456789ABCDEFABCDEFGHIJKLMNOPQRSTUVWXYZ",
+      "trigger": "플레이어는 현재 경계 압박을 읽고 지역 특성과 전선 변화를 결합하여 새로운 전략을 세운다.",
+      "stateChange": "플레이어는 현재 경계 압박을 읽고 지역 특성과 전선 변화를 결합하여 새로운 전략을 세운다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 39,
-      "successes": 36,
+      "calls": 41,
+      "successes": 38,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 3114882,
-      "lastMs": 30399,
+      "totalMs": 3176974,
+      "lastMs": 31246,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T23:19:24.676Z"
+      "updatedAt": "2026-10-08T23:20:26.770Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:48:16.553Z",
-  "updatedAt": "2026-10-08T23:19:24.676Z",
+  "updatedAt": "2026-10-08T23:20:26.772Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3203,7 +3221,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T23:19:24.676Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T23:20:26.772Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
