@@ -434,25 +434,31 @@
       "toSystem": "BOARD_STATE_TRANSITION_SYSTEM_01",
       "trigger": "systemInterconnections[0].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성합니다. 예: '플레이어가 레벨 타겟 상태를 선택하면, 시스템은 다음 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다.'",
       "stateChange": "플레이어가 레벨 타겟 상태를 선택하면, 시스템은 다음 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다."
+    },
+    "local_authoring_parts::5d77e804cf7d07177dc2b933b0c846d308e363204afb98f50d50133546e6fec6:fromId": {
+      "fromId": "systemInterconnections[1]"
+    },
+    "local_authoring_parts::5d77e804cf7d07177dc2b933b0c846d308e363204afb98f50d50133546e6fec6:toId": {
+      "toId": "systemInterconnections[1].stateChange"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 18,
+      "calls": 20,
+      "successes": 20,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 563922,
-      "lastMs": 35481,
+      "totalMs": 632026,
+      "lastMs": 35032,
       "lastError": null,
-      "updatedAt": "2026-10-08T20:59:03.657Z"
+      "updatedAt": "2026-10-08T21:00:11.766Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:49:39.552Z",
-  "updatedAt": "2026-10-08T20:59:03.659Z",
+  "updatedAt": "2026-10-08T21:00:11.766Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2947,7 +2953,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T20:59:03.659Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:00:11.766Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
