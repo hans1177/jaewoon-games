@@ -399,3 +399,24 @@ test('Unity Web world authoring stays opt-in and rejects unapproved or disconnec
     fs.rmSync(root,{recursive:true,force:true});
   }
 });
+
+test('approved procedural Unity bootstrap never overwrites an existing gameplay source',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-web-world-preserve-'));
+  const original=process.cwd();
+  try{
+    process.chdir(root);
+    const baseline=path.join(root,'approved-design.json');
+    fs.writeFileSync(baseline,JSON.stringify({content:{identity:'preserve existing Unity source',platformProfiles:{UNITY:{platform:'UNITY'}},spatialLayout:{dimension:'3D',proceduralWorld:{approvedDesign:true,dimension:'3D',seed:'preserve',width:24,height:24}}}}));
+    const verified=writeVerifiedPlaybooks(root);
+    const script='unity-games/preserved-world/Assets/Scripts/UnityWebFloorGame.cs';
+    fs.mkdirSync(path.dirname(script),{recursive:true});
+    const existing='// existing authored gameplay state; never delete';
+    fs.writeFileSync(script,existing);
+    assert.throws(()=>execFileSync(process.execPath,[tool.pathname,'--game-id=preserved-world','--baseline='+baseline,'--playbooks='+verified,'--output=unity-games/preserved-world'],{stdio:'pipe'}),/Command failed/);
+    assert.equal(fs.readFileSync(script,'utf8'),existing);
+    assert.equal(fs.existsSync('unity-games/preserved-world/Assets/Resources/vibe-world-layout.json'),false);
+  }finally{
+    process.chdir(original);
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
