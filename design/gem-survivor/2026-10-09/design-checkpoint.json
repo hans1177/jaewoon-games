@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::74fb4b36610dbc4fa07c31bbdce76b58e8715b862ba21d6fca35de29df7123ab:identity": {
+      "identity": "보석 생존전은 플레이어가 '진행'하는 단일 행동 중심의 ACTION_SURVIVAL_ROGUELITE 게임이다. 이 게임은 주로 모바일에서 실행되며, 시간 제약 내에 적대적인 희생군을 피하면서 자원을 수집하여 건강하게 살아남는 과정을 재현한다. 게임의 핵심 재미는 진입 시점부터 즉시 이해되는 인간 갈등과 반복 가능한 루프를 통해 전개된다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 202859,
+      "lastMs": 202859,
+      "lastError": null,
+      "updatedAt": "2026-10-08T22:08:35.468Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T22:05:12.596Z",
-  "updatedAt": "2026-10-08T22:05:12.603Z",
+  "updatedAt": "2026-10-08T22:08:35.468Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2208,5 +2224,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-08T22:08:35.468Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
