@@ -874,25 +874,63 @@
         "resourceFlow": "방어 범위 확대, 자원 축적 및 전략 유연성이 증가하는 상태 변화",
         "balanceRules": "기초 방어 전략 학습 후 자원 축적 증가에 따라 전략 유연성과 방어 범위가 점진적으로 확장됨"
       }
+    },
+    "local_authoring_parts::b3a198262587bd386a9cd63b078e89dd4f107e9e28f23e959a3f2d2360fa9a0f:contentExpansionPlan,failureRetryRisk": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "1",
+          "newGameplay": "게임 내 콘텐츠의 다양한 활용 및 재해석을 통해 플레이어에게 새로운 경험과 의미를 제공하는 보조 요소입니다.",
+          "systemImpact": "플레이어가 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이라는 중심 행동을 바탕으로, 대표 선택인 'Earn resources from defeated enemies a'에 대한 다양한 방식을 탐구합니다."
+        },
+        {
+          "milestone": "2",
+          "newGameplay": "게임 내 콘텐츠의 다양한 활용 및 재해석을 통해 플레이어에게 새로운 경험과 의미를 제공하는 보조 요소입니다.",
+          "systemImpact": "플레이어가 'Adapt the defense to enemy types and wave composition'라는 핵심 판단 구조로 전략적 변화를 이끌고, 다음 월드 상태 변에 대한 준비를 합니다."
+        },
+        {
+          "milestone": "3",
+          "newGameplay": "게임 내 콘텐츠의 다양한 활용 및 재해석을 통해 플레이어에게 새로운 경험과 의미를 제공하는 보조 요소입니다.",
+          "systemImpact": "플레이어가 'Explore new defensive layouts, discover hidden upgrades, and uncover strategic patterns in the evolving game state'와 같은 새로운 게임 상태를 탐색하고, 다음 질문으로 이어지게 됩니다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "기초 방어 전략 학습 후 자원 축적이 증가하지 않는 상황",
+          "전략 유연성과 방어 범위 확장이 제한되는 경우"
+        ],
+        "retryFlow": "플레이어는 기존 전략을 바탕으로 새로운 선택지를 탐구하며, 실패 시에도 단순한 반복이나 무작위 선택을 피하기 위해 체계적인 대응법을 적용합니다.",
+        "riskPressure": "자원 축적 과정에서의 위험은 전략 유연성을 높이고, 보상 조건에 따라 재도전 가능성이 존재함을 고려해야 합니다.",
+        "recoveryRules": "실패 시에는 전략적 변화나 자원 배분 변경을 통해 회복할 수 있으며, 이는 플레이어에게 새로운 경험과 의미를 제공하는 중요한 요소입니다."
+      }
+    },
+    "local_authoring_parts::500aa8d28d636819de89da3d6fc7966b2f6ec17550fa1c52ae8c4bda26d034f4:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "SIGNATURE_SYSTEM_0",
+      "toId": "SIGNATURE_SYSTEM_3",
+      "stateKeys": [
+        "DEFENSE_COVERAGE",
+        "RESOURCE_ACUMULATION",
+        "TACTICAL_FLEXIBILITY"
+      ],
+      "fromSystem": "SINGLE_DEFENSE_STRATEGY_CORE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 26,
-      "successes": 23,
+      "calls": 28,
+      "successes": 25,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2793486,
-      "lastMs": 51267,
+      "totalMs": 2998193,
+      "lastMs": 54532,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T23:15:54.812Z"
+      "updatedAt": "2026-10-08T23:19:19.535Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:50:18.458Z",
-  "updatedAt": "2026-10-08T23:15:54.817Z",
+  "updatedAt": "2026-10-08T23:19:19.535Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3084,12 +3122,155 @@
     }
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "f1c4f8ea43e5a3e6fea67d8bc6d05fcd71d9b578bfe24bcd5855d57bc598f6a5"
   },
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T23:15:54.817Z",
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "MAIN→A의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: MAIN→A의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "MAIN→A의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: MAIN→A의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "MAIN→A의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: MAIN→A의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "MAIN→A의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: MAIN→A의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "MAIN→A의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: MAIN→A의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::systems-progression": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "선형적 진입 및 확대: 게임 시작 단계에서 기본적인 방어 전략을 배우고, 이후 자원 축적이 증가하면서 전략 유연성과 방어 범위가 확장되는 과정",
+      "progressionEconomyBalance": {
+        "progressionLoop": "게임 시작 단계에서 기본적인 방어 전략을 배우고, 이후 자원 축적이 증가하면서 전략 유연성과 방어 범위가 확장되는 과정",
+        "resourceFlow": "방어 범위 확대, 자원 축적 및 전략 유연성이 증가하는 상태 변화",
+        "balanceRules": "기초 방어 전략 학습 후 자원 축적 증가에 따라 전략 유연성과 방어 범위가 점진적으로 확장됨"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "1",
+          "newGameplay": "게임 내 콘텐츠의 다양한 활용 및 재해석을 통해 플레이어에게 새로운 경험과 의미를 제공하는 보조 요소입니다.",
+          "systemImpact": "플레이어가 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이라는 중심 행동을 바탕으로, 대표 선택인 'Earn resources from defeated enemies a'에 대한 다양한 방식을 탐구합니다."
+        },
+        {
+          "milestone": "2",
+          "newGameplay": "게임 내 콘텐츠의 다양한 활용 및 재해석을 통해 플레이어에게 새로운 경험과 의미를 제공하는 보조 요소입니다.",
+          "systemImpact": "플레이어가 'Adapt the defense to enemy types and wave composition'라는 핵심 판단 구조로 전략적 변화를 이끌고, 다음 월드 상태 변에 대한 준비를 합니다."
+        },
+        {
+          "milestone": "3",
+          "newGameplay": "게임 내 콘텐츠의 다양한 활용 및 재해석을 통해 플레이어에게 새로운 경험과 의미를 제공하는 보조 요소입니다.",
+          "systemImpact": "플레이어가 'Explore new defensive layouts, discover hidden upgrades, and uncover strategic patterns in the evolving game state'와 같은 새로운 게임 상태를 탐색하고, 다음 질문으로 이어지게 됩니다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "기초 방어 전략 학습 후 자원 축적이 증가하지 않는 상황",
+          "전략 유연성과 방어 범위 확장이 제한되는 경우"
+        ],
+        "retryFlow": "플레이어는 기존 전략을 바탕으로 새로운 선택지를 탐구하며, 실패 시에도 단순한 반복이나 무작위 선택을 피하기 위해 체계적인 대응법을 적용합니다.",
+        "riskPressure": "자원 축적 과정에서의 위험은 전략 유연성을 높이고, 보상 조건에 따라 재도전 가능성이 존재함을 고려해야 합니다.",
+        "recoveryRules": "실패 시에는 전략적 변화나 자원 배분 변경을 통해 회복할 수 있으며, 이는 플레이어에게 새로운 경험과 의미를 제공하는 중요한 요소입니다."
+      }
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T23:19:19.535Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
