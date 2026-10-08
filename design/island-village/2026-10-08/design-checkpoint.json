@@ -778,25 +778,36 @@
       "toSystem": "VillageProgressionSystem",
       "trigger": "Select a new village goal",
       "stateChange": "Acquire a focused set of resources, and unlock a new resident, activity, or area to proceed to the next stage of village development"
+    },
+    "local_authoring_parts::8807395c62bda13580760dee5bf7b77281eaf3dbbc03640ff52b26649586e3cd:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "signatureSystems[3]",
+      "toId": "signatureSystems[4]",
+      "stateKeys": [
+        "VillageFunction",
+        "ResidentCount",
+        "ActivityType",
+        "AreaType"
+      ],
+      "fromSystem": "VillageProgressionSystem"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 27,
-      "successes": 27,
+      "calls": 28,
+      "successes": 28,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2469491,
-      "lastMs": 33013,
+      "totalMs": 2502425,
+      "lastMs": 32934,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:06:40.784Z"
+      "updatedAt": "2026-10-08T16:07:13.720Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:36:39.832Z",
-  "updatedAt": "2026-10-08T16:06:40.785Z",
+  "updatedAt": "2026-10-08T16:07:13.721Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3023,7 +3034,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:06:40.785Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:07:13.720Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
