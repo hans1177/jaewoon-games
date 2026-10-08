@@ -347,6 +347,10 @@ test('approved Unity Web design generates playable-scene visual data in canonica
     assert.match(runtime,/surface.SetTriangles\(groups\[k\],k\)/);
     assert.match(runtime,/roads.vertices=roadV.ToArray\(\)/);
     assert.match(runtime,/baked.CombineMeshes\(models\[k\].ToArray\(\),true,true\)/);
+    assert.match(runtime,/var models=new List<CombineInstance>\[9\]/);
+    assert.match(runtime,/Mathf.Clamp\(lot.material,0,3\)/);
+    assert.doesNotMatch(runtime,/new List<CombineInstance>\[6\]/);
+    assert.match(runtime,/approvedEnvironmentReady \? "PASS" : "REPAIR_REQUIRED/);
     assert.match(runtime,/primitive.GetComponent<Collider>\(\).enabled=false/);
     assert.match(runtime,/primitive.SetActive\(false\);Destroy\(primitive\);/);
     assert.match(runtime,/collider=UNCHANGED save=UNCHANGED native_qa=REQUIRED/);
