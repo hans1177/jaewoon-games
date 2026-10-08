@@ -9,10 +9,10 @@
   "completedPhases": [],
   "completedPhaseCount": 0,
   "cachedTaskCount": 16,
-  "lastSuccessfulModelCallAt": "2026-10-08T12:57:03.650Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T13:00:26.602Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "designerSeed": {
     "file": "design/village-dungeons/2026-10-08/design-seed.json",
     "contentDigest": "e12ba2f2e11537929e12929be1bf9745935571092c7a6cf29f4ab5e28ca922b0",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1028566,
-      "lastMs": 87961,
+      "totalMs": 1231509,
+      "lastMs": 202943,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:57:03.647Z"
+      "updatedAt": "2026-10-08T13:00:26.602Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T12:57:03.658Z"
+  "updatedAt": "2026-10-08T13:00:26.608Z"
 }
