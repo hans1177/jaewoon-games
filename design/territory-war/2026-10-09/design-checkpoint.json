@@ -82,25 +82,41 @@
       "name": "READ_BORDER_PRESSURE_AND_CHOOSE_TERRITORY_CHARACTERISTIC",
       "purpose": "플레이어는 현재 경계 압박과 지역 특성을 결합하여 새로운 전략을 세운다.",
       "playerChoice": "영토의 경계 압박을 읽고, 그에 따라 지역 특성과 전선 변화를 결합하여 새로운 전략을 결정한다."
+    },
+    "local_authoring_parts::51c6916d1b6b7627fbca8e88758ed951a334f3b73be78c39b1b22a10a4b4c972:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "border_pressure",
+        "territory_characteristic"
+      ],
+      "stateOutputs": [
+        "new_strategy",
+        "updated_front_line",
+        "expanded_resources"
+      ],
+      "name": "READ_BORDER_PRESSURE_AND_CHOOSE_TERRITORY_CHARACTERISTIC",
+      "purpose": "Read the current border pressure and choose one territory characteristic to guide strategy and front line adaptation.",
+      "playerChoice": "Select a territory characteristic that reflects the current border pressure and aligns with long-term goals and resource allocation strategies."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 579541,
-      "lastMs": 102063,
+      "totalMs": 681921,
+      "lastMs": 102380,
       "lastError": null,
-      "updatedAt": "2026-10-08T20:57:56.121Z"
+      "updatedAt": "2026-10-08T20:59:38.502Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:48:16.553Z",
-  "updatedAt": "2026-10-08T20:57:56.121Z",
+  "updatedAt": "2026-10-08T20:59:38.502Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2124,7 +2140,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T20:57:56.121Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T20:59:38.502Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
