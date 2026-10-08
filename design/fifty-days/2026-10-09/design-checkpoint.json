@@ -524,25 +524,28 @@
       "toSystem": "ACTION_SURVIVAL_ROGUELITE_A",
       "trigger": "플레이어가 선택한 결과 RUN_RESULT와 현재 건축 상태 BUILD_STATE를 기반으로, 세계 상태 MODIFIED_WORLD_STATE를 업데이트하여 다음 진행 선택 NEXT_PROGRESSION_CHOICE를 결정한다.",
       "stateChange": "플레이어가 선택한 결과 RUN_RESULT와 현재 건축 상태 BUILD_STATE를 기반으로, 세계 상태 MODIFIED_WORLD_STATE를 업데이트하여 다음 진행 선택 NEXT_PROGRESSION_CHOICE를 결정한다."
+    },
+    "local_authoring_parts::f583971592641937357d6418a38b3d60e1011cfcefd7e929e56d4eba8a693ee5:fromId": {
+      "fromId": "systemInterconnections[2]_repair_request"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 25,
-      "successes": 25,
+      "calls": 26,
+      "successes": 26,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1840678,
-      "lastMs": 62329,
+      "totalMs": 1898715,
+      "lastMs": 58037,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:16:19.076Z"
+      "updatedAt": "2026-10-08T18:17:17.116Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:45:38.274Z",
-  "updatedAt": "2026-10-08T18:16:19.077Z",
+  "updatedAt": "2026-10-08T18:17:17.116Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3141,7 +3144,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:16:19.077Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:17:17.116Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
