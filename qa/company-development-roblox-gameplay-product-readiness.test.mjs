@@ -528,4 +528,17 @@ test('Roblox survival object gathering keeps legacy reward and save rules until 
   assert.match(source,/setNumber\(player, "ResourceWood"/);
   assert.match(source,/setNumber\(player, "ResourceStone"/);
   assert.doesNotMatch(config,/ResourceInteractionRules\s*=/,'existing save/economy must not get invented HP by default');
+  assert.match(source,/local verifiedSaveRead = \{\}/);
+  assert.match(source,/if playerLoadStarted\[player\] then return end/);
+  assert.match(source,/ok and \(saved == nil or typeof\(saved\) == "table"\)/);
+  assert.match(source,/verifiedSaveRead\[player\] = false[\s\S]*?SURVIVAL_SAVE_READ_REPAIR_REQUIRED/);
+  assert.match(source,/if verifiedSaveRead\[player\] == true then/);
+  assert.match(source,/SURVIVAL_SAVE_WRITE_SKIPPED_UNVERIFIED_READ/);
+  assert.match(source,/current ~= nil and typeof\(current\) ~= "table"/);
+  assert.match(source,/local merged = typeof\(current\) == "table" and table\.clone\(current\) or \{\}/);
+  assert.match(source,/local objects = typeof\(merged\.WorldObjects\) == "table" and table\.clone\(merged\.WorldObjects\) or \{\}/);
+  assert.match(source,/for objectId, objectState in pairs\(value\)/);
+  assert.match(source,/for field, fieldValue in pairs\(objectState\) do updated\[field\] = fieldValue end/);
+  assert.match(source,/store:UpdateAsync\("player:"/);
+  assert.match(source,/if not saved or blockedRecord then warn\("SURVIVAL_SAVE_WRITE_REPAIR_REQUIRED"\) end/);
 });
