@@ -110,25 +110,247 @@
       "name": "Enemy Wave Management System",
       "purpose": "Manages the flow of enemy waves to maintain strategic pressure and resource accumulation.",
       "playerChoice": "Select and place towers or defenders on lanes or positions that cover the threatened route before resource pressure increases."
+    },
+    "local_authoring_parts::8ada17cee77b1c79beac12362c021ff90a2a5bba2531cee78337204527ea6dbd:signatureSystems:4": {
+      "id": "signatureSystems[4]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "threatened route",
+        "enemy wave",
+        "towers or defenders",
+        "lanes or positions"
+      ],
+      "stateOutputs": [
+        "resources",
+        "upgrades",
+        "new placements",
+        "tactical changes"
+      ],
+      "name": "Enemy Wave Management System",
+      "purpose": "Manages the flow of enemy waves to maintain strategic pressure and resource accumulation.",
+      "playerChoice": "Select and place towers or defenders on lanes or positions that cover the threatened route before resource pressure increases."
+    },
+    "local_authoring_parts::b62927489043cae41e12599b5fbe3802ea76ed60cd6cbcabfe44436bb80d594a:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "threatened route",
+            "enemy wave",
+            "towers or defenders",
+            "lanes or positions"
+          ],
+          "stateOutputs": [
+            "resources",
+            "upgrades",
+            "new placements",
+            "tactical changes"
+          ],
+          "name": "Enemy Wave Management System",
+          "purpose": "Manages the flow of enemy waves to maintain strategic pressure and resource accumulation.",
+          "playerChoice": "Select and place towers or defenders on lanes or positions that cover the threatened route before resource pressure increases."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "threatened route",
+            "enemy wave",
+            "towers or defenders",
+            "lanes or positions"
+          ],
+          "stateOutputs": [
+            "resources",
+            "upgrades",
+            "new placements",
+            "tactical changes"
+          ],
+          "name": "Enemy Wave Management System",
+          "purpose": "Manages the flow of enemy waves to maintain strategic pressure and resource accumulation.",
+          "playerChoice": "Select and place towers or defenders on lanes or positions that cover the threatened route before resource pressure increases."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "threatened route",
+            "enemy wave",
+            "towers or defenders",
+            "lanes or positions"
+          ],
+          "stateOutputs": [
+            "resources",
+            "upgrades",
+            "new placements",
+            "tactical changes"
+          ],
+          "name": "Enemy Wave Management System",
+          "purpose": "Manages the flow of enemy waves to maintain strategic pressure and resource accumulation.",
+          "playerChoice": "Select and place towers or defenders on lanes or positions that cover the threatened route before resource pressure increases."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "threatened route",
+            "enemy wave",
+            "towers or defenders",
+            "lanes or positions"
+          ],
+          "stateOutputs": [
+            "resources",
+            "upgrades",
+            "new placements",
+            "tactical changes"
+          ],
+          "name": "Enemy Wave Management System",
+          "purpose": "Manages the flow of enemy waves to maintain strategic pressure and resource accumulation.",
+          "playerChoice": "Select and place towers or defenders on lanes or positions that cover the threatened route before resource pressure increases."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "threatened route",
+            "enemy wave",
+            "towers or defenders",
+            "lanes or positions"
+          ],
+          "stateOutputs": [
+            "resources",
+            "upgrades",
+            "new placements",
+            "tactical changes"
+          ],
+          "name": "Enemy Wave Management System",
+          "purpose": "Manages the flow of enemy waves to maintain strategic pressure and resource accumulation.",
+          "playerChoice": "Select and place towers or defenders on lanes or positions that cover the threatened route before resource pressure increases."
+        }
+      ]
+    },
+    "local_authoring_parts::8a34352aec3e560f29f4b6ecbca7a35fe6234e245521dea95c5b936a7e0a041f:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "threatened route",
+            "enemy wave",
+            "towers or defenders",
+            "lanes or positions"
+          ],
+          "stateOutputs": [
+            "resources",
+            "upgrades",
+            "new placements",
+            "tactical changes"
+          ],
+          "name": "Enemy Wave Management System",
+          "purpose": "Manages the flow of enemy waves to maintain strategic pressure and resource accumulation.",
+          "playerChoice": "Select and place towers or defenders on lanes or positions that cover the threatened route before resource pressure increases."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "threatened route",
+            "enemy wave",
+            "towers or defenders",
+            "lanes or positions"
+          ],
+          "stateOutputs": [
+            "resources",
+            "upgrades",
+            "new placements",
+            "tactical changes"
+          ],
+          "name": "Enemy Wave Management System",
+          "purpose": "Manages the flow of enemy waves to maintain strategic pressure and resource accumulation.",
+          "playerChoice": "Select and place towers or defenders on lanes or positions that cover the threatened route before resource pressure increases."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "threatened route",
+            "enemy wave",
+            "towers or defenders",
+            "lanes or positions"
+          ],
+          "stateOutputs": [
+            "resources",
+            "upgrades",
+            "new placements",
+            "tactical changes"
+          ],
+          "name": "Enemy Wave Management System",
+          "purpose": "Manages the flow of enemy waves to maintain strategic pressure and resource accumulation.",
+          "playerChoice": "Select and place towers or defenders on lanes or positions that cover the threatened route before resource pressure increases."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "threatened route",
+            "enemy wave",
+            "towers or defenders",
+            "lanes or positions"
+          ],
+          "stateOutputs": [
+            "resources",
+            "upgrades",
+            "new placements",
+            "tactical changes"
+          ],
+          "name": "Enemy Wave Management System",
+          "purpose": "Manages the flow of enemy waves to maintain strategic pressure and resource accumulation.",
+          "playerChoice": "Select and place towers or defenders on lanes or positions that cover the threatened route before resource pressure increases."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "threatened route",
+            "enemy wave",
+            "towers or defenders",
+            "lanes or positions"
+          ],
+          "stateOutputs": [
+            "resources",
+            "upgrades",
+            "new placements",
+            "tactical changes"
+          ],
+          "name": "Enemy Wave Management System",
+          "purpose": "Manages the flow of enemy waves to maintain strategic pressure and resource accumulation.",
+          "playerChoice": "Select and place towers or defenders on lanes or positions that cover the threatened route before resource pressure increases."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 823434,
-      "lastMs": 97338,
+      "totalMs": 923251,
+      "lastMs": 99817,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:24:17.589Z"
+      "updatedAt": "2026-10-08T12:25:57.408Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:10:34.121Z",
-  "updatedAt": "2026-10-08T12:24:17.589Z",
+  "updatedAt": "2026-10-08T12:25:57.411Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2323,7 +2545,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:24:17.589Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:25:57.411Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
