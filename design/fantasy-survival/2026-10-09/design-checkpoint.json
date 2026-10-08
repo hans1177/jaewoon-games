@@ -851,25 +851,35 @@
       "toSystem": "Vibe 폴리시 시스템 (보완)",
       "trigger": "플레이어가 환경에 뿤금처럼 숨어 있는 힘을 바탕으로 전투 중 이동하며 적의 압박을 피하면서 동시에 캐릭터가 살아 움직여야 하는 방식으로 게임 진행을 수행해야 한다.",
       "stateChange": "기존 마력숲 생존기 세계관 및 게임 규칙 복사 후, Vibe 폴리시 기반의 새로운 플레이 패턴 개발로 진입 조건 설정 및 상황별 대응 시스템 구축"
+    },
+    "local_authoring_parts::633581c8c077f998d22b687df1ab080a9f73c37a0a47384c0bd18e82b3837d8c:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "signatureSystems[0]",
+      "toId": "signatureSystems[3]",
+      "stateKeys": [
+        "gameProgress",
+        "playerFantasy",
+        "coreFun"
+      ],
+      "fromSystem": "Vibe 폴리시 시스템 (보완)"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 33,
-      "successes": 32,
+      "calls": 34,
+      "successes": 33,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3173223,
-      "lastMs": 76661,
+      "totalMs": 3191780,
+      "lastMs": 18557,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T23:29:18.536Z"
+      "updatedAt": "2026-10-08T23:29:37.104Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:32:30.796Z",
-  "updatedAt": "2026-10-08T23:29:18.545Z",
+  "updatedAt": "2026-10-08T23:29:37.104Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3129,10 +3139,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T23:29:18.540Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PRESERVATION_GRAMMAR_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-08T23:29:37.104Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
