@@ -49,25 +49,40 @@
       "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
       "purpose": "플레이어가 즉각적인 생존 전략을 통해 점차 복잡해지는 적군을 이탈시키며, 주체적으로 선택하는 방식으로 세계 상태와 다음 선택을 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다.",
       "playerChoice": "진입 후 위험, 성공, 재방문에 대한 정서적 갈등을 느끼게 되며, 새로운 행동, 경로, 관계, 발견, 대응법을 열어 실제 플레이에 적용할 수 있는 핵심 재미를 제공한다."
+    },
+    "local_authoring_parts::af7e9214846f104eb5550ce90ac8ce8d877c45340cee25704b6a4d9e9250ee85:signatureSystems:1": {
+      "id": "ACTION_SURVIVAL_ROGUELITE",
+      "grammarRole": "A",
+      "stateInputs": [
+        "worldState",
+        "build"
+      ],
+      "stateOutputs": [
+        "nextWorldState",
+        "nextBuild"
+      ],
+      "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "purpose": "플레이어가 즉각적인 생존 전략을 통해 점차 복잡해지는 적군을 이탈시키며, 주체적으로 선택하는 방식으로 세계 상태와 다음 선택을 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다.",
+      "playerChoice": "진입 후 위험, 성공, 재방문에 대한 정서적 갈등을 느끼게 되며, 새로운 행동, 경로, 관계, 발견, 대응법을 열어 실제 플레이에 적용할 수 있는 핵심 재미를 제공한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 383169,
-      "lastMs": 49547,
+      "totalMs": 429625,
+      "lastMs": 46456,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:52:48.570Z"
+      "updatedAt": "2026-10-08T18:53:35.028Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:46:25.369Z",
-  "updatedAt": "2026-10-08T18:52:48.570Z",
+  "updatedAt": "2026-10-08T18:53:35.028Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2266,7 +2281,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:52:48.570Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:53:35.028Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
