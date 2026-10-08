@@ -3,30 +3,18 @@
   "gameId": "amusement-tycoon",
   "date": "2026-10-08",
   "seedId": "OWNER-ALL-DESIGN-RESET-AMUSEMENT-TYCOON-20260917",
-  "fingerprint": "3efb48f237a1f546d95da5891a94fd618b6d7a44d62ce5a00a809b2e1d510a12",
+  "fingerprint": "052b04ac8f009ba785d7c3a4adf7f2f00c65c6d7754de23b6ab8c966ec39542c",
   "policyDigest": "0fda28f71ac3a214ad795ba2e2df1e0f6e7da837204b05182cdebecce33c9ade",
   "engineDigest": "d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
   "tasks": {},
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 0,
-      "failures": 1,
-      "timeouts": 1,
-      "jsonFailures": 0,
-      "totalMs": 300099,
-      "lastMs": 300099,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T08:39:06.961Z"
-    }
-  },
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-08T08:34:06.841Z",
-  "updatedAt": "2026-10-08T08:39:06.967Z",
+  "createdAt": "2026-10-08T10:12:36.705Z",
+  "updatedAt": "2026-10-08T10:12:36.719Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1945,12 +1933,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms"
+  }
 }
