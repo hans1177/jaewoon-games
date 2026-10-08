@@ -868,25 +868,36 @@
         "resourceFlow": "Player's initial input and menu transitions in the game lead to contextual loss in the game, which in turn triggers the error recovery mechanism and results in a state and cost regression, based on the original rules and established game mechanics.",
         "balanceRules": "Player's initial input and menu transitions in the game lead to contextual loss in the game, which in turn triggers the error recovery mechanism and results in a state and cost regression, based on the original rules and established game mechanics."
       }
+    },
+    "local_authoring_parts::ebc35b44c281d45f64143c38e47dbdcae652f6c8f4d8f258cce03fcaec763858:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "INPUT_AND_MENU_TRANSITIONS",
+      "toId": "CONTEXT_LOSS",
+      "stateKeys": [
+        "INPUT_AND_MENU_TRANSITIONS",
+        "CONTEXT_LOSS",
+        "ERROR_RECOVERY",
+        "STATE_AND_COST_REGRESSION"
+      ],
+      "fromSystem": "INPUT_AND_MENU_TRANSITIONS"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 49,
-      "successes": 49,
+      "calls": 50,
+      "successes": 50,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3587693,
-      "lastMs": 47777,
+      "totalMs": 3637968,
+      "lastMs": 50275,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:09:41.299Z"
+      "updatedAt": "2026-10-08T16:10:31.592Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:39:54.867Z",
-  "updatedAt": "2026-10-08T16:09:41.314Z",
+  "updatedAt": "2026-10-08T16:10:31.592Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3118,10 +3129,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:09:41.307Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:10:31.592Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
