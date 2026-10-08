@@ -621,25 +621,43 @@
         "ProgressionBenefit"
       ],
       "fromSystem": "CORE_LOOP_DESIGN_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_0"
+    },
+    "local_authoring_parts::09983878410cdd0c2156b0c9d2fe6008139ac29212c956aca663f11311db512c:toSystem,trigger,stateChange": {
+      "toSystem": "CORE_LOOP_DESIGN_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_0",
+      "trigger": "coreLoop→coreFun",
+      "stateChange": "coreLoop→coreFun"
+    },
+    "local_authoring_parts::87d365132c7bbdac7160c4bba201cb4a1974fa338075c0fa70d8a50cf25d3461:systemInterconnections:0": {
+      "fromId": "coreLoop",
+      "toId": "coreFun",
+      "stateKeys": [
+        "Score",
+        "Distance",
+        "ProgressionBenefit"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_0",
+      "toSystem": "CORE_LOOP_DESIGN_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_0",
+      "trigger": "coreLoop→coreFun",
+      "stateChange": "coreLoop→coreFun"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 13,
+      "calls": 15,
+      "successes": 14,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1979237,
-      "lastMs": 103917,
+      "totalMs": 2083222,
+      "lastMs": 103985,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T11:20:36.602Z"
+      "updatedAt": "2026-10-08T11:22:20.588Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:47:37.298Z",
-  "updatedAt": "2026-10-08T11:20:36.602Z",
+  "updatedAt": "2026-10-08T11:22:20.590Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2880,7 +2898,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T11:20:36.602Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T11:22:20.590Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
