@@ -704,6 +704,33 @@ local function advanceTrial(p,amount)
  end
 end
 
+-- 마을의 실제 NPC 배우는 존재하는 집·가게·광장 근처에서 걷는다. 퀘스트/상점 권한은 기존 서버만 갖는다.
+local function addServiceRoam(part,role,dx,dz)
+ local home=part.Position;part.CanCollide=false
+ table.insert(livingResidents,{part=part,role=role,
+  route={home,home+Vector3.new(dx,0,dz),home+Vector3.new(-dx*.45,0,-dz*.45)},
+  nextAnchor=2,restUntil=os.clock()+.8,speed=2.6})
+end
+local function villageActorAdvice(p,role)
+ local zone=n(p,"QuestPortal",0);local need=n(p,"QuestNeed",0);local kills=n(p,"QuestKills",0)
+ if role=="chief"then
+  if zone>=1 and zone<=#C.Portals and need>kills then return string.format("이장: %s 의뢰 %d/%d. 진행도는 그대로야.",C.Portals[zone].Name,kills,need)end
+  if n(p,"CompanionUnlockCount",0)>0 then return "이장: 마을 외곽에서 해금한 보스 동료와 파티를 맺어 봐."end
+  return "이장: 준비되면 다음 사냥 의뢰를 맡아 주게."
+ elseif role=="weapon"then
+  local cost=C.WeaponPrices[n(p,"WeaponTier",1)+1]
+  return cost and n(p,"Gold",0)<cost and("무기상인: 다음 무기는 "..cost.."골드야. 쉬운 사냥터에서 준비해.")or"무기상인: 공격 전에 장비를 확인해."
+ elseif role=="armor"then
+  local cost=C.ArmorPrices[n(p,"ArmorTier",1)+1]
+  return cost and n(p,"Gold",0)<cost and("방어구상인: 새 갑옷엔 "..cost.."골드가 필요해.")or"방어구상인: 보스 전조를 보고 회피해."
+ elseif role=="healer"then
+  local h=hum(p)
+  return h and h.Health<h.MaxHealth*.6 and"치유사: 체력이 낮아. 마을에서 회복해."or"치유사: 사냥 후에 다시 치료 받으러 와."
+ elseif role=="master"then
+  return n(p,"Level",1)<C.AdvancementLevel and("전직 교관: Lv."..C.AdvancementLevel.."부터 시험을 시작해.")or"전직 교관: 현재 직업의 전직 시험을 확인해."
+ end
+ return "주민: 이장에게 의뢰를 묻고, 어려우면 장비를 보강해."
+end
 local function makeVillage()
  table.clear(livingResidents)
  local f=Instance.new("Folder");f.Name="Village";f.Parent=world
@@ -737,27 +764,42 @@ local function makeVillage()
  local fountain=ppart(f,"Fountain",Vector3.new(14,3,14),Vector3.new(0,3,0),Color3.fromRGB(90,112,124),Enum.Material.Slate);label(fountain,"마을 광장",Color3.fromRGB(255,232,168),28)
 
  local chief=humanoidFigure(f,"VillageChief",Vector3.new(-18,6,10),Color3.fromRGB(142,98,68),Color3.fromRGB(80,67,54),1);label(chief,"이장",Color3.fromRGB(255,221,145),28)
+ addServiceRoam(chief,"chief",3.5,-2.4)
  prompt(chief,"마을 이장","퀘스트 받기").Triggered:Connect(function(p)
-  local level=n(p,"Level",1);local id=math.clamp(math.floor((level-1)/3)+1,1,5);local need=5+id
-  p:SetAttribute("QuestPortal",id);p:SetAttribute("QuestKills",0);p:SetAttribute("QuestNeed",need)
-  msg(p,string.format("%s 몬스터 %d마리 처치",C.Portals[id].Name,need));feedback(p,"QUEST_ACCEPT")
+  local pr=root(p)
+  if n(p,"CurrentZone",0)~=0 or not pr or(pr.Position-chief.Position).Magnitude>12 then return end
+  local zone=n(p,"QuestPortal",0),need=n(p,"QuestNeed",0),kills=n(p,"QuestKills",0)
+  -- 대화 반복은 활성 퀘스트의 처치 수나 사냥터를 초기화하지 않는다.
+  if zone>=1 and zone<=#C.Portals and need>kills then
+   local line=villageActorAdvice(p,"chief")
+   p:SetAttribute("NPCSpeech",line);msg(p,line);feedback(p,"NPC_DIALOGUE")
+   return
+  end
+  local level=n(p,"Level",1);local id=math.clamp(math.floor((level-1)/3)+1,1,5);local count=5+id
+  p:SetAttribute("QuestPortal",id);p:SetAttribute("QuestKills",0);p:SetAttribute("QuestNeed",count)
+  local line=string.format("이장: %s 몬스터 %d마리 처치를 부탁하네.",C.Portals[id].Name,count)
+  p:SetAttribute("NPCSpeech",line);msg(p,line);feedback(p,"QUEST_ACCEPT")
  end)
 
  local weapon=humanoidFigure(f,"WeaponMerchant",Vector3.new(22,6,8),Color3.fromRGB(85,92,112),Color3.fromRGB(170,120,65),.95);label(weapon,"무기상인",Color3.fromRGB(255,215,140),28)
+ addServiceRoam(weapon,"weapon",3.5,-2.5)
  prompt(weapon,"무기상인","다음 무기 구매").Triggered:Connect(function(p)
   local tier=n(p,"WeaponTier",1);if tier>=5 then msg(p,"최고급 무기 보유");feedback(p,"WEAPON_MAX")return end
   local cost=C.WeaponPrices[tier+1];if n(p,"Gold",0)<cost then msg(p,"무기 구매 골드 부족 · "..cost);feedback(p,"WEAPON_GOLD_SHORT")return end
   p:SetAttribute("Gold",n(p,"Gold",0)-cost);p:SetAttribute("WeaponTier",tier+1);setStats(p,false);msg(p,"무기 "..(tier+1).."단계 구매");feedback(p,"WEAPON_UPGRADE")
  end)
  local armor=humanoidFigure(f,"ArmorMerchant",Vector3.new(22,6,-10),Color3.fromRGB(92,112,102),Color3.fromRGB(80,91,77),.95);label(armor,"방어구상인",Color3.fromRGB(180,235,190),28)
+ addServiceRoam(armor,"armor",-3.2,2.4)
  prompt(armor,"방어구상인","다음 방어구 구매").Triggered:Connect(function(p)
   local tier=n(p,"ArmorTier",1);if tier>=5 then msg(p,"최고급 방어구 보유");feedback(p,"ARMOR_MAX")return end
   local cost=C.ArmorPrices[tier+1];if n(p,"Gold",0)<cost then msg(p,"방어구 구매 골드 부족 · "..cost);feedback(p,"ARMOR_GOLD_SHORT")return end
   p:SetAttribute("Gold",n(p,"Gold",0)-cost);p:SetAttribute("ArmorTier",tier+1);setStats(p,true);msg(p,"방어구 "..(tier+1).."단계 구매");feedback(p,"ARMOR_UPGRADE")
  end)
  local healer=humanoidFigure(f,"VillageHealer",Vector3.new(-18,6,-10),Color3.fromRGB(208,221,235),Color3.fromRGB(116,169,193),.95);label(healer,"치유사",Color3.fromRGB(180,232,255),28)
+ addServiceRoam(healer,"healer",2.8,-3.2)
  prompt(healer,"치유사","회복").Triggered:Connect(function(p)local h=hum(p);if h then h.Health=h.MaxHealth;msg(p,"체력 완전 회복");feedback(p,"VILLAGE_HEAL")end end)
  local master=humanoidFigure(f,"AdvancementMaster",Vector3.new(-24,6,14),Color3.fromRGB(112,88,145),Color3.fromRGB(67,56,82),.95);label(master,"전직 교관",Color3.fromRGB(225,196,255),30)
+ addServiceRoam(master,"master",2.7,-3.8)
  prompt(master,"전직 교관","전직 시험").Triggered:Connect(startAdvancementTrial)
 
  for i=1,6 do
@@ -1552,7 +1594,9 @@ RunService.Heartbeat:Connect(function(dt)
     if not invited then for _,resident in ipairs(livingResidents)do
      if resident.part and resident.part.Parent and(pr.Position-resident.part.Position).Magnitude<15 then
       nextNpcGreeting[player]=now+28
-      player:SetAttribute("NPCSpeech","주민: 안녕! 길이 막히면 이장에게 물어봐. 위험한 전투 전에는 장비도 확인해.")
+      local line=villageActorAdvice(player,resident.role)
+      player:SetAttribute("NPCSpeech",line)
+      msg(player,line)
       feedback(player,"NPC_INITIATED_TALK")
       break
      end
