@@ -3,26 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1fq0ig4",
-      "worker": "vibe2",
-      "taskId": "SYS-ARCH-425305e25df9-v1",
-      "gameId": "__vibe_system__",
-      "files": [
-        "tools/vibe2-system-steward.mjs",
-        "qa/vibe2-system-steward.test.mjs"
-      ],
-      "baseSha": "5663ca02282fa20907529e712de84697015ce21c",
-      "runId": "37710193117",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-08T00:59:04.375Z",
-      "expiresAt": "2026-10-08T01:44:04.375Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:SYS-ARCH-425305e25df9-v1"
-      ]
-    },
-    {
       "id": "wl-x3xwir",
       "worker": "vibe2",
       "taskId": "seed-casual-realm-weaver-unity-web-base-implementation-v1",
@@ -52,6 +32,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-casual-realm-weaver-unity-web-base-implementation-v1"
+      ]
+    },
+    {
+      "id": "wl-38h5ik",
+      "worker": "vibe2",
+      "taskId": "internal-motion-kuchisake-walk-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "assets/roblox/world-ghosts/motions/kuchisake/init.luau"
+      ],
+      "baseSha": "3afa063bb724e21630cb7f35504bc7cbc090ff2b",
+      "runId": "37712974870",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-08T01:48:12.316Z",
+      "expiresAt": "2026-10-08T02:33:12.316Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:internal-motion-kuchisake-walk-v1"
       ]
     }
   ]
