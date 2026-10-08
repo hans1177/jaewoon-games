@@ -638,25 +638,36 @@
       "toSystem": "CORE_LOOP_DESIGN",
       "trigger": "coreFun→signatureSystems[2]",
       "stateChange": "currentBuild, enemyPressure, runRewards, upgradeChoices → nextProgressionChoice, updatedBuild, survivedWave, convertedRunResult"
+    },
+    "local_authoring_parts::e1a413dee985e794b136415c525e0785fae8da3ffc677c629dae26982e126bd7:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "coreFun",
+      "toId": "signatureSystems[3]",
+      "stateKeys": [
+        "currentBuild",
+        "enemyPressure",
+        "runRewards",
+        "upgradeChoices"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 17,
+      "calls": 18,
+      "successes": 18,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 798076,
-      "lastMs": 33567,
+      "totalMs": 829876,
+      "lastMs": 31800,
       "lastError": null,
-      "updatedAt": "2026-10-08T07:56:26.450Z"
+      "updatedAt": "2026-10-08T07:56:58.252Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:43:08.319Z",
-  "updatedAt": "2026-10-08T07:56:26.451Z",
+  "updatedAt": "2026-10-08T07:56:58.252Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3006,7 +3017,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T07:56:26.451Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T07:56:58.252Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
