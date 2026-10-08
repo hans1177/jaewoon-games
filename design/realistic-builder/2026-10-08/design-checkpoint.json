@@ -120,25 +120,271 @@
       "name": "현실 건축가",
       "purpose": "Action-survival benchmark for real-time survival, build progression, and progression choice in a mobile-friendly environment",
       "playerChoice": "Select a build and strategy, upgrade, choose perks, weapons, or skills that change the current build, and position around enemy pressure"
+    },
+    "local_authoring_parts::b55e21a4a5494e6cb47bbed6b64e261451663a49f6093278bb7982e0aee12bde:signatureSystems:4": {
+      "id": "realistic-builder",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "Build selection",
+        "Upgrade choices",
+        "Perk/weapon/skill selection",
+        "Enemy pressure",
+        "Resource loss"
+      ],
+      "stateOutputs": [
+        "Build upgrade",
+        "Survival progression",
+        "Experience gain",
+        "Resource replenishment",
+        "Progression choice"
+      ],
+      "name": "현실 건축가",
+      "purpose": "Action-survival benchmark for real-time survival, build progression, and progression choice in a mobile-friendly environment",
+      "playerChoice": "Select a build and strategy, upgrade, choose perks, weapons, or skills that change the current build, and position around enemy pressure"
+    },
+    "local_authoring_parts::cede780e6872905c016186281bcc924788856071e9f9a0b65cd2d07444526303:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "Vampire Survivors",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "Build selection",
+            "Upgrade choices",
+            "Perk/weapon/skill selection",
+            "Enemy pressure",
+            "Resource loss"
+          ],
+          "stateOutputs": [
+            "Build upgrade",
+            "Survival progression",
+            "Experience gain",
+            "Resource replenishment",
+            "Progression choice"
+          ],
+          "name": "Vampire Survivors",
+          "purpose": "Action-survival benchmark for horde pressure, simple attacks, upgrade choices and build combinations",
+          "playerChoice": "Select a build and strategy, upgrade, choose perks, weapons, or skills that change the current build, and position around enemy pressure"
+        },
+        {
+          "id": "realistic-builder",
+          "grammarRole": "A",
+          "stateInputs": [
+            "Build selection",
+            "Upgrade choices",
+            "Perk/weapon/skill selection",
+            "Enemy pressure",
+            "Resource loss"
+          ],
+          "stateOutputs": [
+            "Build upgrade",
+            "Survival progression",
+            "Experience gain",
+            "Resource replenishment",
+            "Progression choice"
+          ],
+          "name": "현실 건축가",
+          "purpose": "Action-survival benchmark for real-time survival, build progression, and progression choice in a mobile-friendly environment",
+          "playerChoice": "Select a build and strategy, upgrade, choose perks, weapons, or skills that change the current build, and position around enemy pressure"
+        },
+        {
+          "id": "realistic-builder",
+          "grammarRole": "B",
+          "stateInputs": [
+            "Build selection",
+            "Upgrade choices",
+            "Perk/weapon/skill selection",
+            "Enemy pressure",
+            "Resource loss"
+          ],
+          "stateOutputs": [
+            "Build upgrade",
+            "Survival progression",
+            "Experience gain",
+            "Resource replenishment",
+            "Progression choice"
+          ],
+          "name": "현실 건축가",
+          "purpose": "Action-survival benchmark for real-time survival, build progression, and progression choice in a mobile-friendly environment",
+          "playerChoice": "Select a build and strategy, upgrade, choose perks, weapons, or skills that change the current build, and position around enemy pressure"
+        },
+        {
+          "id": "realistic-builder",
+          "grammarRole": "c",
+          "stateInputs": [
+            "Build selection",
+            "Upgrade choices",
+            "Perk/weapon/skill selection",
+            "Enemy pressure",
+            "Resource loss"
+          ],
+          "stateOutputs": [
+            "Build upgrade",
+            "Survival progression",
+            "Experience gain",
+            "Resource replenishment",
+            "Progression choice"
+          ],
+          "name": "현실 건축가",
+          "purpose": "Action-survival benchmark for real-time survival, build progression, and progression choice in a mobile-friendly environment",
+          "playerChoice": "Select a build and strategy, upgrade, choose perks, weapons, or skills that change the current build, and position around enemy pressure"
+        },
+        {
+          "id": "realistic-builder",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "Build selection",
+            "Upgrade choices",
+            "Perk/weapon/skill selection",
+            "Enemy pressure",
+            "Resource loss"
+          ],
+          "stateOutputs": [
+            "Build upgrade",
+            "Survival progression",
+            "Experience gain",
+            "Resource replenishment",
+            "Progression choice"
+          ],
+          "name": "현실 건축가",
+          "purpose": "Action-survival benchmark for real-time survival, build progression, and progression choice in a mobile-friendly environment",
+          "playerChoice": "Select a build and strategy, upgrade, choose perks, weapons, or skills that change the current build, and position around enemy pressure"
+        }
+      ]
+    },
+    "local_authoring_parts::4114bea68064a2f6bea04b8e5966ba69c961dd06a02dcc838b4dc445079d8abd:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Input: Player selects a build and strategy",
+        "State: Build is upgraded or modified",
+        "Output: New build is tested in a survival scenario",
+        "Reward: Experience, resources, or progression",
+        "Risk: Increased difficulty, enemy pressure, or loss of resources"
+      ],
+      "signatureSystems": [
+        {
+          "id": "Vampire Survivors",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "Build selection",
+            "Upgrade choices",
+            "Perk/weapon/skill selection",
+            "Enemy pressure",
+            "Resource loss"
+          ],
+          "stateOutputs": [
+            "Build upgrade",
+            "Survival progression",
+            "Experience gain",
+            "Resource replenishment",
+            "Progression choice"
+          ],
+          "name": "Vampire Survivors",
+          "purpose": "Action-survival benchmark for horde pressure, simple attacks, upgrade choices and build combinations",
+          "playerChoice": "Select a build and strategy, upgrade, choose perks, weapons, or skills that change the current build, and position around enemy pressure"
+        },
+        {
+          "id": "realistic-builder",
+          "grammarRole": "A",
+          "stateInputs": [
+            "Build selection",
+            "Upgrade choices",
+            "Perk/weapon/skill selection",
+            "Enemy pressure",
+            "Resource loss"
+          ],
+          "stateOutputs": [
+            "Build upgrade",
+            "Survival progression",
+            "Experience gain",
+            "Resource replenishment",
+            "Progression choice"
+          ],
+          "name": "현실 건축가",
+          "purpose": "Action-survival benchmark for real-time survival, build progression, and progression choice in a mobile-friendly environment",
+          "playerChoice": "Select a build and strategy, upgrade, choose perks, weapons, or skills that change the current build, and position around enemy pressure"
+        },
+        {
+          "id": "realistic-builder",
+          "grammarRole": "B",
+          "stateInputs": [
+            "Build selection",
+            "Upgrade choices",
+            "Perk/weapon/skill selection",
+            "Enemy pressure",
+            "Resource loss"
+          ],
+          "stateOutputs": [
+            "Build upgrade",
+            "Survival progression",
+            "Experience gain",
+            "Resource replenishment",
+            "Progression choice"
+          ],
+          "name": "현실 건축가",
+          "purpose": "Action-survival benchmark for real-time survival, build progression, and progression choice in a mobile-friendly environment",
+          "playerChoice": "Select a build and strategy, upgrade, choose perks, weapons, or skills that change the current build, and position around enemy pressure"
+        },
+        {
+          "id": "realistic-builder",
+          "grammarRole": "c",
+          "stateInputs": [
+            "Build selection",
+            "Upgrade choices",
+            "Perk/weapon/skill selection",
+            "Enemy pressure",
+            "Resource loss"
+          ],
+          "stateOutputs": [
+            "Build upgrade",
+            "Survival progression",
+            "Experience gain",
+            "Resource replenishment",
+            "Progression choice"
+          ],
+          "name": "현실 건축가",
+          "purpose": "Action-survival benchmark for real-time survival, build progression, and progression choice in a mobile-friendly environment",
+          "playerChoice": "Select a build and strategy, upgrade, choose perks, weapons, or skills that change the current build, and position around enemy pressure"
+        },
+        {
+          "id": "realistic-builder",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "Build selection",
+            "Upgrade choices",
+            "Perk/weapon/skill selection",
+            "Enemy pressure",
+            "Resource loss"
+          ],
+          "stateOutputs": [
+            "Build upgrade",
+            "Survival progression",
+            "Experience gain",
+            "Resource replenishment",
+            "Progression choice"
+          ],
+          "name": "현실 건축가",
+          "purpose": "Action-survival benchmark for real-time survival, build progression, and progression choice in a mobile-friendly environment",
+          "playerChoice": "Select a build and strategy, upgrade, choose perks, weapons, or skills that change the current build, and position around enemy pressure"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 954572,
-      "lastMs": 102459,
+      "totalMs": 1055508,
+      "lastMs": 100936,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:07:34.693Z"
+      "updatedAt": "2026-10-08T13:09:15.630Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:51:40.085Z",
-  "updatedAt": "2026-10-08T13:07:34.693Z",
+  "updatedAt": "2026-10-08T13:09:15.633Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2490,7 +2736,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:07:34.693Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:09:15.633Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
