@@ -14,7 +14,19 @@
   "failedTask": null,
   "lastError": null,
   "designerSeed": null,
-  "modelHealth": {},
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 234047,
+      "lastMs": 234047,
+      "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
+      "updatedAt": "2026-10-08T05:21:47.766Z"
+    }
+  },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T05:17:53.704Z"
+  "updatedAt": "2026-10-08T05:21:47.766Z"
 }
