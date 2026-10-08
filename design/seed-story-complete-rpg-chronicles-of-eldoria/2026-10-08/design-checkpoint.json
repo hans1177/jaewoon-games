@@ -106,25 +106,236 @@
       "name": "World Narrative Progression System",
       "purpose": "Facilitates player-driven progression through the game's narrative and experience structure, using a combination of exploration, interaction, and structured encounters to advance the story and unlock new content.",
       "playerChoice": "Advance the story, unlock new content, and experience the world through structured encounters and events, while maintaining the core loop of exploration, risk, reward, and narrative progression."
+    },
+    "local_authoring_parts::7fbbc403a5d5d6d0c11cc3918ef43ddad7e24921bdff92f2093a1bbdc58dbdb7:signatureSystems:4": {
+      "id": "signature-system-4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "area",
+        "characters",
+        "quests",
+        "information"
+      ],
+      "stateOutputs": [
+        "next-area",
+        "next-quests",
+        "next-information"
+      ],
+      "name": "World Narrative Progression System",
+      "purpose": "Facilitates player-driven progression through the game's narrative and experience structure, using a combination of exploration, interaction, and structured encounters to advance the story and unlock new content.",
+      "playerChoice": "Advance the story, unlock new content, and experience the world through structured encounters and events, while maintaining the core loop of exploration, risk, reward, and narrative progression."
+    },
+    "local_authoring_parts::83e3f84df013714eeed28e7c9886e919073d98cb5d21159a111679437d16ffa6:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signature-system-1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "area",
+            "characters",
+            "quests",
+            "information"
+          ],
+          "stateOutputs": [
+            "next-area",
+            "next-quests",
+            "next-information"
+          ],
+          "name": "World Exploration System",
+          "purpose": "Facilitates player-driven exploration of the game world",
+          "playerChoice": "Explore, discover, and interact with the environment to advance the narrative and gain new experiences"
+        },
+        {
+          "id": "signature-system-2",
+          "grammarRole": "A",
+          "stateInputs": [
+            "area",
+            "characters",
+            "quests",
+            "information"
+          ],
+          "stateOutputs": [
+            "next-area",
+            "next-quests",
+            "next-information"
+          ],
+          "name": "World Progression System",
+          "purpose": "Facilitates player-driven progression through the game world's narrative and experience structure",
+          "playerChoice": "Progress, unlock new content, and advance the story through structured encounters and events"
+        },
+        {
+          "id": "signature-system-3",
+          "grammarRole": "B",
+          "stateInputs": [
+            "area",
+            "characters",
+            "quests",
+            "information"
+          ],
+          "stateOutputs": [
+            "next-area",
+            "next-quests",
+            "next-information"
+          ],
+          "name": "World Narrative System",
+          "purpose": "Facilitates player-driven progression through the game's narrative and experience structure",
+          "playerChoice": "Advance the story, unlock new content, and experience the world through structured encounters and events"
+        },
+        {
+          "id": "signature-system-3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "area",
+            "characters",
+            "quests",
+            "information"
+          ],
+          "stateOutputs": [
+            "next-area",
+            "next-quests",
+            "next-information"
+          ],
+          "name": "World Narrative Progression System",
+          "purpose": "Facilitates player-driven progression through the game's narrative and experience structure, using a combination of exploration, interaction, and structured encounters to advance the story and unlock new content.",
+          "playerChoice": "Advance the story, unlock new content, and experience the world through structured encounters and events, while maintaining the core loop of exploration, risk, reward, and narrative progression."
+        },
+        {
+          "id": "signature-system-4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "area",
+            "characters",
+            "quests",
+            "information"
+          ],
+          "stateOutputs": [
+            "next-area",
+            "next-quests",
+            "next-information"
+          ],
+          "name": "World Narrative Progression System",
+          "purpose": "Facilitates player-driven progression through the game's narrative and experience structure, using a combination of exploration, interaction, and structured encounters to advance the story and unlock new content.",
+          "playerChoice": "Advance the story, unlock new content, and experience the world through structured encounters and events, while maintaining the core loop of exploration, risk, reward, and narrative progression."
+        }
+      ]
+    },
+    "local_authoring_parts::71e300fa580aa3c544002ed256299b922b4b0f1031ec98ebbc7d4a5b2309b650:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.",
+        "Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter.",
+        "Progress through the complete story arc to a final boss and a real ending, with optional post-game or sequel hooks kept separate from the base conclusion."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signature-system-1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "area",
+            "characters",
+            "quests",
+            "information"
+          ],
+          "stateOutputs": [
+            "next-area",
+            "next-quests",
+            "next-information"
+          ],
+          "name": "World Exploration System",
+          "purpose": "Facilitates player-driven exploration of the game world",
+          "playerChoice": "Explore, discover, and interact with the environment to advance the narrative and gain new experiences"
+        },
+        {
+          "id": "signature-system-2",
+          "grammarRole": "A",
+          "stateInputs": [
+            "area",
+            "characters",
+            "quests",
+            "information"
+          ],
+          "stateOutputs": [
+            "next-area",
+            "next-quests",
+            "next-information"
+          ],
+          "name": "World Progression System",
+          "purpose": "Facilitates player-driven progression through the game world's narrative and experience structure",
+          "playerChoice": "Progress, unlock new content, and advance the story through structured encounters and events"
+        },
+        {
+          "id": "signature-system-3",
+          "grammarRole": "B",
+          "stateInputs": [
+            "area",
+            "characters",
+            "quests",
+            "information"
+          ],
+          "stateOutputs": [
+            "next-area",
+            "next-quests",
+            "next-information"
+          ],
+          "name": "World Narrative System",
+          "purpose": "Facilitates player-driven progression through the game's narrative and experience structure",
+          "playerChoice": "Advance the story, unlock new content, and experience the world through structured encounters and events"
+        },
+        {
+          "id": "signature-system-3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "area",
+            "characters",
+            "quests",
+            "information"
+          ],
+          "stateOutputs": [
+            "next-area",
+            "next-quests",
+            "next-information"
+          ],
+          "name": "World Narrative Progression System",
+          "purpose": "Facilitates player-driven progression through the game's narrative and experience structure, using a combination of exploration, interaction, and structured encounters to advance the story and unlock new content.",
+          "playerChoice": "Advance the story, unlock new content, and experience the world through structured encounters and events, while maintaining the core loop of exploration, risk, reward, and narrative progression."
+        },
+        {
+          "id": "signature-system-4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "area",
+            "characters",
+            "quests",
+            "information"
+          ],
+          "stateOutputs": [
+            "next-area",
+            "next-quests",
+            "next-information"
+          ],
+          "name": "World Narrative Progression System",
+          "purpose": "Facilitates player-driven progression through the game's narrative and experience structure, using a combination of exploration, interaction, and structured encounters to advance the story and unlock new content.",
+          "playerChoice": "Advance the story, unlock new content, and experience the world through structured encounters and events, while maintaining the core loop of exploration, risk, reward, and narrative progression."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 343473,
-      "lastMs": 37411,
+      "totalMs": 381112,
+      "lastMs": 37639,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:57:30.676Z"
+      "updatedAt": "2026-10-08T10:58:08.316Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:51:46.975Z",
-  "updatedAt": "2026-10-08T10:57:30.676Z",
+  "updatedAt": "2026-10-08T10:58:08.318Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2356,7 +2567,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T10:57:30.676Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:58:08.318Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
