@@ -64,25 +64,40 @@
       "name": "KARMA_RETURN",
       "purpose": "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
       "playerChoice": "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태"
+    },
+    "local_authoring_parts::1484752f4dce35b12b3b102cdb9e1be8fe69f0c21ded45f5c63aa20cc5b4fd03:signatureSystems:2": {
+      "id": "KARMA_RETURN",
+      "grammarRole": "B",
+      "stateInputs": [
+        "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+        "A/B와 c 서브요소가 MAIN의 결과를 읽고 변형할 수 있는 실제 게임 상태"
+      ],
+      "stateOutputs": [
+        "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+        "A/B와 c 서브요소가 MAIN의 결과를 읽고 변형할 수 있는 실제 게임 상태"
+      ],
+      "name": "KARMA_RETURN_B",
+      "purpose": "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+      "playerChoice": "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 605520,
-      "lastMs": 106544,
+      "totalMs": 715867,
+      "lastMs": 110347,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:12:17.077Z"
+      "updatedAt": "2026-10-08T13:14:07.426Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:02:11.526Z",
-  "updatedAt": "2026-10-08T13:12:17.077Z",
+  "updatedAt": "2026-10-08T13:14:07.426Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2281,7 +2296,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:12:17.077Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:14:07.426Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
