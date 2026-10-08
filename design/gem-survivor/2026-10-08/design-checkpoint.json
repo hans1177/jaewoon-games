@@ -587,25 +587,35 @@
         "riskPressure": "The risk of failure increases with the difficulty of the waves and bosses, encouraging players to develop more robust strategies and builds to survive them.",
         "recoveryRules": "Players can recover from failure by gaining new rewards, upgrading their build, or gaining new skills that help them survive future challenges."
       }
+    },
+    "local_authoring_parts::152b3def7a14fea7fcc3fd04bf244db7f542c9fd977d03a245c9ca669cfc3650:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "MAIN",
+      "toId": "A",
+      "stateKeys": [
+        "life",
+        "reward",
+        "strategy"
+      ],
+      "fromSystem": "systems-progression"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 12,
+      "calls": 14,
+      "successes": 13,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1500909,
-      "lastMs": 133927,
+      "totalMs": 1595546,
+      "lastMs": 94637,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T09:08:07.649Z"
+      "updatedAt": "2026-10-08T09:09:42.303Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:43:06.687Z",
-  "updatedAt": "2026-10-08T09:08:07.664Z",
+  "updatedAt": "2026-10-08T09:09:42.303Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2983,10 +2993,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T09:08:07.651Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:09:42.303Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
