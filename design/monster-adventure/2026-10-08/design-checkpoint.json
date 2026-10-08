@@ -52,25 +52,43 @@
       "name": "MAIN",
       "purpose": "기존의 인과문법을 비튼다",
       "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+    },
+    "local_authoring_parts::eb79bed293fcc4a7559a777cf4fa547c2dd5a5717a3f32505086a4ea983bbdbd:signatureSystems:1": {
+      "id": "MAIN",
+      "grammarRole": "A",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount"
+      ],
+      "stateOutputs": [
+        "Score",
+        "Distance",
+        "Reward",
+        "ProgressionBenefit"
+      ],
+      "name": "MAIN",
+      "purpose": "기존의 인과문법을 비튼다",
+      "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 611890,
-      "lastMs": 95494,
+      "totalMs": 708564,
+      "lastMs": 96674,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:09:19.075Z"
+      "updatedAt": "2026-10-08T13:10:55.750Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:59:07.154Z",
-  "updatedAt": "2026-10-08T13:09:19.075Z",
+  "updatedAt": "2026-10-08T13:10:55.751Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2156,7 +2174,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:09:19.075Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:10:55.750Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
