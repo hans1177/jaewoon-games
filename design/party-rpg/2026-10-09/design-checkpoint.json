@@ -70,25 +70,61 @@
       "name": "BOARD_STATE_REDUCTION",
       "purpose": "플레이어가 매번 새로운 상태로 이동하며 콘텐츠 재사용 가능성 및 다양한 해법을 열어간다.",
       "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+    },
+    "local_authoring_parts::9ce8485f31dcfdb7f57e26f2b6a07d1551beec841f1a05892d49cc0483cad0e1:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_02",
+      "grammarRole": "B",
+      "stateInputs": [
+        "INPUT",
+        "SELECT",
+        "OUTPUT",
+        "STATE"
+      ],
+      "stateOutputs": [
+        "RESULT",
+        "ACTION",
+        "NEXT_STEP"
+      ],
+      "name": "BOARD_STATE_REDUCTION",
+      "purpose": "플레이어가 매번 새로운 상태로 이동하며 콘텐츠 재사용 가능성 및 다양한 해법을 열어간다.",
+      "playerChoice": "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+    },
+    "local_authoring_parts::9ce8485f31dcfdb7f57e26f2b6a07d1551beec841f1a05892d49cc0483cad0e1:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_03",
+      "grammarRole": "c",
+      "stateInputs": [
+        "INPUT",
+        "SELECT",
+        "OUTPUT",
+        "STATE"
+      ],
+      "stateOutputs": [
+        "RESULT",
+        "ACTION",
+        "NEXT_STEP"
+      ],
+      "name": "BOARD_STATE_EXPANSION",
+      "purpose": "플레이어가 매번 새로운 상태로 이동하며 콘텐츠 재사용 가능성 및 다양한 해법을 열어간다.",
+      "playerChoice": "Expand the board state with new elements and strategies to deepen gameplay."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 394387,
-      "lastMs": 34942,
+      "totalMs": 473501,
+      "lastMs": 40426,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:56:56.483Z"
+      "updatedAt": "2026-10-08T17:58:15.600Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:50:22.065Z",
-  "updatedAt": "2026-10-08T17:56:56.483Z",
+  "updatedAt": "2026-10-08T17:58:15.600Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2125,7 +2161,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:56:56.483Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:58:15.600Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
