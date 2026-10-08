@@ -27,25 +27,47 @@
       "identity": "잃어버린 별의 메아리 - 플레이어가 희망하는 과거에 빠져 있는 현실적인 생존 게임, 주체는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.",
       "playerFantasy": "플레이어는 희망하는 과거에 빠져 있는 현실적인 생존 게임이다. 주체는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.",
       "coreFun": "플레이어는 희망하는 과거에 빠져 있는 현실적인 생존 게임이다. 주체는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다."
+    },
+    "local_authoring_parts::c2c53bf0c93b9864be1fa468fe240993a52c79ea6068dc31627a80300dfbfc9f:coreLoop": {
+      "coreLoop": [
+        "INPUT: 플레이어가 희망하는 과거에 빠져 있는 현실적인 생존 게임에서 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'라는 주체로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.",
+        "SELECT: 수집 가능한 도움말 또는 경험 획득 및 업그레이드 기회를 선택하여 현재 건강도나 전략을 변경할 수 있다.",
+        "OUTPUT: 선택 결과가 다음 월드 상태로 이동하며, 새로운 진입 절차, 위험, 보상을 통해 플레이어에게 즉각적 영향을 미친다."
+      ]
+    },
+    "local_authoring_parts::1ad8dfddb30e976aefecdf3148db8da6686d8c2aadec4e97233dee79f688808d:signatureSystems:0": {
+      "id": "ACTION_SURVIVAL_ROGUELITE_ECHOES_OF_THE_LOST_STAR",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "FIGHT_STATE",
+        "RUN_RESULT"
+      ],
+      "stateOutputs": [
+        "NEXT_WORLD_STATE",
+        "BUILD_UPGRADE"
+      ],
+      "name": "Echoes of the Lost Star",
+      "purpose": "Player's core gameplay revolves around 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure' and its consequences, forming a self-sustaining loop with input, selection, output, state change, and next choice.",
+      "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build to optimize future progression choices within the same world state and accessibility options."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 213604,
-      "lastMs": 35944,
+      "totalMs": 334688,
+      "lastMs": 59330,
       "lastError": null,
-      "updatedAt": "2026-10-08T22:01:02.251Z"
+      "updatedAt": "2026-10-08T22:03:03.339Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:57:28.495Z",
-  "updatedAt": "2026-10-08T22:01:02.252Z",
+  "updatedAt": "2026-10-08T22:03:03.339Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2244,7 +2266,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T22:01:02.252Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T22:03:03.339Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
