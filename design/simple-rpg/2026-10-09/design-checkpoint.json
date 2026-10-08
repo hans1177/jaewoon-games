@@ -88,25 +88,265 @@
       "name": "START_BOARD_LEVEL_WITH_PLAYER_CHOICE_AND_CORE_FUN_EFFECT",
       "purpose": "Player choice and core fun effect interaction",
       "playerChoice": "Player selects a board level with clear goal, limited moves, obstacles, or visible puzzle constraint."
+    },
+    "local_authoring_parts::7e7fdc65dd3b4cb8e2cb2b18f3b64c94df2ab0299b25bb3cf10a5de7bcec2f25:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "GAME_SPACE"
+      ],
+      "stateOutputs": [
+        "WORLD_STATE_CHANGE"
+      ],
+      "name": "START_BOARD_LEVEL_WITH_PLAYER_CHOICE_AND_CORE_FUN_EFFECT",
+      "purpose": "Player choice and core fun effect are both triggered when starting a board level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+      "playerChoice": "Player selects a specific board configuration, obstacle layout, or puzzle challenge to begin the game session."
+    },
+    "local_authoring_parts::83a79b3186f8a2256ebad0dc4a43699bd50a74b71682f40eaea03eef0b64aff6:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "GAME_SPACE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE"
+          ],
+          "name": "START_BOARD_LEVEL",
+          "purpose": "PLAYER_ACTION",
+          "playerChoice": "SET_GAME_SPACE_WITH_CLEAR_GOAL_AND_LIMITED_MOVES_OR_VISIBLE_TASK"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "GAME_SPACE",
+            "PLAYER_CHOICE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE",
+            "CORE_FUN_EFFECT"
+          ],
+          "name": "START_BOARD_LEVEL_WITH_PLAYER_CHOICE",
+          "purpose": "Player's choice affects the game space and world state change.",
+          "playerChoice": "Select a specific path, strategy, or goal to navigate the board level."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "GAME_SPACE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE"
+          ],
+          "name": "START_BOARD_LEVEL_WITH_PLAYER_CHOICE_AND_CORE_FUN_EFFECT",
+          "purpose": "Player choice and core fun effect integration",
+          "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "GAME_SPACE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE"
+          ],
+          "name": "START_BOARD_LEVEL_WITH_PLAYER_CHOICE_AND_CORE_FUN_EFFECT",
+          "purpose": "Player choice and core fun effect interaction",
+          "playerChoice": "Player selects a board level with clear goal, limited moves, obstacles, or visible puzzle constraint."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "GAME_SPACE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE"
+          ],
+          "name": "START_BOARD_LEVEL_WITH_PLAYER_CHOICE_AND_CORE_FUN_EFFECT",
+          "purpose": "Player choice and core fun effect are both triggered when starting a board level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+          "playerChoice": "Player selects a specific board configuration, obstacle layout, or puzzle challenge to begin the game session."
+        }
+      ]
+    },
+    "local_authoring_parts::67644fbc3382632f78cd9cbc10bdaac161a4194e7fd3752e3db2ddce6e76d14c:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT: 플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.이라는 중심 행동을 통해, 진입 단계에서 명확한 목표를 설정하고, 제한된 이동 수, 장애물, 또는 볼 수 있는 퀘스트 형태로 게임 공간을 구성하는 데 초점을 맞춘 PUZZLE 게임이다.",
+        "SELECT: 선택의 결과가 월드 상태에 직접적인 영향을 미치며, 성장은 즉각적 결과와 새로운 행동/경로/조합/관계/발견/대응법의 열림으로 이루어진다.",
+        "OUTPUT: 게임의 핵심 재미는 반복 가능한 루프와 즉시 피드백이 동반되는 입력/선택/상태 변화/보상/다음 선택 구조이며, 모바일에서도 즉시 이해할 수 있는 설계 방식으로 실현된다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "GAME_SPACE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE"
+          ],
+          "name": "START_BOARD_LEVEL",
+          "purpose": "PLAYER_ACTION",
+          "playerChoice": "SET_GAME_SPACE_WITH_CLEAR_GOAL_AND_LIMITED_MOVES_OR_VISIBLE_TASK"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "GAME_SPACE",
+            "PLAYER_CHOICE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE",
+            "CORE_FUN_EFFECT"
+          ],
+          "name": "START_BOARD_LEVEL_WITH_PLAYER_CHOICE",
+          "purpose": "Player's choice affects the game space and world state change.",
+          "playerChoice": "Select a specific path, strategy, or goal to navigate the board level."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "GAME_SPACE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE"
+          ],
+          "name": "START_BOARD_LEVEL_WITH_PLAYER_CHOICE_AND_CORE_FUN_EFFECT",
+          "purpose": "Player choice and core fun effect integration",
+          "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "GAME_SPACE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE"
+          ],
+          "name": "START_BOARD_LEVEL_WITH_PLAYER_CHOICE_AND_CORE_FUN_EFFECT",
+          "purpose": "Player choice and core fun effect interaction",
+          "playerChoice": "Player selects a board level with clear goal, limited moves, obstacles, or visible puzzle constraint."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "GAME_SPACE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE"
+          ],
+          "name": "START_BOARD_LEVEL_WITH_PLAYER_CHOICE_AND_CORE_FUN_EFFECT",
+          "purpose": "Player choice and core fun effect are both triggered when starting a board level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+          "playerChoice": "Player selects a specific board configuration, obstacle layout, or puzzle challenge to begin the game session."
+        }
+      ]
+    },
+    "local_authoring_parts::67644fbc3382632f78cd9cbc10bdaac161a4194e7fd3752e3db2ddce6e76d14c:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::09693c8e3f8f5a2c57b39fc31e10a2dc614ee2347b17e63b2202f4951e881dba:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "INPUT: 플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.이라는 중심 행동을 통해, 진입 단계에서 명확한 목표를 설정하고, 제한된 이동 수, 장애물, 또는 볼 수 있는 퀘스트 형태로 게임 공간을 구성하는 데 초점을 맞춘 PUZZLE 게임이다.",
+        "SELECT: 선택의 결과가 월드 상태에 직접적인 영향을 미치며, 성장은 즉각적 결과와 새로운 행동/경로/조합/관계/발견/대응법의 열림으로 이루어진다.",
+        "OUTPUT: 게임의 핵심 재미는 반복 가능한 루프와 즉시 피드백이 동반되는 입력/선택/상태 변화/보상/다음 선택 구조이며, 모바일에서도 즉시 이해할 수 있는 설계 방식으로 실현된다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "GAME_SPACE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE"
+          ],
+          "name": "START_BOARD_LEVEL",
+          "purpose": "PLAYER_ACTION",
+          "playerChoice": "SET_GAME_SPACE_WITH_CLEAR_GOAL_AND_LIMITED_MOVES_OR_VISIBLE_TASK"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "GAME_SPACE",
+            "PLAYER_CHOICE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE",
+            "CORE_FUN_EFFECT"
+          ],
+          "name": "START_BOARD_LEVEL_WITH_PLAYER_CHOICE",
+          "purpose": "Player's choice affects the game space and world state change.",
+          "playerChoice": "Select a specific path, strategy, or goal to navigate the board level."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "GAME_SPACE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE"
+          ],
+          "name": "START_BOARD_LEVEL_WITH_PLAYER_CHOICE_AND_CORE_FUN_EFFECT",
+          "purpose": "Player choice and core fun effect integration",
+          "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "GAME_SPACE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE"
+          ],
+          "name": "START_BOARD_LEVEL_WITH_PLAYER_CHOICE_AND_CORE_FUN_EFFECT",
+          "purpose": "Player choice and core fun effect interaction",
+          "playerChoice": "Player selects a board level with clear goal, limited moves, obstacles, or visible puzzle constraint."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "GAME_SPACE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE"
+          ],
+          "name": "START_BOARD_LEVEL_WITH_PLAYER_CHOICE_AND_CORE_FUN_EFFECT",
+          "purpose": "Player choice and core fun effect are both triggered when starting a board level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+          "playerChoice": "Player selects a specific board configuration, obstacle layout, or puzzle challenge to begin the game session."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 936463,
-      "lastMs": 97971,
+      "totalMs": 1123610,
+      "lastMs": 89498,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:33:49.596Z"
+      "updatedAt": "2026-10-08T21:36:56.750Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:18:13.104Z",
-  "updatedAt": "2026-10-08T21:33:49.598Z",
+  "updatedAt": "2026-10-08T21:36:56.759Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2139,27 +2379,51 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {
-    "local_authoring_parts::7e7fdc65dd3b4cb8e2cb2b18f3b64c94df2ab0299b25bb3cf10a5de7bcec2f25:signatureSystems:4": [
+    "designer_draft_slices::identity-core": [
       {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "DELVE",
-        "previousRuleIds": [
-          "SIGNATURE_SYSTEM_0",
-          "SIGNATURE_SYSTEM_1",
-          "SIGNATURE_SYSTEM_2",
-          "SIGNATURE_SYSTEM_3"
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems[0].playerChoice",
+          "value": "SET_GAME_SPACE_WITH_CLEAR_GOAL_AND_LIMITED_MOVES_OR_VISIBLE_TASK"
+        },
+        "requiredAction": "signatureSystems[0].playerChoice의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
         ]
       }
     ]
   },
   "sliceRepairAttempts": {
-    "local_authoring_parts::7e7fdc65dd3b4cb8e2cb2b18f3b64c94df2ab0299b25bb3cf10a5de7bcec2f25:signatureSystems:4": 1
+    "local_authoring_parts::7e7fdc65dd3b4cb8e2cb2b18f3b64c94df2ab0299b25bb3cf10a5de7bcec2f25:signatureSystems:4": 1,
+    "designer_draft_slices::identity-core": 1
   },
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:33:49.596Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:DELVE",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "작은 모험 RPG은 플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.이라는 중심 행동을 통해, 진입 단계에서 명확한 목표를 설정하고, 제한된 이동 수, 장애물, 또는 볼 수 있는 퀘스트 형태로 게임 공간을 구성하는 데 초점을 맞춘 PUZZLE 게임이다. 이 과정에서 선택의 결과가 월드 상태에 직접적인 영향을 미치며, 성장은 즉각적 결과와 새로운 행동/경로/조합/관계/발견/대응법의 열림으로 이루어진다. 게임의 핵심 재미는 반복 가능한 루프와 즉시 피드백이 동반되는 입력/선택/상태 변화/보상/다음 선택 구조이며, 모바일에서도 즉시 이해할 수 있는 설계 방식으로 실현된다.",
+      "playerFantasy": "작은 모험 RPG에서는 플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.이라는 중심 행동을 통해, 진입 단계에서 명확한 목표를 설정하고, 제한된 이동 수, 장애물, 또는 볼 수 있는 퀘스트 형태로 게임 공간을 구성하는 데 초점을 맞춘 PUZZLE 게임이다. 이 과정에서 선택의 결과가 월드 상태에 직접적인 영향을 미치며, 성장은 즉각적 결과와 새로운 행동/경로/조합/관계/발견/대응법의 열림으로 이루어진다. 게임의 핵심 재미는 반복 가능한 루프와 즉시 피드백이 동반되는 입력/선택/상태 변화/보상/다음 선택 구조이며, 모바일에서도 즉시 이해할 수 있는 설계 방식으로 실현된다.",
+      "coreFun": "작은 모험 RPG에서는 플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.이라는 중심 행동을 통해, 진입 단계에서 명확한 목표를 설정하고, 제한된 이동 수, 장애물, 또는 볼 수 있는 퀘스트 형태로 게임 공간을 구성하는 데 초점을 맞춘 PUZZLE 게임이다. 이 과정에서 선택의 결과가 월드 상태에 직접적인 영향을 미치며, 성장은 즉각적 결과와 새로운 행동/경로/조합/관계/발견/대응법의 열림으로 이루어진다. 게임의 핵심 재미는 반복 가능한 루프와 즉시 피드백이 동반되는 입력/선택/상태 변화/보상/다음 선택 구조이며, 모바일에서도 즉시 이해할 수 있는 설계 방식으로 실현된다.",
+      "coreLoop": [
+        "INPUT: 플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.이라는 중심 행동을 통해, 진입 단계에서 명확한 목표를 설정하고, 제한된 이동 수, 장애물, 또는 볼 수 있는 퀘스트 형태로 게임 공간을 구성하는 데 초점을 맞춘 PUZZLE 게임이다.",
+        "SELECT: 선택의 결과가 월드 상태에 직접적인 영향을 미치며, 성장은 즉각적 결과와 새로운 행동/경로/조합/관계/발견/대응법의 열림으로 이루어진다.",
+        "OUTPUT: 게임의 핵심 재미는 반복 가능한 루프와 즉시 피드백이 동반되는 입력/선택/상태 변화/보상/다음 선택 구조이며, 모바일에서도 즉시 이해할 수 있는 설계 방식으로 실현된다."
+      ],
+      "multiplayerMode": "COOP"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T21:36:56.752Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
