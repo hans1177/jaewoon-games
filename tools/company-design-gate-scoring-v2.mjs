@@ -66,6 +66,122 @@ const level=(basic,connected,proven=false)=>{
   return proven?100:80;
 };
 
+// 생산성 평가: 기존 설계 필드의 실제 구현 계약을 5개 축으로 점검한다.
+// 설계의 주장만으로 네이티브 런타임/프레임·렌더/2인 QA가 통과했다고 판정하지 않는다.
+export const DESIGN_PRODUCTION_QUALITY_AXES=Object.freeze({
+  ENGINE_VERSION_FEASIBILITY:Object.freeze({axis:'PLATFORM_FIT_DESIGN',fields:['platformProfiles'],
+    action:'ROBLOX는 Studio/Luau의 빌드·채널 확인 방식, 실행할 서버 API와 모바일 예산을, UNITY는 실제 ProjectVersion.txt 또는 확인할 에디터 버전, C# 씬·WebGL/Android 동일 프로젝트, 엔진 API와 실행 QA를 적는다.'}),
+  CODE_IMPLEMENTABILITY:Object.freeze({axis:'IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY',fields:['implementationTraceability','technicalAssumptions'],
+    action:'기존 책임 소스/스크립트와 대표 상태변화→테스트 연결을 최소 3개 작성한다. UI/게임플레이·저장/서버 권한의 책임을 분리하고 실제 검증할 입력·결과를 명시한다.'}),
+  GRAPHICS_ENGINE_PRESENTATION:Object.freeze({axis:'ART_AUDIO_DIRECTION',fields:['artAudioDirection','visualDirection','platformProfiles'],
+    action:'2.5D 이상 실제 씬 깊이·카메라 가림·광원/재질·개별 객체 외형/동작·모바일 WebGL 화면/FPS 검증을 동일 Unity 프로젝트와 Roblox 월드에 각각 연결한다.'}),
+  VISUAL_UI_SYSTEM:Object.freeze({axis:'UX_AND_ACCESSIBILITY_PLAN',fields:['uxAccessibilityPlan','mobileUx','platformProfiles'],
+    action:'장르의 HP/목표/자원 등 실제 HUD 정보 우선순위와 플랫폼 UI 컴포넌트, 모바일 엄지 조작·안전 영역, 문자 대비/색 비의존 접근성을 명시한다.'}),
+  MENU_COMPOSITION:Object.freeze({axis:'UX_AND_ACCESSIBILITY_PLAN',fields:['uxAccessibilityPlan'],
+    action:'이 게임에 필요한 시작/로비→게임→뒤로/복귀, 설정·일시정지/재시도, 잠금/로딩/오류와 중복입력·저장 복구, 실제 클릭·터치 회귀 경로를 메뉴 구조와 편의성 선택에 작성한다.'})
+});
+
+const has=(value,pattern)=>pattern.test(clean(value));
+const qualityDimension=(checks)=>{
+  const keys=Object.keys(checks);
+  const passed=keys.filter(key=>checks[key]).length;
+  return{
+    evidenceLevel:passed===keys.length?80:passed===0?0:passed===1?20:passed===2?40:60,
+    designEvidenceOnly:true,
+    runtimeVerified:false,
+    pass:passed===keys.length,
+    checks,
+    missing:keys.filter(key=>!checks[key]),
+  };
+};
+export function evaluateDesignProductionQuality(design={}){
+  const profiles=design.platformProfiles||{};
+  const roblox=profiles.ROBLOX||{},unity=profiles.UNITY||{},spatial=unity.unityWebSpatialPresentation||{};
+  const ux=design.uxAccessibilityPlan||{},art=design.artAudioDirection||{};
+  const trace=list(design.implementationTraceability);
+  const assumptions=list(design.technicalAssumptions).join(' ');
+  const rEngine=[roblox.platformContentAdaptation,roblox.validationEvidence,roblox.saveAndNetwork].join(' ');
+  const uEngine=[unity.platformContentAdaptation,unity.validationEvidence,unity.saveAndNetwork].join(' ');
+  const qaText=trace.map(row=>clean(row?.validationEvidence)).join(' ');
+  const engine=qualityDimension({
+    robloxStudioLuauVersionPlan:has(rEngine,/roblox\s*studio/i)&&has(rEngine,/luau/i)&&has(rEngine,/version|channel|build|버전|채널|빌드|릴리스/i),
+    robloxNativeServerBinding:has(roblox.saveAndNetwork,/RemoteEvent|RemoteFunction|DataStore|server|서버|검증/i)
+      &&has(roblox.validationEvidence,/Studio|실행|playtest|QA|test|클라이언트/i),
+    unityEditorVersionSource:has(uEngine,/ProjectVersion\.txt|(?:Unity|유니티)\s*(?:Editor\s*)?(?:6|20\d{2}|6000)|(?:에디터|Editor)\s*(?:버전|version)/i),
+    unitySingleProjectAndApi:has(unity.platformContentAdaptation,/Unity|유니티/i)
+      &&has(uEngine,/C#|Scene|Prefab|Shader|Animator|Input System|MonoBehaviour|씬|프리팹/i)
+      &&has(unity.validationEvidence,/WebGL/i)&&has(unity.validationEvidence,/Android|안드로이드/i),
+    measuredNativeCompatibility:has(roblox.performanceBudget,/mobile|FPS|frame|memory|메모리|모바일|프레임|예산/i)
+      &&has(unity.performanceBudget,/WebGL|GPU|FPS|frame|memory|texture|draw|모바일|메모리|텍스처|성능/i)
+      &&has(unity.validationEvidence,/QA|test|검증|실행|build|빌드|프레임/i),
+  });
+  const validTrace=trace.filter(row=>objectReady(row,['designElement','responsibleSystem','validationEvidence'],12));
+  const coding=qualityDimension({
+    differentOwnedResponsibilities:validTrace.length>=3
+      &&distinct(validTrace.map(row=>row.responsibleSystem)).length>=3,
+    engineSourceOrResponsibleFunction:validTrace.some(row=>has(row.responsibleSystem,
+      /\.cs\b|\.lua\b|\.luau\b|ServerScriptService|ReplicatedStorage|Assets\/Scripts|ModuleScript|MonoBehaviour|C#|Luau|기존\s*(?:함수|스크립트|모듈)|(?:게임|전투|플레이|입력|렌더|UI|저장)\s*(?:함수|모듈|스크립트)/i)),
+    gameplayToStateAndTest:validTrace.some(row=>has(row.designElement+' '+row.validationEvidence,
+      /attack|combat|move|action|gameplay|encounter|input|state|행동|전투|상호작용|판정|상태|입력|이동/i))
+      &&validTrace.filter(row=>has(row.validationEvidence,
+        /test|assert|QA|verify|validate|record|실행|검증|테스트|기록|확인|재현/i)).length>=2,
+    uiAndMenuSourceOwnership:validTrace.some(row=>has(row.designElement+' '+row.responsibleSystem,
+      /UI|HUD|Menu|ScreenGui|Canvas|화면|메뉴|인터페이스|버튼/i)),
+    saveAndServerAuthoritySafeguard:has(assumptions,/server|서버|권한|authoritative/i)
+      &&has(assumptions,/save|저장|세이브|schema|데이터/i),
+  });
+  const graphic=qualityDimension({
+    spatialWorldAboveFlat2D:['2.5D','3D'].includes(spatial.dimension)
+      &&has(spatial.worldDepth,/깊이|공간|높이|전경|중경|후경|시차|메시|입체|depth|parallax|foreground|geometry|mesh|height|3D/i),
+    cameraOcclusionNative:has(spatial.cameraAndOcclusion,/카메라|camera|투영|perspective|orthographic/i)
+      &&has(spatial.cameraAndOcclusion,/가림|깊이|차폐|occlusion|depth|sort|시야/i),
+    materialLightingDepth:has(spatial.lightingAndMaterials,/광원|조명|그림자|접지|light|shadow/i)
+      &&has(spatial.lightingAndMaterials,/재질|표면|material|roughness|shader/i),
+    genreActorVisualAndResponse:has(design.visualDirection+' '+art.visualIdentity,
+      /적|몬스터|캐릭터|NPC|지역|랜드마크|실루엣|creature|enemy|actor|silhouette|landmark|environment|world/i)
+      &&has(art.gameplayFeedbackSync,/animation|motion|VFX|sound|audio|state|애니메이션|동작|이펙트|사운드|피드백|상태/i),
+    mobileFrameAndVisualProof:has(spatial.mobileWebglEvidence,/WebGL|브라우저|browser/i)
+      &&has(spatial.mobileWebglEvidence,/실제|real|frame|FPS|프레임|측정|촬영|스크린샷|비교|capture|regression/i)
+      &&has(roblox.platformContentAdaptation,/3D|3차원|월드|world|terrain|mesh|지형|scene/i),
+  });
+  const uiSystem=qualityDimension({
+    actualGameHudHierarchy:has(ux.hudPriorities,/HUD|health|HP|objective|goal|quest|wave|money|resource|currency|risk|player|체력|목표|퀘스트|재화|자원|위험|상태|점수|시간|웨이브/i),
+    platformNativeUi:has(roblox.uiUx,/ScreenGui|Roblox|Studio|로블록스/i)
+      &&has(unity.uiUx,/Canvas|UI Toolkit|UGUI|Unity|유니티/i),
+    touchAndSafeArea:has(ux.touchAndInput+' '+design.mobileUx,/touch|터치|조이스틱|버튼|thumb|엄지/i)
+      &&has(ux.touchAndInput+' '+design.mobileUx,/safe|안전|겹침|가림|영역|배치|모바일|layout|배율/i),
+    textColorAndHierarchy:has(ux.readability,/대비|명암|글자|문자|텍스트|색상|색|아이콘|형태|contrast|text|font|icon|shape|readab/i),
+    accessibleStateFeedback:has(ux.accessibility,/접근성|중복|시각|자막|색상|청각|소리|음량|readab|feedback|visual|audio|color|motion|text/i),
+  });
+  const menu=clean(ux.menuStructure),comfort=clean(ux.convenienceDecisions);
+  const menuDesign=qualityDimension({
+    startAndLobbyEntry:has(menu,/시작|메인|로비|진입|계속하기|입장|title|start|main menu|entry|lobby|continue/i),
+    gameplayAndReturnRoute:has(menu,/플레이|게임|전투|탐험|결과|HUD|play|gameplay|combat|battle/i)
+      &&has(menu,/뒤로|복귀|돌아|닫기|나가기|취소|back|return|exit|close|cancel/i),
+    appropriatePauseSettingsRetry:has(menu,/일시정지|설정|재시도|재개|중단|정지|pause|settings|retry|resume|reconnect|재접속/i),
+    disabledLoadingErrorStates:has(menu,/비활성|잠금|로딩|대기|실패|오류|에러|불가|활성|disable|locked|loading|error|pending|failed/i),
+    convenienceAndRegression:has(comfort,/중복|복귀|재접속|저장|필터|프리셋|재시도|터치|편의|중단|복원|resume|duplicate|reconnect|save|filter|touch|restore/i)
+      &&has(comfort,/검증|시험|테스트|재현|측정|비교|확인|test|verify|QA|check|replay/i),
+  });
+  const dimensions={
+    ENGINE_VERSION_FEASIBILITY:engine,
+    CODE_IMPLEMENTABILITY:coding,
+    GRAPHICS_ENGINE_PRESENTATION:graphic,
+    VISUAL_UI_SYSTEM:uiSystem,
+    MENU_COMPOSITION:menuDesign,
+  };
+  return{
+    authority:'DESIGN_SOURCE_EVIDENCE_ONLY',
+    runtimeVerified:false,
+    cannotGrantNativeQaOrReleasePass:true,
+    minimumEvidenceLevel:80,
+    dimensions,
+    score:Math.round(Object.values(dimensions).reduce((sum,row)=>sum+row.evidenceLevel,0)/Object.keys(dimensions).length),
+    pass:Object.values(dimensions).every(row=>row.pass),
+    missing:Object.entries(dimensions).flatMap(([axis,row])=>row.missing.map(check=>axis+'.'+check)),
+  };
+}
+
 // 설계 규칙: 새 원본 작성과 기존 표현 보존 작업의 범위를 구분한다.
 export function designPlayabilityRequirements(seed={},sourceText=''){
   const original=seed.originalDesignContext?.content||{};
@@ -185,6 +301,19 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
   for(let i=0;i<alternatives.length;i++)for(let j=i+1;j<alternatives.length;j++){
     const different=strategicKeys.filter(key=>normalize(alternatives[i][key])!==normalize(alternatives[j][key]));
     if(different.length<2)reject('DESIGN_ALTERNATIVES_DUPLICATED','IDEA_AND_DISTINCTNESS',['designAlternatives','selectedDesignPlan'],{plans:[alternatives[i].label,alternatives[j].label],differentAxes:different},'원본 규칙을 보존하면서 루프·동선·대응법·성장 중 최소 두 항목의 실제 플레이 접근이 다른 대안을 작성하고 선택 근거를 갱신한다.');
+  }
+  // 기존 설계 객체의 책임 필드를 직접 검증한다. 분할 작성 중 아직 없는 다른 분야는 검사하지 않는다.
+  const productionQuality=evaluateDesignProductionQuality(design);
+  for(const [name,axis] of Object.entries(DESIGN_PRODUCTION_QUALITY_AXES)){
+    if(!axis.fields.some(field=>selected.has(field)))continue;
+    const ownedField=name==='ENGINE_VERSION_FEASIBILITY'?'platformProfiles':
+      name==='CODE_IMPLEMENTABILITY'?'implementationTraceability':
+      name==='GRAPHICS_ENGINE_PRESENTATION'?'artAudioDirection':'uxAccessibilityPlan';
+    if(!selected.has(ownedField))continue;
+    const result=productionQuality.dimensions[name];
+    if(!result.pass)reject('DESIGN_'+name+'_WEAK',axis.axis,[ownedField],
+      {score:result.evidenceLevel,missing:result.missing,authority:productionQuality.authority},
+      axis.action);
   }
   const requirements=designPlayabilityRequirements(seed,sourceText);
   // 보존형 표현 설계도 A/B 상태 교환과 MAIN/c/@ 연결을 실제 원본 경로로 설명해야 한다.
@@ -422,14 +551,16 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
     clean(robloxProfile.performanceBudget)!==clean(unityProfile.performanceBudget)||
     clean(robloxProfile.platformContentAdaptation)!==clean(unityProfile.platformContentAdaptation)
   );
+  const productionQuality=evaluateDesignProductionQuality(design);
+  const quality=productionQuality.dimensions;
   const platformBasic=platformKnown&&Boolean(design.platformFitPlan)&&Boolean(design.platformProfiles)&&textReady(design.mobileUx,20)&&robloxProfileReady&&unityProfileReady;
-  const platformConnected=platformBasic&&profilesDistinct&&clean(design.platformFitPlan?.targetPlatform).toUpperCase()===platform&&textReady(design.platformFitPlan?.targetPlatform,3)&&objectReady(design.platformFitPlan,['inputModel','performanceBudget','sessionConstraints'],16);
+  const platformConnected=platformBasic&&quality.ENGINE_VERSION_FEASIBILITY.pass&&profilesDistinct&&clean(design.platformFitPlan?.targetPlatform).toUpperCase()===platform&&textReady(design.platformFitPlan?.targetPlatform,3)&&objectReady(design.platformFitPlan,['inputModel','performanceBudget','sessionConstraints'],16);
   const uxBasic=Boolean(design.uxAccessibilityPlan)&&textReady(design.mobileUx,20);
-  const uxConnected=uxBasic&&objectReady(design.uxAccessibilityPlan,['hudPriorities','touchAndInput','readability','accessibility'],16);
+  const uxConnected=uxBasic&&quality.VISUAL_UI_SYSTEM.pass&&quality.MENU_COMPOSITION.pass&&objectReady(design.uxAccessibilityPlan,['hudPriorities','touchAndInput','readability','accessibility','menuStructure','convenienceDecisions'],16);
   const artBasic=Boolean(design.artAudioDirection)&&textReady(design.visualDirection,20);
-  const artConnected=artBasic&&objectReady(design.artAudioDirection,['visualIdentity','audioIdentity','gameplayFeedbackSync'],16);
+  const artConnected=artBasic&&quality.GRAPHICS_ENGINE_PRESENTATION.pass&&objectReady(design.artAudioDirection,['visualIdentity','audioIdentity','gameplayFeedbackSync'],16);
   const traceBasic=list(design.implementationTraceability).length>0;
-  const traceConnected=objectListReady(design.implementationTraceability,['designElement','responsibleSystem','validationEvidence'],3,10)&&distinct(list(design.technicalAssumptions)).length>=2&&distinct(list(design.validationQuestions)).length>=2;
+  const traceConnected=quality.CODE_IMPLEMENTABILITY.pass&&objectListReady(design.implementationTraceability,['designElement','responsibleSystem','validationEvidence'],3,10)&&distinct(list(design.technicalAssumptions)).length>=2&&distinct(list(design.validationQuestions)).length>=2;
 
   const evidenceLevels={
     IDEA_AND_DISTINCTNESS:level(ideaBasic,ideaConnected,revalidated&&textReady(design.identity,100)),
@@ -504,6 +635,7 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
     hardFailures:[...new Set(hardFailures)],
     rejectionReasons,
     revalidated,
+    productionQuality,
     thirtyMinuteHardGateApplied:false,
     materialContractOk,
     grammarCarryEvidence:seedGrammar?{formula:'MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @',requiredCausalIds:grammarIds,carriedCausalIds:carriedGrammarIds,primaryVerbCarried,worldRuleCarried,mainName,mainCarried,majorAxisNames,carriedMajorAxes,subElementNames,carriedSubElements,delveNames,carriedDelveElements,emergentGenreName,emergentGenreCarried,categoryRole:seedGrammar?.emergentGenre?.categoryRole||null}:null,
