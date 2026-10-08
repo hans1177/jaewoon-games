@@ -1952,17 +1952,29 @@ function RobloxCommonUI.CreateCharacterDetailScreen(options)
   local function sync(state)
     state=type(state)=="table"and state or {}
     if inner then
-      if inner:FindFirstChild("CharacterName")then inner.CharacterName.Text=tostring(state.name or "캐릭터")end
+      if inner:FindFirstChild("CharacterName")then inner.CharacterName.Text=tostring(state.name or options.displayName or "캐릭터")end
       if inner:FindFirstChild("Class")then inner.Class.Text=tostring(state.className or "")end
       if inner:FindFirstChild("Level")then inner.Level.Text=tostring(state.levelText or "")end
       local values=inner:FindFirstChild("Stats")
       if values then
+        local active={}
         for index,stat in ipairs(state.stats or {})do
-          local row=values:FindFirstChild(tostring(stat.id or ("Stat"..index)))
-          if row then
-            if row:FindFirstChild("Label")then row.Label.Text=tostring(stat.label or stat.id or "")end
-            if row:FindFirstChild("Value")then row.Value.Text=tostring(stat.value or "")end
+          local id=tostring(stat.id or ("Stat"..index))
+          active[id]=true
+          local row=values:FindFirstChild(id)
+          if not row then
+            row=Instance.new("Frame")
+            row.Name=id;row.Size=UDim2.new(1,0,0,26);row.BackgroundTransparency=1;row.Parent=values
+            commonText(row,"Label","",UDim2.new(),UDim2.new(.58,0,1,0),theme.MutedText,12,false)
+            local value=commonText(row,"Value","",UDim2.new(.58,0,0,0),UDim2.new(.42,0,1,0),theme.Text,12,true)
+            value.TextXAlignment=Enum.TextXAlignment.Right
           end
+          row.Visible=true;row.LayoutOrder=index
+          if row:FindFirstChild("Label")then row.Label.Text=tostring(stat.label or stat.id or "")end
+          if row:FindFirstChild("Value")then row.Value.Text=tostring(stat.value or "")end
+        end
+        for _,child in ipairs(values:GetChildren())do
+          if child:IsA("Frame")and not active[child.Name]then child.Visible=false end
         end
       end
     end
@@ -2390,7 +2402,7 @@ function RobloxCommonUI.CreateBuySellPanel(options)
   options=options or {}
   local theme=cloneTheme(options.theme)
   local root,inner=RobloxCommonUI.CreatePanel({
-    name=options.name or "BuySellPanel",size=options.size or UDim2.fromOffset(460,360),theme=theme
+    name=options.name or "BuySellPanel",size=options.size or UDim2.new(1,-24,1,-24),theme=theme
   })
   tag(root,"BUY_SELL_PANEL")
   commonText(inner,"Title",options.title or "장비 매매",UDim2.fromOffset(14,8),UDim2.new(1,-28,0,34),theme.Text,20,true)
