@@ -739,25 +739,46 @@
         "ProgressionBenefit"
       ],
       "fromSystem": "SYSTEM_AVOIDANCE_ZONE_01"
+    },
+    "local_authoring_parts::cc4b4ec72d10e96a0096e51d4c9eda8407ef815bf7374f5bcdf5a30a1f2c3e48:toSystem,trigger,stateChange": {
+      "toSystem": "SYSTEM_AVOIDANCE_ZONE_02",
+      "trigger": "HumanCount + MonsterCount + EliminatedCount 변화",
+      "stateChange": "Score + Distance + ProgressionBenefit 변화"
+    },
+    "local_authoring_parts::934d9aef38062c93d86a54172f4d21af29a59ab8737ae363ebee0c84c69e9c4e:systemInterconnections:2": {
+      "fromId": "RULE_01",
+      "toId": "RULE_02",
+      "stateKeys": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount",
+        "Score",
+        "Distance",
+        "ProgressionBenefit"
+      ],
+      "fromSystem": "SYSTEM_AVOIDANCE_ZONE_01",
+      "toSystem": "SYSTEM_AVOIDANCE_ZONE_02",
+      "trigger": "HumanCount + MonsterCount + EliminatedCount 변화",
+      "stateChange": "Score + Distance + ProgressionBenefit 변화"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 23,
-      "successes": 22,
+      "calls": 24,
+      "successes": 23,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2786196,
-      "lastMs": 61577,
+      "totalMs": 2846468,
+      "lastMs": 60272,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T16:01:57.806Z"
+      "updatedAt": "2026-10-08T16:02:58.079Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:56:17.645Z",
-  "updatedAt": "2026-10-08T16:01:57.806Z",
+  "updatedAt": "2026-10-08T16:02:58.081Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2827,7 +2848,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:01:57.806Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:02:58.081Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
