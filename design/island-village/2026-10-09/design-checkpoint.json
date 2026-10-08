@@ -27,25 +27,32 @@
       "identity": "빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다.\n\n플레이어는 무인도 마을에서 Gather a focused set of island resources.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다.\n\n대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다.\n\n성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다.",
       "playerFantasy": "무인도 마을에서 플레이어는 Gather a focused set of island resources.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다.\n\n대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다.\n\n성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다.",
       "coreFun": "Gather a focused set of island resources.의 결과가 다음 월드 상태를 바꾸며, 이 과정에서 주민들의 생활 연결망을 확장하는 방식으로 이루어진 콘텐츠로 구성된다.\n\n플레이어는 무인도 마을에서 Gather a focused set of island resources.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다.\n\n대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다.\n\n성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다."
+    },
+    "local_authoring_parts::c47b34b27108da67350e8c4f0056fc2095ee579992c4be9b0aa4fdf751b8e4b7:coreLoop": {
+      "coreLoop": [
+        "Gather a focused set of island resources. -> Build or improve one village function.",
+        "Unlock a new resident, activity or area -> Choose next village goal.",
+        "Repeat the main action with different choices and outcomes."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 233535,
-      "lastMs": 44961,
+      "totalMs": 265094,
+      "lastMs": 31559,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:49:59.481Z"
+      "updatedAt": "2026-10-08T17:50:31.042Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:46:05.904Z",
-  "updatedAt": "2026-10-08T17:49:59.482Z",
+  "updatedAt": "2026-10-08T17:50:31.042Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2126,7 +2133,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:49:59.482Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:50:31.042Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
