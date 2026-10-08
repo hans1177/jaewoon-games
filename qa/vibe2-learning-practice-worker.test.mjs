@@ -216,6 +216,37 @@ test('repair budget is bounded and malformed responses remain failures',async()=
   assert.equal(calls,3);assert.equal(result.evaluation.pass,false);
 });
 
+test('repair receives public execution and answer diagnostics but no hidden diagnostics',async()=>{
+  const prompts=[];
+  const drill={platform:'unity',supportCode:'public class Progress { public int Currency; }',feedbackTests:['public'],tests:['private']};
+  const result=await runPracticeRepairSession({order:{executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE]'},drill,
+    request:async prompt=>{prompts.push(prompt);return JSON.stringify({...practiceAnswer,code:prompts.length===1?'broken':'fixed'});},
+    evaluate:(answer,{drill})=>({pass:answer.code==='fixed',answerErrors:answer.code==='fixed'?[]:['tests needs 3 strings'],codeVerification:{pass:answer.code==='fixed',baselineRejected:true,referencePassed:true,reason:'REGRESSION_OR_FIXTURE_FAILED',failedTests:[2],diagnostics:[drill.tests[0]==='public'?'Candidate.cs(1,4): error CS0101: duplicate type':'HIDDEN_DIAGNOSTIC_SECRET']}})});
+  assert.equal(result.repairEvidence.finalPass,true);
+  assert(prompts[0].includes(drill.supportCode));
+  assert.match(prompts[0],/do not redeclare the harness types/);
+  assert(prompts[1].includes('error CS0101'));
+  assert(prompts[1].includes('tests needs 3 strings'));
+  assert(!prompts.join('\n').includes('HIDDEN_DIAGNOSTIC_SECRET'));
+  assert(!JSON.stringify(result.repairEvidence).includes('HIDDEN_DIAGNOSTIC_SECRET'));
+});
+
+test('actual Luau failures identify candidate location and failing public example',{skip:!process.env.VIBE2_LUAU_BINARY},()=>{
+  const drill=robloxCurriculum.drills.find(row=>row.id==='save');
+  const result=evaluatePracticeAnswer({...practiceAnswer,code:'return {save=function() error("broken transition") end}'},{drill:{...drill,tests:drill.feedbackTests}});
+  assert.equal(result.pass,false);
+  assert(result.codeVerification.failedTests.length>0);
+  assert(result.codeVerification.diagnostics.some(line=>/(candidate|check)\.luau:\d+:/.test(line)));
+  assert(!JSON.stringify(result.codeVerification.diagnostics).includes('/tmp/'));
+});
+
+test('C# compiler diagnostics expose duplicate harness type to public repair',{skip:!process.env.VIBE2_TEST_CSHARP_RUNTIME},()=>{
+  const drill=robloxCurriculum.platformDrills.find(row=>row.id==='unity-menu-batch-transaction');
+  const result=evaluatePracticeAnswer({...practiceAnswer,code:drill.supportCode+' '+drill.reference},{drill:{...drill,tests:drill.feedbackTests}});
+  assert.equal(result.pass,false);
+  assert(result.codeVerification.diagnostics.some(line=>/CS0101/.test(line)),JSON.stringify(result));
+});
+
 test('registered Unity coding drills prepare the existing executor and persist repair evidence',()=>{
   const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
   assert.match(workflow,/platformDrills\?\.some\(d=>d\.id===id&&d\.platform==='unity'\)/);
