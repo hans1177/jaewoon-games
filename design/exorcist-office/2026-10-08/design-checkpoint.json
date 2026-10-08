@@ -469,25 +469,43 @@
       "name": "Readable Input State",
       "purpose": "Establish the core gameplay mechanism by which players interact with the game through a readable input, receive feedback, and make a small risk or route choice before the run ends.",
       "playerChoice": "Players choose a small risk or route choice based on a readable input, which affects the status change and progression benefit."
+    },
+    "local_authoring_parts::e4b3a895f50d0e3b78db5c7ff5d04de4ad234ff878d92df8809b571b37785279:signatureSystems:0": {
+      "id": "START_IMMEDIATELY_WITH_SIMPLE_ONE_THUMB_TAP_OR_SWIPE_INPUT_AND_CLEAR_SCORE_DISTA",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "READABLE_INPUT_STATUS",
+        "CLEAR_SCORE_OR_DISTANCE",
+        "SHORT_SESSION_GOAL"
+      ],
+      "stateOutputs": [
+        "CHANGED_WORLD_STATE",
+        "REWARD_OR_SCORE",
+        "PROGRESSION_BENEFIT",
+        "MINIMAL_FRICION"
+      ],
+      "name": "Start Immediately with Simple One-thumb Tap or Swipe Input and Clear Score, Distance, or Short Session Goal",
+      "purpose": "Determines the core fun and system connection of the game, ensuring that the player's actions directly lead to world state changes in a casual game.",
+      "playerChoice": "Player chooses a simple input, receives a score, distance, or short session goal, and experiences a loop of state changes, rewards, risks, and re-visits."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 15,
-      "successes": 15,
+      "calls": 16,
+      "successes": 16,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1682378,
-      "lastMs": 98905,
+      "totalMs": 1784896,
+      "lastMs": 102518,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:10:48.954Z"
+      "updatedAt": "2026-10-08T10:50:19.070Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:42:46.518Z",
-  "updatedAt": "2026-10-08T10:48:36.546Z",
+  "updatedAt": "2026-10-08T10:50:19.070Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2447,10 +2465,10 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T08:10:48.956Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:50:19.070Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
