@@ -19,25 +19,33 @@
     "local_authoring_parts::44932bc7304b1a45079dd45205b407fdf7931ab442fe614d7a18b5540d898961:identity,playerFantasy": {
       "identity": "골목 군단 대전은 플레이어가 매 차례마다 새로운 전략을 수립하고, 이전 선택의 결과를 기반으로 다음 상태를 변화시키는 반복 가능한 핵심 루프를 구축하는 게임이다. 이 게임은 단순한 전략 게임이 아니라, 플레이어가 실제 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 갖춘다. 게임의 핵심 재미는 '전략적 선택의 결과가 다음 상태로 이어지는 반복 가능한 루프'이며, 이는 모바일 플랫폼에서도 즉시 이해할 수 있는 입력과 피드백을 제공한다. 게임의 세계 규칙은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'과 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'의 결과가 서로 영향을 주는 시그니처 상호작용을 통해 구축된다. 게임의 시스템은 MAIN, A, B, c, @의 상태 변화를 통해, 플레이어가 반복적으로 수행하는 중심 행동과 독립적인 대축, 보조 요소, 파고들기의 관계를 구체화한다. 게임의 규칙은 기존의 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고, RPG식 시스템은 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다. 게임의 성장은 수치 증가뿐만 아니라, 새 행동·경로·조합·관계·발견·대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않고, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 게임의 성공은 결정론적 검증기가 담당하며, 실패·중단·재접속·저장은 원본 의미를 보존한다. 게임의 구현 버그와 설계 모순의 원인·수정 책임은 구분하고, 안정성을 먼저 다룬다. 같은 증상을 설계와구",
       "playerFantasy": "골목 군단 대전은 플레이어가 매 차례마다 새로운 전략을 수립하고, 이전 선택의 결과를 기반으로 다음 상태를 변화시키는 반복 가능한 핵심 루프를 구축하는 게임이다. 이 게임은 단순한 전략 게임이 아니라, 플레이어가 실제 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 갖춘다. 게임의 핵심 재미는 '전략적 선택의 결과가 다음 상태로 이어지는 반복 가능한 루프'이며, 이는 모바일 플랫폼에서도 즉시 이해할 수 있는 입력과 피드백을 제공한다. 게임의 세계 규칙은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'과 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'의 결과가 서로 영향을 주는 시그니처 상호작용을 통해 구축된다. 게임의 시스템은 MAIN, A, B, c, @의 상태 변화를 통해, 플레이어가 반복적으로 수행하는 중심 행동과 독립적인 대축, 보조 요소, 파고들기의 관계를 구체화한다. 게임의 규칙은 기존의 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고, RPG식 시스템은 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다. 게임의 성장은 수치 증가뿐만 아니라, 새 행동·경로·조합·관계·발견·대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않고, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 게임의 성공은決定"
+    },
+    "local_authoring_parts::44932bc7304b1a45079dd45205b407fdf7931ab442fe614d7a18b5540d898961:coreFun": {
+      "coreFun": "골목 군단 대전은 플레이어가 매 차례마다 새로운 전략을 수립하고, 이전 선택의 결과를 기반으로 다음 상태를 변화시키는 반복 가능한 핵심 루프를 구축하는 게임이다. 이 게임은 단순한 전략 게임이 아니라, 플레이어가 실제 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 갖춘다. 게임의 핵심 재미는 '전략적 선택의 결과가 다음 상태로 이어지는 반복 가능한 루프'이며, 이는 모바일 플랫폼에서도 즉시 이해할 수 있는 입력과 피드백을 제공한다. 게임의 세계 규칙은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'과 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'의 결과가 서로 영향을 주는 시그니처 상호작용을 통해 구축된다. 게임의 시스템은 MAIN, A, B, c, @의 상태 변화를 통해, 플레이어가 반복적으로 수행하는 중심 행동과 독립적인 대축, 보조 요소, 파고들기의 관계를 구체화한다. 게임의 규칙은 기존의 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고, RPG식 시스템은 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다. 게임의 성장은 수치 증가뿐만 아니라, 새 행동·경로·조합·관계·발견·대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않고, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 게임의 성공은決定"
+    },
+    "local_authoring_parts::fac8397558dd5161e65ca0b435b31fd5f50d9d19d6ca74fb6967209b84a6c4d7:identity,playerFantasy,coreFun": {
+      "identity": "골목 군단 대전은 플레이어가 매 차례마다 새로운 전략을 수립하고, 이전 선택의 결과를 기반으로 다음 상태를 변화시키는 반복 가능한 핵심 루프를 구축하는 게임이다. 이 게임은 단순한 전략 게임이 아니라, 플레이어가 실제 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 갖춘다. 게임의 핵심 재미는 '전략적 선택의 결과가 다음 상태로 이어지는 반복 가능한 루프'이며, 이는 모바일 플랫폼에서도 즉시 이해할 수 있는 입력과 피드백을 제공한다. 게임의 세계 규칙은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'과 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'의 결과가 서로 영향을 주는 시그니처 상호작용을 통해 구축된다. 게임의 시스템은 MAIN, A, B, c, @의 상태 변화를 통해, 플레이어가 반복적으로 수행하는 중심 행동과 독립적인 대축, 보조 요소, 파고들기의 관계를 구체화한다. 게임의 규칙은 기존의 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고, RPG식 시스템은 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다. 게임의 성장은 수치 증가뿐만 아니라, 새 행동·경로·조합·관계·발견·대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않고, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 게임의 성공은 결정론적 검증기가 담당하며, 실패·중단·재접속·저장은 원본 의미를 보존한다. 게임의 구현 버그와 설계 모순의 원인·수정 책임은 구분하고, 안정성을 먼저 다룬다. 같은 증상을 설계와구",
+      "playerFantasy": "골목 군단 대전은 플레이어가 매 차례마다 새로운 전략을 수립하고, 이전 선택의 결과를 기반으로 다음 상태를 변화시키는 반복 가능한 핵심 루프를 구축하는 게임이다. 이 게임은 단순한 전략 게임이 아니라, 플레이어가 실제 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 갖춘다. 게임의 핵심 재미는 '전략적 선택의 결과가 다음 상태로 이어지는 반복 가능한 루프'이며, 이는 모바일 플랫폼에서도 즉시 이해할 수 있는 입력과 피드백을 제공한다. 게임의 세계 규칙은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'과 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'의 결과가 서로 영향을 주는 시그니처 상호작용을 통해 구축된다. 게임의 시스템은 MAIN, A, B, c, @의 상태 변화를 통해, 플레이어가 반복적으로 수행하는 중심 행동과 독립적인 대축, 보조 요소, 파고들기의 관계를 구체화한다. 게임의 규칙은 기존의 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고, RPG식 시스템은 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다. 게임의 성장은 수치 증가뿐만 아니라, 새 행동·경로·조합·관계·발견·대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않고, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 게임의 성공은決定",
+      "coreFun": "골목 군단 대전은 플레이어가 매 차례마다 새로운 전략을 수립하고, 이전 선택의 결과를 기반으로 다음 상태를 변화시키는 반복 가능한 핵심 루프를 구축하는 게임이다. 이 게임은 단순한 전략 게임이 아니라, 플레이어가 실제 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 갖춘다. 게임의 핵심 재미는 '전략적 선택의 결과가 다음 상태로 이어지는 반복 가능한 루프'이며, 이는 모바일 플랫폼에서도 즉시 이해할 수 있는 입력과 피드백을 제공한다. 게임의 세계 규칙은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'과 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'의 결과가 서로 영향을 주는 시그니처 상호작용을 통해 구축된다. 게임의 시스템은 MAIN, A, B, c, @의 상태 변화를 통해, 플레이어가 반복적으로 수행하는 중심 행동과 독립적인 대축, 보조 요소, 파고들기의 관계를 구체화한다. 게임의 규칙은 기존의 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고, RPG식 시스템은 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다. 게임의 성장은 수치 증가뿐만 아니라, 새 행동·경로·조합·관계·발견·대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않고, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 게임의 성공은決定"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 331501,
-      "lastMs": 87795,
+      "totalMs": 440418,
+      "lastMs": 108917,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:33:36.431Z"
+      "updatedAt": "2026-10-08T10:35:25.350Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:28:04.579Z",
-  "updatedAt": "2026-10-08T10:33:36.432Z",
+  "updatedAt": "2026-10-08T10:35:25.352Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2232,7 +2240,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T10:33:36.432Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:35:25.352Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
