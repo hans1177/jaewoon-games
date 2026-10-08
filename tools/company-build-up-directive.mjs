@@ -639,6 +639,7 @@ export function buildDesignToPlatformCodingTrace({
   const bindings=roles.map(role=>{
     const rows=roleByName.get(role)||[];
     const system=rows[0]||{};
+    const everySystemAuthored=rows.length>0&&rows.every(row=>clean(row?.id)&&uniq(row?.stateInputs||[]).length&&uniq(row?.stateOutputs||[]).length);
     const candidates=observedFiles
       .map(file=>({file,score:priority(file,role)}))
       .sort((a,b)=>b.score-a.score||a.file.localeCompare(b.file))
@@ -646,23 +647,25 @@ export function buildDesignToPlatformCodingTrace({
     const inputKeys=uniq(system.stateInputs||[]);
     const outputKeys=uniq(system.stateOutputs||[]);
     const id=clean(system.id);
-    const connected=connections.filter(edge=>edge?.fromId===id||edge?.toId===id).map(edge=>({
+    const roleIds=new Set(rows.map(row=>clean(row.id)).filter(Boolean));
+    const connected=connections.filter(edge=>roleIds.has(clean(edge?.fromId))||roleIds.has(clean(edge?.toId))).map(edge=>({
       fromId:clean(edge.fromId),toId:clean(edge.toId),stateKeys:uniq(edge.stateKeys||[])
     })).slice(0,12);
     return Object.freeze({
       role:role==='DELVE'?'@':role,grammarRole:role,systemId:id||null,
+      systemIds:[...roleIds],names:rows.map(row=>clean(row.name)).filter(Boolean),
       name:clean(system.name)||null,
       stateInputs:inputKeys,stateOutputs:outputKeys,connections:connected,
       suggestedExistingOwnerFiles:candidates,
       inspectedSymbols:symbols.filter(row=>candidates.includes(row.file)).slice(0,5),
-      designStatus:rows.length===1&&id&&inputKeys.length&&outputKeys.length?'AUTHORED':'DESIGN_REPAIR_REQUIRED',
+      designStatus:everySystemAuthored&&(['MAIN','A','B'].includes(role)?rows.length===1:rows.length>=1)?'AUTHORED':'DESIGN_REPAIR_REQUIRED',
       codingStatus:!selectedRoot?'PLATFORM_NOT_SELECTED':!candidates.length?'SOURCE_OWNER_MISSING':'SOURCE_OWNER_CANDIDATE_UNVERIFIED',
       executableBehaviorVerified:false,
       actualRuntimeVerified:false,
       evidenceNeeded:'EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA'
     });
   });
-  const authoredRolesComplete=roles.every(role=>(roleByName.get(role)||[]).length===(['MAIN','A','B'].includes(role)?1:1))
+  const authoredRolesComplete=roles.every(role=>['MAIN','A','B'].includes(role)?(roleByName.get(role)||[]).length===1:(roleByName.get(role)||[]).length>=1)
     &&bindings.every(row=>row.designStatus==='AUTHORED');
   const mandatory=multiplayerRequired===true;
   const unityDepth=design?.platformProfiles?.UNITY?.unityWebSpatialPresentation||{};
@@ -1479,6 +1482,8 @@ export function directivePrompt(d={}){
     `id=${d.directiveId}; generation=${d.generation}; depth=${d.developmentDepth}; stage=${d.escalationStage}; focus=${d.primaryFocus}`,
     `GAME_IDENTITY: ${d.gameIdentityAndNonNegotiables.identity}`,
     `DESIGN_IMPLEMENTATION_CONTEXT: ${JSON.stringify(d.designImplementationContext||{})}`,
+    `DESIGN_TO_PLATFORM_CODING_CHECK: ${JSON.stringify(d.designToPlatformCodingTrace||{})}`,
+    'CODING_IMPLEMENTATION_VERDICT: SOURCE_OWNER_CANDIDATES_ONLY. Do not mark a MAIN/A/B/c/@ role, native platform, multiplayer session or 2.5D graphics PASS from design fields or a source marker. Implement and independently replay actual input→authoritative state→result→reconnect, then rerun existing platform QA.',
     `MULTIPLAYER_IMPLEMENTATION: ${JSON.stringify(d.multiplayerImplementation||{})}`,
     ...(d.multiplayerImplementation?.required?[`전 게임 멀티 필수: 기존 서버 권한·클라이언트 입력/동기화 책임 소스에서 접속·참가·준비·시작·이탈·재접속과 목표·승패·보상 일치를 구현한다. 로컬 시뮬레이션이나 플래그만으로 구현 완료라 하지 않는다. 빠진 구현은 기존 BUILD_UP에서 계속 수정·재시도하며 다른 게임과 독립 작업은 계속 진행한다. 실제 2인 이상 같은 세션의 증거를 별도로 남긴다.`]:[]),
     `IDENTITY_ONE_LINE_FANTASY: ${d.identityReinforcement?.oneLineFantasy||d.gameIdentityAndNonNegotiables.identity}`,
@@ -1590,16 +1595,22 @@ export function buildGameSpecificBuildUpDirective({
   const identity=design.identity||clean(gameName)||id;
   const firstSignature=design.signatureSystems?.[0]||{};
   const firstConnection=design.systemInterconnections?.[0]||{};
-  const reconstructedMain=clean(design.coreLoop?.[0])||clean(design.coreFun)||anchor;
+  const authoredRole=role=>design.signatureSystems.find(system=>system.grammarRole===role);
+  const mainSystem=authoredRole('MAIN'),aSystem=authoredRole('A'),bSystem=authoredRole('B');
+  const cSystems=design.signatureSystems.filter(system=>system.grammarRole==='c');
+  const delveSystems=design.signatureSystems.filter(system=>system.grammarRole==='DELVE');
+  const authorMapped=Boolean(mainSystem&&aSystem&&bSystem&&cSystems.length&&delveSystems.length);
+  const reconstructedMain=clean(mainSystem?.name)||clean(design.coreLoop?.[0])||clean(design.coreFun)||anchor;
   const reconstructedMajorAxes=Object.freeze([
-    Object.freeze({key:'A',name:clean(design.signatureSystems?.[0]?.name)||secondary,source:'CURRENT_DESIGN_SIGNATURE_SYSTEM'}),
-    Object.freeze({key:'B',name:clean(design.signatureSystems?.[1]?.name)||clean(design.coreLoop?.[1])||'CURRENT_SECOND_MAJOR_SYSTEM',source:'CURRENT_DESIGN_SIGNATURE_SYSTEM_OR_LOOP'})
+    Object.freeze({key:'A',systemId:clean(aSystem?.id)||null,name:clean(aSystem?.name)||clean(design.signatureSystems?.[0]?.name)||secondary,source:authorMapped?'DESIGNER_AUTHORED_ROLE_A':'LEGACY_DESIGN_FALLBACK_UNVERIFIED'}),
+    Object.freeze({key:'B',systemId:clean(bSystem?.id)||null,name:clean(bSystem?.name)||clean(design.signatureSystems?.[1]?.name)||clean(design.coreLoop?.[1])||'CURRENT_SECOND_MAJOR_SYSTEM',source:authorMapped?'DESIGNER_AUTHORED_ROLE_B':'LEGACY_DESIGN_FALLBACK_UNVERIFIED'})
   ]);
-  const confirmedSubElements=uniq([
-    ...design.signatureSystems.slice(2).map(row=>row.name||row.purpose),
-    ...design.systemInterconnections.slice(0,4).map(row=>row.trigger)
-  ]).slice(0,6);
+  const confirmedSubElements=uniq(authorMapped
+    ?cSystems.map(row=>row.name||row.purpose)
+    :[...design.signatureSystems.slice(2).map(row=>row.name||row.purpose),...design.systemInterconnections.slice(0,4).map(row=>row.trigger)]
+  ).slice(0,6);
   const delveEvidence=uniq([
+    ...delveSystems.map(row=>row.name||row.purpose),
     ...design.contentExpansionPlan.flatMap(row=>[row.milestone,row.newGameplay]),
     ...design.narrativeWorldRules,
     ...design.designIntegrityNotes
@@ -1608,6 +1619,8 @@ export function buildGameSpecificBuildUpDirective({
     mode:'EXISTING_GAME_RECONSTRUCTION_FROM_CURRENT_DESIGN_AND_INSPECTED_SOURCE',
     formula:'MAIN × A × B × c + @',
     main:reconstructedMain,
+    source:authorMapped?'DESIGNER_AUTHORED_ROLE_IDS_AND_STATE_LINKS':'LEGACY_DESIGN_HEURISTIC_NOT_IMPLEMENTATION_EVIDENCE',
+    roleSystemIds:Object.freeze({MAIN:clean(mainSystem?.id)||null,A:clean(aSystem?.id)||null,B:clean(bSystem?.id)||null,c:cSystems.map(row=>clean(row.id)).filter(Boolean),AT:delveSystems.map(row=>clean(row.id)).filter(Boolean)}),
     majorAxes:reconstructedMajorAxes,
     cSubElements:Object.freeze(confirmedSubElements),
     delveAtEvidence:Object.freeze(delveEvidence),
@@ -1623,7 +1636,7 @@ export function buildGameSpecificBuildUpDirective({
     representativeAction:design.coreLoop?.[0]||design.coreFun||anchor,
     representativeChoice:clean(firstSignature.playerChoice)||design.coreLoop?.[1]||secondary,
     signatureWorldRule:clean(firstConnection.stateChange)||clean(firstConnection.trigger)||`${anchor}의 결과가 다음 월드·목표·위험·보상 상태를 바꾼다.`,
-    signatureSystems:Object.freeze(design.signatureSystems.slice(0,2).map(row=>row.name||row.purpose).filter(Boolean)),
+    signatureSystems:Object.freeze((authorMapped?design.signatureSystems:design.signatureSystems.slice(0,2)).map(row=>row.name||row.purpose).filter(Boolean)),
     growthIdentity:design.progressionDirection||'성장 후 새 행동·경로·조합·관계·발견·대응법을 연다.',
     threeSentenceTest:Object.freeze({
       whatGame:identity,
@@ -1672,6 +1685,12 @@ export function buildGameSpecificBuildUpDirective({
     whyThisAnchor:`${row.file}::${row.symbol||'UNKNOWN'}이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨`,
     observableAcceptance:`${row.file}에 실제 source delta가 있고 관련 QA/runtime에서 ${focus} 상태 변화와 expected player effect가 관찰되어야 함`
   }));
+  // 현재 게임·플랫폼의 설계 역할을 실제 코딩 책임 파일 후보와 연결한다.
+  // 여러 플랫폼을 한 파이프라인으로 합치지 않고 기존 BUILD_UP의 단계별 QA에 전달한다.
+  const designToPlatformCodingTrace=buildDesignToPlatformCodingTrace({
+    gameId:id,design,platform,sourceRoot,sourceObservation:source,
+    responsibleFiles:topFiles,repoRoot,multiplayerRequired
+  });
   const robloxNativeExecution=Object.freeze({
     version:1,
     required:true,
@@ -1880,6 +1899,7 @@ export function buildGameSpecificBuildUpDirective({
     sourceTreeFingerprint:source.sourceTreeFingerprint,
     designFingerprint:sha(JSON.stringify(design)),
     identityReinforcement,
+    designToPlatformCodingTrace,
     designImplementationContext:Object.freeze({
       source:'LATEST_VERIFIED_DESIGN_FIELDS',
       coreFun:design.coreFun,
