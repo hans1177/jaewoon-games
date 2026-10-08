@@ -845,25 +845,49 @@
         "DefensiveStrategy"
       ],
       "fromSystem": "EnemyDefenseSynergy"
+    },
+    "local_authoring_parts::9b5e448a60e7eacd71a6cf42053768cedffbbd696f62d0b5407ab14cf9d8b6ce:toSystem,trigger,stateChange": {
+      "toSystem": "EnemyDefenseSynergy",
+      "trigger": "enemyWaveType",
+      "stateChange": "defensiveStrategy"
+    },
+    "local_authoring_parts::3ee4c82f03ad767d3f2da06b326e0ef5ef7dfa67ce5e16ad01f1271df1b7bce1:systemInterconnections:1": {
+      "fromId": "enemyWaveType",
+      "toId": "defensiveStrategy",
+      "stateKeys": [
+        "DefensiveStrategy"
+      ],
+      "fromSystem": "EnemyDefenseSynergy",
+      "toSystem": "EnemyDefenseSynergy",
+      "trigger": "enemyWaveType",
+      "stateChange": "defensiveStrategy"
+    },
+    "local_authoring_parts::9f7b3973766fd694fe6d0d02faa9c544aca184bc852f5c493c50b0fa16e8b6f3:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "enemyWaveType",
+      "toId": "defensiveStrategy",
+      "stateKeys": [
+        "DefensiveStrategy"
+      ],
+      "fromSystem": "EnemyDefenseSynergy\",\"toSystem\":\"EnemyDefenseSynergy\",\"description\":\"enemyWaveType→defensiveStrategy의 출력과 입력 상태가 연결되지 않는다\",\"requiredAction\":\"systemInterconnections: enemyWaveType→\""
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 34,
-      "successes": 34,
+      "calls": 36,
+      "successes": 36,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2121708,
-      "lastMs": 92116,
+      "totalMs": 2306240,
+      "lastMs": 94565,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:29:29.095Z"
+      "updatedAt": "2026-10-08T16:32:33.631Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:10:25.792Z",
-  "updatedAt": "2026-10-08T16:29:29.095Z",
+  "updatedAt": "2026-10-08T16:32:33.631Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3216,7 +3240,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:29:29.095Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:32:33.631Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
