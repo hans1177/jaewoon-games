@@ -435,25 +435,40 @@
       "name": "ELDORIAN_CORE_01",
       "purpose": "ELDORIAN_CORE_01_PURPOSE",
       "playerChoice": "ELDORIAN_CORE_01_PLAYER_CHOICE"
+    },
+    "local_authoring_parts::4d1d32e7f3b20ee4101c2d14a55597c22a7c4dfb4554cbd1e2b1b83b01fd9361:signatureSystems:1": {
+      "id": "ELDORIAN_CORE_02",
+      "grammarRole": "A",
+      "stateInputs": [
+        "ELDORIAN_CORE_02_READING",
+        "ELDORIAN_CORE_02_MODIFYING"
+      ],
+      "stateOutputs": [
+        "ELDORIAN_CORE_02_READING",
+        "ELDORIAN_CORE_02_MODIFYING"
+      ],
+      "name": "ELDORIAN_CORE_02",
+      "purpose": "ELDORIAN_CORE_02_PURPOSE",
+      "playerChoice": "ELDORIAN_CORE_02_PLAYER_CHOICE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 451531,
-      "lastMs": 38886,
+      "totalMs": 488004,
+      "lastMs": 36473,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:59:18.747Z"
+      "updatedAt": "2026-10-08T10:59:55.221Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:51:46.975Z",
-  "updatedAt": "2026-10-08T10:59:18.747Z",
+  "updatedAt": "2026-10-08T10:59:55.221Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2721,7 +2736,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:59:18.747Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:59:55.221Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
