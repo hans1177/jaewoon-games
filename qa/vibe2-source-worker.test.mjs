@@ -14,6 +14,7 @@ import { execFileSync } from 'node:child_process';
 import { learningGuidance } from '../tools/vibe2-learning-motor.mjs';
 import { buildInternalMotionCoaching, singleMotionResponseSchema } from '../tools/vibe2-motion-coaching.mjs';
 import { validateCandidateSyntax } from '../tools/vibe2-source-worker.mjs';
+import { focusedSymbolContext } from '../tools/vibe2-source-worker.mjs';
 import { requiredBlueprintFieldsFromPrompt } from '../tools/vibe2-source-worker.mjs';
 import { evaluateSingleMotionWorkUnit, SINGLE_MOTION_DEPTH_AXES, generateCandidateWithRecovery, runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateRobloxDesignAnchorGrounding, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, localModelContextLimit, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, attachSelectedInternalAssetApiContext, evaluateRobloxInternalAssetFamilyBindingCandidate, evaluateAllGameDynamicAssetBindingCandidate, assertAllGameDynamicAssetBindingContract, ROBLOX_INTERNAL_ASSET_FAMILIES } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
@@ -42,6 +43,22 @@ test('required blueprint metadata survives normal JSON, fixed-anchor recovery an
   assert.deepEqual(normalizeCandidate(envelope,{...options,responsibleFiles:['index.html'],allowFullRewrite:true}).interfaceBlueprint,report);
   assert.equal(shouldRetryGenerationError(new Error('INTERFACE_BLUEPRINT_INVALID:MODAL_EXIT_MISSING')),true);
   assert.equal(generationFailureClass(new Error('SPATIAL_BLUEPRINT_INVALID:GROUND_SUPPORT_MISSING')),'SPATIAL_BLUEPRINT');
+});
+
+test('native dependency context retains complete distant function bodies and read-only callees within the same token budget',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'native-code-context-'));
+  try{
+    const filler='// irrelevant decoration\n'.repeat(1800);
+    const method='private void PlaceAt(Vector3 next) {\n'+('  // preserve body boundary\n'.repeat(230))+'  position = next; ResolveCost();\n}';
+    fs.writeFileSync(path.join(root,'Game.cs'),'using UnityEngine;\npublic class Game {\n'+filler+'private Vector3 position;\n'+method+'\n'+filler+'}\n');
+    fs.writeFileSync(path.join(root,'Economy.cs'),'public class Economy { private int gold = 10; public void ResolveCost() { gold -= 1; } }');
+    const context=focusedSymbolContext(root,'unity',['Game.cs'],{contextFiles:['Game.cs','Economy.cs'],sourceDependencies:[{path:'Economy.cs',symbol:'ResolveCost',direction:'CALLEE'}],editContract:{responsibilityConfidence:'HIGH',primaryTargets:['PlaceAt'],ownedState:['position']}});
+    assert.ok(context.files.some(row=>row.path==='Game.cs'&&row.content.includes(method)),'retain the entire function, including its final state mutation');
+    assert.ok(context.files.some(row=>row.path==='Economy.cs'&&row.editable===false&&row.content.includes('gold -= 1')));
+    assert.ok(context.files.every(row=>row.path!=='Economy.cs'||row.editable===false));
+    assert.ok(context.bytes<=48000);
+    assert.equal(context.codingAnalysisVersion,2);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
 test('blueprint rejection uses the existing generation retry and retains the repaired report',async t=>{

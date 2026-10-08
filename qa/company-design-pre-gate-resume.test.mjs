@@ -490,6 +490,69 @@ test('bad cached slices refresh nested identities across retries and valid resul
   assert.equal(Object.keys(checkpoint.sliceRepairFeedback).length,0);
 });
 
+test('repeated placeholder repair isolates nested fields and resumes without replaying completed parts',async()=>{
+  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
+  const taskSource=design.slice(design.indexOf('async function runCheckpointTask('),design.indexOf('function isParallelPressure('));
+  const object=properties=>({type:'object',required:Object.keys(properties),properties,additionalProperties:false});
+  const schema=object({designAlternatives:{type:'array',minItems:2,items:object({label:{type:'string',enum:['PLAN_A','PLAN_B']},rules:object({trigger:{type:'string'},response:{type:'string'}})})}});
+  const checkpoint={tasks:{}},calls=[];
+  let fail=true;
+  const author=runInNewContext(taskSource+'\n'+source+'\ncallLocalDesignerModel',{
+    createHash,designAssetLibraryContext:{sha256:'library'},localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'local',
+    designerRoute:{id:'ollama:local'},designCheckpoint:checkpoint,modelCallStats:[],console:{log(){}},clean:String,
+    parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,assertSchemaValue:assertDesignSchema,recordModelHealth(){},persistDesignCheckpoint(){},
+    requestLocalDesignerRaw:async(prompt,{schema:contract})=>{
+      const entries=Object.entries(contract.properties);assert.equal(entries.length,1);
+      const [field,property]=entries[0];assert.equal(property.type,'string','nested objects and array items must also be isolated');
+      assert.match(prompt,/원본: 4 대 4 시작, 포획되면 인간이 몬스터로 전환/);
+      calls.push({prompt,field});
+      if(field==='response'&&fail){fail=false;throw new Error('OLLAMA_DESIGN_HTTP_503');}
+      return JSON.stringify({[field]:property.enum?.[0]||field+'에 맞는 원본 상태 변화와 대응을 작성한다.'});
+    }
+  });
+  const brief='원본: 4 대 4 시작, 포획되면 인간이 몬스터로 전환';
+  await assert.rejects(author('system',brief,schema,{isolateFields:true}),/OLLAMA_DESIGN_HTTP_503/);
+  const result=await author('system',brief,schema,{isolateFields:true});
+  assert.deepEqual(Array.from(result.designAlternatives,row=>row.label),['PLAN_A','PLAN_B']);
+  assert.deepEqual(calls.map(row=>row.field),['label','trigger','response','response','label','trigger','response']);
+  assert.ok(calls.some(row=>row.field==='response'&&row.prompt.includes('CURRENT_OBJECT_FIELDS={"trigger":')),'sibling state is retained');
+  assert.ok(calls.some(row=>row.prompt.includes('PREVIOUS_ARRAY_ITEMS=[{"label":"PLAN_A"')),'later alternatives retain previous authored items');
+});
+
+test('placeholder feedback keeps audit evidence while retries receive paths and still fail invalid content',async()=>{
+  const source=design.slice(design.indexOf('async function authorDesignInCheckpointedSlices('),design.indexOf('function mergeDesignerDesign('));
+  const key='designer_draft_slices::progression';
+  const feedback=validateDesignAuthoringContent({design:{progressionDirection:'SYSTEM_INTERCONNECTIONS_EXPANSION'},fields:['progressionDirection']});
+  assert.ok(feedback.some(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT'));
+  const checkpoint={tasks:{},sliceRepairAttempts:{[key]:16},sliceRepairFeedback:{[key]:feedback}};
+  let valid=false,calls=0;
+  const author=runInNewContext(source+'\nauthorDesignInCheckpointedSlices',{
+    ownerPreservationDesign:false,designAssetLibrary:null,playableRequirements:designPlayabilityRequirements({}),currentRuleSourceContext:{},currentRuleSource:'',designAssetFamilies:[],
+    seed:{},seedDesignDepthContext:{},createHash,validateDesignAuthoringContent,
+    clip:(value,n)=>JSON.stringify(value).slice(0,n),clean:String,
+    DESIGN_AUTHORING_SLICES:[{id:'progression',fields:['progressionDirection'],predict:900}],designSliceSchema:()=>({type:'object',required:['progressionDirection'],properties:{progressionDirection:{type:'string'}},additionalProperties:false}),
+    repairStructureContract:()=>[],designCheckpoint:checkpoint,persistDesignCheckpoint(){},
+    runCheckpointTask:async(phase,id,work)=>checkpoint.tasks[`${phase}::${id}`]??(checkpoint.tasks[`${phase}::${id}`]=await work()),
+    callDesignerModel:async(system,user,schema,options)=>{
+      calls++;assert.equal(options.isolateFields,true);assert.match(user,/DESIGN_PLACEHOLDER_CONTENT/);
+      assert.doesNotMatch(user,/SYSTEM_INTERCONNECTIONS_EXPANSION/);
+      const promptFeedback=JSON.parse(user.split('AUTHORING_REPAIR_FEEDBACK=')[1]);
+      assert.equal(promptFeedback[0].evidence.path,feedback[0].evidence.path);
+      assert.equal(promptFeedback[0].requiredAction,feedback[0].requiredAction);
+      assert.equal(checkpoint.sliceRepairFeedback[key][0].evidence.value,'SYSTEM_INTERCONNECTIONS_EXPANSION','original checkpoint evidence is not erased');
+      return {progressionDirection:valid?'탈출 경로 선택을 익힌 뒤 감염으로 바뀐 인원에 맞춰 동료 구조와 우회 중 하나를 고른다.':'SYSTEM_INTERCONNECTIONS_EXPANSION'};
+    },
+    repairDesignRequiredFields:value=>({value}),factPack:{},enforceOwnerPreservationDesign:value=>value,assertSchemaValue:assertDesignSchema,DESIGN:{},console:{log(){}}
+  });
+  await assert.rejects(author({phase:'designer_draft',system:'s',sharedContext:'c'}),/DESIGN_CONTENT_REPAIR_REQUIRED/);
+  assert.equal(checkpoint.sliceRepairAttempts[key],18);
+  assert.equal(checkpoint.tasks[key],undefined,'invalid isolated output is never promoted');
+  valid=true;
+  assert.match((await author({phase:'designer_draft',system:'s',sharedContext:'c'})).progressionDirection,/감염/);
+  assert.equal(calls,3);
+  assert.equal(checkpoint.sliceRepairFeedback[key],undefined);
+});
+
 test('transport repair reuses previous drafts only when every original input still matches',()=>{
   const source=design.slice(design.indexOf('const checkpointV3CompatibleEngineMigrationEligible='),design.indexOf('if(!checkpointReusable'));
   const oldEngine='cc088ad7a8676ded2864387d1c00a39b024f9e9a4e72f50308346406aea805a9';

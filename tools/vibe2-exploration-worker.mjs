@@ -10,7 +10,7 @@ import { assessExistingWebRepository } from './vibe2-existing-web-assessment.mjs
 import { diagnoseGame, diagnosticResponsibleSystem } from './autonomous-diagnostics.mjs';
 import { analyzeExistingGameSource } from './company-vibe2-gameplay-intelligence.mjs';
 import { buildCodingArchitecture } from './company-vibe2-coding-architecture.mjs';
-import { buildExpertDevelopmentAnalysis, traceFailureResponsibility, summarizeResponsibilityArchitecture } from './company-vibe2-expert-development.mjs';
+import { CODING_ANALYSIS_VERSION, inspectSourceFunctions, buildExpertDevelopmentAnalysis, traceFailureResponsibility, summarizeResponsibilityArchitecture } from './company-vibe2-expert-development.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -56,7 +56,23 @@ function safeRead(file){try{const stat=fs.statSync(file);if(!stat.isFile()||stat
 function listFiles(root,target,ignored=[]){const allowed=extensions(target),ignore=ignored.map(posix).filter(Boolean),rows=[];const walk=current=>{if(rows.length>=MAX_SCAN_FILES)return;for(const entry of fs.readdirSync(current,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name))){if(rows.length>=MAX_SCAN_FILES)return;if(entry.isDirectory()&&IGNORED_DIRS.has(entry.name))continue;const full=path.join(current,entry.name),relative=posix(path.relative(root,full));if(ignore.some(v=>relative===v||relative.startsWith(`${v}/`)))continue;if(entry.isDirectory())walk(full);else{const ext=path.extname(entry.name).toLowerCase();if(allowed.has(ext)&&!BINARY_EXTENSIONS.has(ext))rows.push({full,relative,ext});}}};walk(root);return rows;}
 function goalTokens(goal=''){return unique(clean(goal).toLowerCase().split(/[^a-z0-9가-힣_]+/).filter(x=>x.length>=3)).slice(0,24);}
 function protectedSignals(text=''){const checks=[['save',/save|세이브|progress|진행/i],['combat-number',/damage|attack|health|hp|reward|drop|데미지|공격|체력|보상|드랍/i],['network',/fetch\(|axios|websocket|http:/i],['storage',/localStorage|PlayerPrefs|SaveGame|DataStore/i]];return checks.filter(([,re])=>re.test(text)).map(([name])=>name);}
-function scoreRelated(row,{responsible,goalTokens:tokens,responsibleNames,responsibleDirs}){let score=0;const text=safeRead(row.full);if(responsible.has(row.relative))return{...row,score:10000,text};const lower=row.relative.toLowerCase(),dir=posix(path.dirname(row.relative));if(responsibleDirs.has(dir))score+=35;for(const token of tokens)if(lower.includes(token))score+=5;for(const name of responsibleNames)if(name&&text.includes(name))score+=24;if(/(?:test|spec|qa|playmode|editmode)/i.test(row.relative))score+=8;return{...row,score,text};}
+function scoreRelated(row,{responsible,goalTokens:tokens,responsibleNames,responsibleDirs,sourceFunctions=[],target=''}){
+  let score=0;const text=safeRead(row.full);
+  if(responsible.has(row.relative))return{...row,score:10000,text,connections:[]};
+  const lower=row.relative.toLowerCase(),dir=posix(path.dirname(row.relative));
+  if(responsibleDirs.has(dir))score+=35;
+  for(const token of tokens)if(lower.includes(token))score+=5;
+  for(const name of responsibleNames)if(name&&text.includes(name))score+=24;
+  if(/(?:test|spec|qa|playmode|editmode)/i.test(row.relative))score+=8;
+  const callNames=fn=>new Set([...fn.code.matchAll(/\b([A-Za-z_$][\w$]*(?:[.:][A-Za-z_$][\w$]*)*)\s*\(/g)].map(match=>match[1].split(/[.:]/).at(-1)));
+  const sourceCalls=new Set(sourceFunctions.flatMap(fn=>[...callNames(fn)])),sourceNames=new Set(sourceFunctions.map(fn=>fn.name.split(/[.:]/).at(-1))),connections=[];
+  for(const fn of inspectSourceFunctions(text,{language:target})){
+    if(sourceCalls.has(fn.name.split(/[.:]/).at(-1)))connections.push({path:row.relative,symbol:fn.name,direction:'CALLEE'});
+    if([...callNames(fn)].some(name=>sourceNames.has(name)))connections.push({path:row.relative,symbol:fn.name,direction:'CALLER'});
+  }
+  score+=Math.min(4,connections.length)*80;
+  return{...row,score,text,connections};
+}
 function compactFile(row){return{path:row.relative,hash:sha(row.text||safeRead(row.full)).slice(0,16),bytes:Buffer.byteLength(row.text||safeRead(row.full),'utf8')};}
 function reusableArtifact(cwd,order){
   const file=clean(process.env.VIBE2_EXPLORATION_FILE);
@@ -68,6 +84,12 @@ function reusableArtifact(cwd,order){
   if(clean(cached.taskId)!==clean(order.taskId))throw new Error('exploration handoff task 불일치');
   const expectedRoot=posix(order?.source?.root);
   if(posix(cached.sourceRoot)!==expectedRoot)throw new Error('exploration handoff source root 불일치');
+  if(cached.codingAnalysisVersion!==CODING_ANALYSIS_VERSION)return null;
+  const root=path.resolve(cwd,expectedRoot);
+  for(const row of cached.fileDigests||[]){
+    const file=path.resolve(root,row.path);
+    if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||sha(safeRead(file)).slice(0,16)!==row.hash)return null;
+  }
   return{...cached,reused:true,reusedFrom:posix(path.relative(cwd,resolved))||path.basename(resolved)};
 }
 
@@ -225,7 +247,7 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
     explicitDevelopmentMode:sourceAnalysis.present?'PRESERVE_PATCH':'GREENFIELD'
   });
   const failures=taskFailureEvidence(order);
-  const expertDevelopment=buildExpertDevelopmentAnalysis({source:sourceText,sourceAnalysis,gameplaySketch,failures});
+  const expertDevelopment=buildExpertDevelopmentAnalysis({source:sourceText,sourceAnalysis,gameplaySketch,failures,language:order.target});
   const graph=expertDevelopment?.responsibilityGraph||{nodes:[],edges:[]};
   const architectureSnapshot=summarizeResponsibilityArchitecture(graph);
   const requirementText=clean(order?.originalGoal||order?.selectedTask?.goal||order?.goal);
@@ -405,6 +427,7 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
     gameRepair,
     patchRecipe,
     codingArchitecture:{
+      analysisVersion:CODING_ANALYSIS_VERSION,
       developmentMode:codingArchitecture?.developmentMode||null,
       stateOwnershipSystems:(codingArchitecture?.stateOwnership||[]).map(row=>row.system),
       apiNames:(codingArchitecture?.apiContracts||[]).map(row=>row.api),
@@ -413,6 +436,7 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
     },
     architectureSnapshot,
     responsibilityGraph:{
+      version:graph.version,language:graph.language,analysis:graph.analysis,runtimeVerified:false,
       nodeCount:Number(graph.nodeCount||0),
       relevantNodes:(graph.nodes||[]).filter(node=>primarySet.has(node.name)||directDependentSymbols.includes(node.name)).slice(0,24).map(node=>({
         name:node.name,systems:node.systems||[],calls:node.calls||[],calledBy:node.calledBy||[],
@@ -489,7 +513,7 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
     };
     const reuseKey=sha(JSON.stringify({taskId:order.taskId,baseMainSha,rootRelative,bootstrap:true})).slice(0,24);
     const handoff={
-      version:1,role:'exploration',sourceWrite:false,reused:false,bootstrap:true,
+      version:1,codingAnalysisVersion:CODING_ANALYSIS_VERSION,role:'exploration',sourceWrite:false,reused:false,bootstrap:true,
       taskId:clean(order.taskId)||null,packageId:clean(order?.workPackage?.id)||null,target,sourceRoot:rootRelative,baseMainSha,
       responsibleFiles:responsible,impactFiles:responsible,contextFiles:[],relatedFiles:[],testTargets:[],
       protectedScopeSignals:[],diagnosticEvidence,existingWebAssessment,fileDigests:[],editContract:bootstrapEditContract(order,responsible),reuseKey,generatedAt:new Date().toISOString()
@@ -501,8 +525,9 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
   const responsibleNames=new Set(responsible.map(v=>path.basename(v)).filter(Boolean));
   const responsibleDirs=new Set(responsible.map(v=>posix(path.dirname(v))).filter(Boolean));
   const rows=listFiles(root,target,order?.source?.ignoredPaths||[]);
-  const scored=rows.map(row=>scoreRelated(row,{responsible:responsibleSet,goalTokens:goalTokens(order.goal),responsibleNames,responsibleDirs})).sort((a,b)=>b.score-a.score||a.relative.localeCompare(b.relative));
   const responsibilityRows=responsible.map(relative=>{const full=path.join(root,relative),text=safeRead(full);return{relative,full,text,score:10000};}).filter(row=>fs.existsSync(row.full));
+  const sourceFunctions=responsibilityRows.flatMap(row=>inspectSourceFunctions(row.text,{language:target}));
+  const scored=rows.map(row=>scoreRelated(row,{responsible:responsibleSet,goalTokens:goalTokens(order.goal),responsibleNames,responsibleDirs,sourceFunctions,target})).sort((a,b)=>b.score-a.score||a.relative.localeCompare(b.relative));
   const related=scored.filter(row=>!responsibleSet.has(row.relative)&&row.score>0).slice(0,MAX_RELATED_FILES);
   const impactFiles=unique([...responsible,...related.slice(0,8).map(row=>row.relative)]);
   const contextFiles=unique([...responsible,...related.map(row=>row.relative)]).slice(0,12);
@@ -520,6 +545,7 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
   const reuseKey=sha(JSON.stringify({taskId:order.taskId,baseMainSha,rootRelative,fileDigests,diagnosticEvidence,existingWebAssessment,goal:clean(order?.originalGoal||order?.goal),editContract})).slice(0,24);
   const handoff={
     version:1,
+    codingAnalysisVersion:CODING_ANALYSIS_VERSION,
     role:'exploration',
     sourceWrite:false,
     reused:false,
@@ -531,6 +557,7 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
     responsibleFiles:responsible,
     impactFiles,
     contextFiles,
+    sourceDependencies:related.flatMap(row=>row.connections||[]).slice(0,24),
     relatedFiles:related.map(row=>({path:row.relative,score:row.score})),
     testTargets,
     protectedScopeSignals,
@@ -562,6 +589,7 @@ export function explorationGuidance(handoff={}){
       `소유 상태=${(handoff.editContract.ownedState||[]).join(', ')||'NONE'}`,
       `보존 계약=${(handoff.editContract.preserveSemantics||[]).join(' | ')||'NONE'}`,
       `인과 체인=${(handoff.editContract.failureOrRequirementCausalChain||[]).join(' -> ')||'NONE'}`,
+      `실제 호출·상태 관계=${JSON.stringify(handoff.editContract.responsibilityGraph||{})}`,
       `관찰 결과=${handoff.editContract.requiredObservableResult||'NONE'}`,
       `Semantic diff 허용 시스템=${(handoff.editContract.semanticDiffBudget?.allowedSystems||[]).join(', ')||'NONE'}; unrelated mutation=${handoff.editContract.semanticDiffBudget?.unrelatedSystemMutationForbidden===true?'FORBIDDEN':'CONDITIONAL'}`,
       `필수 집중 검증=${(handoff.editContract.requiredFocusedChecks||[]).join(', ')||'NONE'}`,

@@ -535,9 +535,9 @@ async function authorDesignInCheckpointedSlices({phase,system,sharedContext,curr
     for(let attempt=0;attempt<2;attempt++){
       result=await runCheckpointTask(`${phase}_slices`,slice.id,()=>callDesignerModel(
       system,
-      `${commonInput}\n전체 설계를 한 번에 출력하지 말고 현재 필드 묶음만 상세하게 작성하라. 다른 필드는 출력하지 않는다. MAIN/A/B/c/@와 causalDNA 연결은 현재 필드가 담당하는 범위에서 실제 상태 변화로 유지한다. 이미 작성된 설계와 모순시키지 않는다. 원본 규칙과 수치를 보존한다.\nCURRENT_RULE_SOURCE=${['content-rules','selection-variety'].includes(slice.id)?JSON.stringify({...currentRuleSourceContext,lines:playableRequirements.abilityFacts.length?undefined:currentRuleSourceContext.lines,abilityFacts:playableRequirements.abilityFacts}):'원본 수치는 공유 규칙을 따른다'}\nSLICE_ID=${slice.id}\nSLICE_FIELDS=${JSON.stringify(slice.fields)}\nSTRUCTURE_CONTRACT=${JSON.stringify(repairStructureContract(slice.fields))}\nCURRENT_SLICE=${clip(existing,3500)}\nSHARED_RULE_ANCHORS=${JSON.stringify(anchors)}\nAUTHORING_REPAIR_ATTEMPT=${designCheckpoint.sliceRepairAttempts[taskKey]||0}\nAUTHORING_REPAIR_FEEDBACK=${JSON.stringify(feedback)}`,
+      `${commonInput}\n전체 설계를 한 번에 출력하지 말고 현재 필드 묶음만 상세하게 작성하라. 다른 필드는 출력하지 않는다. MAIN/A/B/c/@와 causalDNA 연결은 현재 필드가 담당하는 범위에서 실제 상태 변화로 유지한다. 이미 작성된 설계와 모순시키지 않는다. 원본 규칙과 수치를 보존한다.\nCURRENT_RULE_SOURCE=${['content-rules','selection-variety'].includes(slice.id)?JSON.stringify({...currentRuleSourceContext,lines:playableRequirements.abilityFacts.length?undefined:currentRuleSourceContext.lines,abilityFacts:playableRequirements.abilityFacts}):'원본 수치는 공유 규칙을 따른다'}\nSLICE_ID=${slice.id}\nSLICE_FIELDS=${JSON.stringify(slice.fields)}\nSTRUCTURE_CONTRACT=${JSON.stringify(repairStructureContract(slice.fields))}\nCURRENT_SLICE=${clip(existing,3500)}\nSHARED_RULE_ANCHORS=${JSON.stringify(anchors)}\nAUTHORING_REPAIR_ATTEMPT=${designCheckpoint.sliceRepairAttempts[taskKey]||0}\nAUTHORING_REPAIR_FEEDBACK=${JSON.stringify(feedback.map(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT'?{...row,evidence:{path:row.evidence?.path}}:row))}`,
       schema,
-      {predict:slice.predict,temperature:phase.includes('revision')?0.16:0.24,numCtx:['content-rules','selection-variety','integrity-stability'].includes(slice.id)?16384:8192,recoverOversized:designCheckpoint.failedTask===slice.id&&/^OLLAMA_DESIGN_(TIMEOUT|OUTPUT_TRUNCATED)/.test(designCheckpoint.lastError||'')}
+      {predict:slice.predict,temperature:phase.includes('revision')?0.16:0.24,numCtx:['content-rules','selection-variety','integrity-stability'].includes(slice.id)?16384:8192,recoverOversized:designCheckpoint.failedTask===slice.id&&/^OLLAMA_DESIGN_(TIMEOUT|OUTPUT_TRUNCATED)/.test(designCheckpoint.lastError||''),isolateFields:(designCheckpoint.sliceRepairAttempts[taskKey]||0)>=2&&feedback.some(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT')}
       ));
       feedback=validateDesignAuthoringContent({design:{...merged,...result},seed,fields:slice.fields,requirePlayableContract:!ownerPreservationDesign,assetLibrary:designAssetLibrary,sourceText:currentRuleSource,assetFamilies:designAssetFamilies});
       try{assertSchemaValue(result,schema);}catch(error){feedback.push({code:'DESIGN_SLICE_SCHEMA_INVALID',fields:slice.fields,requiredAction:clean(error.message)});}
@@ -1019,13 +1019,13 @@ async function requestLocalDesignerRaw(prompt,{predict=1600,temperature=0.1,numC
     req.end(body);
   });
 }
-async function callLocalDesignerModel(system,user,schema,{predict=1600,temperature=0.1,repairRequired=null,numCtx=8192,recoverOversized=false}={}){
+async function callLocalDesignerModel(system,user,schema,{predict=1600,temperature=0.1,repairRequired=null,numCtx=8192,recoverOversized=false,isolateFields=false}={}){
   if(!localDesignerFallbackReady)throw new Error('VIBE_LOCAL_DESIGN_FALLBACK_NOT_READY');
   const timeoutMs=localDesignerCallTimeoutMs;
   const started=Date.now();
   const prompt=`${system}\n\nDESIGN_ASSET_LIBRARY=${JSON.stringify(designAssetLibraryContext)}\n자산 목록은 사실 근거다. 게임당 설계 원본은 하나이며 플랫폼별 적용만 구분한다. 후보의 역할 적합성을 컨셉과 대조하고 기존 technicalAssumptions/implementationTraceability/artAudioDirection/platformProfiles에 재사용 ID, 개선·추가 제작 필요, 플랫폼 적응을 명시하라. 점수는 내부 평가이며 런타임 품질 통과가 아니다. USE_AS_IS도 실제 게임 검증을 뜻하지 않는다. NATIVE_REAUTHOR_BASE는 네이티브 재제작이며 바이너리 직접 재사용이 아니다. referenceOnly는 참고용이다. UNAVAILABLE은 미확인이며 자산이 없다는 뜻이 아니다. 후보 요약 밖의 호환 자산도 자격을 유지한다. 자산 사정으로 원본 게임 규칙을 바꾸지 마라.\n\n${user}\n\nLOCAL_AUTHORING_RULES=JSON_OBJECT_ONLY;DO_NOT_DECIDE_GATE_PASS_FAIL;PRESERVE_OWNER_INTENT;REPAIR_ONLY_REQUESTED_SCOPE`;
   console.log(`DESIGN_LOCAL_AUTHORING_BUDGET_MS=${timeoutMs}|predict=${predict}|context=${numCtx}|promptChars=${prompt.length}`);
-  const identity=createHash('sha256').update(JSON.stringify({system,user,schema,librarySha256:designAssetLibraryContext.sha256||null})).digest('hex');
+  const identity=createHash('sha256').update(JSON.stringify({system,user,schema,librarySha256:designAssetLibraryContext.sha256||null,...(isolateFields?{isolateFields:true}:{})})).digest('hex');
   const fields=schema?.type==='object'?Object.keys(schema.properties||{}):[];
   const field=fields.length===1?fields[0]:null;
   const child=field?schema.properties[field]:null;
@@ -1035,10 +1035,10 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
   let directCall=true;
   try{
     let raw;
-    let splitRequired=canSplit&&(recoverOversized||designCheckpoint.localAuthoringSplits?.[identity]===true||fields.length>6||objectChild||arrayChild);
+    let splitRequired=canSplit&&(isolateFields||recoverOversized||designCheckpoint.localAuthoringSplits?.[identity]===true||fields.length>6||objectChild||arrayChild);
     if(!splitRequired){
       try{
-        raw=await requestLocalDesignerRaw(prompt,{predict,temperature,numCtx,timeoutMs,schema});
+        raw=await requestLocalDesignerRaw(prompt+(isolateFields?'\n현재 한 필드의 실제 조건·행동·상태 변화·대응을 원본 규칙에 근거한 구체적인 문장으로 작성한다. 필드 이름이나 임시 식별자를 내용 대신 복사하지 않는다.': ''),{predict,temperature,numCtx,timeoutMs,schema});
       }catch(error){
         if(!/^OLLAMA_DESIGN_(?:OUTPUT_TRUNCATED|TIMEOUT(?: |$))/.test(error?.message||'')||!canSplit)throw error;
         recordModelHealth(`ollama:${localDesignerModel}`,{success:false,elapsedMs:Date.now()-started,error});
@@ -1049,12 +1049,12 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
     }
     if(splitRequired){
       directCall=false;
-      // 큰 객체·대안 배열을 먼저 분해하고 시간초과도 같은 체크포인트 경로로 복구한다.
+      // 큰 객체·대안 배열과 반복된 빈 내용을 기존 체크포인트의 작은 조각으로 복구한다.
       console.log(`DESIGN_LOCAL_SPLIT=${arrayChild?'ARRAY_ITEMS':objectChild?'NESTED_OBJECT':'FIELDS'}|fields=${fields.length}`);
       let merged={};
       if(objectChild){
         merged[field]=await runCheckpointTask('local_authoring_parts',`${identity}:${field}`,()=>callLocalDesignerModel(
-          system,`${user}\nLOCAL_OUTPUT_PATH=${field}\n이번 응답은 이 경로의 객체 내용만 출력한다. 부모 키를 다시 감싸지 않는다.`,child,{predict,temperature,numCtx}
+          system,`${user}\nLOCAL_OUTPUT_PATH=${field}\n이번 응답은 이 경로의 객체 내용만 출력한다. 부모 키를 다시 감싸지 않는다.`,child,{predict,temperature,numCtx,isolateFields}
         ));
       }else if(arrayChild){
         const rows=[];
@@ -1070,18 +1070,18 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
           const fixed=fact||grammarRole?{...(fact||{}),...(grammarRole?{grammarRole}:{})}:human?{humanId:human.id,humanTool:human.tool}:{};
           for(const [key,value] of Object.entries(fixed))if(value!==undefined&&itemSchema.properties?.[key])itemSchema={...itemSchema,properties:{...itemSchema.properties,[key]:{...itemSchema.properties[key],enum:[value]}}};
           const value=await runCheckpointTask('local_authoring_parts',`${identity}:${field}:${index}`,()=>callLocalDesignerModel(
-            system,`${user}\nLOCAL_OUTPUT_PATH=${field}[${index}]\nPREVIOUS_ARRAY_ITEMS=${JSON.stringify(rows)}\n이번 응답은 이 배열 항목의 객체 하나만 출력한다. 이전 항목과 역할·접근을 구분하고 필수 설계 깊이를 유지한다.`,itemSchema,{predict,temperature,numCtx}
+            system,`${user}\nLOCAL_OUTPUT_PATH=${field}[${index}]\nPREVIOUS_ARRAY_ITEMS=${JSON.stringify(rows)}\n이번 응답은 이 배열 항목의 객체 하나만 출력한다. 이전 항목과 역할·접근을 구분하고 필수 설계 깊이를 유지한다.`,itemSchema,{predict,temperature,numCtx,isolateFields}
           ));
           rows.push(value);
         }
         merged[field]=rows;
       }else{
         const midpoint=Math.ceil(fields.length/2);
-        for(const part of [fields.slice(0,midpoint),fields.slice(midpoint)]){
+        for(const part of (isolateFields?fields.map(field=>[field]):[fields.slice(0,midpoint),fields.slice(midpoint)])){
           const partSchema={...schema,required:(schema.required||[]).filter(field=>part.includes(field)),properties:Object.fromEntries(part.map(field=>[field,schema.properties[field]]))};
           const value=await runCheckpointTask('local_authoring_parts',`${identity}:${part.join(',')}`,()=>callLocalDesignerModel(
             system,`${user}\nCURRENT_OBJECT_FIELDS=${JSON.stringify(merged)}\nLOCAL_REQUIRED_FIELDS=${JSON.stringify(part)}\n이전 지시의 출력 범위 대신 LOCAL_REQUIRED_FIELDS만 출력한다. 먼저 작성된 필드와 일관성을 지키고 필수 구조와 설계 깊이는 유지한다.`,
-            partSchema,{predict:Math.max(512,Math.ceil(predict*part.length/fields.length)),temperature,numCtx}
+            partSchema,{predict:Math.max(512,Math.ceil(predict*part.length/fields.length)),temperature,numCtx,isolateFields}
           ));
           Object.assign(merged,value);
         }

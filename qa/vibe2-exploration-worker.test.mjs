@@ -112,6 +112,26 @@ test('precomputed exploration artifact is reused instead of rescanning',()=>{
   }
 });
 
+test('native exploration discovers cross-file callees and invalidates source-stale or old-analysis handoffs',()=>{
+  const cwd=tempRoot(),file=path.join(cwd,'unity-games/demo/Assets/Player.cs');
+  write(file,'using UnityEngine; public class Player { private int score = 0; public void MovePlayer() { ResolvePath(); score += 1; } }');
+  write(path.join(cwd,'unity-games/demo/Navigation/Routes.cs'),'public class Routes { public void ResolvePath() { } }');
+  const order=workOrder(),first=exploreVibe2WorkOrder({cwd,order});
+  assert.equal(first.editContract.responsibilityGraph.language,'csharp');
+  assert.ok(first.sourceDependencies.some(row=>row.path==='Navigation/Routes.cs'&&row.symbol==='ResolvePath'&&row.direction==='CALLEE'));
+  assert.deepEqual(first.responsibleFiles,['Assets/Player.cs']);
+  const handoff=path.join(cwd,'.vibe2/exploration.json'),old=process.env.VIBE2_EXPLORATION_FILE;
+  write(handoff,JSON.stringify(first));process.env.VIBE2_EXPLORATION_FILE=handoff;
+  try{
+    assert.equal(exploreVibe2WorkOrder({cwd,order}).reused,true);
+    write(file,'using UnityEngine; public class Player { private int score = 0; public void MovePlayer() { ResolvePath(); score += 2; } }');
+    const refreshed=exploreVibe2WorkOrder({cwd,order});
+    assert.equal(refreshed.reused,false);assert.notEqual(refreshed.reuseKey,first.reuseKey);
+    write(handoff,JSON.stringify({...refreshed,codingAnalysisVersion:1}));
+    assert.equal(exploreVibe2WorkOrder({cwd,order}).reused,false);
+  }finally{if(old===undefined)delete process.env.VIBE2_EXPLORATION_FILE;else process.env.VIBE2_EXPLORATION_FILE=old;fs.rmSync(cwd,{recursive:true,force:true});}
+});
+
 test('existing Web exploration emits a preservation strategy before implementation',()=>{
   const cwd=tempRoot();
   const web=path.join(cwd,'web-games/demo/index.html');
