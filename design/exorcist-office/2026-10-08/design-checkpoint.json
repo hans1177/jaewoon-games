@@ -930,25 +930,38 @@
       "toSystem": "GAME_CORE_LOOP_AVOIDANCE_ZONE_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01",
       "trigger": "RULE_01→RULE_02",
       "stateChange": "HumanCount,MonsterCount,EliminatedCount,Score,Distance,ProgressionBenefit"
+    },
+    "local_authoring_parts::78779a2b0ad1d0261a55f5b3caac7ae9d566d9758863c4ac5c413e8f1df1a96c:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "RULE_01",
+      "toId": "RULE_02",
+      "stateKeys": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount",
+        "Score",
+        "Distance",
+        "ProgressionBenefit"
+      ],
+      "fromSystem": "GAME_CORE_LOOP_AVOIDANCE_ZONE_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 34,
-      "successes": 33,
+      "calls": 35,
+      "successes": 34,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 3543895,
-      "lastMs": 75817,
+      "totalMs": 3621949,
+      "lastMs": 78054,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T16:14:38.139Z"
+      "updatedAt": "2026-10-08T16:15:56.196Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:56:17.645Z",
-  "updatedAt": "2026-10-08T16:14:38.140Z",
+  "updatedAt": "2026-10-08T16:15:56.196Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3018,7 +3031,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:14:38.140Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:15:56.196Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
