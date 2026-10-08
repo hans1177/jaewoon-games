@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::bad434962c00e8fb44d17558da2201dac5d3c8e1e648771c948e4a4db8ee4650:identity": {
+      "identity": "개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 완전히 처음부터 다시 설계한다. 게임은 생존, 채집, 제작 중심으로 설계되며, 플레이어는 생존의 과정에서 선택과 결과에 따라 세계 상태와 다음 선택을 바꾼다. 게임의 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, 선택은 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'으로 구성된다. 게임은 시그니처 세계 규칙과 인과 법칙을 통해 플레이어의 선택과 세계 상태의 변화를 구체화한다. 게임의 시스템은 MAIN/A/B/c/@와 같은 구조로 설계되며, 각 시스템은 구체적인 규칙과 상태 변화를 포함한다. 게임은 빠르게 시작할 수 있는 대표 행동을 출발점으로, 시스템 상호작용, 상황별 예외, 조합의 새로운 용도, 여러 유효한 해법, 숙련으로 바뀌는 선택, 발견 후 다음 질문으로 이어지게 설계된다. 게임의 설계는 학문을 가르치거나 학문 소재를 넣는 것이 아니라, 게임 자체를 오래 연구할 만한 규칙·관계·응용의 층위로 구성된다. 게임의 시그니처는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 'Collect run rewards or experience and choose upgrades,"
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 194126,
+      "lastMs": 194126,
+      "lastError": null,
+      "updatedAt": "2026-10-08T13:01:21.252Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:58:07.049Z",
-  "updatedAt": "2026-10-08T12:58:07.093Z",
+  "updatedAt": "2026-10-08T13:01:21.252Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2208,5 +2224,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-08T13:01:21.252Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
