@@ -223,25 +223,77 @@
         }
       ],
       "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::c5302068a166312cc0042d4ea7589123ef99b306cf1f8fd14a437a632ad12723:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "stateKeys": [
+            "월드 상태",
+            "플레이어 이동",
+            "채집",
+            "전투",
+            "제작",
+            "퀘스트 상태"
+          ],
+          "fromSystem": "SIGNATURE_FIGHT_SURVIVAL",
+          "toSystem": "SIGNATURE_FIGHT_SURVIVAL",
+          "trigger": "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결",
+          "stateChange": "시그니처 상호작용 결과"
+        },
+        {
+          "stateKeys": [
+            "월드 상태",
+            "플레이어 이동",
+            "채집",
+            "전투",
+            "제작",
+            "퀘스트 상태"
+          ],
+          "fromSystem": "SIGNATURE_FIGHT_SURVIVAL",
+          "toSystem": "SIGNATURE_FIGHT_SURVIVAL",
+          "trigger": "다음 상태와 접근 가능성이 바뀐 월드 상태",
+          "stateChange": "다음 상태와 접근 가능성이 바뀐 월드 상태"
+        },
+        {
+          "stateKeys": [
+            "월드 상태",
+            "플레이어 이동",
+            "채집",
+            "전투",
+            "제작",
+            "퀘스트 상태"
+          ],
+          "fromSystem": "SIGNATURE_FIGHT_SURVIVAL",
+          "toSystem": "SIGNATURE_FIGHT_SURVIVAL",
+          "trigger": "시그니처 상호작용 결과",
+          "stateChange": "다음 상태와 접근 가능성이 바뀐 월드 상태"
+        }
+      ],
+      "progressionDirection": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하",
+      "progressionEconomyBalance": {
+        "progressionLoop": "플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하",
+        "resourceFlow": "기존 월드 상태, 플레이어 이동, 채집, 전투, 제작, 퀘스트 상태를 그대로 유지",
+        "balanceRules": "기존 저장 의미와 인과를 유지하며, 새로운 플레이와 기존 시스템 영향을 구체적으로 설명"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
-      "failures": 0,
-      "timeouts": 0,
+      "calls": 9,
+      "successes": 8,
+      "failures": 1,
+      "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 823431,
-      "lastMs": 43965,
-      "lastError": null,
-      "updatedAt": "2026-10-08T12:28:58.432Z"
+      "totalMs": 1282712,
+      "lastMs": 159243,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
+      "updatedAt": "2026-10-08T12:36:37.728Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:15:14.939Z",
-  "updatedAt": "2026-10-08T12:28:58.444Z",
+  "updatedAt": "2026-10-08T12:36:37.728Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2442,7 +2494,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:28:58.435Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:36:37.728Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
@@ -2453,5 +2505,8 @@
     "contentDigest": "c77b04e7c17547d597081ac8371042310a72cbe9e3a48740c684b557265c157a",
     "authorModel": "ollama:qwen3:1.7b",
     "status": "AUTHORED_CANDIDATE"
+  },
+  "localAuthoringSplits": {
+    "c5302068a166312cc0042d4ea7589123ef99b306cf1f8fd14a437a632ad12723": true
   }
 }
