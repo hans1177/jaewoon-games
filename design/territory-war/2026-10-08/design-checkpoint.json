@@ -83,25 +83,41 @@
       "name": "Territory Dynamics System B",
       "purpose": "Manages the dynamic interplay between border pressure and territory objectives, ensuring strategic adaptability and resource reallocation.",
       "playerChoice": "Select and prioritize territory objectives based on current border pressure, balancing expansion with defensive needs and resource allocation constraints."
+    },
+    "local_authoring_parts::4dcc6f2cb88ea826ad133140c939fe6c5b6ede4a4fb9bbb089fd8de17b77353d:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "c",
+      "stateInputs": [
+        "currentBorderPressure",
+        "territoryObjectives"
+      ],
+      "stateOutputs": [
+        "updatedFrontLine",
+        "reallocatedResources",
+        "introducedStrategicOptions"
+      ],
+      "name": "Territory Dynamics System C",
+      "purpose": "Manages the dynamic interplay between border pressure and territory objectives, ensuring strategic adaptability and resource reallocation.",
+      "playerChoice": "Select and prioritize territory objectives based on current border pressure, balancing expansion with defensive needs and resource allocation constraints."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 747576,
-      "lastMs": 102699,
+      "totalMs": 850141,
+      "lastMs": 102565,
       "lastError": null,
-      "updatedAt": "2026-10-08T07:59:06.427Z"
+      "updatedAt": "2026-10-08T08:00:48.993Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:46:38.814Z",
-  "updatedAt": "2026-10-08T07:59:06.427Z",
+  "updatedAt": "2026-10-08T08:00:48.993Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2125,7 +2141,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T07:59:06.427Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:00:48.993Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
