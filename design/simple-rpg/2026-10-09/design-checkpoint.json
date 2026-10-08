@@ -27,25 +27,45 @@
       "identity": "작은 모험 RPG은 플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.이라는 중심 행동을 통해, 진입 단계에서 명확한 목표를 설정하고, 제한된 이동 수, 장애물, 또는 볼 수 있는 퀘스트 형태로 게임 공간을 구성하는 데 초점을 맞춘 PUZZLE 게임이다. 이 과정에서 선택의 결과가 월드 상태에 직접적인 영향을 미치며, 성장은 즉각적 결과와 새로운 행동/경로/조합/관계/발견/대응법의 열림으로 이루어진다. 게임의 핵심 재미는 반복 가능한 루프와 즉시 피드백이 동반되는 입력/선택/상태 변화/보상/다음 선택 구조이며, 모바일에서도 즉시 이해할 수 있는 설계 방식으로 실현된다.",
       "playerFantasy": "작은 모험 RPG에서는 플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.이라는 중심 행동을 통해, 진입 단계에서 명확한 목표를 설정하고, 제한된 이동 수, 장애물, 또는 볼 수 있는 퀘스트 형태로 게임 공간을 구성하는 데 초점을 맞춘 PUZZLE 게임이다. 이 과정에서 선택의 결과가 월드 상태에 직접적인 영향을 미치며, 성장은 즉각적 결과와 새로운 행동/경로/조합/관계/발견/대응법의 열림으로 이루어진다. 게임의 핵심 재미는 반복 가능한 루프와 즉시 피드백이 동반되는 입력/선택/상태 변화/보상/다음 선택 구조이며, 모바일에서도 즉시 이해할 수 있는 설계 방식으로 실현된다.",
       "coreFun": "작은 모험 RPG에서는 플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.이라는 중심 행동을 통해, 진입 단계에서 명확한 목표를 설정하고, 제한된 이동 수, 장애물, 또는 볼 수 있는 퀘스트 형태로 게임 공간을 구성하는 데 초점을 맞춘 PUZZLE 게임이다. 이 과정에서 선택의 결과가 월드 상태에 직접적인 영향을 미치며, 성장은 즉각적 결과와 새로운 행동/경로/조합/관계/발견/대응법의 열림으로 이루어진다. 게임의 핵심 재미는 반복 가능한 루프와 즉시 피드백이 동반되는 입력/선택/상태 변화/보상/다음 선택 구조이며, 모바일에서도 즉시 이해할 수 있는 설계 방식으로 실현된다."
+    },
+    "local_authoring_parts::83a79b3186f8a2256ebad0dc4a43699bd50a74b71682f40eaea03eef0b64aff6:coreLoop": {
+      "coreLoop": [
+        "INPUT: 플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.이라는 중심 행동을 통해, 진입 단계에서 명확한 목표를 설정하고, 제한된 이동 수, 장애물, 또는 볼 수 있는 퀘스트 형태로 게임 공간을 구성하는 데 초점을 맞춘 PUZZLE 게임이다.",
+        "SELECT: 선택의 결과가 월드 상태에 직접적인 영향을 미치며, 성장은 즉각적 결과와 새로운 행동/경로/조합/관계/발견/대응법의 열림으로 이루어진다.",
+        "OUTPUT: 게임의 핵심 재미는 반복 가능한 루프와 즉시 피드백이 동반되는 입력/선택/상태 변화/보상/다음 선택 구조이며, 모바일에서도 즉시 이해할 수 있는 설계 방식으로 실현된다."
+      ]
+    },
+    "local_authoring_parts::7e7fdc65dd3b4cb8e2cb2b18f3b64c94df2ab0299b25bb3cf10a5de7bcec2f25:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "GAME_SPACE"
+      ],
+      "stateOutputs": [
+        "WORLD_STATE_CHANGE"
+      ],
+      "name": "START_BOARD_LEVEL",
+      "purpose": "PLAYER_ACTION",
+      "playerChoice": "SET_GAME_SPACE_WITH_CLEAR_GOAL_AND_LIMITED_MOVES_OR_VISIBLE_TASK"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 306408,
-      "lastMs": 52666,
+      "totalMs": 407492,
+      "lastMs": 35444,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:23:19.529Z"
+      "updatedAt": "2026-10-08T21:25:00.618Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:18:13.104Z",
-  "updatedAt": "2026-10-08T21:23:19.530Z",
+  "updatedAt": "2026-10-08T21:25:00.618Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2082,7 +2102,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:23:19.530Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:25:00.618Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
