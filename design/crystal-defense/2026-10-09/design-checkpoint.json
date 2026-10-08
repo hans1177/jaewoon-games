@@ -34,25 +34,42 @@
         "Spend limited resources on placement, resonance or upgrades.",
         "Survive the wave and use the result to prepare a different counter for the next threat."
       ]
+    },
+    "local_authoring_parts::d499759e80ab7ef446eec7593ec876cce63779ac2e2a220a465d0fc4555c7a32:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "PLACEMENT",
+        "RESONANCE",
+        "UPGRADES"
+      ],
+      "stateOutputs": [
+        "STRATEGY",
+        "PATH",
+        "GROWTH"
+      ],
+      "name": "DEFENSE_STRATEGIC_BALANCE",
+      "purpose": "Balances placement, resonance, and upgrades to create optimal defense strategies.",
+      "playerChoice": "Choose where crystal defenses create the most value based on attack patterns and resource allocation."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 353922,
-      "lastMs": 57067,
+      "totalMs": 450850,
+      "lastMs": 96928,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:52:46.033Z"
+      "updatedAt": "2026-10-08T21:54:22.963Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:46:52.091Z",
-  "updatedAt": "2026-10-08T21:52:46.033Z",
+  "updatedAt": "2026-10-08T21:54:22.964Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2243,7 +2260,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:52:46.033Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:54:22.963Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
