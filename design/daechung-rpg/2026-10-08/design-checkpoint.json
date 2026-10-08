@@ -28,25 +28,49 @@
         "DEVELOPMENT: 포탈 전투 중 AI 동료와 플레이어의 전투력 증가, 보스 격파, 동료 해금, 보스 동료 리더 레벨 동기화, 보상 획득, 풀회복, 귀환 허용",
         "RESOLUTION: 보스 동료 3명 파티 구성, 전투/보상 상태 관리, 보스 첫 처치 동료 해금, 보스 동료 리더 레벨 동기화, 보상 획득, 풀회복, 귀환 허용"
       ]
+    },
+    "local_authoring_parts::8342f7a79992174c751e8ffce800605f4a1d54542493e7e9dbab52dc5daa38c8:id,grammarRole,stateInputs,stateOutputs": {
+      "id": "RPG_STYLIZED_TOY_DARK_FANTASY",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "플레이어 1명 + 보스 동료 3명 파티",
+        "마을 편성",
+        "포탈 전투 시작",
+        "15킬 파티사냥",
+        "퀘스트 진행",
+        "보상 획득",
+        "풀회복",
+        "귀환 금지"
+      ],
+      "stateOutputs": [
+        "전투 HUD와 파티/장비 화면 분리",
+        "전투/보상 서버 authoritative",
+        "DataStore 저장",
+        "보스 첫 처치 동료 해금 저장",
+        "플레이어+동료 최대 3명 파티",
+        "보스 동료 리더 레벨 자동 동기화",
+        "보스 동료 전용 장비 없음",
+        "Lv60 레벨캡"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 3,
+      "calls": 8,
+      "successes": 4,
       "failures": 4,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 891832,
-      "lastMs": 106142,
+      "totalMs": 996379,
+      "lastMs": 104547,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T02:47:58.132Z"
+      "updatedAt": "2026-10-08T02:49:42.681Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T02:33:06.288Z",
-  "updatedAt": "2026-10-08T02:47:58.133Z",
+  "updatedAt": "2026-10-08T02:49:42.681Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1470,7 +1494,7 @@
     "5b911938fcf044e2c08368656f612314a4dfbaa0cc913a56fd60a349189a6088": true,
     "c8518cadd2e88cb75716eacc83cc6777b9017a9ae74c98390df43d58c6dd72ae": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T02:47:58.132Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T02:49:42.681Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
