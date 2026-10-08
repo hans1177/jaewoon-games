@@ -615,26 +615,13 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-      - name: Mark Unity Web floor repair requirement
-        id: repair
-        if: steps.readiness.outputs.pass != 'true'
-        shell: bash
-        env:
-          GAME_ID: ${{ steps.request.outputs.game_id }}
-        run: |
-          set -euo pipefail
-          echo 'required=true' >> "$GITHUB_OUTPUT"
-          echo 'UNITY_WEB_FLOOR_STATE=REPAIR_REQUIRED'
-          echo "UNITY_WEB_REPAIR_GAME_ID=$GAME_ID"
-          echo 'UNITY_WEB_REPAIR_PLANNER_HANDOFF=REUSABLE_WORKFLOW'
-          exit 42
-
       - name: Create verified Unity Web readiness PR
-        if: steps.readiness.outputs.pass == 'true' && (github.event_name == 'push' || inputs.publish_to_main == true)
+        if: (steps.readiness.outputs.pass == 'true' && (github.event_name == 'push' || inputs.publish_to_main == true)) || (steps.readiness.outputs.pass == 'false' && steps.request.outputs.game_id == 'daechung-rpg' && github.event_name == 'push')
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ steps.request.outputs.game_id }}
+          READINESS_PASS: ${{ steps.readiness.outputs.pass }}
           SOURCE_COMMIT: ${{ steps.request.outputs.source_commit || github.sha }}
           BASE_MAIN_SHA: ${{ inputs.base_main_sha }}
           VIBE2_TASK_ID: ${{ inputs.vibe2_task_id }}
@@ -649,6 +636,15 @@ jobs:
             git cat-file -e "${SOURCE_COMMIT}:$file" 2>/dev/null || { echo "UNITY_WEB_GENERATED_ASSET_MISSING=$file" >&2; exit 1; }
           done
           candidate_paths=("unity-games/$GAME_ID" "${generated_asset_files[@]}")
+          # Preserve the existing playable HTML archive while publishing the real Unity WebGL test.
+          runtime_dir="web-games/$GAME_ID"
+          if [ "$GAME_ID" = "daechung-rpg" ]; then
+            runtime_dir="web-games/$GAME_ID/unity"
+          fi
+          if [ "$READINESS_PASS" != "true" ] && [ "$GAME_ID" != "daechung-rpg" ]; then
+            echo 'UNITY_WEB_UNVERIFIED_PUBLIC_TEST_SCOPE_INVALID' >&2
+            exit 1
+          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git fetch --no-tags origin main
@@ -665,22 +661,30 @@ jobs:
           branch="unity-web/$GAME_ID-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           git checkout -B "$branch" origin/main
           git checkout "$SOURCE_COMMIT" -- "${candidate_paths[@]}"
-          rm -rf "web-games/$GAME_ID"
-          mkdir -p "web-games/$GAME_ID"
-          cp -R "/tmp/unity-web/web-games/$GAME_ID"/. "web-games/$GAME_ID"/
-          test -d "web-games/$GAME_ID/Build"
-          test -s "web-games/$GAME_ID/unity-web-deploy-manifest.json"
-          git add "unity-games/$GAME_ID" "web-games/$GAME_ID"
+          if [ "$runtime_dir" = "web-games/$GAME_ID" ]; then
+            rm -rf "$runtime_dir"
+          else
+            test -s "web-games/$GAME_ID/index.html"
+            rm -rf "$runtime_dir"
+          fi
+          mkdir -p "$runtime_dir"
+          cp -R "/tmp/unity-web/web-games/$GAME_ID"/. "$runtime_dir"/
+          test -d "$runtime_dir/Build"
+          test -s "$runtime_dir/unity-web-deploy-manifest.json"
+          test -s "$runtime_dir/unity-web-gameplay-validation.json"
+          test -s "$runtime_dir/unity-web-independent-qa.json"
+          test -s "$runtime_dir/unity-web-regression.json"
+          git add "unity-games/$GAME_ID" "$runtime_dir"
           if [ "${#generated_asset_files[@]}" -gt 0 ]; then
             git add -- "${generated_asset_files[@]}"
           fi
           # Historical repo-wide Unity ignore rules matched this nested public Build directory.
           # Force-add the runtime bundle so index.html never lands without loader/data/framework/wasm.
-          git add -f "web-games/$GAME_ID/Build"
-          test -n "$(git ls-files "web-games/$GAME_ID/Build/*.loader.js" | head -n1)"
-          test -n "$(git ls-files "web-games/$GAME_ID/Build/*.data*" | head -n1)"
-          test -n "$(git ls-files "web-games/$GAME_ID/Build/*.framework.js*" | head -n1)"
-          test -n "$(git ls-files "web-games/$GAME_ID/Build/*.wasm*" | head -n1)"
+          git add -f "$runtime_dir/Build"
+          test -n "$(git ls-files "$runtime_dir/Build/*.loader.js" | head -n1)"
+          test -n "$(git ls-files "$runtime_dir/Build/*.data*" | head -n1)"
+          test -n "$(git ls-files "$runtime_dir/Build/*.framework.js*" | head -n1)"
+          test -n "$(git ls-files "$runtime_dir/Build/*.wasm*" | head -n1)"
           git diff --cached --check
           if git diff --cached --quiet; then
             echo "UNITY_WEB_PUBLICATION_PR=NO_CHANGE"
@@ -691,12 +695,17 @@ jobs:
             exit 0
           fi
 
-          git commit -m "build: publish $GAME_ID Unity Web readiness"
+          if [ "$READINESS_PASS" = 'true' ]; then
+            publication_label='Unity Web readiness'
+          else
+            publication_label='Unity Web browser test (graphics/multiplayer repair pending)'
+          fi
+          git commit -m "build: publish $GAME_ID $publication_label"
           release_commit="$(git rev-parse HEAD)"
           git push --force-with-lease origin HEAD:"$branch"
           pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" \
-            --title "build: publish $GAME_ID Unity Web readiness" \
-            --body "Verified Unity Web development-floor artifact from workflow run $GITHUB_RUN_ID. This reviewed PR binds candidate unity-games/$GAME_ID source and the exact validated web-games/$GAME_ID WebGL bundle. upper-platform-development-readiness.json must PASS before upper-platform development continues.")"
+            --title "build: publish $GAME_ID $publication_label" \
+            --body "Real Unity WebGL browser-test bundle from workflow run $GITHUB_RUN_ID. Game: $GAME_ID; runtime path: $runtime_dir; source: $SOURCE_COMMIT. Browser boot, real gameplay, browser touch, independent QA and regression evidence are required. UPPER_PLATFORM_DEVELOPMENT_READY=$READINESS_PASS. If false, this is public testing only; graphics and multiplayer requirements remain REPAIR_REQUIRED, not a native release. Legacy web gameplay at /web-games/$GAME_ID/ is preserved for the Daechung RPG.")"
           echo "UNITY_WEB_READINESS_PR=$pr_url"
           echo "UNITY_WEB_REVIEWED_PROMOTION_PR=$pr_url"
           echo 'UNITY_WEB_DIRECT_MAIN_WRITE=NO'
@@ -720,7 +729,7 @@ jobs:
           fi
           gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
           git fetch --no-tags origin main
-          merged_paths=("unity-games/$GAME_ID" "web-games/$GAME_ID" "${generated_asset_files[@]}")
+          merged_paths=("unity-games/$GAME_ID" "$runtime_dir" "${generated_asset_files[@]}")
           git diff --quiet "$release_commit" origin/main -- "${merged_paths[@]}" || { echo 'UNITY_WEB_MERGED_TREE_MISMATCH' >&2; exit 1; }
 
           promotion_sha="$(git rev-parse origin/main)"
@@ -743,10 +752,12 @@ jobs:
           done
 
           echo "UNITY_WEB_MAIN_PROMOTION_SHA=$promotion_sha"
+          echo "UNITY_WEB_PUBLIC_BROWSER_TEST_PATH=/$runtime_dir/"
+          echo "UNITY_WEB_UPPER_PLATFORM_READY=$READINESS_PASS"
           echo "UNITY_WEB_MAIN_UNITY_SOURCE_TREE_SHA=$unity_source_tree_sha"
           echo "UNITY_WEB_MAIN_RUNTIME_SOURCE_TREE_SHA=$web_source_tree_sha"
 
-          if [ -n "$VIBE2_TASK_ID" ]; then
+          if [ -n "$VIBE2_TASK_ID" ] && [ "$READINESS_PASS" = 'true' ]; then
             rm -rf /tmp/vibe2-control /tmp/vibe2-main-contract
             gh auth setup-git --hostname github.com
             gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-control -- --branch vibe2-unreal-core --single-branch --depth=1 --no-tags >/dev/null 2>&1
@@ -789,6 +800,19 @@ jobs:
             echo "VIBE2_UNITY_WEB_TASK_FINAL_PASS=EXACT_SOURCE_RUNTIME_AND_DEPLOYMENT:$unity_source_tree_sha:$web_source_tree_sha"
           fi
 
+      - name: Mark Unity Web floor repair requirement
+        id: repair
+        if: steps.readiness.outputs.pass != 'true'
+        shell: bash
+        env:
+          GAME_ID: ${{ steps.request.outputs.game_id }}
+        run: |
+          set -euo pipefail
+          echo 'required=true' >> "$GITHUB_OUTPUT"
+          echo 'UNITY_WEB_FLOOR_STATE=REPAIR_REQUIRED'
+          echo "UNITY_WEB_REPAIR_GAME_ID=$GAME_ID"
+          echo 'UNITY_WEB_REPAIR_PLANNER_HANDOFF=REUSABLE_WORKFLOW'
+          exit 42
 
   settle-vibe2-failure:
     name: Settle failed Vibe2 Unity Web candidate
