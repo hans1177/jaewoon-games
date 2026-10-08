@@ -157,6 +157,16 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
     if(!rolesReady||!statesReady)reject('DESIGN_MAIN_A_B_c_DELVE_REQUIRED','CORE_LOOP_DESIGN',['signatureSystems'],
       {counts,systemCount:systems.length,statesReady},
       '메인 중심 행동, A/B 서로 다른 두 축, c 보조 변주, @ 발견·숙련을 기존 규칙에 맞춰 최소 5개 고유 시스템과 실제 상태 입력·출력으로 작성한다. 기존 밸런스·저장·진행은 유지한다.');
+    // 메인: ID만 달리 붙인 복제 규칙도 실제 MAIN/A/B/c/@ 완성으로 인정하지 않는다.
+    for(let i=0;i<systems.length;i++)for(let j=i+1;j<systems.length;j++){
+      const left=systems[i],right=systems[j];
+      const sameName=clean(left?.name).length>=4&&clean(left?.name)===clean(right?.name);
+      const samePurpose=clean(left?.purpose).length>=12&&clean(left?.purpose)===clean(right?.purpose);
+      const sameChoice=clean(left?.playerChoice).length>=12&&clean(left?.playerChoice)===clean(right?.playerChoice);
+      if(sameName&&(samePurpose||sameChoice))reject('DESIGN_GRAMMAR_ROLE_CONTENT_CLONED','CORE_LOOP_DESIGN',['signatureSystems'],
+        {roles:[left?.grammarRole,right?.grammarRole],ids:[left?.id,right?.id]},
+        '서로 다른 규칙 ID라는 표식만으로 통과하지 않는다. 원본 실제 플레이의 역할별 선택·상태 변화를 구분해 디자이너가 다시 작성한다.');
+    }
     // 보존형 설계에서도 행동 설명은 실제 상태 키가 아니다.
     for(const row of systems)for(const field of ['stateInputs','stateOutputs']){
       if(list(row[field]).some(key=>/→|->|\b(?:INPUT|SELECT|OUTPUT|STATE)\s*:/i.test(clean(key)))){
