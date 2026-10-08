@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::77ad0c9cea0f25e00996b77e6979703b5b08f24c5bd9e65141b01d224073f7b4:identity": {
+      "identity": "엘도리아 연대기은 플레이어가 Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 STORY_COMPLETE_RPG 게임이다. 플레이어의 선택은 기존 게임의 인과법칙과 세계 규칙을 거치며 새로운 상태 변화를 만든다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명한다. 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다. 게임의 핵심 재미는 플레이어가 이해할 수 있는 인간 갈등과 선택 결과의 상호작용을 통해 구현된다. 게임의 핵심 루프는 Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.과 Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter.의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용으로 구성된다. 게임의 핵심 시스템은 MAIN/A/B/c/@와 상태 변화를 통해 구체화된다. 게임의 핵심 재미는 플레이어의 선택과 세계 규칙의 상호작용을 통해 구현된다. 게임의 핵심 루프는 플레이어의 선택과 세계 규"
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 263372,
+      "lastMs": 263372,
+      "lastError": null,
+      "updatedAt": "2026-10-08T09:00:12.905Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:55:49.512Z",
-  "updatedAt": "2026-10-08T08:55:49.527Z",
+  "updatedAt": "2026-10-08T09:00:12.905Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2241,5 +2257,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-08T09:00:12.905Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
