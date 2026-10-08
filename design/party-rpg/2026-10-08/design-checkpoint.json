@@ -980,25 +980,45 @@
         "feedbackType"
       ],
       "fromSystem": "CORE_LOOP_DESIGN_1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123"
+    },
+    "local_authoring_parts::e0367e2d04b2b798bfcf0c53179bc9b271aed67eea2ead0f85626ce3385c860b:toSystem,trigger,stateChange": {
+      "toSystem": "signatureSystems[0]",
+      "trigger": "coreLoop→signatureSystems[0]",
+      "stateChange": "levelGoal, moveLimit, obstacleSet, comboTrigger, feedbackType"
+    },
+    "local_authoring_parts::5c47173269624df0e5b83f8e8ebf956c4f694ed74644f2aa05402da12df2e41e:systemInterconnections:2": {
+      "fromId": "coreLoop",
+      "toId": "signatureSystems[0]",
+      "stateKeys": [
+        "levelGoal",
+        "moveLimit",
+        "obstacleSet",
+        "comboTrigger",
+        "feedbackType"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN_1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123",
+      "toSystem": "signatureSystems[0]",
+      "trigger": "coreLoop→signatureSystems[0]",
+      "stateChange": "levelGoal, moveLimit, obstacleSet, comboTrigger, feedbackType"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 28,
-      "successes": 27,
+      "calls": 29,
+      "successes": 28,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 3412078,
-      "lastMs": 104790,
+      "totalMs": 3501556,
+      "lastMs": 89478,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T15:52:58.216Z"
+      "updatedAt": "2026-10-08T15:54:27.695Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:04:39.840Z",
-  "updatedAt": "2026-10-08T15:52:58.216Z",
+  "updatedAt": "2026-10-08T15:54:27.697Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3183,7 +3203,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:52:58.216Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:54:27.697Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
