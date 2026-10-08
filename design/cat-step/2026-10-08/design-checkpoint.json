@@ -54,25 +54,45 @@
       "name": "Puzzle System",
       "purpose": "Establishes the core gameplay mechanics through a series of structured, interactive puzzle challenges that evolve with player progression.",
       "playerChoice": "Player selects a level with a clear goal, limited moves, obstacles, or a visible puzzle constraint. They then make strategic moves, create combos, and use immediate feedback to solve the objective. Upon clearing the level, they earn rewards or unlock new stages, which introduce new board patterns or obstacle combinations for continued engagement."
+    },
+    "local_authoring_parts::3016d96ce70aaaae75e82460df2a2f84fcce4b4ade4556e2c4fbfdeeedb51d72:signatureSystems:1": {
+      "id": "cat-step-signature-systems-1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "LEVEL_GOAL",
+        "LIMITED_MOVES",
+        "OBSTACLES",
+        "VISIBLE_PUZZLE_CONSTRAINT"
+      ],
+      "stateOutputs": [
+        "MATCHES",
+        "DELIVERED_FEEDBACK",
+        "CLEAR_LEVEL_GOAL",
+        "REWARD",
+        "NEXT_BOARD_PATTERN"
+      ],
+      "name": "Puzzle System",
+      "purpose": "Establishes the core gameplay mechanics through a series of structured, interactive puzzle challenges that evolve with player progression.",
+      "playerChoice": "Player selects a level with a clear goal, limited moves, obstacles, or a visible puzzle constraint. They then make strategic moves, create combos, and use immediate feedback to solve the objective. Upon clearing the level, they earn rewards or unlock new stages, which introduce new board patterns or obstacle combinations for continued engagement."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 245821,
-      "lastMs": 41459,
+      "totalMs": 287081,
+      "lastMs": 41260,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:02:18.169Z"
+      "updatedAt": "2026-10-08T12:02:59.430Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:58:12.306Z",
-  "updatedAt": "2026-10-08T12:02:18.169Z",
+  "updatedAt": "2026-10-08T12:02:59.430Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2109,7 +2129,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:02:18.169Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:02:59.430Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
