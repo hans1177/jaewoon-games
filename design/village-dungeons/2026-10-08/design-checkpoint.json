@@ -52,25 +52,42 @@
       "name": "월드 상태 변화 및 보상 시스템",
       "purpose": "플레이어의 선택과 결과가 월드 상태 변화로 연결되어 반복 가능한 핵심 루프를 형성하며, 보상과 진보를 통해 게임의 핵심 재미를 강화한다",
       "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 결과가 다음 월드 상태 변화로 연결되어야 한다. 이 선택은 보상과 진보를 통해 게임의 핵심 재미를 강화한다"
+    },
+    "local_authoring_parts::324ac973bfeb0e02b909b7026dee36395c89c14aff917991367fb47bcf4eba97:signatureSystems:1": {
+      "id": "SIGNATURE_SYSTEM_02",
+      "grammarRole": "A",
+      "stateInputs": [
+        "RUN_DURATION",
+        "REWARD_TYPE",
+        "PROGRESSION_BENEFIT_TYPE"
+      ],
+      "stateOutputs": [
+        "NEXT_WORLD_STATE",
+        "REWARD",
+        "PROGRESSION_BENEFIT"
+      ],
+      "name": "반복적 보상 및 진보 시스템",
+      "purpose": "플레이어의 선택이 반복적 보상과 진보를 통해 게임의 핵심 재미를 강화하며, 이 과정에서 다양한 선택과 결과가 상호작용하여 게임의 루프를 확장한다",
+      "playerChoice": "플레이어는 반복적 보상과 진보를 통해 게임의 핵심 재미를 강화하는 선택을 하며, 이 선택은 다음 월드 상태 변화와 연결되어야 한다"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 390410,
-      "lastMs": 58269,
+      "totalMs": 463582,
+      "lastMs": 73172,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:59:29.958Z"
+      "updatedAt": "2026-10-08T09:00:43.131Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:52:59.507Z",
-  "updatedAt": "2026-10-08T08:59:29.958Z",
+  "updatedAt": "2026-10-08T09:00:43.131Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2147,7 +2164,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:59:29.958Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:00:43.131Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
