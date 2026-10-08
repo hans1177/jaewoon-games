@@ -666,25 +666,85 @@
           "systemImpact": "The survival progression system is further refined to include new gameplay mechanics that allow players to explore different action types, route options, and world relationships. These additions create new opportunities for player choice and strategic adaptation, which in turn influence the progression of the game and the development of new progression choices. The system dynamically adjusts to accommodate these new elements, ensuring that the gameplay remains engaging and responsive to player行为"
         }
       ]
+    },
+    "local_authoring_parts::b40687823b8636097ce27a664e2d6b7f6733eefc059ba11969154de189ea1382:failureRetryRisk": {
+      "failureStates": [
+        "Enemy pressure increases",
+        "Build combination is adjusted",
+        "World relationship evolves",
+        "Next open question is generated",
+        "Build combination is upgraded",
+        "Progression choice is selected"
+      ],
+      "retryFlow": "Enemy pressure increases -> Build combination is adjusted -> World relationship evolves -> Next open question is generated",
+      "riskPressure": "Enemy pressure increases by 10% per round",
+      "recoveryRules": "Player choices in resource allocation and strategic adaptation influence the progression of the game, creating a feedback loop that drives deeper engagement and exploration."
+    },
+    "local_authoring_parts::54979733962c5182cd0f25862b22f816af17101ab5022f282fac3d29ccc0362c:failureRetryRisk": {
+      "failureRetryRisk": {
+        "failureStates": [
+          "Enemy pressure increases",
+          "Build combination is adjusted",
+          "World relationship evolves",
+          "Next open question is generated",
+          "Build combination is upgraded",
+          "Progression choice is selected"
+        ],
+        "retryFlow": "Enemy pressure increases -> Build combination is adjusted -> World relationship evolves -> Next open question is generated",
+        "riskPressure": "Enemy pressure increases by 10% per round",
+        "recoveryRules": "Player choices in resource allocation and strategic adaptation influence the progression of the game, creating a feedback loop that drives deeper engagement and exploration."
+      }
+    },
+    "local_authoring_parts::7b4f296c538c1258d54dac5d30e2ae80f7b5aa9a1ed4ba531e2bf83cbe77e1a9:contentExpansionPlan,failureRetryRisk": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "contentExpansionPlan[0]",
+          "newGameplay": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
+          "systemImpact": "Survival Progression System dynamically adjusts build combinations in response to increasing enemy pressure, evolving world relationships, and new run results. Player choices in resource allocation and strategic adaptation influence the progression of the game, creating a feedback loop that drives deeper engagement and exploration."
+        },
+        {
+          "milestone": "contentExpansionPlan[1]",
+          "newGameplay": "Expand the survival progression system by introducing new gameplay elements that enhance player engagement and deepen the progression loop. This includes the introduction of new action types, route options, and world relationships that reflect the evolving nature of the game.",
+          "systemImpact": "The survival progression system is further refined to include new gameplay mechanics that allow players to explore different action types, route options, and world relationships. These additions create new opportunities for player choice and strategic adaptation, which in turn influence the progression of the game and the development of new progression choices. The system dynamically adjusts to accommodate these new elements, ensuring that the gameplay remains engaging and responsive to player行为"
+        },
+        {
+          "milestone": "contentExpansionPlan[2]",
+          "newGameplay": "Expand the survival progression system by introducing new gameplay elements that enhance player engagement and deepen the progression loop. This includes the introduction of new action types, route options, and world relationships that reflect the evolving nature of the game.",
+          "systemImpact": "The survival progression system is further refined to include new gameplay mechanics that allow players to explore different action types, route options, and world relationships. These additions create new opportunities for player choice and strategic adaptation, which in turn influence the progression of the game and the development of new progression choices. The system dynamically adjusts to accommodate these new elements, ensuring that the gameplay remains engaging and responsive to player行为"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "Enemy pressure increases",
+          "Build combination is adjusted",
+          "World relationship evolves",
+          "Next open question is generated",
+          "Build combination is upgraded",
+          "Progression choice is selected"
+        ],
+        "retryFlow": "Enemy pressure increases -> Build combination is adjusted -> World relationship evolves -> Next open question is generated",
+        "riskPressure": "Enemy pressure increases by 10% per round",
+        "recoveryRules": "Player choices in resource allocation and strategic adaptation influence the progression of the game, creating a feedback loop that drives deeper engagement and exploration."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 14,
+      "calls": 17,
+      "successes": 15,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 2361214,
-      "lastMs": 112123,
+      "totalMs": 2470383,
+      "lastMs": 109169,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T13:47:32.462Z"
+      "updatedAt": "2026-10-08T13:49:21.635Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:08:11.184Z",
-  "updatedAt": "2026-10-08T13:47:32.464Z",
+  "updatedAt": "2026-10-08T13:49:21.644Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2880,15 +2940,162 @@
     }
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "e35c2107f410051ad3c94360fe033f0733e1ce60b457ff73962db9f5b8cf206b"
   },
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:47:32.464Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "ENEMY_PRESSURE→BUILD_COMBINATION의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: ENEMY_PRESSURE→BUILD_COMBINATION의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "ENEMY_PRESSURE→WORLD_RELATIONSHIP의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: ENEMY_PRESSURE→WORLD_RELATIONSHIP의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "RUN_RESULT→NEXT_OPEN_QUESTION의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: RUN_RESULT→NEXT_OPEN_QUESTION의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "BUILD_COMBINATION→OPTIONAL_MASTERY의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: BUILD_COMBINATION→OPTIONAL_MASTERY의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "RUN_RESULT→PROGRESSION_CHOICE의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: RUN_RESULT→PROGRESSION_CHOICE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::systems-progression": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "Forward",
+      "progressionEconomyBalance": {
+        "progressionLoop": "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEW CHOICE",
+        "resourceFlow": "Enemy pressure increases -> Build combination is adjusted -> World relationship evolves -> Next open question is generated",
+        "balanceRules": "Enemy pressure increases by 10% per round; build combination is adjusted based on player choice; world relationship evolves with each new run result"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "contentExpansionPlan[0]",
+          "newGameplay": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
+          "systemImpact": "Survival Progression System dynamically adjusts build combinations in response to increasing enemy pressure, evolving world relationships, and new run results. Player choices in resource allocation and strategic adaptation influence the progression of the game, creating a feedback loop that drives deeper engagement and exploration."
+        },
+        {
+          "milestone": "contentExpansionPlan[1]",
+          "newGameplay": "Expand the survival progression system by introducing new gameplay elements that enhance player engagement and deepen the progression loop. This includes the introduction of new action types, route options, and world relationships that reflect the evolving nature of the game.",
+          "systemImpact": "The survival progression system is further refined to include new gameplay mechanics that allow players to explore different action types, route options, and world relationships. These additions create new opportunities for player choice and strategic adaptation, which in turn influence the progression of the game and the development of new progression choices. The system dynamically adjusts to accommodate these new elements, ensuring that the gameplay remains engaging and responsive to player行为"
+        },
+        {
+          "milestone": "contentExpansionPlan[2]",
+          "newGameplay": "Expand the survival progression system by introducing new gameplay elements that enhance player engagement and deepen the progression loop. This includes the introduction of new action types, route options, and world relationships that reflect the evolving nature of the game.",
+          "systemImpact": "The survival progression system is further refined to include new gameplay mechanics that allow players to explore different action types, route options, and world relationships. These additions create new opportunities for player choice and strategic adaptation, which in turn influence the progression of the game and the development of new progression choices. The system dynamically adjusts to accommodate these new elements, ensuring that the gameplay remains engaging and responsive to player行为"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "Enemy pressure increases",
+          "Build combination is adjusted",
+          "World relationship evolves",
+          "Next open question is generated",
+          "Build combination is upgraded",
+          "Progression choice is selected"
+        ],
+        "retryFlow": "Enemy pressure increases -> Build combination is adjusted -> World relationship evolves -> Next open question is generated",
+        "riskPressure": "Enemy pressure increases by 10% per round",
+        "recoveryRules": "Player choices in resource allocation and strategic adaptation influence the progression of the game, creating a feedback loop that drives deeper engagement and exploration."
+      }
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T13:49:21.640Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
