@@ -787,25 +787,36 @@
       "toSystem": "A",
       "trigger": "INPUT: 플레이어의 'Fight through an escalating horde in a short real-time survivalrun'",
       "stateChange": "OUTPUT: 즉각적인 상태 변화 (예: 생명력 감소, 보상 획득, 전략 변경)\nOUTPUT: 새로운 상태 변화 (예: 보조 자원 획득, 전략 강화)\nOUTPUT: 상태 변화의 재정의 (예: 전략 조합, 보상 변화)"
+    },
+    "local_authoring_parts::e9aec4cbe69f83d68c05eaf77296df57e0d7f86c46fc63054a4039f5a0b121dd:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "MAIN",
+      "toId": "A",
+      "stateKeys": [
+        "INPUT: 플레이어의 'Fight through an escalating horde in a short real-time survivalrun",
+        "OUTPUT: 즉각적인 상태 변화 (예: 생명력 감소, 보상 획득, 전략 변경)",
+        "OUTPUT: 새로운 상태 변화 (예: 보조 자원 획득, 전략 강화)",
+        "OUTPUT: 상태 변화의 재정의 (예: 전략 조합, 보상 변화)"
+      ],
+      "fromSystem": "MAIN"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 27,
-      "successes": 26,
+      "calls": 28,
+      "successes": 27,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2716733,
-      "lastMs": 69206,
+      "totalMs": 2786826,
+      "lastMs": 70093,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T10:15:13.686Z"
+      "updatedAt": "2026-10-08T10:16:23.782Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:43:06.687Z",
-  "updatedAt": "2026-10-08T10:15:13.688Z",
+  "updatedAt": "2026-10-08T10:16:23.782Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3149,7 +3160,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:15:13.688Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:16:23.782Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
