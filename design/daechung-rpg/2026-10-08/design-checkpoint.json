@@ -461,25 +461,48 @@
       "name": "초원 런 보스 봉인 해제 조건",
       "purpose": "초원 런 시작 시 Seed로 방/길/전투/이벤트/보물/정예 구성을 다시 조합한다. 같은 진행 중 플레이어는 동일 런을 공유한다.",
       "playerChoice": "Seed, 방, 길, 전투, 이벤트, 보물, 정예"
+    },
+    "local_authoring_parts::75a963883406221c8115b396e0cbcba87b4ceaaebef70770e5254c3c5ed12216:signatureSystems:2": {
+      "id": "RPG_FANTASY_PORTAL_WORLD_V6",
+      "grammarRole": "B",
+      "stateInputs": [
+        "RoomCode",
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount",
+        "SkillSlot1",
+        "SkillSlot2",
+        "SkillSlot3"
+      ],
+      "stateOutputs": [
+        "SkillSlot1",
+        "SkillSlot2",
+        "SkillSlot3",
+        "SkillSlot4",
+        "SkillSlot5"
+      ],
+      "name": "초원 런 보스 봉인 해제 조건",
+      "purpose": "초원 런 시작 시 Seed로 방/길/전투/이벤트/보물/정예 구성을 다시 조합한다. 같은 진행 중 플레이어는 동일 런을 공유한다.",
+      "playerChoice": "Seed, 방, 길, 전투, 이벤트, 보물, 정예"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 932155,
-      "lastMs": 37870,
+      "totalMs": 1040291,
+      "lastMs": 108136,
       "lastError": null,
-      "updatedAt": "2026-10-08T07:58:54.917Z"
+      "updatedAt": "2026-10-08T08:00:43.054Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:43:22.719Z",
-  "updatedAt": "2026-10-08T07:58:54.917Z",
+  "updatedAt": "2026-10-08T08:00:43.055Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1939,7 +1962,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T07:58:54.917Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:00:43.055Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
