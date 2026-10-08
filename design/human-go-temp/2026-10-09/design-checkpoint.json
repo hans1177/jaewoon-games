@@ -12,25 +12,32 @@
   "tasks": {
     "local_authoring_parts::377028dcfb09ecb50aab11c80e01e1c58c2f2e82d7b0b86e91b5d60aab40c501:identity": {
       "identity": "휴먼 GO!은 기존 구현의 점수나 관문을 승계하지 않고, 플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'라는 중심 행동을 통해, 선택 결과가 다음 월드 상태로 영향을 주는 ACTION_SURVIVAL_ROGUELITE 게임이다. 이 과정에서 성장은 단순히 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다."
+    },
+    "local_authoring_parts::377028dcfb09ecb50aab11c80e01e1c58c2f2e82d7b0b86e91b5d60aab40c501:playerFantasy": {
+      "playerFantasy": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'라는 중심 행동을 통해, 선택 결과가 다음 월드 상태로 영향을 주는 ACTION_SURVIVAL_ROGUELITE 게임이다. 이 과정에서 성장은 단순히 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다."
+    },
+    "local_authoring_parts::5dbb8fa775e409d8f522a1af2209de0d60000a174636b936da206d52b628c1f3:identity,playerFantasy": {
+      "identity": "휴먼 GO!은 기존 구현의 점수나 관문을 승계하지 않고, 플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'라는 중심 행동을 통해, 선택 결과가 다음 월드 상태로 영향을 주는 ACTION_SURVIVAL_ROGUELITE 게임이다. 이 과정에서 성장은 단순히 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
+      "playerFantasy": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'라는 중심 행동을 통해, 선택 결과가 다음 월드 상태로 영향을 주는 ACTION_SURVIVAL_ROGUELITE 게임이다. 이 과정에서 성장은 단순히 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 162718,
-      "lastMs": 162718,
+      "totalMs": 222012,
+      "lastMs": 59294,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:02:01.643Z"
+      "updatedAt": "2026-10-08T19:03:00.938Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:59:18.858Z",
-  "updatedAt": "2026-10-08T19:02:01.643Z",
+  "updatedAt": "2026-10-08T19:03:00.940Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2229,7 +2236,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T19:02:01.643Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:03:00.940Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
