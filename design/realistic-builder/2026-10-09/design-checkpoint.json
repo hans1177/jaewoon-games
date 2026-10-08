@@ -545,25 +545,31 @@
     },
     "local_authoring_parts::c145ed94d2d4bf96b71bc36daa68a2bdad49d1b5d84a113b2098c2abf5a44b08:fromSystem": {
       "fromSystem": "INPUT_SELECTION"
+    },
+    "local_authoring_parts::c145ed94d2d4bf96b71bc36daa68a2bdad49d1b5d84a113b2098c2abf5a44b08:toSystem": {
+      "toSystem": "WORLD_STATE_CHANGE"
+    },
+    "local_authoring_parts::c145ed94d2d4bf96b71bc36daa68a2bdad49d1b5d84a113b2098c2abf5a44b08:trigger": {
+      "trigger": "플레이어가 희망에 빠진 실시간 생존 게임에서 점점 더 어려워지는 적군과 맞서며 생명을 걸어가는 중심 행동을 수행하며, 선택의 결과로 다음 상태와 세계 규칙을 바꾼다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 29,
-      "successes": 29,
+      "calls": 31,
+      "successes": 31,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1067469,
-      "lastMs": 32463,
+      "totalMs": 1136762,
+      "lastMs": 36497,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:05:46.387Z"
+      "updatedAt": "2026-10-08T19:06:55.683Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:47:58.761Z",
-  "updatedAt": "2026-10-08T19:05:46.387Z",
+  "updatedAt": "2026-10-08T19:06:55.683Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3119,7 +3125,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T19:05:46.387Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:06:55.683Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
