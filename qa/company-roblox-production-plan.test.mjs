@@ -202,6 +202,11 @@ test('approved procedural landscapes reach only the existing world source worker
   assert.equal(study.regionBiome,'MOUNTAIN');
   assert.equal(study.climate,'COLD_WET');
   assert.ok(study.routes.length>0);
+  assert.ok(study.routes.every(route=>route.cellSample.length===route.worldPointSample.length));
+  assert.ok(study.routes.every(route=>route.worldPointSample.every(point=>Number.isFinite(point.x)&&Number.isFinite(point.y)&&Number.isFinite(point.z))));
+  const twoD=buildSpatialBlueprintContract({...input,design:{...design,spatialLayout:{dimension:'2D',proceduralWorld:{...spec,dimension:'2D'}}}});
+  assert.equal(twoD.macroSketch.proceduralWorldStudy.status,'STATIC_LAYOUT_PROPOSED');
+  assert.ok(twoD.macroSketch.proceduralWorldStudy.routes.every(route=>route.worldPointSample.every(point=>Number.isFinite(point.y)&&!('z' in point))));
   assert.ok(study.totalBuildings>0);
   assert.ok(study.buildings.every(row=>row.modules.some(module=>module.endsWith('PITCHED_ROOF'))));
   assert.equal(study.fullTerrainOrNativeMeshDelivered,false);
