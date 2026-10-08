@@ -551,25 +551,33 @@
           "playerChoice": "Players can choose to counter specific enemy types based on their threat patterns, adjusting defenders and resource allocation accordingly to optimize survival and progression."
         }
       ]
+    },
+    "local_authoring_parts::d6d84105ec408de6e393864b598ddc111470acc9fbb7fcbd0af0c67b9bae7ca6:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "MAIN",
+      "toId": "A",
+      "stateKeys": [
+        "Read the incoming insect wave and its threat pattern."
+      ],
+      "fromSystem": "MAIN"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 15,
+      "calls": 19,
+      "successes": 16,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2436182,
-      "lastMs": 300100,
+      "totalMs": 2468829,
+      "lastMs": 32647,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T13:27:55.813Z"
+      "updatedAt": "2026-10-08T15:30:45.627Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:47:19.560Z",
-  "updatedAt": "2026-10-08T13:27:55.813Z",
+  "updatedAt": "2026-10-08T15:30:45.628Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2772,7 +2780,7 @@
     "designer_draft_slices::identity-core": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:12:55.527Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:30:45.628Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
