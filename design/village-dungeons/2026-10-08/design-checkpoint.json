@@ -110,25 +110,247 @@
       "name": "KARMA_RETURN",
       "purpose": "Player action that triggers world origin, rules, rewards, risks, and growth",
       "playerChoice": "Start immediately with simple one-thumb tap or swipe input and clear score, distance, or session goal"
+    },
+    "local_authoring_parts::027d85f9ac07e08c25396151a468655cd2f80acffe5861b20bb5324c5e84108c:signatureSystems:4": {
+      "id": "DELVE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "score",
+        "distance",
+        "session"
+      ],
+      "stateOutputs": [
+        "world_origin",
+        "rules",
+        "rewards",
+        "risks",
+        "growth"
+      ],
+      "name": "DELVE",
+      "purpose": "Player action that triggers world origin, rules, rewards, risks, and growth",
+      "playerChoice": "Start immediately with simple one-thumb tap or swipe input and clear score, distance, or session goal"
+    },
+    "local_authoring_parts::fba815df0c8b427f5346e1b781cc9c2329a7f1a87c583826b2863e8b75d8e026:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "score",
+            "distance",
+            "session"
+          ],
+          "stateOutputs": [
+            "world_origin",
+            "rules",
+            "rewards",
+            "risks",
+            "growth"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "Player action that triggers world origin, rules, rewards, risks, and growth",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and clear score, distance, or session goal"
+        },
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "A",
+          "stateInputs": [
+            "score",
+            "distance",
+            "session"
+          ],
+          "stateOutputs": [
+            "world_origin",
+            "rules",
+            "rewards",
+            "risks",
+            "growth"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "Player action that triggers world origin, rules, rewards, risks, and growth",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and clear score, distance, or session goal"
+        },
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "B",
+          "stateInputs": [
+            "score",
+            "distance",
+            "session"
+          ],
+          "stateOutputs": [
+            "world_origin",
+            "rules",
+            "rewards",
+            "risks",
+            "growth"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "Player action that triggers world origin, rules, rewards, risks, and growth",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and clear score, distance, or session goal"
+        },
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "c",
+          "stateInputs": [
+            "score",
+            "distance",
+            "session"
+          ],
+          "stateOutputs": [
+            "world_origin",
+            "rules",
+            "rewards",
+            "risks",
+            "growth"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "Player action that triggers world origin, rules, rewards, risks, and growth",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and clear score, distance, or session goal"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "score",
+            "distance",
+            "session"
+          ],
+          "stateOutputs": [
+            "world_origin",
+            "rules",
+            "rewards",
+            "risks",
+            "growth"
+          ],
+          "name": "DELVE",
+          "purpose": "Player action that triggers world origin, rules, rewards, risks, and growth",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and clear score, distance, or session goal"
+        }
+      ]
+    },
+    "local_authoring_parts::df9aaeab66e9fd2e73cb491ff78513895f66f3043c1fbc1c2f118960950a67a3:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "signatureSystems": [
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "score",
+            "distance",
+            "session"
+          ],
+          "stateOutputs": [
+            "world_origin",
+            "rules",
+            "rewards",
+            "risks",
+            "growth"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "Player action that triggers world origin, rules, rewards, risks, and growth",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and clear score, distance, or session goal"
+        },
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "A",
+          "stateInputs": [
+            "score",
+            "distance",
+            "session"
+          ],
+          "stateOutputs": [
+            "world_origin",
+            "rules",
+            "rewards",
+            "risks",
+            "growth"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "Player action that triggers world origin, rules, rewards, risks, and growth",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and clear score, distance, or session goal"
+        },
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "B",
+          "stateInputs": [
+            "score",
+            "distance",
+            "session"
+          ],
+          "stateOutputs": [
+            "world_origin",
+            "rules",
+            "rewards",
+            "risks",
+            "growth"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "Player action that triggers world origin, rules, rewards, risks, and growth",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and clear score, distance, or session goal"
+        },
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "c",
+          "stateInputs": [
+            "score",
+            "distance",
+            "session"
+          ],
+          "stateOutputs": [
+            "world_origin",
+            "rules",
+            "rewards",
+            "risks",
+            "growth"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "Player action that triggers world origin, rules, rewards, risks, and growth",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and clear score, distance, or session goal"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "score",
+            "distance",
+            "session"
+          ],
+          "stateOutputs": [
+            "world_origin",
+            "rules",
+            "rewards",
+            "risks",
+            "growth"
+          ],
+          "name": "DELVE",
+          "purpose": "Player action that triggers world origin, rules, rewards, risks, and growth",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and clear score, distance, or session goal"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 311532,
-      "lastMs": 36670,
+      "totalMs": 349538,
+      "lastMs": 38006,
       "lastError": null,
-      "updatedAt": "2026-10-08T09:59:36.686Z"
+      "updatedAt": "2026-10-08T10:00:14.693Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T09:54:25.050Z",
-  "updatedAt": "2026-10-08T09:59:36.686Z",
+  "updatedAt": "2026-10-08T10:00:14.695Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2205,7 +2427,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T09:59:36.686Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:00:14.695Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
