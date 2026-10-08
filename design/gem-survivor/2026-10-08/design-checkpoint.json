@@ -948,25 +948,44 @@
         "OUTPUT: 상태 변화의 재정의 (예: 전략 조합, 보상 변화)"
       ],
       "fromSystem": "MAIN"
+    },
+    "local_authoring_parts::04933b70a5875a181a5dfb175caef9066203215e412a6687369ba5f13204a5b8:toSystem,trigger,stateChange": {
+      "toSystem": "A",
+      "trigger": "INPUT: 플레이어의 'Fight through an escalating horde in a short real-time survivalrun'",
+      "stateChange": "OUTPUT: 즉각적인 상태 변화 (예: 생명력 감소, 보상 획득, 전략 변경)\nOUTPUT: 새로운 상태 변화 (예: 보조 자원 획득, 전략 강화)\nOUTPUT: 상태 변화의 재정의 (예: 전략 조합, 보상 변화)"
+    },
+    "local_authoring_parts::27dc08a6035d114f507676175b08dd30742f3cb29ced575e25182a4de8de8df9:systemInterconnections:2": {
+      "fromId": "MAIN",
+      "toId": "A",
+      "stateKeys": [
+        "INPUT: 플레이어의 'Fight through an escalating horde in a short real-time survivalrun",
+        "OUTPUT: 즉각적인 상태 변화 (예: 생명력 감소, 보상 획득, 전략 변경)",
+        "OUTPUT: 새로운 상태 변화 (예: 보조 자원 획득, 전략 강화)",
+        "OUTPUT: 상태 변화의 재정의 (예: 전략 조합, 보상 변화)"
+      ],
+      "fromSystem": "MAIN",
+      "toSystem": "A",
+      "trigger": "INPUT: 플레이어의 'Fight through an escalating horde in a short real-time survivalrun'",
+      "stateChange": "OUTPUT: 즉각적인 상태 변화 (예: 생명력 감소, 보상 획득, 전략 변경)\nOUTPUT: 새로운 상태 변화 (예: 보조 자원 획득, 전략 강화)\nOUTPUT: 상태 변화의 재정의 (예: 전략 조합, 보상 변화)"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 38,
-      "successes": 37,
+      "calls": 39,
+      "successes": 38,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 3297948,
-      "lastMs": 39234,
+      "totalMs": 3335921,
+      "lastMs": 37973,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T10:24:54.933Z"
+      "updatedAt": "2026-10-08T10:25:32.908Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:43:06.687Z",
-  "updatedAt": "2026-10-08T10:24:54.933Z",
+  "updatedAt": "2026-10-08T10:25:32.910Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3310,7 +3329,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:24:54.933Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:25:32.910Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
