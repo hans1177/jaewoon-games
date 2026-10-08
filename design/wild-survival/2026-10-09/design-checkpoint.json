@@ -266,25 +266,197 @@
           "playerChoice": "실제 입력과 상호작용 결과로 인해 월드·대상·자원·위험·진행 상태가 변하게 된다. 변화된 상태에 따른 보상/위험/다음 선택의 연결이 이루어지는 방식으로 플레이어의 선택이 구체화된다."
         }
       ]
+    },
+    "local_authoring_parts::95a0ae4ddc53648edc816ebe3564a0858ccdc8802a3484ac05dfd1da0465f047:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::99a5c263c0dde19711d4ccbcd02216388da2cf0a0a9c7ca4a93787e8f7e9b71f:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "플레이어가 현재 월드 상태와 목표를 읽고, 실질적 입력을 통해 장르 핵심 행동을 선택하며, 이 선택은 월드·대상·자원·위험·진행 상태에 영향을 미친다.",
+        "선택 결과로 월드 상태가 변하게 되며, 그 변화에 따라 보상/위험/다음 선택의 연결이 이루어지도록 설계된다.",
+        "보상 또는 실패는 다음 목표·지역·상호작용·전략 선택의 결정 요소로 작용하여 게임 루프를 반복적으로 진행시킨다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "wild-survival_signature_systems_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "월드 상태: 플레이어가 현재 월드 상태와 목표를 읽고, 실질적 입력을 통해 장르 핵심 행동을 선택"
+          ],
+          "stateOutputs": [
+            "월드 상태 변환: 선택 결과로 월드 상태가 변하게 되며, 그 변화에 따라 보상/위험/다음 선택의 연결이 이루어지도록 설계됨"
+          ],
+          "name": "야생 생존 시그니처 시스템",
+          "purpose": "플레이어가 현재 월드 상태와 목표를 읽고, 실질적 입력을 통해 장르 핵심 행동을 선택하며, 이 선택은 월드 상태와 다음 선택을 바꾼다.",
+          "playerChoice": "실제 입력과 상호작용 결과로 인해 월드·대상·자원·위험·진행 상태가 변하게 된다."
+        },
+        {
+          "id": "wild-survival_signature_systems_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "월드 상태: 플레이어가 현재 월드 상태와 목표를 읽고, 실질적 입력을 통해 장르 핵심 행동을 선택",
+            "선택 결과: 선택 후 월드 상태가 변하게 되며, 그 변화에 따라 보상/위험/다음 선택의 연결이 이루어지도록 설계됨"
+          ],
+          "stateOutputs": [
+            "월드 상태 변환: 선택 결과로 인해 월드 상태가 변하게 된다.",
+            "보상 또는 실패: 다음 목표·지역·상호작용·전략 선택의 결정 요소로 작용하여 게임 루프를 반복적으로 진행시킨다."
+          ],
+          "name": "야생 생존 시그니처 시스템 (2)",
+          "purpose": "플레이어가 현재 월드 상태와 목표를 읽고, 실질적 입력을 통해 장르 핵심 행동을 선택하며, 이 선택은 월드 상태와 다음 선택을 바꾼다. 선택 결과는 월드 상태 변환과 보상/위험/다음 선택의 연결을 포함하여 게임 루프를 반복적으로 진행시킨다.",
+          "playerChoice": "실제 입력과 상호작용 결과로 인해 월드·대상·자원·위험·진행 상태가 변하게 된다. 변화된 상태에 따른 보상/위험/다음 선택의 연결이 이루어지는 방식으로 플레이어의 선택이 구체화된다."
+        },
+        {
+          "id": "wild-survival_signature_systems_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "월드 상태: 플레이어가 현재 월드 상태와 목표를 읽고, 실질적 입력을 통해 장르 핵심 행동을 선택",
+            "선택 결과: 선택 후 월드 상태가 변하게 되며, 그 변화에 따라 보상/위험/다음 선택의 연결이 이루어지도록 설계됨"
+          ],
+          "stateOutputs": [
+            "월드 상태 변환: 선택 결과로 인해 월드 상태가 변하게 된다.",
+            "보상 또는 실패: 다음 목표·지역·상호작용·전략 선택의 결정 요소로 작용하여 게임 루프를 반복적으로 진행시킨다."
+          ],
+          "name": "야생 생존 시그니처 시스템 (3)",
+          "purpose": "플레이어가 현재 월드 상태와 목표를 읽고, 실질적 입력을 통해 장르 핵심 행동을 선택하며, 이 선택은 월드 상태와 다음 선택을 바꾼다. 선택 결과는 월드 상태 변환과 보상/위험/다음 선택의 연결을 포함하여 게임 루프를 반복적으로 진행시킨다.",
+          "playerChoice": "실제 입력과 상호작용 결과로 인해 월드·대상·자원·위험·진행 상태가 변하게 된다. 변화된 상태에 따른 보상/위험/다음 선택의 연결이 이루어지는 방식으로 플레이어의 선택이 구체화된다."
+        },
+        {
+          "id": "wild-survival_signature_systems_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "월드 상태: 플레이어가 현재 월드 상태와 목표를 읽고, 실질적 입력을 통해 장르 핵심 행동을 선택",
+            "선택 결과: 선택 후 월드 상태가 변하게 되며, 그 변화에 따라 보상/위험/다음 선택의 연결이 이루어지도록 설계됨"
+          ],
+          "stateOutputs": [
+            "월드 상태 변환: 선택 결과로 인해 월드 상태가 변하게 된다.",
+            "보상 또는 실패: 다음 목표·지역·상호작용·전략 선택의 결정 요소로 작용하여 게임 루프를 반복적으로 진행시킨다."
+          ],
+          "name": "야생 생존 시그니처 시스템 (4)",
+          "purpose": "플레이어가 현재 월드 상태와 목표를 읽고, 실질적 입력을 통해 장르 핵심 행동을 선택하며, 이 선택은 월드 상태와 다음 선택을 바꾼다. 선택 결과는 월드 상태 변환과 보상/위험/다음 선택의 연결을 포함하여 게임 루프를 반복적으로 진행시킨다.",
+          "playerChoice": "실제 입력과 상호작용 결과로 인해 월드·대상·자원·위험·진행 상태가 변하게 된다. 변화된 상태에 따른 보상/위험/다음 선택의 연결이 이루어지는 방식으로 플레이어의 선택이 구체화된다."
+        },
+        {
+          "id": "wild-survival_signature_systems_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "월드 상태: 플레이어가 현재 월드 상태와 목표를 읽고, 실질적 입력을 통해 장르 핵심 행동을 선택",
+            "선택 결과: 선택 후 월드 상태가 변하게 되며, 그 변화에 따라 보상/위험/다음 선택의 연결이 이루어지도록 설계됨"
+          ],
+          "stateOutputs": [
+            "월드 상태 변환: 선택 결과로 인해 월드 상태가 변하게 된다.",
+            "보상 또는 실패: 다음 목표·지역·상호작용·전략 선택의 결정 요소로 작용하여 게임 루프를 반복적으로 진행시킨다."
+          ],
+          "name": "야생 생존 시그니처 시스템 (5)",
+          "purpose": "플레이어가 현재 월드 상태와 목표를 읽고, 실질적 입력을 통해 장르 핵심 행동을 선택하며, 이 선택은 월드 상태와 다음 선택을 바꾼다. 선택 결과는 월드 상태 변환과 보상/위험/다음 선택의 연결을 포함하여 게임 루프를 반복적으로 진행시킨다.",
+          "playerChoice": "실제 입력과 상호작용 결과로 인해 월드·대상·자원·위험·진행 상태가 변하게 된다. 변화된 상태에 따른 보상/위험/다음 선택의 연결이 이루어지는 방식으로 플레이어의 선택이 구체화된다."
+        }
+      ],
+      "multiplayerMode": "COOP"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "야생 생존 - 실제 야생 환경과 동물 행동, 날씨, 체온, 식수와 부상을 관리하는 오픈월드 생존 게임\n플레이어: 야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며 월드 상태와 다음 선택을 바꾼다.\n시그니처 세계 규칙: 입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 연결을 포함하여 반복 가능한 게임 루프,\n실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택이 이어간다.\n게임 규칙: 중심 행동(MAIN)은 실질적 플레이 단계, A/B 대축은 상태 교환, c는 변주 요소, @는 발견·숙련·재방문 깊이로 역할 구분됨.\n기존 원본 규칙 및 수치를 보존하고, 설계 수정 시 기존 검증과 보안 권한을 유지함.",
+      "playerFantasy": "야생 생존에서 플레이어는 야생 환경과 동물 행동, 날씨, 체온, 식수와 부상을 관리하는 오픈월드 생존 게임에 참여하며, 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하여 월드 상태와 다음 선택을 바꾼다. 이 선택은 실질적 입력과 상호작용 결과로 인해 월드·대상·자원·위험·진행 상태가 변하게 되며, 그 변화에 따라 보상/위험/다음 선택의 연결이 이루어지도록 설계된다.",
+      "coreFun": "야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며 월드 상태와 다음 선택을 바꾼다. 이 선택은 실질적 입력과 상호작용 결과로 인해 월드·대상·자원·위험·진행 상태가 변하게 되며, 그 변화에 따라 보상/위험/다음 선택의 연결이 이루어지도록 설계된다.",
+      "coreLoop": [
+        "플레이어가 현재 월드 상태와 목표를 읽고, 실질적 입력을 통해 장르 핵심 행동을 선택하며, 이 선택은 월드·대상·자원·위험·진행 상태에 영향을 미친다.",
+        "선택 결과로 월드 상태가 변하게 되며, 그 변화에 따라 보상/위험/다음 선택의 연결이 이루어지도록 설계된다.",
+        "보상 또는 실패는 다음 목표·지역·상호작용·전략 선택의 결정 요소로 작용하여 게임 루프를 반복적으로 진행시킨다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "wild-survival_signature_systems_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "월드 상태: 플레이어가 현재 월드 상태와 목표를 읽고, 실질적 입력을 통해 장르 핵심 행동을 선택"
+          ],
+          "stateOutputs": [
+            "월드 상태 변환: 선택 결과로 월드 상태가 변하게 되며, 그 변화에 따라 보상/위험/다음 선택의 연결이 이루어지도록 설계됨"
+          ],
+          "name": "야생 생존 시그니처 시스템",
+          "purpose": "플레이어가 현재 월드 상태와 목표를 읽고, 실질적 입력을 통해 장르 핵심 행동을 선택하며, 이 선택은 월드 상태와 다음 선택을 바꾼다.",
+          "playerChoice": "실제 입력과 상호작용 결과로 인해 월드·대상·자원·위험·진행 상태가 변하게 된다."
+        },
+        {
+          "id": "wild-survival_signature_systems_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "월드 상태: 플레이어가 현재 월드 상태와 목표를 읽고, 실질적 입력을 통해 장르 핵심 행동을 선택",
+            "선택 결과: 선택 후 월드 상태가 변하게 되며, 그 변화에 따라 보상/위험/다음 선택의 연결이 이루어지도록 설계됨"
+          ],
+          "stateOutputs": [
+            "월드 상태 변환: 선택 결과로 인해 월드 상태가 변하게 된다.",
+            "보상 또는 실패: 다음 목표·지역·상호작용·전략 선택의 결정 요소로 작용하여 게임 루프를 반복적으로 진행시킨다."
+          ],
+          "name": "야생 생존 시그니처 시스템 (2)",
+          "purpose": "플레이어가 현재 월드 상태와 목표를 읽고, 실질적 입력을 통해 장르 핵심 행동을 선택하며, 이 선택은 월드 상태와 다음 선택을 바꾼다. 선택 결과는 월드 상태 변환과 보상/위험/다음 선택의 연결을 포함하여 게임 루프를 반복적으로 진행시킨다.",
+          "playerChoice": "실제 입력과 상호작용 결과로 인해 월드·대상·자원·위험·진행 상태가 변하게 된다. 변화된 상태에 따른 보상/위험/다음 선택의 연결이 이루어지는 방식으로 플레이어의 선택이 구체화된다."
+        },
+        {
+          "id": "wild-survival_signature_systems_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "월드 상태: 플레이어가 현재 월드 상태와 목표를 읽고, 실질적 입력을 통해 장르 핵심 행동을 선택",
+            "선택 결과: 선택 후 월드 상태가 변하게 되며, 그 변화에 따라 보상/위험/다음 선택의 연결이 이루어지도록 설계됨"
+          ],
+          "stateOutputs": [
+            "월드 상태 변환: 선택 결과로 인해 월드 상태가 변하게 된다.",
+            "보상 또는 실패: 다음 목표·지역·상호작용·전략 선택의 결정 요소로 작용하여 게임 루프를 반복적으로 진행시킨다."
+          ],
+          "name": "야생 생존 시그니처 시스템 (3)",
+          "purpose": "플레이어가 현재 월드 상태와 목표를 읽고, 실질적 입력을 통해 장르 핵심 행동을 선택하며, 이 선택은 월드 상태와 다음 선택을 바꾼다. 선택 결과는 월드 상태 변환과 보상/위험/다음 선택의 연결을 포함하여 게임 루프를 반복적으로 진행시킨다.",
+          "playerChoice": "실제 입력과 상호작용 결과로 인해 월드·대상·자원·위험·진행 상태가 변하게 된다. 변화된 상태에 따른 보상/위험/다음 선택의 연결이 이루어지는 방식으로 플레이어의 선택이 구체화된다."
+        },
+        {
+          "id": "wild-survival_signature_systems_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "월드 상태: 플레이어가 현재 월드 상태와 목표를 읽고, 실질적 입력을 통해 장르 핵심 행동을 선택",
+            "선택 결과: 선택 후 월드 상태가 변하게 되며, 그 변화에 따라 보상/위험/다음 선택의 연결이 이루어지도록 설계됨"
+          ],
+          "stateOutputs": [
+            "월드 상태 변환: 선택 결과로 인해 월드 상태가 변하게 된다.",
+            "보상 또는 실패: 다음 목표·지역·상호작용·전략 선택의 결정 요소로 작용하여 게임 루프를 반복적으로 진행시킨다."
+          ],
+          "name": "야생 생존 시그니처 시스템 (4)",
+          "purpose": "플레이어가 현재 월드 상태와 목표를 읽고, 실질적 입력을 통해 장르 핵심 행동을 선택하며, 이 선택은 월드 상태와 다음 선택을 바꾼다. 선택 결과는 월드 상태 변환과 보상/위험/다음 선택의 연결을 포함하여 게임 루프를 반복적으로 진행시킨다.",
+          "playerChoice": "실제 입력과 상호작용 결과로 인해 월드·대상·자원·위험·진행 상태가 변하게 된다. 변화된 상태에 따른 보상/위험/다음 선택의 연결이 이루어지는 방식으로 플레이어의 선택이 구체화된다."
+        },
+        {
+          "id": "wild-survival_signature_systems_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "월드 상태: 플레이어가 현재 월드 상태와 목표를 읽고, 실질적 입력을 통해 장르 핵심 행동을 선택",
+            "선택 결과: 선택 후 월드 상태가 변하게 되며, 그 변화에 따라 보상/위험/다음 선택의 연결이 이루어지도록 설계됨"
+          ],
+          "stateOutputs": [
+            "월드 상태 변환: 선택 결과로 인해 월드 상태가 변하게 된다.",
+            "보상 또는 실패: 다음 목표·지역·상호작용·전략 선택의 결정 요소로 작용하여 게임 루프를 반복적으로 진행시킨다."
+          ],
+          "name": "야생 생존 시그니처 시스템 (5)",
+          "purpose": "플레이어가 현재 월드 상태와 목표를 읽고, 실질적 입력을 통해 장르 핵심 행동을 선택하며, 이 선택은 월드 상태와 다음 선택을 바꾼다. 선택 결과는 월드 상태 변환과 보상/위험/다음 선택의 연결을 포함하여 게임 루프를 반복적으로 진행시킨다.",
+          "playerChoice": "실제 입력과 상호작용 결과로 인해 월드·대상·자원·위험·진행 상태가 변하게 된다. 변화된 상태에 따른 보상/위험/다음 선택의 연결이 이루어지는 방식으로 플레이어의 선택이 구체화된다."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 578420,
-      "lastMs": 96120,
+      "totalMs": 828526,
+      "lastMs": 187025,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:01:00.830Z"
+      "updatedAt": "2026-10-08T18:05:10.954Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:51:22.381Z",
-  "updatedAt": "2026-10-08T18:01:00.833Z",
+  "updatedAt": "2026-10-08T18:05:10.958Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2338,12 +2510,165 @@
     },
     "assetFacts": {}
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:01:00.833Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "393813d48ecde0f62f62a711e0827d04582a0dc42d904829cb2d90ac5a4c0a98"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "wild-survival_signature_systems_0→wild-survival_signature_systems_1의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: wild-survival_signature_systems_0→wild-survival_signature_systems_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "wild-survival_signature_systems_1→wild-survival_signature_systems_2의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: wild-survival_signature_systems_1→wild-survival_signature_systems_2의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "wild-survival_signature_systems_2→wild-survival_signature_systems_3의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: wild-survival_signature_systems_2→wild-survival_signature_systems_3의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "wild-survival_signature_systems_3→wild-survival_signature_systems_4의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: wild-survival_signature_systems_3→wild-survival_signature_systems_4의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "wild-survival_signature_systems_4→wild-survival_signature_systems_5의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: wild-survival_signature_systems_4→wild-survival_signature_systems_5의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::systems-progression": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "sequential",
+      "progressionEconomyBalance": {
+        "progressionLoop": "main_a_b_c_delve",
+        "resourceFlow": "natural_resource_gain_loss",
+        "balanceRules": "balanced_world_state_transformation"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "wild_survival_core_gameplay",
+          "newGameplay": "enhanced_world_state_interaction",
+          "systemImpact": "deepened_world_state_relationship"
+        },
+        {
+          "milestone": "wild_survival_reward_system",
+          "newGameplay": "multi_stage_reward_structure",
+          "systemImpact": "extended_playable_cycle"
+        },
+        {
+          "milestone": "wild_survival_failure_system",
+          "newGameplay": "adaptive_failure_recovery",
+          "systemImpact": "refined_error_recovery_process"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "environmental_risk",
+          "resource_depletion"
+        ],
+        "retryFlow": "risk_assessment -> decision_making -> state_transition",
+        "riskPressure": "increased_environmental_risk",
+        "recoveryRules": "adaptive_failure_handling"
+      }
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T18:05:10.954Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/wild-survival/2026-10-09/design-seed.json",
+    "contentDigest": "2c78ae0dbaac7172788c0da1843b73e2c5a78776f6bf2c0dd8eeeb0e1cb02ce6",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
