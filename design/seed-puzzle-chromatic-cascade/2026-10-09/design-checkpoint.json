@@ -242,25 +242,181 @@
           "playerChoice": "색채의 연쇄는 주요 인물의 목표와 두려움, 그리고 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결되어 있으며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 콘텐츠를 다르게 사용하게 한다."
         }
       ]
+    },
+    "local_authoring_parts::ac8eb8bc025d242106405228f89d2e7c530cfa601c28837a6f6cd5a65e56b301:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::e1779bc5ee1eab031fe48f2cfa2df12f54edc836d67031d0c49e6b8ff8a986ce:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.이라는 중심 행동을 수행하며, 선택 결과가 다음 월드 상태로 연결되는 PUZZLE 게임이다.",
+        "색채의 연쇄는 주요 인물의 목표와 두려움, 그리고 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결되어 있으며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 콘텐츠를 다르게 사용하게 한다.",
+        "선택 결과는 위험·보상·다음 선택의 순환 구조를 통해 재생 가능하며, 모바일에서도 즉시 이해할 수 있는 입력과 피드백이 제공된다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "CORE-01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "START_BOARD"
+          ],
+          "stateOutputs": [
+            "END_BOARD"
+          ],
+          "name": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+          "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+          "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+        },
+        {
+          "id": "CORE-02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "START_MATCH"
+          ],
+          "stateOutputs": [
+            "END_MATCH"
+          ],
+          "name": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+          "purpose": "To enable players to strategically engage with the game through combination of matching and logical reasoning.",
+          "playerChoice": "Players can choose to either form complete matches or execute carefully planned puzzle sequences that lead to progress in the game."
+        },
+        {
+          "id": "CORE-03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "START_BOARD"
+          ],
+          "stateOutputs": [
+            "END_BOARD"
+          ],
+          "name": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+          "purpose": "Player choice and strategic planning in a puzzle context.",
+          "playerChoice": "Selecting optimal moves that lead to progress and avoid pitfalls in the game state transition process."
+        },
+        {
+          "id": "CORE-04",
+          "grammarRole": "c",
+          "stateInputs": [
+            "START_BOARD"
+          ],
+          "stateOutputs": [
+            "END_BOARD"
+          ],
+          "name": "색채의 연쇄의 핵심 재미를 실제 플레이 선택으로 재정의",
+          "purpose": "주요 인물의 목표와 두려움, 그리고 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결되어 있으며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 콘텐츠를 다르게 사용하게 한다",
+          "playerChoice": "새 행동·경로·조합·관계·발견 또는 대응법을 선택하여 다양한 콘텐츠를 다르게 사용하게 함"
+        },
+        {
+          "id": "CORE-05",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "START_BOARD"
+          ],
+          "stateOutputs": [
+            "END_BOARD"
+          ],
+          "name": "색채의 연쇄의 핵심 재미를 실제 플레이 선택으로 재정의",
+          "purpose": "플레이어가 단순 반복보다는 경로·위험·보상이 서로 연결되어 있는 반복 가능한 핵심 루프를 제공하여 모바일에서도 즉시 이해할 수 있는 입력과 피드백을 가진다.",
+          "playerChoice": "색채의 연쇄는 주요 인물의 목표와 두려움, 그리고 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결되어 있으며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 콘텐츠를 다르게 사용하게 한다."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "색채의 연쇄은 플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.이라는 중심 행동을 수행하며, 선택 결과가 다음 월드 상태로 연결되는 PUZZLE 게임이다. 이 게임은 단순 반복보다는 경로·위험·보상이 서로 연결되어 있는 반복 가능한 핵심 루프를 제공하여 모바일에서도 즉시 이해할 수 있는 입력과 피드백을 가진다. 색채의 연쇄는 주요 인물의 목표와 두려움, 그리고 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결되어 있으며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 콘텐츠를 다르게 사용하게 한다.",
+      "playerFantasy": "색채의 연쇄는 플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.이라는 중심 행동을 수행하며, 선택 결과가 다음 월드 상태로 연결되는 PUZZLE 게임이다. 이 게임은 단순 반복보다는 경로·위험·보상이 서로 연결되어 있는 반복 가능한 핵심 루프를 제공하여 모바일에서도 즉시 이해할 수 있는 입력과 피드백을 가진다. 색채의 연쇄는 주요 인물의 목표와 두려움, 그리고 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결되어 있으며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 콘텐츠를 다르게 사용하게 한다.",
+      "coreFun": "색채의 연쇄은 플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.이라는 중심 행동을 수행하며, 선택 결과가 다음 월드 상태로 연결되는 PUZZLE 게임이다. 이 게임은 단순 반복보다는 경로·위험·보상이 서로 연결되어 있는 반복 가능한 핵심 루프를 제공하여 모바일에서도 즉시 이해할 수 있는 입력과 피드백을 가진다. 색채의 연쇄는 주요 인물의 목표와 두려움, 그리고 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결되어 있으며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 콘텐츠를 다르게 사용하게 한다.",
+      "coreLoop": [
+        "플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.이라는 중심 행동을 수행하며, 선택 결과가 다음 월드 상태로 연결되는 PUZZLE 게임이다.",
+        "색채의 연쇄는 주요 인물의 목표와 두려움, 그리고 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결되어 있으며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 콘텐츠를 다르게 사용하게 한다.",
+        "선택 결과는 위험·보상·다음 선택의 순환 구조를 통해 재생 가능하며, 모바일에서도 즉시 이해할 수 있는 입력과 피드백이 제공된다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "CORE-01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "START_BOARD"
+          ],
+          "stateOutputs": [
+            "END_BOARD"
+          ],
+          "name": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+          "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+          "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+        },
+        {
+          "id": "CORE-02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "START_MATCH"
+          ],
+          "stateOutputs": [
+            "END_MATCH"
+          ],
+          "name": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+          "purpose": "To enable players to strategically engage with the game through combination of matching and logical reasoning.",
+          "playerChoice": "Players can choose to either form complete matches or execute carefully planned puzzle sequences that lead to progress in the game."
+        },
+        {
+          "id": "CORE-03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "START_BOARD"
+          ],
+          "stateOutputs": [
+            "END_BOARD"
+          ],
+          "name": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+          "purpose": "Player choice and strategic planning in a puzzle context.",
+          "playerChoice": "Selecting optimal moves that lead to progress and avoid pitfalls in the game state transition process."
+        },
+        {
+          "id": "CORE-04",
+          "grammarRole": "c",
+          "stateInputs": [
+            "START_BOARD"
+          ],
+          "stateOutputs": [
+            "END_BOARD"
+          ],
+          "name": "색채의 연쇄의 핵심 재미를 실제 플레이 선택으로 재정의",
+          "purpose": "주요 인물의 목표와 두려움, 그리고 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결되어 있으며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 콘텐츠를 다르게 사용하게 한다",
+          "playerChoice": "새 행동·경로·조합·관계·발견 또는 대응법을 선택하여 다양한 콘텐츠를 다르게 사용하게 함"
+        },
+        {
+          "id": "CORE-05",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "START_BOARD"
+          ],
+          "stateOutputs": [
+            "END_BOARD"
+          ],
+          "name": "색채의 연쇄의 핵심 재미를 실제 플레이 선택으로 재정의",
+          "purpose": "플레이어가 단순 반복보다는 경로·위험·보상이 서로 연결되어 있는 반복 가능한 핵심 루프를 제공하여 모바일에서도 즉시 이해할 수 있는 입력과 피드백을 가진다.",
+          "playerChoice": "색채의 연쇄는 주요 인물의 목표와 두려움, 그리고 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결되어 있으며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 콘텐츠를 다르게 사용하게 한다."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 445461,
-      "lastMs": 42354,
+      "totalMs": 477350,
+      "lastMs": 31889,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:30:31.108Z"
+      "updatedAt": "2026-10-08T21:31:03.000Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:23:05.545Z",
-  "updatedAt": "2026-10-08T21:30:31.110Z",
+  "updatedAt": "2026-10-08T21:31:03.013Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2293,12 +2449,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:30:31.110Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:31:03.008Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/seed-puzzle-chromatic-cascade/2026-10-09/design-seed.json",
+    "contentDigest": "04b11d822f16c695bbac3a81c9fe7dbfd52933931d42aad59bf6c3a017713772",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
