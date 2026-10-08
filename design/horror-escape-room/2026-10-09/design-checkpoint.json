@@ -458,25 +458,41 @@
       "name": "정화 공격",
       "purpose": "인물 정화 공격으로 몬스터를 라운드에서 제거하는 방식으로 실행됩니다",
       "playerChoice": "인간 정화 또는 몬스터 감염 공격 선택"
+    },
+    "local_authoring_parts::de8648dc48f7b962cd4efc0cdc884e054e8aafb73a9a6e635cf42074b38f320f:signatureSystems:3": {
+      "id": "DELVE",
+      "grammarRole": "c",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EnergyMax"
+      ],
+      "stateOutputs": [
+        "DelveRange",
+        "DelveCooldown"
+      ],
+      "name": "추격 공격",
+      "purpose": "감염 전환 시 인간이 몬스터와의 추격을 수행하며, 감염 스킬로 옛 팀을 따라가게 함",
+      "playerChoice": "추격 공격 선택"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 13,
+      "calls": 14,
+      "successes": 14,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 739187,
-      "lastMs": 35472,
+      "totalMs": 785589,
+      "lastMs": 46402,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:56:53.196Z"
+      "updatedAt": "2026-10-08T17:57:39.599Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:44:33.961Z",
-  "updatedAt": "2026-10-08T17:56:53.196Z",
+  "updatedAt": "2026-10-08T17:57:39.599Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1256,7 +1272,7 @@
       "multiplayerMode": "COMPETITIVE"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T17:56:53.196Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:57:39.599Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
