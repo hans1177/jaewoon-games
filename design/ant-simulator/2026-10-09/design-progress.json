@@ -8,11 +8,11 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 28,
-  "lastSuccessfulModelCallAt": "2026-10-08T21:55:28.370Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "cachedTaskCount": 31,
+  "lastSuccessfulModelCallAt": "2026-10-08T21:55:48.217Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "designerSeed": {
     "file": "design/ant-simulator/2026-10-09/design-seed.json",
     "contentDigest": "2c22cf43b7a263df4525fd6f2c42a54bab2221a98f2ca21e911f4564532698dc",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 19,
+      "calls": 21,
+      "successes": 21,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 446871,
-      "lastMs": 6662,
+      "totalMs": 466713,
+      "lastMs": 7322,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:55:28.369Z"
+      "updatedAt": "2026-10-08T21:55:48.215Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T21:55:28.371Z"
+  "updatedAt": "2026-10-08T21:55:48.221Z"
 }
