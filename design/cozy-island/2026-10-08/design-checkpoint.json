@@ -438,25 +438,41 @@
       "name": "자동전투 및 점령 보상",
       "purpose": "보이는 자동전투와 점령 보상 상태 변화를 구체화하고, 서버 권한으로 계산된 병력과 자원을 기반으로 보상이 발생한다.",
       "playerChoice": "자동전투 시작, 점령 보상 획득, 자원 거점 선택, 병력 확장, 전투력 증가, 보상 획득, 점령 상태 변화, 자동전투 및 보상 상태 변화"
+    },
+    "local_authoring_parts::6a14d2e00f9b27be696a45edd8b7c0f1ceb5f10b97bdeea3837475c2985e98c7:signatureSystems:4": {
+      "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "나무·식량 수집 상태 변화",
+        "주민 고용 및 자동화 상태 변화",
+        "병력 확장 및 전투력 증가",
+        "자원 거점 상태 변화 및 점령 상태 변화"
+      ],
+      "stateOutputs": [
+        "자동전투 및 점령 보상 상태 변화"
+      ],
+      "name": "자동전투 및 점령 보상",
+      "purpose": "보이는 자동전투와 점령 보상 상태 변화를 구체화하고, 서버 권한으로 계산된 병력과 자원을 기반으로 보상이 발생한다.",
+      "playerChoice": "자동전투 시작, 점령 보상 획득, 자원 거점 선택, 병력 확장, 전투력 증가, 보상 획득, 점령 상태 변화, 자동전투 및 보상 상태 변화"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 14,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1473844,
-      "lastMs": 87706,
+      "totalMs": 1565125,
+      "lastMs": 91281,
       "lastError": null,
-      "updatedAt": "2026-10-08T07:07:06.235Z"
+      "updatedAt": "2026-10-08T07:08:37.518Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T06:42:32.069Z",
-  "updatedAt": "2026-10-08T07:07:06.235Z",
+  "updatedAt": "2026-10-08T07:08:37.523Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1032,7 +1048,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -1049,10 +1065,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T07:07:06.235Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T07:08:37.519Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
