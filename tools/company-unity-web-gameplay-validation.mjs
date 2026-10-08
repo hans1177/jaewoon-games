@@ -277,9 +277,26 @@ try{
   const nativeRenderCountersMeasured=Boolean(nativeRenderMarker)&&Number.isSafeInteger(nativeDrawCalls)&&nativeDrawCalls>=0&&Number.isSafeInteger(nativeTriangles)&&nativeTriangles>=0;
   const renderBudget={drawCallsMax:500,trianglesMax:250000};
   const renderBudgetExceeded=nativeRenderCountersMeasured&&(nativeDrawCalls>renderBudget.drawCallsMax||nativeTriangles>renderBudget.trianglesMax);
+  const nativeUiMarker=markers.slice().reverse().find(line=>line.includes(' UI_BOUNDS ')
+    &&line.includes(`game=${gameId}`)&&line.includes('surface=UNITY_ONGUI'))||'';
+  const nativeUiKeys=['screenWidth','screenHeight','topLeft','topY','topWidth','topHeight',
+    'controlsLeft','controlsY','controlsWidth','controlsHeight'];
+  const nativeUiRect=Object.fromEntries(nativeUiKeys.map(key=>{
+    const token=nativeUiMarker.split(/\s+/).find(value=>value.startsWith(key+'='));
+    return [key,token===undefined?null:Number(token.slice(key.length+1))];
+  }));
+  const nativeUiMeasured=Boolean(nativeUiMarker)&&Object.values(nativeUiRect).every(value=>Number.isFinite(value))
+    &&nativeUiRect.screenWidth>0&&nativeUiRect.screenHeight>0;
+  const withinNativeViewport=(left,top,width,height)=>left>=-2&&top>=-2&&width>0&&height>0
+    &&left+width<=nativeUiRect.screenWidth+2&&top+height<=nativeUiRect.screenHeight+2;
+  const nativeUiOffscreen=nativeUiMeasured
+    &&(!withinNativeViewport(nativeUiRect.topLeft,nativeUiRect.topY,nativeUiRect.topWidth,nativeUiRect.topHeight)
+      ||!withinNativeViewport(nativeUiRect.controlsLeft,nativeUiRect.controlsY,nativeUiRect.controlsWidth,nativeUiRect.controlsHeight));
+  const nativeUiMissing=gameId==='daechung-rpg'&&!nativeUiMeasured;
   const shaderLikelyMissing=visualPixels.magentaRatio>=.25;
   const blankOrFrozenFrame=visualPixels.pixelCount<100||visualPixels.dominantColorRatio>=.997;
-  const visualBlocked=shaderLikelyMissing||blankOrFrozenFrame||mobileUiBounds.clipped.length>0;
+  const visualBlocked=shaderLikelyMissing||blankOrFrozenFrame||mobileUiBounds.clipped.length>0
+    ||nativeUiOffscreen||nativeUiMissing;
 
   await canvas.focus();
   await page.keyboard.press('KeyR');
@@ -344,7 +361,11 @@ try{
       pass:!visualBlocked,source:'REAL_GAMEPLAY_SCREENSHOT_PIXEL_READBACK',
       screenshotObserved:true,captureSha256:liveCaptureSha256,capturePersisted:Boolean(screenshot),
       magentaShaderLikelyMissing:shaderLikelyMissing,
-      blankOrFrozenFrame,visualPixels,mobileUiBounds,realDeviceVerified:false,
+      blankOrFrozenFrame,visualPixels,mobileUiBounds,
+      nativeUnityUi:{measurementState:nativeUiMeasured?'UNITY_ONGUI_RUNTIME':'NOT_MEASURED',
+        pass:nativeUiMeasured?!nativeUiOffscreen:null,missingRequiredCapture:nativeUiMissing,
+        sourceMarker:nativeUiMeasured?nativeUiMarker:null,rects:nativeUiMeasured?nativeUiRect:null},
+      realDeviceVerified:false,
     },
     nativeRenderBudget:{
       measurementState:nativeRenderCountersMeasured?'MEASURED_NATIVE_COUNTERS':'UNKNOWN_NOT_RECORDED',
@@ -383,7 +404,8 @@ try{
     throw new Error('UNITY_WEB_QA_BOOT_SLOW_FAILED:'+bootMilliseconds);
   }
   if(visualBlocked)throw new Error('UNITY_WEB_QA_VISUAL_RUNTIME_REPAIR_REQUIRED:'+JSON.stringify({
-    shaderLikelyMissing,blankOrFrozenFrame,clippedControls:mobileUiBounds.clipped,visualPixels
+    shaderLikelyMissing,blankOrFrozenFrame,clippedControls:mobileUiBounds.clipped,
+    nativeUiOffscreen,nativeUiMissing,nativeUiRect,visualPixels
   }));
   if(renderBudgetExceeded)throw new Error('UNITY_WEB_QA_NATIVE_RENDER_BUDGET_EXCEEDED:'+JSON.stringify({
     drawCalls:nativeDrawCalls,triangles:nativeTriangles,limits:renderBudget
