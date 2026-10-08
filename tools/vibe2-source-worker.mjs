@@ -3787,7 +3787,7 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
   // 기존 Vibe 소스 생성 프롬프트 안에서만 UI 추천을 실제 책임 함수에 전달한다.
   // 다른 파일, 장르 이름만 맞는 가상 기능, 검증되지 않은 상태는 구현 완료로 취급하지 않는다.
   const existingGenreMenus=order.assetProduction?.genreMenuRecommendations;
-  const menuImplementationRequested=/(?:메뉴|인벤토리|장비|상점|매매|캐릭터|퀘스트|도감|제작|건설|농사|파티|터치|화면|상호작용|오브젝트|조사|열기|제단|상자|포탈|NPC|UI|HUD|MENU|INVENTORY|EQUIPMENT|TRADE|SHOP|QUEST|CHARACTER|INTERACT|INTERACTION|OBJECT|CHEST|PORTAL)/i.test(craftGoal);
+  const menuImplementationRequested=/(?:메뉴|인벤토리|장비|상점|매매|캐릭터|퀘스트|도감|제작|건설|농사|파티|터치|화면|상호작용|오브젝트|조사|열기|제단|상자|포탈|NPC|UI|HUD|MENU|INVENTORY|EQUIPMENT|TRADE|SHOP|QUEST|CHARACTER|INTERACT|INTERACTION|OBJECT|CHEST|PORTAL|CRAFT|FARM|BUILD|DEFENSE|WAVE|CODEX|PARTY)/i.test(craftGoal);
   // Planner refs are repository-relative; Vibe source edits are rooted at order.source.root.
   // An exact hash must also match the complete editable file in the selected game root.
   const currentMenuSourceRoot=posix(order?.source?.root);
@@ -3806,15 +3806,39 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
         &&crypto.createHash('sha256').update(file.content).digest('hex')===ref.sha256));
   };
   const editableMenuRef=ref=>({...ref,editPath:resolveMenuRefEditPath(ref)});
+  // 메뉴 구현은 정확한 현재 GUI 책임 파일에만 배정한다. 서버의 경제/퀘스트 함수를
+  // 발견했다는 이유만으로 서버 편집 파일에 캐릭터창·상점 GUI 구현을 지시하지 않는다.
+  const exactNativeMenuConsumerMatches=ref=>{
+    if(!exactMenuRefMatches(ref))return false;
+    const repoPath=posix(ref?.path);
+    const editPath=resolveMenuRefEditPath(ref);
+    const file=context.files.find(row=>row.path===editPath);
+    if(!file)return false;
+    const target=clean(order.target).toLowerCase();
+    if(target==='roblox'){
+      return /^roblox-games\/[a-z0-9_-]+\/(?:client|shared)\//i.test(repoPath)
+        &&/(?:Instance\.new\(["'](?:ScreenGui|TextButton|ScrollingFrame)["']\)|Create(?:Panel|TabButton|Shop|Inventory|Character)|GuiService|\.Activated:Connect\s*\()/.test(file.content);
+    }
+    if(target==='unity'){
+      return /^unity-games\/[a-z0-9_-]+\/Assets\/Scripts\/.+\.cs$/i.test(repoPath)
+        &&/(?:\bOnGUI\s*\(|\bGUILayout\.|\bUIDocument\b|\bUnityEngine\.UI\b)/.test(file.content);
+    }
+    return false;
+  };
+  const nativeMenuRoleRefs=row=>[
+    ...(row.existingNativeUiRefs||[]),...(row.nativeUiConsumerRefs||[])
+  ];
   const sourceBoundGenreMenus=menuImplementationRequested?(existingGenreMenus?.candidateFeatures||[]).filter(row=>
     row.status!=='IDEA_ONLY_GAME_SYSTEM_NOT_CONFIRMED'
-    &&[...(row.existingNativeUiRefs||[]),...(row.gameSystemSourceRefs||[])].some(exactMenuRefMatches)
+    &&(row.gameSystemSourceRefs||[]).length>0
+    &&nativeMenuRoleRefs(row).some(exactNativeMenuConsumerMatches)
   ).map(row=>({
     role:row.role,factory:row.factory,
     companyUiSource:row.companyUiSource,companyUiSourceSha256:row.companyUiSourceSha256,
     sourceIdeaIds:row.sourceIdeaIds,
-    exactGameSourceRefs:[...(row.existingNativeUiRefs||[]),...(row.gameSystemSourceRefs||[])]
-      .filter(exactMenuRefMatches).map(editableMenuRef),
+    gameSystemSourceRefs:row.gameSystemSourceRefs,
+    exactGameSourceRefs:nativeMenuRoleRefs(row).filter(exactNativeMenuConsumerMatches)
+      .map(editableMenuRef).filter((ref,index,rows)=>rows.findIndex(other=>other.editPath===ref.editPath)===index),
     status:row.status,sourceOnlyNotRuntimePass:true
   })):[];
   const sourceBoundObjectInteractions=menuImplementationRequested?(existingGenreMenus?.objectInteractions||[]).filter(row=>
