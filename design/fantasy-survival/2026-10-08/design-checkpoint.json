@@ -371,25 +371,104 @@
     },
     "local_authoring_parts::6a202b6d8b8b36f646bd7b4855f70d6f23b1cef518e72e9f503a51a2df394d75:trigger": {
       "trigger": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 플레이어 역에서, 'playerPosition' 상태를 'newWorldState'로 전환하며, 'currentBuild'을 업데이트하고, 'availableResources'를 조정하고, 'enemyPressureLevel'"
+    },
+    "local_authoring_parts::6a202b6d8b8b36f646bd7b4855f70d6f23b1cef518e72e9f503a51a2df394d75:stateChange": {
+      "stateChange": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 플레이어 역에서, 'playerPosition' 상태를 'newWorldState'로 전환하며, 'currentBuild'을 업데이트하고, 'availableResources'를 조정하고, 'enemyPressureLevel'을 조절하는 과정을 거친다. 이 전환은 플레이어의 선택과 상태 변화를 구체적으로 반영하며, 'newWorld"
+    },
+    "local_authoring_parts::f5527381135835add834241421c329daec1440301c3f8a33cff10842ed69bfac:systemInterconnections:2": {
+      "fromId": "playerPosition",
+      "toId": "newWorldState",
+      "stateKeys": [
+        "playerPosition",
+        "currentBuild",
+        "availableResources",
+        "enemyPressureLevel",
+        "newWorldState",
+        "updatedBuild",
+        "newResourcePool",
+        "adjustedEnemyPressure"
+      ],
+      "fromSystem": "playerPosition",
+      "toSystem": "newWorldState",
+      "trigger": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 플레이어 역에서, 'playerPosition' 상태를 'newWorldState'로 전환하며, 'currentBuild'을 업데이트하고, 'availableResources'를 조정하고, 'enemyPressureLevel'",
+      "stateChange": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 플레이어 역에서, 'playerPosition' 상태를 'newWorldState'로 전환하며, 'currentBuild'을 업데이트하고, 'availableResources'를 조정하고, 'enemyPressureLevel'을 조절하는 과정을 거친다. 이 전환은 플레이어의 선택과 상태 변화를 구체적으로 반영하며, 'newWorld"
+    },
+    "local_authoring_parts::4c1a6e918fd2a5b70407dbf3623514fb2fecf919494622c8aa8b3ebcb195817a:systemInterconnections": {
+      "systemInterconnections": [
+        {
+          "fromId": "playerPosition",
+          "toId": "newWorldState",
+          "stateKeys": [
+            "playerPosition",
+            "currentBuild",
+            "availableResources",
+            "enemyPressureLevel",
+            "newWorldState",
+            "updatedBuild",
+            "newResourcePool",
+            "adjustedEnemyPressure"
+          ],
+          "fromSystem": "playerPosition",
+          "toSystem": "newWorldState",
+          "trigger": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 플레이어 역",
+          "stateChange": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 플레이어 역에서, 'playerPosition' 상태를 'newWorldState'로 전환하며, 'currentBuild'을 업데이트하고, 'availableResources'를 조정하고, 'enemyPressureLevel'을 조절하는 과정을 거친다. 이 전환은 플레이어의 선택과 상태 변화를 구체적으로 반영하며, 'newWorld"
+        },
+        {
+          "fromId": "playerPosition",
+          "toId": "newWorldState",
+          "stateKeys": [
+            "playerPosition",
+            "currentBuild",
+            "availableResources",
+            "enemyPressureLevel",
+            "newWorldState",
+            "updatedBuild",
+            "newResourcePool",
+            "adjustedEnemyPressure"
+          ],
+          "fromSystem": "playerPosition",
+          "toSystem": "newWorldState",
+          "trigger": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 플레이어 역에서, 'playerPosition' 상태를 'newWorldState'로 전환하며, 'currentBuild'을 업데이트하고, 'availableResources'를 조정하고, 'enemyPressureLevel'",
+          "stateChange": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 플레이어 역에서, 'playerPosition' 상태를 'newWorldState'로 전환하며, 'currentBuild'을 업데이트하고, 'availableResources'를 조정하고, 'enemyPressureLevel'을 조절하는 과정을 거친다. 이 전환은 플레이어의 선택과 상태 변화를 구체적으로 반영하며, 'newWorld"
+        },
+        {
+          "fromId": "playerPosition",
+          "toId": "newWorldState",
+          "stateKeys": [
+            "playerPosition",
+            "currentBuild",
+            "availableResources",
+            "enemyPressureLevel",
+            "newWorldState",
+            "updatedBuild",
+            "newResourcePool",
+            "adjustedEnemyPressure"
+          ],
+          "fromSystem": "playerPosition",
+          "toSystem": "newWorldState",
+          "trigger": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 플레이어 역에서, 'playerPosition' 상태를 'newWorldState'로 전환하며, 'currentBuild'을 업데이트하고, 'availableResources'를 조정하고, 'enemyPressureLevel'",
+          "stateChange": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 플레이어 역에서, 'playerPosition' 상태를 'newWorldState'로 전환하며, 'currentBuild'을 업데이트하고, 'availableResources'를 조정하고, 'enemyPressureLevel'을 조절하는 과정을 거친다. 이 전환은 플레이어의 선택과 상태 변화를 구체적으로 반영하며, 'newWorld"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 28,
-      "successes": 28,
+      "calls": 29,
+      "successes": 29,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2186177,
-      "lastMs": 66759,
+      "totalMs": 2255825,
+      "lastMs": 69648,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:29:06.492Z"
+      "updatedAt": "2026-10-08T08:30:16.141Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:52:40.073Z",
-  "updatedAt": "2026-10-08T08:29:06.492Z",
+  "updatedAt": "2026-10-08T08:30:16.144Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2741,7 +2820,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T08:29:06.492Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:30:16.144Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
