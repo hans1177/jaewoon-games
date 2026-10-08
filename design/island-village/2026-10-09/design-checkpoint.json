@@ -27,25 +27,32 @@
       "identity": "빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다. 플레이어는 무인도 마을에서 Gather a focused set of island resources.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다. 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다. 콘텐츠는 기존 원본과 동일하며, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 실패·중단·재접속·저장은 원본 의미를 보존한다. 공공영역 고전의 원형은 게임에 맞게 재해석하고 현대 보호 작품은 추상적 기법만 참고한다. 보호된 인물·대사·장면은 복제하지 않는다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 점수와 통과 판정은 결정론적 검증기가 담당한다.",
       "playerFantasy": "무인도 마을에서 플레이어는 Gather a focused set of island resources.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다. 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다.",
       "coreFun": "Gather a focused set of island resources.의 결과가 다음 월드 상태를 바꾸며, 이 선택이 무인도 마을의 실제 플레이 공간은 CASUAL 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성된다."
+    },
+    "local_authoring_parts::05f7f52ac1dd978c343e2f93544347930ffd8b8f8f19576641b2dff11d0f75d4:coreLoop": {
+      "coreLoop": [
+        "Gather a focused set of island resources → State change: Resource accumulation → Reward: Improved village infrastructure",
+        "Use them to build or improve one village function → State change: Infrastructure upgrade → Reward: Enhanced daily life",
+        "Unlock new resident/area → State change: New population/land added → Reward: Increased survival chances"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 347271,
-      "lastMs": 40368,
+      "totalMs": 392870,
+      "lastMs": 45599,
       "lastError": null,
-      "updatedAt": "2026-10-08T20:53:45.184Z"
+      "updatedAt": "2026-10-08T20:54:30.786Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:47:57.452Z",
-  "updatedAt": "2026-10-08T20:53:45.185Z",
+  "updatedAt": "2026-10-08T20:54:30.786Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2126,7 +2133,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T20:53:45.185Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T20:54:30.786Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
