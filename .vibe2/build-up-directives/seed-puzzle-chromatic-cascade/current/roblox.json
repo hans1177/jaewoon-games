@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-puzzle-chromatic-cascade-build-up-g29-623193408bdf",
-  "directiveFingerprint": "623193408bdfbf22737cd8c911aa87fc6a198f23c0e1040714d73aaeefa38364",
-  "previousDirectiveFingerprint": "a540ff52ed144774e3d3908d1e6d8bb8fbb6ada2c4d8675d08d86244ae90460e",
-  "forbiddenRepeatFingerprint": "a540ff52ed144774e3d3908d1e6d8bb8fbb6ada2c4d8675d08d86244ae90460e",
+  "directiveId": "seed-puzzle-chromatic-cascade-build-up-g30-4836da6e45be",
+  "directiveFingerprint": "4836da6e45be67ba71d1864c76415346fc19a84192ea4ec74bebd99165d8e28a",
+  "previousDirectiveFingerprint": "623193408bdfbf22737cd8c911aa87fc6a198f23c0e1040714d73aaeefa38364",
+  "forbiddenRepeatFingerprint": "623193408bdfbf22737cd8c911aa87fc6a198f23c0e1040714d73aaeefa38364",
   "gameId": "seed-puzzle-chromatic-cascade",
   "gameName": "색채의 연쇄",
-  "generation": 29,
+  "generation": 30,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,8 +14,8 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-puzzle-chromatic-cascade",
-  "sourceTreeFingerprint": "41f0729fa61ac78dbd7b11a6eb29501ff18386da06ed962511877e8341f34c32",
-  "designFingerprint": "a0b4ee5172a505041e57f2e7376fad8c655a7e56a737079f605c92abf9ac89da",
+  "sourceTreeFingerprint": "f0a6d1a6ab407554d834d7b1e56eacf3e160f63bb485e0bf125917d6b4262e56",
+  "designFingerprint": "65aed9f698f3c21ea92b7f10426eaa004af9fe04cbfb5ecf210a037986021d58",
   "identityReinforcement": {
     "appliesToAllGenres": true,
     "genre": "Puzzle",
@@ -104,7 +104,7 @@
           "제4구역: 공명하는 차원문 (Resonant Portal)",
           "보드의 양 끝을 연결하여 한쪽 끝에서 일어난 연쇄 폭발이 반대편으로 전이되는 '차원 포탈' 노드가 등장합니다."
         ],
-        "sourceTreeFingerprint": "41f0729fa61ac78dbd7b11a6eb29501ff18386da06ed962511877e8341f34c32",
+        "sourceTreeFingerprint": "f0a6d1a6ab407554d834d7b1e56eacf3e160f63bb485e0bf125917d6b4262e56",
         "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -219,8 +219,40 @@
         "validationEvidence": "Exact APK/AAB source revision, install and launch, real touch gameplay, pause/resume, save/restore, performance, independent QA, regression, and package identity evidence."
       }
     },
-    "webCanonicalDesign": {},
-    "platformExpansionPolicy": {},
+    "webCanonicalDesign": {
+      "role": "SHARED_DESIGN_WEB_APPLICATION",
+      "designAuthority": "GAME_DESIGN_REFERENCE_NOT_SOURCE_CODE_AUTHORITY",
+      "playerFlow": [
+        "보드의 제한된 이동 횟수와 색채 장애물 배치를 분석하여 목표를 확인합니다.",
+        "색채 주파수 튜너를 사용해 인접 노드의 색상을 변경하고 동기화 체인을 형성합니다.",
+        "연쇄 기폭 장치로 체인을 활성화하여 대규모 연쇄 폭발을 일으키고 보상을 획득합니다.",
+        "플레이어는 스테이지를 클리어하며 튜너의 성능(색상 변환 범위, 충전 속도)을 업그레이드하고, 더 복잡하고 단단한 장애물이 등장하는 상위 구역으로 진입합니다. 단순한 수치 증가가 아닌, 새로운 색상 주파수와 복합 장애물 패턴이 등장하여 퍼즐의 깊이를 더합니다."
+      ],
+      "worldAndTraversal": "",
+      "systemsAndContent": "name: 색채 주파수 튜너 (Chromatic Frequency Tuner); purpose: 보드 위에 배치된 특정 노드의 색상 주파수를 강제로 변경하여 인접한 다른 색상들과의 동기화 체인을 능동적으로 형성하는 핵심 조작 시스템입니다.; playerChoice: 플레이어는 제한된 튜닝 횟수 내에서 어떤 노드를 어떤 색상으로 전환해야 가장 길고 강력한 연쇄 동기화 경로를 확보할 수 있을지 전술적으로 결정해야 합니다. / name: 연쇄 기폭 장치 (Cascade Detonator); purpose: 동기화된 색채 체인을 일시에 폭발시켜 강력한 에너지 파동을 일으키고, 주변의 단단한 장애물을 파괴하며 추가 연쇄 반응을 유도하는 시스템입니다.; playerChoice: 플레이어는 체인이 형성되었을 때 즉시 기폭할지, 아니면 추가 튜닝을 통해 체인을 더 길게 늘려 한 번에 더 큰 폭발 보너스를 노릴지 선택합니다.",
+      "combatAndInteraction": "플레이어는 매 턴마다 어떤 색채 노드를 튜닝하여 주파수를 일치시킬지 선택하고, 동기화된 노드들이 연쇄적으로 폭발하며 보드 전체의 장애물을 제거하는 즉각적인 시각적 피드백과 전술적 성취감을 느낍니다.",
+      "progressionAndEconomy": "progressionLoop: 스테이지 클리어 -> 색채 정수(재화) 획득 -> 튜너 및 기폭 장치 특성 업그레이드 -> 고난도 스테이지 도전 및 특수 기믹 해제; resourceFlow: 클리어 보상으로 지급되는 색채 정수는 업그레이드에 소모되며, 완벽한 연쇄(Perfect Cascade) 달성 시 보너스 정수가 지급되어 효율적인 플레이를 유도합니다.; balanceRules: 무과금 플레이어도 모든 스테이지를 클리어할 수 있도록 기본 튜닝 횟수와 기믹 파괴 규칙을 정교하게 설계하며, 업그레이드는 편의성과 전술적 선택지를 넓히는 방향으로 제한합니다.",
+      "sessionFailureRecovery": "failureStates: 제한된 이동 횟수(Moves)를 모두 소모했음에도 스테이지 목표(특정 장애물 제거 등)를 달성하지 못한 상태 / 불안정 핵의 폭발로 인해 보드의 80% 이상이 무채색 노드로 오염되어 더 이상 매칭이 불가능해진 상태; retryFlow: 실패 시 즉시 결과 화면이 표시되며, 획득한 부분 보상과 함께 동일한 보드 레이아웃으로 즉시 재도전할 수 있는 버튼을 제공합니다.; riskPressure: 재도전 자체에 패널티는 없으나, 연속 실패 시 스테이지에 누적된 보너스 보상 배율이 초기화되어 플레이어에게 적절한 긴장감을 부여합니다.; recoveryRules: 실패 후 재도전 시, 이전 판에서 가장 많이 사용한 색상의 노드가 보드에 약간 더 많이 배치되는 '색채 동조 도우미' 시스템이 활성화되어 난이도를 완화합니다.",
+      "uiMenuAndOnboarding": "hudPriorities: 화면 상단에는 잔여 이동 횟수와 클리어 목표를 크게 표시하고, 하단에는 현재 선택된 튜너 도구와 기폭 장치의 충전 상태를 명확히 노출합니다.; touchAndInput: 오작동을 방지하기 위해 노드의 터치 영역을 실제 이미지보다 15% 넓게 설정하고, 드래그 중 경로를 시각적인 점선 가이드로 미리 보여줍니다.; readability: 고대비 폰트를 사용하여 수치 가독성을 높이고, 색상 간의 경계선에 미세한 음영을 주어 밝은 야외 환경에서도 노드들이 명확히 구분되도록 합니다.; accessibility: 적록색약 등 색약 플레이어를 위해 각 색상 노드마다 고유한 기하학적 문양(원, 삼각형, 별 등)을 내포하는 '색약 지원 모드'를 기본 탑재합니다.",
+      "inputCameraAccessibility": "모바일 터치 스크린에 최적화된 드래그 앤 드롭 및 탭 입력을 지원합니다. 노드를 탭하여 튜너 메뉴를 열고, 원하는 색상으로 드래그하여 직관적으로 변경합니다.",
+      "presentationAndAudio": "visualIdentity: 어두운 배경 위에 대비되는 선명하고 투명한 유리 질감의 색채 노드들을 배치하여, 빛과 색의 대비가 주는 세련되고 몽환적인 분위기를 연출합니다.; audioIdentity: 차분한 로파이(Lo-Fi) 신스 패드 배경음악을 기반으로 하되, 연쇄 폭발 시에는 청량한 크리스탈 종소리와 웅장한 저음의 베이스 드롭이 조화를 이루는 사운드를 제공합니다.; gameplayFeedbackSync: 연쇄 콤보 수가 증가할 수록 효과음의 음계가 한 단계씩 상승(도-레-미-파...)하여 플레이어가 청각적으로도 연쇄의 확장을 즉각 인지할 수 있도록 동기화합니다.",
+      "multiplayerPersistence": "SINGLE; 현재는 싱글 플레이어의 깊이 있는 퍼즐 경험에 집중하며, 향후 비동기식 점수 경쟁 및 실시간 1v1 색채 상쇄 대전 모드를 도입하여 멀티플레이어 확장을 도모할 계획입니다.",
+      "expansionSpace": "milestone: 제2구역: 프리즘의 심연 (Prism Abyss); newGameplay: 빛을 굴절시켜 주변 노드의 색상을 매 턴마다 무작위로 변화시키는 '프리즘 블록' 기믹이 추가됩니다.; systemImpact: 플레이어는 색채 주파수 튜너를 사용할 때 프리즘의 굴절 방향을 예측하여 튜닝 경로를 설계해야 하므로 전술적 복잡도가 상승합니다. / milestone: 제3구역: 불안정한 초신성 (Unstable Supernova); newGameplay: 일정 횟수 이상 연쇄가 닿지 않으면 폭발하여 주변 노드를 무채색으로 오염시키는 '불안정 핵' 기믹이 도입됩니다.; systemImpact: 연쇄 기폭 장치를 최우선적으로 불안정 핵 주변에서 작동시켜야 하므로, 기폭 타이밍을 강제하는 위험 요소로 작용합니다. / milestone: 제4구역: 공명하는 차원문 (Resonant Portal); newGameplay: 보드의 양 끝을 연결하여 한쪽 끝에서 일어난 연쇄 폭발이 반대편으로 전이되는 '차원 포탈' 노드가 등장합니다.; systemImpact: 공간적 제약을 극복하는 초장거리 연쇄 체인 형성이 가능해져, 기폭 장치의 파괴력과 시각적 피드백이 극대화됩니다."
+    },
+    "platformExpansionPolicy": {
+      "mode": "SINGLE_ORIGINAL_PLATFORM_IMPLEMENTATION",
+      "sharedLargeFrame": [
+        "CORE_IDENTITY",
+        "CORE_FUN_AND_REPRESENTATIVE_LOOP",
+        "WORLD_AND_PROGRESSION_DIRECTION",
+        "SAVE_PERSISTENCE_MEANING",
+        "MULTIPLAYER_INTENT"
+      ],
+      "expansionLimit": "GAMEPLAY_CHANGES_REQUIRE_SHARED_ORIGINAL_REVISION",
+      "webRule": "게임당 하나의 공통 설계 원본을 사용한다. WEB은 같은 MAIN/A/B/c/@·규칙·상태·진행·멀티를 입력·화면·성능·저장 전송에 맞게 구현한다. 별도 원본을 생성하지 않으며 Unity WebGL은 같은 Unity 프로젝트를 사용한다.",
+      "unityRule": "동일 공통 원본과 디자이너가 작성한 규칙을 Unity에서 구현한다. 입력·물리 표현·카메라·UI·성능·저장 전송·런타임 검증만 플랫폼에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다.",
+      "robloxRule": "기존 Roblox 원본의 규칙과 사용자 요청을 공통 원본에 보존한다. platformProfiles.ROBLOX와 robloxBuildProfile은 같은 원본의 구현·배포·검증 방식이며 독립 게임 설계가 아니다. 다른 플랫폼 실패는 해당 플랫폼의 수정·재시도로 분리한다."
+    },
     "visualDirection": "네온 톤의 감각적인 색채와 미니멀한 플랫 디자인이 조화를 이루는 비주얼을 지향합니다. 연쇄 폭발 시 화면 전체로 퍼져나가는 유려한 파티클 효과와 색상별 고유의 빛 파동을 통해 극상의 시각적 만족감을 선사합니다.",
     "mobileUx": "한 손 조작이 가능하도록 주요 조작 버튼과 보드를 화면 하단 및 중앙에 집중 배치합니다. 햅틱 피드백을 적극 활용하여 노드를 튜닝하거나 폭발시킬 때 손끝으로 전해지는 타격감을 극대화합니다.",
     "uxAccessibilityPlan": {
@@ -496,9 +528,9 @@
   "previousVersionDelta": {
     "previousGoal": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 28,
-    "previousSourceTreeFingerprint": "167cbd0a3a61c8956f1bb95393f3755d2ba1e6147d5a9404926da43122b92de0",
-    "currentSourceTreeFingerprint": "41f0729fa61ac78dbd7b11a6eb29501ff18386da06ed962511877e8341f34c32",
+    "previousGeneration": 29,
+    "previousSourceTreeFingerprint": "41f0729fa61ac78dbd7b11a6eb29501ff18386da06ed962511877e8341f34c32",
+    "currentSourceTreeFingerprint": "f0a6d1a6ab407554d834d7b1e56eacf3e160f63bb485e0bf125917d6b4262e56",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -508,8 +540,8 @@
       "sourceRevision": "d7de2d98fb544b9a1741b4fe14d397285aa966fd",
       "artifactIdentity": "sha256:87ad4b34a169a539152da43945541a71ecb0c9d5f41ecdc7431078f383638ebc",
       "authority": "roblox-f0-gameplay-product-readiness-failure",
-      "workflowRunId": 37757199979,
-      "testedAt": "2026-10-08T10:43:45.752Z",
+      "workflowRunId": 37766914129,
+      "testedAt": "2026-10-08T11:45:24.208Z",
       "repairSurfaces": [
         "CORE_GAMEPLAY",
         "WORLD_MAP",
@@ -614,6 +646,15 @@
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
+  },
+  "multiplayerImplementation": {
+    "required": true,
+    "policyVersion": 1,
+    "developmentAdmissionGate": false,
+    "missingImplementationAction": "EXISTING_BUILD_UP_LOCAL_IMPLEMENTATION_AND_RETRY",
+    "otherGamesAndIndependentWorkContinue": true,
+    "actualMultiplayerPlayVerified": false,
+    "completionEvidence": "ACTUAL_TWO_OR_MORE_CLIENTS_SAME_SESSION_ACTION_STATE_RESULT_AND_RECONNECT"
   },
   "qualityGapMap": [
     {
@@ -799,7 +840,7 @@
     {
       "domain": "MULTIPLAYER_AND_SYNC",
       "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "reason": "multiplayer source signals found; actual multi-client gameplay remains unverified by source inspection"
     },
     {
       "domain": "INPUT",
@@ -1317,7 +1358,7 @@
       "state": "PASS",
       "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
-      "directive": "멀티가 적용되는 게임만 기존 방 생성·참가·준비·시작·이탈을 서버 판정으로 연결한다. 참가자·준비·기존 모드를 표시하고 대기 중 안전한 공동 연습을 제공한다. 결과 화면에 각자 재도전 의사를 표시하고 기존 참가 규칙으로 인원을 유지하되 이탈자 때문에 무한 대기하지 않게 한다. 방장 이탈·late join·재접속을 기존 규칙으로 복구하고 실제 2인 이상의 행동·목표·승패·보상 일치와 중복 지급 방지를 검수한다.",
+      "directive": "모든 게임은 멀티 구현이 필수다. 기존 SINGLE 원본은 디자이너가 COOP/COMPETITIVE/HYBRID 중 게임에 맞는 확장을 작성하며 기존 멀티 규칙은 보존한다. 기존 방 생성·참가·준비·시작·이탈을 서버 판정으로 연결한다. 참가자·준비·기존 모드를 표시하고 대기 중 안전한 공동 연습을 제공한다. 결과 화면에 각자 재도전 의사를 표시하고 기존 참가 규칙으로 인원을 유지하되 이탈자 때문에 무한 대기하지 않게 한다. 방장 이탈·late join·재접속을 기존 규칙으로 복구하고 실제 2인 이상의 행동·목표·승패·보상 일치와 중복 지급 방지를 검수한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1749,8 +1790,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 97362,
-        "largestFileBytes": 48042,
+        "sourceBytes": 126741,
+        "largestFileBytes": 48060,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1936,11 +1977,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 29,
-    "previousGeneration": 28,
+    "generation": 30,
+    "previousGeneration": 29,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "41f0729fa61ac78dbd7b11a6eb29501ff18386da06ed962511877e8341f34c32",
-    "priorSourceFingerprint": "167cbd0a3a61c8956f1bb95393f3755d2ba1e6147d5a9404926da43122b92de0",
+    "sourceFingerprint": "f0a6d1a6ab407554d834d7b1e56eacf3e160f63bb485e0bf125917d6b4262e56",
+    "priorSourceFingerprint": "41f0729fa61ac78dbd7b11a6eb29501ff18386da06ed962511877e8341f34c32",
     "previousRuntimeEffect": "REGRESSION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2172,12 +2213,12 @@
     "반복 조작은 편의 기능으로 줄이되 핵심 플레이 선택과 위험/보상 판단을 자동화하지 않는다."
   ],
   "platformAdaptationDirectives": {
-    "WEB": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.: WEB 상세 게임 원본과 공통 큰틀을 기준으로 \"색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. WEB 자체 시스템·콘텐츠·지역·세션·UI·카메라·연출 확장에는 다른 플랫폼과의 세부 parity 제한을 두지 않는다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "ROBLOX": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.: 동일 공통 목표 \"색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
-    "UNITY": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.: WEB 상세 게임 원본에서 공통 큰틀만 이어받아 \"색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 경험으로 재해석한다. Unity 전용 시스템·콘텐츠·지역·물리·카메라·애니메이션·세션 구조·UX·연출 확장에는 인위적 parity 제한을 두지 않는다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
+    "WEB": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.: 게임당 하나인 공통 설계 원본을 기준으로 \"색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. MAIN/A/B/c/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "ROBLOX": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.: 동일 공통 목표 \"색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. MAIN/A/B/c/@·규칙·상태·진행·멀티는 공통 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
+    "UNITY": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.: 동일 공통 원본의 규칙과 상태를 보존하며 \"색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
     "FORTNITE_UEFN": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.: 동일 공통 목표 \"색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UNITY_WEB": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.: WEB 상세 게임 원본과 공통 큰틀을 기준으로 \"색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. WEB 자체 시스템·콘텐츠·지역·세션·UI·카메라·연출 확장에는 다른 플랫폼과의 세부 parity 제한을 두지 않는다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "UNITY_APP": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.: WEB 상세 게임 원본에서 공통 큰틀만 이어받아 \"색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 경험으로 재해석한다. Unity 전용 시스템·콘텐츠·지역·물리·카메라·애니메이션·세션 구조·UX·연출 확장에는 인위적 parity 제한을 두지 않는다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
+    "UNITY_WEB": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.: 게임당 하나인 공통 설계 원본을 기준으로 \"색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. MAIN/A/B/c/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "UNITY_APP": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.: 동일 공통 원본의 규칙과 상태를 보존하며 \"색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
     "UNREAL": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.: 동일 공통 목표 \"색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
     "UEFN": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.: 동일 공통 목표 \"색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
   },
@@ -2340,7 +2381,7 @@
     "actualPlayRule": "after the changed behavior becomes executable and the existing runtime-foundation gate passes, replay the exact changed scenario through official Studio MCP and feed the observed result back into causal repair"
   },
   "productionPlan": {
-    "version": 2,
+    "version": 3,
     "executionBoundary": "EXISTING_BUILD_UP_ONLY",
     "platform": "ROBLOX",
     "executionSurface": "ROBLOX",
@@ -2362,6 +2403,7 @@
       "연쇄 기폭 장치 (Cascade Detonator)"
     ],
     "progressionDirection": "플레이어는 스테이지를 클리어하며 튜너의 성능(색상 변환 범위, 충전 속도)을 업그레이드하고, 더 복잡하고 단단한 장애물이 등장하는 상위 구역으로 진입합니다. 단순한 수치 증가가 아닌, 새로운 색상 주파수와 복합 장애물 패턴이 등장하여 퍼즐의 깊이를 더합니다.",
+    "depthAndReward": null,
     "ideas": [
       {
         "id": "PUZZLE:SOURCE_REPAIR",
@@ -2400,7 +2442,9 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "41f0729fa61ac78dbd7b11a6eb29501ff18386da06ed962511877e8341f34c32",
+    "sourceTreeFingerprint": "f0a6d1a6ab407554d834d7b1e56eacf3e160f63bb485e0bf125917d6b4262e56",
+    "spatialBlueprintContract": null,
+    "interfaceBlueprintContract": null,
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2430,7 +2474,7 @@
     "implementationStatus": "PLANNED_NOT_IMPLEMENTED"
   },
   "robloxProductionPlan": {
-    "version": 2,
+    "version": 3,
     "executionBoundary": "EXISTING_BUILD_UP_ONLY",
     "platform": "ROBLOX",
     "executionSurface": "ROBLOX",
@@ -2452,6 +2496,7 @@
       "연쇄 기폭 장치 (Cascade Detonator)"
     ],
     "progressionDirection": "플레이어는 스테이지를 클리어하며 튜너의 성능(색상 변환 범위, 충전 속도)을 업그레이드하고, 더 복잡하고 단단한 장애물이 등장하는 상위 구역으로 진입합니다. 단순한 수치 증가가 아닌, 새로운 색상 주파수와 복합 장애물 패턴이 등장하여 퍼즐의 깊이를 더합니다.",
+    "depthAndReward": null,
     "ideas": [
       {
         "id": "PUZZLE:SOURCE_REPAIR",
@@ -2490,7 +2535,9 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "41f0729fa61ac78dbd7b11a6eb29501ff18386da06ed962511877e8341f34c32",
+    "sourceTreeFingerprint": "f0a6d1a6ab407554d834d7b1e56eacf3e160f63bb485e0bf125917d6b4262e56",
+    "spatialBlueprintContract": null,
+    "interfaceBlueprintContract": null,
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2753,7 +2800,7 @@
       "runtimeObserved": true
     },
     "baseline": {
-      "sourceTreeFingerprint": "41f0729fa61ac78dbd7b11a6eb29501ff18386da06ed962511877e8341f34c32",
+      "sourceTreeFingerprint": "f0a6d1a6ab407554d834d7b1e56eacf3e160f63bb485e0bf125917d6b4262e56",
       "runtimeObserved": true,
       "runtimePassed": false,
       "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
@@ -2808,7 +2855,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 30,
+    "nextGeneration": 31,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2874,5 +2921,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-07T13:37:52.090Z"
+  "generatedAt": "2026-10-08T11:50:06.460Z"
 }

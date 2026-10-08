@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-action-survival-rogu-echoes-of-the-lost-star-build-up-g27-4c74bf23adf0",
-  "directiveFingerprint": "4c74bf23adf01ef798830a59a6288122a1945449983b6b55067e0a23716b7912",
-  "previousDirectiveFingerprint": "43f7c41ae0461efa20e4075358dc799a4ee3e1bb8f2af78c47f6848e084b3eae",
-  "forbiddenRepeatFingerprint": "43f7c41ae0461efa20e4075358dc799a4ee3e1bb8f2af78c47f6848e084b3eae",
+  "directiveId": "seed-action-survival-rogu-echoes-of-the-lost-star-build-up-g28-dd4c9771ffc9",
+  "directiveFingerprint": "dd4c9771ffc9ad4cad126a4635062d0c4052b5fe4ce00de2fa19dbde44a1e5ba",
+  "previousDirectiveFingerprint": "4c74bf23adf01ef798830a59a6288122a1945449983b6b55067e0a23716b7912",
+  "forbiddenRepeatFingerprint": "4c74bf23adf01ef798830a59a6288122a1945449983b6b55067e0a23716b7912",
   "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
   "gameName": "잃어버린 별의 메아리",
-  "generation": 27,
+  "generation": 28,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,8 +14,8 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star",
-  "sourceTreeFingerprint": "dc1b03c5a3b6a1aaa440fc46ef7e0695e70f88760753bb4a59eb0cc2fc1755c9",
-  "designFingerprint": "fa8aa91bd58f42089e46d5fbe8413fe04bf8522c0ba2592d72aadc5a84e9e989",
+  "sourceTreeFingerprint": "88e2394090c41a2e52aeb13151804fa8a28beccdd3983f4ef311533991e2f5d3",
+  "designFingerprint": "54edee23784b30fbe231459671be1e93d7bef2196e4565d07c629321dc76f806",
   "identityReinforcement": {
     "appliesToAllGenres": true,
     "genre": "Survival",
@@ -104,7 +104,7 @@
           "메아리 시너지 조합 시스템",
           "특정 메아리들을 조합하여 강력한 궁극기를 발동할 수 있는 시너지 시스템을 추가하여 빌드 구성의 재미를 극대화합니다."
         ],
-        "sourceTreeFingerprint": "dc1b03c5a3b6a1aaa440fc46ef7e0695e70f88760753bb4a59eb0cc2fc1755c9",
+        "sourceTreeFingerprint": "88e2394090c41a2e52aeb13151804fa8a28beccdd3983f4ef311533991e2f5d3",
         "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -220,8 +220,40 @@
         "validationEvidence": "Exact APK/AAB source revision, install and launch, real touch gameplay, pause/resume, save/restore, performance, independent QA, regression, and package identity evidence."
       }
     },
-    "webCanonicalDesign": {},
-    "platformExpansionPolicy": {},
+    "webCanonicalDesign": {
+      "role": "SHARED_DESIGN_WEB_APPLICATION",
+      "designAuthority": "GAME_DESIGN_REFERENCE_NOT_SOURCE_CODE_AUTHORITY",
+      "playerFlow": [
+        "실시간 전투를 통해 적의 물결을 돌파하며 생존하고, 적 처치 시 드롭되는 메아리 파편을 수집합니다.",
+        "수집한 파편을 사용하여 실시간으로 무기, 스킬, 능력치를 강화하는 '메아리 선택' 메뉴를 통해 빌드를 구성합니다.",
+        "강화된 빌드를 바탕으로 더욱 강력해진 적과 보스 웨이브에 도전하며, 최종적으로 런의 결과를 메타 성장 재화로 변환합니다.",
+        "메타 진행은 각 런에서 획득한 '별의 가루'를 사용하여 영구적인 능력치 강화와 새로운 메아리 유형을 해금하는 방식으로 이루어집니다. 플레이어는 단순히 강해지는 것을 넘어, 자신의 플레이 스타일에 맞는 메아리 조합을 미리 설정하여 다음 런의 전략적 우위를 점할 수 있습니다. 이 과정은 반복적인 플레이가 지루하지 않도록 새로운 도전 과제와 보상을 지속적으로 제공하며, 플레이어가 자신의 성장을 체감할 수 있도록 설계되었습니다."
+      ],
+      "worldAndTraversal": "",
+      "systemsAndContent": "name: 메아리 공명 시스템; purpose: 전투 중 실시간으로 플레이어의 공격 방식과 유틸리티 능력을 변화시켜 매번 다른 전투 경험을 제공하기 위함입니다.; playerChoice: 플레이어는 획득한 파편을 사용하여 공격 속도 증가, 투사체 분열, 광역 피해 등 다양한 메아리 효과 중 하나를 선택하여 자신의 빌드를 최적화합니다. / name: 엔트로피 미터; purpose: 게임의 난이도를 동적으로 조절하고 플레이어에게 위험과 보상 사이의 전략적 선택을 강요하기 위한 시스템입니다.; playerChoice: 플레이어는 엔트로피가 높은 위험 지역으로 진입하여 더 많은 보상을 노릴지, 아니면 안전한 지역에서 파밍을 지속할지 결정해야 합니다.",
+      "combatAndInteraction": "핵심 재미는 적을 처치하고 얻는 '메아리 파편'을 통해 실시간으로 자신의 전투 스타일을 진화시키는 과정에 있습니다. 플레이어는 적의 공격을 피하며 최적의 위치를 선점하고, 획득한 파편으로 즉각적인 빌드 변화를 선택하여 화면을 가득 채우는 적들을 쓸어버리는 즉각적인 쾌감을 느낍니다.",
+      "progressionAndEconomy": "progressionLoop: 런 종료 -> 결과 정산 -> 별의 가루 획득 -> 메타 업그레이드 트리 투자 -> 다음 런 시작 시 기본 능력치 상승 및 신규 스킬 해금.; resourceFlow: 별의 가루는 적 처치, 보스 격파, 생존 시간에 비례하여 획득하며, 이는 메타 상점에서 영구적인 업그레이드에 사용됩니다.; balanceRules: 초반에는 성장이 빠르고 직관적이어야 하며, 후반으로 갈수록 전략적 선택의 비중이 커지도록 재화 획득량과 업그레이드 비용을 곡선형으로 설계합니다.",
+      "sessionFailureRecovery": "failureStates: 플레이어 체력 0 도달 / 엔트로피 과부하로 인한 붕괴 / 제한 시간 내 목표 달성 실패; retryFlow: 실패 시 획득한 재화를 정산하고 메타 업그레이드 화면으로 이동하여, 다음 도전을 위한 준비를 마친 후 즉시 재시작합니다.; riskPressure: 높은 엔트로피 지역은 더 많은 보상을 주지만, 실패 시 리스크가 커지므로 플레이어의 신중한 판단을 요구합니다.; recoveryRules: 메타 업그레이드를 통해 초기 체력이나 방어력을 보강하여 실패에 대한 좌절감을 완화하고 재도전의 동기를 부여합니다.",
+      "uiMenuAndOnboarding": "hudPriorities: 체력, 엔트로피 미터, 현재 빌드 상태를 화면 가장자리에 배치하여 전투 시야를 방해하지 않도록 합니다.; touchAndInput: 반응성이 뛰어난 가상 조이스틱과 직관적인 터치 피드백을 통해 조작의 정확도를 높입니다.; readability: 적의 공격과 플레이어의 스킬 효과를 색상과 모양으로 명확히 구분하여 가독성을 확보합니다.; accessibility: 색약 모드 지원 및 텍스트 크기 조절 기능을 통해 다양한 플레이어의 접근성을 보장합니다.",
+      "inputCameraAccessibility": "모바일 환경에 최적화된 가상 조이스틱 이동과 자동 공격 시스템을 기본으로 하며, 필요시 수동 조준을 지원합니다.",
+      "presentationAndAudio": "visualIdentity: 어두운 우주 배경에 대비되는 밝고 강렬한 네온 이펙트를 사용하여 시각적 몰입감을 극대화합니다.; audioIdentity: 긴장감을 고조시키는 신스웨이브 장르의 배경음악과 타격감을 살리는 반응형 효과음을 사용합니다.; gameplayFeedbackSync: 적 처치 시 발생하는 사운드와 시각 효과를 동기화하여 플레이어에게 즉각적인 보상감을 전달합니다.",
+      "multiplayerPersistence": "SINGLE; 현재는 싱글 플레이 경험의 완성도에 집중하며, 향후 협동 모드 도입 가능성을 검토할 예정입니다.",
+      "expansionSpace": "milestone: 신규 생태계 환경 업데이트; newGameplay: 새로운 환경 요소와 고유한 적 유형이 등장하는 신규 맵을 추가하여 플레이어의 적응력을 시험하고 지형지물을 활용한 전투를 유도합니다.; systemImpact: 기존 메아리 시스템에 환경 상호작용 요소를 추가하여 빌드 구성의 다양성을 확장하고 맵별 전략적 차별화를 구현합니다. / milestone: 보스 러시 고난도 모드; newGameplay: 일반 웨이브 없이 연속적인 보스 전투만으로 구성된 고난도 모드를 도입하여 플레이어의 컨트롤과 빌드 완성도를 극한으로 테스트합니다.; systemImpact: 기존 빌드 최적화 시스템의 한계를 테스트하고, 보스별 공략법을 연구하도록 유도하여 엔드게임 콘텐츠의 깊이를 더합니다. / milestone: 메아리 시너지 조합 시스템; newGameplay: 특정 메아리들을 조합하여 강력한 궁극기를 발동할 수 있는 시너지 시스템을 추가하여 빌드 구성의 재미를 극대화합니다.; systemImpact: 기존의 개별 업그레이드 시스템을 넘어선 복합적인 빌드 전략을 가능하게 하며, 아이템 간의 상호작용 로직을 대폭 강화합니다."
+    },
+    "platformExpansionPolicy": {
+      "mode": "SINGLE_ORIGINAL_PLATFORM_IMPLEMENTATION",
+      "sharedLargeFrame": [
+        "CORE_IDENTITY",
+        "CORE_FUN_AND_REPRESENTATIVE_LOOP",
+        "WORLD_AND_PROGRESSION_DIRECTION",
+        "SAVE_PERSISTENCE_MEANING",
+        "MULTIPLAYER_INTENT"
+      ],
+      "expansionLimit": "GAMEPLAY_CHANGES_REQUIRE_SHARED_ORIGINAL_REVISION",
+      "webRule": "게임당 하나의 공통 설계 원본을 사용한다. WEB은 같은 MAIN/A/B/c/@·규칙·상태·진행·멀티를 입력·화면·성능·저장 전송에 맞게 구현한다. 별도 원본을 생성하지 않으며 Unity WebGL은 같은 Unity 프로젝트를 사용한다.",
+      "unityRule": "동일 공통 원본과 디자이너가 작성한 규칙을 Unity에서 구현한다. 입력·물리 표현·카메라·UI·성능·저장 전송·런타임 검증만 플랫폼에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다.",
+      "robloxRule": "기존 Roblox 원본의 규칙과 사용자 요청을 공통 원본에 보존한다. platformProfiles.ROBLOX와 robloxBuildProfile은 같은 원본의 구현·배포·검증 방식이며 독립 게임 설계가 아니다. 다른 플랫폼 실패는 해당 플랫폼의 수정·재시도로 분리한다."
+    },
     "visualDirection": "네온 컬러와 우주적 공간감을 강조한 하이 콘트라스트 비주얼 스타일을 채택하여, 모바일 화면에서도 적과 탄막을 명확하게 구분할 수 있도록 합니다.",
     "mobileUx": "한 손으로도 조작 가능한 세로형 인터페이스를 기본으로 하되, 가로형 모드도 지원하여 플레이어의 편의성을 극대화합니다.",
     "uxAccessibilityPlan": {
@@ -497,9 +529,9 @@
   "previousVersionDelta": {
     "previousGoal": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 26,
-    "previousSourceTreeFingerprint": "583908c41911cdd6aaf805a9a57a41f578848aa8c0a9f199f6665324a40f86cb",
-    "currentSourceTreeFingerprint": "dc1b03c5a3b6a1aaa440fc46ef7e0695e70f88760753bb4a59eb0cc2fc1755c9",
+    "previousGeneration": 27,
+    "previousSourceTreeFingerprint": "dc1b03c5a3b6a1aaa440fc46ef7e0695e70f88760753bb4a59eb0cc2fc1755c9",
+    "currentSourceTreeFingerprint": "88e2394090c41a2e52aeb13151804fa8a28beccdd3983f4ef311533991e2f5d3",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -509,8 +541,8 @@
       "sourceRevision": "a7f90410b808dcce9f88cb2b1ffd8cadbca718f5",
       "artifactIdentity": "sha256:fc910a1e242879a6864af149a2ce04af13879d0670ead5db9a373f7bc606ee35",
       "authority": "roblox-f0-gameplay-product-readiness-failure",
-      "workflowRunId": 37757199979,
-      "testedAt": "2026-10-08T10:43:45.752Z",
+      "workflowRunId": 37766914129,
+      "testedAt": "2026-10-08T11:45:24.208Z",
       "repairSurfaces": [
         "CORE_GAMEPLAY",
         "WORLD_MAP",
@@ -656,6 +688,15 @@
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
+  },
+  "multiplayerImplementation": {
+    "required": true,
+    "policyVersion": 1,
+    "developmentAdmissionGate": false,
+    "missingImplementationAction": "EXISTING_BUILD_UP_LOCAL_IMPLEMENTATION_AND_RETRY",
+    "otherGamesAndIndependentWorkContinue": true,
+    "actualMultiplayerPlayVerified": false,
+    "completionEvidence": "ACTUAL_TWO_OR_MORE_CLIENTS_SAME_SESSION_ACTION_STATE_RESULT_AND_RECONNECT"
   },
   "qualityGapMap": [
     {
@@ -841,7 +882,7 @@
     {
       "domain": "MULTIPLAYER_AND_SYNC",
       "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "reason": "multiplayer source signals found; actual multi-client gameplay remains unverified by source inspection"
     },
     {
       "domain": "INPUT",
@@ -1359,7 +1400,7 @@
       "state": "PASS",
       "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
-      "directive": "멀티가 적용되는 게임만 기존 방 생성·참가·준비·시작·이탈을 서버 판정으로 연결한다. 참가자·준비·기존 모드를 표시하고 대기 중 안전한 공동 연습을 제공한다. 결과 화면에 각자 재도전 의사를 표시하고 기존 참가 규칙으로 인원을 유지하되 이탈자 때문에 무한 대기하지 않게 한다. 방장 이탈·late join·재접속을 기존 규칙으로 복구하고 실제 2인 이상의 행동·목표·승패·보상 일치와 중복 지급 방지를 검수한다.",
+      "directive": "모든 게임은 멀티 구현이 필수다. 기존 SINGLE 원본은 디자이너가 COOP/COMPETITIVE/HYBRID 중 게임에 맞는 확장을 작성하며 기존 멀티 규칙은 보존한다. 기존 방 생성·참가·준비·시작·이탈을 서버 판정으로 연결한다. 참가자·준비·기존 모드를 표시하고 대기 중 안전한 공동 연습을 제공한다. 결과 화면에 각자 재도전 의사를 표시하고 기존 참가 규칙으로 인원을 유지하되 이탈자 때문에 무한 대기하지 않게 한다. 방장 이탈·late join·재접속을 기존 규칙으로 복구하고 실제 2인 이상의 행동·목표·승패·보상 일치와 중복 지급 방지를 검수한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1791,8 +1832,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 98271,
-        "largestFileBytes": 48366,
+        "sourceBytes": 127649,
+        "largestFileBytes": 48380,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1980,11 +2021,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 27,
-    "previousGeneration": 26,
+    "generation": 28,
+    "previousGeneration": 27,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "dc1b03c5a3b6a1aaa440fc46ef7e0695e70f88760753bb4a59eb0cc2fc1755c9",
-    "priorSourceFingerprint": "583908c41911cdd6aaf805a9a57a41f578848aa8c0a9f199f6665324a40f86cb",
+    "sourceFingerprint": "88e2394090c41a2e52aeb13151804fa8a28beccdd3983f4ef311533991e2f5d3",
+    "priorSourceFingerprint": "dc1b03c5a3b6a1aaa440fc46ef7e0695e70f88760753bb4a59eb0cc2fc1755c9",
     "previousRuntimeEffect": "REGRESSION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2216,12 +2257,12 @@
     "반복 조작은 편의 기능으로 줄이되 핵심 플레이 선택과 위험/보상 판단을 자동화하지 않는다."
   ],
   "platformAdaptationDirectives": {
-    "WEB": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.: WEB 상세 게임 원본과 공통 큰틀을 기준으로 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. WEB 자체 시스템·콘텐츠·지역·세션·UI·카메라·연출 확장에는 다른 플랫폼과의 세부 parity 제한을 두지 않는다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "ROBLOX": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.: 동일 공통 목표 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
-    "UNITY": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.: WEB 상세 게임 원본에서 공통 큰틀만 이어받아 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 경험으로 재해석한다. Unity 전용 시스템·콘텐츠·지역·물리·카메라·애니메이션·세션 구조·UX·연출 확장에는 인위적 parity 제한을 두지 않는다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
+    "WEB": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.: 게임당 하나인 공통 설계 원본을 기준으로 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. MAIN/A/B/c/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "ROBLOX": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.: 동일 공통 목표 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. MAIN/A/B/c/@·규칙·상태·진행·멀티는 공통 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
+    "UNITY": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.: 동일 공통 원본의 규칙과 상태를 보존하며 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
     "FORTNITE_UEFN": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.: 동일 공통 목표 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UNITY_WEB": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.: WEB 상세 게임 원본과 공통 큰틀을 기준으로 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. WEB 자체 시스템·콘텐츠·지역·세션·UI·카메라·연출 확장에는 다른 플랫폼과의 세부 parity 제한을 두지 않는다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "UNITY_APP": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.: WEB 상세 게임 원본에서 공통 큰틀만 이어받아 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 경험으로 재해석한다. Unity 전용 시스템·콘텐츠·지역·물리·카메라·애니메이션·세션 구조·UX·연출 확장에는 인위적 parity 제한을 두지 않는다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
+    "UNITY_WEB": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.: 게임당 하나인 공통 설계 원본을 기준으로 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. MAIN/A/B/c/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "UNITY_APP": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.: 동일 공통 원본의 규칙과 상태를 보존하며 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
     "UNREAL": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.: 동일 공통 목표 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
     "UEFN": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.: 동일 공통 목표 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
   },
@@ -2384,7 +2425,7 @@
     "actualPlayRule": "after the changed behavior becomes executable and the existing runtime-foundation gate passes, replay the exact changed scenario through official Studio MCP and feed the observed result back into causal repair"
   },
   "productionPlan": {
-    "version": 2,
+    "version": 3,
     "executionBoundary": "EXISTING_BUILD_UP_ONLY",
     "platform": "ROBLOX",
     "executionSurface": "ROBLOX",
@@ -2406,6 +2447,7 @@
       "엔트로피 미터"
     ],
     "progressionDirection": "메타 진행은 각 런에서 획득한 '별의 가루'를 사용하여 영구적인 능력치 강화와 새로운 메아리 유형을 해금하는 방식으로 이루어집니다. 플레이어는 단순히 강해지는 것을 넘어, 자신의 플레이 스타일에 맞는 메아리 조합을 미리 설정하여 다음 런의 전략적 우위를 점할 수 있습니다. 이 과정은 반복적인 플레이가 지루하지 않도록 새로운 도전 과제와 보상을 지속적으로 제공하며, 플레이어가 자신의 성장을 체감할 수 있도록 설계되었습니다.",
+    "depthAndReward": null,
     "ideas": [
       {
         "id": "SURVIVAL:SOURCE_REPAIR",
@@ -2444,7 +2486,9 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "dc1b03c5a3b6a1aaa440fc46ef7e0695e70f88760753bb4a59eb0cc2fc1755c9",
+    "sourceTreeFingerprint": "88e2394090c41a2e52aeb13151804fa8a28beccdd3983f4ef311533991e2f5d3",
+    "spatialBlueprintContract": null,
+    "interfaceBlueprintContract": null,
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2474,7 +2518,7 @@
     "implementationStatus": "PLANNED_NOT_IMPLEMENTED"
   },
   "robloxProductionPlan": {
-    "version": 2,
+    "version": 3,
     "executionBoundary": "EXISTING_BUILD_UP_ONLY",
     "platform": "ROBLOX",
     "executionSurface": "ROBLOX",
@@ -2496,6 +2540,7 @@
       "엔트로피 미터"
     ],
     "progressionDirection": "메타 진행은 각 런에서 획득한 '별의 가루'를 사용하여 영구적인 능력치 강화와 새로운 메아리 유형을 해금하는 방식으로 이루어집니다. 플레이어는 단순히 강해지는 것을 넘어, 자신의 플레이 스타일에 맞는 메아리 조합을 미리 설정하여 다음 런의 전략적 우위를 점할 수 있습니다. 이 과정은 반복적인 플레이가 지루하지 않도록 새로운 도전 과제와 보상을 지속적으로 제공하며, 플레이어가 자신의 성장을 체감할 수 있도록 설계되었습니다.",
+    "depthAndReward": null,
     "ideas": [
       {
         "id": "SURVIVAL:SOURCE_REPAIR",
@@ -2534,7 +2579,9 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "dc1b03c5a3b6a1aaa440fc46ef7e0695e70f88760753bb4a59eb0cc2fc1755c9",
+    "sourceTreeFingerprint": "88e2394090c41a2e52aeb13151804fa8a28beccdd3983f4ef311533991e2f5d3",
+    "spatialBlueprintContract": null,
+    "interfaceBlueprintContract": null,
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2797,7 +2844,7 @@
       "runtimeObserved": true
     },
     "baseline": {
-      "sourceTreeFingerprint": "dc1b03c5a3b6a1aaa440fc46ef7e0695e70f88760753bb4a59eb0cc2fc1755c9",
+      "sourceTreeFingerprint": "88e2394090c41a2e52aeb13151804fa8a28beccdd3983f4ef311533991e2f5d3",
       "runtimeObserved": true,
       "runtimePassed": false,
       "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
@@ -2852,7 +2899,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 28,
+    "nextGeneration": 29,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2918,5 +2965,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-07T13:47:03.188Z"
+  "generatedAt": "2026-10-08T11:50:06.800Z"
 }

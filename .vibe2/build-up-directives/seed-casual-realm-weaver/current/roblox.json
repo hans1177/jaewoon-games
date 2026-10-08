@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-casual-realm-weaver-build-up-g25-4faa1476837a",
-  "directiveFingerprint": "4faa1476837a9e38cc6902630fb3fbf3ac7c96bc7626bc0322929f8d4fdfabfa",
-  "previousDirectiveFingerprint": "6ba2145172983b60e0634b88928184d534f10a0891b6e4c90ad624b94d519d65",
-  "forbiddenRepeatFingerprint": "6ba2145172983b60e0634b88928184d534f10a0891b6e4c90ad624b94d519d65",
+  "directiveId": "seed-casual-realm-weaver-build-up-g26-b706a3ce90ba",
+  "directiveFingerprint": "b706a3ce90bad926455cbce55dfddb9855e14050bca1e4df960b3c8f27424535",
+  "previousDirectiveFingerprint": "4faa1476837a9e38cc6902630fb3fbf3ac7c96bc7626bc0322929f8d4fdfabfa",
+  "forbiddenRepeatFingerprint": "4faa1476837a9e38cc6902630fb3fbf3ac7c96bc7626bc0322929f8d4fdfabfa",
   "gameId": "seed-casual-realm-weaver",
   "gameName": "세계의 직조자",
-  "generation": 25,
+  "generation": 26,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,8 +14,8 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-casual-realm-weaver",
-  "sourceTreeFingerprint": "6336cf31f3782a79b2189cc8ef30c8dda2fa3176a791c6d6b3261065d4567e15",
-  "designFingerprint": "35660d0aeaf1c553947f89ffa097f8a320a70cc0981decae5a4fe1affe02581f",
+  "sourceTreeFingerprint": "4af1486da6ca6624da84b7e16171d8de5b0486bf6b19a08b738502a42ce817cd",
+  "designFingerprint": "4b93f44047dd1681bb8bbe265bf0fd3d94148b58697f0df8a41f49d9ef929bec",
   "identityReinforcement": {
     "appliesToAllGenres": true,
     "genre": "Puzzle",
@@ -104,7 +104,7 @@
           "장기 업데이트: 하늘의 정원",
           "비동기식 소셜 협동 모드 및 커스텀 맵 공유 기능"
         ],
-        "sourceTreeFingerprint": "6336cf31f3782a79b2189cc8ef30c8dda2fa3176a791c6d6b3261065d4567e15",
+        "sourceTreeFingerprint": "4af1486da6ca6624da84b7e16171d8de5b0486bf6b19a08b738502a42ce817cd",
         "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -220,8 +220,40 @@
         "validationEvidence": "Exact APK/AAB source revision, install and launch, real touch gameplay, pause/resume, save/restore, performance, independent QA, regression, and package identity evidence."
       }
     },
-    "webCanonicalDesign": {},
-    "platformExpansionPolicy": {},
+    "webCanonicalDesign": {
+      "role": "SHARED_DESIGN_WEB_APPLICATION",
+      "designAuthority": "GAME_DESIGN_REFERENCE_NOT_SOURCE_CODE_AUTHORITY",
+      "playerFlow": [
+        "화면에 제시된 무작위 지형 조각을 확인하고, 한 손가락 드래그로 원하는 위치에 배치합니다.",
+        "조각을 연결하여 특정 패턴이나 색상을 완성하면, 해당 영역이 활성화되며 점수와 함께 주변 환경이 변화합니다.",
+        "연속 연결(콤보)을 통해 특수 효과를 발동시키고, 제한된 턴 내에 목표 점수를 달성하여 다음 스테이지로 나아갑니다.",
+        "획득한 재화로 새로운 테마의 조각 세트를 해금하거나, 나만의 작은 정원을 꾸미는 보상 시스템을 이용합니다."
+      ],
+      "worldAndTraversal": "",
+      "systemsAndContent": "name: 직조 연결 시스템; purpose: 단순 배치를 넘어, 조각 간의 속성(색상, 형태)을 매칭하여 시너지를 발생시키기 위함입니다.; playerChoice: 어떤 조각을 먼저 배치하여 연쇄 반응을 일으킬지, 혹은 더 큰 보상을 위해 특정 패턴을 완성할지 결정합니다. / name: 생태계 복원 게이지; purpose: 플레이의 성과를 시각적으로 누적하고, 스테이지 클리어 시 극적인 변화를 보여주기 위함입니다.; playerChoice: 어떤 지역을 우선적으로 복원하여 보너스 효과를 얻을지, 혹은 위험 요소를 제거할지 선택합니다.",
+      "combatAndInteraction": "조각을 배치하고 연결할 때 발생하는 즉각적인 시각적 피드백과, 완성된 풍경이 생동감 있게 변하는 '생명력의 전이'를 경험하는 것입니다.",
+      "progressionAndEconomy": "progressionLoop: 스테이지 진입(조각 배치) -> 패턴 완성(생태계 복원) -> 스테이지 클리어(보상 획득) -> 재화 소비(조각 세트 해금/정원 꾸미기) -> 난이도 상승 및 반복; resourceFlow: 생명의 씨앗은 스테이지 클리어 성과에 따라 획득하며, 이는 조각 세트 해금(영구적 능력치/시각 변화)과 정원 장식(심미적 만족)에 소모됨. 밸런스 유지를 위해 스테이지 난이도와 재화 획득량은 비례 곡선을 그림; balanceRules: 스테이지당 턴 제한을 두어 긴장감을 유지하고, 콤보 달성 시 턴 보너스를 제공하여 실력 기반의 플레이를 장려함. 재화 인플레이션을 방지하기 위해 후반부 조각 세트 해금 비용을 지수적으로 증가시킴",
+      "sessionFailureRecovery": "failureStates: 턴 제한 내 목표 점수 미달 / 배치 가능한 조각이 없는 막다른 상태(Deadlock); retryFlow: 실패 시 즉시 '다시 시도' 버튼 노출, 광고 시청을 통한 턴 추가 또는 조각 셔플 기회 제공으로 즉각적인 리플레이 유도; riskPressure: 스테이지가 진행될수록 조각의 속성이 다양해져 최적의 배치를 찾기 어려워지며, 턴 제한이 타이트해져 실패 확률이 점진적으로 상승함; recoveryRules: 실패 시 획득한 재화의 일부를 보존하여 플레이어의 좌절감을 완화하고, 연속 실패 시 난이도 보정(조각 배치 확률 조정)이 자동으로 적용됨",
+      "uiMenuAndOnboarding": "hudPriorities: 중앙: 퍼즐 보드, 하단: 조각 덱 및 햅틱 컨트롤, 상단: 목표 점수 및 복원 게이지; touchAndInput: 드래그 시 조각 확대 표시, 배치 가능 영역 하이라이트 강조; readability: 색약 모드 지원(색상 외 패턴/심볼 병기), 고대비 모드 제공; accessibility: 한 손 조작 최적화, 튜토리얼 단계별 건너뛰기 가능, 시각적 피드백의 명확한 구분",
+      "inputCameraAccessibility": "세로 모드 전용, 한 손 엄지 드래그 앤 드롭 방식. 햅틱 피드백을 통해 조각 배치 시 물리적 타격감 전달",
+      "presentationAndAudio": "visualIdentity: 파스텔 톤의 로우 폴리곤 스타일, 조각 배치 시 부드러운 빛의 파티클 효과와 식물이 자라나는 애니메이션; audioIdentity: 잔잔한 앰비언트 사운드와 조각 배치 시 발생하는 맑은 종소리(Chime) 계열의 효과음; gameplayFeedbackSync: 조각 연결 성공 시 사운드 피치 상승, 콤보 달성 시 배경음악의 악기가 추가되는 다이내믹 오디오 시스템",
+      "multiplayerPersistence": "SINGLE; 비동기식 소셜 요소를 도입하여 친구의 정원을 방문하거나, 공동으로 거대한 세계를 직조하는 협동 이벤트를 고려합니다.",
+      "expansionSpace": "milestone: 초기 런칭: 숲의 속삭임; newGameplay: 기본적인 3색 조각 매칭 및 5x5 그리드 퍼즐 제공; systemImpact: 기본 직조 연결 시스템 안정성 검증 및 초기 리텐션 데이터 수집 / milestone: 중기 업데이트: 바다의 노래; newGameplay: 물 속성 조각 추가, 흐르는 지형 기믹 도입; systemImpact: 생태계 복원 게이지에 속성 상성 시스템 추가 및 전략적 깊이 확장 / milestone: 장기 업데이트: 하늘의 정원; newGameplay: 비동기식 소셜 협동 모드 및 커스텀 맵 공유 기능; systemImpact: 보상 시스템에 소셜 재화 추가 및 커뮤니티 활성화 시스템 연동"
+    },
+    "platformExpansionPolicy": {
+      "mode": "SINGLE_ORIGINAL_PLATFORM_IMPLEMENTATION",
+      "sharedLargeFrame": [
+        "CORE_IDENTITY",
+        "CORE_FUN_AND_REPRESENTATIVE_LOOP",
+        "WORLD_AND_PROGRESSION_DIRECTION",
+        "SAVE_PERSISTENCE_MEANING",
+        "MULTIPLAYER_INTENT"
+      ],
+      "expansionLimit": "GAMEPLAY_CHANGES_REQUIRE_SHARED_ORIGINAL_REVISION",
+      "webRule": "게임당 하나의 공통 설계 원본을 사용한다. WEB은 같은 MAIN/A/B/c/@·규칙·상태·진행·멀티를 입력·화면·성능·저장 전송에 맞게 구현한다. 별도 원본을 생성하지 않으며 Unity WebGL은 같은 Unity 프로젝트를 사용한다.",
+      "unityRule": "동일 공통 원본과 디자이너가 작성한 규칙을 Unity에서 구현한다. 입력·물리 표현·카메라·UI·성능·저장 전송·런타임 검증만 플랫폼에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다.",
+      "robloxRule": "기존 Roblox 원본의 규칙과 사용자 요청을 공통 원본에 보존한다. platformProfiles.ROBLOX와 robloxBuildProfile은 같은 원본의 구현·배포·검증 방식이며 독립 게임 설계가 아니다. 다른 플랫폼 실패는 해당 플랫폼의 수정·재시도로 분리한다."
+    },
     "visualDirection": "부드러운 파스텔 톤과 미니멀한 3D 로우 폴리곤 스타일을 채택합니다. 조각이 연결될 때마다 빛이 퍼져나가고 식물이 자라나는 등 따뜻하고 생동감 넘치는 파티클 효과를 강조합니다.",
     "mobileUx": "세로 모드 전용으로 설계하며, 모든 조작은 한 손 엄지손가락만으로 가능하도록 인터페이스를 하단에 배치합니다. 햅틱 피드백을 활용하여 조각이 딱 맞게 들어갈 때의 손맛을 극대화합니다.",
     "uxAccessibilityPlan": {
@@ -506,9 +538,9 @@
   "previousVersionDelta": {
     "previousGoal": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 24,
-    "previousSourceTreeFingerprint": "21b9e1dd963780cfa9d6a9fc125823c95ce4a69eb994fa7dcaa9fc5e5d03d08a",
-    "currentSourceTreeFingerprint": "6336cf31f3782a79b2189cc8ef30c8dda2fa3176a791c6d6b3261065d4567e15",
+    "previousGeneration": 25,
+    "previousSourceTreeFingerprint": "6336cf31f3782a79b2189cc8ef30c8dda2fa3176a791c6d6b3261065d4567e15",
+    "currentSourceTreeFingerprint": "4af1486da6ca6624da84b7e16171d8de5b0486bf6b19a08b738502a42ce817cd",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -632,6 +664,15 @@
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
+  },
+  "multiplayerImplementation": {
+    "required": true,
+    "policyVersion": 1,
+    "developmentAdmissionGate": false,
+    "missingImplementationAction": "EXISTING_BUILD_UP_LOCAL_IMPLEMENTATION_AND_RETRY",
+    "otherGamesAndIndependentWorkContinue": true,
+    "actualMultiplayerPlayVerified": false,
+    "completionEvidence": "ACTUAL_TWO_OR_MORE_CLIENTS_SAME_SESSION_ACTION_STATE_RESULT_AND_RECONNECT"
   },
   "qualityGapMap": [
     {
@@ -817,7 +858,7 @@
     {
       "domain": "MULTIPLAYER_AND_SYNC",
       "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "reason": "multiplayer source signals found; actual multi-client gameplay remains unverified by source inspection"
     },
     {
       "domain": "INPUT",
@@ -1335,7 +1376,7 @@
       "state": "PASS",
       "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
-      "directive": "멀티가 적용되는 게임만 기존 방 생성·참가·준비·시작·이탈을 서버 판정으로 연결한다. 참가자·준비·기존 모드를 표시하고 대기 중 안전한 공동 연습을 제공한다. 결과 화면에 각자 재도전 의사를 표시하고 기존 참가 규칙으로 인원을 유지하되 이탈자 때문에 무한 대기하지 않게 한다. 방장 이탈·late join·재접속을 기존 규칙으로 복구하고 실제 2인 이상의 행동·목표·승패·보상 일치와 중복 지급 방지를 검수한다.",
+      "directive": "모든 게임은 멀티 구현이 필수다. 기존 SINGLE 원본은 디자이너가 COOP/COMPETITIVE/HYBRID 중 게임에 맞는 확장을 작성하며 기존 멀티 규칙은 보존한다. 기존 방 생성·참가·준비·시작·이탈을 서버 판정으로 연결한다. 참가자·준비·기존 모드를 표시하고 대기 중 안전한 공동 연습을 제공한다. 결과 화면에 각자 재도전 의사를 표시하고 기존 참가 규칙으로 인원을 유지하되 이탈자 때문에 무한 대기하지 않게 한다. 방장 이탈·late join·재접속을 기존 규칙으로 복구하고 실제 2인 이상의 행동·목표·승패·보상 일치와 중복 지급 방지를 검수한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1768,8 +1809,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 97794,
-        "largestFileBytes": 48361,
+        "sourceBytes": 127173,
+        "largestFileBytes": 48379,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1957,11 +1998,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 25,
-    "previousGeneration": 24,
+    "generation": 26,
+    "previousGeneration": 25,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "6336cf31f3782a79b2189cc8ef30c8dda2fa3176a791c6d6b3261065d4567e15",
-    "priorSourceFingerprint": "21b9e1dd963780cfa9d6a9fc125823c95ce4a69eb994fa7dcaa9fc5e5d03d08a",
+    "sourceFingerprint": "4af1486da6ca6624da84b7e16171d8de5b0486bf6b19a08b738502a42ce817cd",
+    "priorSourceFingerprint": "6336cf31f3782a79b2189cc8ef30c8dda2fa3176a791c6d6b3261065d4567e15",
     "previousRuntimeEffect": "REGRESSION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2193,12 +2234,12 @@
     "반복 조작은 편의 기능으로 줄이되 핵심 플레이 선택과 위험/보상 판단을 자동화하지 않는다."
   ],
   "platformAdaptationDirectives": {
-    "WEB": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.: WEB 상세 게임 원본과 공통 큰틀을 기준으로 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. WEB 자체 시스템·콘텐츠·지역·세션·UI·카메라·연출 확장에는 다른 플랫폼과의 세부 parity 제한을 두지 않는다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "ROBLOX": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.: 동일 공통 목표 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
-    "UNITY": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.: WEB 상세 게임 원본에서 공통 큰틀만 이어받아 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 경험으로 재해석한다. Unity 전용 시스템·콘텐츠·지역·물리·카메라·애니메이션·세션 구조·UX·연출 확장에는 인위적 parity 제한을 두지 않는다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
+    "WEB": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.: 게임당 하나인 공통 설계 원본을 기준으로 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. MAIN/A/B/c/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "ROBLOX": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.: 동일 공통 목표 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. MAIN/A/B/c/@·규칙·상태·진행·멀티는 공통 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
+    "UNITY": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.: 동일 공통 원본의 규칙과 상태를 보존하며 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
     "FORTNITE_UEFN": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.: 동일 공통 목표 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UNITY_WEB": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.: WEB 상세 게임 원본과 공통 큰틀을 기준으로 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. WEB 자체 시스템·콘텐츠·지역·세션·UI·카메라·연출 확장에는 다른 플랫폼과의 세부 parity 제한을 두지 않는다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "UNITY_APP": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.: WEB 상세 게임 원본에서 공통 큰틀만 이어받아 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 경험으로 재해석한다. Unity 전용 시스템·콘텐츠·지역·물리·카메라·애니메이션·세션 구조·UX·연출 확장에는 인위적 parity 제한을 두지 않는다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
+    "UNITY_WEB": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.: 게임당 하나인 공통 설계 원본을 기준으로 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. MAIN/A/B/c/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "UNITY_APP": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.: 동일 공통 원본의 규칙과 상태를 보존하며 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
     "UNREAL": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.: 동일 공통 목표 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
     "UEFN": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.: 동일 공통 목표 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
   },
@@ -2361,7 +2402,7 @@
     "actualPlayRule": "after the changed behavior becomes executable and the existing runtime-foundation gate passes, replay the exact changed scenario through official Studio MCP and feed the observed result back into causal repair"
   },
   "productionPlan": {
-    "version": 2,
+    "version": 3,
     "executionBoundary": "EXISTING_BUILD_UP_ONLY",
     "platform": "ROBLOX",
     "executionSurface": "ROBLOX",
@@ -2384,6 +2425,7 @@
       "생태계 복원 게이지"
     ],
     "progressionDirection": "스테이지가 진행될수록 지형의 복잡도가 증가하며, 새로운 속성을 가진 조각들이 추가됩니다. 플레이어는 점진적으로 더 넓고 화려한 세계를 직조하며, 수집한 조각으로 자신만의 커스텀 맵을 구성할 수 있습니다.",
+    "depthAndReward": null,
     "ideas": [
       {
         "id": "PUZZLE:SOURCE_REPAIR",
@@ -2422,7 +2464,9 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "6336cf31f3782a79b2189cc8ef30c8dda2fa3176a791c6d6b3261065d4567e15",
+    "sourceTreeFingerprint": "4af1486da6ca6624da84b7e16171d8de5b0486bf6b19a08b738502a42ce817cd",
+    "spatialBlueprintContract": null,
+    "interfaceBlueprintContract": null,
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2452,7 +2496,7 @@
     "implementationStatus": "PLANNED_NOT_IMPLEMENTED"
   },
   "robloxProductionPlan": {
-    "version": 2,
+    "version": 3,
     "executionBoundary": "EXISTING_BUILD_UP_ONLY",
     "platform": "ROBLOX",
     "executionSurface": "ROBLOX",
@@ -2475,6 +2519,7 @@
       "생태계 복원 게이지"
     ],
     "progressionDirection": "스테이지가 진행될수록 지형의 복잡도가 증가하며, 새로운 속성을 가진 조각들이 추가됩니다. 플레이어는 점진적으로 더 넓고 화려한 세계를 직조하며, 수집한 조각으로 자신만의 커스텀 맵을 구성할 수 있습니다.",
+    "depthAndReward": null,
     "ideas": [
       {
         "id": "PUZZLE:SOURCE_REPAIR",
@@ -2513,7 +2558,9 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "6336cf31f3782a79b2189cc8ef30c8dda2fa3176a791c6d6b3261065d4567e15",
+    "sourceTreeFingerprint": "4af1486da6ca6624da84b7e16171d8de5b0486bf6b19a08b738502a42ce817cd",
+    "spatialBlueprintContract": null,
+    "interfaceBlueprintContract": null,
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2776,7 +2823,7 @@
       "runtimeObserved": true
     },
     "baseline": {
-      "sourceTreeFingerprint": "6336cf31f3782a79b2189cc8ef30c8dda2fa3176a791c6d6b3261065d4567e15",
+      "sourceTreeFingerprint": "4af1486da6ca6624da84b7e16171d8de5b0486bf6b19a08b738502a42ce817cd",
       "runtimeObserved": true,
       "runtimePassed": false,
       "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
@@ -2831,7 +2878,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 26,
+    "nextGeneration": 27,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2897,5 +2944,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-07T13:58:05.034Z"
+  "generatedAt": "2026-10-08T11:50:06.905Z"
 }

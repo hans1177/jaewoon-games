@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-idle-growth-rpg-crystal-bloom-build-up-g25-d89d3cc7fd78",
-  "directiveFingerprint": "d89d3cc7fd78611924dfc4bf4830ce9f4c2715546213a8dba5e4c9809cd930eb",
-  "previousDirectiveFingerprint": "04f89ec2be208f062abac95e56021ed8d0940167f44da7a55cebceb298433470",
-  "forbiddenRepeatFingerprint": "04f89ec2be208f062abac95e56021ed8d0940167f44da7a55cebceb298433470",
+  "directiveId": "seed-idle-growth-rpg-crystal-bloom-build-up-g26-8f0d790a6179",
+  "directiveFingerprint": "8f0d790a6179866f45d08f4743d7023f55d3f7a7fe34ac647e2787a11f609d51",
+  "previousDirectiveFingerprint": "d89d3cc7fd78611924dfc4bf4830ce9f4c2715546213a8dba5e4c9809cd930eb",
+  "forbiddenRepeatFingerprint": "d89d3cc7fd78611924dfc4bf4830ce9f4c2715546213a8dba5e4c9809cd930eb",
   "gameId": "seed-idle-growth-rpg-crystal-bloom",
   "gameName": "수정의 개화",
-  "generation": 25,
+  "generation": 26,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,8 +14,8 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-idle-growth-rpg-crystal-bloom",
-  "sourceTreeFingerprint": "fa71a6b231b917300bbe928c69ca2efa3e1bf844dc75057bf3332da186e67762",
-  "designFingerprint": "90e8de2e9b04209826b6833524a8fdf3b36723551bcf1c4b5a1ed17016d1e8c6",
+  "sourceTreeFingerprint": "ddae09503fe9fb0d69643919930d4e244847cc0efab428c169c6eaa132529619",
+  "designFingerprint": "e73176730ceadb2bb040af1adb28c1b3f69d66f9c588a80f8c92a0359925d5b9",
   "identityReinforcement": {
     "appliesToAllGenres": true,
     "genre": "Strategy",
@@ -104,7 +104,7 @@
           "차원 정화 멀티 레이드 도입 (플레이 시간 50시간 시점)",
           "다른 플레이어의 수정 버프를 실시간으로 공유받아 거대한 차원수를 함께 토벌하는 비동기 협동 레이드 콘텐츠입니다."
         ],
-        "sourceTreeFingerprint": "fa71a6b231b917300bbe928c69ca2efa3e1bf844dc75057bf3332da186e67762",
+        "sourceTreeFingerprint": "ddae09503fe9fb0d69643919930d4e244847cc0efab428c169c6eaa132529619",
         "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -219,8 +219,40 @@
         "validationEvidence": "Exact APK/AAB source revision, install and launch, real touch gameplay, pause/resume, save/restore, performance, independent QA, regression, and package identity evidence."
       }
     },
-    "webCanonicalDesign": {},
-    "platformExpansionPolicy": {},
+    "webCanonicalDesign": {
+      "role": "SHARED_DESIGN_WEB_APPLICATION",
+      "designAuthority": "GAME_DESIGN_REFERENCE_NOT_SOURCE_CODE_AUTHORITY",
+      "playerFlow": [
+        "자동 전투를 통해 오염된 마력 파편과 영웅 성장 재화를 지속적으로 획득합니다.",
+        "획득한 재화로 수정의 원소 노드를 개화하고 영웅의 장비와 스킬을 업그레이드합니다.",
+        "강화된 영웅 진형과 수정 버프를 활용해 더 높은 단계의 보스 스테이지에 도전하여 새로운 원소를 해금합니다.",
+        "플레이어는 스테이지 진행에 따라 점진적으로 더 강력한 적을 조우하며, 수정의 다채로운 원소 가지를 해금하여 영웅들의 한계 레벨을 돌파합니다. 단순 수치 증가를 넘어 새로운 스킬 메커니즘과 원소 조합이 열리는 방향으로 진행됩니다."
+      ],
+      "worldAndTraversal": "",
+      "systemsAndContent": "name: 수정 개화 시스템 (Crystal Bloom System); purpose: 플레이어가 획득한 마력 파편을 소모하여 수정의 가지를 뻗어나가며, 영웅 전체에게 적용되는 고유 원소 버프와 특수 효과를 선택적으로 활성화합니다.; playerChoice: 화염, 냉기, 대지, 번개 중 어떤 원소 노드를 우선적으로 개화하여 현재 영웅 덱의 시너지를 극대화할지 결정합니다. / name: 원소 공명 진형 (Elemental Resonance Formation); purpose: 수정의 개화 상태와 영웅들의 원소 속성을 일치시켜 전투 중 강력한 공명 스킬과 연쇄 반응을 유도하는 전술 시스템입니다.; playerChoice: 전열과 후열의 영웅 배치를 수정의 활성화된 원소 노드와 일치시켜 추가 피해를 줄지, 방어막을 얻을지 실시간으로 조합을 변경합니다.",
+      "combatAndInteraction": "수정의 개화에서 느끼는 핵심 재미는 실시간으로 변화하는 수정의 원소 속성을 선택하고, 이에 맞춰 영웅들의 스킬 체인을 구성하여 한계를 돌파하는 전략적 의사결정과 즉각적인 수치적 피드백에 있습니다.",
+      "progressionAndEconomy": "progressionLoop: 전투 -> 마력 파편 및 골드 획득 -> 수정 개화 및 영웅 레벨업 -> 상위 스테이지 진입 및 시간당 재화 생산량 증가로 이어지는 선순환 구조를 가집니다.; resourceFlow: 기본 재화인 골드는 영웅의 기본 능력치를 올리는 데 사용되며, 희귀 재화인 마력 파편은 수정 개화 시스템에만 집중 투자되어 성장의 두 축을 이룹니다.; balanceRules: 수정 개화 비용은 노드 깊이에 따라 지수함수적으로 증가하지만, 상위 스테이지의 시간당 파편 획득량 역시 비례하여 증가하므로 정체 구간을 최소화합니다.",
+      "sessionFailureRecovery": "failureStates: 보스 스테이지 도전 중 제한 시간 초과로 인한 토벌 실패 / 영웅 진형의 전멸로 인한 스테이지 진행 중단 및 자동 파밍 모드 회귀; retryFlow: 전투 실패 시 패널티 없이 즉시 이전 자동 파밍 스테이지로 안전하게 복귀하며, 플레이어는 즉시 영웅을 정비하거나 수정을 개화한 후 원클릭으로 재도전할 수 있습니다.; riskPressure: 실패에 따른 재화 손실은 전혀 없으나, 상위 스테이지로 진입하지 못할 경우 시간당 누적되는 방치 보상의 효율이 정체되는 기회비용적 압박을 제공합니다.; recoveryRules: 실패한 스테이지의 보스 패턴 분석 툴팁을 제공하며, 추천 원소 속성을 시각적으로 표시하여 플레이어가 수정 노드를 재조정하도록 유도합니다.",
+      "uiMenuAndOnboarding": "hudPriorities: 화면 상단에 시간당 재화 획득량을 실시간 표시하고, 중앙에는 전투 화면, 하단에는 수정 개화 및 영웅 관리 탭을 상시 노출하여 정보 접근성을 높입니다.; touchAndInput: 모든 버튼의 터치 영역을 최소 48dp 이상으로 확보하고, 연속 탭이 필요한 레벨업 버튼에는 롱프레스(누르고 있기) 기능을 지원하여 피로도를 줄입니다.; readability: 고대비 서체를 사용하여 작은 모바일 화면에서도 수치 변화를 쉽게 읽을 수 있도록 하며, 원소 속성은 색상뿐만 아니라 고유 아이콘을 병기하여 색약 플레이어를 배려합니다.; accessibility: 화면 흔들림 및 광과민성 발작을 유발할 수 있는 강한 플래시 효과를 옵션에서 끌 수 있도록 하고, 햅틱 피드백의 강도를 조절할 수 있는 설정을 제공합니다.",
+      "inputCameraAccessibility": "모바일 터치 스크린에 최적화된 원터치 성장 및 드래그 앤 드롭 방식의 영웅 배치 시스템을 지원하며, PC 환경에서는 마우스 클릭만으로 모든 조작이 가능하도록 설계합니다.",
+      "presentationAndAudio": "visualIdentity: 로우폴리곤과 고품질 셰이더의 조화를 통해 몽환적이고 깔끔한 판타지 세계관을 구축하며, 수정이 개화할 때마다 월드의 배경 오브젝트가 점진적으로 정화되는 비주얼 변화를 보여줍니다.; audioIdentity: 평화롭고 신비로운 오케스트라 풍의 배경음악을 기반으로 하되, 전투 시에는 타격감 있는 크리스탈 파편 음향과 원소 폭발음을 강조하여 청각적 몰입감을 선사합니다.; gameplayFeedbackSync: 원소 공명 스킬이 발동하는 순간 화면 테두리에 해당 원소 색상의 오라가 점멸하며, 동시에 묵직한 베이스 음향을 출력하여 플레이어가 시너지 발동을 즉각 인지하게 합니다.",
+      "multiplayerPersistence": "SINGLE; 기본적으로 싱글 플레이어의 성장에 집중하되, 향후 유저 간의 성장 속도를 경쟁하는 비동기식 랭킹전(PvP) 및 협동 레이드 시스템을 시즌제 콘텐츠로 확장할 예정입니다.",
+      "expansionSpace": "milestone: 심연의 균열 콘텐츠 오픈 (플레이 시간 10시간 시점); newGameplay: 요일별로 속성 면역을 가진 보스가 등장하는 심연의 균열 던전이 열리며, 플레이어는 특정 원소 조합만을 사용하여 보스를 공략해야 합니다.; systemImpact: 단일 원소 올인 전략을 쓰던 플레이어들이 다양한 원소 노드를 골고루 개화하도록 유도하여 수정 개화 시스템의 활용도를 다변화시킵니다. / milestone: 고대 유물 각성 시스템 추가 (플레이 시간 25시간 시점); newGameplay: 수정의 특정 노드와 공명하는 고대 유물을 장착하여, 영웅들의 액티브 스킬에 추가적인 원소 상태이상을 부여하는 시스템입니다.; systemImpact: 원소 공명 진형 시스템과 결합하여, 단순한 스킬 체인을 넘어 상태이상 연쇄 폭발을 일으키는 고차원적 전투 메커니즘을 제공합니다. / milestone: 차원 정화 멀티 레이드 도입 (플레이 시간 50시간 시점); newGameplay: 다른 플레이어의 수정 버프를 실시간으로 공유받아 거대한 차원수를 함께 토벌하는 비동기 협동 레이드 콘텐츠입니다.; systemImpact: 자신의 수정 개화 트리와 시너지가 맞는 다른 플레이어를 탐색하고 매칭하는 커뮤니티 활성화 및 덱 다양성 확보에 기여합니다."
+    },
+    "platformExpansionPolicy": {
+      "mode": "SINGLE_ORIGINAL_PLATFORM_IMPLEMENTATION",
+      "sharedLargeFrame": [
+        "CORE_IDENTITY",
+        "CORE_FUN_AND_REPRESENTATIVE_LOOP",
+        "WORLD_AND_PROGRESSION_DIRECTION",
+        "SAVE_PERSISTENCE_MEANING",
+        "MULTIPLAYER_INTENT"
+      ],
+      "expansionLimit": "GAMEPLAY_CHANGES_REQUIRE_SHARED_ORIGINAL_REVISION",
+      "webRule": "게임당 하나의 공통 설계 원본을 사용한다. WEB은 같은 MAIN/A/B/c/@·규칙·상태·진행·멀티를 입력·화면·성능·저장 전송에 맞게 구현한다. 별도 원본을 생성하지 않으며 Unity WebGL은 같은 Unity 프로젝트를 사용한다.",
+      "unityRule": "동일 공통 원본과 디자이너가 작성한 규칙을 Unity에서 구현한다. 입력·물리 표현·카메라·UI·성능·저장 전송·런타임 검증만 플랫폼에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다.",
+      "robloxRule": "기존 Roblox 원본의 규칙과 사용자 요청을 공통 원본에 보존한다. platformProfiles.ROBLOX와 robloxBuildProfile은 같은 원본의 구현·배포·검증 방식이며 독립 게임 설계가 아니다. 다른 플랫폼 실패는 해당 플랫폼의 수정·재시도로 분리한다."
+    },
     "visualDirection": "신비로운 보랏빛과 푸른빛의 크리스탈 텍스처를 메인 테마로 삼고, 오염된 대지의 어두운 톤과 대비되는 화려한 원소 개화 이펙트를 통해 시각적 정화의 쾌감을 극대화합니다.",
     "mobileUx": "한 손 조작이 가능한 세로형 레이아웃을 채택하고, 화면 하단 30% 영역에 핵심 성장 버튼을 배치하여 엄지손가락만으로 모든 루프를 수행할 수 있도록 UX를 설계합니다.",
     "uxAccessibilityPlan": {
@@ -295,7 +327,7 @@
     ],
     "signals": {
       "combat": 71,
-      "progression": 125,
+      "progression": 123,
       "ai": 21,
       "save": 49,
       "multiplayer": 13,
@@ -496,9 +528,9 @@
   "previousVersionDelta": {
     "previousGoal": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 24,
-    "previousSourceTreeFingerprint": "c78d0860f71978927116c337a61b9c96b8be9fd53ec93e28dbfbb10a976f62df",
-    "currentSourceTreeFingerprint": "fa71a6b231b917300bbe928c69ca2efa3e1bf844dc75057bf3332da186e67762",
+    "previousGeneration": 25,
+    "previousSourceTreeFingerprint": "fa71a6b231b917300bbe928c69ca2efa3e1bf844dc75057bf3332da186e67762",
+    "currentSourceTreeFingerprint": "ddae09503fe9fb0d69643919930d4e244847cc0efab428c169c6eaa132529619",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -508,8 +540,8 @@
       "sourceRevision": "6e13f71dda6fcb3edd6d684743ca0da1adc3ebc0",
       "artifactIdentity": "sha256:ea8208c78015adf7a309576284572605269c0708ba410fc14e38d2630bbc8c97",
       "authority": "roblox-f0-gameplay-product-readiness-failure",
-      "workflowRunId": 37757199979,
-      "testedAt": "2026-10-08T10:43:45.752Z",
+      "workflowRunId": 37766914129,
+      "testedAt": "2026-10-08T11:45:24.208Z",
       "repairSurfaces": [
         "CORE_GAMEPLAY",
         "COMBAT_FEEL",
@@ -646,6 +678,15 @@
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
+  },
+  "multiplayerImplementation": {
+    "required": true,
+    "policyVersion": 1,
+    "developmentAdmissionGate": false,
+    "missingImplementationAction": "EXISTING_BUILD_UP_LOCAL_IMPLEMENTATION_AND_RETRY",
+    "otherGamesAndIndependentWorkContinue": true,
+    "actualMultiplayerPlayVerified": false,
+    "completionEvidence": "ACTUAL_TWO_OR_MORE_CLIENTS_SAME_SESSION_ACTION_STATE_RESULT_AND_RECONNECT"
   },
   "qualityGapMap": [
     {
@@ -831,7 +872,7 @@
     {
       "domain": "MULTIPLAYER_AND_SYNC",
       "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "reason": "multiplayer source signals found; actual multi-client gameplay remains unverified by source inspection"
     },
     {
       "domain": "INPUT",
@@ -915,8 +956,8 @@
     },
     {
       "domain": "REPLAYABILITY_VARIATION",
-      "state": "NOT_APPLICABLE",
-      "reason": "no explicit replay variation signal in approved design"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "CHARACTER_VISUALS",
@@ -1349,7 +1390,7 @@
       "state": "PASS",
       "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
-      "directive": "멀티가 적용되는 게임만 기존 방 생성·참가·준비·시작·이탈을 서버 판정으로 연결한다. 참가자·준비·기존 모드를 표시하고 대기 중 안전한 공동 연습을 제공한다. 결과 화면에 각자 재도전 의사를 표시하고 기존 참가 규칙으로 인원을 유지하되 이탈자 때문에 무한 대기하지 않게 한다. 방장 이탈·late join·재접속을 기존 규칙으로 복구하고 실제 2인 이상의 행동·목표·승패·보상 일치와 중복 지급 방지를 검수한다.",
+      "directive": "모든 게임은 멀티 구현이 필수다. 기존 SINGLE 원본은 디자이너가 COOP/COMPETITIVE/HYBRID 중 게임에 맞는 확장을 작성하며 기존 멀티 규칙은 보존한다. 기존 방 생성·참가·준비·시작·이탈을 서버 판정으로 연결한다. 참가자·준비·기존 모드를 표시하고 대기 중 안전한 공동 연습을 제공한다. 결과 화면에 각자 재도전 의사를 표시하고 기존 참가 규칙으로 인원을 유지하되 이탈자 때문에 무한 대기하지 않게 한다. 방장 이탈·late join·재접속을 기존 규칙으로 복구하고 실제 2인 이상의 행동·목표·승패·보상 일치와 중복 지급 방지를 검수한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1499,12 +1540,12 @@
     },
     {
       "domain": "REPLAYABILITY_VARIATION",
-      "state": "NOT_APPLICABLE",
-      "priority": "NOT_APPLICABLE",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "현재 승인 설계상 no explicit replay variation signal in approved design. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "directive": "반복 플레이가 적용되는 게임이면 조우 조합·지역 경로·보상 선택·빌드/전략·이벤트 중 게임에 맞는 변주를 제공해 같은 정답만 반복되지 않게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
-      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
     {
       "domain": "CHARACTER_VISUALS",
@@ -1781,8 +1822,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 97513,
-        "largestFileBytes": 47969,
+        "sourceBytes": 126887,
+        "largestFileBytes": 47979,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1879,7 +1920,7 @@
       },
       {
         "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": 20,
+        "score": 22,
         "gapDomains": []
       },
       {
@@ -1888,12 +1929,12 @@
         "gapDomains": []
       },
       {
-        "theme": "QUEST_STORY_PROGRESSION_CHAIN",
-        "score": 14,
+        "theme": "MID_LATE_ENDGAME_COMPLETION",
+        "score": 16,
         "gapDomains": []
       },
       {
-        "theme": "MID_LATE_ENDGAME_COMPLETION",
+        "theme": "QUEST_STORY_PROGRESSION_CHAIN",
         "score": 14,
         "gapDomains": []
       },
@@ -1970,11 +2011,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 25,
-    "previousGeneration": 24,
+    "generation": 26,
+    "previousGeneration": 25,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "fa71a6b231b917300bbe928c69ca2efa3e1bf844dc75057bf3332da186e67762",
-    "priorSourceFingerprint": "c78d0860f71978927116c337a61b9c96b8be9fd53ec93e28dbfbb10a976f62df",
+    "sourceFingerprint": "ddae09503fe9fb0d69643919930d4e244847cc0efab428c169c6eaa132529619",
+    "priorSourceFingerprint": "fa71a6b231b917300bbe928c69ca2efa3e1bf844dc75057bf3332da186e67762",
     "previousRuntimeEffect": "REGRESSION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2206,12 +2247,12 @@
     "반복 조작은 편의 기능으로 줄이되 핵심 플레이 선택과 위험/보상 판단을 자동화하지 않는다."
   ],
   "platformAdaptationDirectives": {
-    "WEB": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.: WEB 상세 게임 원본과 공통 큰틀을 기준으로 \"수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. WEB 자체 시스템·콘텐츠·지역·세션·UI·카메라·연출 확장에는 다른 플랫폼과의 세부 parity 제한을 두지 않는다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "ROBLOX": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.: 동일 공통 목표 \"수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
-    "UNITY": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.: WEB 상세 게임 원본에서 공통 큰틀만 이어받아 \"수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 경험으로 재해석한다. Unity 전용 시스템·콘텐츠·지역·물리·카메라·애니메이션·세션 구조·UX·연출 확장에는 인위적 parity 제한을 두지 않는다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
+    "WEB": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.: 게임당 하나인 공통 설계 원본을 기준으로 \"수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. MAIN/A/B/c/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "ROBLOX": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.: 동일 공통 목표 \"수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. MAIN/A/B/c/@·규칙·상태·진행·멀티는 공통 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
+    "UNITY": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.: 동일 공통 원본의 규칙과 상태를 보존하며 \"수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
     "FORTNITE_UEFN": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.: 동일 공통 목표 \"수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UNITY_WEB": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.: WEB 상세 게임 원본과 공통 큰틀을 기준으로 \"수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. WEB 자체 시스템·콘텐츠·지역·세션·UI·카메라·연출 확장에는 다른 플랫폼과의 세부 parity 제한을 두지 않는다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "UNITY_APP": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.: WEB 상세 게임 원본에서 공통 큰틀만 이어받아 \"수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 경험으로 재해석한다. Unity 전용 시스템·콘텐츠·지역·물리·카메라·애니메이션·세션 구조·UX·연출 확장에는 인위적 parity 제한을 두지 않는다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
+    "UNITY_WEB": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.: 게임당 하나인 공통 설계 원본을 기준으로 \"수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. MAIN/A/B/c/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "UNITY_APP": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.: 동일 공통 원본의 규칙과 상태를 보존하며 \"수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
     "UNREAL": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.: 동일 공통 목표 \"수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
     "UEFN": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.: 동일 공통 목표 \"수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
   },
@@ -2374,7 +2415,7 @@
     "actualPlayRule": "after the changed behavior becomes executable and the existing runtime-foundation gate passes, replay the exact changed scenario through official Studio MCP and feed the observed result back into causal repair"
   },
   "productionPlan": {
-    "version": 2,
+    "version": 3,
     "executionBoundary": "EXISTING_BUILD_UP_ONLY",
     "platform": "ROBLOX",
     "executionSurface": "ROBLOX",
@@ -2396,6 +2437,7 @@
       "원소 공명 진형 (Elemental Resonance Formation)"
     ],
     "progressionDirection": "플레이어는 스테이지 진행에 따라 점진적으로 더 강력한 적을 조우하며, 수정의 다채로운 원소 가지를 해금하여 영웅들의 한계 레벨을 돌파합니다. 단순 수치 증가를 넘어 새로운 스킬 메커니즘과 원소 조합이 열리는 방향으로 진행됩니다.",
+    "depthAndReward": null,
     "ideas": [
       {
         "id": "STRATEGY:SOURCE_REPAIR",
@@ -2434,7 +2476,9 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "fa71a6b231b917300bbe928c69ca2efa3e1bf844dc75057bf3332da186e67762",
+    "sourceTreeFingerprint": "ddae09503fe9fb0d69643919930d4e244847cc0efab428c169c6eaa132529619",
+    "spatialBlueprintContract": null,
+    "interfaceBlueprintContract": null,
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2464,7 +2508,7 @@
     "implementationStatus": "PLANNED_NOT_IMPLEMENTED"
   },
   "robloxProductionPlan": {
-    "version": 2,
+    "version": 3,
     "executionBoundary": "EXISTING_BUILD_UP_ONLY",
     "platform": "ROBLOX",
     "executionSurface": "ROBLOX",
@@ -2486,6 +2530,7 @@
       "원소 공명 진형 (Elemental Resonance Formation)"
     ],
     "progressionDirection": "플레이어는 스테이지 진행에 따라 점진적으로 더 강력한 적을 조우하며, 수정의 다채로운 원소 가지를 해금하여 영웅들의 한계 레벨을 돌파합니다. 단순 수치 증가를 넘어 새로운 스킬 메커니즘과 원소 조합이 열리는 방향으로 진행됩니다.",
+    "depthAndReward": null,
     "ideas": [
       {
         "id": "STRATEGY:SOURCE_REPAIR",
@@ -2524,7 +2569,9 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "fa71a6b231b917300bbe928c69ca2efa3e1bf844dc75057bf3332da186e67762",
+    "sourceTreeFingerprint": "ddae09503fe9fb0d69643919930d4e244847cc0efab428c169c6eaa132529619",
+    "spatialBlueprintContract": null,
+    "interfaceBlueprintContract": null,
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2787,7 +2834,7 @@
       "runtimeObserved": true
     },
     "baseline": {
-      "sourceTreeFingerprint": "fa71a6b231b917300bbe928c69ca2efa3e1bf844dc75057bf3332da186e67762",
+      "sourceTreeFingerprint": "ddae09503fe9fb0d69643919930d4e244847cc0efab428c169c6eaa132529619",
       "runtimeObserved": true,
       "runtimePassed": false,
       "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
@@ -2842,7 +2889,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 26,
+    "nextGeneration": 27,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2904,10 +2951,9 @@
     ],
     "notApplicable": [
       "QUESTS",
-      "CRAFTING",
-      "REPLAYABILITY_VARIATION"
+      "CRAFTING"
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-07T13:47:03.030Z"
+  "generatedAt": "2026-10-08T11:50:06.345Z"
 }

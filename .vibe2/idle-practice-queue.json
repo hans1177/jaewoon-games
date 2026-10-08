@@ -23,6 +23,7 @@
   "hypothesisGenerationLimit": null,
   "falsificationGenerationLimit": null,
   "previousResultComparisonRequired": true,
+  "externalGameplayPracticeDrills": 0,
   "phase4GeneralizationDrills": 6,
   "drills": [
     {
@@ -595,6 +596,134 @@
         "STATE_MACHINE",
         "SAVE",
         "MOBILE_INPUT"
+      ],
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false
+    },
+    {
+      "id": "unity-spatial-clearance",
+      "kind": "PLATFORM_CODE_REPAIR",
+      "codingPracticeDrill": "unity-spatial-clearance",
+      "platformProfile": "unity",
+      "level": "복합",
+      "sourceFailure": "UNITY_SPATIAL_CLEARANCE",
+      "domains": [
+        "LEVEL_DESIGN",
+        "ENVIRONMENT_COMPOSITION",
+        "UNITY_PHYSICS"
+      ],
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false
+    },
+    {
+      "id": "unity-object-dependencies",
+      "kind": "PLATFORM_CODE_REPAIR",
+      "codingPracticeDrill": "unity-object-dependencies",
+      "platformProfile": "unity",
+      "level": "복합",
+      "sourceFailure": "UNITY_OBJECT_DEPENDENCIES",
+      "domains": [
+        "STATE_MACHINE",
+        "LEVEL_DESIGN",
+        "UNITY_RUNTIME"
+      ],
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false
+    },
+    {
+      "id": "unity-menu-batch-transaction",
+      "kind": "PLATFORM_CODE_REPAIR",
+      "codingPracticeDrill": "unity-menu-batch-transaction",
+      "platformProfile": "unity",
+      "level": "복합",
+      "sourceFailure": "UNITY_MENU_BATCH_TRANSACTION",
+      "domains": [
+        "UI_STATE",
+        "ECONOMY",
+        "STATE_MACHINE"
+      ],
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false
+    },
+    {
+      "id": "unity-reward-prerequisites",
+      "kind": "PLATFORM_CODE_REPAIR",
+      "codingPracticeDrill": "unity-reward-prerequisites",
+      "platformProfile": "unity",
+      "level": "복합",
+      "sourceFailure": "UNITY_REWARD_PREREQUISITES",
+      "domains": [
+        "PROGRESSION",
+        "ECONOMY",
+        "STATE_MACHINE"
+      ],
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false
+    },
+    {
+      "id": "unity-gltf-material-channels",
+      "kind": "PLATFORM_CODE_REPAIR",
+      "codingPracticeDrill": "unity-gltf-material-channels",
+      "platformProfile": "unity",
+      "level": "응용",
+      "sourceFailure": "GLTF_MATERIAL_CHANNEL_TRANSFER",
+      "domains": [
+        "ASSET_LIBRARY",
+        "MATERIAL",
+        "PLATFORM_ADAPTATION"
+      ],
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false
+    },
+    {
+      "id": "unity-import-ground-pivot",
+      "kind": "PLATFORM_CODE_REPAIR",
+      "codingPracticeDrill": "unity-import-ground-pivot",
+      "platformProfile": "unity",
+      "level": "응용",
+      "sourceFailure": "IMPORTED_MESH_FLOATING_PIVOT",
+      "domains": [
+        "ASSET_LIBRARY",
+        "SPATIAL_LAYOUT",
+        "PLATFORM_ADAPTATION"
+      ],
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false
+    },
+    {
+      "id": "unity-hitstop-frame-budget",
+      "kind": "PLATFORM_CODE_REPAIR",
+      "codingPracticeDrill": "unity-hitstop-frame-budget",
+      "platformProfile": "unity",
+      "level": "응용",
+      "sourceFailure": "HITSTOP_FRAME_PARTITION_DRIFT",
+      "domains": [
+        "MOTION",
+        "ACTION_TIMING",
+        "PHYSICS_PRESENTATION"
+      ],
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false
+    },
+    {
+      "id": "unity-menu-modal-focus",
+      "kind": "PLATFORM_CODE_REPAIR",
+      "codingPracticeDrill": "unity-menu-modal-focus",
+      "platformProfile": "unity",
+      "level": "응용",
+      "sourceFailure": "MENU_MODAL_BACK_FOCUS_LEAK",
+      "domains": [
+        "UI_STATE",
+        "INPUT_OWNERSHIP",
+        "MENU_NAVIGATION"
       ],
       "priority": "high",
       "productionPreemptible": true,
