@@ -3410,7 +3410,7 @@ test('queued Unity and Web directives adopt native production plans without rewr
     const updated=result.queue.tasks.find(row=>row.id===queued.id);
     const untouched=result.queue.tasks.find(row=>row.id===running.id);
     assert.equal(updated.buildUpGeneration,queued.buildUpGeneration);
-    assert.equal(updated.buildUpDirective.productionPlan.version,2);
+    assert.equal(updated.buildUpDirective.productionPlan.version,3);
     assert.equal(updated.buildUpDirective.productionPlan.platform,engine.toUpperCase());
     assert.equal(updated.buildUpDirective.productionPlan.qualityContract.runtimeVerified,false);
     assert.deepEqual(untouched.buildUpDirective,running.buildUpDirective);

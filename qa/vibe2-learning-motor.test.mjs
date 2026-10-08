@@ -40,6 +40,11 @@ import {
   buildWebRobloxHandoffs
 } from '../tools/vibe2-learning-motor.mjs';
 
+test('Korean convenience and systemic depth goals retrieve existing UI and progression learning domains',()=>{
+  assert.ok(classifyLearningDomains({goal:'메뉴 편의성 프리셋 일괄 처리'}).primary.includes('UI_STATE'));
+  assert.ok(classifyLearningDomains({goal:'파고들기 숙련 보상 발견 조합'}).primary.includes('PROGRESSION'));
+});
+
 test('verified local Roblox Studio play becomes reusable and online/stale evidence is rejected',()=>{
   const source='a'.repeat(40);
   const artifact='sha256:'+'b'.repeat(64);
@@ -2037,3 +2042,4 @@ test('animal and insect visual knowledge is retrieved by matching graphics tasks
     assert.ok(ctx.exactKnowledgeIds.includes('EXTERNAL_AI_DISTILLED:'+id),id);
   }
 });
+

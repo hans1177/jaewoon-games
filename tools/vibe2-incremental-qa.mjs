@@ -10,6 +10,7 @@ import { pathToFileURL } from 'node:url';
 import { analyzeExistingGameSource } from './company-vibe2-gameplay-intelligence.mjs';
 import { buildResponsibilityGraph, summarizeResponsibilityArchitecture, compareResponsibilityArchitecture } from './company-vibe2-expert-development.mjs';
 import { diagnoseGame } from './autonomous-diagnostics.mjs';
+import {validateSpatialBlueprint,validateInterfaceBlueprint} from './company-roblox-production-plan.mjs';
 
 const clean = (value) => String(value ?? '').trim();
 const posix = (value) => clean(value).replaceAll('\\','/').replace(/^\.\//,'');
@@ -919,7 +920,7 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const graphicsReplacementValidation=data?.graphicsReplacementValidation||null;
   const assetSourceUsage=data?.internalAssetSourceUsage||null;
   const assetSourceHashes=Array.isArray(assetSourceUsage?.selectedSourceHashes)?assetSourceUsage.selectedSourceHashes:[];
-  const payload = ['vibe2-incremental-qa-v17', namespace, JSON.stringify(replayPlan||null), JSON.stringify(gameRepair||null), JSON.stringify(architectureBaseline), JSON.stringify(presentation||null), JSON.stringify(weatherPresentation||null), JSON.stringify(specializedRequest||null), JSON.stringify(studioAssetBinding||null), JSON.stringify(graphicsReplacementReport), JSON.stringify(graphicsReplacementValidation), JSON.stringify(assetSourceUsage)];
+  const payload = ['vibe2-incremental-qa-v18', JSON.stringify(data.spatialBlueprintContract||null),JSON.stringify(data.spatialBlueprint||null),JSON.stringify(data.interfaceBlueprintContract||null),JSON.stringify(data.interfaceBlueprint||null), namespace, JSON.stringify(replayPlan||null), JSON.stringify(gameRepair||null), JSON.stringify(architectureBaseline), JSON.stringify(presentation||null), JSON.stringify(weatherPresentation||null), JSON.stringify(specializedRequest||null), JSON.stringify(studioAssetBinding||null), JSON.stringify(graphicsReplacementReport), JSON.stringify(graphicsReplacementValidation), JSON.stringify(assetSourceUsage)];
   // 자산 소스는 변경 파일 목록 밖에서도 바뀐다. 캐시 조회 전에 현재 내용과 비교한다.
   if(assetSourceUsage?.synchronization?.selectedSourceContentHashesRequired===true){
     const paths=assetSourceUsage.selectedSourcePaths||[];
@@ -944,6 +945,17 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
     payload.push(relative, fs.readFileSync(file));
   }
   for(const target of replayTargets)payload.push('CAUSAL_REPLAY:'+target.relative,fs.readFileSync(target.absolute));
+  // 도안은 변경되지 않은 지지면·연결 파일에도 의존하므로 캐시 조회 전 전체 바인딩을 다시 읽는다.
+  const blueprintSources=new Map();
+  for(const blueprint of [data.spatialBlueprint,data.interfaceBlueprint]){
+    const array=value=>Array.isArray(value)?value:[];
+    const rows=[...array(blueprint?.objects),...array(blueprint?.connections),...array(blueprint?.screens).flatMap(row=>array(row?.controls))];
+    for(const row of rows){const relative=posix(row?.binding?.path);if(!relative)continue;const scoped=resolveManifestRelative(root,data,relative),file=assertInside(root,scoped);if(fs.existsSync(file)){if(!fs.realpathSync(file).startsWith(fs.realpathSync(root)+path.sep))throw new Error('BLUEPRINT_SOURCE_OUTSIDE_ROOT');const text=fs.readFileSync(file,'utf8');blueprintSources.set(relative,text);payload.push('BLUEPRINT_SOURCE:'+scoped,text);}}
+  }
+  const spatialBlueprintQa=validateSpatialBlueprint({contract:data.spatialBlueprintContract,blueprint:data.spatialBlueprint,sourceFiles:blueprintSources,changedFiles:changed.flatMap(file=>[file,posix(file).replace(posix(data.sourceRoot)+'/','')])});
+  const interfaceBlueprintQa=validateInterfaceBlueprint({contract:data.interfaceBlueprintContract,blueprint:data.interfaceBlueprint,sourceFiles:blueprintSources});
+  if(!spatialBlueprintQa.pass)throw new Error('SPATIAL_BLUEPRINT_INVALID:'+spatialBlueprintQa.issues.join('|'));
+  if(!interfaceBlueprintQa.pass)throw new Error('INTERFACE_BLUEPRINT_INVALID:'+interfaceBlueprintQa.issues.join('|'));
   const contentHash = sha256(payload);
   const cachePath = clean(cacheFile);
   const cache = cachePath ? readJson(cachePath,{version:13,entries:{}}) : {version:13,entries:{}};
@@ -952,7 +964,7 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const diagnosticReplay=replayPlan?.required===true&&replayPlan?.executable===true&&clean(replayPlan.mode)==='DIAGNOSTIC_RESCAN';
   const cached = diagnosticReplay ? null : cache.entries?.[contentHash];
   if (!force && cached?.outcome === 'PASS') {
-    return { outcome:'PASS', cached:true, contentHash, changedFiles:changed, checks:cached.checks || [], causalReplay:cached.causalReplay||{status:'PLAN_ONLY',executed:false,canonicalQaStillRequired:true}, gameRepairQa:cached.gameRepairQa||{status:'NOT_REQUIRED',required:false,fullRegressionStillRequired:true}, architectureDrift:cached.architectureDrift||{status:'NOT_AVAILABLE',riskLevel:'LOW',score:0,signals:[],hardReject:false}, presentationQa:cached.presentationQa||{status:'NOT_REQUIRED',pass:null,checks:[],runtimeStillRequired:false,authorityExpanded:false}, graphicsReplacementQa:cached.graphicsReplacementQa||{status:'NOT_REQUIRED',required:false,actualCount:0,groundedCount:0,checks:[],authorityExpanded:false}, weatherPresentationQa:cached.weatherPresentationQa||{status:'NOT_REQUIRED',checks:[],runtimeStillRequired:false,authorityExpanded:false}, robloxStudioAssetBindingQa:cached.robloxStudioAssetBindingQa||{status:'NOT_REQUIRED',checks:[],runtimeStillRequired:false,authorityExpanded:false}, specializedVerificationQa:cached.specializedVerificationQa||{status:'NOT_REQUIRED',requestedMarkers:[],results:{},finalMarkerAuthority:'FAN_IN_ONLY',runtimeStillRequired:false,authorityExpanded:false}, durationMs:Date.now()-started, fullRegressionStillRequired:true };
+    return { outcome:'PASS', cached:true, spatialBlueprintQa,interfaceBlueprintQa, contentHash, changedFiles:changed, checks:cached.checks || [], causalReplay:cached.causalReplay||{status:'PLAN_ONLY',executed:false,canonicalQaStillRequired:true}, gameRepairQa:cached.gameRepairQa||{status:'NOT_REQUIRED',required:false,fullRegressionStillRequired:true}, architectureDrift:cached.architectureDrift||{status:'NOT_AVAILABLE',riskLevel:'LOW',score:0,signals:[],hardReject:false}, presentationQa:cached.presentationQa||{status:'NOT_REQUIRED',pass:null,checks:[],runtimeStillRequired:false,authorityExpanded:false}, graphicsReplacementQa:cached.graphicsReplacementQa||{status:'NOT_REQUIRED',required:false,actualCount:0,groundedCount:0,checks:[],authorityExpanded:false}, weatherPresentationQa:cached.weatherPresentationQa||{status:'NOT_REQUIRED',checks:[],runtimeStillRequired:false,authorityExpanded:false}, robloxStudioAssetBindingQa:cached.robloxStudioAssetBindingQa||{status:'NOT_REQUIRED',checks:[],runtimeStillRequired:false,authorityExpanded:false}, specializedVerificationQa:cached.specializedVerificationQa||{status:'NOT_REQUIRED',requestedMarkers:[],results:{},finalMarkerAuthority:'FAN_IN_ONLY',runtimeStillRequired:false,authorityExpanded:false}, durationMs:Date.now()-started, fullRegressionStillRequired:true };
   }
 
   const checks = changed.map((relative)=>deterministicCheck(root,relative));
@@ -965,7 +977,7 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const weatherPresentationQa=runWeatherPresentationStaticQa({root,data,changed});
   const robloxStudioAssetBindingQa=runRobloxStudioAssetBindingQa({root,data,changed});
   const specializedVerificationQa=runSpecializedFocusedQa({root,data,changed});
-  const result = { outcome:'PASS', cached:false, contentHash, changedFiles:changed, checks, causalReplay, gameRepairQa, architectureDrift, presentationQa, graphicsReplacementQa, weatherPresentationQa, robloxStudioAssetBindingQa, specializedVerificationQa, durationMs:Date.now()-started, fullRegressionStillRequired:true };
+  const result = { outcome:'PASS', cached:false, spatialBlueprintQa,interfaceBlueprintQa, contentHash, changedFiles:changed, checks, causalReplay, gameRepairQa, architectureDrift, presentationQa, graphicsReplacementQa, weatherPresentationQa, robloxStudioAssetBindingQa, specializedVerificationQa, durationMs:Date.now()-started, fullRegressionStillRequired:true };
   if (cachePath) {
     cache.entries=cache.entries||{};
     cache.version=13; cache.entries[contentHash]={ outcome:'PASS', namespace, checks, causalReplay, gameRepairQa, architectureDrift, presentationQa, graphicsReplacementQa, weatherPresentationQa, robloxStudioAssetBindingQa, specializedVerificationQa, savedAt:new Date().toISOString() };
@@ -1070,3 +1082,4 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     process.exitCode=1;
   }
 }
+

@@ -1,5 +1,5 @@
 {
-  "version": 329,
+  "version": 330,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -7343,5 +7343,19 @@
     "internalAndExternalReleaseRemainCheckpoints": true,
     "externalPublicReleaseOwnerApprovalPreserved": true,
     "postReleaseRepeatDevelopmentContinues": true
+  },
+  "spatialBlueprintTopology": {
+    "policy": "company-learning/platform-release-roadmap.json#robloxStudioProductionFlowContract.spatialBlueprint",
+    "planner": "tools/company-roblox-production-plan.mjs",
+    "designHandoff": "tools/company-build-up-directive.mjs",
+    "sourceWorker": "tools/vibe2-source-worker.mjs",
+    "validator": "tools/company-roblox-production-plan.mjs::validateSpatialBlueprint",
+    "incrementalQa": "tools/vibe2-incremental-qa.mjs",
+    "newPipeline": false,
+    "newQueue": false,
+    "runtimeAuthority": "EXISTING_TARGET_RUNTIME_QA",
+    "interfaceValidator": "tools/company-roblox-production-plan.mjs::validateInterfaceBlueprint",
+    "experienceTrace": "tools/vibe2-capability-distillation.mjs",
+    "retrieval": "tools/vibe2-learning-motor.mjs"
   }
 }

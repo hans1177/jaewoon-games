@@ -537,6 +537,8 @@ export function extractDesignContext(record={}){
     genre:clean(d?.robloxBuildProfile?.genre||d?.genre),
     subgenre:clean(d?.robloxBuildProfile?.subgenre||d?.subgenre),
     ownerFeatureChanges:Array.isArray(d?.ownerFeatureChanges)?d.ownerFeatureChanges:[],
+    spatialLayout:asObject(d?.spatialLayout),
+    spatialDimension:clean(d?.spatialLayout?.dimension||d?.spatialDimension),
     coreFun:clean(d?.coreFun),
     coreLoop:uniq(d?.coreLoop).slice(0,10),
     signatureSystems:systems,
@@ -1871,3 +1873,4 @@ function cli(){
   console.log('BUILD_UP_SOURCE_TREE='+directive.sourceTreeFingerprint);
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href)cli();
+

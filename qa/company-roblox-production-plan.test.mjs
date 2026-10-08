@@ -1,11 +1,89 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {buildRobloxProductionPlan,robloxProductionPromptLines,ROBLOX_PRODUCTION_PROFILES} from '../tools/company-roblox-production-plan.mjs';
+import {buildRobloxProductionPlan,robloxProductionPromptLines,ROBLOX_PRODUCTION_PROFILES,buildSpatialBlueprintContract,validateSpatialBlueprint,buildInterfaceBlueprintContract,validateInterfaceBlueprint,productionBlueprintContractsForFiles} from '../tools/company-roblox-production-plan.mjs';
 import {buildGameSpecificBuildUpDirective,directivePrompt} from '../tools/company-build-up-directive.mjs';
 
 const central=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
 const policy=central.robloxStudioProductionFlowContract;
+
+function spatialFixture(dimension='2D'){
+  const source='const world = {scale: 1};';
+  const binding={path:'scene.js',symbol:'world',sourceEvidence:source};
+  const contract=buildSpatialBlueprintContract({enabled:true,design:{identity:'explore a connected map',spatialDimension:dimension},files:['web-games/demo/scene.js'],mode:'CONNECTED_CONTENT_IMPLEMENTATION'});
+  const bounds=dimension==='2D'?{min:[0,0],max:[12,12]}:{min:[0,-1,0],max:[12,5,12]};
+  const obj=(id,role,min,max,extra={})=>({id,role,regionId:'room',bounds:{min,max},solid:false,walkable:false,reason:'existing route boundary',binding,...extra});
+  const objects=dimension==='2D'?[obj('start','SPAWN',[1.5,1.5],[2.5,2.5]),obj('goal','GOAL',[8,8],[9,9])]:[
+    obj('floor','GROUND',[0,-1,0],[12,0,12],{solid:true,walkable:true}),obj('start','SPAWN',[1.5,0,1.5],[2.5,1.8,2.5],{supportId:'floor'}),obj('goal','GOAL',[8,0,8],[9,1.8,9],{supportId:'floor'})];
+  return{contract,sourceFiles:{'scene.js':source},changedFiles:['scene.js'],blueprint:{version:1,designFingerprint:contract.designFingerprint,dimension,view:dimension==='2D'?'TOP_DOWN':'PERSPECTIVE',units:'meters',upAxis:dimension==='2D'?'NONE':'Y',player:{radius:.25,height:1.8,maxStep:.25,maxSlopeDegrees:40},worldBounds:bounds,regions:[{id:'room',bounds,purpose:'task-local room'}],objects,connections:[{id:'walk',from:'start',to:'goal',kind:'WALK',path:dimension==='2D'?[[2,2],[8.5,8.5]]:[[2,0,2],[8.5,0,8.5]],reason:'reach the objective',binding}],entryId:'start',objectiveIds:['goal']}};
+}
+
+test('spatial blueprints distinguish 2D and 3D and never claim engine runtime verification',()=>{
+  for(const dimension of ['2D','3D']){const result=validateSpatialBlueprint(spatialFixture(dimension));assert.equal(result.pass,true,JSON.stringify(result.issues));assert.equal(result.runtimeVerified,false);}
+  const f=spatialFixture();f.blueprint.dimension='3D';assert.equal(validateSpatialBlueprint(f).pass,false);
+  assert.equal(buildSpatialBlueprintContract({enabled:true,mode:'EXISTING_SOURCE_REPAIR',design:{identity:'map'}}),null);
+});
+
+test('screen-down gravity is normalized and scoped workers do not inherit sibling blueprint obligations',()=>{
+  const f=spatialFixture('3D'),b=f.blueprint;b.upDirection=-1;
+  const flip=value=>{const min=[...value.min],max=[...value.max];min[1]=-value.max[1];max[1]=-value.min[1];return{min,max};};
+  b.worldBounds=flip(b.worldBounds);b.regions=b.regions.map(row=>({...row,bounds:flip(row.bounds)}));b.objects=b.objects.map(row=>({...row,bounds:flip(row.bounds)}));b.connections=b.connections.map(row=>({...row,path:row.path.map(point=>[point[0],-point[1],point[2]])}));
+  assert.equal(validateSpatialBlueprint(f).pass,true);
+  const plan={implementationPackages:[{role:'CLIENT_PRESENTATION',files:['roblox-games/demo/client/Menu.luau']},{role:'SERVER_AUTHORITY',files:['roblox-games/demo/server/Save.luau','roblox-games/demo/server/World.luau']}],spatialBlueprintContract:{required:true,macroSketch:{}},interfaceBlueprintContract:{required:true}};
+  const menu=productionBlueprintContractsForFiles(plan,{responsibleFiles:['client/Menu.luau']});assert.equal(menu.spatial.required,false);assert.equal(menu.interface.required,true);
+  const save=productionBlueprintContractsForFiles(plan,{responsibleFiles:['server/Save.luau']});assert.equal(save.spatial.required,false);assert.equal(save.interface.required,false);
+  const world=productionBlueprintContractsForFiles(plan,{responsibleFiles:['server/World.luau']});assert.equal(world.spatial.required,true);assert.equal(world.interface.required,false);
+});
+
+test('3D blueprint detects floating actors, headroom and thin obstacles between route endpoints',()=>{
+  for(const mode of ['floating','ceiling','thinWall']){
+    const f=spatialFixture('3D'),b=f.blueprint;
+    if(mode==='floating')b.objects[1].bounds.min[1]=1;
+    else b.objects.push({...b.objects[0],id:mode,walkable:false,role:'WALL',bounds:mode==='ceiling'?{min:[1,1.3,1],max:[3,2,3]}:{min:[4.5,0,4.5],max:[4.51,3,4.51]}});
+    const result=validateSpatialBlueprint(f);assert.equal(result.pass,false);
+    assert.ok(result.issues.some(x=>x.startsWith(mode==='floating'?'GROUND_SUPPORT_MISSING':mode==='ceiling'?'BODY_OR_HEADROOM_BLOCKED':'ROUTE_CLEARANCE_BLOCKED')),JSON.stringify(result.issues));
+  }
+});
+
+test('3D route over a ground gap is rejected even with supported endpoints',()=>{
+  const f=spatialFixture('3D'),b=f.blueprint;b.objects[0].bounds.max[0]=3;
+  b.objects.push({...b.objects[0],id:'far-floor',bounds:{min:[7,-1,0],max:[12,0,12]}});b.objects[2].supportId='far-floor';
+  assert.ok(validateSpatialBlueprint(f).issues.some(x=>x.startsWith('UNSUPPORTED_ROUTE_GAP')));
+});
+
+test('spatial evidence rejects stale design, dangling graphs, comment-only source and sibling file claims',()=>{
+  for(const mutate of [f=>f.blueprint.designFingerprint='stale',f=>f.blueprint.connections=[],f=>f.sourceFiles['scene.js']='// const world = {scale: 1};',f=>f.contract.sourceFiles=['web-games/demo/other.js'],f=>f.changedFiles=[],f=>f.blueprint.objects.push(null)]){
+    const f=spatialFixture();mutate(f);assert.equal(validateSpatialBlueprint(f).pass,false);
+  }
+});
+
+function interfaceFixture(){
+  const source='function openMenu(){return true;}';
+  const binding={path:'ui.js',symbol:'openMenu',sourceEvidence:source};
+  const contract=buildInterfaceBlueprintContract({enabled:true,focus:'USABILITY',mode:'EXISTING_PLAY_PRESENTATION',files:['web-games/demo/ui.js'],design:{coreLoop:['select equipment loadout','play','return']}});
+  const button=(id)=>({id,action:'existing handler',feedback:'preview selected equipment',enabledWhen:'existing combat restriction',rect:{x:10,y:10,width:48,height:48},binding});
+  return{contract,sourceFiles:{'ui.js':source},blueprint:{version:1,designFingerprint:contract.designFingerprint,viewport:{width:390,height:844,safeTop:0,safeBottom:0},entryId:'play',screens:[{id:'play',role:'GAMEPLAY',modal:false,scrollable:false,controls:[button('open')]},{id:'gear',role:'INVENTORY',modal:true,scrollable:false,controls:[button('close')]}],transitions:[{from:'play',controlId:'open',to:'gear',kind:'OPEN',preservesState:true},{from:'gear',controlId:'close',to:'play',kind:'CLOSE',preservesState:true}],playerTasks:[{id:'setup',friction:'reselecting the same gear',patternId:'BUILD_PRESETS',adaptation:'reuse player-selected gear',from:'play',to:'gear',controlId:'close',maxNavigationSteps:1,retainedContext:['selected preset'],failureRecovery:'keep original equipment on failed preview',runtimeCheck:'open, select, close; verify unchanged combat and save behavior'}]}};
+}
+
+test('modern convenience selection follows existing systems and static task routes stay unmeasured',()=>{
+  const f=interfaceFixture(),result=validateInterfaceBlueprint(f);assert.equal(result.pass,true,JSON.stringify(result.issues));assert.equal(result.runtimeVerified,false);assert.equal(result.taskRoutes[0].navigationSteps,1);assert.equal(result.taskRoutes[0].measuredRuntimeInputs,null);
+  assert.ok(f.contract.referencePatterns.some(x=>x.id==='BUILD_PRESETS'));assert.ok(!f.contract.referencePatterns.some(x=>x.id==='RECIPE_BATCH_WORKFLOW'));
+  assert.ok(f.contract.referencePatterns.every(x=>x.authority==='DESIGN_REFERENCE_ONLY'&&x.runtimeVerified===false&&x.sourceUrl.startsWith('https://')));
+});
+
+test('interface blueprint rejects unusable touch, missing escape, fake handlers and generic menu-only plans',()=>{
+  const cases=[
+    [f=>f.blueprint.screens[0].controls[0].rect.width=20,'TOUCH_TARGET_OR_SAFE_AREA_INVALID'],
+    [f=>f.blueprint.screens[0].controls.push({...f.blueprint.screens[0].controls[0],id:'overlap'}),'TOUCH_TARGET_OVERLAP'],
+    [f=>f.blueprint.transitions.pop(),'MODAL_EXIT_MISSING'],
+    [f=>f.blueprint.transitions[0].preservesState=false,'MENU_STATE_PRESERVATION_MISSING'],
+    [f=>f.sourceFiles['ui.js']='// function openMenu(){return true;}','CONTROL_SOURCE_UNPROVEN'],
+    [f=>f.blueprint.playerTasks=[],'PLAYER_FRICTION_ANALYSIS_MISSING'],
+    [f=>f.blueprint.playerTasks[0].maxNavigationSteps=0,'PLAYER_TASK_ROUTE_BUDGET_EXCEEDED'],
+    [f=>f.blueprint.playerTasks[0].patternId='RECIPE_BATCH_WORKFLOW','REFERENCE_PATTERN_NOT_APPLICABLE']
+  ];
+  for(const [mutate,code] of cases){const f=interfaceFixture();mutate(f);const r=validateInterfaceBlueprint(f);assert.equal(r.pass,false);assert.ok(r.issues.some(x=>x.startsWith(code)),JSON.stringify(r.issues));}
+});
 const files=['roblox-games/garden/server/Game.server.luau','roblox-games/garden/client/Game.client.luau','roblox-games/garden/shared/Definitions.luau'];
 const source={sourceTreeFingerprint:'fixture-source',signals:{},observations:[],sourceAnchors:[],topFiles:files.map(file=>({file,score:10}))};
 const design={identity:'정원 생태와 서식지 선택',genre:'DEFENSE',coreLoop:['침입 경로 관찰','서식지 배치','웨이브 대응','새 서식지 선택'],signatureSystems:[{name:'서식지 상성',purpose:'공간별 역할',playerChoice:'배치 선택'}],progressionDirection:'기존 정원에서 다음 서식지 해금'};
@@ -127,3 +205,4 @@ test('owner feature removal survives repeated evolution and only a newer explici
   assert.equal(next.ownerFeatureChanges.find(x=>x.featureId==='daily-reward').requestId,'owner-3');
   assert.notEqual(next.ownerChangeFingerprint,previous.ownerChangeFingerprint);
 });
+

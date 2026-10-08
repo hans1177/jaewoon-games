@@ -678,8 +678,30 @@ export function buildDesignEvolutionBrief({ game = {}, seed = {}, factPack = {},
       directProtectedExpressionCopyForbidden:true,
       multiReferenceGeneralizationPreferred:true
     }),
+    convenienceEvolution:freeze({
+      study:['PLAYER_FRICTION','INFORMATION_HIERARCHY','CONTEXTUAL_ACTIONS','REUSABLE_SETUP','BATCH_PREVIEW_AND_COMMIT','INTERRUPTION_AND_RETURN'],
+      referenceRequires:['SOURCE_URL','OBSERVED_DATE','OBSERVED_FEATURE','ABSTRACT_PRINCIPLE','GENRE_AND_SYSTEM_FIT','ADAPT_OR_REJECT_REASON'],
+      baselineAndCandidate:['TASK_COMPLETION','INPUT_AND_MENU_TRANSITIONS','CONTEXT_LOSS','ERROR_RECOVERY','STATE_AND_COST_REGRESSION'],
+      documentedFeatureIsRuntimeProof:false,
+      staticRouteLengthIsMeasuredPlayerEffort:false,
+      learningAuthority:'EXISTING_VERIFIED_EXPERIENCE_AND_FRESH_EXACT_BUILD_QA'
+    }),
+    depthAndRewardEvolution:freeze({
+      layers:['APPROVED_MAIN_A_B_C_CORE_FUN','SHORT_SESSION_SMALL_JOYS','OPTIONAL_DEEP_LONG_TERM_PLAY'],
+      rewardContract:['VISIBLE_CONDITIONS','SAVED_PROGRESS','EXPLICIT_GUARANTEED_MILESTONES','DUPLICATE_PURPOSE','INTERRUPTION_AND_RESUME','EXACTLY_ONCE_REWARD_CLAIM'],
+      systemicDepth:['EASY_ENTRY','SYSTEM_INTERDEPENDENCE','CONTEXTUAL_TRADEOFFS','COMBINATORIAL_NEW_USES','MULTIPLE_VIABLE_SOLUTIONS','MASTERY_CHANGES_CHOICES','NEXT_OPEN_QUESTION'],
+      academicSubjectMatterRequired:false,
+      featureCountAndGrindingAreNotDepth:true,
+      chain:['DISCOVERABLE_CLUE','EXPERIMENT_OR_MASTERY_CHOICE','COST_AND_COUNTERPLAY','NEW_PLAY_OPTION','NEXT_OPEN_QUESTION'],
+      payoffAxes:['NEW_ACTION','NEW_ROUTE','BUILD_COMBINATION','WORLD_RELATIONSHIP','OPTIONAL_MASTERY'],
+      numberOrRewardCountAloneInsufficient:true,
+      preserveGenreSaveAndBalance:true,
+      compareBeforeAfterPlayerChoices:true,
+      failedHypothesesMustInformNextIteration:true
+    }),
     priorFeedback:priorFeedback || null,
     factPackAvailable:Boolean(factPack && Object.keys(factPack).length),
     authorityExpanded:false
   });
 }
+
