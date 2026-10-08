@@ -964,25 +964,31 @@
         "Read the incoming insect wave and its threat pattern.",
         "World state change and next selection"
       ]
+    },
+    "local_authoring_parts::485f4ae77cf7477f076030dcc80ff9708d9ca8de3b2c8659fe6b1879a87e6097:fromSystem": {
+      "fromSystem": "Read the incoming insect wave and its threat pattern.의 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임의 중심 플레이. 플레이어는 세계 상태와 다음 선택을 바꾼다."
+    },
+    "local_authoring_parts::485f4ae77cf7477f076030dcc80ff9708d9ca8de3b2c8659fe6b1879a87e6097:toSystem": {
+      "toSystem": "World state change and next selection"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 42,
-      "successes": 39,
+      "calls": 44,
+      "successes": 41,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 3242564,
-      "lastMs": 33814,
+      "totalMs": 3310596,
+      "lastMs": 32814,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T15:43:39.422Z"
+      "updatedAt": "2026-10-08T15:44:47.456Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:47:19.560Z",
-  "updatedAt": "2026-10-08T15:43:39.422Z",
+  "updatedAt": "2026-10-08T15:44:47.456Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3408,7 +3414,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:43:39.422Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:44:47.456Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
