@@ -713,25 +713,56 @@
         "resourceFlow": "balanced",
         "balanceRules": "fixed"
       }
+    },
+    "local_authoring_parts::d9821a8473d82eb8086d574a940314a9e4fe35b4c1369f6c60ed8793e5055de5:contentExpansionPlan,failureRetryRisk": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "BoardPatternSystem",
+          "newGameplay": "Establishes the visual and procedural structure of each level, defining the initial configuration and the progression of challenges.",
+          "systemImpact": "Defines the visual and procedural structure of each level, including the initial board pattern, move limit, obstacle set, combo trigger, and immediate feedback."
+        },
+        {
+          "milestone": "PlayerChoice",
+          "newGameplay": "Selects the initial board pattern, determines the move limit, configures the obstacle set, triggers a combo, and receives immediate feedback to solve the objective.",
+          "systemImpact": "Enables player agency in shaping the level's progression through choice-based configuration and feedback."
+        },
+        {
+          "milestone": "FeedbackSystem",
+          "newGameplay": "Provides immediate visual and procedural feedback to guide the player toward solving the objective.",
+          "systemImpact": "Ensures the player receives real-time confirmation of their progress and actions, reinforcing the loop of play."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "levelGoalNotMet",
+          "moveLimitExceeded",
+          "obstacleSetNotSolved",
+          "comboTriggerNotAchieved",
+          "feedbackNotReceived"
+        ],
+        "retryFlow": "Player can retry the level by selecting a new board pattern, adjusting the move limit, reconfiguring the obstacle set, triggering a new combo, or receiving a new feedback type.",
+        "riskPressure": "Players are incentivized to explore different configurations to achieve the goal, creating a natural risk-reward dynamic in gameplay.",
+        "recoveryRules": "If the level goal is not met, the player can choose to restart the level with a new configuration or continue with a different approach."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 11,
+      "calls": 13,
+      "successes": 12,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1723064,
-      "lastMs": 299719,
+      "totalMs": 1847220,
+      "lastMs": 124156,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T12:33:22.958Z"
+      "updatedAt": "2026-10-08T12:35:27.116Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:04:39.840Z",
-  "updatedAt": "2026-10-08T12:33:22.958Z",
+  "updatedAt": "2026-10-08T12:35:27.122Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2765,15 +2796,195 @@
     }
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "1ae4301a5717b072622600fb20a5993f1b65c3ae3f6afd58be28b4477a0611cc"
   },
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:33:22.958Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "coreLoop→coreFun의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: coreLoop→coreFun의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "coreLoop→signatureSystems[0]의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: coreLoop→signatureSystems[0]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "coreLoop→signatureSystems[1]의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: coreLoop→signatureSystems[1]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "coreLoop→signatureSystems[2]의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: coreLoop→signatureSystems[2]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "coreLoop→signatureSystems[3]의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: coreLoop→signatureSystems[3]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "coreLoop→signatureSystems[4]의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: coreLoop→signatureSystems[4]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "coreLoop→coreFun의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: coreLoop→coreFun의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::systems-progression": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "forward",
+      "progressionEconomyBalance": {
+        "progressionLoop": "3",
+        "resourceFlow": "balanced",
+        "balanceRules": "fixed"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "BoardPatternSystem",
+          "newGameplay": "Establishes the visual and procedural structure of each level, defining the initial configuration and the progression of challenges.",
+          "systemImpact": "Defines the visual and procedural structure of each level, including the initial board pattern, move limit, obstacle set, combo trigger, and immediate feedback."
+        },
+        {
+          "milestone": "PlayerChoice",
+          "newGameplay": "Selects the initial board pattern, determines the move limit, configures the obstacle set, triggers a combo, and receives immediate feedback to solve the objective.",
+          "systemImpact": "Enables player agency in shaping the level's progression through choice-based configuration and feedback."
+        },
+        {
+          "milestone": "FeedbackSystem",
+          "newGameplay": "Provides immediate visual and procedural feedback to guide the player toward solving the objective.",
+          "systemImpact": "Ensures the player receives real-time confirmation of their progress and actions, reinforcing the loop of play."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "levelGoalNotMet",
+          "moveLimitExceeded",
+          "obstacleSetNotSolved",
+          "comboTriggerNotAchieved",
+          "feedbackNotReceived"
+        ],
+        "retryFlow": "Player can retry the level by selecting a new board pattern, adjusting the move limit, reconfiguring the obstacle set, triggering a new combo, or receiving a new feedback type.",
+        "riskPressure": "Players are incentivized to explore different configurations to achieve the goal, creating a natural risk-reward dynamic in gameplay.",
+        "recoveryRules": "If the level goal is not met, the player can choose to restart the level with a new configuration or continue with a different approach."
+      }
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T12:35:27.118Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
