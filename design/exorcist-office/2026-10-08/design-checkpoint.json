@@ -559,25 +559,70 @@
       "name": "Start Immediately with Simple One-thumb Tap or Swipe Input and Clear Score, Distance, or Short Session Goal",
       "purpose": "Determines the core fun and system connection of the game, ensuring that the player's actions directly lead to world state changes in a casual game.",
       "playerChoice": "Player chooses a simple input, receives a score, distance, or short session goal, and experiences a loop of state changes, rewards, risks, and re-visits."
+    },
+    "local_authoring_parts::5b139a29b3790598ef5c90d6972199370152aeeacf897c5b16315fa06ffc012a:signatureSystems:0": {
+      "id": "RULE_01",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "READABLE_STATUS",
+        "CHANGING_STATUS"
+      ],
+      "stateOutputs": [
+        "READABLE_STATUS",
+        "CHANGING_STATUS"
+      ],
+      "name": "단일 규칙 ID 확정",
+      "purpose": "게임 내에서 읽는 상태와 바꾸는 상태를 명확히 정의하여 시스템 연결을 확정합니다.",
+      "playerChoice": "플레이어는 읽는 상태와 바꾸는 상태를 직접 선택하여 게임의 세계를 변화시킵니다. 선택 결과는 다음 월드 상태로 이동합니다."
+    },
+    "local_authoring_parts::5b139a29b3790598ef5c90d6972199370152aeeacf897c5b16315fa06ffc012a:signatureSystems:1": {
+      "id": "RULE_02",
+      "grammarRole": "A",
+      "stateInputs": [
+        "READABLE_STATUS",
+        "CHANGING_STATUS"
+      ],
+      "stateOutputs": [
+        "READABLE_STATUS",
+        "CHANGING_STATUS"
+      ],
+      "name": "단일 규칙 ID 확정",
+      "purpose": "게임 내에서 읽는 상태와 바꾸는 상태를 명확히 정의하여 시스템 연결을 확정합니다.",
+      "playerChoice": "플레이어는 읽는 상태와 바꾸는 상태를 직접 선택하여 게임의 세계를 변화시킵니다. 선택 결과는 다음 월드 상태로 이동합니다."
+    },
+    "local_authoring_parts::5b139a29b3790598ef5c90d6972199370152aeeacf897c5b16315fa06ffc012a:signatureSystems:2": {
+      "id": "RULE_03",
+      "grammarRole": "B",
+      "stateInputs": [
+        "READABLE_STATUS",
+        "CHANGING_STATUS"
+      ],
+      "stateOutputs": [
+        "READABLE_STATUS",
+        "CHANGING_STATUS"
+      ],
+      "name": "단일 규칙 ID 확정",
+      "purpose": "게임 내에서 읽는 상태와 바꾸는 상태를 명확히 정의하여 시스템 연결을 확정합니다.",
+      "playerChoice": "플레이어는 읽는 상태와 바꾸는 상태를 직접 선택하여 게임의 세계를 변화시킵니다. 선택 결과는 다음 월드 상태로 이동합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 20,
+      "calls": 23,
+      "successes": 23,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2197400,
-      "lastMs": 103607,
+      "totalMs": 2417139,
+      "lastMs": 99739,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:57:11.581Z"
+      "updatedAt": "2026-10-08T11:00:51.331Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:42:46.518Z",
-  "updatedAt": "2026-10-08T10:57:11.588Z",
+  "updatedAt": "2026-10-08T11:00:51.331Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2537,10 +2582,10 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:57:11.583Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T11:00:51.331Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
