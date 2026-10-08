@@ -708,25 +708,149 @@
           "playerChoice": "적군 파워를 예측하여 방어 구조를 생성하거나, 전략적 전개를 변경하여 보상의 기회를 확보합니다. 이 선택은 다음 월드 상태를 바꿉니다. 예: '적군 파워가 3번 증가하면, 방어 위치를 2개 더 확장해야 한다.'"
         }
       ]
+    },
+    "local_authoring_parts::b7ccb61d43d8a8ad66ac8164426df364b695e1cd86f82b5aa545451ee46b67ca:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "enemyWaveType",
+          "toId": "threatenedRoute",
+          "stateKeys": [
+            "enemyWaveType",
+            "threatenedRoute",
+            "currentDefenses",
+            "resourcesAvailable"
+          ],
+          "fromSystem": "EnemyWaveDefender",
+          "toSystem": "EnemyWaveDefender",
+          "trigger": "enemyWaveType",
+          "stateChange": "nextDefensesPlaced"
+        },
+        {
+          "fromId": "enemyWaveType",
+          "toId": "threatenedRoute",
+          "stateKeys": [
+            "enemyWaveType",
+            "threatenedRoute",
+            "currentDefenses",
+            "resourcesAvailable"
+          ],
+          "fromSystem": "EnemyWaveDefender",
+          "toSystem": "EnemyWaveDefenderB",
+          "trigger": "enemyWaveType",
+          "stateChange": "resourcesSpent"
+        },
+        {
+          "fromId": "enemyWaveType",
+          "toId": "threatenedRoute",
+          "stateKeys": [
+            "enemyWaveType",
+            "threatenedRoute",
+            "currentDefenses",
+            "resourcesAvailable"
+          ],
+          "fromSystem": "EnemyWaveDefender",
+          "toSystem": "EnemyWaveDefenderC",
+          "trigger": "enemyWaveType",
+          "stateChange": "newDefensiveStrategy"
+        },
+        {
+          "fromId": "enemyWaveType",
+          "toId": "threatenedRoute",
+          "stateKeys": [
+            "enemyWaveType",
+            "threatenedRoute",
+            "currentDefenses",
+            "resourcesAvailable"
+          ],
+          "fromSystem": "EnemyWaveDefenderDelve",
+          "toSystem": "EnemyWaveDefender",
+          "trigger": "enemyWaveType",
+          "stateChange": "nextDefensesPlaced"
+        },
+        {
+          "fromId": "enemyWaveType",
+          "toId": "threatenedRoute",
+          "stateKeys": [
+            "enemyWaveType",
+            "threatenedRoute",
+            "currentDefenses",
+            "resourcesAvailable"
+          ],
+          "fromSystem": "EnemyWaveDefenderDelve",
+          "toSystem": "EnemyWaveDefenderB",
+          "trigger": "enemyWaveType",
+          "stateChange": "resourcesSpent"
+        },
+        {
+          "fromId": "enemyWaveType",
+          "toId": "threatenedRoute",
+          "stateKeys": [
+            "enemyWaveType",
+            "threatenedRoute",
+            "currentDefenses",
+            "resourcesAvailable"
+          ],
+          "fromSystem": "EnemyWaveDefenderDelve",
+          "toSystem": "EnemyWaveDefenderC",
+          "trigger": "enemyWaveType",
+          "stateChange": "newDefensiveStrategy"
+        }
+      ],
+      "progressionDirection": "EASY_ENTRY",
+      "progressionEconomyBalance": {
+        "progressionLoop": "REPEATABLE",
+        "resourceFlow": "CONTINUOUS",
+        "balanceRules": "BALANCED"
+      }
+    },
+    "local_authoring_parts::b7ccb61d43d8a8ad66ac8164426df364b695e1cd86f82b5aa545451ee46b67ca:contentExpansionPlan,failureRetryRisk": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "EnemyWaveDefender",
+          "newGameplay": "EnemyWaveDefender은 플레이어가 다음 적군 파워를 예측하고, 위험을 감지하여 적절한 방어 구조를 생성하는 데 사용되는 시스템입니다. 이 시스템은 게임의 핵심 재미인 성장, 위험, 보상의 반복 루프를 구현하며, MAIN 및 A/B의 상태 변화에 따라 전략적 선택을 조정하여 보상의 기회를 확보합니다.",
+          "systemImpact": "EnemyWaveDefender의 상태 변화는 게임의 전략적 선택과 보상의 기회 확보에 직접적인 영향을 미칩니다. 이는 플레이어가 방어 구조를 생성하거나 전략적 전개를 변경하여 보상의 기회를 확보하는 데 기여합니다."
+        },
+        {
+          "milestone": "EnemyWaveDefenderB",
+          "newGameplay": "EnemyWaveDefenderB은 EnemyWaveDefender의 기능을 확장하여, 방어 위치를 확장하거나 전략적 전개를 변경하여 보상의 기회를 확보하는 데 사용됩니다.",
+          "systemImpact": "EnemyWaveDefenderB는 방어 위치의 확장과 전략적 전개의 조합을 통해 보상의 기회를 확보하는 데 기여합니다. 이는 게임의 전략적 선택과 보상의 기회 확보에 중요한 역할을 합니다."
+        },
+        {
+          "milestone": "EnemyWaveDefenderC",
+          "newGameplay": "EnemyWaveDefenderC은 EnemyWaveDefenderB의 기능을 확장하여, 방어 위치의 확장과 전략적 전개의 조합을 통해 보상의 기회를 확보하는 데 사용됩니다.",
+          "systemImpact": "EnemyWaveDefenderC는 방어 위치의 확장과 전략적 전개의 조합을 통해 보상의 기회를 확보하는 데 기여합니다. 이는 게임의 전략적 선택과 보상의 기회 확보에 중요한 역할을 합니다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "enemyWaveType",
+          "threatenedRoute",
+          "currentDefenses",
+          "resourcesAvailable"
+        ],
+        "retryFlow": "enemyWaveType -> threatenedRoute -> currentDefenses -> resourcesAvailable",
+        "riskPressure": "EnemyWaveDefender의 상태 변화는 플레이어가 방어 구조를 생성하거나 전략적 전개를 변경하여 보상의 기회를 확보하는 데 직접적인 영향을 미칩니다.",
+        "recoveryRules": "EnemyWaveDefender의 상태 변화는 게임의 전략적 선택과 보상의 기회 확보에 중요한 역할을 합니다. 이는 플레이어가 방어 구조를 생성하거나 전략적 전개를 변경하여 보상의 기회를 확보하는 데 기여합니다."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 20,
-      "failures": 0,
-      "timeouts": 0,
+      "calls": 23,
+      "successes": 22,
+      "failures": 1,
+      "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2193723,
-      "lastMs": 118522,
-      "lastError": null,
-      "updatedAt": "2026-10-08T15:53:07.446Z"
+      "totalMs": 2891185,
+      "lastMs": 209716,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
+      "updatedAt": "2026-10-08T16:04:44.924Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:25:16.552Z",
-  "updatedAt": "2026-10-08T15:53:07.455Z",
+  "updatedAt": "2026-10-08T16:04:44.932Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2918,17 +3042,178 @@
     }
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "7949a38a1dc7eb73fbcbf2e0146abfaf6dbd7e37b13f5c5ec19b0aab0c7bd3d5"
   },
-  "sliceRepairFeedback": {},
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "enemyWaveType→threatenedRoute의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: enemyWaveType→threatenedRoute의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "enemyWaveType→threatenedRoute의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: enemyWaveType→threatenedRoute의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "enemyWaveType→threatenedRoute의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: enemyWaveType→threatenedRoute의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "enemyWaveType→threatenedRoute의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: enemyWaveType→threatenedRoute의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "enemyWaveType→threatenedRoute의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: enemyWaveType→threatenedRoute의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "enemyWaveType→threatenedRoute의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: enemyWaveType→threatenedRoute의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 2
+    "designer_draft_slices::identity-core": 2,
+    "designer_draft_slices::systems-progression": 1
   },
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T15:53:07.448Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "EASY_ENTRY",
+      "progressionEconomyBalance": {
+        "progressionLoop": "REPEATABLE",
+        "resourceFlow": "CONTINUOUS",
+        "balanceRules": "BALANCED"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "EnemyWaveDefender",
+          "newGameplay": "EnemyWaveDefender은 플레이어가 다음 적군 파워를 예측하고, 위험을 감지하여 적절한 방어 구조를 생성하는 데 사용되는 시스템입니다. 이 시스템은 게임의 핵심 재미인 성장, 위험, 보상의 반복 루프를 구현하며, MAIN 및 A/B의 상태 변화에 따라 전략적 선택을 조정하여 보상의 기회를 확보합니다.",
+          "systemImpact": "EnemyWaveDefender의 상태 변화는 게임의 전략적 선택과 보상의 기회 확보에 직접적인 영향을 미칩니다. 이는 플레이어가 방어 구조를 생성하거나 전략적 전개를 변경하여 보상의 기회를 확보하는 데 기여합니다."
+        },
+        {
+          "milestone": "EnemyWaveDefenderB",
+          "newGameplay": "EnemyWaveDefenderB은 EnemyWaveDefender의 기능을 확장하여, 방어 위치를 확장하거나 전략적 전개를 변경하여 보상의 기회를 확보하는 데 사용됩니다.",
+          "systemImpact": "EnemyWaveDefenderB는 방어 위치의 확장과 전략적 전개의 조합을 통해 보상의 기회를 확보하는 데 기여합니다. 이는 게임의 전략적 선택과 보상의 기회 확보에 중요한 역할을 합니다."
+        },
+        {
+          "milestone": "EnemyWaveDefenderC",
+          "newGameplay": "EnemyWaveDefenderC은 EnemyWaveDefenderB의 기능을 확장하여, 방어 위치의 확장과 전략적 전개의 조합을 통해 보상의 기회를 확보하는 데 사용됩니다.",
+          "systemImpact": "EnemyWaveDefenderC는 방어 위치의 확장과 전략적 전개의 조합을 통해 보상의 기회를 확보하는 데 기여합니다. 이는 게임의 전략적 선택과 보상의 기회 확보에 중요한 역할을 합니다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "enemyWaveType",
+          "threatenedRoute",
+          "currentDefenses",
+          "resourcesAvailable"
+        ],
+        "retryFlow": "enemyWaveType -> threatenedRoute -> currentDefenses -> resourcesAvailable",
+        "riskPressure": "EnemyWaveDefender의 상태 변화는 플레이어가 방어 구조를 생성하거나 전략적 전개를 변경하여 보상의 기회를 확보하는 데 직접적인 영향을 미칩니다.",
+        "recoveryRules": "EnemyWaveDefender의 상태 변화는 게임의 전략적 선택과 보상의 기회 확보에 중요한 역할을 합니다. 이는 플레이어가 방어 구조를 생성하거나 전략적 전개를 변경하여 보상의 기회를 확보하는 데 기여합니다."
+      }
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T16:04:44.927Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
@@ -2936,5 +3221,8 @@
     "contentDigest": "1aae028bc9857f0aa17f80c6c16e9383f1de74a51e3d2b3f7dbf8df7407626a8",
     "authorModel": "ollama:qwen3:1.7b",
     "status": "AUTHORED_CANDIDATE"
+  },
+  "localAuthoringSplits": {
+    "b7ccb61d43d8a8ad66ac8164426df364b695e1cd86f82b5aa545451ee46b67ca": true
   }
 }
