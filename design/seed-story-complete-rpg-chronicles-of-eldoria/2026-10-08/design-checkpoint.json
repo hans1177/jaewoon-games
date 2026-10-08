@@ -34,25 +34,43 @@
         "Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter.",
         "Progress through the complete story arc to a final boss and a real ending, with optional post-game or sequel hooks kept separate from the base conclusion."
       ]
+    },
+    "local_authoring_parts::695244b87cefe03728e863e05f64ff818da6c14818674d36fe8281179e8c80f1:signatureSystems:0": {
+      "id": "KARMA_RETURN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "EXPLORE_AREA",
+        "MEET_CHARACTERS",
+        "ACCEPT_OR_ADVANCE_STORY_QUESTS",
+        "DISCOVER_INFORMATION"
+      ],
+      "stateOutputs": [
+        "CHANGED_WORLD_STATE",
+        "GROWTH_EFFECT",
+        "ACTION_SEQUENCE"
+      ],
+      "name": "KARMA_RETURN",
+      "purpose": "ACTION_SEQUENCE",
+      "playerChoice": "ACTION_SEQUENCE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 426469,
-      "lastMs": 62751,
+      "totalMs": 456485,
+      "lastMs": 30016,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:30:26.204Z"
+      "updatedAt": "2026-10-08T13:30:56.222Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:23:19.708Z",
-  "updatedAt": "2026-10-08T13:30:26.204Z",
+  "updatedAt": "2026-10-08T13:30:56.222Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2284,7 +2302,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:30:26.204Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:30:56.222Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
