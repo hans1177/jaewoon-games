@@ -36,25 +36,41 @@
         "INPUT: 5개 거점 선택 → STATE: 자원 거점 상태 변화 및 점령 상태 변화",
         "OUTPUT: 자동전투 시작 → STATE: 자동전투 및 점령 보상 상태 변화"
       ]
+    },
+    "local_authoring_parts::5119d48882bf3ddfdce4b6b7f261609fb076bdaebb7219aecf38f4f496c62f18:signatureSystems:0": {
+      "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "INPUT: 직접 채집 → STATE: 나무·식량 수집 상태 변화",
+        "SELECT: NPC 마을 방문 → STATE: 주민 고용 및 자동화 상태 변화",
+        "INPUT: 병사 모집 → STATE: 병력 확장 및 전투력 증가",
+        "INPUT: 5개 거점 선택 → STATE: 자원 거점 상태 변화 및 점령 상태 변화"
+      ],
+      "stateOutputs": [
+        "OUTPUT: 자동전투 시작 → STATE: 자동전투 및 점령 보상 상태 변화"
+      ],
+      "name": "자원 거점 점령 시스템",
+      "purpose": "자원 거점은 서로 다른 적과 보상을 가진 5개 거점으로 구성되어 있으며, 플레이어는 순차적으로 점령하여 전략적 확장이 가능하다. 각 거점은 자원, 전략, 전투력 등 다양한 요소를 포함하며, 점령 시 보상과 위험을 동시에 처리한다.",
+      "playerChoice": "자원 거점 선택, 병력 확장, 전투력 강화, 자원 수집, 보상 획득, 전략적 확장을 선택하여 게임을 진행한다. 각 선택은 자원 거점의 상태 변화와 보상, 위험을 반영하여 게임의 전개를 결정한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 468345,
-      "lastMs": 64246,
+      "totalMs": 558218,
+      "lastMs": 89873,
       "lastError": null,
-      "updatedAt": "2026-10-08T06:50:20.704Z"
+      "updatedAt": "2026-10-08T06:51:50.580Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T06:42:32.069Z",
-  "updatedAt": "2026-10-08T06:50:20.705Z",
+  "updatedAt": "2026-10-08T06:51:50.581Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -609,7 +625,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T06:50:20.704Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T06:51:50.580Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
