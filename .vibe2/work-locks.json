@@ -1,5 +1,41 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-g91o2b",
+      "worker": "vibe2",
+      "taskId": "seed-casual-realm-weaver-unity-web-base-implementation-v1",
+      "gameId": "seed-casual-realm-weaver",
+      "files": [
+        "unity-games/seed-casual-realm-weaver/Assets/Scripts/GameCore.cs",
+        "unity-games/seed-casual-realm-weaver/Assets/Scripts/RuntimeBootstrap.cs",
+        "assets/roblox/world-ghosts/native/spider/spider.glb",
+        "assets/roblox/world-ghosts/native/spider/spider.png",
+        "assets/roblox/world-ghosts/native/spider/evidence.json",
+        "assets/generated/unity/seed-casual-realm-weaver/background/asset.glb",
+        "assets/generated/unity/seed-casual-realm-weaver/background/preview.png",
+        "assets/generated/unity/seed-casual-realm-weaver/background/application.json",
+        "assets/generated/unity/seed-casual-realm-weaver/background/evidence.json",
+        "assets/generated/unity/seed-casual-realm-weaver/item/asset.glb",
+        "assets/generated/unity/seed-casual-realm-weaver/item/preview.png",
+        "assets/generated/unity/seed-casual-realm-weaver/item/application.json",
+        "assets/generated/unity/seed-casual-realm-weaver/item/evidence.json",
+        "assets/generated/unity/seed-casual-realm-weaver/prop/asset.glb",
+        "assets/generated/unity/seed-casual-realm-weaver/prop/preview.png",
+        "assets/generated/unity/seed-casual-realm-weaver/prop/application.json",
+        "assets/generated/unity/seed-casual-realm-weaver/prop/evidence.json"
+      ],
+      "baseSha": "3692811583ad86b81dc6c5d15dbdc651c841c39a",
+      "runId": "37762402884",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-08T11:01:06.240Z",
+      "expiresAt": "2026-10-08T11:46:06.240Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-casual-realm-weaver-unity-web-base-implementation-v1"
+      ]
+    }
+  ]
 }
