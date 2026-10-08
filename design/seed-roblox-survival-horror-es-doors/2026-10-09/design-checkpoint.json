@@ -642,25 +642,32 @@
           "stateChange": "플레이어가 시작 단계에서 명확한 목표와 제한된 이동, 장애물 또는 시각적 퀴즈로 구성된 레벨을 수행하며 선택의 결과가 월드 상태에 직접적인 영향을 미친다."
         }
       ]
+    },
+    "local_authoring_parts::41d6f303d74c0f0ffdf8df64e98376ffaad9a4181fec570253e047ed46b2db69:failureStates": {
+      "failureStates": [
+        "플레이어가 시작 단계에서 명확한 목표와 제한된 이동, 장애물 또는 시각적 퀴즈로 구성된 레벨을 수행하며 선택의 결과가 월드 상태에 직접적인 영향을 미친다.",
+        "선택의 결과가 월드 상태에 직접적인 영향을 미친다는 것은 해당 레벨을 클리어하여 다음 스테이지로 진입하는 것을 의미한다.",
+        "클리어 후에는 새로운 패턴이나 오브젝트 조합이 추가되어 게임 진행이 계속되도록 설계된다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 46,
-      "successes": 46,
+      "calls": 47,
+      "successes": 47,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1603548,
-      "lastMs": 35046,
+      "totalMs": 1644063,
+      "lastMs": 40515,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:56:21.509Z"
+      "updatedAt": "2026-10-08T18:57:02.028Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:29:37.860Z",
-  "updatedAt": "2026-10-08T18:56:21.511Z",
+  "updatedAt": "2026-10-08T18:57:02.028Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2850,7 +2857,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:56:21.511Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:57:02.028Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
