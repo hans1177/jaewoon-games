@@ -85,25 +85,42 @@
       "name": "SURVIVAL_ROGUELITE_DEEPENMENT",
       "purpose": "플레이어가 매일 선택을 내리며 30일간 좀비 아포칼립스 생존 게임에서 살아남아야 하는 역할을 수행합니다.",
       "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. Collect run rewards or experience and choose upgrades... Combine upgrades into a stronger build..."
+    },
+    "local_authoring_parts::59969b989d4d746889a963c91edb605d3e28cb444e495439311b220b445eaccd:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_03",
+      "grammarRole": "c",
+      "stateInputs": [
+        "INPUT",
+        "SELECT",
+        "OUTPUT",
+        "STATE"
+      ],
+      "stateOutputs": [
+        "RESULT",
+        "NEXT_CHOICE"
+      ],
+      "name": "SURVIVAL_ROGUELITE_DEEPENMENT",
+      "purpose": "플레이어가 매일 선택을 내리며 30일간 좀비 아포칼립스 생존 게임에서 살아남아야 하는 역할을 수행합니다.",
+      "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. Collect run rewards or experience and choose upgrades... Combine upgrades into a stronger build..."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 648967,
-      "lastMs": 101348,
+      "totalMs": 750822,
+      "lastMs": 101855,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:04:26.990Z"
+      "updatedAt": "2026-10-08T18:06:08.846Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:53:37.989Z",
-  "updatedAt": "2026-10-08T18:04:26.990Z",
+  "updatedAt": "2026-10-08T18:06:08.846Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2302,7 +2319,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:04:26.990Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:06:08.846Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
