@@ -102,25 +102,225 @@
       "name": "놀이공원 타이쿤의 핵심 재미와 시스템 연결",
       "purpose": "플레이어가 즉시 시작하며 단순한 입력(1指 tap/swipe)과 명확한 목표(점수, 거리, 짧은 세션 목표)를 통해 세계 상태와 다음 선택을 바꾸는 반복 가능한 루프",
       "playerChoice": "단순한 입력(1指 tap/swipe)과 명확한 목표(점수, 거리, 짧은 세션 목표)를 선택"
+    },
+    "local_authoring_parts::cc72208cbeb09da2dea233c29c0a52a8824f6c297c1095f3e2512da824567f62:signatureSystems:4": {
+      "id": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "Score",
+        "Distance",
+        "ProgressionBenefit"
+      ],
+      "stateOutputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount"
+      ],
+      "name": "놀이공원 타이쿤의 핵심 재미와 시스템 연결",
+      "purpose": "플레이어가 즉시 시작하며 단순한 입력(1指 tap/swipe)과 명확한 목표(점수, 거리, 짧은 세션 목표)를 통해 세계 상태와 다음 선택을 바꾸는 반복 가능한 루프",
+      "playerChoice": "단순한 입력(1指 tap/swipe)과 명확한 목표(점수, 거리, 짧은 세션 목표)를 선택"
+    },
+    "local_authoring_parts::b2f764f7bc3f3cd294bfcc36b4697cb48121b106fb4948786ecc5a06827343a6:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "Score",
+            "Distance",
+            "ProgressionBenefit"
+          ],
+          "name": "놀이공원 타이쿤의 핵심 재미와 시스템 연결",
+          "purpose": "플레이어가 즉시 시작하며 단순한 입력과 명확한 목표를 통해 세계 상태와 다음 선택을 바꾸는 반복 가능한 루프",
+          "playerChoice": "단순한 입력(1指 tap/swipe)과 명확한 목표(점수, 거리, 짧은 세션 목표)를 선택"
+        },
+        {
+          "id": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "Score",
+            "Distance",
+            "ProgressionBenefit"
+          ],
+          "name": "놀이공원 타이쿤의 핵심 재미와 시스템 연결",
+          "purpose": "플레이어가 즉시 시작하며 단순한 입력(1指 tap/swipe)과 명확한 목표(점수, 거리, 짧은 세션 목표)를 통해 세계 상태와 다음 선택을 바꾸는 반복 가능한 루프",
+          "playerChoice": "단순한 입력(1指 tap/swipe)과 명확한 목표(점수, 거리, 짧은 세션 목표)를 선택"
+        },
+        {
+          "id": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
+          "grammarRole": "B",
+          "stateInputs": [
+            "Score",
+            "Distance",
+            "ProgressionBenefit"
+          ],
+          "stateOutputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "name": "놀이공원 타이쿤의 핵심 재미와 시스템 연결",
+          "purpose": "플레이어가 즉시 시작하며 단순한 입력(1指 tap/swipe)과 명확한 목표(점수, 거리, 짧은 세션 목표)를 통해 세계 상태와 다음 선택을 바꾸는 반복 가능한 루프",
+          "playerChoice": "단순한 입력(1指 tap/swipe)과 명확한 목표(점수, 거리, 짧은 세션 목표)를 선택"
+        },
+        {
+          "id": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "Score",
+            "Distance",
+            "ProgressionBenefit"
+          ],
+          "stateOutputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "name": "놀이공원 타이쿤의 핵심 재미와 시스템 연결",
+          "purpose": "플레이어가 즉시 시작하며 단순한 입력(1指 tap/swipe)과 명확한 목표(점수, 거리, 짧은 세션 목표)를 통해 세계 상태와 다음 선택을 바꾸는 반복 가능한 루프",
+          "playerChoice": "단순한 입력(1指 tap/swipe)과 명확한 목표(점수, 거리, 짧은 세션 목표)를 선택"
+        },
+        {
+          "id": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "Score",
+            "Distance",
+            "ProgressionBenefit"
+          ],
+          "stateOutputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "name": "놀이공원 타이쿤의 핵심 재미와 시스템 연결",
+          "purpose": "플레이어가 즉시 시작하며 단순한 입력(1指 tap/swipe)과 명확한 목표(점수, 거리, 짧은 세션 목표)를 통해 세계 상태와 다음 선택을 바꾸는 반복 가능한 루프",
+          "playerChoice": "단순한 입력(1指 tap/swipe)과 명확한 목표(점수, 거리, 짧은 세션 목표)를 선택"
+        }
+      ]
+    },
+    "local_authoring_parts::a9b80c9d2bca20c3d265cf1b113badc0c96a599479e76d409aae6b465b641cf3:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "signatureSystems": [
+        {
+          "id": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "Score",
+            "Distance",
+            "ProgressionBenefit"
+          ],
+          "name": "놀이공원 타이쿤의 핵심 재미와 시스템 연결",
+          "purpose": "플레이어가 즉시 시작하며 단순한 입력과 명확한 목표를 통해 세계 상태와 다음 선택을 바꾸는 반복 가능한 루프",
+          "playerChoice": "단순한 입력(1指 tap/swipe)과 명확한 목표(점수, 거리, 짧은 세션 목표)를 선택"
+        },
+        {
+          "id": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "Score",
+            "Distance",
+            "ProgressionBenefit"
+          ],
+          "name": "놀이공원 타이쿤의 핵심 재미와 시스템 연결",
+          "purpose": "플레이어가 즉시 시작하며 단순한 입력(1指 tap/swipe)과 명확한 목표(점수, 거리, 짧은 세션 목표)를 통해 세계 상태와 다음 선택을 바꾸는 반복 가능한 루프",
+          "playerChoice": "단순한 입력(1指 tap/swipe)과 명확한 목표(점수, 거리, 짧은 세션 목표)를 선택"
+        },
+        {
+          "id": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
+          "grammarRole": "B",
+          "stateInputs": [
+            "Score",
+            "Distance",
+            "ProgressionBenefit"
+          ],
+          "stateOutputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "name": "놀이공원 타이쿤의 핵심 재미와 시스템 연결",
+          "purpose": "플레이어가 즉시 시작하며 단순한 입력(1指 tap/swipe)과 명확한 목표(점수, 거리, 짧은 세션 목표)를 통해 세계 상태와 다음 선택을 바꾸는 반복 가능한 루프",
+          "playerChoice": "단순한 입력(1指 tap/swipe)과 명확한 목표(점수, 거리, 짧은 세션 목표)를 선택"
+        },
+        {
+          "id": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "Score",
+            "Distance",
+            "ProgressionBenefit"
+          ],
+          "stateOutputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "name": "놀이공원 타이쿤의 핵심 재미와 시스템 연결",
+          "purpose": "플레이어가 즉시 시작하며 단순한 입력(1指 tap/swipe)과 명확한 목표(점수, 거리, 짧은 세션 목표)를 통해 세계 상태와 다음 선택을 바꾸는 반복 가능한 루프",
+          "playerChoice": "단순한 입력(1指 tap/swipe)과 명확한 목표(점수, 거리, 짧은 세션 목표)를 선택"
+        },
+        {
+          "id": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "Score",
+            "Distance",
+            "ProgressionBenefit"
+          ],
+          "stateOutputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "name": "놀이공원 타이쿤의 핵심 재미와 시스템 연결",
+          "purpose": "플레이어가 즉시 시작하며 단순한 입력(1指 tap/swipe)과 명확한 목표(점수, 거리, 짧은 세션 목표)를 통해 세계 상태와 다음 선택을 바꾸는 반복 가능한 루프",
+          "playerChoice": "단순한 입력(1指 tap/swipe)과 명확한 목표(점수, 거리, 짧은 세션 목표)를 선택"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1170296,
-      "lastMs": 106283,
+      "totalMs": 1276376,
+      "lastMs": 106080,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:00:56.923Z"
+      "updatedAt": "2026-10-08T13:02:43.004Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:41:26.595Z",
-  "updatedAt": "2026-10-08T13:00:56.923Z",
+  "updatedAt": "2026-10-08T13:02:43.007Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2044,7 +2244,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:00:56.923Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:02:43.007Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
