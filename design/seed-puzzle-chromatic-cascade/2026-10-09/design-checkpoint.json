@@ -49,25 +49,51 @@
       "name": "세계 인과법칙 시스템",
       "purpose": "생태·저주·정치·기억 중 하나로 구체화된 몬스터 존재",
       "playerChoice": "세계 인과법칙의 해석 또는 비용 변경을 선택하여 공간 사용법을 바꿈"
+    },
+    "local_authoring_parts::01bbcfec753ee06e15a699bc6611b718829eb44c3bfef5a744c1977c1d12eae8:signatureSystems:1": {
+      "id": "signatureSystems_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "worldState"
+      ],
+      "stateOutputs": [
+        "newWorldState"
+      ],
+      "name": "색채 인과법칙 시스템",
+      "purpose": "색채, 형태, 공간, 시간 중 하나로 구체화된 플레이어 존재",
+      "playerChoice": "색채, 형태, 공간, 시간의 해석 또는 비용 변경을 선택하여 게임 내 상태를 바꿈"
+    },
+    "local_authoring_parts::01bbcfec753ee06e15a699bc6611b718829eb44c3bfef5a744c1977c1d12eae8:signatureSystems:2": {
+      "id": "signatureSystems_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "worldState"
+      ],
+      "stateOutputs": [
+        "newWorldState"
+      ],
+      "name": "색채 인과법칙 시스템",
+      "purpose": "색채, 형태, 공간, 시간 중 하나로 구체화된 플레이어 존재",
+      "playerChoice": "색채, 형태, 공간, 시간의 해석 또는 비용 변경을 선택하여 게임 내 상태를 바꿈"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 500763,
-      "lastMs": 97319,
+      "totalMs": 697428,
+      "lastMs": 99386,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:37:55.630Z"
+      "updatedAt": "2026-10-08T18:41:12.298Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:29:34.840Z",
-  "updatedAt": "2026-10-08T18:37:55.630Z",
+  "updatedAt": "2026-10-08T18:41:12.298Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2104,7 +2130,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:37:55.630Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:41:12.298Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
