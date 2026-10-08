@@ -704,25 +704,51 @@
         "writeState: 'Transition to next world state based on player choices'"
       ],
       "fromSystem": "signatureSystems_0"
+    },
+    "local_authoring_parts::260037c1ec20a3c5d1038f6c7e4193a3a9fe39113f2d9a637bf7bac3712ea3a4:toSystem,trigger,stateChange": {
+      "toSystem": "signatureSystems_1",
+      "trigger": "Fight through an escalating horde in a short real-time survival run",
+      "stateChange": "Transition to next world state based on player choices"
+    },
+    "local_authoring_parts::f97672bfa53690024f56d7594db0c2ae05a995e3cd144090f42929b5227f3a2a:systemInterconnections:2": {
+      "fromId": "signatureSystems_0",
+      "toId": "signatureSystems_1",
+      "stateKeys": [
+        "readState: 'Fight through an escalating horde in a short real-time survival run'",
+        "writeState: 'Transition to next world state based on player choices'"
+      ],
+      "fromSystem": "signatureSystems_0",
+      "toSystem": "signatureSystems_1",
+      "trigger": "Fight through an escalating horde in a short real-time survival run",
+      "stateChange": "Transition to next world state based on player choices"
+    },
+    "local_authoring_parts::41182a54e74505b25f9b1faa77adfc7a2524bc5c183af7602b2fdb50fc57028d:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "signatureSystems_0",
+      "toId": "signatureSystems_1",
+      "stateKeys": [
+        "readState: 'Fight through an escalating horde in a short real-time survival run'",
+        "writeState: 'Transition to next world state based on player choices'"
+      ],
+      "fromSystem": "signatureSystems_0"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 21,
-      "successes": 21,
+      "calls": 23,
+      "successes": 23,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2309858,
-      "lastMs": 94157,
+      "totalMs": 2496822,
+      "lastMs": 94978,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:43:08.900Z"
+      "updatedAt": "2026-10-08T12:46:15.868Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:04:38.961Z",
-  "updatedAt": "2026-10-08T12:43:08.900Z",
+  "updatedAt": "2026-10-08T12:46:15.868Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3067,7 +3093,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:43:08.900Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:46:15.868Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
