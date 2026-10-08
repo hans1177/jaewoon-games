@@ -265,25 +265,112 @@
           "playerChoice": "직접 채집 -> 자동화 적용 -> 거점 점령 -> 협력적 공략 -> 왕국 확장"
         }
       ]
+    },
+    "local_authoring_parts::d529121fe6307c2f448febdbcf4b44cb62b251b08eaf57d8a1b19eb7b4254e69:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::6e258590f93c23b6787df8559eab3b82e1cf7ad1aaeb22b817cd4be5f3d5d7e5:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "INPUT: 직접 채집 → STATE: 나무/식량 획득 및 주민 고용",
+        "SELECT: 주민 영입 → ACTION: 자동화 적용",
+        "OUTPUT: 생산성 증대 → STATE: 병사 모집 시작",
+        "STATE: 병사 모집 완료 → INPUT: 거점 선택",
+        "ACTION: 거점 점령 → OUTPUT: 보상 획득",
+        "STATE: 보상 획득 → INPUT: 다음 거점 선택",
+        "ACTION: 거점 점령 → OUTPUT: 왕국 확장"
+      ],
+      "signatureSystems": [
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무/식량 획득 및 주민 고용"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 생산성 증대 → STATE: 병사 모집 시작",
+            "STATE: 본사 모집 완료 → INPUT: 거점 선택"
+          ],
+          "name": "직접 채집 - 주민 자동화 - 병영 강화",
+          "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득하며, 고용된 주민은 생산 직업에 배치되어 반복 노동을 자동화함.",
+          "playerChoice": "주민 영입 -> 자동화 적용 -> 거점 점령 -> 협력적 공략 -> 왕국 확장"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무/식량 획득 및 주민 고용"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 생산성 증대 → STATE: 병사 모집 시작",
+            "STATE: 본사 모집 완료 → INPUT: 거점 선택"
+          ],
+          "name": "직접 채집 - 주민 자동화 - 병영 강화",
+          "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득하며, 고용된 주민은 생산 직업에 배치되어 반복 노동을 자동화함.",
+          "playerChoice": "주민 영입 -> 자동화 적용 -> 거점 점령 -> 협력적 공략 -> 왕국 확장"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무/식량 획득 및 주민 고용"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 생산성 증대 → STATE: 병사 모집 시작",
+            "STATE: 본사 모집 완료 → INPUT: 거점 선택"
+          ],
+          "name": "직접 채집 - 주민 자동화 - 병영 강화",
+          "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득하며, 고용된 주민은 생산 직업에 배치되어 반복 노동을 자동화함.",
+          "playerChoice": "주민 영입 -> 자동화 적용 -> 거점 점령 -> 협력적 공략 -> 왕국 확장"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무/식량 획득 및 주민 고용"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 생산성 증대 → STATE: 병사 모집 시작",
+            "STATE: 병사 모집 완료 → INPUT: 거점 선택"
+          ],
+          "name": "직접 채집 - 주민 자동화 - 병영 강화",
+          "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득하며, 고용된 주민은 생산 직업에 배치되어 반복 노동을 자동화함.",
+          "playerChoice": "직접 채집 -> 자동화 적용 -> 거점 점령 -> 협력적 공략 -> 왕국 확장"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_DELVE_V1",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무/식량 획득 및 주민 고용"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 생산성 증대 → STATE: 병사 모집 시작",
+            "STATE: 병사 모집 완료 → INPUT: 거점 선택"
+          ],
+          "name": "직접 채집 - 주민 자동화 - 병영 강화",
+          "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득하며, 고용된 주민은 생산 직업에 배置되어 반복 노동을 자동화함.",
+          "playerChoice": "직접 채집 -> 자동화 적용 -> 거점 점령 -> 협력적 공략 -> 왕국 확장"
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 406463,
-      "lastMs": 52779,
+      "totalMs": 435157,
+      "lastMs": 28694,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:39:20.543Z"
+      "updatedAt": "2026-10-08T18:39:49.239Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:32:33.971Z",
-  "updatedAt": "2026-10-08T18:39:20.545Z",
+  "updatedAt": "2026-10-08T18:39:49.348Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -834,12 +921,248 @@
     },
     "assetFacts": {}
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:39:20.545Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_MAIN_A_B_c_DELVE_REQUIRED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "counts": {
+            "MAIN": 1,
+            "A": 1,
+            "B": 1,
+            "c": 1,
+            "DELVE": 1
+          },
+          "systemCount": 5,
+          "statesReady": false
+        },
+        "requiredAction": "메인 중심 행동, A/B 서로 다른 두 축, c 보조 변주, @ 발견·숙련을 기존 규칙에 맞춰 최소 5개 고유 시스템과 실제 상태 입력·출력으로 작성한다. 기존 밸런스·저장·진행은 유지한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.COZY_CHIBI_KINGDOM_WORLD_V8.stateInputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.COZY_CHIBI_KINGDOM_WORLD_V8.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.COZY_CHIBI_KINGDOM_WORLD_V8.stateOutputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.COZY_CHIBI_KINGDOM_WORLD_V8.stateOutputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.COZY_CHIBI_KINGDOM_WORLD_V8.stateInputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.COZY_CHIBI_KINGDOM_WORLD_V8.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.COZY_CHIBI_KINGDOM_WORLD_V8.stateOutputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.COZY_CHIBI_KINGDOM_WORLD_V8.stateOutputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.COZY_CHIBI_KINGDOM_WORLD_V8.stateInputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.COZY_CHIBI_KINGDOM_WORLD_V8.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.COZY_CHIBI_KINGDOM_WORLD_V8.stateOutputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.COZY_CHIBI_KINGDOM_WORLD_V8.stateOutputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.COZY_CHIBI_KINGDOM_WORLD_V8.stateInputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.COZY_CHIBI_KINGDOM_WORLD_V8.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.COZY_CHIBI_KINGDOM_WORLD_V8.stateOutputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.COZY_CHIBI_KINGDOM_WORLD_V8.stateOutputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.COZY_CHIBI_KINGDOM_DELVE_V1.stateInputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.COZY_CHIBI_KINGDOM_DELVE_V1.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.COZY_CHIBI_KINGDOM_DELVE_V1.stateOutputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.COZY_CHIBI_KINGDOM_DELVE_V1.stateOutputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임. 큰 머리와 둥근 얼굴, 짧고 굵은 팔다리의 치비 주민과 하나의 연결된 실루엣으로 보이는 야생동물을 사용하며, 움직이는 왕국의 확장감을 느끼게 된다. 플레이어는 단순히 나무와 식량을 채집해 주민을 고용하고, 그로 인해 생산성을 증대시키며, 병사를 모집하여 지역 기지를 점령하게 되고, 이 과정에서 각각 다른 적들과 보상을 가진 5개 거점들을 순차적으로 점령하여 왕국을 확장시킨다. 이 과정에서는 다양한 상황과 대응이 필요하며, 협력적인 방식으로 강한 거점 공략이 이루어지기 때문에, 게임은 서로 다른 역할과 상태를 통해 깊이 있는 플레이 경험을 제공한다.",
+      "playerFantasy": "플레이어는 단순히 나무와 식량을 채집해 주민을 고용하고, 그로 인해 생산성을 증대시키며, 병사를 모집하여 지역 기지를 점령하게 되고, 이 과정에서 각각 다른 적들과 보상을 가진 5개 거점을 순차적으로 점령하여 왕국을 확장시킨다. 이 과정에서는 다양한 상황과 대응이 필요하며, 협력적인 방식으로 강한 거점 공략이 이루어지기 때문에, 게임은 서로 다른 역할과 상태를 통해 깊이 있는 플레이 경험을 제공한다.",
+      "coreFun": "나무와 식량을 직접 채집하여 주민을 고용하고 생산성 증대시키며 병사를 모집해 지역 기지를 점령하며, 이 과정에서 5개 거점들을 순차적으로 점령하여 왕국 확장에 따라 진입하는 단순한 플레이어 역할을 수행하고, 다양한 상황 및 대응을 통해 협력적인 방식으로 강한 거점 공략을 이루어내는 게임 경험을 제공한다.",
+      "coreLoop": [
+        "INPUT: 직접 채집 → STATE: 나무/식량 획득 및 주민 고용",
+        "SELECT: 주민 영입 → ACTION: 자동화 적용",
+        "OUTPUT: 생산성 증대 → STATE: 병사 모집 시작",
+        "STATE: 병사 모집 완료 → INPUT: 거점 선택",
+        "ACTION: 거점 점령 → OUTPUT: 보상 획득",
+        "STATE: 보상 획득 → INPUT: 다음 거점 선택",
+        "ACTION: 거점 점령 → OUTPUT: 왕국 확장"
+      ],
+      "multiplayerMode": "COOP"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T18:39:49.343Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_MAIN_A_B_c_DELVE_REQUIRED,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_RULE_STATE_MISSING",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
