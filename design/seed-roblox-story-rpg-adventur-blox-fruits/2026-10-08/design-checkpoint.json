@@ -608,25 +608,96 @@
           "playerChoice": "Player-selected board patterns or obstacle combinations that determine the next level's state and objective."
         }
       ]
+    },
+    "local_authoring_parts::c8bdb13b2b8c88ae99803307df79f039626c0bb34cebc6f1523f0e6f0c2c63f8:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "MAIN",
+          "toId": "A",
+          "stateKeys": [
+            "board_state",
+            "objective_clear",
+            "reward_unlock"
+          ],
+          "fromSystem": "BOARD_STATE_TRANSITION",
+          "toSystem": "BOARD_STATE_TRANSITION",
+          "trigger": "player_choice",
+          "stateChange": "board_state_evolution"
+        },
+        {
+          "fromId": "A",
+          "toId": "B",
+          "stateKeys": [
+            "board_pattern",
+            "obstacle_combination"
+          ],
+          "fromSystem": "BOARD_STATE_TRANSITION",
+          "toSystem": "BOARD_STATE_TRANSITION",
+          "trigger": "player_choice",
+          "stateChange": "board_pattern_evolution"
+        },
+        {
+          "fromId": "B",
+          "toId": "C",
+          "stateKeys": [
+            "next_level_goal",
+            "new_board_pattern"
+          ],
+          "fromSystem": "BOARD_STATE_TRANSITION",
+          "toSystem": "BOARD_STATE_TRANSITION",
+          "trigger": "player_choice",
+          "stateChange": "level_evolution"
+        },
+        {
+          "fromId": "C",
+          "toId": "DELVE",
+          "stateKeys": [
+            "delve_target",
+            "new_board_pattern"
+          ],
+          "fromSystem": "BOARD_STATE_TRANSITION",
+          "toSystem": "BOARD_STATE_TRANSITION",
+          "trigger": "player_choice",
+          "stateChange": "delve_evolution"
+        },
+        {
+          "fromId": "DELVE",
+          "toId": "MAIN",
+          "stateKeys": [
+            "delve_result",
+            "new_board_pattern"
+          ],
+          "fromSystem": "BOARD_STATE_TRANSITION",
+          "toSystem": "BOARD_STATE_TRANSITION",
+          "trigger": "player_choice",
+          "stateChange": "delve_result_evolution"
+        }
+      ],
+      "progressionDirection": "SEQUENTIAL",
+      "progressionEconomyBalance": {
+        "progressionLoop": "BOARD_STATE_TRANSITION",
+        "resourceFlow": "BOARD_STATE_TRANSITION",
+        "balanceRules": "BOARD_STATE_TRANSITION"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 21,
-      "successes": 20,
+      "calls": 22,
+      "successes": 21,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1407305,
-      "lastMs": 300089,
+      "totalMs": 1552252,
+      "lastMs": 144947,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T10:18:56.456Z"
+      "updatedAt": "2026-10-08T10:21:21.405Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:01:25.970Z",
-  "updatedAt": "2026-10-08T10:18:56.456Z",
+  "updatedAt": "2026-10-08T10:21:21.405Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2667,7 +2738,7 @@
     "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T10:13:56.357Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:21:21.405Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
