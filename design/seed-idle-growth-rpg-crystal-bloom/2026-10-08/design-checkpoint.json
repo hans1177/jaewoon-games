@@ -68,25 +68,59 @@
       "name": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_01",
       "purpose": "IDLE_GROWTH_RPG_CORE_LOOP_01 -> IDLE_GROWTH_RPG_CORE_LOOP_02 -> IDLE_GROWTH_RPG_CORE_LOOP_03",
       "playerChoice": "IDLE_GROWTH_RPG_CORE_LOOP_01 -> IDLE_GROWTH_RPG_CORE_LOOP_02 -> IDLE_GROWTH_RPG_CORE_LOOP_03"
+    },
+    "local_authoring_parts::0748d5c820e5c5b7a173af1fc7f29344f0715dbf2de442ed27ab2fa2d4e594bd:signatureSystems:2": {
+      "id": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_02",
+      "grammarRole": "B",
+      "stateInputs": [
+        "IDLE_GROWTH_RPG_CORE_LOOP_01",
+        "IDLE_GROWTH_RPG_CORE_LOOP_02",
+        "IDLE_GROWTH_RPG_CORE_LOOP_03"
+      ],
+      "stateOutputs": [
+        "IDLE_GROWTH_RPG_CORE_LOOP_01",
+        "IDLE_GROWTH_RPG_CORE_LOOP_02",
+        "IDLE_GROWTH_RPG_CORE_LOOP_03"
+      ],
+      "name": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_02",
+      "purpose": "IDLE_GROWTH_RPG_CORE_LOOP_01 -> IDLE_GROWTH_RPG_CORE_LOOP_02 -> IDLE_GROWTH_RPG_CORE_LOOP_03",
+      "playerChoice": "IDLE_GROWTH_RPG_CORE_LOOP_01 -> IDLE_GROWTH_RPG_CORE_LOOP_02 -> IDLE_GROWTH_RPG_CORE_LOOP_03"
+    },
+    "local_authoring_parts::0748d5c820e5c5b7a173af1fc7f29344f0715dbf2de442ed27ab2fa2d4e594bd:signatureSystems:3": {
+      "id": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_03",
+      "grammarRole": "c",
+      "stateInputs": [
+        "IDLE_GROWTH_RPG_CORE_LOOP_01",
+        "IDLE_GROWTH_RPG_CORE_LOOP_02",
+        "IDLE_GROWTH_RPG_CORE_LOOP_03"
+      ],
+      "stateOutputs": [
+        "IDLE_GROWTH_RPG_CORE_LOOP_01",
+        "IDLE_GROWTH_RPG_CORE_LOOP_02",
+        "IDLE_GROWTH_RPG_CORE_LOOP_03"
+      ],
+      "name": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_03",
+      "purpose": "IDLE_GROWTH_RPG_CORE_LOOP_01 -> IDLE_GROWTH_RPG_CORE_LOOP_02 -> IDLE_GROWTH_RPG_CORE_LOOP_03",
+      "playerChoice": "IDLE_GROWTH_RPG_CORE_LOOP_01 -> IDLE_GROWTH_RPG_CORE_LOOP_02 -> IDLE_GROWTH_RPG_CORE_LOOP_03"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 696677,
-      "lastMs": 114496,
+      "totalMs": 929066,
+      "lastMs": 116560,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:57:29.156Z"
+      "updatedAt": "2026-10-08T13:01:21.548Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:45:52.443Z",
-  "updatedAt": "2026-10-08T12:57:29.156Z",
+  "updatedAt": "2026-10-08T13:01:21.548Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2318,7 +2352,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:57:29.156Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:01:21.548Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
