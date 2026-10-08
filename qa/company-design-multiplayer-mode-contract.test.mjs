@@ -19,10 +19,12 @@ test('central policy requires multiplayer mode inside the minimum game design co
 });
 
 test('designer schema requires one explicit canonical multiplayer mode and no legacy single-player default',()=>{
-  assert.match(design,/const MULTIPLAYER_MODES=\['SINGLE','COOP','COMPETITIVE','HYBRID'\]/);
+  assert.match(design,/allGamesMultiplayerRequired\?\['COOP','COMPETITIVE','HYBRID'\]/);
+  assert.match(design,/includes\(originalMultiplayerMode\)\?\[originalMultiplayerMode\]/);
+  assert.equal(policy.directNativeDualPlatformDevelopment.multiplayerImplementation.required,true);
+  assert.equal(policy.directNativeDualPlatformDevelopment.multiplayerImplementation.developmentAdmissionGate,false);
   assert.match(design,/required:\['identity'.*'multiplayerMode'.*'multiplayerExpansionDecision'/s);
   assert.match(design,/multiplayerMode:\{type:'string',enum:MULTIPLAYER_MODES\}/);
-  assert.match(design,/SINGLE\/COOP\/COMPETITIVE\/HYBRID 중 하나를 multiplayerMode에 반드시 명시/);
   assert.match(design,/SINGLE\/COOP\/COMPETITIVE\/HYBRID 중 하나를 multiplayerMode에 반드시 명시/);
   assert.doesNotMatch(design,/Android 모바일 싱글 기본/);
 });
