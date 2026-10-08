@@ -28,7 +28,7 @@ test('Vibe genre menu recommendations bind source-backed existing UI without own
     const gameRoot=path.join(root,'roblox-games','demo-rpg','shared');
     fs.mkdirSync(gameRoot,{recursive:true});
     fs.writeFileSync(path.join(gameRoot,'RPGMenu.luau'),
-      'local character=Model.character(state,config)\nlocal shop=Model.shop(state,config)\nlocal gear=Model.equipment(state,config)\n');
+      'local GuiService=game:GetService("GuiService")\nlocal character=Model.character(state,config)\nlocal shop=Model.shop(state,config)\nlocal gear=Model.equipment(state,config)\n');
     // UI 문자열만으로 시스템을 추정하지 않으며, 실제 게임 소스의 책임 함수가 필요하다.
     const serverDir=path.join(root,'roblox-games','demo-rpg','server');
     fs.mkdirSync(serverDir,{recursive:true});
@@ -115,7 +115,7 @@ test('genre UI detection rejects unowned menu keywords and platform-incompatible
     fs.writeFileSync(path.join(folder,'server','Game.server.luau'),
       'local shopkeeper = "weapon shop"\nlocal progressBar = "level"\nlocal mapTitle = "world"');
     fs.writeFileSync(path.join(folder,'shared','RPGMenu.luau'),
-      'local character=Model.character(state,config)\nlocal shop=Model.shop(state,config)');
+      'local GuiService=game:GetService("GuiService")\nlocal character=Model.character(state,config)\nlocal shop=Model.shop(state,config)');
     const task={gameId:'menu-proof-demo',genre:'RPG',goal:'상점 캐릭터 메뉴'};
     const config={target:'roblox',repoRoot:root,task,manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}};
     const unowned=buildVibeAssetProductionPlan(config).genreMenuRecommendations;
@@ -179,6 +179,48 @@ test('Vibe source worker applies genre menu suggestions only to exact SHA-matche
   const unrelated=buildPrompt({...order,goal:'fix shader normals'},
     {files:[{path:sourcePath,content,editable:true}]},[sourcePath]);
   assert.doesNotMatch(unrelated,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
+});
+
+test('genre menus bind only to current editable native UI consumers, never server-only gameplay owners',()=>{
+ const root=tempRoot();
+ try{
+   const gameRoot=path.join(root,'roblox-games','survival-proof');
+   fs.mkdirSync(path.join(gameRoot,'server'),{recursive:true});
+   fs.mkdirSync(path.join(gameRoot,'client'),{recursive:true});
+   const serverPath='roblox-games/survival-proof/server/Game.server.luau';
+   const clientPath='roblox-games/survival-proof/client/Game.client.luau';
+   const server='local function TryCraft(player,recipeId) player:SetAttribute("ItemCount",1) end';
+   const client='local screen=Instance.new("ScreenGui")\nlocal action=Instance.new("TextButton")';
+   fs.writeFileSync(path.join(root,serverPath),server);
+   fs.writeFileSync(path.join(root,clientPath),client);
+   const plan=buildVibeAssetProductionPlan({target:'roblox',repoRoot:root,
+     task:{gameId:'survival-proof',genre:'SURVIVAL',goal:'craft menu'},
+     manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}});
+   const menu=plan.genreMenuRecommendations;
+   const row=menu.candidateFeatures.find(item=>item.role==='CRAFT');
+   assert.equal(row.status,'EXISTING_SYSTEM_NATIVE_UI_BINDING_REQUIRED');
+   assert.equal(row.existingNativeUiRefs.length,0);
+   assert.equal(row.nativeUiConsumerRefs.length,1);
+   assert.equal(row.nativeUiConsumerRefs[0].path,clientPath);
+   assert.equal(row.gameSystemSourceRefs[0].path,serverPath);
+   const order={target:'roblox',goal:'craft menu',
+     source:{root:'roblox-games/survival-proof'},assetProduction:{genreMenuRecommendations:menu}};
+   const valid=buildPrompt(order,{files:[{path:'client/Game.client.luau',content:client,editable:true}]},
+     ['client/Game.client.luau']);
+   assert.match(valid,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
+   assert.match(valid,/"role":"CRAFT"/);
+   assert.ok(valid.includes('"editPath":"client/Game.client.luau"'));
+   assert.ok(!valid.includes('"editPath":"server/Game.server.luau"'));
+   const onlyServer=buildPrompt(order,{files:[{path:'server/Game.server.luau',content:server,editable:true}]},
+     ['server/Game.server.luau']);
+   assert.doesNotMatch(onlyServer,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
+   const stale=buildPrompt(order,{files:[{path:'client/Game.client.luau',content:client+'\n-- stale',editable:true}]},
+     ['client/Game.client.luau']);
+   assert.doesNotMatch(stale,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
+   const wrongGame=buildPrompt({...order,source:{root:'roblox-games/other-game'}},
+     {files:[{path:'client/Game.client.luau',content:client,editable:true}]},['client/Game.client.luau']);
+   assert.doesNotMatch(wrongGame,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
 test('Vibe discovers only actual object-specific prompts with source identity, never imaginary object systems',()=>{
