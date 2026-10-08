@@ -62,25 +62,39 @@
       "name": "FIGHT_THROUGH_ELEVATED_HORDE",
       "purpose": "Player's core action and progression choice in a real-time survival run, influencing the next state through resource management and skill upgrades.",
       "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build to influence the next progression choice."
+    },
+    "local_authoring_parts::a83335c7fb080b831b98ef84d8717c1bef1bc3178a8865c80590eb4b76b043ed:signatureSystems:2": {
+      "id": "SURVIVAL_03_SIGNATURE_SYSTEM",
+      "grammarRole": "B",
+      "stateInputs": [
+        "RUN_REWARDS",
+        "UPGRADES"
+      ],
+      "stateOutputs": [
+        "PROGRESSION_CHOICE"
+      ],
+      "name": "FIGHT_THROUGH_ELEVATED_HORDE_B",
+      "purpose": "A/B 대축에서 선택 결과가 다음 상태와 비용, 위험, 경로에 연결되는 시스템입니다.",
+      "playerChoice": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 319972,
-      "lastMs": 31519,
+      "totalMs": 353227,
+      "lastMs": 33255,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:48:27.480Z"
+      "updatedAt": "2026-10-08T21:49:00.737Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:43:07.484Z",
-  "updatedAt": "2026-10-08T21:48:27.480Z",
+  "updatedAt": "2026-10-08T21:49:00.737Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2279,7 +2293,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:48:27.480Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:49:00.737Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
