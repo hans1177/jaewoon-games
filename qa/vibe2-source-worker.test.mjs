@@ -3481,6 +3481,34 @@ test('Codex game source write override is rejected before generation', async () 
   }
 });
 
+test('central owner Codex no-use contract keeps canonical Vibe and deterministic alternatives',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
+  const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+  const contract=policy.developmentLifecycleMachine.developmentToolAuthority;
+  assert.equal(contract.codex.role,'DISABLED');
+  assert.deepEqual(contract.codex.allowedScopes,[]);
+  assert.equal(contract.codex.allUseForbidden,true);
+  assert.equal(contract.codex.gameSourceWriteAllowed,false);
+  assert.equal(contract.codex.unattendedGitHubActionsGameSourceUse,false);
+  assert.equal(contract.gameSourceGenerationProvider,'LOCAL_OLLAMA');
+  assert.equal(contract.gameSourceWritePolicy.allowedWorker,'tools/vibe2-source-worker.mjs');
+  assert.equal(contract.enforcement.requiredEnvironment.VIBE2_CODEX_ROLE,'DISABLED');
+  assert.equal(contract.enforcement.requiredEnvironment.VIBE2_CODEX_GAME_SOURCE_WRITE,'FORBIDDEN');
+  assert.equal(architecture.workerRoles.CODEX,'DISABLED');
+  assert.ok(architecture.forbidden.includes('CODEX_ANY_SCOPE'));
+  assert.equal(architecture.workerRoles.VIBE2_VIBE3,'GAME_SOURCE_IMPLEMENTATION_OWNER');
+  assert.match(workflow,/VIBE2_GAME_SOURCE_PROVIDER: LOCAL_OLLAMA/);
+  assert.match(workflow,/VIBE2_ROBLOX_DETERMINISTIC_SOURCE: 'true'/);
+  assert.match(workflow,/VIBE2_CODEX_ROLE: DISABLED/);
+  assert.match(workflow,/test "\\$VIBE2_CODEX_ROLE" = "DISABLED"/);
+  assert.match(workflow,/CODEX_USE_FORBIDDEN=\\$VIBE2_CODEX_ROLE/);
+  assert.ok(!workflow.includes('VIBE2_CODEX_ROLE: SYSTEM_TOOLING_CI_TEST_INFRA_ONLY'));
+  assert.equal(policy.finalDevelopmentLock.sequenceLock.status,'LOCKED');
+  assert.equal(policy.finalDevelopmentLock.sequenceLock.candidateOrderMustRemain.at(-1),'INTERNAL_PLATFORM_RELEASE');
+  assert.equal(policy.finalDevelopmentLock.sequenceLock.evolutionLoopOrderMustRemain[0],'GAME_SOURCE_MUTATION');
+});
+
 test('Codex tool role is disabled even for previous CI tooling scope and local Ollama remains sole model provider', async () => {
   const cwd=tempRoot();
   const responseFile=path.join(cwd,'model.json');
