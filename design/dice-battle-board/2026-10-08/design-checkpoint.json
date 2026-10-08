@@ -91,25 +91,44 @@
       "name": "Dice Battle Board",
       "purpose": "A puzzle game where players navigate a board with goals, constraints, and feedback to achieve progression. The game emphasizes strategic planning, obstacle management, and the dynamic evolution of the board pattern to create new challenges and opportunities.",
       "playerChoice": "Select a board pattern, manage obstacles, and strategically plan moves to clear levels and unlock new challenges. The choice of board pattern and obstacle configuration directly influences the game's progression and the emergence of new puzzle elements."
+    },
+    "local_authoring_parts::7cde5e7acfccbf18338a4be8c6d4a112e179142877cf6f898329f5fd5bbd13d8:signatureSystems:3": {
+      "id": "c-01",
+      "grammarRole": "c",
+      "stateInputs": [
+        "DiceResult",
+        "BoardPattern",
+        "ObstacleConfiguration",
+        "PlayerChoice"
+      ],
+      "stateOutputs": [
+        "BoardState",
+        "GameProgress",
+        "RewardSystem",
+        "NextLevelPattern"
+      ],
+      "name": "Dice Battle Board",
+      "purpose": "A puzzle game where players navigate a board with goals, constraints, and feedback to achieve progression. The game emphasizes strategic planning, obstacle management, and the dynamic evolution of the board pattern to create new challenges and opportunities.",
+      "playerChoice": "Select a board pattern, manage obstacles, and strategically plan moves to clear levels and unlock new challenges. The choice of board pattern and obstacle configuration directly influences the game's progression and the emergence of new puzzle elements."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 900569,
-      "lastMs": 76491,
+      "totalMs": 975342,
+      "lastMs": 74773,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:11:50.105Z"
+      "updatedAt": "2026-10-08T13:13:04.879Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:56:49.507Z",
-  "updatedAt": "2026-10-08T13:11:50.105Z",
+  "updatedAt": "2026-10-08T13:13:04.879Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2041,7 +2060,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:11:50.105Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:13:04.879Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
