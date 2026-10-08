@@ -623,25 +623,125 @@
           "playerChoice": "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases. This choice allows the player to strategically adjust the defense layout to counter the current enemy wave and prepare for future challenges."
         }
       ]
+    },
+    "local_authoring_parts::0d1496ac5e8a6a35e6e75bab4625a7863d908c1c92dc5b20f0f95cb9c83a8d4d:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "MAIN_01",
+          "toId": "MAIN_02",
+          "stateKeys": [
+            "defendedLane",
+            "newPlacement",
+            "tacticalChange",
+            "resourceAllocation",
+            "nextEnemyWave"
+          ],
+          "fromSystem": "ENEMY_WAVE_ADAPTATION_SYSTEM",
+          "toSystem": "ENEMY_WAVE_ADAPTATION_SYSTEM",
+          "trigger": "enemyWaveType",
+          "stateChange": "defenderPlacement"
+        },
+        {
+          "fromId": "MAIN_02",
+          "toId": "B_01",
+          "stateKeys": [
+            "defendedLane",
+            "newPlacement",
+            "tacticalChange",
+            "resourceAllocation",
+            "nextEnemyWave"
+          ],
+          "fromSystem": "ENEMY_WAVE_ADAPTATION_SYSTEM",
+          "toSystem": "ENEMY_WAVE_ADAPTATION_SYSTEM_B",
+          "trigger": "enemyWaveType",
+          "stateChange": "defenderPlacement"
+        },
+        {
+          "fromId": "MAIN_02",
+          "toId": "c_01",
+          "stateKeys": [
+            "defendedLane",
+            "newPlacement",
+            "tacticalChange",
+            "resourceAllocation",
+            "nextEnemyWave"
+          ],
+          "fromSystem": "ENEMY_WAVE_ADAPTATION_SYSTEM",
+          "toSystem": "ENEMY_WAVE_ADAPTATION_SYSTEM_C",
+          "trigger": "enemyWaveType",
+          "stateChange": "defenderPlacement"
+        },
+        {
+          "fromId": "DELVE_01",
+          "toId": "MAIN_01",
+          "stateKeys": [
+            "defendedLane",
+            "newPlacement",
+            "tacticalChange",
+            "resourceAllocation",
+            "nextEnemyWave"
+          ],
+          "fromSystem": "ENEMY_WAVE_ADAPTATION_SYSTEM_DELVE",
+          "toSystem": "ENEMY_WAVE_ADAPTATION_SYSTEM",
+          "trigger": "enemyWaveType",
+          "stateChange": "defenderPlacement"
+        },
+        {
+          "fromId": "DELVE_01",
+          "toId": "B_01",
+          "stateKeys": [
+            "defendedLane",
+            "newPlacement",
+            "tacticalChange",
+            "resourceAllocation",
+            "nextEnemyWave"
+          ],
+          "fromSystem": "ENEMY_WAVE_ADAPTATION_SYSTEM_DELVE",
+          "toSystem": "ENEMY_WAVE_ADAPTATION_SYSTEM_B",
+          "trigger": "enemyWaveType",
+          "stateChange": "defenderPlacement"
+        },
+        {
+          "fromId": "DELVE_01",
+          "toId": "c_01",
+          "stateKeys": [
+            "defendedLane",
+            "newPlacement",
+            "tacticalChange",
+            "resourceAllocation",
+            "nextEnemyWave"
+          ],
+          "fromSystem": "ENEMY_WAVE_ADAPTATION_SYSTEM_DELVE",
+          "toSystem": "ENEMY_WAVE_ADAPTATION_SYSTEM_C",
+          "trigger": "enemyWaveType",
+          "stateChange": "defenderPlacement"
+        }
+      ],
+      "progressionDirection": "forward",
+      "progressionEconomyBalance": {
+        "progressionLoop": "linear",
+        "resourceFlow": "increasing",
+        "balanceRules": "balanced"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 15,
-      "successes": 15,
-      "failures": 0,
-      "timeouts": 0,
+      "calls": 17,
+      "successes": 16,
+      "failures": 1,
+      "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1021494,
-      "lastMs": 77263,
-      "lastError": null,
-      "updatedAt": "2026-10-08T12:25:56.780Z"
+      "totalMs": 1587311,
+      "lastMs": 265757,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
+      "updatedAt": "2026-10-08T12:35:22.605Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:08:55.008Z",
-  "updatedAt": "2026-10-08T12:25:56.785Z",
+  "updatedAt": "2026-10-08T12:35:22.605Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2840,7 +2940,7 @@
     "designer_draft_slices::identity-core": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:25:56.781Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:35:22.605Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
@@ -2851,5 +2951,8 @@
     "contentDigest": "a4c0b5e2f75fd5243efbe578c394974edddc2aa7a6f2d64f0309f493b0d0e6c5",
     "authorModel": "ollama:qwen3:1.7b",
     "status": "AUTHORED_CANDIDATE"
+  },
+  "localAuthoringSplits": {
+    "0d1496ac5e8a6a35e6e75bab4625a7863d908c1c92dc5b20f0f95cb9c83a8d4d": true
   }
 }
