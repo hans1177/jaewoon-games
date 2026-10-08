@@ -638,25 +638,43 @@
       "name": "Last Lantern Core Loop System",
       "purpose": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. - Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. - Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.",
       "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. - Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. - Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination. - Choose a new board pattern or obstacle combination to continue the game."
+    },
+    "local_authoring_parts::81d1b215e862e1f30e7c019d7e1a92c8dd5667158e7cb5f2022d4e058bd43cd6:signatureSystems:3": {
+      "id": "Last Lantern - Core Loop System",
+      "grammarRole": "c",
+      "stateInputs": [
+        "START_GOAL",
+        "LIMITED_MOVES",
+        "OBSTACLES",
+        "VISIBLE_PUZZLE_CONSTRAINT"
+      ],
+      "stateOutputs": [
+        "MATCHES_CREATED",
+        "COMBOS_FORMED",
+        "BOARD_FEEDBACK_RECEIVED"
+      ],
+      "name": "Last Lantern Core Loop System",
+      "purpose": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. - Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. - Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.",
+      "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. - Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. - Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination. - Choose a new board pattern or obstacle combination to continue the game."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 23,
-      "successes": 23,
+      "calls": 24,
+      "successes": 24,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2313349,
-      "lastMs": 111913,
+      "totalMs": 2425128,
+      "lastMs": 111779,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:20:03.387Z"
+      "updatedAt": "2026-10-08T10:21:55.168Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:36:57.405Z",
-  "updatedAt": "2026-10-08T10:20:03.388Z",
+  "updatedAt": "2026-10-08T10:21:55.168Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2729,7 +2747,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:20:03.388Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:21:55.168Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
