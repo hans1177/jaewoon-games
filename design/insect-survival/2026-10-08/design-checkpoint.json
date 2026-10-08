@@ -784,25 +784,115 @@
     "local_authoring_parts::5f6ba4b404018717b1a505b48650746d2c509f68eab5cecd1e2e41688a8fc881:progressionLoop,resourceFlow": {
       "progressionLoop": "DISCOVERABLE_CLUE -> EXPERIMENT_OR_MASTERY_CHOICE -> COST_AND_COUNTERPLAY -> NEW_PLAY_OPTION -> NEXT_OPEN_QUESTION",
       "resourceFlow": "fromSystem:GAMEPLAY_SKETCH v4, toSystem:GAMEPLAY_SKETCH v4, trigger:EcoRiskHandler, stateChange:survivalTool, safeRoute, ecologicalInsight"
+    },
+    "local_authoring_parts::5f6ba4b404018717b1a505b48650746d2c509f68eab5cecd1e2e41688a8fc881:balanceRules": {
+      "balanceRules": "EcoRiskHandler manages ecological risk through adaptive survival choices, with state transitions: playerChoice → environmentalRisk → ecologicalThreshold → survivalTool, safeRoute, ecologicalInsight. The progression loop is DISCOVERABLE_CLUE → EXPERIMENT_OR_MASTERY_CHOICE → COST_AND_COUNTERPLAY → NEW_PLAY_OPTION → NEXT_OPEN_QUESTION. The resource flow is from SYSTEM:GAMEPLAY_SKETCH v4 to SYSTEM:GAMEPLAY_SKETCH v4, triggered by EcoRiskHandler, with state changes: survivalTool, safeRoute, ecologicalInsight."
+    },
+    "local_authoring_parts::ffaa3173d59d771ec0ca1a591d1b994e1d7fde6cad56aa81c2cd801f1eb2db07:progressionEconomyBalance": {
+      "progressionLoop": "DISCOVERABLE_CLUE -> EXPERIMENT_OR_MASTERY_CHOICE -> COST_AND_COUNTERPLAY -> NEW_PLAY_OPTION -> NEXT_OPEN_QUESTION",
+      "resourceFlow": "fromSystem:GAMEPLAY_SKETCH v4, toSystem:GAMEPLAY_SKETCH v4, trigger:EcoRiskHandler, stateChange:survivalTool, safeRoute, ecologicalInsight",
+      "balanceRules": "EcoRiskHandler manages ecological risk through adaptive survival choices, with state transitions: playerChoice → environmentalRisk → ecologicalThreshold → survivalTool, safeRoute, ecologicalInsight. The progression loop is DISCOVERABLE_CLUE → EXPERIMENT_OR_MASTERY_CHOICE → COST_AND_COUNTERPLAY → NEW_PLAY_OPTION → NEXT_OPEN_QUESTION. The resource flow is from SYSTEM:GAMEPLAY_SKETCH v4 to SYSTEM:GAMEPLAY_SKETCH v4, triggered by EcoRiskHandler, with state changes: survivalTool, safeRoute, ecologicalInsight."
+    },
+    "local_authoring_parts::9a4ebc23fe7707556cc0267458c794d60d600ac92b190ee951292b2dc9f82659:progressionEconomyBalance": {
+      "progressionEconomyBalance": {
+        "progressionLoop": "DISCOVERABLE_CLUE -> EXPERIMENT_OR_MASTERY_CHOICE -> COST_AND_COUNTERPLAY -> NEW_PLAY_OPTION -> NEXT_OPEN_QUESTION",
+        "resourceFlow": "fromSystem:GAMEPLAY_SKETCH v4, toSystem:GAMEPLAY_SKETCH v4, trigger:EcoRiskHandler, stateChange:survivalTool, safeRoute, ecologicalInsight",
+        "balanceRules": "EcoRiskHandler manages ecological risk through adaptive survival choices, with state transitions: playerChoice → environmentalRisk → ecologicalThreshold → survivalTool, safeRoute, ecologicalInsight. The progression loop is DISCOVERABLE_CLUE → EXPERIMENT_OR_MASTERY_CHOICE → COST_AND_COUNTERPLAY → NEW_PLAY_OPTION → NEXT_OPEN_QUESTION. The resource flow is from SYSTEM:GAMEPLAY_SKETCH v4 to SYSTEM:GAMEPLAY_SKETCH v4, triggered by EcoRiskHandler, with state changes: survivalTool, safeRoute, ecologicalInsight."
+      }
+    },
+    "local_authoring_parts::b96ef2766e6f7ce435e4569da3d6a33b81785aaa466aa6a7c4d3e75054e08297:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "MAIN",
+          "toId": "A",
+          "stateKeys": [
+            "survivalTool",
+            "safeRoute",
+            "ecologicalInsight"
+          ],
+          "fromSystem": "GAMEPLAY_SKETCH v4",
+          "toSystem": "GAMEPLAY_SKETCH v4",
+          "trigger": "EcoRiskHandler",
+          "stateChange": "survivalTool, safeRoute, ecologicalInsight"
+        },
+        {
+          "fromId": "MAIN",
+          "toId": "A",
+          "stateKeys": [
+            "survivalTool",
+            "safeRoute",
+            "ecologicalInsight"
+          ],
+          "fromSystem": "GAMEPLAY_SKETCH v4",
+          "toSystem": "GAMEPLAY_SKETCH v4",
+          "trigger": "EcoRiskHandler",
+          "stateChange": "survivalTool, safeRoute, ecologicalInsight"
+        },
+        {
+          "fromId": "MAIN",
+          "toId": "A",
+          "stateKeys": [
+            "survivalTool",
+            "safeRoute",
+            "ecologicalInsight"
+          ],
+          "fromSystem": "GAMEPLAY_SKETCH v4",
+          "toSystem": "GAMEPLAY_SKETCH v4",
+          "trigger": "EcoRiskHandler",
+          "stateChange": "survivalTool, safeRoute, ecologicalInsight"
+        },
+        {
+          "fromId": "MAIN",
+          "toId": "A",
+          "stateKeys": [
+            "survivalTool",
+            "safeRoute",
+            "ecologicalInsight"
+          ],
+          "fromSystem": "GAMEPLAY_SKETCH v4",
+          "toSystem": "GAMEPLAY_SKETCH v4",
+          "trigger": "EcoRiskHandler",
+          "stateChange": "survivalTool, safeRoute, ecologicalInsight"
+        },
+        {
+          "fromId": "MAIN",
+          "toId": "A",
+          "stateKeys": [
+            "survivalTool",
+            "safeRoute",
+            "ecologicalInsight"
+          ],
+          "fromSystem": "GAMEPLAY_SKETCH v4",
+          "toSystem": "GAMEPLAY_SKETCH v4",
+          "trigger": "EcoRiskHandler",
+          "stateChange": "survivalTool, safeRoute, ecologicalInsight"
+        }
+      ],
+      "progressionDirection": "DISCOVERABLE_CLUE -> EXPERIMENT_OR_MASTERY_CHOICE -> COST_AND_COUNTERPLAY -> NEW_PLAY_OPTION -> NEXT_OPEN_QUESTION",
+      "progressionEconomyBalance": {
+        "progressionLoop": "DISCOVERABLE_CLUE -> EXPERIMENT_OR_MASTERY_CHOICE -> COST_AND_COUNTERPLAY -> NEW_PLAY_OPTION -> NEXT_OPEN_QUESTION",
+        "resourceFlow": "fromSystem:GAMEPLAY_SKETCH v4, toSystem:GAMEPLAY_SKETCH v4, trigger:EcoRiskHandler, stateChange:survivalTool, safeRoute, ecologicalInsight",
+        "balanceRules": "EcoRiskHandler manages ecological risk through adaptive survival choices, with state transitions: playerChoice → environmentalRisk → ecologicalThreshold → survivalTool, safeRoute, ecologicalInsight. The progression loop is DISCOVERABLE_CLUE → EXPERIMENT_OR_MASTERY_CHOICE → COST_AND_COUNTERPLAY → NEW_PLAY_OPTION → NEXT_OPEN_QUESTION. The resource flow is from SYSTEM:GAMEPLAY_SKETCH v4 to SYSTEM:GAMEPLAY_SKETCH v4, triggered by EcoRiskHandler, with state changes: survivalTool, safeRoute, ecologicalInsight."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 25,
-      "successes": 22,
+      "calls": 26,
+      "successes": 23,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2639749,
-      "lastMs": 91788,
+      "totalMs": 2736327,
+      "lastMs": 96578,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T15:27:56.261Z"
+      "updatedAt": "2026-10-08T15:29:32.840Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:02:11.066Z",
-  "updatedAt": "2026-10-08T15:27:56.261Z",
+  "updatedAt": "2026-10-08T15:29:32.845Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3036,7 +3126,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T15:27:56.261Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:29:32.845Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
