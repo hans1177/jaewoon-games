@@ -723,25 +723,53 @@
         "resourceFlow": "PlayerChoice → BuildProgress → RunProgress → ActionResult",
         "balanceRules": "BuildProgress increases by 1 per action, RunProgress advances by 1 per session, ActionResult provides immediate feedback."
       }
+    },
+    "local_authoring_parts::d68ea24e165108fa6c793206eaf2cbab69a02b56ffaa4b76a5cd83a3263559e3:contentExpansionPlan,failureRetryRisk": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "1. 플레이어의 기본 행동: Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "newGameplay": "Player chooses a core gameplay action that drives the survival run and determines the next progression choice.",
+          "systemImpact": "Main action is reinforced through player choice, leading to increased BuildProgress and RunProgress."
+        },
+        {
+          "milestone": "2. 조합 및 조정: Upgrade selection and build synergy.",
+          "newGameplay": "Player combines upgrades into a stronger build, survives waves, and converts run results into progression choices.",
+          "systemImpact": "BuildProgress increases by 2, RunProgress advances by 2, and PlayerChoice updates to next progression choice."
+        },
+        {
+          "milestone": "3. 깊은 탐구: Delve into gameplay mechanics and emergent patterns.",
+          "newGameplay": "Player explores mechanics and patterns, leading to deeper understanding and new progression choices.",
+          "systemImpact": "BuildProgress increases by 1, RunProgress advances by 1, and PlayerChoice updates to next progression choice."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "Player fails to complete a run due to insufficient build or poor positioning.",
+          "Player encounters a wave that they cannot survive, leading to a failure state."
+        ],
+        "retryFlow": "Player retries the action, adjusts their build or positioning, and continues the run.",
+        "riskPressure": "Player faces a high risk of failure due to limited build options or poor positioning, leading to a potential retry or progression choice adjustment.",
+        "recoveryRules": "Player can recover by upgrading their build or adjusting their positioning, leading to a successful run."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 11,
+      "calls": 13,
+      "successes": 12,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1672196,
-      "lastMs": 292531,
+      "totalMs": 1942117,
+      "lastMs": 269921,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T12:26:19.936Z"
+      "updatedAt": "2026-10-08T12:30:49.859Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:58:27.660Z",
-  "updatedAt": "2026-10-08T12:26:19.936Z",
+  "updatedAt": "2026-10-08T12:30:49.865Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2937,15 +2965,158 @@
     }
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "38fecf0a3369fe154ec02c82e176429e0cae1dc243689bdc5e3fdf82efc67618"
   },
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:26:19.936Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "MAIN→A의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: MAIN→A의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "A→B의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: A→B의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "B→C의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: B→C의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "C→MAIN의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: C→MAIN의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "DELVE→MAIN의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: DELVE→MAIN의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::systems-progression": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "Forward",
+      "progressionEconomyBalance": {
+        "progressionLoop": "Short Session Small Joys",
+        "resourceFlow": "PlayerChoice → BuildProgress → RunProgress → ActionResult",
+        "balanceRules": "BuildProgress increases by 1 per action, RunProgress advances by 1 per session, ActionResult provides immediate feedback."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "1. 플레이어의 기본 행동: Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "newGameplay": "Player chooses a core gameplay action that drives the survival run and determines the next progression choice.",
+          "systemImpact": "Main action is reinforced through player choice, leading to increased BuildProgress and RunProgress."
+        },
+        {
+          "milestone": "2. 조합 및 조정: Upgrade selection and build synergy.",
+          "newGameplay": "Player combines upgrades into a stronger build, survives waves, and converts run results into progression choices.",
+          "systemImpact": "BuildProgress increases by 2, RunProgress advances by 2, and PlayerChoice updates to next progression choice."
+        },
+        {
+          "milestone": "3. 깊은 탐구: Delve into gameplay mechanics and emergent patterns.",
+          "newGameplay": "Player explores mechanics and patterns, leading to deeper understanding and new progression choices.",
+          "systemImpact": "BuildProgress increases by 1, RunProgress advances by 1, and PlayerChoice updates to next progression choice."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "Player fails to complete a run due to insufficient build or poor positioning.",
+          "Player encounters a wave that they cannot survive, leading to a failure state."
+        ],
+        "retryFlow": "Player retries the action, adjusts their build or positioning, and continues the run.",
+        "riskPressure": "Player faces a high risk of failure due to limited build options or poor positioning, leading to a potential retry or progression choice adjustment.",
+        "recoveryRules": "Player can recover by upgrading their build or adjusting their positioning, leading to a successful run."
+      }
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T12:30:49.861Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
