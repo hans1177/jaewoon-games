@@ -819,25 +819,44 @@
         "AreaType"
       ],
       "fromSystem": "VillageProgressionSystem"
+    },
+    "local_authoring_parts::bb2564ccf67741f86847c85b9ca9af3582ff453632a3d38712bd20f2ba64d8d8:toSystem,trigger,stateChange": {
+      "toSystem": "VillageProgressionSystem",
+      "trigger": "Select a new village goal",
+      "stateChange": "Acquire a focused set of resources, and unlock a new resident, activity, or area to proceed to the next stage of village development"
+    },
+    "local_authoring_parts::0936980b567fc52de662cd2e84770a0c98db062592ea62654e92e82d7e9f7964:systemInterconnections:4": {
+      "fromId": "signatureSystems[3]",
+      "toId": "signatureSystems[4]",
+      "stateKeys": [
+        "VillageFunction",
+        "ResidentCount",
+        "ActivityType",
+        "AreaType"
+      ],
+      "fromSystem": "VillageProgressionSystem",
+      "toSystem": "VillageProgressionSystem",
+      "trigger": "Select a new village goal",
+      "stateChange": "Acquire a focused set of resources, and unlock a new resident, activity, or area to proceed to the next stage of village development"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 30,
-      "successes": 30,
+      "calls": 31,
+      "successes": 31,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2570265,
-      "lastMs": 32724,
+      "totalMs": 2604724,
+      "lastMs": 34459,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:08:21.565Z"
+      "updatedAt": "2026-10-08T16:08:56.025Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:36:39.832Z",
-  "updatedAt": "2026-10-08T16:08:21.565Z",
+  "updatedAt": "2026-10-08T16:08:56.032Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3025,7 +3044,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 2
+    "designer_draft_slices::systems-progression": 3
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3064,10 +3083,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:08:21.565Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T16:08:56.028Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
