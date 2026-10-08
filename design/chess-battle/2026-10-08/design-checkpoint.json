@@ -34,25 +34,40 @@
         "READ BOARD AND ENEMY THREAT INFORMATION -> COMMIT MOVE/ABILITY -> RESOLVE TACTICAL EXCHANGE -> USE NEW BOARD STATE TO PLAN NEXT DECISIVE TURN",
         "READ BOARD AND ENEMY THREAT INFORMATION -> COMMIT MOVE/ABILITY -> RESOLVE TACTICAL EXCHANGE -> USE NEW BOARD STATE TO PLAN NEXT DECISIVE TURN"
       ]
+    },
+    "local_authoring_parts::3d723d484d8fce2dc965be365f43fa6d49efc4711d497a99b7b2839a7f807996:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "worldState",
+        "enemyThreatInfo"
+      ],
+      "stateOutputs": [
+        "newWorldState",
+        "nextMoveChoice"
+      ],
+      "name": "BoardStateTransitionSystem",
+      "purpose": "Manages the transition between the current board state and the next move, ensuring tactical resolution and strategic planning.",
+      "playerChoice": "Commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 585558,
-      "lastMs": 94522,
+      "totalMs": 682832,
+      "lastMs": 97274,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:01:25.656Z"
+      "updatedAt": "2026-10-08T08:03:02.932Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:51:40.071Z",
-  "updatedAt": "2026-10-08T08:01:25.657Z",
+  "updatedAt": "2026-10-08T08:03:02.933Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2181,7 +2196,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:01:25.657Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:03:02.932Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
