@@ -34,25 +34,39 @@
         "SELECT: Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
         "OUTPUT: Status changes based on selected upgrades, perks, weapons, or skills, leading to new progression choices."
       ]
+    },
+    "local_authoring_parts::a83335c7fb080b831b98ef84d8717c1bef1bc3178a8865c80590eb4b76b043ed:signatureSystems:0": {
+      "id": "SURVIVAL_01_SIGNATURE_SYSTEM",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "RUN_REWARDS",
+        "UPGRADES"
+      ],
+      "stateOutputs": [
+        "PROGRESSION_CHOICE"
+      ],
+      "name": "FIGHT_THROUGH_ELEVATED_HORDE",
+      "purpose": "Player's core action: fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 255827,
-      "lastMs": 30755,
+      "totalMs": 288453,
+      "lastMs": 32626,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:47:23.331Z"
+      "updatedAt": "2026-10-08T21:47:55.959Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:43:07.484Z",
-  "updatedAt": "2026-10-08T21:47:23.331Z",
+  "updatedAt": "2026-10-08T21:47:55.959Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2251,7 +2265,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:47:23.331Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:47:55.959Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
