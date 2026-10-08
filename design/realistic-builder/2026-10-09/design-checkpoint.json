@@ -34,25 +34,40 @@
         "SELECT: Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
         "OUTPUT: MAIN의 결과가 A/B/c 서브요소에 의해 변형되어 다음 월드 상태로 이동합니다."
       ]
+    },
+    "local_authoring_parts::7abdf7285dcea11c9877d9f4bb3a287229f2e9e0197e5324a2406282d3227269:signatureSystems:0": {
+      "id": "realistic-builder",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "INPUT",
+        "SELECT",
+        "OUTPUT"
+      ],
+      "stateOutputs": [
+        "MAIN"
+      ],
+      "name": "현실 건축가",
+      "purpose": "ACTION_SURVIVAL_ROGUELITE",
+      "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 481381,
-      "lastMs": 59206,
+      "totalMs": 539156,
+      "lastMs": 57775,
       "lastError": null,
-      "updatedAt": "2026-10-08T23:56:10.267Z"
+      "updatedAt": "2026-10-08T23:57:08.045Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T23:48:08.866Z",
-  "updatedAt": "2026-10-08T23:56:10.267Z",
+  "updatedAt": "2026-10-08T23:57:08.045Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2404,7 +2419,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T23:56:10.267Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T23:57:08.045Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
