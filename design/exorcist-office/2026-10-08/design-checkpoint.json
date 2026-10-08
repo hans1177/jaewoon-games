@@ -66,25 +66,41 @@
       "name": "퇴마 사무소의 핵심 재미와 시스템 연결",
       "purpose": "simple one-thumb input, score chase, and fast retry benchmark",
       "playerChoice": "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal"
+    },
+    "local_authoring_parts::a63c52307be79ee91b48581623a292e09415c58cab55968ffa568e42f9b2abe9:signatureSystems:2": {
+      "id": "exorcist-office",
+      "grammarRole": "B",
+      "stateInputs": [
+        "input: one-thumb tap or swipe",
+        "input: clear score, distance, or short-session goal"
+      ],
+      "stateOutputs": [
+        "state: START",
+        "state: RUN",
+        "state: FINISH"
+      ],
+      "name": "퇴마 사무소의 핵심 재미와 시스템 연결",
+      "purpose": "simple one-thumb input, score chase, and fast retry benchmark",
+      "playerChoice": "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 779897,
-      "lastMs": 101739,
+      "totalMs": 880820,
+      "lastMs": 100923,
       "lastError": null,
-      "updatedAt": "2026-10-08T07:55:46.445Z"
+      "updatedAt": "2026-10-08T07:57:27.370Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:42:46.518Z",
-  "updatedAt": "2026-10-08T07:55:46.446Z",
+  "updatedAt": "2026-10-08T07:57:27.370Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2008,7 +2024,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T07:55:46.445Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T07:57:27.370Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
