@@ -488,25 +488,28 @@
       "toSystem": "ACTION_SURVIVAL_ROGUELITE_CORE",
       "trigger": "systemInterconnections[0].stateChange",
       "stateChange": "플레이어가 선택한 결과 RUN_RESULT와 현재 건축 상태 BUILD_STATE를 기반으로, 세계 상태 MODIFIED_WORLD_STATE를 업데이트하여 다음 진행 선택 NEXT_PROGRESSION_CHOICE를 결정한다."
+    },
+    "local_authoring_parts::4b0fae2b3f994d91b4a7fbd04e9117c9e4be956314bcef7739322b0567523978:fromId": {
+      "fromId": "systemInterconnections[1]"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 18,
+      "calls": 19,
+      "successes": 19,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1429070,
-      "lastMs": 61855,
+      "totalMs": 1486463,
+      "lastMs": 57393,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:09:27.454Z"
+      "updatedAt": "2026-10-08T18:10:24.851Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:45:38.274Z",
-  "updatedAt": "2026-10-08T18:09:27.456Z",
+  "updatedAt": "2026-10-08T18:10:24.851Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3105,7 +3108,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:09:27.456Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:10:24.851Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
