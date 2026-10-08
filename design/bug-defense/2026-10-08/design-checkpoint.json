@@ -51,25 +51,42 @@
       "name": "InsectWaveThreatAnalysisSystem",
       "purpose": "Analyzes the threat pattern of an incoming insect wave and determines the optimal defender placement and resource allocation.",
       "playerChoice": "Choose the best defender placement and allocate resources to the highest-value counterplay strategy."
+    },
+    "local_authoring_parts::9ae835924c9c5456c054577ff0e67ba3ba5a6be544049e3b6017db2f34e3cb7d:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "insectWaveThreatPattern",
+        "defenderPlacement",
+        "resourceAllocation"
+      ],
+      "stateOutputs": [
+        "defenderAdjustment",
+        "resourceSpent",
+        "nextDefenseDecision"
+      ],
+      "name": "InsectWaveThreatAnalysisSystem",
+      "purpose": "Analyzes the threat pattern of an incoming insect wave and determines the optimal defender placement and resource allocation.",
+      "playerChoice": "Choose the best defender placement and allocate resources to the highest-value counterplay strategy."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 705547,
-      "lastMs": 99084,
+      "totalMs": 802864,
+      "lastMs": 97317,
       "lastError": null,
-      "updatedAt": "2026-10-08T07:57:20.073Z"
+      "updatedAt": "2026-10-08T07:58:57.391Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:45:34.468Z",
-  "updatedAt": "2026-10-08T07:57:20.073Z",
+  "updatedAt": "2026-10-08T07:58:57.391Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2268,7 +2285,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T07:57:20.073Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T07:58:57.391Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
