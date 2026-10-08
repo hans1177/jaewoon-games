@@ -730,25 +730,42 @@
         "territoryObjectives"
       ],
       "fromSystem": "MAIN/A/B/c/@"
+    },
+    "local_authoring_parts::bf597a2e6605b1ee2ea4bbfcaa5068f22a32c0e9ed06c31b603d1cfaa14b41c8:toSystem,trigger,stateChange": {
+      "toSystem": "MAIN/A/B/c/@",
+      "trigger": "currentBorderPressure",
+      "stateChange": "updatedFrontLine"
+    },
+    "local_authoring_parts::600018a22b6a29cbc222ffa33fc58986edb86cf4cd23fd1283f8abb2ed3c61fa:systemInterconnections:4": {
+      "fromId": "currentBorderPressure",
+      "toId": "updatedFrontLine",
+      "stateKeys": [
+        "currentBorderPressure",
+        "territoryObjectives"
+      ],
+      "fromSystem": "MAIN/A/B/c/@",
+      "toSystem": "MAIN/A/B/c/@",
+      "trigger": "currentBorderPressure",
+      "stateChange": "updatedFrontLine"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 30,
-      "successes": 30,
+      "calls": 31,
+      "successes": 31,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2992198,
-      "lastMs": 70980,
+      "totalMs": 3062004,
+      "lastMs": 69806,
       "lastError": null,
-      "updatedAt": "2026-10-08T11:02:56.825Z"
+      "updatedAt": "2026-10-08T11:04:06.633Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:46:38.814Z",
-  "updatedAt": "2026-10-08T11:02:56.825Z",
+  "updatedAt": "2026-10-08T11:04:06.642Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2782,9 +2799,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "coreFun→coreLoop의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "currentBorderPressure→updatedFrontLine의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: coreFun→coreLoop의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: currentBorderPressure→updatedFrontLine의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2799,9 +2816,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "coreFun→coreLoop의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "currentBorderPressure→updatedFrontLine의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: coreFun→coreLoop의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: currentBorderPressure→updatedFrontLine의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2816,9 +2833,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "coreFun→coreLoop의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "currentBorderPressure→updatedFrontLine의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: coreFun→coreLoop의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: currentBorderPressure→updatedFrontLine의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2833,9 +2850,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "coreFun→coreLoop의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "currentBorderPressure→updatedFrontLine의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: coreFun→coreLoop의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: currentBorderPressure→updatedFrontLine의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2850,9 +2867,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "coreFun→coreLoop의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "currentBorderPressure→updatedFrontLine의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: coreFun→coreLoop의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: currentBorderPressure→updatedFrontLine의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2879,7 +2896,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 2
+    "designer_draft_slices::systems-progression": 3
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -2918,10 +2935,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T11:02:56.825Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T11:04:06.637Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
