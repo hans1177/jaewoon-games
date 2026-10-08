@@ -12,25 +12,32 @@
   "tasks": {
     "local_authoring_parts::ad0dec3ec2d33d05b62f86f6eb3390763e676f108c27fd50adfd22551b6ac27b:identity": {
       "identity": "엘도리아 연대기은 플레이어가 Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 STORY_COMPLETE_RPG 게임이다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화된다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다."
+    },
+    "local_authoring_parts::ad0dec3ec2d33d05b62f86f6eb3390763e676f108c27fd50adfd22551b6ac27b:playerFantasy": {
+      "playerFantasy": "엘도리아 연대기에서는 플레이어가 '탐험'이라는 중심 행동을 통해 다양한 선택과 결과를 경험하게 된다. 이 탐험 과정에서 플레이어는 지역, 인물, 적, 아이템 등 다양한 요소들을 만나며 세계의 역사, 생활, 경제, 지역 기능에 대한 이해를 쌓게 되고, 이를 바탕으로 다음 상태로 전환할 수 있다. 탐험 중에는 위험과 성공, 실패, 성장 등의 상태 변화가 발생하며, 이러한 변화들은 게임 내에서 일관되게 강화되는 소리와 음악을 통해 감각적으로 느껴진다. 또한, 적, 아이템, NPC는 이름만 다르지만, 그들의 존재 이유와 플레이 규칙, 보상, 정보, 관계에 깊이 연결되어 있어, 플레이어에게 새로운 해석과 의미를 제공한다."
+    },
+    "local_authoring_parts::b73a61d9b9276d7d1e8d6b256403233fe3567580a5dc4052308310c0938dcfb6:identity,playerFantasy": {
+      "identity": "엘도리아 연대기은 플레이어가 Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 STORY_COMPLETE_RPG 게임이다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화된다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
+      "playerFantasy": "엘도리아 연대기에서는 플레이어가 '탐험'이라는 중심 행동을 통해 다양한 선택과 결과를 경험하게 된다. 이 탐험 과정에서 플레이어는 지역, 인물, 적, 아이템 등 다양한 요소들을 만나며 세계의 역사, 생활, 경제, 지역 기능에 대한 이해를 쌓게 되고, 이를 바탕으로 다음 상태로 전환할 수 있다. 탐험 중에는 위험과 성공, 실패, 성장 등의 상태 변화가 발생하며, 이러한 변화들은 게임 내에서 일관되게 강화되는 소리와 음악을 통해 감각적으로 느껴진다. 또한, 적, 아이템, NPC는 이름만 다르지만, 그들의 존재 이유와 플레이 규칙, 보상, 정보, 관계에 깊이 연결되어 있어, 플레이어에게 새로운 해석과 의미를 제공한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 199921,
-      "lastMs": 199921,
+      "totalMs": 242250,
+      "lastMs": 42329,
       "lastError": null,
-      "updatedAt": "2026-10-08T20:54:06.494Z"
+      "updatedAt": "2026-10-08T20:54:48.824Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:50:46.559Z",
-  "updatedAt": "2026-10-08T20:54:06.494Z",
+  "updatedAt": "2026-10-08T20:54:48.826Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2262,7 +2269,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T20:54:06.494Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T20:54:48.826Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
