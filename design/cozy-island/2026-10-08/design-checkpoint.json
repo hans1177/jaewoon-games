@@ -660,25 +660,46 @@
       "name": "COZY_CHIBI_KINGDOM_WORLD_V8",
       "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득한다. 주민은 자동화로 생산, 병사는 자원으로 전환하며 전투력을 확장한다. 5개 거점을 순차적으로 점령하며 확장한다. 자동전투와 협동 지원은 서버 권한으로 계산 및 표시한다. 기본 섬 노동과 주민 자동화는 실제 성장 상태로 연결한다. 서버 권한으로 자동전투와 점령 상태를 시각적으로 표시한다.",
       "playerChoice": "나무·식량 직접 채집, 주민 고용과 벌목/농업 자동화, 병영 강화와 병사 모집, 다음 자원 거점 선택, 보이는 자동전투와 점령 보상, 협동 지원으로 강한 거점 공략. 자동전투와 협동 지원 계산은 서버 권한으로 처리한다. 기본 섬 노동과 주민 자동화는 실제 성장 상태로 연결한다. 서버 권한으로 자동전투와 점령 상태를 시각적으로 표시한다."
+    },
+    "local_authoring_parts::87e54f7dc94fe4d52752902d479a94fc8cc1ca4ebe22dfbf0084503d7db76ea8:signatureSystems:4": {
+      "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "나무·식량 수집 상태",
+        "주민 자동화 상태",
+        "병영 강화 상태",
+        "자원 거점 선택 상태",
+        "자동전투 상태",
+        "점령 상태",
+        "협동 지원 상태"
+      ],
+      "stateOutputs": [
+        "자동전투 상태",
+        "점령 상태",
+        "협동 지원 상태"
+      ],
+      "name": "COZY_CHIBI_KINGDOM_WORLD_V8",
+      "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득한다. 주민은 자동화로 생산, 병사는 자원으로 전환하며 전투력을 확장한다. 5개 거점을 순차적으로 점령하며 확장한다. 자동전투와 협동 지원은 서버 권한으로 계산 및 표시한다. 기본 섬 노동과 주민 자동화는 실제 성장 상태로 연결한다. 서버 권한으로 자동전투와 점령 상태를 시각적으로 표시한다.",
+      "playerChoice": "나무·식량 직접 채집, 주민 고용과 벌목/농업 자동화, 병영 강화와 병사 모집, 다음 자원 거점 선택, 보이는 자동전투와 점령 보상, 협동 지원으로 강한 거점 공략. 자동전투와 협동 지원 계산은 서버 권한으로 처리한다. 기본 섬 노동과 주민 자동화는 실제 성장 상태로 연결한다. 서버 권한으로 자동전투와 점령 상태를 시각적으로 표시한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 14,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 687258,
-      "lastMs": 57686,
+      "totalMs": 742259,
+      "lastMs": 55001,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:37:09.048Z"
+      "updatedAt": "2026-10-08T15:38:04.050Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T15:25:41.713Z",
-  "updatedAt": "2026-10-08T15:37:09.048Z",
+  "updatedAt": "2026-10-08T15:38:04.055Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1254,7 +1275,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -1273,10 +1294,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:37:09.048Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T15:38:04.051Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
