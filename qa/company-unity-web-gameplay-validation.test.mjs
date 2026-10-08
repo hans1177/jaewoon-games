@@ -6,6 +6,21 @@ import fs from 'node:fs';
 
 const source=fs.readFileSync(new URL('../tools/company-unity-web-gameplay-validation.mjs',import.meta.url),'utf8');
 
+test('Unity Web performance QA samples live gameplay frames instead of treating boot time as FPS proof',()=>{
+  const gameplay=source.indexOf('UNITY_WEB_QA_GENRE_CORE_FUN_EVIDENCE_MISSING');
+  const frame=source.indexOf('const framePacing=await page.evaluate');
+  const returnInput=source.indexOf("await page.keyboard.press('KeyR')");
+  assert.ok(gameplay>=0&&frame>gameplay&&returnInput>frame,'sample while gameplay is active');
+  assert.match(source,/requestAnimationFrame\(onFrame\)/);
+  assert.match(source,/framePacing\.frameCount<25/);
+  assert.match(source,/framePacing\.medianFrameMs>38/);
+  assert.match(source,/framePacing\.p95FrameMs>100/);
+  assert.match(source,/throw new Error\('UNITY_WEB_QA_FRAME_PACING_FAILED:'/);
+  assert.match(source,/measurementSurface:'PLAYWRIGHT_MOBILE_BROWSER_EMULATION'/);
+  assert.match(source,/realDeviceVerified:false/);
+  assert.match(source,/performance:\{pass:bootMilliseconds<=90000&&fatal.length===0&&framePacing\.medianFrameMs<=38/);
+});
+
 test('Unity Web gameplay validation focuses the real canvas before keyboard input',()=>{
   assert.match(source,/const canvas=page\.locator\('canvas'\)\.first\(\)/);
   assert.match(source,/await canvas\.focus\(\);\s*await page\.keyboard\.press\('Digit1'\)/s);

@@ -170,6 +170,38 @@ try{
   if(progress.length<1)throw new Error('UNITY_WEB_QA_PROGRESS_EVIDENCE_MISSING');
   if(coreFunMarkers.length<1)throw new Error('UNITY_WEB_QA_GENRE_CORE_FUN_EVIDENCE_MISSING');
 
+  // 게임플레이 중 실제 브라우저 렌더 루프를 관찰한다. 첫 로딩 시간만으로 FPS PASS를 주장하지 않는다.
+  const framePacing=await page.evaluate(()=>new Promise(resolve=>{
+    const intervals=[];
+    let first=null,previous=null,finished=false;
+    const finish=()=>{
+      if(finished)return;
+      finished=true;
+      const sorted=intervals.slice().sort((a,b)=>a-b);
+      const percentile=p=>sorted.length?sorted[Math.min(sorted.length-1,Math.ceil(sorted.length*p)-1)]:null;
+      const medianFrameMs=percentile(0.5),p95FrameMs=percentile(0.95);
+      resolve({
+        frameCount:sorted.length,
+        medianFrameMs,
+        p95FrameMs,
+        approximateMedianFps:medianFrameMs?Math.round(10000/medianFrameMs)/10:null
+      });
+    };
+    const timer=setTimeout(finish,3500);
+    const onFrame=now=>{
+      if(finished)return;
+      if(first===null)first=now;
+      if(previous!==null&&now>previous)intervals.push(now-previous);
+      previous=now;
+      if(now-first>=2400){clearTimeout(timer);finish();}
+      else requestAnimationFrame(onFrame);
+    };
+    requestAnimationFrame(onFrame);
+  }));
+  if(framePacing.frameCount<25||!Number.isFinite(framePacing.medianFrameMs)||
+     framePacing.medianFrameMs>38||framePacing.p95FrameMs>100)
+    throw new Error('UNITY_WEB_QA_FRAME_PACING_FAILED:'+JSON.stringify(framePacing));
+
   await canvas.focus();
   await page.keyboard.press('KeyR');
   await page.waitForTimeout(2200);
@@ -241,7 +273,7 @@ try{
       actualBrowserTouchDispatched:true,
       realGameTouchHandlerObserved:mobileInputObserved,
     },
-    performance:{pass:bootMilliseconds<=90000&&fatal.length===0,bootMilliseconds,fatalRuntimeErrorCount:fatal.length},
+    performance:{pass:bootMilliseconds<=90000&&fatal.length===0&&framePacing.medianFrameMs<=38&&framePacing.p95FrameMs<=100,bootMilliseconds,fatalRuntimeErrorCount:fatal.length,framePacing,measurementSurface:'PLAYWRIGHT_MOBILE_BROWSER_EMULATION',realDeviceVerified:false},
     noCriticalRuntimeError:fatal.length===0,
     markers,
     generatedAt:new Date().toISOString(),

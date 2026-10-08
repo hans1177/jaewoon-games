@@ -3668,6 +3668,27 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
     ?{...motionTeaching,example:{contract:'Use the source-hash-bound example in INTERNAL MOTION COACHING; adapt its principles to the target rig, never its identity or duration.',reference:boundMotionReference}}
     :motionTeaching;
   const craftGoal=[order.goal,order.selectedTask?.goal,order.selectedTask?.focus].filter(Boolean).join(' ');
+  // Unity WebGL·Android는 동일 Unity 프로젝트를 사용하고 Roblox는 독립 소스로 구현한다.
+  // 최적화 요청에만 적용해 일반 게임 소스 생성의 프롬프트 용량을 늘리지 않는다.
+  const performanceTarget=clean(order.target).toLowerCase();
+  const performanceRequested=['unity','roblox'].includes(performanceTarget)&&(
+    order.selectedTask?.optimizationLane===true||
+    order.selectedTask?.performanceOptimization===true||
+    /(?:성능|최적화|렉|버벅|드로우.?콜|프레임.?저하|프레임.?드랍|렌더링.?병목|메모리.?병목|멀티스레드|gpu.?driven|gpu.?컬링|게임.?스레드|fps|frame.?time|bottleneck|profiling|rendering.?performance|draw.?calls|streaming.?budget|\b(?:ecs|lod|culling)\b)/i.test(craftGoal)
+  );
+  const performanceSurface=performanceTarget==='roblox'?'ROBLOX':order.selectedTask?.firstStageUnityWeb===true?'UNITY_WEB':'UNITY_APP';
+  const platformPerformanceBlock=performanceRequested?[
+    '[PLATFORM PERFORMANCE SOURCE IMPLEMENTATION BEGIN]',
+    'Surface='+performanceSurface+'; existing responsible game source only. Make an actual executable performance change, not a comment/marker-only delta.',
+    'Preserve fixed gameplay timing, authoritative physics/combat, player control, AI attack decisions, progression, loot, economy, save keys/schemas and multiplayer replication. Render interpolation is visual-only; never copy interpolated positions back into authoritative physics state. Do not change fixedDeltaTime, attack cadence or server tick to meet FPS.',
+    performanceSurface==='UNITY_WEB'
+      ?'Unity WebGL: reuse unity-games/<gameId> C# scenes/prefabs as the single source for WebGL and Android; web-games is build output only. Prefer measured batching, instancing, LOD/culling and asset/GC/memory reductions. Do NOT assume ComputeShader, indirect drawing, native threads or threaded WebAssembly are supported by this WebGL/browser build. UnityEngine scene/Transform APIs stay on the Unity main thread.'
+      :performanceSurface==='UNITY_APP'
+        ?'Unity Android app: profile actual CPU/GPU/GC frame time and thermal/memory first. Reuse the existing render pipeline and scene; select batching/instancing, LODGroup, Animator culling or pooled effects as evidence warrants. Jobs/Burst/ECS require existing compatible packages and proven gains; do not rebuild all GameObjects blindly. UnityEngine Transform/scene APIs stay on the main thread.'
+        :'Roblox: use existing Luau/Workspace streaming and engine rendering/animation budgets. Reduce only distant visual/AI perception work and amortize non-authoritative raycasts; keep combat, movement validation, rewards and persistence server-authoritative. Do not generate Unity C#, DOTS/ECS, DX12/Vulkan, custom compute shaders or GPU indirect-draw calls.',
+    'For all three surfaces, keep gameplay-critical tick and hit/health results invariant. Compare exact-revision before/after measurements (CPU/GPU frame time, memory, draw/animation/AI cost where observable) using existing platform runtime QA. If unavailable, report performance UNVERIFIED; never fabricate a runtime/FPS PASS.',
+    '[PLATFORM PERFORMANCE SOURCE IMPLEMENTATION END]'
+  ].join('\n'):'';
   const productionFamilies=motionUnit?['MOTION']:[...(order.assetProduction?.decisions||[]).map(row=>row.type).filter(Boolean),...Object.entries(order.assetProduction?.baseMaterialLoadout?.families||{}).filter(([,atoms])=>Array.isArray(atoms)&&atoms.length>0).map(([family])=>family)];
   const taskRequests=unique([order.selectedTask?.goal,order.selectedTask?.focus]);
   if(!taskRequests.length&&!motionUnit&&Buffer.byteLength(String(order.goal||''),'utf8')<=6000&&clean(order.goal))taskRequests.push(String(order.goal));
@@ -3825,6 +3846,7 @@ gameSpecificBuildUpDirectiveGuidance(order,responsibleFiles),
 robloxNativeWorkerGuidance(order,context,responsibleFiles),
 gatedRetryStrategyGuidance(order),
 weatherWorkerGuidance(order),
+platformPerformanceBlock,
 clean(order.target).toLowerCase()==='system'?systemArchitectureGuidance(order.selectedTask||{}):'',
 `Allowed edit paths: ${allowed}`,
 context.exactSourceWindows?'CONTEXT MODE: exact responsibility windows. Each FILE window contains exact source text but separate windows are not contiguous. Any edits[].find MUST be copied wholly from one exact window; never span two windows or invent omitted text.':'',
