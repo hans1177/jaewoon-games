@@ -1124,25 +1124,44 @@
         "시그니처_규칙_2"
       ],
       "fromSystem": "별길 개척자 - 게임_시그니처_1"
+    },
+    "local_authoring_parts::eaa56fdde9812f6f758e397bcdf27cd0fb4b641be5c35d913dc6d5d2182b77dc:toSystem,trigger,stateChange": {
+      "toSystem": "별길 개척자 - 게임_시그니처_2",
+      "trigger": "게임_시작_목표_2 설정, 제한_이동_수_2 선택, 장애물_집합_2 해결, 시그니처_규칙_4 적용",
+      "stateChange": "게임_결과_상태_2 변화, 선택_바뀐_상태_2 변화, 게임_진행_상태_2 변화, 시그니처_규칙_4 적용"
+    },
+    "local_authoring_parts::4a26e41dc922bbc26be2771d652147a264b602338a18fb704e976e72abab5978:systemInterconnections:0": {
+      "fromId": "별길 개척자-게임_시그니처_1",
+      "toId": "별길 개척자-게임_시그니처_2",
+      "stateKeys": [
+        "게임_결과_상태",
+        "선택_바뀐_상태",
+        "게임_진행_상태",
+        "시그니처_규칙_2"
+      ],
+      "fromSystem": "별길 개척자 - 게임_시그니처_1",
+      "toSystem": "별길 개척자 - 게임_시그니처_2",
+      "trigger": "게임_시작_목표_2 설정, 제한_이동_수_2 선택, 장애물_집합_2 해결, 시그니처_규칙_4 적용",
+      "stateChange": "게임_결과_상태_2 변화, 선택_바뀐_상태_2 변화, 게임_진행_상태_2 변화, 시그니처_규칙_4 적용"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 39,
-      "successes": 38,
+      "calls": 40,
+      "successes": 39,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3074753,
-      "lastMs": 35400,
+      "totalMs": 3114406,
+      "lastMs": 39653,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T15:31:54.912Z"
+      "updatedAt": "2026-10-08T15:32:34.566Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:53:17.663Z",
-  "updatedAt": "2026-10-08T15:31:54.912Z",
+  "updatedAt": "2026-10-08T15:32:34.567Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3327,7 +3346,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:31:54.912Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:32:34.567Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
