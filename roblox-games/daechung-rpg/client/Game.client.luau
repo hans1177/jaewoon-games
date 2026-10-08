@@ -786,7 +786,7 @@ if p.Character then task.defer(bindChar,p.Character)end;p.CharacterAdded:Connect
 p:GetAttributeChangedSignal("FeedbackEvent"):Connect(function()
  local v=tostring(p:GetAttribute("FeedbackEvent")or"")
  if v:find("LEVEL_UP")then levelSfx:Play()elseif v:find("PARRY")then skillSfx:Play()elseif v:find("GUARD_BREAK")then hitSfx:Play()elseif v:find("ATTACK")or v:find("KILL")then hitSfx:Play()end
- if v:find("NPC_INITIATED_TALK",1,true)or v:find("NPC_DIALOGUE",1,true)then showNpcSpeech()end
+ if v:find("NPC_INITIATED_TALK",1,true)or v:find("NPC_DIALOGUE",1,true)or v:find("QUEST_ACCEPT",1,true)then showNpcSpeech()end
 end)
 
 remote.OnClientEvent:Connect(function(kind,snapshot)
