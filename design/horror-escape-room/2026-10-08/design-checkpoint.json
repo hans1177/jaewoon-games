@@ -511,25 +511,43 @@
       "name": "감염 공격",
       "purpose": "몬스터의 명시적 서버 권한 감염 공격으로 인간을 감염한다.",
       "playerChoice": "고유 도구·대시·정화 선택"
+    },
+    "local_authoring_parts::651d31ca3173955dad50f83f24ea00b933e0a7096635d73c5a35b9fab2121828:signatureSystems:2": {
+      "id": "INFECT_ATTACK",
+      "grammarRole": "B",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount",
+        "Energy"
+      ],
+      "stateOutputs": [
+        "InfectAttackCost",
+        "InfectAttackCooldown",
+        "InfectRange"
+      ],
+      "name": "감염 공격",
+      "purpose": "몬스터의 명시적 서버 권한 감염 공격으로 인간을 감염한다.",
+      "playerChoice": "고유 도구·대시·정화 선택"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 17,
+      "calls": 18,
+      "successes": 18,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 986937,
-      "lastMs": 30085,
+      "totalMs": 1014565,
+      "lastMs": 27628,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:13:26.371Z"
+      "updatedAt": "2026-10-08T15:13:54.001Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:57:28.511Z",
-  "updatedAt": "2026-10-08T15:13:26.371Z",
+  "updatedAt": "2026-10-08T15:13:54.001Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1282,7 +1300,7 @@
       "multiplayerMode": "COMPETITIVE"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:13:26.371Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:13:54.001Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
