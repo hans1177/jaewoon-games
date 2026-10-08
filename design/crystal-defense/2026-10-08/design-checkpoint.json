@@ -783,25 +783,34 @@
       "toSystem": "GAMEPLAY_SKETCH v4",
       "trigger": "attackPattern",
       "stateChange": "crystalDefensePlacement"
+    },
+    "local_authoring_parts::e0988e595546d30b22423a65ad366b7e952d9c2583da6c8d32dd57686d54bf2b:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "attackPattern",
+      "toId": "crystalDefensePlacement",
+      "stateKeys": [
+        "attackPattern",
+        "crystalDefensePlacement"
+      ],
+      "fromSystem": "attackPatternSystem\",\"crystalDefensePlacementSystem\",\"defensiveStrategySystem\""
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 23,
-      "successes": 22,
+      "calls": 24,
+      "successes": 23,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1980244,
-      "lastMs": 58438,
+      "totalMs": 2075588,
+      "lastMs": 95344,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T12:32:10.617Z"
+      "updatedAt": "2026-10-08T15:53:41.057Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:59:10.064Z",
-  "updatedAt": "2026-10-08T15:52:05.710Z",
+  "updatedAt": "2026-10-08T15:53:41.057Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3139,10 +3148,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:32:10.620Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:53:41.057Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
