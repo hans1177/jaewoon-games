@@ -80,25 +80,48 @@
       "name": "A",
       "purpose": "Centered action: Player chooses a core gameplay action that drives the survival run and determines the next progression choice.",
       "playerChoice": "Choose a core gameplay action that drives the survival run and determines the next progression choice."
+    },
+    "local_authoring_parts::21bcfd6946c7b11fa4ab1b0d36a12193e1f5875dd9b8a862f3b167735455fbfd:signatureSystems:2": {
+      "id": "B",
+      "grammarRole": "B",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount",
+        "BuildProgress",
+        "RunProgress",
+        "PlayerChoice"
+      ],
+      "stateOutputs": [
+        "ActionResult",
+        "Reward",
+        "Upgrade",
+        "Perk",
+        "Skill",
+        "BuildChange"
+      ],
+      "name": "B",
+      "purpose": "Independent state: Player chooses a core gameplay action that drives the survival run and determines the next progression choice.",
+      "playerChoice": "Choose a core gameplay action that drives the survival run and determines the next progression choice."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 695589,
-      "lastMs": 100536,
+      "totalMs": 794205,
+      "lastMs": 98616,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:10:03.303Z"
+      "updatedAt": "2026-10-08T12:11:41.923Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:58:27.660Z",
-  "updatedAt": "2026-10-08T12:10:03.304Z",
+  "updatedAt": "2026-10-08T12:11:41.923Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2297,7 +2320,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:10:03.304Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:11:41.923Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
