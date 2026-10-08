@@ -712,25 +712,41 @@
       "name": "OPENING_WORLD_STATE_TRANSITION",
       "purpose": "플레이어는 개미 종족 중 하나를 선택하여 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션에서, 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하여 월드·대상·자원·위험·진행 상태를 변화시킨다. 실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택을 이어간다. 반복 가능한 게임 루프로, 모바일에서도 즉시 이해되는 입력·피드백·실패·재도전 흐름을 구현한다. 개미 시뮬레이터의 실제 플레이 핵심 행동과 선택을 구체화하여, 게임의 씨앗인 정체성·플레이어 판타지·핵심 재미·핵심 루프를 구축한다.",
       "playerChoice": "개미 종족 중 하나를 선택하여 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션에서, 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하여 월드·대상·자원·위험·진행 상태를 변화시킨다. 실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택을 이어간다. 반복 가능한 게임 루프로, 모바일에서도 즉시 이해되는 입력·피드백·실패·재도전 흐름을 구현한다. 개미 시뮬레이터의 실제 플레이 핵심 행동과 선택을 구체화하여, 게임의 씨앗인 정체성·플레이어 판타지·핵심 재미·핵심 루프를 구축한다."
+    },
+    "local_authoring_parts::89836606f2c5b5c29747026574cefb3f8ef4298f2e21905699ce5410e4f652d4:signatureSystems:2": {
+      "id": "ANT_SIMULATOR_CORE_RULES_04",
+      "grammarRole": "B",
+      "stateInputs": [
+        "START_OR_WORLD_ENTRY",
+        "REAL_PLAYER_INPUT",
+        "CORE_GAMEPLAY_ACTION",
+        "OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE"
+      ],
+      "stateOutputs": [
+        "NEXT_OPEN_QUESTION"
+      ],
+      "name": "OPENING_WORLD_STATE_TRANSITION",
+      "purpose": "플레이어는 개미 종족 중 하나를 선택하여 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션에서, 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하여 월드·대상·자원·위험·진행 상태를 변화시킨다. 실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택을 이어간다. 반복 가능한 게임 루프로, 모바일에서도 즉시 이해되는 입력·피드백·실패·재도전 흐름을 구현한다. 개미 시뮬레이터의 실제 플레이 핵심 행동과 선택을 구체화하여, 게임의 씨앗인 정체성·플레이어 판타지·핵심 재미·핵심 루프를 구축한다.",
+      "playerChoice": "개미 종족 중 하나를 선택하여 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션에서, 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하여 월드·대상·자원·위험·진행 상태를 변화시킨다. 실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택을 이어간다. 반복 가능한 게임 루프로, 모바일에서도 즉시 이해되는 입력·피드백·실패·재도전 흐름을 구현한다. 개미 시뮬레이터의 실제 플레이 핵심 행동과 선택을 구체화하여, 게임의 씨앗인 정체성·플레이어 판타지·핵심 재미·핵심 루프를 구축한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 22,
-      "successes": 22,
+      "calls": 23,
+      "successes": 23,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3370815,
-      "lastMs": 119849,
+      "totalMs": 3486688,
+      "lastMs": 115873,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:09:41.886Z"
+      "updatedAt": "2026-10-08T10:11:37.760Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:52:53.417Z",
-  "updatedAt": "2026-10-08T10:09:41.886Z",
+  "updatedAt": "2026-10-08T10:11:37.760Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2825,7 +2841,7 @@
       "multiplayerMode": "COMPETITIVE"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:09:41.886Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:11:37.760Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
