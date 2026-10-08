@@ -110,25 +110,247 @@
       "name": "골목 군단 대전의 시그니처 시스템",
       "purpose": "플레이어가 반복적으로 수행하는 중심 행동과 독립적인 대축, 보조 요소, 파고들기의 관계를 구체화하며, 게임의 세계 규칙과 시스템 상호작용을 구축",
       "playerChoice": "플레이어가 실제 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 갖춘다"
+    },
+    "local_authoring_parts::9d5c1d70ac7c2ac0d17f3434acb29d5cff073baa2d432d341abfb7bb168f4ec4:signatureSystems:4": {
+      "id": "DELVE(@)",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount"
+      ],
+      "stateOutputs": [
+        "NewAction",
+        "NewRoute",
+        "BuildCombination",
+        "WorldRelationship",
+        "OptionalMastery"
+      ],
+      "name": "골목 군단 대전의 시그니처 시스템",
+      "purpose": "플레이어가 반복적으로 수행하는 중심 행동과 독립적인 대축, 보조 요소, 파고들기의 관계를 구체화하며, 게임의 세계 규칙과 시스템 상호작용을 구축",
+      "playerChoice": "플레이어가 실제 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 갖춘다"
+    },
+    "local_authoring_parts::182116f29f6f27fc79013f84beaa4126add224cea77735ee30cb8d1b676f9235:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "DELVE(@)",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "NewAction",
+            "NewRoute",
+            "BuildCombination",
+            "WorldRelationship",
+            "OptionalMastery"
+          ],
+          "name": "골목 군단 대전의 시그니처 시스템",
+          "purpose": "플레이어가 반복적으로 수행하는 중심 행동과 독립적인 대축, 보조 요소, 파고들기의 관계를 구체화하며, 게임의 세계 규칙과 시스템 상호작용을 구축",
+          "playerChoice": "플레이어가 실제 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 갖춘다"
+        },
+        {
+          "id": "DELVE(@)",
+          "grammarRole": "A",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "NewAction",
+            "NewRoute",
+            "BuildCombination",
+            "WorldRelationship",
+            "OptionalMastery"
+          ],
+          "name": "골목 군단 대전의 시그니처 시스템",
+          "purpose": "플레이어가 반복적으로 수행하는 중심 행동과 독립적인 대축, 보조 요소, 파고들기의 관계를 구체화하며, 게임의 세계 규칙과 시스템 상호작용을 구축",
+          "playerChoice": "플레이어가 실제 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 갖춘다"
+        },
+        {
+          "id": "DELVE(@)",
+          "grammarRole": "B",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "NewAction",
+            "NewRoute",
+            "BuildCombination",
+            "WorldRelationship",
+            "OptionalMastery"
+          ],
+          "name": "골목 군단 대전의 시그니처 시스템",
+          "purpose": "플레이어가 반복적으로 수행하는 중심 행동과 독립적인 대축, 보조 요소, 파고들기의 관계를 구체화하며, 게임의 세계 규칙과 시스템 상호작용을 구축",
+          "playerChoice": "플레이어가 실제 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 갖춘다"
+        },
+        {
+          "id": "DELVE(@)",
+          "grammarRole": "c",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "NewAction",
+            "NewRoute",
+            "BuildCombination",
+            "WorldRelationship",
+            "OptionalMastery"
+          ],
+          "name": "골목 군단 대전의 시그니처 시스템",
+          "purpose": "플레이어가 반복적으로 수행하는 중심 행동과 독립적인 대축, 보조 요소, 파고들기의 관계를 구체화하며, 게임의 세계 규칙과 시스템 상호작용을 구축",
+          "playerChoice": "플레이어가 실제 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 갖춘다"
+        },
+        {
+          "id": "DELVE(@)",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "NewAction",
+            "NewRoute",
+            "BuildCombination",
+            "WorldRelationship",
+            "OptionalMastery"
+          ],
+          "name": "골목 군단 대전의 시그니처 시스템",
+          "purpose": "플레이어가 반복적으로 수행하는 중심 행동과 독립적인 대축, 보조 요소, 파고들기의 관계를 구체화하며, 게임의 세계 규칙과 시스템 상호작용을 구축",
+          "playerChoice": "플레이어가 실제 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 갖춘다"
+        }
+      ]
+    },
+    "local_authoring_parts::3942821904c58f85715f7810811aeb86171a52cdf04614f6abb080e851ab3832:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+      ],
+      "signatureSystems": [
+        {
+          "id": "DELVE(@)",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "NewAction",
+            "NewRoute",
+            "BuildCombination",
+            "WorldRelationship",
+            "OptionalMastery"
+          ],
+          "name": "골목 군단 대전의 시그니처 시스템",
+          "purpose": "플레이어가 반복적으로 수행하는 중심 행동과 독립적인 대축, 보조 요소, 파고들기의 관계를 구체화하며, 게임의 세계 규칙과 시스템 상호작용을 구축",
+          "playerChoice": "플레이어가 실제 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 갖춘다"
+        },
+        {
+          "id": "DELVE(@)",
+          "grammarRole": "A",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "NewAction",
+            "NewRoute",
+            "BuildCombination",
+            "WorldRelationship",
+            "OptionalMastery"
+          ],
+          "name": "골목 군단 대전의 시그니처 시스템",
+          "purpose": "플레이어가 반복적으로 수행하는 중심 행동과 독립적인 대축, 보조 요소, 파고들기의 관계를 구체화하며, 게임의 세계 규칙과 시스템 상호작용을 구축",
+          "playerChoice": "플레이어가 실제 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 갖춘다"
+        },
+        {
+          "id": "DELVE(@)",
+          "grammarRole": "B",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "NewAction",
+            "NewRoute",
+            "BuildCombination",
+            "WorldRelationship",
+            "OptionalMastery"
+          ],
+          "name": "골목 군단 대전의 시그니처 시스템",
+          "purpose": "플레이어가 반복적으로 수행하는 중심 행동과 독립적인 대축, 보조 요소, 파고들기의 관계를 구체화하며, 게임의 세계 규칙과 시스템 상호작용을 구축",
+          "playerChoice": "플레이어가 실제 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 갖춘다"
+        },
+        {
+          "id": "DELVE(@)",
+          "grammarRole": "c",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "NewAction",
+            "NewRoute",
+            "BuildCombination",
+            "WorldRelationship",
+            "OptionalMastery"
+          ],
+          "name": "골목 군단 대전의 시그니처 시스템",
+          "purpose": "플레이어가 반복적으로 수행하는 중심 행동과 독립적인 대축, 보조 요소, 파고들기의 관계를 구체화하며, 게임의 세계 규칙과 시스템 상호작용을 구축",
+          "playerChoice": "플레이어가 실제 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 갖춘다"
+        },
+        {
+          "id": "DELVE(@)",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "NewAction",
+            "NewRoute",
+            "BuildCombination",
+            "WorldRelationship",
+            "OptionalMastery"
+          ],
+          "name": "골목 군단 대전의 시그니처 시스템",
+          "purpose": "플레이어가 반복적으로 수행하는 중심 행동과 독립적인 대축, 보조 요소, 파고들기의 관계를 구체화하며, 게임의 세계 규칙과 시스템 상호작용을 구축",
+          "playerChoice": "플레이어가 실제 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 갖춘다"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 959617,
-      "lastMs": 107361,
+      "totalMs": 1065341,
+      "lastMs": 105724,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:44:04.559Z"
+      "updatedAt": "2026-10-08T10:45:50.285Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:28:04.579Z",
-  "updatedAt": "2026-10-08T10:44:04.559Z",
+  "updatedAt": "2026-10-08T10:45:50.287Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2323,7 +2545,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T10:44:04.559Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:45:50.287Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
