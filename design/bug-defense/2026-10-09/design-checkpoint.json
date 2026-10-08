@@ -85,25 +85,42 @@
       "name": "INSECT_DEFENSE_ADAPTABILITY_SYSTEM_B",
       "purpose": "A/B 대축에서 세계 상태와 다음 선택의 비용·위험·보상을 바꾸며, 플레이어가 새로운 전략적 경로를 개발하는 데 기여합니다.",
       "playerChoice": "Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision."
+    },
+    "local_authoring_parts::700c47434d237990cf562cee70abe47c91b680c5734707c9a5ab90e8330bf99d:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "INCOMING_INSECT_WAVE",
+        "DEFENDER_POSITIONS",
+        "RESOURCE_ALLOCATIONS"
+      ],
+      "stateOutputs": [
+        "WORLD_STATE_CHANGE",
+        "NEW_STRATEGY_IMPLEMENTATION",
+        "EXPANDED_GAMEPLAY_POSSIBILITIES"
+      ],
+      "name": "INSECT_DEFENSE_ADAPTABILITY_C",
+      "purpose": "Discover and master the dynamic interplay between insect waves, defender positions, and resource allocations to unlock new gameplay possibilities.",
+      "playerChoice": "Explore the evolving relationship between environmental threats, strategic positioning, and adaptive resource management to create novel and meaningful game experiences."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 402956,
-      "lastMs": 43007,
+      "totalMs": 647825,
+      "lastMs": 244869,
       "lastError": null,
-      "updatedAt": "2026-10-08T20:51:55.920Z"
+      "updatedAt": "2026-10-08T20:56:00.791Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:45:12.936Z",
-  "updatedAt": "2026-10-08T20:51:55.920Z",
+  "updatedAt": "2026-10-08T20:56:00.791Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2302,7 +2319,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T20:51:55.920Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T20:56:00.791Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
