@@ -76,25 +76,46 @@
       "name": "Board Puzzle System",
       "purpose": "Player-controlled puzzle progression through a grid or board level with clear objective and constraints.",
       "playerChoice": "Select moves, create combos, and manage obstacles to achieve the goal and unlock new levels or stages."
+    },
+    "local_authoring_parts::e7b89f1850722d16859a7f35f8dbe0cbbb50843d4c7a27e8b141c3818c115807:signatureSystems:2": {
+      "id": "B",
+      "grammarRole": "B",
+      "stateInputs": [
+        "boardPattern",
+        "goal",
+        "moves",
+        "obstacles",
+        "puzzleConstraint"
+      ],
+      "stateOutputs": [
+        "nextBoardPattern",
+        "newGoal",
+        "newMoves",
+        "newObstacles",
+        "newPuzzleConstraint"
+      ],
+      "name": "Board Puzzle System",
+      "purpose": "Player-controlled puzzle progression through a grid or board level with clear objective and constraints.",
+      "playerChoice": "Select moves, create combos, and manage obstacles to achieve the goal and unlock new levels or stages."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 795071,
-      "lastMs": 100220,
+      "totalMs": 893485,
+      "lastMs": 98414,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:40:33.068Z"
+      "updatedAt": "2026-10-08T08:42:11.484Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:27:17.966Z",
-  "updatedAt": "2026-10-08T08:40:33.069Z",
+  "updatedAt": "2026-10-08T08:42:11.484Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2131,7 +2152,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:40:33.068Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:42:11.484Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
