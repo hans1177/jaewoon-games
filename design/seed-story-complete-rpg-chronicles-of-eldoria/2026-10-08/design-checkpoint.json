@@ -465,25 +465,40 @@
       "name": "ELDORIAN_CORE_03",
       "purpose": "ELDORIAN_CORE_03_PURPOSE",
       "playerChoice": "ELDORIAN_CORE_03_PLAYER_CHOICE"
+    },
+    "local_authoring_parts::4d1d32e7f3b20ee4101c2d14a55597c22a7c4dfb4554cbd1e2b1b83b01fd9361:signatureSystems:3": {
+      "id": "ELDORIAN_CORE_04",
+      "grammarRole": "c",
+      "stateInputs": [
+        "ELDORIAN_CORE_04_READING",
+        "ELDORIAN_CORE_04_MODIFYING"
+      ],
+      "stateOutputs": [
+        "ELDORIAN_CORE_04_READING",
+        "ELDORIAN_CORE_04_MODIFYING"
+      ],
+      "name": "ELDORIAN_CORE_04",
+      "purpose": "Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.",
+      "playerChoice": "Explore a new region, encounter a mysterious NPC, accept a quest, and uncover a hidden artifact that advances the story."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 13,
+      "calls": 14,
+      "successes": 14,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 524571,
-      "lastMs": 36567,
+      "totalMs": 562216,
+      "lastMs": 37645,
       "lastError": null,
-      "updatedAt": "2026-10-08T11:00:31.789Z"
+      "updatedAt": "2026-10-08T11:01:09.435Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:51:46.975Z",
-  "updatedAt": "2026-10-08T11:00:31.789Z",
+  "updatedAt": "2026-10-08T11:01:09.435Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2751,7 +2766,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T11:00:31.789Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T11:01:09.435Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
