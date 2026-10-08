@@ -655,25 +655,28 @@
         "판정: '위험' - 선택",
         "OUTPUT: '보상' - 선택"
       ]
+    },
+    "local_authoring_parts::e44277c9021724b21c6c78c4841c09de3a5cb91ca0678187839e9955bb56d0dc:fromSystem": {
+      "fromSystem": "CORE-LOOP-1 → CORE-LOOP-2"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 31,
-      "successes": 31,
+      "calls": 32,
+      "successes": 32,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3098316,
-      "lastMs": 91131,
+      "totalMs": 3189398,
+      "lastMs": 91082,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:40:38.424Z"
+      "updatedAt": "2026-10-08T15:42:09.509Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:21:47.979Z",
-  "updatedAt": "2026-10-08T15:40:38.425Z",
+  "updatedAt": "2026-10-08T15:42:09.509Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3138,7 +3141,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:40:38.424Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:42:09.509Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
