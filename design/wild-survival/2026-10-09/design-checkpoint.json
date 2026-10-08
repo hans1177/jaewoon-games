@@ -516,25 +516,34 @@
       "toSystem": "CORE_LOOP_DESIGN_CORE_FUN_A",
       "trigger": "world_state_transformed",
       "stateChange": "reward_condition_met"
+    },
+    "local_authoring_parts::39e909f6ee0f7af7aadc50ac9d2854836fe7aac27ea01ba3b191b619091ec62a:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "wild-survival_signature_systems_3",
+      "toId": "wild-survival_signature_systems_4",
+      "stateKeys": [
+        "world_state_transformed",
+        "reward_condition_met"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN_CORE_FUN_MAIN_A_B_C_DELVE_0_TO_1_EFFECTIVE_STATE_CHANGE_0_ORIGINAL_SYSTEM_BASELINE_2026-09-25_GENERATED_BY_AUTO_MISSING_DESIGN_INTAKE_2026-09-25_WILDSURVIVAL_CORE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 17,
+      "calls": 18,
+      "successes": 18,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1102288,
-      "lastMs": 17688,
+      "totalMs": 1146603,
+      "lastMs": 44315,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:09:44.731Z"
+      "updatedAt": "2026-10-08T18:10:29.049Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:51:22.381Z",
-  "updatedAt": "2026-10-08T18:09:44.732Z",
+  "updatedAt": "2026-10-08T18:10:29.049Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2737,7 +2746,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:09:44.732Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:10:29.049Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
