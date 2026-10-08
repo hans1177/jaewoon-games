@@ -108,25 +108,448 @@
       "name": "Enemy Defense System",
       "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
       "playerChoice": "Place towers or defenders on lanes or positions that cover the threatened route."
+    },
+    "local_authoring_parts::2ba8799316aa2f3f8a139a5f13169dfcce614a23361376e4e0b624f5bf99d14a:signatureSystems:4": {
+      "id": "signatureSystems[4]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "enemyWave",
+        "towers",
+        "defenders",
+        "lanes",
+        "positions"
+      ],
+      "stateOutputs": [
+        "worldState",
+        "nextSelection"
+      ],
+      "name": "Enemy Defense System",
+      "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
+      "playerChoice": "Place towers or defenders on lanes or positions that cover the threatened route."
+    },
+    "local_authoring_parts::e0b38213f5c5739a65497037f6982aab66ce255f17b09192bc5969d96dbc2f06:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "enemyWave",
+            "towers",
+            "defenders",
+            "lanes",
+            "positions"
+          ],
+          "stateOutputs": [
+            "worldState",
+            "nextSelection"
+          ],
+          "name": "Enemy Defense System",
+          "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
+          "playerChoice": "Place towers or defenders on lanes or positions that cover the threatened route."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "enemyWave",
+            "towers",
+            "defenders",
+            "lanes",
+            "positions"
+          ],
+          "stateOutputs": [
+            "worldState",
+            "nextSelection"
+          ],
+          "name": "Enemy Defense System",
+          "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
+          "playerChoice": "Place towers or defenders on lanes or positions that cover the threatened route."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "enemyWave",
+            "towers",
+            "defenders",
+            "lanes",
+            "positions"
+          ],
+          "stateOutputs": [
+            "worldState",
+            "nextSelection"
+          ],
+          "name": "Enemy Defense System",
+          "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
+          "playerChoice": "Place towers or defenders on lanes or positions that cover the threatened route."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "enemyWave",
+            "towers",
+            "defenders",
+            "lanes",
+            "positions"
+          ],
+          "stateOutputs": [
+            "worldState",
+            "nextSelection"
+          ],
+          "name": "Enemy Defense System",
+          "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
+          "playerChoice": "Place towers or defenders on lanes or positions that cover the threatened route."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "enemyWave",
+            "towers",
+            "defenders",
+            "lanes",
+            "positions"
+          ],
+          "stateOutputs": [
+            "worldState",
+            "nextSelection"
+          ],
+          "name": "Enemy Defense System",
+          "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
+          "playerChoice": "Place towers or defenders on lanes or positions that cover the threatened route."
+        }
+      ]
+    },
+    "local_authoring_parts::66146af57a2cbc316e2024b264dc1f04129b2fea884d8668c1f916a2cf949bb6:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT_AND_MENU_TRANSITIONS",
+        "CONTEXT_LOSS",
+        "ERROR_RECOVERY",
+        "STATE_AND_COST_REGRESSION",
+        "TASK_COMPLETION"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "enemyWave",
+            "towers",
+            "defenders",
+            "lanes",
+            "positions"
+          ],
+          "stateOutputs": [
+            "worldState",
+            "nextSelection"
+          ],
+          "name": "Enemy Defense System",
+          "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
+          "playerChoice": "Place towers or defenders on lanes or positions that cover the threatened route."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "enemyWave",
+            "towers",
+            "defenders",
+            "lanes",
+            "positions"
+          ],
+          "stateOutputs": [
+            "worldState",
+            "nextSelection"
+          ],
+          "name": "Enemy Defense System",
+          "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
+          "playerChoice": "Place towers or defenders on lanes or positions that cover the threatened route."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "enemyWave",
+            "towers",
+            "defenders",
+            "lanes",
+            "positions"
+          ],
+          "stateOutputs": [
+            "worldState",
+            "nextSelection"
+          ],
+          "name": "Enemy Defense System",
+          "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
+          "playerChoice": "Place towers or defenders on lanes or positions that cover the threatened route."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "enemyWave",
+            "towers",
+            "defenders",
+            "lanes",
+            "positions"
+          ],
+          "stateOutputs": [
+            "worldState",
+            "nextSelection"
+          ],
+          "name": "Enemy Defense System",
+          "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
+          "playerChoice": "Place towers or defenders on lanes or positions that cover the threatened route."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "enemyWave",
+            "towers",
+            "defenders",
+            "lanes",
+            "positions"
+          ],
+          "stateOutputs": [
+            "worldState",
+            "nextSelection"
+          ],
+          "name": "Enemy Defense System",
+          "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
+          "playerChoice": "Place towers or defenders on lanes or positions that cover the threatened route."
+        }
+      ]
+    },
+    "local_authoring_parts::66146af57a2cbc316e2024b264dc1f04129b2fea884d8668c1f916a2cf949bb6:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::547155a485a5ab21f37c8b8283f2e8f4211cfdf67a2d983017aeab4b4471c3b8:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "INPUT_AND_MENU_TRANSITIONS",
+        "CONTEXT_LOSS",
+        "ERROR_RECOVERY",
+        "STATE_AND_COST_REGRESSION",
+        "TASK_COMPLETION"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "enemyWave",
+            "towers",
+            "defenders",
+            "lanes",
+            "positions"
+          ],
+          "stateOutputs": [
+            "worldState",
+            "nextSelection"
+          ],
+          "name": "Enemy Defense System",
+          "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
+          "playerChoice": "Place towers or defenders on lanes or positions that cover the threatened route."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "enemyWave",
+            "towers",
+            "defenders",
+            "lanes",
+            "positions"
+          ],
+          "stateOutputs": [
+            "worldState",
+            "nextSelection"
+          ],
+          "name": "Enemy Defense System",
+          "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
+          "playerChoice": "Place towers or defenders on lanes or positions that cover the threatened route."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "enemyWave",
+            "towers",
+            "defenders",
+            "lanes",
+            "positions"
+          ],
+          "stateOutputs": [
+            "worldState",
+            "nextSelection"
+          ],
+          "name": "Enemy Defense System",
+          "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
+          "playerChoice": "Place towers or defenders on lanes or positions that cover the threatened route."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "enemyWave",
+            "towers",
+            "defenders",
+            "lanes",
+            "positions"
+          ],
+          "stateOutputs": [
+            "worldState",
+            "nextSelection"
+          ],
+          "name": "Enemy Defense System",
+          "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
+          "playerChoice": "Place towers or defenders on lanes or positions that cover the threatened route."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "enemyWave",
+            "towers",
+            "defenders",
+            "lanes",
+            "positions"
+          ],
+          "stateOutputs": [
+            "worldState",
+            "nextSelection"
+          ],
+          "name": "Enemy Defense System",
+          "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
+          "playerChoice": "Place towers or defenders on lanes or positions that cover the threatened route."
+        }
+      ],
+      "multiplayerMode": "COOP"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "Pocket Foundry은 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임이다. 플레이어는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 게임은 단순 반복과 다른 경로·위험·결과를 만드는 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고, RPG식 시스템을 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다. 게임은 기존의 시스템과 규칙을 보존하며, MAIN/A/B/c/@와 상태 변화를 직접 생성한다. 게임은 플랫폼별로 입력·성능·연출·배포/검증만 네이티브에 맞게 적용한다. 게임은 실패·중단·재접속·저장을 원본 의미를 보존하며, 구현 버그와 설계 모순의 원인·수정 책임을 구분하고 안정성을 먼저 다룬다. 게임은 최소 두 실제 대안을 비교하고 선택안을 한 판의 시작·전개·결말로 재생한다. 게임은 공공영역 고전의 원형은 게임에 맞게 재해석하고 현대 보호 작품은 추상적 기법만 참고한다. 보호된 인물·대사·장면은 복제하지 않는다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 점수와 통과 판정은 결정론적 검증기가 담당한다. 게임은 기존의 시스템과 규칙을 보존하며, MAIN/A/B/c/@와 상태 변화를 직접 생성한다. 게임은 플랫폼별로 입력·성능·연출·배포/검증만 네이티브에 맞게 적용한다. 게임은 실패·중단·재접속·",
+      "playerFantasy": "Pocket Foundry은 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임이다. 플레이어는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 게임은 단순 반복과 다른 경로·위험·결과를 만드는 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고, RPG식 시스템을 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다. 게임은 기존의 시스템과 규칙을 보존하며, MAIN/A/B/c/@와 상태 변화를 직접 생성한다. 게임은 플랫폼별로 입력·성능·연출·배포/검증만 네이티브에 맞게 적용한다. 게임은 실패·중단·재접속·저장을 원본 의미를 보존하며, 구현 버그와 설계 모순의 원인·수정 책임을 구분하고 안정성을 먼저 다룬다. 게임은 최소 두 실제 대안을 비교하고 선택안을 한 판의 시작·전개·결말로 재생한다. 게임은 공공영역 고전의 원형은 게임에 맞게 재해석하고 현대 보호 작품은 추상적 기법만 참고한다. 보호된 인물·대사·장면은 복제하지 않는다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 점수와 통과 판정은 결정론적 검증기가 담당한다.",
+      "coreFun": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임이다. 플레이어는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 게임은 단순 반복과 다른 경로·위험·결과를 만드는 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고, RPG식 시스템을 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다. 게임은 기존의 시스템과 규칙을 보존하며, MAIN/A/B/c/@와 상태 변화를 직접 생성한다. 게임은 플랫폼별로 입력·성능·연출·배포/검증만 네이티브에 맞게 적용한다. 게임은 실패·중단·재접속·저장을 원본 의미를 보존하며, 구현 버그와 설계 모순의 원인·수정 책임을 구분하고 안정성을 먼저 다룬다. 게임은 최소 두 실제 대안을 비교하고 선택안을 한 판의 시작·전개·결말로 재생한다. 게임은 공공영역 고전의 원형은 게임에 맞게 재해석하고 현대 보호 작품은 추상적 기법만 참고한다. 보호된 인물·대사·장면은 복제하지 않는다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 점수와 통과 판정은 결정론적 검증기가 담당한다.",
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "enemyWave",
+            "towers",
+            "defenders",
+            "lanes",
+            "positions"
+          ],
+          "stateOutputs": [
+            "worldState",
+            "nextSelection"
+          ],
+          "name": "Enemy Defense System",
+          "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
+          "playerChoice": "Place towers or defenders on lanes or positions that cover the threatened route."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "enemyWave",
+            "towers",
+            "defenders",
+            "lanes",
+            "positions"
+          ],
+          "stateOutputs": [
+            "worldState",
+            "nextSelection"
+          ],
+          "name": "Enemy Defense System",
+          "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
+          "playerChoice": "Place towers or defenders on lanes or positions that cover the threatened route."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "enemyWave",
+            "towers",
+            "defenders",
+            "lanes",
+            "positions"
+          ],
+          "stateOutputs": [
+            "worldState",
+            "nextSelection"
+          ],
+          "name": "Enemy Defense System",
+          "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
+          "playerChoice": "Place towers or defenders on lanes or positions that cover the threatened route."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "enemyWave",
+            "towers",
+            "defenders",
+            "lanes",
+            "positions"
+          ],
+          "stateOutputs": [
+            "worldState",
+            "nextSelection"
+          ],
+          "name": "Enemy Defense System",
+          "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
+          "playerChoice": "Place towers or defenders on lanes or positions that cover the threatened route."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "enemyWave",
+            "towers",
+            "defenders",
+            "lanes",
+            "positions"
+          ],
+          "stateOutputs": [
+            "worldState",
+            "nextSelection"
+          ],
+          "name": "Enemy Defense System",
+          "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
+          "playerChoice": "Place towers or defenders on lanes or positions that cover the threatened route."
+        }
+      ],
+      "multiplayerMode": "COOP",
+      "coreLoop": [
+        "플레이어는 다음 적군 wave를 확인하고, 보호해야 하는 위치를 파악한 후, 적군의 종류와 웨이브 구성에 맞춘 방어 전략을 수립하여, 타겟 위치를 보호하는 타워 또는 방어 구조를 적절히 배치한다. 이 배치는 월드 상태를 변화시키고, 다음 선택을 결정하는 데 활용된다.",
+        "플레이어는 적군의 웨이브 구성에 따라 방어 전략을 조정하고, 보호 목표를 효과적으로 수행하기 위해 타워 또는 방어 구조를 최적화하여 배치한다. 이 과정에서 발생하는 선택은 월드 상태를 변화시키고, 다음 선택을 결정하는 데 기여한다.",
+        "플레이어는 방어 전략을 수립하고, 타워 또는 방어 구조를 배치하는 과정에서, 다양한 경로, 위험, 결과를 생성하여 게임의 재미를 증대시킨다. 이 선택은 월드 상태를 변화시키고, 다음 선택을 결정하는 데 기여한다.",
+        "플레이어는 방어 전략을 수립하고, 타워 또는 방어 구조를 배치하는 과정에서, 다양한 행동, 경로, 조합, 관계, 발견, 대응법을 열어 게임의 콘텐츠를 다양하게 사용하게 한다. 이 선택은 월드 상태를 변화시키고, 다음 선택을 결정하는 데 기여한다.",
+        "플레이어는 방어 전략을 수립하고, 타워 또는 방어 구조를 배치하는 과정에서, 실패, 중단, 재접속, 저장 등의 상황을 처리하여 게임의 안정성을 보장한다. 이 선택은 월드 상태를 변화시키고, 다음 선택을 결정하는 데 기여한다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 937031,
-      "lastMs": 99387,
+      "totalMs": 1249216,
+      "lastMs": 126083,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:54:00.430Z"
+      "updatedAt": "2026-10-08T08:59:12.630Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:38:23.364Z",
-  "updatedAt": "2026-10-08T08:54:00.430Z",
+  "updatedAt": "2026-10-08T08:59:12.634Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2317,12 +2740,24 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:54:00.430Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:59:12.630Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/seed-roblox-simulator-tycoon-i-adopt-me/2026-10-08/design-seed.json",
+    "contentDigest": "e86e8773b4739eb1e22a5721efa90272a3a4482d43e609614e74349813e9e344",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
