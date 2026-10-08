@@ -454,25 +454,40 @@
       "name": "CORE-LOOP-1",
       "purpose": "플레이어가 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프를 구체화한 시그니처 시스템",
       "playerChoice": "진행·위험·보상의 순차적 연결을 통해 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 재미를 구현"
+    },
+    "local_authoring_parts::6b64b9751e9c5f2cfcb9ae25aa3225156f572ed407e85b4ea2379305316ef7f7:signatureSystems:1": {
+      "id": "CORE-LOOP-2",
+      "grammarRole": "A",
+      "stateInputs": [
+        "플레이어의 '진행' - 선택",
+        "판정: '위험' - 선택"
+      ],
+      "stateOutputs": [
+        "상태 변화",
+        "보상/다음 선택"
+      ],
+      "name": "CORE-LOOP-2",
+      "purpose": "플레이어가 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프를 구체화한 시그니처 시스템",
+      "playerChoice": "진행·위험·보상의 순차적 연결을 통해 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 재미를 구현"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 16,
+      "calls": 17,
+      "successes": 17,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1477873,
-      "lastMs": 102779,
+      "totalMs": 1579520,
+      "lastMs": 101647,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:13:37.940Z"
+      "updatedAt": "2026-10-08T15:15:19.589Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:21:47.979Z",
-  "updatedAt": "2026-10-08T15:13:37.940Z",
+  "updatedAt": "2026-10-08T15:15:19.589Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2707,7 +2722,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:13:37.940Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:15:19.589Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
