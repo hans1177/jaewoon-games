@@ -118,25 +118,269 @@
       "name": "전략적 지위 변화 반영 시스템",
       "purpose": "플레이어가 매번 새로운 전략을 선택해 전투의 전략적 지위를 높이는 반복 가능한 핵심 루프를 구축하는 게임의 핵심 기능",
       "playerChoice": "전략적 지위 변화를 반영한 전략 선택"
+    },
+    "local_authoring_parts::591ab7258593b1eb4330dfca0ba5bbf5f0be5a0f145b4dfedc3b5abc04097af6:signatureSystems:4": {
+      "id": "signatureSystems[4]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "전략적 지위",
+        "전략적 대안",
+        "전투 전략",
+        "전략적 변화",
+        "전략적 지위 변화"
+      ],
+      "stateOutputs": [
+        "전략적 지위 상승",
+        "전략적 대안 실행",
+        "전투 전략 재설계",
+        "전략적 변화 실행",
+        "전략적 지위 변화 반영"
+      ],
+      "name": "전략적 지위 변화 반영 시스템",
+      "purpose": "플레이어가 매번 새로운 전략을 선택해 전투의 전략적 지위를 높이는 반복 가능한 핵심 루프를 구축하는 게임의 핵심 기능",
+      "playerChoice": "전략적 지위 변화를 반영한 전략 선택"
+    },
+    "local_authoring_parts::a23e3444af6f788993d2dc5f101dc2b398cc1390a3de935cae7be3b271f714c4:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "적의 웨이브",
+            "방어 구조",
+            "자원",
+            "전략적 변화",
+            "전략적 지위"
+          ],
+          "stateOutputs": [
+            "방어 구조 재설계",
+            "자원 수집",
+            "전략적 변화 실행",
+            "전략적 지위 상승",
+            "전투 전략적 지위 변화"
+          ],
+          "name": "전략적 지위 변화 시스템",
+          "purpose": "플레이어가 매번 새로운 전략을 선택해 전투의 전략적 지위를 높이는 반복 가능한 핵심 루프를 구축하는 게임의 핵심 기능",
+          "playerChoice": "새로운 전략 선택"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "전략적 지위",
+            "전략적 대안",
+            "전투 전략",
+            "전략적 변화",
+            "전략적 지위 변화"
+          ],
+          "stateOutputs": [
+            "전략적 지위 상승",
+            "전략적 대안 실행",
+            "전투 전략 재설계",
+            "전략적 변화 실행",
+            "전략적 지위 변화 반영"
+          ],
+          "name": "전략적 지위 변화 시스템",
+          "purpose": "플레이어가 매번 새로운 전략을 선택해 전투의 전략적 지위를 높이는 반복 가능한 핵심 루프를 구축하는 게임의 핵심 기능",
+          "playerChoice": "전략적 지위 변화를 반영한 전략 선택"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "전략적 지위",
+            "전략적 대안",
+            "전투 전략",
+            "전략적 변화",
+            "전략적 지위 변화"
+          ],
+          "stateOutputs": [
+            "전략적 지위 상승",
+            "전략적 대안 실행",
+            "전투 전략 재설계",
+            "전략적 변화 실행",
+            "전략적 지위 변화 반영"
+          ],
+          "name": "전략적 지위 변화 시스템",
+          "purpose": "플레이어가 매번 새로운 전략을 선택해 전투의 전략적 지위를 높이는 반복 가능한 핵심 루프를 구축하는 게임의 핵심 기능",
+          "playerChoice": "전략적 지위 변화를 반영한 전략 선택"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "전략적 지위",
+            "전략적 대안",
+            "전투 전략",
+            "전략적 변화",
+            "전략적 지위 변화"
+          ],
+          "stateOutputs": [
+            "전략적 지위 상승",
+            "전략적 대안 실행",
+            "전투 전략 재설계",
+            "전략적 변화 실행",
+            "전략적 지위 변화 반영"
+          ],
+          "name": "전략적 지위 변화 반영 시스템",
+          "purpose": "플레이어가 매번 새로운 전략을 선택해 전투의 전략적 지위를 높이는 반복 가능한 핵심 루프를 구축하는 게임의 핵심 기능",
+          "playerChoice": "전략적 지위 변화를 반영한 전략 선택"
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "전략적 지위",
+            "전략적 대안",
+            "전투 전략",
+            "전략적 변화",
+            "전략적 지위 변화"
+          ],
+          "stateOutputs": [
+            "전략적 지위 상승",
+            "전략적 대안 실행",
+            "전투 전략 재설계",
+            "전략적 변화 실행",
+            "전략적 지위 변화 반영"
+          ],
+          "name": "전략적 지위 변화 반영 시스템",
+          "purpose": "플레이어가 매번 새로운 전략을 선택해 전투의 전략적 지위를 높이는 반복 가능한 핵심 루프를 구축하는 게임의 핵심 기능",
+          "playerChoice": "전략적 지위 변화를 반영한 전략 선택"
+        }
+      ]
+    },
+    "local_authoring_parts::bd9fff0c3113be1e55b33ee26ef04e9d22f752d019e18ddd24799958e7d19746:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "입력: 적의 웨이브를 읽고 방어 구조를 재설계 → 상태변화: 방어 구조 변경 → 보상: 자원 수집 및 전략적 변화 실행",
+        "입력: 새로운 전략 선택 → 상태변화: 방어 구조 재설계 → 보상: 전략적 지위 상승",
+        "입력: 전략적 지위 변화 반영 → 상태변화: 방어 구조 재설계 → 보상: 전략적 지위 상승 및 웨이브 대응"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "적의 웨이브",
+            "방어 구조",
+            "자원",
+            "전략적 변화",
+            "전략적 지위"
+          ],
+          "stateOutputs": [
+            "방어 구조 재설계",
+            "자원 수집",
+            "전략적 변화 실행",
+            "전략적 지위 상승",
+            "전투 전략적 지위 변화"
+          ],
+          "name": "전략적 지위 변화 시스템",
+          "purpose": "플레이어가 매번 새로운 전략을 선택해 전투의 전략적 지위를 높이는 반복 가능한 핵심 루프를 구축하는 게임의 핵심 기능",
+          "playerChoice": "새로운 전략 선택"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "전략적 지위",
+            "전략적 대안",
+            "전투 전략",
+            "전략적 변화",
+            "전략적 지위 변화"
+          ],
+          "stateOutputs": [
+            "전략적 지위 상승",
+            "전략적 대안 실행",
+            "전투 전략 재설계",
+            "전략적 변화 실행",
+            "전략적 지위 변화 반영"
+          ],
+          "name": "전략적 지위 변화 시스템",
+          "purpose": "플레이어가 매번 새로운 전략을 선택해 전투의 전략적 지위를 높이는 반복 가능한 핵심 루프를 구축하는 게임의 핵심 기능",
+          "playerChoice": "전략적 지위 변화를 반영한 전략 선택"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "전략적 지위",
+            "전략적 대안",
+            "전투 전략",
+            "전략적 변화",
+            "전략적 지위 변화"
+          ],
+          "stateOutputs": [
+            "전략적 지위 상승",
+            "전략적 대안 실행",
+            "전투 전략 재설계",
+            "전략적 변화 실행",
+            "전략적 지위 변화 반영"
+          ],
+          "name": "전략적 지위 변화 시스템",
+          "purpose": "플레이어가 매번 새로운 전략을 선택해 전투의 전략적 지위를 높이는 반복 가능한 핵심 루프를 구축하는 게임의 핵심 기능",
+          "playerChoice": "전략적 지위 변화를 반영한 전략 선택"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "전략적 지위",
+            "전략적 대안",
+            "전투 전략",
+            "전략적 변화",
+            "전략적 지위 변화"
+          ],
+          "stateOutputs": [
+            "전략적 지위 상승",
+            "전략적 대안 실행",
+            "전투 전략 재설계",
+            "전략적 변화 실행",
+            "전략적 지위 변화 반영"
+          ],
+          "name": "전략적 지위 변화 반영 시스템",
+          "purpose": "플레이어가 매번 새로운 전략을 선택해 전투의 전략적 지위를 높이는 반복 가능한 핵심 루프를 구축하는 게임의 핵심 기능",
+          "playerChoice": "전략적 지위 변화를 반영한 전략 선택"
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "전략적 지위",
+            "전략적 대안",
+            "전투 전략",
+            "전략적 변화",
+            "전략적 지위 변화"
+          ],
+          "stateOutputs": [
+            "전략적 지위 상승",
+            "전략적 대안 실행",
+            "전투 전략 재설계",
+            "전략적 변화 실행",
+            "전략적 지위 변화 반영"
+          ],
+          "name": "전략적 지위 변화 반영 시스템",
+          "purpose": "플레이어가 매번 새로운 전략을 선택해 전투의 전략적 지위를 높이는 반복 가능한 핵심 루프를 구축하는 게임의 핵심 기능",
+          "playerChoice": "전략적 지위 변화를 반영한 전략 선택"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 974337,
-      "lastMs": 76715,
+      "totalMs": 1051162,
+      "lastMs": 76825,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:48:48.039Z"
+      "updatedAt": "2026-10-08T08:50:04.866Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:32:33.592Z",
-  "updatedAt": "2026-10-08T08:48:48.040Z",
+  "updatedAt": "2026-10-08T08:50:04.869Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2331,7 +2575,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:48:48.039Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:50:04.869Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
