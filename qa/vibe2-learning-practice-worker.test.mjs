@@ -183,8 +183,8 @@ test('Unity prose and unsafe API source cannot pass a code drill',()=>{
 
 test('repair uses public execution feedback without leaking hidden checks or reference answers',async()=>{
   const drill={id:'opaque',platform:'unity',scenario:'Implement the requested state transition.',broken:'BROKEN',reference:'PRIVATE_REFERENCE',feedbackTests:['PUBLIC_EXAMPLE'],tests:['PRIVATE_ACCEPTANCE']};
-  const prompts=[],formats=[],turns=[];
-  const request=async (prompt,options)=>{prompts.push(prompt);formats.push(options.format);turns.push(options.messages);return JSON.stringify({...practiceAnswer,code:prompts.length===1?'WRONG':'FIXED'});};
+  const prompts=[],formats=[],turns=[],generation=[];
+  const request=async (prompt,options)=>{prompts.push(prompt);formats.push(options.format);turns.push(options.messages);generation.push(options);return JSON.stringify({...practiceAnswer,code:prompts.length===1?'WRONG':'FIXED'});};
   const evaluate=(answer)=>({pass:answer.code==='FIXED',codeVerification:{pass:answer.code==='FIXED',baselineRejected:true,referencePassed:true,reason:answer.code==='FIXED'?'VERIFIED_LOGIC_ONLY':'REGRESSION_OR_FIXTURE_FAILED'}});
   const result=await runPracticeRepairSession({order:{executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE]'},drill,request,evaluate});
   assert.equal(result.repairEvidence.firstAttemptPass,false);
@@ -194,6 +194,9 @@ test('repair uses public execution feedback without leaking hidden checks or ref
   assert.equal(prompts.length,2);
   assert(formats.every(format=>format.required.includes('code')&&format.properties.tests.minItems===3&&format.additionalProperties===false));
   assert.match(prompts[0],/Sandbox contract: no using directives/);
+  assert(generation.every(options=>options.think===true&&options.maxPredict===6144));
+  assert.deepEqual(generation.map(options=>options.attempt),[0,1]);
+  assert(prompts.every(prompt=>prompt.includes(JSON.stringify(formats[0]))));
   for(const prompt of prompts){assert(!prompt.includes('PRIVATE_REFERENCE'));assert(!prompt.includes('PRIVATE_ACCEPTANCE'));}
   assert(prompts[1].includes('WRONG'));
   assert.equal(turns[0],null);
@@ -201,6 +204,7 @@ test('repair uses public execution feedback without leaking hidden checks or ref
   assert.equal(JSON.parse(turns[1][1].content).code,'WRONG');
   assert.match(turns[1][2].content,/PUBLIC EXECUTION DIAGNOSTICS/);
   assert(!turns[1][0].content.includes('BROKEN'));
+  assert(!turns[1][0].content.includes('WRONG'),'failed code belongs only to the assistant turn');
   assert(!JSON.stringify(turns).includes('PRIVATE_ACCEPTANCE'));
   assert(!JSON.stringify(turns).includes('PRIVATE_REFERENCE'));
   assert(!JSON.stringify(result.repairEvidence).includes('FIXED'));

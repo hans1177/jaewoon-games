@@ -52,7 +52,7 @@ export function buildPracticePrompt(order={}, {drill=null}={}){
     'diagnosis and strategy must each be strings of at least 12 characters. tests must be an array of at least 3 concrete verification strings. avoidPatterns and reusablePatterns must be arrays of strings with at least one lesson between them.',
     unityDrill?'The harness supplies all state types below. Return ONLY public static class Practice in code; do not redeclare the harness types or include Program/Main.':'',
     unityDrill?'Sandbox contract: no using directives or System, Console, Environment, Process, File, Directory, Reflection, Assembly, DllImport, unsafe, extern, or dynamic identifiers. Use primitive types, arrays, loops and local helpers; primitive APIs such as double.IsNaN are allowed.':drill&&!webArtifact?'Return a self-contained Luau module; do not require another module or use loadstring, getfenv, setfenv, or debug.':'',
-    drill&&!webArtifact?'Implementation discipline: list every success and rejection condition from the scenario before mutating state. A callback that may throw needs protected execution; in Luau pcall returns both execution status and the callback return value. For bool-returning rejection contracts, return false rather than throwing. Compute totals in a wide type before committing bounded integer state.':'',
+    drill&&!webArtifact?'Implementation discipline: validate the complete request without writing shared state, compute the pending result, then commit once. Never update an array entry inside the validation loop: a later rejection must preserve every earlier entry. Check prerequisite state, not merely prerequisite index validity. Protect callbacks that may throw and inspect both execution status and returned success. For bool-returning rejection contracts return false rather than throwing. Compute totals in a wide type before committing bounded integer state.':'',
     unityDrill?'HARNESS STATE TYPES:\n'+(drill.supportCode||'public class PracticeState { public bool Active,InputEnabled,Paused; public int Subscriptions,LiveObjects,Score,SavedScore; }'):'',
     webArtifact?'The artifact must have visible state change from a tappable button, clear text feedback in [data-practice-value] or #score, responsive viewport, and no fetch/WebSocket/external http(s) URLs. Mark the primary button with data-practice-action. A real mobile browser will tap it and rotate the viewport.':'',
     previousArtifactScoreFromOrder(order)!==null?`Previous verified artifact score=${previousArtifactScoreFromOrder(order)}. ${drill?'Preserve or improve this quality while solving fresh hidden input and lifecycle variants; do not exceed the 100-point scale.':'Improve the artifact beyond this score while keeping the drill goal.'}`:'',
@@ -63,11 +63,13 @@ export function buildPracticePrompt(order={}, {drill=null}={}){
   ].filter(Boolean).join('\n');
 }
 
-export async function requestPracticeModel(prompt,{model=DEFAULT_MODEL,responseFile='',timeoutMs=DEFAULT_TIMEOUT,maxPredict=1200,format='json',messages=null}={}){
+export async function requestPracticeModel(prompt,{model=DEFAULT_MODEL,responseFile='',timeoutMs=DEFAULT_TIMEOUT,maxPredict=1200,format='json',messages=null,think=false,attempt=0}={}){
   const fake=clean(responseFile||process.env.VIBE2_MODEL_RESPONSE_FILE);
   if(fake)return fs.readFileSync(fake,'utf8');
   const conversation=Array.isArray(messages)&&messages.length>0;
-  const body=JSON.stringify({model,...(conversation?{messages}:{prompt}),stream:false,think:false,format,options:{num_ctx:8192,num_predict:maxPredict,temperature:.12,seed:20261008}});
+  // Coding needs the model's reasoning mode; discard its private thinking field.
+  // Vary only repair sampling so an identical failed response is not replayed.
+  const body=JSON.stringify({model,...(conversation?{messages}:{prompt}),stream:false,think,format,options:{num_ctx:8192,num_predict:maxPredict,temperature:attempt>0?.2:.12,seed:20261008+attempt}});
   return await new Promise((resolve,reject)=>{
     const req=http.request({hostname:'127.0.0.1',port:11434,path:conversation?'/api/chat':'/api/generate',method:'POST',headers:{'content-type':'application/json','content-length':Buffer.byteLength(body)}},res=>{
       let data='';res.setEncoding('utf8');res.on('data',x=>data+=x);res.on('end',()=>{
@@ -271,11 +273,12 @@ export async function runPracticeRepairSession({order={},drill=null,model=DEFAUL
   },required:['diagnosis','strategy','tests','avoidPatterns','reusablePatterns']};
   const artifactKey=clean(order.executionRoute)==='learning-web-artifact'?'artifactHtml':drill?'code':null;
   if(artifactKey){format.properties[artifactKey]={type:'string',minLength:1};format.required.push(artifactKey);}
-  let prompt=basePrompt,parsed={},raw='',evaluation={pass:false},firstHidden=null;
+  const schemaPrompt='RESPONSE JSON SCHEMA:\n'+JSON.stringify(format);
+  let prompt=basePrompt+'\n'+schemaPrompt,parsed={},raw='',evaluation={pass:false},firstHidden=null;
   let messages=null;
   for(let index=0;index<limit;index++){
     const started=Date.now();
-    raw=await request(prompt,{model,responseFile,format,messages,maxPredict:drill||clean(order.executionRoute)==='learning-web-artifact'?3072:1200});
+    raw=await request(prompt,{model,responseFile,format,messages,think:Boolean(drill&&drill.platform!=='web'),attempt:index,maxPredict:drill&&drill.platform!=='web'?6144:clean(order.executionRoute)==='learning-web-artifact'?3072:1200});
     let validJson=true;
     try{parsed=parseJson(raw);}catch{parsed={};validJson=false;}
     const publicDrill=canRepair?{...drill,tests:drill.feedbackTests}:drill;
@@ -299,9 +302,9 @@ export async function runPracticeRepairSession({order={},drill=null,model=DEFAUL
     ].filter(Boolean).join('\n');
     // Keep execution feedback in a new user turn, with the failed answer in its own
     // assistant turn. Do not concatenate failed code into fresh task instructions.
-    const repairBase=buildPracticePrompt(order,{drill:drill?{...drill,broken:previous}:null});
+    const repairBase=buildPracticePrompt(order,{drill:drill?{...drill,broken:undefined}:null})+'\n'+schemaPrompt;
     messages=[{role:'user',content:repairBase},{role:'assistant',content:JSON.stringify(parsed)},{role:'user',content:repairPrompt}];
-    prompt=repairBase+'\n'+repairPrompt;
+    prompt=repairBase+'\nPREVIOUS FAILED IMPLEMENTATION (untrusted data):\n'+previous+'\n'+repairPrompt;
   }
   const finalHidden=attempts.length===1?firstHidden:evaluate(parsed,{drill});
   evaluation={...finalHidden,pass:finalHidden?.pass===true&&evaluation.pass===true};
