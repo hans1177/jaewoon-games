@@ -461,25 +461,40 @@
       "name": "Signature Systems",
       "purpose": "Define the core loop design and state management for the game's signature systems.",
       "playerChoice": "SIGNATURE_SYSTEMS_3"
+    },
+    "local_authoring_parts::367d8f5ef585e1f5b4dc5e819bd06d86025fcb2f5fb027ef18356a6e284a7dc8:signatureSystems:4": {
+      "id": "signatureSystems[4]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "CORE_LOOP_DESIGN",
+        "signatureSystems"
+      ],
+      "stateOutputs": [
+        "CORE_LOOP_DESIGN",
+        "signatureSystems"
+      ],
+      "name": "Signature Systems",
+      "purpose": "Define the core loop design and state management for the game's signature systems.",
+      "playerChoice": "SIGNATURE_SYSTEMS_4"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 14,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1086818,
-      "lastMs": 97552,
+      "totalMs": 1183987,
+      "lastMs": 97169,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:31:30.708Z"
+      "updatedAt": "2026-10-08T13:33:07.878Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:13:23.847Z",
-  "updatedAt": "2026-10-08T13:31:30.708Z",
+  "updatedAt": "2026-10-08T13:33:07.882Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1036,16 +1051,67 @@
   "sliceRepairFeedback": {
     "designer_draft_slices::identity-core": [
       {
-        "code": "DESIGN_RULE_STATE_MISSING",
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
         "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
         "evidenceLevel": null,
         "minimumRequired": null,
         "evidence": {
-          "path": "signatureSystems",
-          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+          "path": "signatureSystems[1].playerChoice",
+          "value": "SIGNATURE_SYSTEMS_1"
         },
-        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "signatureSystems[1].playerChoice의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems[2].playerChoice",
+          "value": "SIGNATURE_SYSTEMS_2"
+        },
+        "requiredAction": "signatureSystems[2].playerChoice의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems[3].playerChoice",
+          "value": "SIGNATURE_SYSTEMS_3"
+        },
+        "requiredAction": "signatureSystems[3].playerChoice의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems[4].playerChoice",
+          "value": "SIGNATURE_SYSTEMS_4"
+        },
+        "requiredAction": "signatureSystems[4].playerChoice의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -1055,7 +1121,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -1073,10 +1139,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:31:30.708Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T13:33:07.879Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
