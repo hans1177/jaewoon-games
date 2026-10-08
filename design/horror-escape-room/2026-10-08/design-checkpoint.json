@@ -302,25 +302,123 @@
           "playerChoice": "감염 공격을 선택하고, 적중한 인간이 몬스터로 전환되며, 인간 직업별 고유 감염 스킬을 얻는다."
         }
       ]
+    },
+    "local_authoring_parts::5617b8801466ba2c70f2351a75b5981bd814ee6d3376b560e30464da787d5bd0:multiplayerMode": {
+      "multiplayerMode": "COMPETITIVE"
+    },
+    "local_authoring_parts::d3288bf41dc5619740de4f300c20c578da28e87f88bc2a352ed3f09de7248fa9:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "INPUT: PLAYER_ROLE_SELECTION -> STATE: ROLE_ASSIGNMENT -> REWARD: INFECTION_SKILL_GAIN",
+        "INPUT: FIRST_CONTACT -> STATE: ROLE_BALANCE -> REWARD: INFECTION_CONVERSION",
+        "INPUT: INFECTION_ATTACK -> STATE: ROLE_RECONFIGURATION -> REWARD: ENERGY_CONSUMPTION"
+      ],
+      "signatureSystems": [
+        {
+          "id": "INFECT_ATTACK",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT: PLAYER_ROLE_SELECTION",
+            "INPUT: FIRST_CONTACT",
+            "INPUT: INFECTION_ATTACK"
+          ],
+          "stateOutputs": [
+            "STATE: ROLE_ASSIGNMENT",
+            "STATE: ROLE_BALANCE",
+            "STATE: ROLE_RECONFIGURATION"
+          ],
+          "name": "감염 공격",
+          "purpose": "몬스터의 명시적 서버 권한 감염 공격이 적중한 인간이 탈락하지 않고 몬스터로 전환하며 인간 직업별 감염 스킬을 얻는다.",
+          "playerChoice": "감염 공격을 선택하고, 적중한 인간이 몬스터로 전환되며, 인간 직업별 고유 감염 스킬을 얻는다."
+        },
+        {
+          "id": "INFECT_ATTACK",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT: PLAYER_ROLE_SELECTION",
+            "INPUT: FIRST_CONTACT",
+            "INPUT: INFECTION_ATTACK"
+          ],
+          "stateOutputs": [
+            "STATE: ROLE_ASSIGNMENT",
+            "STATE: ROLE_BALANCE",
+            "STATE: ROLE_RECONFIGURATION"
+          ],
+          "name": "감염 공격",
+          "purpose": "몬스터의 명시적 서버 권한 감염 공격이 적중한 인간이 탈락하지 않고 몬스터로 전환하며 인간 직업별 감염 스킬을 얻는다.",
+          "playerChoice": "감염 공격을 선택하고, 적중한 인간이 몬스터로 전환되며, 인간 직업별 고유 감염 스킬을 얻는다."
+        },
+        {
+          "id": "INFECT_ATTACK",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT: PLAYER_ROLE_SELECTION",
+            "INPUT: FIRST_CONTACT",
+            "INPUT: INFECTION_ATTACK"
+          ],
+          "stateOutputs": [
+            "STATE: ROLE_ASSIGNMENT",
+            "STATE: ROLE_BALANCE",
+            "STATE: ROLE_RECONFIGURATION"
+          ],
+          "name": "감염 공격",
+          "purpose": "몬스터의 명시적 서버 권한 감염 공격이 적중한 인간이 탈락하지 않고 몬스터로 전환하며 인간 직업별 감염 스킬을 얻는다.",
+          "playerChoice": "감염 공격을 선택하고, 적중한 인간이 몬스터로 전환되며, 인간 직업별 고유 감염 스킬을 얻는다."
+        },
+        {
+          "id": "INFECT_ATTACK",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT: PLAYER_ROLE_SELECTION",
+            "INPUT: FIRST_CONTACT",
+            "INPUT: INFECTION_ATTACK"
+          ],
+          "stateOutputs": [
+            "STATE: ROLE_ASSIGNMENT",
+            "STATE: ROLE_BALANCE",
+            "STATE: ROLE_RECONFIGURATION"
+          ],
+          "name": "감염 공격",
+          "purpose": "몬스터의 명시적 서버 권한 감염 공격이 적중한 인간이 탈락하지 않고 몬스터로 전환하며 인간 직업별 감염 스킬을 얻는다.",
+          "playerChoice": "감염 공격을 선택하고, 적중한 인간이 몬스터로 전환되며, 인간 직업별 고유 감염 스킬을 얻는다."
+        },
+        {
+          "id": "INFECT_ATTACK",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT: PLAYER_ROLE_SELECTION",
+            "INPUT: FIRST_CONTACT",
+            "INPUT: INFECTION_ATTACK"
+          ],
+          "stateOutputs": [
+            "STATE: ROLE_ASSIGNMENT",
+            "STATE: ROLE_BALANCE",
+            "STATE: ROLE_RECONFIGURATION"
+          ],
+          "name": "감염 공격",
+          "purpose": "몬스터의 명시적 서버 권한 감염 공격이 적중한 인간이 탈락하지 않고 몬스터로 전환하며 인간 직업별 감염 스킬을 얻는다.",
+          "playerChoice": "감염 공격을 선택하고, 적중한 인간이 몬스터로 전환되며, 인간 직업별 고유 감염 스킬을 얻는다."
+        }
+      ],
+      "multiplayerMode": "COMPETITIVE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 643544,
-      "lastMs": 57323,
+      "totalMs": 681039,
+      "lastMs": 37495,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:27:57.405Z"
+      "updatedAt": "2026-10-08T08:28:34.903Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:17:13.829Z",
-  "updatedAt": "2026-10-08T08:27:57.407Z",
+  "updatedAt": "2026-10-08T08:28:34.910Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1033,12 +1131,50 @@
     },
     "assetFacts": {}
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:27:57.407Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "인간 4명과 몬스터 4명이 시작하고, 몬스터의 명시적 감염 공격에 맞은 인간이 즉시 몬스터로 전환돼 판세가 계속 뒤집히는 8인 감염 추격전. 게임은 4대4 인원 구성에서 시작하며, 감염 공격과 정화 규칙에 따라 실시간으로 인원 구성이 바뀌고, 감염 스킬을 가진 몬스터로 전환되는 긴장감을 유도한다. 감염된 인간은 몬스터로 전환되고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격을 진행한다. 인간 정화 공격은 몬스터를 라운드에서 제거하고, 한 진영이 0명이 되면 즉시 승패가 결정된다. 240초까지 양팀이 남으면 무승부가 결정된다. 게임은 로블로크에서 구현되며, 감염·정화·전환·승패·에너지 서버가 권한을 가지는 게임 규칙을 따른다. 감염 공격은 적중한 인간이 탈락하지 않고 몬스터로 전환되며, 인간 직업별 감염 스킬을 얻는다. 감염된 인간은 몬스터로 전환되고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격을 진행한다. 인간 정화 공격은 몬스터를 라운드에서 제거하고, 한 진영이 0명이 되면 즉시 승패가 결정된다. 240초까지 양팀이 남으면 무승부가 결정된다. 게임은 4대4 인원 구성에서 시작하며, 감염 공격과 정화 규칙에 따라 실시간으로 인원 구성이 바뀌고, 감염 스킬을 가진 몬스터로 전환되는 긴장감을 유도한다. 감염된 인간은 몬스터로 전환되고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격을 진행한다. 인간 정화 공격은 몬스터를 라운드에서 제거하고, 한 진영이 0명이 되면 즉시 승패가 결정된다. 240초까지 양팀이 남으면 무승부가 결정된다. 게임은 로블로크에서 구현되며, 감염·정화·전환·승패·에너지 서버가 권한을 가지는 게임 규칙을 따른다. 감염 공격은 적중한 인간이 탈락하지 않고 몬스터로 전환되며, 인간 직업별 감염 스킬을 얻는다. 감염된 인간은 몬스터로 전환되고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격을 진행한다. 인간 정화 공격은 몬스터를 라운드에서 제거하고, 한 진영이 0명이 되면 즉시 승패가 결정된다. 240",
+      "playerFantasy": "감염된 인간은 몬스터로 전환되고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격을 진행하며, 인간 정화 공격은 몬스터를 라운드에서 제거하고, 한 진영이 0명이 되면 즉시 승패가 결정된다. 240초까지 양팀이 남으면 무승부가 결정된다. 게임은 4대4 인원 구성에서 시작하며, 감염 공격과 정화 규칙에 따라 실시간으로 인원 구성이 바뀌고, 감염 스킬을 가진 몬스터로 전환되는 긴장감을 유도한다. 감염 공격은 적중한 인간이 탈락하지 않고 몬스터로 전환되며, 인간 직업별 감염 스킬을 얻는다. 감염된 인간은 몬스터로 전환되고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격을 진행한다. 인간 정화 공격은 몬스터를 라운드에서 제거하고, 한 진영이 0명이 되면 즉시 승패가 결정된다. 240초까지 양팀이 남으면 무승부가 결정된다. 게임은 로블로크에서 구현되며, 감염·정화·전환·승패·에너지 서버가 권한을 가지는 게임 규칙을 따른다.",
+      "coreFun": "감염된 인간은 몬스터로 전환되고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격을 진행하며, 인간 정화 공격은 몬스터를 라운드에서 제거하고, 한 진영이 0명이 되면 즉시 승패가 결정된다. 240초까지 양팀이 남으면 무승부가 결정된다. 게임은 4대4 인원 구성에서 시작하며, 감염 공격과 정화 규칙에 따라 실시간으로 인원 구성이 바뀌고, 감염 스킬을 가진 몬스터로 전환되는 긴장감을 유도한다. 감염 공격은 적중한 인간이 탈락하지 않고 몬스터로 전환되며, 인간 직업별 감염 스킬을 얻는다. 감염된 인간은 몬스터로 전환되고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격을 진행한다. 인간 정화 공격은 몬스터를 라운드에서 제거하고, 한 진영이 0명이 되면 즉시 승패가 결정된다. 240초까지 양팀이 남으면 무승부가 결정된다.",
+      "coreLoop": [
+        "INPUT: PLAYER_ROLE_SELECTION -> STATE: ROLE_ASSIGNMENT -> REWARD: INFECTION_SKILL_GAIN",
+        "INPUT: FIRST_CONTACT -> STATE: ROLE_BALANCE -> REWARD: INFECTION_CONVERSION",
+        "INPUT: INFECTION_ATTACK -> STATE: ROLE_RECONFIGURATION -> REWARD: ENERGY_CONSUMPTION"
+      ],
+      "multiplayerMode": "COMPETITIVE"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T08:28:34.905Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
