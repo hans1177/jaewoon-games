@@ -302,25 +302,123 @@
           "playerChoice": "Discover a new resource, find a new shelter, and acquire new equipment based on environmental danger, current supplies, and group readiness."
         }
       ]
+    },
+    "local_authoring_parts::b6b38ef68fde0e5011811d69d1454cfc3ee9358706290106a53c59643f07f1e0:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::95085568813ed39ce5cab45148d150925043ddc001a756ec1c83b489d7f3421f:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "Explore the forest for a needed resource while reading environmental and creature danger.의 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다.",
+        "대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다.",
+        "성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 높다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SURVIVAL2-DELVE-1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "environmentalAndCreatureDanger",
+            "currentSupplies",
+            "groupReadiness"
+          ],
+          "stateOutputs": [
+            "newResource",
+            "newShelter",
+            "newEquipment"
+          ],
+          "name": "DELVE",
+          "purpose": "Explore the forest for a needed resource while reading environmental and creature danger.",
+          "playerChoice": "Explore the forest for a needed resource while reading environmental and creature danger."
+        },
+        {
+          "id": "SURVIVAL2-DELVE-1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "environmentalAndCreatureDanger",
+            "currentSupplies",
+            "groupReadiness"
+          ],
+          "stateOutputs": [
+            "newResource",
+            "newShelter",
+            "newEquipment"
+          ],
+          "name": "DELVE",
+          "purpose": "Explore the forest for a needed resource while reading environmental and creature danger.",
+          "playerChoice": "Explore the forest for a needed resource while reading environmental and creature danger."
+        },
+        {
+          "id": "SURVIVAL2-DELVE-2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "environmentalAndCreatureDanger",
+            "currentSupplies",
+            "groupReadiness"
+          ],
+          "stateOutputs": [
+            "newResource",
+            "newShelter",
+            "newEquipment"
+          ],
+          "name": "DELVE",
+          "purpose": "Explore the forest for a needed resource while reading environmental and creature danger.",
+          "playerChoice": "Explore the forest for a needed resource while reading environmental and creature danger."
+        },
+        {
+          "id": "SURVIVAL2-DELVE-3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "environmentalAndCreatureDanger",
+            "currentSupplies",
+            "groupReadiness"
+          ],
+          "stateOutputs": [
+            "newResource",
+            "newShelter",
+            "newEquipment"
+          ],
+          "name": "DELVE",
+          "purpose": "Discover a new resource, find a new shelter, and acquire new equipment based on environmental danger, current supplies, and group readiness.",
+          "playerChoice": "Discover a new resource, find a new shelter, and acquire new equipment based on environmental danger, current supplies, and group readiness."
+        },
+        {
+          "id": "SURVIVAL2-DELVE-4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "environmentalAndCreatureDanger",
+            "currentSupplies",
+            "groupReadiness"
+          ],
+          "stateOutputs": [
+            "newResource",
+            "newShelter",
+            "newEquipment"
+          ],
+          "name": "DELVE",
+          "purpose": "Discover a new resource, find a new shelter, and acquire new equipment based on environmental danger, current supplies, and group readiness.",
+          "playerChoice": "Discover a new resource, find a new shelter, and acquire new equipment based on environmental danger, current supplies, and group readiness."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 895309,
-      "lastMs": 81970,
+      "totalMs": 959979,
+      "lastMs": 64670,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:12:18.429Z"
+      "updatedAt": "2026-10-08T13:13:23.103Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:57:22.913Z",
-  "updatedAt": "2026-10-08T13:12:18.432Z",
+  "updatedAt": "2026-10-08T13:13:23.111Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2544,12 +2642,50 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:12:18.432Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임으로 재설계한다. 플레이어는 숲의 생존자들에서 Explore the forest for a needed resource while reading environmental and creature danger.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 대표 선택은 Return or push deeper based on current supplies and group readiness.로, 세계 규칙은 ACTION_SURVIVAL_ROGUELITE 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 게임은 단순 반복과 다른 경로·위험·결과를 만든다. 게임 규칙은 숲의 생존자들의 실제 플레이 공간, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 게임은 단순 반복과 다른 경로·위험·결과를 만든다. 게임 규칙은 숲의 생존자들의 실제 플레이 공간, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 게임은 단순 반복과 다른 경로·위험·결과를 만든다. 게임 규칙은 숲의 생존자들의 실제 플레이 공간, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 게임은 단순 반복과 다른 경로·위험·결과를 만든다. 게임 규칙은 숲의 생존자들의 실제 플레이 공간, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 게임은 단순 반복과 다른 경로·위험·결과를 만든다. 게임 규칙은 숲의 생존자들의 실제 플레이 공간, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 게임은 단순 반복과 다른 경로·위험·결과를 만든다. 게임 규칙은 숲의 생존자들의 실제 플레이 공간, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구",
+      "playerFantasy": "숲의 생존자들에서 플레이어는 Explore the forest for a needed resource while reading environmental and creature danger.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 대표 선택은 Return or push deeper based on current supplies and group readiness.로, 세계 규칙은 ACTION_SURVIVAL_ROGUELITE 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 게임은 단순 반복과 다른 경로·위험·결과를 만든다.",
+      "coreFun": "숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임으로 재설계한다. 플레이어는 숲의 생존자들에서 Explore the forest for a needed resource while reading environmental and creature danger.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 대표 선택은 Return or push deeper based on current supplies and group readiness.로, 세계 규칙은 ACTION_SURVIVAL_ROGUELITE 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 게임은 단순 반복과 다른 경로·위험·결과를 만든다.",
+      "coreLoop": [
+        "Explore the forest for a needed resource while reading environmental and creature danger.의 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다.",
+        "대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다.",
+        "성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 높다."
+      ],
+      "multiplayerMode": "COOP"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T13:13:23.106Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
