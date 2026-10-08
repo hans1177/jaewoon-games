@@ -552,25 +552,39 @@
     },
     "local_authoring_parts::19cf66026edabf6096c0f1d6884ffb3df887164f6d9cd0306c0645b9fcfb1c71:trigger": {
       "trigger": "실제 조건: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다."
+    },
+    "local_authoring_parts::19cf66026edabf6096c0f1d6884ffb3df887164f6d9cd0306c0645b9fcfb1c71:stateChange": {
+      "stateChange": "실제 조건: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다."
+    },
+    "local_authoring_parts::7c36af8083137e532eecbf1be054042a43b26275d66b522c2e417da5cb4f17f7:systemInterconnections:1": {
+      "fromId": "systemInterconnections[1].trigger",
+      "toId": "systemInterconnections[1].trigger",
+      "stateKeys": [
+        "systemInterconnections[1].trigger"
+      ],
+      "fromSystem": "systemInterconnections[1].trigger",
+      "toSystem": "실제 조건: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다.",
+      "trigger": "실제 조건: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다.",
+      "stateChange": "실제 조건: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 26,
-      "successes": 26,
+      "calls": 27,
+      "successes": 27,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2270633,
-      "lastMs": 97391,
+      "totalMs": 2368105,
+      "lastMs": 97472,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:40:49.568Z"
+      "updatedAt": "2026-10-08T21:42:27.042Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:02:58.858Z",
-  "updatedAt": "2026-10-08T21:40:49.569Z",
+  "updatedAt": "2026-10-08T21:42:27.043Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3298,7 +3312,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T21:40:49.568Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:42:27.043Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
