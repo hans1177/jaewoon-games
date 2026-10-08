@@ -454,25 +454,42 @@
       "name": "ACTION_SURVIVAL_ROGUELITE",
       "purpose": "Explore a dangerous small-scale habitat and identify food, material and insect threats.",
       "playerChoice": "Take a risk to gather or fight, then convert the result into survival tools or a safer route. Use what was learned about the ecosystem to survive stronger pressure and reach the next meaningful objective."
+    },
+    "local_authoring_parts::566d7f003e0df90f7f7194ea24e822ab823bf5b0e0bc9a02e68f3d4542d79d25:signatureSystems:2": {
+      "id": "ACTION_SURVIVAL_ROGUELITE",
+      "grammarRole": "B",
+      "stateInputs": [
+        "explorationState",
+        "resourceState",
+        "insectThreatState"
+      ],
+      "stateOutputs": [
+        "survivalToolState",
+        "safeRouteState",
+        "nextObjectiveState"
+      ],
+      "name": "ACTION_SURVIVAL_ROGUELITE",
+      "purpose": "Explore a dangerous small-scale habitat and identify food, material and insect threats.",
+      "playerChoice": "Take a risk to gather or fight, then convert the result into survival tools or a safer route. Use what was learned about the ecosystem to survive stronger pressure and reach the next meaningful objective."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1254568,
-      "lastMs": 100483,
+      "totalMs": 1354858,
+      "lastMs": 100290,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:06:25.656Z"
+      "updatedAt": "2026-10-08T08:08:05.947Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:45:31.034Z",
-  "updatedAt": "2026-10-08T08:06:25.656Z",
+  "updatedAt": "2026-10-08T08:08:05.947Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2740,7 +2757,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T08:06:25.656Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:08:05.947Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
