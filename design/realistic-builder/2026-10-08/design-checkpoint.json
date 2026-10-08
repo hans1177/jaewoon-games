@@ -898,25 +898,28 @@
     },
     "local_authoring_parts::2d27d96975def0973e6316d6c02873587a0023e9423c7b5b48ffe5c0510b3d50:milestone": {
       "milestone": "contentExpansionPlan[0].newGameplay의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다."
+    },
+    "local_authoring_parts::2d27d96975def0973e6316d6c02873587a0023e9423c7b5b48ffe5c0510b3d50:newGameplay": {
+      "newGameplay": "플레이어는 선택한 건축 방식과 전략을 기반으로, 실제 상황에서의 전략적 선택과 상태 변화를 통해 게임 내에서의 시스템과 규칙을 조건화하고, 이 상태 변화를 기반으로 새로운 게임 환경을 생성한다. 선택된 건축 방식은 게임 내에서의 상태 변화를 통해 실제 조건에 따라 변환되며, 이 변환 과정은 플레이어의 선택과 상호작용을 통해 구체화된다. 상태 변화는 경험, 자원, 또는 게임 진행의 형태로 제공되며, 이는 게임의 핵심 루프와 규칙 구조를 안정적으로 유지한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 52,
-      "successes": 52,
+      "calls": 53,
+      "successes": 53,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4434861,
-      "lastMs": 65744,
+      "totalMs": 4524448,
+      "lastMs": 89587,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:54:06.122Z"
+      "updatedAt": "2026-10-08T15:55:35.712Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:51:40.085Z",
-  "updatedAt": "2026-10-08T15:54:06.122Z",
+  "updatedAt": "2026-10-08T15:55:35.712Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3499,7 +3502,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:54:06.122Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:55:35.712Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
