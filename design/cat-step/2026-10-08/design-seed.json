@@ -1,0 +1,124 @@
+{
+  "version": 1,
+  "gameId": "cat-step",
+  "date": "2026-10-08",
+  "seedId": "OWNER-ALL-DESIGN-RESET-CAT-STEP-20260917",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "ollama:qwen3:1.7b",
+  "singleAuthor": true,
+  "sourceStage": "identity-core",
+  "phase": "designer_draft",
+  "status": "AUTHORED_CANDIDATE",
+  "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
+  "originalSource": null,
+  "fingerprint": "23cfc4f64e07b800e1094d98048a167846ebeadf3a97edf1afeba88bf5514f73",
+  "engineDigest": "d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904",
+  "contentDigest": "2ed2442480d1318569e98b648197829457b12c486376cbba87de4935bdaad219",
+  "externalSeedRequired": false,
+  "designPass": false,
+  "runtimePass": false,
+  "content": {
+    "identity": "캣 스텝은 시작 단계에서 플레이어가 게임의 중심 행동으로부터 반복적으로 선택을 통해 세계 상태를 바꾸는 PUZZLE 게임이다. 플레이어는 게임의 핵심 재미인 '판단'과 '선택'을 통해 세계의 원인과 규칙을 직접 경험하며, 이는 시스템의 핵심 인과법칙과 연결되어 진다. 게임의 중심 행동은 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'으로, 이는 플레이어가 즉시 상태 변화를 만드는 핵심 플레이이다. 이는 MAIN의 결과가 A/B/c 서브요소와 상호작용하며, 이는 게임의 반복 규칙과 연결되어 진다. 게임의 핵심 재미는 '진행·위험·보상'이 서로 연결되어 있는 반복 가능한 핵심 루프로, 이는 모바일에서도 즉시 이해되는 입력과 피드백을 제공한다. 게임의 시스템은 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'과 'Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.'으로 구성되어, 이는 게임의 핵심 인과법칙과 연결되어 진다. 게임의 보조 요소는 'c'로, 이는 MAIN/A/B의 관계를 상황별로 변주하며, 이는 게임의 다양한 선택과 결과를 제공한다. 게임의 파고들기 요소는 '@'으로, 이는 발견·숙련·재방문의 깊이를 나타내며, 이는 게임의 다양한 플레이 스타일과 연결되어 진다. 게임의 인과법칙은 'KARMA_RETURN'와 'MANDATE_LEGITIMACY'로 구성되어, 이는 게임의 주요 인과법칙과 연결되어 진다. 게임의 시스템은 'MAIN × A × B × c'로 구성되어, 이는 게임의 다양한 선택과 관",
+    "playerFantasy": "플레이어는 게임의 중심 행동인 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'을 통해 세계 상태를 반복적으로 바꾸는 PUZZLE 게임에서, '판단'과 '선택'이라는 핵심 재미를 직접 경험하며, 이는 세계의 원인과 규칙을 이해하고 경험하게 된다. 이는 시스템의 핵심 인과법칙과 연결되어 있으며, 플레이어는 이 과정에서 '진행·위험·보상'이 서로 연결되어 있는 반복 가능한 핵심 루프를 경험하게 된다. 게임의 보조 요소인 'c'는 MAIN/A/B의 관계를 상황별로 변주하며, 이는 다양한 선택과 결과를 제공한다. 파고들기 요소인 '@'는 발견·숙련·재방문의 깊이를 나타내며, 이는 다양한 플레이 스타일과 연결되어 있다. 게임의 인과법칙은 'KARMA_RETURN'와 'MANDATE_LEGITIMACY'로 구성되어, 이는 주요 인과법칙과 연결되어 있다. 게임의 시스템은 'MAIN × A × B × c'로 구성되어, 이는 다양한 선택과 관계를 통해 게임의 반복 규칙과 연결되어 있다.",
+    "coreFun": "플레이어는 게임의 중심 행동인 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'을 통해 세계 상태를 반복적으로 바꾸는 PUZZLE 게임에서, '판단'과 '선택'이라는 핵심 재미를 직접 경험하며, 이는 세계의 원인과 규칙을 이해하고 경험하게 된다. 이는 시스템의 핵심 인과법칙과 연결되어 있으며, 플레이어는 이 과정에서 '진행·위험·보상'이 서로 연결되어 있는 반복 가능한 핵심 루프를 경험하게 된다. 게임의 보조 요소인 'c'는 MAIN/A/B의 관계를 상황별로 변주하며, 이는 다양한 선택과 결과를 제공한다. 파고들기 요소인 '@'는 발견·숙련·재방문의 깊이를 나타내며, 이는 다양한 플레이 스타일과 연결되어 있다. 게임의 인과법칙은 'KARMA_RETURN'와 'MANDATE_LEGITIMACY'로 구성되어, 이는 주요 인과법칙과 연결되어 있다. 게임의 시스템은 'MAIN × A × B × c'로 구성되어, 이는 다양한 선택과 관계를 통해 게임의 반복 규칙과 연결되어 있다.",
+    "coreLoop": [
+      "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+      "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+      "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+    ],
+    "signatureSystems": [
+      {
+        "id": "MAIN",
+        "grammarRole": "MAIN",
+        "stateInputs": [
+          "goal",
+          "moves",
+          "obstacles",
+          "puzzleConstraint"
+        ],
+        "stateOutputs": [
+          "status",
+          "rewards",
+          "nextStage"
+        ],
+        "name": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "purpose": "Player's core action to initiate gameplay and establish the initial state.",
+        "playerChoice": "Select and configure the initial game state based on the goal, limited moves, obstacles, or puzzle constraint."
+      },
+      {
+        "id": "A",
+        "grammarRole": "A",
+        "stateInputs": [
+          "goal",
+          "moves",
+          "obstacles",
+          "puzzleConstraint"
+        ],
+        "stateOutputs": [
+          "status",
+          "rewards",
+          "nextStage"
+        ],
+        "name": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "purpose": "Player's core action to initiate gameplay and establish the initial state.",
+        "playerChoice": "Select and configure the initial game state based on the goal, limited moves, obstacles, or puzzle constraint."
+      },
+      {
+        "id": "B",
+        "grammarRole": "B",
+        "stateInputs": [
+          "goal",
+          "moves",
+          "obstacles",
+          "puzzleConstraint"
+        ],
+        "stateOutputs": [
+          "status",
+          "rewards",
+          "nextStage"
+        ],
+        "name": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "purpose": "Player's core action to initiate gameplay and establish the initial state.",
+        "playerChoice": "Select and configure the initial game state based on the goal, limited moves, obstacles, or puzzle constraint."
+      },
+      {
+        "id": "c",
+        "grammarRole": "c",
+        "stateInputs": [
+          "goal",
+          "moves",
+          "obstacles",
+          "puzzleConstraint"
+        ],
+        "stateOutputs": [
+          "status",
+          "rewards",
+          "nextStage"
+        ],
+        "name": "Deep exploration of game state through discovery and mastery",
+        "purpose": "Player's action to explore and understand the game state through discovery, mastery, and progression",
+        "playerChoice": "Discover, master, and progress through the game state through exploration and deep understanding"
+      },
+      {
+        "id": "DELVE",
+        "grammarRole": "DELVE",
+        "stateInputs": [
+          "goal",
+          "moves",
+          "obstacles",
+          "puzzleConstraint"
+        ],
+        "stateOutputs": [
+          "status",
+          "rewards",
+          "nextStage"
+        ],
+        "name": "Deep exploration of game state through discovery and mastery",
+        "purpose": "Player's action to explore and understand the game state through discovery, mastery, and progression",
+        "playerChoice": "Discover, master, and progress through the game state through exploration and deep understanding"
+      }
+    ],
+    "multiplayerMode": "HYBRID"
+  },
+  "updatedAt": "2026-10-08T07:59:42.690Z"
+}
