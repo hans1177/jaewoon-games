@@ -24,6 +24,9 @@ import { buildVibeAssetProductionPlan, assetProductionGuidance, inspectVibeSourc
 import { createVibeContinuousQueue } from '../assets/vibe-continuous-queue.js';
 import { robloxDeterministicPresentationEligible } from '../tools/vibe2-source-worker.mjs';
 
+import { expandPresentationResponsibleFiles } from '../tools/vibe2-continuous-runner.mjs';
+import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
+
 test('Vibe source performance tasks retain distinct Unity Web, Unity Android and Roblox source/runtime contracts',()=>{
   const context={files:[{path:'GameCore.cs',content:'public void Update() {}',editable:true}]};
   const options={verifiedExternalLearningContract:{block:''}};
@@ -53,8 +56,7 @@ test('Vibe source performance tasks retain distinct Unity Web, Unity Android and
   const legacyWeb=buildPrompt({target:'web',goal:'렌더링 최적화'},{files:[]},[],options);
   assert.doesNotMatch(legacyWeb,/Surface=UNITY_WEB/);
 });
-import { expandPresentationResponsibleFiles } from '../tools/vibe2-continuous-runner.mjs';
-import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
+
 
 test('required blueprint metadata survives normal JSON, fixed-anchor recovery and full-file envelope',()=>{
   const prompt='gameProductionINTERFACE='+JSON.stringify({required:true})+'\ngameProductionSPATIAL='+JSON.stringify({required:false});
