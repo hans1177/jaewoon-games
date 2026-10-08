@@ -563,25 +563,52 @@
       "name": "CORE_LOOP_DESIGN",
       "purpose": "규칙의 상태 변화를 관리하고, 상태 입력과 출력을 정의하여 규칙의 동작을 명확히 한다.",
       "playerChoice": "마을에서 퀘스트와 장비를 준비, 포탈로 사냥터를 돌며 AI 유저와 파티를 구성, 몬스터를 직접 전투, 보스 첫 처치로 AI 동료 해금, 15마리 파티 사냥과 기여도 보상, 플레이어 + 보스 동료 최대 3명 편성, 보스 공략 → 보스 동료 해금 → 파티 조합 확장, 마을 귀환/회복/강화"
+    },
+    "local_authoring_parts::a862650e7a1512e6ce7992f29c7ae4247900214aefbdb84b7647be3fedba2d70:signatureSystems:4": {
+      "id": "CORE_LOOP_DESIGN",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "마을에서 퀘스트와 장비를 준비",
+        "포탈로 사냥터를 돌며 AI 유저와 파티를 구성",
+        "몬스터를 직접 전투",
+        "보스 첫 처치로 AI 동료 해금",
+        "15마리 파티 사냥과 기여도 보상",
+        "플레이어 + 보스 동료 최대 3명 편성",
+        "보스 공략 → 보스 동료 해금 → 파티 조합 확장",
+        "마을 귀환/회복/강화"
+      ],
+      "stateOutputs": [
+        "마을에서 퀘스트와 장비를 준비",
+        "포탈로 사냥터를 돌며 AI 유저와 파티를 구성",
+        "몬스터를 직접 전투",
+        "보스 첫 처치로 AI 동료 해금",
+        "15마리 파티 사냥과 기여도 보상",
+        "플레이어 + 보스 동료 최대 3명 편성",
+        "보스 공략 → 보스 동료 해금 → 파티 조합 확장",
+        "마을 귀환/회복/강화"
+      ],
+      "name": "CORE_LOOP_DESIGN",
+      "purpose": "규칙의 상태 변화를 관리하고, 상태 입력과 출력을 정의하여 규칙의 동작을 명확히 한다.",
+      "playerChoice": "마을에서 퀘스트와 장비를 준비, 포탈로 사냥터를 돌며 AI 유저와 파티를 구성, 몬스터를 직접 전투, 보스 첫 처치로 AI 동료 해금, 15마리 파티 사냥과 기여도 보상, 플레이어 + 보스 동료 최대 3명 편성, 보스 공략 → 보스 동료 해금 → 파티 조합 확장, 마을 귀환/회복/강화"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 14,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1572196,
-      "lastMs": 129903,
+      "totalMs": 1702005,
+      "lastMs": 129809,
       "lastError": null,
-      "updatedAt": "2026-10-08T07:14:02.495Z"
+      "updatedAt": "2026-10-08T07:16:12.305Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T06:47:50.251Z",
-  "updatedAt": "2026-10-08T07:14:02.495Z",
+  "updatedAt": "2026-10-08T07:16:12.311Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2021,7 +2048,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2041,10 +2068,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T07:14:02.495Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T07:16:12.307Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
