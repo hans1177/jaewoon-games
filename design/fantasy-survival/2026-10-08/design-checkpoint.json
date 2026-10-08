@@ -521,25 +521,245 @@
           "variation": "플레이어는 전투 전략을 통해 다양한 채집 전략과 이동 전략을 조합하여 생존 전략을 확장한다."
         }
       ]
+    },
+    "local_authoring_parts::34dc6bb58f10668c83a6b4fdd10df07af83c157ca0e04f3f090785fd2c6f4fb1:antiMonotonyRule": {
+      "antiMonotonyRule": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하, 플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결, 시그니처 상호작용 결과, 다음 상태와 접근 가능성이 바뀐 월드 상태를 실제 상태 변화로 반영하여, 이전 선택과 현재 상태의 관계를 유동적으로 조정하며, 새로운 플레이와 기존 시스템 영향을 구체적으로 설명한다."
+    },
+    "local_authoring_parts::45932aa7c264e29f4ca3154dc553ca7e6594debe03ac84a52cbf4144ec9ee9b8:enemiesOrChallenges,objectives,antiMonotonyRule": {
+      "enemiesOrChallenges": [
+        {
+          "name": "전투의 적",
+          "behavior": "플레이어가 전투 중에 나타나는 적은 세계 인과법칙에 따라 다양한 형태로 존재한다. 예를 들어, 화산의 빙하가 빠져나가면 전투 적은 빙하의 유산과 관련이 있다.",
+          "counterplay": "플레이어는 전투 적의 행동을 예측하고, 그에 따라 전략적 선택을 할 수 있다.",
+          "positioning": "플레이어는 전투 적의 위치를 예측하여 전투 전략을 조정한다.",
+          "timing": "전투 적의 등장 시간은 플레이어의 전투 전략과 상관없이 유동적으로 변화한다.",
+          "mobility": "전투 적은 플레이어의 이동 상태에 따라 유동적으로 이동한다.",
+          "groupRole": "전투 적은 플레이어의 전투 전략과 상관없이 군집 형태로 존재한다.",
+          "identity": "전투 적은 플레이어의 전투 전략과 상관없이 유동적으로 변화한다.",
+          "rewardMeaning": "전투 적의 전투 결과는 플레이어의 전투 전략과 상관없이 보상으로 주어진다."
+        },
+        {
+          "name": "채집의 적",
+          "behavior": "플레이어가 채집 중에 나타나는 적은 채집의 원인과 관련이 있다. 예를 들어, 연구소의 빙하가 빠져나가면 채집 적은 빙하의 유산과 관련이 있다.",
+          "counterplay": "플레이어는 채집 적의 행동을 예측하고, 그에 따라 전략적 선택을 할 수 있다.",
+          "positioning": "플레이어는 채집 적의 위치를 예측하여 채집 전략을 조정한다.",
+          "timing": "채집 적의 등장 시간은 플레이어의 채집 전략과 상관없이 유동적으로 변화한다.",
+          "mobility": "채집 적은 플레이어의 이동 상태에 따라 유동적으로 이동한다.",
+          "groupRole": "채집 적은 플레이어의 채집 전략과 상관없이 군집 형태로 존재한다.",
+          "identity": "채집 적은 플레이어의 채집 전략과 상관없이 유동적으로 변화한다.",
+          "rewardMeaning": "채집 적의 채집 결과는 플레이어의 채집 전략과 상관없이 보상으로 주어진다."
+        }
+      ],
+      "objectives": [
+        {
+          "role": "생존",
+          "variation": "플레이어는 생존 압박을 유지하면서 다양한 전투 전략과 채집 전략을 사용한다."
+        },
+        {
+          "role": "제작",
+          "variation": "플레이어는 제작 전략을 통해 다양한 전투 전략과 채집 전략을 조합하여 생존 전략을 확장한다."
+        },
+        {
+          "role": "전투",
+          "variation": "플레이어는 전투 전략을 통해 다양한 채집 전략과 이동 전략을 조합하여 생존 전략을 확장한다."
+        }
+      ],
+      "antiMonotonyRule": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하, 플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결, 시그니처 상호작용 결과, 다음 상태와 접근 가능성이 바뀐 월드 상태를 실제 상태 변화로 반영하여, 이전 선택과 현재 상태의 관계를 유동적으로 조정하며, 새로운 플레이와 기존 시스템 영향을 구체적으로 설명한다."
+    },
+    "local_authoring_parts::a84fb2bd1c1c34944802f5d2acdbf6f21f4499192262a22047a2e5f9e69403b0:contentVarietyPlan": {
+      "roleTransitions": [
+        {
+          "humanId": "PLAYER",
+          "humanTool": "플레이어",
+          "humanAbilityId": "FIGHT_SURVIVAL",
+          "infectedAbilityId": "FIGHT_SURVIVAL",
+          "retainedState": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하",
+          "removedState": "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결",
+          "changedChoice": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하"
+        },
+        {
+          "humanId": "PLAYER",
+          "humanTool": "플레이어",
+          "humanAbilityId": "FIGHT_SURVIVAL",
+          "infectedAbilityId": "FIGHT_SURVIVAL",
+          "retainedState": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하",
+          "removedState": "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결",
+          "changedChoice": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하"
+        }
+      ],
+      "regions": [
+        {
+          "ruleIds": [
+            "SIGNATURE_FIGHT_SURVIVAL"
+          ],
+          "name": "마력숲",
+          "traversal": "기존 18000×12000 마력숲 월드와 수정 지역",
+          "riskReward": "생존 압박 유지",
+          "landmark": "연구소, 퀘스트 공간",
+          "encounterPattern": "전투, 채집, 이동",
+          "resourcePressure": "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결",
+          "storyContext": "생존, 제작, 전투, 스토리 진행"
+        },
+        {
+          "ruleIds": [
+            "SIGNATURE_FIGHT_SURVIVAL"
+          ],
+          "name": "수정 지역",
+          "traversal": "기존 18000×12000 마력숲 월드와 수정 지역",
+          "riskReward": "생존 압박 유지",
+          "landmark": "연구소, 퀘스트 공간",
+          "encounterPattern": "전투, 채집, 이동",
+          "resourcePressure": "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결",
+          "storyContext": "생존, 제작, 전투, 스토리 진행"
+        }
+      ],
+      "enemiesOrChallenges": [
+        {
+          "name": "전투의 적",
+          "behavior": "플레이어가 전투 중에 나타나는 적은 세계 인과법칙에 따라 다양한 형태로 존재한다. 예를 들어, 화산의 빙하가 빠져나가면 전투 적은 빙하의 유산과 관련이 있다.",
+          "counterplay": "플레이어는 전투 적의 행동을 예측하고, 그에 따라 전략적 선택을 할 수 있다.",
+          "positioning": "플레이어는 전투 적의 위치를 예측하여 전투 전략을 조정한다.",
+          "timing": "전투 적의 등장 시간은 플레이어의 전투 전략과 상관없이 유동적으로 변화한다.",
+          "mobility": "전투 적은 플레이어의 이동 상태에 따라 유동적으로 이동한다.",
+          "groupRole": "전투 적은 플레이어의 전투 전략과 상관없이 군집 형태로 존재한다.",
+          "identity": "전투 적은 플레이어의 전투 전략과 상관없이 유동적으로 변화한다.",
+          "rewardMeaning": "전투 적의 전투 결과는 플레이어의 전투 전략과 상관없이 보상으로 주어진다."
+        },
+        {
+          "name": "채집의 적",
+          "behavior": "플레이어가 채집 중에 나타나는 적은 채집의 원인과 관련이 있다. 예를 들어, 연구소의 빙하가 빠져나가면 채집 적은 빙하의 유산과 관련이 있다.",
+          "counterplay": "플레이어는 채집 적의 행동을 예측하고, 그에 따라 전략적 선택을 할 수 있다.",
+          "positioning": "플레이어는 채집 적의 위치를 예측하여 채집 전략을 조정한다.",
+          "timing": "채집 적의 등장 시간은 플레이어의 채집 전략과 상관없이 유동적으로 변화한다.",
+          "mobility": "채집 적은 플레이어의 이동 상태에 따라 유동적으로 이동한다.",
+          "groupRole": "채집 적은 플레이어의 채집 전략과 상관없이 군집 형태로 존재한다.",
+          "identity": "채집 적은 플레이어의 채집 전략과 상관없이 유동적으로 변화한다.",
+          "rewardMeaning": "채집 적의 채집 결과는 플레이어의 채집 전략과 상관없이 보상으로 주어진다."
+        }
+      ],
+      "objectives": [
+        {
+          "role": "생존",
+          "variation": "플레이어는 생존 압박을 유지하면서 다양한 전투 전략과 채집 전략을 사용한다."
+        },
+        {
+          "role": "제작",
+          "variation": "플레이어는 제작 전략을 통해 다양한 전투 전략과 채집 전략을 조합하여 생존 전략을 확장한다."
+        },
+        {
+          "role": "전투",
+          "variation": "플레이어는 전투 전략을 통해 다양한 채집 전략과 이동 전략을 조합하여 생존 전략을 확장한다."
+        }
+      ],
+      "antiMonotonyRule": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하, 플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결, 시그니처 상호작용 결과, 다음 상태와 접근 가능성이 바뀐 월드 상태를 실제 상태 변화로 반영하여, 이전 선택과 현재 상태의 관계를 유동적으로 조정하며, 새로운 플레이와 기존 시스템 영향을 구체적으로 설명한다."
+    },
+    "designer_draft_slices::content-rules": {
+      "contentVarietyPlan": {
+        "roleTransitions": [
+          {
+            "humanId": "PLAYER",
+            "humanTool": "플레이어",
+            "humanAbilityId": "FIGHT_SURVIVAL",
+            "infectedAbilityId": "FIGHT_SURVIVAL",
+            "retainedState": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하",
+            "removedState": "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결",
+            "changedChoice": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하"
+          },
+          {
+            "humanId": "PLAYER",
+            "humanTool": "플레이어",
+            "humanAbilityId": "FIGHT_SURVIVAL",
+            "infectedAbilityId": "FIGHT_SURVIVAL",
+            "retainedState": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하",
+            "removedState": "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결",
+            "changedChoice": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하"
+          }
+        ],
+        "regions": [
+          {
+            "ruleIds": [
+              "SIGNATURE_FIGHT_SURVIVAL"
+            ],
+            "name": "마력숲",
+            "traversal": "기존 18000×12000 마력숲 월드와 수정 지역",
+            "riskReward": "생존 압박 유지",
+            "landmark": "연구소, 퀘스트 공간",
+            "encounterPattern": "전투, 채집, 이동",
+            "resourcePressure": "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결",
+            "storyContext": "생존, 제작, 전투, 스토리 진행"
+          },
+          {
+            "ruleIds": [
+              "SIGNATURE_FIGHT_SURVIVAL"
+            ],
+            "name": "수정 지역",
+            "traversal": "기존 18000×12000 마력숲 월드와 수정 지역",
+            "riskReward": "생존 압박 유지",
+            "landmark": "연구소, 퀘스트 공간",
+            "encounterPattern": "전투, 채집, 이동",
+            "resourcePressure": "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결",
+            "storyContext": "생존, 제작, 전투, 스토리 진행"
+          }
+        ],
+        "enemiesOrChallenges": [
+          {
+            "name": "전투의 적",
+            "behavior": "플레이어가 전투 중에 나타나는 적은 세계 인과법칙에 따라 다양한 형태로 존재한다. 예를 들어, 화산의 빙하가 빠져나가면 전투 적은 빙하의 유산과 관련이 있다.",
+            "counterplay": "플레이어는 전투 적의 행동을 예측하고, 그에 따라 전략적 선택을 할 수 있다.",
+            "positioning": "플레이어는 전투 적의 위치를 예측하여 전투 전략을 조정한다.",
+            "timing": "전투 적의 등장 시간은 플레이어의 전투 전략과 상관없이 유동적으로 변화한다.",
+            "mobility": "전투 적은 플레이어의 이동 상태에 따라 유동적으로 이동한다.",
+            "groupRole": "전투 적은 플레이어의 전투 전략과 상관없이 군집 형태로 존재한다.",
+            "identity": "전투 적은 플레이어의 전투 전략과 상관없이 유동적으로 변화한다.",
+            "rewardMeaning": "전투 적의 전투 결과는 플레이어의 전투 전략과 상관없이 보상으로 주어진다."
+          },
+          {
+            "name": "채집의 적",
+            "behavior": "플레이어가 채집 중에 나타나는 적은 채집의 원인과 관련이 있다. 예를 들어, 연구소의 빙하가 빠져나가면 채집 적은 빙하의 유산과 관련이 있다.",
+            "counterplay": "플레이어는 채집 적의 행동을 예측하고, 그에 따라 전략적 선택을 할 수 있다.",
+            "positioning": "플레이어는 채집 적의 위치를 예측하여 채집 전략을 조정한다.",
+            "timing": "채집 적의 등장 시간은 플레이어의 채집 전략과 상관없이 유동적으로 변화한다.",
+            "mobility": "채집 적은 플레이어의 이동 상태에 따라 유동적으로 이동한다.",
+            "groupRole": "채집 적은 플레이어의 채집 전략과 상관없이 군집 형태로 존재한다.",
+            "identity": "채집 적은 플레이어의 채집 전략과 상관없이 유동적으로 변화한다.",
+            "rewardMeaning": "채집 적의 채집 결과는 플레이어의 채집 전략과 상관없이 보상으로 주어진다."
+          }
+        ],
+        "objectives": [
+          {
+            "role": "생존",
+            "variation": "플레이어는 생존 압박을 유지하면서 다양한 전투 전략과 채집 전략을 사용한다."
+          },
+          {
+            "role": "제작",
+            "variation": "플레이어는 제작 전략을 통해 다양한 전투 전략과 채집 전략을 조합하여 생존 전략을 확장한다."
+          },
+          {
+            "role": "전투",
+            "variation": "플레이어는 전투 전략을 통해 다양한 채집 전략과 이동 전략을 조합하여 생존 전략을 확장한다."
+          }
+        ],
+        "antiMonotonyRule": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하, 플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결, 시그니처 상호작용 결과, 다음 상태와 접근 가능성이 바뀐 월드 상태를 실제 상태 변화로 반영하여, 이전 선택과 현재 상태의 관계를 유동적으로 조정하며, 새로운 플레이와 기존 시스템 영향을 구체적으로 설명한다."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 12,
+      "calls": 17,
+      "successes": 13,
       "failures": 4,
       "timeouts": 4,
       "jsonFailures": 0,
-      "totalMs": 2848211,
-      "lastMs": 165685,
+      "totalMs": 2923850,
+      "lastMs": 75639,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T15:26:53.641Z"
+      "updatedAt": "2026-10-08T15:28:09.281Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:15:14.939Z",
-  "updatedAt": "2026-10-08T15:26:53.641Z",
+  "updatedAt": "2026-10-08T15:28:09.291Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2736,12 +2956,13 @@
   },
   "sliceDependencies": {
     "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
-    "designer_draft_slices::systems-progression": "d6ce40b4c81d9825410cb7921f5d4df27ddde3a005a4f619cb072512097894ac"
+    "designer_draft_slices::systems-progression": "d6ce40b4c81d9825410cb7921f5d4df27ddde3a005a4f619cb072512097894ac",
+    "designer_draft_slices::content-rules": "ec1c1441504f83292dc61262f7a740901d1c361db4bef63866c2a8fc66535d7e"
   },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T15:26:53.641Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:28:09.286Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
