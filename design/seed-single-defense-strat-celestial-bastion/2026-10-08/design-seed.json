@@ -1,0 +1,184 @@
+{
+  "version": 1,
+  "gameId": "seed-single-defense-strat-celestial-bastion",
+  "date": "2026-10-08",
+  "seedId": "OWNER-ALL-DESIGN-RESET-SEED-SINGLE-DEFENSE-STRAT-CELESTIAL-BASTION-20260917",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "ollama:qwen3:1.7b",
+  "singleAuthor": true,
+  "sourceStage": "identity-core",
+  "phase": "designer_draft",
+  "status": "AUTHORED_CANDIDATE",
+  "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
+  "originalSource": null,
+  "fingerprint": "61f8580560c8d4c84769804bd4d2d902cdbb250d8ae5415e1526ae69ff3721ca",
+  "engineDigest": "d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904",
+  "contentDigest": "ee4b359cce5bf00e0270ce7bc71792916267b8757cc6cbd247cb69057b844d31",
+  "externalSeedRequired": false,
+  "designPass": false,
+  "runtimePass": false,
+  "content": {
+    "identity": "천상의 보루는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임이다. 플레이어는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 중심으로 세계 상태와 다음 선택을 바꾼다. 게임의 핵심 재미는 반복적인 전략 선택과 즉각적인 상태 변화의 조합이다. 게임의 핵심 루프는 입력/선택 -> 상태 변화 -> 보상/위험/다음 선택의 연결이다. 게임의 시스템은 MAIN/A/B/c/@와 같은 시그니처 세계 규칙을 포함하며, 각각의 상태 변화는 게임의 구조와 규칙을 형성한다. 게임의 플랫폼별 구현은 같은 원본의 플랫폼별 제약을 따르며, 기존의 SINGLE_DEFENSE_STRATEGY의 핵심 재미와 시스템 연결을 유지한다. 게임의 설계는 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안을 유지한다. 게임의 설계는 단순한 반복을 벗어나, 다양한 선택, 위험, 보상, 그리고 상태 변화의 조합을 포함한다. 게임의 설계는 플레이어의 역할, 선택, 결과에 대한 구체적인 판타지를 포함하며, 게임의 구조와 규칙은 플레이어의 경험과 이해에 맞게 설계된다. 게임의 설계는 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안을 유지한다. 게임의 설계는 단순한 반복을 벗어나, 다양한 선택, 위험, 보상, 그리고 상태 변화의 조합을 포함한다. 게임의 설계는 플레이어의 역할, 선택, 결과에 대한 구체적인 판타지를 포함하며, 게임의 구조와 규칙은 플레이어의 경험과 이해에 맞게 설계된다. 게임의 설계는 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안을 유지한다. 게임의 설계는 단순한반",
+    "playerFantasy": "천상의 보루는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임이다. 플레이어는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 중심으로 세계 상태와 다음 선택을 바꾼다. 게임의 핵심 재미는 반복적인 전략 선택과 즉각적인 상태 변화의 조합이다. 게임의 핵심 루프는 입력/선택 -> 상태 변화 -> 보상/위험/다음 선택의 연결이다. 게임의 시스템은 MAIN/A/B/c/@와 같은 시그니처 세계 규칙을 포함하며, 각각의 상태 변화는 게임의 구조와 규칙을 형성한다. 게임의 플랫폼별 구현은 같은 원본의 플랫폼별 제약을 따르며, 기존의 SINGLE_DEFENSE_STRATEGY의 핵심 재미와 시스템 연결을 유지한다. 게임의 설계는 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안을 유지한다. 게임의 설계는 단순한 반복을 벗어나, 다양한 선택, 위험, 보상, 그리고 상태 변화의 조합을 포함한다. 게임의 설계는 플레이어의 역할, 선택, 결과에 대한 구체적인 판타지를 포함하며, 게임의 구조와 규칙은 플레이어의 경험과 이해에 맞게 설계된다.",
+    "coreFun": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임의 핵심 재미와 시스템 연결을 확정하며, 플레이어의 역할, 선택, 결과에 대한 구체적인 판타지를 포함하여, 게임의 구조와 규칙은 플레이어의 경험과 이해에 맞게 설계된다. 게임의 설계는 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안을 유지한다. 게임의 설계는 단순한 반복을 벗어나, 다양한 선택, 위험, 보상, 그리고 상태 변화의 조합을 포함하며, 플레이어의 역할, 선택, 결과에 대한 구체적인 판타지를 포함하여, 게임의 구조와 규칙은 플레이어의 경험과 이해에 맞게 설계된다.",
+    "coreLoop": [
+      "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+      "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+      "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+    ],
+    "signatureSystems": [
+      {
+        "id": "signatureSystems[0]",
+        "grammarRole": "MAIN",
+        "stateInputs": [
+          "threatened route",
+          "enemy wave",
+          "towers or defenders",
+          "lanes or positions",
+          "resources",
+          "upgrades",
+          "new placements",
+          "tactical changes",
+          "enemy types",
+          "wave composition",
+          "objective",
+          "stage or boss"
+        ],
+        "stateOutputs": [
+          "new state",
+          "updated defense strategy",
+          "resource allocation",
+          "tactical adjustments",
+          "enemy adaptation",
+          "game progression",
+          "unlocking harder defense choices"
+        ],
+        "name": "Enemy Adaptation System",
+        "purpose": "Facilitates dynamic defense strategy adjustments based on enemy type and wave composition.",
+        "playerChoice": "Adapt defense strategy in real-time to counter evolving threats and optimize resource allocation before pressure increases."
+      },
+      {
+        "id": "signatureSystems[1]",
+        "grammarRole": "A",
+        "stateInputs": [
+          "threatened route",
+          "enemy wave",
+          "towers or defenders",
+          "lanes or positions",
+          "resources",
+          "upgrades",
+          "new placements",
+          "tactical changes",
+          "enemy types",
+          "wave composition",
+          "objective",
+          "stage or boss"
+        ],
+        "stateOutputs": [
+          "new state",
+          "updated defense strategy",
+          "resource allocation",
+          "tactical adjustments",
+          "enemy adaptation",
+          "game progression",
+          "unlocking harder defense choices"
+        ],
+        "name": "Enemy Adaptation System",
+        "purpose": "Facilitates dynamic defense strategy adjustments based on enemy type and wave composition.",
+        "playerChoice": "Adapt defense strategy in real-time to counter evolving threats and optimize resource allocation before pressure increases."
+      },
+      {
+        "id": "signatureSystems[2]",
+        "grammarRole": "B",
+        "stateInputs": [
+          "threatened route",
+          "enemy wave",
+          "towers or defenders",
+          "lanes or positions",
+          "resources",
+          "upgrades",
+          "new placements",
+          "tactical changes",
+          "enemy types",
+          "wave composition",
+          "objective",
+          "stage or boss"
+        ],
+        "stateOutputs": [
+          "new state",
+          "updated defense strategy",
+          "resource allocation",
+          "tactical adjustments",
+          "enemy adaptation",
+          "game progression",
+          "unlocking harder defense choices"
+        ],
+        "name": "Enemy Adaptation System",
+        "purpose": "Facilitates dynamic defense strategy adjustments based on enemy type and wave composition.",
+        "playerChoice": "Adapt defense strategy in real-time to counter evolving threats and optimize resource allocation before pressure increases."
+      },
+      {
+        "id": "signatureSystems[3]",
+        "grammarRole": "c",
+        "stateInputs": [
+          "threatened route",
+          "enemy wave",
+          "towers or defenders",
+          "lanes or positions",
+          "resources",
+          "upgrades",
+          "new placements",
+          "tactical changes",
+          "enemy types",
+          "wave composition",
+          "objective",
+          "stage or boss"
+        ],
+        "stateOutputs": [
+          "new state",
+          "updated defense strategy",
+          "resource allocation",
+          "tactical adjustments",
+          "enemy adaptation",
+          "game progression",
+          "unlocking harder defense choices"
+        ],
+        "name": "Enemy Adaptation System",
+        "purpose": "Facilitates dynamic defense strategy adjustments based on enemy type and wave composition.",
+        "playerChoice": "Adapt defense strategy in real-time to counter evolving threats and optimize resource allocation before pressure increases."
+      },
+      {
+        "id": "signatureSystems[4]",
+        "grammarRole": "DELVE",
+        "stateInputs": [
+          "threatened route",
+          "enemy wave",
+          "towers or defenders",
+          "lanes or positions",
+          "resources",
+          "upgrades",
+          "new placements",
+          "tactical changes",
+          "enemy types",
+          "wave composition",
+          "objective",
+          "stage or boss"
+        ],
+        "stateOutputs": [
+          "new state",
+          "updated defense strategy",
+          "resource allocation",
+          "tactical adjustments",
+          "enemy adaptation",
+          "game progression",
+          "unlocking harder defense choices"
+        ],
+        "name": "Enemy Adaptation System",
+        "purpose": "Facilitates dynamic defense strategy adjustments based on enemy type and wave composition.",
+        "playerChoice": "Adapt defense strategy in real-time to counter evolving threats and optimize resource allocation before pressure increases."
+      }
+    ],
+    "multiplayerMode": "COOP"
+  },
+  "updatedAt": "2026-10-08T10:43:22.536Z"
+}
