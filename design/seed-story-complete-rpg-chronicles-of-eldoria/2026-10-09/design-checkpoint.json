@@ -757,25 +757,28 @@
     },
     "local_authoring_parts::a84b098539536039f25591cc122f7aac92e2e99252399e610678ea3f09810de0:toSystem": {
       "toSystem": "월드 상태 전환 시스템"
+    },
+    "local_authoring_parts::a84b098539536039f25591cc122f7aac92e2e99252399e610678ea3f09810de0:trigger": {
+      "trigger": "플레이어가 탐험 중 새로운 지역을 발견하면, 월드 상태 전환 시스템에서 'EXPLORATION_STATE' 상태가 'LOCATION_CHANGE_STATE'로 전환되며, 새로운 정보와 아이템을 획득하게 된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 32,
-      "successes": 31,
+      "calls": 33,
+      "successes": 32,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2976218,
-      "lastMs": 59051,
+      "totalMs": 3042347,
+      "lastMs": 66129,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T23:52:52.454Z"
+      "updatedAt": "2026-10-08T23:53:58.585Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:50:46.559Z",
-  "updatedAt": "2026-10-08T23:52:52.455Z",
+  "updatedAt": "2026-10-08T23:53:58.585Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3221,7 +3224,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T23:52:52.455Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T23:53:58.585Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
