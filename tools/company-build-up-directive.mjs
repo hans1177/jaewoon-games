@@ -622,6 +622,21 @@ export function buildDesignToPlatformCodingTrace({
     ...(sourceObservation?.sourceAnchors||[]).map(row=>row?.file),
     ...responsibleFiles
   ].map(safeSourcePath).filter(Boolean));
+  // 정적 함수/행동 증거는 최소 소스 후보만 의미한다. 코멘트·태그·설정 파일만으로는 구현을 인정하지 않는다.
+  const codeSignalFiles=observedFiles.filter(file=>{
+    try{
+      const original=fs.readFileSync(path.resolve(rootReal,file),'utf8');
+      const source=original.split('\n').map(line=>{
+        const comment=file.endsWith('.cs')?'//':'--';
+        const at=line.indexOf(comment);
+        return at<0?line:line.slice(0,at);
+      }).join('\n');
+      if(file.endsWith('.cs')){
+        return /\b(?:void|Task|IEnumerator|bool|int|float|string|GameObject|Coroutine)\s+\w+\s*\(/.test(source);
+      }
+      return /\bfunction\s*[\w.:(]|\b(?:Instance\.new|FireAllClients|FireServer|UpdateAsync)\s*\(/.test(source);
+    }catch{return false;}
+  });
   const symbols=(sourceObservation?.sourceAnchors||[]).map(row=>({
     file:safeSourcePath(row?.file),symbol:clean(row?.symbol),kind:clean(row?.kind)
   })).filter(row=>row.file&&row.symbol).slice(0,24);
@@ -659,7 +674,8 @@ export function buildDesignToPlatformCodingTrace({
       suggestedExistingOwnerFiles:candidates,
       inspectedSymbols:symbols.filter(row=>candidates.includes(row.file)).slice(0,5),
       designStatus:everySystemAuthored&&(['MAIN','A','B'].includes(role)?rows.length===1:rows.length>=1)?'AUTHORED':'DESIGN_REPAIR_REQUIRED',
-      codingStatus:!selectedRoot?'PLATFORM_NOT_SELECTED':!candidates.length?'SOURCE_OWNER_MISSING':'SOURCE_OWNER_CANDIDATE_UNVERIFIED',
+      codingStatus:!selectedRoot?'PLATFORM_NOT_SELECTED':!candidates.length?'SOURCE_OWNER_MISSING':
+        !candidates.some(file=>codeSignalFiles.includes(file))?'SOURCE_OWNER_ONLY_DECLARATIVE_OR_COMMENT':'SOURCE_OWNER_CANDIDATE_UNVERIFIED',
       executableBehaviorVerified:false,
       actualRuntimeVerified:false,
       evidenceNeeded:'EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA'
@@ -687,6 +703,7 @@ export function buildDesignToPlatformCodingTrace({
     ...(mandatory&&!modeReady?['MULTIPLAYER_DESIGN_MODE_MISSING']:[]),
     ...(selected==='UNITY_WEB'&&!spatialReady?['UNITY_WEB_DESIGN_SPATIAL_DEPTH_MISSING']:[]),
     ...(!selectedRoot?['PLATFORM_SOURCE_NOT_SELECTED']:!observedCode?['NATIVE_GAME_CODE_OWNER_MISSING']:[]),
+    ...(observedCode&&!codeSignalFiles.length?['EXECUTABLE_GAMEPLAY_SOURCE_NOT_FOUND']:[]),
     ...bindings.filter(row=>row.designStatus!=='AUTHORED').map(row=>'DESIGN_ROLE_NOT_AUTHORED:'+row.role),
     ...bindings.filter(row=>row.codingStatus==='SOURCE_OWNER_MISSING').map(row=>'GAME_CODE_OWNER_MISSING:'+row.role)
   ];
@@ -698,6 +715,7 @@ export function buildDesignToPlatformCodingTrace({
     platformCodingPlans:Object.freeze(platforms),
     roleBindings:Object.freeze(bindings),
     observedGameCodeFiles:Object.freeze(observedFiles),
+    executableCodeCandidateFiles:Object.freeze(codeSignalFiles),
     gapReasons:Object.freeze(uniq(gapReasons)),
     codingReviewState:gapReasons.length?'GAME_STAGE_LOCAL_REPAIR_REQUIRED':'SOURCE_CANDIDATES_PRESENT_NOT_IMPLEMENTATION_PASS',
     sourceImplementationPassed:false,actualTwoClientPassed:false,actualWebglRenderPassed:false,independentQaPassed:false,
