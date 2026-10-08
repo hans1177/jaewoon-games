@@ -440,25 +440,41 @@
       "name": "ELDORIA_CORE_B",
       "purpose": "플레이어가 탐험, 위험, 성공, 실패, 성장의 상태 변화를 통해 세계의 역사, 생활, 경제, 지역 기능을 이해하고, 인물, 적, 아이템, UI의 역할과 위험/보상 차이를 시각 언어로 표현하며, 선택 결과와 세계 규칙의 상호작용을 통해 핵심 재미를 구현한다.",
       "playerChoice": "플레이어는 탐험을 통해 세계의 원인을 파악하고, 위험을 통해 인물의 목표와 두려움을 반영하며, 성공과 실패를 통해 선택의 결과와 세계의 상태 변화를 관찰하고, 성장으로 새로운 행동·경로·조합·관계·발견·대응법을 열어 같은 콘텐츠를 다르게 사용하게 된다."
+    },
+    "local_authoring_parts::6f6f4b8f32e6d9fcb3c03f811fc97e30e46879ac4a95735637113947ab145a4b:signatureSystems:3": {
+      "id": "ELDORIA_C",
+      "grammarRole": "c",
+      "stateInputs": [
+        "worldState",
+        "playerSelection",
+        "gameProgression"
+      ],
+      "stateOutputs": [
+        "newWorldState",
+        "updatedGameProgression"
+      ],
+      "name": "ELDORIA_C",
+      "purpose": "플레이어가 탐험, 위험, 성공, 실패, 성장의 상태 변화를 통해 세계의 역사, 생활, 경제, 지역 기능을 이해하고, 인물, 적, 아이템, UI의 역할과 위험/보상 차이를 시각 언어로 표현하며, 선택 결과와 세계 규칙의 상호작용을 통해 핵심 재미를 구현한다.",
+      "playerChoice": "플레이어는 탐험을 통해 세계의 원인을 파악하고, 위험을 통해 인물의 목표와 두려움을 반영하며, 성공과 실패를 통해 선택의 결과와 세계의 상태 변화를 관찰하고, 성장으로 새로운 행동·경로·조합·관계·발견·대응법을 열어 같은 콘텐츠를 다르게 사용하게 된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 13,
+      "calls": 14,
+      "successes": 14,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1482041,
-      "lastMs": 119053,
+      "totalMs": 1602925,
+      "lastMs": 120884,
       "lastError": null,
-      "updatedAt": "2026-10-08T09:20:31.603Z"
+      "updatedAt": "2026-10-08T09:22:32.488Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:55:49.512Z",
-  "updatedAt": "2026-10-08T09:20:31.603Z",
+  "updatedAt": "2026-10-08T09:22:32.488Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2777,7 +2793,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T09:20:31.603Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:22:32.488Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
