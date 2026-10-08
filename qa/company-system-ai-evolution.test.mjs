@@ -587,11 +587,19 @@ test('exact first-frame evidence groups unobserved boot separately from proven u
   const result=analyzeSystemAiBottlenecks({developmentQueue:{items:[
     {...base,gameId:'amusement-tycoon',robloxFirstFrameGroundingEvidence:noBoot},
     {...base,gameId:'bug-defense',robloxFirstFrameGroundingEvidence:noBoot},
+    {...base,gameId:'simulation-off',robloxFirstFrameGroundingEvidence:{
+      ...noBoot,sourceRevision:revision,artifactIdentity:artifact,placeId:'123456',candidateVersionNumber:7,
+      simulationRunningAfter:false,serverContextExecuted:true
+    }},
+    {...base,gameId:'stale-first-frame-binding',robloxFirstFrameGroundingEvidence:{
+      ...noBoot,sourceRevision:'c'.repeat(40),artifactIdentity:artifact,placeId:'123456',candidateVersionNumber:7
+    }},
     {...base,gameId:'geometry-test',robloxFailureSignature:'ROBLOX_FIRST_FRAME_GROUNDING_FAILED',robloxFirstFrameGroundingEvidence:unsupported},
     {...base,gameId:'quality-blocked',robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:revision,robloxFirstFrameGroundingEvidence:noBoot},
     {...base,gameId:'superseded',robloxRuntimeCandidateEvidence:{...base.robloxRuntimeCandidateEvidence,sourceRevision:'c'.repeat(40)},robloxFirstFrameGroundingEvidence:noBoot}
   ]}});
-  assert.equal(result.development.firstFrameWorldBootstrapUnobservedCount,2);
+  assert.equal(result.development.firstFrameWorldBootstrapUnobservedCount,3);
+  assert.equal(result.development.firstFrameServerSimulationNotRunningCount,1);
   assert.equal(result.development.firstFrameGroundingFailedCount,1);
   assert.equal(result.development.qualityBlockedCount,1);
   assert.equal(result.development.pendingCandidateCount,1);
@@ -601,6 +609,8 @@ test('exact first-frame evidence groups unobserved boot separately from proven u
   assert.equal(empty.firstFrameObservation.basePartCount,1);
   assert.equal(empty.firstFrameObservation.spawnCount,0);
   assert.equal(empty.firstFrameObservation.renderedScreenshotClaimed,false);
+  assert.equal(result.development.rows.find(x=>x.gameId==='simulation-off').classification,'EXACT_PRIVATE_GAME_SERVER_SIMULATION_NOT_RUNNING');
+  assert.equal(result.development.rows.find(x=>x.gameId==='stale-first-frame-binding').firstFrameObservation,null);
   assert.equal(result.development.rows.find(x=>x.gameId==='geometry-test').classification,'EXACT_PRIVATE_CANDIDATE_SPAWN_GROUNDING_FAILED');
   assert.equal(result.development.rows.find(x=>x.gameId==='quality-blocked').classification,'QUALITY_GATE_BLOCKS_CANDIDATE_HANDOFF');
   assert.equal(result.development.rows.find(x=>x.gameId==='superseded').firstFrameObservation,null);
