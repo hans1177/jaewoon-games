@@ -826,25 +826,57 @@
       "toSystem": "wild-survival-weather",
       "trigger": "weatherStorm",
       "stateChange": "weather affects player decisions and resource availability"
+    },
+    "local_authoring_parts::785ecfed39fbcb0a0ef0a00c67bc8f1d26041bb63c42263afca39214dac6b250:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "wild-survival-core",
+      "toId": "wild-survival-weather",
+      "stateKeys": [
+        "월드 상태",
+        "대상",
+        "자원",
+        "위험",
+        "진행 상태"
+      ],
+      "fromSystem": "wild-survival-core-to-wild-survival-weather"
+    },
+    "local_authoring_parts::785ecfed39fbcb0a0ef0a00c67bc8f1d26041bb63c42263afca39214dac6b250:toSystem,trigger,stateChange": {
+      "toSystem": "wild-survival-weather",
+      "trigger": "weatherStorm",
+      "stateChange": "weather affects player decisions and resource availability"
+    },
+    "local_authoring_parts::feda502764787b7f0bc781177d196f9e7691a29b7676a1c3ac03b170d97a4073:systemInterconnections:2": {
+      "fromId": "wild-survival-core",
+      "toId": "wild-survival-weather",
+      "stateKeys": [
+        "월드 상태",
+        "대상",
+        "자원",
+        "위험",
+        "진행 상태"
+      ],
+      "fromSystem": "wild-survival-core-to-wild-survival-weather",
+      "toSystem": "wild-survival-weather",
+      "trigger": "weatherStorm",
+      "stateChange": "weather affects player decisions and resource availability"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 25,
-      "successes": 25,
+      "calls": 27,
+      "successes": 27,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1129129,
-      "lastMs": 4815,
+      "totalMs": 1143854,
+      "lastMs": 5004,
       "lastError": null,
-      "updatedAt": "2026-10-08T09:47:09.421Z"
+      "updatedAt": "2026-10-08T09:47:24.150Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:16:20.952Z",
-  "updatedAt": "2026-10-08T09:47:09.422Z",
+  "updatedAt": "2026-10-08T09:47:24.152Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3059,7 +3091,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T09:47:09.422Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:47:24.152Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
