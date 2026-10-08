@@ -583,25 +583,42 @@
       "name": "ACTION_SURVIVAL_ROGUELITE",
       "purpose": "A survival-roguelite game where players repeatedly engage in a short real-time survival run, making choices that affect the game state and progression.",
       "playerChoice": "Fight through an escalating horde in a short real-time survival run while boxing. Collect run rewards or experience and choose upgrades, perks, weapons, or skills. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+    },
+    "local_authoring_parts::d31fd643e0bbb6e1af331961dbfe078b82f065eff405feb5d7bd72ca7686ea75:signatureSystems:3": {
+      "id": "ACTION_SURVIVAL_ROGUELITE",
+      "grammarRole": "c",
+      "stateInputs": [
+        "Fight through an escalating horde in a short real-time survival run while boxing",
+        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills",
+        "Combine upgrades into a stronger build, survive harder waves or a boss"
+      ],
+      "stateOutputs": [
+        "Survival run result",
+        "Progression choice",
+        "Game state transition"
+      ],
+      "name": "ACTION_SURVIVAL_ROGUELITE",
+      "purpose": "A survival-roguelite game where players repeatedly engage in a short real-time survival run, making choices that affect the game state and progression.",
+      "playerChoice": "Fight through an escalating horde in a short real-time survival run while boxing. Collect run rewards or experience and choose upgrades, perks, weapons, or skills. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 23,
-      "successes": 23,
+      "calls": 24,
+      "successes": 24,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2150211,
-      "lastMs": 78850,
+      "totalMs": 2227704,
+      "lastMs": 77493,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:19:40.129Z"
+      "updatedAt": "2026-10-08T16:20:57.623Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:02:11.526Z",
-  "updatedAt": "2026-10-08T16:19:40.129Z",
+  "updatedAt": "2026-10-08T16:20:57.623Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2836,7 +2853,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:19:40.129Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:20:57.623Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
