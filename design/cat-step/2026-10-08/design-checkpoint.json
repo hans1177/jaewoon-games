@@ -693,25 +693,36 @@
       "toSystem": "Puzzle System",
       "trigger": "LEVEL_GOAL",
       "stateChange": "CLEAR_LEVEL_GOAL"
+    },
+    "local_authoring_parts::ac24ab387855eb45904cc9c9861ea6b74a52680e183d0d0e994610bb1ec7e105:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "cat-step-signature-systems-0",
+      "toId": "cat-step-signature-systems-1",
+      "stateKeys": [
+        "LEVEL_GOAL",
+        "LIMITED_MOVES",
+        "OBSTACLES",
+        "VISIBLE_PUZZLE_CONSTRAINT"
+      ],
+      "fromSystem": "Puzzle System"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 19,
+      "calls": 20,
+      "successes": 20,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 825230,
-      "lastMs": 32678,
+      "totalMs": 858967,
+      "lastMs": 33737,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:11:57.621Z"
+      "updatedAt": "2026-10-08T12:12:31.360Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:58:12.306Z",
-  "updatedAt": "2026-10-08T12:11:57.622Z",
+  "updatedAt": "2026-10-08T12:12:31.360Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2894,7 +2905,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:11:57.622Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:12:31.360Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
