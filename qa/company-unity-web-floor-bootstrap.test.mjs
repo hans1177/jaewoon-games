@@ -326,6 +326,7 @@ test('approved Unity Web design generates playable-scene visual data in canonica
     assert.equal(manifest.buildMethod,'UnityWebFloorBuild.BuildWeb');
     assert.equal(layout.version,1);
     assert.equal(layout.mobile,true);
+    assert.equal(layout.maxSlopeDegrees,35);
     assert.equal(layout.heights.length,576);
     assert.equal(layout.types.length,576);
     assert.ok(layout.types.some(type=>type===1),'approved mountain must include ridge');
@@ -361,6 +362,14 @@ test('approved Unity Web design generates playable-scene visual data in canonica
     assert.match(runtime,/data\.mobile&&\(data\.width>48/);
     assert.match(runtime,/WORLD_DOOR_ROAD_DISCONNECTED/);
     assert.match(runtime,/WORLD_OBJECT_ID_DUPLICATED/);
+    assert.match(runtime,/WORLD_OBJECT_ID_REQUIRED/);
+    assert.match(runtime,/WORLD_ROAD_CELL_DUPLICATED/);
+    assert.match(runtime,/WORLD_TERRAIN_INVALID/);
+    assert.match(runtime,/WORLD_DOOR_ROAD_STEEP/);
+    assert.match(runtime,/new GameObject\("WorldObject_"\+lot.id\)/);
+    assert.match(runtime,/new GameObject\("WorldObject_"\+plant.id\)/);
+    assert.doesNotMatch(runtime,/Input\.touchCount/);
+    assert.doesNotMatch(runtime,/AddComponent<MeshCollider>/);
     assert.match(runtime,/var worldIds=new HashSet<string>/);
     assert.doesNotMatch(runtime,/RegisterDestroyedObject/);
     assert.doesNotMatch(runtime,/BuildApprovedWorldVisuals\(\);[\s\S]*UNITY_WEB_WORLD=PASS/);
