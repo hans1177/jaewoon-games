@@ -102,25 +102,225 @@
       "name": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense",
       "purpose": "Player's main action to adapt defense strategy based on enemy type and wave composition, protect the objective, and clear the stage or boss to unlock harder defense.",
       "playerChoice": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense."
+    },
+    "local_authoring_parts::e4038e09e25cbcbf538c565d87ec6a4d12cfc7e8998d4128e787a4b3f7b2cebb:signatureSystems:4": {
+      "id": "SINGLE_DEFENSE_STRATEGY",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "enemyWave",
+        "defenses",
+        "resources"
+      ],
+      "stateOutputs": [
+        "newDefenses",
+        "resources",
+        "pressure"
+      ],
+      "name": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense",
+      "purpose": "Player's main action to adapt defense strategy based on enemy type and wave composition, protect the objective, and clear the stage or boss to unlock harder defense",
+      "playerChoice": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense"
+    },
+    "local_authoring_parts::6ea8c1fb4fb9906d17835168083afb1d864b3f308889fa6e605ffb7d96b0c122:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SINGLE_DEFENSE_STRATEGY",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "enemyWave",
+            "defenses",
+            "resources"
+          ],
+          "stateOutputs": [
+            "newDefenses",
+            "resources",
+            "pressure"
+          ],
+          "name": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+          "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+          "playerChoice": "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases."
+        },
+        {
+          "id": "SINGLE_DEFENSE_STRATEGY",
+          "grammarRole": "A",
+          "stateInputs": [
+            "enemyWave",
+            "defenses",
+            "resources"
+          ],
+          "stateOutputs": [
+            "newDefenses",
+            "resources",
+            "pressure"
+          ],
+          "name": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+          "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+          "playerChoice": "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases."
+        },
+        {
+          "id": "SINGLE_DEFENSE_STRATEGY",
+          "grammarRole": "B",
+          "stateInputs": [
+            "enemyWave",
+            "defenses",
+            "resources"
+          ],
+          "stateOutputs": [
+            "newDefenses",
+            "resources",
+            "pressure"
+          ],
+          "name": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense",
+          "purpose": "플레이어가 주요 목표를 보호하고, 적의 유형, 웨이브의 구성에 따라 방어 전략을 조정하며, 스테이지/보스 클리어를 통해 더 어려운 방어를 열어주는 중심 플레이.",
+          "playerChoice": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense"
+        },
+        {
+          "id": "SINGLE_DEFENSE_STRATEGY",
+          "grammarRole": "c",
+          "stateInputs": [
+            "enemyWave",
+            "defenses",
+            "resources"
+          ],
+          "stateOutputs": [
+            "newDefenses",
+            "resources",
+            "pressure"
+          ],
+          "name": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense",
+          "purpose": "Player's main action to adapt defense strategy based on enemy type and wave composition, protect the objective, and clear the stage or boss to unlock harder defense.",
+          "playerChoice": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense."
+        },
+        {
+          "id": "SINGLE_DEFENSE_STRATEGY",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "enemyWave",
+            "defenses",
+            "resources"
+          ],
+          "stateOutputs": [
+            "newDefenses",
+            "resources",
+            "pressure"
+          ],
+          "name": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense",
+          "purpose": "Player's main action to adapt defense strategy based on enemy type and wave composition, protect the objective, and clear the stage or boss to unlock harder defense",
+          "playerChoice": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense"
+        }
+      ]
+    },
+    "local_authoring_parts::3551f865da0bf0f5171b20b1aa7c4be8bd6fc0133091c72dae1ddd5885d051f9:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SINGLE_DEFENSE_STRATEGY",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "enemyWave",
+            "defenses",
+            "resources"
+          ],
+          "stateOutputs": [
+            "newDefenses",
+            "resources",
+            "pressure"
+          ],
+          "name": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+          "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+          "playerChoice": "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases."
+        },
+        {
+          "id": "SINGLE_DEFENSE_STRATEGY",
+          "grammarRole": "A",
+          "stateInputs": [
+            "enemyWave",
+            "defenses",
+            "resources"
+          ],
+          "stateOutputs": [
+            "newDefenses",
+            "resources",
+            "pressure"
+          ],
+          "name": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+          "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+          "playerChoice": "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases."
+        },
+        {
+          "id": "SINGLE_DEFENSE_STRATEGY",
+          "grammarRole": "B",
+          "stateInputs": [
+            "enemyWave",
+            "defenses",
+            "resources"
+          ],
+          "stateOutputs": [
+            "newDefenses",
+            "resources",
+            "pressure"
+          ],
+          "name": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense",
+          "purpose": "플레이어가 주요 목표를 보호하고, 적의 유형, 웨이브의 구성에 따라 방어 전략을 조정하며, 스테이지/보스 클리어를 통해 더 어려운 방어를 열어주는 중심 플레이.",
+          "playerChoice": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense"
+        },
+        {
+          "id": "SINGLE_DEFENSE_STRATEGY",
+          "grammarRole": "c",
+          "stateInputs": [
+            "enemyWave",
+            "defenses",
+            "resources"
+          ],
+          "stateOutputs": [
+            "newDefenses",
+            "resources",
+            "pressure"
+          ],
+          "name": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense",
+          "purpose": "Player's main action to adapt defense strategy based on enemy type and wave composition, protect the objective, and clear the stage or boss to unlock harder defense.",
+          "playerChoice": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense."
+        },
+        {
+          "id": "SINGLE_DEFENSE_STRATEGY",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "enemyWave",
+            "defenses",
+            "resources"
+          ],
+          "stateOutputs": [
+            "newDefenses",
+            "resources",
+            "pressure"
+          ],
+          "name": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense",
+          "purpose": "Player's main action to adapt defense strategy based on enemy type and wave composition, protect the objective, and clear the stage or boss to unlock harder defense",
+          "playerChoice": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 525509,
-      "lastMs": 71784,
+      "totalMs": 597756,
+      "lastMs": 72247,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:17:40.775Z"
+      "updatedAt": "2026-10-08T12:18:53.024Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:08:55.008Z",
-  "updatedAt": "2026-10-08T12:17:40.775Z",
+  "updatedAt": "2026-10-08T12:18:53.027Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2315,7 +2515,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:17:40.775Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:18:53.026Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
