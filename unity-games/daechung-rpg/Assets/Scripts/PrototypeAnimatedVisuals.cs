@@ -32,6 +32,7 @@ namespace JaewoonGames.DaechungRpg
         private SpriteRenderer _backdrop;
         private string _enemyId = "skeleton";
         private readonly Dictionary<string, Sprite> _regions = new Dictionary<string, Sprite>();
+        private readonly Dictionary<string, Sprite[]> _actorFrames = new Dictionary<string, Sprite[]>();
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void AutoCreate()
@@ -167,9 +168,14 @@ namespace JaewoonGames.DaechungRpg
         {
             foreach (var action in Actions)
             {
-                var frames = new Sprite[4];
-                for (var frame = 0; frame < frames.Length; frame++)
-                    frames[frame] = CreateActor(id, action, frame);
+                var key = id + "/" + action;
+                if (!_actorFrames.TryGetValue(key, out var frames))
+                {
+                    frames = new Sprite[4];
+                    for (var frame = 0; frame < frames.Length; frame++)
+                        frames[frame] = CreateActor(id, action, frame);
+                    _actorFrames[key] = frames;
+                }
                 actor.AddClip(action, frames, action == "walk" ? 8 : 5);
             }
             actor.Play("idle", true, true);
