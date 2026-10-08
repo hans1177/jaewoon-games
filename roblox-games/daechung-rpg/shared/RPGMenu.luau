@@ -300,7 +300,7 @@ function Menu.install(config,gui,player,options)
    table.insert(toolConnections,container.ChildAdded:Connect(scheduleRefresh));table.insert(toolConnections,container.ChildRemoved:Connect(scheduleRefresh))
   end
   local humanoid=player.Character and player.Character:FindFirstChildOfClass("Humanoid")
-  if humanoid then table.insert(toolConnections,humanoid.HealthChanged:Connect(scheduleRefresh))end
+  if humanoid and humanoid.HealthChanged then table.insert(toolConnections,humanoid.HealthChanged:Connect(scheduleRefresh))end
   scheduleRefresh()
  end
  table.insert(connections,player.ChildAdded:Connect(function(child)if child:IsA("Backpack")then watchTools()end end))
