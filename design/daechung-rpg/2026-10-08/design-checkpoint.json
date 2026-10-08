@@ -96,25 +96,44 @@
       "name": "초원 런 보스 봉인 해제 조건",
       "purpose": "보스 봉인 해제 조건을 만족할 경우 로그라이크 런을 시작하고 보스전을 시작한다.",
       "playerChoice": "보스 봉인 해제 조건을 만족할 경우 로그라이크 런을 시작한다."
+    },
+    "local_authoring_parts::b5e5d1bc4912e359d411a86cf730d85262e2f34653a33a6c0823d05481ebf641:signatureSystems:3": {
+      "id": "초원 런 보스 봉인 해제 조건",
+      "grammarRole": "c",
+      "stateInputs": [
+        "RoomCode",
+        "PlayerLevel",
+        "MonsterEliminatedCount",
+        "PlayerPartySize"
+      ],
+      "stateOutputs": [
+        "LogRun",
+        "MonsterSpawn",
+        "BattleResult",
+        "PlayerPartyFormation"
+      ],
+      "name": "초원 런 보스 봉인 해제 조건",
+      "purpose": "보스 봉인 해제 조건을 만족할 경우 로그라이크 런을 시작하고 보스전을 시작한다.",
+      "playerChoice": "보스 봉인 해제 조건을 만족할 경우 로그라이크 런을 시작한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 765515,
-      "lastMs": 102032,
+      "totalMs": 865858,
+      "lastMs": 100343,
       "lastError": null,
-      "updatedAt": "2026-10-08T07:00:35.795Z"
+      "updatedAt": "2026-10-08T07:02:16.139Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T06:47:50.251Z",
-  "updatedAt": "2026-10-08T07:00:35.795Z",
+  "updatedAt": "2026-10-08T07:02:16.139Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1533,7 +1552,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T07:00:35.795Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T07:02:16.139Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
