@@ -1,3 +1,5 @@
+// 파일명: qa/company-design-cycle-deepseek-fallback.test.mjs
+// 임포트
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -60,7 +62,7 @@ test('game designer schema supplies every stage gate v2 evidence axis',()=>{
     'systemInterconnections','progressionEconomyBalance','contentExpansionPlan','failureRetryRisk',
     'platformFitPlan','uxAccessibilityPlan','artAudioDirection','implementationTraceability'
   ]) assert.match(design,new RegExp(field));
-  assert.match(design,/signatureSystems:\{type:'array',minItems:2/);
+  assert.match(design,/signatureSystems:\{type:'array',minItems:5/);
   assert.match(design,/systemInterconnections:\{type:'array',minItems:3/);
   assert.match(design,/contentExpansionPlan:\{type:'array',minItems:3/);
   assert.match(design,/failureStates:\{type:'array',minItems:2/);
