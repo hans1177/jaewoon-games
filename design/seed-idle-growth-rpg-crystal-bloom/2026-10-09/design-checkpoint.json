@@ -380,25 +380,73 @@
         }
       ],
       "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::ab72cc2406b2449515014a91730c2c4b4a8bf1659e07c0b95c8b9f85e6f94a26:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "PLAYER_FIGHT_AUTO",
+        "PROGRESSION_RESOURCES"
+      ],
+      "stateOutputs": [
+        "STATE_CHANGE",
+        "REWARD_CLAIM",
+        "NEXT_INVESTMENT_CHOICE"
+      ],
+      "name": "IDLE_GROWTH_RPG_CORE_LOOP",
+      "purpose": "플레이어가 Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 IDLE_GROWTH_RPG 게임이다.",
+      "playerChoice": "플레이어는 자동으로 적군을 공격하고, 이 과정에서 유용한 아이템 또는 프로gression 리소스를 생성하여 다음 월드 상태를 바꿀 수 있다."
+    },
+    "local_authoring_parts::ab72cc2406b2449515014a91730c2c4b4a8bf1659e07c0b95c8b9f85e6f94a26:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "PLAYER_FIGHT_AUTO",
+        "PROGRESSION_RESOURCES"
+      ],
+      "stateOutputs": [
+        "STATE_CHANGE",
+        "REWARD_CLAIM",
+        "NEXT_INVESTMENT_CHOICE"
+      ],
+      "name": "IDLE_GROWTH_RPG_CORE_LOOP_2",
+      "purpose": "플레이어가 자동으로 적군을 공격하고, 이 과정에서 유용한 아이템 또는 프로gression 리소스를 생성하여 다음 월드 상태를 바꿀 수 있다.",
+      "playerChoice": "플레이어는 자동으로 적군을 공격하며, 이 과정에서 유용한 아이템을 수집하거나 프로gression 리소스를 생성하여 다음 월드 상태를 변경할 수 있다."
+    },
+    "local_authoring_parts::ab72cc2406b2449515014a91730c2c4b4a8bf1659e07c0b95c8b9f85e6f94a26:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "PLAYER_FIGHT_AUTO",
+        "PROGRESSION_RESOURCES"
+      ],
+      "stateOutputs": [
+        "STATE_CHANGE",
+        "REWARD_CLAIM",
+        "NEXT_INVESTMENT_CHOICE"
+      ],
+      "name": "IDLE_GROWTH_RPG_DEEPENED_FIGHT_SYSTEM",
+      "purpose": "플레이어가 자동으로 적군을 공격하며, 이 과정에서 유용한 아이템을 수집하거나 프로gression 리소스를 생성하여 다음 월드 상태를 변경할 수 있다.",
+      "playerChoice": "플레이어는 자동으로 적군을 공격하고, 이 과정에서 유용한 아이템을 수집하거나 프로gression 리소스를 생성하여 다음 월드 상태를 바꿀 수 있다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 428594,
-      "lastMs": 29894,
+      "totalMs": 550535,
+      "lastMs": 41156,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:52:17.538Z"
+      "updatedAt": "2026-10-08T18:54:19.490Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:45:08.916Z",
-  "updatedAt": "2026-10-08T18:52:17.546Z",
+  "updatedAt": "2026-10-08T18:54:19.490Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2700,10 +2748,10 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:52:17.540Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:54:19.490Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
