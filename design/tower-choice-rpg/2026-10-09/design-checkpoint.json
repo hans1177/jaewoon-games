@@ -399,25 +399,38 @@
       "name": "ACTION_SURVIVAL_ROGUELITE",
       "purpose": "플레이어가 즉각적인 생존 전략을 통해 점차 복잡해지는 적군을 이탈시키며, 주체적으로 선택하는 방식으로 세계 상태와 다음 선택을 바꾸는 게임",
       "playerChoice": "주체적으로 선택하여 세계 상태와 다음 선택을 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임"
+    },
+    "local_authoring_parts::671c44aba5e0f3fdc1007671efd00ba92115fbbf6cc7ea7c4065d79eb91786a4:signatureSystems:3": {
+      "id": "10층 탑 RPG",
+      "grammarRole": "c",
+      "stateInputs": [
+        "INITIAL_STATE"
+      ],
+      "stateOutputs": [
+        "FINAL_STATE"
+      ],
+      "name": "ACTION_SURVIVAL_ROGUELITE",
+      "purpose": "플레이어가 즉각적인 생존 전략을 통해 점차 복잡해지는 적군을 이탈시키며, 주체적으로 선택하는 방식으로 세계 상태와 다음 선택을 바꾸는 게임",
+      "playerChoice": "주체적으로 선택하여 세계 상태와 다음 선택을 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 13,
+      "calls": 14,
+      "successes": 14,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1140393,
-      "lastMs": 100024,
+      "totalMs": 1237807,
+      "lastMs": 97414,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:05:25.820Z"
+      "updatedAt": "2026-10-08T19:07:03.235Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:46:25.369Z",
-  "updatedAt": "2026-10-08T19:05:25.820Z",
+  "updatedAt": "2026-10-08T19:07:03.235Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2676,7 +2689,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T19:05:25.820Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:07:03.235Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
