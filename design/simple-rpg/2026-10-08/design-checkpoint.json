@@ -34,25 +34,46 @@
         "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
         "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
       ]
+    },
+    "local_authoring_parts::e7b89f1850722d16859a7f35f8dbe0cbbb50843d4c7a27e8b141c3818c115807:signatureSystems:0": {
+      "id": "MAIN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "boardPattern",
+        "goal",
+        "moves",
+        "obstacles",
+        "puzzleConstraint"
+      ],
+      "stateOutputs": [
+        "nextBoardPattern",
+        "newGoal",
+        "newMoves",
+        "newObstacles",
+        "newPuzzleConstraint"
+      ],
+      "name": "Board Puzzle System",
+      "purpose": "Player-controlled puzzle progression through a grid or board level with clear objective and constraints.",
+      "playerChoice": "Select moves, create combos, and manage obstacles to achieve the goal and unlock new levels or stages."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 595532,
-      "lastMs": 94993,
+      "totalMs": 694851,
+      "lastMs": 99319,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:37:13.526Z"
+      "updatedAt": "2026-10-08T08:38:52.847Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:27:17.966Z",
-  "updatedAt": "2026-10-08T08:37:13.526Z",
+  "updatedAt": "2026-10-08T08:38:52.847Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2089,7 +2110,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:37:13.526Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:38:52.847Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
