@@ -72,25 +72,44 @@
       "name": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
       "purpose": "Player's core action that directly alters the game state and determines the next phase of the defense strategy.",
       "playerChoice": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route."
+    },
+    "local_authoring_parts::2570c3b69d8bcb348316efca61a93f93ca1abaeb74574a7403979226a463d012:signatureSystems:2": {
+      "id": "SINGLE_DEFENSE_STRATEGY",
+      "grammarRole": "B",
+      "stateInputs": [
+        "enemyWave",
+        "defenderPositions",
+        "resourcePool",
+        "pressureLevel"
+      ],
+      "stateOutputs": [
+        "defendedRoute",
+        "resourceAllocation",
+        "defenseStrategy",
+        "nextEnemyWave"
+      ],
+      "name": "Adapt the defense to enemy types and wave composition",
+      "purpose": "Player's core action that directly alters the game state and determines the next phase of the defense strategy.",
+      "playerChoice": "Adapt the defense to enemy types and wave composition"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 437556,
-      "lastMs": 48437,
+      "totalMs": 471598,
+      "lastMs": 34042,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:40:21.360Z"
+      "updatedAt": "2026-10-08T08:40:55.403Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:33:03.734Z",
-  "updatedAt": "2026-10-08T08:40:21.360Z",
+  "updatedAt": "2026-10-08T08:40:55.403Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2285,7 +2304,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:40:21.360Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:40:55.403Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
