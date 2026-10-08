@@ -533,25 +533,53 @@
       "toSystem": "CORE_LOOP_DESIGN_CORE_FUNCTONALITY_01A_01B_01C_01D_01E_01F_01G_01H_01I_01J_01K_01L_01M_01N_01O_01P_01Q_01R_01S_01T_01U_01V_01W_01X_01Y_01Z_01AA_01AB_01AC_01AD_01AE_01AF_01AG_01AH_0",
       "trigger": "coreFun→coreLoop",
       "stateChange": "updatedFrontLine,reallocatedResources,introducedStrategicOptions"
+    },
+    "local_authoring_parts::5df7b08cabb6702c32392004f1b5aa712ccc3ec40eb870c06dfe7e19ec84ab59:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "coreFun",
+      "toId": "coreLoop",
+      "stateKeys": [
+        "updatedFrontLine",
+        "reallocatedResources",
+        "introducedStrategicOptions"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN_CORE_FUNCTONALITY_01A_01B_01C_01D_01E_01F_01G_01H_01I_01J_01K_01L_01M_01N_01O_01P_01Q_01R_01S_01T_01U_01V_01W_01X_01Y_01Z_01AA_01AB_01AC_01AD_01AE_01AF_01AG_01AH_0"
+    },
+    "local_authoring_parts::5df7b08cabb6702c32392004f1b5aa712ccc3ec40eb870c06dfe7e19ec84ab59:toSystem,trigger,stateChange": {
+      "toSystem": "CORE_LOOP_DESIGN_CORE_FUNCTONALITY_01A_01B_01C_01D_01E_01F_01G_01H_01I_01J_01K_01L_01M_01N_01O_01P_01Q_01R_01S_01T_01U_01V_01W_01X_01Y_01Z_01AA_01AB_01AC_01AD_01AE_01AF_01AG_01AH_0",
+      "trigger": "coreFun→coreLoop",
+      "stateChange": "updatedFrontLine,reallocatedResources,introducedStrategicOptions"
+    },
+    "local_authoring_parts::fde0e58d84b0c4a291882aa03491b53a577f92796e6aa524e80282f0387f9108:systemInterconnections:2": {
+      "fromId": "coreFun",
+      "toId": "coreLoop",
+      "stateKeys": [
+        "updatedFrontLine",
+        "reallocatedResources",
+        "introducedStrategicOptions"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN_CORE_FUNCTONALITY_01A_01B_01C_01D_01E_01F_01G_01H_01I_01J_01K_01L_01M_01N_01O_01P_01Q_01R_01S_01T_01U_01V_01W_01X_01Y_01Z_01AA_01AB_01AC_01AD_01AE_01AF_01AG_01AH_0",
+      "toSystem": "CORE_LOOP_DESIGN_CORE_FUNCTONALITY_01A_01B_01C_01D_01E_01F_01G_01H_01I_01J_01K_01L_01M_01N_01O_01P_01Q_01R_01S_01T_01U_01V_01W_01X_01Y_01Z_01AA_01AB_01AC_01AD_01AE_01AF_01AG_01AH_0",
+      "trigger": "coreFun→coreLoop",
+      "stateChange": "updatedFrontLine,reallocatedResources,introducedStrategicOptions"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 15,
-      "successes": 15,
+      "calls": 17,
+      "successes": 17,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1717032,
-      "lastMs": 106421,
+      "totalMs": 1929069,
+      "lastMs": 105300,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:15:15.913Z"
+      "updatedAt": "2026-10-08T08:18:47.955Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:46:38.814Z",
-  "updatedAt": "2026-10-08T08:15:15.915Z",
+  "updatedAt": "2026-10-08T08:18:47.956Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2840,7 +2868,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T08:15:15.915Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:18:47.956Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
