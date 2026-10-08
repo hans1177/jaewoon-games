@@ -79,25 +79,40 @@
       "name": "세계 속성 변환 시스템 2",
       "purpose": "플레이어가 환경의 위험과 압박 속에서 즉각적인 상태 변화를 경험하며, 주로 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 한 선택 결과에 따라 월드 상태와 접근 가능성을 실제 바꾼다.",
       "playerChoice": "'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'"
+    },
+    "local_authoring_parts::ca34eeebd079a29233c162c95cb16108bdcab4c939cea8ae2963e780eaa323a2:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "RUN_RESULT",
+        "PLAYER_ACTION"
+      ],
+      "stateOutputs": [
+        "WORLD_STATE_CHANGE",
+        "ACCESSABILITY_MODIFICATION"
+      ],
+      "name": "세계 재방문 시스템",
+      "purpose": "플레이어가 환경의 위험과 압박 속에서 즉각적인 상태 변화를 경험하며, 주로 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 한 선택 결과에 따라 월드 상태와 접근 가능성을 실제 바꾼다.",
+      "playerChoice": "'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 459684,
-      "lastMs": 75094,
+      "totalMs": 538592,
+      "lastMs": 78908,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:36:49.117Z"
+      "updatedAt": "2026-10-08T18:38:08.026Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:29:09.382Z",
-  "updatedAt": "2026-10-08T18:36:49.117Z",
+  "updatedAt": "2026-10-08T18:38:08.026Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2296,7 +2311,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:36:49.117Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:38:08.026Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
