@@ -442,25 +442,46 @@
       "name": "ENEMY_WAVE_ADAPTATION_SYSTEM",
       "purpose": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
       "playerChoice": "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases."
+    },
+    "local_authoring_parts::056cde2326e1201239a2cfca52f9da8f26272829d86a93f0a1ae6b59f6db872d:signatureSystems:2": {
+      "id": "B_01",
+      "grammarRole": "B",
+      "stateInputs": [
+        "enemyWaveType",
+        "defenderPlacement",
+        "resourcePool",
+        "upgradeCost",
+        "pressureLevel"
+      ],
+      "stateOutputs": [
+        "defendedLane",
+        "newPlacement",
+        "tacticalChange",
+        "resourceAllocation",
+        "nextEnemyWave"
+      ],
+      "name": "ENEMY_WAVE_ADAPTATION_SYSTEM_B",
+      "purpose": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route. This system is responsible for adapting the defense strategy based on the type of enemy wave, available resources, and current pressure levels.",
+      "playerChoice": "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases. This choice allows the player to strategically adjust the defense layout to counter the current enemy wave and prepare for future challenges."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 793904,
-      "lastMs": 71026,
+      "totalMs": 869011,
+      "lastMs": 75107,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:22:09.186Z"
+      "updatedAt": "2026-10-08T12:23:24.294Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:08:55.008Z",
-  "updatedAt": "2026-10-08T12:22:09.186Z",
+  "updatedAt": "2026-10-08T12:23:24.294Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2691,7 +2712,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:22:09.186Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:23:24.294Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
