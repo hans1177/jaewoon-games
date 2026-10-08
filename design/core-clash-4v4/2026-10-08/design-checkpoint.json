@@ -793,25 +793,95 @@
           "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice. Use the run result to unlock new progression choices and adjust the build accordingly."
         }
       ]
+    },
+    "local_authoring_parts::49cd2fd79f1cf6702d937795812ddc8cefa1c377fdbedb1c5336ac79d3294e51:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "CORE-LOOP-1",
+          "toId": "CORE-LOOP-2",
+          "stateKeys": [
+            "RUN_PROGRESS",
+            "BUILD_UPGRADE"
+          ],
+          "fromSystem": "CORE-LOOP-1",
+          "toSystem": "CORE-LOOP-2",
+          "trigger": "RUN_RESULT",
+          "stateChange": "BUILD_UPGRADE"
+        },
+        {
+          "fromId": "CORE-LOOP-2",
+          "toId": "CORE-LOOP-3",
+          "stateKeys": [
+            "RUN_PROGRESS",
+            "BUILD_UPGRADE"
+          ],
+          "fromSystem": "CORE-LOOP-2",
+          "toSystem": "CORE-LOOP-3",
+          "trigger": "RUN_RESULT",
+          "stateChange": "BUILD_UPGRADE"
+        },
+        {
+          "fromId": "CORE-LOOP-3",
+          "toId": "CORE-LOOP-4",
+          "stateKeys": [
+            "RUN_PROGRESS",
+            "BUILD_UPGRADE"
+          ],
+          "fromSystem": "CORE-LOOP-3",
+          "toSystem": "CORE-LOOP-4",
+          "trigger": "RUN_RESULT",
+          "stateChange": "BUILD_UPGRADE"
+        },
+        {
+          "fromId": "CORE-LOOP-4",
+          "toId": "CORE-LOOP-5",
+          "stateKeys": [
+            "RUN_PROGRESS",
+            "BUILD_UPGRADE"
+          ],
+          "fromSystem": "CORE-LOOP-4",
+          "toSystem": "CORE-LOOP-5",
+          "trigger": "RUN_RESULT",
+          "stateChange": "BUILD_UPGRADE"
+        },
+        {
+          "fromId": "CORE-LOOP-5",
+          "toId": "CORE-LOOP-1",
+          "stateKeys": [
+            "RUN_PROGRESS",
+            "BUILD_UPGRADE"
+          ],
+          "fromSystem": "CORE-LOOP-5",
+          "toSystem": "CORE-LOOP-1",
+          "trigger": "RUN_RESULT",
+          "stateChange": "BUILD_UPGRADE"
+        }
+      ],
+      "progressionDirection": "SEQUENTIAL",
+      "progressionEconomyBalance": {
+        "progressionLoop": "ECONOMICAL",
+        "resourceFlow": "BALANCED",
+        "balanceRules": "AUTOMATIC"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 26,
-      "successes": 25,
+      "calls": 27,
+      "successes": 26,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1951263,
-      "lastMs": 300051,
+      "totalMs": 2094483,
+      "lastMs": 143220,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T10:30:56.176Z"
+      "updatedAt": "2026-10-08T10:33:19.398Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:15:41.984Z",
-  "updatedAt": "2026-10-08T10:30:56.176Z",
+  "updatedAt": "2026-10-08T10:33:19.398Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3014,7 +3084,7 @@
     "designer_draft_slices::identity-core": 3
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T10:25:56.120Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:33:19.398Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
