@@ -193,3 +193,45 @@ a.CurrentZone=0
 a.WeaponTier=3
 assert(Model.shop(a,config).weapon.price==nil)
 `));
+
+test('each authored world object uses its existing server action with replicated interaction identity',()=>{
+ const server=fs.readFileSync('roblox-games/daechung-rpg/server/Game.server.luau','utf8');
+ const client=fs.readFileSync('roblox-games/daechung-rpg/client/Game.client.luau','utf8');
+ const kinds=[
+   'QUEST_NPC','WEAPON_MERCHANT','ARMOR_MERCHANT','HEALER','ADVANCEMENT_NPC',
+   'ENTRY_PORTAL','RETURN_PORTAL','EVENT_ALTAR','TREASURE_CHEST','SECRET_RUNE','BOSS_COMPANION'
+ ];
+ assert.match(server,/local function prompt\(target,objectText,actionText,kind,interactionId\)/);
+ assert.match(server,/p\.MaxActivationDistance=11;p\.HoldDuration=\.12/);
+ assert.match(server,/p:SetAttribute\("InteractionId",id\);p:SetAttribute\("InteractionKind",objectKind\)/);
+ assert.match(server,/target:SetAttribute\("ObjectInteractionId",id\);target:SetAttribute\("ObjectInteractionKind",objectKind\)/);
+ for(const kind of kinds)assert.match(server,new RegExp('"'+kind+'"'),'missing '+kind);
+ for(const kind of kinds.filter(kind=>kind!=='BOSS_COMPANION')){
+   const lines=server.split('\n').filter(line=>line.includes('prompt(')&&line.includes('"'+kind+'"'));
+   assert.equal(lines.length,1,'each object type must have one original prompt handler: '+kind);
+ }
+ assert.match(server,/portalPrompt:SetAttribute\("DestinationZone",z\.Id\)/);
+ assert.match(server,/returnPrompt:SetAttribute\("DestinationZone",0\)/);
+ assert.match(server,/altarPrompt:SetAttribute\("ClaimAttribute",altarKey\)/);
+ assert.match(server,/chestPrompt:SetAttribute\("ClaimAttribute",chestKey\)/);
+ assert.match(server,/p:SetAttribute\(altarKey,true\);p:SetAttribute\("Gold",n\(p,"Gold",0\)\+25\)/);
+ assert.match(server,/p:SetAttribute\(chestKey,true\);p:SetAttribute\("Gold",n\(p,"Gold",0\)\+40\)/);
+ assert.match(server,/stone:SetAttribute\("Revealed",true\);pr.Enabled=false/);
+ assert.match(server,/clickTimes\[p\]\[def\.Id\]/);
+ assert.match(server,/cd:SetAttribute\("InteractionKind","BOSS_COMPANION"\)/);
+ assert.match(server,/if combat or p:GetAttribute\("InCombat"\)==true then msg\(p,"전투 중에는 마을로 돌아갈 수 없어"\)return end/);
+ assert.match(client,/ProximityPromptService=game:GetService\("ProximityPromptService"\)/);
+ assert.match(client,/ProximityPromptService\.PromptShown:Connect/);
+ assert.match(client,/ProximityPromptService\.PromptHidden:Connect/);
+ assert.match(client,/refreshObjectInteraction/);
+ assert.match(client,/kind=="TREASURE_CHEST"or kind=="EVENT_ALTAR"/);
+ assert.match(client,/p:GetAttribute\(claimKey\)==true/);
+ assert.match(client,/kind=="WEAPON_MERCHANT"or kind=="ARMOR_MERCHANT"/);
+ assert.match(client,/kind=="RETURN_PORTAL"/);
+ assert.match(client,/kind=="SECRET_RUNE"/);
+ assert.match(client,/BoundInteractionId/);
+ assert.match(client,/BoundInteractionKind/);
+ assert.match(client,/BoundInteractionState/);
+ assert.match(client,/OwnsGameplayAuthority",false/);
+ assert.doesNotMatch(client,/p:SetAttribute\(.*Gold|p:SetAttribute\(.*WeaponTier/);
+});
