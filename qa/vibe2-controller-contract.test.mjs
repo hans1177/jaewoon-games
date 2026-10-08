@@ -1217,6 +1217,16 @@ test('fan-in release requires exact candidate manifest identity',()=>{
   assert.equal(blocked.codingTraces[0].verification.reviewPass,false);
 });
 
+test('fan-in review indexes the result cohort once instead of rescanning all results per task',()=>{
+  const source=fs.readFileSync('tools/vibe2-fan-in-review.mjs','utf8');
+  assert(source.includes('function indexFanInResults(resultRows=[])'));
+  assert(source.includes('const resultIndex=indexFanInResults(resultRows);'));
+  assert(source.includes('selectedResult=indexedExactResult(resultIndex,task.id,candidateBranch)||resultIndex.firstPassByTaskId.get(clean(task.id))||null;'));
+  assert(source.includes("const pairRows=(resultIndex.byTaskId.get(clean(taskId))||[]).filter(row=>row?.phase4BenchmarkVerification?.active===true);"));
+  assert.equal(source.includes('const rows=resultRows.filter(row=>clean(row?.taskId)===clean(task.id));'),false);
+  assert.equal(source.includes('const pairRows=resultRows.filter(row=>clean(row?.taskId)===clean(taskId)'),false);
+});
+
 test('supervised Web candidates learn review decisions and stay unreleased until verified PASS approval',()=>{
   const branch='vibe2/candidate/supervised-demo/primary';
   const baseTask={
