@@ -333,25 +333,51 @@
       "name": "KARMA RETURN",
       "purpose": "플레이어 선택에 따른 상태 변화 및 보상 제공",
       "playerChoice": "플레이어가 세계 상태를 바꾸는 선택을 입력하여, 새로운 경로와 결과를 생성합니다."
+    },
+    "local_authoring_parts::c5583f3481fe4383d0971e37ce21c024319fa1131eeea2b8e69ad4ebd915e1b4:signatureSystems:1": {
+      "id": "signatureSystems.DELVE_4",
+      "grammarRole": "A",
+      "stateInputs": [
+        "PLAYER_CHOICE"
+      ],
+      "stateOutputs": [
+        "STATE_CHANGE"
+      ],
+      "name": "DELVE_4",
+      "purpose": "플레이어 선택에 따른 상태 변화 및 새로운 경로와 결과 생성",
+      "playerChoice": "플레이어가 세계 상태를 바꾸는 선택을 입력하여, 숨은 관계와 진입 가능한 경로를 발굴합니다."
+    },
+    "local_authoring_parts::c5583f3481fe4383d0971e37ce21c024319fa1131eeea2b8e69ad4ebd915e1b4:signatureSystems:2": {
+      "id": "signatureSystems.B",
+      "grammarRole": "B",
+      "stateInputs": [
+        "STATE_CHANGE"
+      ],
+      "stateOutputs": [
+        "PLAYER_CHOICE"
+      ],
+      "name": "B - STATE CHANGE TO PLAYER CHOICE",
+      "purpose": "플레이어 선택에 따른 세계 상태 변환 및 새로운 플레이 경로 생성",
+      "playerChoice": "플레이어가 현재 세계 상태를 바꾸는 선택을 입력하여, 숨은 관계와 진입 가능한 경로를 발굴합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 479102,
-      "lastMs": 65640,
+      "totalMs": 612711,
+      "lastMs": 66329,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:52:20.616Z"
+      "updatedAt": "2026-10-08T17:54:34.227Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:44:21.449Z",
-  "updatedAt": "2026-10-08T17:52:20.616Z",
+  "updatedAt": "2026-10-08T17:54:34.227Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2468,7 +2494,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T17:52:20.616Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:54:34.227Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
