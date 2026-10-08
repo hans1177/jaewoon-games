@@ -551,25 +551,42 @@
     },
     "local_authoring_parts::148a9840522768ba5a783a6e5f94d5126a6199e1b533fe11fa7d32529499f868:trigger": {
       "trigger": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다. 플레이어는 현재 세계 상태와 적의 위협 정보를 평가하여, 전략적 선택을 실행하고, 주요 공간의 통제를 변화시켜 전략적 전장의 전개를 계획한다. 이 과정에서, 새로운 세계 상태를 기반으로 다음의 전략적 선택을 결정하며, 전술적 전장의 전개를 계획한다."
+    },
+    "local_authoring_parts::148a9840522768ba5a783a6e5f94d5126a6199e1b533fe11fa7d32529499f868:stateChange": {
+      "stateChange": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다. 플레이어는 현재 세계 상태와 적의 위협 정보를 평가하여, 전략적 선택을 실행하고, 주요 공간의 통제를 변화시켜 전략적 전장의 전개를 계획한다. 이 과정에서, 새로운 세계 상태를 기반으로 다음의 전략적 선택을 결정하며, 전술적 전장의 전개를 계획한다."
+    },
+    "local_authoring_parts::3bf2a728aab430b6985e1ac65fa096204d001d581888074af26979b52f60b120:systemInterconnections:2": {
+      "fromId": "systemInterconnections[2].trigger",
+      "toId": "systemInterconnections[2].trigger",
+      "stateKeys": [
+        "worldState",
+        "enemyThreatInfo",
+        "newWorldState",
+        "nextMoveChoice"
+      ],
+      "fromSystem": "TacticalInsightAndDecisionSystem",
+      "toSystem": "TacticalInsightAndDecisionSystem",
+      "trigger": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다. 플레이어는 현재 세계 상태와 적의 위협 정보를 평가하여, 전략적 선택을 실행하고, 주요 공간의 통제를 변화시켜 전략적 전장의 전개를 계획한다. 이 과정에서, 새로운 세계 상태를 기반으로 다음의 전략적 선택을 결정하며, 전술적 전장의 전개를 계획한다.",
+      "stateChange": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다. 플레이어는 현재 세계 상태와 적의 위협 정보를 평가하여, 전략적 선택을 실행하고, 주요 공간의 통제를 변화시켜 전략적 전장의 전개를 계획한다. 이 과정에서, 새로운 세계 상태를 기반으로 다음의 전략적 선택을 결정하며, 전술적 전장의 전개를 계획한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 31,
-      "successes": 31,
+      "calls": 32,
+      "successes": 32,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3164382,
-      "lastMs": 98922,
+      "totalMs": 3263547,
+      "lastMs": 99165,
       "lastError": null,
-      "updatedAt": "2026-10-08T11:07:02.096Z"
+      "updatedAt": "2026-10-08T11:08:41.264Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:51:40.071Z",
-  "updatedAt": "2026-10-08T11:07:02.096Z",
+  "updatedAt": "2026-10-08T11:08:41.265Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3106,7 +3123,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T11:07:02.096Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T11:08:41.265Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
