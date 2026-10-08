@@ -1000,25 +1000,42 @@
         "crystalDefensePlacement"
       ],
       "fromSystem": "attackPatternSystem, crystalDefensePlacementSystem, resourceFlow:crystalDefensePlacement"
+    },
+    "local_authoring_parts::cfb412c6c932bb9e2787079292b7dccefbb2ecc9d27814846e6f36ac262a384c:toSystem,trigger,stateChange": {
+      "toSystem": "crystalDefensePlacementSystem",
+      "trigger": "readNextAttackPattern",
+      "stateChange": "attackPattern → crystalDefensePlacement"
+    },
+    "local_authoring_parts::32c70e82e29f6cdb924d3b332e4323d2164cb6d608b1a178fbcf9d6c15ee1959:systemInterconnections:3": {
+      "fromId": "attackPattern",
+      "toId": "crystalDefensePlacement",
+      "stateKeys": [
+        "attackPattern",
+        "crystalDefensePlacement"
+      ],
+      "fromSystem": "attackPatternSystem, crystalDefensePlacementSystem, resourceFlow:crystalDefensePlacement",
+      "toSystem": "crystalDefensePlacementSystem",
+      "trigger": "readNextAttackPattern",
+      "stateChange": "attackPattern → crystalDefensePlacement"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 40,
-      "successes": 39,
+      "calls": 41,
+      "successes": 40,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3566964,
-      "lastMs": 96663,
+      "totalMs": 3662271,
+      "lastMs": 95307,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T16:18:32.479Z"
+      "updatedAt": "2026-10-08T16:20:07.787Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:59:10.064Z",
-  "updatedAt": "2026-10-08T16:18:32.479Z",
+  "updatedAt": "2026-10-08T16:20:07.789Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3356,7 +3373,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:18:32.479Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:20:07.789Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
