@@ -86,25 +86,181 @@
       "name": "DELVE(@)",
       "purpose": "世界の原図とプレイルール、ボーナス・情報・関係をつなぐシグニチャシステム",
       "playerChoice": "世界の原図とプレイルール、ボーナス・情報・関係をつなぐシグニチャシステムの変化を示す選択肢を提供する"
+    },
+    "local_authoring_parts::b26e8980077c4e956ac75228f625a95ea14b978e5a2e469ee773d52f196b9ec4:signatureSystems:4": {
+      "id": "signatureSystems[4]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "world_state"
+      ],
+      "stateOutputs": [
+        "new_world_state"
+      ],
+      "name": "DELVE(@)",
+      "purpose": "世界の歴史・生活・経済・地域機能を基にしたシグニチャシステム",
+      "playerChoice": "世界の歴史・生活・経済・地域機能を基にしたシグニチャシステムを通じて、探索・リスク管理・成長を実現するための選択肢を提供する。"
+    },
+    "local_authoring_parts::197da97a2c3e31ac77ebde892562216c3108c89da991c726d59a3b62a4527c7c:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "world_state"
+          ],
+          "stateOutputs": [
+            "new_world_state"
+          ],
+          "name": "DELVE(@)",
+          "purpose": "게임 내 탐험, 위험, 성공, 실패, 성장 상태의 관리 및 변환",
+          "playerChoice": "플레이어가 탐험, 위험, 성공, 실패, 성장 상태에 대한 선택 또는 대응 전략을 결정함으로써 세계 상태를 변경합니다."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "world_state"
+          ],
+          "stateOutputs": [
+            "new_world_state"
+          ],
+          "name": "DELVE(@)",
+          "purpose": "World exploration and resource acquisition",
+          "playerChoice": "Explore new areas, collect resources, and gain insight into the world's history, geography, and culture through gameplay and interaction with characters, items, and UI elements."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "world_state"
+          ],
+          "stateOutputs": [
+            "new_world_state"
+          ],
+          "name": "DELVE(@)",
+          "purpose": "世界の歴史・生活・経済・地域機能を基にした探検とリスク管理",
+          "playerChoice": "探索範囲を選定し、目標エッグを見つけ、巡視リスクを評価する選択肢を提供する。"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "world_state"
+          ],
+          "stateOutputs": [
+            "new_world_state"
+          ],
+          "name": "DELVE(@)",
+          "purpose": "世界の原図とプレイルール、ボーナス・情報・関係をつなぐシグニチャシステム",
+          "playerChoice": "世界の原図とプレイルール、ボーナス・情報・関係をつなぐシグニチャシステムの変化を示す選択肢を提供する"
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "world_state"
+          ],
+          "stateOutputs": [
+            "new_world_state"
+          ],
+          "name": "DELVE(@)",
+          "purpose": "世界の歴史・生活・経済・地域機能を基にしたシグニチャシステム",
+          "playerChoice": "世界の歴史・生活・経済・地域機能を基にしたシグニチャシステムを通じて、探索・リスク管理・成長を実現するための選択肢を提供する。"
+        }
+      ]
+    },
+    "local_authoring_parts::67437248eaf9cca68336f0496506f115139ad4c154db00cb2733a99292f8515e:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택",
+        "알 도둑 대작전에서 'Scout a small area and identify the target egg and patrol risk.' 중심으로 플레이어는 알을 훔치거나 이동하여 위험에 노출시키며, 성공 시 보상을 얻고 새로운 경로나 기술을 획득하게 된다.",
+        "플레이어의 선택은 월드 상태를 변경하며, 이는 세계의 역사, 지역, 캐릭터, 아이템 등 다양한 요소와 연결되어 있으며, 탐험, 위험, 성공, 실패, 성장 상태가 일관되게 강화된다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "world_state"
+          ],
+          "stateOutputs": [
+            "new_world_state"
+          ],
+          "name": "DELVE(@)",
+          "purpose": "게임 내 탐험, 위험, 성공, 실패, 성장 상태의 관리 및 변환",
+          "playerChoice": "플레이어가 탐험, 위험, 성공, 실패, 성장 상태에 대한 선택 또는 대응 전략을 결정함으로써 세계 상태를 변경합니다."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "world_state"
+          ],
+          "stateOutputs": [
+            "new_world_state"
+          ],
+          "name": "DELVE(@)",
+          "purpose": "World exploration and resource acquisition",
+          "playerChoice": "Explore new areas, collect resources, and gain insight into the world's history, geography, and culture through gameplay and interaction with characters, items, and UI elements."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "world_state"
+          ],
+          "stateOutputs": [
+            "new_world_state"
+          ],
+          "name": "DELVE(@)",
+          "purpose": "世界の歴史・生活・経済・地域機能を基にした探検とリスク管理",
+          "playerChoice": "探索範囲を選定し、目標エッグを見つけ、巡視リスクを評価する選択肢を提供する。"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "world_state"
+          ],
+          "stateOutputs": [
+            "new_world_state"
+          ],
+          "name": "DELVE(@)",
+          "purpose": "世界の原図とプレイルール、ボーナス・情報・関係をつなぐシグニチャシステム",
+          "playerChoice": "世界の原図とプレイルール、ボーナス・情報・関係をつなぐシグニチャシステムの変化を示す選択肢を提供する"
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "world_state"
+          ],
+          "stateOutputs": [
+            "new_world_state"
+          ],
+          "name": "DELVE(@)",
+          "purpose": "世界の歴史・生活・経済・地域機能を基にしたシグニチャシステム",
+          "playerChoice": "世界の歴史・生活・経済・地域機能を基にしたシグニチャシステムを通じて、探索・リスク管理・成長を実現するための選択肢を提供する。"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 831678,
-      "lastMs": 98239,
+      "totalMs": 930308,
+      "lastMs": 98630,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:01:07.986Z"
+      "updatedAt": "2026-10-08T21:02:46.617Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:47:16.280Z",
-  "updatedAt": "2026-10-08T21:01:07.986Z",
+  "updatedAt": "2026-10-08T21:02:46.620Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1966,7 +2122,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:01:07.986Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:02:46.620Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
