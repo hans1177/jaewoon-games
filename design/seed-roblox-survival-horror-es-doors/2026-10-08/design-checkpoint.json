@@ -673,25 +673,55 @@
       "toSystem": "GAME_SEED_SYSTEM_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_0",
       "trigger": "Start a board or grid level with a clear goal, limited moves, obstacles, or a visible puzzle constraint.",
       "stateChange": "Establishes the visual and procedural structure of the level, defining the initial configuration and the rules governing the progression through the puzzle."
+    },
+    "local_authoring_parts::4f09e2c0bb8d3a4256a216db482b7bc8c6425c55de5d85e05844c41d7ebe43d2:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "GAME_SEED",
+      "toId": "GAME_SEED",
+      "stateKeys": [
+        "levelGoal",
+        "limitedMoves",
+        "obstacles",
+        "puzzleConstraint"
+      ],
+      "fromSystem": "GAME_SEED_TO_GAME_SEED_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_0"
+    },
+    "local_authoring_parts::4f09e2c0bb8d3a4256a216db482b7bc8c6425c55de5d85e05844c41d7ebe43d2:toSystem,trigger,stateChange": {
+      "toSystem": "GAME_SEED_TO_GAME_SEED_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_0",
+      "trigger": "Player selects a board or grid level with a clear goal, limited moves, obstacles, or a visible puzzle constraint.",
+      "stateChange": "Establishes the visual and procedural structure of the level, defining the initial configuration and the rules governing the progression through the puzzle."
+    },
+    "local_authoring_parts::6a89450eb8b3d99b3fc52c0333b7ada437c382e2c2b7a2145b59b39c6978809e:systemInterconnections:0": {
+      "fromId": "GAME_SEED",
+      "toId": "GAME_SEED",
+      "stateKeys": [
+        "levelGoal",
+        "limitedMoves",
+        "obstacles",
+        "puzzleConstraint"
+      ],
+      "fromSystem": "GAME_SEED_TO_GAME_SEED_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_0",
+      "toSystem": "GAME_SEED_TO_GAME_SEED_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_0",
+      "trigger": "Player selects a board or grid level with a clear goal, limited moves, obstacles, or a visible puzzle constraint.",
+      "stateChange": "Establishes the visual and procedural structure of the level, defining the initial configuration and the rules governing the progression through the puzzle."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 21,
-      "successes": 21,
+      "calls": 23,
+      "successes": 23,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2420396,
-      "lastMs": 108872,
+      "totalMs": 2635137,
+      "lastMs": 108523,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:30:02.963Z"
+      "updatedAt": "2026-10-08T15:24:00.604Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:49:42.483Z",
-  "updatedAt": "2026-10-08T15:20:25.858Z",
+  "updatedAt": "2026-10-08T15:24:00.617Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2883,10 +2913,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:30:02.966Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:24:00.617Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
