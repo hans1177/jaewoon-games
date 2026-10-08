@@ -748,25 +748,42 @@
         "playerAction"
       ],
       "fromSystem": "SurvivalDepthSystem"
+    },
+    "local_authoring_parts::aa952c079dbd5b8a95c178250a47e611f55812d68caba678529845d17d6579a2:toSystem,trigger,stateChange": {
+      "toSystem": "SurvivalDiscoverySystem",
+      "trigger": "SurvivalDepthSystem → SurvivalDiscoverySystem",
+      "stateChange": "worldState updated to reflect deepened survival through exploration, resource management, and progression, playerAction adjusted to pursue new gameplay options and reshape the world state"
+    },
+    "local_authoring_parts::a2ea97667c698c57e73e3417cd931ddaf283feecead57b5f6cdc176fd4c7f348:systemInterconnections:2": {
+      "fromId": "signatureSystems[2]",
+      "toId": "signatureSystems[3]",
+      "stateKeys": [
+        "worldState",
+        "playerAction"
+      ],
+      "fromSystem": "SurvivalDepthSystem",
+      "toSystem": "SurvivalDiscoverySystem",
+      "trigger": "SurvivalDepthSystem → SurvivalDiscoverySystem",
+      "stateChange": "worldState updated to reflect deepened survival through exploration, resource management, and progression, playerAction adjusted to pursue new gameplay options and reshape the world state"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 28,
-      "successes": 27,
+      "calls": 29,
+      "successes": 28,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2533764,
-      "lastMs": 79683,
+      "totalMs": 2618400,
+      "lastMs": 84636,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T16:38:15.125Z"
+      "updatedAt": "2026-10-08T16:39:39.763Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:58:07.049Z",
-  "updatedAt": "2026-10-08T16:38:15.125Z",
+  "updatedAt": "2026-10-08T16:39:39.764Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3121,7 +3138,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:38:15.125Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:39:39.764Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
