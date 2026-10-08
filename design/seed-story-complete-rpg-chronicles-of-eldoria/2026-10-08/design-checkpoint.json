@@ -317,25 +317,128 @@
           "playerChoice": "ACTION_SEQUENCE"
         }
       ]
+    },
+    "local_authoring_parts::b51c4a7b15035a59b0211778210bbf26de0eb3a1d7b33852f65238d1888c6466:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::14ea55d49ac70f93dfc7c390455eafe45704ed9da3c75c30036d0b79fc67beb2:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.",
+        "Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter.",
+        "Progress through the complete story arc to a final boss and a real ending, with optional post-game or sequel hooks kept separate from the base conclusion."
+      ],
+      "signatureSystems": [
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "EXPLORE_AREA",
+            "MEET_CHARACTERS",
+            "ACCEPT_OR_ADVANCE_STORY_QUESTS",
+            "DISCOVER_INFORMATION"
+          ],
+          "stateOutputs": [
+            "CHANGED_WORLD_STATE",
+            "GROWTH_EFFECT",
+            "ACTION_SEQUENCE"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "ACTION_SEQUENCE",
+          "playerChoice": "ACTION_SEQUENCE"
+        },
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "A",
+          "stateInputs": [
+            "EXPLORE_AREA",
+            "MEET_CHARACTERS",
+            "ACCEPT_OR_ADVANCE_STORY_QUESTS",
+            "DISCOVER_INFORMATION"
+          ],
+          "stateOutputs": [
+            "CHANGED_WORLD_STATE",
+            "GROWTH_EFFECT",
+            "ACTION_SEQUENCE"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "ACTION_SEQUENCE",
+          "playerChoice": "ACTION_SEQUENCE"
+        },
+        {
+          "id": "B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "EXPLORE_AREA",
+            "MEET_CHARACTERS",
+            "ACCEPT_OR_ADVANCE_STORY_QUESTS",
+            "DISCOVER_INFORMATION"
+          ],
+          "stateOutputs": [
+            "CHANGED_WORLD_STATE",
+            "GROWTH_EFFECT",
+            "ACTION_SEQUENCE"
+          ],
+          "name": "B",
+          "purpose": "ACTION_SEQUENCE",
+          "playerChoice": "ACTION_SEQUENCE"
+        },
+        {
+          "id": "DELVE_C",
+          "grammarRole": "c",
+          "stateInputs": [
+            "EXPLORE_AREA",
+            "MEET_CHARACTERS",
+            "ACCEPT_OR_ADVANCE_STORY_QUESTS",
+            "DISCOVER_INFORMATION"
+          ],
+          "stateOutputs": [
+            "CHANGED_WORLD_STATE",
+            "GROWTH_EFFECT",
+            "ACTION_SEQUENCE"
+          ],
+          "name": "DELVE_C",
+          "purpose": "ACTION_SEQUENCE",
+          "playerChoice": "ACTION_SEQUENCE"
+        },
+        {
+          "id": "DELVE_C",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "EXPLORE_AREA",
+            "MEET_CHARACTERS",
+            "ACCEPT_OR_ADVANCE_STORY_QUESTS",
+            "DISCOVER_INFORMATION"
+          ],
+          "stateOutputs": [
+            "CHANGED_WORLD_STATE",
+            "GROWTH_EFFECT",
+            "ACTION_SEQUENCE"
+          ],
+          "name": "DELVE_C",
+          "purpose": "ACTION_SEQUENCE",
+          "playerChoice": "ACTION_SEQUENCE"
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 917865,
-      "lastMs": 97659,
+      "totalMs": 1006142,
+      "lastMs": 88277,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:38:37.608Z"
+      "updatedAt": "2026-10-08T13:40:05.889Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:23:19.708Z",
-  "updatedAt": "2026-10-08T13:38:37.611Z",
+  "updatedAt": "2026-10-08T13:40:05.899Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2563,12 +2666,50 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:38:37.611Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "엘도리아 연대기의 핵심 재미와 시스템 연결을 확정한 고유한 정체성입니다. 게임은 플레이어가 'Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 STORY_COMPLETE_RPG 게임입니다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 합니다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다. 게임은 단순 반복과 다른 경로·위험·결과를 만든다. 게임의 핵심 재미는 성장의 가능성과 세계 규칙의 상호작용을 통해 구현된다. 게임의 정체성은 플레이어가 'Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 STORY_COMPLETE_RPG 게임입니다. 게임의 핵심 재미는 성장의 가능성과 세계 규칙의 상호작용을 통해 구현된다. 게임의 정체성은 플레이어가 'Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 게",
+      "playerFantasy": "엘도리아 연대기에서 플레이어는 'Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 STORY_COMPLETE_RPG 게임의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 이 선택은 플레이어의 탐험, 위험, 성공, 실패, 성장 상태를 기반으로 한 반복 가능한 루프를 형성하며, 모바일에서도 즉시 이해되는 입력과 피드백을 제공한다. 게임의 핵심 재미는 성장의 가능성과 세계 규칙의 상호작용을 통해 구현되며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화하며, 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다. 게임은 단순 반복과 다른 경로·위험·결과를 만든다.",
+      "coreFun": "플레이어는 'Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 STORY_COMPLETE_RPG 게임의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 이 선택은 플레이어의 탐험, 위험, 성공, 실패, 성장 상태를 기반으로 한 반복 가능한 루프를 형성하며, 모바일에서도 즉시 이해되는 입력과 피드백을 제공한다. 게임의 핵심 재미는 성장의 가능성과 세계 규칙의 상호작용을 통해 구현되며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화하며, 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다. 게임은 단순 반복과 다른 경로·위험·결과를 만든다.",
+      "coreLoop": [
+        "Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.",
+        "Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter.",
+        "Progress through the complete story arc to a final boss and a real ending, with optional post-game or sequel hooks kept separate from the base conclusion."
+      ],
+      "multiplayerMode": "COOP"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T13:40:05.892Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
