@@ -1,0 +1,119 @@
+{
+  "version": 1,
+  "gameId": "insect-survival",
+  "date": "2026-10-08",
+  "seedId": "OWNER-FULL-REBUILD-INSECT-SURVIVAL-20260916",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "ollama:qwen3:1.7b",
+  "singleAuthor": true,
+  "sourceStage": "identity-core",
+  "phase": "designer_draft",
+  "status": "AUTHORED_CANDIDATE",
+  "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
+  "originalSource": null,
+  "fingerprint": "97752b1782a84934e0f9e3b8a023ccecb10292ee652586ff0a2ec196cddc5ffa",
+  "engineDigest": "d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904",
+  "contentDigest": "da0c317dde5042a05623a0585d4b004e2044ed75a38f370ec08f5f4faf2d069f",
+  "externalSeedRequired": false,
+  "designPass": false,
+  "runtimePass": false,
+  "content": {
+    "identity": "작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 생존 게임으로 완전히 처음부터 다시 설계한다. 게임은 작은 세계에서 살아남는 생존 게임으로, 작은 세계에서의 생존 압력, 자원 기반의 생존 선택, 곤충 생태가 게임의 플레이 기반으로 삼는 게임이다. 중심 행동은 'Explore a dangerous small-scale habitat and identify food, material and insect threats.'으로, 선택은 'Take a risk to gather or fight, then convert the result into survival tools or a safer route.'과 'Use what was learned about the ecosystem to survive stronger pressure and reach the next meaningful objective.'으로 구성된다. 게임은 시그니처 시스템으로 MAIN, A, B, c, @가 각각 포함된 다차원 인과 구조를 가진 ACTION_SURVIVAL_ROGUELITE 게임이다. 게임은 기존 장르 태그를 최종 장르로 고정하지 않고, 게임의 핵심 재미를 최우선으로 두고, 장르에 맞게 정체성 질문만 적용한다. 게임은 기존 구현을 보존하고, 설계 수정은 기존 검증, 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임은 실패, 중단, 재접속, 저장을 원본 의미로 보존한다. 게임은 구현 버그와 설계 모순의 원인, 수정 책임을 구분하고 안정성을 먼저 다룬다. 게임은 최소 두 실제 대안을 비교하고 선택안을 한 판의 시작·전개·결말로 재생한다. 게임은 검증되지 않은 시간·품질·실행 결과를 확정하지 않는다. 게임은 공공영역 고전의 원형은 게임에 맞게 재해석하고 현대 보호 작품은 추상적 기법만 참고한다. 보호된 인물·대사·장면은 복제하지 않는다. 게임은 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 점수와 통과 판정은 결정론적 검증기가 담",
+    "playerFantasy": "작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 생존 게임으로 완전히 처음부터 다시 설계한다. 플레이어는 곤충 생존기의 중심 행동인 'Explore a dangerous small-scale habitat and identify food, material and insect threats.'을 수행하며, 선택은 'Take a risk to gather or fight, then convert the result into survival tools or a safer route.'과 'Use what was learned about the ecosystem to survive stronger pressure and reach the next meaningful objective.'으로 구성된다. 이 선택은 게임의 시그니처 시스템인 MAIN, A, B, c, @를 통해 인과 구조를 형성하며, 게임은 기존 장르 태그를 최종 장르로 고정하지 않고, 학문적 규칙과 게임 자체의 재미를 최우선으로 두고, 장르에 맞게 정체성 질문만 적용한다. 게임은 기존 구현을 보존하고, 설계 수정은 기존 검증, 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임은 실패, 중단, 재접속, 저장을 원본 의미로 보존한다. 게임은 구현 버그와 설계 모순의 원인, 수정 책임을 구분하고 안정성을 먼저 다룬다. 게임은 최소 두 실제 대안을 비교하고 선택안을 한 판의 시작·전개·결말로 재생한다. 게임은 검증되지 않은 시간·품질·실행 결과를 확정하지 않는다. 게임은 공공영역 고전의 원형은 게임에 맞게 재해석하고 현대 보호 작품은 추상적 기법만 참고한다. 보호된 인물·대사·장면은 복제하지 않는다. 게임은 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 점수와 통과 판정은 결정",
+    "coreFun": "작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 생존 게임으로 완전히 처음부터 다시 설계한다. 게임은 작은 세계에서 살아남는 생존 게임으로, 작은 세계에서의 생존 압력, 자원 기반의 생존 선택, 곤충 생태가 게임의 플레이 기반으로 삼는 게임이다. 중심 행동은 'Explore a dangerous small-scale habitat and identify food, material and insect threats.'으로, 선택은 'Take a risk to gather or fight, then convert the result into survival tools or a safer route.'과 'Use what was learned about the ecosystem to survive stronger pressure and reach the next meaningful objective.'으로 구성된다. 게임은 시그니처 시스템으로 MAIN, A, B, c, @가 각각 포함된 다차원 인과 구조를 가진 ACTION_SURVIVAL_ROGUELITE 게임이다. 게임은 기존 장르 태그를 최종 장르로 고정하지 않고, 게임의 핵심 재미를 최우선으로 두고, 장르에 맞게 정체성 질문만 적용한다. 게임은 기존 구현을 보존하고, 설계 수정은 기존 검증, 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임은 실패, 중단, 재접속, 저장을 원본 의미로 보존한다. 게임은 구현 버그와 설계 모순의 원인, 수정 책임을 구분하고 안정성을 먼저 다룬다. 게임은 최소 두 실제 대안을 비교하고 선택안을 한 판의 시작·전개·결말로 재생한다. 게임은 검증되지 않은 시간·품질·실행 결과를 확정하지 않는다. 게임은 공공영역 고전의 원형은 게임에 맞게 재해석하고 현대 보호 작품은 추",
+    "coreLoop": [
+      "Explore a dangerous small-scale habitat and identify food, material and insect threats.",
+      "Take a risk to gather or fight, then convert the result into survival tools or a safer route.",
+      "Use what was learned about the ecosystem to survive stronger pressure and reach the next meaningful objective."
+    ],
+    "signatureSystems": [
+      {
+        "id": "identity-core",
+        "grammarRole": "MAIN",
+        "stateInputs": [
+          "playerChoice",
+          "environmentalRisk",
+          "ecologicalThreshold"
+        ],
+        "stateOutputs": [
+          "survivalTool",
+          "safeRoute",
+          "ecologicalInsight"
+        ],
+        "name": "EcoRiskHandler",
+        "purpose": "Manage ecological risk through adaptive survival choices",
+        "playerChoice": "Assess environmental hazards and make risk-based decisions to secure survival resources or safer paths in a small-scale habitat ecosystem"
+      },
+      {
+        "id": "signature-systems-1",
+        "grammarRole": "A",
+        "stateInputs": [
+          "playerChoice",
+          "environmentalRisk",
+          "ecologicalThreshold"
+        ],
+        "stateOutputs": [
+          "survivalTool",
+          "safeRoute",
+          "ecologicalInsight"
+        ],
+        "name": "EcoRiskHandler",
+        "purpose": "Manage ecological risk through adaptive survival choices",
+        "playerChoice": "Assess environmental hazards and make risk-based decisions to secure survival resources or safer paths in a small-scale habitat ecosystem"
+      },
+      {
+        "id": "signature-systems-2",
+        "grammarRole": "B",
+        "stateInputs": [
+          "playerChoice",
+          "environmentalRisk",
+          "ecologicalThreshold"
+        ],
+        "stateOutputs": [
+          "survivalTool",
+          "safeRoute",
+          "ecologicalInsight"
+        ],
+        "name": "EcoRiskAdaptation",
+        "purpose": "Adaptively adjust survival strategies based on ecological thresholds and environmental risks",
+        "playerChoice": "Evaluate ecological thresholds and environmental risks to dynamically adjust survival strategies for optimal outcomes in a small-scale habitat ecosystem"
+      },
+      {
+        "id": "signature-systems-3",
+        "grammarRole": "c",
+        "stateInputs": [
+          "playerChoice",
+          "environmentalRisk",
+          "ecologicalThreshold"
+        ],
+        "stateOutputs": [
+          "survivalTool",
+          "safeRoute",
+          "ecologicalInsight"
+        ],
+        "name": "EcoRiskAdaptation",
+        "purpose": "Adaptively adjust survival strategies based on ecological thresholds and environmental risks",
+        "playerChoice": "Evaluate ecological thresholds and environmental risks to dynamically adjust survival strategies for optimal outcomes in a small-scale habitat ecosystem"
+      },
+      {
+        "id": "signature-systems-4",
+        "grammarRole": "DELVE",
+        "stateInputs": [
+          "playerChoice",
+          "environmentalRisk",
+          "ecologicalThreshold"
+        ],
+        "stateOutputs": [
+          "survivalTool",
+          "safeRoute",
+          "ecologicalInsight"
+        ],
+        "name": "EcoRiskAdaptation",
+        "purpose": "Adaptively adjust survival strategies based on ecological thresholds and environmental risks",
+        "playerChoice": "Evaluate ecological thresholds and environmental risks to dynamically adjust survival strategies for optimal outcomes in a small-scale habitat ecosystem"
+      }
+    ],
+    "multiplayerMode": "HYBRID"
+  },
+  "updatedAt": "2026-10-08T12:20:27.640Z"
+}

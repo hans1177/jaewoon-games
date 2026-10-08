@@ -8,25 +8,30 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 13,
-  "lastSuccessfulModelCallAt": "2026-10-08T12:19:35.862Z",
+  "cachedTaskCount": 16,
+  "lastSuccessfulModelCallAt": "2026-10-08T12:20:27.633Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
-  "designerSeed": null,
+  "designerSeed": {
+    "file": "design/insect-survival/2026-10-08/design-seed.json",
+    "contentDigest": "da0c317dde5042a05623a0585d4b004e2044ed75a38f370ec08f5f4faf2d069f",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1044708,
-      "lastMs": 76950,
+      "totalMs": 1096474,
+      "lastMs": 51766,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:19:35.858Z"
+      "updatedAt": "2026-10-08T12:20:27.629Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T12:19:35.863Z"
+  "updatedAt": "2026-10-08T12:20:27.641Z"
 }
