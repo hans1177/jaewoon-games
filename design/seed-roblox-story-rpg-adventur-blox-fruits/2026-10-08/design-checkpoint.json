@@ -789,25 +789,28 @@
       "toSystem": "Player-selected board patterns or obstacle combinations that determine the next level's state and objective.",
       "trigger": "Player selects a board pattern or obstacle combination that determines the next level's state and objective. The selection is validated through immediate feedback, and the resulting state is transitioned to the next level. This action establishes the core mechanism by which player choices drive the ",
       "stateChange": "Player selects a board pattern or obstacle combination that determines the next level's state and objective. The selection is validated through immediate feedback, and the resulting state is transitioned to the next level. This action establishes the core mechanism by which player choices drive the evolution of the game world."
+    },
+    "local_authoring_parts::ae3ba1690de14807278bfee18d958d328f92a2e00c76037730559d3d2f717c27:fromId": {
+      "fromId": "Delve Evolution"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 37,
-      "successes": 36,
+      "calls": 38,
+      "successes": 37,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2608001,
-      "lastMs": 70954,
+      "totalMs": 2668767,
+      "lastMs": 60766,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T10:38:57.198Z"
+      "updatedAt": "2026-10-08T10:39:57.971Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:01:25.970Z",
-  "updatedAt": "2026-10-08T10:38:57.200Z",
+  "updatedAt": "2026-10-08T10:39:57.971Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3053,7 +3056,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:38:57.200Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:39:57.971Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
