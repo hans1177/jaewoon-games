@@ -458,25 +458,44 @@
       "name": "ELDORIAN_CORE_02",
       "purpose": "Establishes the core gameplay mechanics of 'El Dorian Chronicles' through a recursive, narrative-driven loop that enables exploration, character interaction, quest progression, and narrative advancement. This system ensures that player choices directly influence the game's world state and determine the next set of gameplay options. The system is designed to be flexible, allowing for emergent gameplay through player decisions and the use",
       "playerChoice": "Player choices directly affect the game's world state, determining the next set of gameplay options. Exploration, character interaction, quest progression, and narrative advancement are all core gameplay mechanics that are recursively influenced by player decisions. This system allows for the creation of new content, new paths, new combinations, new relationships, new discoveries, or new responses, enabling the game to evolve through a "
+    },
+    "local_authoring_parts::b58fa91e9599e448eb4f1959bc19175d1ffb1c0f06cd5f124ff0b3656cdaf252:signatureSystems:2": {
+      "id": "ELDORIAN_CORE_03",
+      "grammarRole": "B",
+      "stateInputs": [
+        "Exploration Status",
+        "Character Interaction Status",
+        "Quest Completion Status",
+        "Narrative Progress Status"
+      ],
+      "stateOutputs": [
+        "Area Expansion Status",
+        "Character Development Status",
+        "Quest Progression Status",
+        "Narrative Advancement Status"
+      ],
+      "name": "ELDORIAN_CORE_03",
+      "purpose": "Establishes the core gameplay mechanics of 'El Dorian Chronicles' through a recursive, narrative-driven loop that enables exploration, character interaction, quest progression, and narrative advancement. This system ensures that player choices directly influence the game's world state and determine the next set of gameplay options. The system is designed to be flexible, allowing for emergent gameplay through player decisions and the use",
+      "playerChoice": "Player choices directly affect the game's world state, determining the next set of gameplay options. Exploration, character interaction, quest progression, and narrative advancement are all core gameplay mechanics that are recursively influenced by player decisions. This system allows for the creation of new content, new paths, new combinations, new relationships, new discoveries, or new responses, enabling the game to evolve through a "
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1220593,
-      "lastMs": 110352,
+      "totalMs": 1332318,
+      "lastMs": 111725,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:43:40.354Z"
+      "updatedAt": "2026-10-08T13:45:32.081Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:23:19.708Z",
-  "updatedAt": "2026-10-08T13:43:40.354Z",
+  "updatedAt": "2026-10-08T13:45:32.081Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2744,7 +2763,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:43:40.354Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:45:32.081Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
