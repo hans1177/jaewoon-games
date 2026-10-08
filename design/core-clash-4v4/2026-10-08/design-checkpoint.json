@@ -34,25 +34,45 @@
         "DEVELOPMENT: 플레이어는 선택 결과에 따라 보상·위험·다음 선택을 경험합니다. 이 단계에서는 게임의 진전과 플레이어의 선택이 상호작용하며, 게임의 핵심 재미를 구축합니다.",
         "RESOLUTION: 게임은 반복적인 선택과 상태 변화를 통해 플레이어의 목표를 달성합니다. 이 단계에서는 게임의 결말과 플레이어의 성취감을 제공하며, 게임의 전체적인 구조를 정립합니다."
       ]
+    },
+    "local_authoring_parts::a5aa28a3dd652f827ba1d1bb85eec766bef32515f4eadc1d98467a1fa3a09035:signatureSystems:0": {
+      "id": "CORE-CLASH-4V4-REF-1",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "playerFantasy",
+        "coreFun",
+        "coreLoop",
+        "signatureSystems"
+      ],
+      "stateOutputs": [
+        "identity",
+        "playerFantasy",
+        "coreFun",
+        "coreLoop",
+        "signatureSystems"
+      ],
+      "name": "CORE-CLASH-4V4-REF-1",
+      "purpose": "ACTION_SURVIVAL_ROGUELITE",
+      "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 266771,
-      "lastMs": 41628,
+      "totalMs": 305875,
+      "lastMs": 39104,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:46:52.057Z"
+      "updatedAt": "2026-10-08T12:47:31.162Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:42:25.217Z",
-  "updatedAt": "2026-10-08T12:46:52.057Z",
+  "updatedAt": "2026-10-08T12:47:31.162Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2251,7 +2271,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:46:52.057Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:47:31.162Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
