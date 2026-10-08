@@ -67,25 +67,41 @@
       "name": "시그니처 시스템",
       "purpose": "플레이어의 선택과 상태 변화에 따라 변화하는 게임 세계 규칙을 구현",
       "playerChoice": "플레이어는 선택을 통해 세계 상태를 바꾸고, 보상과 위험을 결정하며, 다음 선택을 결정한다"
+    },
+    "local_authoring_parts::f2a736c750a1f88068981c8600a9e0e34e579527e7d8fddff3809d7f204753c7:signatureSystems:2": {
+      "id": "50일의 시그니처 시스템",
+      "grammarRole": "B",
+      "stateInputs": [
+        "INPUT_AND_MENU_TRANSITIONS",
+        "CONTEXT_LOSS",
+        "ERROR_RECOVERY",
+        "STATE_AND_COST_REGRESSION"
+      ],
+      "stateOutputs": [
+        "STATE_AND_COST_REGRESSION"
+      ],
+      "name": "시그니처 시스템",
+      "purpose": "플레이어의 선택과 상태 변화에 따라 변화하는 게임 세계 규칙을 구현",
+      "playerChoice": "플레이어는 선택을 통해 세계 상태를 바꾸고, 보상과 위험을 결정하며, 다음 선택을 결정한다"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 6,
+      "calls": 8,
+      "successes": 7,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1083802,
-      "lastMs": 100962,
+      "totalMs": 1187576,
+      "lastMs": 103774,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T15:20:41.760Z"
+      "updatedAt": "2026-10-08T15:22:25.536Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:23:37.455Z",
-  "updatedAt": "2026-10-08T15:20:41.761Z",
+  "updatedAt": "2026-10-08T15:22:25.536Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2287,5 +2303,5 @@
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
-  "lastSuccessfulModelCallAt": "2026-10-08T15:20:41.760Z"
+  "lastSuccessfulModelCallAt": "2026-10-08T15:22:25.536Z"
 }
