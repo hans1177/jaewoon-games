@@ -87,7 +87,6 @@ jobs:
       targets: ${{ steps.targets.outputs.targets }}
       target_count: ${{ steps.targets.outputs.target_count }}
       parallel_max: ${{ steps.targets.outputs.parallel_max }}
-      canary_mode: ${{ steps.targets.outputs.canary_mode }}
       engine_digest: ${{ steps.targets.outputs.engine_digest }}
       pending_total: ${{ steps.targets.outputs.pending_total }}
     steps:
@@ -105,7 +104,7 @@ jobs:
             exit 0
           fi
           git fetch origin "$COMPANY_RUNTIME_BRANCH"
-          for runtime_path in game-seed-state.json design design-engine-canary.json; do
+          for runtime_path in game-seed-state.json design; do
             if git cat-file -e "origin/$COMPANY_RUNTIME_BRANCH:$runtime_path" 2>/dev/null; then
               git checkout "origin/$COMPANY_RUNTIME_BRANCH" -- "$runtime_path"
             fi
@@ -189,8 +188,6 @@ jobs:
           const designScheduling=directive?.platformStrategy?.designStabilizationScheduling||{};
           const engineFiles=['tools/company-design-cycle.mjs','tools/vibe2-design-intelligence.mjs','tools/company-design-checkpoint-recovery.mjs','tools/company-design-gate-scoring-v2.mjs','tools/company-strict-production-review.mjs','tools/company-design-prepromotion-repair.mjs','tools/company-baseline-gate.mjs'];
           const engineDigest=createHash('sha256').update(engineFiles.map(file=>`${file}\n${fs.readFileSync(file,'utf8')}`).join('\n---\n')).digest('hex');
-          const canaryMarker=(()=>{try{return JSON.parse(fs.readFileSync('design-engine-canary.json','utf8'));}catch{return null;}})();
-          const canaryVerified=canaryMarker?.engineDigest===engineDigest;
           const configuredWip=roadmap?.developmentSpeedExecution?.globalSelectedPlatformDevelopmentWipMax;
           const unboundedByPolicy=configuredWip===null||typeof configuredWip==='undefined';
           const externalBatchMax=Number(roadmap?.developmentSpeedExecution?.externalMatrixBatchMax||256);
@@ -342,17 +339,17 @@ jobs:
             String(a.createdAt||'').localeCompare(String(b.createdAt||''))||
             String(a.gameId||'').localeCompare(String(b.gameId||''))
           ).slice(0,preservationOnly?1:designWipMax);
-          const selected=canaryVerified?pending:pending.slice(0,preservationOnly?1:3);
+          // 각 게임은 중앙 병렬 한도 안에서 독립 작성한다. 다른 게임의 성공을 기다리지 않는다.
+          const selected=pending;
           const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
           const get=t=>parts.find(x=>x.type===t)?.value||'';const date=`${get('year')}-${get('month')}-${get('day')}`;
           const targets=selected.map(seed=>{const evolution=designEvolutionDueFor(seed);return{game_id:seed.gameId,game_name:seed.gameName||seed.gameId,seed_id:seed.seedId,category:seed.GAME_CATEGORY,target_platform:String(seed.INITIAL_TARGET_PLATFORM||'').toUpperCase(),date,multiplayer_mode:seed.MULTIPLAYER_DESIGN_MODE||'SINGLE',target_session_minutes:Number(seed.TARGET_SESSION_MINUTES||30),design_evolution_due:evolution.due,design_evolution_reason:evolution.reason,baseline_review_at:Number(evolution.baselineReviewAt||0)};});
-          // 대표 검증 대상도 독립 게임별로 병렬 실행하고 성공 증거로만 다음 배치를 연다.
+          // 게임별 최종 설계 검수는 유지하며 실패는 해당 게임의 재시도로 돌아간다.
           const parallelMax=Math.max(1,Math.min(designWipMax,targets.length||1));
           console.log(`run=${targets.length?'true':'false'}`);
           console.log(`targets=${JSON.stringify(targets)}`);
           console.log(`target_count=${targets.length}`);
           console.log(`parallel_max=${parallelMax}`);
-          console.log(`canary_mode=${canaryVerified?'false':'true'}`);
           console.log(`engine_digest=${engineDigest}`);
           console.log(`pending_total=${pending.length}`);
           console.error(`OWNER_ACTIVE_DESIGN_RESET_TARGETS=${activeResetSeeds.length}`);
@@ -360,7 +357,7 @@ jobs:
           console.error('OWNER_RESET_SCHEDULING=PRIORITY_NOT_EXCLUSIVE');
           console.error(`GAME_SEED_DESIGN_TARGET_COUNT=${targets.length}`);
           console.error(`GAME_SEED_DESIGN_PENDING_TOTAL=${pending.length}`);
-          console.error(`GAME_DESIGN_ENGINE_CANARY=${canaryVerified?'VERIFIED':'REQUIRED'}`);
+          console.error('GAME_DESIGN_PORTFOLIO_CANARY_GATE=DISABLED');
           console.error(`GAME_DESIGN_ENGINE_DIGEST=${engineDigest}`);
           console.error(`GAME_DESIGN_WIP_MAX=${unboundedByPolicy?'UNBOUNDED_POLICY':designWipMax}`);
           console.error(`GAME_DESIGN_EXTERNAL_MATRIX_BATCH_MAX=${externalBatchMax}`);
@@ -992,52 +989,6 @@ jobs:
           echo 'PORTFOLIO_WIDE_PASS_WAIT=NO'
           echo 'WEB_DEVELOPMENT_START=NO'
 
-  mark-design-engine-canary:
-    needs: [resolve-seed-targets, design-cycle]
-    if: always() && needs.resolve-seed-targets.outputs.run == 'true' && needs.resolve-seed-targets.outputs.canary_mode == 'true' && needs.design-cycle.result == 'success'
-    runs-on: ubuntu-slim
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.sha }}
-          fetch-depth: 1
-          fetch-tags: false
-      - name: Persist verified design engine canary
-        env:
-          ENGINE_DIGEST: ${{ needs.resolve-seed-targets.outputs.engine_digest }}
-          VERIFIED_GAME_COUNT: ${{ needs.resolve-seed-targets.outputs.target_count }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name 'jaewoon-design-canary'
-          git config user.email 'design-canary@users.noreply.github.com'
-          cat > /tmp/design-engine-canary.json <<JSON
-          {
-            "version": 1,
-            "engineDigest": "$ENGINE_DIGEST",
-            "engineSha": "$GITHUB_SHA",
-            "verifiedGameCount": $VERIFIED_GAME_COUNT,
-            "verifiedAt": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-            "policy": "CANARY_SELECTED_GAMES_BEFORE_CENTRAL_POLICY_BATCH"
-          }
-          JSON
-          pushed=0
-          for attempt in 1 2 3 4; do
-            git fetch origin "$COMPANY_RUNTIME_BRANCH"
-            git checkout -B design-canary-runtime "origin/$COMPANY_RUNTIME_BRANCH"
-            cp /tmp/design-engine-canary.json design-engine-canary.json
-            git add -- design-engine-canary.json
-            if git diff --cached --quiet; then pushed=1; break; fi
-            git commit -m "runtime: verify DESIGN_ONLY engine canary"
-            if git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
-            sleep $((attempt * 2))
-          done
-          test "$pushed" = 1
-          echo 'DESIGN_ENGINE_CANARY=VERIFIED'
-          echo "DESIGN_ENGINE_DIGEST=$ENGINE_DIGEST"
-          echo 'PUBLIC_MAIN_WRITE=NO'
-
   sync-strict-design-scores:
     needs: [resolve-seed-targets, design-cycle]
     if: always() && !cancelled() && needs.resolve-seed-targets.outputs.run == 'true'
@@ -1135,7 +1086,7 @@ jobs:
           test "$pushed" = 1
 
   continue-seed-supply:
-    needs: [resolve-seed-targets, design-cycle, mark-design-engine-canary, sync-strict-design-scores]
+    needs: [resolve-seed-targets, design-cycle, sync-strict-design-scores]
     if: always() && !cancelled() && needs.resolve-seed-targets.outputs.run == 'true'
     runs-on: ubuntu-slim
     timeout-minutes: 5

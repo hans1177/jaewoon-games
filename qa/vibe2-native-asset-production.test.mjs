@@ -2932,6 +2932,23 @@ test('GLB production inspection measures transformed geometry and ground pivot f
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('GLB production inspection measures actual rotated surfaces and counts only visible instances',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'glb-contact-'));
+  try{
+    const result=writeInspectionTriangle(root,d=>{
+      d.nodes[1].rotation=[0,0,Math.sin(-3*Math.PI/8),Math.cos(-3*Math.PI/8)];
+      d.nodes.push({mesh:0,translation:[20,3,-2],scale:[2,2,2]});
+      d.scenes[0].nodes.push(2);
+      d.meshes.push(structuredClone(d.meshes[0]),structuredClone(d.meshes[0]));
+    });
+    assert.equal(result.status,'INSPECTED_RECONSTRUCTION_INPUT',JSON.stringify(result.issues));
+    const spatial=result.inventory.spatial;
+    assert(Math.abs(spatial.bounds.min[1]-(3-2*Math.SQRT2))<1e-9,'empty bounding-box corners must not move ground contact');
+    assert(Math.abs(spatial.groundTranslation[1]-(2*Math.SQRT2-3))<1e-9);
+    assert.equal(spatial.triangleCount,2,'count visible mesh instances, excluding unattached meshes');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('GLB production inspection rejects poisoned payloads and malformed import bindings',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'glb-payload-'));
   const cases=[

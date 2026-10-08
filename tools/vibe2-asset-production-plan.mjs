@@ -307,13 +307,21 @@ export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
   const activeNodes=new Set(),pending=Array.isArray(roots)?[...roots]:[];
   if(!Array.isArray(roots))issues.push('GLB_SCENE_INVALID');
   while(pending.length){const index=pending.pop();if(!Number.isInteger(index)||!nodes[index]){issues.push('GLB_SCENE_INVALID');continue;}if(activeNodes.has(index))continue;activeNodes.add(index);pending.push(...(Array.isArray(nodes[index].children)?nodes[index].children:[]));}
-  const sceneBounds={min:[Infinity,Infinity,Infinity],max:[-Infinity,-Infinity,-Infinity]};let boundedPrimitiveCount=0;
+  const sceneBounds={min:[Infinity,Infinity,Infinity],max:[-Infinity,-Infinity,-Infinity]};let boundedPrimitiveCount=0,visibleTriangleCount=0;
   for(const index of activeNodes){
     const matrix=worldMatrices.get(index);if(!matrix)continue;
-    for(const row of geometryRows.filter(row=>row.meshIndex===nodes[index].mesh&&row.bounds)){
+    for(const row of geometryRows.filter(row=>row.meshIndex===nodes[index].mesh&&row.bounds&&!row.invalidIndexCount)){
+      const primitive=document.meshes[row.meshIndex].primitives[row.primitiveIndex];
+      const position=accessorInfo(primitive.attributes.POSITION);
+      const indices=primitive.indices===undefined?null:accessorInfo(primitive.indices);
       boundedPrimitiveCount++;
-      for(let corner=0;corner<8;corner++){
-        const p=[0,1,2].map(c=>row.bounds[(corner>>c)&1?'max':'min'][c]);
+      visibleTriangleCount+=row.triangleCount;
+      // A rotated local AABB contains empty corners. Using those corners can
+      // invent a lower contact point and leave the imported object floating.
+      // Measure only vertices referenced by this visible primitive instance.
+      for(let vertex=0;vertex<(indices?indices.count:position.count);vertex++){
+        const vertexIndex=indices?readAccessorComponent(indices,vertex,0):vertex;
+        const p=[0,1,2].map(c=>readAccessorComponent(position,vertexIndex,c));
         for(let c=0;c<3;c++){const n=matrix[c]*p[0]+matrix[c+4]*p[1]+matrix[c+8]*p[2]+matrix[c+12];sceneBounds.min[c]=Math.min(sceneBounds.min[c],n);sceneBounds.max[c]=Math.max(sceneBounds.max[c],n);}
       }
     }
@@ -323,7 +331,7 @@ export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
     coordinateSystem:'GLTF_RIGHT_HANDED_Y_UP_METERS',scope:'STATIC_NODE_TRANSFORM_BOUNDS_NOT_ANIMATION_OR_SKIN_DEFORMATION',
     bounds:sceneBounds,size:sceneBounds.max.map((v,i)=>v-sceneBounds.min[i]),
     groundTranslation:[-(sceneBounds.min[0]+sceneBounds.max[0])/2,-sceneBounds.min[1],-(sceneBounds.min[2]+sceneBounds.max[2])/2],
-    triangleCount:geometryRows.reduce((n,row)=>n+row.triangleCount,0)
+    triangleCount:visibleTriangleCount
   }:null;
   if(spatial&&spatial.size.every(v=>v<=1e-9))issues.push('GLB_COLLAPSED_GEOMETRY');
   const textureSlots=material=>[
