@@ -12,25 +12,32 @@
   "tasks": {
     "local_authoring_parts::6c3434e4f35d3d49190a553bdc8581fe5630be0b642fb097cd7d99e28fab3157:identity": {
       "identity": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다. 플레이어는 현재 경계 압력에 따라 영토 목표를 선택하며, 이 선택은 다음 월드 상태와 관계 변화를 유발한다. 주요 행동은 'Read the current border pressure and choose one territory objective.'이며, 결과로는 자원 배분, 이동 경로, 위험/보상 등 다양한 상태 변화가 발생한다. 세계의 역사, 생활, 경제, 지역 기능이 핵심 플레이 행동의 존재 이유를 설명하며, 시각 언어로 지역, 캐릭터, 적, 아이템, UI가 역할과 위험/보상 차이를 나타낸다. 음악과 소리도 세계 분위기를 강화하여, 성장은 수치 증가뿐만 아니라 새로운 행동, 경로, 관계, 발견, 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다."
+    },
+    "local_authoring_parts::6c3434e4f35d3d49190a553bdc8581fe5630be0b642fb097cd7d99e28fab3157:playerFantasy": {
+      "playerFantasy": "영토 전쟁에서 플레이어는 현재 경계 압력에 따라 영토 목표를 선택하며, 이 선택은 다음 월드 상태와 관계 변화를 유발한다. 주요 행동은 'Read the current border pressure and choose one territory objective.'이며, 결과로는 자원 배분, 이동 경로, 위험/보상 등 다양한 상태 변화가 발생한다. 세계의 역사, 생활, 경제, 지역 기능이 핵심 플레이 행동의 존재 이유를 설명하며, 시각 언어로 지역, 캐릭터, 적, 아이템, UI가 역할과 위험/보상 차이를 나타낸다. 음악과 소리도 세계 분위기를 강화하여, 성장은 수치 증가뿐만 아니라 새로운 행동, 경로, 관계, 발견, 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다."
+    },
+    "local_authoring_parts::01d5265f011d688d68e72aa4a4cc5e8e3ed3ae56543436c4dab70a6cb537170e:identity,playerFantasy": {
+      "identity": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다. 플레이어는 현재 경계 압력에 따라 영토 목표를 선택하며, 이 선택은 다음 월드 상태와 관계 변화를 유발한다. 주요 행동은 'Read the current border pressure and choose one territory objective.'이며, 결과로는 자원 배분, 이동 경로, 위험/보상 등 다양한 상태 변화가 발생한다. 세계의 역사, 생활, 경제, 지역 기능이 핵심 플레이 행동의 존재 이유를 설명하며, 시각 언어로 지역, 캐릭터, 적, 아이템, UI가 역할과 위험/보상 차이를 나타낸다. 음악과 소리도 세계 분위기를 강화하여, 성장은 수치 증가뿐만 아니라 새로운 행동, 경로, 관계, 발견, 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.",
+      "playerFantasy": "영토 전쟁에서 플레이어는 현재 경계 압력에 따라 영토 목표를 선택하며, 이 선택은 다음 월드 상태와 관계 변화를 유발한다. 주요 행동은 'Read the current border pressure and choose one territory objective.'이며, 결과로는 자원 배분, 이동 경로, 위험/보상 등 다양한 상태 변화가 발생한다. 세계의 역사, 생활, 경제, 지역 기능이 핵심 플레이 행동의 존재 이유를 설명하며, 시각 언어로 지역, 캐릭터, 적, 아이템, UI가 역할과 위험/보상 차이를 나타낸다. 음악과 소리도 세계 분위기를 강화하여, 성장은 수치 증가뿐만 아니라 새로운 행동, 경로, 관계, 발견, 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 195380,
-      "lastMs": 195380,
+      "totalMs": 250538,
+      "lastMs": 55158,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:43:55.161Z"
+      "updatedAt": "2026-10-08T18:44:50.321Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:40:39.764Z",
-  "updatedAt": "2026-10-08T18:43:55.162Z",
+  "updatedAt": "2026-10-08T18:44:50.323Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2054,7 +2061,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:43:55.161Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:44:50.323Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
