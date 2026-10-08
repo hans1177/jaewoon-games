@@ -518,25 +518,64 @@
         "resourceFlow": "Resource collection → Resource consolidation → Resource optimization → Resource depth → Resource discovery",
         "balanceRules": "Resource conservation for immediate survival, resource optimization for long-term strategy, and resource depth for progression"
       }
+    },
+    "local_authoring_parts::9a53442f2757810f313016d10c6ea65e51aa1e71c7cb75f0bacd646f5f7f50fa:contentExpansionPlan,failureRetryRisk": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "SurvivalHordeSystem",
+          "newGameplay": "Implement the core gameplay mechanic of fighting an escalating horde in real-time while positioning around enemies, with the ability to upgrade resources through strategic choices.",
+          "systemImpact": "This system ensures that the player's survival strategy is continuously optimized through resource management and strategic decision-making."
+        },
+        {
+          "milestone": "SurvivalResourceSystem",
+          "newGameplay": "Implement the core gameplay mechanic of resource management and strategic decision-making in a survival context, with the ability to optimize resources through tactical choices.",
+          "systemImpact": "This system ensures that the player's resources are optimized for both immediate survival and long-term strategic advantages."
+        },
+        {
+          "milestone": "SurvivalProgressionSystem",
+          "newGameplay": "Implement the core gameplay mechanic of progressing through survival challenges by combining upgrades, surviving waves, and converting run results into progression choices.",
+          "systemImpact": "This system ensures that the player's progression through challenges is optimized through strategic combination of upgrades and tactical survival."
+        },
+        {
+          "milestone": "SurvivalDepthSystem",
+          "newGameplay": "Implement the core gameplay mechanic of deepening survival through strategic exploration, resource management, and progression, with the ability to uncover new possibilities and game options.",
+          "systemImpact": "This system ensures that the player's survival is deepened through exploration, resource management, and progression, leading to new game options and world states."
+        },
+        {
+          "milestone": "SurvivalDiscoverySystem",
+          "newGameplay": "Implement the core gameplay mechanic of deepening survival through strategic exploration, resource management, and progression, with the ability to uncover new possibilities and game options.",
+          "systemImpact": "This system ensures that the player's survival is deepened through exploration, resource management, and progression, leading to new game options and world states."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "Resource depletion",
+          "Enemy advancement",
+          "Progression stagnation"
+        ],
+        "retryFlow": "Player can retry by consolidating resources, upgrading strategies, or exploring new territories to overcome these challenges.",
+        "riskPressure": "The risk of resource depletion or progression stagnation increases as the player faces more difficult horde encounters and requires more strategic choices to survive.",
+        "recoveryRules": "Players can recover by re-discovering hidden resources, optimizing their strategies, or exploring new territories to reset and regain progress."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 11,
+      "calls": 13,
+      "successes": 12,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1386766,
-      "lastMs": 269346,
+      "totalMs": 1509059,
+      "lastMs": 122293,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T13:21:13.960Z"
+      "updatedAt": "2026-10-08T13:23:16.254Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:58:07.049Z",
-  "updatedAt": "2026-10-08T13:21:13.960Z",
+  "updatedAt": "2026-10-08T13:23:16.260Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2732,15 +2771,169 @@
     }
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "cda02bf2bfd5544461af706d710c6a2884d2e882c13cde4019bb6f328c02c697"
   },
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:21:13.960Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "signatureSystems[0]→signatureSystems[1]의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: signatureSystems[0]→signatureSystems[1]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "signatureSystems[1]→signatureSystems[2]의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: signatureSystems[1]→signatureSystems[2]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "signatureSystems[2]→signatureSystems[3]의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: signatureSystems[2]→signatureSystems[3]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "signatureSystems[3]→signatureSystems[4]의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: signatureSystems[3]→signatureSystems[4]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "signatureSystems[4]→signatureSystems[0]의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: signatureSystems[4]→signatureSystems[0]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::systems-progression": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "Survival progression through horde encounters, resource management, and progression choices",
+      "progressionEconomyBalance": {
+        "progressionLoop": "SurvivalHordeSystem → SurvivalResourceSystem → SurvivalProgressionSystem → SurvivalDepthSystem → SurvivalDiscoverySystem",
+        "resourceFlow": "Resource collection → Resource consolidation → Resource optimization → Resource depth → Resource discovery",
+        "balanceRules": "Resource conservation for immediate survival, resource optimization for long-term strategy, and resource depth for progression"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "SurvivalHordeSystem",
+          "newGameplay": "Implement the core gameplay mechanic of fighting an escalating horde in real-time while positioning around enemies, with the ability to upgrade resources through strategic choices.",
+          "systemImpact": "This system ensures that the player's survival strategy is continuously optimized through resource management and strategic decision-making."
+        },
+        {
+          "milestone": "SurvivalResourceSystem",
+          "newGameplay": "Implement the core gameplay mechanic of resource management and strategic decision-making in a survival context, with the ability to optimize resources through tactical choices.",
+          "systemImpact": "This system ensures that the player's resources are optimized for both immediate survival and long-term strategic advantages."
+        },
+        {
+          "milestone": "SurvivalProgressionSystem",
+          "newGameplay": "Implement the core gameplay mechanic of progressing through survival challenges by combining upgrades, surviving waves, and converting run results into progression choices.",
+          "systemImpact": "This system ensures that the player's progression through challenges is optimized through strategic combination of upgrades and tactical survival."
+        },
+        {
+          "milestone": "SurvivalDepthSystem",
+          "newGameplay": "Implement the core gameplay mechanic of deepening survival through strategic exploration, resource management, and progression, with the ability to uncover new possibilities and game options.",
+          "systemImpact": "This system ensures that the player's survival is deepened through exploration, resource management, and progression, leading to new game options and world states."
+        },
+        {
+          "milestone": "SurvivalDiscoverySystem",
+          "newGameplay": "Implement the core gameplay mechanic of deepening survival through strategic exploration, resource management, and progression, with the ability to uncover new possibilities and game options.",
+          "systemImpact": "This system ensures that the player's survival is deepened through exploration, resource management, and progression, leading to new game options and world states."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "Resource depletion",
+          "Enemy advancement",
+          "Progression stagnation"
+        ],
+        "retryFlow": "Player can retry by consolidating resources, upgrading strategies, or exploring new territories to overcome these challenges.",
+        "riskPressure": "The risk of resource depletion or progression stagnation increases as the player faces more difficult horde encounters and requires more strategic choices to survive.",
+        "recoveryRules": "Players can recover by re-discovering hidden resources, optimizing their strategies, or exploring new territories to reset and regain progress."
+      }
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T13:23:16.256Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
