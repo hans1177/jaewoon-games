@@ -76,25 +76,39 @@
       "name": "FIGHT_THROUGH_ELEVATED_HORDE_B",
       "purpose": "A/B 대축에서 선택 결과가 다음 상태와 비용, 위험, 경로에 연결되는 시스템입니다.",
       "playerChoice": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+    },
+    "local_authoring_parts::a83335c7fb080b831b98ef84d8717c1bef1bc3178a8865c80590eb4b76b043ed:signatureSystems:3": {
+      "id": "SURVIVAL_04_SIGNATURE_SYSTEM",
+      "grammarRole": "c",
+      "stateInputs": [
+        "RUN_REWARDS",
+        "UPGRADES"
+      ],
+      "stateOutputs": [
+        "PROGRESSION_CHOICE"
+      ],
+      "name": "CROSS_PATH_CONVERGENCE",
+      "purpose": "게임 내에서 MAIN/A/B의 선택 결과가 서로 영향을 주며, 새로운 플레이 경로와 상태 변화를 생성하는 보조 요소.",
+      "playerChoice": "선택된 업그레이드, 퍼시픽, 무기 또는 스킬을 기반으로 다음 선택을 결정합니다. 이 선택은 MAIN의 결과와 A/B의 상태 교환에 따라 다양한 방식으로 적용됩니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 353227,
-      "lastMs": 33255,
+      "totalMs": 393931,
+      "lastMs": 40704,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:49:00.737Z"
+      "updatedAt": "2026-10-08T21:49:41.442Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:43:07.484Z",
-  "updatedAt": "2026-10-08T21:49:00.737Z",
+  "updatedAt": "2026-10-08T21:49:41.442Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2293,7 +2307,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:49:00.737Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:49:41.442Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
