@@ -877,25 +877,34 @@
       "toSystem": "SURVIVAL_SYSTEM_01110101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101",
       "trigger": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure",
       "stateChange": "Transition to next world state based on player choices"
+    },
+    "local_authoring_parts::637282f2cdc0b1e95e747d3a717bb1a185b6ad402ae6fc90a550e44fd4bb2bfb:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "signatureSystems_0",
+      "toId": "signatureSystems_1",
+      "stateKeys": [
+        "readState: 'Fight through an escalating horde in a short real-time survival run'",
+        "writeState: 'Transition to next world state based on player choices'"
+      ],
+      "fromSystem": "SURVIVAL_SYSTEM_01110101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 34,
-      "successes": 34,
+      "calls": 35,
+      "successes": 35,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3600589,
-      "lastMs": 102790,
+      "totalMs": 3707634,
+      "lastMs": 107045,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:44:10.076Z"
+      "updatedAt": "2026-10-08T16:45:57.125Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:04:38.961Z",
-  "updatedAt": "2026-10-08T16:44:10.078Z",
+  "updatedAt": "2026-10-08T16:45:57.125Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3240,7 +3249,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:44:10.078Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:45:57.125Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
