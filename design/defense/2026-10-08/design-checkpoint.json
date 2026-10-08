@@ -809,25 +809,28 @@
         "resourceAllocation",
         "nextEnemyWave"
       ]
+    },
+    "local_authoring_parts::45c8a828c7411e7b2aeebfcadb8ec75a0b5725c080200b07f8f6589c20638051:fromSystem": {
+      "fromSystem": "ENEMY_WAVE_ADAPTATION_SYSTEM_MAIN_01"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 28,
-      "successes": 27,
+      "calls": 29,
+      "successes": 28,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2252768,
-      "lastMs": 58362,
+      "totalMs": 2309541,
+      "lastMs": 56773,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T12:46:28.086Z"
+      "updatedAt": "2026-10-08T12:47:24.860Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:08:55.008Z",
-  "updatedAt": "2026-10-08T12:46:28.086Z",
+  "updatedAt": "2026-10-08T12:47:24.860Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3186,7 +3189,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:46:28.086Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:47:24.860Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
