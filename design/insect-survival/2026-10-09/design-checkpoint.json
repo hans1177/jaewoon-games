@@ -27,25 +27,34 @@
       "identity": "작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 생존 게임으로 완전히 처음부터 다시 설계한다.",
       "playerFantasy": "곤충 생존기에서는 플레이어가 작은 세계에서 살아남는 데 최선을 다해, 위험에 노출되어도 희망적인 결과로 이끄는 선택을 하는 독자적 생존 게임이다. 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하며, 탐험, 수집, 귀환의 순환 중 하나를 선택하는 것이 주요 플레이 방식이다.",
       "coreFun": "플레이어가 작은 세계에서 살아남는 데 최선을 다해, 위험에 노출되어도 희망적인 결과로 이끄는 선택을 하는 독자적 생존 게임이다. 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하며, 탐험, 수집, 귀환의 순환 중 하나를 선택하는 것이 주요 플레이 방식이다."
+    },
+    "local_authoring_parts::2e5a5c1083c10ce9f69e9ba1f646f6119c07a356cabf8828b16373a25011f1a9:coreLoop": {
+      "coreLoop": [
+        "INPUT: Explore a dangerous small-scale habitat and identify food, material and insect threats.",
+        "SELECT: Take a risk to gather or fight, then convert the result into survival tools or a safer route.",
+        "OUTPUT: Status change based on risk assessment and resource acquisition.",
+        "ACTION: Move through environment, adjust path, and reach next objective.",
+        "NEXT SELECT: Use learned ecosystem knowledge to survive stronger pressure and advance toward meaningful goal."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 263462,
-      "lastMs": 32435,
+      "totalMs": 304052,
+      "lastMs": 40590,
       "lastError": null,
-      "updatedAt": "2026-10-08T22:02:20.592Z"
+      "updatedAt": "2026-10-08T22:03:01.186Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:57:57.113Z",
-  "updatedAt": "2026-10-08T22:02:20.594Z",
+  "updatedAt": "2026-10-08T22:03:01.186Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2277,7 +2286,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T22:02:20.594Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T22:03:01.186Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
