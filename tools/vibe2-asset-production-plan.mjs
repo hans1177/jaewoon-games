@@ -4302,7 +4302,7 @@ export function buildVibeAssetProductionPlan({
     COOP_MULTIPLAYER:['PARTY','MAP']
   });
   const menuRoleFactories=freeze({
-    NAV:'CreateOneHandBottomNav',CHARACTER:'CreateCharacterDetailScreen',
+    NAV:'CreateMenuSystemSwitcherDrawer',MOBILE_NAV:'CreateOneHandBottomNav',CHARACTER:'CreateCharacterDetailScreen',
     INVENTORY:'CreateInventoryFullScreen',EQUIPMENT:'CreateEquipmentFullScreen',
     TRADE:'CreateBuySellPanel',QUEST:'CreateQuestLog',
     CODEX:'CreateCodexScreen',CRAFT:'CreateCraftingFullScreen',MAP:'CreateMapFullScreen',
@@ -4314,6 +4314,7 @@ export function buildVibeAssetProductionPlan({
   });
   const menuRoleSourceHints=freeze({
     NAV:/menu|navigation|tab|screen|메뉴|화면/i,
+    MOBILE_NAV:/menu|navigation|tab|screen|메뉴|화면/i,
     CHARACTER:/character|player|level|classId|health|캐릭터/i,
     INVENTORY:/inventory|backpack|ownedWeapons|ownedArmors|items|인벤토리|배낭/i,
     EQUIPMENT:/equipment|equip|weapon|armor|gear|장비|무기/i,
@@ -4362,7 +4363,7 @@ export function buildVibeAssetProductionPlan({
     }catch{return[];}
   });
   const currentMenuIdeaIds=menuSeed.ideas.filter(idea=>idea.domain==='UI');
-  const selectedMenuRoles=new Map([['NAV',new Set(['ALWAYS'])]]);
+  const selectedMenuRoles=new Map([['NAV',new Set(['ALWAYS'])],['MOBILE_NAV',new Set(['ALWAYS'])]]);
   for(const signal of menuSeed.detectedSignals){
     for(const role of menuRolesBySignal[signal]||[]){
       if(!selectedMenuRoles.has(role))selectedMenuRoles.set(role,new Set());
@@ -4378,7 +4379,8 @@ export function buildVibeAssetProductionPlan({
     return freeze({
       role,factory,signalIds:freezeList([...signalSet]),
       sourceIdeaIds:freezeList(currentMenuIdeaIds.filter(row=>
-        row.sourceSignals.some(signal=>signalSet.has(signal))).map(row=>row.ideaId)),
+        (role==='NAV'||role==='MOBILE_NAV')&&row.ideaId==='ONE_HAND_CONTEXT_ACTION_LAYOUTS'
+        ||row.sourceSignals.some(signal=>signalSet.has(signal))).map(row=>row.ideaId)),
       companyUiSource:uiLibrarySourcePath,companyUiSourceSha256:uiLibraryHash,
       companyFactoryPresent:uiLibrarySource.includes('function RobloxCommonUI.'+factory+'(options)'),
       platform:resolvedTarget.toUpperCase(),
