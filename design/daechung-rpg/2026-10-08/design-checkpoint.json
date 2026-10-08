@@ -478,25 +478,39 @@
       "webRule": "WEB_2_5D_AND_UP",
       "unityRule": "UNITY_2_5D_AND_UP",
       "robloxRule": "ROBLOX_2_5D_AND_UP"
+    },
+    "local_authoring_parts::4dbd977025363a0018141cdec505ca53aaf8a9871b32b561af1fbfa297934bb4:platformExpansionPolicy": {
+      "mode": "SHARED_LARGE_FRAME_PLATFORM_NATIVE_EXPANSION",
+      "sharedLargeFrame": [
+        "CORE_FUN_AND_REPRESENTATIVE_LOOP",
+        "CORE_IDENTITY",
+        "CORE_IDENTITY",
+        "CORE_IDENTITY",
+        "CORE_IDENTITY"
+      ],
+      "expansionLimit": "NO_ARTIFICIAL_PARITY_LIMIT_WITHIN_SHARED_LARGE_FRAME",
+      "webRule": "WEB_2_5D_AND_UP",
+      "unityRule": "UNITY_2_5D_AND_UP",
+      "robloxRule": "ROBLOX_2_5D_AND_UP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 23,
-      "successes": 22,
+      "calls": 24,
+      "successes": 23,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2181622,
-      "lastMs": 99215,
+      "totalMs": 2211559,
+      "lastMs": 29937,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T01:06:05.610Z"
+      "updatedAt": "2026-10-08T01:06:35.554Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-07T22:49:19.585Z",
-  "updatedAt": "2026-10-08T01:06:05.615Z",
+  "updatedAt": "2026-10-08T01:06:35.558Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1995,12 +2009,12 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::platform-expansion": 15
+    "designer_draft_slices::platform-expansion": 16
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T01:06:05.612Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T01:06:35.555Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
-  "failedPhase": "designer_draft_slices",
+  "failedPhase": "designer_draft",
   "failedTask": "platform-expansion",
   "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_SHARED_FRAME_INCOMPLETE",
   "localAuthoringSplits": {
