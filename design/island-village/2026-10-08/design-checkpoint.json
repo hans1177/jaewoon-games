@@ -53,25 +53,42 @@
       "name": "주민 자원 수집 및 마을 개발 시스템",
       "purpose": "플레이어가 무인도 마을에서 자원을 수집하고, 이를 바탕으로 마을의 기능을 개선하거나 새로운 주민/활동/지역을 추가하는 과정을 관리하는 시스템",
       "playerChoice": "자원 수집, 마을 기능 개선, 새로운 주민/활동/지역 추가, 다음 목표 선택"
+    },
+    "local_authoring_parts::99b7183cedfa3dd68ad34684b2467cd1293a950c196bf3b660b8b077e3908c1d:signatureSystems:1": {
+      "id": "MAIN",
+      "grammarRole": "A",
+      "stateInputs": [
+        "GATHER FOCUSED ISLAND RESOURCES",
+        "BUILD OR IMPROVE VILLAGE FUNCTION",
+        "UNLOCK NEW RESIDENT/ACTIVITY/AREA",
+        "CHOOSE NEXT VILLAGE GOAL"
+      ],
+      "stateOutputs": [
+        "STATUS CHANGE",
+        "REWARD/RISE/NEXT CHOICE"
+      ],
+      "name": "주민 자원 수집 및 마을 개발 시스템",
+      "purpose": "플레이어가 무인도 마을에서 자원을 수집하고, 이를 바탕으로 마을의 기능을 개선하거나 새로운 주민/활동/지역을 추가하는 과정을 관리하는 시스템",
+      "playerChoice": "자원 수집, 마을 기능 개선, 새로운 주민/활동/지역 추가, 다음 목표 선택"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 682876,
-      "lastMs": 102883,
+      "totalMs": 786628,
+      "lastMs": 103752,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:42:52.474Z"
+      "updatedAt": "2026-10-08T08:44:36.227Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:31:29.567Z",
-  "updatedAt": "2026-10-08T08:42:52.474Z",
+  "updatedAt": "2026-10-08T08:44:36.227Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2152,7 +2169,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:42:52.474Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:44:36.227Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
