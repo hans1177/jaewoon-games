@@ -50,25 +50,112 @@
       "name": "signatureSystems[0]",
       "purpose": "플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하고, 플레이어 이동·채집·전투·제작·퀘스트 상태가 같은 월드 상태에 연결된다.의 다음 상태와 접근 가능성을 실제로 바꾼다.의 시그니처 상호작용을 구체화한 게임 정체성.",
       "playerChoice": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하고, 플레이어 이동·채집·전투·제작·퀘스트 상태가 같은 월드 상태에 연결된다.의 다음 상태와 접근 가능성을 실제로 바꾼다.의 시그니처 상호작용을 구체화한 게임 정체성."
+    },
+    "local_authoring_parts::4793688b5a25db7509481c009bc5abd7e50e5cac9b575ee7b5cf4e606547b1eb:signatureSystems:1": {
+      "stateInputs": [
+        "월드 상태 (18000×12000 마력숲 월드, 수정 지역, 화산, 세계수, 연구소, 퀘스트 공간)",
+        "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태"
+      ],
+      "stateOutputs": [
+        "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결",
+        "시그니처 상호작용 결과",
+        "다음 상태와 접근 가능성이 바뀐 월드 상태"
+      ],
+      "name": "signatureSystems[1]",
+      "purpose": "플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하고, 플레이어 이동·채집·전투·제작·퀘스트 상태가 같은 월드 상태에 연결된다.의 다음 상태와 접근 가능성을 실제로 바꾼다.의 시그니처 상호작용을 구체화한 게임 정체성.",
+      "playerChoice": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하고, 플레이어 이동·채집·전투·제작·퀘스트 상태가 같은 월드 상태에 연결된다.의 다음 상태와 접근 가능성을 실제로 바꾼다.의 시그니처 상호작용을 구체화한 게임 정체성."
+    },
+    "local_authoring_parts::9c0b101ff322329aa6724be86ede601ee807ccb40429de0702bbb761d38b9d7c:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_FIGHT_SURVIVAL",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "월드 상태 (18000×12000 마력숲 월드, 수정 지역, 화산, 세계수, 연구소, 퀘스트 공간)",
+            "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태"
+          ],
+          "stateOutputs": [
+            "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결",
+            "시그니처 상호작용 결과",
+            "다음 상태와 접근 가능성이 바뀐 월드 상태"
+          ],
+          "name": "signatureSystems[0]",
+          "purpose": "플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하고, 플레이어 이동·채집·전투·제작·퀘스트 상태가 같은 월드 상태에 연결된다.의 다음 상태와 접근 가능성을 실제로 바꾼다.의 시그니처 상호작용을 구체화한 게임 정체성.",
+          "playerChoice": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하고, 플레이어 이동·채집·전투·제작·퀘스트 상태가 같은 월드 상태에 연결된다.의 다음 상태와 접근 가능성을 실제로 바꾼다.의 시그니처 상호작용을 구체화한 게임 정체성."
+        },
+        {
+          "stateInputs": [
+            "월드 상태 (18000×12000 마력숲 월드, 수정 지역, 화산, 세계수, 연구소, 퀘스트 공간)",
+            "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태"
+          ],
+          "stateOutputs": [
+            "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결",
+            "시그니처 상호작용 결과",
+            "다음 상태와 접근 가능성이 바뀐 월드 상태"
+          ],
+          "name": "signatureSystems[1]",
+          "purpose": "플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하고, 플레이어 이동·채집·전투·제작·퀘스트 상태가 같은 월드 상태에 연결된다.의 다음 상태와 접근 가능성을 실제로 바꾼다.의 시그니처 상호작용을 구체화한 게임 정체성.",
+          "playerChoice": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하고, 플레이어 이동·채집·전투·제작·퀘스트 상태가 같은 월드 상태에 연결된다.의 다음 상태와 접근 가능성을 실제로 바꾼다.의 시그니처 상호작용을 구체화한 게임 정체성."
+        }
+      ]
+    },
+    "local_authoring_parts::2e3aac503bf7634c578b3fd4251e66f1e40dc1d3833eaad525534a604f7bc9d5:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_FIGHT_SURVIVAL",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "월드 상태 (18000×12000 마력숲 월드, 수정 지역, 화산, 세계수, 연구소, 퀘스트 공간)",
+            "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태"
+          ],
+          "stateOutputs": [
+            "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결",
+            "시그니처 상호작용 결과",
+            "다음 상태와 접근 가능성이 바뀐 월드 상태"
+          ],
+          "name": "signatureSystems[0]",
+          "purpose": "플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하고, 플레이어 이동·채집·전투·제작·퀘스트 상태가 같은 월드 상태에 연결된다.의 다음 상태와 접근 가능성을 실제로 바꾼다.의 시그니처 상호작용을 구체화한 게임 정체성.",
+          "playerChoice": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하고, 플레이어 이동·채집·전투·제작·퀘스트 상태가 같은 월드 상태에 연결된다.의 다음 상태와 접근 가능성을 실제로 바꾼다.의 시그니처 상호작용을 구체화한 게임 정체성."
+        },
+        {
+          "stateInputs": [
+            "월드 상태 (18000×12000 마력숲 월드, 수정 지역, 화산, 세계수, 연구소, 퀘스트 공간)",
+            "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태"
+          ],
+          "stateOutputs": [
+            "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결",
+            "시그니처 상호작용 결과",
+            "다음 상태와 접근 가능성이 바뀐 월드 상태"
+          ],
+          "name": "signatureSystems[1]",
+          "purpose": "플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하고, 플레이어 이동·채집·전투·제작·퀘스트 상태가 같은 월드 상태에 연결된다.의 다음 상태와 접근 가능성을 실제로 바꾼다.의 시그니처 상호작용을 구체화한 게임 정체성.",
+          "playerChoice": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하고, 플레이어 이동·채집·전투·제작·퀘스트 상태가 같은 월드 상태에 연결된다.의 다음 상태와 접근 가능성을 실제로 바꾼다.의 시그니처 상호작용을 구체화한 게임 정체성."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 655818,
-      "lastMs": 127093,
+      "totalMs": 779466,
+      "lastMs": 123648,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:26:10.814Z"
+      "updatedAt": "2026-10-08T12:28:14.463Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:15:14.939Z",
-  "updatedAt": "2026-10-08T12:26:10.814Z",
+  "updatedAt": "2026-10-08T12:28:14.466Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2267,7 +2354,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:26:10.814Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:28:14.466Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
