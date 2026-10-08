@@ -446,25 +446,28 @@
         "trigger",
         "stateChange"
       ]
+    },
+    "local_authoring_parts::5d77e804cf7d07177dc2b933b0c846d308e363204afb98f50d50133546e6fec6:fromSystem": {
+      "fromSystem": "BOARD_STATE_TRANSITION_SYSTEM_03"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 21,
-      "successes": 21,
+      "calls": 22,
+      "successes": 22,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 665986,
-      "lastMs": 33960,
+      "totalMs": 698787,
+      "lastMs": 32801,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:00:45.728Z"
+      "updatedAt": "2026-10-08T21:01:18.531Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:49:39.552Z",
-  "updatedAt": "2026-10-08T21:00:45.728Z",
+  "updatedAt": "2026-10-08T21:01:18.531Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2959,7 +2962,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T21:00:45.728Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:01:18.531Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
