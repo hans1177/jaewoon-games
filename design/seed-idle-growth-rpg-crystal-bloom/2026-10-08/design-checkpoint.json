@@ -663,25 +663,104 @@
     },
     "local_authoring_parts::839d8079845498e02085fd3592229fc896c062eb1c2e5e796959662aa1af1852:trigger": {
       "trigger": "시스템은 MAIN→A 상태 변화에 해당하는 조건을 검증하고, 해당 조건에 맞는 선택을 수행하여 상태를 업데이트한다. 이 과정에서 시스템은 MAIN→A 상태의 입력을 검증하고, 해당 상태 변화에 맞는 조건을 선택하여 다음 상태로 전환한다."
+    },
+    "local_authoring_parts::839d8079845498e02085fd3592229fc896c062eb1c2e5e796959662aa1af1852:stateChange": {
+      "stateChange": "시스템은 MAIN→A 상태 변화에 해당하는 조건을 검증하고, 해당 조건에 맞는 선택을 수행하여 상태를 업데이트한다. 이 과정에서 시스템은 MAIN→A 상태의 입력을 검증하고, 해당 상태 변화에 맞는 조건을 선택하여 다음 상태로 전환한다."
+    },
+    "local_authoring_parts::3eb9d022182677f3582138b9645b63887c17093cbd49ab3bfbe56750971075c9:systemInterconnections:4": {
+      "fromId": "MAIN→A",
+      "toId": "systemInterconnections[4]",
+      "stateKeys": [
+        "MAIN→A",
+        "systemInterconnections[4].stateChange"
+      ],
+      "fromSystem": "시스템은 MAIN→A 상태 변화에 해당하는 조건을 검증하고, 해당 조건에 맞는 선택을 수행하여 상태를 업데이트한다. 이 과정에서 시스템은 MAIN→A 상태의 입력을 검증하고, 해당 상태 변화에 맞는 조건을 선택하여 다음 상태로 전환한다.",
+      "toSystem": "시스템은 MAIN→A 상태 변화에 해당하는 조건을 검증하고, 해당 조건에 맞는 선택을 수행하여 상태를 업데이트한다. 이 과정에서 시스템은 MAIN→A 상태의 입력을 검증하고, 해당 상태 변화에 맞는 조건을 선택하여 다음 상태로 전환한다.",
+      "trigger": "시스템은 MAIN→A 상태 변화에 해당하는 조건을 검증하고, 해당 조건에 맞는 선택을 수행하여 상태를 업데이트한다. 이 과정에서 시스템은 MAIN→A 상태의 입력을 검증하고, 해당 상태 변화에 맞는 조건을 선택하여 다음 상태로 전환한다.",
+      "stateChange": "시스템은 MAIN→A 상태 변화에 해당하는 조건을 검증하고, 해당 조건에 맞는 선택을 수행하여 상태를 업데이트한다. 이 과정에서 시스템은 MAIN→A 상태의 입력을 검증하고, 해당 상태 변화에 맞는 조건을 선택하여 다음 상태로 전환한다."
+    },
+    "local_authoring_parts::d94023855c70ca144de948e3cfb9d803217353339b1f63fbe89ea1b15e6d4482:systemInterconnections": {
+      "systemInterconnections": [
+        {
+          "fromId": "MAIN→A",
+          "toId": "systemInterconnections[0].stateChange",
+          "stateKeys": [
+            "MAIN→A",
+            "systemInterconnections[0].stateChange"
+          ],
+          "fromSystem": "systemInterconnections[0].stateChange",
+          "toSystem": "systemInterconnections[0].stateChange",
+          "trigger": "systemInterconnections[0].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+          "stateChange": "시스템이 MAIN→A 상태 변화를 처리하며, 이 상태 변화는 원본 규칙에 따라 조건을 검증하고 선택을 수행하여 상태를 업데이트한다. 이 과정에서 시스템은 MAIN→A 상태의 입력을 검증하고, 해당 상태 변화에 맞는 조건을 선택하여 다음 상태로 전환한다."
+        },
+        {
+          "fromId": "MAIN→A",
+          "toId": "systemInterconnections[1].stateChange",
+          "stateKeys": [
+            "MAIN→A",
+            "systemInterconnections[1].stateChange"
+          ],
+          "fromSystem": "systemInterconnections[1].stateChange",
+          "toSystem": "시스템이 MAIN→A 상태 변화를 처리하며, 이 상태 변화는 원본 규칙에 따라 조건을 검증하고 선택을 수행하여 상태를 업데이트한다. 이 과정에서 시스템은 MAIN→A 상태의 입력을 검증하고, 해당 상태 변화에 맞는 조건을 선택하여 다음 상태로 전환한다.",
+          "trigger": "시스템이 MAIN→A 상태 변화를 처리하며, 이 상태 변화는 원본 규칙에 따라 조건을 검증하고 선택을 수행하여 상태를 업데이트한다. 이 과정에서 시스템은 MAIN→A 상태의 입력을 검증하고, 해당 상태 변화에 맞는 조건을 선택하여 다음 상태로 전환한다.",
+          "stateChange": "시스템은 MAIN→A 상태 변화에 해당하는 조건을 검증하고, 해당 조건에 맞는 선택을 수행하여 상태를 업데이트한다. 이 과정에서 시스템은 MAIN→A 상태의 입력을 검증하고, 해당 상태 변화에 맞는 조건을 선택하여 다음 상태로 전환한다."
+        },
+        {
+          "fromId": "MAIN→A",
+          "toId": "systemInterconnections[2].stateChange",
+          "stateKeys": [
+            "MAIN→A",
+            "systemInterconnections[2].stateChange"
+          ],
+          "fromSystem": "시스템은 MAIN→A 상태 변화에 해당하는 조건을 검증하고, 해당 조건에 맞는 선택을 수행하여 상태를 업데이트한다. 이 과정에서 시스템은 MAIN→A 상태의 입력을 검증하고, 해당 상태 변화에 맞는 조건을 선택하여 다음 상태로 전환한다.",
+          "toSystem": "시스템은 MAIN→A 상태 변화에 해당하는 조건을 검증하고, 해당 조건에 맞는 선택을 수행하여 상태를 업데이트한다. 이 과정에서 시스템은 MAIN→A 상태의 입력을 검증하고, 해당 상태 변화에 맞는 조건을 선택하여 다음 상태로 전환한다.",
+          "trigger": "시스템은 MAIN→A 상태 변화에 해당하는 조건을 검증하고, 해당 조건에 맞는 선택을 수행하여 상태를 업데이트한다. 이 과정에서 시스템은 MAIN→A 상태의 입력을 검증하고, 해당 상태 변화에 맞는 조건을 선택하여 다음 상태로 전환한다.",
+          "stateChange": "시스템은 MAIN→A 상태 변화에 해당하는 조건을 검증하고, 해당 조건에 맞는 선택을 수행하여 상태를 업데이트한다. 이 과정에서 시스템은 MAIN→A 상태의 입력을 검증하고, 해당 상태 변화에 맞는 조건을 선택하여 다음 상태로 전환한다."
+        },
+        {
+          "fromId": "MAIN→A",
+          "toId": "systemInterconnections[3]",
+          "stateKeys": [
+            "MAIN→A",
+            "systemInterconnections[3].stateChange"
+          ],
+          "fromSystem": "시스템은 MAIN→A 상태 변화에 해당하는 조건을 검증하고, 해당 조건에 맞는 선택을 수행하여 상태를 업데이트한다. 이 과정에서 시스템은 MAIN→A 상태의 입력을 검증하고, 해당 상태 변화에 맞는 조건을 선택하여 다음 상태로 전환한다.",
+          "toSystem": "시스템은 MAIN→A 상태 변화에 해당하는 조건을 검증하고, 해당 조건에 맞는 선택을 수행하여 상태를 업데이트한다. 이 과정에서 시스템은 MAIN→A 상태의 입력을 검증하고, 해당 상태 변화에 맞는 조건을 선택하여 다음 상태로 전환한다.",
+          "trigger": "시스템은 MAIN→A 상태 변화에 해당하는 조건을 검증하고, 해당 조건에 맞는 선택을 수행하여 상태를 업데이트한다. 이 과정에서 시스템은 MAIN→A 상태의 입력을 검증하고, 해당 상태 변화에 맞는 조건을 선택하여 다음 상태로 전환한다.",
+          "stateChange": "시스템은 MAIN→A 상태 변화에 해당하는 조건을 검증하고, 해당 조건에 맞는 선택을 수행하여 상태를 업데이트한다. 이 과정에서 시스템은 MAIN→A 상태의 입력을 검증하고, 해당 상태 변화에 맞는 조건을 선택하여 다음 상태로 전환한다."
+        },
+        {
+          "fromId": "MAIN→A",
+          "toId": "systemInterconnections[4]",
+          "stateKeys": [
+            "MAIN→A",
+            "systemInterconnections[4].stateChange"
+          ],
+          "fromSystem": "시스템은 MAIN→A 상태 변화에 해당하는 조건을 검증하고, 해당 조건에 맞는 선택을 수행하여 상태를 업데이트한다. 이 과정에서 시스템은 MAIN→A 상태의 입력을 검증하고, 해당 상태 변화에 맞는 조건을 선택하여 다음 상태로 전환한다.",
+          "toSystem": "시스템은 MAIN→A 상태 변화에 해당하는 조건을 검증하고, 해당 조건에 맞는 선택을 수행하여 상태를 업데이트한다. 이 과정에서 시스템은 MAIN→A 상태의 입력을 검증하고, 해당 상태 변화에 맞는 조건을 선택하여 다음 상태로 전환한다.",
+          "trigger": "시스템은 MAIN→A 상태 변화에 해당하는 조건을 검증하고, 해당 조건에 맞는 선택을 수행하여 상태를 업데이트한다. 이 과정에서 시스템은 MAIN→A 상태의 입력을 검증하고, 해당 상태 변화에 맞는 조건을 선택하여 다음 상태로 전환한다.",
+          "stateChange": "시스템은 MAIN→A 상태 변화에 해당하는 조건을 검증하고, 해당 조건에 맞는 선택을 수행하여 상태를 업데이트한다. 이 과정에서 시스템은 MAIN→A 상태의 입력을 검증하고, 해당 상태 변화에 맞는 조건을 선택하여 다음 상태로 전환한다."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 45,
-      "successes": 45,
+      "calls": 46,
+      "successes": 46,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1740785,
-      "lastMs": 34815,
+      "totalMs": 1775488,
+      "lastMs": 34703,
       "lastError": null,
-      "updatedAt": "2026-10-08T09:19:28.089Z"
+      "updatedAt": "2026-10-08T09:20:02.793Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:50:27.155Z",
-  "updatedAt": "2026-10-08T09:19:28.089Z",
+  "updatedAt": "2026-10-08T09:20:02.796Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3388,7 +3467,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T09:19:28.089Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:20:02.796Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
