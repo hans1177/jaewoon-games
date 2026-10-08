@@ -3,7 +3,17 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DataStoreService = game:GetService("DataStoreService")
 local RunService = game:GetService("RunService")
-local store = DataStoreService:GetDataStore("survival-development-v1")
+-- 파일이 처음 실행되는 로컬 스튜디오에서도 자원/월드 초기화를 막지 않는다.
+-- 서비스 접근 실패를 기본 저장 기록으로 덮어쓰지 않도록 loadPlayer에서 실패 처리한다.
+local store
+local storeReady, storeValue = pcall(function()
+  return DataStoreService:GetDataStore("survival-development-v1")
+end)
+if storeReady then
+  store = storeValue
+else
+  warn("SURVIVAL_DATASTORE_UNAVAILABLE")
+end
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("GameConfig"))
 
@@ -470,38 +480,54 @@ local handlers = {
   ["scope-mobileux-4d98ef9e2d"] = useEquippedTool,
 }
 
-Players.PlayerAdded:Connect(function(player)
+-- 파일별 기존 DataStore를 그대로 사용하되, 읽기 실패 세션은 저장으로 덮어쓰지 않는다.
+local verifiedSaveRead = {}
+local playerLoadStarted = {}
+local function loadPlayer(player)
+  if playerLoadStarted[player] then return end
+  playerLoadStarted[player] = true
   local ok, saved = pcall(function()
     return store:GetAsync("player:" .. player.UserId)
   end)
-  if ok and typeof(saved) == "table" then
-    for key, fallback in pairs(Config.InitialState) do
-      local value = saved[key]
-      if typeof(value) == "number" then player:SetAttribute(key, value) else player:SetAttribute(key, fallback) end
-    end
-    -- 이전 저장 구조도 그대로 복원하고, 승인된 노드의 내구도 상태만 선택적으로 추가 복원한다.
-    if type(saved.WorldObjects) == "table" then
-      local states = {}
-      for _, name in ipairs({"WoodResourceNode", "StoneResourceNode"}) do
-        local definition = validResourceRule(name)
-        local id = "SURVIVAL:RESOURCE:" .. name
-        local item = saved.WorldObjects[id]
-        if definition and type(item) == "table" and type(item.health) == "number" and type(item.depletedUntil) == "number" then
-          states[id] = {
-            health = math.clamp(math.floor(item.health), 0, definition.MaxHealth),
-            depletedUntil = math.clamp(math.floor(item.depletedUntil), 0, os.time() + 86400)
-          }
-        end
+  if player.Parent ~= Players then return end
+
+  if ok and (saved == nil or typeof(saved) == "table") then
+    verifiedSaveRead[player] = true
+    if typeof(saved) == "table" then
+      for key, fallback in pairs(Config.InitialState) do
+        local value = saved[key]
+        if typeof(value) == "number" then player:SetAttribute(key, value) else player:SetAttribute(key, fallback) end
       end
-      if next(states) then worldObjectStates[player] = states end
+      -- 이전 저장 구조도 그대로 복원하고, 승인된 노드의 내구도 상태만 선택적으로 추가 복원한다.
+      if type(saved.WorldObjects) == "table" then
+        local states = {}
+        for _, name in ipairs({"WoodResourceNode", "StoneResourceNode"}) do
+          local definition = validResourceRule(name)
+          local id = "SURVIVAL:RESOURCE:" .. name
+          local item = saved.WorldObjects[id]
+          if definition and type(item) == "table" and type(item.health) == "number" and type(item.depletedUntil) == "number" then
+            states[id] = {
+              health = math.clamp(math.floor(item.health), 0, definition.MaxHealth),
+              depletedUntil = math.clamp(math.floor(item.depletedUntil), 0, os.time() + 86400)
+            }
+          end
+        end
+        if next(states) then worldObjectStates[player] = states end
+      end
+    else
+      initializePlayer(player)
     end
+    player:SetAttribute("SaveLoadStatus", "READY")
   else
+    -- 임시 스토어 오류와 손상된 기존 기록은 새로운 기본값으로 절대 덮어쓰지 않는다.
+    verifiedSaveRead[player] = false
     initializePlayer(player)
+    player:SetAttribute("SaveLoadStatus", "REPAIR_REQUIRED")
+    warn("SURVIVAL_SAVE_READ_REPAIR_REQUIRED")
   end
-end)
-for _, player in ipairs(Players:GetPlayers()) do
-  task.defer(function() if player:GetAttribute("Score") == nil then initializePlayer(player) end end)
 end
+Players.PlayerAdded:Connect(loadPlayer)
+for _, player in ipairs(Players:GetPlayers()) do task.defer(loadPlayer, player) end
 remote.OnServerEvent:Connect(function(player, actionId)
   if typeof(actionId) ~= "string" then return end
   local handler = handlers[actionId]
@@ -513,16 +539,53 @@ remote.OnServerEvent:Connect(function(player, actionId)
   handler(player)
 end)
 Players.PlayerRemoving:Connect(function(player)
-  local snapshot = {}
-  for key, fallback in pairs(Config.InitialState) do snapshot[key] = readNumber(player, key, fallback) end
-  if worldObjectStates[player] and next(worldObjectStates[player]) then
-    snapshot.WorldObjects = worldObjectStates[player]
+  if verifiedSaveRead[player] == true then
+    local snapshot = {}
+    for key, fallback in pairs(Config.InitialState) do
+      snapshot[key] = readNumber(player, key, fallback)
+    end
+    if worldObjectStates[player] and next(worldObjectStates[player]) then
+      snapshot.WorldObjects = worldObjectStates[player]
+    end
+    local blockedRecord = false
+    local saved = pcall(function()
+      store:UpdateAsync("player:" .. player.UserId, function(current)
+        -- 모르는 구버전 레코드나 동시 진화된 저장 구조는 파괴하지 않는다.
+        if current ~= nil and typeof(current) ~= "table" then
+          blockedRecord = true
+          return nil
+        end
+        blockedRecord = false
+        local merged = typeof(current) == "table" and table.clone(current) or {}
+        for key, value in pairs(snapshot) do
+          if key == "WorldObjects" and typeof(value) == "table" then
+            local objects = typeof(merged.WorldObjects) == "table" and table.clone(merged.WorldObjects) or {}
+            for objectId, objectState in pairs(value) do
+              local previous = objects[objectId]
+              if typeof(previous) == "table" and typeof(objectState) == "table" then
+                local updated = table.clone(previous)
+                for field, fieldValue in pairs(objectState) do updated[field] = fieldValue end
+                objects[objectId] = updated
+              else
+                objects[objectId] = objectState
+              end
+            end
+            merged.WorldObjects = objects
+          else
+            merged[key] = value
+          end
+        end
+        return merged
+      end)
+    end)
+    if not saved or blockedRecord then warn("SURVIVAL_SAVE_WRITE_REPAIR_REQUIRED") end
+  else
+    warn("SURVIVAL_SAVE_WRITE_SKIPPED_UNVERIFIED_READ")
   end
-  pcall(function()
-    store:UpdateAsync("player:" .. player.UserId, function() return snapshot end)
-  end)
   lastAction[player] = nil
   worldObjectStates[player] = nil
+  verifiedSaveRead[player] = nil
+  playerLoadStarted[player] = nil
 end)
 
 
