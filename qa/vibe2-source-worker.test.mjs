@@ -1337,6 +1337,14 @@ test('declared Blender authoring persists exact generated outputs only inside th
     assert.equal(result.status,'DCC_RECIPE_EXECUTED_CANDIDATE_PERSISTED');
     assert.deepEqual([...result.generatedFiles],outputs);
     for(const relative of outputs)assert.ok(fs.existsSync(path.join(root,relative)),relative);
+    // 두 번째 제작 실패는 먼저 성공한 제작까지 같은 묶음으로 되돌린다.
+    fs.writeFileSync(path.join(root,outputs[1]),'preserved-before-batch');
+    const beforeBatch=outputs.map(relative=>fs.readFileSync(path.join(root,relative)));
+    const firstRecipe=workOrder.assetProduction.nativeAuthoringExecution.dcc.executionRecipes[0];
+    workOrder.assetProduction.nativeAuthoringExecution.dcc.executionRecipes=[firstRecipe,{...firstRecipe,id:'invalid-second',executor:'INVALID'}];
+    assert.throws(()=>executeDeclaredNativeDccAuthoringVerification({cwd:root,order:workOrder,blenderExecutable:blender,persistCandidateOutputs:true}),/NATIVE_DCC_EXECUTOR_FORBIDDEN/);
+    for(const [index,relative] of outputs.entries())assert.deepEqual(fs.readFileSync(path.join(root,relative)),beforeBatch[index]);
+    workOrder.assetProduction.nativeAuthoringExecution.dcc.executionRecipes=[firstRecipe];
     const status=execFileSync('git',['status','--porcelain','--untracked-files=all'],{cwd:root,encoding:'utf8'});
     assert.match(status,/assets\/test\/native\/model\/model\.glb/);
     workOrder.compiledWorkContract.workLock.files=['roblox-games/demo/client/Game.client.luau'];

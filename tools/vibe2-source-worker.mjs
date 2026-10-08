@@ -482,6 +482,7 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
   const beforeStatusKey=JSON.stringify(beforeStatus);
   const tempRoot=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-dcc-verify-'));
   const results=[];
+  const batchSnapshots=[];
   try{
     execFileSync(blenderExecutable,['--version'],{cwd,encoding:'utf8',timeout:30000,maxBuffer:4*1024*1024,stdio:['ignore','pipe','pipe']});
     for(const [index,recipe] of recipes.entries()){
@@ -507,6 +508,7 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
         if(existed)fs.cpSync(absolute,backup,{recursive:true,force:true});
         snapshots.push({parent,absolute,backup,existed});
       }
+      if(persist)batchSnapshots.push(...snapshots);
       const preOutput=new Map(outputs.map(relative=>{const file=path.resolve(cwd,relative);return[relative,fs.existsSync(file)&&fs.statSync(file).isFile()?{sha256:sha256File(file),size:fs.statSync(file).size}:null];}));
       let stdout='',recipeSucceeded=false;
       try{
@@ -602,6 +604,18 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
       editableSource:first.editableSource||null,nativeArtifact:first.nativeArtifact||null,artifactHash:first.artifactHash||null,preview:first.preview||null,
       runtimeVerified:false,companyPromotionEligible:false
     });
+  }catch(error){
+    // 하나의 후보 묶음이므로 뒤쪽 제작 또는 최종 범위 검사가 실패하면
+    // 앞서 성공한 출력도 역순으로 복원한다. 같은 출력 폴더의 연속 제작도 보존한다.
+    const rollbackErrors=[];
+    for(const snap of [...batchSnapshots].reverse()){
+      try{
+        fs.rmSync(snap.absolute,{recursive:true,force:true});
+        if(snap.existed)fs.cpSync(snap.backup,snap.absolute,{recursive:true,force:true});
+      }catch(rollbackError){rollbackErrors.push(snap.parent+':'+clean(rollbackError?.message));}
+    }
+    if(rollbackErrors.length)throw new Error('NATIVE_DCC_BATCH_ROLLBACK_FAILED:'+rollbackErrors.join('|'),{cause:error});
+    throw error;
   }finally{fs.rmSync(tempRoot,{recursive:true,force:true});}
 }
 export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}){
