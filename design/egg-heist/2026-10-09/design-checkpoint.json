@@ -478,25 +478,41 @@
         "world_state"
       ],
       "fromSystem": "DELVE(@): 세계의原図とプレイルール、ボーナス・情報・関係をつなぐシグニチャシステム"
+    },
+    "local_authoring_parts::90bd95e42a42aadb5d0db7d8e0ea51c6857eb25835b724ed2afd1aaa04c5c6c1:toSystem,trigger,stateChange": {
+      "toSystem": "DELVE(@): 세계의原図와プレイルール,ボーナス・情報・関係をつなぐシグニチャシステム",
+      "trigger": "world_state",
+      "stateChange": "new_world_state"
+    },
+    "local_authoring_parts::7794471a773fce6c1a602f9d0a2406912e4a2b5bb249dae5741e780f4a6a8279:systemInterconnections:3": {
+      "fromId": "signatureSystems[3]",
+      "toId": "signatureSystems[4]",
+      "stateKeys": [
+        "world_state"
+      ],
+      "fromSystem": "DELVE(@): 세계의原図とプレイルール、ボーナス・情報・関係をつなぐシグニチャシステム",
+      "toSystem": "DELVE(@): 세계의原図와プレイルール,ボーナス・情報・関係をつなぐシグニチャシステム",
+      "trigger": "world_state",
+      "stateChange": "new_world_state"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 18,
+      "calls": 19,
+      "successes": 19,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1807682,
-      "lastMs": 92153,
+      "totalMs": 1898917,
+      "lastMs": 91235,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:17:24.025Z"
+      "updatedAt": "2026-10-08T21:18:55.261Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:47:16.280Z",
-  "updatedAt": "2026-10-08T21:17:24.025Z",
+  "updatedAt": "2026-10-08T21:18:55.262Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2509,7 +2525,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T21:17:24.025Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:18:55.262Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
