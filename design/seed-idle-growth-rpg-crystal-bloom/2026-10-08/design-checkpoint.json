@@ -742,25 +742,28 @@
           "stateChange": "시스템은 MAIN→A 상태 변화에 해당하는 조건을 검증하고, 해당 조건에 맞는 선택을 수행하여 상태를 업데이트한다. 이 과정에서 시스템은 MAIN→A 상태의 입력을 검증하고, 해당 상태 변화에 맞는 조건을 선택하여 다음 상태로 전환한다."
         }
       ]
+    },
+    "local_authoring_parts::d94023855c70ca144de948e3cfb9d803217353339b1f63fbe89ea1b15e6d4482:progressionDirection": {
+      "progressionDirection": "시스템은 MAIN→A 상태 변화에 해당하는 조건을 검증하고, 해당 조건에 맞는 선택을 수행하여 상태를 업데이트한다. 이 과정에서 시스템은 MAIN→A 상태의 입력을 검증하고, 해당 상태 변화에 맞는 조건을 선택하여 다음 상태로 전환한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 46,
-      "successes": 46,
+      "calls": 47,
+      "successes": 47,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1775488,
-      "lastMs": 34703,
+      "totalMs": 1810320,
+      "lastMs": 34832,
       "lastError": null,
-      "updatedAt": "2026-10-08T09:20:02.793Z"
+      "updatedAt": "2026-10-08T09:20:37.629Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:50:27.155Z",
-  "updatedAt": "2026-10-08T09:20:02.796Z",
+  "updatedAt": "2026-10-08T09:20:37.629Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3467,7 +3470,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T09:20:02.796Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:20:37.629Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
