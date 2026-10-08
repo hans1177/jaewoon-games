@@ -114,25 +114,258 @@
       "name": "EnemyDefenseSynergy",
       "purpose": "Establishes the dynamic relationship between enemy wave types, defender placements, and resource allocation to create adaptive and responsive defensive strategies.",
       "playerChoice": "Player chooses where to place defenders, what resources to allocate, and how to adjust the defense based on enemy wave composition and type."
+    },
+    "local_authoring_parts::696689c0dcf70fde1bc1a94784074a7dceb30b286208b13f5d0aae71a4482e73:signatureSystems:4": {
+      "id": "signatureSystems[4]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "EnemyWaveType",
+        "DefenderPlacement",
+        "ResourcePool",
+        "EnemyType",
+        "WaveComposition"
+      ],
+      "stateOutputs": [
+        "DefensiveStrategy",
+        "ResourceAllocation",
+        "ObjectiveProtection",
+        "StageClearance"
+      ],
+      "name": "EnemyDefenseSynergy",
+      "purpose": "Establishes the dynamic relationship between enemy wave types, defender placements, and resource allocation to create adaptive and responsive defensive strategies.",
+      "playerChoice": "Player chooses where to place defenders, what resources to allocate, and how to adjust the defense based on enemy wave composition and type."
+    },
+    "local_authoring_parts::31d3e4e14b3211b33fb52596a64b78b42e2aa0db8e40e0482355a9a987ac51da:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "EnemyWaveType",
+            "DefenderPlacement",
+            "ResourcePool",
+            "EnemyType",
+            "WaveComposition"
+          ],
+          "stateOutputs": [
+            "DefensiveStrategy",
+            "ResourceAllocation",
+            "ObjectiveProtection",
+            "StageClearance"
+          ],
+          "name": "EnemyDefenseSynergy",
+          "purpose": "Establishes the dynamic relationship between enemy wave types, defender placements, and resource allocation to create adaptive and responsive defensive strategies.",
+          "playerChoice": "Player chooses where to place defenders, what resources to allocate, and how to adjust the defense based on enemy wave composition and type."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "EnemyWaveType",
+            "DefenderPlacement",
+            "ResourcePool",
+            "EnemyType",
+            "WaveComposition"
+          ],
+          "stateOutputs": [
+            "DefensiveStrategy",
+            "ResourceAllocation",
+            "ObjectiveProtection",
+            "StageClearance"
+          ],
+          "name": "EnemyDefenseSynergy",
+          "purpose": "Establishes the dynamic relationship between enemy wave types, defender placements, and resource allocation to create adaptive and responsive defensive strategies.",
+          "playerChoice": "Player chooses where to place defenders, what resources to allocate, and how to adjust the defense based on enemy wave composition and type."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "EnemyWaveType",
+            "DefenderPlacement",
+            "ResourcePool",
+            "EnemyType",
+            "WaveComposition"
+          ],
+          "stateOutputs": [
+            "DefensiveStrategy",
+            "ResourceAllocation",
+            "ObjectiveProtection",
+            "StageClearance"
+          ],
+          "name": "EnemyDefenseSynergy",
+          "purpose": "Establishes the dynamic relationship between enemy wave types, defender placements, and resource allocation to create adaptive and responsive defensive strategies.",
+          "playerChoice": "Player chooses where to place defenders, what resources to allocate, and how to adjust the defense based on enemy wave composition and type."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "EnemyWaveType",
+            "DefenderPlacement",
+            "ResourcePool",
+            "EnemyType",
+            "WaveComposition"
+          ],
+          "stateOutputs": [
+            "DefensiveStrategy",
+            "ResourceAllocation",
+            "ObjectiveProtection",
+            "StageClearance"
+          ],
+          "name": "EnemyDefenseSynergy",
+          "purpose": "Establishes the dynamic relationship between enemy wave types, defender placements, and resource allocation to create adaptive and responsive defensive strategies.",
+          "playerChoice": "Player chooses where to place defenders, what resources to allocate, and how to adjust the defense based on enemy wave composition and type."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "EnemyWaveType",
+            "DefenderPlacement",
+            "ResourcePool",
+            "EnemyType",
+            "WaveComposition"
+          ],
+          "stateOutputs": [
+            "DefensiveStrategy",
+            "ResourceAllocation",
+            "ObjectiveProtection",
+            "StageClearance"
+          ],
+          "name": "EnemyDefenseSynergy",
+          "purpose": "Establishes the dynamic relationship between enemy wave types, defender placements, and resource allocation to create adaptive and responsive defensive strategies.",
+          "playerChoice": "Player chooses where to place defenders, what resources to allocate, and how to adjust the defense based on enemy wave composition and type."
+        }
+      ]
+    },
+    "local_authoring_parts::fe02a1b305086a1b66a32ea76c883923bd6005d8c9b05dde587e0fc8123e275c:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT: Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "PROCESS: Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "OUTPUT: Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "EnemyWaveType",
+            "DefenderPlacement",
+            "ResourcePool",
+            "EnemyType",
+            "WaveComposition"
+          ],
+          "stateOutputs": [
+            "DefensiveStrategy",
+            "ResourceAllocation",
+            "ObjectiveProtection",
+            "StageClearance"
+          ],
+          "name": "EnemyDefenseSynergy",
+          "purpose": "Establishes the dynamic relationship between enemy wave types, defender placements, and resource allocation to create adaptive and responsive defensive strategies.",
+          "playerChoice": "Player chooses where to place defenders, what resources to allocate, and how to adjust the defense based on enemy wave composition and type."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "EnemyWaveType",
+            "DefenderPlacement",
+            "ResourcePool",
+            "EnemyType",
+            "WaveComposition"
+          ],
+          "stateOutputs": [
+            "DefensiveStrategy",
+            "ResourceAllocation",
+            "ObjectiveProtection",
+            "StageClearance"
+          ],
+          "name": "EnemyDefenseSynergy",
+          "purpose": "Establishes the dynamic relationship between enemy wave types, defender placements, and resource allocation to create adaptive and responsive defensive strategies.",
+          "playerChoice": "Player chooses where to place defenders, what resources to allocate, and how to adjust the defense based on enemy wave composition and type."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "EnemyWaveType",
+            "DefenderPlacement",
+            "ResourcePool",
+            "EnemyType",
+            "WaveComposition"
+          ],
+          "stateOutputs": [
+            "DefensiveStrategy",
+            "ResourceAllocation",
+            "ObjectiveProtection",
+            "StageClearance"
+          ],
+          "name": "EnemyDefenseSynergy",
+          "purpose": "Establishes the dynamic relationship between enemy wave types, defender placements, and resource allocation to create adaptive and responsive defensive strategies.",
+          "playerChoice": "Player chooses where to place defenders, what resources to allocate, and how to adjust the defense based on enemy wave composition and type."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "EnemyWaveType",
+            "DefenderPlacement",
+            "ResourcePool",
+            "EnemyType",
+            "WaveComposition"
+          ],
+          "stateOutputs": [
+            "DefensiveStrategy",
+            "ResourceAllocation",
+            "ObjectiveProtection",
+            "StageClearance"
+          ],
+          "name": "EnemyDefenseSynergy",
+          "purpose": "Establishes the dynamic relationship between enemy wave types, defender placements, and resource allocation to create adaptive and responsive defensive strategies.",
+          "playerChoice": "Player chooses where to place defenders, what resources to allocate, and how to adjust the defense based on enemy wave composition and type."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "EnemyWaveType",
+            "DefenderPlacement",
+            "ResourcePool",
+            "EnemyType",
+            "WaveComposition"
+          ],
+          "stateOutputs": [
+            "DefensiveStrategy",
+            "ResourceAllocation",
+            "ObjectiveProtection",
+            "StageClearance"
+          ],
+          "name": "EnemyDefenseSynergy",
+          "purpose": "Establishes the dynamic relationship between enemy wave types, defender placements, and resource allocation to create adaptive and responsive defensive strategies.",
+          "playerChoice": "Player chooses where to place defenders, what resources to allocate, and how to adjust the defense based on enemy wave composition and type."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 438187,
-      "lastMs": 40329,
+      "totalMs": 478004,
+      "lastMs": 39817,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:17:44.125Z"
+      "updatedAt": "2026-10-08T12:18:23.943Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:10:25.792Z",
-  "updatedAt": "2026-10-08T12:17:44.125Z",
+  "updatedAt": "2026-10-08T12:18:23.945Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2327,7 +2560,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:17:44.125Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:18:23.945Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
