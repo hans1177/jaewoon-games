@@ -230,3 +230,65 @@ callbacks.remove(p)
 assert(writes==3 and recorded.ResourceStone==30)
 `);
 });
+
+test('bug-defense co-op uses server-owned target and damage while keeping old rules',()=>{
+  const server=read('roblox-games/bug-defense/server/Game.server.luau');
+  const client=read('roblox-games/bug-defense/client/Game.client.luau');
+  const config=read('roblox-games/bug-defense/shared/GameConfig.luau');
+  assert.match(config,/PlayMode = "COOP"/);
+  assert.match(config,/MultiplayerRequired = true/);
+  assert.match(config,/CoopRequired = true/);
+  assert.match(config,/MinimumParticipants = 2/);
+  assert.match(server,/local function assistTeammate\(player\)/);
+  const assist=server.slice(server.indexOf('local function assistTeammate(player)'),server.indexOf('-- 플레이어 전투 행동'));
+  assert.match(assist,/#Players:GetPlayers\(\) < 2/);
+  assert.match(assist,/\(root.Position - otherRoot.Position\).Magnitude <= 36/);
+  assert.match(assist,/sessions\[teammate\].enemies\[target\]/);
+  assert.match(assist,/damageEnemy\(teammate, target, \(12 \+ level \* 2\) \* multiplier\)/);
+  assert.doesNotMatch(assist,/FireServer|DataStore|UpdateAsync|SetAsync/);
+  assert.match(server,/local function multiplayerSnapshot\(changedPlayer, excludedPlayer\)/);
+  assert.match(server,/remote:FireAllClients\("MULTIPLAYER_SYNC", multiplayerSnapshot/);
+  assert.match(server,/remote:FireClient\(player, "MULTIPLAYER_SYNC", multiplayerSnapshot\(nil\)\)/);
+  assert.match(server,/broadcastMultiplayerSync\(nil, player\)/);
+  assert.match(client,/remote:FireServer\("coop-assist"\)/);
+  assert.match(client,/remote:FireServer\("coop-sync"\)/);
+  assert.match(client,/remote.OnClientEvent:Connect\(function\(eventName, snapshot\)/);
+  assert.match(server,/GetDataStore\("bug-defense-development-v1"\)/);
+  assert.doesNotMatch(config,/CoopAssists\s*=/,'session-only assist count must not be saved');
+});
+
+test('bug-defense save gate preserves unknown keys and rejects failed reads',{skip:!luau},()=>{
+  const src=read('roblox-games/bug-defense/server/Game.server.luau');
+  const save=src.slice(src.indexOf('local function savePlayer(player)'),src.indexOf('local function recordAction(player'));
+  assert.match(save,/verifiedSaveRead\[player\] ~= true/);
+  assert.match(save,/typeof\(current\) ~= "table"/);
+  assert.match(save,/table.clone\(current\)/);
+  runLuau(`
+local Config={InitialState={Coins=0,Score=0}}
+local verifiedSaveRead={}
+local log={}
+local function warn(msg)table.insert(log,msg)end
+local player={UserId=42,attrs={Coins=31,Score=5}}
+function player:GetAttribute(key)return self.attrs[key]end
+function player:SetAttribute(key,value)self.attrs[key]=value end
+local function readNumber(p,key,fallback)
+ local value=p:GetAttribute(key)
+ return typeof(value)=="number" and value or fallback
+end
+local writes=0
+local record={Coins=120,Score=60,FutureKey="keep"}
+local store={}
+function store:UpdateAsync(key,update)
+ assert(key=="player:42")
+ writes+=1
+ local change=update(record)
+ if change~=nil then record=change end
+end
+${save}
+assert(savePlayer(player)==false and writes==0 and record.Coins==120)
+verifiedSaveRead[player]=true
+assert(savePlayer(player)==true and writes==1 and record.Coins==31 and record.FutureKey=="keep")
+record="corrupt"
+assert(savePlayer(player)==false and writes==2 and record=="corrupt")
+`);
+});
