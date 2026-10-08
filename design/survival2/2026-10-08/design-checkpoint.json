@@ -492,25 +492,48 @@
       "name": "Forest Role",
       "purpose": "Players assume a dynamic survival role based on seasonal ecology, resource needs, and danger levels, influencing path choices, goals, and actions.",
       "playerChoice": "Choose a role that aligns with current ecology, resource availability, and danger, and decide on path, goal, and action."
+    },
+    "local_authoring_parts::7ef576f73e995d0b9cc7cb7057647b60257e357ee4d9474c51f937c9712934b9:signatureSystems:4": {
+      "id": "forest_role",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "season",
+        "ecology",
+        "resource",
+        "danger",
+        "supply",
+        "group readiness"
+      ],
+      "stateOutputs": [
+        "role",
+        "path",
+        "goal",
+        "action",
+        "outcome",
+        "map"
+      ],
+      "name": "Forest Role",
+      "purpose": "Players assume a dynamic survival role based on seasonal ecology, resource needs, and danger levels, influencing path choices, goals, and actions.",
+      "playerChoice": "Choose a role that aligns with current ecology, resource availability, and danger, and decide on path, goal, and action."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 14,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1281744,
-      "lastMs": 82193,
+      "totalMs": 1366562,
+      "lastMs": 84818,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:18:44.883Z"
+      "updatedAt": "2026-10-08T13:20:09.702Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:57:22.913Z",
-  "updatedAt": "2026-10-08T13:18:44.883Z",
+  "updatedAt": "2026-10-08T13:20:09.723Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2759,7 +2782,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2774,10 +2797,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:18:44.883Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T13:20:09.704Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
