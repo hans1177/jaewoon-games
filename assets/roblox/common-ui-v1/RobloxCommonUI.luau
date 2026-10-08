@@ -3321,11 +3321,52 @@ end
 
 function RobloxCommonUI.CreateWorldPropActionWheel(options)
   options=options or {}
-  local actions=options.actions or {"조사","사용","열기","옮기기","수리","취소"}
-  local root,buttons=RobloxCommonUI.CreateRadialMenu({name=options.name or "WorldPropActionWheel",actions=actions,centerText=options.centerText or "상호작용",size=options.size,theme=options.theme})
+  local theme=cloneTheme(options.theme)
+  local root=RobloxCommonUI.CreateRadialMenu({
+    name=options.name or "WorldPropActionWheel",actions={},
+    centerText=options.centerText or "상호작용",size=options.size,theme=theme
+  })
   tag(root,"WORLD_PROP_ACTION_WHEEL")
+  local buttons,actions={},{}
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    actions=type(state.actions)=="table"and state.actions or {}
+    for index,row in ipairs(actions)do
+      if not buttons[index]then
+        local button=RobloxCommonUI.CreateTabButton({
+          name="Action"..index,text="",size=UDim2.fromOffset(92,48),theme=theme
+        })
+        button.Parent=root;buttons[index]=button
+        local captured=index
+        button.Activated:Connect(function()
+          local current=actions[captured]
+          if not current or current.available==false then return end
+          if type(options.onSelect)=="function"then options.onSelect(current.id,current)end
+        end)
+      end
+      local button=buttons[index]
+      local angle=math.rad((index-1)*360/#actions-90)
+      button.AnchorPoint=Vector2.new(.5,.5)
+      button.Position=UDim2.new(.5,math.cos(angle)*125,.5,math.sin(angle)*125)
+      button.Name="Action"..index
+      button.Text=tostring(row.label or row.id or "상호작용")
+      button.Active=row.available~=false;button.AutoButtonColor=row.available~=false
+      button.Visible=true
+      button:SetAttribute("InteractionActionId",tostring(row.id or index))
+      button:SetAttribute("MinimumTouchHeight",48)
+    end
+    for index=#actions+1,#buttons do buttons[index].Visible=false end
+    local center=root:FindFirstChild("Center")
+    local label=center and center:FindFirstChild("CenterLabel")
+    if label then label.Text=tostring(state.target or options.centerText or "상호작용")end
+    root:SetAttribute("BoundInteractionId",tostring(state.id or ""))
+    root:SetAttribute("BoundInteractionKind",tostring(state.kind or "GENERIC"))
+    root:SetAttribute("BoundActionCount",#actions)
+  end
+  sync(options.interaction or {actions=options.actions or {}})
   root:SetAttribute("OwnsInteractionAuthority",false)
-  return root,buttons
+  root:SetAttribute("OwnsRemoteAuthority",false)
+  return root,buttons,sync
 end
 
 function RobloxCommonUI.CreateInteractionProgress(options)
