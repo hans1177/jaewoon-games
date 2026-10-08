@@ -312,25 +312,127 @@
           "playerChoice": "자원 수집, 마을 기능 개선, 새로운 주민/활동/지역 추가, 다음 목표 선택"
         }
       ]
+    },
+    "local_authoring_parts::81819c76f2f7bf65c8b5038d86b338f42754975d164b51b58ba76145beb7a86d:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::23f67720af151076e798d8872d4b2327c6a6cdf13d76543d13dc5ce07b4bae77:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "INPUT/SELECT -> STATUS CHANGE -> REWARD/RISE/NEXT CHOICE",
+        "GATHER FOCUSED ISLAND RESOURCES",
+        "BUILD OR IMPROVE VILLAGE FUNCTION",
+        "UNLOCK NEW RESIDENT/ACTIVITY/AREA",
+        "CHOOSE NEXT VILLAGE GOAL"
+      ],
+      "signatureSystems": [
+        {
+          "id": "MAIN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "GATHER FOCUSED ISLAND RESOURCES",
+            "BUILD OR IMPROVE VILLAGE FUNCTION",
+            "UNLOCK NEW RESIDENT/ACTIVITY/AREA",
+            "CHOOSE NEXT VILLAGE GOAL"
+          ],
+          "stateOutputs": [
+            "STATUS CHANGE",
+            "REWARD/RISE/NEXT CHOICE"
+          ],
+          "name": "주민 자원 수집 및 마을 개발 시스템",
+          "purpose": "플레이어가 무인도 마을에서 자원을 수집하고, 이를 바탕으로 마을의 기능을 개선하거나 새로운 주민/활동/지역을 추가하는 과정을 관리하는 시스템",
+          "playerChoice": "자원 수집, 마을 기능 개선, 새로운 주민/활동/지역 추가, 다음 목표 선택"
+        },
+        {
+          "id": "MAIN",
+          "grammarRole": "A",
+          "stateInputs": [
+            "GATHER FOCUSED ISLAND RESOURCES",
+            "BUILD OR IMPROVE VILLAGE FUNCTION",
+            "UNLOCK NEW RESIDENT/ACTIVITY/AREA",
+            "CHOOSE NEXT VILLAGE GOAL"
+          ],
+          "stateOutputs": [
+            "STATUS CHANGE",
+            "REWARD/RISE/NEXT CHOICE"
+          ],
+          "name": "주민 자원 수집 및 마을 개발 시스템",
+          "purpose": "플레이어가 무인도 마을에서 자원을 수집하고, 이를 바탕으로 마을의 기능을 개선하거나 새로운 주민/활동/지역을 추가하는 과정을 관리하는 시스템",
+          "playerChoice": "자원 수집, 마을 기능 개선, 새로운 주민/활동/지역 추가, 다음 목표 선택"
+        },
+        {
+          "id": "B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "GATHER FOCUSED ISLAND RESOURCES",
+            "BUILD OR IMPROVE VILLAGE FUNCTION",
+            "UNLOCK NEW RESIDENT/ACTIVITY/AREA",
+            "CHOOSE NEXT VILLAGE GOAL"
+          ],
+          "stateOutputs": [
+            "STATUS CHANGE",
+            "REWARD/RISE/NEXT CHOICE"
+          ],
+          "name": "마을 기능 개선 및 목표 선택 시스템",
+          "purpose": "플레이어가 무인도 마을에서 자원을 수집하고, 이를 바탕으로 마을의 기능을 개선하거나 새로운 주민/활동/지역을 추가하는 과정을 관리하는 시스템",
+          "playerChoice": "자원 수집, 마을 기능 개선, 새로운 주민/활동/지역 추가, 다음 목표 선택"
+        },
+        {
+          "id": "c",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT/SELECT",
+            "GATHER FOCUSED ISLAND RESOURCES",
+            "BUILD OR IMPROVE VILLAGE FUNCTION",
+            "UNLOCK NEW RESIDENT/ACTIVITY/AREA",
+            "CHOOSE NEXT VILLAGE GOAL"
+          ],
+          "stateOutputs": [
+            "STATUS CHANGE",
+            "REWARD/RISE/NEXT CHOICE"
+          ],
+          "name": "마을 개발 및 목표 선택 시스템",
+          "purpose": "플레이어가 무인도 마을에서 자원을 수집하고, 이를 바탕으로 마을의 기능을 개선하거나 새로운 주민/활동/지역을 추가하는 과정을 관리하는 시스템",
+          "playerChoice": "자원 수집, 마을 기능 개선, 새로운 주민/활동/지역 추가, 다음 목표 선택"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT/SELECT",
+            "GATHER FOCUSED ISLAND RESOURCES",
+            "BUILD OR IMPROVE VILLAGE FUNCTION",
+            "UNLOCK NEW RESIDENT/ACTIVITY/AREA",
+            "CHOOSE NEXT VILLAGE GOAL"
+          ],
+          "stateOutputs": [
+            "STATUS CHANGE",
+            "REWARD/RISE/NEXT CHOICE"
+          ],
+          "name": "마을 개발 및 목표 선택 시스템",
+          "purpose": "플레이어가 무인도 마을에서 자원을 수집하고, 이를 바탕으로 마을의 기능을 개선하거나 새로운 주민/활동/지역을 추가하는 과정을 관리하는 시스템",
+          "playerChoice": "자원 수집, 마을 기능 개선, 새로운 주민/활동/지역 추가, 다음 목표 선택"
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1097016,
-      "lastMs": 103312,
+      "totalMs": 1183631,
+      "lastMs": 86615,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:49:46.620Z"
+      "updatedAt": "2026-10-08T08:51:13.239Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:31:29.567Z",
-  "updatedAt": "2026-10-08T08:49:46.623Z",
+  "updatedAt": "2026-10-08T08:51:13.249Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2407,12 +2509,52 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:49:46.623Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다. 플레이어는 무인도 마을에서 Gather a focused set of island resources.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다. 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다. 게임의 중심 행동은 Gather a focused set of island resources.이며, 이는 플레이어의 선택과 세계 상태의 변화를 통해 구체화된다. 게임의 핵심 루프는 입력/선택 -> 상태 변화 -> 보상/위험/다음 선택의 연결이다. 게임의 보조 요소는 c이며, 이는 MAIN/A/B의 상태 교환을 변주하는 보조 요소로 작용한다. 게임의 파고들기는 @이며, 이는 발견·숙련·재방문 깊이로 역할을 구분한다. 게임의 시그니처 시스템은 MAIN, A, B, C, DELVE(@)로 구성되며, 각 시스템은 구체적인 목적과 선택을 담당한다. 게임의 시그니처 세계 규칙은 주민의 목표·두려움·비밀, 몬스터의 존재·저주·정치·기억, 지역의 인과법칙, 스토리 사건의 핵심 문법 등으로 구성된다. 게임의 시그니처 시스템은 공백 포함 최소 60자 이상의 구체적 게임 정체성을 담당한다. 게임의 시그니처 시스템은 주민의 목표·두려움·비밀, 몬스터의 존재·저주·정치·기억, 지역의 인과법칙, 스토리 사건의 핵심 문법 등으로 구성된다. 게임의 시그니처 시스템은 공백 포함 최소 60자 이상의 구체적 게임 정체성을 담당한다. 게임의 시그니처 시스템은 주민의 목표·두려움·비밀, 몬스터의 존재·저주·정치·기억, 지역의 인과법칙, 스토리 사건의 핵심 문법 등으로 구성된다. 게임의 시그니처 시스템은 공백 포함 최소 60자 이상의 구체적 게임 정체성을 담당한다. 게임의 시그니처 시스템은 주민의 목표·두려움·비밀, 몬스터의 존재·저주·정치·기억,지",
+      "playerFantasy": "무인도 마을에서 플레이어는 Gather a focused set of island resources.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다. 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다. 게임의 중심 행동은 Gather a focused set of island resources.이며, 이는 플레이어의 선택과 세계 상태의 변화를 통해 구체화된다. 게임의 핵심 루프는 입력/선택 -> 상태 변화 -> 보상/위험/다음 선택의 연결이다. 게임의 보조 요소는 c이며, 이는 MAIN/A/B의 상태 교환을 변주하는 보조 요소로 작용한다. 게임의 파고들기는 @이며, 이는 발견·숙련·재방문 깊이로 역할을 구분한다. 게임의 시그니처 시스템은 MAIN, A, B, C, DELVE(@)로 구성되며, 각 시스템은 구체적인 목적과 선택을 담당한다. 게임의 시그니처 세계 규칙은 주민의 목표·두려움·비밀, 몬스터의 존재·저주·정치·기억, 지역의 인과법칙, 스토리 사건의 핵심 문법 등으로 구성된다. 게임의 시그니처 시스템은 공백 포함 최소 60자 이상의 구체적 게임 정체성을 담당한다. 게임의 시그니처 시스템은 주민의 목표·두려움·비밀, 몬스터의 존재·저주·정치·기억, 지역의 인과법칙, 스토리 사건의 핵심 문법 등으로 구성된다. 게임의 시그니처 시스템은 공백 포함 최소 60자 이상의 구체적 게임 정체성을 담당한다. 게임의 시그니처 시스템은 주민의 목표·두려움·비밀, 몬스터의 존재·저주·정치·기억, 지역의 인과법칙, 스토리 사건의 핵심 문법 등으로 구성된다.",
+      "coreFun": "무인도 마을에서 플레이어는 Gather a focused set of island resources.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다. 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다.",
+      "coreLoop": [
+        "INPUT/SELECT -> STATUS CHANGE -> REWARD/RISE/NEXT CHOICE",
+        "GATHER FOCUSED ISLAND RESOURCES",
+        "BUILD OR IMPROVE VILLAGE FUNCTION",
+        "UNLOCK NEW RESIDENT/ACTIVITY/AREA",
+        "CHOOSE NEXT VILLAGE GOAL"
+      ],
+      "multiplayerMode": "COOP"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T08:51:13.242Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
