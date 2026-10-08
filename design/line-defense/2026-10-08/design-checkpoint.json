@@ -871,25 +871,36 @@
       "toSystem": "타워 위치 및 전략 결정 시스템",
       "trigger": "enemyWave",
       "stateChange": "towersDefenders, resources, defenseStrategy, gameProgress"
+    },
+    "local_authoring_parts::b3cc4df604372a6e969901e8958e86cb9b7c45ea46a18d9f5d0b38dd58a4b9d2:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "main-1",
+      "toId": "signatureSystems[1]",
+      "stateKeys": [
+        "enemyWave",
+        "towersDefenders",
+        "resources",
+        "defenseStrategy"
+      ],
+      "fromSystem": "타워 위치 및 전략 결정 시스템"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 16,
+      "calls": 18,
+      "successes": 17,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2449631,
-      "lastMs": 97179,
+      "totalMs": 2549584,
+      "lastMs": 99953,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T09:24:07.353Z"
+      "updatedAt": "2026-10-08T09:25:47.310Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:43:17.650Z",
-  "updatedAt": "2026-10-08T09:24:07.355Z",
+  "updatedAt": "2026-10-08T09:25:47.310Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3417,7 +3428,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T09:24:07.355Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:25:47.310Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
