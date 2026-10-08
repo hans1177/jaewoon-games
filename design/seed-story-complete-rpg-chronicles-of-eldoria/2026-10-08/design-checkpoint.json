@@ -420,25 +420,44 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::b58fa91e9599e448eb4f1959bc19175d1ffb1c0f06cd5f124ff0b3656cdaf252:signatureSystems:0": {
+      "id": "ELDORIAN_CORE_01",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "Exploration Status",
+        "Character Interaction Status",
+        "Quest Completion Status",
+        "Narrative Progress Status"
+      ],
+      "stateOutputs": [
+        "Area Expansion Status",
+        "Character Development Status",
+        "Quest Progression Status",
+        "Narrative Advancement Status"
+      ],
+      "name": "ELDORIAN_CORE_01",
+      "purpose": "Establishes the core gameplay mechanics of 'El Dorian Chronicles' through a recursive, narrative-driven loop that enables exploration, character interaction, quest progression, and narrative advancement. This system ensures that player choices directly influence the game's world state and determine the next set of gameplay options.",
+      "playerChoice": "Player choices directly affect the game's world state, determining the next set of gameplay options. Exploration, character interaction, quest progression, and narrative advancement are all core gameplay mechanics that are recursively influenced by player decisions."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1006142,
-      "lastMs": 88277,
+      "totalMs": 1110241,
+      "lastMs": 104099,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:40:05.889Z"
+      "updatedAt": "2026-10-08T13:41:50.000Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:23:19.708Z",
-  "updatedAt": "2026-10-08T13:40:05.899Z",
+  "updatedAt": "2026-10-08T13:41:50.000Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2706,10 +2725,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:40:05.892Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:41:50.000Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
