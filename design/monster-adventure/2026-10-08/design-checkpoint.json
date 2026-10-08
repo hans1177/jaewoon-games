@@ -420,25 +420,38 @@
         }
       ],
       "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::d3168b4b25640c354b716496a01148964e67746f8f38f8f26824c07a04073f12:signatureSystems:0": {
+      "id": "MAIN_01",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "WorldState"
+      ],
+      "stateOutputs": [
+        "NextAction"
+      ],
+      "name": "몬스터 어드벤처의 중심 행동",
+      "purpose": "플레이어가 즉시 이해할 수 있는 단순한 입력을 통해 세계 상태를 바꾸는 중심 행동",
+      "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1088424,
-      "lastMs": 86361,
+      "totalMs": 1180942,
+      "lastMs": 92518,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:17:15.619Z"
+      "updatedAt": "2026-10-08T13:18:48.147Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:59:07.154Z",
-  "updatedAt": "2026-10-08T13:17:15.627Z",
+  "updatedAt": "2026-10-08T13:18:48.147Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2560,10 +2573,10 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:17:15.622Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:18:48.147Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
