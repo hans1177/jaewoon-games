@@ -70,25 +70,43 @@
       "name": "Puzzle Constraint",
       "purpose": "Establishes the visual and procedural structure of the level, defining the initial configuration and the rules governing the progression through the puzzle.",
       "playerChoice": "Player selects a board or grid level with a clear goal, limited moves, obstacles, or a visible puzzle constraint. They then attempt to solve it by creating matches, combos, and using immediate feedback to achieve the objective."
+    },
+    "local_authoring_parts::906644e9347d28f1a16aa52b9e6eacdf5c888319f459093d699a3aa31043fe62:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "levelGoal",
+        "limitedMoves",
+        "obstacles",
+        "puzzleConstraint"
+      ],
+      "stateOutputs": [
+        "matchFound",
+        "comboCreated",
+        "levelCompleted"
+      ],
+      "name": "Puzzle Constraint",
+      "purpose": "Establishes the visual and procedural structure of the level, defining the initial configuration and the rules governing the progression through the puzzle.",
+      "playerChoice": "Player selects a board or grid level with a clear goal, limited moves, obstacles, or a visible puzzle constraint. They then attempt to solve it by creating matches, combos, and using immediate feedback to achieve the objective."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 669997,
-      "lastMs": 104668,
+      "totalMs": 776045,
+      "lastMs": 106048,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:00:52.511Z"
+      "updatedAt": "2026-10-08T13:02:38.561Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:49:42.483Z",
-  "updatedAt": "2026-10-08T13:00:52.512Z",
+  "updatedAt": "2026-10-08T13:02:38.561Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2125,7 +2143,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:00:52.511Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:02:38.561Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
