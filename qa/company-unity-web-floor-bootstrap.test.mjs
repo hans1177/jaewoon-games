@@ -334,6 +334,10 @@ test('approved Unity Web design generates playable-scene visual data in canonica
     assert.ok(layout.buildings.length<=22);
     assert.ok(layout.vegetation.length<=64);
     assert.ok(layout.buildings.every(lot=>lot.roof===1&&lot.size===2));
+    const ids=[...layout.buildings,...layout.vegetation].map(item=>item.id);
+    assert.ok(ids.every(id=>/^WORLD_[A-Z0-9]+:(LOT|NATURE):/.test(id)));
+    assert.equal(new Set(ids).size,ids.length);
+    assert.ok(layout.buildings.every(lot=>layout.roads.includes(lot.roadZ*layout.width+lot.roadX)));
     assert.ok(layout.buildings.every(lot=>Number.isFinite(lot.x)&&Number.isFinite(lot.z)&&Number.isFinite(lot.door)));
     assert.equal(layout.gameplayCollisionAuthority,false);
     assert.equal(layout.saveMutation,false);
@@ -355,6 +359,10 @@ test('approved Unity Web design generates playable-scene visual data in canonica
     assert.match(runtime,/primitive.SetActive\(false\);Destroy\(primitive\);/);
     assert.match(runtime,/collider=UNCHANGED save=UNCHANGED native_qa=REQUIRED/);
     assert.match(runtime,/data\.mobile&&\(data\.width>48/);
+    assert.match(runtime,/WORLD_DOOR_ROAD_DISCONNECTED/);
+    assert.match(runtime,/WORLD_OBJECT_ID_DUPLICATED/);
+    assert.match(runtime,/var worldIds=new HashSet<string>/);
+    assert.doesNotMatch(runtime,/RegisterDestroyedObject/);
     assert.doesNotMatch(runtime,/BuildApprovedWorldVisuals\(\);[\s\S]*UNITY_WEB_WORLD=PASS/);
     assert.match(runtime,/PlayerPrefs\.Save\(\)/);
     assert.match(runtime,/status=REPAIR_REQUIRED reason=BOOTSTRAP_ONLY_GAMEPLAY_NOT_IMPLEMENTED/);
