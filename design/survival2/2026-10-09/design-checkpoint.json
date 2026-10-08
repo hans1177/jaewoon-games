@@ -66,25 +66,41 @@
       "name": "Explore the forest for a needed resource while reading environmental and creature danger.",
       "purpose": "Player's primary action to initiate survival exploration and modify world state based on available resources and group composition.",
       "playerChoice": "Resource allocation, shelter upgrades, preparation for higher risks."
+    },
+    "local_authoring_parts::501f8b6e59042c85206df599f11130be65f53c6b1a3d67495152ecea55d67aba:signatureSystems:2": {
+      "id": "SURVIVAL2-B-01",
+      "grammarRole": "B",
+      "stateInputs": [
+        "Explore the forest for a needed resource while reading environmental andcreature",
+        "Craft a survival advantage, improve shelter or equipment and prepare for thenext"
+      ],
+      "stateOutputs": [
+        "World state changes, new survival advantages, risk/reward dynamics, and next act",
+        "Enhanced gameplay mechanics, improved survival conditions, and strategic depth",
+        "New game states, altered progression paths, and expanded player agency"
+      ],
+      "name": "Explore the forest for a needed resource while reading environmental and creature danger.",
+      "purpose": "Resource allocation, shelter upgrades, preparation for higher risks.",
+      "playerChoice": "Select from: Resource distribution, shelter enhancement, threat mitigation."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 419250,
-      "lastMs": 43597,
+      "totalMs": 663656,
+      "lastMs": 244406,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:10:30.284Z"
+      "updatedAt": "2026-10-08T21:14:34.691Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:03:31.006Z",
-  "updatedAt": "2026-10-08T21:10:30.284Z",
+  "updatedAt": "2026-10-08T21:14:34.691Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2314,7 +2330,7 @@
     "local_authoring_parts::501f8b6e59042c85206df599f11130be65f53c6b1a3d67495152ecea55d67aba:signatureSystems:0": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:10:30.284Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:14:34.691Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
