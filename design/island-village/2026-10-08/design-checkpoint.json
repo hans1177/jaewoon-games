@@ -898,25 +898,55 @@
       "toSystem": "IslandResourceManagementSystem",
       "trigger": "Gather a focused set of island resources",
       "stateChange": "Build or improve one village function, and unlock a new resident, activity, or area"
+    },
+    "local_authoring_parts::a32fddc96531e5d96d63066979dd7bb1ccd2246f418f2d993bfb1f737b332484:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "signatureSystems[3]",
+      "toId": "signatureSystems[4]",
+      "stateKeys": [
+        "VillageFunction",
+        "ResidentCount",
+        "ActivityType",
+        "AreaType"
+      ],
+      "fromSystem": "VillageProgressionSystem"
+    },
+    "local_authoring_parts::a32fddc96531e5d96d63066979dd7bb1ccd2246f418f2d993bfb1f737b332484:toSystem,trigger,stateChange": {
+      "toSystem": "VillageProgressionSystem",
+      "trigger": "Select a new village goal",
+      "stateChange": "Acquire a focused set of resources, and unlock a new resident, activity, or area to proceed to the next stage of village development"
+    },
+    "local_authoring_parts::d9385963ad794d288f92bbfd2b4091a77e82bb4f71df2d913cea34a63ad41040:systemInterconnections:2": {
+      "fromId": "signatureSystems[3]",
+      "toId": "signatureSystems[4]",
+      "stateKeys": [
+        "VillageFunction",
+        "ResidentCount",
+        "ActivityType",
+        "AreaType"
+      ],
+      "fromSystem": "VillageProgressionSystem",
+      "toSystem": "VillageProgressionSystem",
+      "trigger": "Select a new village goal",
+      "stateChange": "Acquire a focused set of resources, and unlock a new resident, activity, or area to proceed to the next stage of village development"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 35,
-      "successes": 35,
+      "calls": 37,
+      "successes": 37,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2659603,
-      "lastMs": 13334,
+      "totalMs": 2689404,
+      "lastMs": 15548,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:09:50.918Z"
+      "updatedAt": "2026-10-08T16:10:20.722Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:36:39.832Z",
-  "updatedAt": "2026-10-08T16:09:50.919Z",
+  "updatedAt": "2026-10-08T16:10:20.724Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3143,7 +3173,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:09:50.919Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:10:20.724Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
