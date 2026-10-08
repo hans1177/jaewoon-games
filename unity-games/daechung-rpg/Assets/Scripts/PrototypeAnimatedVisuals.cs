@@ -25,6 +25,7 @@ namespace JaewoonGames.DaechungRpg
         private AnimatedActor _enemy;
         private AnimatedActor _coopPartner;
         private bool _hasCoopPartner;
+        private float _coopAttackUntil;
         private bool _ready;
         private bool _battleVisible;
         private string _loadError = string.Empty;
@@ -263,10 +264,30 @@ namespace JaewoonGames.DaechungRpg
             }
         }
 
+        // 메인: 인증형 방의 상대 좌표는 외형에만 반영한다. 내 플레이어/적/저장 상태는 바꾸지 않는다.
+        public Vector3 PlayerPosition => _player != null ? _player.Position : Vector3.zero;
+
+        public void SetCoopPartnerPosition(Vector2 remotePosition)
+        {
+            if (!_hasCoopPartner || _coopPartner == null || _player == null) return;
+            var x = Mathf.Clamp(remotePosition.x, -4.5f, 4.5f);
+            if (Mathf.Abs(x - _player.Position.x) < 0.5f)
+                x = Mathf.Clamp(x - 0.65f, -4.5f, 4.5f);
+            var target = new Vector3(x, Mathf.Clamp(remotePosition.y, -3f, 3f), -0.45f);
+            var moving = (target - _coopPartner.Position).sqrMagnitude > 0.025f;
+            _coopPartner.Position = Vector3.Lerp(_coopPartner.Position, target,
+                Mathf.Clamp01(Time.deltaTime * 8f));
+            if (Time.time < _coopAttackUntil) return;
+            _coopPartner.Play(moving ? "walk" : "idle", true);
+        }
+
         public void PlayCoopAction()
         {
             if (_hasCoopPartner && _coopPartner != null && _battleVisible)
+            {
+                _coopAttackUntil = Time.time + 0.8f;
                 _coopPartner.Play("attack", false, true);
+            }
         }
 
         public void SetEnemyIdentity(string id)
