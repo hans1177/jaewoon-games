@@ -283,6 +283,38 @@ test('boss introduction uses authored dialogue once and preserves current attack
   assert.equal(new JaewoonCommonAI().decide({...context,bossScene:{...scene,engineApproved:false}}).state,JaewoonCommonAI.State.ATTACK);
 });
 
+// Unity 원본 소스 정적 회귀: 실물 런타임 조작이 아니며 APK/WebGL 실행 통과로 간주하지 않는다.
+test('Unity village life, story save, scout opt-in and boss reveal remain on original engine-owned paths',()=>{
+  const core=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/GameCore.cs',import.meta.url),'utf8');
+  const runtime=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs',import.meta.url),'utf8');
+  const visual=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs',import.meta.url),'utf8');
+  assert.match(core,/private const string SaveKey = "daechung-rpg-save-v1"/);
+  assert.match(core,/public List<string> witnessedStoryEvents = new\(\)/);
+  assert.match(core,/public bool TryRecordStoryEvent\(string eventId\)/);
+  assert.match(core,/Player\.witnessedStoryEvents\.Contains\(eventId\)/);
+  assert.match(core,/public bool TrySetScoutCompanion\(bool accompanying\)/);
+  assert.match(core,/Player\.scoutAccompanying = accompanying;/);
+  assert.match(core,/Player\.witnessedStoryEvents == null/);
+  assert.match(runtime,/DrawSocialControls\(\)/);
+  assert.match(runtime,/IsVillageResidentNearby\(id\)/);
+  assert.match(runtime,/TalkWithResident\(string id\)/);
+  assert.match(runtime,/TryRecordStoryEvent\("chief-introduction"\)/);
+  assert.match(runtime,/TryRecordStoryEvent\("smith-visit"\)/);
+  assert.match(runtime,/TryRecordStoryEvent\("ogre-sighted"\)/);
+  assert.match(runtime,/TryRecordStoryEvent\("ogre-defeated"\)/);
+  assert.match(runtime,/TrySetScoutCompanion\(true\)/);
+  assert.match(runtime,/TrySetScoutCompanion\(false\)/);
+  assert.match(runtime,/DrawStoryPrompt\(Rect safe, float scale\)/);
+  assert.match(runtime,/GUI\.Button\(skip, "SKIP"\)/);
+  assert.match(visual,/Vector3\.MoveTowards\(at, destination/);
+  assert.match(visual,/InitializeVillageResidents\(\)/);
+  assert.match(visual,/public bool IsVillageResidentNearby\(string id\)/);
+  assert.match(visual,/public void PlayBossReveal\(\)/);
+  assert.match(visual,/public void SkipBossReveal\(\)/);
+  assert.match(visual,/public void SetNarrativeCompanion\(bool accompanying\)/);
+  assert.doesNotMatch(runtime,/ParticipantCount\s*\+\s*1|Connected\s*=\s*true/);
+  assert.doesNotMatch(core,/TryRecordStoryEvent[\s\S]{0,2000}(?:baseAttack\s*[+\-]=|gold\s*[+\-]=|experience\s*[+\-]=)/);
+});
 test('common AI memory is bounded idempotent and relationships remain directional state',()=>{
   const ai=new JaewoonCommonAI({memoryLimit:4});
   assert.equal(ai.remember({id:'e1',type:'help'}),true);
