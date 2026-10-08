@@ -780,25 +780,37 @@
       "toSystem": "MAIN/A/B/c/DELVE",
       "trigger": "Player selects moves, creates combos, and manages obstacles to achieve the goal and unlock new levels or stages.",
       "stateChange": "The board pattern evolves with each playthrough, introducing new obstacles and puzzle elements that challenge the player's adaptability. The goal and constraints become more complex, requiring strategic thinking and creative problem-solving to progress."
+    },
+    "local_authoring_parts::4c9af95749995dd370cfe2703cde39683c77c114b462202d0becf90634a278e9:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "MAIN",
+      "toId": "A",
+      "stateKeys": [
+        "nextBoardPattern",
+        "newGoal",
+        "newMoves",
+        "newObstacles",
+        "newPuzzleConstraint"
+      ],
+      "fromSystem": "MAIN/A/B/c/DELVE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 16,
+      "calls": 18,
+      "successes": 17,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2278057,
-      "lastMs": 94603,
+      "totalMs": 2370076,
+      "lastMs": 92019,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T09:05:16.088Z"
+      "updatedAt": "2026-10-08T09:06:48.111Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:27:17.966Z",
-  "updatedAt": "2026-10-08T09:05:16.090Z",
+  "updatedAt": "2026-10-08T09:06:48.111Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2985,7 +2997,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T09:05:16.090Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:06:48.111Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
