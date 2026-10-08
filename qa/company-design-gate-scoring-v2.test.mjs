@@ -170,7 +170,8 @@ assert.doesNotMatch(designReviewBlock,/identity\.length>=80/);
 console.log('COMPANY_DESIGN_GATE_SCORING_V2_TEST=PASS');
 
 
-for(const platform of ['UNITY','ROBLOX','FORTNITE_UEFN']){
+// 현재 개발 우선 플랫폼은 Roblox와 Unity이며 Fortnite UEFN은 중앙 정책상 중단 상태다.
+for(const platform of ['UNITY','ROBLOX']){
   const platformSeed={...seed,INITIAL_TARGET_PLATFORM:platform};
   const platformRecord=structuredClone(designRecord);
   platformRecord.content.platformFitPlan={...platformRecord.content.platformFitPlan,targetPlatform:platform};
