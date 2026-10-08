@@ -1600,7 +1600,7 @@ RunService.Heartbeat:Connect(function(dt)
    else
     local back=Vector3.new(e.spawn.X-e.part.Position.X,0,e.spawn.Z-e.part.Position.Z)
     -- 기존 전투 추적·귀환은 그대로 두고, 비전투 일반 몬스터만 자기 서식지에서 관찰·이동한다.
-    if e.boss or e.runBoss or e.hiddenBoss or now-(e.lastPlayerObservedAt or -100)>20 or back.Magnitude>18 then
+    if e.boss or e.runBoss or e.hiddenBoss or now-(e.lastPlayerObservedAt or -1000000)<4 or back.Magnitude>18 then
      if back.Magnitude>2 then e.part.CFrame=e.part.CFrame+back.Unit*math.min(back.Magnitude,9*dt)end
      e.roamTarget=nil
     elseif not e.attackPending and now>=(e.stunnedUntil or 0) then
