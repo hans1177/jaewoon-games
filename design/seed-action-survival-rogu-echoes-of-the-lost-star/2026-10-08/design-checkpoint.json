@@ -379,25 +379,44 @@
       "name": "ACTION_SURVIVAL_ROGUELITE",
       "purpose": "Player engages in a short real-time survival run where they must fight an escalating horde while positioning around enemy pressure, collect rewards, and upgrade their build to survive harder waves or a boss.",
       "playerChoice": "Choose between collecting rewards or experience, upgrading weapons, perks, or skills to change the current build, or combining upgrades to create a stronger build, then convert the run result into the next progression choice."
+    },
+    "local_authoring_parts::847425197799cd8b86dd7d5c30c5a6f2c70c5e1ce079a9b6c40ad71c4dbc6514:signatureSystems:1": {
+      "id": "ACTION_SURVIVAL_ROGUELITE",
+      "grammarRole": "A",
+      "stateInputs": [
+        "PlayerPosition",
+        "EnemyPressure",
+        "RunProgression",
+        "BuildComposition"
+      ],
+      "stateOutputs": [
+        "NewRunProgression",
+        "UpdatedBuildComposition",
+        "NewEnemyPressureLevel",
+        "NewPlayerPosition"
+      ],
+      "name": "ACTION_SURVIVAL_ROGUELITE",
+      "purpose": "Player engages in a short real-time survival run where they must fight an escalating horde while positioning around enemy pressure, collect rewards, and upgrade their build to survive harder waves or a boss.",
+      "playerChoice": "Choose between collecting rewards or experience, upgrading weapons, perks, or skills to change the current build, or combining upgrades to create a stronger build, then convert the run result into the next progression choice."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1135947,
-      "lastMs": 107862,
+      "totalMs": 1248139,
+      "lastMs": 112192,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:21:07.527Z"
+      "updatedAt": "2026-10-08T13:22:59.721Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:02:11.526Z",
-  "updatedAt": "2026-10-08T13:21:07.527Z",
+  "updatedAt": "2026-10-08T13:22:59.721Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2632,7 +2651,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:21:07.527Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:22:59.721Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
