@@ -492,17 +492,20 @@ test('per-game F0 evidence is reused only for exact source and package; quality 
     developmentQueue:{items:[
       {...base,gameId:'alpha',robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:source},
       {...base,gameId:'beta',robloxFoundationF0Evidence:{...base.robloxFoundationF0Evidence,artifactIdentity:'sha256:'+'c'.repeat(64)}},
-      {...base,gameId:'gamma'}
+      {...base,gameId:'gamma'},
+      {...base,gameId:'delta',robloxBuildSourceRevision:'9'.repeat(40)}
     ]},
     maxBatch:2
   });
-  assert.equal(snapshot.development.total,3);
+  assert.equal(snapshot.development.total,4);
   assert.equal(snapshot.development.exactF0Count,2);
-  assert.equal(snapshot.development.f0RepairCount,1);
+  assert.equal(snapshot.development.f0RepairCount,2);
   assert.equal(snapshot.development.qualityBlockedCount,1);
   assert.equal(snapshot.development.pendingCandidateCount,1);
   assert.equal(snapshot.development.rows.find(x=>x.gameId==='alpha').classification,'QUALITY_GATE_BLOCKS_CANDIDATE_HANDOFF');
   assert.equal(snapshot.development.rows.find(x=>x.gameId==='beta').classification,'F0_NOT_VERIFIED_FOR_EXACT_PACKAGE');
+  assert.equal(snapshot.development.rows.find(x=>x.gameId==='beta').invalidEvidenceCause,'F0_ARTIFACT_IDENTITY_MISMATCH');
+  assert.equal(snapshot.development.rows.find(x=>x.gameId==='delta').invalidEvidenceCause,'SOURCE_REVISION_MISMATCH');
   assert.equal(snapshot.development.rows.find(x=>x.gameId==='gamma').classification,'F0_PASSED_CANDIDATE_NOT_PUBLISHED');
   assert.ok(snapshot.development.rows.every(x=>x.automaticPassClaim===false));
   assert.ok(snapshot.actions.includes('REPAIR_SOURCE_QUALITY_BEFORE_RUNTIME_HANDOFF'));
