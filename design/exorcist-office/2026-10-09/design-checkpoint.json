@@ -102,25 +102,225 @@
       "name": "CASUAL_GAME_FLOW_EXPANSION_CROSS_PATH",
       "purpose": "게임 내에서 MAIN/A/B의 선택 결과와 세계 인과법칙에 따라 다른 경로, 위험, 보상을 열어 재방문 및 숙련을 가능하게 한다.",
       "playerChoice": "게임 내에서 MAIN/A/B의 선택 결과와 세계 인과법칙에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 합니다."
+    },
+    "local_authoring_parts::d0c95423c56e995f03ee3b3105a66104fefce059715e1d9ccdaed4a0e185e408:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "START_STATE",
+        "RUN_STATE",
+        "RESULT_STATE"
+      ],
+      "stateOutputs": [
+        "NEXT_WORLD_STATE",
+        "NEW_CHOICE_STATE",
+        "PROGRESSION_STATE"
+      ],
+      "name": "CASUAL_GAME_FLOW_DELVE_PATH",
+      "purpose": "플레이어가 선택 결과와 세계 상태 간의 복잡한 인과 관계를 통해 새로운 경로, 대응법, 또는 발견을 열어 재미있는 플레이 경험을 제공한다.",
+      "playerChoice": "선택 결과에 따라 다양한 시스템적 변주 및 진입 방식을 적용하여 게임의 깊이와 유연성을 높인다."
+    },
+    "local_authoring_parts::5f7b021c6494c4358b774ed4c31f90c0b9c48a7b9a17ab88bd40a772298de470:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "START_STATE",
+            "RUN_STATE",
+            "RESULT_STATE"
+          ],
+          "stateOutputs": [
+            "NEXT_WORLD_STATE",
+            "NEW_CHOICE_STATE",
+            "PROGRESSION_STATE"
+          ],
+          "name": "CASUAL_GAME_FLOW",
+          "purpose": "플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾼다.",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "START_STATE",
+            "RUN_STATE",
+            "RESULT_STATE"
+          ],
+          "stateOutputs": [
+            "NEXT_WORLD_STATE",
+            "NEW_CHOICE_STATE",
+            "PROGRESSION_STATE"
+          ],
+          "name": "CASUAL_GAME_FLOW_EXPANSION",
+          "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "START_STATE",
+            "RUN_STATE",
+            "RESULT_STATE"
+          ],
+          "stateOutputs": [
+            "NEXT_WORLD_STATE",
+            "NEW_CHOICE_STATE",
+            "PROGRESSION_STATE"
+          ],
+          "name": "CASUAL_GAME_FLOW_EXPANSION",
+          "purpose": "A와 MAIN의 결과를 다른 핵심 판단 구조로 연결하는 두 번째 대축.",
+          "playerChoice": "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "START_STATE",
+            "RUN_STATE",
+            "RESULT_STATE"
+          ],
+          "stateOutputs": [
+            "NEXT_WORLD_STATE",
+            "NEW_CHOICE_STATE",
+            "PROGRESSION_STATE"
+          ],
+          "name": "CASUAL_GAME_FLOW_EXPANSION_CROSS_PATH",
+          "purpose": "게임 내에서 MAIN/A/B의 선택 결과와 세계 인과법칙에 따라 다른 경로, 위험, 보상을 열어 재방문 및 숙련을 가능하게 한다.",
+          "playerChoice": "게임 내에서 MAIN/A/B의 선택 결과와 세계 인과법칙에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 합니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "START_STATE",
+            "RUN_STATE",
+            "RESULT_STATE"
+          ],
+          "stateOutputs": [
+            "NEXT_WORLD_STATE",
+            "NEW_CHOICE_STATE",
+            "PROGRESSION_STATE"
+          ],
+          "name": "CASUAL_GAME_FLOW_DELVE_PATH",
+          "purpose": "플레이어가 선택 결과와 세계 상태 간의 복잡한 인과 관계를 통해 새로운 경로, 대응법, 또는 발견을 열어 재미있는 플레이 경험을 제공한다.",
+          "playerChoice": "선택 결과에 따라 다양한 시스템적 변주 및 진입 방식을 적용하여 게임의 깊이와 유연성을 높인다."
+        }
+      ]
+    },
+    "local_authoring_parts::9925be98e06ec2d33f5972302c91b19c3deecf1a588c961f09cc9692c1db4221:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "START_STATE",
+            "RUN_STATE",
+            "RESULT_STATE"
+          ],
+          "stateOutputs": [
+            "NEXT_WORLD_STATE",
+            "NEW_CHOICE_STATE",
+            "PROGRESSION_STATE"
+          ],
+          "name": "CASUAL_GAME_FLOW",
+          "purpose": "플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾼다.",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "START_STATE",
+            "RUN_STATE",
+            "RESULT_STATE"
+          ],
+          "stateOutputs": [
+            "NEXT_WORLD_STATE",
+            "NEW_CHOICE_STATE",
+            "PROGRESSION_STATE"
+          ],
+          "name": "CASUAL_GAME_FLOW_EXPANSION",
+          "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "START_STATE",
+            "RUN_STATE",
+            "RESULT_STATE"
+          ],
+          "stateOutputs": [
+            "NEXT_WORLD_STATE",
+            "NEW_CHOICE_STATE",
+            "PROGRESSION_STATE"
+          ],
+          "name": "CASUAL_GAME_FLOW_EXPANSION",
+          "purpose": "A와 MAIN의 결과를 다른 핵심 판단 구조로 연결하는 두 번째 대축.",
+          "playerChoice": "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "START_STATE",
+            "RUN_STATE",
+            "RESULT_STATE"
+          ],
+          "stateOutputs": [
+            "NEXT_WORLD_STATE",
+            "NEW_CHOICE_STATE",
+            "PROGRESSION_STATE"
+          ],
+          "name": "CASUAL_GAME_FLOW_EXPANSION_CROSS_PATH",
+          "purpose": "게임 내에서 MAIN/A/B의 선택 결과와 세계 인과법칙에 따라 다른 경로, 위험, 보상을 열어 재방문 및 숙련을 가능하게 한다.",
+          "playerChoice": "게임 내에서 MAIN/A/B의 선택 결과와 세계 인과법칙에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 합니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "START_STATE",
+            "RUN_STATE",
+            "RESULT_STATE"
+          ],
+          "stateOutputs": [
+            "NEXT_WORLD_STATE",
+            "NEW_CHOICE_STATE",
+            "PROGRESSION_STATE"
+          ],
+          "name": "CASUAL_GAME_FLOW_DELVE_PATH",
+          "purpose": "플레이어가 선택 결과와 세계 상태 간의 복잡한 인과 관계를 통해 새로운 경로, 대응법, 또는 발견을 열어 재미있는 플레이 경험을 제공한다.",
+          "playerChoice": "선택 결과에 따라 다양한 시스템적 변주 및 진입 방식을 적용하여 게임의 깊이와 유연성을 높인다."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 535067,
-      "lastMs": 66353,
+      "totalMs": 602747,
+      "lastMs": 67680,
       "lastError": null,
-      "updatedAt": "2026-10-08T22:14:51.847Z"
+      "updatedAt": "2026-10-08T22:15:59.528Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T22:05:56.751Z",
-  "updatedAt": "2026-10-08T22:14:51.847Z",
+  "updatedAt": "2026-10-08T22:15:59.531Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2044,7 +2244,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T22:14:51.847Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T22:15:59.531Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
