@@ -723,25 +723,60 @@
         "resourceFlow": "increasing",
         "balanceRules": "balanced"
       }
+    },
+    "local_authoring_parts::0d1496ac5e8a6a35e6e75bab4625a7863d908c1c92dc5b20f0f95cb9c83a8d4d:contentExpansionPlan,failureRetryRisk": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "ENEMY_WAVE_ADAPTATION_SYSTEM",
+          "newGameplay": "Adapt the defense strategy based on enemy wave type, placement, and resource availability.",
+          "systemImpact": "Enhances the core gameplay by introducing dynamic defense adjustments."
+        },
+        {
+          "milestone": "RESOURCE_UPGRADES",
+          "newGameplay": "Players can upgrade defenses with resources obtained from defeated enemies.",
+          "systemImpact": "Introduces strategic resource management and upgrades, increasing gameplay depth."
+        },
+        {
+          "milestone": "TACTICAL_CHANGES",
+          "newGameplay": "Players can implement tactical changes to optimize defense strategy.",
+          "systemImpact": "Adds flexibility and complexity to the gameplay, encouraging strategic thinking."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "Enemy wave type not covered by current defense strategy",
+          "Resource pool insufficient for upgrades and placements",
+          "Defensive positions not optimally placed to cover threats"
+        ],
+        "retryFlow": "Players can retry with different placements, resource allocations, or defensive strategies.",
+        "riskPressure": "Players may face repeated failures if not properly adapted to enemy waves.",
+        "recoveryRules": "Players can retry with different placements, resource allocations, or defensive strategies."
+      }
+    },
+    "local_authoring_parts::0754c5324f918bc0f6842e1ba15a345f845f7da68235603a4b9e3e80a0af675e:fromId": {
+      "fromId": "MAIN_01"
+    },
+    "local_authoring_parts::0754c5324f918bc0f6842e1ba15a345f845f7da68235603a4b9e3e80a0af675e:toId": {
+      "toId": "MAIN_02"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 16,
+      "calls": 20,
+      "successes": 19,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1587311,
-      "lastMs": 265757,
+      "totalMs": 1785323,
+      "lastMs": 56834,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T12:35:22.605Z"
+      "updatedAt": "2026-10-08T12:38:40.626Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:08:55.008Z",
-  "updatedAt": "2026-10-08T12:35:22.605Z",
+  "updatedAt": "2026-10-08T12:38:40.626Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2933,14 +2968,174 @@
     }
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "28935212c19eec1d2d8976fa7cf3b70dbb6b8e12f46b14b260dfba4ef39fd432"
   },
-  "sliceRepairFeedback": {},
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentExpansionPlan[0].milestone",
+          "value": "ENEMY_WAVE_ADAPTATION_SYSTEM"
+        },
+        "requiredAction": "contentExpansionPlan[0].milestone의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentExpansionPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "MAIN_01→MAIN_02의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: MAIN_01→MAIN_02의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "MAIN_02→B_01의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: MAIN_02→B_01의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "MAIN_02→c_01의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: MAIN_02→c_01의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "DELVE_01→MAIN_01의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: DELVE_01→MAIN_01의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "DELVE_01→B_01의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: DELVE_01→B_01의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "DELVE_01→c_01의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: DELVE_01→c_01의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 1,
+    "designer_draft_slices::systems-progression": 1
   },
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:35:22.605Z",
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "forward",
+      "progressionEconomyBalance": {
+        "progressionLoop": "linear",
+        "resourceFlow": "increasing",
+        "balanceRules": "balanced"
+      },
+      "failureRetryRisk": {
+        "failureStates": [
+          "Enemy wave type not covered by current defense strategy",
+          "Resource pool insufficient for upgrades and placements",
+          "Defensive positions not optimally placed to cover threats"
+        ],
+        "retryFlow": "Players can retry with different placements, resource allocations, or defensive strategies.",
+        "riskPressure": "Players may face repeated failures if not properly adapted to enemy waves.",
+        "recoveryRules": "Players can retry with different placements, resource allocations, or defensive strategies."
+      }
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T12:38:40.626Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
