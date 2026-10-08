@@ -70,25 +70,41 @@
       "name": "직접 채집",
       "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득한다.",
       "playerChoice": "나무와 식량은 월드 노드에서 직접 상호작용해 획득한다."
+    },
+    "local_authoring_parts::600ba3bdb7593a0ae4e71e3f400797d0b2b6c0394bba2e7e27d5be87c59c8b54:signatureSystems:2": {
+      "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+      "grammarRole": "B",
+      "stateInputs": [
+        "나무·식량",
+        "주민"
+      ],
+      "stateOutputs": [
+        "자원 거점",
+        "협동 지원",
+        "점령 보상"
+      ],
+      "name": "직접 채집",
+      "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득한다.",
+      "playerChoice": "나무와 식량은 월드 노드에서 직접 상호작용해 획득한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 536513,
-      "lastMs": 31364,
+      "totalMs": 571603,
+      "lastMs": 35090,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:22:20.386Z"
+      "updatedAt": "2026-10-08T13:22:55.477Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:13:23.847Z",
-  "updatedAt": "2026-10-08T13:22:20.386Z",
+  "updatedAt": "2026-10-08T13:22:55.478Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -643,7 +659,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:22:20.386Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:22:55.478Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
