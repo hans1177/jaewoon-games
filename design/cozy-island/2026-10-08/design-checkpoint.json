@@ -308,25 +308,126 @@
           "playerChoice": "자원 거점 선택 및 협동 지원 요청"
         }
       ]
+    },
+    "local_authoring_parts::70cc70e1eb7631a528a68ec0a24419c2948f10f334cce641b902555775af6972:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::512a9c50be292c150ffdd93eb75d086ee171106a806f371a9103f7f9d9001224:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "나무·식량 직접 채집",
+        "주민 고용과 벌목/농업 자동화",
+        "병영 강화와 병사 모집",
+        "다음 자원 거점 선택",
+        "보이는 자동전투와 점령 보상",
+        "협동 지원으로 강한 거점 공략"
+      ],
+      "signatureSystems": [
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "나무·식량",
+            "주민",
+            "병력"
+          ],
+          "stateOutputs": [
+            "자원 거점",
+            "협동 지원",
+            "점령 보상"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "5개 서로 다른 자원 거점을 순차적으로 점령하며 성장감을 확장하는 게임 규칙",
+          "playerChoice": "자원 거점 선택 및 협동 지원 요청"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "A",
+          "stateInputs": [
+            "나무·식량",
+            "주민",
+            "병력"
+          ],
+          "stateOutputs": [
+            "자원 거점",
+            "협동 지원",
+            "점령 보상"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "5개 서로 다른 자원 거점을 순차적으로 점령하며 성장감을 확장하는 게임 규칙",
+          "playerChoice": "자원 거점 선택 및 협동 지원 요청"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "B",
+          "stateInputs": [
+            "나무·식량",
+            "주민",
+            "병력"
+          ],
+          "stateOutputs": [
+            "자원 거점",
+            "협동 지원",
+            "점령 보상"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "5개 서로 다른 자원 거점을 순차적으로 점령하며 성장감을 확장하는 게임 규칙",
+          "playerChoice": "자원 거점 선택 및 협동 지원 요청"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "c",
+          "stateInputs": [
+            "자원 거점",
+            "협동 지원",
+            "점령 보상"
+          ],
+          "stateOutputs": [
+            "자원 거점",
+            "협동 지원",
+            "점령 보상"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "5개 서로 다른 자원 거점을 순차적으로 점령하며 성장감을 확장하는 게임 규칙",
+          "playerChoice": "자원 거점 선택 및 협동 지원 요청"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "자원 거점",
+            "협동 지원",
+            "점령 보상"
+          ],
+          "stateOutputs": [
+            "자원 거점",
+            "협동 지원",
+            "점령 보상"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "5개 서로 다른 자원 거점을 순차적으로 점령하며 성장감을 확장하는 게임 규칙",
+          "playerChoice": "자원 거점 선택 및 협동 지원 요청"
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 645676,
-      "lastMs": 40996,
+      "totalMs": 676029,
+      "lastMs": 30353,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:23:51.390Z"
+      "updatedAt": "2026-10-08T10:24:21.746Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:13:05.670Z",
-  "updatedAt": "2026-10-08T10:23:51.392Z",
+  "updatedAt": "2026-10-08T10:24:21.753Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -877,12 +978,53 @@
     },
     "assetFacts": {}
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T10:23:51.392Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임. 큰 머리와 둥근 얼굴, 짧고 굵은 팔다리의 치비 주민과 하나의 연결된 실루엣으로 보이는 야생동물을 사용한다. 웹은 최소 2.5D 이상이며 로블·유니티·웹의 구현 차이는 디자이너가 원본에 맞춰 설계한다. 기존 저장·밸런스와 이미 구현된 규칙은 보존한다. 로블 설계가 원본이다. 별도 시드 설계 단계 없이 사용자 요청과 기존 원본을 입력으로 사용한다. A/B/c/@와 상세 설계는 디자이너 AI가 직접 생성한다. 요청 전달자는 설계안을 대신 작성하지 않는다. 설계가 없거나 부족하면 현재 플로우 단계와 관계없이 기존 디자이너가 작성·보완하고 기존 제작 흐름으로 복귀한다. 웹은 최소 2.5D 이상이며 로블·유니티·웹의 구현 차이는 디자이너가 원본에 맞춰 설계한다. 기존 저장·밸런스와 이미 구현된 규칙은 보존한다. 로블 설계가 원본이다. 별도 시드 설계 단계 없이 사용자 요청과 기존 원본을 입력으로 사용한다. A/B/c/@와 상세 설계는 디자이너 AI가 직접 생성한다. 요청 전달자는 설계안을 대신 작성하지 않는다. 설계가 없거나 부족하면 현재 플로우 단계와 관계없이 기존 디자이너가 작성·보완하고 기존 제작 흐름으로 복귀한다. 웹은 최소 2.5D 이상이며 로블·유니티·웹의 구현 차이는 디자이너가 원본에 맞춰 설계한다. 기존 저장·밸런스와 이미 구현된 규칙은 보존한다. 로블 설계가 원본이다. 별도 시드 설계 단계 없이 사용자 요청과 기존 원본을 입력으로 사용한다. A/B/c/@와 상세 설계는 디자이너 AI가 직접 생성한다. 요청 전달자는 설계안을 대신 작성하지 않는다. 설계가 없거나 부족하면 현재 플로우 단계와 관계없이 기존 디자이너가 작성·보완하고 기존 제작 흐름으로 복귀한다. 웹은 최소 2.5D 이상이며 로블·유니티·웹의 구현 차이는 디자이너가 원본에 맞춰 설계한다. 기존 저장·밸런스와 이미 구현된 규칙은 보존한다. 로블 설계가 원본이다. 별도 시드 설",
+      "playerFantasy": "작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임. 큰 머리와 둥근 얼굴, 짧고 굵은 팔다리의 치비 주민과 하나의 연결된 실루엣으로 보이는 야생동물을 사용한다. 웹은 최소 2.5D 이상이며 로블·유니티·웹의 구현 차이는 디자이너가 원본에 맞춰 설계한다. 기존 저장·밸런스와 이미 구현된 규칙은 보존한다. 로블 설계가 원본이다. 별도 시드 설계 단계 없이 사용자 요청과 기존 원본을 입력으로 사용한다. A/B/c/@와 상세 설계는 디자이너 AI가 직접 생성한다. 요청 전달자는 설계안을 대신 작성하지 않는다. 설계가 없거나 부족하면 현재 플로우 단계와 관계없이 기존 디자이너가 작성·보완하고 기존 제작 흐름으로 복귀한다. 웹은 최소 2.5D 이상이며 로블·유니티·웹의 구현 차이는 디자이너가 원본에 맞춰 설계한다. 기존 저장·밸런스와 이미 구현된 규칙은 보존한다. 로블 설계가 원본이다. 별도 시드 설계 단계 없이 사용자 요청과 기존 원본을 입력으로 사용한다. A/B/c/@와 상세 설계는 디자이너 AI가 직접 생성한다. 요청 전달자는 설계안을 대신 작성하지 않는다. 설계가 없거나 부족하면 현재 플로우 단계와 관계없이 기존 디자이너가 작성·보완하고 기존 제작 흐름으로 복귀한다. 웹은 최소 2.5D 이상이며 로블·유니티·웹의 구현 차이는 디자이너가 원본에 맞춰 설계한다. 기존 저장·밸런스와 이미 구현된 규칙은 보존한다. 로블 설계가 원본이다. 별도 시드 설계 단계 없이 사용자 요청과 기존 원본을 입력으로 사용한다. A/B/c/@와 상세 설계는 디자이너 AI가 직접 생성한다. 요청 전달자는 설계안을 대신 작성하지 않는다. 설계가 없거나 부족하면 현재 플로우 단계와 관계없이 기존 디자이너가 작성·보완하고 기존 제작 흐름으로 복귀한다.웹",
+      "coreFun": "손으로 시작한 작은 섬이 주민 자동화와 병사 진군으로 실제 움직이는 왕국이 되고, 5개 거점을 하나씩 점령하며 확장되는 성장감. 큰 머리와 둥근 얼굴, 짧고 굵은 팔다리의 치비 주민과 하나의 연결된 실루엣으로 보이는 야생동물을 사용한다. 웹은 최소 2.5D 이상이며 로블·유니티·웹의 구현 차이는 디자이너가 원본에 맞춰 설계한다. 기존 저장·밸런스와 이미 구현된 규칙은 보존한다. 로블 설계가 원본이다. 별도 시드 설계 단계 없이 사용자 요청과 기존 원본을 입력으로 사용한다. A/B/c/@와 상세 설계는 디자이너 AI가 직접 생성한다. 요청 전달자는 설계안을 대신 작성하지 않는다. 설계가 없거나 부족하면 현재 플로우 단계와 관계없이 기존 디자이너가 작성·보완하고 기존 제작 흐름으로 복귀한다. 웹은 최소 2.5D 이상이며 로블·유니티·웹의 구현 차이는 디자이너가 원본에 맞춰 설계한다. 기존 저장·밸런스와 이미 구현된 규칙은 보존한다. 로블 설계가 원본이다. 별도 시드 설계 단계 없이 사용자 요청과 기존 원본을 입력으로 사용한다. A/B/c/@와 상세 설계는 디자이너 AI가 직접 생성한다. 요청 전달자는 설계안을 대신 작성하지 않는다. 설계가 없거나 부족하면 현재 플로우 단계와 관계없이 기존 디자이너가 작성·보완하고 기존 제작 흐름으로 복귀한다. 웹은 최소 2.5D 이상이며 로블·유니티·웹의 구현 차이는 디자이너가 원본에 맞춰 설계한다. 기존 저장·밸런스와 이미 구현된 규칙은 보존한다. 로블 설계가 원본이다. 별도 시드 설계 단계 없이 사용자 요청과 기존 원본을 입력으로 사용한다. A/B/c/@와 상세 설계는 디자이너 AI가 직접 생성한다. 요청 전달자는 설계안을 대신 작성하지 않는다. 설계가 없거나 부족하면 현재 플로우 단계와 관계없이 기존 디자이너가 작성·보완하고 기존 제작 흐름으로 복귀",
+      "coreLoop": [
+        "나무·식량 직접 채집",
+        "주민 고용과 벌목/농업 자동화",
+        "병영 강화와 병사 모집",
+        "다음 자원 거점 선택",
+        "보이는 자동전투와 점령 보상",
+        "협동 지원으로 강한 거점 공략"
+      ],
+      "multiplayerMode": "COOP"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T10:24:21.748Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
