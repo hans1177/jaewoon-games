@@ -72,25 +72,44 @@
       "name": "ProgressionConversionSystem",
       "purpose": "Enables dynamic progression through the conversion of run results into new game states, maintaining the core loop and ensuring progression is both meaningful and achievable.",
       "playerChoice": "Select and combine upgrades, perks, weapons, or skills that transform the current build to unlock new progression paths and ensure survival in subsequent waves."
+    },
+    "local_authoring_parts::c25a42f8d17a0f65012bc6945c1874a38a9db21a8ecf54718c758bd52fc98e8b:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "currentBuild",
+        "enemyPressure",
+        "runRewards",
+        "upgradeChoices"
+      ],
+      "stateOutputs": [
+        "nextProgressionChoice",
+        "updatedBuild",
+        "survivedWave",
+        "convertedRunResult"
+      ],
+      "name": "ProgressionExpansionSystem",
+      "purpose": "Enables dynamic progression through the expansion of game states, introducing new gameplay mechanics and narrative layers that evolve with each progression step. This system ensures that the core loop remains intact while allowing for the introduction of new elements that enhance player engagement and narrative depth.",
+      "playerChoice": "Select and combine upgrades, perks, weapons, or skills that not only transform the current build but also introduce new gameplay mechanics, narrative elements, or strategic options that expand the game's potential and create new progression paths."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 313798,
-      "lastMs": 38073,
+      "totalMs": 354373,
+      "lastMs": 40575,
       "lastError": null,
-      "updatedAt": "2026-10-08T07:48:22.139Z"
+      "updatedAt": "2026-10-08T07:49:02.716Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:43:08.319Z",
-  "updatedAt": "2026-10-08T07:48:22.140Z",
+  "updatedAt": "2026-10-08T07:49:02.717Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2289,7 +2308,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T07:48:22.139Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T07:49:02.716Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
