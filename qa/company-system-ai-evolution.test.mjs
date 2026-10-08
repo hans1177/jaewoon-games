@@ -547,21 +547,23 @@ test('canonical reusable parent keeps final fan-in while successful games hand o
   for(const name of [
     'company-development-roblox-runtime.yml','company-development-unity-runtime.yml',
     'unity-web-first-stage-build.yml','unity-web-floor-source-bootstrap.yml'
-  ])assert.match(workflow,new RegExp('uses: \\.\\/\\.github\\/workflows\\/'+name.replace(/\\./g,'\\.') ));
-  assert.doesNotMatch(workflow,/gh workflow run (?:company-development-(?:roblox|unity)-runtime|unity-web-(?:first-stage-build|floor-source-bootstrap))\\.yml/);
-  assert.match(workflow,/needs: \\[native-plan, dispatch-roblox, dispatch-unity, dispatch-unity-web-floor, dispatch-unity-web-bootstrap\\]/);
-  assert.match(workflow,/--arg control_sha "\\$GITHUB_SHA"/);
-  assert.match(workflow,/select\\(\\.head_sha == \\$control_sha\\)/);
-  assert.match(workflow,/DEVELOPMENT_COORDINATOR_OLDER_MAIN_RUNS_MAY_NOT_BLOCK_NEW_REVISION=YES/);
-  assert.match(workflow,/fail-fast: false/);
+  ]){
+    assert.ok(workflow.includes('uses: ./.github/workflows/'+name),'missing canonical reusable workflow: '+name);
+    assert.ok(!workflow.includes('gh workflow run '+name),'duplicate API lane dispatch: '+name);
+  }
+  assert.ok(workflow.includes('needs: [native-plan, dispatch-roblox, dispatch-unity, dispatch-unity-web-floor, dispatch-unity-web-bootstrap]'));
+  assert.ok(workflow.includes('--arg control_sha "$GITHUB_SHA"'));
+  assert.ok(workflow.includes('select(.head_sha == $control_sha)'));
+  assert.ok(workflow.includes('DEVELOPMENT_COORDINATOR_OLDER_MAIN_RUNS_MAY_NOT_BLOCK_NEW_REVISION=YES'));
+  assert.ok(workflow.includes('fail-fast: false'));
   const unity=fs.readFileSync('.github/workflows/company-development-unity-runtime.yml','utf8');
-  assert.match(unity,/Immediately continue this successful Unity game/);
-  assert.match(unity,/gh workflow run company-development-confirmed-runtime\\.yml --repo "\\$GITHUB_REPOSITORY" --ref main -f game_id="\\$GAME_ID"/);
+  assert.ok(unity.includes('Immediately continue this successful Unity game'));
+  assert.ok(unity.includes('gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID"'));
   const f0=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
-  assert.match(f0,/Dispatch exact private Roblox validation directly after this game's F0 persist/);
-  assert.match(f0,/const blocked=x\\.robloxQualityBuildUpRequired===true/);
-  assert.match(f0,/gh workflow run company-development-roblox-release-promotion\\.yml/);
+  assert.ok(f0.includes("Dispatch exact private Roblox validation directly after this game's F0 persist"));
+  assert.ok(f0.includes('const blocked=x.robloxQualityBuildUpRequired===true'));
+  assert.ok(f0.includes('gh workflow run company-development-roblox-release-promotion.yml'));
   const ai=fs.readFileSync('.github/workflows/company-system-ai-workers.yml','utf8');
-  assert.match(ai,/--development-queue=\\/tmp\\/system-ai-development-queue\\.json/);
-  assert.match(ai,/SYSTEM_AI_DEVELOPMENT_QUEUE_SNAPSHOT=UNAVAILABLE/);
+  assert.ok(ai.includes('--development-queue=/tmp/system-ai-development-queue.json'));
+  assert.ok(ai.includes('SYSTEM_AI_DEVELOPMENT_QUEUE_SNAPSHOT=UNAVAILABLE'));
 });
