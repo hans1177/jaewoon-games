@@ -247,3 +247,24 @@ test('Unity Web mobile QA touches the real menu, checks all menu rectangles and 
   assert.match(source,/nativeUiRect\.controlsY\+nativeUiRect\.controlsHeight>nativeUiRect\.actionY-6/);
   assert.match(source,/pass:nativeUiMeasured\?!nativeUiOffscreen&&!nativeUiOverlap:null/);
 });
+
+test('compact landscape keeps the original combat action and real scrollable menu accessible',()=>{
+  assert.match(daechungUnitySource,/compactLandscape = safe\.width > safe\.height && safe\.height < 540f/);
+  assert.match(daechungUnitySource,/compactLandscape \? Mathf\.Min\(88f, safe\.height \* 0\.24f\)/);
+  assert.match(daechungUnitySource,/compactLandscape \? topY \+ topHeight \+ 8f/);
+  assert.match(daechungUnitySource,/compactLandscape \? 48f : Mathf\.Max\(48f, 38f \* scale\)/);
+  assert.match(daechungUnitySource,/if \(compactLandscape\)[\s\S]*GUILayout\.Label\("DAECHUNG RPG"\)/);
+  assert.match(daechungUnitySource,/else[\s\S]*DrawPlayerStatus\(\)/);
+  for(const [width,height,dpi] of [[568,320,260],[844,390,260],[390,844,280]]){
+    const compact=width>height&&height<540,scale=Math.max(1,Math.min(1.6,dpi/180));
+    const topY=12;
+    const topHeight=compact?Math.min(88,height*.24):Math.min(194*scale,height*.29);
+    const controlsY=compact?topY+topHeight+8:Math.max(topY+topHeight+12,height*.5);
+    const tabHeight=compact?48:Math.max(48,38*scale),margin=Math.max(12,width*.04);
+    const actionHeight=Math.min(Math.max(1,height-margin*2),Math.max(56,Math.min(84,height*.08)));
+    const actionY=height-actionHeight-margin;
+    const scrollY=controlsY+tabHeight+6,scrollHeight=actionY-10-scrollY;
+    assert.ok(scrollHeight>=65,`menu must remain touch-scrollable at ${width}x${height}, got ${scrollHeight}`);
+    assert.ok(scrollY+scrollHeight<=actionY-8,'scroll must end above action dock');
+  }
+});
