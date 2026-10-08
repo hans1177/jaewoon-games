@@ -506,25 +506,41 @@
         "worldState"
       ],
       "fromSystem": "SIGNATURESYSTEMS[0]_WORLDSTATE_SYSTEM_NAME_16_CHAR_MINIMUM_LENGTH_24_CHAR_MAXIMUM_LENGTH_TRIGGER_STATE_CHANGE_24_CHAR_MINIMUM_LENGTH_16_CHAR_MAXIMUM_LENGTH_FROM_SYSTEM_TO_SYSTEM_16"
+    },
+    "local_authoring_parts::3c5025dc25364a11e339bca513f5a42c47a472ca8a9e0d7b705a181681e273ef:toSystem,trigger,stateChange": {
+      "toSystem": "SIGNATURESYSTEMS[1]_WORLDSTATE_SYSTEM_NAME_16_CHAR_MINIMUM_LENGTH_24_CHAR_MAXIMUM_LENGTH_TRIGGER_STATE_CHANGE_24_CHAR_MINIMUM_LENGTH_16_CHAR_MAXIMUM_LENGTH_TO_SYSTEM_FROM_SYSTEM",
+      "trigger": "worldState",
+      "stateChange": "newWorldState"
+    },
+    "local_authoring_parts::96f5ad161c2d97707dd954e8ba73664a60a860092d63abfe69207dc09e0cb273:systemInterconnections:4": {
+      "fromId": "signatureSystems[0]",
+      "toId": "signatureSystems[1]",
+      "stateKeys": [
+        "worldState"
+      ],
+      "fromSystem": "SIGNATURESYSTEMS[0]_WORLDSTATE_SYSTEM_NAME_16_CHAR_MINIMUM_LENGTH_24_CHAR_MAXIMUM_LENGTH_TRIGGER_STATE_CHANGE_24_CHAR_MINIMUM_LENGTH_16_CHAR_MAXIMUM_LENGTH_FROM_SYSTEM_TO_SYSTEM_16",
+      "toSystem": "SIGNATURESYSTEMS[1]_WORLDSTATE_SYSTEM_NAME_16_CHAR_MINIMUM_LENGTH_24_CHAR_MAXIMUM_LENGTH_TRIGGER_STATE_CHANGE_24_CHAR_MINIMUM_LENGTH_16_CHAR_MAXIMUM_LENGTH_TO_SYSTEM_FROM_SYSTEM",
+      "trigger": "worldState",
+      "stateChange": "newWorldState"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 20,
+      "calls": 21,
+      "successes": 21,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2222388,
-      "lastMs": 101934,
+      "totalMs": 2321379,
+      "lastMs": 98991,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:37:29.276Z"
+      "updatedAt": "2026-10-08T18:39:08.269Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:00:26.817Z",
-  "updatedAt": "2026-10-08T18:37:29.276Z",
+  "updatedAt": "2026-10-08T18:39:08.276Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2413,9 +2429,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "signatureSystems[1]→signatureSystems[2]의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "signatureSystems[0]→signatureSystems[1]의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: signatureSystems[1]→signatureSystems[2]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: signatureSystems[0]→signatureSystems[1]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2447,9 +2463,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "signatureSystems[3]→signatureSystems[4]의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "signatureSystems[3]→signatureSystems[0]의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: signatureSystems[3]→signatureSystems[4]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: signatureSystems[3]→signatureSystems[0]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2464,9 +2480,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "signatureSystems[4]→signatureSystems[0]의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "signatureSystems[0]→signatureSystems[1]의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: signatureSystems[4]→signatureSystems[0]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: signatureSystems[0]→signatureSystems[1]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2493,7 +2509,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 1
+    "designer_draft_slices::systems-progression": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -2531,10 +2547,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:37:29.276Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T18:39:08.272Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
