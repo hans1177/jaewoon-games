@@ -1,0 +1,134 @@
+{
+  "version": 1,
+  "gameId": "party-rpg",
+  "date": "2026-10-08",
+  "seedId": "OWNER-ALL-DESIGN-RESET-PARTY-RPG-20260917",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "ollama:qwen3:1.7b",
+  "singleAuthor": true,
+  "sourceStage": "identity-core",
+  "phase": "designer_draft",
+  "status": "AUTHORED_CANDIDATE",
+  "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
+  "originalSource": null,
+  "fingerprint": "78f10305167a4b30de0263d5d788651d45f848ba587cf8555b363d0224d40ce0",
+  "engineDigest": "d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904",
+  "contentDigest": "4dd9745ccececc3a6cfa24f235e73a9bdb96743bd55920b24560edbdc805f1c9",
+  "externalSeedRequired": false,
+  "designPass": false,
+  "runtimePass": false,
+  "content": {
+    "identity": "파티 RPG은 사용자 직접 업로드 웹게임으로, 플레이어가 시작하는 보드/그리드 레벨에서 명확한 목표, 제한된 이동, 장애물, 또는 명확한 퀴즈를 통해 반복 가능한 핵심 루프를 구축하는 PUZZLE 게임이다. 플레이어는 시작 단계에서 세계 상태를 바꾸는 중심 행동과 목표를 수행하며, 선택 결과가 다음 월드 상태와 접근 가능성에 영향을 미친다. 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견·대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 기존 게임 원본과의 연계성을 유지한다.",
+    "playerFantasy": "파티 RPG에서 플레이어는 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임의 중심 행동과 목표를 수행하며, 선택 결과가 다음 월드 상태와 접근 가능성에 영향을 미친다. 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견·대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 기존 게임 원본과의 연계성을 유지한다.",
+    "coreFun": "파티 RPG은 사용자 직접 업로드 웹게임으로, 플레이어가 시작하는 보드/그리드 레벨에서 명확한 목표, 제한된 이동, 장애물, 또는 명확한 퀴즈를 통해 반복 가능한 핵심 루프를 구축하는 PUZZLE 게임이다. 플레이어는 시작 단계에서 세계 상태를 바꾸는 중심 행동과 목표를 수행하며, 선택 결과가 다음 월드 상태와 접근 가능성에 영향을 미친다. 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견·대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 기존 게임 원본과의 연계성을 유지한다.",
+    "coreLoop": [
+      "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+      "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+      "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+    ],
+    "signatureSystems": [
+      {
+        "id": "SIGNATURE_SYSTEM_0",
+        "grammarRole": "MAIN",
+        "stateInputs": [
+          "BOARD_STATE",
+          "PLAYER_ACTION",
+          "LEVEL_GOAL",
+          "REWARD_SYSTEM",
+          "OBSTACLE_PATTERN"
+        ],
+        "stateOutputs": [
+          "CHANGED_BOARD_STATE",
+          "NEW_PLAYER_ACTION",
+          "REWARD_SYSTEM_UPDATED",
+          "OBSTACLE_PATTERN_MODIFIED"
+        ],
+        "name": "BOARD_RULE_0",
+        "purpose": "플레이어가 시작하는 보드/그리드 레벨에서 명확한 목표, 제한된 이동, 장애물, 또는 명확한 퀴즈를 통해 반복 가능한 핵심 루프를 구축하는 PUZZLE 게임의 중심 행동과 목표를 수행하며, 선택 결과가 다음 월드 상태와 접근 가능성에 영향을 미친다.",
+        "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.의 결과를 이용해 다음 월드 상태와 접근 가능성을 바꾼다."
+      },
+      {
+        "id": "SIGNATURE_SYSTEM_1",
+        "grammarRole": "A",
+        "stateInputs": [
+          "BOARD_STATE",
+          "PLAYER_ACTION",
+          "LEVEL_GOAL",
+          "REWARD_SYSTEM",
+          "OBSTACLE_PATTERN"
+        ],
+        "stateOutputs": [
+          "CHANGED_BOARD_STATE",
+          "NEW_PLAYER_ACTION",
+          "REWARD_SYSTEM_UPDATED",
+          "OBSTACLE_PATTERN_MODIFIED"
+        ],
+        "name": "BOARD_RULE_1",
+        "purpose": "플레이어가 시작하는 보드/그리드 레벨에서 명확한 목표, 제한된 이동, 장애물, 또는 명확한 퀴즈를 통해 반복 가능한 핵심 루프를 구축하는 PUZZLE 게임의 중심 행동과 목표를 수행하며, 선택 결과가 다음 월드 상태와 접근 가능성에 영향을 미친다.",
+        "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.의 결과를 이용해 다음 월드 상태와 접근 가능성을 바꾼다."
+      },
+      {
+        "id": "SIGNATURE_SYSTEM_2",
+        "grammarRole": "B",
+        "stateInputs": [
+          "BOARD_STATE",
+          "PLAYER_ACTION",
+          "LEVEL_GOAL",
+          "REWARD_SYSTEM",
+          "OBSTACLE_PATTERN"
+        ],
+        "stateOutputs": [
+          "CHANGED_BOARD_STATE",
+          "NEW_PLAYER_ACTION",
+          "REWARD_SYSTEM_UPDATED",
+          "OBSTACLE_PATTERN_MODIFIED"
+        ],
+        "name": "BOARD_RULE_2",
+        "purpose": "플레이어가 시작하는 보드/그리드 레벨에서 명확한 목표, 제한된 이동, 장애물, 또는 명확한 퀴즈를 통해 반복 가능한 핵심 루프를 구축하는 PUZZLE 게임의 중심 행동과 목표를 수행하며, 선택 결과가 다음 월드 상태와 접근 가능성에 영향을 미친다.",
+        "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or a visible puzzle constraint.의 결과를 이용해 다음 월드 상태와 접근 가능성을 바꾼다."
+      },
+      {
+        "id": "SIGNATURE_SYSTEM_3",
+        "grammarRole": "c",
+        "stateInputs": [
+          "BOARD_STATE",
+          "PLAYER_ACTION",
+          "LEVEL_GOAL",
+          "REWARD_SYSTEM",
+          "OBSTACLE_PATTERN"
+        ],
+        "stateOutputs": [
+          "CHANGED_BOARD_STATE",
+          "NEW_PLAYER_ACTION",
+          "REWARD_SYSTEM_UPDATED",
+          "OBSTACLE_PATTERN_MODIFIED"
+        ],
+        "name": "BOARD_RULE_3",
+        "purpose": "플레이어가 시작하는 보드/그리드 레벨에서 명확한 목표, 제한된 이동, 장애물, 또는 명확한 퀴즈를 통해 반복 가능한 핵심 루프를 구축하는 PUZZLE 게임의 중심 행동과 목표를 수행하며, 선택 결과가 다음 월드 상태와 접근 가능성에 영향을 미친다.",
+        "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or a visible puzzle constraint.의 결과를 이용해 다음 월드 상태와 접근 가능성을 바꾼다."
+      },
+      {
+        "id": "SIGNATURE_SYSTEM_4",
+        "grammarRole": "DELVE",
+        "stateInputs": [
+          "BOARD_STATE",
+          "PLAYER_ACTION",
+          "LEVEL_GOAL",
+          "REWARD_SYSTEM",
+          "OBSTACLE_PATTERN"
+        ],
+        "stateOutputs": [
+          "CHANGED_BOARD_STATE",
+          "NEW_PLAYER_ACTION",
+          "REWARD_SYSTEM_UPDATED",
+          "OBSTACLE_PATTERN_MODIFIED"
+        ],
+        "name": "BOARD_RULE_4",
+        "purpose": "플레이어가 시작하는 보드/그리드 레벨에서 명확한 목표, 제한된 이동, 장애물, 또는 명확한 퀴즈를 통해 반복 가능한 핵심 루프를 구축하는 PUZZLE 게임의 중심 행동과 목표를 수행하며, 선택 결과가 다음 월드 상태와 접근 가능성에 영향을 미친다.",
+        "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or a visible puzzle constraint.의 결과를 이용해 다음 월드 상태와 접근 가능성을 바꾼다."
+      }
+    ],
+    "multiplayerMode": "HYBRID"
+  },
+  "updatedAt": "2026-10-08T08:47:04.655Z"
+}
