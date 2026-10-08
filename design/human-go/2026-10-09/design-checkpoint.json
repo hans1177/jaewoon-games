@@ -320,25 +320,38 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::c5583f3481fe4383d0971e37ce21c024319fa1131eeea2b8e69ad4ebd915e1b4:signatureSystems:0": {
+      "id": "signatureSystems.KARMA_RETURN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "PLAYER_CHOICE"
+      ],
+      "stateOutputs": [
+        "STATE_CHANGE"
+      ],
+      "name": "KARMA RETURN",
+      "purpose": "플레이어 선택에 따른 상태 변화 및 보상 제공",
+      "playerChoice": "플레이어가 세계 상태를 바꾸는 선택을 입력하여, 새로운 경로와 결과를 생성합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 413462,
-      "lastMs": 21702,
+      "totalMs": 479102,
+      "lastMs": 65640,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:51:14.967Z"
+      "updatedAt": "2026-10-08T17:52:20.616Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:44:21.449Z",
-  "updatedAt": "2026-10-08T17:51:14.974Z",
+  "updatedAt": "2026-10-08T17:52:20.616Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2455,10 +2468,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T17:51:14.970Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:52:20.616Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
