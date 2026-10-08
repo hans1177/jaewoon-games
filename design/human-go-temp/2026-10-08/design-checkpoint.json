@@ -779,25 +779,53 @@
       "toSystem": "A",
       "trigger": "BuildProgress",
       "stateChange": "RunProgress"
+    },
+    "local_authoring_parts::583e6c6b3db196343ede1276c66529f3342436204acb520ee1e58a381c42d4d4:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "MAIN",
+      "toId": "A",
+      "stateKeys": [
+        "BuildProgress",
+        "RunProgress",
+        "PlayerChoice"
+      ],
+      "fromSystem": "MAIN,omitempty/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/"
+    },
+    "local_authoring_parts::583e6c6b3db196343ede1276c66529f3342436204acb520ee1e58a381c42d4d4:toSystem,trigger,stateChange": {
+      "toSystem": "A",
+      "trigger": "BuildProgress",
+      "stateChange": "RunProgress"
+    },
+    "local_authoring_parts::d7aa882c6af17b3882b2968a68d516f5e7c7b59d96691ee47c43fcc135d4ddbf:systemInterconnections:1": {
+      "fromId": "MAIN",
+      "toId": "A",
+      "stateKeys": [
+        "BuildProgress",
+        "RunProgress",
+        "PlayerChoice"
+      ],
+      "fromSystem": "MAIN,omitempty/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/",
+      "toSystem": "A",
+      "trigger": "BuildProgress",
+      "stateChange": "RunProgress"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 15,
-      "successes": 14,
+      "calls": 17,
+      "successes": 16,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2123609,
-      "lastMs": 87617,
+      "totalMs": 2308512,
+      "lastMs": 89202,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T12:33:51.361Z"
+      "updatedAt": "2026-10-08T12:36:56.270Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:58:27.660Z",
-  "updatedAt": "2026-10-08T12:33:51.363Z",
+  "updatedAt": "2026-10-08T12:36:56.272Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3141,7 +3169,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:33:51.363Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:36:56.272Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
