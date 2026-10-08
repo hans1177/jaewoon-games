@@ -620,25 +620,46 @@
       "name": "생존자 역할 변화 시스템",
       "purpose": "플레이어가 숲의 생존자들에서 탐험·제작·협력의 협력 확장형 생존 게임에서 자원을 수집하고, 환경 위험을 읽고 이동·경로를 결정하며, 생존을 확장하는 데 필요한 조건을 만족시켜야 한다.",
       "playerChoice": "movement decision"
+    },
+    "local_authoring_parts::229c1c22494de211900e38e7e8171125a4f5d0f74a48c2e6416f4d8577cc1e4a:signatureSystems:0": {
+      "id": "숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임으로 재설계한다.",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "seasonal changes",
+        "resource needs",
+        "environmental hazards",
+        "group readiness",
+        "current supplies"
+      ],
+      "stateOutputs": [
+        "role change",
+        "movement direction",
+        "resource acquisition",
+        "shelter improvement",
+        "threat progression"
+      ],
+      "name": "생존자 역할 변화 시스템",
+      "purpose": "플레이어가 숲의 생존자들에서 자원을 수집하고 위험을 관리하며, 계절별로 변화하는 환경에 맞춘 협력적 생존 전략을 수립하는 데 사용된다.",
+      "playerChoice": "Return or push deeper based on current supplies and group readiness."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 20,
+      "calls": 21,
+      "successes": 21,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1757320,
-      "lastMs": 75447,
+      "totalMs": 1786159,
+      "lastMs": 28839,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:06:45.156Z"
+      "updatedAt": "2026-10-08T16:07:14.007Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:57:22.913Z",
-  "updatedAt": "2026-10-08T16:06:45.166Z",
+  "updatedAt": "2026-10-08T16:07:14.008Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2902,10 +2923,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:06:45.158Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:07:14.008Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
