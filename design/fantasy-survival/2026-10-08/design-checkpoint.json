@@ -34,25 +34,43 @@
         "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 플레이어 역할을 수행하며, 이 선택은 기존 마력숲 생존기의 세계관과 게임 규칙을 그대로 보존하고, 플레이어 이동·채집·전투·제작·퀘스트 상태가 같은 월드 상태에 연결됩니다.",
         "이 선택은 기존 게임의 보존형 표현 업그레이드를 통해, 게임의 재미와 플레이어 경험을 높이기 위한 설계입니다."
       ]
+    },
+    "local_authoring_parts::2cf1b28de51ef09ce4b7875e7c746126bf9b95df115a212b2a304b3be67ccefc:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_01",
+      "stateInputs": [
+        "playerPosition",
+        "currentBuild",
+        "availableResources",
+        "enemyPressureLevel"
+      ],
+      "stateOutputs": [
+        "newWorldState",
+        "updatedBuild",
+        "newResourcePool",
+        "adjustedEnemyPressure"
+      ],
+      "name": "마력숲 생존기 - 시그니처 시스템",
+      "purpose": "플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 플레이어 역할을 수행하며, 이 선택은 기존 마력숲 생존기의 세계관과 게임 규칙을 그대로 보존하고, 플레이어 이동·채집·전투·제작·퀘스트 상태가 같은 월드 상태에 연결된다.",
+      "playerChoice": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 플레이어 역할을 수행하며, 이 선택은 기존 마력숲 생존기의 세계관과 게임 규칙을 그대로 보존하고, 플레이어 이동·채집·전투·제작·퀘스트 상태가 같은 월드 상태에 연결된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 455421,
-      "lastMs": 79116,
+      "totalMs": 546506,
+      "lastMs": 91085,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:00:15.546Z"
+      "updatedAt": "2026-10-08T08:01:46.632Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:52:40.073Z",
-  "updatedAt": "2026-10-08T08:00:15.546Z",
+  "updatedAt": "2026-10-08T08:01:46.632Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2251,7 +2269,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:00:15.546Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:01:46.632Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
