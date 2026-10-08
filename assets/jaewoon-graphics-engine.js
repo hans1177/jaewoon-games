@@ -55,7 +55,11 @@
     ASSET_LOAD_FAILURE:['asset','sprite','render','ui'],LICENSE_LEDGER_MISSING:['asset'],STYLE_DNA_MISMATCH:['visual','render','style','ui','vfx'],
   });
 
-  const clamp = (value, min, max) => Math.max(min, Math.min(max, Number(value) || 0));
+  // 유틸: 렌더링 계측 실패(Infinity/NaN)를 최고 점수로 취급하지 않는다.
+  const clamp = (value, min, max) => {
+    const measured = Number(value);
+    return Number.isFinite(measured) ? Math.max(min, Math.min(max, measured)) : min;
+  };
   const own = (object, key) => Object.prototype.hasOwnProperty.call(object, key);
   const clean = value => String(value ?? '').replace(/\s+/g, ' ').trim();
   const posix = value => String(value ?? '').replaceAll('\\','/').replace(/^\.\//,'');
