@@ -75,25 +75,38 @@
       "name": "색채 인과법칙 시스템",
       "purpose": "색채, 형태, 공간, 시간 중 하나로 구체화된 플레이어 존재",
       "playerChoice": "색채, 형태, 공간, 시간의 해석 또는 비용 변경을 선택하여 게임 내 상태를 바꿈"
+    },
+    "local_authoring_parts::01bbcfec753ee06e15a699bc6611b718829eb44c3bfef5a744c1977c1d12eae8:signatureSystems:3": {
+      "id": "signatureSystems_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "worldState"
+      ],
+      "stateOutputs": [
+        "newWorldState"
+      ],
+      "name": "색채 인과법칙 시스템",
+      "purpose": "색채, 형태, 공간, 시간 중 하나로 구체화된 플레이어 존재",
+      "playerChoice": "색채, 형태, 공간, 시간의 해석 또는 비용 변경을 선택하여 게임 내 상태를 바꿈"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 697428,
-      "lastMs": 99386,
+      "totalMs": 795319,
+      "lastMs": 97891,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:41:12.298Z"
+      "updatedAt": "2026-10-08T18:42:50.190Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:29:34.840Z",
-  "updatedAt": "2026-10-08T18:41:12.298Z",
+  "updatedAt": "2026-10-08T18:42:50.190Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2130,7 +2143,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:41:12.298Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:42:50.190Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
