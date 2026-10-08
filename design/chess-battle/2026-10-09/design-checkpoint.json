@@ -556,25 +556,34 @@
       "toSystem": "CORE_LOOP_DESIGN_SYSTEM_0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789AB",
       "trigger": "worldStateMapper→dynamicWorldMapper의 출력과 입력 상태가 연결되지 않음",
       "stateChange": "boardState와 threatInfo의 상태 변화로 인해 strategyPath 및 growthPotential이 생성됨"
+    },
+    "local_authoring_parts::3cd5c1811684a3b51b6497f357e20cde7ab4936275355272195edc4c0e7d6c1a:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "worldStateMapper",
+      "toId": "dynamicWorldMapper",
+      "stateKeys": [
+        "boardState",
+        "threatInfo"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN_SYSTEM_0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789AB"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 19,
+      "calls": 20,
+      "successes": 20,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2195719,
-      "lastMs": 111307,
+      "totalMs": 2308628,
+      "lastMs": 112909,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:35:11.615Z"
+      "updatedAt": "2026-10-08T18:37:04.526Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:58:35.822Z",
-  "updatedAt": "2026-10-08T18:35:11.616Z",
+  "updatedAt": "2026-10-08T18:37:04.526Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2854,7 +2863,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:35:11.616Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:37:04.526Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
