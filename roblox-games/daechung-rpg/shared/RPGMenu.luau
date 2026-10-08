@@ -45,6 +45,7 @@ function Menu.install(config,gui,player,options)
  local relayout
  local setOpen
 
+ local tabNames={"배낭","장비","캐릭터","상점","퀘스트","파티","설정"}
  local toggle=button(gui,"RPGMenuToggle","배낭 · 메뉴")
  toggle.Position=UDim2.fromOffset(12,150);toggle.Size=UDim2.fromOffset(136,52)
  local overlay=make("Frame",gui,"RPGSystemMenu",{Visible=false,Active=true,BackgroundColor3=Color3.new(0,0,0),BackgroundTransparency=.28,Size=UDim2.fromScale(1,1),ZIndex=50})
@@ -54,12 +55,12 @@ function Menu.install(config,gui,player,options)
  local title=label(panel,"MenuTitle","모험가의 배낭",22);title.Font=Enum.Font.GothamBold;title.Position=UDim2.fromOffset(18,8);title.Size=UDim2.new(1,-88,0,30)
  local balance=label(panel,"MenuBalance","",13);balance.TextColor3=colors.gold;balance.Position=UDim2.fromOffset(18,39);balance.Size=UDim2.new(1,-88,0,20)
  local close=button(panel,"CloseMenu","×");close.Position=UDim2.new(1,-62,0,8);close.Size=UDim2.fromOffset(52,52)
- local tabs=make("ScrollingFrame",panel,"MenuTabs",{Position=UDim2.fromOffset(12,68),Size=UDim2.new(1,-24,0,58),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=2,CanvasSize=UDim2.fromOffset(558,0),ScrollingDirection=Enum.ScrollingDirection.X})
+ local tabs=make("ScrollingFrame",panel,"MenuTabs",{Position=UDim2.fromOffset(12,68),Size=UDim2.new(1,-24,0,58),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=2,CanvasSize=UDim2.fromOffset(#tabNames*112,0),ScrollingDirection=Enum.ScrollingDirection.X})
  local tabButtons={}
  local body=make("Frame",panel,"MenuBody",{Position=UDim2.fromOffset(12,134),Size=UDim2.new(1,-24,1,-190),BackgroundTransparency=1})
  local footer=label(panel,"MenuFooter","",13);footer.TextColor3=colors.muted;footer.Position=UDim2.new(0,18,1,-48);footer.Size=UDim2.new(1,-36,0,40)
  local pages={}
- for _,name in ipairs({"배낭","장비","퀘스트","파티","설정"})do
+ for _,name in ipairs(tabNames)do
   pages[name]=make(name=="배낭" and "ScrollingFrame" or "Frame",body,"Page"..name,{Size=UDim2.fromScale(1,1),BackgroundTransparency=1,Visible=false,BorderSizePixel=0})
  end
 
@@ -100,13 +101,37 @@ function Menu.install(config,gui,player,options)
  end)
 
  local content={}
- for _,name in ipairs({"장비","퀘스트","파티","설정"})do
+ for _,name in ipairs({"장비","캐릭터","상점","퀘스트","파티","설정"})do
   local scroll=make("ScrollingFrame",pages[name],"Content",{Size=UDim2.fromScale(1,1),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=4,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y})
   make("UIListLayout",scroll,"Rows",{Padding=UDim.new(0,12),SortOrder=Enum.SortOrder.LayoutOrder})
   content[name]=scroll
  end
  local equipmentText=label(content["장비"],"EquipmentSummary","",18);equipmentText.Size=UDim2.new(1,-8,0,230);equipmentText.TextYAlignment=Enum.TextYAlignment.Top
  local equipmentHint=label(content["장비"],"EquipmentHelp","장비 강화는 마을 상인에게서 진행해. 배낭의 장비를 누르면 적용 능력치를 볼 수 있어.",15);equipmentHint.Size=UDim2.new(1,-8,0,80);equipmentHint.TextColor3=colors.muted
+ -- 캐릭터 및 상점: 표시 데이터는 서버 Player Attributes / 원본 GameConfig에서만 동기화한다.
+ local characterText=label(content["캐릭터"],"CharacterSummary","",17)
+ characterText.Size=UDim2.new(1,-8,0,300);characterText.TextYAlignment=Enum.TextYAlignment.Top
+ local characterHint=label(content["캐릭터"],"CharacterSource","서버에서 확인된 직업·장비·경험치만 표시해.",14)
+ characterHint.Size=UDim2.new(1,-8,0,52);characterHint.TextColor3=colors.muted
+ local shopSummary=label(content["상점"],"ShopSummary","",16)
+ shopSummary.Size=UDim2.new(1,-8,0,68);shopSummary.TextYAlignment=Enum.TextYAlignment.Top
+ local weaponOffer=label(content["상점"],"WeaponOffer","",17);weaponOffer.Size=UDim2.new(1,-8,0,74)
+ local buyWeapon=button(content["상점"],"BuyWeapon","다음 무기 구매");buyWeapon.Size=UDim2.new(1,-8,0,52)
+ local armorOffer=label(content["상점"],"ArmorOffer","",17);armorOffer.Size=UDim2.new(1,-8,0,74)
+ local buyArmor=button(content["상점"],"BuyArmor","다음 방어구 구매");buyArmor.Size=UDim2.new(1,-8,0,52)
+ local saleNotice=label(content["상점"],"SaleNotice",
+  "티어 장비 재판매 가격은 기존 규칙에 없어 판매할 수 없어.\n구매는 마을 상인 가까이에서 서버가 확인해.",14)
+ saleNotice.Size=UDim2.new(1,-8,0,94);saleNotice.TextColor3=colors.muted
+ buyWeapon.Activated:Connect(function()
+  local offer=Model.shop(player:GetAttributes(),config).weapon
+  if not opened or activeTab~="상점"or not offer.canBuy then return end
+  if options.buyWeapon then options.buyWeapon()end
+ end)
+ buyArmor.Activated:Connect(function()
+  local offer=Model.shop(player:GetAttributes(),config).armor
+  if not opened or activeTab~="상점"or not offer.canBuy then return end
+  if options.buyArmor then options.buyArmor()end
+ end)
  local questTitle=label(content["퀘스트"],"QuestTitle","",22);questTitle.Size=UDim2.new(1,-8,0,48)
  local questText=label(content["퀘스트"],"QuestProgress","",18);questText.Size=UDim2.new(1,-8,0,140);questText.TextYAlignment=Enum.TextYAlignment.Top
  local track=button(content["퀘스트"],"TrackQuest","퀘스트 추적 켜기");track.Size=UDim2.new(1,-8,0,52)
@@ -133,7 +158,7 @@ function Menu.install(config,gui,player,options)
   for key,b in pairs(tabButtons)do b.BackgroundColor3=key==name and Color3.fromRGB(82,67,44) or colors.card end
   title.Text=name=="배낭" and "모험가의 배낭" or name
  end
- for index,name in ipairs({"배낭","장비","퀘스트","파티","설정"})do
+ for index,name in ipairs(tabNames)do
   local b=button(tabs,"Tab"..index,name);b.Position=UDim2.fromOffset((index-1)*112,0);tabButtons[name]=b
   b.Activated:Connect(function()switchTab(name);refresh()end)
  end
@@ -185,6 +210,31 @@ function Menu.install(config,gui,player,options)
   selection=selection or filtered[1]
   if selection then selectItem(selection)else selectedId=nil;selectedTool=nil;detailTitle.Text="아이템 없음";detailText.Text="검색어나 분류를 바꿔 봐. 없는 아이템은 표시되지 않아.";itemAction.Visible=false end
   if removedFocus then GuiService.SelectedObject=itemButtons[selectedId] or filterButtons[category]end
+  local humanoid=player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+  if humanoid then a.CurrentHP=humanoid.Health end
+  local character=Model.character(a,config)
+  characterText.Text=string.format(
+   "%s  ·  Lv.%d\n체력  %d / %d     공격력  %d\n경험치  %d     보유 골드  %d\n\n무기 T%d (기본 보너스 +%d)\n방어구 T%d (기본 보너스 +%d)\n유물  %s\n\n1차 전직  %s\n2차 전직  %s",
+   character.className,character.level,character.hp,character.maxHp,character.attack,
+   character.xp,character.gold,character.weaponTier,character.weaponBonus,
+   character.armorTier,character.armorBonus,character.relic,
+   character.advancement~=""and character.advancement or "없음",
+   character.secondaryAdvancement~=""and character.secondaryAdvancement or "없음")
+  local offers=Model.shop(a,config)
+  shopSummary.Text=string.format("골드 %d    ·    %s\n무기·방어구 강화는 서버 상태와 즉시 동기화돼.",
+   offers.gold,offers.inVillage and "마을 상인에게 가까이 가서 구매"or"상점 이용은 마을에서만 가능")
+  weaponOffer.Text=offers.weapon.price and
+   string.format("무기 T%d → T%d   ·   %dG",offers.weapon.tier,offers.weapon.nextTier,offers.weapon.price) or
+   "무기 최고 티어 보유"
+  armorOffer.Text=offers.armor.price and
+   string.format("방어구 T%d → T%d   ·   %dG",offers.armor.tier,offers.armor.nextTier,offers.armor.price) or
+   "방어구 최고 티어 보유"
+  buyWeapon.Active=offers.weapon.canBuy
+  buyArmor.Active=offers.armor.canBuy
+  buyWeapon.AutoButtonColor=offers.weapon.canBuy
+  buyArmor.AutoButtonColor=offers.armor.canBuy
+  buyWeapon.Text=offers.weapon.canBuy and "다음 무기 구매"or"구매 불가 / 조건 미충족"
+  buyArmor.Text=offers.armor.canBuy and "다음 방어구 구매"or"구매 불가 / 조건 미충족"
   local class=(config.Classes or {})[a.ClassId]
   equipmentText.Text=string.format("%s  ·  Lv.%d\n\n최대 체력  %d\n공격력  %d\n\n무기  T%d    방어구  T%d\n유물  %s",class and class.Name or "직업 미선택",a.Level or 1,a.MaxHP or 100,a.AttackPower or 0,a.WeaponTier or 0,a.ArmorTier or 0,a.RelicId=="NONE" and "비어 있음" or tostring(a.RelicId or "비어 있음"))
   local quest=Model.quest(a,config);questTitle.Text=quest.title;questText.Text=quest.text;track.Visible=quest.active
@@ -242,13 +292,15 @@ function Menu.install(config,gui,player,options)
   if pending or not opened then return end
   pending=true;task.defer(function()pending=false;if gui.Parent then refresh()end end)
  end
- local watched={Level=true,Gold=true,ClassId=true,MaxHP=true,AttackPower=true,WeaponTier=true,ArmorTier=true,RelicId=true,QuestPortal=true,QuestKills=true,QuestNeed=true,RoomCode=true,PartyCount=true,PartyKills=true,Contribution=true,UnlockedCompanions=true,CompanionUnlockCount=true,LastAction=true}
+ local watched={Level=true,Gold=true,ClassId=true,MaxHP=true,AttackPower=true,WeaponTier=true,ArmorTier=true,RelicId=true,QuestPortal=true,QuestKills=true,QuestNeed=true,RoomCode=true,PartyCount=true,PartyKills=true,Contribution=true,UnlockedCompanions=true,CompanionUnlockCount=true,LastAction=true,CurrentZone=true,XP=true,AdvancementId=true,SecondAdvancementId=true}
  table.insert(connections,player.AttributeChanged:Connect(function(name)if watched[name]then scheduleRefresh()end end))
  local function watchTools()
   for _,c in ipairs(toolConnections)do c:Disconnect()end;toolConnections={}
   for _,container in pairs({backpack=player:FindFirstChildOfClass("Backpack"),character=player.Character})do
    table.insert(toolConnections,container.ChildAdded:Connect(scheduleRefresh));table.insert(toolConnections,container.ChildRemoved:Connect(scheduleRefresh))
   end
+  local humanoid=player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+  if humanoid then table.insert(toolConnections,humanoid.HealthChanged:Connect(scheduleRefresh))end
   scheduleRefresh()
  end
  table.insert(connections,player.ChildAdded:Connect(function(child)if child:IsA("Backpack")then watchTools()end end))
