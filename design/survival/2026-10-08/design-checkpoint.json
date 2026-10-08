@@ -696,25 +696,42 @@
         "playerAction"
       ],
       "fromSystem": "SurvivalHordeSystem"
+    },
+    "local_authoring_parts::26a6750d3fa81e4cdb8636d78e3731ef7dce7417baa2728b6d6696e438676aa7:toSystem,trigger,stateChange": {
+      "toSystem": "SurvivalResourceSystem",
+      "trigger": "SurvivalHordeSystem → SurvivalResourceSystem",
+      "stateChange": "worldState updated to reflect resource optimization, playerAction adjusted to prioritize resource consolidation and strategic upgrades"
+    },
+    "local_authoring_parts::a2ea97667c698c57e73e3417cd931ddaf283feecead57b5f6cdc176fd4c7f348:systemInterconnections:0": {
+      "fromId": "signatureSystems[0]",
+      "toId": "signatureSystems[1]",
+      "stateKeys": [
+        "worldState",
+        "playerAction"
+      ],
+      "fromSystem": "SurvivalHordeSystem",
+      "toSystem": "SurvivalResourceSystem",
+      "trigger": "SurvivalHordeSystem → SurvivalResourceSystem",
+      "stateChange": "worldState updated to reflect resource optimization, playerAction adjusted to prioritize resource consolidation and strategic upgrades"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 24,
-      "successes": 23,
+      "calls": 25,
+      "successes": 24,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2208457,
-      "lastMs": 80801,
+      "totalMs": 2290541,
+      "lastMs": 82084,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T16:32:49.808Z"
+      "updatedAt": "2026-10-08T16:34:11.893Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:58:07.049Z",
-  "updatedAt": "2026-10-08T16:32:49.808Z",
+  "updatedAt": "2026-10-08T16:34:11.895Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3069,7 +3086,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:32:49.808Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:34:11.895Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
