@@ -104,7 +104,7 @@ export function buildSpatialBlueprintContract({design={},source={},files=[],mode
     regionBiome:worldProposal.regionalBiome||null,climate:worldProposal.climate||null,
     grid:worldProposal.size||null,drainage:worldProposal.drainage||null,riverType:worldProposal.riverType||null,
     riverSample:(worldProposal.river||[]).slice(0,24),riverLength:worldProposal.river?.length||0,
-    routes:(worldProposal.roads||[]).map(row=>({id:row.id,from:row.from,to:row.to,totalCells:row.cells.length,cellSample:row.cells.slice(0,64)})),
+    routes:(worldProposal.roads||[]).map(row=>({id:row.id,from:row.from,to:row.to,totalCells:row.cells.length,cellSample:row.cells.slice(0,64),worldPointSample:row.worldPath.slice(0,64)})),
     buildings:(worldProposal.buildings||[]).slice(0,12).map(row=>({id:row.id,zone:row.zone,position:row.position,footprint:row.footprint,modules:row.modules,doorFacing:row.doorFacing,roadAccess:row.roadAccess,gridSnap:row.gridSnap,sourceBindingRequired:true})),
     totalBuildings:worldProposal.buildings?.length||0,vegetationTypes:(worldProposal.instancingPlan||[]).filter(row=>String(row.module).startsWith('NATURE:')).map(row=>({module:row.module,count:row.count})),
     landmark:worldProposal.landmark||null,sightline:worldProposal.sightline||null,
