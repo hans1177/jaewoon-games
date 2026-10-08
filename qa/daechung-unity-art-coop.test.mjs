@@ -49,6 +49,22 @@ test('실제 제작 애니메이션 시트의 크기와 비어 있지 않은 픽
     assert.match(visuals, /Shader\.Find\("Jaewoon\/DaechungPixelArt"\)/);
 });
 
+test('2.5D 카메라·실제 공간 지형·지역별 깊이 표현과 WebGL 성능 게이트를 유지한다', () => {
+    assert.match(visuals, /camera\.orthographic\s*=\s*false/);
+    assert.match(visuals, /camera\.transform\.LookAt/);
+    assert.match(visuals, /new GameObject\("DaechungDepthGround"\)/);
+    assert.match(visuals, /new GameObject\("DaechungDepthPath"\)/);
+    assert.match(visuals, /AddComponent<MeshFilter>\(\)/);
+    assert.match(visuals, /new Vector3\(-24f, -1\.85f, 8f\)/);
+    assert.match(visuals, /new Vector3\(-24f, -1\.85f, -8f\)/);
+    assert.match(visuals, /_depthGround\.sharedMaterial\.color/);
+    assert.match(visuals, /QualitySettings\.SetQualityLevel\(0, true\)/);
+    assert.match(visuals, /Resources\.Load<Texture2D>\("DaechungArt\/hero-idle"\) != null/);
+    const validator = fs.readFileSync(path.join(root,
+        'tools', 'company-unity-web-gameplay-validation.mjs'), 'utf8');
+    assert.match(validator, /framePacing\.medianFrameMs>38\|\|framePacing\.p95FrameMs>100/);
+});
+
 test('WebGL 브리지가 서버 이벤트를 Unity 본체에 전달하고 재접속용 소켓을 바꾼다', () => {
     const source = read('Plugins', 'WebGL', 'DaechungSocket.jslib');
     const events = [];
