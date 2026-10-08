@@ -430,25 +430,52 @@
       "name": "Read the incoming insect wave and its threat pattern.",
       "purpose": "Plays a central role in the game by requiring players to interpret and respond to incoming insect waves, thereby shaping the game's progression and strategy.",
       "playerChoice": "Players must interpret the incoming insect wave and its threat pattern, then place or adjust defenders and spend limited resources on the highest-value counter to survive and advance the game."
+    },
+    "local_authoring_parts::639dfd8871b01dbb58e7f81436739dfc609c2a62169e70d0bb6a780031f3eeac:signatureSystems:2": {
+      "id": "B",
+      "grammarRole": "B",
+      "stateInputs": [
+        "Read the incoming insect wave and its threat pattern."
+      ],
+      "stateOutputs": [
+        "World state change and next selection"
+      ],
+      "name": "Read the incoming insect wave and its threat pattern.",
+      "purpose": "Plays a central role in the game by requiring players to interpret and respond to incoming insect waves, thereby shaping the game's progression and strategy.",
+      "playerChoice": "Players must interpret the incoming insect wave and its threat pattern, then place or adjust defenders and spend limited resources on the highest-value counter to survive and advance the game."
+    },
+    "local_authoring_parts::639dfd8871b01dbb58e7f81436739dfc609c2a62169e70d0bb6a780031f3eeac:signatureSystems:3": {
+      "id": "c",
+      "grammarRole": "c",
+      "stateInputs": [
+        "Read the incoming insect wave and its threat pattern.",
+        "Enemy type counterplay"
+      ],
+      "stateOutputs": [
+        "World state change and next selection"
+      ],
+      "name": "Enemy type counterplay",
+      "purpose": "Provides a strategic option for players to counter enemy types based on their threat patterns, adding depth and variability to the gameplay.",
+      "playerChoice": "Players can choose to counter specific enemy types based on their threat patterns, adjusting defenders and resource allocation accordingly to optimize survival and progression."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 14,
+      "successes": 14,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1219235,
-      "lastMs": 105618,
+      "totalMs": 1429577,
+      "lastMs": 103927,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:07:38.849Z"
+      "updatedAt": "2026-10-08T13:11:09.194Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:47:19.560Z",
-  "updatedAt": "2026-10-08T13:07:38.849Z",
+  "updatedAt": "2026-10-08T13:11:09.194Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2683,7 +2710,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:07:38.849Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:11:09.194Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
