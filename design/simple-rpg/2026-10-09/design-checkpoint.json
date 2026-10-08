@@ -75,25 +75,38 @@
       "name": "START_BOARD_LEVEL_WITH_PLAYER_CHOICE_AND_CORE_FUN_EFFECT",
       "purpose": "Player choice and core fun effect integration",
       "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+    },
+    "local_authoring_parts::7e7fdc65dd3b4cb8e2cb2b18f3b64c94df2ab0299b25bb3cf10a5de7bcec2f25:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "GAME_SPACE"
+      ],
+      "stateOutputs": [
+        "WORLD_STATE_CHANGE"
+      ],
+      "name": "START_BOARD_LEVEL_WITH_PLAYER_CHOICE_AND_CORE_FUN_EFFECT",
+      "purpose": "Player choice and core fun effect interaction",
+      "playerChoice": "Player selects a board level with clear goal, limited moves, obstacles, or visible puzzle constraint."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 742508,
-      "lastMs": 97225,
+      "totalMs": 838492,
+      "lastMs": 95984,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:30:35.638Z"
+      "updatedAt": "2026-10-08T21:32:11.624Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:18:13.104Z",
-  "updatedAt": "2026-10-08T21:30:35.638Z",
+  "updatedAt": "2026-10-08T21:32:11.624Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2130,7 +2143,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:30:35.638Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:32:11.624Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
