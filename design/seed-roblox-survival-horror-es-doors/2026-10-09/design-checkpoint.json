@@ -416,25 +416,28 @@
     },
     "local_authoring_parts::9926c34360da446b236c6472c78d9f6585ed2c998b39dafc818bdda106c765ac:toSystem": {
       "toSystem": "BOARD_STATE_TRANSITION_SYSTEM_01"
+    },
+    "local_authoring_parts::9926c34360da446b236c6472c78d9f6585ed2c998b39dafc818bdda106c765ac:trigger": {
+      "trigger": "systemInterconnections[0].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성합니다. 예: '플레이어가 레벨 타겟 상태를 선택하면, 시스템은 다음 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다.'"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 16,
+      "calls": 17,
+      "successes": 17,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 491021,
-      "lastMs": 32554,
+      "totalMs": 528441,
+      "lastMs": 37420,
       "lastError": null,
-      "updatedAt": "2026-10-08T20:57:50.753Z"
+      "updatedAt": "2026-10-08T20:58:28.174Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:49:39.552Z",
-  "updatedAt": "2026-10-08T20:57:50.753Z",
+  "updatedAt": "2026-10-08T20:58:28.174Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2929,7 +2932,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T20:57:50.753Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T20:58:28.174Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
