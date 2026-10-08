@@ -667,25 +667,44 @@
       "name": "ACTION_SURVIVAL_ROGUELITE",
       "purpose": "Explore a dangerous small-scale habitat and identify food, material and insect threats.",
       "playerChoice": "Take a risk to gather or fight, then convert the result into survival tools or a safer route. Use what was learned about the ecosystem to survive stronger pressure and reach the next meaningful objective."
+    },
+    "local_authoring_parts::40e14107143a1d0301d4af25bc826ce21a5b37b1e4ea30527852ddfe59b3827a:signatureSystems:3": {
+      "id": "ACTION_SURVIVAL_ROGUELITE",
+      "grammarRole": "c",
+      "stateInputs": [
+        "READABLE_HABITAT",
+        "IDENTIFIED_FOOD",
+        "IDENTIFIED_MATERIAL",
+        "IDENTIFIED_INSECT_THREAT"
+      ],
+      "stateOutputs": [
+        "MODIFIED_HABITAT",
+        "CREATED_SURVIVAL_TOOL",
+        "CHANGED_ROUTE",
+        "REACHED_NEXT_OBJECTIVE"
+      ],
+      "name": "ACTION_SURVIVAL_ROGUELITE",
+      "purpose": "Explore a dangerous small-scale habitat and identify food, material and insect threats.",
+      "playerChoice": "Take a risk to gather or fight, then convert the result into survival tools or a safer route. Use what was learned about the ecosystem to survive stronger pressure and reach the next meaningful objective."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 23,
-      "successes": 23,
+      "calls": 24,
+      "successes": 24,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2078846,
-      "lastMs": 71771,
+      "totalMs": 2150474,
+      "lastMs": 71628,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:18:09.139Z"
+      "updatedAt": "2026-10-08T10:19:20.768Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:45:31.034Z",
-  "updatedAt": "2026-10-08T10:18:09.139Z",
+  "updatedAt": "2026-10-08T10:19:20.768Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2953,7 +2972,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:18:09.139Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:19:20.768Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
