@@ -487,21 +487,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1332509,
-      "lastMs": 246677,
+      "totalMs": 1484347,
+      "lastMs": 151838,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:35:15.834Z"
+      "updatedAt": "2026-10-08T08:37:47.678Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:13:03.272Z",
-  "updatedAt": "2026-10-08T08:35:15.839Z",
+  "updatedAt": "2026-10-08T08:37:47.683Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2703,22 +2703,6 @@
   "sliceRepairFeedback": {
     "designer_draft_slices::systems-progression": [
       {
-        "code": "DESIGN_REPEATED_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "CONTENT_EXPANSION_PLAN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "name": "failureRetryRisk"
-        },
-        "requiredAction": "서로 다른 항목을 같은 설명으로 채우지 않는다. 동선·전조·대응·위험·보상·복구가 각각 어떤 규칙인지 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "failureRetryRisk"
-        ]
-      },
-      {
         "code": "DESIGN_STATE_EXCHANGE_BROKEN",
         "kind": "HARD_GATE",
         "axis": "CORE_LOOP_DESIGN",
@@ -2823,7 +2807,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 1
+    "designer_draft_slices::systems-progression": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -2849,13 +2833,23 @@
           "newGameplay": "OUTPUT: 게임의 중심 행동인 'Fight through an escalating horde in a short real-time生存 run'",
           "systemImpact": "OUTPUT: 게임의 중심 행동인 'Fight through an escalating horde in a short real-time生存 run'"
         }
-      ]
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "INPUT: 플레이어의 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프",
+          "STATE: 선택의 결과가 다음 상태와 접근 가능성을 바꾼다",
+          "OUTPUT: 게임의 중심 행동인 'Fight through an escalating horde in a short real-time生存 run'"
+        ],
+        "retryFlow": "REPEATED",
+        "riskPressure": "BALANCE",
+        "recoveryRules": "BALANCE"
+      }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T08:35:15.834Z",
-  "failedPhase": "designer_draft_slices",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:37:47.678Z",
+  "failedPhase": "designer_draft",
   "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_REPEATED_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
