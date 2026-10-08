@@ -70,25 +70,43 @@
       "name": "KARMA_RETURN",
       "purpose": "ACTION_SEQUENCE",
       "playerChoice": "ACTION_SEQUENCE"
+    },
+    "local_authoring_parts::695244b87cefe03728e863e05f64ff818da6c14818674d36fe8281179e8c80f1:signatureSystems:2": {
+      "id": "B",
+      "grammarRole": "B",
+      "stateInputs": [
+        "EXPLORE_AREA",
+        "MEET_CHARACTERS",
+        "ACCEPT_OR_ADVANCE_STORY_QUESTS",
+        "DISCOVER_INFORMATION"
+      ],
+      "stateOutputs": [
+        "CHANGED_WORLD_STATE",
+        "GROWTH_EFFECT",
+        "ACTION_SEQUENCE"
+      ],
+      "name": "B",
+      "purpose": "ACTION_SEQUENCE",
+      "playerChoice": "ACTION_SEQUENCE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 484324,
-      "lastMs": 27839,
+      "totalMs": 722117,
+      "lastMs": 237793,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:31:24.063Z"
+      "updatedAt": "2026-10-08T13:35:21.857Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:23:19.708Z",
-  "updatedAt": "2026-10-08T13:31:24.063Z",
+  "updatedAt": "2026-10-08T13:35:21.857Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2320,7 +2338,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:31:24.063Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:35:21.857Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
