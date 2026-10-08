@@ -199,4 +199,23 @@ assert.ok(authoredRejections(markerOnly).some(row=>row.code==='DESIGN_UNITY_WEB_
 const true3d=authoredSpatialDesign();
 true3d.platformProfiles.UNITY.unityWebSpatialPresentation.dimension='3D';
 assert.equal(authoredRejections(true3d).some(row=>row.code==='DESIGN_UNITY_WEB_SPATIAL_DEPTH_REQUIRED'),false);
+// 기존 게임의 표현 보존 설계에서도 MAIN/A/B/c/@는 실제 상태 입력과 출력으로 이어야 한다.
+const preserved=authoredSpatialDesign();
+const preservedRoles=preserved.signatureSystems;
+preserved.systemInterconnections=preservedRoles.map((row,index)=>{
+  const next=preservedRoles[(index+1)%preservedRoles.length];
+  return {fromId:row.id,toId:next.id,stateKeys:['WorldState'],
+    fromSystem:row.name,toSystem:next.name,trigger:'기존 규칙에서 상태가 바뀌었을 때',
+    stateChange:'원래 진행과 저장 의미를 바꾸지 않고 확인된 상태를 다음 기존 시스템에 전달한다.'};
+});
+const preservedSeed={MULTIPLAYER_DESIGN_MODE:'SINGLE',REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION:true,OWNER_REBUILD_MODE:'PRESERVATION_PRESENTATION_UPGRADE'};
+const preservedValidate=design=>validateDesignAuthoringContent({
+  design,seed:preservedSeed,fields:['signatureSystems','systemInterconnections'],multiplayerRequired:true
+});
+assert.equal(preservedValidate(preserved).some(row=>row.code==='DESIGN_PRESERVATION_GRAMMAR_GRAPH_DISCONNECTED'),false);
+const disconnected=structuredClone(preserved);
+disconnected.systemInterconnections[0].stateKeys=['UnboundState'];
+assert.ok(preservedValidate(disconnected).some(row=>row.code==='DESIGN_PRESERVATION_GRAMMAR_GRAPH_DISCONNECTED'));
+console.log('DESIGN_PRESERVED_MAIN_A_B_c_DELVE_CAUSAL_GRAPH=PASS');
+
 console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
