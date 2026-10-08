@@ -477,25 +477,46 @@
       "name": "초원 런 보스 봉인 해제 조건",
       "purpose": "1번 초원 랜덤런의 EXIT에는 금빛 큰뿔이 등장한다. 황금뿔 돌진은 패링 가능, 대지 짓밟기는 패링/막기 불가, 삼연속 돌진은 연속 대응을 요구한다.",
       "playerChoice": "1번 초원 랜덤런의 EXIT에 금빛 큰뿔이 등장하는 상태를 선택하거나, 황금뿔 돌진을 선택하여 패링/막기/삼연속 돌진을 수행한다."
+    },
+    "local_authoring_parts::f9f9b872d05e94c0f912271ebc601d0a80fbce556fd6472e2dab0ab0b041a06f:signatureSystems:2": {
+      "id": "RPG_FANTASY_PORTAL_WORLD_B",
+      "grammarRole": "B",
+      "stateInputs": [
+        "RoomCode",
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount",
+        "SkillSlot1",
+        "SkillSlot2",
+        "SkillSlot3"
+      ],
+      "stateOutputs": [
+        "SkillSlot1",
+        "SkillSlot2",
+        "SkillSlot3"
+      ],
+      "name": "초원 런 보스 봉인 해제 조건",
+      "purpose": "1번 초원 랜덤런의 EXIT에는 금빛 큰뿔이 등장한다. 황금뿔 돌진은 패링 가능, 대지 짓밟기는 패링/막기 불가, 삼연속 돌진은 연속 대응을 요구한다.",
+      "playerChoice": "1번 초원 랜덤런의 EXIT에 금빛 큰뿔이 등장하는 상태를 선택하거나, 황금뿔 돌진을 선택하여 패링/막기/삼연속 돌진을 수행한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1072360,
-      "lastMs": 68219,
+      "totalMs": 1177759,
+      "lastMs": 105399,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:57:53.973Z"
+      "updatedAt": "2026-10-08T15:59:39.373Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T15:40:01.570Z",
-  "updatedAt": "2026-10-08T15:57:53.973Z",
+  "updatedAt": "2026-10-08T15:59:39.373Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1955,7 +1976,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:57:53.973Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:59:39.373Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
