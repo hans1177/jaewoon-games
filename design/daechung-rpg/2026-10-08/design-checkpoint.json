@@ -9,12 +9,67 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "designer_draft_slices::identity-core": {
+      "identity": "Roblox R15 3D Action RPG: 4직업/전직 시스템, 5포탈 사냥, 15킬 파티, 보스 동료, 런 보스, 레벨 성장, 어그로 해제, 파티 토글, 1차 전직, 2차 완성형, Lv.60 만렙",
+      "playerFantasy": "4직업/전직 시스템을 활용한 3D 액션 RPG, AI 유저와 파티를 구성해 보스를 공략하는 전투, 퀘스트와 장비 준비, 포탈로 이동, 몬스터 전투, 보스 첫 처치, AI 동료, 15킬 파티, 런 보스, 레벨 성장, 어그로 해제, 파티 토글, 1차 전직, 2차 완성형, Lv.60 만렙",
+      "coreFun": "4직업/전직 시스템, 5포탈 사냥, 15킬 파티, 보스 동료, 런 보스, 레벨 성장, 어그로 해제, 파티 토글, 1차 전직, 2차 완성형, Lv.60 만렙",
+      "coreLoop": [
+        "마을에서 장비와 퀘스트 준비, 5포탈 사냥터 돌파, AI 유저와 파티 구성, 보스 공략",
+        "포탈로 이동, 몬스터 전투, 보스 첫 처치, AI 동료 영입, 15킬 파티, 기여도 보상",
+        "레벨 성장, 어그로 해제, 파티 토글, 1차 전직, 2차 완성형, Lv.60 만렙"
+      ],
+      "signatureSystems": [
+        {
+          "name": "5포탈 지역",
+          "purpose": "초원·협곡·유적·설원·심연의 독립 대형 사냥터.",
+          "playerChoice": "5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략."
+        },
+        {
+          "name": "레벨 성장",
+          "purpose": "레벨업마다 최대체력 +10, 공격력 +10.",
+          "playerChoice": "레벨업마다 최대체력과 공격력이 증가하며 보스 공략 능력이 강화."
+        },
+        {
+          "name": "1차 전직",
+          "purpose": "Lv.15 직업 시험 후 각 시작 직업에서 2개 분기 중 하나를 선택한다.",
+          "playerChoice": "1차 전직 분기별 고유 2차 완성형으로 자동 승급, 2차에서 다시 분기하지 않는다."
+        },
+        {
+          "name": "파티 토글",
+          "purpose": "AI를 두 번 클릭해 즉시 파티 초대/제외.",
+          "playerChoice": "AI를 두 번 클릭해 파티 구성, 파티 토글 조작으로 파티 상태를 조절."
+        },
+        {
+          "name": "15킬 파티사냥",
+          "purpose": "15마리 처치 시 종료하고 기여도에 따라 XP/골드 보상.",
+          "playerChoice": "15마리 처치 시 파티 종료, 기여도에 따라 보상 제공."
+        },
+        {
+          "name": "전투 귀환 잠금",
+          "purpose": "전투 중 마을 귀환 차단, 귀환 성공 시 풀회복.",
+          "playerChoice": "전투 중 마을 귀환 금지, 귀환 성공 시 풀회복."
+        }
+      ]
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 173402,
+      "lastMs": 173402,
+      "lastError": null,
+      "updatedAt": "2026-10-08T01:40:57.817Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T01:38:04.183Z",
-  "updatedAt": "2026-10-08T01:38:04.408Z",
+  "updatedAt": "2026-10-08T01:40:57.820Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1428,5 +1483,16 @@
       }
     },
     "assetFacts": {}
-  }
+  },
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "lastSuccessfulModelCallAt": "2026-10-08T01:40:57.817Z",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
