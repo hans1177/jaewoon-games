@@ -421,25 +421,63 @@
       "name": "Border Pressure and Territory Objective System",
       "purpose": "Monitor and respond to border pressure, select and pursue territory objectives, and manage movement and progression within the game world.",
       "playerChoice": "Read the current border pressure, choose a territory objective, select a movement path, and pursue target progression. Adjust strategies based on evolving border conditions and territorial goals."
+    },
+    "local_authoring_parts::1295005e04130c91a9967db83066128e99b729ef1f65509777ab76f89ceeef2f:signatureSystems:2": {
+      "id": "border-pressure-territory-objective",
+      "grammarRole": "B",
+      "stateInputs": [
+        "currentBorderPressure",
+        "selectedTerritoryObjective",
+        "movementPath",
+        "targetProgression"
+      ],
+      "stateOutputs": [
+        "borderPressureStatus",
+        "territoryObjectiveStatus",
+        "movementPathStatus",
+        "targetProgressionStatus"
+      ],
+      "name": "Border Pressure and Territory Objective System",
+      "purpose": "Monitor and respond to border pressure, select and pursue territory objectives, and manage movement and progression within the game world.",
+      "playerChoice": "Read the current border pressure, choose a territory objective, select a movement path, and pursue target progression. Adjust strategies based on evolving border conditions and territorial goals."
+    },
+    "local_authoring_parts::1295005e04130c91a9967db83066128e99b729ef1f65509777ab76f89ceeef2f:signatureSystems:3": {
+      "id": "border-pressure-territory-objective",
+      "grammarRole": "c",
+      "stateInputs": [
+        "currentBorderPressure",
+        "selectedTerritoryObjective",
+        "movementPath",
+        "targetProgression"
+      ],
+      "stateOutputs": [
+        "borderPressureStatus",
+        "territoryObjectiveStatus",
+        "movementPathStatus",
+        "targetProgressionStatus"
+      ],
+      "name": "Border Pressure and Territory Objective",
+      "purpose": "Monitor and respond to border pressure, select and pursue territory objectives, and manage movement and progression within the game world.",
+      "playerChoice": "Read the current border pressure, choose a territory objective, select a movement path, and pursue target progression. Adjust strategies based on evolving border conditions and territorial goals."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 14,
+      "successes": 14,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1266805,
-      "lastMs": 100825,
+      "totalMs": 1467682,
+      "lastMs": 100917,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:37:29.767Z"
+      "updatedAt": "2026-10-08T12:40:50.646Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:16:22.910Z",
-  "updatedAt": "2026-10-08T12:37:29.767Z",
+  "updatedAt": "2026-10-08T12:40:50.646Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2500,7 +2538,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:37:29.767Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:40:50.646Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
