@@ -552,25 +552,105 @@
         }
       ],
       "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::7b4f296c538c1258d54dac5d30e2ae80f7b5aa9a1ed4ba531e2bf83cbe77e1a9:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "ENEMY_PRESSURE",
+          "toId": "BUILD_COMBINATION",
+          "stateKeys": [
+            "ENEMY_PRESSURE",
+            "HORDE_SIZE",
+            "TIME_LIMIT",
+            "RUN_RESULT"
+          ],
+          "fromSystem": "Survival Progression System",
+          "toSystem": "Survival Progression System",
+          "trigger": "Enemy pressure increases",
+          "stateChange": "Build combination is adjusted"
+        },
+        {
+          "fromId": "ENEMY_PRESSURE",
+          "toId": "WORLD_RELATIONSHIP",
+          "stateKeys": [
+            "ENEMY_PRESSURE",
+            "HORDE_SIZE",
+            "TIME_LIMIT",
+            "RUN_RESULT"
+          ],
+          "fromSystem": "Survival Progression System",
+          "toSystem": "Survival Progression System",
+          "trigger": "Enemy pressure shifts",
+          "stateChange": "World relationship evolves"
+        },
+        {
+          "fromId": "RUN_RESULT",
+          "toId": "NEXT_OPEN_QUESTION",
+          "stateKeys": [
+            "ENEMY_PRESSURE",
+            "HORDE_SIZE",
+            "TIME_LIMIT",
+            "RUN_RESULT"
+          ],
+          "fromSystem": "Survival Progression System",
+          "toSystem": "Survival Progression System",
+          "trigger": "Run result is finalized",
+          "stateChange": "Next open question is generated"
+        },
+        {
+          "fromId": "BUILD_COMBINATION",
+          "toId": "OPTIONAL_MASTERY",
+          "stateKeys": [
+            "BUILD_COMBINATION",
+            "WORLD_RELATIONSHIP",
+            "OPTIONAL_MASTERY",
+            "NEXT_OPEN_QUESTION"
+          ],
+          "fromSystem": "Survival Progression System",
+          "toSystem": "Survival Progression System",
+          "trigger": "Build combination is upgraded",
+          "stateChange": "Optional mastery is unlocked"
+        },
+        {
+          "fromId": "RUN_RESULT",
+          "toId": "PROGRESSION_CHOICE",
+          "stateKeys": [
+            "ENEMY_PRESSURE",
+            "HORDE_SIZE",
+            "TIME_LIMIT",
+            "RUN_RESULT"
+          ],
+          "fromSystem": "Survival Progression System",
+          "toSystem": "Survival Progression System",
+          "trigger": "Run result is converted",
+          "stateChange": "Progression choice is selected"
+        }
+      ],
+      "progressionDirection": "Forward",
+      "progressionEconomyBalance": {
+        "progressionLoop": "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEW CHOICE",
+        "resourceFlow": "Enemy pressure increases -> Build combination is adjusted -> World relationship evolves -> Next open question is generated",
+        "balanceRules": "Enemy pressure increases by 10% per round; build combination is adjusted based on player choice; world relationship evolves with each new run result"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 10,
+      "calls": 12,
+      "successes": 11,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1614600,
-      "lastMs": 300101,
+      "totalMs": 1734725,
+      "lastMs": 120125,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T13:35:05.837Z"
+      "updatedAt": "2026-10-08T13:37:05.965Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:08:11.184Z",
-  "updatedAt": "2026-10-08T13:35:05.837Z",
+  "updatedAt": "2026-10-08T13:37:05.966Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2771,7 +2851,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:30:05.729Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:37:05.965Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
