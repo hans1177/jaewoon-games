@@ -707,25 +707,43 @@
         "New game states, altered progression paths, and expanded player agency"
       ],
       "fromSystem": "SURVIVAL2-MAIN-01"
+    },
+    "local_authoring_parts::c34fd2af47c3bd851a53200aa4e7dfcc661a17453042d19731b2c7ae43ae8d61:toSystem,trigger,stateChange": {
+      "toSystem": "SURVIVAL2-MAIN-02",
+      "trigger": "Explore the forest for a needed resource while reading environmental and creature danger.",
+      "stateChange": "World state changes, new survival advantages, risk/reward dynamics, and next act."
+    },
+    "local_authoring_parts::765ad3cf6614422cc390cebec01f6f8e868e02926571af6c8a92c1ee0222ca5e:systemInterconnections:3": {
+      "fromId": "SURVIVAL2-MAIN-01",
+      "toId": "SURVIVAL2-MAIN-02",
+      "stateKeys": [
+        "World state changes, new survival advantages, risk/reward dynamics, and next act",
+        "Enhanced gameplay mechanics, improved survival conditions, and strategic depth",
+        "New game states, altered progression paths, and expanded player agency"
+      ],
+      "fromSystem": "SURVIVAL2-MAIN-01",
+      "toSystem": "SURVIVAL2-MAIN-02",
+      "trigger": "Explore the forest for a needed resource while reading environmental and creature danger.",
+      "stateChange": "World state changes, new survival advantages, risk/reward dynamics, and next act."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 29,
-      "successes": 29,
+      "calls": 30,
+      "successes": 30,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2770786,
-      "lastMs": 83082,
+      "totalMs": 2844211,
+      "lastMs": 73425,
       "lastError": null,
-      "updatedAt": "2026-10-08T23:40:11.490Z"
+      "updatedAt": "2026-10-08T23:41:24.917Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:03:31.006Z",
-  "updatedAt": "2026-10-08T23:40:11.490Z",
+  "updatedAt": "2026-10-08T23:41:24.919Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3100,7 +3118,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T23:40:11.490Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T23:41:24.919Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
