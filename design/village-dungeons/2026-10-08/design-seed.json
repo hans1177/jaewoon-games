@@ -1,0 +1,119 @@
+{
+  "version": 1,
+  "gameId": "village-dungeons",
+  "date": "2026-10-08",
+  "seedId": "OWNER-ALL-DESIGN-RESET-VILLAGE-DUNGEONS-20260917",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "ollama:qwen3:1.7b",
+  "singleAuthor": true,
+  "sourceStage": "identity-core",
+  "phase": "designer_draft",
+  "status": "AUTHORED_CANDIDATE",
+  "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
+  "originalSource": null,
+  "fingerprint": "29bfb490246e5be2a1bf4dfe9339e20107eb6419dee3ff54478d530aaab84de7",
+  "engineDigest": "d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904",
+  "contentDigest": "01295a5968b4bde3e1b5a98c55b0ee699df2c3879694c342ba5668e149042552",
+  "externalSeedRequired": false,
+  "designPass": false,
+  "runtimePass": false,
+  "content": {
+    "identity": "마을 던전 RPG은 플레이어가 즉시 시작할 수 있는 단순한 터치 또는 스위프 입력과 명확한 점수, 거리, 또는 짧은 세션 목표를 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 플레이어는 시작 즉시 단순한 터치 또는 스위프 입력을 하며, 점수, 거리, 또는 짧은 세션 목표를 설정하고, 이 선택이 다음 월드 상태 변화와 연결되어야 한다. 이 게임은 플레이어의 선택과 결과가 월드 상태 변화로 연결되어, 반복 가능한 핵심 루프를 형성한다. 이 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 플레이어의 선택과 결과가 시스템의 핵심 규칙과 연결되어 있다.",
+    "playerFantasy": "마을 던전 RPG은 플레이어가 즉시 시작할 수 있는 단순한 터치 또는 스위프 입력과 명확한 점수, 거리, 또는 짧은 세션 목표를 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 플레이어는 시작 즉시 단순한 터치 또는 스위프 입력을 하며, 점수, 거리, 또는 짧은 세션 목표를 설정하고, 이 선택이 다음 월드 상태 변화와 연결되어야 한다. 이 게임은 플레이어의 선택과 결과가 월드 상태 변화로 연결되어, 반복 가능한 핵심 루프를 형성한다. 이 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 플레이어의 선택과 결과가 시스템의 핵심 규칙과 연결되어 있다.",
+    "coreFun": "마을 던전 RPG은 플레이어가 즉시 시작할 수 있는 단순한 터치 또는 스위프 입력과 명확한 점수, 거리, 또는 짧은 세션 목표를 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 플레이어는 시작 즉시 단순한 터치 또는 스위프 입력을 하며, 점수, 거리, 또는 짧은 세션 목표를 설정하고, 이 선택이 다음 월드 상태 변화와 연결되어야 한다. 이 게임은 플레이어의 선택과 결과가 월드 상태 변화로 연결되어, 반복 가능한 핵심 루프를 형성한다. 이 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 플레이어의 선택과 결과가 시스템의 핵심 규칙과 연결되어 있다.",
+    "coreLoop": [
+      "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+      "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+      "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+    ],
+    "signatureSystems": [
+      {
+        "id": "MAIN-DELVE-1",
+        "grammarRole": "MAIN",
+        "stateInputs": [
+          "GAME_STATE",
+          "PLAYER_CHOICE",
+          "SYSTEM_RULE"
+        ],
+        "stateOutputs": [
+          "NEXT_GAME_STATE",
+          "REWARD",
+          "PROGRESSION_BENEFIT"
+        ],
+        "name": "마을 던전 RPG의 주요 시스템",
+        "purpose": "플레이어가 즉시 시작할 수 있는 단순한 터치 또는 스위프 입력과 명확한 점수, 거리, 또는 짧은 세션 목표를 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임입니다. 플레이어는 시작 즉시 단순한 터치 또는 스위프 입력을 하며, 점수, 거리, 또는 짧은 세션 목표를 설정하고, 이 선택이 다음 월드 상태 변화와 연결되어야 합니다. 이 게임은 플레이어의 선택과 결과가 월드 상태 변화로 연결되어, 반복 가능한 핵심 루프를 형성합니다. 이 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 플레이어의 선택과 결과가 시스템의 핵심 규칙과 연결되어 있습니다.",
+        "playerChoice": "단순한 터치 또는 스위프 입력, 점수, 거리, 또는 짧은 세션 목표 설정, 선택 결과와 월드 상태 변화의 연결성 확보"
+      },
+      {
+        "id": "MAIN-DELVE-2",
+        "grammarRole": "A",
+        "stateInputs": [
+          "GAME_STATE",
+          "PLAYER_CHOICE",
+          "SYSTEM_RULE"
+        ],
+        "stateOutputs": [
+          "NEXT_GAME_STATE",
+          "REWARD",
+          "PROGRESSION_BENEFIT"
+        ],
+        "name": "마을 던전 RPG의 주요 시스템",
+        "purpose": "플레이어가 즉시 시작할 수 있는 단순한 터치 또는 스위프 입력과 명확한 점수, 거리, 또는 짧은 세션 목표를 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임입니다. 플레이어는 시작 즉시 단순한 터치 또는 스위프 입력을 하며, 점수, 거리, 또는 짧은 세션 목표를 설정하고, 이 선택이 다음 월드 상태 변화와 연결되어야 합니다. 이 게임은 플레이어의 선택과 결과가 월드 상태 변화로 연결되어, 반복 가능한 핵심 루프를 형성합니다. 이 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 플레이어의 선택과 결과가 시스템의 핵심 규칙과 연결되어 있습니다.",
+        "playerChoice": "단순한 터치 또는 스위프 입력, 점수, 거리, 또는 짧은 세션 목표 설정, 선택 결과와 월드 상태 변화의 연결성 확보"
+      },
+      {
+        "id": "B-DELVE",
+        "grammarRole": "B",
+        "stateInputs": [
+          "GAME_STATE",
+          "PLAYER_CHOICE",
+          "SYSTEM_RULE"
+        ],
+        "stateOutputs": [
+          "NEXT_GAME_STATE",
+          "REWARD",
+          "PROGRESSION_BENEFIT"
+        ],
+        "name": "마을 던전 RPG의 주요 시스템",
+        "purpose": "플레이어가 즉시 시작할 수 있는 단순한 터치 또는 스위프 입력과 명확한 점수, 거리, 또는 짧은 세션 목표를 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임입니다. 플레이어는 시작 즉시 단순한 터치 또는 스위프 입력을 하며, 점수, 거리, 또는 짧은 세션 목표를 설정하고, 이 선택이 다음 월드 상태 변화와 연결되어야 합니다. 이 게임은 플레이어의 선택과 결과가 월드 상태 변화로 연결되어, 반복 가능한 핵심 루프를 형성합니다. 이 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 플레이어의 선택과 결과가 시스템의 핵심 규칙과 연결되어 있습니다.",
+        "playerChoice": "단순한 터치 또는 스위프 입력, 점수, 거리, 또는 짧은 세션 목표 설정, 선택 결과와 월드 상태 변화의 연결성 확보"
+      },
+      {
+        "id": "MAIN-DELVE-3",
+        "grammarRole": "c",
+        "stateInputs": [
+          "GAME_STATE",
+          "PLAYER_CHOICE",
+          "SYSTEM_RULE"
+        ],
+        "stateOutputs": [
+          "NEXT_GAME_STATE",
+          "REWARD",
+          "PROGRESSION_BENEFIT"
+        ],
+        "name": "마을 던전 RPG의 주요 시스템",
+        "purpose": "플레이어가 즉시 시작할 수 있는 단순한 터치 또는 스위프 입력과 명확한 점수, 거리, 또는 짧은 세션 목표를 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임입니다. 플레이어는 시작 즉시 단순한 터치 또는 스위프 입력을 하며, 점수, 거리, 또는 짧은 세션 목표를 설정하고, 이 선택이 다음 월드 상태 변화와 연결되어야 합니다. 이 게임은 플레이어의 선택과 결과가 월드 상태 변화로 연결되어, 반복 가능한 핵심 루프를 형성합니다. 이 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 플레이어의 선택과 결과가 시스템의 핵심 규칙과 연결되어 있습니다.",
+        "playerChoice": "단순한 터치 또는 스위프 입력, 점수, 거리, 또는 짧은 세션 목표 설정, 선택 결과와 월드 상태 변화의 연결성 확보"
+      },
+      {
+        "id": "MAIN-DELVE-4",
+        "grammarRole": "DELVE",
+        "stateInputs": [
+          "GAME_STATE",
+          "PLAYER_CHOICE",
+          "SYSTEM_RULE"
+        ],
+        "stateOutputs": [
+          "NEXT_GAME_STATE",
+          "REWARD",
+          "PROGRESSION_BENEFIT"
+        ],
+        "name": "마을 던전 RPG의 주요 시스템",
+        "purpose": "플레이어가 즉시 시작할 수 있는 단순한 터치 또는 스위프 입력과 명확한 점수, 거리, 또는 짧은 세션 목표를 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임입니다. 플레이어는 시작 즉시 단순한 터치 또는 스위프 입력을 하며, 점수, 거리, 또는 짧은 세션 목표를 설정하고, 이 선택이 다음 월드 상태 변화와 연결되어야 합니다. 이 게임은 플레이어의 선택과 결과가 월드 상태 변화로 연결되어, 반복 가능한 핵심 루프를 형성합니다. 이 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 플레이어의 선택과 결과가 시스템의 핵심 규칙과 연결되어 있습니다.",
+        "playerChoice": "단순한 터치 또는 스위프 입력, 점수, 거리, 또는 짧은 세션 목표 설정, 선택 결과와 월드 상태 변화의 연결성 확보"
+      }
+    ],
+    "multiplayerMode": "HYBRID"
+  },
+  "updatedAt": "2026-10-08T09:14:18.163Z"
+}
