@@ -8,25 +8,30 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 19,
-  "lastSuccessfulModelCallAt": "2026-10-08T10:32:28.826Z",
+  "cachedTaskCount": 21,
+  "lastSuccessfulModelCallAt": "2026-10-08T10:34:40.609Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
-  "designerSeed": null,
+  "designerSeed": {
+    "file": "design/seed-action-survival-rogu-echoes-of-the-lost-star/2026-10-08/design-seed.json",
+    "contentDigest": "70072b241a8b8eecde7075f3fa810537214c4c0a1eab24b2cf4bc50f32bb7fc1",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 14,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1609166,
-      "lastMs": 131866,
+      "totalMs": 1740946,
+      "lastMs": 131780,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:32:28.826Z"
+      "updatedAt": "2026-10-08T10:34:40.607Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T10:32:28.827Z"
+  "updatedAt": "2026-10-08T10:34:40.615Z"
 }
