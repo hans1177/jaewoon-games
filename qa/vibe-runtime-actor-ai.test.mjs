@@ -344,6 +344,31 @@ test('Unity village life, story save, scout opt-in and boss reveal remain on ori
   const storyOnly=core.slice(core.indexOf('public bool TryRecordStoryEvent('),core.indexOf('public bool HasStoryEvent('));
   assert.doesNotMatch(storyOnly,/baseAttack\s*[+\-]=|gold\s*[+\-]=|experience\s*[+\-]=/);
 });
+test('Roblox village NPC roam and first-sighting boss scene keep original server save and party authority',()=>{
+  const server=fs.readFileSync(new URL('../roblox-games/daechung-rpg/server/Game.server.luau',import.meta.url),'utf8');
+  const client=fs.readFileSync(new URL('../roblox-games/daechung-rpg/client/Game.client.luau',import.meta.url),'utf8');
+  const config=fs.readFileSync(new URL('../roblox-games/daechung-rpg/shared/GameConfig.luau',import.meta.url),'utf8');
+  assert.match(server,/GetDataStore\("daechung-rpg-portal-v1"\)/);
+  assert.match(config,/MultiplayerRequired\s*=\s*true,MinimumParticipants=2,PartySlots=4/);
+  assert.match(server,/local livingResidents=\{\}/);
+  assert.match(server,/table\.insert\(livingResidents,\{part=npc,route=/);
+  assert.match(server,/prompt\(npc,"주민 "\.\.i,"대화하기"\)/);
+  assert.match(server,/n\(p,"CurrentZone",0\)~=0/);
+  assert.match(server,/resident\.route\[resident\.nextAnchor\]/);
+  assert.match(server,/part\.CFrame=CFrame\.lookAt\(nextPos,nextPos\+direction\)/);
+  assert.match(server,/nextNpcGreeting\[player\]=now\+28/);
+  assert.match(server,/feedback\(player,"NPC_INITIATED_TALK"\)/);
+  assert.match(server,/bossSceneSeen\[target\]\[id\]=true/);
+  assert.match(server,/target:SetAttribute\("BossIntroLine"/);
+  assert.match(server,/target:SetAttribute\("BossIntroId",id\)/);
+  assert.match(server,/if count>=C\.PartySlots-1 then/);
+  assert.match(server,/parties\[p\]\[def\.Id\]=true;spawnActiveCompanion/);
+  assert.match(client,/NPCSpeech/);
+  assert.match(client,/SkipBossCinematic/);
+  assert.match(client,/bossSkip\.Activated:Connect\(endBossCinematic\)/);
+  assert.match(client,/p:GetAttributeChangedSignal\("BossIntroId"\):Connect\(showBossCinematic\)/);
+  assert.doesNotMatch(client,/remote:FireServer\("BossIntroId"/);
+});
 test('common AI memory is bounded idempotent and relationships remain directional state',()=>{
   const ai=new JaewoonCommonAI({memoryLimit:4});
   assert.equal(ai.remember({id:'e1',type:'help'}),true);
