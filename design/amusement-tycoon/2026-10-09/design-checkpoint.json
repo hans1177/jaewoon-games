@@ -86,25 +86,181 @@
       "name": "CASUAL_PLAYSPACE_TRANSITION_C",
       "purpose": "Player's action triggers immediate state transition to next level of gameplay.",
       "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+    },
+    "local_authoring_parts::b878f5bacdc3b110a138ffe877005b740485fe60251bd322091e5e31d12fd37d:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "PLAYER_ACTION"
+      ],
+      "stateOutputs": [
+        "NEXT_GAMEPLAY_STATE"
+      ],
+      "name": "CASUAL_PLAYSPACE_TRANSITION_DELVE",
+      "purpose": "Player's action triggers immediate state transition to next level of gameplay.",
+      "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+    },
+    "local_authoring_parts::4e6c48d6abe2adf4c66fe455f0b51e7678e8a6145af4bbe163b1c25c519b8c99:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEXT_GAMEPLAY_STATE"
+          ],
+          "name": "CASUAL_PLAYSPACE_TRANSITION",
+          "purpose": "Player's action triggers immediate state transition to next level of gameplay.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEXT_GAMEPLAY_STATE"
+          ],
+          "name": "CASUAL_PLAYSPACE_TRANSITION_A",
+          "purpose": "Player's action triggers immediate state transition to next level of gameplay.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEXT_GAMEPLAY_STATE"
+          ],
+          "name": "CASUAL_PLAYSPACE_TRANSITION_B",
+          "purpose": "Player's action triggers immediate state transition to next level of gameplay.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEXT_GAMEPLAY_STATE"
+          ],
+          "name": "CASUAL_PLAYSPACE_TRANSITION_C",
+          "purpose": "Player's action triggers immediate state transition to next level of gameplay.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEXT_GAMEPLAY_STATE"
+          ],
+          "name": "CASUAL_PLAYSPACE_TRANSITION_DELVE",
+          "purpose": "Player's action triggers immediate state transition to next level of gameplay.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        }
+      ]
+    },
+    "local_authoring_parts::b905b3ba4eb7a53de740460368323d6a69a374a092643b962ef58ed40a5d0ae7:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT: Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.\n",
+        "STATE CHANGE: Player's action triggers immediate state transition to next level of gameplay.",
+        "OUTPUT: Visible feedback (score, distance, or brief run result) and new choice set for the next step."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEXT_GAMEPLAY_STATE"
+          ],
+          "name": "CASUAL_PLAYSPACE_TRANSITION",
+          "purpose": "Player's action triggers immediate state transition to next level of gameplay.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEXT_GAMEPLAY_STATE"
+          ],
+          "name": "CASUAL_PLAYSPACE_TRANSITION_A",
+          "purpose": "Player's action triggers immediate state transition to next level of gameplay.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEXT_GAMEPLAY_STATE"
+          ],
+          "name": "CASUAL_PLAYSPACE_TRANSITION_B",
+          "purpose": "Player's action triggers immediate state transition to next level of gameplay.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEXT_GAMEPLAY_STATE"
+          ],
+          "name": "CASUAL_PLAYSPACE_TRANSITION_C",
+          "purpose": "Player's action triggers immediate state transition to next level of gameplay.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEXT_GAMEPLAY_STATE"
+          ],
+          "name": "CASUAL_PLAYSPACE_TRANSITION_DELVE",
+          "purpose": "Player's action triggers immediate state transition to next level of gameplay.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 602427,
-      "lastMs": 95448,
+      "totalMs": 698038,
+      "lastMs": 95611,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:21:57.425Z"
+      "updatedAt": "2026-10-08T19:23:33.037Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T19:11:54.966Z",
-  "updatedAt": "2026-10-08T19:21:57.425Z",
+  "updatedAt": "2026-10-08T19:23:33.040Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2028,7 +2184,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T19:21:57.425Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:23:33.040Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
