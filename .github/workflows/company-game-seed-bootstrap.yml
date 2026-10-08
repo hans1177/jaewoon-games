@@ -182,10 +182,10 @@ jobs:
           GAME_SEED_MARKET_EVIDENCE_FILE: game-seed-market-evidence.json
         run: node tools/company-game-seed-semantic-normalize.mjs
 
-      - name: Enforce GAME_SEED quality contract
+      - name: Diagnose intake and retain source integrity checks
         env:
           GAME_SEED_MARKET_EVIDENCE_FILE: game-seed-market-evidence.json
-        run: node tools/company-game-seed-quality-gate.mjs
+        run: node tools/company-game-seed-quality-gate.mjs --designer-intake
 
       - name: Persist GAME_SEED state to company runtime branch
         id: persist

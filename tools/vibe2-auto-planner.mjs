@@ -2430,9 +2430,11 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
   );
   const activeDirectiveMultiplayerState=clean((activeDirectiveTask?.buildUpDirective?.qualityGapMap||[]).find(row=>clean(row?.domain).toUpperCase()==='MULTIPLAYER_AND_SYNC')?.state).toUpperCase();
   const projectPlayMode=clean(project?.playMode).toUpperCase();
-  const projectRequiresMultiplayer=Boolean(projectPlayMode&&projectPlayMode!=='SINGLE');
+  const multiplayerPolicy=readJson(sourceFile(repoRoot,'company-learning/platform-release-roadmap.json'),{})?.directNativeDualPlatformDevelopment?.multiplayerImplementation||{};
+  const projectRequiresMultiplayer=multiplayerPolicy.required===true||Boolean(projectPlayMode&&projectPlayMode!=='SINGLE');
   const activeDirectivePlatformCompatible=platformLane!=='roblox'||clean(activeDirectiveTask?.buildUpDirective?.platform).toUpperCase()==='ROBLOX';
-  const activeDirectiveSemanticCompatible=!projectRequiresMultiplayer||activeDirectiveMultiplayerState!=='NOT_APPLICABLE';
+  const activeDirectiveSemanticCompatible=(!projectRequiresMultiplayer||activeDirectiveMultiplayerState!=='NOT_APPLICABLE')
+    &&(multiplayerPolicy.required!==true||activeDirectiveTask?.buildUpDirective?.multiplayerImplementation?.policyVersion===multiplayerPolicy.version);
   const productionPolicy=readJson(sourceFile(repoRoot,'company-learning/platform-release-roadmap.json'),{})?.robloxStudioProductionFlowContract||{};
   const productionTarget=platformLane.startsWith('unity')||posix(project.projectPath).startsWith('unity-games/')?'UNITY':platformLane.toUpperCase();
   const productionRequired=productionPolicy.status==='ACTIVE_EXECUTABLE_CONTRACT'&&(productionPolicy.platforms||[]).includes(productionTarget);

@@ -11,7 +11,7 @@ import {EventEmitter} from 'node:events';
 import {createHash} from 'node:crypto';
 import {buildAllGameDynamicLibraryBindingPlan,buildAssetSupplyDecisionSummary} from '../tools/vibe2-asset-production-plan.mjs';
 import {validateDesignAuthoringContent,scoreDesignGateV2,designPlayabilityRequirements} from '../tools/company-design-gate-scoring-v2.mjs';
-import {activeSeedForGame} from '../tools/game-seed-state.mjs';
+import {activeSeedForGame,normalizeSeedState} from '../tools/game-seed-state.mjs';
 import {ownerDesignResetSeedForGame} from '../tools/owner-design-reset.mjs';
 import {makeAutoMissingDesignSeed,latestUsableDesign,autoEnrollMissingDesignSeeds} from '../tools/company-all-games-design-reset.mjs';
 import {validateGameSeed} from '../tools/company-game-seed-contract.mjs';
@@ -105,7 +105,7 @@ test('the same designer authors and checkpoints the seed before detailed slices 
   const source=design.slice(design.indexOf('function persistDesignerSeed('),design.indexOf('function mergeDesignerDesign('));
   let failDetail=true;
   const author=runInNewContext(source+'\nauthorDesignInCheckpointedSlices',{
-    ownerPreservationDesign:false,designAssetLibrary:null,designAssetFamilies:[],playableRequirements:designPlayabilityRequirements(fixture.seed),currentRuleSourceContext:{},currentRuleSource:'',
+    ownerPreservationDesign:false,allGamesMultiplayerRequired:false,MULTIPLAYER_MODES:['COOP','COMPETITIVE','HYBRID'],designAssetLibrary:null,designAssetFamilies:[],playableRequirements:designPlayabilityRequirements(fixture.seed),currentRuleSourceContext:{},currentRuleSource:'',
     seed:{...fixture.seed,seedId:'test',designInputMode:'DESIGNER_SELF_SEED'},seedDesignDepthContext:{invented:'automatic sketch must not be input'},gameId:'demo',date:'2026-10-08',designerSeedPath:'design/demo/2026-10-08/design-seed.json',engineDigest:'engine',checkpointFingerprint:'input',activeDesignerRoute:{id:'ollama:test-model'},
     clip:(v,n)=>{const s=typeof v==='string'?v:JSON.stringify(v);return s.slice(0,n);},createHash,DESIGN_AUTHORING_SLICES:slices,designSliceSchema:schemaFor,repairStructureContract:v=>v,designCheckpoint:checkpoint,
     validateDesignAuthoringContent,assertSchemaValue:assertDesignSchema,writeJson:(file,value)=>writes.push({file,value:structuredClone(value)}),persistDesignCheckpoint(){},console:{log(){}},
@@ -123,7 +123,7 @@ test('the same designer authors and checkpoints the seed before detailed slices 
   assert.equal(calls.filter(p=>p.includes('SLICE_ID=identity-core')).length,1,'resume reuses the same model-authored seed');
   const invalid={...content,signatureSystems:[{...content.signatureSystems[0],grammarRole:'MAIN'}]};
   const save=runInNewContext(design.slice(design.indexOf('function persistDesignerSeed('),design.indexOf('async function authorDesignInCheckpointedSlices('))+'\npersistDesignerSeed',{
-    DESIGN_AUTHORING_SLICES:slices,designSliceSchema:schemaFor,assertSchemaValue:assertDesignSchema,validateDesignAuthoringContent,seed:fixture.seed,ownerPreservationDesign:false,currentRuleSource:'',writeJson(){throw new Error('invalid seed must never be saved');}
+    DESIGN_AUTHORING_SLICES:slices,designSliceSchema:schemaFor,assertSchemaValue:assertDesignSchema,validateDesignAuthoringContent,seed:fixture.seed,ownerPreservationDesign:false,allGamesMultiplayerRequired:false,MULTIPLAYER_MODES:['COOP','COMPETITIVE','HYBRID'],currentRuleSource:'',writeJson(){throw new Error('invalid seed must never be saved');}
   });
   assert.throws(()=>save(invalid,'designer_draft'),/DESIGNER_SEED_REPAIR_REQUIRED/);
 });
@@ -313,10 +313,10 @@ test('current blocked checkpoint engine remains compatible with targeted resume 
 });
 
 
-test('design runtime replaces stale push work while preserving manual and scheduled continuation',()=>{
+test('design runtime finishes active work across engine pushes and continuations',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
   assert.match(workflow,/group: company-seed-design-runtime/);
-  assert.match(workflow,/cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
+  assert.match(workflow,/cancel-in-progress: false/);
   assert.doesNotMatch(workflow,/cancel-in-progress: true/);
   assert.match(workflow,/push:[\s\S]*tools\/company-design-cycle\.mjs/);
   assert.match(workflow,/workflow_dispatch:/);
@@ -453,6 +453,10 @@ test('design library facts preserve compatibility and separate audit scores from
   assert.deepEqual(payload,JSON.parse(JSON.stringify(context)),'library evidence must not be clipped by shared context');
   assert.match(sent,/점수는 내부 평가이며 런타임 품질 통과가 아니다/);
   assert.match(sent,/게임당 설계 원본은 하나/);
+  await author('system','original game rules',{}, {includeAssetContext:false});
+  assert.doesNotMatch(sent,/DESIGN_ASSET_LIBRARY=/);
+  assert.match(sent,/DESIGN_ASSET_REVIEW=AFTER_PLAY_FLOW_AND_CONTRADICTION_REPAIR/);
+  assert.match(sent,/original game rules/);
 });
 
 // 생성 실패 복구와 동일 입력 체크포인트 재사용만 검증한다.
@@ -515,7 +519,7 @@ test('slice input keeps the owner original in a stable prefix and omits compatib
   const source=design.slice(design.indexOf('async function authorDesignInCheckpointedSlices('),design.indexOf('function mergeDesignerDesign('));
   const calls=[];
   const author=runInNewContext(source+'\nauthorDesignInCheckpointedSlices',{
-    ownerPreservationDesign:false,designAssetLibrary:null,playableRequirements:designPlayabilityRequirements({}),currentRuleSourceContext:{},currentRuleSource:"",designAssetFamilies:[],
+    ownerPreservationDesign:false,allGamesMultiplayerRequired:false,MULTIPLAYER_MODES:['COOP','COMPETITIVE','HYBRID'],designAssetLibrary:null,playableRequirements:designPlayabilityRequirements({}),currentRuleSourceContext:{},currentRuleSource:"",designAssetFamilies:[],
     seed:{designInputMode:'OWNER_BRIEF_AND_ORIGINAL_ONLY'},seedDesignDepthContext:{duplicate:'x'.repeat(9000)},
     clip:(value,n)=>{const s=typeof value==='string'?value:JSON.stringify(value);return s.slice(0,n);},
     DESIGN_AUTHORING_SLICES:[{id:'first',fields:['identity'],predict:1200},{id:'second',fields:['coreFun'],predict:1200}],
@@ -532,6 +536,7 @@ test('slice input keeps the owner original in a stable prefix and omits compatib
   assert.ok(calls.every(x=>x.user.startsWith('SHARED_CONTEXT='+original)));
   assert.ok(calls.every(x=>!x.user.includes('GAME_SEED_DESIGN_DEPTH=')));
   assert.equal(calls[1].options.recoverOversized,true);
+  assert.ok(calls.every(x=>x.options.includeAssetContext===false),'play-flow calls do not repeat the asset catalog');
   assert.ok(calls[1].user.includes('"identity":"authored"'),'later work keeps prior authored continuity');
 });
 
@@ -588,7 +593,7 @@ test('bad cached slices refresh nested identities across retries and valid resul
   let calls=0;
   const localParts=new Map();
   const author=runInNewContext(source+'\nauthorDesignInCheckpointedSlices',{
-    ownerPreservationDesign:false,designAssetLibrary:null,playableRequirements:designPlayabilityRequirements({}),currentRuleSourceContext:{},currentRuleSource:"",designAssetFamilies:[],
+    ownerPreservationDesign:false,allGamesMultiplayerRequired:false,MULTIPLAYER_MODES:['COOP','COMPETITIVE','HYBRID'],designAssetLibrary:null,playableRequirements:designPlayabilityRequirements({}),currentRuleSourceContext:{},currentRuleSource:"",designAssetFamilies:[],
     seed:{MULTIPLAYER_DESIGN_MODE:'COMPETITIVE'},seedDesignDepthContext:{},createHash,validateDesignAuthoringContent,
     clip:(value,n)=>JSON.stringify(value).slice(0,n),clean:value=>String(value),
     DESIGN_AUTHORING_SLICES:[{id:'mode',fields:['multiplayerMode'],predict:900}],designSliceSchema:()=>({type:'object',required:['multiplayerMode'],properties:{multiplayerMode:{type:'string'}},additionalProperties:false}),
@@ -642,7 +647,7 @@ test('placeholder feedback keeps audit evidence while retries receive paths and 
   const checkpoint={tasks:{},sliceRepairAttempts:{[key]:16},sliceRepairFeedback:{[key]:feedback}};
   let valid=false,calls=0;
   const author=runInNewContext(source+'\nauthorDesignInCheckpointedSlices',{
-    ownerPreservationDesign:false,designAssetLibrary:null,playableRequirements:designPlayabilityRequirements({}),currentRuleSourceContext:{},currentRuleSource:'',designAssetFamilies:[],
+    ownerPreservationDesign:false,allGamesMultiplayerRequired:false,MULTIPLAYER_MODES:['COOP','COMPETITIVE','HYBRID'],designAssetLibrary:null,playableRequirements:designPlayabilityRequirements({}),currentRuleSourceContext:{},currentRuleSource:'',designAssetFamilies:[],
     seed:{},seedDesignDepthContext:{},createHash,validateDesignAuthoringContent,
     clip:(value,n)=>JSON.stringify(value).slice(0,n),clean:String,
     DESIGN_AUTHORING_SLICES:[{id:'progression',fields:['progressionDirection'],predict:900}],designSliceSchema:()=>({type:'object',required:['progressionDirection'],properties:{progressionDirection:{type:'string'}},additionalProperties:false}),
@@ -811,3 +816,81 @@ test('bound rule and ability identifiers are valid while identifier-only prose i
 });
 
 
+
+
+test('repair keeps valid sibling fields and asks the designer only for the contradictory mode',async()=>{
+  const source=design.slice(design.indexOf('async function authorDesignInCheckpointedSlices('),design.indexOf('function mergeDesignerDesign('));
+  const checkpoint={tasks:{}},calls=[];
+  const author=runInNewContext(source+'\nauthorDesignInCheckpointedSlices',{
+    ownerPreservationDesign:false,allGamesMultiplayerRequired:true,MULTIPLAYER_MODES:['COMPETITIVE'],designAssetLibrary:null,designAssetFamilies:[],
+    playableRequirements:designPlayabilityRequirements({}),currentRuleSourceContext:{},currentRuleSource:'',
+    seed:{MULTIPLAYER_DESIGN_MODE:'COMPETITIVE'},seedDesignDepthContext:{},createHash,validateDesignAuthoringContent,
+    clip:(value,n)=>JSON.stringify(value).slice(0,n),clean:String,
+    DESIGN_AUTHORING_SLICES:[{id:'partial',fields:['identity','multiplayerMode'],predict:1200}],
+    designSliceSchema:fields=>({type:'object',required:fields,properties:Object.fromEntries(fields.map(field=>[field,{type:'string'}])),additionalProperties:false}),
+    repairStructureContract:()=>[],designCheckpoint:checkpoint,persistDesignCheckpoint(){},
+    runCheckpointTask:async(phase,id,work)=>checkpoint.tasks[`${phase}::${id}`]??(checkpoint.tasks[`${phase}::${id}`]=await work()),
+    callDesignerModel:async(system,user,schema)=>{
+      calls.push(Object.keys(schema.properties));
+      return calls.length===1?{identity:'사용자가 정한 원본의 대표 행동과 상태 변화를 유지하는 게임',multiplayerMode:'SINGLE'}:{multiplayerMode:'COMPETITIVE'};
+    },
+    repairDesignRequiredFields:value=>({value}),factPack:{},enforceOwnerPreservationDesign:value=>value,assertSchemaValue:assertDesignSchema,DESIGN:{},console:{log(){}}
+  });
+  const result=await author({phase:'designer_draft',system:'s',sharedContext:'original'});
+  assert.deepEqual(calls.map(fields=>Array.from(fields)),[['identity','multiplayerMode'],['multiplayerMode']]);
+  assert.equal(result.identity,'사용자가 정한 원본의 대표 행동과 상태 변화를 유지하는 게임');
+  assert.equal(result.multiplayerMode,'COMPETITIVE');
+  assert.equal(Object.keys(checkpoint.slicePartialResults).length,0);
+});
+
+test('mandatory multiplayer upgrades legacy single input but preserves existing cooperative and competitive rules',()=>{
+  const check=(original,actual)=>validateDesignAuthoringContent({seed:{MULTIPLAYER_DESIGN_MODE:original},design:{multiplayerMode:actual},fields:['multiplayerMode'],multiplayerRequired:true});
+  assert.equal(check('SINGLE','COOP').length,0);
+  assert.equal(check('SINGLE','COMPETITIVE').length,0);
+  assert.ok(check('SINGLE','SINGLE').some(row=>row.code==='DESIGN_MULTIPLAYER_CONTRADICTION'));
+  assert.ok(check('COMPETITIVE','COOP').some(row=>row.code==='DESIGN_MULTIPLAYER_CONTRADICTION'));
+  assert.equal(check('COMPETITIVE','COMPETITIVE').length,0);
+  const declaration=design.slice(design.indexOf('const allGamesMultiplayerRequired='),design.indexOf('const MULTIPLAYER_MODES=')+design.slice(design.indexOf('const MULTIPLAYER_MODES=')).indexOf(';')+1);
+  for(const [mode,expected] of [['SINGLE',['COOP','COMPETITIVE','HYBRID']],['COOP',['COOP']],['COMPETITIVE',['COMPETITIVE']]]){
+    const result=runInNewContext(declaration+'\nMULTIPLAYER_MODES',{seed:{MULTIPLAYER_DESIGN_MODE:mode},CANONICAL_POLICY_PATH:'policy',clean:String,readJson:()=>({directNativeDualPlatformDevelopment:{multiplayerImplementation:{required:true}}})});
+    assert.deepEqual(Array.from(result),expected);
+  }
+});
+
+test('isolated grammar fields retain the current role without supplying authored rules',async()=>{
+  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
+  const checkpoint={tasks:{}},calls=[];
+  const author=runInNewContext(source+'\ncallLocalDesignerModel',{
+    createHash,designAssetLibraryContext:{sha256:'library'},localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'local',
+    designerRoute:{id:'ollama:local'},designCheckpoint:checkpoint,modelCallStats:[],console:{log(){}},clean:String,
+    parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,assertSchemaValue:assertDesignSchema,recordModelHealth(){},persistDesignCheckpoint(){},
+    runCheckpointTask:async(phase,id,work)=>work(),
+    requestLocalDesignerRaw:async(prompt,{schema})=>{
+      const role=prompt.match(/CURRENT_GRAMMAR_ROLE=(MAIN|A|B|c|DELVE)/)?.[1];
+      assert.ok(role);calls.push(role);
+      const field=Object.keys(schema.properties)[0];
+      return JSON.stringify({[field]:field==='grammarRole'?role:`designer-generated-${role}`});
+    }
+  });
+  const schema={type:'object',required:['signatureSystems'],properties:{signatureSystems:{type:'array',minItems:5,items:{type:'object',required:['id','grammarRole'],properties:{id:{type:'string'},grammarRole:{type:'string',enum:['MAIN','A','B','c','DELVE']}},additionalProperties:false}}},additionalProperties:false};
+  const result=await author('designer','original game rules',schema,{isolateFields:true});
+  assert.deepEqual(Array.from(result.signatureSystems,row=>row.id),['MAIN','A','B','c','DELVE'].map(role=>`designer-generated-${role}`));
+  assert.equal(calls.length,10);
+});
+
+test('bootstrap creative diagnostics do not stop designer intake or fake a design pass and copying still fails',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'designer-intake-diagnostic-'));
+  try{
+    const state=normalizeSeedState({seeds:[{seedId:'incomplete',gameId:'incomplete',status:'ACTIVE',GAME_CATEGORY:'CASUAL',INITIAL_TARGET_PLATFORM:'ROBLOX',CORE_LOOP:[]}]});
+    const seed=state.seeds[0];
+    const file=path.join(root,'state.json');
+    const run=()=>spawnSync(process.execPath,['tools/company-game-seed-quality-gate.mjs','--designer-intake'],{encoding:'utf8',env:{...process.env,GAME_SEED_STATE_FILE:file}});
+    fs.writeFileSync(file,JSON.stringify(state));
+    const pending=run();
+    assert.equal(pending.status,0,pending.stdout+pending.stderr);
+    assert.match(pending.stdout,/GAME_SEED_SEMANTIC_QUALITY=DESIGNER_AUTHORING_PENDING/);
+    assert.doesNotMatch(pending.stdout,/GAME_SEED_SEMANTIC_QUALITY=PASS/);
+    seed.COPY_SOURCE_CODE=true;fs.writeFileSync(file,JSON.stringify(state));
+    const forbidden=run();assert.notEqual(forbidden.status,0);assert.match(forbidden.stderr,/direct.copy/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});

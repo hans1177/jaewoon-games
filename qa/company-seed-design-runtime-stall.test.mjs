@@ -9,7 +9,7 @@ const artbookPipeline=fs.readFileSync('tools/artbook-production-pipeline.mjs','u
 const prepareOllama=fs.readFileSync('.github/actions/prepare-ollama/action.yml','utf8');
 
 test('seed design runtime preserves the active fanout and revalidates matrix targets before model setup',()=>{
-  assert.match(workflow,/group: company-seed-design-runtime\s+cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
+  assert.match(workflow,/group: company-seed-design-runtime\s+cancel-in-progress: false/);
   assert.equal((workflow.match(/ref: \$\{\{ github\.sha \}\}/g)||[]).length,4);
   const checkoutIndex=workflow.indexOf('- name: Checkout isolated company runtime branch');
   const revalidateIndex=workflow.indexOf('- name: Revalidate current seed target');
@@ -63,7 +63,7 @@ test('restored model cache skips unnecessary network pulls and transient model p
   assert.match(prepareOllama,/OLLAMA_MODEL_PULL_RETRY_TRANSIENT=YES/);
 });
 
-test('engine pushes cancel stale DESIGN_ONLY work while normal dispatch remains protected',()=>{
+test('engine pushes and normal dispatch preserve active DESIGN_ONLY work',()=>{
   const triggerSection=workflow.slice(0,workflow.indexOf('\npermissions:'));
   assert.match(triggerSection,/workflow_dispatch:/);
   assert.match(triggerSection,/push:[\s\S]*branches: \[main\]/);
@@ -71,7 +71,7 @@ test('engine pushes cancel stale DESIGN_ONLY work while normal dispatch remains 
   assert.match(triggerSection,/tools\/company-design-cycle\.mjs/);
   assert.match(triggerSection,/tools\/company-design-gate-scoring-v2\.mjs/);
   assert.match(triggerSection,/schedule:/);
-  assert.match(workflow,/cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
+  assert.match(workflow,/cancel-in-progress: false/);
   assert.match(bootstrap,/push:\s+branches: \[main\]\s+paths:/);
   for(const path of [
     '.github/workflows/company-seed-design-runtime.yml',
