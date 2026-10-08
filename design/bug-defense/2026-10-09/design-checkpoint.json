@@ -49,25 +49,40 @@
       "name": "KARMA RETURN",
       "purpose": "Player's strategic decision impacts future world state through delayed consequences.",
       "playerChoice": "Adjust defender positions and resource distribution based on enemy threat patterns, with long-term effects on survival rates and strategy evolution."
+    },
+    "local_authoring_parts::80022b36efc072dcdf5e0bd7a845716e706c3178368f1e2d59d2f1571bf1c154:signatureSystems:1": {
+      "id": "MANDATE_LEGITIMACY",
+      "grammarRole": "A",
+      "stateInputs": [
+        "threat pattern",
+        "defender configuration"
+      ],
+      "stateOutputs": [
+        "resource allocation",
+        "enemy behavior analysis"
+      ],
+      "name": "MANDATE LEGITIMACY",
+      "purpose": "Player's strategic decision impacts future world state through delayed consequences.",
+      "playerChoice": "Adjust defender positions and resource distribution based on enemy threat patterns, with long-term effects on survival rates and strategy evolution."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 371105,
-      "lastMs": 34673,
+      "totalMs": 609264,
+      "lastMs": 238159,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:38:11.477Z"
+      "updatedAt": "2026-10-08T18:42:09.638Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:32:00.339Z",
-  "updatedAt": "2026-10-08T18:38:11.477Z",
+  "updatedAt": "2026-10-08T18:42:09.638Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2266,7 +2281,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:38:11.477Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:42:09.638Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
