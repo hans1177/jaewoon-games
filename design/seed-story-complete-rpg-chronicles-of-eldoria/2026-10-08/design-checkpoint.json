@@ -1093,25 +1093,36 @@
       "toSystem": "ELDORIAN_CORE_02_SYSTEM_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_",
       "trigger": "Player choices directly affect the game's world state, determining the next set of gameplay options. Exploration, character interaction, quest progression, and narrative advancement are interdependent and mutually reinforcing, with each state transition influencing the next.",
       "stateChange": "Exploration Status → Area Expansion Status, Character Interaction Status → Character Development Status, Quest Completion Status → Quest Progression Status, Narrative Progress Status → Narrative Advancement Status"
+    },
+    "local_authoring_parts::f9eef9f726d298b1a3860994c4382392f50abbb2aa48c5eb239c7432823b3257:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "ELDORIAN_CORE_01",
+      "toId": "ELDORIAN_CORE_02",
+      "stateKeys": [
+        "Exploration Status",
+        "Character Interaction Status",
+        "Quest Completion Status",
+        "Narrative Progress Status"
+      ],
+      "fromSystem": "ELDORIAN_CORE_01_SYSTEM_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 34,
-      "successes": 31,
+      "calls": 35,
+      "successes": 32,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2993754,
-      "lastMs": 47795,
+      "totalMs": 3039000,
+      "lastMs": 45246,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T16:17:01.584Z"
+      "updatedAt": "2026-10-08T16:17:46.834Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:23:19.708Z",
-  "updatedAt": "2026-10-08T16:17:01.586Z",
+  "updatedAt": "2026-10-08T16:17:46.834Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3500,7 +3511,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:17:01.586Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:17:46.834Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
