@@ -487,25 +487,43 @@
         "introducedStrategicOptions"
       ],
       "fromSystem": "CORE_LOOP_DESIGN_CORE_FUNCTONALITY_01A_01B_01C_01D_01E_01F_01G_01H_01I_01J_01K_01L_01M_01N_01O_01P_01Q_01R_01S_01T_01U_01V_01W_01X_01Y_01Z_01AA_01AB_01AC_01AD_01AE_01AF_01AG_01AH_0"
+    },
+    "local_authoring_parts::0c52aca04216580391d32fd2a8ce4f1f7be6d2f8f8335c9a36e93e9073f16705:toSystem,trigger,stateChange": {
+      "toSystem": "CORE_LOOP_DESIGN_CORE_FUNCTONALITY_01A_01B_01C_01D_01E_01F_01G_01H_01I_01J_01K_01L_01M_01N_01O_01P_01Q_01R_01S_01T_01U_01V_01W_01X_01Y_01Z_01AA_01AB_01AC_01AD_01AE_01AF_01AG_01AH_0",
+      "trigger": "coreFun→coreLoop",
+      "stateChange": "updatedFrontLine,reallocatedResources,introducedStrategicOptions"
+    },
+    "local_authoring_parts::fde0e58d84b0c4a291882aa03491b53a577f92796e6aa524e80282f0387f9108:systemInterconnections:0": {
+      "fromId": "coreFun",
+      "toId": "coreLoop",
+      "stateKeys": [
+        "updatedFrontLine",
+        "reallocatedResources",
+        "introducedStrategicOptions"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN_CORE_FUNCTONALITY_01A_01B_01C_01D_01E_01F_01G_01H_01I_01J_01K_01L_01M_01N_01O_01P_01Q_01R_01S_01T_01U_01V_01W_01X_01Y_01Z_01AA_01AB_01AC_01AD_01AE_01AF_01AG_01AH_0",
+      "toSystem": "CORE_LOOP_DESIGN_CORE_FUNCTONALITY_01A_01B_01C_01D_01E_01F_01G_01H_01I_01J_01K_01L_01M_01N_01O_01P_01Q_01R_01S_01T_01U_01V_01W_01X_01Y_01Z_01AA_01AB_01AC_01AD_01AE_01AF_01AG_01AH_0",
+      "trigger": "coreFun→coreLoop",
+      "stateChange": "updatedFrontLine,reallocatedResources,introducedStrategicOptions"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1397785,
-      "lastMs": 108149,
+      "totalMs": 1504692,
+      "lastMs": 106907,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:09:56.659Z"
+      "updatedAt": "2026-10-08T08:11:43.567Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:46:38.814Z",
-  "updatedAt": "2026-10-08T08:09:56.659Z",
+  "updatedAt": "2026-10-08T08:11:43.569Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2794,7 +2812,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T08:09:56.659Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:11:43.569Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
