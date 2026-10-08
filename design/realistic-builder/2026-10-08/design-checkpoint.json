@@ -36,25 +36,46 @@
         "Reward: Experience, resources, or progression",
         "Risk: Increased difficulty, enemy pressure, or loss of resources"
       ]
+    },
+    "local_authoring_parts::b55e21a4a5494e6cb47bbed6b64e261451663a49f6093278bb7982e0aee12bde:signatureSystems:0": {
+      "id": "Vampire Survivors",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "Build selection",
+        "Upgrade choices",
+        "Perk/weapon/skill selection",
+        "Enemy pressure",
+        "Resource loss"
+      ],
+      "stateOutputs": [
+        "Build upgrade",
+        "Survival progression",
+        "Experience gain",
+        "Resource replenishment",
+        "Progression choice"
+      ],
+      "name": "Vampire Survivors",
+      "purpose": "Action-survival benchmark for horde pressure, simple attacks, upgrade choices and build combinations",
+      "playerChoice": "Select a build and strategy, upgrade, choose perks, weapons, or skills that change the current build, and position around enemy pressure"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 552622,
-      "lastMs": 91495,
+      "totalMs": 652253,
+      "lastMs": 99631,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:00:52.735Z"
+      "updatedAt": "2026-10-08T13:02:32.368Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:51:40.085Z",
-  "updatedAt": "2026-10-08T13:00:52.735Z",
+  "updatedAt": "2026-10-08T13:02:32.368Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2406,7 +2427,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:00:52.735Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:02:32.368Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
