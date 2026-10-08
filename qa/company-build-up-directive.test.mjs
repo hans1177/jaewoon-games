@@ -985,6 +985,9 @@ test('design-to-native trace is fail-closed for absent owners, incomplete roles 
     assert.ok(trace.gapReasons.includes('MULTIPLAYER_DESIGN_MODE_MISSING'));
     assert.ok(trace.gapReasons.includes('UNITY_WEB_DESIGN_SPATIAL_DEPTH_MISSING'));
     assert.ok(trace.gapReasons.includes('DESIGN_MAIN_A_B_c_AT_INCOMPLETE'));
+    assert.ok(trace.gapReasons.includes('EXECUTABLE_GAMEPLAY_SOURCE_NOT_FOUND'));
+    assert.deepEqual(trace.executableCodeCandidateFiles,[]);
+    assert.ok(trace.roleBindings.every(row=>row.codingStatus==='SOURCE_OWNER_ONLY_DECLARATIVE_OR_COMMENT'));
     assert.equal(trace.sourceImplementationPassed,false,'decorative markers are never implementation evidence');
     assert.equal(trace.actualWebglRenderPassed,false);
     const wrongGame=buildDesignToPlatformCodingTrace({gameId:'different-game',design:d,
