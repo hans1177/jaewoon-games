@@ -566,25 +566,42 @@
         "playerAction"
       ],
       "fromSystem": "SurvivalHordeSystem"
+    },
+    "local_authoring_parts::f0354fe6b1e87276c9812106c6b1b3454b90ebfafe90e525b45901364eda8f51:toSystem,trigger,stateChange": {
+      "toSystem": "SurvivalResourceSystem",
+      "trigger": "SurvivalHordeSystem → SurvivalResourceSystem",
+      "stateChange": "worldState updated to reflect resource consolidation, playerAction adjusted to prioritize resource management strategies"
+    },
+    "local_authoring_parts::cf0ba45a6782b7a347658596e496fc18573f0849f8f7dd2a1436b3c09459ab49:systemInterconnections:0": {
+      "fromId": "signatureSystems[0]",
+      "toId": "signatureSystems[1]",
+      "stateKeys": [
+        "worldState",
+        "playerAction"
+      ],
+      "fromSystem": "SurvivalHordeSystem",
+      "toSystem": "SurvivalResourceSystem",
+      "trigger": "SurvivalHordeSystem → SurvivalResourceSystem",
+      "stateChange": "worldState updated to reflect resource consolidation, playerAction adjusted to prioritize resource management strategies"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 13,
+      "calls": 15,
+      "successes": 14,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1572209,
-      "lastMs": 63150,
+      "totalMs": 1634236,
+      "lastMs": 62027,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T13:24:19.412Z"
+      "updatedAt": "2026-10-08T13:25:21.440Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:58:07.049Z",
-  "updatedAt": "2026-10-08T13:24:19.412Z",
+  "updatedAt": "2026-10-08T13:25:21.442Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2939,7 +2956,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:24:19.412Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:25:21.442Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
