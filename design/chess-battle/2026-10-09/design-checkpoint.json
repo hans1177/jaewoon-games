@@ -35,25 +35,40 @@
         "플레이어는 Read the board and enemy threat information.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다.",
         "탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다."
       ]
+    },
+    "local_authoring_parts::553c507bbe3d7772a3ec47d1dd8b5b5ef0d90d807fcf0d162972359c5ea24c7d:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "boardState",
+        "threatInfo"
+      ],
+      "stateOutputs": [
+        "strategyPath",
+        "growthPotential"
+      ],
+      "name": "WorldStateMapper",
+      "purpose": "Mapping the dynamic world state to player experience through evolving board configuration and strategic path generation.",
+      "playerChoice": "Player chooses a move that alters the board's spatial relationships, triggering new strategies and growth opportunities based on threat information and current board state."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 531722,
-      "lastMs": 111398,
+      "totalMs": 637896,
+      "lastMs": 106174,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:07:27.572Z"
+      "updatedAt": "2026-10-08T18:09:13.748Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:58:35.822Z",
-  "updatedAt": "2026-10-08T18:07:27.572Z",
+  "updatedAt": "2026-10-08T18:09:13.748Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2182,7 +2197,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:07:27.572Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:09:13.748Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
