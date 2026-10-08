@@ -451,25 +451,44 @@
       "name": "Signature Systems",
       "purpose": "This system defines the core rules and progression mechanics that govern the game's behavior, ensuring consistency, clarity, and player progression through structured interactions and state transitions. It maintains the original rule set while introducing new elements of progression, expansion, and multi-layered meaning.",
       "playerChoice": "Choose a simple one-thumb tap or swipe input to set a score, distance, or short-session goal. This action directly influences the next world state and accessibility, linking player intentions to system state changes. Progression is achieved through numerical increases, new behaviors, combinations, relationships, discoveries, or responses, allowing the same content to be used in different ways. The game is designed with mobile-friendly, "
+    },
+    "local_authoring_parts::5c719ec50b0d4e348383e5e05ecfcd307e338d90fcb81a465209f9ef3bec590b:signatureSystems:0": {
+      "id": "CORE_LOOP_DESIGN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score,距离,",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk或",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit,",
+        "retry quickly with minimal friction."
+      ],
+      "stateOutputs": [
+        "Initialize with a simple touch or swipe input to set a score, distance, or short",
+        "Execute a brief run with readable feedback, collect rewards, and make a small",
+        "Complete or fail, receive a score or reward, unlock a small progression benefit,",
+        "Retry quickly with minimal friction."
+      ],
+      "name": "Core Loop Design",
+      "purpose": "Define the core loop structure for the game, ensuring it is consistent with the original rules and maintains a clear progression system.",
+      "playerChoice": "Player chooses the initial goal, input method, and progression benefit during the first run."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 15,
-      "successes": 15,
+      "calls": 16,
+      "successes": 16,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1715468,
-      "lastMs": 83668,
+      "totalMs": 1822433,
+      "lastMs": 106965,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:54:49.678Z"
+      "updatedAt": "2026-10-08T15:35:02.195Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:26:14.109Z",
-  "updatedAt": "2026-10-08T15:33:15.224Z",
+  "updatedAt": "2026-10-08T15:35:02.196Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2429,10 +2448,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:54:49.679Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:35:02.196Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
