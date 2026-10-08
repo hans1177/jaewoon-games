@@ -50,6 +50,15 @@ function generalizedSystem(task={}){
   return'SYSTEM_ENGINEERING';
 }
 
+// ── 검증 승격 시에만 재사용하는 최소 단계/서명 키 (원본 모델 출력 보존 금지). ──
+function verifiedRecoveryKey(task={}) {
+  if(clean(task.taskType).toLowerCase()!=='bottleneck-repair')return null;
+  const stage=upper(task.failureStage).replace(/[^A-Z0-9_]/g,'_').slice(0,80);
+  const signature=upper(task.failureSignature).replace(/[^A-Z0-9_]/g,'_').slice(0,100);
+  if(!stage||!signature)return null;
+  return {stage,signature,failedStrategies:uniq(task.failedStrategyFingerprints)
+    .filter(x=>/^[0-9a-f]{64}$/i.test(x)).slice(0,8)};
+}
 function knowledgeRefs(task={}){
   return uniq((task.evidence||[])
     .map(clean)
@@ -99,7 +108,7 @@ export function promoteVerifiedSystemAiLearning({systemAiInput={},experienceInpu
     const mutationRequired=task.sourceMutationRequired===true;
     if(mutationRequired&&(!files.length||!revision))return task;
     if(!evidence.length)return task;
-    const system=generalizedSystem(task);
+    const system=generalizedSystem(task),recovery=verifiedRecoveryKey(task);
     const fingerprint='system_ai_'+hash([task.id,task.lastOutcome,system,...evidence.sort()].join('|'));
     const expId='exp_'+fingerprint;
     if(!expIds.has(expId)){
@@ -107,13 +116,15 @@ export function promoteVerifiedSystemAiLearning({systemAiInput={},experienceInpu
         version:3,id:expId,fingerprint,gameId:clean(task.gameId)||null,engine:'system-ai',
         departments:uniq([clean(task.department)||'system-ai','qa','learning']),
         taskType:gate.marketing?'verified-marketing-system-ai':'verified-system-ai',
-        problem:clean(task.blocker||task.goal).slice(0,500),
+        problem:(recovery?'verified-stage:'+recovery.stage+' verified-signature:'+recovery.signature+' ':'')+clean(task.blocker||task.goal).slice(0,350),
         goal:clean(task.goal).slice(0,1200),
         change:files.length?'verified changes: '+files.join(', '):'deterministic current-main contract verified',
         outcome:'PASS',failureCause:null,qa:uniq(task.verificationCommands),
         build:null,evidence:uniq([...evidence,'system-ai-learning-gate:'+gate.reason]),
-        reusablePatterns:[`VERIFIED_SYSTEM_AI_${system}_SCOPED_EXECUTION_WITH_DETERMINISTIC_VERIFICATION`],
-        avoidPatterns:['SYSTEM_AI_SELF_ACCEPTANCE','RAW_MODEL_OUTPUT_REUSE_WITHOUT_VERIFICATION'],
+        reusablePatterns:[`VERIFIED_SYSTEM_AI_${system}_SCOPED_EXECUTION_WITH_DETERMINISTIC_VERIFICATION`,
+          ...(recovery?[`VERIFIED_${recovery.stage}_${recovery.signature}_CAUSE_SCOPED_REPAIR`]:[])],
+        avoidPatterns:['SYSTEM_AI_SELF_ACCEPTANCE','RAW_MODEL_OUTPUT_REUSE_WITHOUT_VERIFICATION',
+          ...(recovery?recovery.failedStrategies.map(x=>'FAILED_STRATEGY_SHA256_'+x):[])],
         verified:true,reusable:true,independentlyVerified:true,
         authority:gate.marketing?'VERIFIED_SYSTEM_AI_MARKETING_LEARNING':'VERIFIED_SYSTEM_AI_LEARNING',
         sourceSystemAiTaskId:clean(task.id),sourceRevision:revision,
@@ -126,9 +137,10 @@ export function promoteVerifiedSystemAiLearning({systemAiInput={},experienceInpu
       if(!patIds.has(patId)){
         library.patterns.push({
           id:patId,gameId:clean(task.gameId)||null,engine:'system-ai',taskType:gate.marketing?'marketing':'system-ai',
-          system,problem:clean(task.goal).slice(0,220),
-          pattern:`VERIFIED_SYSTEM_AI_${system}_SCOPED_CHANGE_VERIFY_REVIEW_REUSE`,
-          tags:uniq(['system-ai','verified','distilled',gate.marketing?'marketing':'engineering',system]),
+          system,problem:(recovery?'verified '+recovery.stage+' '+recovery.signature+' ':'')+clean(task.goal).slice(0,170),
+          pattern:recovery?`VERIFIED_SYSTEM_AI_${system}_${recovery.stage}_CAUSE_SCOPED_CHANGE_VERIFY_REVIEW_REUSE`:`VERIFIED_SYSTEM_AI_${system}_SCOPED_CHANGE_VERIFY_REVIEW_REUSE`,
+          tags:uniq(['system-ai','verified','distilled',gate.marketing?'marketing':'engineering',system,
+            ...(recovery?[recovery.stage.toLowerCase(),recovery.signature.toLowerCase()]:[])]),
           verified:true,sourceRevision:revision||('sha256:'+hash(evidence.join('|')).padEnd(64,'0').slice(0,64)),
           evidencePath:'vibe2-unreal-core:.vibe2/system-ai-queue.json',
           rawCodeStored:false,independentQa:'PASS',browserQa:'NOT_APPLICABLE',
