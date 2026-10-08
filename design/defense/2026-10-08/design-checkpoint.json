@@ -366,25 +366,145 @@
           "playerChoice": "Refine defensive positions, expand resource pools, reduce threat levels, and enhance game progression through iterative strategy adjustments and resource management."
         }
       ]
+    },
+    "local_authoring_parts::ba4e250e23478606b6a86ed5780ca11ffff57427138f029f90ea1970dc0f3445:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::747ac06a4793bbd776fa8ffa577296f86c28c53ec05ea1b509133e92fd52d14c:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "입력: 다음 적의 웨이브를 읽고, 방어 구조를 조정하여 위험을 줄이는 선택",
+        "상태변화: 방어 구조의 변화로 인해 위험 수치가 감소",
+        "보상: 적의 수가 감소하여 자원이 축적되고, 방어 구조를 업그레이드하거나 재조정할 수 있음",
+        "위험: 방어 구조가 악화되면, 방어 전략이 복잡해지고, 방어 전략이 악화될 수 있음",
+        "다음 선택: 방어 전략을 재조정하거나, 방어 구조를 재설계하여 다음 웨이브를 대비할 수 있음"
+      ],
+      "signatureSystems": [
+        {
+          "id": "forest-defense-signature-system-1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "enemyWaveCount",
+            "defenderPosition",
+            "resourcePool",
+            "threatLevel",
+            "defensiveStrategy"
+          ],
+          "stateOutputs": [
+            "defensiveStrategyUpdated",
+            "resourcePoolExpanded",
+            "threatLevelReduced",
+            "defenderPositionRevised",
+            "gameProgressionEnhanced"
+          ],
+          "name": "Forest Defense Strategy System",
+          "purpose": "Player-controlled defensive strategy evolution based on enemy wave composition and resource availability.",
+          "playerChoice": "Select and revise defensive positions, upgrade resources, or adjust strategies in real-time based on threat levels and enemy wave patterns."
+        },
+        {
+          "id": "forest-defense-signature-system-2",
+          "grammarRole": "A",
+          "stateInputs": [
+            "enemyWaveCount",
+            "defenderPosition",
+            "resourcePool",
+            "threatLevel",
+            "defensiveStrategy"
+          ],
+          "stateOutputs": [
+            "defensiveStrategyUpdated",
+            "resourcePoolExpanded",
+            "threatLevelReduced",
+            "defenderPositionRevised",
+            "gameProgressionEnhanced"
+          ],
+          "name": "Dynamic Defensive Strategy System",
+          "purpose": "A real-time adaptive system that evolves defensive strategies based on enemy wave composition, resource availability, and threat levels. It allows players to dynamically adjust positions, upgrade resources, or modify strategies in response to changing game conditions.",
+          "playerChoice": "Adjust defensive positions, upgrade resources, or modify strategies in real-time based on threat levels and enemy wave patterns."
+        },
+        {
+          "id": "forest-defense-signature-system-3",
+          "grammarRole": "B",
+          "stateInputs": [
+            "enemyWaveCount",
+            "defenderPosition",
+            "resourcePool",
+            "threatLevel",
+            "defensiveStrategy"
+          ],
+          "stateOutputs": [
+            "defensiveStrategyUpdated",
+            "resourcePoolExpanded",
+            "threatLevelReduced",
+            "defenderPositionRevised",
+            "gameProgressionEnhanced"
+          ],
+          "name": "Dynamic Defensive Strategy System",
+          "purpose": "A real-time adaptive system that evolves defensive strategies based on enemy wave composition, resource availability, and threat levels. It allows players to dynamically adjust positions, upgrade resources, or modify strategies in response to changing game conditions.",
+          "playerChoice": "Adjust defensive positions, upgrade resources, or modify strategies in real-time based on threat levels and enemy wave patterns."
+        },
+        {
+          "id": "forest-defense-signature-system-3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "enemyWaveCount",
+            "defenderPosition",
+            "resourcePool",
+            "threatLevel",
+            "defensiveStrategy"
+          ],
+          "stateOutputs": [
+            "defensiveStrategyUpdated",
+            "resourcePoolExpanded",
+            "threatLevelReduced",
+            "defenderPositionRevised",
+            "gameProgressionEnhanced"
+          ],
+          "name": "Forest Defense Progression System",
+          "purpose": "A dynamic system that evolves game progression based on enemy wave patterns, resource availability, and defensive strategy adjustments. It allows players to enhance the game experience through iterative strategy refinement and resource expansion.",
+          "playerChoice": "Refine defensive positions, expand resource pools, reduce threat levels, and enhance game progression through iterative strategy adjustments and resource management."
+        },
+        {
+          "id": "forest-defense-delve-system",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "enemyWaveCount",
+            "defenderPosition",
+            "resourcePool",
+            "threatLevel",
+            "defensiveStrategy"
+          ],
+          "stateOutputs": [
+            "defensiveStrategyUpdated",
+            "resourcePoolExpanded",
+            "threatLevelReduced",
+            "defenderPositionRevised",
+            "gameProgressionEnhanced"
+          ],
+          "name": "Forest Defense Delve System",
+          "purpose": "A dynamic system that evolves game progression based on enemy wave patterns, resource availability, and defensive strategy adjustments. It allows players to enhance the game experience through iterative strategy refinement and resource management.",
+          "playerChoice": "Refine defensive positions, expand resource pools, reduce threat levels, and enhance game progression through iterative strategy adjustments and resource management."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1090258,
-      "lastMs": 102384,
+      "totalMs": 1177151,
+      "lastMs": 86893,
       "lastError": null,
-      "updatedAt": "2026-10-08T09:08:18.021Z"
+      "updatedAt": "2026-10-08T09:09:44.919Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:50:07.728Z",
-  "updatedAt": "2026-10-08T09:08:18.024Z",
+  "updatedAt": "2026-10-08T09:09:44.928Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2575,12 +2695,52 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T09:08:18.024Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "숲길 디펜스의 핵심 재미와 시스템 연결을 확정한 고유한 정체성입니다. 게임은 플레이어가 '다음 적의 웨이브를 읽고, 방어 구조를 조정하여 위험을 줄이는 단일 방어 전략'을 중심으로 설계되었습니다. 이는 진입 시스템, 선택 시스템, 보상 시스템, 위험 시스템, 그리고 재방문 시스템이 모두 연결되어 있는 반복 가능한 핵심 루프를 구현합니다. 게임의 세계는 플레이어의 선택과 결과가 서로 영향을 주는 시스템으로 구성되어 있습니다. 이는 기존의 단순한 방어 전략을 벗어나, 플레이어가 성장, 변화, 재방문을 통해 게임을 계속하는 방식으로 설계되었습니다. 게임의 세계는 역사, 생활, 경제, 지역 기능을 포함하며, 플레이어의 선택이 세계 상태와 관계 변화를 일관되게 반영합니다. 이는 게임의 인과법칙과 시스템 연결을 강화하는 데 기여합니다. 게임의 세계는 플레이어가 이해할 수 있는 인간 갈등과 욕망, 두려움, 소속, 가족, 명예, 생존, 인정 등 감정적 발판을 사용하여 설계되었습니다. 이는 게임의 재미와 시스템 연결을 강화하는 데 기여합니다. 게임의 세계는 플레이어가 실제 플레이하는 행동과 선택을 반영하며, 게임의 재미와 시스템 연결을 확정합니다. 게임의 세계는 플레이어가 이해할 수 있는 인간 갈등과 욕망, 두려움, 소속, 가족, 명예, 생존, 인정 등 감정적 발판을 사용하여 설계되었습니다. 이는 게임의 재미와 시스템 연결을 강화하는 데 기여합니다. 게임의 세계는 플레이어가 실제 플레이하는 행동과 선택을 반영하며, 게임의 재미와 시스템 연결을 확정합니다. 게임의 세계는 플레이어가 이해할 수 있는 인간 갈등과 욕망, 두려움, 소속, 가족, 명예, 생존, 인정 등 감정적 발판을 사용하여 설계되었습니다. 이는 게임의 재미와 시스템 연결을 강화하는 데 기여합니다. 게임의 세계는 플레이어가 실제 플레이하는 행동과 선택을 반영하며, 게임의 재미와 시스템 연결을 확정합니다. 게임의 세계는 플레이어가 이해할 수 있는 인간 갈등과 욕망, 두려움, 소속, 가족, 명예, 생존, 인정 등 감정적발",
+      "playerFantasy": "숲길 디펜스는 플레이어가 '다음 적의 웨이브를 읽고, 방어 구조를 조정하여 위험을 줄이는 단일 방어 전략'을 중심으로 설계되었습니다. 이는 진입 시스템, 선택 시스템, 보상 시스템, 위험 시스템, 그리고 재방문 시스템이 모두 연결되어 있는 반복 가능한 핵심 루프를 구현합니다. 게임의 세계는 플레이어의 선택과 결과가 서로 영향을 주는 시스템으로 구성되어 있습니다. 이는 기존의 단순한 방어 전략을 벗어나, 플레이어가 성장, 변화, 재방문을 통해 게임을 계속하는 방식으로 설계되었습니다. 게임의 세계는 역사, 생활, 경제, 지역 기능을 포함하며, 플레이어의 선택이 세계 상태와 관계 변화를 일관되게 반영합니다. 이는 게임의 인과법칙과 시스템 연결을 강화하는 데 기여합니다. 게임의 세계는 플레이어가 이해할 수 있는 인간 갈등과 욕망, 두려움, 소속, 가족, 명예, 생존, 인정 등 감정적 발판을 사용하여 설계되었습니다. 이는 게임의 재미와 시스템 연결을 강화하는 데 기여합니다. 게임의 세계는 플레이어가 실제 플레이하는 행동과 선택을 반영하며, 게임의 재미와 시스템 연결을 확정합니다. 게임의 세계는 플레이어가 이해할 수 있는 인간 갈등과 욕망, 두려움, 소속, 가족, 명예, 생존, 인정 등 감정적 발판을 사용하여 설계되었습니다. 이는 게임의 재미와 시스템 연결을 강화하는 데 기여합니다. 게임의 세계는 플레이어가 실제 플레이하는 행동과 선택을 반영하며, 게임의 재미와 시스템 연결을 확정합니다. 게임의 세계는 플레이어가 이해할 수 있는 인간 갈등과 욕망, 두려움, 소속, 가족, 명예, 생존, 인정 등 감정적 발판을 사용하여 설계되었습니다. 이는 게임의 재미와 시스템 연결을 강화하는 데 기여합니다. 게임의 세계는 플레이어가 실제 플레이하는 행동과 선택을 반영하며, 게임의 재미와 시스템 연결을 확정합니다.",
+      "coreFun": "숲길 디펜스의 핵심 재미와 시스템 연결을 확정한 고유한 정체성입니다. 게임은 플레이어가 '다음 적의 웨이브를 읽고, 방어 구조를 조정하여 위험을 줄이는 단일 방어 전략'을 중심으로 설계되었습니다. 이는 진입 시스템, 선택 시스템, 보상 시스템, 위험 시스템, 그리고 재방문 시스템이 모두 연결되어 있는 반복 가능한 핵심 루프를 구현합니다. 게임의 세계는 플레이어의 선택과 결과가 서로 영향을 주는 시스템으로 구성되어 있습니다. 이는 기존의 단순한 방어 전략을 벗어나, 플레이어가 성장, 변화, 재방문을 통해 게임을 계속하는 방식으로 설계되었습니다. 게임의 세계는 역사, 생활, 경제, 지역 기능을 포함하며, 플레이어의 선택이 세계 상태와 관계 변화를 일관되게 반영합니다. 이는 게임의 인과법칙과 시스템 연결을 강화하는 데 기여합니다. 게임의 세계는 플레이어가 이해할 수 있는 인간 갈등과 욕망, 두려움, 소속, 가족, 명예, 생존, 인정 등 감정적 발판을 사용하여 설계되었습니다. 이는 게임의 재미와 시스템 연결을 강화하는 데 기여합니다. 게임의 세계는 플레이어가 실제 플레이하는 행동과 선택을 반영하며, 게임의 재미와 시스템 연결을 확정합니다. 게임의 세계는 플레이어가 이해할 수 있는 인간 갈등과 욕망, 두려움, 소속, 가족, 명예, 생존, 인정 등 감정적 발판을 사용하여 설계되었습니다. 이는 게임의 재미와 시스템 연결을 강화하는 데 기여합니다. 게임의 세계는 플레이어가 실제 플레이하는 행동과 선택을 반영하며, 게임의 재미와 시스템 연결을 확정합니다. 게임의 세계는 플레이어가 이해할 수 있는 인간 갈등과 욕망, 두려움, 소속, 가족, 명예, 생존, 인정 등 감정적 발판을 사용하여 설계되었습니다. 이는 게임의 재미와 시스템 연결을 강화하는 데 기여합니다. 게임의 세계는 플레이어가 실제 플레이하는 행",
+      "coreLoop": [
+        "입력: 다음 적의 웨이브를 읽고, 방어 구조를 조정하여 위험을 줄이는 선택",
+        "상태변화: 방어 구조의 변화로 인해 위험 수치가 감소",
+        "보상: 적의 수가 감소하여 자원이 축적되고, 방어 구조를 업그레이드하거나 재조정할 수 있음",
+        "위험: 방어 구조가 악화되면, 방어 전략이 복잡해지고, 방어 전략이 악화될 수 있음",
+        "다음 선택: 방어 전략을 재조정하거나, 방어 구조를 재설계하여 다음 웨이브를 대비할 수 있음"
+      ],
+      "multiplayerMode": "COOP"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T09:09:44.923Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
