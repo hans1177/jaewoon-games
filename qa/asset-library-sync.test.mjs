@@ -182,6 +182,27 @@ test('Roblox inventory menu stacks controls on narrow screens and does not clip 
  assert.doesNotMatch(inventory,/RemoteEvent|DataStoreService|RunService|RenderStepped/);
 });
 
+test('character state uses a compact stacked scrolling layout without owning level or save authority',()=>{
+ const source=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const a=source.indexOf('function RobloxCommonUI.CreateCharacterDetailScreen(options)');
+ const b=source.indexOf('function RobloxCommonUI.CreateMapFullScreen(options)',a);
+ assert.ok(a>=0&&b>a);
+ const body=source.slice(a,b);
+ assert.match(body,/scroll\.Name="CharacterScroll"/);
+ assert.match(body,/scroll\.AutomaticCanvasSize=Enum\.AutomaticSize\.Y/);
+ assert.match(body,/scroll\.Active=true/);
+ assert.match(body,/body\.AbsoluteSize\.X<560/);
+ assert.match(body,/details\.Position=UDim2\.fromOffset\(0,sheetHeight\+12\)/);
+ assert.match(body,/sheetHeight=math\.max\(330,160\+statCount\*30\)/);
+ assert.match(body,/statCount=#\(state\.stats or \{\}\)/);
+ assert.match(body,/root:SetAttribute\("CharacterStateRevision"/);
+ assert.match(body,/root:SetAttribute\("MobileStackedLayout",compact\)/);
+ assert.match(body,/root:SetAttribute\("TouchScrollable",true\)/);
+ assert.match(body,/OwnsCharacterStats",false/);
+ assert.match(body,/OwnsProgressionAuthority",false/);
+ assert.doesNotMatch(body,/DataStoreService|FireServer|PlayerPrefs|SetAsync|UpdateAsync/);
+});
+
 test('equipment slots stay scrollable and authority-safe on narrow mobile screens',()=>{
  const source=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
  const begin=source.indexOf('function RobloxCommonUI.CreateEquipmentFullScreen(options)');
