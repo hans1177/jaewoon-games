@@ -20,6 +20,16 @@ if(!/^[a-z0-9][a-z0-9-]{1,80}$/.test(gameId))throw new Error(`INVALID_GAME_ID:${
 if(source!==`web-games/${gameId}`)throw new Error(`UNITY_WEB_BUILD_OUTPUT_REQUIRED:${source}`);
 if(!fs.existsSync(source))throw new Error(`UNITY_WEB_SOURCE_MISSING:${source}`);
 if(!fs.existsSync(path.join(source,'index.html')))throw new Error('UNITY_WEB_INDEX_MISSING');
+const manifestPath=path.join(source,'unity-web-deploy-manifest.json');
+const deployManifest=fs.existsSync(manifestPath)?JSON.parse(fs.readFileSync(manifestPath,'utf8')):{};
+const approvedEnvironment=deployManifest.approvedEnvironment||{required:false};
+if(approvedEnvironment.required===true&&(
+  deployManifest.gameId!==gameId||
+  !/^[a-f0-9]{64}$/.test(String(approvedEnvironment.layoutSha256||''))||
+  !Number.isInteger(approvedEnvironment.terrainCells)||approvedEnvironment.terrainCells<=0||
+  !Number.isInteger(approvedEnvironment.buildingCount)||approvedEnvironment.buildingCount<0||
+  !Number.isInteger(approvedEnvironment.vegetationCount)||approvedEnvironment.vegetationCount<0
+))throw new Error('UNITY_WEB_APPROVED_ENVIRONMENT_DEPLOY_BINDING_INVALID');
 
 const requiredFiles={
   wasm:false,data:false,framework:false,loader:false,
@@ -81,7 +91,7 @@ try{
   const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
   page.on('console',msg=>{
     const text=String(msg.text()||'');
-    if(text.includes('JAEWOON_UNITY_WEB_QA '))markers.push(text);
+    if(text.includes('JAEWOON_UNITY_WEB_QA ')||text.includes('UNITY_WEB_WORLD='))markers.push(text);
     if(msg.type()==='error')consoleErrors.push(text);
   });
   page.on('pageerror',error=>pageErrors.push(String(error?.message||error)));
@@ -101,6 +111,17 @@ try{
 
   const boot=()=>markers.some(x=>x.includes(' BOOT ')&&x.includes(`game=${gameId}`)&&x.includes('status=PASS'));
   if(!boot())throw new Error('UNITY_WEB_QA_BOOT_MARKER_MISSING');
+  const worldMeshMarker=markers.find(x=>x.includes('UNITY_WEB_WORLD=VISUAL_MESH_AUTHORED')&&x.includes(`game=${gameId}`))||null;
+  if(approvedEnvironment.required===true){
+    if(markers.some(x=>x.includes('UNITY_WEB_WORLD=REPAIR_REQUIRED')))throw new Error('UNITY_WEB_APPROVED_ENVIRONMENT_NATIVE_AUTHORING_FAILED');
+    if(!worldMeshMarker)throw new Error('UNITY_WEB_APPROVED_ENVIRONMENT_MESH_NOT_OBSERVED');
+    for(const [field,tag] of [['terrainCells','terrain'],['buildingCount','buildings'],['vegetationCount','vegetation']]){
+      if(!worldMeshMarker.includes(`${tag}=${approvedEnvironment[field]}`))
+        throw new Error('UNITY_WEB_APPROVED_ENVIRONMENT_GEOMETRY_COUNT_MISMATCH:'+tag);
+    }
+    if(!markers.some(x=>x.includes(`game=${gameId}`)&&x.includes('domain=environment status=PASS')))
+      throw new Error('UNITY_WEB_APPROVED_ENVIRONMENT_VISUAL_RUNTIME_NOT_READY');
+  }
   const initialStateLine=markers.slice().reverse().find(x=>x.includes(' STATE '))||'';
   const initialState=parseState(initialStateLine);
 
@@ -187,6 +208,13 @@ try{
     engine:'UNITY_WEB',
     gameId,
     sourcePath:source,
+    approvedEnvironment:{
+      required:approvedEnvironment.required===true,
+      layoutSha256:approvedEnvironment.required===true?approvedEnvironment.layoutSha256:null,
+      runtimeObserved:approvedEnvironment.required===true?Boolean(worldMeshMarker):false,
+      geometryMarker:approvedEnvironment.required===true?worldMeshMarker:null,
+      collisionPhysicsVerified:false,
+    },
     pass:true,
     boot:{pass:true},
     input:{pass:true,qaMode:'REAL_GAME_FUNCTION_INPUT_AND_REAL_BROWSER_TOUCH',mobileInputObserved,canvasFocusedBeforeKeyboard:true,gameplayStartInput},
