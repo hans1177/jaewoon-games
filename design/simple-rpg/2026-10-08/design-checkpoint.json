@@ -747,25 +747,35 @@
       "toSystem": "BoardPatternSystemA",
       "trigger": "boardPattern→nextBoardPattern",
       "stateChange": "boardPattern→nextBoardPattern"
+    },
+    "local_authoring_parts::4d423a7246b12df10966352961ce0d345db9b783535c4e124f95289adb9a8f1d:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "boardPattern",
+      "toId": "nextBoardPattern",
+      "stateKeys": [
+        "boardPattern",
+        "obstacleCombination",
+        "playerChoice"
+      ],
+      "fromSystem": "BoardPatternSystemA"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 18,
+      "calls": 21,
+      "successes": 19,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 2118172,
-      "lastMs": 88849,
+      "totalMs": 2208043,
+      "lastMs": 89871,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T16:25:05.046Z"
+      "updatedAt": "2026-10-08T16:26:34.920Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:56:55.190Z",
-  "updatedAt": "2026-10-08T16:25:05.048Z",
+  "updatedAt": "2026-10-08T16:26:34.920Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2948,7 +2958,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:25:05.048Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:26:34.920Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
