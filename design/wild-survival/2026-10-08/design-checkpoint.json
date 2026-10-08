@@ -966,25 +966,42 @@
         "player_goal"
       ],
       "fromSystem": "world_state_system_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_\",\"toSystem\":\"player_goal_sys_"
+    },
+    "local_authoring_parts::0e72b0638b118f8081cd7ea6775d4b50c99c413c50de41c9855839f02d1dd819:toSystem,trigger,stateChange": {
+      "toSystem": "player_goal_sys",
+      "trigger": "world_state_to_player_goal",
+      "stateChange": "world_state → player_goal"
+    },
+    "local_authoring_parts::427fa98c34bc86d64818b81b7f4b3459e29203c1350ab21dd523c5df55b2469f:systemInterconnections:4": {
+      "fromId": "world_state",
+      "toId": "player_goal",
+      "stateKeys": [
+        "world_state",
+        "player_goal"
+      ],
+      "fromSystem": "world_state_system_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_\",\"toSystem\":\"player_goal_sys_",
+      "toSystem": "player_goal_sys",
+      "trigger": "world_state_to_player_goal",
+      "stateChange": "world_state → player_goal"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 30,
-      "successes": 30,
+      "calls": 31,
+      "successes": 31,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2804992,
-      "lastMs": 108234,
+      "totalMs": 2900207,
+      "lastMs": 95215,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:23:25.100Z"
+      "updatedAt": "2026-10-08T16:25:00.317Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:57:35.274Z",
-  "updatedAt": "2026-10-08T16:23:25.100Z",
+  "updatedAt": "2026-10-08T16:25:00.325Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3120,9 +3137,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "player_goal→world_state의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "world_state→player_goal의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: player_goal→world_state의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: world_state→player_goal의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3149,7 +3166,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 2
+    "designer_draft_slices::systems-progression": 3
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3198,10 +3215,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:23:25.100Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T16:25:00.321Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
