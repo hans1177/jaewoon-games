@@ -1,0 +1,185 @@
+{
+  "version": 2,
+  "gameId": "survival",
+  "state": "PASS",
+  "pass": true,
+  "validated": true,
+  "target": "UNITY_ANDROID_TECHNICAL_VALIDATION",
+  "checkedAt": "2026-10-08T17:42:13.891Z",
+  "sourceBinding": {
+    "upstreamBuildRunId": 37788300656,
+    "sourceCommit": "ce0c612f03c0c30747160e49415e3bf2d697e07d",
+    "sourceTreeSha": "8ba3ab4ebc777f148478f0d087007cb0e7eb13f2",
+    "apkSha256": "0d8743508173605e3c2fcd6a61dc2079aab78aad88b7823cb70bc6af00b1130d",
+    "sameBinding": true
+  },
+  "foundationAdapter": {
+    "version": 1,
+    "platform": "UNITY",
+    "mode": "F0_COMPILE_PLUS_ONE_EXACT_BLACK_BOX_RUNTIME_F1_F8_PLUS_F9_EVIDENCE_FAN_IN",
+    "f1ThroughF8SingleRuntimeSession": true,
+    "f9RuntimeReplayRequired": false,
+    "blackBoxContractPass": true,
+    "blackBoxFoundationPass": true,
+    "foundationFloors": {
+      "F0": {
+        "state": "PASS",
+        "authority": "UNITY_EDITOR_BUILD_COMPILE_AND_EXACT_SOURCE_ARTIFACT_BINDING"
+      },
+      "F1": {
+        "state": "PASS",
+        "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+        "signals": [
+          "EXACT_ACTIVITY_LAUNCH",
+          "PROCESS_ALIVE",
+          "NO_FATAL_RUNTIME_ERROR"
+        ]
+      },
+      "F2": {
+        "state": "PASS",
+        "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+        "signals": [
+          "FOREGROUND_ACTIVITY",
+          "RENDERED_FRAME",
+          "PRE_INPUT_SCREEN_CAPTURE"
+        ]
+      },
+      "F3": {
+        "state": "PASS",
+        "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+        "signals": [
+          "PLAYABLE_SUBJECT_OR_INTERACTION_EQUIVALENT",
+          "INPUT_RESPONSE_OBSERVED"
+        ]
+      },
+      "F4": {
+        "state": "PASS",
+        "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+        "signals": [
+          "CONTROLLED_INPUT_DELIVERED",
+          "VISIBLE_RUNTIME_STATE_DELTA",
+          "PROCESS_ALIVE_AFTER_INPUT"
+        ]
+      },
+      "F5": {
+        "state": "PASS",
+        "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+        "signals": [
+          "TOUCH_INPUT_PATH",
+          "VISIBLE_INPUT_RESPONSE",
+          "POST_INPUT_SCREEN_CAPTURE"
+        ],
+        "independentQaCorroborated": true
+      },
+      "F6": {
+        "state": "PASS",
+        "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+        "signals": [
+          "UPDATE_INSTALL",
+          "SAVE_SIGNAL_WHEN_REQUIRED",
+          "RUNTIME_ERROR_BOUNDARY"
+        ],
+        "independentQaCorroborated": true
+      },
+      "F7": {
+        "state": "DEFER_TO_MULTIPLAYER_APPLICABILITY",
+        "authority": "DESIGN_AND_MULTIPLAYER_QA_EVIDENCE"
+      },
+      "F8": {
+        "state": "PASS",
+        "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+        "signals": [
+          "GAMEPLAY_INTERACTION_RESPONSE",
+          "CORE_ACTION_OR_VISIBLE_STATE_TRANSITION"
+        ],
+        "independentQaCorroborated": true
+      }
+    }
+  },
+  "realEvidence": {
+    "runtimeSmoke": true,
+    "independentQa": true,
+    "evidenceMode": "ANDROID_PLATFORM_BLACK_BOX",
+    "metricSamples": 7,
+    "platformMetricsPass": true,
+    "seedRuntimeRequired": false,
+    "seedSignalsPass": true,
+    "actionObserved": true,
+    "saveObserved": true,
+    "pauseResumeObserved": true,
+    "visualDeltaObserved": true,
+    "foregroundActivityObserved": true
+  },
+  "coverage": {
+    "ANDROID_FPS_FRAME_STABILITY": {
+      "state": "PASS",
+      "provider": "ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO",
+      "sampleCount": 7,
+      "totalFramesRendered": 127,
+      "jankyFrames": 0,
+      "jankyFrameRatePct": 0,
+      "minFps": 10.4,
+      "avgFps": 13.98,
+      "scope": "ANDROID_16_EMULATOR_TECHNICAL_VALIDATION"
+    },
+    "MEMORY_HEAT_LOADING": {
+      "state": "PASS_WITH_LIMITATION",
+      "provider": "ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO",
+      "maxAllocatedMemoryBytes": 64117384,
+      "loading": "PASS",
+      "heat": "EMULATOR_ONLY_NOT_PHYSICAL_DEVICE",
+      "limitation": "Physical-device thermal behavior remains a RELEASE_CONFIRMED device-validation concern."
+    },
+    "PHYSICS_CAMERA_ANIMATION": {
+      "state": "NOT_REQUIRED_BY_CURRENT_TECH_PROTOTYPE",
+      "reason": "Generated validation prototype uses deterministic UI/state animation and no physics/camera dependency."
+    },
+    "AI_NAVMESH_OBJECT_COUNT": {
+      "state": "NOT_REQUIRED_BY_CURRENT_TECH_PROTOTYPE",
+      "reason": "No NavMesh or AI-agent dependency is used in the validation prototype."
+    },
+    "VFX_COST": {
+      "state": "PASS",
+      "reason": "No external VFX assets; prototype uses lightweight immediate-mode validation visuals."
+    },
+    "ASPECT_RATIO_TOUCH": {
+      "state": "PASS",
+      "evidence": "Android emulator black-box taps/swipes plus in-app action log."
+    },
+    "SAVE_LOAD_UPDATE_COMPATIBILITY": {
+      "state": "PASS_WITH_LIMITATION",
+      "updateInstallPassed": true,
+      "saveSignalRequired": false,
+      "saveSignalObserved": null,
+      "limitation": "Same-signed update installation is observed; the existing game save schema is not inferred from black-box Android evidence."
+    },
+    "APP_PAUSE_RESUME": {
+      "state": "PASS",
+      "evidence": "Independent Android QA background/resume plus app pause/focus signal."
+    },
+    "IMPLEMENTATION_COMPLEXITY": {
+      "state": "PASS",
+      "trackedProjectFiles": 11,
+      "reason": "One-game technical prototype is intentionally minimal and generated from locked design/Web evidence."
+    },
+    "ASSET_AND_QA_COST": {
+      "state": "PASS",
+      "externalRuntimeAssets": 0,
+      "reason": "No external art/audio package dependency in technical prototype; QA uses existing Android smoke and independent QA pipelines."
+    },
+    "FUTURE_EXPANSION_FEASIBILITY": {
+      "state": "REVIEW_REQUIRED_BY_DEPARTMENT_MEETING",
+      "reason": "Seed expansion decisions are preserved for Unity evidence meeting; technical prototype does not claim Steam/multiplayer production readiness."
+    }
+  },
+  "limitations": [
+    "This is DEVELOPMENT_CONFIRMED technical-validation evidence, not RELEASE_CONFIRMED approval.",
+    "Physical-device thermal behavior is not inferred from emulator evidence."
+  ],
+  "provenance": {
+    "buildInfo": "/tmp/unity-build/survival-android-cloud-37788300656-1/build-info.json",
+    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-37788300656/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
+    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-37788300656/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
+    "projectPath": "unity-games/survival"
+  }
+}
