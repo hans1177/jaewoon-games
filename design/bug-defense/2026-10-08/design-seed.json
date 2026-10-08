@@ -11,109 +11,91 @@
   "status": "AUTHORED_CANDIDATE",
   "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
   "originalSource": null,
-  "fingerprint": "410a38be47a63e25f2ebf2330ba3f088a3505a8c907132e1832d3eab121f0b5f",
+  "fingerprint": "28e02b9a7d37d59529ee185b931dd76737b52254b920bb63fbe1af9d7929aa7b",
   "engineDigest": "d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904",
-  "contentDigest": "7a35f85a6c2804f1b8381d2256a8a8235f9d5c19cab827ad1d9d075331b7a19c",
+  "contentDigest": "7108ca45ff9f3c744b65f1890b7de31804cf63b470681565de3282f14989fcbe",
   "externalSeedRequired": false,
   "designPass": false,
   "runtimePass": false,
   "content": {
-    "identity": "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계한다. 플레이어는 Read the incoming insect wave and its threat pattern.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 Read the incoming insect wave and its threat pattern.이며, 두 대축은 Place or adjust defenders and spend limited resources on the highest-value counter.와 Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision. 보조 요소는 c이며, 발견·숙련·재방문 @를 구분한다. 게임 규칙은 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고, 시그니처 세계 규칙은 플레이어의 Read the incoming insect wave and its threat pattern.과 선택이 SINGLE_DEFENSE_STRATEGY의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다. 게임의 공통 원본은 하나이며, 플랫폼별로 입력·성능·연출·배포/검증만 네이티브에 맞게 적용한다. 게임의 설계는 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 실패·중단·재접속·저장은 원본 의미를 보존한다. 구현 버그와 설계 모순의 원인·수정 책임을 구분하고 안정성을 먼저 다룬다. 같은 증상을 설계와 구현이 독립적으로 중복 수정하지 않는다. 최소 두 실제 대안을 비교하고 선택안을 한 판의 시작·전개·결말로 재생한다. 한 판과 전체 세션 시간을 구분하며 검증되지 않은 시간·품질·실행 결과를 확정하지 않는다. 공공영역 고전의 원형은 게임에 맞게 재해석하고 현대 보호 작품은추",
-    "playerFantasy": "플레이어는 Read the incoming insect wave and its threat pattern.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 Read the incoming insect wave and its threat pattern.이며, 두 대축은 Place or adjust defenders and spend limited resources on the highest-value counter.와 Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision. 보조 요소는 c이며, 발견·숙련·재방문 @를 구분한다. 게임 규칙은 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고, 시그니처 세계 규칙은 플레이어의 Read the incoming insect wave and its threat pattern.과 선택이 SINGLE_DEFENSE_STRATEGY의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.",
-    "coreFun": "Read the incoming insect wave and its threat pattern.의 결과를 이용해 다음 세계 규칙을 설계한다. 중심 행동은 Read the incoming insect wave and its threat pattern.이며, 두 대축은 Place or adjust defenders and spend limited resources on the highest-value counter.와 Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision. 보조 요소는 c이며, 발견·숙련·재방문 @를 구분한다. 게임 규칙은 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고, 시그니처 세계 규칙은 플레이어의 Read the incoming insect wave and its threat pattern.과 선택이 SINGLE_DEFENSE_STRATEGY의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다. 게임의 공통 원본은 하나이며, 플랫폼별로 입력·성능·연출·배포/검증만 네이티브에 맞게 적용한다. 게임의 설계는 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 실패·중단·재접속·저장은 원본 의미를 보존한다. 구현 버그와 설계 모순의 원인·수정 책임을 구분하고 안정성을 먼저 다룬다. 같은 증상을 설계와 구현이 독립적으로 중복 수정하지 않는다. 최소 두 실제 대안을 비교하고 선택안을 한 판의 시작·전개·결말로 재생한다. 한 판과 전체 세션 시간을 구분하며 검증되지 않은 시간·품질·실행 결과를 확정하지 않는다. 공공영역 고전의",
+    "identity": "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계한다. 게임의 중심 행동은 'Read the incoming insect wave and its threat pattern.'이며, 이는 플레이어가 세계 상태와 다음 선택을 바꾼다. 게임의 시그니처 시스템은 MAIN/A/B/c/DELVE(@)로 구성되어 있으며, 각 시스템은 구체적인 규칙과 상태 변화를 포함한다. 게임의 핵심 재미는 단순 반복과 다른 경로·위험·결과를 만드는 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고, 성장은 새 행동·경로·조합·관계·발견·대응법을 열어 다양한 콘텐츠를 다르게 사용하게 한다. 게임의 플레이어 역할은 '곤충 디펜스에서 플레이어는 Read the incoming insect wave and its threat pattern.의 주체가 되어 세계 상태와 다음 선택을 바꾼다.'로, 이는 플레이어가 실제로 무엇을 하는지 명확하게 정의된다. 게임의 시그니처 세계 규칙은 '플레이어의 Read the incoming insect wave and its threat pattern.과 선택이 SINGLE_DEFENSE_STRATEGY의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.'로, 이는 게임의 구조와 규칙을 정의한다. 게임의 핵심 재미는 '성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견·대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.'로, 이는 게임의 플레이어 경험을 구체화한다. 게임의 시그니처 시스템은 'MAIN/A/B/c/DELVE(@)'로 구성되어 있으며, 각 시스템은 구체적인 규칙과 상태 변화를 포함한다. 게임의 핵심 재미는 'SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고 RPG식 시스템을 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다.'로, 이는 게임의 구조와 규칙을 정의한다. 게",
+    "playerFantasy": "곤충 디펜스에서 플레이어는 Read the incoming insect wave and its threat pattern.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 이는 플레이어가 실제로 무엇을 하는지 명확하게 정의된다. 게임의 핵심 재미는 단순 반복과 다른 경로·위험·결과를 만드는 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고, 성장은 새 행동·경로·조합·관계·발견·대응법을 열어 다양한 콘텐츠를 다르게 사용하게 한다.",
+    "coreFun": "Read the incoming insect wave and its threat pattern.의 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임의 중심 플레이. 플레이어는 세계 상태와 다음 선택을 바꾼다. 이는 게임의 핵심 재미를 단순 반복과 다른 경로·위험·결과로 만드는 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고, 성장은 새 행동·경로·조합·관계·발견·대응법을 열어 다양한 콘텐츠를 다르게 사용하게 한다.",
     "coreLoop": [
-      "Read the incoming insect wave and its threat pattern.",
-      "Place or adjust defenders and spend limited resources on the highest-value counter.",
-      "Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision."
+      "INPUT: Read the incoming insect wave and its threat pattern.",
+      "ACTION: Place or adjust defenders and spend limited resources on the highest-value counter.",
+      "RESULT: World state change and next selection"
     ],
     "signatureSystems": [
       {
-        "id": "signatureSystems[0]",
+        "id": "MAIN",
         "grammarRole": "MAIN",
         "stateInputs": [
-          "insectWaveThreatPattern",
-          "defenderPlacement",
-          "resourceAllocation"
+          "Read the incoming insect wave and its threat pattern."
         ],
         "stateOutputs": [
-          "defenderAdjustment",
-          "resourceSpent",
-          "nextDefenseDecision"
+          "World state change and next selection"
         ],
-        "name": "InsectWaveThreatAnalysisSystem",
-        "purpose": "Analyzes the threat pattern of an incoming insect wave and determines the optimal defender placement and resource allocation.",
-        "playerChoice": "Choose the best defender placement and allocate resources to the highest-value counterplay strategy."
+        "name": "Read the incoming insect wave and its threat pattern.",
+        "purpose": "Plays a central role in the game by requiring players to interpret and respond to incoming insect waves, thereby shaping the game's progression and strategy.",
+        "playerChoice": "Players must interpret the incoming insect wave and its threat pattern, then place or adjust defenders and spend limited resources on the highest-value counter to survive and advance the game."
       },
       {
-        "id": "signatureSystems[1]",
+        "id": "A",
         "grammarRole": "A",
         "stateInputs": [
-          "insectWaveThreatPattern",
-          "defenderPlacement",
-          "resourceAllocation"
+          "Read the incoming insect wave and its threat pattern."
         ],
         "stateOutputs": [
-          "defenderAdjustment",
-          "resourceSpent",
-          "nextDefenseDecision"
+          "World state change and next selection"
         ],
-        "name": "InsectWaveThreatAnalysisSystem",
-        "purpose": "Analyzes the threat pattern of an incoming insect wave and determines the optimal defender placement and resource allocation.",
-        "playerChoice": "Choose the best defender placement and allocate resources to the highest-value counterplay strategy."
+        "name": "Read the incoming insect wave and its threat pattern.",
+        "purpose": "Plays a central role in the game by requiring players to interpret and respond to incoming insect waves, thereby shaping the game's progression and strategy.",
+        "playerChoice": "Players must interpret the incoming insect wave and its threat pattern, then place or adjust defenders and spend limited resources on the highest-value counter to survive and advance the game."
       },
       {
-        "id": "signatureSystems[2]",
+        "id": "B",
         "grammarRole": "B",
         "stateInputs": [
-          "insectWaveThreatPattern",
-          "defenderPlacement",
-          "resourceAllocation"
+          "Read the incoming insect wave and its threat pattern."
         ],
         "stateOutputs": [
-          "defenderAdjustment",
-          "resourceSpent",
-          "nextDefenseDecision"
+          "World state change and next selection"
         ],
-        "name": "InsectWaveThreatAnalysisSystem",
-        "purpose": "Analyzes the threat pattern of an incoming insect wave and determines the optimal defender placement and resource allocation.",
-        "playerChoice": "Choose the best defender placement and allocate resources to the highest-value counterplay strategy."
+        "name": "Read the incoming insect wave and its threat pattern.",
+        "purpose": "Plays a central role in the game by requiring players to interpret and respond to incoming insect waves, thereby shaping the game's progression and strategy.",
+        "playerChoice": "Players must interpret the incoming insect wave and its threat pattern, then place or adjust defenders and spend limited resources on the highest-value counter to survive and advance the game."
       },
       {
-        "id": "signatureSystems[3]",
+        "id": "c",
         "grammarRole": "c",
         "stateInputs": [
-          "insectWaveThreatPattern",
-          "defenderPlacement",
-          "resourceAllocation"
+          "Read the incoming insect wave and its threat pattern.",
+          "Enemy type counterplay"
         ],
         "stateOutputs": [
-          "defenderAdjustment",
-          "resourceSpent",
-          "nextDefenseDecision"
+          "World state change and next selection"
         ],
-        "name": "InsectWaveThreatAnalysisSystem",
-        "purpose": "Analyzes the threat pattern of an incoming insect wave and determines the optimal defender placement and resource allocation.",
-        "playerChoice": "Choose the best defender placement and allocate resources to the highest-value counterplay strategy."
+        "name": "Enemy type counterplay",
+        "purpose": "Provides a strategic option for players to counter enemy types based on their threat patterns, adding depth and variability to the gameplay.",
+        "playerChoice": "Players can choose to counter specific enemy types based on their threat patterns, adjusting defenders and resource allocation accordingly to optimize survival and progression."
       },
       {
-        "id": "signatureSystems[4]",
+        "id": "DELVE",
         "grammarRole": "DELVE",
         "stateInputs": [
-          "insectWaveThreatPattern",
-          "defenderPlacement",
-          "resourceAllocation"
+          "Read the incoming insect wave and its threat pattern.",
+          "Enemy type counterplay"
         ],
         "stateOutputs": [
-          "defenderAdjustment",
-          "resourceSpent",
-          "nextDefenseDecision"
+          "World state change and next selection"
         ],
-        "name": "InsectWaveThreatAnalysisSystem",
-        "purpose": "Analyzes the threat pattern of an incoming insect wave and determines the optimal defender placement and resource allocation.",
-        "playerChoice": "Choose the best defender placement and allocate resources to the highest-value counterplay strategy."
+        "name": "Enemy type counterplay",
+        "purpose": "Provides a strategic option for players to counter enemy types based on their threat patterns, adding depth and variability to the gameplay.",
+        "playerChoice": "Players can choose to counter specific enemy types based on their threat patterns, adjusting defenders and resource allocation accordingly to optimize survival and progression."
       }
     ],
     "multiplayerMode": "COOP"
   },
-  "updatedAt": "2026-10-08T08:04:59.350Z"
+  "updatedAt": "2026-10-08T13:12:55.530Z"
 }
