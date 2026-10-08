@@ -445,6 +445,7 @@ test('Unity Web and Android share verified-only destructible world interactions 
     const playbooks=writeVerifiedPlaybooks(root);
     const args=['--game-id=test-harvest','--game-name=Verified Harvest','--baseline='+baseline,
       '--playbooks='+playbooks,'--build-up-directive='+directive,'--output='+output];
+    const rejectionReason=()=>{try{execFileSync(process.execPath,[tool.pathname,...args],{stdio:'pipe'});return 'NOT_REJECTED';}catch(error){return String(error.stderr||error);}};
     execFileSync(process.execPath,[tool.pathname,...args],{stdio:'pipe'});
     const data=JSON.parse(fs.readFileSync(path.join(output,'Assets/Resources/vibe-world-layout.json'),'utf8'));
     const runtime=fs.readFileSync(path.join(output,'Assets/Scripts/UnityWebFloorGame.cs'),'utf8');
@@ -473,15 +474,15 @@ test('Unity Web and Android share verified-only destructible world interactions 
     assert.doesNotMatch(runtime,/CORE_FUN[^\n]+status=PASS/);
     design.content.verifiedRuntimeInteractionContract=false;
     fs.writeFileSync(baseline,JSON.stringify(design));
-    assert.throws(()=>execFileSync(process.execPath,[tool.pathname,...args],{stdio:'pipe'}));
+    assert.match(rejectionReason(),/UNITY_WEB_INTERACTION_VERIFIED_GAME_DESIGN_REQUIRED/);
     design.content.verifiedRuntimeInteractionContract=true;
     design.content.multiplayerMode='COOP';
     fs.writeFileSync(baseline,JSON.stringify(design));
-    assert.throws(()=>execFileSync(process.execPath,[tool.pathname,...args],{stdio:'pipe'}));
+    assert.match(rejectionReason(),/UNITY_WEB_INTERACTION_CLIENT_AUTHORITY_FORBIDDEN_FOR_MULTIPLAYER/);
     design.content.multiplayerMode='SINGLE_PLAYER';
     design.content.spatialLayout.proceduralWorld.interactionRules.GATHER.minDrop=-1;
     fs.writeFileSync(baseline,JSON.stringify(design));
-    assert.throws(()=>execFileSync(process.execPath,[tool.pathname,...args],{stdio:'pipe'}));
+    assert.match(rejectionReason(),/UNITY_WEB_INTERACTION_RULE_INVALID:GATHER/);
     assert.equal(fs.existsSync(path.join(output,'Assets/Scripts/UnityWebFloorGame.cs')),true);
   }finally{
     process.chdir(previous);
