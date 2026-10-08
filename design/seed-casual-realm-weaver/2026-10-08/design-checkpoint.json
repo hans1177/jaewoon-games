@@ -400,25 +400,42 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::1cfe07306c4f73f86d60dd5f75c8efa30a3aa0eeb377fb6b4ca1c3a13cb771fc:signatureSystems:0": {
+      "id": "coreRule_01",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score,距离,",
+        "플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear",
+        "게임은 반복 가능한 핵심 루프를 통해 시스템과 플레이어의 선택, 위험, 보상이 연결된 캐주얼 세계를 만든다."
+      ],
+      "stateOutputs": [
+        "세계의 직조자 - 플레이어는 Start immediately with simple one-thumb tap or swipe input and a",
+        "게임은 반복 가능한 핵심 루프를 통해 시스템과 플레이어의 선택, 위험, 보상이 연결된 캐주얼 세계를 만든다.",
+        "게임은 기존의 캐주얼 게임 원본을 유지하면서도, 새로운 인과법칙과 시스템을 설계하여 고유한 핵심 재미를 제공한다."
+      ],
+      "name": "coreRule_01",
+      "purpose": "게임의 핵심 루프를 구현하고, 플레이어의 선택과 세계 상태 변화를 연결하는 기초 규칙",
+      "playerChoice": "세계의 직조자에서 플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 주체가 되어 세계 상태와 다음 선택을 바꾼다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1273313,
-      "lastMs": 88080,
+      "totalMs": 1392866,
+      "lastMs": 119553,
       "lastError": null,
-      "updatedAt": "2026-10-08T11:12:36.623Z"
+      "updatedAt": "2026-10-08T11:14:36.185Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:51:23.271Z",
-  "updatedAt": "2026-10-08T11:12:36.631Z",
+  "updatedAt": "2026-10-08T11:14:36.186Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2378,10 +2395,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T11:12:36.626Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T11:14:36.185Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
