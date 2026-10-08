@@ -196,3 +196,20 @@ test('native Unity canvas UI stays inside mobile bounds with real runtime measur
   assert.match(source,/nativeUnityUi:\{measurementState:nativeUiMeasured\?'UNITY_ONGUI_RUNTIME':'NOT_MEASURED'/);
   assert.match(source,/nativeUiOffscreen\|\|nativeUiMissing/);
 });
+
+test('actual Daechung Unity scene mesh and texture proof is native, fails closed, and never promotes library assets',()=>{
+  const visual=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs',import.meta.url),'utf8');
+  assert.match(visual,/MESH_INTEGRITY game=daechung-rpg source=UNITY_MESH_FILTER/);
+  assert.match(visual,/var filter = renderer\.GetComponent<MeshFilter>\(\)/);
+  assert.match(visual,/mesh\.vertexCount < 3/);
+  assert.match(visual,/mesh\.GetTopology\(subMesh\) == MeshTopology\.Triangles/);
+  assert.match(visual,/mesh\.GetIndexCount\(subMesh\) \/ 3/);
+  assert.match(visual,/renderer\.sharedMaterial\.shader\.isSupported/);
+  assert.match(visual,/backdropTexture\.width > 0 && backdropTexture\.height > 0/);
+  assert.match(visual,/validMeshes == 2 && triangles > 0/);
+  assert.match(source,/const nativeMeshMarker=markers\.slice\(\)\.reverse\(\)\.find/);
+  assert.match(source,/const nativeMeshVerified=Boolean\(nativeMeshMarker\)/);
+  assert.match(source,/nativeMeshMissing=gameId==='daechung-rpg'&&!nativeMeshVerified/);
+  assert.match(source,/nativeMeshMissing;/);
+  assert.match(source,/libraryAssetPromotionGranted:false/);
+});
