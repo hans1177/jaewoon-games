@@ -73,25 +73,38 @@
       "name": "NEW AUTHORITY STRUCTURE",
       "purpose": "POWER OF AUTHORITY BASED ON CONSENT, ORDER, AND POPULARITY",
       "playerChoice": "USE POWER TO ALTER ESTATE, RELATIONSHIP, OR GOAL STATUS"
+    },
+    "local_authoring_parts::28e8993aa6738e0f5824a288c7d787a1db2dd785a3557899c21b8153282a93ff:signatureSystems:3": {
+      "id": "C",
+      "grammarRole": "c",
+      "stateInputs": [
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+      ],
+      "stateOutputs": [
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+      ],
+      "name": "CONTENT EXPANSION",
+      "purpose": "EXPAND CONTENT BASED ON DISCOVERY AND MASTERY TO ENHANCE PLAYABILITY",
+      "playerChoice": "USE DISCOVERY AND MASTERY TO EXPAND CONTENT AND REFRESH GAMEPLAY"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 308873,
-      "lastMs": 35102,
+      "totalMs": 348325,
+      "lastMs": 39452,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:49:30.371Z"
+      "updatedAt": "2026-10-08T17:50:09.824Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:44:21.449Z",
-  "updatedAt": "2026-10-08T17:49:30.371Z",
+  "updatedAt": "2026-10-08T17:50:09.824Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2019,7 +2032,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:49:30.371Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:50:09.824Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
