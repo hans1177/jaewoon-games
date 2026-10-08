@@ -15,8 +15,13 @@ namespace JaewoonGames.DaechungRpg
         private string _message = "Select a hunting field to begin.";
         private Vector2 _scroll;
         // 모바일 메뉴: 한 번에 필요한 화면만 그려 재계산 비용을 줄이고 탭별 스크롤을 유지한다.
-        private static readonly string[] MenuTabs = { "WORLD", "COMBAT", "SOCIAL" };
-        private readonly Vector2[] _menuScrollPositions = new Vector2[3];
+        private static readonly string[] MenuTabs = { "월드", "전투", "파티", "캐릭터", "가방", "상점" };
+        private readonly Vector2[] _menuScrollPositions = new Vector2[MenuTabs.Length];
+        private static readonly string[] InventoryFilters = { "전체", "무기", "방어구" };
+        private static readonly string[] ShopFilters = { "무기", "방어구" };
+        private int _inventoryFilter;
+        private int _shopFilter;
+        private float _qaMenuWindowAt;
         private int _menuPage;
         private Rect _actionButtonRect;
         private PrototypeAnimatedVisuals _visuals;
@@ -206,7 +211,10 @@ namespace JaewoonGames.DaechungRpg
             GUILayout.EndArea();
 
             // 탭 자체도 충분한 터치 높이를 유지한다. 변경하지 않은 탭의 스크롤 위치는 보존한다.
+            var originalButtonFont = GUI.skin.button.fontSize;
+            GUI.skin.button.fontSize = 12;
             var selectedPage = GUI.Toolbar(tabsRect, _menuPage, MenuTabs);
+            GUI.skin.button.fontSize = originalButtonFont;
             if (selectedPage >= 0 && selectedPage < MenuTabs.Length && selectedPage != _menuPage)
             {
                 _menuScrollPositions[_menuPage] = _scroll;
@@ -233,19 +241,171 @@ namespace JaewoonGames.DaechungRpg
                 GUILayout.Label("LOG");
                 GUILayout.TextArea(_message, GUILayout.MinHeight(58f * scale));
             }
-            else
+            else if (_menuPage == 2)
             {
                 _multiplayer?.DrawControls(scale);
                 GUILayout.Space(6f * scale);
                 GUILayout.Label("LOG");
                 GUILayout.TextArea(_message, GUILayout.MinHeight(58f * scale));
             }
+            else if (_menuPage == 3)
+            {
+                DrawCharacterWindow();
+            }
+            else if (_menuPage == 4)
+            {
+                DrawEquipmentInventory();
+            }
+            else if (_menuPage == 5)
+            {
+                DrawShopWindow();
+            }
+#if UNITY_WEBGL && !UNITY_EDITOR
+            if (Application.absoluteURL.Contains("qa=1") && Event.current.type == EventType.Repaint &&
+                _menuPage >= 3 && Time.unscaledTime >= _qaMenuWindowAt)
+            {
+                _qaMenuWindowAt = Time.unscaledTime + 1f;
+                Debug.Log($"JAEWOON_UNITY_WEB_QA MENU_SCREEN game=daechung-rpg index={_menuPage} page={MenuTabs[_menuPage]} ownedWeapons={_core.Player.ownedWeapons.Count} ownedArmors={_core.Player.ownedArmors.Count} gold={_core.Player.gold} source=GAMECORE_V1_STATE");
+            }
+#endif
             GUILayout.EndScrollView();
             _menuScrollPositions[_menuPage] = _scroll;
             GUILayout.EndArea();
 
             // 하단 행동 버튼은 메뉴를 스크롤하거나 탭을 바꿔도 같은 위치에서 동작한다.
             DrawPrimaryCombatActionButton();
+        }
+
+        // 캐릭터: 실제 저장된 Player와 GameCatalog에서 파생한 능력치만 표시한다.
+        private void DrawCharacterWindow()
+        {
+            var player = _core.Player;
+            GUILayout.Label("캐릭터 정보");
+            GUILayout.Label($"직업 {player.job}  ·  레벨 {player.level}");
+            GUILayout.Label($"HP {player.currentHp}/{_core.GetMaxHp()}  ·  공격력 {_core.GetAttackPower()}");
+            GUILayout.Label($"EXP {player.experience}/{ExperienceNeeded(player.level)}  ·  GOLD {player.gold}");
+            GUILayout.Label($"기본 HP {player.baseMaxHp}  ·  기본 공격력 {player.baseAttack}");
+            GUILayout.Label($"완료한 숨은 퀘스트 {player.completedHiddenQuests.Count}  ·  메인 진행 {player.mainQuestStep}");
+            GUILayout.Space(6);
+            GUILayout.Label("현재 장비");
+            var weaponName = GameCatalog.Weapons.TryGetValue(player.equippedWeaponId, out var weapon)
+                ? weapon.displayName : "맨손";
+            var armorName = GameCatalog.Armors.TryGetValue(player.equippedArmorId, out var armor)
+                ? armor.displayName : "장착하지 않음";
+            GUILayout.Label($"무기  {weaponName}");
+            GUILayout.Label($"방어구  {armorName}");
+            if (GUILayout.Button("보유 장비 보기")) ChangeMenuPage(4);
+        }
+
+        // 장비: 실제 보유 목록만 출력하고 장착 요청은 기존 GameCore와 동일한 v1 저장에 반영한다.
+        private void DrawEquipmentInventory()
+        {
+            var player = _core.Player;
+            GUILayout.Label($"장비 인벤토리  ·  무기 {player.ownedWeapons.Count}개 / 방어구 {player.ownedArmors.Count}개");
+            _inventoryFilter = GUILayout.Toolbar(_inventoryFilter, InventoryFilters);
+            if (_inventoryFilter != 2)
+            {
+                GUILayout.Label("무기");
+                if (player.ownedWeapons.Count == 0) GUILayout.Label("보유 무기 없음");
+                foreach (var id in player.ownedWeapons)
+                {
+                    if (!GameCatalog.Weapons.TryGetValue(id, out var weapon)) continue;
+                    bool equipped = player.equippedWeaponId == id;
+                    GUILayout.BeginVertical(GUI.skin.box);
+                    GUILayout.Label($"{weapon.displayName}  ·  공격력 +{weapon.damage}" +
+                        (equipped ? "  [장착 중]" : ""));
+                    if (!equipped && GUILayout.Button("장착") && _core.TryEquipWeapon(id))
+                        _message = weapon.displayName + " 장착 완료";
+                    GUILayout.EndVertical();
+                }
+                if (player.equippedWeaponId != "bare-hands" &&
+                    GUILayout.Button("무기 해제") && _core.TryEquipWeapon("bare-hands"))
+                    _message = "무기 해제 완료";
+            }
+            if (_inventoryFilter != 1)
+            {
+                GUILayout.Label("방어구");
+                if (player.ownedArmors.Count == 0) GUILayout.Label("보유 방어구 없음");
+                foreach (var id in player.ownedArmors)
+                {
+                    if (!GameCatalog.Armors.TryGetValue(id, out var armor)) continue;
+                    bool equipped = player.equippedArmorId == id;
+                    GUILayout.BeginVertical(GUI.skin.box);
+                    GUILayout.Label($"{armor.displayName}  ·  최대 체력 +{armor.bonusHp}" +
+                        (equipped ? "  [장착 중]" : ""));
+                    if (!equipped && GUILayout.Button("장착") && _core.TryEquipArmor(id))
+                        _message = armor.displayName + " 장착 완료";
+                    GUILayout.EndVertical();
+                }
+                if (player.equippedArmorId != "none" &&
+                    GUILayout.Button("방어구 해제") && _core.TryEquipArmor("none"))
+                    _message = "방어구 해제 완료";
+            }
+        }
+
+        // 매매: 새 경제·보상 공식을 만들지 않고 GameCatalog의 기존 정가만 사용한다.
+        // 골드 변경·소유 검증·자동 장착·세이브는 GameCore가 전담한다.
+        private void DrawShopWindow()
+        {
+            var player = _core.Player;
+            GUILayout.Label($"장비 매매  ·  보유 골드 {player.gold}G");
+            if (player.currentRegionId != "town")
+            {
+                GUILayout.Label("매매는 마을에서만 가능해.");
+                return;
+            }
+            GUILayout.Label("매입 및 판매 가격은 기존 상점 정가와 동일해.");
+            _shopFilter = GUILayout.Toolbar(_shopFilter, ShopFilters);
+            if (_shopFilter == 0)
+            {
+                foreach (var pair in GameCatalog.Weapons)
+                {
+                    var weapon = pair.Value;
+                    if (weapon.hidden) continue;
+                    var owned = player.ownedWeapons.Contains(weapon.id);
+                    GUILayout.BeginVertical(GUI.skin.box);
+                    GUILayout.Label($"{weapon.displayName}  ·  공격력 +{weapon.damage}  ·  {weapon.price}G");
+                    GUI.enabled = owned || player.gold >= weapon.price;
+                    if (GUILayout.Button(owned ? "판매" : "구매"))
+                    {
+                        bool result = owned ? _core.TrySellWeapon(weapon.id) : _core.TryBuyWeapon(weapon.id);
+                        _message = result ? $"{weapon.displayName} {(owned ? "판매" : "구매")} 완료" : "거래할 수 없어.";
+                        if (result)
+                            Debug.Log($"JAEWOON_UNITY_WEB_QA SHOP_ACTION game=daechung-rpg item={weapon.id} action={(owned ? "SELL" : "BUY")} gold={player.gold} source=GAMECORE_V1");
+                    }
+                    GUI.enabled = true;
+                    GUILayout.EndVertical();
+                }
+            }
+            else
+            {
+                foreach (var pair in GameCatalog.Armors)
+                {
+                    var armor = pair.Value;
+                    var owned = player.ownedArmors.Contains(armor.id);
+                    GUILayout.BeginVertical(GUI.skin.box);
+                    GUILayout.Label($"{armor.displayName}  ·  최대 체력 +{armor.bonusHp}  ·  {armor.price}G");
+                    GUI.enabled = owned || player.gold >= armor.price;
+                    if (GUILayout.Button(owned ? "판매" : "구매"))
+                    {
+                        bool result = owned ? _core.TrySellArmor(armor.id) : _core.TryBuyArmor(armor.id);
+                        _message = result ? $"{armor.displayName} {(owned ? "판매" : "구매")} 완료" : "거래할 수 없어.";
+                        if (result)
+                            Debug.Log($"JAEWOON_UNITY_WEB_QA SHOP_ACTION game=daechung-rpg item={armor.id} action={(owned ? "SELL" : "BUY")} gold={player.gold} source=GAMECORE_V1");
+                    }
+                    GUI.enabled = true;
+                    GUILayout.EndVertical();
+                }
+            }
+            GUILayout.Label(_message);
+        }
+
+        private void ChangeMenuPage(int page)
+        {
+            if (page < 0 || page >= MenuTabs.Length || page == _menuPage) return;
+            _menuScrollPositions[_menuPage] = _scroll;
+            _menuPage = page;
+            _scroll = _menuScrollPositions[_menuPage];
         }
 
         private void DrawPlayerStatus()
@@ -349,6 +509,7 @@ namespace JaewoonGames.DaechungRpg
             if (_core.Player.currentRegionId != "town") return;
 
             GUILayout.Label("TOWN");
+            if (GUILayout.Button("상점 / 장비 매매창 열기")) ChangeMenuPage(5);
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("FULL HEAL"))
             {
