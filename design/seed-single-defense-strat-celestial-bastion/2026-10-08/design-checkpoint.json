@@ -110,25 +110,247 @@
       "name": "Adapt the defense to enemy types and wave composition",
       "purpose": "Player's core action that directly alters the game state and determines the next phase of the defense strategy.",
       "playerChoice": "Adapt the defense to enemy types and wave composition"
+    },
+    "local_authoring_parts::2570c3b69d8bcb348316efca61a93f93ca1abaeb74574a7403979226a463d012:signatureSystems:4": {
+      "id": "SINGLE_DEFENSE_STRATEGY",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "enemyWave",
+        "defenderPositions",
+        "resourcePool",
+        "pressureLevel"
+      ],
+      "stateOutputs": [
+        "defendedRoute",
+        "resourceAllocation",
+        "defenseStrategy",
+        "nextEnemyWave"
+      ],
+      "name": "Adapt the defense to enemy types and wave composition",
+      "purpose": "Player's core action that directly alters the game state and determines the next phase of the defense strategy.",
+      "playerChoice": "Adapt the defense to enemy types and wave composition"
+    },
+    "local_authoring_parts::8e6919c13b44f64bce0db80196416b44196d9b8877a85b86c31ab1967c5ea3db:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SINGLE_DEFENSE_STRATEGY",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "enemyWave",
+            "defenderPositions",
+            "resourcePool",
+            "pressureLevel"
+          ],
+          "stateOutputs": [
+            "defendedRoute",
+            "resourceAllocation",
+            "defenseStrategy",
+            "nextEnemyWave"
+          ],
+          "name": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+          "purpose": "Player's core action that directly alters the game state and determines the next phase of the defense strategy.",
+          "playerChoice": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route."
+        },
+        {
+          "id": "SINGLE_DEFENSE_STRATEGY",
+          "grammarRole": "A",
+          "stateInputs": [
+            "enemyWave",
+            "defenderPositions",
+            "resourcePool",
+            "pressureLevel"
+          ],
+          "stateOutputs": [
+            "defendedRoute",
+            "resourceAllocation",
+            "defenseStrategy",
+            "nextEnemyWave"
+          ],
+          "name": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+          "purpose": "Player's core action that directly alters the game state and determines the next phase of the defense strategy.",
+          "playerChoice": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route."
+        },
+        {
+          "id": "SINGLE_DEFENSE_STRATEGY",
+          "grammarRole": "B",
+          "stateInputs": [
+            "enemyWave",
+            "defenderPositions",
+            "resourcePool",
+            "pressureLevel"
+          ],
+          "stateOutputs": [
+            "defendedRoute",
+            "resourceAllocation",
+            "defenseStrategy",
+            "nextEnemyWave"
+          ],
+          "name": "Adapt the defense to enemy types and wave composition",
+          "purpose": "Player's core action that directly alters the game state and determines the next phase of the defense strategy.",
+          "playerChoice": "Adapt the defense to enemy types and wave composition"
+        },
+        {
+          "id": "SINGLE_DEFENSE_STRATEGY",
+          "grammarRole": "c",
+          "stateInputs": [
+            "enemyWave",
+            "defenderPositions",
+            "resourcePool",
+            "pressureLevel"
+          ],
+          "stateOutputs": [
+            "defendedRoute",
+            "resourceAllocation",
+            "defenseStrategy",
+            "nextEnemyWave"
+          ],
+          "name": "Adapt the defense to enemy types and wave composition",
+          "purpose": "Player's core action that directly alters the game state and determines the next phase of the defense strategy.",
+          "playerChoice": "Adapt the defense to enemy types and wave composition"
+        },
+        {
+          "id": "SINGLE_DEFENSE_STRATEGY",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "enemyWave",
+            "defenderPositions",
+            "resourcePool",
+            "pressureLevel"
+          ],
+          "stateOutputs": [
+            "defendedRoute",
+            "resourceAllocation",
+            "defenseStrategy",
+            "nextEnemyWave"
+          ],
+          "name": "Adapt the defense to enemy types and wave composition",
+          "purpose": "Player's core action that directly alters the game state and determines the next phase of the defense strategy.",
+          "playerChoice": "Adapt the defense to enemy types and wave composition"
+        }
+      ]
+    },
+    "local_authoring_parts::b5db6c49cc2cd9f7cd4572a28753fac27f96155da31704aca35d55caeff2cdda:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SINGLE_DEFENSE_STRATEGY",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "enemyWave",
+            "defenderPositions",
+            "resourcePool",
+            "pressureLevel"
+          ],
+          "stateOutputs": [
+            "defendedRoute",
+            "resourceAllocation",
+            "defenseStrategy",
+            "nextEnemyWave"
+          ],
+          "name": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+          "purpose": "Player's core action that directly alters the game state and determines the next phase of the defense strategy.",
+          "playerChoice": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route."
+        },
+        {
+          "id": "SINGLE_DEFENSE_STRATEGY",
+          "grammarRole": "A",
+          "stateInputs": [
+            "enemyWave",
+            "defenderPositions",
+            "resourcePool",
+            "pressureLevel"
+          ],
+          "stateOutputs": [
+            "defendedRoute",
+            "resourceAllocation",
+            "defenseStrategy",
+            "nextEnemyWave"
+          ],
+          "name": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+          "purpose": "Player's core action that directly alters the game state and determines the next phase of the defense strategy.",
+          "playerChoice": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route."
+        },
+        {
+          "id": "SINGLE_DEFENSE_STRATEGY",
+          "grammarRole": "B",
+          "stateInputs": [
+            "enemyWave",
+            "defenderPositions",
+            "resourcePool",
+            "pressureLevel"
+          ],
+          "stateOutputs": [
+            "defendedRoute",
+            "resourceAllocation",
+            "defenseStrategy",
+            "nextEnemyWave"
+          ],
+          "name": "Adapt the defense to enemy types and wave composition",
+          "purpose": "Player's core action that directly alters the game state and determines the next phase of the defense strategy.",
+          "playerChoice": "Adapt the defense to enemy types and wave composition"
+        },
+        {
+          "id": "SINGLE_DEFENSE_STRATEGY",
+          "grammarRole": "c",
+          "stateInputs": [
+            "enemyWave",
+            "defenderPositions",
+            "resourcePool",
+            "pressureLevel"
+          ],
+          "stateOutputs": [
+            "defendedRoute",
+            "resourceAllocation",
+            "defenseStrategy",
+            "nextEnemyWave"
+          ],
+          "name": "Adapt the defense to enemy types and wave composition",
+          "purpose": "Player's core action that directly alters the game state and determines the next phase of the defense strategy.",
+          "playerChoice": "Adapt the defense to enemy types and wave composition"
+        },
+        {
+          "id": "SINGLE_DEFENSE_STRATEGY",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "enemyWave",
+            "defenderPositions",
+            "resourcePool",
+            "pressureLevel"
+          ],
+          "stateOutputs": [
+            "defendedRoute",
+            "resourceAllocation",
+            "defenseStrategy",
+            "nextEnemyWave"
+          ],
+          "name": "Adapt the defense to enemy types and wave composition",
+          "purpose": "Player's core action that directly alters the game state and determines the next phase of the defense strategy.",
+          "playerChoice": "Adapt the defense to enemy types and wave composition"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 540105,
-      "lastMs": 68507,
+      "totalMs": 613645,
+      "lastMs": 73540,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:42:03.962Z"
+      "updatedAt": "2026-10-08T08:43:17.503Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:33:03.734Z",
-  "updatedAt": "2026-10-08T08:42:03.962Z",
+  "updatedAt": "2026-10-08T08:43:17.506Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2323,7 +2545,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:42:03.962Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:43:17.506Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
