@@ -106,7 +106,7 @@ function designReview(){
     designText,
     multiplayerMode:designPlayMode
   });
-  const scored=scoreDesignGateV2({seed,designRecord,cycleStatus,robloxGenreProfile});
+  const scored=scoreDesignGateV2({seed,designRecord,cycleStatus,robloxGenreProfile,multiplayerRequired:readJson('company-learning/platform-release-roadmap.json',{})?.directNativeDualPlatformDevelopment?.multiplayerImplementation?.required===true});
   const result=finalResult({
     scores:scored.scores,
     hardFailures:scored.hardFailures,

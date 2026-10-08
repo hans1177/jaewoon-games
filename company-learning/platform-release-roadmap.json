@@ -1,5 +1,5 @@
 {
-  "version": 550,
+  "version": 551,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-07",
@@ -6444,7 +6444,7 @@
       }
     }
   },
-  "updatedAt": "2026-10-08T02:14:34.456Z",
+  "updatedAt": "2026-10-08T04:00:00Z",
   "priorityTiers": [
     {
       "tier": 1,
@@ -24638,7 +24638,8 @@
               "contentRepairDuringAuthoring": true,
               "finalStrictReviewRequired": true,
               "finalConsumer": "tools/company-baseline-gate.mjs",
-              "preparedSeedFieldsRequiredAfterVerifiedAuthorship": false
+              "preparedSeedFieldsRequiredAfterVerifiedAuthorship": false,
+              "bootstrapCreativeChecks": "DIAGNOSTIC_ONLY_THEN_EXISTING_DESIGNER_SLICE_REPAIR"
             }
           }
         },
@@ -25306,6 +25307,36 @@
       "unityWorkDeferredUntilRobloxApplicationPathIsVerified": true,
       "preserveExistingDualPlatformArchitecture": true,
       "noNewPipeline": true
+    },
+    "multiplayerImplementation": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-10-08_ALL_GAMES_MULTIPLAYER",
+      "required": true,
+      "scope": "ALL_ACTIVE_AND_NEW_GAMES",
+      "platforms": [
+        "ROBLOX",
+        "UNITY_WEB",
+        "UNITY_APP"
+      ],
+      "allowedDesignModes": [
+        "COOP",
+        "COMPETITIVE",
+        "HYBRID"
+      ],
+      "minimumParticipants": 2,
+      "existingMultiplayerRulesPreserved": true,
+      "legacySingleModeAction": "DESIGNER_AUTHORED_MULTIPLAYER_EXTENSION_IN_EXISTING_BUILD_UP",
+      "implementationOwner": "tools/company-build-up-directive.mjs::buildGameSpecificBuildUpDirective",
+      "sourceExecution": "tools/vibe2-source-worker.mjs",
+      "existingCanonicalVibe2Vibe3Only": true,
+      "developmentAdmissionGate": false,
+      "missingImplementationAction": "GAME_STAGE_LOCAL_IMPLEMENTATION_AND_RETRY",
+      "otherGamesAndIndependentWorkContinue": true,
+      "perpetualCycle": true,
+      "newPipeline": false,
+      "staticCodeEvidenceIsActualMultiplayerPlay": false,
+      "completionEvidence": "ACTUAL_TWO_OR_MORE_CLIENTS_SAME_SESSION_ACTION_STATE_RESULT_AND_RECONNECT",
+      "releaseValidationPolicyUnchanged": true
     }
   },
   "centralDocumentation": {

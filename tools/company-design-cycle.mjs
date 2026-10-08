@@ -420,7 +420,10 @@ writeProgress('BOOTSTRAP',{checkpointReusable});
 const MEMBER_TEXT={type:'string',maxLength:130};
 const MEMBER_REVIEW={type:'object',required:['keep','fix','add','risks','evidence','questions'],properties:{keep:{type:'array',maxItems:1,items:MEMBER_TEXT},fix:{type:'array',maxItems:1,items:MEMBER_TEXT},add:{type:'array',maxItems:1,items:MEMBER_TEXT},risks:{type:'array',maxItems:1,items:MEMBER_TEXT},evidence:{type:'array',maxItems:1,items:MEMBER_TEXT},questions:{type:'array',maxItems:1,items:MEMBER_TEXT}},additionalProperties:false};
 const SHORT_TEXT={type:'string',maxLength:260};
-const MULTIPLAYER_MODES=['SINGLE','COOP','COMPETITIVE','HYBRID'];
+const allGamesMultiplayerRequired=readJson(CANONICAL_POLICY_PATH,{})?.directNativeDualPlatformDevelopment?.multiplayerImplementation?.required===true;
+const originalMultiplayerMode=clean(seed.MULTIPLAYER_DESIGN_MODE||seed.INITIAL_PLAY_MODE).toUpperCase();
+const MULTIPLAYER_MODES=['COOP','COMPETITIVE','HYBRID'].includes(originalMultiplayerMode)?[originalMultiplayerMode]
+  :allGamesMultiplayerRequired?['COOP','COMPETITIVE','HYBRID']:['SINGLE','COOP','COMPETITIVE','HYBRID'];
 // 플레이 근거 스키마: 기존 설계 필드 안에서 규칙·능력·상태·자산을 연결한다.
 const RULE_IDS={type:'array',minItems:1,maxItems:12,items:{type:'string',maxLength:80}};
 const STATE_VALUES={type:'array',minItems:1,maxItems:16,items:{type:'object',required:['key','value'],properties:{key:{type:'string',maxLength:80},value:{type:'number'}},additionalProperties:false}};
@@ -569,7 +572,7 @@ function persistDesignerSeed(design,phase){
   const fields=DESIGN_AUTHORING_SLICES.find(row=>row.id==='identity-core').fields;
   const content=Object.fromEntries(fields.map(field=>[field,design[field]]));
   assertSchemaValue(content,designSliceSchema(fields));
-  const failures=validateDesignAuthoringContent({design,seed,fields,requirePlayableContract:!ownerPreservationDesign,sourceText:currentRuleSource});
+  const failures=validateDesignAuthoringContent({design,seed,fields,multiplayerRequired:allGamesMultiplayerRequired,requirePlayableContract:!ownerPreservationDesign,sourceText:currentRuleSource});
   if(failures.length)throw new Error(`DESIGNER_SEED_REPAIR_REQUIRED: ${failures.map(row=>row.code).join(',')}`);
   const authorModel=designCheckpoint.effectiveDesignerModel||activeDesignerRoute.id;
   const contentDigest=createHash('sha256').update(JSON.stringify(content)).digest('hex');
@@ -590,7 +593,7 @@ async function authorDesignInCheckpointedSlices({phase,system,sharedContext,curr
   const merged={...currentDesign};
   // 고정 입력을 앞에 유지해 다음 요청에서도 같은 접두부를 재사용한다.
   // 오너 원본 모드의 호환용 자동 스케치는 설계 원본 입력이 아니다.
-  const commonInput=`${['OWNER_BRIEF_AND_ORIGINAL_ONLY','DESIGNER_SELF_SEED'].includes(seed.designInputMode)||seed.autoMissingDesignIntake?'':`GAME_SEED_DESIGN_DEPTH=${clip(seedDesignDepthContext,7500)}\n`}SHARED_CONTEXT=${clip(sharedContext,6500)}\nPLAYABILITY_REQUIREMENTS=${JSON.stringify(playableRequirements)}`;
+  const commonInput=`${['OWNER_BRIEF_AND_ORIGINAL_ONLY','DESIGNER_SELF_SEED'].includes(seed.designInputMode)||seed.autoMissingDesignIntake?'':`GAME_SEED_DESIGN_DEPTH=${clip(seedDesignDepthContext,7500)}\n`}SHARED_CONTEXT=${clip(sharedContext,6500)}\nMULTIPLAYER_ALLOWED_MODES=${JSON.stringify(MULTIPLAYER_MODES)}; 모든 게임 멀티 필수 정책이 적용되면 기존 SINGLE은 원본 참고이며 디자이너가 멀티 확장을 직접 작성한다. 기존 COOP/COMPETITIVE/HYBRID 규칙은 보존한다.\nPLAYABILITY_REQUIREMENTS=${JSON.stringify(playableRequirements)}`;
   for(const slice of DESIGN_AUTHORING_SLICES){
     const schema=designSliceSchema(slice.fields);
     const existing=Object.fromEntries(slice.fields.filter(field=>Object.prototype.hasOwnProperty.call(merged,field)).map(field=>[field,merged[field]]));
@@ -609,9 +612,9 @@ async function authorDesignInCheckpointedSlices({phase,system,sharedContext,curr
       system,
       `${commonInput}\n전체 설계를 한 번에 출력하지 말고 현재 필드 묶음만 상세하게 작성하라. 다른 필드는 출력하지 않는다. MAIN/A/B/c/@와 causalDNA 연결은 현재 필드가 담당하는 범위에서 실제 상태 변화로 유지한다. 이미 작성된 설계와 모순시키지 않는다. 원본 규칙과 수치를 보존한다.\nCURRENT_RULE_SOURCE=${['content-rules','selection-variety'].includes(slice.id)?JSON.stringify({...currentRuleSourceContext,lines:playableRequirements.abilityFacts.length?undefined:currentRuleSourceContext.lines,abilityFacts:playableRequirements.abilityFacts}):'원본 수치는 공유 규칙을 따른다'}\nSLICE_ID=${slice.id}\nSLICE_FIELDS=${JSON.stringify(slice.fields)}\nSTRUCTURE_CONTRACT=${JSON.stringify(repairStructureContract(slice.fields))}\nCURRENT_SLICE=${clip(existing,3500)}\nSHARED_RULE_ANCHORS=${JSON.stringify(anchors)}\nAUTHORING_REPAIR_ATTEMPT=${designCheckpoint.sliceRepairAttempts[taskKey]||0}\nAUTHORING_REPAIR_FEEDBACK=${JSON.stringify(feedback.map(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT'?{...row,evidence:{path:row.evidence?.path}}:row))}`,
       schema,
-      {predict:slice.predict,temperature:phase.includes('revision')?0.16:0.24,numCtx:['content-rules','selection-variety','integrity-stability'].includes(slice.id)?16384:8192,recoverOversized:designCheckpoint.failedTask===slice.id&&/^OLLAMA_DESIGN_(TIMEOUT|OUTPUT_TRUNCATED)/.test(designCheckpoint.lastError||''),isolateFields:(designCheckpoint.sliceRepairAttempts[taskKey]||0)>=2&&feedback.some(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT')}
+      {predict:slice.predict,temperature:phase.includes('revision')?0.16:0.24,numCtx:['content-rules','selection-variety','integrity-stability'].includes(slice.id)?16384:8192,recoverOversized:designCheckpoint.failedTask===slice.id&&/^OLLAMA_DESIGN_(TIMEOUT|OUTPUT_TRUNCATED)/.test(designCheckpoint.lastError||''),isolateFields:feedback.some(row=>['DESIGN_PLACEHOLDER_CONTENT','DESIGN_MULTIPLAYER_CONTRADICTION','DESIGN_RULE_ROLE_MISSING','DESIGN_RULE_STATE_MISSING','DESIGN_SLICE_SCHEMA_INVALID'].includes(row.code))}
       ));
-      feedback=validateDesignAuthoringContent({design:{...merged,...result},seed,fields:slice.fields,requirePlayableContract:!ownerPreservationDesign,assetLibrary:designAssetLibrary,sourceText:currentRuleSource,assetFamilies:designAssetFamilies});
+      feedback=validateDesignAuthoringContent({design:{...merged,...result},seed,fields:slice.fields,multiplayerRequired:allGamesMultiplayerRequired,requirePlayableContract:!ownerPreservationDesign,assetLibrary:designAssetLibrary,sourceText:currentRuleSource,assetFamilies:designAssetFamilies});
       try{assertSchemaValue(result,schema);}catch(error){feedback.push({code:'DESIGN_SLICE_SCHEMA_INVALID',fields:slice.fields,requiredAction:clean(error.message)});}
       if(!feedback.length)break;
       delete designCheckpoint.tasks[taskKey];
@@ -634,7 +637,7 @@ async function authorDesignInCheckpointedSlices({phase,system,sharedContext,curr
   const grounded=repairDesignRequiredFields(merged,{seed,factPack,phase:phase.toUpperCase()});
   const complete=enforceOwnerPreservationDesign(grounded.value);
   assertSchemaValue(complete,DESIGN);
-  const finalFeedback=validateDesignAuthoringContent({design:complete,seed,requirePlayableContract:!ownerPreservationDesign,assetLibrary:designAssetLibrary,sourceText:currentRuleSource,assetFamilies:designAssetFamilies});
+  const finalFeedback=validateDesignAuthoringContent({design:complete,seed,multiplayerRequired:allGamesMultiplayerRequired,requirePlayableContract:!ownerPreservationDesign,assetLibrary:designAssetLibrary,sourceText:currentRuleSource,assetFamilies:designAssetFamilies});
   if(finalFeedback.length){
     for(const slice of DESIGN_AUTHORING_SLICES){
       const feedback=finalFeedback.filter(row=>row.fields.some(field=>slice.fields.includes(field)));
@@ -699,7 +702,7 @@ function genreProfileForDesign(design){
 function deterministicPreGate(design){
   return scoreDesignGateV2({
     seed,
-    requirePlayableContract:!ownerPreservationDesign,
+    multiplayerRequired:allGamesMultiplayerRequired,requirePlayableContract:!ownerPreservationDesign,
     assetLibrary:designAssetLibrary,
     assetFamilies:designAssetFamilies,
     sourceText:currentRuleSource,
@@ -747,7 +750,7 @@ function repairStructureContract(fields){
   if(fields.includes('playerFantasy'))rules.push('playerFantasy: 공백 포함 최소 40자 이상의 구체적 플레이어 역할·책임·대표 행동·결과 판타지. 관찰자 설명이 아니라 플레이어가 실제로 무엇을 하는지 명시.');
   if(fields.includes('coreFun'))rules.push('coreFun: 공백 포함 최소 40자 이상. 대표 행동과 반복되는 대표 선택, 관찰 가능한 상태변화, 즉각적 결과를 명시하고 정체성 문장과 같은 플레이 약속을 증명.');
   if(fields.includes('coreLoop'))rules.push('coreLoop: 서로 다른 실제 플레이 단계 최소 3개. 입력/선택 -> 상태변화 -> 보상·위험·다음 선택의 연결을 포함.');
-  if(fields.includes('signatureSystems'))rules.push('signatureSystems: 최소 2개 서로 다른 시스템. 각 name은 최소 2자, purpose와 playerChoice는 각각 최소 20자 이상의 구체적 내용.');
+  if(fields.includes('signatureSystems'))rules.push('signatureSystems: MAIN/A/B/c/DELVE(@) 역할을 각각 포함하는 최소 5개 서로 다른 시스템. 각 name은 최소 2자, purpose와 playerChoice는 각각 최소 20자 이상의 구체적 내용.');
   if(fields.includes('contentExpansionPlan'))rules.push('contentExpansionPlan: 최소 3개 서로 다른 객체. JS String.length 기준 각 milestone은 최소 20자, newGameplay/systemImpact는 각각 최소 30자 이상으로 실제 새 플레이와 기존 시스템 영향을 구체적으로 설명.');
   if(fields.includes('uxAccessibilityPlan'))rules.push('menuStructure: 장르·대표 행동·기기에 맞는 정보 구조를 선택한다. 화면 진입/복귀, 전투 중 빠른 선택, 비교 분할창, 탐색형 목록, 빌드 트리, 상황형 바로가기 중 왜 이 구성이 맞는지 대안을 비교한다. convenienceDecisions: 실제 반복 불편 -> 참고 기능의 작동 원리 -> 우리 게임 적용/기각 이유 -> 상태/비용 보호 -> 검증 경로를 적는다. 프리셋 저장·전환, 조건 필터, 일괄 처리 미리보기, 목표에서 재료/지도 바로가기, 선택·필터·스크롤·미완성 작업 복귀 중 관련 기능을 선택한다. 버튼 크기나 메뉴 개수만으로 편의성 개선이라 하지 않는다. 아래 공식 참고는 관찰일의 설계 자료이며 최신 여부와 우리 게임의 효과는 미검증이다. 검증된 이전 경험과 실패도 함께 비교하고 새 작품/업데이트를 참고했다고 출처 없이 주장하지 않는다. REFERENCES='+JSON.stringify(GAME_CONVENIENCE_REFERENCES.map(({match,...row})=>row)));
   if(fields.some(field=>['progressionEconomyBalance','contentExpansionPlan','failureRetryRisk'].includes(field)))rules.push('파고들기/보상: 발견 가능한 단서 -> 조합·숙련·탐험 실험 -> 위험·기회비용·대응법 -> 새 행동/공략/경로/세계관계 -> 다음 탐구거리의 인과를 설계한다. 재화·능력치·아이템 개수 증가만으로 깊이를 주장하지 않는다. 보상은 단기 성공, 세션 목표, 선택적 장기 숙련에서 서로 다른 플레이 변화를 주되 해당 장르와 기존 저장·밸런스를 보존한다. 조합 기록·비교·발견 단서·재도전 준비는 관련 메뉴에 연결하고 정답을 미리 노출하거나 반복 노동을 강제하지 않는다. 구현 전 가설과 실제 플레이 증거를 구분한다.');

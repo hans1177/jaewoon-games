@@ -112,7 +112,7 @@ export function designPlayabilityRequirements(seed={},sourceText=''){
 }
 
 // 설계 내용 검증: 분할 작성 직후와 최종 점수 판정에서 동일하게 사용한다.
-export function validateDesignAuthoringContent({design={},seed={},fields=Object.keys(design),requirePlayableContract=false,assetLibrary=null,sourceText='',assetFamilies=[]}={}){
+export function validateDesignAuthoringContent({design={},seed={},fields=Object.keys(design),multiplayerRequired=false,requirePlayableContract=false,assetLibrary=null,sourceText='',assetFamilies=[]}={}){
   const selected=new Set(fields);
   const reasons=[];
   const reject=(code,axis,affected,evidence,requiredAction)=>{
@@ -138,8 +138,11 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
   };
   for(const field of proseFields)if(selected.has(field))scan(design[field],field,field);
   const declared=clean(seed.MULTIPLAYER_DESIGN_MODE||seed.INITIAL_PLAY_MODE).toUpperCase();
-  if(design.multiplayerMode&&['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(declared)&&design.multiplayerMode!==declared){
+  if(design.multiplayerMode&&['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(declared)&&!(multiplayerRequired&&declared==='SINGLE')&&design.multiplayerMode!==declared){
     reject('DESIGN_MULTIPLAYER_CONTRADICTION','CATEGORY_IDENTITY',['multiplayerMode','multiplayerExpansionDecision'],{expected:declared,actual:design.multiplayerMode},'오너 입력의 플레이 모드를 보존한다. 인공지능 충원으로 혼자 플레이할 수 있어도 멀티 의도를 SINGLE로 바꾸지 않는다.');
+  }
+  if(multiplayerRequired&&selected.has('multiplayerMode')&&!['COOP','COMPETITIVE','HYBRID'].includes(design.multiplayerMode)){
+    reject('DESIGN_MULTIPLAYER_CONTRADICTION','CATEGORY_IDENTITY',['multiplayerMode','multiplayerExpansionDecision'],{actual:design.multiplayerMode},'모든 게임은 멀티 필수다. 원본의 대표 행동과 저장 의미를 보존하며 디자이너가 COOP/COMPETITIVE/HYBRID 중 실제 함께 플레이할 규칙을 작성한다.');
   }
   const profiles=design.platformProfiles||{};
   for(const [platform,foreign] of [['UNITY',/(?:OPEN_CLOUD(?:_|\b)|\b(?:Rojo|ScreenGui|RemoteEvent|Roblox DataStore)\b)/i],['ROBLOX',/\b(?:APK|AAB|Unity Input System|UnityEditor)\b/i]]){
@@ -315,7 +318,7 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
   return reasons;
 }
 
-export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},robloxGenreProfile={},requirePlayableContract=false,assetLibrary=null,sourceText='',assetFamilies=[]}={}){
+export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},robloxGenreProfile={},multiplayerRequired=false,requirePlayableContract=false,assetLibrary=null,sourceText='',assetFamilies=[]}={}){
   const design=designRecord?.content&&typeof designRecord.content==='object'?designRecord.content:{};
   const loops=distinct(list(design.coreLoop).map(clean));
   const signatureSystems=list(design.signatureSystems).filter(row=>row&&typeof row==='object');
@@ -401,7 +404,7 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
   const scores=Object.fromEntries(Object.entries(DESIGN_GATE_WEIGHTS).map(([axis,weight])=>[axis,weighted(evidenceLevels[axis],weight)]));
   const totalScore=Math.round(Object.values(scores).reduce((sum,value)=>sum+Number(value||0),0)*100)/100;
   const criticalAxisFailures=Object.keys(DESIGN_GATE_WEIGHTS).filter(axis=>Number(evidenceLevels[axis]||0)<DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT);
-  const rejectionReasons=validateDesignAuthoringContent({design,seed,requirePlayableContract,assetLibrary,sourceText,assetFamilies});
+  const rejectionReasons=validateDesignAuthoringContent({design,seed,multiplayerRequired,requirePlayableContract,assetLibrary,sourceText,assetFamilies});
   const hardFailures=rejectionReasons.map(reason=>reason.code);
   const ownerPreservationSeed=seed?.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true&&clean(seed?.OWNER_REBUILD_MODE).toUpperCase()==='PRESERVATION_PRESENTATION_UPGRADE';
   if(ownerPreservationSeed){

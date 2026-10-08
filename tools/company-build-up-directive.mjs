@@ -599,7 +599,7 @@ function secondaryDesignAnchor(design={}){
   return clean(system?.name)||clean(system?.playerChoice)||clean(design.progressionDirection)||design.coreLoop?.[0]||'핵심 루프';
 }
 
-function domainState(domain,{design={},source={}}={}){
+function domainState(domain,{design={},source={},multiplayerRequired=false}={}){
   const s=source?.signals||{};
   const detailedDesignText=JSON.stringify({
     progressionEconomyBalance:design.progressionEconomyBalance,
@@ -630,10 +630,14 @@ function domainState(domain,{design={},source={}}={}){
   const hasInventory=/inventory|item|equipment|equip|weapon|armor|loot|craft|인벤|아이템|장비|무기|방어구|전리품|제작/.test(relevantByText)||Number(s.inventory||0)>0||Number(s.equipment||0)>0;
   const hasEquipment=/equipment|equip|weapon|armor|loadout|장비|무기|방어구|장착/.test(relevantByText)||Number(s.equipment||0)>0;
   const hasProgression=Boolean(clean(design.progressionDirection))||Number(s.progression||0)>0;
-  const hasMultiplayer=/multi|coop|co-op|pvp|player/.test(clean(design.multiplayerMode).toLowerCase())||/multiplayer|coop|pvp/.test(relevantByText)||Number(s.multiplayer||0)>0;
+  const hasMultiplayer=multiplayerRequired||/multi|coop|co-op|pvp|player/.test(clean(design.multiplayerMode).toLowerCase())||/multiplayer|coop|pvp/.test(relevantByText)||Number(s.multiplayer||0)>0;
   const hasSave=Number(s.save||0)>0||/save|persist|저장/.test(relevantByText);
 
-  if(domain==='MULTIPLAYER_AND_SYNC'&&!hasMultiplayer)return no('approved design and current source do not require multiplayer');
+  if(domain==='MULTIPLAYER_AND_SYNC'){
+    if(!hasMultiplayer)return no('approved design and current source do not require multiplayer');
+    if(Number(s.multiplayer||0)<3||Number(s.errorRecovery||0)<2)return gap('required multiplayer implementation or reconnect recovery is incomplete; continue existing BUILD_UP');
+    return pass('multiplayer source signals found; actual multi-client gameplay remains unverified by source inspection');
+  }
   if(domain==='CRAFTING'&&!/craft|제작|recipe/.test(relevantByText)&&Number(s.progression||0)>0)return no('no crafting signal in approved design');
   if(domain==='QUESTS'&&!/quest|퀘스트|story|npc/.test(relevantByText))return no('no quest/story objective signal in approved design');
   if(domain==='NPC_SOCIAL_BEHAVIOR'&&!/npc|villager|resident|social|주민|상인|대화/.test(relevantByText))return no('no NPC or social behavior signal in approved design');
@@ -762,7 +766,7 @@ function buildAllDomainDirectives({states=[],design={},focus='CORE_FUN',depthInf
     INVENTORY:`인벤토리는 획득·정렬/표시·장착/사용·교체·버리기/보존 상태를 명확히 하고 실제 캐릭터/전투/진행 상태와 동기화한다.`,
     CRAFTING:`제작이 적용되는 게임이면 재료 발견→레시피 이해→제작 조건→대기/완료→인벤토리 반영→실제 사용까지 끊김 없이 연결하고 중복 레시피를 줄인다.`,
     SAVE_AND_RECOVERY:`기존 저장 키·구조·의미를 보존하고 진행·장비·해금을 재접속 후 복구한다. 불러오기 실패를 신규 사용자로 처리하거나 기본값으로 덮어쓰지 말고 재시도·안전 복귀를 제공한다.`,
-    MULTIPLAYER_AND_SYNC:`멀티가 적용되는 게임만 기존 방 생성·참가·준비·시작·이탈을 서버 판정으로 연결한다. 참가자·준비·기존 모드를 표시하고 대기 중 안전한 공동 연습을 제공한다. 결과 화면에 각자 재도전 의사를 표시하고 기존 참가 규칙으로 인원을 유지하되 이탈자 때문에 무한 대기하지 않게 한다. 방장 이탈·late join·재접속을 기존 규칙으로 복구하고 실제 2인 이상의 행동·목표·승패·보상 일치와 중복 지급 방지를 검수한다.`,
+    MULTIPLAYER_AND_SYNC:`모든 게임은 멀티 구현이 필수다. 기존 SINGLE 원본은 디자이너가 COOP/COMPETITIVE/HYBRID 중 게임에 맞는 확장을 작성하며 기존 멀티 규칙은 보존한다. 기존 방 생성·참가·준비·시작·이탈을 서버 판정으로 연결한다. 참가자·준비·기존 모드를 표시하고 대기 중 안전한 공동 연습을 제공한다. 결과 화면에 각자 재도전 의사를 표시하고 기존 참가 규칙으로 인원을 유지하되 이탈자 때문에 무한 대기하지 않게 한다. 방장 이탈·late join·재접속을 기존 규칙으로 복구하고 실제 2인 이상의 행동·목표·승패·보상 일치와 중복 지급 방지를 검수한다.`,
     INPUT:`핵심 행동마다 터치 우선 입력과 키보드/패드 대체 입력을 동일 게임 상태에 연결하고 중복 입력·길게 누름·드래그·취소 경계를 명확히 한다.`,
     MOBILE_UX:`작은 화면에서 핵심 행동 버튼을 크게, 설정·도움말을 접어서 배치하고 HUD·위험 경고가 손가락에 가리지 않게 한다. safe area·스크롤·가로/세로를 검수하고 팝업 닫기 터치가 뒤쪽 이동·공격으로 전달되지 않게 입력을 소비한다.`,
     ACCESSIBILITY:`색만으로 상태를 구분하지 않고 형태/아이콘/텍스트/모션을 함께 쓰며, 중요한 피드백은 크기·대비·지속시간을 확보해 정보 누락을 줄인다.`,
@@ -1338,6 +1342,8 @@ export function directivePrompt(d={}){
     `id=${d.directiveId}; generation=${d.generation}; depth=${d.developmentDepth}; stage=${d.escalationStage}; focus=${d.primaryFocus}`,
     `GAME_IDENTITY: ${d.gameIdentityAndNonNegotiables.identity}`,
     `DESIGN_IMPLEMENTATION_CONTEXT: ${JSON.stringify(d.designImplementationContext||{})}`,
+    `MULTIPLAYER_IMPLEMENTATION: ${JSON.stringify(d.multiplayerImplementation||{})}`,
+    ...(d.multiplayerImplementation?.required?[`전 게임 멀티 필수: 기존 서버 권한·클라이언트 입력/동기화 책임 소스에서 접속·참가·준비·시작·이탈·재접속과 목표·승패·보상 일치를 구현한다. 로컬 시뮬레이션이나 플래그만으로 구현 완료라 하지 않는다. 빠진 구현은 기존 BUILD_UP에서 계속 수정·재시도하며 다른 게임과 독립 작업은 계속 진행한다. 실제 2인 이상 같은 세션의 증거를 별도로 남긴다.`]:[]),
     `IDENTITY_ONE_LINE_FANTASY: ${d.identityReinforcement?.oneLineFantasy||d.gameIdentityAndNonNegotiables.identity}`,
     `IDENTITY_REPRESENTATIVE_ACTION: ${d.identityReinforcement?.representativeAction||'CURRENT_CORE_ACTION'}`,
     `IDENTITY_REPRESENTATIVE_CHOICE: ${d.identityReinforcement?.representativeChoice||'CURRENT_CORE_CHOICE'}`,
@@ -1403,6 +1409,8 @@ export function buildGameSpecificBuildUpDirective({
 }={}){
   const id=clean(gameId);if(!id)throw new Error('BUILD_UP_GAME_ID_REQUIRED');
   const design=extractDesignContext(designRecord||{});
+  const multiplayerPolicy=readJson(path.join(repoRoot,'company-learning/platform-release-roadmap.json'),{})?.directNativeDualPlatformDevelopment?.multiplayerImplementation||{};
+  const multiplayerRequired=multiplayerPolicy.required===true;
   sourceRoot=posix(sourceRoot)||posix(sourceObservation?.sourceRoot);
   const source=sourceObservation||inspectGameSource({repoRoot,sourceRoot});
   const signals=uniq([
@@ -1508,8 +1516,8 @@ export function buildGameSpecificBuildUpDirective({
   };
   const goal=goalByFocus[focus]||goalByFocus.CORE_FUN;
   const previousFingerprint=clean(previousDirective?.directiveFingerprint);
-  const fingerprint=sha(JSON.stringify({id,generation,focus,goal,source:source.sourceTreeFingerprint,design,previousDirectiveOutcome:clean(previousDirectiveOutcome),previousEffectiveness,qualitySignals:signals,runtimeEvidence,safeDesignlessMode}));
-  const baseStates=BUILD_UP_DOMAINS.map(domain=>domainState(domain,{design,source}));
+  const fingerprint=sha(JSON.stringify({id,generation,focus,goal,source:source.sourceTreeFingerprint,design,previousDirectiveOutcome:clean(previousDirectiveOutcome),previousEffectiveness,qualitySignals:signals,runtimeEvidence,safeDesignlessMode,multiplayerPolicy}));
+  const baseStates=BUILD_UP_DOMAINS.map(domain=>domainState(domain,{design,source,multiplayerRequired}));
   const designlessAllowedDomains=new Set(safeDesignlessMode?(DESIGNLESS_SAFE_BUILD_UP_DOMAINS[focus]||[]):BUILD_UP_DOMAINS);
   const states=safeDesignlessMode
     ?baseStates.map(row=>designlessAllowedDomains.has(row.domain)?row:{domain:row.domain,state:'NOT_APPLICABLE',reason:'designless source-safe BUILD_UP cannot expand gameplay/progression semantics'})
@@ -1771,6 +1779,12 @@ export function buildGameSpecificBuildUpDirective({
     currentImplementationFindings:{sourceObservations:source.observations,signals:source.signals,topFiles:source.topFiles,sourceAnchors:source.sourceAnchors||[]},
     previousVersionDelta:previousDirective?{previousGoal:previousDirective.thisLoopPrimaryGoal||null,previousFocus:previousDirective.primaryFocus||null,previousGeneration:previousDirective.generation||null,previousSourceTreeFingerprint:previousDirective.sourceTreeFingerprint||null,currentSourceTreeFingerprint:source.sourceTreeFingerprint,sourceChanged:depthInfo.sourceChangedSincePrevious,verifiedEvolution:depthInfo.verifiedEvolution}:{state:'NO_PREVIOUS_DIRECTIVE'},
     playtestRuntimeFindings:runtimeEvidence&&Object.keys(runtimeEvidence).length?runtimeEvidence:{state:'UNKNOWN_NOT_INVENTED'},
+    multiplayerImplementation:Object.freeze({
+      required:multiplayerRequired,policyVersion:multiplayerPolicy.version||0,
+      developmentAdmissionGate:false,missingImplementationAction:'EXISTING_BUILD_UP_LOCAL_IMPLEMENTATION_AND_RETRY',
+      otherGamesAndIndependentWorkContinue:true,actualMultiplayerPlayVerified:false,
+      completionEvidence:multiplayerPolicy.completionEvidence||null
+    }),
     qualityGapMap:states,
     allDomainImplementationDirectives,
     detectedGaps:gaps,

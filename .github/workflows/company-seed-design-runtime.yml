@@ -639,6 +639,9 @@ jobs:
             sync_key="$(checkpoint_sync_key)"
             if [ "$sync_key" = "$last_checkpoint_sync_key" ]; then return 0; fi
             cp "$checkpoint_path" /tmp/design-checkpoint.json
+            local seed_path="$(dirname "$checkpoint_path")/design-seed.json"
+            rm -f /tmp/design-seed.json
+            [ -f "$seed_path" ] && cp "$seed_path" /tmp/design-seed.json || true
             [ -f "$progress_path" ] && cp "$progress_path" /tmp/design-progress.json || true
             local pushed=0
             for attempt in 1 2 3 4; do
@@ -652,6 +655,10 @@ jobs:
               git -C "$worktree" config user.name 'jaewoon-seed-design-checkpoint'
               git -C "$worktree" config user.email 'seed-design-checkpoint@users.noreply.github.com'
               git -C "$worktree" add -- "$checkpoint_path" "$progress_path"
+              if [ -f /tmp/design-seed.json ]; then
+                cp /tmp/design-seed.json "$worktree/$seed_path"
+                git -C "$worktree" add -- "$seed_path"
+              fi
               if git -C "$worktree" diff --cached --quiet; then
                 pushed=1
                 git worktree remove -f "$worktree" >/dev/null 2>&1 || true

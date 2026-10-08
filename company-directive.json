@@ -1127,7 +1127,37 @@
     "externalCapacityOnlyParallelBoundary": true,
     "upperPlatformAdmissionAuthority": "UPPER_PLATFORM_DEVELOPMENT_READY",
     "fortniteUefnDevelopmentStatus": "DEVELOPMENT_PAUSED",
-    "fortniteUefnStatusLabel": "개발보류"
+    "fortniteUefnStatusLabel": "개발보류",
+    "multiplayerImplementation": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-10-08_ALL_GAMES_MULTIPLAYER",
+      "required": true,
+      "scope": "ALL_ACTIVE_AND_NEW_GAMES",
+      "platforms": [
+        "ROBLOX",
+        "UNITY_WEB",
+        "UNITY_APP"
+      ],
+      "allowedDesignModes": [
+        "COOP",
+        "COMPETITIVE",
+        "HYBRID"
+      ],
+      "minimumParticipants": 2,
+      "existingMultiplayerRulesPreserved": true,
+      "legacySingleModeAction": "DESIGNER_AUTHORED_MULTIPLAYER_EXTENSION_IN_EXISTING_BUILD_UP",
+      "implementationOwner": "tools/company-build-up-directive.mjs::buildGameSpecificBuildUpDirective",
+      "sourceExecution": "tools/vibe2-source-worker.mjs",
+      "existingCanonicalVibe2Vibe3Only": true,
+      "developmentAdmissionGate": false,
+      "missingImplementationAction": "GAME_STAGE_LOCAL_IMPLEMENTATION_AND_RETRY",
+      "otherGamesAndIndependentWorkContinue": true,
+      "perpetualCycle": true,
+      "newPipeline": false,
+      "staticCodeEvidenceIsActualMultiplayerPlay": false,
+      "completionEvidence": "ACTUAL_TWO_OR_MORE_CLIENTS_SAME_SESSION_ACTION_STATE_RESULT_AND_RECONNECT",
+      "releaseValidationPolicyUnchanged": true
+    }
   },
   "highEndVisualProduction": {
     "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.highEndVisualProductionContract",
