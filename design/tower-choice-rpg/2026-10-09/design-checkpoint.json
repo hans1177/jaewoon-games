@@ -272,25 +272,126 @@
           "playerChoice": "진입 후 위험, 성공, 재방문에 대한 정서적 갈등을 느끼게 되며, 새로운 행동, 경로, 관계, 발견, 대응법을 열어 실제 플레이에 적용할 수 있는 핵심 재미를 제공한다."
         }
       ]
+    },
+    "local_authoring_parts::38c96523521ad3850d465114bf4244ab7a4de11c056353191a335c6eef1c4593:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::127cfbc992bc21a6248670181bcfe4c31d6f987719a615cddb72b7ff3ffc8eb5:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "INPUT: 플레이어가 즉각적인 생존 전략을 통해 점차 복잡해지는 적군을 이탈시키며, 주체적으로 선택하는 방식으로 세계 상태와 다음 선택을 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다.",
+        "SELECT: 진입 후 위험, 성공, 재방문에 대한 정서적 갈등을 느끼게 되며, 새로운 행동, 경로, 관계, 발견, 대응법을 열어 실제 플레이에 적용할 수 있는 핵심 재미를 제공한다.",
+        "OUTPUT: 기존 루프 구조에서 새로운 행동, 경로, 관계, 발견, 대응법의 결과가 월드 상태와 다음 선택으로 연결되어, 즉시 상태 변화를 만든다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "worldState",
+            "build"
+          ],
+          "stateOutputs": [
+            "nextWorldState",
+            "nextBuild"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "purpose": "플레이어가 즉각적인 생존 전략을 통해 점차 복잡해지는 적군을 이탈시키며, 주체적으로 선택하는 방식으로 세계 상태와 다음 선택을 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다.",
+          "playerChoice": "진입 후 위험, 성공, 재방문에 대한 정서적 갈등을 느끼게 되며, 새로운 행동, 경로, 관계, 발견, 대응법을 열어 실제 플레이에 적용할 수 있는 핵심 재미를 제공한다."
+        },
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE",
+          "grammarRole": "A",
+          "stateInputs": [
+            "worldState",
+            "build"
+          ],
+          "stateOutputs": [
+            "nextWorldState",
+            "nextBuild"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "purpose": "플레이어가 즉각적인 생존 전략을 통해 점차 복잡해지는 적군을 이탈시키며, 주체적으로 선택하는 방식으로 세계 상태와 다음 선택을 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다.",
+          "playerChoice": "진입 후 위험, 성공, 재방문에 대한 정서적 갈등을 느끼게 되며, 새로운 행동, 경로, 관계, 발견, 대응법을 열어 실제 플레이에 적용할 수 있는 핵심 재미를 제공한다."
+        },
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE",
+          "grammarRole": "B",
+          "stateInputs": [
+            "worldState",
+            "build"
+          ],
+          "stateOutputs": [
+            "nextWorldState",
+            "nextBuild"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "purpose": "플레이어가 즉각적인 생존 전략을 통해 점차 복잡해지는 적군을 이탈시키며, 주체적으로 선택하는 방식으로 세계 상태와 다음 선택을 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다.",
+          "playerChoice": "진입 후 위험, 성공, 재방문에 대한 정서적 갈등을 느끼게 되며, 새로운 행동, 경로, 관계, 발견, 대응법을 열어 실제 플레이에 적용할 수 있는 핵심 재미를 제공한다."
+        },
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE",
+          "grammarRole": "c",
+          "stateInputs": [
+            "worldState",
+            "build"
+          ],
+          "stateOutputs": [
+            "nextWorldState",
+            "nextBuild"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "purpose": "플레이어가 즉각적인 생존 전략을 통해 점차 복잡해지는 적군을 이탈시키며, 주체적으로 선택하는 방식으로 세계 상태와 다음 선택을 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다.",
+          "playerChoice": "진입 후 위험, 성공, 재방문에 대한 정서적 갈등을 느끼게 되며, 새로운 행동, 경로, 관계, 발견, 대응법을 열어 실제 플레이에 적용할 수 있는 핵심 재미를 제공한다."
+        },
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "worldState",
+            "build"
+          ],
+          "stateOutputs": [
+            "nextWorldState",
+            "nextBuild"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "purpose": "플레이어가 즉각적인 생존 전략을 통해 점차 복잡해지는 적군을 이탈시키며, 주체적으로 선택하는 방식으로 세계 상태와 다음 선택을 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다.",
+          "playerChoice": "진입 후 위험, 성공, 재방문에 대한 정서적 갈등을 느끼게 되며, 새로운 행동, 경로, 관계, 발견, 대응법을 열어 실제 플레이에 적용할 수 있는 핵심 재미를 제공한다."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::671c44aba5e0f3fdc1007671efd00ba92115fbbf6cc7ea7c4065d79eb91786a4:signatureSystems:0": {
+      "id": "10층 탑 RPG",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "INITIAL_STATE"
+      ],
+      "stateOutputs": [
+        "FINAL_STATE"
+      ],
+      "name": "ACTION_SURVIVAL_ROGUELITE",
+      "purpose": "플레이어가 즉각적인 생존 전략을 통해 점차 복잡해지는 적군을 이탈시키며, 주체적으로 선택하는 방식으로 세계 상태와 다음 선택을 바꾸는 게임",
+      "playerChoice": "주체적으로 선택하여 세계 상태와 다음 선택을 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 754369,
-      "lastMs": 108131,
+      "totalMs": 940707,
+      "lastMs": 98221,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:58:59.776Z"
+      "updatedAt": "2026-10-08T19:02:06.130Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:46:25.369Z",
-  "updatedAt": "2026-10-08T18:58:59.778Z",
+  "updatedAt": "2026-10-08T19:02:06.131Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2485,12 +2586,74 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:58:59.778Z",
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_MAIN_A_B_c_DELVE_REQUIRED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "counts": {
+            "MAIN": 1,
+            "A": 1,
+            "B": 1,
+            "c": 1,
+            "DELVE": 1
+          },
+          "systemCount": 5,
+          "statesReady": false
+        },
+        "requiredAction": "메인 중심 행동, A/B 서로 다른 두 축, c 보조 변주, @ 발견·숙련을 기존 규칙에 맞춰 최소 5개 고유 시스템과 실제 상태 입력·출력으로 작성한다. 기존 밸런스·저장·진행은 유지한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "10층 탑 RPG은 플레이어가 즉각적인 생존 전략을 통해 점차 복잡해지는 적군을 이탈시키며, 주체적으로 선택하는 방식으로 세계 상태와 다음 선택을 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 플레이어는 단순한 희생이나 반복적 승리보다는 진입 후의 위험, 성공, 그리고 재방문에 대한 정서적 갈등을 느끼게 된다. 이는 기존의 루프 구조에서 새로운 행동, 경로, 관계, 발견, 대응법을 열어 실제 플레이에 적용할 수 있는 핵심 재미를 제공한다.",
+      "playerFantasy": "10층 탑 RPG에서는 플레이어가 즉각적인 생존 전략을 통해 점차 복잡해지는 적군을 이탈시키며, 주체적으로 선택하는 방식으로 세계 상태와 다음 선택을 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 플레이어는 단순한 희생이나 반복적 승리보다는 진입 후의 위험, 성공, 그리고 재방문에 대한 정서적 갈등을 느끼게 된다. 이는 기존의 루프 구조에서 새로운 행동, 경로, 관계, 발견, 대응법을 열어 실제 플레이에 적용할 수 있는 핵심 재미를 제공한다.",
+      "coreFun": "플레이어가 즉각적인 생존 전략을 통해 점차 복잡해지는 적군을 이탈시키며 주체적으로 선택하는 방식으로 세계 상태와 다음 선택을 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 플레이어는 단순한 희생이나 반복적 승리보다는 진입 후의 위험, 성공, 그리고 재방문에 대한 정서적 갈등을 느끼게 된다. 이는 기존의 루프 구조에서 새로운 행동, 경로, 관계, 발견, 대응법을 열어 실제 플레이에 적용할 수 있는 핵심 재미를 제공한다.",
+      "coreLoop": [
+        "INPUT: 플레이어가 즉각적인 생존 전략을 통해 점차 복잡해지는 적군을 이탈시키며, 주체적으로 선택하는 방식으로 세계 상태와 다음 선택을 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다.",
+        "SELECT: 진입 후 위험, 성공, 재방문에 대한 정서적 갈등을 느끼게 되며, 새로운 행동, 경로, 관계, 발견, 대응법을 열어 실제 플레이에 적용할 수 있는 핵심 재미를 제공한다.",
+        "OUTPUT: 기존 루프 구조에서 새로운 행동, 경로, 관계, 발견, 대응법의 결과가 월드 상태와 다음 선택으로 연결되어, 즉시 상태 변화를 만든다."
+      ],
+      "multiplayerMode": "HYBRID"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T19:02:06.130Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
