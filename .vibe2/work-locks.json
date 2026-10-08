@@ -3,44 +3,24 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-k2f56c",
+      "id": "wl-42y9e7",
       "worker": "vibe2",
-      "taskId": "survival-unity-web-base-implementation-v1",
-      "gameId": "survival",
+      "taskId": "cozy-island-existing-web-assessment-v1",
+      "gameId": "cozy-island",
       "files": [
-        "unity-games/survival/Assets/Scripts/GameCore.cs",
-        "unity-games/survival/Assets/Scripts/RuntimeBootstrap.cs",
-        "assets/roblox/world-ghosts/native/spider/spider.glb",
-        "assets/roblox/world-ghosts/native/spider/spider.png",
-        "assets/roblox/world-ghosts/native/spider/evidence.json",
-        "assets/generated/unity/survival/background/asset.glb",
-        "assets/generated/unity/survival/background/master.glb",
-        "assets/generated/unity/survival/background/preview.png",
-        "assets/generated/unity/survival/background/preview-master.png",
-        "assets/generated/unity/survival/background/application.json",
-        "assets/generated/unity/survival/background/evidence.json",
-        "assets/generated/unity/survival/item/asset.glb",
-        "assets/generated/unity/survival/item/master.glb",
-        "assets/generated/unity/survival/item/preview.png",
-        "assets/generated/unity/survival/item/preview-master.png",
-        "assets/generated/unity/survival/item/application.json",
-        "assets/generated/unity/survival/item/evidence.json",
-        "assets/generated/unity/survival/prop/asset.glb",
-        "assets/generated/unity/survival/prop/master.glb",
-        "assets/generated/unity/survival/prop/preview.png",
-        "assets/generated/unity/survival/prop/preview-master.png",
-        "assets/generated/unity/survival/prop/application.json",
-        "assets/generated/unity/survival/prop/evidence.json"
+        "web-games/cozy-island/index.html",
+        "web-games/cozy-island/style.css",
+        "web-games/cozy-island/game.js"
       ],
-      "baseSha": "9722b1411b611d58694b3c69494541cb5a0ce2f4",
-      "runId": "37793721753",
+      "baseSha": "63364b605b6fbe14858784947602fe39c520eed9",
+      "runId": "37812843758",
       "runAttempt": "1",
-      "acquiredAt": "2026-10-08T16:37:53.215Z",
-      "expiresAt": "2026-10-08T17:22:53.215Z",
+      "acquiredAt": "2026-10-08T17:29:20.474Z",
+      "expiresAt": "2026-10-08T18:14:20.474Z",
       "status": "active",
       "evidence": [
         "compiled-central-work-contract",
-        "change-set:survival-unity-web-base-implementation-v1"
+        "change-set:cozy-island-existing-web-assessment-v1"
       ]
     }
   ]
