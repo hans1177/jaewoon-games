@@ -672,25 +672,110 @@
     },
     "local_authoring_parts::67eddd466281653b8e26e609734eea9a69dd235c2952129a55715a768a01ced3:trigger": {
       "trigger": "플레이어는 주요 선택에 따라 다양한 전략, 경로, 성장 가능성을 생성하며, 이 과정에서 세계 상태와 보상이 서로 영향을 미친다."
+    },
+    "local_authoring_parts::67eddd466281653b8e26e609734eea9a69dd235c2952129a55715a768a01ced3:stateChange": {
+      "stateChange": "플레이어는 주요 선택에 따라 다양한 전략, 경로, 성장 가능성을 생성하며, 이 과정에서 세계 상태와 보상이 서로 영향을 미친다."
+    },
+    "local_authoring_parts::b7aa2a41e14f0c54824bfb2971b7f75398421d8b09f496d351b209cc60e98dd1:systemInterconnections:4": {
+      "fromId": "DELVE",
+      "toId": "DELVE",
+      "stateKeys": [
+        "PLACEMENT",
+        "RESONANCE",
+        "UPGRADES"
+      ],
+      "fromSystem": "DELVE",
+      "toSystem": "DELVE",
+      "trigger": "플레이어는 주요 선택에 따라 다양한 전략, 경로, 성장 가능성을 생성하며, 이 과정에서 세계 상태와 보상이 서로 영향을 미친다.",
+      "stateChange": "플레이어는 주요 선택에 따라 다양한 전략, 경로, 성장 가능성을 생성하며, 이 과정에서 세계 상태와 보상이 서로 영향을 미친다."
+    },
+    "local_authoring_parts::0a352b3ebbb7c387518f0d8e6e362185f4cd4033dc42a3f107370eab4b48a808:systemInterconnections": {
+      "systemInterconnections": [
+        {
+          "fromId": "PLACEMENT",
+          "toId": "RESONANCE",
+          "stateKeys": [
+            "PLACEMENT",
+            "RESONANCE",
+            "UPGRADES"
+          ],
+          "fromSystem": "PLACEMENT",
+          "toSystem": "RESONANCE",
+          "trigger": "ATTACK_PATTERNS",
+          "stateChange": "플레이어는 주요 선택에 따라 다양한 전략, 경로, 성장 가능성을 생성하며, 이 과정에서 세계 상태와 보상이 서로 영향을 미친다."
+        },
+        {
+          "fromId": "PLACEMENT",
+          "toId": "RESONANCE",
+          "stateKeys": [
+            "PLACEMENT",
+            "RESONANCE",
+            "UPGRADES"
+          ],
+          "fromSystem": "PLACEMENT",
+          "toSystem": "RESONANCE",
+          "trigger": "플레이어는 주요 선택에 따라 다양한 전략, 경로, 성장 가능성을 생성하며, 이 과정에서 세계 상태와 보상이 서로 영향을 미친다.",
+          "stateChange": "플레이어는 주요 선택에 따라 다양한 전략, 경로, 성장 가능성을 생성하며, 이 과정에서 세계 상태와 보상이 서로 영향을 미친다."
+        },
+        {
+          "fromId": "PLACEMENT",
+          "toId": "RESONANCE",
+          "stateKeys": [
+            "PLACEMENT",
+            "RESONANCE",
+            "UPGRADES"
+          ],
+          "fromSystem": "PLACEMENT",
+          "toSystem": "RESONANCE",
+          "trigger": "ATTACK_PATTERNS",
+          "stateChange": "플레이어는 주요 선택에 따라 다양한 전략, 경로, 성장 가능성을 생성하며, 이 과정에서 세계 상태와 보상이 서로 영향을 미친다."
+        },
+        {
+          "fromId": "DELVE",
+          "toId": "DELVE",
+          "stateKeys": [
+            "PLACEMENT",
+            "RESONANCE",
+            "UPGRADES"
+          ],
+          "fromSystem": "DELVE",
+          "toSystem": "DELVE",
+          "trigger": "플레이어는 주요 선택에 따라 다양한 전략, 경로, 성장 가능성을 생성하며, 이 과정에서 세계 상태와 보상이 서로 영향을 미친다.",
+          "stateChange": "플레이어는 주요 선택에 따라 다양한 전략, 경로, 성장 가능성을 생성하며, 이 과정에서 세계 상태와 보상이 서로 영향을 미친다."
+        },
+        {
+          "fromId": "DELVE",
+          "toId": "DELVE",
+          "stateKeys": [
+            "PLACEMENT",
+            "RESONANCE",
+            "UPGRADES"
+          ],
+          "fromSystem": "DELVE",
+          "toSystem": "DELVE",
+          "trigger": "플레이어는 주요 선택에 따라 다양한 전략, 경로, 성장 가능성을 생성하며, 이 과정에서 세계 상태와 보상이 서로 영향을 미친다.",
+          "stateChange": "플레이어는 주요 선택에 따라 다양한 전략, 경로, 성장 가능성을 생성하며, 이 과정에서 세계 상태와 보상이 서로 영향을 미친다."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 45,
-      "successes": 45,
+      "calls": 46,
+      "successes": 46,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4157443,
-      "lastMs": 91820,
+      "totalMs": 4249053,
+      "lastMs": 91610,
       "lastError": null,
-      "updatedAt": "2026-10-08T23:39:25.714Z"
+      "updatedAt": "2026-10-08T23:40:57.325Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:46:52.091Z",
-  "updatedAt": "2026-10-08T23:39:25.714Z",
+  "updatedAt": "2026-10-08T23:40:57.328Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3102,7 +3187,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T23:39:25.714Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T23:40:57.328Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
