@@ -131,6 +131,9 @@ namespace JaewoonGames.DaechungRpg
             // 화면에 있는 주민만 선택하며 반복 대사/제안은 한 번에 하나로 제한한다.
             if (_core.Player.currentRegionId == "town")
             {
+                // 제안 대상 정찰병과 거리가 멀어지면 이전 동행 승인을 폐기한다.
+                if (_scoutInvitationPending && (_visuals == null || !_visuals.IsVillageResidentNearby("scout")))
+                    _scoutInvitationPending = false;
                 if (Time.unscaledTime >= _nextResidentOfferAt && string.IsNullOrEmpty(_pendingResidentId))
                 {
                     _nextResidentOfferAt = Time.unscaledTime + 18f;
@@ -443,7 +446,7 @@ namespace JaewoonGames.DaechungRpg
                 GUILayout.BeginHorizontal();
                 if (GUILayout.Button("동행 수락"))
                 {
-                    if (_core.TrySetScoutCompanion(true))
+                    if (_visuals != null && _visuals.IsVillageResidentNearby("scout") && _core.TrySetScoutCompanion(true))
                     {
                         _visuals?.SetNarrativeCompanion(true);
                         _message = "정찰병이 함께 길을 걸어간다. 전투 보상·공격력과 멀티 인원은 변하지 않는다.";
@@ -556,6 +559,17 @@ namespace JaewoonGames.DaechungRpg
                 return;
             }
 
+            if (regionId != _core.Player.currentRegionId)
+            {
+                // 떠난 지역의 NPC 대화 제안과 보스 컷신은 다음 지역까지 유지하지 않는다.
+                _pendingResidentId = string.Empty;
+                _scoutInvitationPending = false;
+                if (_bossSceneUntil > 0f)
+                {
+                    _bossSceneUntil = 0f;
+                    _visuals?.SkipBossReveal();
+                }
+            }
             _core.SetRegion(regionId);
             // 이동 직후 관련 메뉴를 앞에 보여준다. 게임 상태·보상·저장 의미는 그대로 둔다.
             _menuScrollPositions[_menuPage] = _scroll;
@@ -574,9 +588,10 @@ namespace JaewoonGames.DaechungRpg
                 return;
             }
 
-            SpawnFirstEnemyInCurrentRegion(false);
+            // 보스 조우 대사와 카메라 연출이 실행되도록 전투 장면을 먼저 준비한다.
             _visuals?.ShowBattle();
             _visuals?.PlayTravelToBattle();
+            SpawnFirstEnemyInCurrentRegion(false);
         }
 
         private void SpawnFirstEnemyInCurrentRegion(bool resetVisual = true, bool announceEncounter = true)
@@ -653,6 +668,8 @@ namespace JaewoonGames.DaechungRpg
                 _menuPage = 0;
                 _scroll = _menuScrollPositions[_menuPage];
                 _visuals?.SetRegionVisual("town");
+                _bossSceneUntil = 0f;
+                _visuals?.SkipBossReveal();
                 _enemy = null;
                 _enemyHp = 0;
                 _core.Save();
