@@ -653,25 +653,43 @@
         "strategy"
       ],
       "fromSystem": "systems-progression"
+    },
+    "local_authoring_parts::31fd195b5f9d656a40f807b088f0355d77e930d00b9d5e44307ea58e2d07b735:toSystem,trigger,stateChange": {
+      "toSystem": "systems-progression",
+      "trigger": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "stateChange": "life decreases, reward increases, strategy changes"
+    },
+    "local_authoring_parts::bf39828c708aa60c5957520b556b1d24d83f17e1f1a3ef6211bdca27f3a9372e:systemInterconnections:2": {
+      "fromId": "MAIN",
+      "toId": "A",
+      "stateKeys": [
+        "life",
+        "reward",
+        "strategy"
+      ],
+      "fromSystem": "systems-progression",
+      "toSystem": "systems-progression",
+      "trigger": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "stateChange": "life decreases, reward increases, strategy changes"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 17,
+      "calls": 19,
+      "successes": 18,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1980499,
-      "lastMs": 94242,
+      "totalMs": 2075617,
+      "lastMs": 95118,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T09:16:07.268Z"
+      "updatedAt": "2026-10-08T09:17:42.388Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:43:06.687Z",
-  "updatedAt": "2026-10-08T09:16:07.269Z",
+  "updatedAt": "2026-10-08T09:17:42.390Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3049,7 +3067,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T09:16:07.268Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:17:42.390Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
