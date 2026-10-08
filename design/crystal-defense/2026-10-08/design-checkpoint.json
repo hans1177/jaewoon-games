@@ -88,25 +88,254 @@
       "name": "배치 조합 시스템",
       "purpose": "플레이어가 다음 웨이브의 패턴을 읽고, 콜리드 라인, 배치 조합, 또는 업그레이드 중 가장 가치가 있는 위치를 선택하여 방어 전략을 조정해야 한다.",
       "playerChoice": "다음 웨이브의 패턴과 전략적 결과를 기반으로, 방어 성능을 최적화하고, 다음 전략의 선택에 기초하여 전반적인 방어 전략을 재설계해야 한다."
+    },
+    "local_authoring_parts::2f49ffd56895baaf3cf2ad85329df316941c1d95ebf4432d79739f4c6d333b1c:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "c",
+      "stateInputs": [
+        "attackPattern",
+        "crystalDefensePlacement",
+        "crystalDefenseResonance",
+        "crystalDefenseUpgrades"
+      ],
+      "stateOutputs": [
+        "defensiveStrategy",
+        "nextAttackPattern",
+        "playerChoice"
+      ],
+      "name": "재방문 시스템",
+      "purpose": "플레이어가 다음 웨이브의 패턴을 읽고, 콜리드 라인, 공명 연결, 배치 조합, 또는 업그레이드 중 가장 가치가 있는 위치를 선택하여 방어 전략을 재방문하고, 다음 전략의 선택에 기초하여 전반적인 방어 전략을 재설계해야 한다.",
+      "playerChoice": "다음 웨이브의 패턴과 전략적 결과를 기반으로, 방어 성능을 최적화하고, 다음 전략의 선택에 기초하여 전반적인 방어 전략을 재설계해야 한다."
+    },
+    "local_authoring_parts::2f49ffd56895baaf3cf2ad85329df316941c1d95ebf4432d79739f4c6d333b1c:signatureSystems:4": {
+      "id": "signatureSystems[4]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "attackPattern",
+        "crystalDefensePlacement",
+        "crystalDefenseResonance",
+        "crystalDefenseUpgrades"
+      ],
+      "stateOutputs": [
+        "defensiveStrategy",
+        "nextAttackPattern",
+        "playerChoice"
+      ],
+      "name": "재방문 시스템",
+      "purpose": "플레이어가 다음 웨이브의 패턴을 읽고, 콜리드 라인, 공명 연결, 배치 조합, 또는 업그레이드 중 가장 가치가 있는 위치를 선택하여 방어 전략을 재방문하고, 다음 전략의 선택에 기초하여 전반적인 방어 전략을 재설계해야 한다.",
+      "playerChoice": "다음 웨이브의 패턴과 전략적 결과를 기반으로, 방어 성능을 최적화하고, 다음 전략의 선택에 기초하여 전반적인 방어 전략을 재설계해야 한다."
+    },
+    "local_authoring_parts::6077a01ac3d9e5b0dacf9b5736ec372346419b138b7f1d61f586fcdbdaa03723:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "attackPattern",
+            "crystalDefensePlacement",
+            "crystalDefenseResonance",
+            "crystalDefenseUpgrades"
+          ],
+          "stateOutputs": [
+            "defensiveStrategy",
+            "nextAttackPattern",
+            "playerChoice"
+          ],
+          "name": "공명 연결 시스템",
+          "purpose": "플레이어가 다음 웨이브의 패턴을 읽고, 콜리드 라인, 공명 연결, 또는 업그레이드 중 가장 가치가 있는 위치를 선택하여 방어 전략을 조정해야 한다.",
+          "playerChoice": "다음 웨이브의 패턴과 전략적 결과를 기반으로, 방어 성능을 최적화하고, 다음 전략의 선택에 기초하여 전반적인 방어 전략을 재설계해야 한다."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "attackPattern",
+            "crystalDefensePlacement",
+            "crystalDefenseResonance",
+            "crystalDefenseUpgrades"
+          ],
+          "stateOutputs": [
+            "defensiveStrategy",
+            "nextAttackPattern",
+            "playerChoice"
+          ],
+          "name": "공명 연결 시스템",
+          "purpose": "플레이어가 다음 웨이브의 패턴을 읽고, 콜리드 라인, 공명 연결, 또는 업그레이드 중 가장 가치가 있는 위치를 선택하여 방어 전략을 조정해야 한다.",
+          "playerChoice": "다음 웨이브의 패턴과 전략적 결과를 기반으로, 방어 성능을 최적화하고, 다음 전략의 선택에 기초하여 전반적인 방어 전략을 재설계해야 한다."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "attackPattern",
+            "crystalDefensePlacement",
+            "crystalDefenseResonance",
+            "crystalDefenseUpgrades"
+          ],
+          "stateOutputs": [
+            "defensiveStrategy",
+            "nextAttackPattern",
+            "playerChoice"
+          ],
+          "name": "배치 조합 시스템",
+          "purpose": "플레이어가 다음 웨이브의 패턴을 읽고, 콜리드 라인, 배치 조합, 또는 업그레이드 중 가장 가치가 있는 위치를 선택하여 방어 전략을 조정해야 한다.",
+          "playerChoice": "다음 웨이브의 패턴과 전략적 결과를 기반으로, 방어 성능을 최적화하고, 다음 전략의 선택에 기초하여 전반적인 방어 전략을 재설계해야 한다."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "attackPattern",
+            "crystalDefensePlacement",
+            "crystalDefenseResonance",
+            "crystalDefenseUpgrades"
+          ],
+          "stateOutputs": [
+            "defensiveStrategy",
+            "nextAttackPattern",
+            "playerChoice"
+          ],
+          "name": "재방문 시스템",
+          "purpose": "플레이어가 다음 웨이브의 패턴을 읽고, 콜리드 라인, 공명 연결, 배치 조합, 또는 업그레이드 중 가장 가치가 있는 위치를 선택하여 방어 전략을 재방문하고, 다음 전략의 선택에 기초하여 전반적인 방어 전략을 재설계해야 한다.",
+          "playerChoice": "다음 웨이브의 패턴과 전략적 결과를 기반으로, 방어 성능을 최적화하고, 다음 전략의 선택에 기초하여 전반적인 방어 전략을 재설계해야 한다."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "attackPattern",
+            "crystalDefensePlacement",
+            "crystalDefenseResonance",
+            "crystalDefenseUpgrades"
+          ],
+          "stateOutputs": [
+            "defensiveStrategy",
+            "nextAttackPattern",
+            "playerChoice"
+          ],
+          "name": "재방문 시스템",
+          "purpose": "플레이어가 다음 웨이브의 패턴을 읽고, 콜리드 라인, 공명 연결, 배치 조합, 또는 업그레이드 중 가장 가치가 있는 위치를 선택하여 방어 전략을 재방문하고, 다음 전략의 선택에 기초하여 전반적인 방어 전략을 재설계해야 한다.",
+          "playerChoice": "다음 웨이브의 패턴과 전략적 결과를 기반으로, 방어 성능을 최적화하고, 다음 전략의 선택에 기초하여 전반적인 방어 전략을 재설계해야 한다."
+        }
+      ]
+    },
+    "local_authoring_parts::955818eaad6b9f661c86b9c6882486cda006b7cb7e772b14e217e8edcc746f15:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "입력 → 선택 → 상태 변화 → 보상/위험/다음 선택",
+        "플레이어는 다음 웨이브의 패턴을 읽고, 콜리드 라인, 공명 연결, 또는 업그레이드 중 가장 가치가 있는 위치를 선택하여 방어 전략을 조정해야 한다.",
+        "선택은 다음 웨이브의 패턴과 전략적 결과를 기반으로, 방어 성능을 최적화하고, 다음 전략의 선택에 기초하여 전반적인 방어 전략을 재설계해야 한다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "attackPattern",
+            "crystalDefensePlacement",
+            "crystalDefenseResonance",
+            "crystalDefenseUpgrades"
+          ],
+          "stateOutputs": [
+            "defensiveStrategy",
+            "nextAttackPattern",
+            "playerChoice"
+          ],
+          "name": "공명 연결 시스템",
+          "purpose": "플레이어가 다음 웨이브의 패턴을 읽고, 콜리드 라인, 공명 연결, 또는 업그레이드 중 가장 가치가 있는 위치를 선택하여 방어 전략을 조정해야 한다.",
+          "playerChoice": "다음 웨이브의 패턴과 전략적 결과를 기반으로, 방어 성능을 최적화하고, 다음 전략의 선택에 기초하여 전반적인 방어 전략을 재설계해야 한다."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "attackPattern",
+            "crystalDefensePlacement",
+            "crystalDefenseResonance",
+            "crystalDefenseUpgrades"
+          ],
+          "stateOutputs": [
+            "defensiveStrategy",
+            "nextAttackPattern",
+            "playerChoice"
+          ],
+          "name": "공명 연결 시스템",
+          "purpose": "플레이어가 다음 웨이브의 패턴을 읽고, 콜리드 라인, 공명 연결, 또는 업그레이드 중 가장 가치가 있는 위치를 선택하여 방어 전략을 조정해야 한다.",
+          "playerChoice": "다음 웨이브의 패턴과 전략적 결과를 기반으로, 방어 성능을 최적화하고, 다음 전략의 선택에 기초하여 전반적인 방어 전략을 재설계해야 한다."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "attackPattern",
+            "crystalDefensePlacement",
+            "crystalDefenseResonance",
+            "crystalDefenseUpgrades"
+          ],
+          "stateOutputs": [
+            "defensiveStrategy",
+            "nextAttackPattern",
+            "playerChoice"
+          ],
+          "name": "배치 조합 시스템",
+          "purpose": "플레이어가 다음 웨이브의 패턴을 읽고, 콜리드 라인, 배치 조합, 또는 업그레이드 중 가장 가치가 있는 위치를 선택하여 방어 전략을 조정해야 한다.",
+          "playerChoice": "다음 웨이브의 패턴과 전략적 결과를 기반으로, 방어 성능을 최적화하고, 다음 전략의 선택에 기초하여 전반적인 방어 전략을 재설계해야 한다."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "attackPattern",
+            "crystalDefensePlacement",
+            "crystalDefenseResonance",
+            "crystalDefenseUpgrades"
+          ],
+          "stateOutputs": [
+            "defensiveStrategy",
+            "nextAttackPattern",
+            "playerChoice"
+          ],
+          "name": "재방문 시스템",
+          "purpose": "플레이어가 다음 웨이브의 패턴을 읽고, 콜리드 라인, 공명 연결, 배치 조합, 또는 업그레이드 중 가장 가치가 있는 위치를 선택하여 방어 전략을 재방문하고, 다음 전략의 선택에 기초하여 전반적인 방어 전략을 재설계해야 한다.",
+          "playerChoice": "다음 웨이브의 패턴과 전략적 결과를 기반으로, 방어 성능을 최적화하고, 다음 전략의 선택에 기초하여 전반적인 방어 전략을 재설계해야 한다."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "attackPattern",
+            "crystalDefensePlacement",
+            "crystalDefenseResonance",
+            "crystalDefenseUpgrades"
+          ],
+          "stateOutputs": [
+            "defensiveStrategy",
+            "nextAttackPattern",
+            "playerChoice"
+          ],
+          "name": "재방문 시스템",
+          "purpose": "플레이어가 다음 웨이브의 패턴을 읽고, 콜리드 라인, 공명 연결, 배치 조합, 또는 업그레이드 중 가장 가치가 있는 위치를 선택하여 방어 전략을 재방문하고, 다음 전략의 선택에 기초하여 전반적인 방어 전략을 재설계해야 한다.",
+          "playerChoice": "다음 웨이브의 패턴과 전략적 결과를 기반으로, 방어 성능을 최적화하고, 다음 전략의 선택에 기초하여 전반적인 방어 전략을 재설계해야 한다."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 707485,
-      "lastMs": 76867,
+      "totalMs": 866885,
+      "lastMs": 80369,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:10:57.702Z"
+      "updatedAt": "2026-10-08T12:13:37.104Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:59:10.064Z",
-  "updatedAt": "2026-10-08T12:10:57.702Z",
+  "updatedAt": "2026-10-08T12:13:37.106Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2297,7 +2526,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:10:57.702Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:13:37.106Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
