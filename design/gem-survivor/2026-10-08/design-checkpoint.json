@@ -458,25 +458,154 @@
         }
       ],
       "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::55d19e7cf5fad314b8bd26bf105a9362313dba213e88a032716c1267362bea5b:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "MAIN",
+          "toId": "A",
+          "stateKeys": [
+            "life",
+            "rewards",
+            "strategy"
+          ],
+          "fromSystem": "coreLoop",
+          "toSystem": "coreLoop",
+          "trigger": "player_choice",
+          "stateChange": "state_renovation"
+        },
+        {
+          "fromId": "MAIN",
+          "toId": "B",
+          "stateKeys": [
+            "life",
+            "rewards",
+            "strategy"
+          ],
+          "fromSystem": "coreLoop",
+          "toSystem": "coreLoop",
+          "trigger": "player_choice",
+          "stateChange": "state_renovation"
+        },
+        {
+          "fromId": "MAIN",
+          "toId": "c",
+          "stateKeys": [
+            "life",
+            "rewards",
+            "strategy"
+          ],
+          "fromSystem": "coreLoop",
+          "toSystem": "coreLoop",
+          "trigger": "player_choice",
+          "stateChange": "state_renovation"
+        },
+        {
+          "fromId": "DELVE",
+          "toId": "MAIN",
+          "stateKeys": [
+            "life",
+            "rewards",
+            "strategy"
+          ],
+          "fromSystem": "coreLoop",
+          "toSystem": "coreLoop",
+          "trigger": "player_choice",
+          "stateChange": "state_renovation"
+        },
+        {
+          "fromId": "DELVE",
+          "toId": "A",
+          "stateKeys": [
+            "life",
+            "rewards",
+            "strategy"
+          ],
+          "fromSystem": "coreLoop",
+          "toSystem": "coreLoop",
+          "trigger": "player_choice",
+          "stateChange": "state_renovation"
+        },
+        {
+          "fromId": "DELVE",
+          "toId": "B",
+          "stateKeys": [
+            "life",
+            "rewards",
+            "strategy"
+          ],
+          "fromSystem": "coreLoop",
+          "toSystem": "coreLoop",
+          "trigger": "player_choice",
+          "stateChange": "state_renovation"
+        },
+        {
+          "fromId": "DELVE",
+          "toId": "c",
+          "stateKeys": [
+            "life",
+            "rewards",
+            "strategy"
+          ],
+          "fromSystem": "coreLoop",
+          "toSystem": "coreLoop",
+          "trigger": "player_choice",
+          "stateChange": "state_renovation"
+        }
+      ],
+      "progressionDirection": "forward",
+      "progressionEconomyBalance": {
+        "progressionLoop": "linear",
+        "resourceFlow": "balanced",
+        "balanceRules": "coreLoop"
+      }
+    },
+    "local_authoring_parts::55d19e7cf5fad314b8bd26bf105a9362313dba213e88a032716c1267362bea5b:contentExpansionPlan,failureRetryRisk": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "newGameplay": "A dynamic, real-time survival loop where players must continuously adapt to an increasing number of enemies and environmental hazards.",
+          "systemImpact": "This system impacts all gameplay mechanics, including resource management, strategy development, and progression through different levels of difficulty."
+        },
+        {
+          "milestone": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+          "newGameplay": "Players can choose to either gain rewards or experience points, or upgrade their current build with new tools and abilities that affect gameplay strategy.",
+          "systemImpact": "This system introduces a variety of upgrade options that influence how players approach the game, affecting both immediate gameplay and long-term progression."
+        },
+        {
+          "milestone": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
+          "newGameplay": "Players can combine upgrades into a more powerful build, survive tougher waves or bosses, and then use the result of the run to unlock new progression options.",
+          "systemImpact": "This system introduces a progression system that allows players to build stronger builds, survive more challenging content, and unlock new game states based on their performance."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "Players may fail to survive certain waves or bosses due to poor strategy or resource management.",
+          "Players may fail to collect enough rewards or experience points due to poor decision-making."
+        ],
+        "retryFlow": "Players can retry failed attempts by revising their strategy, upgrading their build, or gaining new skills.",
+        "riskPressure": "The risk of failure increases with the difficulty of the waves and bosses, encouraging players to develop more robust strategies and builds to survive them.",
+        "recoveryRules": "Players can recover from failure by gaining new rewards, upgrading their build, or gaining new skills that help them survive future challenges."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 10,
+      "calls": 13,
+      "successes": 12,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1074608,
-      "lastMs": 300100,
+      "totalMs": 1500909,
+      "lastMs": 133927,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T09:01:01.342Z"
+      "updatedAt": "2026-10-08T09:08:07.649Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:43:06.687Z",
-  "updatedAt": "2026-10-08T09:01:01.342Z",
+  "updatedAt": "2026-10-08T09:08:07.664Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2672,15 +2801,192 @@
     }
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "53372ce0368a1ce8b8f982481d6dc7d7ae044dda32ebd2554bca660235dbd75e"
   },
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:56:01.235Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "MAIN→A의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: MAIN→A의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "MAIN→B의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: MAIN→B의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "MAIN→c의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: MAIN→c의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "DELVE→MAIN의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: DELVE→MAIN의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "DELVE→A의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: DELVE→A의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "DELVE→B의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: DELVE→B의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "DELVE→c의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: DELVE→c의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::systems-progression": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "forward",
+      "progressionEconomyBalance": {
+        "progressionLoop": "linear",
+        "resourceFlow": "balanced",
+        "balanceRules": "coreLoop"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "newGameplay": "A dynamic, real-time survival loop where players must continuously adapt to an increasing number of enemies and environmental hazards.",
+          "systemImpact": "This system impacts all gameplay mechanics, including resource management, strategy development, and progression through different levels of difficulty."
+        },
+        {
+          "milestone": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+          "newGameplay": "Players can choose to either gain rewards or experience points, or upgrade their current build with new tools and abilities that affect gameplay strategy.",
+          "systemImpact": "This system introduces a variety of upgrade options that influence how players approach the game, affecting both immediate gameplay and long-term progression."
+        },
+        {
+          "milestone": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
+          "newGameplay": "Players can combine upgrades into a more powerful build, survive tougher waves or bosses, and then use the result of the run to unlock new progression options.",
+          "systemImpact": "This system introduces a progression system that allows players to build stronger builds, survive more challenging content, and unlock new game states based on their performance."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "Players may fail to survive certain waves or bosses due to poor strategy or resource management.",
+          "Players may fail to collect enough rewards or experience points due to poor decision-making."
+        ],
+        "retryFlow": "Players can retry failed attempts by revising their strategy, upgrading their build, or gaining new skills.",
+        "riskPressure": "The risk of failure increases with the difficulty of the waves and bosses, encouraging players to develop more robust strategies and builds to survive them.",
+        "recoveryRules": "Players can recover from failure by gaining new rewards, upgrading their build, or gaining new skills that help them survive future challenges."
+      }
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T09:08:07.651Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
