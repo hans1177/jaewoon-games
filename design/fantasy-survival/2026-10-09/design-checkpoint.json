@@ -473,25 +473,94 @@
         }
       ],
       "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::611663ff3f0408cf0722612d8ac0a7fdfaa0db7f6ef5918160adec1e7019464a:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "gameProgress",
+          "toId": "progressionChoice",
+          "stateKeys": [
+            "gameProgress",
+            "playerFantasy",
+            "coreFun"
+          ],
+          "fromSystem": "CORE_FUN_TO_LEARN",
+          "toSystem": "MAIN_A_B_C_CORE_FUN",
+          "trigger": "progressionTrigger",
+          "stateChange": "progressionState"
+        },
+        {
+          "fromId": "gameProgress",
+          "toId": "multiplayerMode",
+          "stateKeys": [
+            "gameProgress",
+            "playerFantasy",
+            "coreFun"
+          ],
+          "fromSystem": "CORE_FUN_TO_LEARN",
+          "toSystem": "MAIN_A_B_C_CORE_FUN",
+          "trigger": "multiplayerTrigger",
+          "stateChange": "multiplayerState"
+        },
+        {
+          "fromId": "playerFantasy",
+          "toId": "coreFun",
+          "stateKeys": [
+            "playerFantasy"
+          ],
+          "fromSystem": "CORE_FUN_TO_LEARN",
+          "toSystem": "MAIN_A_B_C_CORE_FUN",
+          "trigger": "fantasyTrigger",
+          "stateChange": "fantasyState"
+        },
+        {
+          "fromId": "coreFun",
+          "toId": "progressionChoice",
+          "stateKeys": [
+            "coreFun"
+          ],
+          "fromSystem": "CORE_FUN_TO_LEARN",
+          "toSystem": "MAIN_A_B_C_CORE_FUN",
+          "trigger": "funTrigger",
+          "stateChange": "funState"
+        },
+        {
+          "fromId": "coreFun",
+          "toId": "multiplayerMode",
+          "stateKeys": [
+            "coreFun"
+          ],
+          "fromSystem": "CORE_FUN_TO_LEARN",
+          "toSystem": "MAIN_A_B_C_CORE_FUN",
+          "trigger": "funTrigger",
+          "stateChange": "funState"
+        }
+      ],
+      "progressionDirection": "기존 마력숲 생존기 세계관 및 게임 규칙 복사, Vibe 폴리시 시스템 구축, 모바일 플랫폼 특성 반영",
+      "progressionEconomyBalance": {
+        "progressionLoop": "플레이어가 환경에 뿤금처럼 숨어 있는 힘을 바탕으로 전투 중 이동하며 적의 압박을 피하면서 동시에 캐릭터가 살아 움직여야 하는 방식으로 게임 진행을 수행해야 한다.",
+        "resourceFlow": "주변 자원 수집 후 장비/스킬 선택, 기존 단순 반복 벗어나 새로운 행동 패턴 개발, 진입 조건 설정, 상황별 대응 및 재방문 가능 여부 결정하기 위한 플레이어 선택 시스템 구축 및 실행 제안이 필요하다.",
+        "balanceRules": "재미와 보상은 승인된 메인 A/B/C 조합의 큰 재미, 짧은 발견·수집·꾸미기·작은 목표의 소확행, 선택적으로 깊게 투자하는 장기 즐길거리를 구분해 연결한다. 보상 조건·비용·누적 진척·약속한 확정 보상·확률 보상의 실제 확률·중복 보상의 쓰임·중단 후 이어하기를 게임에 맞게 설계하고 메뉴에 보인다."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 10,
+      "calls": 12,
+      "successes": 11,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1217713,
-      "lastMs": 240974,
+      "totalMs": 1378178,
+      "lastMs": 160465,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T21:52:48.554Z"
+      "updatedAt": "2026-10-08T21:55:29.021Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:32:30.796Z",
-  "updatedAt": "2026-10-08T21:52:48.554Z",
+  "updatedAt": "2026-10-08T21:55:29.021Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2692,7 +2761,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:48:47.572Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:55:29.021Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
