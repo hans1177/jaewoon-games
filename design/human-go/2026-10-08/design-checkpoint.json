@@ -477,25 +477,44 @@
       "name": "Person Discovery System",
       "purpose": "Players explore a compact activity space and discover a person, task, or collectible opportunity. The system tracks the progression of discoveries and their impact on the game world.",
       "playerChoice": "Choose an activity space, discover a person, task, or collectible, and determine the outcome of the interaction or challenge."
+    },
+    "local_authoring_parts::fceda170b8819ed9686cd417002d7c4246bd9b9c9da6a8accf4f2b06a6bd4706:signatureSystems:3": {
+      "id": "personDiscoveryC",
+      "grammarRole": "c",
+      "stateInputs": [
+        "humanCount",
+        "monsterCount",
+        "eliminatedCount",
+        "activitySpace",
+        "discoveredObject"
+      ],
+      "stateOutputs": [
+        "newActivitySpace",
+        "newDiscovery",
+        "newObjective"
+      ],
+      "name": "Discovery Expansion System",
+      "purpose": "Players explore a compact activity space and discover a person, task, or collectible opportunity. The system tracks the progression of discoveries and their impact on the game world. Discovery expansions allow players to explore new dimensions of the game world through novel interactions and outcomes.",
+      "playerChoice": "Choose an activity space, discover a person, task, or collectible, and determine the outcome of the interaction or challenge. Expand the discovery by introducing new elements, such as hidden objectives, unique encounters, or dynamic environments that enhance the game experience."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 13,
+      "calls": 14,
+      "successes": 14,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1393581,
-      "lastMs": 102172,
+      "totalMs": 1498159,
+      "lastMs": 104578,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:41:01.125Z"
+      "updatedAt": "2026-10-08T12:42:45.705Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:17:47.490Z",
-  "updatedAt": "2026-10-08T12:41:01.125Z",
+  "updatedAt": "2026-10-08T12:42:45.705Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2459,7 +2478,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:41:01.125Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:42:45.705Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
