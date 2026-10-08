@@ -800,25 +800,28 @@
     },
     "local_authoring_parts::3cd1b81094291642b6d1fbba8c70e2002d287a8949d6958d3abcfaff241959ab:progressionLoop": {
       "progressionLoop": "프로세스 루프에서 'resourceFlow' 상태가 발생하여 'balanceRules' 상태 교환을 수행해야 한다. 플레이어가 리소스 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다."
+    },
+    "local_authoring_parts::3cd1b81094291642b6d1fbba8c70e2002d287a8949d6958d3abcfaff241959ab:resourceFlow": {
+      "resourceFlow": "플레이어가 리소스 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 52,
-      "successes": 52,
+      "calls": 53,
+      "successes": 53,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1891044,
-      "lastMs": 35950,
+      "totalMs": 1923780,
+      "lastMs": 32736,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:16:40.139Z"
+      "updatedAt": "2026-10-08T19:17:12.877Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:45:08.916Z",
-  "updatedAt": "2026-10-08T19:16:40.139Z",
+  "updatedAt": "2026-10-08T19:17:12.877Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3573,7 +3576,7 @@
       "progressionDirection": "{\"from\": \"AUTO_FIGHT\", \"to\": \"RESOURCE_COLLECTION\"}"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T19:16:40.139Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:17:12.877Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
