@@ -102,25 +102,225 @@
       "name": "INSECT_DEFENSE_ADAPTABILITY_C",
       "purpose": "Discover and master the dynamic interplay between insect waves, defender positions, and resource allocations to unlock new gameplay possibilities.",
       "playerChoice": "Explore the evolving relationship between environmental threats, strategic positioning, and adaptive resource management to create novel and meaningful game experiences."
+    },
+    "local_authoring_parts::700c47434d237990cf562cee70abe47c91b680c5734707c9a5ab90e8330bf99d:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "INCOMING_INSECT_WAVE",
+        "DEFENDER_POSITIONS",
+        "RESOURCE_ALLOCATIONS"
+      ],
+      "stateOutputs": [
+        "WORLD_STATE_CHANGE",
+        "NEW_STRATEGY_IMPLEMENTATION",
+        "EXPANDED_GAMEPLAY_POSSIBILITIES"
+      ],
+      "name": "INSECT_DEFENSE_ADAPTABILITY_DELVE_SYSTEM",
+      "purpose": "Provides deep insight into the dynamic interplay between insect threats, defensive positioning, and resource allocation, enabling players to explore new strategies and expand gameplay possibilities through discovery and mastery.",
+      "playerChoice": "Explore adaptive defense strategies that evolve with changing threat patterns, optimize resource use in real-time, and discover novel gameplay mechanics through iterative experimentation."
+    },
+    "local_authoring_parts::9a1e70a57f7d7254b3edd45d18b5e6b2abc9646deeaf8b3295ddc197b748aff1:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE",
+            "DEFENDER_POSITIONS",
+            "RESOURCE_ALLOCATIONS"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE",
+            "NEW_STRATEGY_IMPLEMENTATION",
+            "EXPANDED_GAMEPLAY_POSSIBILITIES"
+          ],
+          "name": "INSECT_THREAT_ANALYSIS_SYSTEM",
+          "purpose": "Player's action of reading the incoming insect wave and its threat pattern to determine new strategies and expand gameplay possibilities.",
+          "playerChoice": "Read the incoming insect wave and its threat pattern, then implement a new strategy based on resource allocation and defensive positioning."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE",
+            "DEFENDER_POSITIONS",
+            "RESOURCE_ALLOCATIONS"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE",
+            "NEW_STRATEGY_IMPLEMENTATION",
+            "EXPANDED_GAMEPLAY_POSSIBILITIES"
+          ],
+          "name": "INSECT_DEFENSE_ADAPTABILITY_SYSTEM",
+          "purpose": "Adaptively adjusts the game state based on incoming insect waves, defender positions, and resource allocations to create new strategies and gameplay possibilities.",
+          "playerChoice": "Adaptively adjust defender positions and allocate resources in response to changing threat patterns and environmental conditions."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE",
+            "DEFENDER_POSITIONS",
+            "RESOURCE_ALLOCATIONS"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE",
+            "NEW_STRATEGY_IMPLEMENTATION",
+            "EXPANDED_GAMEPLAY_POSSIBILITIES"
+          ],
+          "name": "INSECT_DEFENSE_ADAPTABILITY_SYSTEM_B",
+          "purpose": "A/B 대축에서 세계 상태와 다음 선택의 비용·위험·보상을 바꾸며, 플레이어가 새로운 전략적 경로를 개발하는 데 기여합니다.",
+          "playerChoice": "Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE",
+            "DEFENDER_POSITIONS",
+            "RESOURCE_ALLOCATIONS"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE",
+            "NEW_STRATEGY_IMPLEMENTATION",
+            "EXPANDED_GAMEPLAY_POSSIBILITIES"
+          ],
+          "name": "INSECT_DEFENSE_ADAPTABILITY_C",
+          "purpose": "Discover and master the dynamic interplay between insect waves, defender positions, and resource allocations to unlock new gameplay possibilities.",
+          "playerChoice": "Explore the evolving relationship between environmental threats, strategic positioning, and adaptive resource management to create novel and meaningful game experiences."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE",
+            "DEFENDER_POSITIONS",
+            "RESOURCE_ALLOCATIONS"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE",
+            "NEW_STRATEGY_IMPLEMENTATION",
+            "EXPANDED_GAMEPLAY_POSSIBILITIES"
+          ],
+          "name": "INSECT_DEFENSE_ADAPTABILITY_DELVE_SYSTEM",
+          "purpose": "Provides deep insight into the dynamic interplay between insect threats, defensive positioning, and resource allocation, enabling players to explore new strategies and expand gameplay possibilities through discovery and mastery.",
+          "playerChoice": "Explore adaptive defense strategies that evolve with changing threat patterns, optimize resource use in real-time, and discover novel gameplay mechanics through iterative experimentation."
+        }
+      ]
+    },
+    "local_authoring_parts::fc5f67124453fbd4fb3a6d67833ee910f5b6157bce55c1f72a441d5b600c4d12:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT: Read the incoming insect wave and its threat pattern.",
+        "SELECT: Place or adjust defenders and spend limited resources on the highest-value counter.",
+        "OUTPUT: Status change in world state, new strategy, and expanded gameplay possibilities."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE",
+            "DEFENDER_POSITIONS",
+            "RESOURCE_ALLOCATIONS"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE",
+            "NEW_STRATEGY_IMPLEMENTATION",
+            "EXPANDED_GAMEPLAY_POSSIBILITIES"
+          ],
+          "name": "INSECT_THREAT_ANALYSIS_SYSTEM",
+          "purpose": "Player's action of reading the incoming insect wave and its threat pattern to determine new strategies and expand gameplay possibilities.",
+          "playerChoice": "Read the incoming insect wave and its threat pattern, then implement a new strategy based on resource allocation and defensive positioning."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE",
+            "DEFENDER_POSITIONS",
+            "RESOURCE_ALLOCATIONS"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE",
+            "NEW_STRATEGY_IMPLEMENTATION",
+            "EXPANDED_GAMEPLAY_POSSIBILITIES"
+          ],
+          "name": "INSECT_DEFENSE_ADAPTABILITY_SYSTEM",
+          "purpose": "Adaptively adjusts the game state based on incoming insect waves, defender positions, and resource allocations to create new strategies and gameplay possibilities.",
+          "playerChoice": "Adaptively adjust defender positions and allocate resources in response to changing threat patterns and environmental conditions."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE",
+            "DEFENDER_POSITIONS",
+            "RESOURCE_ALLOCATIONS"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE",
+            "NEW_STRATEGY_IMPLEMENTATION",
+            "EXPANDED_GAMEPLAY_POSSIBILITIES"
+          ],
+          "name": "INSECT_DEFENSE_ADAPTABILITY_SYSTEM_B",
+          "purpose": "A/B 대축에서 세계 상태와 다음 선택의 비용·위험·보상을 바꾸며, 플레이어가 새로운 전략적 경로를 개발하는 데 기여합니다.",
+          "playerChoice": "Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE",
+            "DEFENDER_POSITIONS",
+            "RESOURCE_ALLOCATIONS"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE",
+            "NEW_STRATEGY_IMPLEMENTATION",
+            "EXPANDED_GAMEPLAY_POSSIBILITIES"
+          ],
+          "name": "INSECT_DEFENSE_ADAPTABILITY_C",
+          "purpose": "Discover and master the dynamic interplay between insect waves, defender positions, and resource allocations to unlock new gameplay possibilities.",
+          "playerChoice": "Explore the evolving relationship between environmental threats, strategic positioning, and adaptive resource management to create novel and meaningful game experiences."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE",
+            "DEFENDER_POSITIONS",
+            "RESOURCE_ALLOCATIONS"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE",
+            "NEW_STRATEGY_IMPLEMENTATION",
+            "EXPANDED_GAMEPLAY_POSSIBILITIES"
+          ],
+          "name": "INSECT_DEFENSE_ADAPTABILITY_DELVE_SYSTEM",
+          "purpose": "Provides deep insight into the dynamic interplay between insect threats, defensive positioning, and resource allocation, enabling players to explore new strategies and expand gameplay possibilities through discovery and mastery.",
+          "playerChoice": "Explore adaptive defense strategies that evolve with changing threat patterns, optimize resource use in real-time, and discover novel gameplay mechanics through iterative experimentation."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 647825,
-      "lastMs": 244869,
+      "totalMs": 895223,
+      "lastMs": 247398,
       "lastError": null,
-      "updatedAt": "2026-10-08T20:56:00.791Z"
+      "updatedAt": "2026-10-08T21:00:08.190Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:45:12.936Z",
-  "updatedAt": "2026-10-08T20:56:00.791Z",
+  "updatedAt": "2026-10-08T21:00:08.193Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2319,7 +2519,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T20:56:00.791Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:00:08.193Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
