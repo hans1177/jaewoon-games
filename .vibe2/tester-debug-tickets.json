@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-10-08T14:01:33.561Z",
+  "updatedAt": "2026-10-08T14:49:31.180Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -188,15 +188,16 @@
         "{\"version\":1,\"gameId\":\"daechung-rpg\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"dc0e69c84c82c09269eaabd9565294973bcb751b\",\"artifactIdentity\":\"sha256:ea03b17b1547dc7d667d9330cf57d21a993dd55b1907ae47f40fd5e47239bd13\",\"artifactRunId\":37139004255,\"universeId\":\"10768961338\",\"placeId\":\"79150944093879\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":5,\"workflowRunId\":37140416031,\"publishedAt\":\"2026-10-03T17:26:54.017Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}",
         "{\"version\":2,\"gameId\":\"daechung-rpg\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"dc0e69c84c82c09269eaabd9565294973bcb751b\",\"artifactIdentity\":\"sha256:ea03b17b1547dc7d667d9330cf57d21a993dd55b1907ae47f40fd5e47239bd13\",\"artifactRunId\":37139004255,\"universeId\":\"10767445769\",\"placeId\":\"126302702438348\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"exposure\":\"PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":35,\"workflowRunId\":37163328866,\"publishedAt\":\"2026-10-04T00:16:26.807Z\",\"authority\":\"roblox-open-cloud-dedicated-private-runtime-candidate\",\"dedicated\":true,\"current\":true,\"publisherMainRevision\":\"ae0d35a20ad2d842f788b93a1bf6987a5c3c351f\"}",
         "{\"version\":1,\"gameId\":\"daechung-rpg\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"269d4a741562a4e6e1f93d1360952ab2bc6affb5\",\"artifactIdentity\":\"sha256:5983948268b44253a704447a353f7fd639fec53ffadce396e7992b4f21dd1f2b\",\"artifactRunId\":37575952015,\"universeId\":\"10768961338\",\"placeId\":\"79150944093879\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":8,\"workflowRunId\":37602693068,\"publishedAt\":\"2026-10-07T09:45:38.328Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}",
-        "{\"version\":1,\"gameId\":\"daechung-rpg\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"bc6ca4bf24042fa809d7cba0ce918295cd8dd86b\",\"artifactIdentity\":\"sha256:0c3b395e04d63ab0a16e61b4c01b1630c2ad9256f9a529618f8f424486d6f41d\",\"artifactRunId\":37632390643,\"universeId\":\"10768961338\",\"placeId\":\"79150944093879\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":9,\"workflowRunId\":37633563003,\"publishedAt\":\"2026-10-07T14:05:05.629Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}"
+        "{\"version\":1,\"gameId\":\"daechung-rpg\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"bc6ca4bf24042fa809d7cba0ce918295cd8dd86b\",\"artifactIdentity\":\"sha256:0c3b395e04d63ab0a16e61b4c01b1630c2ad9256f9a529618f8f424486d6f41d\",\"artifactRunId\":37632390643,\"universeId\":\"10768961338\",\"placeId\":\"79150944093879\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":9,\"workflowRunId\":37633563003,\"publishedAt\":\"2026-10-07T14:05:05.629Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}",
+        "{\"version\":1,\"gameId\":\"daechung-rpg\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"6f0bb2d9121b8530dcf10bd8eb2220c7c52c7f81\",\"artifactIdentity\":\"sha256:8a6ec8161fd4ece31cb8d32ea79012d14dac99dae6a1ba5133c7ebf3c7b07138\",\"artifactRunId\":37773425618,\"universeId\":\"10768961338\",\"placeId\":\"79150944093879\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":10,\"workflowRunId\":37786712856,\"publishedAt\":\"2026-10-08T13:53:16.635Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
       "route": "GAME_TESTER_FOUNDATION_EXECUTION",
       "repairEligible": false,
       "status": "OPEN",
       "createdAt": "2026-09-23T11:54:41.174Z",
-      "updatedAt": "2026-10-08T10:48:20.689Z",
-      "occurrenceCount": 380,
+      "updatedAt": "2026-10-08T14:49:31.177Z",
+      "occurrenceCount": 381,
       "internalFlowBlocking": true,
       "externalReleaseBlockingOnly": false
     },
@@ -361,15 +362,16 @@
         "{\"version\":1,\"gameId\":\"cozy-island\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"18141713083918f873f7b25fa0dea966f00f44ab\",\"artifactIdentity\":\"sha256:e9447ab4ffdb7e0c765945c8b9300eac5a7388a7366aee55828c454c7e533cf1\",\"artifactRunId\":37008589565,\"universeId\":\"10768961327\",\"placeId\":\"120624557291637\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":3,\"workflowRunId\":37008816937,\"publishedAt\":\"2026-10-02T12:47:58.501Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}",
         "{\"version\":1,\"gameId\":\"cozy-island\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"dc0e69c84c82c09269eaabd9565294973bcb751b\",\"artifactIdentity\":\"sha256:6184dce22f966bbdd96e418e5d00e599d16cf92e925fa559d27e8cca19db7f84\",\"artifactRunId\":37019555949,\"universeId\":\"10768961327\",\"placeId\":\"120624557291637\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":4,\"workflowRunId\":37019995481,\"publishedAt\":\"2026-10-02T14:32:42.791Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}",
         "{\"version\":1,\"gameId\":\"cozy-island\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"51d3d00e868380dbd79733707b2c10cff697924e\",\"artifactIdentity\":\"sha256:cef54ad7f8848ef2badd9547c5c2e0b75011ae75916fd488558a034cde037e0a\",\"artifactRunId\":37573396777,\"universeId\":\"10768961327\",\"placeId\":\"120624557291637\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":5,\"workflowRunId\":37602701469,\"publishedAt\":\"2026-10-07T09:49:50.561Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}",
-        "{\"version\":1,\"gameId\":\"cozy-island\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"c80afe5d10ebb1d90f7314626a87d4cfe5440af3\",\"artifactIdentity\":\"sha256:81097b93e209d8e0f3cf518cbc35b1bf4bf605992045050b80eb10f562454027\",\"artifactRunId\":37632390643,\"universeId\":\"10768961327\",\"placeId\":\"120624557291637\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":6,\"workflowRunId\":37633055651,\"publishedAt\":\"2026-10-07T14:02:55.742Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}"
+        "{\"version\":1,\"gameId\":\"cozy-island\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"c80afe5d10ebb1d90f7314626a87d4cfe5440af3\",\"artifactIdentity\":\"sha256:81097b93e209d8e0f3cf518cbc35b1bf4bf605992045050b80eb10f562454027\",\"artifactRunId\":37632390643,\"universeId\":\"10768961327\",\"placeId\":\"120624557291637\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":6,\"workflowRunId\":37633055651,\"publishedAt\":\"2026-10-07T14:02:55.742Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}",
+        "{\"version\":1,\"gameId\":\"cozy-island\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"6f0bb2d9121b8530dcf10bd8eb2220c7c52c7f81\",\"artifactIdentity\":\"sha256:eb7b28d6559f7b4dd375a592ff34a64c9ddb27cfe8d12cf6f2e7d7c947faf0b0\",\"artifactRunId\":37773425618,\"universeId\":\"10768961327\",\"placeId\":\"120624557291637\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":7,\"workflowRunId\":37786359584,\"publishedAt\":\"2026-10-08T13:52:09.431Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
       "route": "GAME_TESTER_FOUNDATION_EXECUTION",
       "repairEligible": false,
       "status": "OPEN",
       "createdAt": "2026-09-24T07:13:17.730Z",
-      "updatedAt": "2026-10-08T10:48:20.689Z",
-      "occurrenceCount": 380,
+      "updatedAt": "2026-10-08T14:49:31.177Z",
+      "occurrenceCount": 381,
       "internalFlowBlocking": true,
       "externalReleaseBlockingOnly": false
     },
@@ -3630,7 +3632,8 @@
         "roblox-runtime-evidence-pending",
         "{\"sourceRevision\":\"1e576e79daa06aae68f0297e6407d5b1a95754da\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
         "{\"sourceRevision\":\"08bb8bba5b5f22a8790f066a9a4dbef536c1f16e\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "{\"sourceRevision\":\"894471019841dc9a92d9b2c7dced238b0d80de70\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+        "{\"sourceRevision\":\"894471019841dc9a92d9b2c7dced238b0d80de70\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "{\"sourceRevision\":\"e492b08b78ba6acba24d58650adac583ec183339\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_SOURCE_BIND",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -3639,8 +3642,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-30T10:38:43.210Z",
-      "updatedAt": "2026-10-05T07:05:30.193Z",
-      "occurrenceCount": 237
+      "updatedAt": "2026-10-08T14:49:31.177Z",
+      "occurrenceCount": 238
     },
     {
       "id": "bug-e2cc3ec7845deaeffcb4",
@@ -3732,8 +3735,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-30T21:54:48.103Z",
-      "updatedAt": "2026-10-08T14:01:33.558Z",
-      "occurrenceCount": 183
+      "updatedAt": "2026-10-08T14:49:31.177Z",
+      "occurrenceCount": 184
     },
     {
       "id": "bug-c7db2be1bdc6c06c3fa4",
@@ -5144,8 +5147,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-08T14:01:33.558Z",
-      "occurrenceCount": 548
+      "updatedAt": "2026-10-08T14:49:31.177Z",
+      "occurrenceCount": 549
     },
     {
       "id": "bug-aeaf9db6cfc39c4713f6",
@@ -5171,8 +5174,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-08T14:01:33.558Z",
-      "occurrenceCount": 548
+      "updatedAt": "2026-10-08T14:49:31.177Z",
+      "occurrenceCount": 549
     },
     {
       "id": "bug-7391f6e22431967dcb01",
@@ -6858,8 +6861,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-05T16:11:53.993Z",
-      "updatedAt": "2026-10-08T10:48:20.689Z",
-      "occurrenceCount": 100
+      "updatedAt": "2026-10-08T14:49:31.177Z",
+      "occurrenceCount": 101
     },
     {
       "id": "bug-a6f5d3b250499c30aca4",
@@ -6882,8 +6885,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-05T16:20:05.482Z",
-      "updatedAt": "2026-10-08T10:48:20.689Z",
-      "occurrenceCount": 100
+      "updatedAt": "2026-10-08T14:49:31.177Z",
+      "occurrenceCount": 101
     },
     {
       "id": "bug-80d915aca0a7f0595b57",
@@ -7090,8 +7093,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-07T09:52:13.719Z",
-      "updatedAt": "2026-10-08T14:01:33.558Z",
-      "occurrenceCount": 60
+      "updatedAt": "2026-10-08T14:49:31.177Z",
+      "occurrenceCount": 61
     },
     {
       "id": "bug-a33b92fc547c2fed253b",
@@ -7113,8 +7116,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-07T09:52:13.719Z",
-      "updatedAt": "2026-10-08T14:01:33.558Z",
-      "occurrenceCount": 60
+      "updatedAt": "2026-10-08T14:49:31.177Z",
+      "occurrenceCount": 61
     },
     {
       "id": "bug-8d21a7e760769184367b",
@@ -7136,8 +7139,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-08T03:18:10.312Z",
-      "updatedAt": "2026-10-08T10:48:20.689Z",
-      "occurrenceCount": 15
+      "updatedAt": "2026-10-08T14:49:31.177Z",
+      "occurrenceCount": 16
     },
     {
       "id": "bug-611433ca3f28654bd823",
