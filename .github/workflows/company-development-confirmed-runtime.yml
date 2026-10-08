@@ -83,10 +83,11 @@ jobs:
             exit 15
           fi
           jq -s '{workflow_runs:(map(.workflow_runs // [])|add)}' /tmp/development-coordinator-runs-{1,2,3}.json > /tmp/development-coordinator-runs.json
-          oldest_active_id="$(jq -r --argjson current "$GITHUB_RUN_ID" '
+          oldest_active_id="$(jq -r --argjson current "$GITHUB_RUN_ID" --arg control_sha "$GITHUB_SHA" '
             [
               .workflow_runs[]
               | select(.status == "queued" or .status == "pending" or .status == "in_progress" or .status == "requested")
+              | select(.head_sha == $control_sha)
               | select(
                   .display_title == "Company DEVELOPMENT_CONFIRMED Runtime"
                   or (.display_title | startswith("DEVELOPMENT cycle | batch | "))
