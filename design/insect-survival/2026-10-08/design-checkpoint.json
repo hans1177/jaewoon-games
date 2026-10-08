@@ -982,25 +982,47 @@
     },
     "local_authoring_parts::052d550471f7f9dbd2e6b24008f462c8f0e9a6070e3e044e8bf3d1afc56bd7e1:trigger": {
       "trigger": "EcoRiskHandler manages ecological risk through adaptive survival choices, with state transitions: playerChoice → environmentalRisk → ecologicalThreshold → survivalTool, safeRoute, ecologicalInsight."
+    },
+    "local_authoring_parts::052d550471f7f9dbd2e6b24008f462c8f0e9a6070e3e044e8bf3d1afc56bd7e1:stateChange": {
+      "stateChange": "PlayerChoice is evaluated against environmentalRisk, leading to the activation of ecologicalThreshold. This triggers the transition to survivalTool, with the option to choose between a safer route or continue with the risky action, ultimately influencing the outcome of the ecologicalInsight."
+    },
+    "local_authoring_parts::b21699979b69006883fdd5e294791ba1a9c530ccad91fa500cd2e8c630599c9b:systemInterconnections:1": {
+      "fromId": "GAMEPLAY_SKETCH v4",
+      "toId": "GAMEPLAY_SKETCH v4",
+      "stateKeys": [
+        "playerChoice",
+        "environmentalRisk",
+        "ecologicalThreshold",
+        "survivalTool",
+        "safeRoute",
+        "ecologicalInsight"
+      ],
+      "fromSystem": "GAMEPLAY_SKETCH v4",
+      "toSystem": "GAMEPLAY_SKETCH v4",
+      "trigger": "EcoRiskHandler manages ecological risk through adaptive survival choices, with state transitions: playerChoice → environmentalRisk → ecologicalThreshold → survivalTool, safeRoute, ecologicalInsight.",
+      "stateChange": "PlayerChoice is evaluated against environmentalRisk, leading to the activation of ecologicalThreshold. This triggers the transition to survivalTool, with the option to choose between a safer route or continue with the risky action, ultimately influencing the outcome of the ecologicalInsight."
+    },
+    "local_authoring_parts::4cc2fd94f0cae3d6e5c605b95de2ad0729550e4a8de1ccaec353f45dff30ee98:fromId": {
+      "fromId": "GAMEPLAY_SKETCH v4"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 40,
-      "successes": 37,
+      "calls": 42,
+      "successes": 39,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 4015355,
-      "lastMs": 91599,
+      "totalMs": 4195882,
+      "lastMs": 89355,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T15:50:51.908Z"
+      "updatedAt": "2026-10-08T15:53:52.441Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:02:11.066Z",
-  "updatedAt": "2026-10-08T15:50:51.909Z",
+  "updatedAt": "2026-10-08T15:53:52.441Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3429,7 +3451,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:50:51.908Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:53:52.441Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
