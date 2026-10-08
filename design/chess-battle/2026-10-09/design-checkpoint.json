@@ -27,25 +27,32 @@
       "identity": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다. 플레이어는 Read the board and enemy threat information.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다. 이는 단순한 전략 퀘스트가 아니라, 인과법칙에 기반한 시스템 내에서의 진화 과정이다.",
       "playerFantasy": "체스 배틀에서는 플레이어가 Read the board and enemy threat information.을 숙련하며 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다. 이는 단순한 전략 퀘스트가 아니라, 인과법칙에 기반한 시스템 내에서의 진화 과정이다.",
       "coreFun": "Read the board and enemy threat information.의 결과를 이용해 다음 세계 규칙을 설계한다. 이는 단순한 전략 퀘스트가 아니라, 인과법칙에 기반한 시스템 내에서의 진화 과정이다."
+    },
+    "local_authoring_parts::1c49ccdb8adccfe213ff1e17cd044a4eac90310d530988168eb6ba3168447503:coreLoop": {
+      "coreLoop": [
+        "Read the board and enemy threat information.의 결과를 이용해 다음 세계 규칙을 설계한다.",
+        "Commit a move or ability that changes control of key spaces.의 선택은 기능 병렬 추가가 아니라 서로의 조건과 결과를 바꾼다.",
+        "Resolve the tactical exchange and use the new board state to plan the next decisive turn.의 진행은 단순 장르 태그나 기능 합산으로 분리할 수 없다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 295154,
-      "lastMs": 29095,
+      "totalMs": 341702,
+      "lastMs": 46548,
       "lastError": null,
-      "updatedAt": "2026-10-08T22:01:20.040Z"
+      "updatedAt": "2026-10-08T22:02:06.592Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:56:24.867Z",
-  "updatedAt": "2026-10-08T22:01:20.042Z",
+  "updatedAt": "2026-10-08T22:02:06.592Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2174,7 +2181,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T22:01:20.042Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T22:02:06.592Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
