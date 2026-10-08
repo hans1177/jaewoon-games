@@ -423,25 +423,42 @@
     },
     "local_authoring_parts::429f70da228d1ed89b304458a6821d5b85cfffb4de8290e7537c1fa26c61beeb:toSystem": {
       "toSystem": "GAME_CATEGORY"
+    },
+    "local_authoring_parts::429f70da228d1ed89b304458a6821d5b85cfffb4de8290e7537c1fa26c61beeb:trigger": {
+      "trigger": "플레이어가 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행하며, 세계 인과법칙 시스템과 게임 내 상태 간의 연결을 형성합니다."
+    },
+    "local_authoring_parts::429f70da228d1ed89b304458a6821d5b85cfffb4de8290e7537c1fa26c61beeb:stateChange": {
+      "stateChange": "플레이어가 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행하며, 세계 인과법칙 시스템과 게임 내 상태 간의 연결을 형성합니다."
+    },
+    "local_authoring_parts::a7215c97f8c16b898ef079a672ded972438f5f6f462ad83672fe81f893dfb509:systemInterconnections:0": {
+      "fromId": "CORE_FUN_TO_LEARN",
+      "toId": "GAME_CATEGORY",
+      "stateKeys": [
+        "GAME_CATEGORY"
+      ],
+      "fromSystem": "CORE_FUN_TO_LEARN",
+      "toSystem": "GAME_CATEGORY",
+      "trigger": "플레이어가 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행하며, 세계 인과법칙 시스템과 게임 내 상태 간의 연결을 형성합니다.",
+      "stateChange": "플레이어가 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행하며, 세계 인과법칙 시스템과 게임 내 상태 간의 연결을 형성합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 16,
+      "calls": 18,
+      "successes": 18,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1665578,
-      "lastMs": 88321,
+      "totalMs": 1855016,
+      "lastMs": 96473,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:57:20.477Z"
+      "updatedAt": "2026-10-08T19:00:29.917Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:29:34.840Z",
-  "updatedAt": "2026-10-08T18:57:20.477Z",
+  "updatedAt": "2026-10-08T19:00:29.919Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2854,7 +2871,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:57:20.477Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:00:29.919Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
