@@ -68,25 +68,42 @@
       "name": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
       "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
       "playerChoice": "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases."
+    },
+    "local_authoring_parts::e4038e09e25cbcbf538c565d87ec6a4d12cfc7e8998d4128e787a4b3f7b2cebb:signatureSystems:2": {
+      "id": "SINGLE_DEFENSE_STRATEGY",
+      "grammarRole": "B",
+      "stateInputs": [
+        "enemyWave",
+        "defenses",
+        "resources"
+      ],
+      "stateOutputs": [
+        "newDefenses",
+        "resources",
+        "pressure"
+      ],
+      "name": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense",
+      "purpose": "플레이어가 주요 목표를 보호하고, 적의 유형, 웨이브의 구성에 따라 방어 전략을 조정하며, 스테이지/보스 클리어를 통해 더 어려운 방어를 열어주는 중심 플레이.",
+      "playerChoice": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 399986,
-      "lastMs": 41936,
+      "totalMs": 453725,
+      "lastMs": 53739,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:15:35.249Z"
+      "updatedAt": "2026-10-08T12:16:28.990Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:08:55.008Z",
-  "updatedAt": "2026-10-08T12:15:35.249Z",
+  "updatedAt": "2026-10-08T12:16:28.990Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2281,7 +2298,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:15:35.249Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:16:28.990Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
