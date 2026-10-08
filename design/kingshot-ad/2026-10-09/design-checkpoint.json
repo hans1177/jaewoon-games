@@ -509,25 +509,49 @@
         "riskPressure": "Repeated failure increases risk of losing progress, prompting players to adapt their approach and explore alternative paths.",
         "recoveryRules": "Players can save resources, replay key moments, and use learned experiences to improve future decision-making."
       }
+    },
+    "local_authoring_parts::bae234caaa7bb043e9b354c1b0aa4906c7dfdd14adfa22d7dc461dba565870a7:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "MAIN",
+      "toId": "A",
+      "stateKeys": [
+        "Main state"
+      ],
+      "fromSystem": "MAIN"
+    },
+    "local_authoring_parts::bae234caaa7bb043e9b354c1b0aa4906c7dfdd14adfa22d7dc461dba565870a7:toSystem,trigger,stateChange": {
+      "toSystem": "A",
+      "trigger": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+      "stateChange": "Main state is transformed into a new defensive configuration based on player strategy and resource allocation."
+    },
+    "local_authoring_parts::c445774d95e601b763e2813d187052336bf84b3d4b37039fae362fb05cb36164:systemInterconnections:0": {
+      "fromId": "MAIN",
+      "toId": "A",
+      "stateKeys": [
+        "Main state"
+      ],
+      "fromSystem": "MAIN",
+      "toSystem": "A",
+      "trigger": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+      "stateChange": "Main state is transformed into a new defensive configuration based on player strategy and resource allocation."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 12,
+      "calls": 15,
+      "successes": 14,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1410327,
-      "lastMs": 137262,
+      "totalMs": 1598333,
+      "lastMs": 95564,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T18:10:51.360Z"
+      "updatedAt": "2026-10-08T18:13:59.376Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:47:20.978Z",
-  "updatedAt": "2026-10-08T18:10:51.366Z",
+  "updatedAt": "2026-10-08T18:13:59.378Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2877,10 +2901,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:10:51.362Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:13:59.378Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
