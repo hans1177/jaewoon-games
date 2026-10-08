@@ -257,25 +257,191 @@
           "playerChoice": "Select a specific resource type and determine how it will be used to enhance a village function in the next step of the game."
         }
       ]
+    },
+    "local_authoring_parts::548bd02d53b71b14aae5c100142c3d11d180e925184985eae88ffe23e3e83fa7:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::a32aa557d6c81c7237388ebc4fc949cc844fa46aae8438954f81405758e158ac:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "Gather a focused set of island resources. -> Build or improve one village function.",
+        "Unlock a new resident, activity or area -> Choose next village goal.",
+        "Repeat the main action with different choices and outcomes."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "VILLAGE_RESOURCES"
+          ],
+          "stateOutputs": [
+            "NEW_VILLAGE_FUNCTION",
+            "NEXT_VILLAGE_GOAL"
+          ],
+          "name": "RESOURCE_TO_VILLAGE_PROGRESSION",
+          "purpose": "Establishes the progression of resources to village functions, enabling players to build or improve one village function through focused resource gathering.",
+          "playerChoice": "Choose a specific resource type and determine how it will be used to enhance a village function in the next step of the game."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "VILLAGE_RESOURCES"
+          ],
+          "stateOutputs": [
+            "NEW_VILLAGE_FUNCTION",
+            "NEXT_VILLAGE_GOAL"
+          ],
+          "name": "RESOURCE_TO_VILLAGE_PROGRESSION",
+          "purpose": "Establishes the progression of resources to village functions, enabling players to build or improve one village function through focused resource gathering.",
+          "playerChoice": "Choose a specific resource type and determine how it will be used to enhance a village function in the next step of the game."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "VILLAGE_RESOURCES"
+          ],
+          "stateOutputs": [
+            "NEW_VILLAGE_GOAL",
+            "NEXT_OPEN_QUESTION"
+          ],
+          "name": "RELAXED_DAILY_GOALS",
+          "purpose": "Enables players to choose relaxed daily goals that gradually evolve the game, providing a sense of progression and variety without strict constraints.",
+          "playerChoice": "Select a specific goal or activity that aligns with the current village state, ensuring it is both achievable and meaningful in the long term."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "VILLAGE_RESOURCES"
+          ],
+          "stateOutputs": [
+            "NEW_PLAY_OPTION",
+            "NEXT_OPEN_QUESTION"
+          ],
+          "name": "RESOURCE_TO_VILLAGE_PROGRESSION",
+          "purpose": "Establishes the progression of resources to village functions, enabling players to build or improve one village function through focused resource gathering.",
+          "playerChoice": "Select a specific resource type and determine how it will be used to enhance a village function in the next step of the game."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "VILLAGE_RESOURCES"
+          ],
+          "stateOutputs": [
+            "NEW_PLAY_OPTION",
+            "NEXT_OPEN_QUESTION"
+          ],
+          "name": "RESOURCE_TO_VILLAGE_PROGRESSION",
+          "purpose": "Establishes the progression of resources to village functions, enabling players to build or improve one village function through focused resource gathering.",
+          "playerChoice": "Select a specific resource type and determine how it will be used to enhance a village function in the next step of the game."
+        }
+      ],
+      "multiplayerMode": "COOP"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다.\n\n플레이어는 무인도 마을에서 Gather a focused set of island resources.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다.\n\n대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다.\n\n성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다.",
+      "playerFantasy": "무인도 마을에서 플레이어는 Gather a focused set of island resources.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다.\n\n대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다.\n\n성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다.",
+      "coreFun": "Gather a focused set of island resources.의 결과가 다음 월드 상태를 바꾸며, 이 과정에서 주민들의 생활 연결망을 확장하는 방식으로 이루어진 콘텐츠로 구성된다.\n\n플레이어는 무인도 마을에서 Gather a focused set of island resources.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다.\n\n대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다.\n\n성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다.",
+      "coreLoop": [
+        "Gather a focused set of island resources. -> Build or improve one village function.",
+        "Unlock a new resident, activity or area -> Choose next village goal.",
+        "Repeat the main action with different choices and outcomes."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "VILLAGE_RESOURCES"
+          ],
+          "stateOutputs": [
+            "NEW_VILLAGE_FUNCTION",
+            "NEXT_VILLAGE_GOAL"
+          ],
+          "name": "RESOURCE_TO_VILLAGE_PROGRESSION",
+          "purpose": "Establishes the progression of resources to village functions, enabling players to build or improve one village function through focused resource gathering.",
+          "playerChoice": "Choose a specific resource type and determine how it will be used to enhance a village function in the next step of the game."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "VILLAGE_RESOURCES"
+          ],
+          "stateOutputs": [
+            "NEW_VILLAGE_FUNCTION",
+            "NEXT_VILLAGE_GOAL"
+          ],
+          "name": "RESOURCE_TO_VILLAGE_PROGRESSION",
+          "purpose": "Establishes the progression of resources to village functions, enabling players to build or improve one village function through focused resource gathering.",
+          "playerChoice": "Choose a specific resource type and determine how it will be used to enhance a village function in the next step of the game."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "VILLAGE_RESOURCES"
+          ],
+          "stateOutputs": [
+            "NEW_VILLAGE_GOAL",
+            "NEXT_OPEN_QUESTION"
+          ],
+          "name": "RELAXED_DAILY_GOALS",
+          "purpose": "Enables players to choose relaxed daily goals that gradually evolve the game, providing a sense of progression and variety without strict constraints.",
+          "playerChoice": "Select a specific goal or activity that aligns with the current village state, ensuring it is both achievable and meaningful in the long term."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "VILLAGE_RESOURCES"
+          ],
+          "stateOutputs": [
+            "NEW_PLAY_OPTION",
+            "NEXT_OPEN_QUESTION"
+          ],
+          "name": "RESOURCE_TO_VILLAGE_PROGRESSION",
+          "purpose": "Establishes the progression of resources to village functions, enabling players to build or improve one village function through focused resource gathering.",
+          "playerChoice": "Select a specific resource type and determine how it will be used to enhance a village function in the next step of the game."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "VILLAGE_RESOURCES"
+          ],
+          "stateOutputs": [
+            "NEW_PLAY_OPTION",
+            "NEXT_OPEN_QUESTION"
+          ],
+          "name": "RESOURCE_TO_VILLAGE_PROGRESSION",
+          "purpose": "Establishes the progression of resources to village functions, enabling players to build or improve one village function through focused resource gathering.",
+          "playerChoice": "Select a specific resource type and determine how it will be used to enhance a village function in the next step of the game."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 599565,
-      "lastMs": 66475,
+      "totalMs": 654928,
+      "lastMs": 55363,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:56:05.518Z"
+      "updatedAt": "2026-10-08T17:57:00.885Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:46:05.904Z",
-  "updatedAt": "2026-10-08T17:56:05.521Z",
+  "updatedAt": "2026-10-08T17:57:00.914Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2352,12 +2518,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:56:05.521Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:57:00.908Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/island-village/2026-10-09/design-seed.json",
+    "contentDigest": "320c97eee95a5d63a4a47ad854f3b8d21d88f961be0b7f2be31314879d3e7cc8",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
