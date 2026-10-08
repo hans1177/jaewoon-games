@@ -41,6 +41,9 @@ namespace JaewoonGames.DaechungRpg
         private readonly Dictionary<string, Sprite[]> _actorFrames = new Dictionary<string, Sprite[]>();
         // 메인: 게임에서 이미 존재하는 마을 캐릭터는 고정 안내판 대신 이동하는 배우로 표현한다.
         private readonly List<VillageResident> _villageResidents = new List<VillageResident>();
+        private bool _scoutAccompanying;
+        private float _bossRevealUntil;
+        private float _baseCameraFieldOfView = 40f;
         private sealed class VillageResident
         {
             public string Id;
@@ -124,9 +127,15 @@ namespace JaewoonGames.DaechungRpg
             if (_sceneCamera != null && Mathf.Abs(_sceneCamera.aspect - _lastCameraAspect) > 0.01f)
             {
                 _lastCameraAspect = _sceneCamera.aspect;
-                _sceneCamera.fieldOfView = Mathf.Clamp(
+                _baseCameraFieldOfView = Mathf.Clamp(
                     2f * Mathf.Atan(4f / (13f * Mathf.Max(0.4f, _lastCameraAspect))) * Mathf.Rad2Deg,
                     40f, 72f);
+            }
+            if (_sceneCamera != null)
+            {
+                // 컷신은 카메라만 짧게 당기고 원래 시야로 돌아온다. 전투 콜라이더/피해/페이즈 불변.
+                var revealActive = _battleVisible && Time.time < _bossRevealUntil;
+                _sceneCamera.fieldOfView = revealActive ? Mathf.Max(34f, _baseCameraFieldOfView - 8f) : _baseCameraFieldOfView;
             }
             _player?.Tick(Time.time);
             _enemy?.Tick(Time.time);
@@ -176,7 +185,8 @@ namespace JaewoonGames.DaechungRpg
             }
 
             ResetBattleActors();
-            foreach (var resident in _villageResidents) resident.Actor.SetVisible(false);
+            foreach (var resident in _villageResidents)
+                resident.Actor.SetVisible(_scoutAccompanying && resident.Id == "scout");
         }
 
         public void PlayTravelToBattle()
@@ -227,7 +237,19 @@ namespace JaewoonGames.DaechungRpg
         {
             foreach (var npc in _villageResidents)
             {
-                if (_battleVisible || !_ready) { npc.Actor.Tick(Time.time); continue; }
+                if (!_ready) { npc.Actor.Tick(Time.time); continue; }
+                if (npc.Id == "scout" && _scoutAccompanying)
+                {
+                    // NPC 동행은 별개 네트워크 플레이어를 위조하지 않고 연출만 보조한다.
+                    var destination = _player.Position + new Vector3(-0.9f, 0f, -0.35f);
+                    var at = npc.Actor.Position;
+                    npc.Actor.Position = Vector3.MoveTowards(at, destination, Mathf.Min(dt, 0.05f) * 1.5f);
+                    npc.Actor.FaceRight(destination.x >= at.x);
+                    npc.Actor.Play(Vector3.Distance(at, destination) < 0.07f ? "idle" : "walk", true);
+                    npc.Actor.Tick(Time.time);
+                    continue;
+                }
+                if (_battleVisible) { npc.Actor.Tick(Time.time); continue; }
                 var at = npc.Actor.Position;
                 var destination = npc.AuthoredPath[npc.NextPoint];
                 if (Time.time < npc.PauseUntil)
@@ -247,6 +269,28 @@ namespace JaewoonGames.DaechungRpg
                 }
                 npc.Actor.Tick(Time.time);
             }
+        }
+
+        public void SetNarrativeCompanion(bool accompanying)
+        {
+            _scoutAccompanying = accompanying;
+            var scout = _villageResidents.Find(resident => resident.Id == "scout");
+            if (scout == null) return;
+            scout.Actor.SetVisible(_scoutAccompanying || !_battleVisible);
+            scout.PauseUntil = Time.time + 0.25f;
+        }
+
+        public void PlayBossReveal()
+        {
+            if (!_battleVisible || _enemy == null) return;
+            _bossRevealUntil = Time.time + 2.4f;
+            _enemy.Play("attack", false, true);
+        }
+
+        public void SkipBossReveal()
+        {
+            _bossRevealUntil = 0f;
+            if (_sceneCamera != null) _sceneCamera.fieldOfView = _baseCameraFieldOfView;
         }
 
         public bool IsVillageResidentNearby(string id)
