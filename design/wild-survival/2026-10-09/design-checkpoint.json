@@ -426,25 +426,81 @@
       "toSystem": "wild-survival_signature_systems_1",
       "trigger": "월드 상태 변환 시스템 실행",
       "stateChange": "현재 월드 상태에 대한 실질적 입력 및 선택이 이루어지며, 진입 -> 선택 -> 변화 -> 보상/위험 -> 다음 선택 순서로 월드 상태가 변환됨."
+    },
+    "local_authoring_parts::fe5b011659601a7729dc66fc9ab60ed6a8247b94a194d52276f546c0fdbb82c6:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "wild-survival_systems_0",
+      "toId": "wild-survival_systems_1",
+      "stateKeys": [
+        "world_state"
+      ],
+      "fromSystem": "wild-survival_signature_systems_0"
+    },
+    "local_authoring_parts::fe5b011659601a7729dc66fc9ab60ed6a8247b94a194d52276f546c0fdbb82c6:toSystem,trigger,stateChange": {
+      "toSystem": "wild-survival_signature_systems_1",
+      "trigger": "월드 상태 변환 시스템 실행",
+      "stateChange": "현재 월드 상태에 대한 실질적 입력 및 선택이 이루어지며, 진입 -> 선택 -> 변화 -> 보상/위험 -> 다음 선택 순서로 월드 상태가 변환됨."
+    },
+    "local_authoring_parts::2a0883104ae431d260c6ff0525f26bd37785095b224adb80094f3eed682c279b:systemInterconnections:1": {
+      "fromId": "wild-survival_systems_0",
+      "toId": "wild-survival_systems_1",
+      "stateKeys": [
+        "world_state"
+      ],
+      "fromSystem": "wild-survival_signature_systems_0",
+      "toSystem": "wild-survival_signature_systems_1",
+      "trigger": "월드 상태 변환 시스템 실행",
+      "stateChange": "현재 월드 상태에 대한 실질적 입력 및 선택이 이루어지며, 진입 -> 선택 -> 변화 -> 보상/위험 -> 다음 선택 순서로 월드 상태가 변환됨."
+    },
+    "local_authoring_parts::08b2aecf293d7daa7725a9a2d8716054614e7e3bb2e4028041abe95c5dbcae1b:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "wild-survival_systems_0",
+      "toId": "wild-survival_systems_1",
+      "stateKeys": [
+        "world_state"
+      ],
+      "fromSystem": "wild-survival_signature_systems_0"
+    },
+    "local_authoring_parts::08b2aecf293d7daa7725a9a2d8716054614e7e3bb2e4028041abe95c5dbcae1b:toSystem,trigger,stateChange": {
+      "toSystem": "wild-survival_signature_systems_1",
+      "trigger": "월드 상태 변환 시스템 실행",
+      "stateChange": "현재 월드 상태에 대한 실질적 입력 및 선택이 이루어지며, 진입 -> 선택 -> 변화 -> 보상/위험 -> 다음 선택 순서로 월드 상태가 변환됨."
+    },
+    "local_authoring_parts::2a0883104ae431d260c6ff0525f26bd37785095b224adb80094f3eed682c279b:systemInterconnections:2": {
+      "fromId": "wild-survival_systems_0",
+      "toId": "wild-survival_systems_1",
+      "stateKeys": [
+        "world_state"
+      ],
+      "fromSystem": "wild-survival_signature_systems_0",
+      "toSystem": "wild-survival_signature_systems_1",
+      "trigger": "월드 상태 변환 시스템 실행",
+      "stateChange": "현재 월드 상태에 대한 실질적 입력 및 선택이 이루어지며, 진입 -> 선택 -> 변화 -> 보상/위험 -> 다음 선택 순서로 월드 상태가 변환됨."
+    },
+    "local_authoring_parts::9ee971b6736f236d321b4d99d40a492a51baeaf4725c66a9bd2d2c4ac2b21494:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "wild-survival_systems_3",
+      "toId": "wild-survival_systems_4",
+      "stateKeys": [
+        "world_state"
+      ],
+      "fromSystem": "wild-survival_signature_systems_3"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 13,
+      "calls": 18,
+      "successes": 18,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 427472,
-      "lastMs": 10751,
+      "totalMs": 491946,
+      "lastMs": 16123,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:12:38.681Z"
+      "updatedAt": "2026-10-08T21:13:43.167Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:05:30.914Z",
-  "updatedAt": "2026-10-08T21:12:38.685Z",
+  "updatedAt": "2026-10-08T21:13:43.167Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2647,7 +2703,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T21:12:38.685Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:13:43.167Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
