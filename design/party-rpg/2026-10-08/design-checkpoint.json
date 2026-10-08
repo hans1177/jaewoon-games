@@ -968,25 +968,37 @@
       "toSystem": "signatureSystems[0]",
       "trigger": "coreLoop→signatureSystems[0]",
       "stateChange": "levelGoal, moveLimit, obstacleSet, comboTrigger, feedbackType"
+    },
+    "local_authoring_parts::e0367e2d04b2b798bfcf0c53179bc9b271aed67eea2ead0f85626ce3385c860b:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "coreLoop",
+      "toId": "signatureSystems[0]",
+      "stateKeys": [
+        "levelGoal",
+        "moveLimit",
+        "obstacleSet",
+        "comboTrigger",
+        "feedbackType"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN_1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 27,
-      "successes": 26,
+      "calls": 28,
+      "successes": 27,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 3307288,
-      "lastMs": 90497,
+      "totalMs": 3412078,
+      "lastMs": 104790,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T15:51:13.423Z"
+      "updatedAt": "2026-10-08T15:52:58.216Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:04:39.840Z",
-  "updatedAt": "2026-10-08T15:51:13.425Z",
+  "updatedAt": "2026-10-08T15:52:58.216Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3171,7 +3183,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:51:13.425Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:52:58.216Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
