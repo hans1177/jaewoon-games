@@ -555,25 +555,100 @@
           "playerChoice": "MAIN/A/B/c/@를 통해 실제 상태 변화를 구체화하고, 보상·위험·다음 선택의 연결을 포함하며, 콘텐츠를 다르게 사용하여 성장의 과정을 확장한다."
         }
       ]
+    },
+    "local_authoring_parts::d24d0fc474dcf235f2b7c7b1584e6f40af964b5be21c16deefe01a6a9f5a3ecc:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "RULE_01",
+          "toId": "RULE_02",
+          "stateKeys": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "fromSystem": "RULE_01",
+          "toSystem": "RULE_02",
+          "trigger": "PlayerAction",
+          "stateChange": "WorldStateUpdate"
+        },
+        {
+          "fromId": "RULE_02",
+          "toId": "RULE_03",
+          "stateKeys": [
+            "WorldState",
+            "SelectionOutcome",
+            "ProgressionUnlock"
+          ],
+          "fromSystem": "RULE_02",
+          "toSystem": "RULE_03",
+          "trigger": "PlayerSelection",
+          "stateChange": "WorldStateUpdate"
+        },
+        {
+          "fromId": "RULE_03",
+          "toId": "RULE_04",
+          "stateKeys": [
+            "WorldState",
+            "SelectionOutcome",
+            "ProgressionUnlock"
+          ],
+          "fromSystem": "RULE_03",
+          "toSystem": "RULE_04",
+          "trigger": "PlayerSelection",
+          "stateChange": "WorldStateUpdate"
+        },
+        {
+          "fromId": "RULE_04",
+          "toId": "RULE_05",
+          "stateKeys": [
+            "WorldState",
+            "SelectionOutcome",
+            "ProgressionUnlock"
+          ],
+          "fromSystem": "RULE_04",
+          "toSystem": "RULE_05",
+          "trigger": "PlayerSelection",
+          "stateChange": "WorldStateUpdate"
+        },
+        {
+          "fromId": "RULE_05",
+          "toId": "RULE_01",
+          "stateKeys": [
+            "WorldState",
+            "SelectionOutcome",
+            "ProgressionUnlock"
+          ],
+          "fromSystem": "RULE_05",
+          "toSystem": "RULE_01",
+          "trigger": "PlayerSelection",
+          "stateChange": "WorldStateUpdate"
+        }
+      ],
+      "progressionDirection": "SEQUENTIAL",
+      "progressionEconomyBalance": {
+        "progressionLoop": "REPEATABLE",
+        "resourceFlow": "CONTINUOUS",
+        "balanceRules": "BALANCED"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 15,
+      "calls": 17,
+      "successes": 16,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2134034,
-      "lastMs": 300030,
+      "totalMs": 2275836,
+      "lastMs": 141802,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T12:31:51.740Z"
+      "updatedAt": "2026-10-08T12:34:13.544Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:56:17.645Z",
-  "updatedAt": "2026-10-08T12:31:51.740Z",
+  "updatedAt": "2026-10-08T12:34:13.545Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2501,7 +2576,7 @@
     "designer_draft_slices::identity-core": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:26:51.705Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:34:13.544Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
