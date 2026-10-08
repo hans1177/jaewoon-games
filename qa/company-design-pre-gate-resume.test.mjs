@@ -13,7 +13,7 @@ import {buildAllGameDynamicLibraryBindingPlan,buildAssetSupplyDecisionSummary} f
 import {validateDesignAuthoringContent,scoreDesignGateV2,designPlayabilityRequirements} from '../tools/company-design-gate-scoring-v2.mjs';
 import {activeSeedForGame} from '../tools/game-seed-state.mjs';
 import {ownerDesignResetSeedForGame} from '../tools/owner-design-reset.mjs';
-import {makeAutoMissingDesignSeed,latestUsableDesign} from '../tools/company-all-games-design-reset.mjs';
+import {makeAutoMissingDesignSeed,latestUsableDesign,autoEnrollMissingDesignSeeds} from '../tools/company-all-games-design-reset.mjs';
 import {validateGameSeed} from '../tools/company-game-seed-contract.mjs';
 
 const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
@@ -29,6 +29,22 @@ test('design admission accepts a missing seed while skipping superseded work and
   assert.doesNotMatch(design,/GAME_SEED_REQUIRED:|DESIGN_ONLY_CLASS_REQUIRED:|designCheckpoint\.status='PRE_GATE_BLOCKED'/);
   assert.match(workflow,/Apply strict 30-minute design review/);
   assert.match(workflow,/strict.verdict==='PASS'/);
+});
+
+test('incomplete intake remains input for the designer instead of failing a seed quality pre-gate',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'designer-incomplete-intake-'));
+  try{
+    const catalog={games:[{id:'incomplete',name:'Incomplete',description:'사용자 원본에서 게임을 설계한다',lifecycleState:'ACTIVE',selectedPlatform:'ROBLOX'}]};
+    fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify(catalog));
+    fs.writeFileSync(path.join(root,'game-seed-state.json'),JSON.stringify({seeds:[{gameId:'incomplete',seedId:'input',status:'ACTIVE'}]}));
+    const result=autoEnrollMissingDesignSeeds({root,gameId:'incomplete'});
+    assert.deepEqual(result.grammarUpgraded,['incomplete']);
+    const input=JSON.parse(fs.readFileSync(path.join(root,'game-seed-state.json'),'utf8')).seeds[0];
+    assert.ok(input.inputRepairNotes.length>0);
+    assert.equal(input.status,'ACTIVE');
+    assert.equal(input.designerSeed,undefined,'normalizing input is not AI authorship');
+    assert.equal(validateGameSeed(input).pass,false,'record diagnostics do not fabricate a seed PASS');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
 test('designer can start without a pre-authored seed and preserves the original instead of automatic grammar',()=>{
