@@ -161,25 +161,53 @@
     "local_authoring_parts::27d772bbd2873403e41ece36d7ce1af09994bcea41809060ef5b20af19523fed:role,designAuthority": {
       "role": "WEB_DETAILED_GAME_ORIGINAL",
       "designAuthority": "GAME_DESIGN_REFERENCE_NOT_SOURCE_CODE_AUTHORITY"
+    },
+    "local_authoring_parts::27d772bbd2873403e41ece36d7ce1af09994bcea41809060ef5b20af19523fed:playerFlow,worldAndTraversal": {
+      "playerFlow": [
+        "마을에서 장비와 퀘스트를 준비하고, 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG.",
+        "5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략.",
+        "AI 유저와 파티를 구성하고, 보스를 공략.",
+        "보스 첫 처치 후, AI 동료를 영입하고, 15킬 파티를 진행하며 기여도에 따라 보상 제공.",
+        "15킬 파티 종료 시, 레벨이 증가하고, 기여도에 따라 XP/골드 보상 제공.",
+        "레벨이 증가하며, 어그로 해제 및 파티 토글 조작을 수행.",
+        "1차 전직 분기 선택 후, 2차 완성형으로 자동 승급.",
+        "Lv.60 만렙/숙련을 달성하고, 레벨캡을 달성하며, 레벨 성장과 어그로 해제를 수행."
+      ],
+      "worldAndTraversal": "Roblox R15 3D Action RPG: 4직업/전직 시스템, 5포탈 사냥, 15킬 파티, 보스 동료, 런 보스, 레벨 성장, 어그로 해제, 파티 토글, 1차 전직, 2차 완성형, Lv.60 만렙. 모든 설명은 구체적인 장면·행동·상태 전이로 작성된다. 공격/상호작용의 선행조건·범위·자원·재사용 시간·전조·대응과 실패 복구를 원본 근거에 연결한다."
+    },
+    "local_authoring_parts::4cf43f35dafab1812a4c1e5bb1ec2a6cc72fc145ebda49a238fdeea816cc8a25:role,designAuthority,playerFlow,worldAndTraversal": {
+      "role": "WEB_DETAILED_GAME_ORIGINAL",
+      "designAuthority": "GAME_DESIGN_REFERENCE_NOT_SOURCE_CODE_AUTHORITY",
+      "playerFlow": [
+        "마을에서 장비와 퀘스트를 준비하고, 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG.",
+        "5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략.",
+        "AI 유저와 파티를 구성하고, 보스를 공략.",
+        "보스 첫 처치 후, AI 동료를 영입하고, 15킬 파티를 진행하며 기여도에 따라 보상 제공.",
+        "15킬 파티 종료 시, 레벨이 증가하고, 기여도에 따라 XP/골드 보상 제공.",
+        "레벨이 증가하며, 어그로 해제 및 파티 토글 조작을 수행.",
+        "1차 전직 분기 선택 후, 2차 완성형으로 자동 승급.",
+        "Lv.60 만렙/숙련을 달성하고, 레벨캡을 달성하며, 레벨 성장과 어그로 해제를 수행."
+      ],
+      "worldAndTraversal": "Roblox R15 3D Action RPG: 4직업/전직 시스템, 5포탈 사냥, 15킬 파티, 보스 동료, 런 보스, 레벨 성장, 어그로 해제, 파티 토글, 1차 전직, 2차 완성형, Lv.60 만렙. 모든 설명은 구체적인 장면·행동·상태 전이로 작성된다. 공격/상호작용의 선행조건·범위·자원·재사용 시간·전조·대응과 실패 복구를 원본 근거에 연결한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 4,
+      "calls": 6,
+      "successes": 5,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 763913,
-      "lastMs": 90501,
+      "totalMs": 891029,
+      "lastMs": 127116,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T01:50:48.342Z"
+      "updatedAt": "2026-10-08T01:52:55.459Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T01:38:04.183Z",
-  "updatedAt": "2026-10-08T01:50:48.342Z",
+  "updatedAt": "2026-10-08T01:52:55.460Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1601,7 +1629,7 @@
   },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T01:50:48.342Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T01:52:55.460Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
