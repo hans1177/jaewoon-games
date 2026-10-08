@@ -5,7 +5,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
 import http from 'node:http';
-import {loadSeedState,activeSeedForGame} from './game-seed-state.mjs';
+import {loadSeedState,saveSeedState,activeSeedForGame} from './game-seed-state.mjs';
+import {ownerDesignResetSeedForGame} from './owner-design-reset.mjs';
+import {makeAutoMissingDesignSeed,latestUsableDesign} from './company-all-games-design-reset.mjs';
+import {validateGameSeed} from './company-game-seed-contract.mjs';
 import {repairDesignRequiredFields} from './company-design-prepromotion-repair.mjs';
 import {scoreDesignGateV2,validateDesignAuthoringContent,designPlayabilityRequirements,DESIGN_GATE_PASS_MINIMUM} from './company-design-gate-scoring-v2.mjs';
 import {classifyRobloxGenre} from './roblox-genre-profile.mjs';
@@ -33,12 +36,54 @@ const modelKeepAlive='PROVIDER_SPECIFIC';
 // 내부 모델 작성 예산: 준비 단계의 모델 로딩 시간은 제외한다.
 const localDesignerCallTimeoutMs=Math.min(300000,Math.max(30000,Number(process.env.COMPANY_LOCAL_DESIGN_CALL_TIMEOUT_MS)||300000));
 
+// 접수 기록은 실행 메타데이터다. 창작 시드는 아래 identity-core에서 같은 디자이너가 작성한다.
+function resolveDesignerSeedInput({state,gameId,catalog,brief='',root='.'}){
+  if(!/^[a-z0-9][a-z0-9-]*$/.test(gameId))throw new Error('DESIGN_GAME_ID_INVALID');
+  if((catalog?.permanentRemovalPolicy?.ids||[]).includes(gameId))throw new Error(`DESIGN_GAME_REMOVED: ${gameId}`);
+  const existing=activeSeedForGame(state,gameId);
+  if(existing)return{seed:existing,created:false};
+  const ownerInput=ownerDesignResetSeedForGame(gameId,path.join(root,'owner-design-reset-queue.json'));
+  const catalogEntry=(catalog?.games||[]).find(row=>row.id===gameId);
+  if(!ownerInput&&!catalogEntry&&!clean(brief))throw new Error(`DESIGN_BRIEF_OR_ORIGINAL_REQUIRED: ${gameId}`);
+  if(!ownerInput&&catalogEntry&&!['ACTIVE','REBUILD'].includes(clean(catalogEntry.lifecycleState||catalogEntry.canonical?.lifecycle?.state||'ACTIVE').toUpperCase()))throw new Error(`DESIGN_GAME_INACTIVE: ${gameId}`);
+  const input=ownerInput||makeAutoMissingDesignSeed(catalogEntry||{id:gameId,name:gameId,description:brief});
+  if(!ownerInput){
+    const baseline=latestUsableDesign(root,gameId);
+    const original=baseline?.record?.content||baseline?.record||{};
+    const platform=input.INITIAL_TARGET_PLATFORM;
+    input.designInputMode='DESIGNER_SELF_SEED';
+    input.OWNER_LATEST_DESIGN_REQUEST=clean(brief)||clean(catalogEntry?.description)||`기존 ${input.gameName} 원본에서 시드와 상세 설계를 디자이너가 직접 작성한다.`;
+    if(baseline){
+      input.DESIGN_BASELINE_SOURCE=path.relative(root,baseline.file).replaceAll('\\','/');
+      input.originalDesignContext={source:input.DESIGN_BASELINE_SOURCE,version:baseline.record.version||null,content:original,platformProfile:original.platformProfiles?.[platform]||{}};
+      input.REUSE_PRIOR_DESIGN_BASELINE=true;
+      input.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION=true;
+      if(original.identity)input.DISTINCT_IDENTITY=original.identity;
+      if(original.coreFun)input.CORE_FUN_TO_LEARN=[original.coreFun];
+      if(original.coreLoop?.length)input.CORE_LOOP=original.coreLoop;
+      const mode=clean(original.multiplayerMode||original.robloxBuildProfile?.playMode).toUpperCase();
+      if(['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(mode))input.MULTIPLAYER_DESIGN_MODE=mode;
+    }
+    // 기존 접수 계약은 유지하되 자동 조합 문법을 디자이너의 창작 결과로 넘기지 않는다.
+    delete input.GAMEPLAY_SKETCH;
+    const inputCheck=validateGameSeed(input);
+    if(!inputCheck.pass)input.inputRepairNotes=inputCheck.errors;
+    input.GAMEPLAY_SKETCH.source='DESIGNER_INTAKE_COMPATIBILITY_INPUT_NOT_AUTHORED_DESIGN';
+  }
+  input.seedAuthoring={writer:'GAME_DESIGNER_AI',stage:'identity-core',externalSeedRequired:false};
+  state.seeds||=[];
+  state.seeds.push(input);
+  return{seed:input,created:true};
+}
+
 const gameId=clean(process.env.ARTBOOK_GAME_ID||process.env.GAME_ID||process.argv.find(x=>x.startsWith('--game='))?.split('=')[1]);
 const date=clean(process.env.ARTBOOK_DATE||process.env.DESIGN_DATE||kstDate());
 if(!gameId)throw new Error('ARTBOOK_GAME_ID or GAME_ID is required');
 const seedState=loadSeedState();
-const seed=activeSeedForGame(seedState,gameId);
-if(!seed)throw new Error(`GAME_SEED_REQUIRED: ${gameId}`);
+const catalog=readJson('game-catalog.json',{games:[]});
+const seedInput=resolveDesignerSeedInput({state:seedState,gameId,catalog,brief:process.env.COMPANY_DESIGN_BRIEF||''});
+const seed=seedInput.seed;
+if(seedInput.created){saveSeedState(seedState);console.log(`DESIGNER_SEED_INPUT_CREATED=${gameId}`);}
 const seedGameplaySketch=seed.GAMEPLAY_SKETCH&&typeof seed.GAMEPLAY_SKETCH==='object'&&!Array.isArray(seed.GAMEPLAY_SKETCH)?seed.GAMEPLAY_SKETCH:null;
 const seedGameplaySketchVersion=Math.max(1,Number(seedGameplaySketch?.version||1));
 const advancedSeedDesignDepth=seedGameplaySketchVersion>=2;
@@ -114,9 +159,7 @@ const currentRuleSourceContext={path:currentRuleSourcePath,sha256:currentRuleSou
 };
 const ownerPreservationDesign=seed.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true
   &&clean(seed.OWNER_REBUILD_MODE).toUpperCase()==='PRESERVATION_PRESENTATION_UPGRADE';
-const catalog=readJson('game-catalog.json',{games:[]});
 const catalogGame=(catalog.games||[]).find(x=>x.id===gameId)||null;
-if(catalogGame&&clean(catalogGame.productionClass)&&clean(catalogGame.productionClass)!=='DESIGN_ONLY'&&seed.designInputMode!=='OWNER_BRIEF_AND_ORIGINAL_ONLY')throw new Error(`DESIGN_ONLY_CLASS_REQUIRED: ${catalogGame.productionClass}`);
 const game={id:gameId,name:clean(catalogGame?.name||seed.gameName||gameId),description:clean(catalogGame?.description||seed.DISTINCT_IDENTITY),genre:clean(catalogGame?.genre||seed.GAME_CATEGORY),productionClass:'DESIGN_ONLY',productionTier:3,productionTarget:'DESIGN_BASELINE',webPath:catalogGame?.webPath||null,unityProjectPath:catalogGame?.unityProjectPath||null};
 const designerRoute={provider:'VIBE_LOCAL_OLLAMA',model:localDesignerModel,id:`ollama:${localDesignerModel}`};
 const activeDesignerRoute=designerRoute;
@@ -127,6 +170,7 @@ console.log('DESIGN_EXTERNAL_AI_ALLOWED=NO');
 console.log(`GAME_DESIGNER_MODEL=${designerModel}`);
 console.log('DESIGN_AI_REVIEW_LANES=NONE');
 const base=path.join('design',gameId,date);fs.mkdirSync(base,{recursive:true});
+const designerSeedPath=path.join(base,'design-seed.json');
 const submissionBase=path.join('artbook-submissions',gameId,date);
 const factPack=readJson(path.join(submissionBase,'fact-pack.json'),{});
 // 컨셉 단계에서 현재 보유 자산을 읽는다. 후보 요약은 설계 근거이며 최종 선택/품질 통과가 아니다.
@@ -239,6 +283,8 @@ const checkpointInputContext={
   discardPolicy:directive.discardPolicy?.DESIGN_ONLY||null
 };
 const checkpointFingerprint=createHash('sha256').update(JSON.stringify(checkpointInputContext)).digest('hex');
+const previousDesignerSeed=readJson(designerSeedPath,null);
+if(previousDesignerSeed&&(previousDesignerSeed.fingerprint!==checkpointFingerprint||previousDesignerSeed.engineDigest!==engineDigest))fs.rmSync(designerSeedPath,{force:true});
 let designCheckpoint=readJson(checkpointPath,null);
 const priorCheckpointStatus=clean(designCheckpoint?.status).toUpperCase();
 const checkpointReusable=designCheckpoint?.contractVersion===DESIGN_CHECKPOINT_CONTRACT_VERSION&&designCheckpoint?.fingerprint===checkpointFingerprint;
@@ -352,6 +398,7 @@ function writeProgress(stage=designCheckpoint.currentPhase||'BOOTSTRAP',extra={}
     failedPhase:designCheckpoint.failedPhase||null,
     failedTask:designCheckpoint.failedTask||null,
     lastError:designCheckpoint.lastError||null,
+    designerSeed:designCheckpoint.designerSeed||null,
     modelHealth:designCheckpoint.modelHealth||{},
     slowPhases:designCheckpoint.slowPhases||{},
     updatedAt:new Date().toISOString(),
@@ -514,11 +561,32 @@ const DESIGN_AUTHORING_SLICE_FIELDS=DESIGN_AUTHORING_SLICES.flatMap(row=>row.fie
 if(DESIGN_AUTHORING_SLICE_FIELDS.length!==DESIGN.required.length||new Set(DESIGN_AUTHORING_SLICE_FIELDS).size!==DESIGN.required.length||DESIGN.required.some(field=>!DESIGN_AUTHORING_SLICE_FIELDS.includes(field))){
   throw new Error('DESIGN_AUTHORING_SLICE_CONTRACT_MISMATCH');
 }
+function persistDesignerSeed(design,phase){
+  const fields=DESIGN_AUTHORING_SLICES.find(row=>row.id==='identity-core').fields;
+  const content=Object.fromEntries(fields.map(field=>[field,design[field]]));
+  assertSchemaValue(content,designSliceSchema(fields));
+  const failures=validateDesignAuthoringContent({design,seed,fields,requirePlayableContract:!ownerPreservationDesign,sourceText:currentRuleSource});
+  if(failures.length)throw new Error(`DESIGNER_SEED_REPAIR_REQUIRED: ${failures.map(row=>row.code).join(',')}`);
+  const authorModel=designCheckpoint.effectiveDesignerModel||activeDesignerRoute.id;
+  const contentDigest=createHash('sha256').update(JSON.stringify(content)).digest('hex');
+  writeJson(designerSeedPath,{
+    version:1,gameId,date,seedId:seed.seedId,
+    authorRole:'GAME_DESIGNER_AI',authorModel,singleAuthor:true,
+    sourceStage:'identity-core',phase,status:'AUTHORED_CANDIDATE',
+    inputSource:'OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS',
+    originalSource:seed.DESIGN_BASELINE_SOURCE||null,
+    fingerprint:checkpointFingerprint,engineDigest,contentDigest,
+    externalSeedRequired:false,designPass:false,runtimePass:false,
+    content,updatedAt:new Date().toISOString()
+  });
+  designCheckpoint.designerSeed={file:designerSeedPath,contentDigest,authorModel,status:'AUTHORED_CANDIDATE'};
+  console.log(`DESIGNER_SEED_AUTHORED=${gameId}|${phase}|${contentDigest}`);
+}
 async function authorDesignInCheckpointedSlices({phase,system,sharedContext,currentDesign={}}){
   const merged={...currentDesign};
   // 고정 입력을 앞에 유지해 다음 요청에서도 같은 접두부를 재사용한다.
   // 오너 원본 모드의 호환용 자동 스케치는 설계 원본 입력이 아니다.
-  const commonInput=`${seed.designInputMode==='OWNER_BRIEF_AND_ORIGINAL_ONLY'?'':`GAME_SEED_DESIGN_DEPTH=${clip(seedDesignDepthContext,7500)}\n`}SHARED_CONTEXT=${clip(sharedContext,6500)}\nPLAYABILITY_REQUIREMENTS=${JSON.stringify(playableRequirements)}`;
+  const commonInput=`${['OWNER_BRIEF_AND_ORIGINAL_ONLY','DESIGNER_SELF_SEED'].includes(seed.designInputMode)||seed.autoMissingDesignIntake?'':`GAME_SEED_DESIGN_DEPTH=${clip(seedDesignDepthContext,7500)}\n`}SHARED_CONTEXT=${clip(sharedContext,6500)}\nPLAYABILITY_REQUIREMENTS=${JSON.stringify(playableRequirements)}`;
   for(const slice of DESIGN_AUTHORING_SLICES){
     const schema=designSliceSchema(slice.fields);
     const existing=Object.fromEntries(slice.fields.filter(field=>Object.prototype.hasOwnProperty.call(merged,field)).map(field=>[field,merged[field]]));
@@ -555,6 +623,7 @@ async function authorDesignInCheckpointedSlices({phase,system,sharedContext,curr
     delete designCheckpoint.sliceRepairFeedback[taskKey];
     designCheckpoint.sliceDependencies[taskKey]=dependencyHash;
     Object.assign(merged,result);
+    if(slice.id==='identity-core')persistDesignerSeed(merged,phase);
     persistDesignCheckpoint();
     console.log(`DESIGN_SLICE_CONTENT_VALID=${slice.id}`);
   }
@@ -1121,7 +1190,7 @@ async function callDesignerModel(system,user,schema,options={}){
 }
 
 async function generateDesignerDraft(){
-  const ownerBriefOnly=seed.designInputMode==='OWNER_BRIEF_AND_ORIGINAL_ONLY';
+  const ownerBriefOnly=['OWNER_BRIEF_AND_ORIGINAL_ONLY','DESIGNER_SELF_SEED'].includes(seed.designInputMode)||seed.autoMissingDesignIntake===true;
   const original=seed.originalDesignContext?.content||{};
   const originalBrief=ownerBriefOnly?{
     instruction:seed.OWNER_LATEST_DESIGN_REQUEST,
@@ -1138,7 +1207,7 @@ async function generateDesignerDraft(){
     visualDirection:original.visualDirection
   }:null;
   const preservationDirective=ownerPreservationDesign?' 이 seed는 기존 게임 보존형 표현 업그레이드다. 기존 세계관·지역·스토리·퀘스트·전투·제작·진행·밸런스·드랍·세이브·hit/cooldown 의미를 절대 재설계하지 않는다. 새 스킬·게이지·패널티·보상·자원·해금 규칙을 추가하지 않고 ASSET_ADAPTATION→LIVING_MOTION→ANIMATION_FEEL→VFX→AUDIO_FEEL→CAMERA_LANGUAGE→POLISH_MOBILE 표현 패스만 설계한다.':'';
-  const system=`너는 단일 Game Designer AI다. 기존 게임 원본과 오너 의도를 최우선으로 보존하고 요청된 설계 필드만 구체적으로 작성한다. 한 게임의 공통 원본은 하나이며 플랫폼별로 입력·성능·연출·배포/검증만 네이티브에 맞게 적용한다. 중심 행동 MAIN, 두 대축 A/B의 상태 교환, 보조 요소 c, 발견·숙련·재방문 @를 구분한다. CORE_RULE_ANCHORS/SHARED_RULE_ANCHORS와 현재 STRUCTURE_CONTRACT를 따라 입력→조건/판정→상태 변화→위험/보상→대응→다음 선택을 작성한다. 일반적인 기능 목록·장식 세계관·임시 표식·반복 문장으로 설계하지 않는다. 지역·적·아이템·퀘스트·메뉴는 해당 장르에 필요한 것만 실제 역할과 상태로 연결한다. 실패·중단·재접속·저장은 원본 의미를 보존한다. 구현 버그와 설계 모순의 원인·수정 책임을 구분하고 안정성을 먼저 다룬다. 같은 증상을 설계와 구현이 독립적으로 중복 수정하지 않는다. 최소 두 실제 대안을 비교하고 선택안을 한 판의 시작·전개·결말로 재생한다. 한 판과 전체 세션 시간을 구분하며 검증되지 않은 시간·품질·실행 결과를 확정하지 않는다. 공공영역 고전의 원형은 게임에 맞게 재해석하고 현대 보호 작품은 추상적 기법만 참고한다. 보호된 인물·대사·장면은 복제하지 않는다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 점수와 통과 판정은 결정론적 검증기가 담당한다.${preservationDirective}${ownerBriefOnly?' 호환용 자동 스케치는 설계 원본이 아니다. 사용자 요청과 기존 플랫폼 원본을 입력으로 A/B/c/@ 및 상세 설계를 직접 작성한다.':''}`;
+  const system=`너는 시드부터 상세 설계까지 직접 작성하는 단일 Game Designer AI다. 외부에서 완성된 시드를 요구하지 않는다. 첫 identity-core 작성에서 사용자 요청·원본·참고 재료로 게임의 씨앗인 정체성·플레이어 판타지·핵심 재미·핵심 루프·MAIN/A/B/c/@와 상태 변화를 직접 생성한다. 이 결과가 design-seed.json이며 뒤의 상세 설계는 같은 시드를 확장한다. 접수용 자동 스케치는 창작 시드가 아니다. 기존 게임 원본과 오너 의도를 최우선으로 보존하고 요청된 설계 필드만 구체적으로 작성한다. 한 게임의 공통 원본은 하나이며 플랫폼별로 입력·성능·연출·배포/검증만 네이티브에 맞게 적용한다. 중심 행동 MAIN, 두 대축 A/B의 상태 교환, 보조 요소 c, 발견·숙련·재방문 @를 구분한다. CORE_RULE_ANCHORS/SHARED_RULE_ANCHORS와 현재 STRUCTURE_CONTRACT를 따라 입력→조건/판정→상태 변화→위험/보상→대응→다음 선택을 작성한다. 일반적인 기능 목록·장식 세계관·임시 표식·반복 문장으로 설계하지 않는다. 지역·적·아이템·퀘스트·메뉴는 해당 장르에 필요한 것만 실제 역할과 상태로 연결한다. 실패·중단·재접속·저장은 원본 의미를 보존한다. 구현 버그와 설계 모순의 원인·수정 책임을 구분하고 안정성을 먼저 다룬다. 같은 증상을 설계와 구현이 독립적으로 중복 수정하지 않는다. 최소 두 실제 대안을 비교하고 선택안을 한 판의 시작·전개·결말로 재생한다. 한 판과 전체 세션 시간을 구분하며 검증되지 않은 시간·품질·실행 결과를 확정하지 않는다. 공공영역 고전의 원형은 게임에 맞게 재해석하고 현대 보호 작품은 추상적 기법만 참고한다. 보호된 인물·대사·장면은 복제하지 않는다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 점수와 통과 판정은 결정론적 검증기가 담당한다.${preservationDirective}${ownerBriefOnly?' 호환용 자동 스케치는 설계 원본이 아니다. 사용자 요청과 기존 플랫폼 원본을 입력으로 A/B/c/@ 및 상세 설계를 직접 작성한다.':''}`;
   const user=`DESIGN_ONLY 상세 설계를 한 번에 완성하라. STABILIZE→UNDERSTAND→OBSERVE→DIAGNOSE→PRIORITIZE→BLUEPRINT→PROPOSE→COMPARE→REVISE→VALIDATE→LEARN→REPLAN→EXPAND 순서를 따른다. 정체성·핵심 재미·core loop·signature systems·시스템 연결·진행/경제·콘텐츠 확장·실패/재시도·플랫폼 적합성·UX/접근성·아트/오디오·구현 추적성을 서로 연결한다. 모든 장르에서 identity는 '무슨 게임인지'와 '같은 장르와 뭐가 다른지'가 한 번에 읽혀야 한다. playerFantasy는 플레이어의 역할과 책임을 구체화하고, coreFun/coreLoop는 representativeAction과 representativeChoice가 반복해서 실제 상태 변화를 만드는 구조여야 한다. signatureSystems는 일반적인 메뉴 기능이 아니라 제목을 가려도 이 게임을 알아볼 정도의 시그니처 약속을 1~2개 이상 핵심에 두고, systemInterconnections는 그 시그니처 규칙이 다른 시스템과 실제 상태를 주고받게 한다. progressionDirection은 레벨·공격력 상승 설명으로 끝내지 말고 성장 후 새 행동·경로·조합·관계·발견·대응법 중 무엇이 가능해지는지 적는다. visualDirection과 artAudioDirection은 세계 문화·지역·적·아이템·NPC·UI·사운드가 같은 정체성 논리를 공유하게 한다. 설계를 읽고 3문장으로 '이건 무슨 게임인가 / 같은 장르와 무엇이 다른가 / 성장하면 무엇을 새로 할 수 있나'가 서로 다른 답으로 즉시 나와야 한다. 이 기준은 퍼즐·레이싱·타이쿤·디펜스·생존·액션·RPG·카드·보드·전략·캐주얼 등 모든 장르에 적용하되 장르에 맞지 않는 RPG식 시스템을 억지로 추가하지 않는다. v4 novelGameGrammar가 있으면 단순히 '독특한 세계관'을 설명하지 말고 새로운 게임문법을 실제 플레이에 보존한다. causalDNA는 장식 키워드가 아니라 원인→선택→대가→다음 상태의 법칙이어야 하고, 한 축을 제거하면 평범한 장르로 돌아가는지 irreducibilityTest를 설계 전반에서 검증한다. 익숙한 인간 감정과 갈등은 공감의 발판으로 남기고, 캐릭터·몬스터·지역·스토리·아이템은 같은 인과법칙을 각기 다른 방식으로 보여준다. gameplaySystemFusion은 MAIN × A × B × c를 보존한다. A/B만 대축이고 c는 서브요소 묶음이다. @는 파고들기 층이라 c나 세 번째 대축으로 취급하지 않는다. 철학·종교·신화·역사·정치·비극·희극·해학·엽기·코믹은 모두 동등한 재료이며 게임 톤과 규모에 맞게 자유롭게 융합한다. 최종 장르 설명은 seed의 GAME_CATEGORY를 반복하지 말고 emergentGenre를 정체성에 반영한다. designAlternatives에는 최소 PLAN_A와 PLAN_B를 실제로 다른 접근으로 작성하고 각 안마다 컨셉/플레이어 판타지·핵심루프/세션리듬·맵 토폴로지/지역역할·랜드마크/이동·적 생태계/대응법·보스/시그니처 순간·성장/경제·퀘스트/스토리/이벤트·실패/재시도/복구·플랫폼 적응·구현범위·검증계획을 빠짐없이 구체화한다. selectedDesignPlan에서 선택 이유·정체성 보존·창작적 일탈·장르변경 여부·되돌림 가능성을 설명한다. contentVarietyPlan에서 맵/지역·적/도전·목표가 같은 템플릿 반복이 되지 않게 역할 차이를 설계한다. narrativeDialoguePlan은 해당 게임에서 스토리/대화가 필요하면 캐릭터별 말투와 장면·복선·회수·반전을 구체화하고 필요 없으면 applicable=false와 빈 배열을 사용한다. referenceHomagePlan은 공공영역 또는 추상기법/독자창작만 사용하고 그대로 베끼지 않는다. designIntegrityPlan은 이동·첫 행동·진행·퀘스트 선행조건·종료·회복·맵 목표·경제·대응법·보스 페이즈 전환·멀티 입장/이탈/재입장/동기화·세이브/마이그레이션·서사 인물지식/인과/복선회수 일관성을 실제 규칙 기준으로 검사하며 불확실한 걸 거짓 PASS로 쓰지 않는다. stabilityPriorityPlan은 알려진 증상을 구현/설계/혼합/미확정으로 분류한다. webCanonicalDesign은 기존 Roblox 상세 설계 수준으로 WEB 자체를 상세하게 설계하는 게임 원본이다. 단, 소스코드 authority가 아니라 게임 설계 reference이며 Unity WebGL의 canonical source는 기존 중앙정책대로 같은 Unity 프로젝트를 유지한다. WEB 원본에는 실제 1분·5분·15분 플레이를 상상할 수 있게 플레이 흐름·월드/이동·시스템/콘텐츠·전투/상호작용·진행/경제·실패/복구·UI/메뉴/온보딩·입력/카메라/접근성·연출/오디오·멀티/저장·향후 확장을 구체적인 상태 전이와 플레이 사례로 적는다. platformExpansionPolicy는 플랫폼 간 세부 parity를 요구하지 않는다. 공통으로 유지할 것은 CORE_IDENTITY, CORE_FUN_AND_REPRESENTATIVE_LOOP, WORLD_AND_PROGRESSION_DIRECTION, SAVE_PERSISTENCE_MEANING, MULTIPLAYER_INTENT의 큰틀뿐이며, 그 안에서 WEB·Unity·Roblox 각각 플랫폼 네이티브 시스템·콘텐츠·지역·세션·UX·연출을 자유롭게 응용·확장할 수 있다. 기존 platformProfiles.ROBLOX와 robloxBuildProfile은 이 WEB/Unity 요구 때문에 다시 쓰거나 축소하지 않는다. UNITY platformProfiles는 네이티브와 별개 게임을 설계하지 말고 같은 canonical Unity 프로젝트가 Unity Web/WebGL 검증 표면에서도 동작하도록 터치 입력·모바일 UI·브라우저 성능·WebGL 호환성을 포함한다. Unity Web은 릴리스 플랫폼이나 별도 게임 규칙이 아니며 핵심 규칙·밸런스를 바꾸지 않는다. SINGLE/COOP/COMPETITIVE/HYBRID 중 하나를 multiplayerMode에 반드시 명시한다. 이전 Strict 실패는 삭제하지 말고 실제 설계로 해결한다. scorer 최소치에 딱 맞추지 말고 구조·문자 길이에 충분한 안전여유를 둔다. 초기 설계는 압축 요약보다 구체적 상태 전이와 플레이 사례를 우선한다. MAIN은 입력→즉시 피드백→상태 변화→위험/보상→다음 선택까지 한 사이클을 실제 플레이 기준으로 적고, A와 B는 각각 독립된 대축의 상태·자원·선택·실패조건·성장효과를 구분한 뒤 서로 어떤 값을 주고받는지 명시한다. c는 최소 3개 이상의 서브요소가 MAIN/A/B 결과를 어떻게 변주하는지 원인→선택→대가 단위로 적고 대축처럼 독립 진행시키지 않는다. @는 해금 조건·발견 단서·숙련 보상·재방문 가치·고급 조합을 구체화하되 일반 시스템 축으로 승격하지 않는다. 지역·맵·적·보스·아이템·퀘스트·이벤트는 이름 나열로 끝내지 말고 역할, 플레이어가 읽는 신호, 요구 선택, 상태 입력/출력, 카운터플레이, 보상, 실패/복구, 다음 시스템 연결을 적는다. 진행/경제는 획득원·소비처·해금·새 행동·새 경로·빌드 분화가 어떻게 연결되는지, 실패 후 무엇을 잃고 무엇을 보존하는지까지 적는다. 플랫폼 설계는 PC 설명을 모바일로 복사하지 말고 터치 조작·UI 밀도·가독성·카메라·세션 중단/복귀를 실제 흐름에 연결한다. designAlternatives의 PLAN_A/PLAN_B도 각각 MAIN/A/B/c/@가 어떻게 달라지는지 비교 가능하게 작성하고 selectedDesignPlan은 선택안의 실제 플레이 5분·15분·30분 흐름을 설명한다. 반복 문장이나 장식적 세계관으로 분량을 채우지 말고 구현 가능한 규칙과 상태 연결에 분량을 사용한다. 메뉴와 UI도 게임 규칙의 일부로 설계한다. 시작 화면·메인 메뉴·계속하기/새 게임·세이브/로드·설정·일시정지·HUD·인벤토리·장비·상점·퀘스트 로그·지도·제작·사망/재시도·결과 화면·멀티 로비/매칭은 해당 게임에 필요한 것만 선택하되, 각 화면의 진입 조건·나가기/뒤로가기·핵심 정보 우선순위·버튼 이름/위치/역할·활성/비활성/잠금·확인/취소·로딩/오류·터치 영역·키보드/패드/모바일 조작·중복 클릭 방지·진행 막힘 방지를 구체화한다. 튜토리얼/온보딩은 첫 입력, 첫 성공, 첫 실패, 첫 성장, 첫 메뉴 사용을 실제 1분·5분·15분 흐름에 배치한다. 전투/주요 상호작용은 입력, 선행조건, 판정, 자원 소모, 쿨다운, 적 반응, 피격/회피/상태효과, 사망/복구, 카메라/VFX/SFX 피드백까지 연결하고 적은 역할·행동 신호·공격 패턴·카운터·군집 관계·스폰/리젠·지역 역할을 구분한다. 보스는 진입 조건·페이즈·패턴 전환 조건·전조·대응법·실패 학습·승리 후 세계/진행 변화까지 설계한다. 월드/맵은 지역별 목적·동선·랜드마크·접근 조건·빠른 이동/복귀·위험 보상·수직/수평 탐색·밀도·비밀·재방문 이유를 적고 단순 크기 확장으로 대신하지 않는다. 인벤토리/장비/제작/상점/경제는 획득원·소비처·소지 제한·정렬/필터·장착 교체·제작 조건·가격/보상 의미·희귀도·중복 처리·손실/복구·세이브 의미까지 연결한다. 스토리와 퀘스트가 중요한 게임은 메인/사이드/동료/세력/지역/숨김/월드 이벤트 중 필요한 유형을 사용하고 각 퀘스트에 발생 원인·선행조건·목표·플레이어 선택·상태 변화·결과·보상 의미·후속 또는 종료를 명시하며 단순 처치/수집 복제를 금지한다. NPC/동료/세력은 욕구·목표·갈등·관계·기억·지식범위·말투·행동 의도와 플레이어 행동에 따른 변화가 퀘스트와 세계 상태에 이어지게 한다. 저장/복구는 저장 시점·저장 대상·중단/재접속·체크포인트·죽음·롤백·마이그레이션·멀티 재입장 의미를 설계하고 기존 저장 의미를 깨지 않는다. 접근성/설정은 글자 크기·대비·진동·음량 분리·카메라 민감도·조작 재매핑 가능성·색상 의존 회피·모바일 가독성을 게임에 맞게 다룬다. 성능 설계는 화면 내 적/이펙트/UI/오브젝트 밀도와 스트리밍·풀링·LOD 또는 플랫폼 대체 전략을 플레이 품질과 함께 잡는다. contentExpansionPlan은 한 번의 완성 목록이 아니라 검증 회차가 반복될수록 현재 소스와 이전 검증 결과에서 다음 부족분을 골라 실제 코드와 플레이 콘텐츠를 연결 확장하는 순서를 적는다. 각 확장 단계는 현재 기준선·추가되는 플레이어 행동/지역/적/보스/아이템/퀘스트/스토리/메뉴·재사용할 기존 시스템·수정 책임·선행조건·세이브/밸런스 호환·런타임 확인 방법을 포함하고, 단순 수치 증가나 기능 개수 늘리기를 진화로 간주하지 않는다. 초기 완성 후에도 MAIN/A/B 관계를 깊게 하고 새 c 변주와 @ 파고들기, 중후반 콘텐츠·재방문·리플레이·스토리/퀘스트 후속을 기존 정체성 안에서 단계적으로 늘릴 수 있게 설계한다.\nPRE_GATE_STRUCTURE_CONTRACT=${JSON.stringify(repairStructureContract(DESIGN.required))}\nSTRICT_GATE_FEEDBACK=${clip(strictDesignerFeedback,6500)}\nGAME_SEED_DESIGN_DEPTH=${clip(seedDesignDepthContext,16000)}\nEVIDENCE=${clip(evidence,15000)}`;
   return await authorDesignInCheckpointedSlices({
     phase:'designer_draft',
@@ -1161,6 +1230,8 @@ function scoreCurrentDesign(label,design){
 }
 
 let designDraft=enforceOwnerPreservationDesign(await runPhase('designer_draft',generateDesignerDraft));
+persistDesignerSeed(designDraft,'designer_draft');
+persistDesignCheckpoint();
 // Deterministic scoring is intentionally never served from checkpoint cache.
 // The current design object is cheap to rescore and may have changed after targeted repair.
 let preGate=scoreCurrentDesign('deterministic_pre_gate',designDraft);
@@ -1229,17 +1300,11 @@ if(!designIntelligence.implementationGate.allowed){
   persistDesignCheckpoint();
   throw new Error(designCheckpoint.lastError);
 }
-writeJson(path.join(base,'design-draft.json'),{version:5,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,gameSeedId:seed.seedId,gameSeedSource:'game-seed-state.json',gameplaySketchVersion:seedGameplaySketchVersion,gameplaySketch:seedGameplaySketch,ownerDesignEventId:designEvolutionBrief.ownerIntent.eventId||null,designEvolutionLoopVersion:1,authorRole:'GAME_DESIGNER_AI',authorModel:designCheckpoint.effectiveDesignerModel||activeDesignerRoute.id,singleAuthor:true,preGate:{pass:preGatePass(preGate),totalScore:preGate.totalScore,hardFailures:preGate.hardFailures,criticalAxisFailures:preGate.criticalAxisFailures,attempts:preGateHistory.length-1},content:designDraft});
-if(!preGatePass(preGate)){
-  designCheckpoint.status='PRE_GATE_BLOCKED';
-  designCheckpoint.lastError=`DESIGN_PRE_GATE_BLOCKED score=${preGate.totalScore} hard=${(preGate.hardFailures||[]).join(',')||'NONE'}`;
-  console.log('DESIGN_PRE_GATE_REPAIR_CHECKPOINTS_PRESERVED=YES');
-  persistDesignCheckpoint();
-  writeProgress('PRE_GATE_REPAIR',{blocked:true,preGateScore:preGate.totalScore,hardFailures:preGate.hardFailures,repairPacket:repairPacket(preGate)});
-  throw new Error(designCheckpoint.lastError);
-}
-writeProgress('DEPARTMENT_REVIEWS',{preGateScore:preGate.totalScore,preGatePass:true});
-console.log(`DESIGN_PRE_GATE=PASS|${preGate.totalScore}`);
+persistDesignerSeed(designDraft,'designer_draft');
+writeJson(path.join(base,'design-draft.json'),{version:5,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,gameSeedId:seed.seedId,gameSeedSource:designerSeedPath,gameSeedInputSource:'game-seed-state.json',gameplaySketchVersion:seedGameplaySketchVersion,gameplaySketch:seedGameplaySketch,ownerDesignEventId:designEvolutionBrief.ownerIntent.eventId||null,designEvolutionLoopVersion:1,authorRole:'GAME_DESIGNER_AI',authorModel:designCheckpoint.effectiveDesignerModel||activeDesignerRoute.id,singleAuthor:true,preGate:{pass:preGatePass(preGate),totalScore:preGate.totalScore,hardFailures:preGate.hardFailures,criticalAxisFailures:preGate.criticalAxisFailures,attempts:preGateHistory.length-1},content:designDraft});
+// 초안 점수는 수정 근거다. 작성 완료 후보를 막는 별도 사전 통과 게이트는 없다.
+writeProgress('DEPARTMENT_REVIEWS',{preGateScore:preGate.totalScore,preGatePass:preGatePass(preGate),preGateAdmissionRequired:false});
+console.log(`DESIGN_PRE_GATE=REMOVED|score=${preGate.totalScore}|finalReview=REQUIRED`);
 
 
 function deterministicDepartmentReview(role,scored){
@@ -1290,10 +1355,12 @@ writeJson(path.join(base,'department-lead-reviews.json'),{
 
 writeProgress('DETERMINISTIC_REVALIDATION',{departmentEvidenceComplete:ROLES.length,aiReviewUsed:false});
 const revisedDesign=designDraft;
+persistDesignerSeed(revisedDesign,'designer_revision');
+persistDesignCheckpoint();
 const postRevisionPreGate=deterministicPreGate(revisedDesign);
 writeJson(path.join(base,'design-revised.json'),{
   version:6,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,
-  gameSeedId:seed.seedId,gameplaySketchVersion:seedGameplaySketchVersion,gameplaySketch:seedGameplaySketch,ownerDesignEventId:designEvolutionBrief.ownerIntent.eventId||null,designEvolutionLoopVersion:1,authorRole:'GAME_DESIGNER_AI',authorModel:designCheckpoint.effectiveDesignerModel||activeDesignerRoute.id,
+  gameSeedId:seed.seedId,gameSeedSource:designerSeedPath,gameSeedInputSource:'game-seed-state.json',gameplaySketchVersion:seedGameplaySketchVersion,gameplaySketch:seedGameplaySketch,ownerDesignEventId:designEvolutionBrief.ownerIntent.eventId||null,designEvolutionLoopVersion:1,authorRole:'GAME_DESIGNER_AI',authorModel:designCheckpoint.effectiveDesignerModel||activeDesignerRoute.id,
   sameModelAsDraft:false,revisionApplied:false,reviewMode:'DETERMINISTIC_EVIDENCE_NO_AI_REVIEW',
   deterministicRevalidation:{passed:preGatePass(postRevisionPreGate),authority:'STAGE_GATE_SCORING_V2'},
   status:'DESIGN_BASELINE_CANDIDATE',
@@ -1357,7 +1424,7 @@ const runtimeMetrics={
 writeJson(path.join(base,'cycle-status.json'),{
   version:6,date,gameId,gameName:game.name,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,
   status:'COMPLETE',policyDocument:'COMPANY_FLOW.md',flow:'GAME_SEED_TO_DESIGN_BASELINE_CANDIDATE',
-  gameSeed:{seedId:seed.seedId,category:seed.GAME_CATEGORY,source:'game-seed-state.json',complete:true,gameplaySketchVersion:seedGameplaySketchVersion,advancedDesignDepth:advancedSeedDesignDepth},
+  gameSeed:{seedId:seed.seedId,category:seed.GAME_CATEGORY,source:designerSeedPath,inputSource:'game-seed-state.json',authorRole:'GAME_DESIGNER_AI',complete:true,gameplaySketchVersion:seedGameplaySketchVersion,advancedDesignDepth:advancedSeedDesignDepth},
   designer:{role:'GAME_DESIGNER_AI',model:designCheckpoint.effectiveDesignerModel||activeDesignerRoute.id,singleAuthor:true,sameModelRevised:false},
   departments:{
     count:ROLES.length,roles:ROLES,leadModels,resolvedLeadModels,

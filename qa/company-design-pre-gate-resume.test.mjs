@@ -11,9 +11,85 @@ import {EventEmitter} from 'node:events';
 import {createHash} from 'node:crypto';
 import {buildAllGameDynamicLibraryBindingPlan,buildAssetSupplyDecisionSummary} from '../tools/vibe2-asset-production-plan.mjs';
 import {validateDesignAuthoringContent,scoreDesignGateV2,designPlayabilityRequirements} from '../tools/company-design-gate-scoring-v2.mjs';
+import {activeSeedForGame} from '../tools/game-seed-state.mjs';
+import {ownerDesignResetSeedForGame} from '../tools/owner-design-reset.mjs';
+import {makeAutoMissingDesignSeed,latestUsableDesign} from '../tools/company-all-games-design-reset.mjs';
+import {validateGameSeed} from '../tools/company-game-seed-contract.mjs';
 
 const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
 const assertDesignSchema=runInNewContext(design.slice(design.indexOf('function assertSchemaValue('),design.indexOf('function normalizeSchemaValue('))+'\nassertSchemaValue');
+
+test('design admission accepts a missing seed while skipping superseded work and retaining final review',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  const decision=workflow.split('\n').filter(line=>/const (targetStillCurrent|shouldRun)=/.test(line)).join('\n');
+  for(const [seed,due,superseded,expected] of [[null,true,false,true],[{seedId:'current'},true,false,true],[{seedId:'newer'},true,false,false],[null,false,false,false],[null,true,true,false]]){
+    assert.equal(runInNewContext(decision+'\nshouldRun',{seed,seedId:'current',targetDue:due,supersededByNewerPass:superseded}),expected);
+  }
+  assert.doesNotMatch(workflow,/DESIGN_SEED_NORMALIZATION_STAGE=PRE_DESIGN|name: Static strict contracts/);
+  assert.doesNotMatch(design,/GAME_SEED_REQUIRED:|DESIGN_ONLY_CLASS_REQUIRED:|designCheckpoint\.status='PRE_GATE_BLOCKED'/);
+  assert.match(workflow,/Apply strict 30-minute design review/);
+  assert.match(workflow,/strict.verdict==='PASS'/);
+});
+
+test('designer can start without a pre-authored seed and preserves the original instead of automatic grammar',()=>{
+  const source=design.slice(design.indexOf('function resolveDesignerSeedInput('),design.indexOf('const gameId='));
+  const resolve=runInNewContext(source+'\nresolveDesignerSeedInput',{path,activeSeedForGame,ownerDesignResetSeedForGame,makeAutoMissingDesignSeed,latestUsableDesign,validateGameSeed,clean:v=>String(v??'').trim()});
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'designer-self-seed-'));
+  try{
+    const original={gameId:'demo',content:{identity:'원본은 네 명씩 두 팀으로 시작하는 감염 게임이다',coreFun:'공격을 맞힌 뒤 진영과 다음 선택이 실제로 바뀐다',coreLoop:['위치를 확인한다','공격을 맞혀 진영을 바꾼다','남은 인원으로 다시 협력한다'],multiplayerMode:'COMPETITIVE',technicalAssumptions:['제한 시간 240초를 보존한다']}};
+    const folder=path.join(root,'design/demo/2026-10-08');fs.mkdirSync(folder,{recursive:true});
+    fs.writeFileSync(path.join(folder,'design-revised.json'),JSON.stringify(original));
+    const state={seeds:[]},catalog={games:[{id:'demo',name:'Demo',description:'원본 감염전을 구체화',selectedPlatform:'ROBLOX',lifecycleState:'ACTIVE'}]};
+    const input=resolve({state,gameId:'demo',catalog,root});
+    assert.equal(input.created,true);assert.equal(state.seeds.length,1);
+    assert.equal(validateGameSeed(input.seed).pass,true);
+    assert.equal(input.seed.designInputMode,'DESIGNER_SELF_SEED');
+    assert.deepEqual(input.seed.originalDesignContext.content,original.content);
+    assert.equal(input.seed.MULTIPLAYER_DESIGN_MODE,'COMPETITIVE');
+    assert.equal(input.seed.GAMEPLAY_SKETCH.novelGameGrammar,undefined);
+    assert.match(input.seed.GAMEPLAY_SKETCH.source,/NOT_AUTHORED_DESIGN/);
+    assert.equal(input.seed.seedAuthoring.externalSeedRequired,false);
+    assert.equal(resolve({state,gameId:'demo',catalog,root}).created,false);
+    assert.equal(state.seeds.length,1,'resume must keep the same intake identity');
+    const fresh=resolve({state,gameId:'new-concept',catalog,root,brief:'수중 탐험 게임의 씨앗부터 직접 설계해'});
+    assert.equal(fresh.created,true);assert.equal(fresh.seed.OWNER_LATEST_DESIGN_REQUEST,'수중 탐험 게임의 씨앗부터 직접 설계해');
+    assert.throws(()=>resolve({state,gameId:'unknown',catalog,root}),/DESIGN_BRIEF_OR_ORIGINAL_REQUIRED/);
+    assert.throws(()=>resolve({state,gameId:'demo',catalog:{...catalog,permanentRemovalPolicy:{ids:['demo']}},root}),/DESIGN_GAME_REMOVED/);
+    assert.throws(()=>resolve({state,gameId:'../other',catalog,root}),/DESIGN_GAME_ID_INVALID/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('the same designer authors and checkpoints the seed before detailed slices without a second model lane',async()=>{
+  const fixture=playableFixture();
+  const content={identity:'검사용 감염 게임에서 공격 적중으로 팀 구성이 바뀐다',playerFantasy:'상대의 선택을 읽고 동료와 합류하는 참가자',coreFun:'공격과 회피의 결과가 다음 진영의 협력 선택으로 이어진다',coreLoop:['상대 위치와 자원을 읽는다','공격이나 회피로 상태를 바꾼다','바뀐 팀 구성으로 다시 경로를 고른다'],signatureSystems:fixture.design.signatureSystems,multiplayerMode:'COMPETITIVE'};
+  const fields=Object.keys(content),slices=[{id:'identity-core',fields,predict:1200},{id:'next-detail',fields:['progressionDirection'],predict:900}];
+  const schemaFor=keys=>({type:'object',required:keys,properties:Object.fromEntries(keys.map(k=>[k,{type:Array.isArray(content[k])?'array':'string'}])),additionalProperties:false});
+  const checkpoint={tasks:{},effectiveDesignerModel:'ollama:test-model'},writes=[],calls=[];
+  const source=design.slice(design.indexOf('function persistDesignerSeed('),design.indexOf('function mergeDesignerDesign('));
+  let failDetail=true;
+  const author=runInNewContext(source+'\nauthorDesignInCheckpointedSlices',{
+    ownerPreservationDesign:false,designAssetLibrary:null,designAssetFamilies:[],playableRequirements:designPlayabilityRequirements(fixture.seed),currentRuleSourceContext:{},currentRuleSource:'',
+    seed:{...fixture.seed,seedId:'test',designInputMode:'DESIGNER_SELF_SEED'},seedDesignDepthContext:{invented:'automatic sketch must not be input'},gameId:'demo',date:'2026-10-08',designerSeedPath:'design/demo/2026-10-08/design-seed.json',engineDigest:'engine',checkpointFingerprint:'input',activeDesignerRoute:{id:'ollama:test-model'},
+    clip:(v,n)=>{const s=typeof v==='string'?v:JSON.stringify(v);return s.slice(0,n);},createHash,DESIGN_AUTHORING_SLICES:slices,designSliceSchema:schemaFor,repairStructureContract:v=>v,designCheckpoint:checkpoint,
+    validateDesignAuthoringContent,assertSchemaValue:assertDesignSchema,writeJson:(file,value)=>writes.push({file,value:structuredClone(value)}),persistDesignCheckpoint(){},console:{log(){}},
+    runCheckpointTask:async(phase,id,work)=>checkpoint.tasks[id]||(checkpoint.tasks[id]=await work()),
+    callDesignerModel:async(system,user)=>{calls.push(user);if(user.includes('SLICE_ID=identity-core'))return structuredClone(content);if(failDetail)throw new Error('MODEL_TEMPORARILY_UNAVAILABLE');return{progressionDirection:'검사용 후속 설계가 같은 인원과 자원 상태를 이어받는다'};},
+    repairDesignRequiredFields:value=>({value}),factPack:{},enforceOwnerPreservationDesign:v=>v,DESIGN:{}
+  });
+  await assert.rejects(author({phase:'designer_draft',system:'single designer',sharedContext:'owner original'}),/MODEL_TEMPORARILY_UNAVAILABLE/);
+  assert.equal(writes.length,1,'seed is available even if a later detail call fails');
+  assert.deepEqual(writes[0].value.content,content);assert.equal(writes[0].value.authorRole,'GAME_DESIGNER_AI');
+  assert.equal(writes[0].value.authorModel,'ollama:test-model');assert.equal(writes[0].value.designPass,false);assert.equal(writes[0].value.runtimePass,false);
+  assert.ok(calls[1].includes('"identity":"'+content.identity+'"'));assert.ok(calls.every(p=>!p.includes('GAME_SEED_DESIGN_DEPTH=')));
+  failDetail=false;
+  await author({phase:'designer_draft',system:'single designer',sharedContext:'owner original'});
+  assert.equal(calls.filter(p=>p.includes('SLICE_ID=identity-core')).length,1,'resume reuses the same model-authored seed');
+  const invalid={...content,signatureSystems:[{...content.signatureSystems[0],grammarRole:'MAIN'}]};
+  const save=runInNewContext(design.slice(design.indexOf('function persistDesignerSeed('),design.indexOf('async function authorDesignInCheckpointedSlices('))+'\npersistDesignerSeed',{
+    DESIGN_AUTHORING_SLICES:slices,designSliceSchema:schemaFor,assertSchemaValue:assertDesignSchema,validateDesignAuthoringContent,seed:fixture.seed,ownerPreservationDesign:false,currentRuleSource:'',writeJson(){throw new Error('invalid seed must never be saved');}
+  });
+  assert.throws(()=>save(invalid,'designer_draft'),/DESIGNER_SEED_REPAIR_REQUIRED/);
+});
 
 // 대표 검증과 일반 배치 모두 실제 대상 수·중앙 정책 범위 안에서 병렬 실행한다.
 test('design canary games run concurrently without bypassing the verified-engine gate',()=>{
@@ -188,7 +264,9 @@ test('blocked resume preserves the current designer draft and gate threshold',()
   assert.doesNotMatch(section,/delete designCheckpoint\.phases\.designer_draft/);
   assert.doesNotMatch(section,/designCheckpoint\.phases\s*=\s*\{\}/);
   assert.doesNotMatch(section,/DESIGN_GATE_PASS_MINIMUM\s*=/);
-  assert.match(design,/if\(!preGatePass\(preGate\)\)[\s\S]*status='PRE_GATE_BLOCKED'/);
+  assert.doesNotMatch(design,/designCheckpoint\.status='PRE_GATE_BLOCKED'/);
+  assert.match(design,/DESIGN_PRE_GATE=REMOVED/);
+  assert.match(design,/strictGateStillAuthoritative:true/);
 });
 
 test('current blocked checkpoint engine remains compatible with targeted resume migration',()=>{
