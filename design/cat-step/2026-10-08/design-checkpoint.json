@@ -751,25 +751,47 @@
     },
     "local_authoring_parts::b789dcb2010a50b8a43cbee4b8a1cef0cbfd43ad55901c0081c37e7f49b71380:trigger": {
       "trigger": "Player selects a level with a clear goal, limited moves, obstacles, or a visible puzzle constraint. They then make strategic moves, create combos, and use immediate feedback to solve the current objective."
+    },
+    "local_authoring_parts::b789dcb2010a50b8a43cbee4b8a1cef0cbfd43ad55901c0081c37e7f49b71380:stateChange": {
+      "stateChange": "Player selects a level with a clear goal, limited moves, obstacles, or a visible puzzle constraint. They then make strategic moves, create combos, and use immediate feedback to solve the current objective. The selected level's goal is recorded as the current objective. The game's state is updated to reflect the new objective, and the player is prompted to做出新"
+    },
+    "local_authoring_parts::61837df9f657b26ca71c24a95b0802563d8e4752f2e70813b6d845b8f0ed89a9:systemInterconnections:0": {
+      "fromId": "cat-step-signature-systems-0",
+      "toId": "cat-step-signature-systems-1",
+      "stateKeys": [
+        "LEVEL_GOAL",
+        "LIMITED_MOVES",
+        "OBSTACLES",
+        "VISIBLE_PUZZLE_CONSTRAINT",
+        "MATCHES",
+        "DELIVERED_FEEDBACK",
+        "CLEAR_LEVEL_GOAL",
+        "REWARD",
+        "NEXT_BOARD_PATTERN"
+      ],
+      "fromSystem": "cat-step-signature-systems-0",
+      "toSystem": "cat-step-signature-systems-1",
+      "trigger": "Player selects a level with a clear goal, limited moves, obstacles, or a visible puzzle constraint. They then make strategic moves, create combos, and use immediate feedback to solve the current objective.",
+      "stateChange": "Player selects a level with a clear goal, limited moves, obstacles, or a visible puzzle constraint. They then make strategic moves, create combos, and use immediate feedback to solve the current objective. The selected level's goal is recorded as the current objective. The game's state is updated to reflect the new objective, and the player is prompted to做出新"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 27,
-      "successes": 27,
+      "calls": 28,
+      "successes": 28,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1243680,
-      "lastMs": 59173,
+      "totalMs": 1307742,
+      "lastMs": 64062,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:46:08.604Z"
+      "updatedAt": "2026-10-08T15:47:12.668Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:58:12.306Z",
-  "updatedAt": "2026-10-08T15:46:08.604Z",
+  "updatedAt": "2026-10-08T15:47:12.670Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3037,7 +3059,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:46:08.604Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:47:12.670Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
