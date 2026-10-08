@@ -73,3 +73,18 @@ test('asset strategy preserves usable originals instead of replacing by default'
   assert.equal(Graphics.classifyAsset({currentQuality:.6,readability:.6,identityFit:.7}), 'ENHANCE');
   assert.equal(Graphics.classifyAsset({currentQuality:.6,readability:.6,identityFit:.7,needsParts:true}), 'COMBINE');
 });
+
+// 메인: 렌더링 후보 파일 권한과 저장소 경로 경계를 검사한다.
+test('graphics candidate scoping rejects traversal, absolute paths and URLs while retaining local rendering', () => {
+  const unsafe = ['../assets/render.js', '../../game/ui.css', '/etc/shaders/screen.css', 'C:\\\\private\\\\ui.css', 'https://example.com/ui.css', 'assets/legit/../../tools/render.js'];
+  for (const file of unsafe) {
+    const authority = Graphics.visualFileAuthority(file);
+    assert.equal(authority.safe, false, file);
+    assert.equal(authority.reason, 'UNSAFE_VISUAL_PATH', file);
+  }
+  const local = 'web-games/demo/assets/ui/panel.css';
+  assert.equal(Graphics.visualFileAuthority(local).safe, true);
+  const plan = Graphics.planGraphicsImplementation({ goal: '모바일 화면 수정', anomalies: ['UI_OUTSIDE_SAFE_AREA'], files: [unsafe[0], local] });
+  assert.deepEqual(plan.scope, [local]);
+  assert.equal(Graphics.graphicsImplementationImpact({ changedFiles: [local, unsafe[0]] }).pass, false);
+});
