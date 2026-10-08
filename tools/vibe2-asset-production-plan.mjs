@@ -4345,23 +4345,65 @@ export function buildVibeAssetProductionPlan({
   let uiLibrarySource='';
   try{uiLibrarySource=fs.readFileSync(path.join(repoRoot,uiLibrarySourcePath),'utf8');}catch{}
   const uiLibraryHash=uiLibrarySource?crypto.createHash('sha256').update(uiLibrarySource).digest('hex'):null;
-  const nativeMenuPaths=!safeMenuGameId?[]:resolvedTarget==='roblox'?[
-    'roblox-games/'+safeMenuGameId+'/shared/RPGMenu.luau',
-    'roblox-games/'+safeMenuGameId+'/shared/RPGMenuModel.luau',
-    'roblox-games/'+safeMenuGameId+'/client/Game.client.luau',
-    'roblox-games/'+safeMenuGameId+'/shared/GameConfig.luau',
-    'roblox-games/'+safeMenuGameId+'/server/Game.server.luau'
-  ]:resolvedTarget==='unity'?[
-    'unity-games/'+safeMenuGameId+'/Assets/Scripts/RuntimeBootstrap.cs',
-    'unity-games/'+safeMenuGameId+'/Assets/Scripts/GameCore.cs'
-  ]:[];
+  // 장르별 원본 시스템은 선택된 게임 디렉터리의 네이티브 코드에서만 찾는다.
+  // RPG 고정 파일명만 읽으면 생존/디펜스/농장 등 다른 장르의 실제 시스템을 놓친다.
+  const nativeMenuRoot=!safeMenuGameId?'':resolvedTarget==='roblox'
+    ?'roblox-games/'+safeMenuGameId:'unity-games/'+safeMenuGameId+'/Assets/Scripts';
+  const nativeMenuPaths=[];
+  if(nativeMenuRoot){
+    const queue=resolvedTarget==='roblox'
+      ?['/server','/client','/shared'].map(suffix=>({dir:nativeMenuRoot+suffix,depth:0}))
+      :[{dir:nativeMenuRoot,depth:0}];
+    while(queue.length&&nativeMenuPaths.length<96){
+      const current=queue.shift();
+      let entries=[];
+      try{entries=fs.readdirSync(path.join(repoRoot,current.dir),{withFileTypes:true});}catch{continue;}
+      for(const entry of entries.sort((a,b)=>a.name.localeCompare(b.name))){
+        if(entry.isSymbolicLink()||entry.name.startsWith('.'))continue;
+        const file=current.dir+'/'+entry.name;
+        if(entry.isDirectory()&&current.depth<3){
+          queue.push({dir:file,depth:current.depth+1});
+        }else if(entry.isFile()&&
+          (resolvedTarget==='roblox'?/\\.luau$|\\.lua$/i:/\\.cs$/i).test(entry.name)){
+          nativeMenuPaths.push(file);
+          if(nativeMenuPaths.length>=96)break;
+        }
+      }
+    }
+  }
+  let nativeMenuSourceBytes=0;
   const nativeMenuSources=nativeMenuPaths.flatMap(file=>{
     try{
       const full=path.join(repoRoot,file),stat=fs.statSync(full);
-      if(!stat.isFile()||stat.size>750000)return[];
+      if(!stat.isFile()||stat.size>750000||nativeMenuSourceBytes+stat.size>4000000)return[];
       const content=fs.readFileSync(full,'utf8');
+      nativeMenuSourceBytes+=stat.size;
       return[freeze({file,content,sha256:crypto.createHash('sha256').update(content).digest('hex')})];
     }catch{return[];}
+  });
+  // 'player', 'shop', 'world' 같은 일반 단어만으로는 게임 시스템이 존재한다고 판단하지 않는다.
+  // 서버/게임 상태 책임 소스의 실제 메서드나 저장 필드가 있어야 바인딩을 허용한다.
+  const nativeMenuGameplaySources=nativeMenuSources.filter(row=>resolvedTarget==='roblox'
+    ?row.file.includes('/server/')||row.file.includes('/shared/')
+    :!/\\/(?:RuntimeBootstrap|[^/]*(?:View|Menu|Screen|UI))\\.cs$/i.test(row.file));
+  const menuRoleOwnerProof=freeze({
+    CHARACTER:/SetAttribute\\s*\\(\\s*["'](?:MaxHP|Level|ClassId)["']|\\b(?:class|struct)\\s+PlayerState\\b|\\bGetMaxHp\\s*\\(/,
+    INVENTORY:/SetAttribute\\s*\\(\\s*["'](?:WeaponTier|Inventory|ItemCount)["']|\\bownedWeapons\\s*=|\\bownedArmors\\s*=|\\b(?:AddItem|RemoveItem|GrantItem)\\s*\\(/,
+    EQUIPMENT:/SetAttribute\\s*\\(\\s*["'](?:WeaponTier|ArmorTier)["']|\\bTryEquip(?:Weapon|Armor)\\s*\\(|\\bequippedWeaponId\\s*=/,
+    TRADE:/\\b(?:purchaseMerchantEquipment|TryBuyWeapon|TryBuyArmor|TrySellWeapon|TrySellArmor|PurchaseItem|SellItem)\\s*\\(/,
+    QUEST:/SetAttribute\\s*\\(\\s*["'](?:QuestPortal|QuestKills)["']|\\bmainQuestStep\\s*[;=]|\\b(?:AcceptQuest|CompleteQuest)\\s*\\(/,
+    PARTY:/SetAttribute\\s*\\(\\s*["'](?:PartyCount|PartyHuntActive)["']|\\b(?:AddPartyMember|RemovePartyMember|JoinParty)\\s*\\(/,
+    CODEX:/SetAttribute\\s*\\(\\s*["'](?:UnlockedCompanions|CodexEntry)["']|\\b(?:UnlockCodex|RecordDiscovery)\\s*\\(/,
+    CRAFT:/\\b(?:CraftItem|TryCraft|CompleteCraft|CraftRecipe)\\s*\\(/,
+    MAP:/\\b(?:DrawMap|BuildMap|CreateWorldMap|OpenRegionMap|UpdateMinimap)\\s*\\(/,
+    HOUSING:/\\b(?:PlaceBuilding|BuildStructure|TryBuild|PlaceFurniture)\\s*\\(/,
+    FARM:/\\b(?:PlantCrop|HarvestCrop|WaterCrop|TryHarvest)\\s*\\(/,
+    GROWTH:/SetAttribute\\s*\\(\\s*["'](?:Level|XP)["']|\\b(?:grantXP|GainExperience|AddExperience)\\s*\\(/,
+    DEFENSE:/\\b(?:SpawnWave|StartWave|AdvanceWave|BuildTower|PlaceTower)\\s*\\(/,
+    PUZZLE:/\\b(?:SolvePuzzle|MovePuzzleTile|CheckPuzzle|SubmitPuzzle)\\s*\\(/,
+    SURVIVAL:/SetAttribute\\s*\\(\\s*["'](?:Hunger|Thirst|Temperature)["']|\\b(?:ApplyHunger|ConsumeHunger|UpdateSurvival)\\s*\\(/,
+    DIALOGUE:/SetAttribute\\s*\\(\\s*["'](?:NPCSpeech|DialogueId)["']|\\b(?:StartDialogue|ShowDialogue)\\s*\\(/,
+    INTERACTION:/SetAttribute\\s*\\(\\s*["'](?:InteractionKind|ObjectInteractionKind)["']|\\b(?:HandleInteraction|TriggerInteraction)\\s*\\(/
   });
   const currentMenuIdeaIds=menuSeed.ideas.filter(idea=>idea.domain==='UI');
   const selectedMenuRoles=new Map([['NAV',new Set(['ALWAYS'])],['MOBILE_NAV',new Set(['ALWAYS'])]]);
@@ -4373,17 +4415,23 @@ export function buildVibeAssetProductionPlan({
   }
   const menuFeatureSuggestions=freezeList([...selectedMenuRoles].map(([role,signalSet])=>{
     const factory=menuRoleFactories[role],methodHints=nativeMenuMethodHints[role]||[];
-    const gameSystemSource=nativeMenuSources.filter(row=>menuRoleSourceHints[role].test(row.content));
-    const existingNativeUiSource=nativeMenuSources.filter(row=>methodHints.some(method=>row.content.includes(method)));
+    // 메뉴 자체만 발견한 경우 시스템 구현으로 승격하지 않는다.
+    const systemProof=menuRoleOwnerProof[role];
+    const gameSystemSource=(role==='NAV'||role==='MOBILE_NAV')
+      ?nativeMenuSources.filter(row=>menuRoleSourceHints[role].test(row.content))
+      :nativeMenuGameplaySources.filter(row=>systemProof&&systemProof.test(row.content));
+    const existingNativeUiSource=gameSystemSource.length
+      ?nativeMenuSources.filter(row=>methodHints.some(method=>row.content.includes(method))):[];
     const status=existingNativeUiSource.length?'NATIVE_UI_SOURCE_PRESENT_RUNTIME_QA_REQUIRED'
       :gameSystemSource.length?'EXISTING_SYSTEM_NATIVE_UI_BINDING_REQUIRED':'IDEA_ONLY_GAME_SYSTEM_NOT_CONFIRMED';
     return freeze({
-      role,factory,signalIds:freezeList([...signalSet]),
+      role,factory:resolvedTarget==='roblox'?factory:null,signalIds:freezeList([...signalSet]),
       sourceIdeaIds:freezeList(currentMenuIdeaIds.filter(row=>
         (role==='NAV'||role==='MOBILE_NAV')&&row.ideaId==='ONE_HAND_CONTEXT_ACTION_LAYOUTS'
         ||row.sourceSignals.some(signal=>signalSet.has(signal))).map(row=>row.ideaId)),
-      companyUiSource:uiLibrarySourcePath,companyUiSourceSha256:uiLibraryHash,
-      companyFactoryPresent:uiLibrarySource.includes('function RobloxCommonUI.'+factory+'(options)'),
+      companyUiSource:resolvedTarget==='roblox'?uiLibrarySourcePath:null,
+      companyUiSourceSha256:resolvedTarget==='roblox'?uiLibraryHash:null,
+      companyFactoryPresent:resolvedTarget==='roblox'&&uiLibrarySource.includes('function RobloxCommonUI.'+factory+'(options)'),
       platform:resolvedTarget.toUpperCase(),
       gameSystemSourceRefs:freezeList(gameSystemSource.map(row=>freeze({path:row.file,sha256:row.sha256}))),
       existingNativeUiRefs:freezeList(existingNativeUiSource.map(row=>freeze({path:row.file,sha256:row.sha256}))),
@@ -4438,7 +4486,8 @@ export function buildVibeAssetProductionPlan({
   const genreMenuRecommendations=freeze({
     version:1,signals:freezeList(menuSeed.detectedSignals),
     companySeedUiIdeaIds:freezeList(currentMenuIdeaIds.map(row=>row.ideaId)),
-    uiFactorySource:uiLibrarySourcePath,uiFactorySha256:uiLibraryHash,
+    uiFactorySource:resolvedTarget==='roblox'?uiLibrarySourcePath:null,
+    uiFactorySha256:resolvedTarget==='roblox'?uiLibraryHash:null,
     nativeGameSourceCount:nativeMenuSources.length,
     candidateFeatures:menuFeatureSuggestions,
     objectInteractions:objectInteractionRows,
