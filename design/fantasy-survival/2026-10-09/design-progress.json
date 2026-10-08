@@ -8,11 +8,11 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 33,
-  "lastSuccessfulModelCallAt": "2026-10-08T22:14:14.134Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PRESERVATION_GRAMMAR_GRAPH_DISCONNECTED",
+  "cachedTaskCount": 34,
+  "lastSuccessfulModelCallAt": "2026-10-08T23:19:06.336Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "designerSeed": {
     "file": "design/fantasy-survival/2026-10-09/design-seed.json",
     "contentDigest": "2d8eb2f70ccab5654a07b319cdbb59aa6b4cfb16fc1ce74694d2cc1bd37145aa",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 23,
-      "successes": 22,
+      "calls": 24,
+      "successes": 23,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2503256,
-      "lastMs": 95839,
+      "totalMs": 2561047,
+      "lastMs": 57791,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T22:14:14.131Z"
+      "updatedAt": "2026-10-08T23:19:06.336Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T23:18:08.539Z"
+  "updatedAt": "2026-10-08T23:19:06.337Z"
 }
