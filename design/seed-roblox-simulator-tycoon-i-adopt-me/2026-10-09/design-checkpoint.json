@@ -52,25 +52,40 @@
       "name": "INHERITANCE_OF_WAVE_PRESSURE_AND_DEFENSE_ADAPTATION",
       "purpose": "플레이어가 매번 선택에 따라 자원, 위험, 보상을 교환하며 성장하는 반복 가능한 루프로 진입합니다.",
       "playerChoice": "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases."
+    },
+    "local_authoring_parts::4a4f4e5d612e26d21bb1f59693cbeef7ec7ca5576888e7616ccd20b25a1fe534:signatureSystems:1": {
+      "id": "SIGNATURE_SYSTEM_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "RESOURCE_POOL",
+        "THREAT_LEVEL"
+      ],
+      "stateOutputs": [
+        "GROWTH_POINTS",
+        "NEW_DEFENSE_LAYOUT"
+      ],
+      "name": "ADAPTATION_TO_ENEMY_TYPES_AND_WAVE_COMPOSITION",
+      "purpose": "Main axis: Adapt defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
+      "playerChoice": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 344725,
-      "lastMs": 37186,
+      "totalMs": 377587,
+      "lastMs": 32862,
       "lastError": null,
-      "updatedAt": "2026-10-08T22:07:16.201Z"
+      "updatedAt": "2026-10-08T22:07:49.065Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T22:01:31.453Z",
-  "updatedAt": "2026-10-08T22:07:16.201Z",
+  "updatedAt": "2026-10-08T22:07:49.065Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2265,7 +2280,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T22:07:16.201Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T22:07:49.065Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
