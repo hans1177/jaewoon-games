@@ -34,25 +34,41 @@
         "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
         "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
       ]
+    },
+    "local_authoring_parts::15cfe12573e5d43580589d444025008e5d0047949588f0ffc1787e46d7d69281:signatureSystems:0": {
+      "id": "MAIN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "input: simple one-thumb tap or swipe",
+        "input: clear score, distance, or short-session goal"
+      ],
+      "stateOutputs": [
+        "state: immediate feedback",
+        "state: score or reward",
+        "state: progression benefit"
+      ],
+      "name": "세계의 직조자 - 시그니처 시스템",
+      "purpose": "플레이어가 시작 즉시 단순한 한 손가락 터치 또는 스ワイ프 입력을 통해 점수, 거리, 또는 짧은 세션 목표를 설정하고, 이 결과가 다음 월드 상태와 접근 가능성을 바꾼다. 이는 CASUAL의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.",
+      "playerChoice": "플레이어는 시작 즉시 단순한 한 손가락 터치 또는 스ワイ프 입력을 통해 점수, 거리, 또는 짧은 세션 목표를 설정하고, 이 결과가 다음 월드 상태와 접근 가능성을 바꾼다. 이는 CASUAL의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다. 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 692162,
-      "lastMs": 57508,
+      "totalMs": 800437,
+      "lastMs": 108275,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:37:46.344Z"
+      "updatedAt": "2026-10-08T12:39:34.621Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:26:14.109Z",
-  "updatedAt": "2026-10-08T12:37:46.344Z",
+  "updatedAt": "2026-10-08T12:39:34.621Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1976,7 +1992,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:37:46.344Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:39:34.621Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
