@@ -306,6 +306,8 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
   }
   const w=width,h=height,hash=String(seed).split('').reduce((v,c)=>Math.imul(v^c.charCodeAt(0),16777619)>>>0,2166136261);
   const at=(x,z)=>z*w+x,within=(x,z)=>x>=0&&x<w&&z>=0&&z<h;
+  // 좌표는 동일한 격자 X/Z에서 계산하고 2D 최종 배치 위치만 X/Y로 변환한다.
+  const worldPosition=(x,z,elevationY=0)=>dimension==='2D'?{x:x*cellSize,y:z*cellSize}:{x:x*cellSize,y:elevationY,z:z*cellSize};
   const blocked=new Set(),issues=[];
   if(!Array.isArray(reservedCells))return Object.freeze({status:'INVALID_GENERATION_INPUT',issues:Object.freeze(['RESERVED_CELLS_INVALID']),...noMutation});
   for(const cell of reservedCells){
@@ -380,7 +382,7 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     const cells=route(points[from],points[to]);
     if(!cells){issues.push('REQUIRED_ROUTE_BLOCKED:'+from+'-'+to);continue;}
     for(const cell of cells)roadSet.add(at(cell.x,cell.z));
-    routes.push({id:from+'-'+to,from,to,cells});
+    routes.push({id:from+'-'+to,from,to,cells,worldPath:cells.map(cell=>worldPosition(cell.x,cell.z,terrain[at(cell.x,cell.z)].elevation*8))});
   }
   const routeGraph=createVibeRouteGraph({nodes:routeNodes.map(([id,,role])=>({id,role,required:id!=='BRANCH'})),edges:routes.map(r=>({from:r.from,to:r.to,kind:'main'}))});
   if(!routeGraph.pass)issues.push('REQUIRED_OBJECTIVE_UNREACHABLE');
@@ -391,9 +393,9 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
   }
   const buildings=[],occupied=new Set([...roadSet,...blocked]),instanceGroups=new Map();
   const maxBuildings=mobile?22:56,style=String(buildingStyle||'LOCAL').toUpperCase();
-  const addInstance=(name,x,z,rotation=0)=>{
+  const addInstance=(name,x,z,rotation=0,levelY=terrain[at(x,z)].elevation*8)=>{
     const key=style+':'+name,group=instanceGroups.get(key)||{module:key,count:0,transforms:[]};
-    group.transforms.push({x:x*cellSize,z:z*cellSize,rotation});group.count++;instanceGroups.set(key,group);
+    group.transforms.push({...worldPosition(x,z,levelY),rotation});group.count++;instanceGroups.set(key,group);
   };
   for(const id of [...roadSet].sort((a,b)=>a-b)){
     if(buildings.length>=maxBuildings)break;
@@ -411,13 +413,13 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       const zone=distance<Math.min(w,h)*.23?'COMMERCIAL':x>w*.75?'WORKSHOP':'RESIDENTIAL';
       const climateText=String(climate).toUpperCase(),biomeText=String(biome).toUpperCase();
       const roof=/WET|RAIN|SNOW|COLD/.test(climateText)?'PITCHED_ROOF':/ARID|DESERT/.test(climateText+' '+biomeText)?'FLAT_ROOF':'ROOF';
-      const pivot={x:x*cellSize,y:Math.max(...footing),z:z*cellSize},doorFacing=dx!==0?(dx>0?'WEST':'EAST'):(dz>0?'NORTH':'SOUTH');
-      const building={id:'LOT_'+buildings.length,zone,style,footprint,position:pivot,foundation:{terrainMinY:Math.min(...footing),terrainMaxY:Math.max(...footing),levelY:pivot.y},construction:{climate:climateText,primaryMaterial:/GOTHIC|CASTLE/.test(style)?'STONE':/MODERN/.test(style)?'METAL_GLASS':/ARID|DESERT/.test(climateText+' '+biomeText)?'CLAY':'TIMBER',verifiedStructuralEngineering:false},modules:[style+':FOUNDATION',style+':WALL',style+':DOOR',style+':'+roof],doorFacing,roadAccess:{x:rx,z:rz},gridSnap:cellSize,sourceBindingRequired:true};
+      const levelY=Math.max(...footing),pivot=worldPosition(x,z,levelY),doorFacing=dx!==0?(dx>0?'WEST':'EAST'):(dz>0?'NORTH':'SOUTH');
+      const building={id:'LOT_'+buildings.length,zone,style,footprint,position:pivot,foundation:{terrainMinY:Math.min(...footing),terrainMaxY:Math.max(...footing),levelY},construction:{climate:climateText,primaryMaterial:/GOTHIC|CASTLE/.test(style)?'STONE':/MODERN/.test(style)?'METAL_GLASS':/ARID|DESERT/.test(climateText+' '+biomeText)?'CLAY':'TIMBER',verifiedStructuralEngineering:false},modules:[style+':FOUNDATION',style+':WALL',style+':DOOR',style+':'+roof],doorFacing,roadAccess:{x:rx,z:rz},gridSnap:cellSize,sourceBindingRequired:true};
       buildings.push(building);
-      addInstance('FOUNDATION',x,z);
-      addInstance('DOOR',x,z);
-      addInstance(roof,x,z);
-      for(const [ox,oz,rot] of [[0,0,0],[1,0,90],[1,1,180],[0,1,270]])addInstance('WALL',x+ox,z+oz,rot);
+      addInstance('FOUNDATION',x,z,0,levelY);
+      addInstance('DOOR',x,z,0,levelY);
+      addInstance(roof,x,z,0,levelY);
+      for(const [ox,oz,rot] of [[0,0,0],[1,0,90],[1,1,180],[0,1,270]])addInstance('WALL',x+ox,z+oz,rot,levelY);
       break;
     }
   }
@@ -433,7 +435,7 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     if(roll>chance)continue;
     const kind=tile.biome==='RIDGE'?'ROCK':/DRY|ARID|DESERT/.test(climateHint+' '+biomeHint)?'SCRUB':/COLD|SNOW|ALPINE|MOUNTAIN/.test(climateHint+' '+biomeHint)?'PINE':tile.biome==='FOREST'?'BROADLEAF':'BUSH';
     const size=+(0.75+(proceduralCellHash(hash^0x992,tile.x,tile.z)/4294967296)*.7).toFixed(2);
-    const placement={id:'NATURE_'+vegetation.length,kind,biome:tile.biome,x:tile.x,z:tile.z,position:{x:tile.x*cellSize,y:tile.elevation*8,z:tile.z*cellSize},scale:size,physicsColliderGenerated:false};
+    const placement={id:'NATURE_'+vegetation.length,kind,biome:tile.biome,x:tile.x,z:tile.z,position:worldPosition(tile.x,tile.z,tile.elevation*8),elevationY:tile.elevation*8,scale:size,physicsColliderGenerated:false};
     vegetation.push(placement);
     const group=natureGroups.get(kind)||{module:'NATURE:'+kind,count:0,transforms:[]};
     group.transforms.push({...placement.position,scale:size});group.count++;natureGroups.set(kind,group);
@@ -454,12 +456,12 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
   }
   const result={
     version:1,status:issues.length?'LAYOUT_REVIEW_REQUIRED':'STATIC_LAYOUT_PROPOSED',issues:Object.freeze(issues),
-    seed:String(seed),dimension,regionalBiome:String(biome).toUpperCase(),climate:String(climate).toUpperCase(),coordinateSystem:dimension==='3D'?'Y_UP_HEIGHTFIELD':'GRID_XZ_REQUIRES_2D_AXIS_MAPPING',
+    seed:String(seed),dimension,regionalBiome:String(biome).toUpperCase(),climate:String(climate).toUpperCase(),coordinateSystem:dimension==='3D'?'Y_UP_HEIGHTFIELD':'GRID_XZ_TO_TOP_DOWN_XY_PROPOSED',
     size:{width:w,height:h,cellSize},terrain:Object.freeze(terrain),river:Object.freeze(river),riverType,roads:Object.freeze(routes),roadCells:Object.freeze([...roadSet].sort((a,b)=>a-b).map(id=>({x:id%w,z:Math.floor(id/w)}))),
     routeGraph,buildings:Object.freeze(buildings),vegetation:Object.freeze(vegetation),instancingPlan:Object.freeze([...instanceGroups.values(),...natureGroups.values()]),landmark:Object.freeze({cell:landmark,reason:'VISIBLE_NAVIGATION_ANCHOR'}),
     sightline:Object.freeze(sightline),drainage:'FOUR_NEIGHBOR_DOWNHILL',noise:'SEEDED_2D_GRADIENT_FBM',snapRules:Object.freeze({moduleGrid:cellSize,entrancesFaceConnectedRoad:true,foundationsFollowTerrain:true}),
     mobileBudget:Object.freeze({cellCount:terrain.length,buildingLimit:maxBuildings,vegetationLimit:maxVegetation,instanceGroupCount:instanceGroups.size+natureGroups.size,actualDrawCallsMeasured:false}),
-    native2DWorldCoordinateMappingRequired:dimension==='2D',
+    native2DWorldCoordinateMappingRequired:dimension==='2D',native2DPositionProjectionProvided:dimension==='2D',
     protected:Object.freeze(['existing-transforms','spawns','objective-rules','collision','navigation','economy','save','network-authority']),
     ...noMutation
   };
