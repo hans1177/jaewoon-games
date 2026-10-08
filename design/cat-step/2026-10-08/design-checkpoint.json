@@ -584,25 +584,44 @@
         "VISIBLE_PUZZLE_CONSTRAINT"
       ],
       "fromSystem": "Puzzle System"
+    },
+    "local_authoring_parts::dba42983a8c174394dee2e362a52b18e2ae3f61bd53b7e60f35942c2956eb217:toSystem,trigger,stateChange": {
+      "toSystem": "Puzzle System",
+      "trigger": "LEVEL_GOAL",
+      "stateChange": "CLEAR_LEVEL_GOAL"
+    },
+    "local_authoring_parts::404289245a245736cd599e203054eb7a7cdca348aef24ddb04a9b33c1248ddf8:systemInterconnections:0": {
+      "fromId": "cat-step-signature-systems-0",
+      "toId": "cat-step-signature-systems-1",
+      "stateKeys": [
+        "LEVEL_GOAL",
+        "LIMITED_MOVES",
+        "OBSTACLES",
+        "VISIBLE_PUZZLE_CONSTRAINT"
+      ],
+      "fromSystem": "Puzzle System",
+      "toSystem": "Puzzle System",
+      "trigger": "LEVEL_GOAL",
+      "stateChange": "CLEAR_LEVEL_GOAL"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 590682,
-      "lastMs": 34401,
+      "totalMs": 622298,
+      "lastMs": 31616,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:08:03.052Z"
+      "updatedAt": "2026-10-08T12:08:34.669Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:58:12.306Z",
-  "updatedAt": "2026-10-08T12:08:03.052Z",
+  "updatedAt": "2026-10-08T12:08:34.670Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2785,7 +2804,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:08:03.052Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:08:34.670Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
