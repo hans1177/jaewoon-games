@@ -644,25 +644,28 @@
     },
     "local_authoring_parts::12bee6b0c4f7e41d2e0fc4ecf7b77ecb6fce093f345c270b20fdc42e24604466:toSystem": {
       "toSystem": "마을 던전 RPG의 주요 시스템"
+    },
+    "local_authoring_parts::12bee6b0c4f7e41d2e0fc4ecf7b77ecb6fce093f345c270b20fdc42e24604466:trigger": {
+      "trigger": "플레이어는 시작 즉시 단순한 터치 또는 스위프 입력을 하며, 점수, 거리, 또는 짧은 세션 목표를 설정하고, 이 선택이 다음 월드 상태 변화와 연결되어야 한다. 시스템 규칙에 따라 게임 상태가 변환되며, 플레이어는 선택 결과에 따라 다음 월드 상태로 이동한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 28,
-      "successes": 28,
+      "calls": 29,
+      "successes": 29,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1990338,
-      "lastMs": 43347,
+      "totalMs": 2050602,
+      "lastMs": 60264,
       "lastError": null,
-      "updatedAt": "2026-10-08T09:26:09.945Z"
+      "updatedAt": "2026-10-08T09:27:10.211Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:52:59.507Z",
-  "updatedAt": "2026-10-08T09:26:09.945Z",
+  "updatedAt": "2026-10-08T09:27:10.211Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3038,7 +3041,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T09:26:09.945Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:27:10.211Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
