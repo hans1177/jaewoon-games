@@ -66,8 +66,53 @@ const level=(basic,connected,proven=false)=>{
   return proven?100:80;
 };
 
+// 설계 규칙: 새 원본 작성과 기존 표현 보존 작업의 범위를 구분한다.
+export function designPlayabilityRequirements(seed={},sourceText=''){
+  const original=seed.originalDesignContext?.content||{};
+  const infection=/INFECTION/i.test(clean(seed.INITIAL_PLAY_MODE))||original.systemImplementation?.currentCoreRule==='EXPLICIT_SERVER_AUTHORITATIVE_INFECT_ATTACK_ONLY';
+  const lockedNumbers=Object.fromEntries(list(original.technicalAssumptions).flatMap(value=>{
+    const match=/^([A-Za-z][A-Za-z0-9]*)\s*=\s*(-?\d+(?:\.\d+)?)$/.exec(clean(value));
+    return match?[[match[1],Number(match[2])]]:[];
+  }));
+  // 실행하지 않고 현재 Luau 설정의 명시적 행만 읽는다. 해석할 수 없는 값은 추측하지 않는다.
+  const sourceRows={},sourceForms={};
+  let section='';
+  for(const line of String(sourceText).split('\n')){
+    const start=/^\s*(HumanForms|Monsters|MonsterForms|HumanAbilities|InfectedAbilities|MonsterAbilities)\s*=\s*\{/.exec(line);
+    if(start){section=start[1];continue;}
+    if(/^\s*},?\s*$/.test(line)){section='';continue;}
+    const id=/\bId="([^"]+)"/.exec(line)?.[1];
+    if(id&&section.endsWith('Forms'))sourceForms[id]={human:/\bActiveAbility="([^"]+)"/.exec(line)?.[1],infected:/\bInfectedAbility="([^"]+)"/.exec(line)?.[1],monster:/\bAbility="([^"]+)"/.exec(line)?.[1]};
+    const row=/^\s*([A-Z][A-Z_]+)\s*=\s*\{(.+)\},?\s*$/.exec(line);
+    if(row&&section.endsWith('Abilities')){
+      const values=Object.fromEntries([...row[2].matchAll(/\b([A-Za-z]+)=(-?\d+(?:\.\d+)?)/g)].map(match=>[match[1],Number(match[2])]));
+      sourceRows[row[1]]={name:/\bName="([^"]+)"/.exec(row[2])?.[1],...values};
+    }
+  }
+  const sourceNumber=key=>{const match=new RegExp(`\\b${key}\\s*=\\s*(-?\\d+(?:\\.\\d+)?)`).exec(sourceText);return match?Number(match[1]):undefined;};
+  const abilityFacts=[];
+  const add=(id,kind,ownerId)=>{
+    const row=sourceRows[id];if(!row)return;
+    abilityFacts.push({id,kind,ownerId,name:row.name,range:row.Range??row.Radius??row.DrainRadius??row.ShockRadius??row.Distance??0,cost:row.Cost??sourceNumber('AbilityCost'),cooldownSeconds:row.Cooldown??sourceNumber('MonsterAbilityCooldown')});
+  };
+  if(infection&&sourceText){
+    abilityFacts.push({id:'INFECT_ATTACK',kind:'INFECTION',ownerId:'BASE',range:sourceNumber('InfectRange'),cost:sourceNumber('InfectAttackCost'),cooldownSeconds:sourceNumber('InfectAttackCooldown')},{id:'PURIFY',kind:'PURIFICATION',ownerId:'BASE',range:sourceNumber('PurifyDistance'),cost:sourceNumber('PurifyCost'),cooldownSeconds:sourceNumber('PurifyCooldown')});
+    for(const human of list(original.humanRoster)){add(sourceForms[human.id]?.human,'HUMAN',human.id);add(sourceForms[human.id]?.infected,'INFECTED',human.id);}
+    for(const monster of list(original.monsterRoster))add(sourceForms[monster.id]?.monster,'MONSTER',monster.id);
+  }
+  return {
+    required:!(seed.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true&&seed.OWNER_REBUILD_MODE==='PRESERVATION_PRESENTATION_UPGRADE'),
+    infection,
+    phases:infection?['START','FIRST_CONTACT','FIRST_INFECTION','IMBALANCE','COMEBACK','RESOLUTION']:['OPENING','DEVELOPMENT','RESOLUTION'],
+    lockedNumbers,
+    abilityFacts,
+    humanRoster:list(original.humanRoster),
+    monsterRoster:list(original.monsterRoster)
+  };
+}
+
 // 설계 내용 검증: 분할 작성 직후와 최종 점수 판정에서 동일하게 사용한다.
-export function validateDesignAuthoringContent({design={},seed={},fields=Object.keys(design)}={}){
+export function validateDesignAuthoringContent({design={},seed={},fields=Object.keys(design),requirePlayableContract=false,assetLibrary=null,sourceText='',assetFamilies=[]}={}){
   const selected=new Set(fields);
   const reasons=[];
   const reject=(code,axis,affected,evidence,requiredAction)=>{
@@ -76,17 +121,18 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
   };
   const proseFields=['identity','playerFantasy','coreFun','coreLoop','signatureSystems','systemInterconnections','progressionDirection','progressionEconomyBalance','contentExpansionPlan','failureRetryRisk','platformFitPlan','platformProfiles','webCanonicalDesign','platformExpansionPolicy','visualDirection','mobileUx','uxAccessibilityPlan','artAudioDirection','marketTargetDirection','multiplayerExpansionDecision','designAlternatives','selectedDesignPlan','contentVarietyPlan','technicalAssumptions','implementationTraceability'];
   const enumKeys=new Set(['name','label','role','phase','platform','targetPlatform','designAuthority','mode','sharedLargeFrame','expansionLimit','internalReleaseTarget','fromSystem','toSystem','responsibleSystem']);
-  const scan=(value,path,root)=>{
-    if(Array.isArray(value)){value.forEach((item,index)=>scan(item,`${path}[${index}]`,root));return;}
+  const identifierKeys=new Set(['id','fromId','toId','from','to','ruleId','ruleIds','stateInputs','stateOutputs','stateKeys','key','ownerId','abilityId','humanId','humanAbilityId','infectedAbilityId','regionId','stateKey','actorId','targetId','classId','assetId','rangeKey','costKey','cooldownKey','reachableBy','nextPhase']);
+  const scan=(value,path,root,identifier=false)=>{
+    if(Array.isArray(value)){value.forEach((item,index)=>scan(item,`${path}[${index}]`,root,identifier));return;}
     if(value&&typeof value==='object'){
-      for(const [key,item] of Object.entries(value))if(!enumKeys.has(key))scan(item,`${path}.${key}`,root);
+      for(const [key,item] of Object.entries(value))if(!enumKeys.has(key))scan(item,`${path}.${key}`,root,identifierKeys.has(key));
       return;
     }
     if(typeof value!=='string')return;
     const text=clean(value);
     // 기존 표현 개선 계약이 생성하는 추적 ID는 설명용 임시 표식이 아니다.
     if(/^implementationTraceability\[\d+\]\.designElement$/.test(path)&&['ASSET_ADAPTATION','LIVING_MOTION_AND_ANIMATION_FEEL','VFX_AUDIO_CAMERA_POLISH_MOBILE'].includes(text))return;
-    if(/^[A-Z][A-Z0-9]*(?:_[A-Z0-9]+){2,}$/.test(text)||/^(?:TODO|TBD|PLACEHOLDER|미정|작성 예정|추후 작성)$/i.test(text)){
+    if((!identifier&&/^[A-Z][A-Z0-9]*(?:_[A-Z0-9]+){2,}$/.test(text))||/\b(?:TODO|TBD|PLACEHOLDER)\b|작성 예정|추후 작성|^미정$/i.test(text)){
       reject('DESIGN_PLACEHOLDER_CONTENT','IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY',[root],{path,value:text.slice(0,160)},`${path}의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.`);
     }
   };
@@ -97,7 +143,7 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
   }
   const profiles=design.platformProfiles||{};
   for(const [platform,foreign] of [['UNITY',/(?:OPEN_CLOUD(?:_|\b)|\b(?:Rojo|ScreenGui|RemoteEvent|Roblox DataStore)\b)/i],['ROBLOX',/\b(?:APK|AAB|Unity Input System|UnityEditor)\b/i]]){
-    for(const key of ['internalReleaseTarget','validationEvidence']){
+    for(const key of ['inputModel','multiplayerRuntime','uiUx','saveAndNetwork','platformContentAdaptation','internalReleaseTarget','validationEvidence']){
       const value=clean(profiles[platform]?.[key]);
       if(foreign.test(value))reject('DESIGN_PLATFORM_NATIVE_CONTRADICTION','PLATFORM_FIT_DESIGN',['platformProfiles'],{platform,key,value},`${platform}의 배포·검증 항목을 해당 플랫폼의 실제 산출물과 실행 증거로 작성한다. 다른 플랫폼 항목을 복사하지 않는다.`);
     }
@@ -112,12 +158,14 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
     const different=strategicKeys.filter(key=>normalize(alternatives[i][key])!==normalize(alternatives[j][key]));
     if(different.length<2)reject('DESIGN_ALTERNATIVES_DUPLICATED','IDEA_AND_DISTINCTNESS',['designAlternatives','selectedDesignPlan'],{plans:[alternatives[i].label,alternatives[j].label],differentAxes:different},'원본 규칙을 보존하면서 루프·동선·대응법·성장 중 최소 두 항목의 실제 플레이 접근이 다른 대안을 작성하고 선택 근거를 갱신한다.');
   }
+  const requirements=designPlayabilityRequirements(seed,sourceText);
+  const detailed=requirements.required&&(requirePlayableContract||seed.designInputMode==='OWNER_BRIEF_AND_ORIGINAL_ONLY'||design.designIntegrityPlan?.authoringVersion===2||list(design.signatureSystems).some(row=>row.grammarRole));
   const chosen=design.selectedDesignPlan;
   if(chosen){
     if(alternatives.length&&!alternatives.some(plan=>plan.label===chosen.label))reject('DESIGN_SELECTION_UNGROUNDED','IDEA_AND_DISTINCTNESS',['selectedDesignPlan'],{label:chosen.label},'실제로 작성한 대안 중 하나를 선택하고 선택 이유를 적는다.');
     const steps=list(chosen.playthrough);
-    const phases=['OPENING','DEVELOPMENT','RESOLUTION'];
-    const valid=phases.every((phase,index)=>steps[index]?.phase===phase)&&steps.length===3&&steps.every(step=>objectReady(step,['entryState','playerChoice','actionAndResponse','exitState','nextDecision'],12));
+    const phases=detailed?requirements.phases:['OPENING','DEVELOPMENT','RESOLUTION'];
+    const valid=phases.every((phase,index)=>steps[index]?.phase===phase)&&steps.length===phases.length&&steps.every(step=>objectReady(step,['entryState','playerChoice','actionAndResponse','exitState','nextDecision'],12));
     if(!valid||!textReady(chosen.durationRationale,30))reject('DESIGN_PLAYTHROUGH_MISSING','CORE_LOOP_DESIGN',['selectedDesignPlan'],{phases:steps.map(step=>step.phase)},'시작·전개·결말 각각의 진입 상태, 선택, 입력/판정/대응, 결과 상태, 다음 선택을 작성하고 한 판과 전체 세션 길이의 근거를 구분한다. 기존 시간·밸런스 수치는 임의 변경하지 않는다.');
     if(valid){
       const broken=steps.slice(1).map((step,index)=>({phase:step.phase,previous:steps[index].exitState,current:step.entryState})).filter(row=>normalize(row.previous)!==normalize(row.current));
@@ -130,10 +178,144 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
       if(values.some(value=>values.filter(other=>other===value).length>=3))reject('DESIGN_REPEATED_CONTENT','CONTENT_EXPANSION_PLAN',[root],{name:row?.name||root},'서로 다른 항목을 같은 설명으로 채우지 않는다. 동선·전조·대응·위험·보상·복구가 각각 어떤 규칙인지 작성한다.');
     }
   }
+  if(detailed){
+    const invalid=(code,fields,path,detail)=>reject(code,'CORE_LOOP_DESIGN',fields,{path,detail},`${path}: ${detail}. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.`);
+    const systems=list(design.signatureSystems),byRule=new Map(systems.map(row=>[row.id,row]));
+    const states=new Set(systems.flatMap(row=>[...list(row.stateInputs),...list(row.stateOutputs)]));
+    const refsValid=refs=>Array.isArray(refs)&&refs.length>0&&refs.every(id=>byRule.has(id));
+    const finite=value=>typeof value==='number'&&Number.isFinite(value);
+    const nonnegative=value=>finite(value)&&value>=0;
+    const distinctIds=rows=>rows.every(row=>textReady(row.id,1))&&new Set(rows.map(row=>row.id)).size===rows.length;
+    if(selected.has('signatureSystems')){
+      for(const role of ['MAIN','A','B','c','DELVE']){
+        const count=systems.filter(row=>row.grammarRole===role).length;
+        if(count<1||(['MAIN','A','B'].includes(role)&&count!==1))invalid('DESIGN_RULE_ROLE_MISSING',['signatureSystems'],'signatureSystems',`${role} 역할과 그 상태 입출력을 명확히 구분해야 한다`);
+      }
+      if(!distinctIds(systems)||systems.some(row=>!list(row.stateInputs).length||!list(row.stateOutputs).length))invalid('DESIGN_RULE_STATE_MISSING',['signatureSystems'],'signatureSystems','중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다');
+    }
+    if(selected.has('systemInterconnections')){
+      const edges=list(design.systemInterconnections),graph=new Map(systems.map(row=>[row.id,[]]));
+      for(const edge of edges){
+        const from=byRule.get(edge.fromId),to=byRule.get(edge.toId);
+        if(!from||!to||!list(edge.stateKeys).length||edge.stateKeys.some(key=>!list(from.stateOutputs).includes(key)||!list(to.stateInputs).includes(key)))invalid('DESIGN_STATE_EXCHANGE_BROKEN',['systemInterconnections'],'systemInterconnections',`${edge.fromId}→${edge.toId}의 출력과 입력 상태가 연결되지 않는다`);
+        else graph.get(edge.fromId).push(edge.toId);
+      }
+      const reaches=(from,to)=>{const queue=[from],seen=new Set();while(queue.length){const id=queue.shift();if(id===to)return true;if(seen.has(id))continue;seen.add(id);queue.push(...(graph.get(id)||[]));}return false;};
+      const main=systems.find(row=>row.grammarRole==='MAIN')?.id,a=systems.find(row=>row.grammarRole==='A')?.id,b=systems.find(row=>row.grammarRole==='B')?.id;
+      if(!main||!a||!b||!reaches(a,b)||!reaches(b,a)||systems.some(row=>!reaches(main,row.id)&&!reaches(row.id,main)))invalid('DESIGN_RULE_GRAPH_DISCONNECTED',['systemInterconnections'],'systemInterconnections','중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다');
+    }
+    const variety=design.contentVarietyPlan||{},abilities=list(variety.abilities),byAbility=new Map(abilities.map(row=>[row.id,row]));
+    const regions=list(variety.regions),regionIds=new Set(regions.map(row=>row.id));
+    if(selected.has('contentVarietyPlan')){
+      if(abilities.length<2||!distinctIds(abilities))invalid('DESIGN_ABILITY_CONTRACT_MISSING',['contentVarietyPlan'],'contentVarietyPlan.abilities','능력별 중복 없는 식별자와 상세 계약이 필요하다');
+      for(const ability of abilities){
+        const numeric=['range','cost','cooldownSeconds'].every(key=>nonnegative(ability[key]));
+        if(!numeric||!objectReady(ability,['trigger','telegraph','avoidance','effect','source'],12)||!textReady(ability.rangeUnit,1)||!textReady(ability.resource,1)||!byRule.has(ability.ruleId)||!list(ability.stateInputs).length||!list(ability.stateOutputs).length||[...list(ability.stateInputs),...list(ability.stateOutputs)].some(key=>!states.has(key)))invalid('DESIGN_ABILITY_CONTRACT_MISSING',['contentVarietyPlan'],`abilities.${ability.id}`,'조건·범위/단위·소모·재사용·전조·회피·효과·원본 근거와 상태 연결이 필요하다');
+        for(const [valueKey,referenceKey] of [['range','rangeKey'],['cost','costKey'],['cooldownSeconds','cooldownKey']]){
+          const key=ability[referenceKey];
+          if(key&&Object.hasOwn(requirements.lockedNumbers,key)&&ability[valueKey]!==requirements.lockedNumbers[key])invalid('DESIGN_ORIGINAL_NUMBER_CHANGED',['contentVarietyPlan'],`abilities.${ability.id}.${valueKey}`,`원본 ${key}=${requirements.lockedNumbers[key]}을 유지해야 한다`);
+        }
+        if(requirements.infection&&['INFECTION','PURIFICATION'].includes(ability.kind)){
+          const keys=ability.kind==='INFECTION'?{rangeKey:'InfectRange',costKey:'InfectAttackCost',cooldownKey:'InfectAttackCooldown'}:{rangeKey:'PurifyDistance',cooldownKey:'PurifyCooldown'};
+          if(Object.entries(keys).some(([field,key])=>Object.hasOwn(requirements.lockedNumbers,key)&&ability[field]!==key))invalid('DESIGN_ORIGINAL_RULE_UNBOUND',['contentVarietyPlan'],`abilities.${ability.id}`,'기본 감염·정화 수치를 원본 키에 직접 연결해야 한다');
+        }
+      }
+      if(requirements.infection&&['INFECTION','PURIFICATION'].some(kind=>abilities.filter(row=>row.kind===kind).length!==1))invalid('DESIGN_INFECTION_RULE_MISSING',['contentVarietyPlan'],'abilities','기본 감염과 기본 정화를 각각 하나의 원본 규칙으로 정의해야 한다');
+      for(const fact of requirements.abilityFacts){
+        const ability=byAbility.get(fact.id);
+        if(!ability||['kind','ownerId','range','cost','cooldownSeconds',...(fact.name?['name']:[])].some(key=>fact[key]!==undefined&&ability[key]!==fact[key]))invalid('DESIGN_SOURCE_ABILITY_CHANGED',['contentVarietyPlan'],`abilities.${fact.id}`,`현재 원본 설정 ${JSON.stringify(fact)}을 정확히 보존해야 한다`);
+      }
+      const transitions=list(variety.roleTransitions);
+      for(const human of requirements.humanRoster){
+        const rows=transitions.filter(row=>row.humanId===human.id),row=rows[0],before=byAbility.get(row?.humanAbilityId),after=byAbility.get(row?.infectedAbilityId);
+        if(rows.length!==1||before?.ownerId!==human.id||before?.kind!=='HUMAN'||after?.ownerId!==human.id||after?.kind!=='INFECTED'||clean(after?.name)!==clean(human.infectedAbility)||clean(row?.humanTool)!==clean(human.tool)||!objectReady(row,['retainedState','removedState','changedChoice'],12))invalid('DESIGN_ROLE_TRANSITION_MISSING',['contentVarietyPlan'],`roleTransitions.${human.id}`,'원본 직업·도구→인간 능력→감염 능력과 유지/제거 상태·전략 변화가 모두 필요하다');
+      }
+      for(const monster of requirements.monsterRoster)if(!abilities.some(row=>row.kind==='MONSTER'&&row.ownerId===monster.id))invalid('DESIGN_MONSTER_ABILITY_MISSING',['contentVarietyPlan'],`abilities.${monster.id}`,'원본 몬스터의 능력과 대응법이 누락됐다');
+      if(regions.length<2||!distinctIds(regions)||regions.some(row=>!refsValid(row.ruleIds)))invalid('DESIGN_MAP_RULE_UNBOUND',['contentVarietyPlan'],'regions','각 구역의 중복 없는 ID와 핵심 규칙 연결이 필요하다');
+    }
+    if(selected.has('designAlternatives')){
+      const fingerprints=[];
+      for(const plan of alternatives){
+        const strategy=plan.strategy||{},routes=list(strategy.routeEdges),resources=list(strategy.resourceSites),cooperation=list(strategy.cooperation);
+        if(!routes.length||!resources.length||!cooperation.length||!objectReady(strategy,['advantage','cost','bestSituation'],12)||routes.some(row=>!regionIds.has(row.from)||!regionIds.has(row.to)||row.from===row.to)||resources.some(row=>!regionIds.has(row.regionId)||!states.has(row.stateKey))||cooperation.some(row=>!regionIds.has(row.regionId)||!byRule.has(row.ruleId)||!byAbility.has(row.abilityId)))invalid('DESIGN_STRATEGY_UNGROUNDED',['designAlternatives'],`designAlternatives.${plan.label}`,'같은 구역·자원·규칙·능력 ID로 동선/자원 배치/협력을 비교하고 유리한 상황과 대가를 명시해야 한다');
+        // 설명 문장은 비교하지 않는다. 같은 ID들의 실제 관계가 달라야 한다.
+        fingerprints.push([routes.map(row=>[row.from,row.to].join('>')),resources.map(row=>[row.stateKey,row.regionId].join('@')),cooperation.map(row=>[row.ruleId,row.regionId,row.abilityId].join('@'))].map(rows=>JSON.stringify([...new Set(rows)].sort())));
+      }
+      for(let i=0;i<fingerprints.length;i++)for(let j=i+1;j<fingerprints.length;j++)if(fingerprints[i].filter((value,index)=>value!==fingerprints[j][index]).length<2)invalid('DESIGN_STRATEGY_EQUIVALENT',['designAlternatives','selectedDesignPlan'],'designAlternatives','설명만 다른 안은 인정하지 않는다. 동선·자원 배치·협력 중 둘 이상의 관계가 달라야 한다');
+    }
+    if(selected.has('selectedDesignPlan')){
+      const steps=list(chosen?.playthrough),lastCast=new Map();
+      const participants=list(chosen?.participants),actors=new Map(participants.map(row=>[row.id,{...row,infected:false}]));
+      if(requirements.infection&&(participants.length!==requirements.lockedNumbers.TargetPopulation||!distinctIds(participants)||participants.some(row=>!['HUMAN','MONSTER'].includes(row.role))||participants.filter(row=>row.role==='HUMAN').length!==requirements.lockedNumbers.SurvivorSlots||participants.filter(row=>row.role==='MONSTER').length!==requirements.lockedNumbers.MonsterSlots))invalid('DESIGN_PARTICIPANTS_INVALID',['selectedDesignPlan'],'selectedDesignPlan.participants','원본 인원 수와 진영을 가진 서로 다른 참가자에서 한 판을 시작해야 한다');
+      const snapshot=values=>Object.fromEntries(list(values).map(row=>[row.key,row.value]));
+      const same=(a,b)=>Object.keys(a).length===Object.keys(b).length&&Object.entries(a).every(([key,value])=>b[key]===value);
+      let previous=null,previousEnd=0,lastActionTime=-1;
+      if(requirements.infection&&requirements.humanRoster.length&&!steps.some(step=>list(step.actions).some(action=>byAbility.get(action.abilityId)?.kind==='INFECTED')))invalid('DESIGN_INFECTED_PLAY_MISSING',['selectedDesignPlan'],'playthrough','감염된 인간이 자기 직업의 감염 후 능력으로 옛 동료를 추격하는 실제 사건이 필요하다');
+      const lockedRound=requirements.lockedNumbers.RoundSeconds;
+      if(!chosen||!nonnegative(chosen.roundSeconds)||chosen.roundSeconds<=0||!nonnegative(chosen.sessionSeconds)||chosen.sessionSeconds<chosen.roundSeconds||(finite(lockedRound)&&chosen.roundSeconds!==lockedRound))invalid('DESIGN_DURATION_UNGROUNDED',['selectedDesignPlan'],'selectedDesignPlan','원본 라운드 시간과 전체 세션 시간을 구분하고 플레이 시간 근거를 보존해야 한다');
+      for(const [index,step] of steps.entries()){
+        const before=snapshot(step.before),after=snapshot(step.after),actions=list(step.actions);
+        if(!refsValid(step.ruleIds)||!list(step.before).length||!list(step.after).length||Object.keys(before).length!==list(step.before).length||Object.keys(after).length!==list(step.after).length||Object.keys(before).length!==Object.keys(after).length||Object.entries({...before,...after}).some(([key,value])=>!states.has(key)||!finite(value))||Object.keys(before).some(key=>!Object.hasOwn(after,key))||(previous&&!same(previous,before)))invalid('DESIGN_STATE_TRACE_BROKEN',['selectedDesignPlan'],`playthrough.${step.phase}`,'같은 상태 키의 실제 수치가 전후 장면에서 이어져야 한다');
+        if(!nonnegative(step.startSeconds)||!nonnegative(step.endSeconds)||step.startSeconds!==previousEnd||step.endSeconds<=step.startSeconds||step.endSeconds>chosen?.roundSeconds||!textReady(step.timeReason,12))invalid('DESIGN_SCENE_TIME_INVALID',['selectedDesignPlan'],`playthrough.${step.phase}`,'각 장면의 행동 시간 근거와 연속된 시작/종료 시간이 필요하다');
+        let infected=0,purified=0;
+        for(const action of actions){
+          const ability=byAbility.get(action.abilityId),castKey=`${action.actorId}:${action.abilityId}`,prior=lastCast.get(castKey);
+          if(!ability||!textReady(action.actorId,1)||!textReady(action.response,12)||typeof action.hit!=='boolean'||!nonnegative(action.atSeconds)||action.atSeconds<lastActionTime||action.atSeconds<step.startSeconds||action.atSeconds>step.endSeconds||!nonnegative(action.distance)||!nonnegative(action.energyBefore)||!nonnegative(action.energyAfter)||action.energyBefore<ability.cost||Math.abs(action.energyBefore-ability.cost-action.energyAfter)>0.000001||(action.hit&&ability.range>0&&action.distance>ability.range)||(prior!==undefined&&action.atSeconds-prior<ability.cooldownSeconds))invalid('DESIGN_ACTION_INFEASIBLE',['selectedDesignPlan'],`playthrough.${step.phase}.${action.abilityId}`,'존재하는 능력을 조건·범위·자원·재사용 시간 안에서 사용하고 실제 대응을 설명해야 한다');
+          lastActionTime=action.atSeconds;
+          if(requirements.infection){
+            const actor=actors.get(action.actorId),target=actors.get(action.targetId),kind=ability?.kind;
+            const expectedRole=['INFECTION','INFECTED','MONSTER'].includes(kind)?'MONSTER':['PURIFICATION','HUMAN'].includes(kind)?'HUMAN':null;
+            const validActor=actor&&actor.role!=='ELIMINATED'&&(!expectedRole||actor.role===expectedRole)&&(!['HUMAN','INFECTED','MONSTER'].includes(kind)||actor.classId===ability.ownerId)&&(kind!=='INFECTED'||actor.infected);
+            const validTarget=kind==='INFECTION'?target?.role==='HUMAN':kind==='PURIFICATION'?target?.role==='MONSTER':true;
+            if(!validActor||(action.hit&&!validTarget))invalid('DESIGN_ROLE_ACTION_INVALID',['selectedDesignPlan'],`playthrough.${step.phase}.${action.actorId}`,'전환·탈락 이후 현재 진영/직업의 능력만 사용하고 살아 있는 상대를 대상으로 해야 한다');
+            if(action.hit&&validActor&&validTarget&&kind==='INFECTION'){target.role='MONSTER';target.infected=true;}
+            if(action.hit&&validActor&&validTarget&&kind==='PURIFICATION')target.role='ELIMINATED';
+          }
+          lastCast.set(castKey,action.atSeconds);
+          if(action.hit&&ability?.kind==='INFECTION')infected++;
+          if(action.hit&&ability?.kind==='PURIFICATION')purified++;
+        }
+        if(requirements.infection){
+          const keys=['HumanCount','MonsterCount','EliminatedCount'];
+          if(keys.some(key=>!Number.isInteger(before[key])||before[key]<0||!Number.isInteger(after[key])||after[key]<0)||after.HumanCount!==before.HumanCount-infected||after.MonsterCount!==before.MonsterCount+infected-purified||after.EliminatedCount!==before.EliminatedCount+purified)invalid('DESIGN_INFECTION_STATE_INVALID',['selectedDesignPlan'],`playthrough.${step.phase}`,'감염은 인간 -1/몬스터 +1, 정화는 몬스터 -1/탈락 +1이며 인원이 음수가 될 수 없다');
+          for(const [key,role] of [['HumanCount','HUMAN'],['MonsterCount','MONSTER'],['EliminatedCount','ELIMINATED']])if(after[key]!==[...actors.values()].filter(row=>row.role===role).length)invalid('DESIGN_PARTICIPANT_COUNT_MISMATCH',['selectedDesignPlan'],`playthrough.${step.phase}.${key}`,'사건을 재생한 개별 참가자의 실제 진영과 인원 수가 일치해야 한다');
+          if(index===0&&(before.HumanCount!==requirements.lockedNumbers.SurvivorSlots||before.MonsterCount!==requirements.lockedNumbers.MonsterSlots||before.EliminatedCount!==0))invalid('DESIGN_INFECTION_START_INVALID',['selectedDesignPlan'],'playthrough.START','원본 인원 배정에서 시작해야 한다');
+          if((index<2&&infected>0)||(step.phase==='FIRST_INFECTION'&&infected!==1)||(step.phase==='IMBALANCE'&&after.HumanCount>=after.MonsterCount)||(step.phase==='COMEBACK'&&purified<1))invalid('DESIGN_INFECTION_BEAT_MISSING',['selectedDesignPlan'],`playthrough.${step.phase}`,'첫 접촉→첫 감염→인원 불균형→정화를 통한 역전 기회를 실제 사건으로 증명해야 한다');
+          const expected=after.HumanCount===0?'MONSTER_WIN':after.MonsterCount===0?'HUMAN_WIN':step.endSeconds===chosen?.roundSeconds?'DRAW':'ONGOING';
+          if(step.outcome!==expected||(index<steps.length-1&&expected!=='ONGOING')||(index===steps.length-1&&expected==='ONGOING'))invalid('DESIGN_ROUND_END_INVALID',['selectedDesignPlan'],`playthrough.${step.phase}`,'한 진영 0명 즉시 종료 또는 원본 제한시간의 무승부까지 같은 한 판을 완주해야 한다');
+        }
+        previous=after;previousEnd=step.endSeconds;
+      }
+    }
+    if(selected.has('artAudioDirection')){
+      const bindings=list(design.artAudioDirection?.assetBindings),assets=list(assetLibrary?.assets),byAsset=new Map(assets.map(row=>[row.id,row]));
+      for(const family of assetFamilies)if(!bindings.some(row=>clean(row.family).toUpperCase()===family))invalid('DESIGN_ASSET_FAMILY_MISSING',['artAudioDirection'],`assetBindings.${family}`,'현재 설계가 요구하는 자산 분류의 역할과 적합성 검토가 누락됐다');
+      if(!bindings.length)invalid('DESIGN_ASSET_FIT_MISSING',['artAudioDirection'],'artAudioDirection.assetBindings','자산별 역할과 적합성 근거가 필요하다');
+      for(const binding of bindings){
+        if(!refsValid(binding.ruleIds)||!objectReady(binding,['role','bodyPlan','behavior','presentation','useLocation','selectionReason','improvement','platformAdaptation','validation'],8)||binding.decision==='UNRESOLVED')invalid('DESIGN_ASSET_FIT_MISSING',['artAudioDirection'],`assetBindings.${binding.assetId||binding.role}`,'필요 체형·행동·연출·사용 위치·선정 이유·개선점과 규칙 연결을 확정해야 한다');
+        if(['USE','ADAPT'].includes(binding.decision)&&assetLibrary){
+          const asset=byAsset.get(binding.assetId),normalizeRole=value=>clean(value).toLowerCase().replace(/[\s-]+/g,'_');
+          const roles=[asset?.role,asset?.subfamily,...list(asset?.tags)].map(normalizeRole);
+          if(!asset||clean(asset.family||asset.category).toUpperCase()!==clean(binding.family).toUpperCase()||!roles.includes(normalizeRole(binding.role))||asset.securityBlocked===true||asset.rightsPass===false||asset.catalogActive===false)invalid('DESIGN_ASSET_ROLE_MISMATCH',['artAudioDirection'],`assetBindings.${binding.assetId}`,'현재 내부 목록의 실제 역할·분류·사용 자격과 일치하는 후보를 선택해야 한다');
+        }
+        if(binding.decision==='AUTHOR'&&binding.assetId)invalid('DESIGN_ASSET_DECISION_INVALID',['artAudioDirection'],`assetBindings.${binding.assetId}`,'새 제작 요구를 기존 자산 사용으로 표시할 수 없다');
+        if(binding.decision==='AUTHOR'&&assetLibrary){
+          const role=clean(binding.role).toLowerCase().replace(/[\s-]+/g,'_');
+          const reusable=assets.filter(asset=>clean(asset.family||asset.category).toUpperCase()===clean(binding.family).toUpperCase()&&[asset.role,asset.subfamily,...list(asset.tags)].map(value=>clean(value).toLowerCase().replace(/[\s-]+/g,'_')).includes(role)&&asset.securityBlocked!==true&&asset.rightsPass!==false&&asset.catalogActive!==false);
+          if(reusable.length)invalid('DESIGN_ASSET_REUSE_NOT_EVALUATED',['artAudioDirection'],`assetBindings.${binding.role}`,`같은 역할의 기존 후보 ${reusable.map(asset=>asset.id).join(',')}를 재사용/개선 검토해야 한다`);
+        }
+      }
+    }
+    if(selected.has('designIntegrityPlan')){
+      const audit=list(design.designIntegrityPlan?.flowAudit);
+      if(design.designIntegrityPlan?.authoringVersion!==2||audit.length!==requirements.phases.length||audit.some((row,index)=>row.phase!==requirements.phases[index]||row.nextPhase!==(requirements.phases[index+1]||'END')||!list(row.reachableBy).length||row.reachableBy.some(id=>!byAbility.has(id))||!objectReady(row,['blockedCase','recovery'],12)))invalid('DESIGN_FULL_FLOW_AUDIT_MISSING',['designIntegrityPlan'],'designIntegrityPlan.flowAudit','각 장면의 실행 가능한 능력·막힘 사례·복구·다음 장면을 순서대로 재검사해야 한다');
+      for(const [key,value] of Object.entries(design.designIntegrityPlan||{}))if(typeof value==='boolean'&&value===false)invalid('DESIGN_REACHABILITY_BLOCKED',['designIntegrityPlan'],`designIntegrityPlan.${key}`,'진행 불가능한 항목을 후속 설계의 통과 근거로 넘길 수 없다');
+    }
+  }
   return reasons;
 }
 
-export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},robloxGenreProfile={}}={}){
+export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},robloxGenreProfile={},requirePlayableContract=false,assetLibrary=null,sourceText='',assetFamilies=[]}={}){
   const design=designRecord?.content&&typeof designRecord.content==='object'?designRecord.content:{};
   const loops=distinct(list(design.coreLoop).map(clean));
   const signatureSystems=list(design.signatureSystems).filter(row=>row&&typeof row==='object');
@@ -219,7 +401,7 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
   const scores=Object.fromEntries(Object.entries(DESIGN_GATE_WEIGHTS).map(([axis,weight])=>[axis,weighted(evidenceLevels[axis],weight)]));
   const totalScore=Math.round(Object.values(scores).reduce((sum,value)=>sum+Number(value||0),0)*100)/100;
   const criticalAxisFailures=Object.keys(DESIGN_GATE_WEIGHTS).filter(axis=>Number(evidenceLevels[axis]||0)<DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT);
-  const rejectionReasons=validateDesignAuthoringContent({design,seed});
+  const rejectionReasons=validateDesignAuthoringContent({design,seed,requirePlayableContract,assetLibrary,sourceText,assetFamilies});
   const hardFailures=rejectionReasons.map(reason=>reason.code);
   const ownerPreservationSeed=seed?.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true&&clean(seed?.OWNER_REBUILD_MODE).toUpperCase()==='PRESERVATION_PRESENTATION_UPGRADE';
   if(ownerPreservationSeed){
@@ -279,4 +461,5 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
     grammarCarryEvidence:seedGrammar?{formula:'MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @',requiredCausalIds:grammarIds,carriedCausalIds:carriedGrammarIds,primaryVerbCarried,worldRuleCarried,mainName,mainCarried,majorAxisNames,carriedMajorAxes,subElementNames,carriedSubElements,delveNames,carriedDelveElements,emergentGenreName,emergentGenreCarried,categoryRole:seedGrammar?.emergentGenre?.categoryRole||null}:null,
   };
 }
+
 

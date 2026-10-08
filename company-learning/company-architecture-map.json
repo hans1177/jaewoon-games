@@ -1,5 +1,5 @@
 {
-  "version": 330,
+  "version": 331,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3828,7 +3828,12 @@
         "writer": "tools/company-design-cycle.mjs::authorDesignInCheckpointedSlices",
         "validator": "tools/company-design-gate-scoring-v2.mjs::validateDesignAuthoringContent",
         "assetSupply": "tools/vibe2-asset-production-plan.mjs::buildAssetSupplyDecisionSummary",
-        "existingCheckpointAndScorerOnly": true
+        "existingCheckpointAndScorerOnly": true,
+        "schemaVersion": 2,
+        "sharedRuleGraphBeforeMapsAndAssets": true,
+        "abilityAndRoleContractsBeforeAlternatives": true,
+        "numericPlaythroughAndParticipantReplay": true,
+        "existingRemoteQa": ".github/workflows/vibe2-core-qa.yml"
       }
     },
     "unityWebDevelopmentLane": {
