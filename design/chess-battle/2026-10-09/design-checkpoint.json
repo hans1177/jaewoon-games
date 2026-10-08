@@ -73,25 +73,38 @@
       "name": "Resolve the tactical exchange and use the new board state to plan the next decisive turn.",
       "purpose": "Establish a clear, actionable path forward based on the current board state and tactical resolution.",
       "playerChoice": "Select a move or ability that directly influences the progression of the game toward a decisive outcome."
+    },
+    "local_authoring_parts::c64abb8bcaf0be5ef90a9511630e20b0ed11c5b7948ed3bb91a06f038cf28251:signatureSystems:3": {
+      "id": "CORE_LOOP_4",
+      "grammarRole": "c",
+      "stateInputs": [
+        "READ_BOARD_THREAT_INFO"
+      ],
+      "stateOutputs": [
+        "DESIGN_CONTENT_EXPANSION_PLAN"
+      ],
+      "name": "Design content expansion plan based on board state and tactical resolution.",
+      "purpose": "To systematically expand the game's content through strategic planning and adaptive design.",
+      "playerChoice": "Player chooses to implement new strategies, enhance board positioning, and refine tactical resolutions."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 689552,
-      "lastMs": 102861,
+      "totalMs": 791658,
+      "lastMs": 102106,
       "lastError": null,
-      "updatedAt": "2026-10-08T22:07:54.450Z"
+      "updatedAt": "2026-10-08T22:09:36.557Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:56:24.867Z",
-  "updatedAt": "2026-10-08T22:07:54.450Z",
+  "updatedAt": "2026-10-08T22:09:36.557Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2222,7 +2235,7 @@
     "local_authoring_parts::c64abb8bcaf0be5ef90a9511630e20b0ed11c5b7948ed3bb91a06f038cf28251:signatureSystems:1": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T22:07:54.450Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T22:09:36.557Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
