@@ -178,8 +178,10 @@ async function bindAvailableUnityWebSurfaces(catalog){
     return cleanRef.startsWith('Build/')?`${href}${cleanRef}`:`${href}Build/${cleanRef}`;
   };
   await Promise.all(candidates.map(async game=>{
-    const id=gameIdOf(game),href=`/web-games/${id}/`,stamp=Date.now();
+    const id=gameIdOf(game),stamp=Date.now();
     if(!id)return;
+    // Keep the playable legacy web game, but prefer the published real Unity WebGL test build.
+    for(const href of [`/web-games/${id}/unity/`,`/web-games/${id}/`]){
     try{
       const indexResponse=await probeFetch(`${href}index.html?ts=${stamp}`,{cache:'no-store'});
       if(!indexResponse.ok)return;
@@ -194,6 +196,12 @@ async function bindAvailableUnityWebSurfaces(catalog){
             &&manifest?.gameId===id
             &&manifest?.bundleComplete===true
             &&['loader','data','framework','wasm'].every(key=>Array.isArray(groups[key])&&groups[key].length>0);
+          if(complete){
+            const probes=await Promise.all(['loader','data','framework','wasm'].map(key=>
+              probeFetch(`${href}${groups[key][0]}?ts=${stamp}`,{method:'HEAD',cache:'no-store'}).catch(()=>null)
+            ));
+            complete=probes.every(response=>response?.ok===true);
+          }
         }
       }catch{}
       if(!complete){
@@ -206,8 +214,9 @@ async function bindAvailableUnityWebSurfaces(catalog){
           complete=probes.every(response=>response?.ok===true);
         }
       }
-      if(complete)available.set(id,href);
+      if(complete){available.set(id,href);break;}
     }catch{}
+    }
   }));
   return{
     ...catalog,
