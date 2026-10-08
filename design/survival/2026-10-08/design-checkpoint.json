@@ -930,25 +930,42 @@
         "playerAction"
       ],
       "fromSystem": "SurvivalHordeSystem"
+    },
+    "local_authoring_parts::1f10ac5964ab519048ae1592d5a7a4b777cce2af35af0b27ef1f1518086caac4:toSystem,trigger,stateChange": {
+      "toSystem": "SurvivalResourceSystem",
+      "trigger": "SurvivalHordeSystem → SurvivalResourceSystem",
+      "stateChange": "worldState updated to reflect resource consolidation, playerAction adjusted to prioritize resource management strategies"
+    },
+    "local_authoring_parts::0989a3570450f80106ae12cd73855d5356953de110d6ac4af8eaa38e207f7fe7:systemInterconnections:4": {
+      "fromId": "signatureSystems[0]",
+      "toId": "signatureSystems[1]",
+      "stateKeys": [
+        "worldState",
+        "playerAction"
+      ],
+      "fromSystem": "SurvivalHordeSystem",
+      "toSystem": "SurvivalResourceSystem",
+      "trigger": "SurvivalHordeSystem → SurvivalResourceSystem",
+      "stateChange": "worldState updated to reflect resource consolidation, playerAction adjusted to prioritize resource management strategies"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 42,
-      "successes": 41,
+      "calls": 43,
+      "successes": 42,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 3585344,
-      "lastMs": 81470,
+      "totalMs": 3667610,
+      "lastMs": 82266,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T16:55:46.749Z"
+      "updatedAt": "2026-10-08T16:57:09.016Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:58:07.049Z",
-  "updatedAt": "2026-10-08T16:55:46.749Z",
+  "updatedAt": "2026-10-08T16:57:09.025Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3191,9 +3208,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "signatureSystems[2]→signatureSystems[3]의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "signatureSystems[0]→signatureSystems[1]의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: signatureSystems[2]→signatureSystems[3]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: signatureSystems[0]→signatureSystems[1]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3254,7 +3271,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 3
+    "designer_draft_slices::systems-progression": 4
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3303,10 +3320,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:55:46.749Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T16:57:09.020Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
