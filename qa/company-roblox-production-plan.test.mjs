@@ -1,3 +1,5 @@
+// 파일명: qa/company-roblox-production-plan.test.mjs
+// 역할: 기존 바이브 공간·화면 도안의 실제 소스 바인딩과 절차적 월드 설계의 정적 계약 회귀 검사.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
