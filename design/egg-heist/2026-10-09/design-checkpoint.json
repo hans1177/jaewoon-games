@@ -35,25 +35,38 @@
         "플레이어는 'Scout a small area and identify the target egg and patrol risk.' 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다.",
         "적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결되어 있으며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다."
       ]
+    },
+    "local_authoring_parts::52b7d201dbd2de40945ed7ff605114318d91978afe5960f871a05ef2dc856dd2:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "worldState"
+      ],
+      "stateOutputs": [
+        "newWorldState"
+      ],
+      "name": "세계 원인 시스템",
+      "purpose": "플레이어가 세계의 역사, 생활, 경제, 지역 기능에 대한 인식과 이해를 강화하는 시스템",
+      "playerChoice": "지역, 캐릭터, 적, 아이템, UI와의 관계 및 위험/보상 차이를 시각 언어로 표현하기 위한 선택"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 526173,
-      "lastMs": 112674,
+      "totalMs": 633117,
+      "lastMs": 106944,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:09:13.016Z"
+      "updatedAt": "2026-10-08T18:10:59.961Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:00:26.817Z",
-  "updatedAt": "2026-10-08T18:09:13.016Z",
+  "updatedAt": "2026-10-08T18:10:59.961Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1915,7 +1928,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:09:13.016Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:10:59.961Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
