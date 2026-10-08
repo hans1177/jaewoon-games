@@ -6,7 +6,8 @@ export class JaewoonCommonAI {
   static State = Object.freeze({
     IDLE: 'IDLE', FOLLOW: 'FOLLOW', SEARCH: 'SEARCH', ATTACK: 'ATTACK',
     DODGE: 'DODGE', HEAL: 'HEAL', RETREAT: 'RETREAT', GUARD: 'GUARD',
-    REVIVE: 'REVIVE', INTERACT: 'INTERACT', PATROL: 'PATROL'
+    REVIVE: 'REVIVE', INTERACT: 'INTERACT', PATROL: 'PATROL',
+    TALK: 'TALK', INVITE: 'INVITE', GUIDE: 'GUIDE'
   });
 
   static Role = Object.freeze({
@@ -31,6 +32,9 @@ export class JaewoonCommonAI {
     this.causalContext = null;
     this.lastIntent = '';
     this.intentHoldUntil = 0;
+    // 유틸: 관계·대화 제안의 반복 발화를 막는 비저장, 비권한 타이머.
+    this.lastSocialAt = -Infinity;
+    this.lastSocialTopic = '';
     this.order = JaewoonCommonAI.Order.AUTO;
     this.focusTargetId = '';
     this.protectTargetId = '';
@@ -41,6 +45,7 @@ export class JaewoonCommonAI {
       attackDistance: 3,
       rangedAttackDistance: 10,
       dangerThreshold: 0.75,
+      socialCooldownMs: 18000,
       ...(options.config || {})
     };
   }
@@ -122,6 +127,17 @@ export class JaewoonCommonAI {
       return this.action(S.SEARCH, 'approach_enemy', target);
     }
     if (this.order === O.ATTACK) return this.action(S.SEARCH, 'order_attack_no_target');
+    // 메인: 동료가 이미 확인한 정보에 대해서만 플레이어에게 먼저 말을 걸 수 있다.
+    const now = Number.isFinite(Number(context.now)) ? Number(context.now) : Date.now();
+    const tip = context.knownAdvice;
+    if (this.order === O.AUTO && context.canInitiateDialogue === true && context.playerVisible === true
+      && ownerDistance <= this.config.followDistance && context.playerBusy !== true
+      && now - this.lastSocialAt >= this.config.socialCooldownMs && tip?.observed === true && tip?.id
+      && String(tip.id) !== this.lastSocialTopic) {
+      this.lastSocialAt = now;
+      this.lastSocialTopic = String(tip.id);
+      return this.action(S.GUIDE, 'companion_observed_advice', { id: String(tip.id), text: String(tip.text || '').slice(0, 240) });
+    }
     return this.action(S.FOLLOW, 'no_enemy');
   }
 
@@ -139,6 +155,39 @@ export class JaewoonCommonAI {
     if (causalPreferences.includes('avoid-source') && context.canDisengage === true) return this.action(S.RETREAT, 'causal_avoid_source');
     if (causalPreferences.includes('investigate-cause') && context.investigateTarget) return this.action(S.SEARCH, 'causal_investigate', context.investigateTarget);
     if ((causalPreferences.includes('cooperate-with-source') || causalPreferences.includes('support-target')) && context.canInteract) return this.action(S.INTERACT, 'causal_social_followup', context.interactTarget || null);
+
+    // 메인: 스토리/가이드/파티는 플레이어가 알아챌 수 있는 제안이며 엔진의 승인 전에는 상태를 바꾸지 않는다.
+    // NPC는 플레이어에게 접근해 대화 제안은 할 수 있어도 보상·파티 합류·퀘스트 완료를 결정할 수 없다.
+    const now = Number.isFinite(Number(context.now)) ? Number(context.now) : Date.now();
+    const near = context.playerVisible === true && context.playerNearby === true && context.playerBusy !== true;
+    const canOffer = near && context.canInitiateDialogue === true
+      && now - this.lastSocialAt >= this.config.socialCooldownMs;
+    const story = context.authoredStoryBeat;
+    const party = context.partyInvitation;
+    const advice = context.knownAdvice;
+    if (canOffer && story?.eligible === true && story?.sourceEventId && story?.id) {
+      this.lastSocialAt = now;
+      this.lastSocialTopic = 'story:' + story.id;
+      return this.action(S.TALK, 'npc_authored_story_offer', { id: String(story.id), sourceEventId: String(story.sourceEventId) });
+    }
+    if (canOffer && party?.recruitable === true && party?.engineApproved === true
+      && Number(party.openSlots) > 0 && party?.playerId) {
+      this.lastSocialAt = now;
+      this.lastSocialTopic = 'party:' + String(party.playerId);
+      return this.action(S.INVITE, 'npc_party_invitation_proposal', { id: String(party.playerId) });
+    }
+    if (canOffer && advice?.observed === true && advice?.id
+      && String(advice.id) !== this.lastSocialTopic) {
+      this.lastSocialAt = now;
+      this.lastSocialTopic = String(advice.id);
+      return this.action(S.GUIDE, 'npc_observed_progress_guidance', { id: String(advice.id), text: String(advice.text || '').slice(0, 240) });
+    }
+
+    // 마을/필드의 기존 경로만 따라 걸으며 실제 좌표·충돌·스폰 판정은 엔진에 위임한다.
+    if (context.canRoam === true && context.movementAuthorized === true && Array.isArray(context.authoredAnchors)) {
+      const anchor = context.authoredAnchors.find(item => item && item.id && Number.isFinite(item.x) && Number.isFinite(item.y));
+      if (anchor) return this.action(S.PATROL, 'npc_authored_daily_route', { id: String(anchor.id), x: anchor.x, y: anchor.y });
+    }
     if (context.canInteract && this.personality.sociability >= -0.35) return this.action(S.INTERACT, 'player_nearby');
     if (context.investigateTarget && this.personality.curiosity > 0.2) return this.action(S.SEARCH, 'npc_curiosity', context.investigateTarget);
     if (context.patrolReady !== false) return this.action(S.PATROL, 'npc_patrol');
