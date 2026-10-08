@@ -598,25 +598,140 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::d9821a8473d82eb8086d574a940314a9e4fe35b4c1369f6c60ed8793e5055de5:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "coreLoop",
+          "toId": "coreFun",
+          "stateKeys": [
+            "levelGoal",
+            "moveLimit",
+            "obstacleSet",
+            "comboTrigger",
+            "feedbackType"
+          ],
+          "fromSystem": "coreLoop",
+          "toSystem": "coreFun",
+          "trigger": "startLevel",
+          "stateChange": "levelGoalUpdated"
+        },
+        {
+          "fromId": "coreLoop",
+          "toId": "signatureSystems[0]",
+          "stateKeys": [
+            "levelGoal",
+            "moveLimit",
+            "obstacleSet",
+            "comboTrigger",
+            "feedbackType"
+          ],
+          "fromSystem": "coreLoop",
+          "toSystem": "signatureSystems[0]",
+          "trigger": "boardPattern",
+          "stateChange": "boardPatternUpdated"
+        },
+        {
+          "fromId": "coreLoop",
+          "toId": "signatureSystems[1]",
+          "stateKeys": [
+            "levelGoal",
+            "moveLimit",
+            "obstacleSet",
+            "comboTrigger",
+            "feedbackType"
+          ],
+          "fromSystem": "coreLoop",
+          "toSystem": "signatureSystems[1]",
+          "trigger": "boardPattern",
+          "stateChange": "boardPatternUpdated"
+        },
+        {
+          "fromId": "coreLoop",
+          "toId": "signatureSystems[2]",
+          "stateKeys": [
+            "levelGoal",
+            "moveLimit",
+            "obstacleSet",
+            "comboTrigger",
+            "feedbackType"
+          ],
+          "fromSystem": "coreLoop",
+          "toSystem": "signatureSystems[2]",
+          "trigger": "boardPattern",
+          "stateChange": "boardPatternUpdated"
+        },
+        {
+          "fromId": "coreLoop",
+          "toId": "signatureSystems[3]",
+          "stateKeys": [
+            "levelGoal",
+            "moveLimit",
+            "obstacleSet",
+            "comboTrigger",
+            "feedbackType"
+          ],
+          "fromSystem": "coreLoop",
+          "toSystem": "signatureSystems[3]",
+          "trigger": "boardPattern",
+          "stateChange": "boardPatternUpdated"
+        },
+        {
+          "fromId": "coreLoop",
+          "toId": "signatureSystems[4]",
+          "stateKeys": [
+            "levelGoal",
+            "moveLimit",
+            "obstacleSet",
+            "comboTrigger",
+            "feedbackType"
+          ],
+          "fromSystem": "coreLoop",
+          "toSystem": "signatureSystems[4]",
+          "trigger": "boardPattern",
+          "stateChange": "boardPatternUpdated"
+        },
+        {
+          "fromId": "coreLoop",
+          "toId": "coreFun",
+          "stateKeys": [
+            "levelGoal",
+            "moveLimit",
+            "obstacleSet",
+            "comboTrigger",
+            "feedbackType"
+          ],
+          "fromSystem": "coreLoop",
+          "toSystem": "coreFun",
+          "trigger": "startLevel",
+          "stateChange": "levelGoalUpdated"
+        }
+      ],
+      "progressionDirection": "forward",
+      "progressionEconomyBalance": {
+        "progressionLoop": "3",
+        "resourceFlow": "balanced",
+        "balanceRules": "fixed"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 10,
+      "calls": 12,
+      "successes": 11,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1423345,
-      "lastMs": 300005,
+      "totalMs": 1723064,
+      "lastMs": 299719,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T12:28:23.237Z"
+      "updatedAt": "2026-10-08T12:33:22.958Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:04:39.840Z",
-  "updatedAt": "2026-10-08T12:28:23.237Z",
+  "updatedAt": "2026-10-08T12:33:22.958Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2655,7 +2770,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:23:23.224Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:33:22.958Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
