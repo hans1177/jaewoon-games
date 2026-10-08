@@ -582,25 +582,31 @@
     },
     "local_authoring_parts::0561362f7e5bcfafefa9828db85cfba866024ae126e628623b09847fa6bfa759:fromSystem": {
       "fromSystem": "SURVIVAL_05_SIGNATURE_SYSTEM"
+    },
+    "local_authoring_parts::0561362f7e5bcfafefa9828db85cfba866024ae126e628623b09847fa6bfa759:toSystem": {
+      "toSystem": "SURVIVAL_05_SIGNATURE_SYSTEM"
+    },
+    "local_authoring_parts::0561362f7e5bcfafefa9828db85cfba866024ae126e628623b09847fa6bfa759:trigger": {
+      "trigger": "RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 44,
-      "successes": 44,
+      "calls": 46,
+      "successes": 46,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3061024,
-      "lastMs": 44087,
+      "totalMs": 3153345,
+      "lastMs": 48886,
       "lastError": null,
-      "updatedAt": "2026-10-08T23:20:04.362Z"
+      "updatedAt": "2026-10-08T23:21:36.685Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:43:07.484Z",
-  "updatedAt": "2026-10-08T23:20:04.362Z",
+  "updatedAt": "2026-10-08T23:21:36.685Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2979,7 +2985,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T23:20:04.362Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T23:21:36.685Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
