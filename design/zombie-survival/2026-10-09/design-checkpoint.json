@@ -12,25 +12,32 @@
   "tasks": {
     "local_authoring_parts::4bc3c96ef75d29056023d0dc98de87d3a06a66355e577943c904ff7fea6cb746:identity": {
       "identity": "좀비 생존기은 플레이어가 하루에 한 번 선택을 내리며 30일 동안 좀비 아포칼립스를 버티는 선택형 생존 게임이다. 이 게임에서는 주체인 플레이어가 매일 새로운 도전과 위험, 보상을 경험하며 시스템의 핵심 루프를 통해 세계 상태를 점진적으로 바꾼다. 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, 대축 A/B는 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'와 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'로 구성된다. 보조 요소 c는 전략적 조합 및 상황별 변화를 나타내고, 파고들기는 진입/성장/재방문 깊이로 구분된다. 게임 규칙은 기존 인과법칙과 함께 실제 상태 교환을 증명하고, 각각의 시스템은 최종 장르인 ACTION_SURVIVAL_ROGUELITE에서 사용되며, 저장·보상·진행 등 기본적인 게임 메커니즘을 임의 변경하지 않는다."
+    },
+    "local_authoring_parts::4bc3c96ef75d29056023d0dc98de87d3a06a66355e577943c904ff7fea6cb746:playerFantasy": {
+      "playerFantasy": "플레이어는 하루에 한 번 선택을 내리며 30일 동안 좀비 아포칼립스를 버티는 선택형 생존 게임이다. 이 게임에서는 주체인 플레이어가 매일 새로운 도전과 위험, 보상을 경험하며 시스템의 핵심 루프를 통해 세계 상태를 점진적으로 바꾼다. 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, 대축 A/B는 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'와 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'로 구성된다. 보조 요소 c는 전략적 조합 및 상황별 변화를 나타내고, 파고들기는 진입/성장/재방문 깊이로 구분된다. 게임 규칙은 기존 인과법칙과 함께 실제 상태 교환을 증명하고, 각각의 시스템은 최종 장르인 ACTION_SURVIVAL_ROGUELITE에서 사용되며, 저장·보상·진행 등 기본적인 게임 메커니즘을 임의 변경하지 않는다."
+    },
+    "local_authoring_parts::e43325e60645c4331d6a33d75e90c0788673c969b4a74e6634d0b25119dbbdd4:identity,playerFantasy": {
+      "identity": "좀비 생존기은 플레이어가 하루에 한 번 선택을 내리며 30일 동안 좀비 아포칼립스를 버티는 선택형 생존 게임이다. 이 게임에서는 주체인 플레이어가 매일 새로운 도전과 위험, 보상을 경험하며 시스템의 핵심 루프를 통해 세계 상태를 점진적으로 바꾼다. 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, 대축 A/B는 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'와 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'로 구성된다. 보조 요소 c는 전략적 조합 및 상황별 변화를 나타내고, 파고들기는 진입/성장/재방문 깊이로 구분된다. 게임 규칙은 기존 인과법칙과 함께 실제 상태 교환을 증명하고, 각각의 시스템은 최종 장르인 ACTION_SURVIVAL_ROGUELITE에서 사용되며, 저장·보상·진행 등 기본적인 게임 메커니즘을 임의 변경하지 않는다.",
+      "playerFantasy": "플레이어는 하루에 한 번 선택을 내리며 30일 동안 좀비 아포칼립스를 버티는 선택형 생존 게임이다. 이 게임에서는 주체인 플레이어가 매일 새로운 도전과 위험, 보상을 경험하며 시스템의 핵심 루프를 통해 세계 상태를 점진적으로 바꾼다. 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, 대축 A/B는 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'와 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'로 구성된다. 보조 요소 c는 전략적 조합 및 상황별 변화를 나타내고, 파고들기는 진입/성장/재방문 깊이로 구분된다. 게임 규칙은 기존 인과법칙과 함께 실제 상태 교환을 증명하고, 각각의 시스템은 최종 장르인 ACTION_SURVIVAL_ROGUELITE에서 사용되며, 저장·보상·진행 등 기본적인 게임 메커니즘을 임의 변경하지 않는다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 225060,
-      "lastMs": 225060,
+      "totalMs": 320577,
+      "lastMs": 95517,
       "lastError": null,
-      "updatedAt": "2026-10-08T20:57:52.542Z"
+      "updatedAt": "2026-10-08T20:59:28.060Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:54:07.468Z",
-  "updatedAt": "2026-10-08T20:57:52.542Z",
+  "updatedAt": "2026-10-08T20:59:28.062Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2229,7 +2236,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T20:57:52.542Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T20:59:28.062Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
