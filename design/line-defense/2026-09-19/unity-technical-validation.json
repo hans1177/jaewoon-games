@@ -5,12 +5,12 @@
   "pass": true,
   "validated": true,
   "target": "UNITY_ANDROID_TECHNICAL_VALIDATION",
-  "checkedAt": "2026-10-06T01:33:38.322Z",
+  "checkedAt": "2026-10-08T04:43:17.994Z",
   "sourceBinding": {
-    "upstreamBuildRunId": 37327811485,
-    "sourceCommit": "bea4efc11fd50717316a9cc19354753136b3874f",
-    "sourceTreeSha": "01766b6ee2be37582717a8bdbb5825c1b59719f8",
-    "apkSha256": "5413fcdfd6c0b50c98bf3e035fc626075f2a61e5fdb46f473287f1a5e5565061",
+    "upstreamBuildRunId": 37725811242,
+    "sourceCommit": "85a0bdf362499b0e4d3a821ae31a093ff438609f",
+    "sourceTreeSha": "7f287cf97be724de027148b5971d836660a71104",
+    "apkSha256": "17ac22980cc45176554796f0eb40726e2cf6c7c6d7b67ccca26d7eee171fe061",
     "sameBinding": true
   },
   "foundationAdapter": {
@@ -125,7 +125,7 @@
     "MEMORY_HEAT_LOADING": {
       "state": "PASS_WITH_LIMITATION",
       "provider": "ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO",
-      "maxAllocatedMemoryBytes": 55553168,
+      "maxAllocatedMemoryBytes": 55586415,
       "loading": "PASS",
       "heat": "EMULATOR_ONLY_NOT_PHYSICAL_DEVICE",
       "limitation": "Physical-device thermal behavior remains a RELEASE_CONFIRMED device-validation concern."
@@ -177,9 +177,9 @@
     "Physical-device thermal behavior is not inferred from emulator evidence."
   ],
   "provenance": {
-    "buildInfo": "/tmp/unity-build/line-defense-android-cloud-37327811485-1/build-info.json",
-    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-37327811485/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
-    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-37327811485/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
+    "buildInfo": "/tmp/unity-build/line-defense-android-cloud-37725811242-1/build-info.json",
+    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-37725811242/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
+    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-37725811242/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
     "projectPath": "unity-games/line-defense"
   }
 }
