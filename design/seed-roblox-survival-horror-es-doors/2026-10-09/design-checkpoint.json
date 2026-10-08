@@ -47,25 +47,38 @@
       "name": "Level State Transition System",
       "purpose": "플레이어가 시작 단계에서 명확한 목표와 제한된 이동, 장애물 또는 시각적 퀴즈로 구성된 레벨을 수행하며 선택의 결과가 월드 상태에 직접적인 영향을 미친다.",
       "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+    },
+    "local_authoring_parts::75c94bda5942c97e95532c11bd5d3d02c899ed126e3da83c8fba695739643554:signatureSystems:1": {
+      "id": "SIGNATURE_SYSTEM_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "LEVEL_STATE"
+      ],
+      "stateOutputs": [
+        "NEXT_LEVEL_PATTERN"
+      ],
+      "name": "Level State Transition System",
+      "purpose": "플레이어가 시작 단계에서 명확한 목표와 제한된 이동, 장애물 또는 시각적 퀴즈로 구성된 레벨을 수행하며 선택의 결과가 월드 상태에 직접적인 영향을 미친다.",
+      "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 169080,
-      "lastMs": 20865,
+      "totalMs": 190620,
+      "lastMs": 21540,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:32:26.963Z"
+      "updatedAt": "2026-10-08T18:32:48.507Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:29:37.860Z",
-  "updatedAt": "2026-10-08T18:32:26.963Z",
+  "updatedAt": "2026-10-08T18:32:48.508Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2102,7 +2115,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:32:26.963Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:32:48.508Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
