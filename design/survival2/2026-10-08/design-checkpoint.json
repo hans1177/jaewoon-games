@@ -68,25 +68,42 @@
       "name": "DELVE",
       "purpose": "Explore the forest for a needed resource while reading environmental and creature danger.",
       "playerChoice": "Explore the forest for a needed resource while reading environmental and creature danger."
+    },
+    "local_authoring_parts::d9eb839216d4f90e95d38656ec5f108abc92f9d96fd5625e7ee758ac3b777a7b:signatureSystems:2": {
+      "id": "SURVIVAL2-DELVE-2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "environmentalAndCreatureDanger",
+        "currentSupplies",
+        "groupReadiness"
+      ],
+      "stateOutputs": [
+        "newResource",
+        "newShelter",
+        "newEquipment"
+      ],
+      "name": "DELVE",
+      "purpose": "Explore the forest for a needed resource while reading environmental and creature danger.",
+      "playerChoice": "Explore the forest for a needed resource while reading environmental and creature danger."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 652063,
-      "lastMs": 79981,
+      "totalMs": 730557,
+      "lastMs": 78494,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:08:15.179Z"
+      "updatedAt": "2026-10-08T13:09:33.675Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:57:22.913Z",
-  "updatedAt": "2026-10-08T13:08:15.180Z",
+  "updatedAt": "2026-10-08T13:09:33.675Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2314,7 +2331,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:08:15.179Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:09:33.675Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
