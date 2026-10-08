@@ -254,25 +254,37 @@
     },
     "local_authoring_parts::e3b664b9347a07db9ebbfe7edf519402a3e2e326f88051a6c6fee88bff48b418:toId": {
       "toId": "newWorldState"
+    },
+    "local_authoring_parts::e3b664b9347a07db9ebbfe7edf519402a3e2e326f88051a6c6fee88bff48b418:stateKeys": {
+      "stateKeys": [
+        "playerPosition",
+        "currentBuild",
+        "availableResources",
+        "enemyPressureLevel",
+        "newWorldState",
+        "updatedBuild",
+        "newResourcePool",
+        "adjustedEnemyPressure"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1093845,
-      "lastMs": 59706,
+      "totalMs": 1157481,
+      "lastMs": 63636,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:10:54.023Z"
+      "updatedAt": "2026-10-08T08:11:57.660Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:52:40.073Z",
-  "updatedAt": "2026-10-08T08:10:54.023Z",
+  "updatedAt": "2026-10-08T08:11:57.660Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2624,7 +2636,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T08:10:54.023Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:11:57.660Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
