@@ -554,25 +554,35 @@
       "toSystem": "INSECT_WAVE_THREAT_ANALYSIS_SYSTEM",
       "trigger": "INSECT_WAVE_THREAT_PATTERN",
       "stateChange": "DEFENDER_PLACEMENT,RESOURCE_ALLOCATION"
+    },
+    "local_authoring_parts::5711e94210508511d9720f7f68681e8d6313837b7aa7a12ff583d8de197438e9:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "INSECT_WAVE_THREAT_PATTERN",
+      "toId": "DEFENDER_ADJUSTMENT",
+      "stateKeys": [
+        "INSECT_WAVE_THREAT_PATTERN",
+        "DEFENDER_PLACEMENT",
+        "RESOURCE_ALLOCATION"
+      ],
+      "fromSystem": "INSECT_WAVE_THREAT_ANALYSIS_SYSTEM"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 14,
+      "calls": 18,
+      "successes": 15,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2545509,
-      "lastMs": 83712,
+      "totalMs": 2634592,
+      "lastMs": 89083,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T08:28:00.071Z"
+      "updatedAt": "2026-10-08T08:29:29.157Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:45:34.468Z",
-  "updatedAt": "2026-10-08T08:28:00.073Z",
+  "updatedAt": "2026-10-08T08:29:29.157Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2773,7 +2783,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:28:00.072Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:29:29.157Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
