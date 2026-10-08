@@ -65,25 +65,40 @@
       "name": "ACTION_SURVIVAL_ROGUELITE_A",
       "purpose": "플레이어가 선택한 결과와 현재 건축 상태를 바탕으로 다음 진행 선택 및 세계 상태를 결정하는 주요 규칙.",
       "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build."
+    },
+    "local_authoring_parts::fa1bda93e11fbb74b6151c557d8cfa8aca615a4f78b21648cbc3090a96521c91:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "RUN_RESULT",
+        "BUILD_STATE"
+      ],
+      "stateOutputs": [
+        "NEXT_PROGRESSION_CHOICE",
+        "MODIFIED_WORLD_STATE"
+      ],
+      "name": "ACTION_SURVIVAL_ROGUELITE_B",
+      "purpose": "플레이어가 선택한 결과와 현재 건축 상태를 바탕으로 다음 진행 선택 및 세계 상태를 결정하는 주요 규칙.",
+      "playerChoice": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 360531,
-      "lastMs": 39124,
+      "totalMs": 405569,
+      "lastMs": 45038,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:51:38.884Z"
+      "updatedAt": "2026-10-08T17:52:23.924Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:45:38.274Z",
-  "updatedAt": "2026-10-08T17:51:38.885Z",
+  "updatedAt": "2026-10-08T17:52:23.924Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2282,7 +2297,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:51:38.884Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:52:23.924Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
