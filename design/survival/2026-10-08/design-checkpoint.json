@@ -79,25 +79,40 @@
       "name": "SurvivalProgressionSystem",
       "purpose": "Implement the core gameplay mechanic of progressing through survival challenges by combining upgrades, surviving waves, and converting run results into progression choices. This system enables players to advance through the game by strategically combining resources, overcoming challenges, and transitioning to new phases of gameplay.",
       "playerChoice": "Choose between combining upgrades into a stronger build, surviving harder waves or a boss, and converting the run result into the next progression choice. This allows players to optimize their strategy by leveraging resource efficiency, overcoming difficulty, and advancing through the game's progression system."
+    },
+    "local_authoring_parts::cf423ba85f3f1e874a4dc0378a0726462ad50f11a16a3186dcdda7bc4ec2601a:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "c",
+      "stateInputs": [
+        "worldState",
+        "playerAction"
+      ],
+      "stateOutputs": [
+        "newWorldState",
+        "nextPlayerAction"
+      ],
+      "name": "SurvivalDepthSystem",
+      "purpose": "Implement the core gameplay mechanic of deepening survival through strategic exploration, resource management, and progression, with the ability to uncover new possibilities and generate new questions for the next iteration of gameplay.",
+      "playerChoice": "Explore new territories, discover hidden resources, and uncover the potential for new gameplay options that can reshape the world state and influence the next player action."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 618647,
-      "lastMs": 73161,
+      "totalMs": 689413,
+      "lastMs": 70766,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:08:25.787Z"
+      "updatedAt": "2026-10-08T13:09:36.554Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:58:07.049Z",
-  "updatedAt": "2026-10-08T13:08:25.787Z",
+  "updatedAt": "2026-10-08T13:09:36.554Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2296,7 +2311,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:08:25.787Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:09:36.554Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
