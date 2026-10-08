@@ -902,25 +902,45 @@
         "progressionStatus"
       ],
       "fromSystem": "SYSTEM_WORLD_STATE_TRANSFORMATION_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01"
+    },
+    "local_authoring_parts::bab5f17d5c85f8018acb24c7bb738ac5a84617872fe8cc40b53106e5468f3992:toSystem,trigger,stateChange": {
+      "toSystem": "SYSTEM_WORLD_STATE_TRANSFORMATION_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01",
+      "trigger": "ACTION_PLAYER_INPUT",
+      "stateChange": "{\"currentWorldState\": \"OPENING\", \"playerTarget\": \"OPENING\", \"availableResources\": \"OPENING\", \"potentialHazards\": \"OPENING\", \"progressionStatus\": \"OPENING\"} -> { \"updatedWorldState\": \"OPENING\", \"newPlayerTarget\": \"OPENING\", \"modifiedResources\": \"OPENING\", \"reducedHazards\": \"OPENING\", \"newProgressionStatus\": \"OPENING\" }"
+    },
+    "local_authoring_parts::c0381f5e6e75bd2178f8307f4194a77212c828ef4f4a1e1ff49c93964f1b587a:systemInterconnections:4": {
+      "fromId": "systemInterconnections[0]",
+      "toId": "systemInterconnections[1]",
+      "stateKeys": [
+        "currentWorldState",
+        "playerTarget",
+        "availableResources",
+        "potentialHazards",
+        "progressionStatus"
+      ],
+      "fromSystem": "SYSTEM_WORLD_STATE_TRANSFORMATION_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01",
+      "toSystem": "SYSTEM_WORLD_STATE_TRANSFORMATION_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01",
+      "trigger": "ACTION_PLAYER_INPUT",
+      "stateChange": "{\"currentWorldState\": \"OPENING\", \"playerTarget\": \"OPENING\", \"availableResources\": \"OPENING\", \"potentialHazards\": \"OPENING\", \"progressionStatus\": \"OPENING\"} -> { \"updatedWorldState\": \"OPENING\", \"newPlayerTarget\": \"OPENING\", \"modifiedResources\": \"OPENING\", \"reducedHazards\": \"OPENING\", \"newProgressionStatus\": \"OPENING\" }"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 30,
-      "successes": 30,
+      "calls": 31,
+      "successes": 31,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1028308,
-      "lastMs": 41069,
+      "totalMs": 1073279,
+      "lastMs": 44971,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:21:12.093Z"
+      "updatedAt": "2026-10-08T15:21:57.066Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:29:02.212Z",
-  "updatedAt": "2026-10-08T15:21:12.093Z",
+  "updatedAt": "2026-10-08T15:21:57.072Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2981,6 +3001,91 @@
   "sliceRepairFeedback": {
     "designer_draft_slices::systems-progression": [
       {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[0].trigger",
+          "value": "ACTION_PLAYER_INPUT"
+        },
+        "requiredAction": "systemInterconnections[0].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[1].trigger",
+          "value": "ACTION_PLAYER_INPUT"
+        },
+        "requiredAction": "systemInterconnections[1].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[2].trigger",
+          "value": "ACTION_PLAYER_INPUT"
+        },
+        "requiredAction": "systemInterconnections[2].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[3].trigger",
+          "value": "ACTION_PLAYER_INPUT"
+        },
+        "requiredAction": "systemInterconnections[3].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[4].trigger",
+          "value": "ACTION_PLAYER_INPUT"
+        },
+        "requiredAction": "systemInterconnections[4].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
         "code": "DESIGN_STATE_EXCHANGE_BROKEN",
         "kind": "HARD_GATE",
         "axis": "CORE_LOOP_DESIGN",
@@ -3056,9 +3161,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "systemInterconnections[3]→systemInterconnections[4]의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "systemInterconnections[0]→systemInterconnections[1]의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: systemInterconnections[3]→systemInterconnections[4]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: systemInterconnections[0]→systemInterconnections[1]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3085,7 +3190,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 2
+    "designer_draft_slices::systems-progression": 3
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3126,10 +3231,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:21:12.093Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T15:21:57.069Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
