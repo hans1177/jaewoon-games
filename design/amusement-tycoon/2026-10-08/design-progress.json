@@ -8,25 +8,30 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 13,
-  "lastSuccessfulModelCallAt": "2026-10-08T10:31:14.399Z",
+  "cachedTaskCount": 16,
+  "lastSuccessfulModelCallAt": "2026-10-08T10:32:42.904Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
-  "designerSeed": null,
+  "designerSeed": {
+    "file": "design/amusement-tycoon/2026-10-08/design-seed.json",
+    "contentDigest": "db0d8ab8833ee4c63c4637d8ba1382aa430704a40d23cd8b03f4fd51e081e510",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1117656,
-      "lastMs": 100886,
+      "totalMs": 1206155,
+      "lastMs": 88499,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:31:14.397Z"
+      "updatedAt": "2026-10-08T10:32:42.899Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T10:31:14.400Z"
+  "updatedAt": "2026-10-08T10:32:42.912Z"
 }
