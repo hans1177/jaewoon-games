@@ -669,25 +669,34 @@
       "toSystem": "signatureSystems_1",
       "trigger": "Fight through an escalating horde in a short real-time survival run",
       "stateChange": "Transition to next world state based on player choices"
+    },
+    "local_authoring_parts::06a1c6120fc4795370b3e0c144d9e1179c14604642659fc2381e13142ee0315a:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "signatureSystems_0",
+      "toId": "signatureSystems_1",
+      "stateKeys": [
+        "readState: 'Fight through an escalating horde in a short real-time survival run'",
+        "writeState: 'Transition to next world state based on player choices'"
+      ],
+      "fromSystem": "signatureSystems_0"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 18,
+      "calls": 19,
+      "successes": 19,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2029641,
-      "lastMs": 91691,
+      "totalMs": 2122905,
+      "lastMs": 93264,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:38:28.674Z"
+      "updatedAt": "2026-10-08T12:40:01.941Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:04:38.961Z",
-  "updatedAt": "2026-10-08T12:38:28.675Z",
+  "updatedAt": "2026-10-08T12:40:01.941Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3032,7 +3041,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:38:28.675Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:40:01.941Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
