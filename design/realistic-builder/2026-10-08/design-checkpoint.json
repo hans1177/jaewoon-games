@@ -726,25 +726,43 @@
         "NEXT CHOICE: BUILD STRONGER BUILD"
       ],
       "fromSystem": "ACTION_SURVIVAL_ROGUELITE_SIGNATURE_SYSTEM_01"
+    },
+    "local_authoring_parts::f626c358692b4e72b29aa51581cf79099b8a260c0744e1064adde99d9747a8bd:toSystem,trigger,stateChange": {
+      "toSystem": "ACTION_SURVIVAL_ROGUELITE_SIGNATURE_SYSTEM_02",
+      "trigger": "FIGHT THROUGH HORDE",
+      "stateChange": "POSITIONING AROUND ENEMY PRESSURE"
+    },
+    "local_authoring_parts::7065499dcc2497234b67446f0ebefec178ace17fcd51a3336f45293a46ac6ddb:systemInterconnections:2": {
+      "fromId": "ACTION_SURVIVAL_ROGUELITE_SIGNATURE_SYSTEM_01",
+      "toId": "ACTION_SURVIVAL_ROGUELITE_SIGNATURE_SYSTEM_02",
+      "stateKeys": [
+        "FIGHT THROUGH HORDE",
+        "RUN REWARDS / UPGRADES / SKILLS",
+        "NEXT CHOICE: BUILD STRONGER BUILD"
+      ],
+      "fromSystem": "ACTION_SURVIVAL_ROGUELITE_SIGNATURE_SYSTEM_01",
+      "toSystem": "ACTION_SURVIVAL_ROGUELITE_SIGNATURE_SYSTEM_02",
+      "trigger": "FIGHT THROUGH HORDE",
+      "stateChange": "POSITIONING AROUND ENEMY PRESSURE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 28,
-      "successes": 25,
+      "calls": 29,
+      "successes": 26,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 3639856,
-      "lastMs": 95165,
+      "totalMs": 3733216,
+      "lastMs": 93360,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T11:25:21.715Z"
+      "updatedAt": "2026-10-08T11:26:55.077Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:14:49.595Z",
-  "updatedAt": "2026-10-08T11:25:21.715Z",
+  "updatedAt": "2026-10-08T11:26:55.078Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3100,7 +3118,7 @@
     "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T11:25:21.715Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T11:26:55.078Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
