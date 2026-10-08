@@ -68,25 +68,42 @@
       "name": "DEFENSE_STRATEGIC_BALANCE_REINTERPRETED",
       "purpose": "Balances strategic choices across placement, resonance, and upgrades to optimize defense effectiveness.",
       "playerChoice": "Choose the most valuable resource allocation for each wave based on current threat patterns and player strategy evolution."
+    },
+    "local_authoring_parts::d499759e80ab7ef446eec7593ec876cce63779ac2e2a220a465d0fc4555c7a32:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "PLACEMENT",
+        "RESONANCE",
+        "UPGRADES"
+      ],
+      "stateOutputs": [
+        "STRATEGY",
+        "PATH",
+        "GROWTH"
+      ],
+      "name": "DEFENSE_STRATEGIC_BALANCE_REINTERPRETED_B",
+      "purpose": "Balances placement, resonance, and upgrades to create strategic depth and growth potential.",
+      "playerChoice": "Choose where crystal defenses create the most value based on current threat patterns and player strategy evolution."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 547764,
-      "lastMs": 96914,
+      "totalMs": 644735,
+      "lastMs": 96971,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:55:59.880Z"
+      "updatedAt": "2026-10-08T21:57:36.852Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:46:52.091Z",
-  "updatedAt": "2026-10-08T21:55:59.880Z",
+  "updatedAt": "2026-10-08T21:57:36.852Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2277,7 +2294,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:55:59.880Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:57:36.852Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
