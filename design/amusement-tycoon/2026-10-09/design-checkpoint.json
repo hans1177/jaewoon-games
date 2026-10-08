@@ -543,25 +543,34 @@
       "toSystem": "CORE_LOOP_DESIGN_BASELINE_MAIN_A_B_C_DELVE",
       "trigger": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
       "stateChange": "Player's action triggers immediate state transition to next level of gameplay."
+    },
+    "local_authoring_parts::d7a8020051b0f8c896cd2a174e54253603581da95ea3b5968a1457511504d496:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "START",
+      "toId": "RUN_1",
+      "stateKeys": [
+        "SCORE",
+        "DISTANCE"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN_BASELINE_MAIN_A_B_C_DELVE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 16,
+      "calls": 18,
+      "successes": 17,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1834293,
-      "lastMs": 91538,
+      "totalMs": 1924463,
+      "lastMs": 90170,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T19:42:29.324Z"
+      "updatedAt": "2026-10-08T19:43:59.496Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T19:11:54.966Z",
-  "updatedAt": "2026-10-08T19:42:29.325Z",
+  "updatedAt": "2026-10-08T19:43:59.496Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2630,7 +2639,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T19:42:29.325Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:43:59.496Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
