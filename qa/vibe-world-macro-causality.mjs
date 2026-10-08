@@ -282,6 +282,7 @@ const generated=createVibeProceduralWorldLayout(seedWorld);
 assert.equal(generated.status,'STATIC_LAYOUT_PROPOSED',JSON.stringify(generated.issues));
 assert.equal(generated.terrain.length,24*24);
 assert.equal(generated.drainage,'FOUR_NEIGHBOR_DOWNHILL');
+assert.equal(generated.riverType,'PERENNIAL_FLOW_CANDIDATE');
 assert.equal(generated.regionalBiome,'TEMPERATE');
 assert.ok(generated.river.length>0);
 assert.ok(generated.roadCells.length>5);
@@ -348,8 +349,11 @@ const reserved=createVibeProceduralWorldLayout({...seedWorld,reservedCells:Array
 assert.ok(reserved.issues.some(issue=>issue.includes('REQUIRED_ROUTE_BLOCKED')||issue.includes('REQUIRED_OBJECTIVE_UNREACHABLE')));
 assert.equal(reserved.runtimeVerified,false);
 const generated2D=createVibeProceduralWorldLayout({...seedWorld,dimension:'2D'});
-assert.equal(generated2D.coordinateSystem,'XY_TOP_DOWN');
+assert.equal(generated2D.coordinateSystem,'GRID_XZ_REQUIRES_2D_AXIS_MAPPING');
+assert.equal(generated2D.native2DWorldCoordinateMappingRequired,true);
 assert.equal(generated2D.terrain.length,generated.terrain.length);
+const aridWorld=createVibeProceduralWorldLayout({...seedWorld,biome:'DESERT',climate:'ARID'});
+assert.equal(aridWorld.riverType,'SEASONAL_DRY_CHANNEL');
 assert.deepEqual(generated2D.roadCells,generated.roadCells);
 
 console.log('vibe-world-macro-causality: ok');
