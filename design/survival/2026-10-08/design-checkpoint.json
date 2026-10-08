@@ -64,25 +64,40 @@
       "name": "SurvivalResourceSystem",
       "purpose": "Implement the core gameplay mechanic of resource management and strategic decision-making in a survival context, with the ability to optimize resources through tactical choices.",
       "playerChoice": "Choose between collecting resources for immediate survival or consolidating them for long-term strategic advantages, with the ability to upgrade tools, skills, or systems to enhance survival efficiency."
+    },
+    "local_authoring_parts::cf423ba85f3f1e874a4dc0378a0726462ad50f11a16a3186dcdda7bc4ec2601a:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "worldState",
+        "playerAction"
+      ],
+      "stateOutputs": [
+        "newWorldState",
+        "nextPlayerAction"
+      ],
+      "name": "SurvivalProgressionSystem",
+      "purpose": "Implement the core gameplay mechanic of progressing through survival challenges by combining upgrades, surviving waves, and converting run results into progression choices. This system enables players to advance through the game by strategically combining resources, overcoming challenges, and transitioning to new phases of gameplay.",
+      "playerChoice": "Choose between combining upgrades into a stronger build, surviving harder waves or a boss, and converting the run result into the next progression choice. This allows players to optimize their strategy by leveraging resource efficiency, overcoming difficulty, and advancing through the game's progression system."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 545486,
-      "lastMs": 72352,
+      "totalMs": 618647,
+      "lastMs": 73161,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:07:12.624Z"
+      "updatedAt": "2026-10-08T13:08:25.787Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:58:07.049Z",
-  "updatedAt": "2026-10-08T13:07:12.624Z",
+  "updatedAt": "2026-10-08T13:08:25.787Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2281,7 +2296,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:07:12.624Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:08:25.787Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
