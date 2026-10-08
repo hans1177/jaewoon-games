@@ -975,25 +975,35 @@
       "toSystem": "A",
       "trigger": "Player chooses a core gameplay action that drives the survival run and determines the next progression choice.",
       "stateChange": "PlayerChoice updates to next progression choice."
+    },
+    "local_authoring_parts::d61a071ad875f9da4358ea11917819a20c8007f278d0323c09762f220393c369:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "MAIN",
+      "toId": "A",
+      "stateKeys": [
+        "BuildProgress",
+        "RunProgress",
+        "PlayerChoice"
+      ],
+      "fromSystem": "MAIN/A/B/c/DELVE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 29,
-      "successes": 28,
+      "calls": 30,
+      "successes": 29,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 3432438,
-      "lastMs": 94338,
+      "totalMs": 3524356,
+      "lastMs": 91918,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T16:41:58.672Z"
+      "updatedAt": "2026-10-08T16:43:30.594Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:58:27.660Z",
-  "updatedAt": "2026-10-08T16:41:58.674Z",
+  "updatedAt": "2026-10-08T16:43:30.594Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3337,7 +3347,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:41:58.674Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:43:30.594Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
