@@ -66,25 +66,41 @@
       "name": "READ_BORDER_PRESSURE_AND_CHOOSE_TERRITORY_CHARACTERISTIC",
       "purpose": "Read the current border pressure and choose one territory objective based on regional characteristics",
       "playerChoice": "Select a territory objective that aligns with regional features and strategic goals in real-time gameplay progression and decision-making processes within the game's core loop system."
+    },
+    "local_authoring_parts::51c6916d1b6b7627fbca8e88758ed951a334f3b73be78c39b1b22a10a4b4c972:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "border_pressure",
+        "territory_characteristic"
+      ],
+      "stateOutputs": [
+        "new_strategy",
+        "updated_front_line",
+        "expanded_resources"
+      ],
+      "name": "READ_BORDER_PRESSURE_AND_CHOOSE_TERRITORY_CHARACTERISTIC",
+      "purpose": "플레이어는 현재 경계 압박과 지역 특성을 결합하여 새로운 전략을 세운다.",
+      "playerChoice": "영토의 경계 압박을 읽고, 그에 따라 지역 특성과 전선 변화를 결합하여 새로운 전략을 결정한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 477478,
-      "lastMs": 99174,
+      "totalMs": 579541,
+      "lastMs": 102063,
       "lastError": null,
-      "updatedAt": "2026-10-08T20:56:14.056Z"
+      "updatedAt": "2026-10-08T20:57:56.121Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:48:16.553Z",
-  "updatedAt": "2026-10-08T20:56:14.056Z",
+  "updatedAt": "2026-10-08T20:57:56.121Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2108,7 +2124,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T20:56:14.056Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T20:57:56.121Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
