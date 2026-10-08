@@ -545,25 +545,28 @@
       "stateKeys": [
         "BOARD_STATE"
       ]
+    },
+    "local_authoring_parts::9a0a9f70e58e177153888032966519e4814c74acad408cced9d713128e2016c8:fromSystem": {
+      "fromSystem": "SIGNATURE_SYSTEM_4 → BOARD_STATE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 42,
-      "successes": 42,
+      "calls": 43,
+      "successes": 43,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2969400,
-      "lastMs": 43469,
+      "totalMs": 3012085,
+      "lastMs": 42685,
       "lastError": null,
-      "updatedAt": "2026-10-08T23:53:00.553Z"
+      "updatedAt": "2026-10-08T23:53:43.240Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:31:40.536Z",
-  "updatedAt": "2026-10-08T23:53:00.553Z",
+  "updatedAt": "2026-10-08T23:53:43.240Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3003,7 +3006,7 @@
       "progressionDirection": "{\"from\": \"START_GAME\", \"to\": \"MATCH_GAME\"}"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T23:53:00.553Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T23:53:43.240Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
