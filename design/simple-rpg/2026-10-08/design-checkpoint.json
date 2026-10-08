@@ -824,25 +824,45 @@
         "newPuzzleConstraint"
       ],
       "fromSystem": "MAIN/A/B/c/DELVE"
+    },
+    "local_authoring_parts::6145e6f4f0d6cd7bee0b229a0b71afccd2877a0fe2d25ac90871b448f2e1f992:toSystem,trigger,stateChange": {
+      "toSystem": "MAIN/A/B/c/DELVE",
+      "trigger": "Player selects moves, creates combos, and manages obstacles to achieve the goal and unlock new levels or stages.",
+      "stateChange": "The board pattern evolves with each playthrough, introducing new obstacles and puzzle elements that challenge the player's adaptability. The goal and constraints become more complex, requiring strategic thinking and creative problem-solving to progress."
+    },
+    "local_authoring_parts::cd3355af5e47f67185b5b1323fcda0b9d7551c116b877087c2895f4fb1f7cf76:systemInterconnections:3": {
+      "fromId": "MAIN",
+      "toId": "A",
+      "stateKeys": [
+        "nextBoardPattern",
+        "newGoal",
+        "newMoves",
+        "newObstacles",
+        "newPuzzleConstraint"
+      ],
+      "fromSystem": "MAIN/A/B/c/DELVE",
+      "toSystem": "MAIN/A/B/c/DELVE",
+      "trigger": "Player selects moves, creates combos, and manages obstacles to achieve the goal and unlock new levels or stages.",
+      "stateChange": "The board pattern evolves with each playthrough, introducing new obstacles and puzzle elements that challenge the player's adaptability. The goal and constraints become more complex, requiring strategic thinking and creative problem-solving to progress."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 19,
+      "calls": 21,
+      "successes": 20,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2555252,
-      "lastMs": 90400,
+      "totalMs": 2618587,
+      "lastMs": 63335,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T09:09:53.291Z"
+      "updatedAt": "2026-10-08T10:10:00.484Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:27:17.966Z",
-  "updatedAt": "2026-10-08T10:08:57.127Z",
+  "updatedAt": "2026-10-08T10:10:00.486Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3029,7 +3049,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T09:09:53.291Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:10:00.486Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
