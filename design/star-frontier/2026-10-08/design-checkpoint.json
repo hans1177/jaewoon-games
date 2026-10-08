@@ -703,25 +703,105 @@
           "playerChoice": "게임_시작_목표_3를 설정하고, 제한된 이동 수를 선택하며, 장애물을 해결하고, 시그니처 규칙을 적용하여 게임을 진행한다. 선택은 즉시 상태 변화를 일으키며, 게임은 다양한 경로와 결과를 제공한다. 성장은 행동, 경로, 조합, 관계, 발견, 대응법을 통해 콘텐츠를 다양하게 사용한다. 모바일에서 즉시 이해되는 입력과 피드백을 통해 플레이어는 게임을 즐길 수 있다."
         }
       ]
+    },
+    "local_authoring_parts::8c01518da8f8d31a61f7986dd6ad2edcca119b17c2266521bfee10e06d7abb9e:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "별길 개척자-게임_시그니처_1",
+          "toId": "별길 개척자-게임_시그니처_2",
+          "stateKeys": [
+            "게임_시작_목표",
+            "제한_이동_수",
+            "장애물_집합",
+            "시그니처_규칙_1"
+          ],
+          "fromSystem": "별길 개척자-게임_시그니처_1",
+          "toSystem": "별길 개척자-게임_시그니처_2",
+          "trigger": "게임_시작_목표 설정",
+          "stateChange": "제한_이동_수 선택 및 장애물 해결"
+        },
+        {
+          "fromId": "별길 개척자-게임_시그니처_2",
+          "toId": "별길 개척자-게임_시그니처_3",
+          "stateKeys": [
+            "게임_시작_목표_2",
+            "제한_이동_수_2",
+            "장애물_집합_2",
+            "시그니처_규칙_3"
+          ],
+          "fromSystem": "별길 개척자-게임_시그니처_2",
+          "toSystem": "별길 개척자-게임_시그니처_3",
+          "trigger": "게임_시작_목표_2 설정",
+          "stateChange": "제한_이동_수_2 선택 및 장애물 해결"
+        },
+        {
+          "fromId": "별길 개척자-게임_시그니처_3",
+          "toId": "별길 개척자-게임_시그니처_4",
+          "stateKeys": [
+            "게임_시작_목표_3",
+            "제한_이동_수_3",
+            "장애물_집합_3",
+            "시그니처_규칙_5"
+          ],
+          "fromSystem": "별길 개척자-게임_시그니처_3",
+          "toSystem": "별길 개척자-게임_시그니처_4",
+          "trigger": "게임_시작_목표_3 설정",
+          "stateChange": "제한_이동_수_3 선택 및 장애물 해결"
+        },
+        {
+          "fromId": "별길 개척자-게임_시그니처_4",
+          "toId": "별길 개척자-게임_시그니처_5",
+          "stateKeys": [
+            "게임_시작_목표_2",
+            "제한_이동_수_2",
+            "장애물_집합_2",
+            "시그니처_규칙_4"
+          ],
+          "fromSystem": "별길 개척자-게임_시그니처_4",
+          "toSystem": "별길 개척자-게임_시그니처_5",
+          "trigger": "게임_시작_목표_2 설정",
+          "stateChange": "제한_이동_수_2 선택 및 장애물 해결"
+        },
+        {
+          "fromId": "별길 개척자-게임_시그니처_5",
+          "toId": "별길 개척자-게임_시그니처_1",
+          "stateKeys": [
+            "게임_결과_상태_2",
+            "선택_바뀐_상태_2",
+            "게임_진행_상태_2",
+            "시그니처_규칙_5"
+          ],
+          "fromSystem": "별길 개척자-게임_시그니처_5",
+          "toSystem": "별길 개척자-게임_시그니처_1",
+          "trigger": "게임_결과_상태_2 획득",
+          "stateChange": "게임_진행_상태_2 전환"
+        }
+      ],
+      "progressionDirection": "선형",
+      "progressionEconomyBalance": {
+        "progressionLoop": "기본",
+        "resourceFlow": "기본",
+        "balanceRules": "기본"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 15,
+      "calls": 17,
+      "successes": 16,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1520399,
-      "lastMs": 219866,
+      "totalMs": 1675697,
+      "lastMs": 155298,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T13:18:38.231Z"
+      "updatedAt": "2026-10-08T13:21:13.530Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:53:17.663Z",
-  "updatedAt": "2026-10-08T13:18:38.231Z",
+  "updatedAt": "2026-10-08T13:21:13.530Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2762,7 +2842,7 @@
     "designer_draft_slices::identity-core": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:14:58.340Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:21:13.530Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
