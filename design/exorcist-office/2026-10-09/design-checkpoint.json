@@ -938,25 +938,28 @@
       "toSystem": "RUN_STATE",
       "trigger": "systemInterconnections[0].stateChange",
       "stateChange": "START_STATE → RUN_STATE: 플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다. 이 과정에서 사용자는 단일 행동으로 세계 상태를 변환시키며, 결과에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 한다."
+    },
+    "local_authoring_parts::7f779fa0df629f3fa334f71b7e883ad86dd7121ea29d764afe621579c6210836:fromId": {
+      "fromId": "systemInterconnections[1].stateChange"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 34,
-      "successes": 31,
+      "calls": 35,
+      "successes": 32,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2891020,
-      "lastMs": 65837,
+      "totalMs": 2947374,
+      "lastMs": 56354,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T23:28:14.370Z"
+      "updatedAt": "2026-10-08T23:29:10.727Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T22:05:56.751Z",
-  "updatedAt": "2026-10-08T23:28:14.371Z",
+  "updatedAt": "2026-10-08T23:29:10.727Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3110,7 +3113,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T23:28:14.371Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T23:29:10.727Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
