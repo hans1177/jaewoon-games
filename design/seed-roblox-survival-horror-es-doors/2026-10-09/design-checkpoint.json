@@ -86,25 +86,181 @@
       "name": "Board State Transition System (Content Expansion)",
       "purpose": "Provides content expansion through emergent gameplay patterns and player agency, evolving the board state with each unique combination of choices, risks, and rewards.",
       "playerChoice": "Generate a new board pattern or obstacle combination that reflects the current state and player intent, ensuring dynamic evolution of the game world through repeated play and discovery."
+    },
+    "local_authoring_parts::65bcd5eebd670f99928fbac34d7a72f8257e988904325f1aae3c89e2e22357fa:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_05",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "BOARD_STATE"
+      ],
+      "stateOutputs": [
+        "NEXT_BOARD_PATTERN_STATE"
+      ],
+      "name": "Board State Transition System (Delve Expansion)",
+      "purpose": "Player choices, risk/reward dynamics, and emergent gameplay patterns are used to evolve the board state through a series of interconnected states.",
+      "playerChoice": "Make strategic decisions that influence the next board pattern or obstacle combination, leveraging immediate feedback to adapt to changing conditions and risks."
+    },
+    "local_authoring_parts::0c8ad5cb2af45a0d53ad131eedeab0c36da0d2c07dbd1a8441428e0f0b370e78:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "LEVEL_GOAL_STATE"
+          ],
+          "stateOutputs": [
+            "NEXT_BOARD_PATTERN_STATE"
+          ],
+          "name": "Board State Transition System",
+          "purpose": "Main system that governs the evolution of the game through player choices, risk/reward dynamics, and emergent gameplay patterns.",
+          "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. (INPUT: LEVEL_GOAL_STATE) → Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. (SELECT: NEXT_BOARD_PATTERN_STATE)"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "NEXT_BOARD_PATTERN_STATE"
+          ],
+          "name": "Board State Transition System",
+          "purpose": "Main system that governs the evolution of board states through player choices, risk/reward dynamics, and emergent gameplay patterns.",
+          "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "NEXT_BOARD_PATTERN_STATE"
+          ],
+          "name": "Board State Transition System (Secondary Axis)",
+          "purpose": "Establishes a secondary axis of board state transition, allowing for alternative pathways and risk/reward dynamics in gameplay.",
+          "playerChoice": "Make strategic decisions that alter the current board state to achieve specific goals or unlock new game mechanics while maintaining core gameplay principles."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_04",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "NEXT_BOARD_PATTERN_STATE"
+          ],
+          "name": "Board State Transition System (Content Expansion)",
+          "purpose": "Provides content expansion through emergent gameplay patterns and player agency, evolving the board state with each unique combination of choices, risks, and rewards.",
+          "playerChoice": "Generate a new board pattern or obstacle combination that reflects the current state and player intent, ensuring dynamic evolution of the game world through repeated play and discovery."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_05",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "NEXT_BOARD_PATTERN_STATE"
+          ],
+          "name": "Board State Transition System (Delve Expansion)",
+          "purpose": "Player choices, risk/reward dynamics, and emergent gameplay patterns are used to evolve the board state through a series of interconnected states.",
+          "playerChoice": "Make strategic decisions that influence the next board pattern or obstacle combination, leveraging immediate feedback to adapt to changing conditions and risks."
+        }
+      ]
+    },
+    "local_authoring_parts::717e472c4b8b68ed2552bc02099d02fcfa20c9c15442040cf7c72ae1765b6fce:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT: Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "SELECT: Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "OUTPUT: Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "LEVEL_GOAL_STATE"
+          ],
+          "stateOutputs": [
+            "NEXT_BOARD_PATTERN_STATE"
+          ],
+          "name": "Board State Transition System",
+          "purpose": "Main system that governs the evolution of the game through player choices, risk/reward dynamics, and emergent gameplay patterns.",
+          "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. (INPUT: LEVEL_GOAL_STATE) → Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. (SELECT: NEXT_BOARD_PATTERN_STATE)"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "NEXT_BOARD_PATTERN_STATE"
+          ],
+          "name": "Board State Transition System",
+          "purpose": "Main system that governs the evolution of board states through player choices, risk/reward dynamics, and emergent gameplay patterns.",
+          "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "NEXT_BOARD_PATTERN_STATE"
+          ],
+          "name": "Board State Transition System (Secondary Axis)",
+          "purpose": "Establishes a secondary axis of board state transition, allowing for alternative pathways and risk/reward dynamics in gameplay.",
+          "playerChoice": "Make strategic decisions that alter the current board state to achieve specific goals or unlock new game mechanics while maintaining core gameplay principles."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_04",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "NEXT_BOARD_PATTERN_STATE"
+          ],
+          "name": "Board State Transition System (Content Expansion)",
+          "purpose": "Provides content expansion through emergent gameplay patterns and player agency, evolving the board state with each unique combination of choices, risks, and rewards.",
+          "playerChoice": "Generate a new board pattern or obstacle combination that reflects the current state and player intent, ensuring dynamic evolution of the game world through repeated play and discovery."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_05",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "NEXT_BOARD_PATTERN_STATE"
+          ],
+          "name": "Board State Transition System (Delve Expansion)",
+          "purpose": "Player choices, risk/reward dynamics, and emergent gameplay patterns are used to evolve the board state through a series of interconnected states.",
+          "playerChoice": "Make strategic decisions that influence the next board pattern or obstacle combination, leveraging immediate feedback to adapt to changing conditions and risks."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 192849,
-      "lastMs": 16772,
+      "totalMs": 210660,
+      "lastMs": 17811,
       "lastError": null,
-      "updatedAt": "2026-10-08T20:52:52.547Z"
+      "updatedAt": "2026-10-08T20:53:10.359Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:49:39.552Z",
-  "updatedAt": "2026-10-08T20:52:52.547Z",
+  "updatedAt": "2026-10-08T20:53:10.361Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2141,7 +2297,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T20:52:52.547Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T20:53:10.361Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
