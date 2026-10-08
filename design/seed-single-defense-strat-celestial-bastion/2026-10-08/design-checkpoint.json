@@ -679,25 +679,44 @@
         "lanes or positions"
       ],
       "fromSystem": "MAIN/A/B/c/@/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE"
+    },
+    "local_authoring_parts::c51c4332952fef27bac66c61a2edf3737c35cb997eb5614b663551a860f0b2a7:toSystem,trigger,stateChange": {
+      "toSystem": "CORE_LOOP_DESIGN",
+      "trigger": "enemy_wave",
+      "stateChange": "resources"
+    },
+    "local_authoring_parts::0699f941e103c21ed3019c9c5545394b14a537d178f0ec7d9ed231a03119415a:systemInterconnections:4": {
+      "fromId": "threatened_route",
+      "toId": "resources",
+      "stateKeys": [
+        "threatened_route",
+        "enemy_wave",
+        "towers or defenders",
+        "lanes or positions"
+      ],
+      "fromSystem": "MAIN/A/B/c/@/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE",
+      "toSystem": "CORE_LOOP_DESIGN",
+      "trigger": "enemy_wave",
+      "stateChange": "resources"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 20,
+      "calls": 21,
+      "successes": 21,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1965623,
-      "lastMs": 97016,
+      "totalMs": 2057654,
+      "lastMs": 92031,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:43:19.819Z"
+      "updatedAt": "2026-10-08T12:44:51.852Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:10:34.121Z",
-  "updatedAt": "2026-10-08T12:43:19.820Z",
+  "updatedAt": "2026-10-08T12:44:51.860Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2902,9 +2921,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "enemy_wave→resources의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "threatened_route→resources의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: enemy_wave→resources의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: threatened_route→resources의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2919,9 +2938,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "resources→upgrades의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "threatened_route→resources의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: resources→upgrades의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: threatened_route→resources의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2936,9 +2955,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "resources→new_placements의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "threatened_route→resources의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: resources→new_placements의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: threatened_route→resources의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2953,9 +2972,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "resources→tactical_changes의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "threatened_route→resources의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: resources→tactical_changes의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: threatened_route→resources의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2970,9 +2989,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "threatened_route→enemy_wave의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "threatened_route→resources의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: threatened_route→enemy_wave의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: threatened_route→resources의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2999,7 +3018,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 1
+    "designer_draft_slices::systems-progression": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3043,10 +3062,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:43:19.819Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T12:44:51.855Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
