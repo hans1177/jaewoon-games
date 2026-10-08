@@ -34,25 +34,42 @@
         "STATE: 선택의 결과가 다음 상태와 접근 가능성을 바꾼다",
         "OUTPUT: 게임의 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택인 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the跑"
       ]
+    },
+    "local_authoring_parts::b4360846def3e1583f9fd2832d9faf3f2eee6b83ceb33fdec8d7358a0afe26b9:signatureSystems:0": {
+      "id": "MAIN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "INPUT: 플레이어의 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프",
+        "STATE: 선택의 결과가 다음 상태와 접근 가능성을 바꾼다",
+        "OUTPUT: 게임의 중심 행동인 'Fight through an escalating horde in a short real-time生存 run"
+      ],
+      "stateOutputs": [
+        "INPUT: 플레이어의 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프",
+        "STATE: 선택의 결과가 다음 상태와 접근 가능성을 바꾼다",
+        "OUTPUT: 게임의 중심 행동인 'Fight through an escalating horde in a short real-time生存 run"
+      ],
+      "name": "MAIN",
+      "purpose": "게임의 중심 행동을 정의하는 시스템",
+      "playerChoice": "게임의 중심 행동인 'Fight through an escalating horde in a short real-time生存 run'을 선택하는 플레이어의 행동을 정의한다"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 445392,
-      "lastMs": 69313,
+      "totalMs": 556918,
+      "lastMs": 111526,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:20:28.691Z"
+      "updatedAt": "2026-10-08T08:22:20.219Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:13:03.272Z",
-  "updatedAt": "2026-10-08T08:20:28.691Z",
+  "updatedAt": "2026-10-08T08:22:20.219Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2251,7 +2268,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:20:28.691Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:22:20.219Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
