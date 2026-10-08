@@ -34,25 +34,44 @@
         "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
         "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
       ]
+    },
+    "local_authoring_parts::9d5c1d70ac7c2ac0d17f3434acb29d5cff073baa2d432d341abfb7bb168f4ec4:signatureSystems:0": {
+      "id": "DELVE(@)",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount"
+      ],
+      "stateOutputs": [
+        "NewAction",
+        "NewRoute",
+        "BuildCombination",
+        "WorldRelationship",
+        "OptionalMastery"
+      ],
+      "name": "골목 군단 대전의 시그니처 시스템",
+      "purpose": "플레이어가 반복적으로 수행하는 중심 행동과 독립적인 대축, 보조 요소, 파고들기의 관계를 구체화하며, 게임의 세계 규칙과 시스템 상호작용을 구축",
+      "playerChoice": "플레이어가 실제 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 갖춘다"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 534371,
-      "lastMs": 93953,
+      "totalMs": 640375,
+      "lastMs": 106004,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:36:59.307Z"
+      "updatedAt": "2026-10-08T10:38:45.313Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:28:04.579Z",
-  "updatedAt": "2026-10-08T10:36:59.308Z",
+  "updatedAt": "2026-10-08T10:38:45.313Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2247,7 +2266,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T10:36:59.307Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:38:45.313Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
