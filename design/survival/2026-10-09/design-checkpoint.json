@@ -19,25 +19,41 @@
     "local_authoring_parts::1809cdcc71fb658f142f4f1d30e9806fa4335dbdff7cd1f7afddf4ded75b7008:identity,playerFantasy": {
       "identity": "나의 생존기: 개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 완전히 처음부터 다시 설계한다.",
       "playerFantasy": "나의 생존기: 내가 살아남아야 할 과거를 재생하며, 채집과 제작의 선택에 따라 다음 하루의 가능성들을 바꾼다. 이 게임에서는 단순한 생존이 아니라, 내 삶의 방향성과 가치를 결정하는 중요한 경로가 존재한다."
+    },
+    "local_authoring_parts::1809cdcc71fb658f142f4f1d30e9806fa4335dbdff7cd1f7afddf4ded75b7008:coreFun": {
+      "coreFun": "플레이어는 개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 완전히 처음부터 다시 설계된다. 이 게임에서는 단순한 생존이 아니라, 내 삶의 방향성과 가치를 결정하는 중요한 경로가 존재하며, 주체는 '나'이며, 중심 행동은 '생존', 두 대축은 '채집/제작' 및 '위험/보상'이고, 보조 요소는 '재방문'이다."
+    },
+    "local_authoring_parts::5635cf3c492e5d3d5487a48e87a883fa3e983a544128859890a8870b787cc5b8:identity,playerFantasy,coreFun": {
+      "identity": "나의 생존기: 개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 완전히 처음부터 다시 설계한다.",
+      "playerFantasy": "나의 생존기: 내가 살아남아야 할 과거를 재생하며, 채집과 제작의 선택에 따라 다음 하루의 가능성들을 바꾼다. 이 게임에서는 단순한 생존이 아니라, 내 삶의 방향성과 가치를 결정하는 중요한 경로가 존재한다.",
+      "coreFun": "플레이어는 개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 완전히 처음부터 다시 설계된다. 이 게임에서는 단순한 생존이 아니라, 내 삶의 방향성과 가치를 결정하는 중요한 경로가 존재하며, 주체는 '나'이며, 중심 행동은 '생존', 두 대축은 '채집/제작' 및 '위험/보상'이고, 보조 요소는 '재방문'이다."
+    },
+    "local_authoring_parts::5b1ae5ecd7d4bfee3bb239c93d02100e118c6fd9f7a2fc2e87ad811e956276fe:coreLoop": {
+      "coreLoop": [
+        "INPUT: 플레이어가 '생존'이라는 중심 행동을 수행하며, 채집/제작 선택에 따라 다음 하루의 가능성들을 바꾼다.",
+        "SELECT: 채집/제작 선택 중 하나를 선택하여 주체인 '나'의 생존 방향성과 가치를 결정한다.",
+        "OUTPUT: 선택 결과로 인해 세계 상태가 변환되고, 이전 상태와 비교하여 새로운 가능성이 열린다.",
+        "STATE CHANGE: 채집/제작 선택이 주체의 심리적·실용적인 상태를 변화시켜, 위험/보상 기반의 재방문 과정을 시작한다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 201131,
-      "lastMs": 18719,
+      "totalMs": 270993,
+      "lastMs": 42122,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:59:58.936Z"
+      "updatedAt": "2026-10-08T19:01:08.803Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:56:37.782Z",
-  "updatedAt": "2026-10-08T18:59:58.937Z",
+  "updatedAt": "2026-10-08T19:01:08.803Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2236,7 +2252,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:59:58.937Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:01:08.803Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
