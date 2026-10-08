@@ -3,47 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-bghd7p",
-      "worker": "vibe2",
-      "taskId": "seed-single-defense-strat-celestial-bastion-unity-web-base-implementation-v1",
-      "gameId": "seed-single-defense-strat-celestial-bastion",
-      "files": [
-        "unity-games/seed-single-defense-strat-celestial-bastion/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-single-defense-strat-celestial-bastion/Assets/Scripts/RuntimeBootstrap.cs",
-        "assets/roblox/world-ghosts/native/spider/spider.glb",
-        "assets/roblox/world-ghosts/native/spider/spider.png",
-        "assets/roblox/world-ghosts/native/spider/evidence.json",
-        "assets/generated/unity/seed-single-defense-strat-celestial-bastion/background/asset.glb",
-        "assets/generated/unity/seed-single-defense-strat-celestial-bastion/background/master.glb",
-        "assets/generated/unity/seed-single-defense-strat-celestial-bastion/background/preview.png",
-        "assets/generated/unity/seed-single-defense-strat-celestial-bastion/background/preview-master.png",
-        "assets/generated/unity/seed-single-defense-strat-celestial-bastion/background/application.json",
-        "assets/generated/unity/seed-single-defense-strat-celestial-bastion/background/evidence.json",
-        "assets/generated/unity/seed-single-defense-strat-celestial-bastion/item/asset.glb",
-        "assets/generated/unity/seed-single-defense-strat-celestial-bastion/item/master.glb",
-        "assets/generated/unity/seed-single-defense-strat-celestial-bastion/item/preview.png",
-        "assets/generated/unity/seed-single-defense-strat-celestial-bastion/item/preview-master.png",
-        "assets/generated/unity/seed-single-defense-strat-celestial-bastion/item/application.json",
-        "assets/generated/unity/seed-single-defense-strat-celestial-bastion/item/evidence.json",
-        "assets/generated/unity/seed-single-defense-strat-celestial-bastion/prop/asset.glb",
-        "assets/generated/unity/seed-single-defense-strat-celestial-bastion/prop/master.glb",
-        "assets/generated/unity/seed-single-defense-strat-celestial-bastion/prop/preview.png",
-        "assets/generated/unity/seed-single-defense-strat-celestial-bastion/prop/preview-master.png",
-        "assets/generated/unity/seed-single-defense-strat-celestial-bastion/prop/application.json",
-        "assets/generated/unity/seed-single-defense-strat-celestial-bastion/prop/evidence.json"
-      ],
-      "baseSha": "0f483ac0c88531cc4d03563b69b3bcae7983172d",
-      "runId": "37775259378",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-08T13:46:25.625Z",
-      "expiresAt": "2026-10-08T14:31:25.625Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-single-defense-strat-celestial-bastion-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-gpqvq7",
       "worker": "vibe2",
       "taskId": "internal-motion-dueoksini-walk-v1",
@@ -98,6 +57,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:internal-motion-nukekubi-walk-v1"
+      ]
+    },
+    {
+      "id": "wl-1f88rw",
+      "worker": "vibe2",
+      "taskId": "internal-motion-huli-jing-walk-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "assets/roblox/world-ghosts/motions/huli-jing/init.luau"
+      ],
+      "baseSha": "15a44d53ddd9d5611c625cc4c971b47955ff1adc",
+      "runId": "37782134834",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-08T14:33:27.901Z",
+      "expiresAt": "2026-10-08T15:18:27.901Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:internal-motion-huli-jing-walk-v1"
       ]
     }
   ]
