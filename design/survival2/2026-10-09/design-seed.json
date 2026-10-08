@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "gameId": "survival2",
+  "date": "2026-10-09",
+  "seedId": "OWNER-ENROLL-SURVIVAL2-20260913",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "ollama:qwen3:1.7b",
+  "singleAuthor": true,
+  "sourceStage": "identity-core",
+  "phase": "designer_draft",
+  "status": "AUTHORED_CANDIDATE",
+  "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
+  "originalSource": null,
+  "fingerprint": "f6e216ca84b234be9ab45958e10b80803c33e5d096b9add8a9f3941e28c4c0a7",
+  "engineDigest": "99d97cd218cc96b09d93fa3463e513ee6dfe6cf6cb4cecf8f023674a19c6620b",
+  "contentDigest": "cceb8f21c343e30149642b4aa3fd78de64508838e475587cf479e18082df0e58",
+  "externalSeedRequired": false,
+  "designPass": false,
+  "runtimePass": false,
+  "content": {
+    "identity": "숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임으로 재설계한다. 플레이어는 숲의 생존자들에서 Explore the forest for a needed resource while reading environmental and creature danger.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동 MAIN, 두 대축 A/B, 보조 요소 c, 발견·숙련·재방문 @를 직접 생성하여 게임의 핵심 루프를 구현한다.",
+    "playerFantasy": "숲의 생존자들에서 플레이어는 Explore the forest for a needed resource while reading environmental and creature danger.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동 MAIN, 두 대축 A/B, 보조 요소 c, 발견·숙련·재방문 @를 직접 생성하여 게임의 핵심 루프를 구현한다.",
+    "coreFun": "숲의 생존자들에서 플레이어는 Explore the forest for a needed resource while reading environmental and creature danger.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동 MAIN, 두 대축 A/B, 보조 요소 c, 발견·숙련·재방문 @를 직접 생성하여 게임의 핵심 루프를 구현한다.",
+    "coreLoop": [
+      "INPUT: Explore the forest for a needed resource while reading environmental and creature danger.\nSELECT: Return or push deeper based on current supplies and group readiness.\nOUTPUT: World state changes, new survival advantages, risk/reward dynamics, and next action options.",
+      "INPUT: Craft a survival advantage, improve shelter or equipment and prepare for the next stronger threat.\nSELECT: Resource allocation, shelter upgrades, preparation for higher risks.\nOUTPUT: Enhanced gameplay mechanics, improved survival conditions, and strategic depth in exploration.",
+      "INPUT: Navigate through dynamic environments with changing dangers and resources.\nSELECT: Move forward, explore, or retreat based on available tools and group composition.\nOUTPUT: New game states, altered progression paths, and expanded player agency."
+    ],
+    "signatureSystems": [
+      {
+        "id": "SURVIVAL2-MAIN-01",
+        "grammarRole": "MAIN",
+        "stateInputs": [
+          "Explore the forest for a needed resource while reading environmental andcreature",
+          "Craft a survival advantage, improve shelter or equipment and prepare for thenext"
+        ],
+        "stateOutputs": [
+          "World state changes, new survival advantages, risk/reward dynamics, and next act",
+          "Enhanced gameplay mechanics, improved survival conditions, and strategic depth",
+          "New game states, altered progression paths, and expanded player agency"
+        ],
+        "name": "Explore the forest for a needed resource while reading environmental and creature danger.",
+        "purpose": "Player's core action that drives world state change and determines next action options.",
+        "playerChoice": "Return or push deeper based on current supplies and group readiness."
+      },
+      {
+        "id": "SURVIVAL2-MAIN-02",
+        "grammarRole": "A",
+        "stateInputs": [
+          "Explore the forest for a needed resource while reading environmental andcreature",
+          "Craft a survival advantage, improve shelter or equipment and prepare for thenext"
+        ],
+        "stateOutputs": [
+          "World state changes, new survival advantages, risk/reward dynamics, and next act",
+          "Enhanced gameplay mechanics, improved survival conditions, and strategic depth",
+          "New game states, altered progression paths, and expanded player agency"
+        ],
+        "name": "Explore the forest for a needed resource while reading environmental and creature danger.",
+        "purpose": "Player's primary action to initiate survival exploration and modify world state based on available resources and group composition.",
+        "playerChoice": "Resource allocation, shelter upgrades, preparation for higher risks."
+      },
+      {
+        "id": "SURVIVAL2-B-01",
+        "grammarRole": "B",
+        "stateInputs": [
+          "Explore the forest for a needed resource while reading environmental andcreature",
+          "Craft a survival advantage, improve shelter or equipment and prepare for thenext"
+        ],
+        "stateOutputs": [
+          "World state changes, new survival advantages, risk/reward dynamics, and next act",
+          "Enhanced gameplay mechanics, improved survival conditions, and strategic depth",
+          "New game states, altered progression paths, and expanded player agency"
+        ],
+        "name": "Explore the forest for a needed resource while reading environmental and creature danger.",
+        "purpose": "Resource allocation, shelter upgrades, preparation for higher risks.",
+        "playerChoice": "Select from: Resource distribution, shelter enhancement, threat mitigation."
+      },
+      {
+        "id": "SURVIVAL2-C-01",
+        "grammarRole": "c",
+        "stateInputs": [
+          "Explore the forest for a needed resource while reading environmental andcreature",
+          "Craft a survival advantage, improve shelter or equipment and prepare for thenext"
+        ],
+        "stateOutputs": [
+          "World state changes, new survival advantages, risk/reward dynamics, and next act",
+          "Enhanced gameplay mechanics, improved survival conditions, and strategic depth",
+          "New game states, altered progression paths, and expanded player agency"
+        ],
+        "name": "Navigate through dynamic environments with changing dangers and resources.",
+        "purpose": "Player choice to move forward, explore, or retreat based on available tools and group composition.",
+        "playerChoice": "Move forward, explore, or retreat."
+      },
+      {
+        "id": "SURVIVAL2-DELVE-01",
+        "grammarRole": "DELVE",
+        "stateInputs": [
+          "Explore the forest for a needed resource while reading environmental andcreature",
+          "Craft a survival advantage, improve shelter or equipment and prepare for thenext"
+        ],
+        "stateOutputs": [
+          "World state changes, new survival advantages, risk/reward dynamics, and next act",
+          "Enhanced gameplay mechanics, improved survival conditions, and strategic depth",
+          "New game states, altered progression paths, and expanded player agency"
+        ],
+        "name": "Navigate through dynamic environments with changing dangers and resources.",
+        "purpose": "To enable players to dynamically adapt to shifting environmental hazards and resource availability in the forest.",
+        "playerChoice": "Move forward, explore, or retreat based on available tools and group composition."
+      }
+    ],
+    "multiplayerMode": "COOP"
+  },
+  "updatedAt": "2026-10-08T21:19:27.516Z"
+}
