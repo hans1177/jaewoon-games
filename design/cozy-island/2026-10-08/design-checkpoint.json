@@ -401,25 +401,40 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::367d8f5ef585e1f5b4dc5e819bd06d86025fcb2f5fb027ef18356a6e284a7dc8:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "CORE_LOOP_DESIGN",
+        "signatureSystems"
+      ],
+      "stateOutputs": [
+        "CORE_LOOP_DESIGN",
+        "signatureSystems"
+      ],
+      "name": "Signature Systems",
+      "purpose": "Define the core loop design and state management for the game's signature systems.",
+      "playerChoice": "SIGNATURE_SYSTEMS"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 697185,
-      "lastMs": 31617,
+      "totalMs": 792200,
+      "lastMs": 95015,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:25:01.064Z"
+      "updatedAt": "2026-10-08T13:26:36.087Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:13:23.847Z",
-  "updatedAt": "2026-10-08T13:25:01.071Z",
+  "updatedAt": "2026-10-08T13:26:36.088Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1013,10 +1028,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:25:01.066Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:26:36.087Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
