@@ -439,25 +439,44 @@
       "name": "Person Discovery System",
       "purpose": "Players explore a compact activity space and discover a person, task, or collectible opportunity. The system tracks the progression of discoveries and their impact on the game world.",
       "playerChoice": "Choose an activity space, discover a person, task, or collectible, and determine the outcome of the interaction or challenge."
+    },
+    "local_authoring_parts::fceda170b8819ed9686cd417002d7c4246bd9b9c9da6a8accf4f2b06a6bd4706:signatureSystems:1": {
+      "id": "identity-core",
+      "grammarRole": "A",
+      "stateInputs": [
+        "humanCount",
+        "monsterCount",
+        "eliminatedCount",
+        "activitySpace",
+        "discoveredObject"
+      ],
+      "stateOutputs": [
+        "newActivitySpace",
+        "newDiscovery",
+        "newObjective"
+      ],
+      "name": "Activity Space Discovery System",
+      "purpose": "Players explore a compact activity space and discover a person, task, or collectible opportunity. The system tracks the progression of discoveries and their impact on the game world.",
+      "playerChoice": "Choose an activity space, discover a person, task, or collectible, and determine the outcome of the interaction or challenge."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1189867,
-      "lastMs": 102365,
+      "totalMs": 1291409,
+      "lastMs": 101542,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:37:37.408Z"
+      "updatedAt": "2026-10-08T12:39:18.951Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:17:47.490Z",
-  "updatedAt": "2026-10-08T12:37:37.408Z",
+  "updatedAt": "2026-10-08T12:39:18.952Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2421,7 +2440,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:37:37.408Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:39:18.952Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
