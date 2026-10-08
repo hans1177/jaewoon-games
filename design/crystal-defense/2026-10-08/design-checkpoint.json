@@ -653,25 +653,34 @@
         "riskPressure": "플레이어의 선택이 방어 성능에 영향을 미치며, 다음 전략의 선택에 기초하여 전반적인 방어 전략을 재설계해야 한다.",
         "recoveryRules": "플레이어는 다음 웨이브의 패턴을 읽고, 콜리드 라인, 공명 연결, 또는 업그레이드 중 가장 가치가 있는 위치를 선택하여 방어 전략을 재설계해야 한다."
       }
+    },
+    "local_authoring_parts::a4556a7c3fae347c779c714001b56320b4dfbeff63e78e9e033f5c2913403797:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "attackPattern",
+      "toId": "crystalDefensePlacement",
+      "stateKeys": [
+        "attackPattern",
+        "crystalDefensePlacement"
+      ],
+      "fromSystem": "GAMEPLAY_SKETCH v4"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 12,
+      "calls": 14,
+      "successes": 13,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1390945,
-      "lastMs": 121353,
+      "totalMs": 1450103,
+      "lastMs": 59158,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T12:22:21.178Z"
+      "updatedAt": "2026-10-08T12:23:20.344Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:59:10.064Z",
-  "updatedAt": "2026-10-08T12:22:21.184Z",
+  "updatedAt": "2026-10-08T12:23:20.344Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3043,10 +3052,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:22:21.180Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:23:20.344Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
