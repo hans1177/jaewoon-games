@@ -88,25 +88,42 @@
       "name": "세계의 직조자 시스템",
       "purpose": "플레이어 선택이 월드 상태 변화와 보상/위험/다음 선택에 직접 연결되는 시스템",
       "playerChoice": "플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된 적·아이템·NPC가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다. 플레이어의 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-term"
+    },
+    "local_authoring_parts::07bbbf484484b40bf0aab259d1fda476f49663e6e74251df371f37752d0759ef:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "c",
+      "stateInputs": [
+        "월드 상태 변화",
+        "플레이어 선택",
+        "보상/위험/다음 선택"
+      ],
+      "stateOutputs": [
+        "세계의 역사·생활·경제·지역 기능",
+        "플레이 규칙",
+        "보상·정보·관계"
+      ],
+      "name": "세계의 직조자 시스템",
+      "purpose": "플레이어 선택이 월드 상태 변화와 보상/위험/다음 선택에 직접 연결되는 시스템",
+      "playerChoice": "플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된 적·아이템·NPC가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다. 플레이어의 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-term"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 867838,
-      "lastMs": 122674,
+      "totalMs": 988639,
+      "lastMs": 120801,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:16:50.593Z"
+      "updatedAt": "2026-10-08T08:18:51.396Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:02:22.725Z",
-  "updatedAt": "2026-10-08T08:16:50.593Z",
+  "updatedAt": "2026-10-08T08:18:51.397Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2030,7 +2047,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:16:50.593Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:18:51.396Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
