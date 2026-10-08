@@ -3371,10 +3371,21 @@ end
 
 function RobloxCommonUI.CreateInteractionProgress(options)
   options=options or {}
-  local root,controller=RobloxCommonUI.CreateProgressBar({name=options.name or "InteractionProgress",label=options.label or "진행",value=options.value or 0,size=options.size or UDim2.fromOffset(260,40),theme=options.theme})
+  local root,controller=RobloxCommonUI.CreateProgressBar({
+    name=options.name or "InteractionProgress",text=options.label or "진행",
+    ratio=options.ratio or 0,size=options.size or UDim2.fromOffset(260,40),theme=options.theme
+  })
   tag(root,"INTERACTION_PROGRESS")
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    if state.ratio~=nil then controller.SetRatio(state.ratio,state.text or state.label)
+    elseif state.text~=nil or state.label~=nil then controller.SetRatio(root:GetAttribute("DisplayedRatio"),state.text or state.label)end
+    root:SetAttribute("BoundInteractionId",tostring(state.id or ""))
+    root:SetAttribute("SourceAuthority",tostring(state.source or "UNVERIFIED"))
+  end
+  sync(options.interaction or {})
   root:SetAttribute("OwnsInteractionDuration",false)
-  return root,controller
+  return root,controller,sync
 end
 
 function RobloxCommonUI.CreateInteractionStateCard(options)
@@ -3403,27 +3414,86 @@ end
 
 function RobloxCommonUI.CreateBedInteractionPrompt(options)
   options=options or {}
-  return deepSystemPanel(options,"BED_INTERACTION_PROMPT","BED_INTERACTION_PROMPT","침대",{"쉬기","재시작 지점 표시","현재 사용 상태","사용 조건"})
+  local root,parts=deepSystemPanel(options,"BED_INTERACTION_PROMPT","BED_INTERACTION_PROMPT","침대",{"","","",""})
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    local values={state.action,state.respawnPoint,state.status,state.requirements}
+    for i,label in ipairs(parts.labels)do label.Text=tostring(values[i] or "")end
+    root:SetAttribute("BoundInteractionId",tostring(state.id or ""))
+    root:SetAttribute("InteractionAvailable",state.available~=false)
+    root:SetAttribute("SourceAuthority",tostring(state.source or "UNVERIFIED"))
+  end
+  sync(options.interaction or {})
+  root:SetAttribute("OwnsInteractionAuthority",false)
+  return root,{inner=parts.inner,list=parts.list,labels=parts.labels,Sync=sync}
 end
 
 function RobloxCommonUI.CreateHarvestInteractionPrompt(options)
   options=options or {}
-  return deepSystemPanel(options,"HARVEST_INTERACTION_PROMPT","HARVEST_INTERACTION_PROMPT","채집 / 수확",{"대상","필요 도구","진행 상태","예상 분류"})
+  local root,parts=deepSystemPanel(options,"HARVEST_INTERACTION_PROMPT","HARVEST_INTERACTION_PROMPT","채집 / 수확",{"","","",""})
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    local values={state.target,state.requiredTool,state.progress,state.resourceCategory}
+    for i,label in ipairs(parts.labels)do label.Text=tostring(values[i] or "")end
+    root:SetAttribute("BoundInteractionId",tostring(state.id or ""))
+    root:SetAttribute("InteractionAvailable",state.available~=false)
+    root:SetAttribute("SourceAuthority",tostring(state.source or "UNVERIFIED"))
+  end
+  sync(options.interaction or {})
+  root:SetAttribute("OwnsInteractionAuthority",false)
+  root:SetAttribute("OwnsLootAuthority",false)
+  return root,{inner=parts.inner,list=parts.list,labels=parts.labels,Sync=sync}
 end
 
 function RobloxCommonUI.CreateContainerInteractionPrompt(options)
   options=options or {}
-  return deepSystemPanel(options,"CONTAINER_INTERACTION_PROMPT","CONTAINER_INTERACTION_PROMPT","보관함",{"열기","현재 상태","용량 표시","권한 표시"})
+  local root,parts=deepSystemPanel(options,"CONTAINER_INTERACTION_PROMPT","CONTAINER_INTERACTION_PROMPT","보관함",{"","","",""})
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    local values={state.target,state.status,state.capacity,state.access}
+    for i,label in ipairs(parts.labels)do label.Text=tostring(values[i] or "")end
+    root:SetAttribute("BoundInteractionId",tostring(state.id or ""))
+    root:SetAttribute("BoundInteractionState",tostring(state.state or "UNVERIFIED"))
+    root:SetAttribute("InteractionAvailable",state.available~=false)
+    root:SetAttribute("SourceAuthority",tostring(state.source or "UNVERIFIED"))
+  end
+  sync(options.interaction or {})
+  root:SetAttribute("OwnsInteractionAuthority",false)
+  root:SetAttribute("OwnsInventoryAuthority",false)
+  return root,{inner=parts.inner,list=parts.list,labels=parts.labels,Sync=sync}
 end
 
 function RobloxCommonUI.CreateLightControlPrompt(options)
   options=options or {}
-  return deepSystemPanel(options,"LIGHT_CONTROL_PROMPT","LIGHT_CONTROL_PROMPT","조명",{"켜기 / 끄기","현재 상태","연결 장치","조건"})
+  local root,parts=deepSystemPanel(options,"LIGHT_CONTROL_PROMPT","LIGHT_CONTROL_PROMPT","조명",{"","","",""})
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    local values={state.action,state.status,state.connection,state.requirements}
+    for i,label in ipairs(parts.labels)do label.Text=tostring(values[i] or "")end
+    root:SetAttribute("BoundInteractionId",tostring(state.id or ""))
+    root:SetAttribute("InteractionAvailable",state.available~=false)
+    root:SetAttribute("SourceAuthority",tostring(state.source or "UNVERIFIED"))
+  end
+  sync(options.interaction or {})
+  root:SetAttribute("OwnsInteractionAuthority",false)
+  return root,{inner=parts.inner,list=parts.list,labels=parts.labels,Sync=sync}
 end
 
 function RobloxCommonUI.CreateReadInspectPanel(options)
   options=options or {}
-  return deepSystemPanel(options,"READ_INSPECT_PANEL","READ_INSPECT_PANEL",options.title or "조사",{"이름 / 종류","설명","관련 정보","다른 시스템 연결"})
+  local root,parts=deepSystemPanel(options,"READ_INSPECT_PANEL","READ_INSPECT_PANEL",options.title or "조사",{"","","",""})
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    local values={state.target,state.description,state.status,state.related}
+    for i,label in ipairs(parts.labels)do label.Text=tostring(values[i] or "")end
+    root:SetAttribute("BoundInteractionId",tostring(state.id or ""))
+    root:SetAttribute("BoundInteractionState",tostring(state.state or "UNVERIFIED"))
+    root:SetAttribute("SourceAuthority",tostring(state.source or "UNVERIFIED"))
+  end
+  sync(options.interaction or {})
+  root:SetAttribute("OwnsInteractionAuthority",false)
+  root:SetAttribute("OwnsDiscoveryAuthority",false)
+  return root,{inner=parts.inner,list=parts.list,labels=parts.labels,Sync=sync}
 end
 
 function RobloxCommonUI.CreateInventorySmartSortPreview(options)
