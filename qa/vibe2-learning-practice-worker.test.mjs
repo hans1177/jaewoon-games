@@ -464,3 +464,41 @@ test('coding guidance clarifies language execution hazards without injecting an 
     for(const hidden of drill.tests)assert(!prompt.includes(hidden));
   }
 });
+
+
+// 메인: 공개 컴파일 진단만 제약 힌트로 변환하고 숨긴 입력은 수정 프롬프트에 쓰지 않는다.
+test('C# public compile errors select sandbox-safe repair hints without exposing hidden checks',async()=>{
+  const order={executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE] compile repair'};
+  const drill={platform:'unity',scenario:'Repair a public state transition',supportCode:'public class PracticeState { public int Gold; }',
+    feedbackTests:['PUBLIC_EXAMPLE'],tests:['SECRET_ACCEPTANCE_CHECK']};
+  for(const [diagnostic,expected] of [
+    ["Candidate.cs(1,184): error CS0246: The type or namespace name 'ArgumentNullException' could not be found",'C# sandbox has no implicit namespace imports'],
+    ["Candidate.cs(1,184): error CS1061: array has no definition for Sum",'Replace Sum/Contains/Any'],
+    ["Candidate.cs(1,184): error CS1733: Expected expression",'balanced braces, parentheses, and statements']
+  ]){
+    const prompts=[];
+    const result=await runPracticeRepairSession({order,drill,maxAttempts:2,
+      request:async prompt=>{prompts.push(prompt);return JSON.stringify({...practiceAnswer,code:prompts.length===1?'BROKEN_CODE':'FIXED_CODE'});},
+      evaluate:(answer,{drill:input})=>({pass:answer.code==='FIXED_CODE',
+        codeVerification:{baselineRejected:true,referencePassed:true,
+          reason:'REGRESSION_OR_FIXTURE_FAILED',diagnostics:answer.code==='BROKEN_CODE'?[input.tests[0]==='PUBLIC_EXAMPLE'?diagnostic:'SECRET_HIDDEN_DIAGNOSTIC']:[]}})});
+    assert.equal(result.repairEvidence.finalPass,true,diagnostic);
+    assert.equal(result.repairEvidence.modelCalls,2,diagnostic);
+    assert(prompts[1].includes(expected),diagnostic);
+    assert(!JSON.stringify(prompts).includes('SECRET_ACCEPTANCE_CHECK'),diagnostic);
+    assert(!JSON.stringify(prompts).includes('SECRET_HIDDEN_DIAGNOSTIC'),diagnostic);
+    assert.equal(result.repairEvidence.hiddenChecksUsedForRepair,false);
+  }
+});
+
+test('unrelated public failures do not invent C# compiler guidance',async()=>{
+  const prompts=[];
+  const result=await runPracticeRepairSession({order:{executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE]'},
+    drill:{platform:'roblox',feedbackTests:['PUBLIC'],tests:['HIDDEN']},maxAttempts:2,
+    request:async prompt=>{prompts.push(prompt);return JSON.stringify({...practiceAnswer,code:'SAME_FAILING_CODE'});},
+    evaluate:()=>({pass:false,codeVerification:{baselineRejected:true,referencePassed:true,
+      reason:'REGRESSION_OR_FIXTURE_FAILED',diagnostics:["candidate.luau:1: syntax error"]}})});
+  assert.equal(result.repairEvidence.finalPass,false);
+  assert(!prompts.some(prompt=>prompt.includes('C# sandbox has no implicit namespace imports')));
+  assert(!prompts.some(prompt=>prompt.includes('Replace Sum/Contains/Any')));
+});
