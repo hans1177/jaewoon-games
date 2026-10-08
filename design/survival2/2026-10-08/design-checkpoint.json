@@ -34,25 +34,55 @@
         "Return or push deeper based on current supplies and group readiness.",
         "Craft a survival advantage, improve shelter or equipment and prepare for the next stronger threat."
       ]
+    },
+    "local_authoring_parts::c997b41a191fe7bf2c01d57a0804c1be3422748cd479a94082d714ef91496ee2:signatureSystems:0": {
+      "id": "KARMA_RETURN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "current supplies",
+        "group readiness"
+      ],
+      "stateOutputs": [
+        "return",
+        "push deeper"
+      ],
+      "name": "KARMA_RETURN",
+      "purpose": "Action's result delays to affect behavior, relationships, and future rules.",
+      "playerChoice": "Return or push deeper based on current supplies and group readiness."
+    },
+    "local_authoring_parts::c997b41a191fe7bf2c01d57a0804c1be3422748cd479a94082d714ef91496ee2:signatureSystems:1": {
+      "id": "KARMA_RETURN",
+      "grammarRole": "A",
+      "stateInputs": [
+        "current supplies",
+        "group readiness"
+      ],
+      "stateOutputs": [
+        "return",
+        "push deeper"
+      ],
+      "name": "KARMA_RETURN",
+      "purpose": "Action's result delays to affect behavior, relationships, and future rules.",
+      "playerChoice": "Return or push deeper based on current supplies and group readiness."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 398969,
-      "lastMs": 47509,
+      "totalMs": 454838,
+      "lastMs": 27148,
       "lastError": null,
-      "updatedAt": "2026-10-08T07:50:25.464Z"
+      "updatedAt": "2026-10-08T07:51:21.337Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:43:46.463Z",
-  "updatedAt": "2026-10-08T07:50:25.464Z",
+  "updatedAt": "2026-10-08T07:51:21.337Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2280,7 +2310,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T07:50:25.464Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T07:51:21.337Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
