@@ -34,25 +34,42 @@
         "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
         "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
       ]
+    },
+    "local_authoring_parts::1c711359d7d8c5fecc1aa12e60ff28e374f9c2eafcc2a4efba506db7c61799ce:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount"
+      ],
+      "stateOutputs": [
+        "Score",
+        "Distance",
+        "ProgressionBenefit"
+      ],
+      "name": "Core Progression System",
+      "purpose": "Enables players to progress through the game by accumulating score, distance, or progression benefits, while maintaining a clear and immediate feedback loop.",
+      "playerChoice": "Select a simple one-thumb tap or swipe input, and set a clear score, distance, or short-session goal to start the run."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 558599,
-      "lastMs": 93757,
+      "totalMs": 656743,
+      "lastMs": 98144,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:56:55.929Z"
+      "updatedAt": "2026-10-08T10:58:34.075Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:47:37.298Z",
-  "updatedAt": "2026-10-08T10:56:55.929Z",
+  "updatedAt": "2026-10-08T10:58:34.075Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2138,7 +2155,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T10:56:55.929Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:58:34.075Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
