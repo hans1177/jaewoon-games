@@ -1,0 +1,119 @@
+{
+  "version": 1,
+  "gameId": "crystal-defense",
+  "date": "2026-10-08",
+  "seedId": "OWNER-ENROLL-CRYSTAL-DEFENSE-20260913",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "ollama:qwen3:1.7b",
+  "singleAuthor": true,
+  "sourceStage": "identity-core",
+  "phase": "designer_draft",
+  "status": "AUTHORED_CANDIDATE",
+  "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
+  "originalSource": null,
+  "fingerprint": "c7a8452bd4ad1c1e2b44ee215a50d988cf1618c19c17494c8f1b9e118135e865",
+  "engineDigest": "d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904",
+  "contentDigest": "d4e59da6fb163bb49ecc518aca5945c63ba17547be6bb64f08b6f5be84beebcf",
+  "externalSeedRequired": false,
+  "designPass": false,
+  "runtimePass": false,
+  "content": {
+    "identity": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다. 플레이어는 Read the next attack pattern and choose where crystal defenses create the most value.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 단일 게임으로 설계된다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된 장식 세계관을 구축한다. 지역·적·아이템·퀘스트·메뉴는 해당 장르에 필요한 것만 실제 역할과 상태로 연결된다. 실패·중단·재접속·저장은 원본 의미를 보존하며, 구현 버그와 설계 모순의 원인·수정 책임을 구분하고 안정성을 먼저 다룬다. 같은 증상을 설계와 구현이 독립적으로 중복 수정하지 않는다. 최소 두 실제 대안을 비교하고 선택안을 한 판의 시작·전개·결말로 재생한다. 한 판과 전체 세션 시간을 구분하며 검증되지 않은 시간·품질·실행 결과를 확정하지 않는다. 공공영역 고전의 원형은 게임에 맞게 재해석하고 현대 보호 작품은 추상적 기법만 참고한다. 보호된 인물·대사·장면은 복제하지 않는다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 점수와 통과 판정은 결정론적 검증기가 담당한다.",
+    "playerFantasy": "수정 디펜스에서 플레이어는 Read the next attack pattern and choose where crystal defenses create the most value.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 단일 게임으로 설계된다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된 장식 세계관을 구축한다. 지역·적·아이템·퀘스트·메뉴는 해당 장르에 필요한 것만 실제 역할과 상태로 연결된다. 실패·중단·재접속·저장은 원본 의미를 보존하며, 구현 버그와 설계 모순의 원인·수정 책임을 구분하고 안정성을 먼저 다룬다. 같은 증상을 설계와 구현이 독립적으로 중복 수정하지 않는다. 최소 두 실제 대안을 비교하고 선택안을 한 판의 시작·전개·결말로 재생한다. 한 판과 전체 세션 시간을 구분하며 검증되지 않은 시간·품질·실행 결과를 확정하지 않는다. 공공영역 고전의 원형은 게임에 맞게 재해석하고 현대 보호 작품은 추상적 기법만 참고한다. 보호된 인물·대사·장면은 복제하지 않는다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 점수와 통과 판정은 결정론적 검증기가 담당한다.",
+    "coreFun": "Read the next attack pattern and choose where crystal defenses create the most value.의 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임이다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된 장식 세계관을 구축한다. 지역·적·아이템·퀘스트·메뉴는 해당 장르에 필요한 것만 실제 역할과 상태로 연결된다. 실패·중단·재접속·저장은 원본 의미를 보존하며, 구현 버그와 설계 모순의 원인·수정 책임을 구분하고 안정성을 먼저 다룬다. 같은 증상을 설계와 구현이 독립적으로 중복 수정하지 않는다. 최소 두 실제 대안을 비교하고 선택안을 한 판의 시작·전개·결말로 재생한다. 한 판과 전체 세션 시간을 구분하며 검증되지 않은 시간·품질·실행 결과를 확정하지 않는다. 공공영역 고전의 원형은 게임에 맞게 재해석하고 현대 보호 작품은 추상적 기법만 참고한다. 보호된 인물·대사·장면은 복제하지 않는다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 점수와 통과 판정은 결정론적 검증기가 담당한다.",
+    "coreLoop": [
+      "Read the next attack pattern and choose where crystal defenses create the most value.",
+      "Spend limited resources on placement, resonance or upgrades.",
+      "Survive the wave and use the result to prepare a different counter for the next threat."
+    ],
+    "signatureSystems": [
+      {
+        "id": "signatureSystems[0]",
+        "grammarRole": "MAIN",
+        "stateInputs": [
+          "wavePattern",
+          "resourceAllocation",
+          "defensePlacement"
+        ],
+        "stateOutputs": [
+          "defenseStrategy",
+          "nextThreat",
+          "playerChoice"
+        ],
+        "name": "공명 연결 시스템",
+        "purpose": "플레이어가 다음 공격 패턴에 따라 최적의 방어 위치를 선택하는 데 사용되는 시스템",
+        "playerChoice": "다음 공격 패턴에 따라 방어 위치를 선택하는 선택지로 사용됨"
+      },
+      {
+        "id": "signatureSystems[1]",
+        "grammarRole": "A",
+        "stateInputs": [
+          "wavePattern",
+          "resourceAllocation",
+          "defensePlacement"
+        ],
+        "stateOutputs": [
+          "defenseStrategy",
+          "nextThreat",
+          "playerChoice"
+        ],
+        "name": "배치 조합 시스템",
+        "purpose": "플레이어가 다음 웨이브 패턴에 따라 최적의 배치 위치를 선택하는 데 사용되는 시스템",
+        "playerChoice": "다음 웨이브 패턴에 따라 배치 위치를 선택하는 선택지로 사용됨"
+      },
+      {
+        "id": "signatureSystems[2]",
+        "grammarRole": "B",
+        "stateInputs": [
+          "wavePattern",
+          "resourceAllocation",
+          "defensePlacement"
+        ],
+        "stateOutputs": [
+          "defenseStrategy",
+          "nextThreat",
+          "playerChoice"
+        ],
+        "name": "재방문 시스템",
+        "purpose": "플레이어가 다음 웨이브 패턴에 따라 최적의 방어 전략을 선택하는 데 사용되는 시스템",
+        "playerChoice": "다음 웨이브 패턴에 따라 방어 전략을 선택하는 선택지로 사용됨"
+      },
+      {
+        "id": "signatureSystems[3]",
+        "grammarRole": "c",
+        "stateInputs": [
+          "wavePattern",
+          "resourceAllocation",
+          "defensePlacement"
+        ],
+        "stateOutputs": [
+          "defenseStrategy",
+          "nextThreat",
+          "playerChoice"
+        ],
+        "name": "재방문 시스템",
+        "purpose": "플레이어가 다음 웨이브 패턴에 따라 최적의 방어 전략을 선택하는 데 사용되는 시스템",
+        "playerChoice": "다음 웨이브 패턴에 따라 방어 전략을 선택하는 선택지로 사용됨"
+      },
+      {
+        "id": "signatureSystems[4]",
+        "grammarRole": "DELVE",
+        "stateInputs": [
+          "wavePattern",
+          "resourceAllocation",
+          "defensePlacement"
+        ],
+        "stateOutputs": [
+          "defenseStrategy",
+          "nextThreat",
+          "playerChoice"
+        ],
+        "name": "재방문 시스템",
+        "purpose": "플레이어가 다음 웨이브 패턴에 따라 최적의 방어 전략을 선택하는 데 사용되는 시스템",
+        "playerChoice": "다음 웨이브 패턴에 따라 방어 전략을 선택하는 선택지로 사용됨"
+      }
+    ],
+    "multiplayerMode": "COOP"
+  },
+  "updatedAt": "2026-10-08T08:04:31.567Z"
+}
