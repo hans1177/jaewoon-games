@@ -27,25 +27,32 @@
       "identity": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다. 게임은 단순한 웨이브 디펜스에서 시작해 플레이어가 '현재 선택'에 따라 다음 상태를 바꾼다. 중심 행동은 READ THE NEXT ATTACK PATTERN AND CHOOSE WHERE CRISTAL DEFENSES CREATE MOST VALUE이다. 두 대축은 SPEND LIMITED RESOURCES ON PLACEMENT, RESONANCE OR UPGRADES와 SURVIVE THE WAVE AND USE THE RESULT TO PREPARE A DIFFERENT COUNTER FOR THE NEXT THREAT이며, 보조 요소는 @인 것으로 구성된다. 세계 규칙은 MAIN×A×B×c의 관계를 기반으로 하며, 인과법칙은 주요 인물의 목표·두려움·비밀을 통해 실제 선택과 관계 변화로 나타난다.",
       "playerFantasy": "플레이어는 웨이브 디펜스에서 단순히 방어를 하는 것이 아니라, '현재 선택'에 따라 다음 상태를 바꾸는 독자적인 전략을 실행해야 한다. 중심 행동은 '현재 선택'을 하여 '다음 상태'를 결정하는 데서 시작하며, 이 과정에서는 주요 인물의 목표·두려움·비밀이 실제 선택과 관계 변화로 나타난다. 두 대축은 'SPEND LIMITED RESOURCES ON PLACEMENT, RESONANCE OR UPGRADES'와 'SURVIVE THE WAVE AND USE THE RESULT TO PREPARE A DIFFERENT COUNTER FOR THE NEXT THREAT'이며, 보조 요소는 '@'로 구성된다.",
       "coreFun": "플레이어는 웨이브 디펜스에서 단순히 방어를 하는 것이 아니라, '현재 선택'에 따라 다음 상태를 바꾸는 독자적인 전략을 실행해야 한다. 중심 행동은 '현재 선택'을 하여 '다음 상태'를 결정하는 데서 시작하며, 이 과정에서는 주요 인물의 목표·두려움·비밀이 실제 선택과 관계 변화로 나타난다. 두 대축은 'SPEND LIMITED RESOURCES ON PLACEMENT, RESONANCE OR UPGRADES'와 'SURVIVE THE WAVE AND USE THE RESULT TO PREPARE A DIFFERENT COUNTER FOR THE NEXT THREAT'이며, 보조 요소는 '@'로 구성된다. 세계 규칙은 MAIN×A×B×c의 관계를 기반으로 하며, 인과법칙은 주요 인물의 목표·두려움·비밀을 통해 실제 선택과 관계 변화로 나타난다."
+    },
+    "local_authoring_parts::5373fac09cdc01b01e7047dfeccae856e4e767048c68d7ba03e278f8c260e759:coreLoop": {
+      "coreLoop": [
+        "INPUT: 플레이어가 '현재 선택'을 하며, 주요 인물의 목표·두려움·비밀을 기반으로 다음 상태를 결정해야 한다.",
+        "SELECT: 'SPEND LIMITED RESOURCES ON PLACEMENT, RESONANCE OR UPGRADES' 또는 'SURVIVE THE WAVE AND USE THE RESULT TO PREPARE A DIFFERENT COUNTER FOR THE NEXT THREAT' 중 하나를 선택한다.",
+        "OUTPUT: 선택 결과에 따라 세계 상태가 변환되고, 이는 주요 인물의 목표와 두려움이 실제 선택과 관계 변화로 나타난다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 271768,
-      "lastMs": 60935,
+      "totalMs": 328090,
+      "lastMs": 56322,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:44:58.599Z"
+      "updatedAt": "2026-10-08T18:45:54.996Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:40:26.814Z",
-  "updatedAt": "2026-10-08T18:44:58.600Z",
+  "updatedAt": "2026-10-08T18:45:54.996Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2236,7 +2243,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:44:58.600Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:45:54.996Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
