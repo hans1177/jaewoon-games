@@ -595,25 +595,40 @@
       "name": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM",
       "purpose": "Player action leads to world state change in a repeatable loop",
       "playerChoice": "Choose which hero or stat path receives next investment"
+    },
+    "local_authoring_parts::87a38618bf1d8c61b75ab1547075406a180ca8674d902b02fe1456b209b78dbb:signatureSystems:3": {
+      "id": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM",
+      "grammarRole": "c",
+      "stateInputs": [
+        "READABLE_STATE: Heroes or characters fight automatically and continue generating",
+        "CHANGABLE_STATE: World state after player action"
+      ],
+      "stateOutputs": [
+        "READABLE_STATE: Claim rewards, upgrade levels or skills, equip gear, and choose",
+        "CHANGABLE_STATE: World state after player action"
+      ],
+      "name": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM",
+      "purpose": "Player action leads to world state change in a repeatable loop",
+      "playerChoice": "Choose which hero or stat path receives next investment"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 23,
-      "successes": 23,
+      "calls": 24,
+      "successes": 24,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2412418,
-      "lastMs": 99351,
+      "totalMs": 2508541,
+      "lastMs": 96123,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:32:49.100Z"
+      "updatedAt": "2026-10-08T16:34:25.224Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:45:52.443Z",
-  "updatedAt": "2026-10-08T16:32:49.100Z",
+  "updatedAt": "2026-10-08T16:34:25.224Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2881,7 +2896,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:32:49.100Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:34:25.224Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
