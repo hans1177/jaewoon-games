@@ -136,7 +136,7 @@ test('Unity Web mobile QA selects the Android Chrome mobile branch and rejects o
   assert.match(source,/touchX>=mobileViewport\.width/);
   assert.match(source,/touchY>=mobileViewport\.height/);
   assert.match(source,/layout:mobileLayout/);
-  assert.match(source,/await page\.screenshot\(\{path:screenshot,fullPage:false\}\)/);
+  assert.match(source,/fs\.writeFileSync\(screenshot,liveCapture\)/);
   assert.doesNotMatch(source,/fullPage:true/);
   const browserStart=source.indexOf('const androidChrome=devices');
   const boot=source.indexOf('UNITY_WEB_QA_BOOT_MARKER_MISSING');
@@ -158,6 +158,8 @@ test('Unity Web visual QA reads actual gameplay pixels and detects missing shade
   assert.match(source,/pass:!performanceBlocked&&!visualBlocked&&!renderBudgetExceeded/);
   assert.match(source,/UNITY_WEB_QA_VISUAL_RUNTIME_REPAIR_REQUIRED/);
   assert.match(source,/source:'REAL_GAMEPLAY_SCREENSHOT_PIXEL_READBACK'/);
+  assert.match(source,/captureSha256:liveCaptureSha256/);
+  assert.match(source,/crypto.createHash\('sha256'\).update\(liveCapture\).digest\('hex'\)/);
   assert.match(source,/realDeviceVerified:false/);
 });
 
