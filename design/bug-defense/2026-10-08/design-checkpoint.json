@@ -508,25 +508,43 @@
         "RESOURCE_ALLOCATION"
       ],
       "fromSystem": "INSECT_WAVE_THREAT_ANALYSIS_SYSTEM"
+    },
+    "local_authoring_parts::1c5a838f6e6b1ec4771cca91fe3b20b7e4b1f0dfac6d814fc6f0ccb44c27e10b:toSystem,trigger,stateChange": {
+      "toSystem": "INSECT_WAVE_THREAT_ANALYSIS_SYSTEM",
+      "trigger": "INSECT_WAVE_THREAT_PATTERN",
+      "stateChange": "DEFENDER_PLACEMENT,RESOURCE_ALLOCATION"
+    },
+    "local_authoring_parts::619ddf4b589e361a739d606b7efeb04dd4586f6ce0510565c3043f7bba4a9f6f:systemInterconnections:0": {
+      "fromId": "INSECT_WAVE_THREAT_PATTERN",
+      "toId": "DEFENDER_ADJUSTMENT",
+      "stateKeys": [
+        "INSECT_WAVE_THREAT_PATTERN",
+        "DEFENDER_PLACEMENT",
+        "RESOURCE_ALLOCATION"
+      ],
+      "fromSystem": "INSECT_WAVE_THREAT_ANALYSIS_SYSTEM",
+      "toSystem": "INSECT_WAVE_THREAT_ANALYSIS_SYSTEM",
+      "trigger": "INSECT_WAVE_THREAT_PATTERN",
+      "stateChange": "DEFENDER_PLACEMENT,RESOURCE_ALLOCATION"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 11,
+      "calls": 15,
+      "successes": 12,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2284786,
-      "lastMs": 219737,
+      "totalMs": 2369963,
+      "lastMs": 85177,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T08:23:39.342Z"
+      "updatedAt": "2026-10-08T08:25:04.520Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:45:34.468Z",
-  "updatedAt": "2026-10-08T08:23:39.342Z",
+  "updatedAt": "2026-10-08T08:25:04.521Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2727,7 +2745,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:23:39.342Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:25:04.521Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
