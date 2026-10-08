@@ -657,25 +657,45 @@
         "positions"
       ],
       "fromSystem": "GAME_CATEGORY"
+    },
+    "local_authoring_parts::3f939ea52d4ec106433e6d17e9729c03d134d0f9c1f7029ac64e308d445be055:toSystem,trigger,stateChange": {
+      "toSystem": "GAME_CATEGORY",
+      "trigger": "enemyWave→worldState",
+      "stateChange": "enemyWave, towers, defenders, lanes, positions → worldState"
+    },
+    "local_authoring_parts::3e1d90f690cf88276ad34895db0f9ca7747f6a17f0c5e6693c7bb82b0032ecc0:systemInterconnections:0": {
+      "fromId": "enemyWave",
+      "toId": "worldState",
+      "stateKeys": [
+        "enemyWave",
+        "towers",
+        "defenders",
+        "lanes",
+        "positions"
+      ],
+      "fromSystem": "GAME_CATEGORY",
+      "toSystem": "GAME_CATEGORY",
+      "trigger": "enemyWave→worldState",
+      "stateChange": "enemyWave, towers, defenders, lanes, positions → worldState"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 15,
-      "successes": 14,
+      "calls": 16,
+      "successes": 15,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2178896,
-      "lastMs": 89766,
+      "totalMs": 2268760,
+      "lastMs": 89864,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T09:14:42.327Z"
+      "updatedAt": "2026-10-08T09:16:12.192Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:38:23.364Z",
-  "updatedAt": "2026-10-08T09:14:42.327Z",
+  "updatedAt": "2026-10-08T09:16:12.194Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3027,7 +3047,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T09:14:42.327Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:16:12.193Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
