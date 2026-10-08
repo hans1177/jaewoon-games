@@ -808,25 +808,37 @@
       "toSystem": "coreLoopSystemBase_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0",
       "trigger": "coreLoop→signatureSystems[0]",
       "stateChange": "newLevelGoal,newMoveLimit,newObstacleSet,newComboTrigger,newFeedbackType"
+    },
+    "local_authoring_parts::72c22bbd0eae95a37e700b56db85c71c96244cdb036628d902fbddc48828c572:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "coreLoop",
+      "toId": "signatureSystems[0]",
+      "stateKeys": [
+        "newLevelGoal",
+        "newMoveLimit",
+        "newObstacleSet",
+        "newComboTrigger",
+        "newFeedbackType"
+      ],
+      "fromSystem": "coreLoopSystemBase_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 16,
+      "calls": 18,
+      "successes": 17,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2275215,
-      "lastMs": 105131,
+      "totalMs": 2382457,
+      "lastMs": 107242,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T12:42:35.127Z"
+      "updatedAt": "2026-10-08T12:44:22.372Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:04:39.840Z",
-  "updatedAt": "2026-10-08T12:42:35.129Z",
+  "updatedAt": "2026-10-08T12:44:22.372Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3045,7 +3057,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:42:35.129Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:44:22.372Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
