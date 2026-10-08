@@ -833,25 +833,43 @@
         "coreFun"
       ],
       "fromSystem": "Vibe 폴리시 시스템 (보완)"
+    },
+    "local_authoring_parts::683884aa645c207e0640d63b5210570603ead25bd02eaf5ea607537172510e40:toSystem,trigger,stateChange": {
+      "toSystem": "Vibe 폴리시 시스템 (보완)",
+      "trigger": "플레이어가 환경에 뿤금처럼 숨어 있는 힘을 바탕으로 전투 중 이동하며 적의 압박을 피하면서 동시에 캐릭터가 살아 움직여야 하는 방식으로 게임 진행을 수행해야 한다.",
+      "stateChange": "기존 마력숲 생존기 세계관 및 게임 규칙 복사 후, Vibe 폴리시 기반의 새로운 플레이 패턴 개발로 진입 조건 설정 및 상황별 대응 시스템 구축"
+    },
+    "local_authoring_parts::54075d2c532ae1543c2a7bf3e0c23423c86005e9d38beeba5ab0604ceaa0ad8d:systemInterconnections:4": {
+      "fromId": "signatureSystems[3]",
+      "toId": "signatureSystems[3]",
+      "stateKeys": [
+        "gameProgress",
+        "playerFantasy",
+        "coreFun"
+      ],
+      "fromSystem": "Vibe 폴리시 시스템 (보완)",
+      "toSystem": "Vibe 폴리시 시스템 (보완)",
+      "trigger": "플레이어가 환경에 뿤금처럼 숨어 있는 힘을 바탕으로 전투 중 이동하며 적의 압박을 피하면서 동시에 캐릭터가 살아 움직여야 하는 방식으로 게임 진행을 수행해야 한다.",
+      "stateChange": "기존 마력숲 생존기 세계관 및 게임 규칙 복사 후, Vibe 폴리시 기반의 새로운 플레이 패턴 개발로 진입 조건 설정 및 상황별 대응 시스템 구축"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 32,
-      "successes": 31,
+      "calls": 33,
+      "successes": 32,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3096562,
-      "lastMs": 58770,
+      "totalMs": 3173223,
+      "lastMs": 76661,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T23:28:01.872Z"
+      "updatedAt": "2026-10-08T23:29:18.536Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:32:30.796Z",
-  "updatedAt": "2026-10-08T23:28:01.872Z",
+  "updatedAt": "2026-10-08T23:29:18.545Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3072,7 +3090,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 2
+    "designer_draft_slices::systems-progression": 3
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3111,10 +3129,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T23:28:01.872Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T23:29:18.540Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PRESERVATION_GRAMMAR_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
