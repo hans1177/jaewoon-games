@@ -797,25 +797,105 @@
     "local_authoring_parts::131f42744cdf8e5dca19546119148096a1e13af0be239b4a8d7b3c53fa92d56d:progressionLoop,resourceFlow": {
       "progressionLoop": "DISCOVERABLE_CLUE",
       "resourceFlow": "BATCH_PREVIEW_AND_COMMIT"
+    },
+    "local_authoring_parts::131f42744cdf8e5dca19546119148096a1e13af0be239b4a8d7b3c53fa92d56d:balanceRules": {
+      "balanceRules": "SYSTEM_INTERCONNECTION_DESIGN"
+    },
+    "local_authoring_parts::b19aa674ab6e1ee6bb54fb9e1163e412b98d6ad977d69e93b9e96c2b7a564a90:progressionEconomyBalance": {
+      "progressionLoop": "DISCOVERABLE_CLUE",
+      "resourceFlow": "BATCH_PREVIEW_AND_COMMIT",
+      "balanceRules": "SYSTEM_INTERCONNECTION_DESIGN"
+    },
+    "local_authoring_parts::150851e5a0ddb9b6386e2b880237478a865438ca20de8a681d6a727200c4e6fe:progressionEconomyBalance": {
+      "progressionEconomyBalance": {
+        "progressionLoop": "DISCOVERABLE_CLUE",
+        "resourceFlow": "BATCH_PREVIEW_AND_COMMIT",
+        "balanceRules": "SYSTEM_INTERCONNECTION_DESIGN"
+      }
+    },
+    "local_authoring_parts::a35cf570b6bab38eda355a1383903d142a661b2e849131f58c3ce9a56f369c6d:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "MAIN",
+          "toId": "A",
+          "stateKeys": [
+            "Read the incoming insect wave and its threat pattern."
+          ],
+          "fromSystem": "MAIN",
+          "toSystem": "A",
+          "trigger": "Read the incoming insect wave and its threat pattern.",
+          "stateChange": "World state change and next selection"
+        },
+        {
+          "fromId": "MAIN",
+          "toId": "A",
+          "stateKeys": [
+            "Read the incoming insect wave and its threat pattern."
+          ],
+          "fromSystem": "MAIN",
+          "toSystem": "A",
+          "trigger": "Read the incoming insect wave and its threat pattern.",
+          "stateChange": "World state change and next selection"
+        },
+        {
+          "fromId": "MAIN",
+          "toId": "A",
+          "stateKeys": [
+            "Read the incoming insect wave and its threat pattern."
+          ],
+          "fromSystem": "MAIN",
+          "toSystem": "A",
+          "trigger": "Read the incoming insect wave and its threat pattern.",
+          "stateChange": "World state change and next selection."
+        },
+        {
+          "fromId": "MAIN",
+          "toId": "A",
+          "stateKeys": [
+            "Read the incoming insect wave and its threat pattern."
+          ],
+          "fromSystem": "MAIN",
+          "toSystem": "A",
+          "trigger": "Read the incoming insect wave and its threat pattern.",
+          "stateChange": "World state change and next selection."
+        },
+        {
+          "fromId": "MAIN",
+          "toId": "A",
+          "stateKeys": [
+            "Read the incoming insect wave and its threat pattern."
+          ],
+          "fromSystem": "MAIN",
+          "toSystem": "A",
+          "trigger": "Read the incoming insect wave and its threat pattern.",
+          "stateChange": "World state change and next selection."
+        }
+      ],
+      "progressionDirection": "DISCOVERABLE_CLUE",
+      "progressionEconomyBalance": {
+        "progressionLoop": "DISCOVERABLE_CLUE",
+        "resourceFlow": "BATCH_PREVIEW_AND_COMMIT",
+        "balanceRules": "SYSTEM_INTERCONNECTION_DESIGN"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 30,
-      "successes": 27,
+      "calls": 31,
+      "successes": 28,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2830940,
-      "lastMs": 32704,
+      "totalMs": 2863313,
+      "lastMs": 32373,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T15:36:47.771Z"
+      "updatedAt": "2026-10-08T15:37:20.145Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:47:19.560Z",
-  "updatedAt": "2026-10-08T15:36:47.771Z",
+  "updatedAt": "2026-10-08T15:37:20.148Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3018,7 +3098,7 @@
     "designer_draft_slices::identity-core": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T15:36:47.771Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:37:20.148Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
