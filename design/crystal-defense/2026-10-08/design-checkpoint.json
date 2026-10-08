@@ -939,25 +939,34 @@
       "toSystem": "crystalDefensePlacementSystem",
       "trigger": "readNextAttackPattern",
       "stateChange": "attackPattern→crystalDefensePlacement"
+    },
+    "local_authoring_parts::26286f9f98b2ecf679bb9f842f758aaab9014e1dc2dd8c433501d9da9d3d86da:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "attackPattern",
+      "toId": "crystalDefensePlacement",
+      "stateKeys": [
+        "attackPattern",
+        "crystalDefensePlacement"
+      ],
+      "fromSystem": "attackPatternSystem, crystalDefensePlacementSystem, resourceFlow:crystalDefensePlacement"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 35,
-      "successes": 34,
+      "calls": 36,
+      "successes": 35,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3083276,
-      "lastMs": 96394,
+      "totalMs": 3181526,
+      "lastMs": 98250,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T16:10:28.779Z"
+      "updatedAt": "2026-10-08T16:12:07.033Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:59:10.064Z",
-  "updatedAt": "2026-10-08T16:10:28.781Z",
+  "updatedAt": "2026-10-08T16:12:07.033Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3295,7 +3304,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:10:28.781Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:12:07.033Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
