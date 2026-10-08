@@ -12,6 +12,82 @@ import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeathe
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
 import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource,robloxStudioAssetFamilyBoundInText} from '../tools/company-development-roblox-bootstrap.mjs';
 
+test('Vibe genre menu recommendations bind source-backed existing UI without owning economy, save or network',()=>{
+  const root=tempRoot();
+  try{
+    const uiFile=path.join(root,'assets','roblox','common-ui-v1','RobloxCommonUI.luau');
+    fs.mkdirSync(path.dirname(uiFile),{recursive:true});
+    fs.writeFileSync(uiFile,[
+      'function RobloxCommonUI.CreateCharacterDetailScreen(options) end',
+      'function RobloxCommonUI.CreateInventoryFullScreen(options) end',
+      'function RobloxCommonUI.CreateEquipmentFullScreen(options) end',
+      'function RobloxCommonUI.CreateBuySellPanel(options) end',
+      'function RobloxCommonUI.CreateQuestLog(options) end'
+    ].join('\n'));
+    const gameRoot=path.join(root,'roblox-games','demo-rpg','shared');
+    fs.mkdirSync(gameRoot,{recursive:true});
+    fs.writeFileSync(path.join(gameRoot,'RPGMenu.luau'),
+      'local character=Model.character(state,config)\nlocal shop=Model.shop(state,config)\nlocal gear=Model.equipment(state,config)\n');
+    const task={gameId:'demo-rpg',genre:'RPG',goal:'현재 캐릭터 장비 인벤토리 상점 메뉴를 실제 게임 상태와 동기화'};
+    const request={target:'roblox',repoRoot:root,task,manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}};
+    const plan=buildVibeAssetProductionPlan(request);
+    const menu=plan.genreMenuRecommendations;
+    assert.ok(menu.signals.includes('RPG_PROGRESSION'));
+    assert.ok(menu.companySeedUiIdeaIds.includes('RPG_QUEST_EQUIPMENT_CODEX_SCREENS'));
+    assert.ok(menu.candidateFeatures.some(row=>row.role==='TRADE'&&row.factory==='CreateBuySellPanel'));
+    assert.equal(menu.newQueueCreated,false);
+    assert.equal(menu.shadowUiPipelineCreated,false);
+    assert.equal(menu.runtimeVerifiedCount,0);
+    assert.ok(menu.nativeSourceBoundCandidateCount>=2);
+    const character=menu.candidateFeatures.find(row=>row.role==='CHARACTER');
+    assert.equal(character.companyFactoryPresent,true);
+    assert.equal(character.status,'NATIVE_UI_SOURCE_PRESENT_RUNTIME_QA_REQUIRED');
+    assert.equal(character.existingNativeUiRefs[0].path,'roblox-games/demo-rpg/shared/RPGMenu.luau');
+    assert.match(character.companyUiSourceSha256,/^[a-f0-9]{64}$/);
+    assert.match(character.existingNativeUiRefs[0].sha256,/^[a-f0-9]{64}$/);
+    const commerce=menu.candidateFeatures.find(row=>row.role==='TRADE');
+    assert.equal(commerce.status,'NATIVE_UI_SOURCE_PRESENT_RUNTIME_QA_REQUIRED');
+    assert.equal(commerce.gameplaySaveNetworkEconomyAuthorityRetained,true);
+    const guidance=assetProductionGuidance(plan);
+    assert.match(guidance,/GENRE MENU FEATURE SYNCHRONIZATION/);
+    assert.match(guidance,/게임 상태/);
+    assert.match(guidance,/NATIVE_UI_SOURCE_PRESENT_RUNTIME_QA_REQUIRED/);
+    fs.unlinkSync(path.join(gameRoot,'RPGMenu.luau'));
+    const noSource=buildVibeAssetProductionPlan(request).genreMenuRecommendations;
+    const unconfirmed=noSource.candidateFeatures.find(row=>row.role==='CHARACTER');
+    assert.equal(unconfirmed.status,'IDEA_ONLY_GAME_SYSTEM_NOT_CONFIRMED');
+    assert.equal(noSource.runtimeVerifiedCount,0);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('genre-specific menu ideas reuse official genre signals without inventing missing gameplay systems',()=>{
+  const root=tempRoot();
+  try{
+    const configurations=[
+      {genre:'SURVIVAL',signal:'SURVIVAL',role:'CRAFT'},
+      {genre:'TYCOON',signal:'TYCOON_SIM',role:'HOUSING'},
+      {genre:'HORROR',signal:'HORROR',role:'CODEX'},
+      {genre:'TOWER DEFENSE',signal:'DEFENSE',role:'DEFENSE'},
+      {genre:'PUZZLE',signal:'PUZZLE',role:'PUZZLE'},
+      {genre:'COZY FARMING',signal:'COZY_FARMING',role:'FARM'}
+    ];
+    for(const row of configurations){
+      const plan=buildVibeAssetProductionPlan({target:'unity',repoRoot:root,
+        task:{gameId:'genre-demo',genre:row.genre,goal:'모바일 메뉴 아이디어 제안'},
+        manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}});
+      const suggestions=plan.genreMenuRecommendations;
+      assert.ok(suggestions.signals.includes(row.signal),row.genre);
+      const item=suggestions.candidateFeatures.find(entry=>entry.role===row.role);
+      assert.ok(item,row.genre+' '+row.role);
+      assert.equal(item.status,'IDEA_ONLY_GAME_SYSTEM_NOT_CONFIRMED',row.genre);
+      assert.equal(item.existingNativeUiRefs.length,0);
+      assert.equal(item.gameplaySaveNetworkEconomyAuthorityRetained,true);
+      assert.equal(item.applyVia,'EXISTING_BUILD_UP_GRAPHICS_PRODUCTION_INPUT_ONLY');
+      assert.equal(suggestions.runtimeVerifiedCount,0);
+    }
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('OBJ static validation reads actual polygons and material references without self-approving production',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'obj-geometry-'));
   const assetDir=path.join(root,'assets');
