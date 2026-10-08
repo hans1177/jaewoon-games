@@ -614,25 +614,77 @@
         "진행 상태"
       ],
       "fromSystem": "wild-survival-core-to-wild-survival-weather"
+    },
+    "local_authoring_parts::6fcea213943b772447dafe955b91162a929bcbeb51693a304694d7eb58a48e6a:toSystem,trigger,stateChange": {
+      "toSystem": "wild-survival-weather",
+      "trigger": "weatherStorm",
+      "stateChange": "weather affects player decisions and resource availability"
+    },
+    "local_authoring_parts::729075728840ba20ae0282d716c9a7527d237294be37b3cb584bc9b516b3615d:systemInterconnections:0": {
+      "fromId": "wild-survival-core",
+      "toId": "wild-survival-weather",
+      "stateKeys": [
+        "월드 상태",
+        "대상",
+        "자원",
+        "위험",
+        "진행 상태"
+      ],
+      "fromSystem": "wild-survival-core-to-wild-survival-weather",
+      "toSystem": "wild-survival-weather",
+      "trigger": "weatherStorm",
+      "stateChange": "weather affects player decisions and resource availability"
+    },
+    "local_authoring_parts::2071937467c45045e4be7653b8ca09252eb1080ee825492796080e4e378da176:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "wild-survival-core",
+      "toId": "wild-survival-weather",
+      "stateKeys": [
+        "월드 상태",
+        "대상",
+        "자원",
+        "위험",
+        "진행 상태"
+      ],
+      "fromSystem": "wild-survival-core-to-wild-survival-weather"
+    },
+    "local_authoring_parts::2071937467c45045e4be7653b8ca09252eb1080ee825492796080e4e378da176:toSystem,trigger,stateChange": {
+      "toSystem": "wild-survival-weather",
+      "trigger": "weatherStorm",
+      "stateChange": "weather affects player decisions and resource availability"
+    },
+    "local_authoring_parts::729075728840ba20ae0282d716c9a7527d237294be37b3cb584bc9b516b3615d:systemInterconnections:1": {
+      "fromId": "wild-survival-core",
+      "toId": "wild-survival-weather",
+      "stateKeys": [
+        "월드 상태",
+        "대상",
+        "자원",
+        "위험",
+        "진행 상태"
+      ],
+      "fromSystem": "wild-survival-core-to-wild-survival-weather",
+      "toSystem": "wild-survival-weather",
+      "trigger": "weatherStorm",
+      "stateChange": "weather affects player decisions and resource availability"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 910041,
-      "lastMs": 112153,
+      "totalMs": 949146,
+      "lastMs": 10278,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:31:31.050Z"
+      "updatedAt": "2026-10-08T08:32:10.162Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:16:20.952Z",
-  "updatedAt": "2026-10-08T08:31:31.050Z",
+  "updatedAt": "2026-10-08T08:32:10.163Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2847,7 +2899,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T08:31:31.050Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:32:10.163Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
