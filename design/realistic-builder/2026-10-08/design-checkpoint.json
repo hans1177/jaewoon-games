@@ -895,25 +895,28 @@
           "stateChange": "CORE_LOOP_DESIGN의 출력 상태는 READABLE_STATE 및 MODIFIABLE_STATE로, SIGNATURE_SYSTEM_DESIGN의 입력 상태는 READABLE_STATE 및 MODIFIABLE_STATE로 명확히 정의되어 있으며, 이 두 시스템 간의 상태 교환은 현재 설계에서 명확히 구체화되지 않았음."
         }
       ]
+    },
+    "local_authoring_parts::2d27d96975def0973e6316d6c02873587a0023e9423c7b5b48ffe5c0510b3d50:milestone": {
+      "milestone": "contentExpansionPlan[0].newGameplay의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 51,
-      "successes": 51,
+      "calls": 52,
+      "successes": 52,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4369117,
-      "lastMs": 73148,
+      "totalMs": 4434861,
+      "lastMs": 65744,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:53:00.371Z"
+      "updatedAt": "2026-10-08T15:54:06.122Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:51:40.085Z",
-  "updatedAt": "2026-10-08T15:53:00.375Z",
+  "updatedAt": "2026-10-08T15:54:06.122Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3496,7 +3499,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:53:00.375Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:54:06.122Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
