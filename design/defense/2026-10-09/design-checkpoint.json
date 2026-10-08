@@ -1024,25 +1024,43 @@
         "TACTICAL_FLEXIBILITY"
       ],
       "fromSystem": "SINGLE_DEFENSE_STRATEGY_CORE"
+    },
+    "local_authoring_parts::246f2e9f5537e129383776f336630ff61d93bc8ece0cb82276a396308963d28c:toSystem,trigger,stateChange": {
+      "toSystem": "SINGLE_DEFENSE_STRATEGY_CONTENT_EXPANSION",
+      "trigger": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+      "stateChange": "Defense coverage increases, resource accumulation accelerates, strategic flexibility expands."
+    },
+    "local_authoring_parts::1b01f43f6b8b6d94075f445a911cdc9502a7d5fdd960f0f0e9a2835b60bf5049:systemInterconnections:4": {
+      "fromId": "SIGNATURE_SYSTEM_0",
+      "toId": "SIGNATURE_SYSTEM_3",
+      "stateKeys": [
+        "DEFENSE_COVERAGE",
+        "RESOURCE_ACUMULATION",
+        "TACTICAL_FLEXIBILITY"
+      ],
+      "fromSystem": "SINGLE_DEFENSE_STRATEGY_CORE",
+      "toSystem": "SINGLE_DEFENSE_STRATEGY_CONTENT_EXPANSION",
+      "trigger": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+      "stateChange": "Defense coverage increases, resource accumulation accelerates, strategic flexibility expands."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 36,
-      "successes": 33,
+      "calls": 37,
+      "successes": 34,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 3440721,
-      "lastMs": 53228,
+      "totalMs": 3493321,
+      "lastMs": 52600,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T23:26:42.087Z"
+      "updatedAt": "2026-10-08T23:27:34.689Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:50:18.458Z",
-  "updatedAt": "2026-10-08T23:26:42.087Z",
+  "updatedAt": "2026-10-08T23:27:34.738Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3247,9 +3265,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "MAIN→A의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: MAIN→A의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3264,9 +3282,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "MAIN→A의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: MAIN→A의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3281,9 +3299,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "MAIN→A의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: MAIN→A의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3298,9 +3316,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "MAIN→A의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: MAIN→A의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3315,9 +3333,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "MAIN→A의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: MAIN→A의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3344,7 +3362,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 1
+    "designer_draft_slices::systems-progression": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3382,10 +3400,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T23:26:42.087Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T23:27:34.692Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
