@@ -471,25 +471,42 @@
     },
     "local_authoring_parts::97eb58a5d46eea39c992e01908dca55bb567b60c5ce58bebe4fba4e64f561779:trigger": {
       "trigger": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다. 플레이어는 Read the board and enemy threat information.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 Read the board and enemy threat information.이며, 두 대축은 Commit a move or ability that changes control of key spaces, and resolve the tactical exchange while使用新的板"
+    },
+    "local_authoring_parts::97eb58a5d46eea39c992e01908dca55bb567b60c5ce58bebe4fba4e64f561779:stateChange": {
+      "stateChange": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다. 플레이어는 Read the board and enemy threat information.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 Read the board and enemy threat information.이며, 두 대축은 Commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
+    },
+    "local_authoring_parts::3bf2a728aab430b6985e1ac65fa096204d001d581888074af26979b52f60b120:systemInterconnections:0": {
+      "fromId": "systemInterconnections[0].trigger",
+      "toId": "systemInterconnections[0].trigger",
+      "stateKeys": [
+        "worldState",
+        "enemyThreatInfo",
+        "newWorldState",
+        "nextMoveChoice"
+      ],
+      "fromSystem": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다.",
+      "toSystem": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다.",
+      "trigger": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다. 플레이어는 Read the board and enemy threat information.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 Read the board and enemy threat information.이며, 두 대축은 Commit a move or ability that changes control of key spaces, and resolve the tactical exchange while使用新的板",
+      "stateChange": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다. 플레이어는 Read the board and enemy threat information.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 Read the board and enemy threat information.이며, 두 대축은 Commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 17,
+      "calls": 18,
+      "successes": 18,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1879183,
-      "lastMs": 95646,
+      "totalMs": 1975237,
+      "lastMs": 96054,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:22:59.319Z"
+      "updatedAt": "2026-10-08T08:24:35.375Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:51:40.071Z",
-  "updatedAt": "2026-10-08T08:22:59.319Z",
+  "updatedAt": "2026-10-08T08:24:35.376Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3026,7 +3043,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T08:22:59.319Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:24:35.376Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
