@@ -171,6 +171,12 @@ jobs:
           done
           echo "SURVIVAL_LUAU_COMPILE_PASS=${#files[@]}"
 
+      - name: Verify Survival DataStore failure recovery in Luau runtime
+        run: |
+          set -euo pipefail
+          test -x /tmp/luau-bin/luau
+          VIBE2_LUAU_BINARY=/tmp/luau-bin/luau node --test --test-name-pattern='survival preserves saved resources' qa/roblox-game-repair-safety.test.mjs
+
       - name: Check Vibe3 syntax
         run: |
           node --input-type=module --check < assets/vibe-v3-engine.js
