@@ -893,25 +893,41 @@
         "DefensiveStrategy"
       ],
       "fromSystem": "EnemyDefenseSynergy\",\"toSystem\":\"EnemyDefenseSynergy\",\"description\":\"enemyWaveType→defensiveStrategy의 출력과 입력 상태가 연결되지 않는다\",\"requiredAction\":\"systemInterconnections: enemyWaveType→\""
+    },
+    "local_authoring_parts::902cd1bb4161d0cc78c8d36883bd5700f24cf6c923557ab423964c1a7232616e:toSystem,trigger,stateChange": {
+      "toSystem": "EnemyDefenseSynergy",
+      "trigger": "enemyWaveType",
+      "stateChange": "defensiveStrategy"
+    },
+    "local_authoring_parts::3ee4c82f03ad767d3f2da06b326e0ef5ef7dfa67ce5e16ad01f1271df1b7bce1:systemInterconnections:3": {
+      "fromId": "enemyWaveType",
+      "toId": "defensiveStrategy",
+      "stateKeys": [
+        "DefensiveStrategy"
+      ],
+      "fromSystem": "EnemyDefenseSynergy\",\"toSystem\":\"EnemyDefenseSynergy\",\"description\":\"enemyWaveType→defensiveStrategy의 출력과 입력 상태가 연결되지 않는다\",\"requiredAction\":\"systemInterconnections: enemyWaveType→\"",
+      "toSystem": "EnemyDefenseSynergy",
+      "trigger": "enemyWaveType",
+      "stateChange": "defensiveStrategy"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 38,
-      "successes": 38,
+      "calls": 39,
+      "successes": 39,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2488629,
-      "lastMs": 93174,
+      "totalMs": 2579089,
+      "lastMs": 90460,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:35:36.025Z"
+      "updatedAt": "2026-10-08T16:37:06.487Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:10:25.792Z",
-  "updatedAt": "2026-10-08T16:35:36.025Z",
+  "updatedAt": "2026-10-08T16:37:06.489Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3264,7 +3280,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:35:36.025Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:37:06.489Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
