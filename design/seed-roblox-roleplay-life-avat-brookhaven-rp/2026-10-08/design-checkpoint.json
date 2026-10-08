@@ -334,25 +334,243 @@
           "playerChoice": "Player selects upgrades, perks, weapons, or skills that influence the current build, affecting survival outcomes and progression choices."
         }
       ]
+    },
+    "local_authoring_parts::7c28cc33bba9f10a18f9d8554968ea26bbb73d79c49ee711b1e018bf59c66bed:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::cd950ba5414065b8b291910604ddb32bb9bd51ce858bc1bf4762d66718d8645d:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEW CHOICE",
+        "FIGHT THROUGH ASCENDING HORDE IN SHORT REAL-TIME SURVIVAL RUN WHILE POSITIONING AROUND ENEMY PRESSURE",
+        "COLLECT RUN REWARDS/EXPERIENCE AND CHOOSE UPGRADS, PERKS, WEAPONS, OR SKILLS THAT CHANGE THE CURRENT BUILD",
+        "COMBINE UPGRADS INTO STRONGER BUILD, SURVIVE HARDER WAVES OR BOSS, THEN CONVERT RUN RESULT INTO NEXT PROGRESSION CHOICE"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "ENEMY_PRESSURE",
+            "HORDE_SIZE",
+            "TIME_LIMIT",
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "BUILD_COMBINATION",
+            "WORLD_RELATIONSHIP",
+            "OPTIONAL_MASTERY",
+            "NEXT_OPEN_QUESTION"
+          ],
+          "name": "Survival Progression System",
+          "purpose": "Facilitates dynamic build progression through real-time survival challenges, with player choice in resource allocation and strategic adaptation.",
+          "playerChoice": "Player selects upgrades, perks, weapons, or skills that influence the current build, affecting survival outcomes and progression choices."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "ENEMY_PRESSURE",
+            "HORDE_SIZE",
+            "TIME_LIMIT",
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "BUILD_COMBINATION",
+            "WORLD_RELATIONSHIP",
+            "OPTIONAL_MASTERY",
+            "NEXT_OPEN_QUESTION"
+          ],
+          "name": "Survival Progression System",
+          "purpose": "Facilitates dynamic build progression through real-time survival challenges, with player choice in resource allocation and strategic adaptation.",
+          "playerChoice": "Player selects upgrades, perks, weapons, or skills that influence the current build, affecting survival outcomes and progression choices."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "ENEMY_PRESSURE",
+            "HORDE_SIZE",
+            "TIME_LIMIT",
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "BUILD_COMBINATION",
+            "WORLD_RELATIONSHIP",
+            "OPTIONAL_MASTERY",
+            "NEXT_OPEN_QUESTION"
+          ],
+          "name": "Survival Progression System",
+          "purpose": "Facilitates dynamic build progression through real-time survival challenges, with player choice in resource allocation and strategic adaptation.",
+          "playerChoice": "Player selects upgrades, perks, weapons, or skills that influence the current build, affecting survival outcomes and progression choices."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "ENEMY_PRESSURE",
+            "HORDE_SIZE",
+            "TIME_LIMIT",
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "BUILD_COMBINATION",
+            "WORLD_RELATIONSHIP",
+            "OPTIONAL_MASTERY",
+            "NEXT_OPEN_QUESTION"
+          ],
+          "name": "Survival Progression System",
+          "purpose": "Facilitates dynamic build progression through real-time survival challenges, with player choice in resource allocation and strategic adaptation.",
+          "playerChoice": "Player selects upgrades, perks, weapons, or skills that influence the current build, affecting survival outcomes and progression choices."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "ENEMY_PRESSURE",
+            "HORDE_SIZE",
+            "TIME_LIMIT",
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "BUILD_COMBINATION",
+            "WORLD_RELATIONSHIP",
+            "OPTIONAL_MASTERY",
+            "NEXT_OPEN_QUESTION"
+          ],
+          "name": "Survival Progression System",
+          "purpose": "Facilitates dynamic build progression through real-time survival challenges, with player choice in resource allocation and strategic adaptation.",
+          "playerChoice": "Player selects upgrades, perks, weapons, or skills that influence the current build, affecting survival outcomes and progression choices."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "Harbor Days의 핵심 재미와 시스템 연결을 확정한 고유한 정체성입니다. 게임은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임입니다. 플레이어는 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임의 핵심 재미는 반복 가능한 루프, 즉각적 결과, 위험, 보상, 그리고 선택의 상호작용을 포함합니다. 게임의 시스템은 MAIN/A/B/c/@와 같은 구조로 설계되어 있으며, 각각의 상태 변화는 게임의 재미와 깊이를 높입니다. 게임의 정체성은 플레이어의 행동, 선택, 상호작용, 그리고 결과에 기반하여 정의됩니다. 게임의 정체성은 단순한 장르 태그나 기능 합산으로 분리되지 않습니다. 게임의 정체성은 기존 원본의 의미를 보존하며, 설계 수정은 기존 검증, 보안, 저장, 네트워크 권한을 바꾸지 않습니다. 게임의 정체성은 플레이어의 이해를 위해 인간 갈등, 욕망, 경쟁, 소속, 가족, 명예, 생존, 인정 등에 기반합니다. 게임의 정체성은 기존 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증을 바탕으로 합니다. 게임의 정체성은 플레이어의 행동과 선택, 상호작용, 결과에 기반하여 정의됩니다. 게임의 정체성은 단순한 장르 태그나 기능 합산으로 분리되지 않습니다. 게임의 정체성은 기존 원본의 의미를 보존하며, 설계 수정은 기존 검증, 보안, 저장, 네트워크 권한을 바꾸지 않습니다. 게임의 정체성은 플레이어의 행동과 선택, 상호작용, 결과에 기반하여 정의됩니다. 게임의 정체성은 기존 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증을 바탕으로 합니다. 게임의 정체성은 플레이어의 행동과 선택, 상호작용, 결과에 기반하여 정의됩니다. 게임의 정체성은 기존 원본의 의미를 보존하며, 설계 수정은 기존 검증, 보안, 저장, 네트워",
+      "playerFantasy": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임은 반복 가능한 루프, 즉각적 결과, 위험, 보상, 그리고 선택의 상호작용을 포함하며, 플레이어의 행동, 선택, 상호작용, 결과에 기반한 고유한 정체성을 가진다. 게임의 정체성은 기존 원본의 의미를 보존하고, 설계 수정은 기존 검증, 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 정체성은 인간 갈등, 욕망, 경쟁, 소속, 가족, 명예, 생존, 인정 등에 기반하며, 플레이어의 이해를 위해 단순한 장르 태그나 기능 합산으로 분리되지 않는다. 게임의 정체성은 기존 원본의 규칙과 수치를 보존하고, 설계 수정은 기존 검증을 바탕으로 한다. 게임의 정체성은 플레이어의 행동과 선택, 상호작용, 결과에 기반하여 정의된다. 게임의 정체성은 기존 원본의 의미를 보존하며, 설계 수정은 기존 검증, 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 정체성은 플레이어의 행동과 선택, 상호작용, 결과에 기반하여 정의된다. 게임의 정체성은 기존 원본의 규칙과 수치를 보존하고, 설계 수정은 기존 검증을 바탕으로 한다.",
+      "coreFun": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.과 Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용을 포함하는 ACTION_SURVIVAL_ROGUELITE 게임의 중심 행동이며, 플레이어는 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임의 핵심 재미는 반복 가능한 루프, 즉각적 결과, 위험, 보상, 그리고 선택의 상호작용을 포함하며, 플레이어의 행동, 선택, 상호작용, 결과에 기반한 고유한 정체성을 가진다. 게임의 시스템은 MAIN/A/B/c/@와 같은 구조로 설계되어 있으며, 각각의 상태 변화는 게임의 재미와 깊이를 높인다. 게임의 정체성은 플레이어의 행동, 선택, 상호작용, 결과에 기반하여 정의된다. 게임의 정체성은 기존 원본의 의미를 보존하며, 설계 수정은 기존 검증, 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 정체성은 인간 갈등, 욕망, 경쟁, 소속, 가족, 명예, 생존, 인정 등에 기반하며, 플레이어의 이해를 위해 단순한 장르 태그나 기능 합산으로 분리되지 않는다. 게임의 정체성은 기존 원본의 규칙과 수치를 보존하고, 설계 수정은 기존 검증을 바탕으로 한다. 게임의 정체성은 플레이어의 행동과 선택, 상호작용, 결과에 기반하여 정의된다. 게임의 정체성은 기존 원본의 의미를 보존하며, 설계 수정은 기존 검증, 보안, 저장, 네트워크 권한을 바꾸지 않는다.",
+      "coreLoop": [
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEW CHOICE",
+        "FIGHT THROUGH ASCENDING HORDE IN SHORT REAL-TIME SURVIVAL RUN WHILE POSITIONING AROUND ENEMY PRESSURE",
+        "COLLECT RUN REWARDS/EXPERIENCE AND CHOOSE UPGRADS, PERKS, WEAPONS, OR SKILLS THAT CHANGE THE CURRENT BUILD",
+        "COMBINE UPGRADS INTO STRONGER BUILD, SURVIVE HARDER WAVES OR BOSS, THEN CONVERT RUN RESULT INTO NEXT PROGRESSION CHOICE"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "ENEMY_PRESSURE",
+            "HORDE_SIZE",
+            "TIME_LIMIT",
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "BUILD_COMBINATION",
+            "WORLD_RELATIONSHIP",
+            "OPTIONAL_MASTERY",
+            "NEXT_OPEN_QUESTION"
+          ],
+          "name": "Survival Progression System",
+          "purpose": "Facilitates dynamic build progression through real-time survival challenges, with player choice in resource allocation and strategic adaptation.",
+          "playerChoice": "Player selects upgrades, perks, weapons, or skills that influence the current build, affecting survival outcomes and progression choices."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "ENEMY_PRESSURE",
+            "HORDE_SIZE",
+            "TIME_LIMIT",
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "BUILD_COMBINATION",
+            "WORLD_RELATIONSHIP",
+            "OPTIONAL_MASTERY",
+            "NEXT_OPEN_QUESTION"
+          ],
+          "name": "Survival Progression System",
+          "purpose": "Facilitates dynamic build progression through real-time survival challenges, with player choice in resource allocation and strategic adaptation.",
+          "playerChoice": "Player selects upgrades, perks, weapons, or skills that influence the current build, affecting survival outcomes and progression choices."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "ENEMY_PRESSURE",
+            "HORDE_SIZE",
+            "TIME_LIMIT",
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "BUILD_COMBINATION",
+            "WORLD_RELATIONSHIP",
+            "OPTIONAL_MASTERY",
+            "NEXT_OPEN_QUESTION"
+          ],
+          "name": "Survival Progression System",
+          "purpose": "Facilitates dynamic build progression through real-time survival challenges, with player choice in resource allocation and strategic adaptation.",
+          "playerChoice": "Player selects upgrades, perks, weapons, or skills that influence the current build, affecting survival outcomes and progression choices."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "ENEMY_PRESSURE",
+            "HORDE_SIZE",
+            "TIME_LIMIT",
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "BUILD_COMBINATION",
+            "WORLD_RELATIONSHIP",
+            "OPTIONAL_MASTERY",
+            "NEXT_OPEN_QUESTION"
+          ],
+          "name": "Survival Progression System",
+          "purpose": "Facilitates dynamic build progression through real-time survival challenges, with player choice in resource allocation and strategic adaptation.",
+          "playerChoice": "Player selects upgrades, perks, weapons, or skills that influence the current build, affecting survival outcomes and progression choices."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "ENEMY_PRESSURE",
+            "HORDE_SIZE",
+            "TIME_LIMIT",
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "BUILD_COMBINATION",
+            "WORLD_RELATIONSHIP",
+            "OPTIONAL_MASTERY",
+            "NEXT_OPEN_QUESTION"
+          ],
+          "name": "Survival Progression System",
+          "purpose": "Facilitates dynamic build progression through real-time survival challenges, with player choice in resource allocation and strategic adaptation.",
+          "playerChoice": "Player selects upgrades, perks, weapons, or skills that influence the current build, affecting survival outcomes and progression choices."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1220288,
-      "lastMs": 109497,
+      "totalMs": 1314499,
+      "lastMs": 94211,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:28:31.510Z"
+      "updatedAt": "2026-10-08T13:30:05.725Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:08:11.184Z",
-  "updatedAt": "2026-10-08T13:28:31.512Z",
+  "updatedAt": "2026-10-08T13:30:05.735Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2547,12 +2765,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:28:31.512Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:30:05.729Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/seed-roblox-roleplay-life-avat-brookhaven-rp/2026-10-08/design-seed.json",
+    "contentDigest": "04672423276ee081ac821d6af3d71c134f6aeaf0079ba1afdc75d5d4956170a9",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
