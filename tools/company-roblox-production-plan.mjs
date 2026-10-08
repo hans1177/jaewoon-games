@@ -412,8 +412,21 @@ export function buildRobloxProductionPlan({gameId='',platform='',design={},sourc
     qualityContract:{
       reference:'SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX',
       implementation:target==='UNITY'?'EXISTING_CSHARP_SCENE_PREFAB_AND_ASSET_BINDINGS':target==='WEB'?'EXISTING_BROWSER_GAME_SOURCE_AND_RESOURCE_BINDINGS':'EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS',
-      required:['CONNECTED_PLAYER_ACTION_STATE_FEEDBACK_AND_NEXT_GOAL','COMPATIBLE_INTERNAL_ASSETS_ACTUALLY_BOUND','MOTION_AUDIO_VFX_LINKED_TO_EXISTING_GAME_STATE_WHEN_APPLICABLE','MOBILE_TOUCH_AND_SCREEN_READABILITY','EXACT_CHANGED_BUILD_RUNTIME_AND_SAVE_REGRESSION'],
+      required:['CONNECTED_PLAYER_ACTION_STATE_FEEDBACK_AND_NEXT_GOAL','COMPATIBLE_INTERNAL_ASSETS_ACTUALLY_BOUND','MOTION_AUDIO_VFX_LINKED_TO_EXISTING_GAME_STATE_WHEN_APPLICABLE','MOBILE_TOUCH_AND_SCREEN_READABILITY','EXISTING_INPUT_AI_PHYSICS_ANIMATION_RENDER_CHAIN_WHEN_APPLICABLE','EXACT_CHANGED_BUILD_RUNTIME_AND_SAVE_REGRESSION'],
       runtimeSurface:target==='UNITY'?(requested==='UNITY_WEB'?'UNITY_WEBGL_ACTUAL_BROWSER_PLAY':'UNITY_NATIVE_AND_ANDROID_WHEN_TARGETED'):target==='WEB'?'ACTUAL_BROWSER_PLAY':'ROBLOX_OPEN_CLOUD_EXACT_CANDIDATE',
+      // 메인: 작업자가 실제 게임 소스에 입력·물리·애니메이션·렌더 소비자를 연결하도록 계약한다.
+      // 설계 계약만으로는 엔진 물리/렌더 실행 성공을 판정하지 않는다.
+      actorFrameContract:{
+        owner:'EXISTING_NATIVE_GAME_SOURCE',
+        steps:['INPUT_AND_AI_INTENT','ENGINE_PHYSICS_AND_COLLISION','GAMEPLAY_STATE_DRIVEN_ANIMATION','NATIVE_RENDER_AND_UI'],
+        timing:'PHYSICS_IN_ENGINE_APPROVED_STEP_RENDER_CONSUMES_RESOLVED_STATE',
+        gameplayAuthority:'EXISTING_GAMEPLAY_COLLISION_DAMAGE_SAVE_AND_NETWORK_AUTHORITY_UNCHANGED',
+        platformBinding:target==='ROBLOX'?'SERVER_AI_HUMANOID_WORKSPACE_PHYSICS_CLIENT_ANIMATOR_AND_VISUALS'
+          :target==='UNITY'?'EXISTING_CSHARP_UPDATE_FIXEDUPDATE_RIGIDBODY_ANIMATOR_RENDERER'
+          :'EXISTING_BROWSER_GAME_TICK_CANVAS_OR_WEBGL_RENDER_CONSUMER',
+        mobileOptimization:'COSMETIC_LOD_CULLING_BATCHING_AND_EFFECT_BUDGET_ONLY_WITHOUT_CHANGING_HITS_OR_AI_OUTCOME',
+        sourceEvidenceRequired:true,runtimeVerified:false
+      },
       markerOnlyCompletionAllowed:false,runtimeVerified:false
     },
     handoffRule:'Use the observed files and symbols within the existing allowed write scope. Reuse existing event/data contracts; missing context is not permission to invent an API or edit another file.',
@@ -460,7 +473,17 @@ export function robloxProductionPromptLines(plan,{prefix='',responsibleFiles=[]}
       prefix+'SPATIAL_SCHEMA='+JSON.stringify(SPATIAL_BLUEPRINT_SCHEMA),
       prefix+'SPATIAL_RULE=When required=true, first author spatialBlueprint in the same candidate JSON, then implement it in existing source. Otherwise include a report only for relevant spatial changes. Scope the sketch to the owned task region and its existing entry/objective boundaries, not the entire game or sibling files. Use source dimensions, axis direction, units, player size and stable IDs. Draw regions before object bounds and typed connections. Preserve locations unless authorized. In 3D account for support, headroom, elevation, stairs, slopes, camera sightlines and swept clearance; in 2D distinguish top-down from side-view and layers. Bind each row to executable source. AABB checks are conservative and cannot prove curved terrain, ramps, jumps, engine physics or runtime PASS. For an explicitly approved new environment, derive seeded gradient-noise elevation and drainage by climate and biome; connect walkable road and optional routes before placing any building. Zone footprints by local function (housing, services and workshops), snap modular foundations/walls/openings/roofs to the existing grid, face door openings toward a traversable road, and preserve any reserved player/objective/interaction cells. Use local material and climate for architecture, keep a clear landmark sightline from a decision point, and budget cell/prop density, LOD and reusable mesh instances for mobile. These are authoring constraints, not proof of native instancing or runtime visibility; bind placements to real existing source and reject blocked routes instead of claiming PASS. An approved macroSketch.proceduralWorldStudy provides only bounded route and lot samples, not a full terrain mesh or a verified game implementation. If status is not STATIC_LAYOUT_PROPOSED, repair route or placement feasibility before using its layout; do not substitute the study for actual source implementation. Existing map repairs and presentation-only tasks must preserve established layout and gameplay state.'
     ]:[]),
-    ...(plan.qualityContract?[prefix+'QUALITY='+JSON.stringify(plan.qualityContract)]:[]),
+    ...(plan.qualityContract?[
+      prefix+'QUALITY='+JSON.stringify(plan.qualityContract),
+      // 메인: Vibe2/Vibe3의 기존 생성 프롬프트에만 연결한다. 새 물리/렌더 파이프라인을 만들지 않는다.
+      prefix+'RUNTIME_CHAIN_RULE=For games with moving actors, connect the existing input and enemy AI intent to authoritative movement and engine-native colliders, then drive rig/Animator or sprites from resolved gameplay state, and finally render meshes, materials, lighting, VFX and UI through the existing native consumer. Physics may run at a fixed engine step independently of render frames; do not advance authoritative movement or attack damage a second time inside visual updates. Kinematic actors use the existing controller and collision contract, not decorative transforms that cross walls. Preserve all existing AI/spawn rates, collision and hitbox dimensions, combat timing, network authority, saves and rewards. Turn-based or nonphysical games retain their current tick model. Mobile LOD, draw-call reduction, culling and effects budgets may change visuals only, never detection, hit, physics or gameplay results. Produce actual changed owner-file code and exact-build collision, animation-sync, touch and performance evidence; plan text, material names, screenshots of unrelated builds and markers are NOT runtime PASS. '+(
+        plan.platform==='ROBLOX'
+          ?'Roblox: retain current server-side AI/combat ownership, existing Humanoid/controller and Workspace collisions; consume replicated state with existing client Animator, mesh/Material and HUD without moving server-owned hitboxes.'
+          :plan.platform==='UNITY'
+          ?'Unity: use the existing C# scene/prefab and Rigidbody/CharacterController where present; integrate input in the appropriate game update, physics with FixedUpdate/engine steps, and visual Animator/SkinnedMeshRenderer/URP consumers. UNITY_WEB uses the same Unity project, never an HTML gameplay substitute.'
+          :'Legacy Web: reuse current game step and requestAnimationFrame Canvas/WebGL consumer; handle bounded elapsed time without making simulation speed depend on monitor FPS and without rebuilding a native physics renderer.'
+      )+' Scope every operation to the current responsible files and approved behavior; PRESENTATION-only work must not change game-state or server authority.'
+    ]:[]),
     ...list(plan.ownerFeatureChanges).map(change=>prefix+'OWNER='+JSON.stringify(change)+'; latest owner intent wins; REMOVE must not be restored by autonomous expansion; ADD/UPDATE must be preserved within this request scope.'),
     prefix+'SCOPE='+plan.contentRule+'; '+plan.handoffRule+' Preserve approved concept, style, balance, save and server authority. Independent files can proceed in parallel inside the existing worker; this is no new stage.'
   ];
