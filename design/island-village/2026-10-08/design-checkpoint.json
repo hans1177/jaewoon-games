@@ -109,25 +109,242 @@
       "name": "VillageProgressionSystem",
       "purpose": "Manages the progression of the village through different stages of development, including unlocking new goals, acquiring new resources, and advancing the village's state.",
       "playerChoice": "Select a new village goal, acquire a focused set of resources, and unlock a new resident, activity, or area to proceed to the next stage of village development."
+    },
+    "local_authoring_parts::0c1d8e5a0d48a36efe3b994df347742623b9184961aab0cced4d4fae96f11fc1:signatureSystems:4": {
+      "id": "signatureSystems[4]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "VillageFunction",
+        "ResidentCount",
+        "ActivityType",
+        "AreaType"
+      ],
+      "stateOutputs": [
+        "NextVillageGoal",
+        "NewResourceSet",
+        "VillageProgression"
+      ],
+      "name": "VillageProgressionSystem",
+      "purpose": "Manages the progression of the village through different stages of development, including unlocking new goals, acquiring new resources, and advancing the village's state.",
+      "playerChoice": "Select a new village goal, acquire a focused set of resources, and unlock a new resident, activity, or area to proceed to the next stage of village development."
+    },
+    "local_authoring_parts::624bf8c46abe82573238fd7590dde7e3c0a8e42cc166554aa7304cdccd4381e6:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount",
+            "IslandResources"
+          ],
+          "stateOutputs": [
+            "VillageFunction",
+            "ResidentCount",
+            "ActivityType",
+            "AreaType"
+          ],
+          "name": "IslandResourceManagementSystem",
+          "purpose": "Manages the acquisition, allocation, and utilization of island resources to build or improve village functions.",
+          "playerChoice": "Gather a focused set of island resources to build or improve one village function, and unlock a new resident, activity, or area to choose the next village goal."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount",
+            "IslandResources"
+          ],
+          "stateOutputs": [
+            "VillageFunction",
+            "ResidentCount",
+            "ActivityType",
+            "AreaType"
+          ],
+          "name": "IslandResourceManagementSystem",
+          "purpose": "Manages the acquisition, allocation, and utilization of island resources to build or improve village functions.",
+          "playerChoice": "Gather a focused set of island resources to build or improve one village function, and unlock a new resident, activity, or area to choose the next village goal."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount",
+            "IslandResources"
+          ],
+          "stateOutputs": [
+            "VillageFunction",
+            "ResidentCount",
+            "ActivityType",
+            "AreaType"
+          ],
+          "name": "IslandResourceManagementSystem",
+          "purpose": "Manages the acquisition, allocation, and utilization of island resources to build or improve village functions.",
+          "playerChoice": "Gather a focused set of island resources to build or improve one village function, and unlock a new resident, activity, or area to choose the next village goal."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "VillageFunction",
+            "ResidentCount",
+            "ActivityType",
+            "AreaType"
+          ],
+          "stateOutputs": [
+            "NextVillageGoal",
+            "NewResourceSet",
+            "VillageProgression"
+          ],
+          "name": "VillageProgressionSystem",
+          "purpose": "Manages the progression of the village through different stages of development, including unlocking new goals, acquiring new resources, and advancing the village's state.",
+          "playerChoice": "Select a new village goal, acquire a focused set of resources, and unlock a new resident, activity, or area to proceed to the next stage of village development."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "VillageFunction",
+            "ResidentCount",
+            "ActivityType",
+            "AreaType"
+          ],
+          "stateOutputs": [
+            "NextVillageGoal",
+            "NewResourceSet",
+            "VillageProgression"
+          ],
+          "name": "VillageProgressionSystem",
+          "purpose": "Manages the progression of the village through different stages of development, including unlocking new goals, acquiring new resources, and advancing the village's state.",
+          "playerChoice": "Select a new village goal, acquire a focused set of resources, and unlock a new resident, activity, or area to proceed to the next stage of village development."
+        }
+      ]
+    },
+    "local_authoring_parts::dcc06a451cf41e7aee953a8d6f7395558144491fbcb2a7b1fddb527c350c2d8e:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Gather a focused set of island resources.",
+        "Use them to build or improve one village function.",
+        "Unlock a new resident, activity or area and choose the next village goal."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount",
+            "IslandResources"
+          ],
+          "stateOutputs": [
+            "VillageFunction",
+            "ResidentCount",
+            "ActivityType",
+            "AreaType"
+          ],
+          "name": "IslandResourceManagementSystem",
+          "purpose": "Manages the acquisition, allocation, and utilization of island resources to build or improve village functions.",
+          "playerChoice": "Gather a focused set of island resources to build or improve one village function, and unlock a new resident, activity, or area to choose the next village goal."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount",
+            "IslandResources"
+          ],
+          "stateOutputs": [
+            "VillageFunction",
+            "ResidentCount",
+            "ActivityType",
+            "AreaType"
+          ],
+          "name": "IslandResourceManagementSystem",
+          "purpose": "Manages the acquisition, allocation, and utilization of island resources to build or improve village functions.",
+          "playerChoice": "Gather a focused set of island resources to build or improve one village function, and unlock a new resident, activity, or area to choose the next village goal."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount",
+            "IslandResources"
+          ],
+          "stateOutputs": [
+            "VillageFunction",
+            "ResidentCount",
+            "ActivityType",
+            "AreaType"
+          ],
+          "name": "IslandResourceManagementSystem",
+          "purpose": "Manages the acquisition, allocation, and utilization of island resources to build or improve village functions.",
+          "playerChoice": "Gather a focused set of island resources to build or improve one village function, and unlock a new resident, activity, or area to choose the next village goal."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "VillageFunction",
+            "ResidentCount",
+            "ActivityType",
+            "AreaType"
+          ],
+          "stateOutputs": [
+            "NextVillageGoal",
+            "NewResourceSet",
+            "VillageProgression"
+          ],
+          "name": "VillageProgressionSystem",
+          "purpose": "Manages the progression of the village through different stages of development, including unlocking new goals, acquiring new resources, and advancing the village's state.",
+          "playerChoice": "Select a new village goal, acquire a focused set of resources, and unlock a new resident, activity, or area to proceed to the next stage of village development."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "VillageFunction",
+            "ResidentCount",
+            "ActivityType",
+            "AreaType"
+          ],
+          "stateOutputs": [
+            "NextVillageGoal",
+            "NewResourceSet",
+            "VillageProgression"
+          ],
+          "name": "VillageProgressionSystem",
+          "purpose": "Manages the progression of the village through different stages of development, including unlocking new goals, acquiring new resources, and advancing the village's state.",
+          "playerChoice": "Select a new village goal, acquire a focused set of resources, and unlock a new resident, activity, or area to proceed to the next stage of village development."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 930089,
-      "lastMs": 98012,
+      "totalMs": 1032246,
+      "lastMs": 102157,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:52:09.956Z"
+      "updatedAt": "2026-10-08T12:53:52.114Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:36:39.832Z",
-  "updatedAt": "2026-10-08T12:52:09.956Z",
+  "updatedAt": "2026-10-08T12:53:52.117Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2208,7 +2425,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:52:09.956Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:53:52.117Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
