@@ -64,25 +64,40 @@
       "name": "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
       "purpose": "플레이어가 자원 수집 후 업그레이드 또는 전략 변경을 통해 상태 변화를 유도하는 주요 선택 기회.",
       "playerChoice": "Earn resources from defeated enemies and allocate them to upgrades, new placements, or tactical adjustments."
+    },
+    "local_authoring_parts::e7f8d748d3c09e96a3797298ce2c9b587b480edc42f3f9ee2dd9f8b4af38caeb:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "ENEMY_WAVE",
+        "RESOURCE_POOL"
+      ],
+      "stateOutputs": [
+        "DEFENSE_STRUCTURE_CHANGED",
+        "RESOURCE_ALLOCATED"
+      ],
+      "name": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense",
+      "purpose": "플레이어가 적의 종류와 웨이브 구성에 따라 방어 전략을 재설계하며, 목적지 보호 및 스테이지를 클리어하여 더 어려운 방어 선택 기회를 열기 위한 중심 선택.",
+      "playerChoice": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 671482,
-      "lastMs": 238988,
+      "totalMs": 774792,
+      "lastMs": 103310,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:15:00.935Z"
+      "updatedAt": "2026-10-08T19:16:44.247Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T19:03:49.423Z",
-  "updatedAt": "2026-10-08T19:15:00.936Z",
+  "updatedAt": "2026-10-08T19:16:44.247Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2277,7 +2292,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T19:15:00.935Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:16:44.247Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
