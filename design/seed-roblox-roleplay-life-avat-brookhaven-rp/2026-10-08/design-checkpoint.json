@@ -1007,25 +1007,44 @@
         "RUN_RESULT"
       ],
       "fromSystem": "systemInterconnections[0]_ENEMY_PRESSURE_TO_BUILD_COMBINATION_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_"
+    },
+    "local_authoring_parts::699687bd17e67891df33fda2b86afce894ba60a417b31ce02bfc9abfe2e4ffe7:toSystem,trigger,stateChange": {
+      "toSystem": "systemInterconnections[0]_ENEMY_PRESSURE_TO_BUILD_COMBINATION_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_",
+      "trigger": "ENEMY_PRESSURE",
+      "stateChange": "BUILD_COMBINATION"
+    },
+    "local_authoring_parts::143ae6cb1d8c432503e1b8c3180c590640150927c34590069e946895117e7392:systemInterconnections:4": {
+      "fromId": "ENEMY_PRESSURE",
+      "toId": "BUILD_COMBINATION",
+      "stateKeys": [
+        "ENEMY_PRESSURE",
+        "HORDE_SIZE",
+        "TIME_LIMIT",
+        "RUN_RESULT"
+      ],
+      "fromSystem": "systemInterconnections[0]_ENEMY_PRESSURE_TO_BUILD_COMBINATION_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_",
+      "toSystem": "systemInterconnections[0]_ENEMY_PRESSURE_TO_BUILD_COMBINATION_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_",
+      "trigger": "ENEMY_PRESSURE",
+      "stateChange": "BUILD_COMBINATION"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 36,
-      "successes": 34,
+      "calls": 37,
+      "successes": 35,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 3809057,
-      "lastMs": 77979,
+      "totalMs": 3884528,
+      "lastMs": 75471,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T15:27:25.276Z"
+      "updatedAt": "2026-10-08T15:28:40.749Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:08:11.184Z",
-  "updatedAt": "2026-10-08T15:27:25.276Z",
+  "updatedAt": "2026-10-08T15:28:40.757Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3331,7 +3350,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 2
+    "designer_draft_slices::systems-progression": 3
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3373,10 +3392,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:27:25.276Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T15:28:40.752Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
