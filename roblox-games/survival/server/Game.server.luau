@@ -324,7 +324,11 @@ local function bindResourcePrompts()
       prompt.RequiresLineOfSight = true
       prompt.HoldDuration = 0.1
       local rule = validResourceRule(nodeName)
-      prompt.Triggered:Connect(function(player) interactWithResource(player, part, rule) end)
+      -- 기존 설계에 내구도·드롭 규칙이 없으면 새 보상 경로를 활성화하지 않는다.
+      prompt.Enabled = rule ~= nil
+      if rule then
+        prompt.Triggered:Connect(function(player) interactWithResource(player, part, rule) end)
+      end
     end
   end
 end
