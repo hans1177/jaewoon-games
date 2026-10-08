@@ -886,25 +886,42 @@
         "writeState: 'Transition to next world state based on player choices'"
       ],
       "fromSystem": "SURVIVAL_SYSTEM_01110101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101"
+    },
+    "local_authoring_parts::637282f2cdc0b1e95e747d3a717bb1a185b6ad402ae6fc90a550e44fd4bb2bfb:toSystem,trigger,stateChange": {
+      "toSystem": "SURVIVAL_SYSTEM_01110101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101",
+      "trigger": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure",
+      "stateChange": "Transition to next world state based on player choices"
+    },
+    "local_authoring_parts::56b1f904a6a2d9388c2fbe9305df2dfbda6f5e66db8b5bdf89ea1dbf39341a51:systemInterconnections:4": {
+      "fromId": "signatureSystems_0",
+      "toId": "signatureSystems_1",
+      "stateKeys": [
+        "readState: 'Fight through an escalating horde in a short real-time survival run'",
+        "writeState: 'Transition to next world state based on player choices'"
+      ],
+      "fromSystem": "SURVIVAL_SYSTEM_01110101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101",
+      "toSystem": "SURVIVAL_SYSTEM_01110101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101",
+      "trigger": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure",
+      "stateChange": "Transition to next world state based on player choices"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 35,
-      "successes": 35,
+      "calls": 36,
+      "successes": 36,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3707634,
-      "lastMs": 107045,
+      "totalMs": 3810836,
+      "lastMs": 103202,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:45:57.125Z"
+      "updatedAt": "2026-10-08T16:47:40.329Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:04:38.961Z",
-  "updatedAt": "2026-10-08T16:45:57.125Z",
+  "updatedAt": "2026-10-08T16:47:40.337Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3211,7 +3228,7 @@
   },
   "sliceRepairAttempts": {
     "designer_draft_slices::identity-core": 1,
-    "designer_draft_slices::systems-progression": 2
+    "designer_draft_slices::systems-progression": 3
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3249,10 +3266,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:45:57.125Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T16:47:40.332Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
