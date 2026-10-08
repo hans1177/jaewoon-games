@@ -471,25 +471,63 @@
         "resourceFlow": "Resources are accumulated through gameplay, used in defense upgrades, and then redistributed or saved for future use.",
         "balanceRules": "Players manage resources strategically, balancing between immediate gains and long-term strategy. Resources can be lost during battles but are preserved for later use."
       }
+    },
+    "local_authoring_parts::e9ebae00a0df0d6904a0824c4b26016e6024d2b36fd864c4823e0c73ad1eb3b2:contentExpansionPlan,failureRetryRisk": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "Discoverable Clue",
+          "newGameplay": "Player's choice of 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'",
+          "systemImpact": "Introduces new strategic options, battlefield dynamics, and progression directions based on player decisions."
+        },
+        {
+          "milestone": "Experiment or Mastery Choice",
+          "newGameplay": "Adapts defense to enemy types and wave composition.",
+          "systemImpact": "Changes defensive configuration, protects objective, and clears stage/boss to unlock harder defense choices."
+        },
+        {
+          "milestone": "Cost and Counterplay",
+          "newGameplay": "Clears stage/boss, unlocks new strategic options, and shifts battlefield dynamics for future encounters.",
+          "systemImpact": "Reconfigures defenses, introduces new challenges, and alters gameplay flow for subsequent waves."
+        },
+        {
+          "milestone": "New Play Option",
+          "newGameplay": "Expands game content by introducing new strategic options, battlefield dynamics, and progression directions.",
+          "systemImpact": "Adds depth through expanded content, new mechanics, and evolving play patterns."
+        },
+        {
+          "milestone": "Next Open Question",
+          "newGameplay": "Revisits past states, revises strategies, and reconfigures defenses based on newly acquired knowledge and experience.",
+          "systemImpact": "Creates a cycle of discovery, adaptation, and evolution in gameplay."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "Player's choice of 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.' leads to immediate difficulty due to high pressure.",
+          "Resource depletion during battles forces players to make strategic decisions about upgrades and placements."
+        ],
+        "retryFlow": "Players can retry earlier choices, revisit past states, and adjust their strategy based on new information gained from previous failures.",
+        "riskPressure": "Repeated failure increases risk of losing progress, prompting players to adapt their approach and explore alternative paths.",
+        "recoveryRules": "Players can save resources, replay key moments, and use learned experiences to improve future decision-making."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 11,
+      "calls": 13,
+      "successes": 12,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1273065,
-      "lastMs": 290487,
+      "totalMs": 1410327,
+      "lastMs": 137262,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T18:08:34.097Z"
+      "updatedAt": "2026-10-08T18:10:51.360Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:47:20.978Z",
-  "updatedAt": "2026-10-08T18:08:34.097Z",
+  "updatedAt": "2026-10-08T18:10:51.366Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2681,15 +2719,168 @@
     }
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "cbd7ace25373f020481a47358599703cd51d0bfbd197932937614747e64b1409"
   },
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:08:34.097Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "MAIN→A의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: MAIN→A의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "A→B의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: A→B의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "B→C의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: B→C의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "C→DELVE의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: C→DELVE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "DELVE→MAIN의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: DELVE→MAIN의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::systems-progression": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "Linear",
+      "progressionEconomyBalance": {
+        "progressionLoop": "Main -> A -> B -> C -> DELVE",
+        "resourceFlow": "Resources are accumulated through gameplay, used in defense upgrades, and then redistributed or saved for future use.",
+        "balanceRules": "Players manage resources strategically, balancing between immediate gains and long-term strategy. Resources can be lost during battles but are preserved for later use."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "Discoverable Clue",
+          "newGameplay": "Player's choice of 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'",
+          "systemImpact": "Introduces new strategic options, battlefield dynamics, and progression directions based on player decisions."
+        },
+        {
+          "milestone": "Experiment or Mastery Choice",
+          "newGameplay": "Adapts defense to enemy types and wave composition.",
+          "systemImpact": "Changes defensive configuration, protects objective, and clears stage/boss to unlock harder defense choices."
+        },
+        {
+          "milestone": "Cost and Counterplay",
+          "newGameplay": "Clears stage/boss, unlocks new strategic options, and shifts battlefield dynamics for future encounters.",
+          "systemImpact": "Reconfigures defenses, introduces new challenges, and alters gameplay flow for subsequent waves."
+        },
+        {
+          "milestone": "New Play Option",
+          "newGameplay": "Expands game content by introducing new strategic options, battlefield dynamics, and progression directions.",
+          "systemImpact": "Adds depth through expanded content, new mechanics, and evolving play patterns."
+        },
+        {
+          "milestone": "Next Open Question",
+          "newGameplay": "Revisits past states, revises strategies, and reconfigures defenses based on newly acquired knowledge and experience.",
+          "systemImpact": "Creates a cycle of discovery, adaptation, and evolution in gameplay."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "Player's choice of 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.' leads to immediate difficulty due to high pressure.",
+          "Resource depletion during battles forces players to make strategic decisions about upgrades and placements."
+        ],
+        "retryFlow": "Players can retry earlier choices, revisit past states, and adjust their strategy based on new information gained from previous failures.",
+        "riskPressure": "Repeated failure increases risk of losing progress, prompting players to adapt their approach and explore alternative paths.",
+        "recoveryRules": "Players can save resources, replay key moments, and use learned experiences to improve future decision-making."
+      }
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T18:10:51.362Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
