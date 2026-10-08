@@ -246,25 +246,118 @@
           "playerChoice": "Initiate the survival run with dynamic upgrades and strategic positioning to influence the game's progression."
         }
       ]
+    },
+    "local_authoring_parts::edbc2015c0a03be4183e09b40b85501856e03a4125f7f878fa7bdbe4a7aa6685:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::48a276f575e9e9cc4e8deb2f4961c38c4eb97ebeeeba7a5befd3a3ae77a87a02:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "INPUT: 플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'라는 중심 행동을 통해 선택 결과가 다음 월드 상태로 영향을 주는 ACTION_SURVIVAL_ROGUELITE 게임이다.",
+        "SELECT: Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "OUTPUT: MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태를 만든다.",
+        "STATE CHANGE: MAIN의 결과를 다음 위험·보상·자원 또는 경로 상태로 바꾼다.",
+        "NEXT CHOICE: Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+      ],
+      "signatureSystems": [
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "GAME_STATE_CHANGE"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure",
+          "purpose": "Player initiates the core gameplay experience by engaging in a survival-based action sequence that impacts the game state.",
+          "playerChoice": "Initiate the survival run with dynamic upgrades and strategic positioning to influence the game's progression."
+        },
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE",
+          "grammarRole": "A",
+          "stateInputs": [
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "GAME_STATE_CHANGE"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure",
+          "purpose": "Player initiates the core gameplay experience by engaging in a survival-based action sequence that impacts the game state.",
+          "playerChoice": "Initiate the survival run with dynamic upgrades and strategic positioning to influence the game's progression."
+        },
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE",
+          "grammarRole": "B",
+          "stateInputs": [
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "GAME_STATE_CHANGE"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure",
+          "purpose": "Player initiates the core gameplay experience by engaging in a survival-based action sequence that impacts the game state.",
+          "playerChoice": "Initiate the survival run with dynamic upgrades and strategic positioning to influence the game's progression."
+        },
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE",
+          "grammarRole": "c",
+          "stateInputs": [
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "GAME_STATE_CHANGE"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure",
+          "purpose": "Player initiates the core gameplay experience by engaging in a survival-based action sequence that impacts the game state.",
+          "playerChoice": "Initiate the survival run with dynamic upgrades and strategic positioning to influence the game's progression."
+        },
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "GAME_STATE_CHANGE"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure",
+          "purpose": "Player initiates the core gameplay experience by engaging in a survival-based action sequence that impacts the game state.",
+          "playerChoice": "Initiate the survival run with dynamic upgrades and strategic positioning to influence the game's progression."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::1ac87529ea1c85660f561b46ad5e8410fc0870e17deb8e5c1c6b159615716db1:signatureSystems:0": {
+      "id": "휴먼 GO! - 심층 탐험 시스템",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "플레이어가 'Fight through an escalating horde in a short real-time survival run while"
+      ],
+      "stateOutputs": [
+        "ACTION_SURVIVAL_ROGUELITE 게임 상태 변환 및 새로운 행동/경로/조합/관계/발견 대응법 열림"
+      ],
+      "name": "심층 탐험",
+      "purpose": "플레이어의 중심 행동인 '탐험'에 대한 역할과 위험, 보상, 자원 연결",
+      "playerChoice": "타겟 선택: 탐험 중 적대적 압력 극복, 리스크 관리, 성공/실패 경험 획득, 성장 확대"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 660961,
-      "lastMs": 67988,
+      "totalMs": 794423,
+      "lastMs": 76112,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:10:19.899Z"
+      "updatedAt": "2026-10-08T19:12:33.374Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:59:18.858Z",
-  "updatedAt": "2026-10-08T19:10:19.901Z",
+  "updatedAt": "2026-10-08T19:12:33.374Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2459,12 +2552,76 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T19:10:19.901Z",
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_MAIN_A_B_c_DELVE_REQUIRED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "counts": {
+            "MAIN": 1,
+            "A": 1,
+            "B": 1,
+            "c": 1,
+            "DELVE": 1
+          },
+          "systemCount": 5,
+          "statesReady": false
+        },
+        "requiredAction": "메인 중심 행동, A/B 서로 다른 두 축, c 보조 변주, @ 발견·숙련을 기존 규칙에 맞춰 최소 5개 고유 시스템과 실제 상태 입력·출력으로 작성한다. 기존 밸런스·저장·진행은 유지한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "휴먼 GO!은 기존 구현의 점수나 관문을 승계하지 않고, 플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'라는 중심 행동을 통해, 선택 결과가 다음 월드 상태로 영향을 주는 ACTION_SURVIVAL_ROGUELITE 게임이다. 이 과정에서 성장은 단순히 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
+      "playerFantasy": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'라는 중심 행동을 통해, 선택 결과가 다음 월드 상태로 영향을 주는 ACTION_SURVIVAL_ROGUELITE 게임이다. 이 과정에서 성장은 단순히 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
+      "coreFun": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'라는 중심 행동을 통해 선택 결과가 다음 월드 상태로 영향을 주는 ACTION_SURVIVAL_ROGUELITE 게임이다. 이 과정에서 성장은 단순히 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
+      "coreLoop": [
+        "INPUT: 플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'라는 중심 행동을 통해 선택 결과가 다음 월드 상태로 영향을 주는 ACTION_SURVIVAL_ROGUELITE 게임이다.",
+        "SELECT: Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "OUTPUT: MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태를 만든다.",
+        "STATE CHANGE: MAIN의 결과를 다음 위험·보상·자원 또는 경로 상태로 바꾼다.",
+        "NEXT CHOICE: Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+      ],
+      "multiplayerMode": "HYBRID"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T19:12:33.374Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
