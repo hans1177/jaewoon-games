@@ -459,25 +459,129 @@
       "name": "몬스터 어드벤처의 단순한 입력",
       "purpose": "플레이어가 즉시 이해할 수 있는 단순한 입력을 통해 세계 상태를 바꾸는 중심 행동",
       "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+    },
+    "local_authoring_parts::d3168b4b25640c354b716496a01148964e67746f8f38f8f26824c07a04073f12:signatureSystems:3": {
+      "id": "c_01",
+      "grammarRole": "c",
+      "stateInputs": [
+        "WorldState"
+      ],
+      "stateOutputs": [
+        "NextAction"
+      ],
+      "name": "몬스터 어드벤처의 변주 요소",
+      "purpose": "MAIN/A/B의 상태 변화를 변주하는 보조 요소",
+      "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+    },
+    "local_authoring_parts::d3168b4b25640c354b716496a01148964e67746f8f38f8f26824c07a04073f12:signatureSystems:4": {
+      "id": "DELVE_01",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "WorldState"
+      ],
+      "stateOutputs": [
+        "NextAction"
+      ],
+      "name": "몬스터 어드벤처의 발견·숙련·재방문",
+      "purpose": "플레이어가 즉시 이해할 수 있는 단순한 입력을 통해 세계 상태를 바꾸는 보조 요소로, 발견·숙련·재방문의 깊이를 표현한다",
+      "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "몬스터 어드벤처는 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다. 플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 MAIN, 두 대축은 A/B, 보조 요소는 c, 발견·숙련·재방문은 @로 구분된다. 게임의 핵심 재미는 반복 가능한 루프, 즉시 이해되는 입력/피드백, 그리고 고유한 시스템 연결을 포함한다. 게임은 모바일에서도 즉시 이해되는 단순한 입력으로 시작하며, 선택 결과가 다음 상태와 세계 규칙에 영향을 주는 CASUAL 게임이다. 게임의 핵심 루프는 Start → Run → Result → Retry의 순환 구조로 구성되며, 각 단계는 즉각적인 피드백과 보상, 위험, 그리고 다음 선택을 포함한다. 게임의 시스템은 MAIN, A, B, c, @로 구성되어, 각각의 상태 변화는 플레이어의 선택과 세계 규칙에 직접 연결되어야 한다. 게임의 인과법칙은 기존의 인과문법을 비튼다. 게임의 설계는 기존의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다",
+      "playerFantasy": "몬스터 어드벤처는 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다. 플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 MAIN, 두 대축은 A/B, 보조 요소는 c, 발견·숙련·재방문은 @로 구분된다. 게임의 핵심 재미는 반복 가능한 루프, 즉시 이해되는 입력/피드백, 그리고 고유한 시스템 연결을 포함한다. 게임은 모바일에서도 즉시 이해되는 단순한 입력으로 시작하며, 선택 결과가 다음 상태와 세계 규칙에 영향을 주는 CASUAL 게임이다. 게임의 핵심 루프는 Start → Run → Result → Retry의 순환 구조로 구성되며, 각 단계는 즉각적인 피드백과 보상, 위험, 그리고 다음 선택을 포함한다. 게임의 시스템은 MAIN, A, B, c, @로 구성되어, 각각의 상태 변화는 플레이어의 선택과 세계 규칙에 직접 연결되어야 한다. 게임의 인과법칙은 기존의 인과문법을 비튼다. 게임의 설계는 기존의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다.",
+      "coreFun": "몬스터 어드벤처는 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다. 플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 MAIN, 두 대축은 A/B, 보조 요소는 c, 발견·숙련·재방문은 @로 구분된다. 게임의 핵심 재미는 반복 가능한 루프, 즉시 이해되는 입력/피드백, 그리고 고유한 시스템 연결을 포함한다. 게임은 모바일에서도 즉시 이해되는 단순한 입력으로 시작하며, 선택 결과가 다음 상태와 세계 규칙에 영향을 주는 CASUAL 게임이다. 게임의 핵심 루프는 Start → Run → Result → Retry의 순환 구조로 구성되며, 각 단계는 즉각적인 피드백과 보상, 위험, 그리고 다음 선택을 포함한다. 게임의 시스템은 MAIN, A, B, c, @로 구성되어, 각각의 상태 변화는 플레이어의 선택과 세계 규칙에 직접 연결되어야 한다. 게임의 인과법칙은 기존의 인과문법을 비튼다. 게임의 설계는 기존의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다.",
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "multiplayerMode": "HYBRID",
+      "signatureSystems": [
+        {
+          "id": "MAIN_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "WorldState"
+          ],
+          "stateOutputs": [
+            "NextAction"
+          ],
+          "name": "몬스터 어드벤처의 중심 행동",
+          "purpose": "플레이어가 즉시 이해할 수 있는 단순한 입력을 통해 세계 상태를 바꾸는 중심 행동",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        },
+        {
+          "id": "A_01",
+          "grammarRole": "A",
+          "stateInputs": [
+            "WorldState"
+          ],
+          "stateOutputs": [
+            "NextAction"
+          ],
+          "name": "몬스터 어드벤처의 단순한 입력",
+          "purpose": "플레이어가 즉시 이해할 수 있는 단순한 입력을 통해 세계 상태를 바꾸는 중심 행동",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        },
+        {
+          "id": "B_01",
+          "grammarRole": "B",
+          "stateInputs": [
+            "WorldState"
+          ],
+          "stateOutputs": [
+            "NextAction"
+          ],
+          "name": "몬스터 어드벤처의 단순한 입력",
+          "purpose": "플레이어가 즉시 이해할 수 있는 단순한 입력을 통해 세계 상태를 바꾸는 중심 행동",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        },
+        {
+          "id": "c_01",
+          "grammarRole": "c",
+          "stateInputs": [
+            "WorldState"
+          ],
+          "stateOutputs": [
+            "NextAction"
+          ],
+          "name": "몬스터 어드벤처의 변주 요소",
+          "purpose": "MAIN/A/B의 상태 변화를 변주하는 보조 요소",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        },
+        {
+          "id": "DELVE_01",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "WorldState"
+          ],
+          "stateOutputs": [
+            "NextAction"
+          ],
+          "name": "몬스터 어드벤처의 발견·숙련·재방문",
+          "purpose": "플레이어가 즉시 이해할 수 있는 단순한 입력을 통해 세계 상태를 바꾸는 보조 요소로, 발견·숙련·재방문의 깊이를 표현한다",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 13,
-      "failures": 0,
-      "timeouts": 0,
+      "calls": 16,
+      "successes": 15,
+      "failures": 1,
+      "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1372790,
-      "lastMs": 96428,
-      "lastError": null,
-      "updatedAt": "2026-10-08T13:21:59.998Z"
+      "totalMs": 1868991,
+      "lastMs": 300101,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
+      "updatedAt": "2026-10-08T13:30:16.209Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:59:07.154Z",
-  "updatedAt": "2026-10-08T13:21:59.998Z",
+  "updatedAt": "2026-10-08T13:30:16.209Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2562,47 +2666,24 @@
   "sliceDependencies": {
     "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
   },
-  "sliceRepairFeedback": {
-    "designer_draft_slices::identity-core": [
-      {
-        "code": "DESIGN_RULE_STATE_MISSING",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "signatureSystems",
-          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
-        },
-        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "signatureSystems"
-        ]
-      }
-    ]
-  },
+  "sliceRepairFeedback": {},
   "sliceRepairAttempts": {
     "designer_draft_slices::identity-core": 1
   },
-  "slicePartialResults": {
-    "designer_draft_slices::identity-core": {
-      "identity": "몬스터 어드벤처는 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다. 플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 MAIN, 두 대축은 A/B, 보조 요소는 c, 발견·숙련·재방문은 @로 구분된다. 게임의 핵심 재미는 반복 가능한 루프, 즉시 이해되는 입력/피드백, 그리고 고유한 시스템 연결을 포함한다. 게임은 모바일에서도 즉시 이해되는 단순한 입력으로 시작하며, 선택 결과가 다음 상태와 세계 규칙에 영향을 주는 CASUAL 게임이다. 게임의 핵심 루프는 Start → Run → Result → Retry의 순환 구조로 구성되며, 각 단계는 즉각적인 피드백과 보상, 위험, 그리고 다음 선택을 포함한다. 게임의 시스템은 MAIN, A, B, c, @로 구성되어, 각각의 상태 변화는 플레이어의 선택과 세계 규칙에 직접 연결되어야 한다. 게임의 인과법칙은 기존의 인과문법을 비튼다. 게임의 설계는 기존의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다",
-      "playerFantasy": "몬스터 어드벤처는 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다. 플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 MAIN, 두 대축은 A/B, 보조 요소는 c, 발견·숙련·재방문은 @로 구분된다. 게임의 핵심 재미는 반복 가능한 루프, 즉시 이해되는 입력/피드백, 그리고 고유한 시스템 연결을 포함한다. 게임은 모바일에서도 즉시 이해되는 단순한 입력으로 시작하며, 선택 결과가 다음 상태와 세계 규칙에 영향을 주는 CASUAL 게임이다. 게임의 핵심 루프는 Start → Run → Result → Retry의 순환 구조로 구성되며, 각 단계는 즉각적인 피드백과 보상, 위험, 그리고 다음 선택을 포함한다. 게임의 시스템은 MAIN, A, B, c, @로 구성되어, 각각의 상태 변화는 플레이어의 선택과 세계 규칙에 직접 연결되어야 한다. 게임의 인과법칙은 기존의 인과문법을 비튼다. 게임의 설계는 기존의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다.",
-      "coreFun": "몬스터 어드벤처는 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다. 플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 MAIN, 두 대축은 A/B, 보조 요소는 c, 발견·숙련·재방문은 @로 구분된다. 게임의 핵심 재미는 반복 가능한 루프, 즉시 이해되는 입력/피드백, 그리고 고유한 시스템 연결을 포함한다. 게임은 모바일에서도 즉시 이해되는 단순한 입력으로 시작하며, 선택 결과가 다음 상태와 세계 규칙에 영향을 주는 CASUAL 게임이다. 게임의 핵심 루프는 Start → Run → Result → Retry의 순환 구조로 구성되며, 각 단계는 즉각적인 피드백과 보상, 위험, 그리고 다음 선택을 포함한다. 게임의 시스템은 MAIN, A, B, c, @로 구성되어, 각각의 상태 변화는 플레이어의 선택과 세계 규칙에 직접 연결되어야 한다. 게임의 인과법칙은 기존의 인과문법을 비튼다. 게임의 설계는 기존의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다.",
-      "coreLoop": [
-        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
-        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
-        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
-      ],
-      "multiplayerMode": "HYBRID"
-    }
-  },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:21:59.998Z",
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-08T13:25:16.103Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
-  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/monster-adventure/2026-10-08/design-seed.json",
+    "contentDigest": "0d6145f3a656d31566827fa016651b632f99b717442031b038e493917f40f9c9",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  },
+  "localAuthoringSplits": {
+    "6030342837b0903141b2434c740710ac144722fbb56bc8fde03dfba85119ca8d": true
+  }
 }
