@@ -1,0 +1,140 @@
+{
+  "version": 1,
+  "gameId": "ant-simulator",
+  "date": "2026-10-08",
+  "seedId": "AUTO-MISSING-DESIGN-ANT-SIMULATOR",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "ollama:qwen3:1.7b",
+  "singleAuthor": true,
+  "sourceStage": "identity-core",
+  "phase": "designer_draft",
+  "status": "AUTHORED_CANDIDATE",
+  "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
+  "originalSource": null,
+  "fingerprint": "2bd46c74ea4cb9f2e5b1f7965b86bcc382d2b00cbbd349b4c9c1a3ed8f7dc71e",
+  "engineDigest": "d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904",
+  "contentDigest": "98d52e6ed486661f1af9af4d03953e206142083826a019416ed484a29dd2c5ba",
+  "externalSeedRequired": false,
+  "designPass": false,
+  "runtimePass": false,
+  "content": {
+    "identity": "세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션 - 개미 시뮬레이터의 실제 플레이 핵심 행동과 선택을 구체화, 행동 결과가 진행·위험·보상과 연결되는 반복 가능한 게임 루프, 모바일에서도 즉시 이해되는 입력·피드백·실패·재도전 흐름 - 개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택한다. 실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다. 변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택으로 이어간다. 개미 시뮬레이터의 실제 플레이 핵심 행동과 선택을 구체화, 행동 결과가 진행·위험·보상과 연결되는 반복 가능한 게임 루프, 모바일에서도 즉시 이해되는 입력·피드백·실패·재도전 흐름 - 개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택한다. 실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다. 변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택으로 이어간다. 개미 시뮬레이터의 실제 플레이 핵심 행동과 선택을 구체화, 행동 결과가 진행·위험·보상과 연결되는 반복 가능한 게임 루프, 모바일에서도 즉시 이해되는 입력·피드백·실패·재도전 흐름 - 개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택한다. 실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다. 변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택으로 이어간다. 개미 시뮬레이터의 실제 플레이 핵심 행동과 선택을 구체화, 행동 결과가 진행·위험·보상과 연결되는 반복 가능한 게임 루프, 모바일에서도 즉시 이해되는 입력·피드백·실패·재도전 흐름 - 개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택한다. 실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다. 변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택으로 이어간다. 개미 시뮬레이터의 실",
+    "playerFantasy": "개미 시뮬레이터의 플레이어는 개미 종족을 선택하고, 월드 상태를 변화시키며, 보상, 위험, 목표를 통해 게임을 진행하는 반복 가능한 게임 루프를 경험한다. 게임은 모바일에서도 즉시 이해 가능한 입력·피드백·실패·재도전 흐름을 가진다. 개미 시뮬레이터의 실제 플레이 핵심 행동과 선택을 구체화하여, 월드·대상·자원·위험·진행 상태가 변하며, 변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택을 이어간다.",
+    "coreFun": "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택한다. 실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다. 변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택으로 이어간다.",
+    "coreLoop": [
+      "입력/선택 -> 월드 상태 변화 -> 보상/위험/다음 선택의 연결",
+      "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택",
+      "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변",
+      "변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택으로 이어간다"
+    ],
+    "signatureSystems": [
+      {
+        "id": "signatureSystems[0]",
+        "grammarRole": "MAIN",
+        "stateInputs": [
+          "currentWorldState",
+          "playerTarget",
+          "availableResources",
+          "potentialHazards",
+          "progressionStatus"
+        ],
+        "stateOutputs": [
+          "updatedWorldState",
+          "newPlayerTarget",
+          "modifiedResources",
+          "reducedHazards",
+          "newProgressionStatus"
+        ],
+        "name": "월드 상태 변환 시스템",
+        "purpose": "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 자원, 위험, 진행 상태를 변화시키는 반복 가능한 게임 루프를 구축",
+        "playerChoice": "개미 종족을 선택하고, 월드 상태를 변화시키며, 보상, 위험, 목표를 통해 게임을 진행하는 반복 가능한 게임 루프를 경험하며, 모바일에서도 즉시 이해 가능한 입력·피드백·실패·재도전 흐름을 가진다"
+      },
+      {
+        "id": "signatureSystems[1]",
+        "grammarRole": "A",
+        "stateInputs": [
+          "currentWorldState",
+          "playerTarget",
+          "availableResources",
+          "potentialHazards",
+          "progressionStatus"
+        ],
+        "stateOutputs": [
+          "updatedWorldState",
+          "newPlayerTarget",
+          "modifiedResources",
+          "reducedHazards",
+          "newProgressionStatus"
+        ],
+        "name": "자원과 위험 조절 시스템",
+        "purpose": "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 자원과 위험을 조절하여 게임 루프를 구축",
+        "playerChoice": "자원을 효율적으로 관리하고, 위험을 줄이며, 목표를 설정하여 게임을 진행하는 반복 가능한 게임 루프를 경험하며, 모바일에서도 즉시 이해 가능한 입력·피드백·실패·재도전 흐름을 가진다"
+      },
+      {
+        "id": "signatureSystems[2]",
+        "grammarRole": "B",
+        "stateInputs": [
+          "currentWorldState",
+          "playerTarget",
+          "availableResources",
+          "potentialHazards",
+          "progressionStatus"
+        ],
+        "stateOutputs": [
+          "updatedWorldState",
+          "newPlayerTarget",
+          "modifiedResources",
+          "reducedHazards",
+          "newProgressionStatus"
+        ],
+        "name": "자원 관리 및 위험 조절 시스템",
+        "purpose": "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 자원과 위험을 조절하여 게임 루프를 구축",
+        "playerChoice": "자원을 효율적으로 관리하고, 위험을 줄이며, 목표를 설정하여 게임을 진행하는 반복 가능한 게임 루프를 경험하며, 모바일에서도 즉시 이해 가능한 입력·피드백·실패·재도전 흐름을 가진다"
+      },
+      {
+        "id": "signatureSystems[3]",
+        "grammarRole": "c",
+        "stateInputs": [
+          "currentWorldState",
+          "playerTarget",
+          "availableResources",
+          "potentialHazards",
+          "progressionStatus"
+        ],
+        "stateOutputs": [
+          "updatedWorldState",
+          "newPlayerTarget",
+          "modifiedResources",
+          "reducedHazards",
+          "newProgressionStatus"
+        ],
+        "name": "발견·숙련·재방문 시스템",
+        "purpose": "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 발굴된 정보를 활용하여 게임 루프를 구축하고, 숙련된 전략을 적용하며, 재방문을 통해 게임을 재구성하는 반복 가능한 게임 루프를 구축",
+        "playerChoice": "발굴된 정보를 활용하여 목표를 재설정하고, 숙련된 전략을 적용하여 게임 루프를 재구성하며, 재방문을 통해 게임을 재도전하는 반복 가능한 게임 루프를 경험하며, 모바일에서도 즉시 이해 가능한 입력·피드백·실패·재도전 흐름을 가진다"
+      },
+      {
+        "id": "signatureSystems[4]",
+        "grammarRole": "DELVE",
+        "stateInputs": [
+          "currentWorldState",
+          "playerTarget",
+          "availableResources",
+          "potentialHazards",
+          "progressionStatus"
+        ],
+        "stateOutputs": [
+          "updatedWorldState",
+          "newPlayerTarget",
+          "modifiedResources",
+          "reducedHazards",
+          "newProgressionStatus"
+        ],
+        "name": "발견·숙련·재방문 시스템",
+        "purpose": "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 발굴된 정보를 활용하여 게임 루프를 구축하고, 숙련된 전략을 적용하며, 재방문을 통해 게임을 재구성하는 반복 가능한 게임 루프를 구축",
+        "playerChoice": "발굴된 정보를 활용하여 목표를 재설정하고, 숙련된 전략을 적용하여 게임 루프를 재구성하며, 재방문을 통해 게임을 재도전하는 반복 가능한 게임 루프를 경험하며, 모바일에서도 즉시 이해 가능한 입력·피드백·실패·재도전 흐름을 가진다"
+      }
+    ],
+    "multiplayerMode": "COOP"
+  },
+  "updatedAt": "2026-10-08T12:33:35.364Z"
+}
