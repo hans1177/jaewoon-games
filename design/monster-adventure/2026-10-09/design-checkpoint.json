@@ -12,25 +12,32 @@
   "tasks": {
     "local_authoring_parts::fabe131845581cabfec11b805b4e0373baf1e11205c35e77b96a08a435d70015:identity": {
       "identity": "몬스터 어드벤처의 핵심 재미와 시스템 연결을 확정한 고유 정체성입니다. 게임은 단순한 점수나 관문 승계 없이, 플레이어가 즉시 시작할 수 있는 'Start' 행동과 선택을 중심으로, 진입 -> 상태변화 -> 보상/위험 -> 다음선택의 반복 루프를 통해 콘텐츠를 오래 연구할 만한 규칙과 관계로 구성됩니다. 이는 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 주요 인물의 목표, 두려움, 비밀은 실제 선택과 관계 변화를 만들어냅니다."
+    },
+    "local_authoring_parts::fabe131845581cabfec11b805b4e0373baf1e11205c35e77b96a08a435d70015:playerFantasy": {
+      "playerFantasy": "몬스터 어드벤처에서 플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 이는 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 주요 인물의 목표, 두려움, 비밀은 실제 선택과 관계 변화를 만들어냅니다."
+    },
+    "local_authoring_parts::309bc2cdf658bec9bbfa8036fcecd0531794ef4dfd60b739d4b08d907f8ca369:identity,playerFantasy": {
+      "identity": "몬스터 어드벤처의 핵심 재미와 시스템 연결을 확정한 고유 정체성입니다. 게임은 단순한 점수나 관문 승계 없이, 플레이어가 즉시 시작할 수 있는 'Start' 행동과 선택을 중심으로, 진입 -> 상태변화 -> 보상/위험 -> 다음선택의 반복 루프를 통해 콘텐츠를 오래 연구할 만한 규칙과 관계로 구성됩니다. 이는 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 주요 인물의 목표, 두려움, 비밀은 실제 선택과 관계 변화를 만들어냅니다.",
+      "playerFantasy": "몬스터 어드벤처에서 플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 이는 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 주요 인물의 목표, 두려움, 비밀은 실제 선택과 관계 변화를 만들어냅니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 161427,
-      "lastMs": 161427,
+      "totalMs": 190636,
+      "lastMs": 29209,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:02:29.274Z"
+      "updatedAt": "2026-10-08T18:02:58.484Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:59:47.811Z",
-  "updatedAt": "2026-10-08T18:02:29.274Z",
+  "updatedAt": "2026-10-08T18:02:58.486Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2116,7 +2123,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:02:29.274Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:02:58.486Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
