@@ -19,6 +19,7 @@ local lastAction = {}
 -- 서버가 소유하는 자원 상호작용 상태. 기존 플레이어 저장 키와 경제 규칙은 유지한다.
 local worldObjectStates = {}
 local resourceRules = type(Config.ResourceInteractionRules) == "table" and Config.ResourceInteractionRules or {}
+local invalidResourceRulesLogged = {}
 local resourceEffectPool = {}
 local function readNumber(player, name, fallback)
   local value = player:GetAttribute(name)
@@ -191,12 +192,17 @@ local function validResourceRule(nodeName)
   local health, damage = definition.MaxHealth, definition.HitDamage
   local cooldown = definition.RespawnSeconds
   local minDrop, maxDrop = definition.MinDrop, definition.MaxDrop
-  if type(health) ~= "number" or health ~= math.floor(health) or health < 1 or health > 100000
+  local minToolTier = definition.RequiredToolTier == nil and 0 or definition.RequiredToolTier
+  if type(minToolTier) ~= "number" or minToolTier ~= math.floor(minToolTier) or minToolTier < 0 or minToolTier > 100
+    or type(health) ~= "number" or health ~= math.floor(health) or health < 1 or health > 100000
     or type(damage) ~= "number" or damage ~= math.floor(damage) or damage < 1 or damage > health
     or type(cooldown) ~= "number" or cooldown ~= math.floor(cooldown) or cooldown < 0 or cooldown > 86400
     or type(minDrop) ~= "number" or minDrop ~= math.floor(minDrop) or minDrop < 1 or minDrop > 100
     or type(maxDrop) ~= "number" or maxDrop ~= math.floor(maxDrop) or maxDrop < minDrop or maxDrop > 100 then
-    warn("WORLD_INTERACTION_RULE_REJECTED node=" .. tostring(nodeName))
+    if not invalidResourceRulesLogged[nodeName] then
+      invalidResourceRulesLogged[nodeName] = true
+      warn("WORLD_INTERACTION_RULE_REJECTED node=" .. tostring(nodeName))
+    end
     return nil
   end
   return definition
@@ -258,6 +264,10 @@ local function interactWithResource(player, part, rule)
   local root = character and character:FindFirstChild("HumanoidRootPart")
   if not root or not humanoid or humanoid.Health <= 0 then return end
   if (root.Position - part.Position).Magnitude > 12 then return end
+  if rule and readNumber(player, "EquippedToolTier", 0) < (rule.RequiredToolTier or 0) then
+    player:SetAttribute("WorldHarvestStatus", "TOOL_REQUIRED")
+    return
+  end
   local now = os.clock()
   if now - (lastAction[player] or -1e6) < Config.RateLimitSeconds then return end
   lastAction[player] = now
