@@ -48,25 +48,51 @@
       "name": "생존 상태 변환 시스템",
       "purpose": "야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며 월드 상태와 다음 선택을 바꾼다는 의미가 있는 게임 루프의 실행을 관리합니다.",
       "playerChoice": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변환됩니다."
+    },
+    "local_authoring_parts::4131cbe17a58e607b5f57e16cc59cbe76ad6668131c9ff8064a1e087e2150d96:signatureSystems:1": {
+      "id": "wild-survival_signature_systems_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "world_state"
+      ],
+      "stateOutputs": [
+        "new_world_state"
+      ],
+      "name": "생존 상태 변환 시스템",
+      "purpose": "월드 상태에 대한 실질적 입력 및 선택을 처리하며, 진입 -> 선택 -> 변화 -> 보상/위험 -> 다음 선택 순서로 월드 상태가 변환된다.",
+      "playerChoice": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변환된다."
+    },
+    "local_authoring_parts::4131cbe17a58e607b5f57e16cc59cbe76ad6668131c9ff8064a1e087e2150d96:signatureSystems:2": {
+      "id": "wild-survival_signature_systems_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "world_state"
+      ],
+      "stateOutputs": [
+        "new_world_state"
+      ],
+      "name": "생존 상태 변환 시스템",
+      "purpose": "월드 상태에 즉각적인 영향을 미치며, 플레이어 선택에 따라 월드 상태가 변화하는 기반 시스템",
+      "playerChoice": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변환된다"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 150674,
-      "lastMs": 17062,
+      "totalMs": 179395,
+      "lastMs": 14097,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:08:01.858Z"
+      "updatedAt": "2026-10-08T21:08:30.583Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:05:30.914Z",
-  "updatedAt": "2026-10-08T21:08:01.858Z",
+  "updatedAt": "2026-10-08T21:08:30.583Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2124,7 +2150,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:08:01.858Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:08:30.583Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
