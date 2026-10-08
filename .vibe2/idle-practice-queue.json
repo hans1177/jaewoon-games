@@ -23,9 +23,221 @@
   "hypothesisGenerationLimit": null,
   "falsificationGenerationLimit": null,
   "previousResultComparisonRequired": true,
-  "externalGameplayPracticeDrills": 0,
+  "externalGameplayPracticeDrills": 4,
   "phase4GeneralizationDrills": 6,
   "drills": [
+    {
+      "id": "external-arknights-web",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MOBILE_INPUT",
+        "SAVE",
+        "WEB_RUNTIME"
+      ],
+      "platformProfile": "web",
+      "codingPracticeDrill": "web-input-save",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-37772035502-arknights",
+        "gameId": "arknights",
+        "designAxes": {
+          "genre": {
+            "id": "TOWER_DEFENSE",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-37772035502-arknights"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "c9e6ae942f83579c8ae3effaeaf93159e07570c39837b4b43da232c28dea2dc6",
+          "afterScreenshotSha256": "c184dfe606231424357d53b0e6e5b0584da203e7ecfc6a0bb6e15af602952d99",
+          "measuredInputCount": 3,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-arknights-roblox",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION"
+      ],
+      "platformProfile": "roblox",
+      "robloxCodePractice": true,
+      "robloxPracticeDrill": "authority",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-37772035502-arknights",
+        "gameId": "arknights",
+        "designAxes": {
+          "genre": {
+            "id": "TOWER_DEFENSE",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-37772035502-arknights"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "c9e6ae942f83579c8ae3effaeaf93159e07570c39837b4b43da232c28dea2dc6",
+          "afterScreenshotSha256": "c184dfe606231424357d53b0e6e5b0584da203e7ecfc6a0bb6e15af602952d99",
+          "measuredInputCount": 3,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-simcity-buildit-web",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MOBILE_INPUT",
+        "SAVE",
+        "WEB_RUNTIME"
+      ],
+      "platformProfile": "web",
+      "codingPracticeDrill": "web-input-save",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-37772035502-simcity-buildit",
+        "gameId": "simcity-buildit",
+        "designAxes": {
+          "genre": {
+            "id": "CITY_BUILDER_SIMULATION",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-37772035502-simcity-buildit"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "3ed261ee10b5305f1de54c9caaae09b26b7c1ab15868795c8633bd6f5733a87c",
+          "afterScreenshotSha256": "3ed261ee10b5305f1de54c9caaae09b26b7c1ab15868795c8633bd6f5733a87c",
+          "measuredInputCount": 3,
+          "visualChange": false
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-simcity-buildit-roblox",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION"
+      ],
+      "platformProfile": "roblox",
+      "robloxCodePractice": true,
+      "robloxPracticeDrill": "authority",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-37772035502-simcity-buildit",
+        "gameId": "simcity-buildit",
+        "designAxes": {
+          "genre": {
+            "id": "CITY_BUILDER_SIMULATION",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-37772035502-simcity-buildit"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "3ed261ee10b5305f1de54c9caaae09b26b7c1ab15868795c8633bd6f5733a87c",
+          "afterScreenshotSha256": "3ed261ee10b5305f1de54c9caaae09b26b7c1ab15868795c8633bd6f5733a87c",
+          "measuredInputCount": 3,
+          "visualChange": false
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
     {
       "id": "review-fail_wu3qnk",
       "kind": "REPRO_DRILL",
