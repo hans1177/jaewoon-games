@@ -3,7 +3,17 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DataStoreService = game:GetService("DataStoreService")
 local RunService = game:GetService("RunService")
-local store = DataStoreService:GetDataStore("survival-development-v1")
+-- 파일이 처음 실행되는 로컬 스튜디오에서도 자원/월드 초기화를 막지 않는다.
+-- 서비스 접근 실패를 기본 저장 기록으로 덮어쓰지 않도록 loadPlayer에서 실패 처리한다.
+local store
+local storeReady, storeValue = pcall(function()
+  return DataStoreService:GetDataStore("survival-development-v1")
+end)
+if storeReady then
+  store = storeValue
+else
+  warn("SURVIVAL_DATASTORE_UNAVAILABLE")
+end
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("GameConfig"))
 
