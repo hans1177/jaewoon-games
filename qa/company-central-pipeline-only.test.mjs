@@ -60,6 +60,36 @@ test('platform-release-roadmap is the only production machine policy with author
   assert.equal(Object.hasOwn(roadmap,'legacyPolicyMirror'),false);
   assert.equal(roadmap.centralDocumentation.canonicalSet.policy,'company-learning/platform-release-roadmap.json');
 });
+test('owner policy defines exactly three platform targets on existing adapters and Unity Web floor',()=>{
+  const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
+  const direct=roadmap.directNativeDualPlatformDevelopment;
+  const targets=direct.platformCountingPolicy;
+  assert.equal(targets.authority,'OWNER_DIRECTIVE_2026-10-09');
+  assert.equal(targets.targetCount,3);
+  assert.deepEqual(targets.targets,['ROBLOX','UNITY_ANDROID','UNITY_WEB']);
+  assert.deepEqual(targets.existingExecutionBindings,{
+    ROBLOX:'ROBLOX',UNITY_ANDROID:'UNITY',UNITY_WEB:'UNITY_WEB_FLOOR'
+  });
+  assert.deepEqual(targets.nativeRouterKeysUnchanged,['ROBLOX','UNITY']);
+  assert.deepEqual(roadmap.commonExecutionContract.allowedPlatforms,['ROBLOX','UNITY']);
+  assert.deepEqual(direct.supportedDevelopmentPlatforms,['ROBLOX','UNITY']);
+  assert.equal(targets.unityAndroidAndWebShareCanonicalUnityProject,true);
+  assert.equal(direct.unityWebDevelopmentLane.sameCanonicalUnityProjectRequired,true);
+  assert.equal(direct.unityWebDevelopmentLane.codeDevelopmentRequired,true);
+  assert.equal(direct.unityWebDevelopmentLane.actualBrowserPlayRequired,true);
+  assert.equal(direct.unityWebDevelopmentLane.independentQaRequired,true);
+  assert.equal(direct.unityWebDevelopmentLane.regressionRequired,true);
+  assert.equal(targets.unityWebIsNotASeparateLegacyWebGameplayCodebase,true);
+  assert.equal(direct.unityWebDevelopmentLane.separateWebGameplayCodebaseForbidden,true);
+  assert.equal(targets.fortniteUefnExcluded,true);
+  assert.equal(direct.fortniteUefnDevelopmentStatus,'DEVELOPMENT_PAUSED');
+  assert.equal(targets.existingF0F9OrderAndRuntimeSecurityQaReleaseGatesPreserved,true);
+  assert.equal(roadmap.finalDevelopmentLock.sequenceLock.status,'LOCKED');
+  assert.equal(direct.unityWebDevelopmentLane.nativeReleaseGateAuthority,false);
+  assert.equal(targets.noNewAdapterWorkflowOrShadowPipeline,true);
+  assert.equal(roadmap.changeRecord.ownerThreePlatformTargets20261009.targetCount,3);
+});
+
 test('obsolete Roblox runtime v8 migration helpers are removed',()=>{
   assert.equal(exists('.github/workflows/roblox-runtime-v8-finalize.yml'),false);
   assert.equal(exists('.github/workflows/roblox-runtime-v8-local-finalize.yml'),false);
