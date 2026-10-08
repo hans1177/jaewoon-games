@@ -1063,25 +1063,36 @@
         "riskPressure": "Player choices directly affect the game's world state, determining the next set of gameplay options. Exploration, character interaction, and quest progression are interdependent and mutually reinforcing, with each state transition influencing the next. The resource flow is governed by the core gameplay mechanics, with exploration enabling character interaction, character interaction enabling quest progression, and quest progression enabling narrative advancement. Each state transition is a deliberate choice that affects the overall progression of the game world.",
         "recoveryRules": "Player choices directly affect the game's world state, determining the next set of gameplay options. Exploration, character interaction, and quest progression are interdependent and mutually reinforcing, with each state transition influencing the next. The resource flow is governed by the core gameplay mechanics, with exploration enabling character interaction, character interaction enabling quest progression, and quest progression enabling narrative advancement. Each state transition is a deliberate choice that affects the overall progression of the game world."
       }
+    },
+    "local_authoring_parts::0114fd2839684c893090284c139846d061098c0c8d6a259cd5310fdf43232513:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "ELDORIAN_CORE_01",
+      "toId": "ELDORIAN_CORE_02",
+      "stateKeys": [
+        "Exploration Status",
+        "Character Interaction Status",
+        "Quest Completion Status",
+        "Narrative Progress Status"
+      ],
+      "fromSystem": "ELDORIAN_CORE_01_SYSTEM_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 32,
-      "successes": 29,
+      "calls": 33,
+      "successes": 30,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2900240,
-      "lastMs": 72222,
+      "totalMs": 2945959,
+      "lastMs": 45719,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T16:15:28.055Z"
+      "updatedAt": "2026-10-08T16:16:13.787Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:23:19.708Z",
-  "updatedAt": "2026-10-08T16:15:28.061Z",
+  "updatedAt": "2026-10-08T16:16:13.787Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3470,10 +3481,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:15:28.057Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:16:13.787Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
