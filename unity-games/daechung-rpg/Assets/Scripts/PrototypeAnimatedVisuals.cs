@@ -78,6 +78,15 @@ namespace JaewoonGames.DaechungRpg
             backdropObject.transform.SetParent(transform, false);
             _backdrop = backdropObject.AddComponent<SpriteRenderer>();
             _backdrop.sortingOrder = -30;
+            var pixelShader = Shader.Find("Jaewoon/DaechungPixelArt");
+            if (pixelShader != null)
+            {
+                var material = new Material(pixelShader);
+                _backdrop.sharedMaterial = material;
+                _player.SetMaterial(material);
+                _enemy.SetMaterial(material);
+                _coopPartner.SetMaterial(material);
+            }
             SetRegionVisual("town");
             InstallLocalActor(_player, "hero");
             InstallLocalActor(_enemy, "skeleton");
@@ -666,6 +675,7 @@ namespace JaewoonGames.DaechungRpg
             }
 
             public void SetTint(Color tint) { _renderer.color = tint; }
+            public void SetMaterial(Material material) { _renderer.sharedMaterial = material; }
 
             public bool Loaded { get; set; }
             public bool Dead { get; set; }
