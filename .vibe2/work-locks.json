@@ -3,38 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-x3xwir",
-      "worker": "vibe2",
-      "taskId": "seed-casual-realm-weaver-unity-web-base-implementation-v1",
-      "gameId": "seed-casual-realm-weaver",
-      "files": [
-        "unity-games/seed-casual-realm-weaver/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-casual-realm-weaver/Assets/Scripts/RuntimeBootstrap.cs",
-        "assets/roblox/world-ghosts/native/spider/spider.glb",
-        "assets/roblox/world-ghosts/native/spider/spider.png",
-        "assets/roblox/world-ghosts/native/spider/evidence.json",
-        "assets/generated/unity/seed-casual-realm-weaver/background/asset.glb",
-        "assets/generated/unity/seed-casual-realm-weaver/background/preview.png",
-        "assets/generated/unity/seed-casual-realm-weaver/background/evidence.json",
-        "assets/generated/unity/seed-casual-realm-weaver/item/asset.glb",
-        "assets/generated/unity/seed-casual-realm-weaver/item/preview.png",
-        "assets/generated/unity/seed-casual-realm-weaver/item/evidence.json",
-        "assets/generated/unity/seed-casual-realm-weaver/prop/asset.glb",
-        "assets/generated/unity/seed-casual-realm-weaver/prop/preview.png",
-        "assets/generated/unity/seed-casual-realm-weaver/prop/evidence.json"
-      ],
-      "baseSha": "5663ca02282fa20907529e712de84697015ce21c",
-      "runId": "37710450736",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-08T01:29:08.518Z",
-      "expiresAt": "2026-10-08T02:14:08.518Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-casual-realm-weaver-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-x9hyua",
       "worker": "vibe2",
       "taskId": "internal-motion-manananggal-walk-v1",
@@ -127,6 +95,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:internal-motion-mae-nak-walk-v1"
+      ]
+    },
+    {
+      "id": "wl-1got8zh",
+      "worker": "vibe2",
+      "taskId": "internal-motion-tsuchigumo-walk-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "assets/roblox/world-ghosts/motions/tsuchigumo/init.luau"
+      ],
+      "baseSha": "3afa063bb724e21630cb7f35504bc7cbc090ff2b",
+      "runId": "37712974870",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-08T02:14:32.951Z",
+      "expiresAt": "2026-10-08T02:59:32.951Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:internal-motion-tsuchigumo-walk-v1"
       ]
     }
   ]
