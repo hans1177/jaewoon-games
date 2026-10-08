@@ -773,25 +773,44 @@
         "positionSelection"
       ],
       "fromSystem": "MAIN"
+    },
+    "local_authoring_parts::687be4246905f0ab464d9cee4f8a488b90c1818b89c6930361a159f42580653d:toSystem,trigger,stateChange": {
+      "toSystem": "MAIN",
+      "trigger": "borderPressure",
+      "stateChange": "territoryObjective"
+    },
+    "local_authoring_parts::0c8a2af744b7e51e896bd4857ded04102d20bed96e4a4b87d545f03821f5d73e:systemInterconnections:3": {
+      "fromId": "borderPressure",
+      "toId": "territoryObjective",
+      "stateKeys": [
+        "borderPressure",
+        "territoryObjective",
+        "movementPath",
+        "positionSelection"
+      ],
+      "fromSystem": "MAIN",
+      "toSystem": "MAIN",
+      "trigger": "borderPressure",
+      "stateChange": "territoryObjective"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 28,
-      "successes": 28,
+      "calls": 29,
+      "successes": 29,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2187746,
-      "lastMs": 36987,
+      "totalMs": 2222185,
+      "lastMs": 34439,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:30:53.857Z"
+      "updatedAt": "2026-10-08T15:31:28.297Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:16:22.910Z",
-  "updatedAt": "2026-10-08T15:30:53.857Z",
+  "updatedAt": "2026-10-08T15:31:28.298Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2967,7 +2986,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:30:53.857Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:31:28.298Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
