@@ -302,25 +302,140 @@
           "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.과 Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과가 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다."
         }
       ]
+    },
+    "local_authoring_parts::543416de09ff0ae73c690c5ed5852e288927e4bf3ddac18514d40955d6a6c3ce:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::b64c9ab39e45bbf21760dcc144f91d103952f129afaf5067600769a15263ae43:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+      ],
+      "signatureSystems": [
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "FIGHT_STATE",
+            "RUN_REWARD",
+            "UPGRADE_SELECTION"
+          ],
+          "stateOutputs": [
+            "SURVIVAL_STATE",
+            "BUILD_UPGRADE",
+            "PROGRESSION_STEP"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+          "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.과 Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과가 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다."
+        },
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE",
+          "grammarRole": "A",
+          "stateInputs": [
+            "FIGHT_STATE",
+            "RUN_REWARD",
+            "UPGRADE_SELECTION"
+          ],
+          "stateOutputs": [
+            "SURVIVAL_STATE",
+            "BUILD_UPGRADE",
+            "PROGRESSION_STEP"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+          "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.과 Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과가 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다."
+        },
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE",
+          "grammarRole": "B",
+          "stateInputs": [
+            "FIGHT_STATE",
+            "RUN_REWARD",
+            "UPGRADE_SELECTION"
+          ],
+          "stateOutputs": [
+            "SURVIVAL_STATE",
+            "BUILD_UPGRADE",
+            "PROGRESSION_STEP"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+          "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.과 Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과가 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다."
+        },
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE",
+          "grammarRole": "c",
+          "stateInputs": [
+            "FIGHT_STATE",
+            "RUN_REWARD",
+            "UPGRADE_SELECTION"
+          ],
+          "stateOutputs": [
+            "SURVIVAL_STATE",
+            "BUILD_UPGRADE",
+            "PROGRESSION_STEP"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+          "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.과 Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과가 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다."
+        },
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "FIGHT_STATE",
+            "RUN_REWARD",
+            "UPGRADE_SELECTION"
+          ],
+          "stateOutputs": [
+            "SURVIVAL_STATE",
+            "BUILD_UPGRADE",
+            "PROGRESSION_STEP"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+          "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.과 Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과가 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::d43121e4ff1ec2cf65c318498222338ae144c015fe7c15e3fc0a14823c2a7422:signatureSystems:0": {
+      "id": "CORE_FUN_1",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "GAME_STATE_1",
+        "GAME_STATE_2",
+        "GAME_STATE_3"
+      ],
+      "stateOutputs": [
+        "GAME_STATE_4",
+        "GAME_STATE_5",
+        "GAME_STATE_6"
+      ],
+      "name": "생존의 선택과 결과",
+      "purpose": "플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 중심 역할을 수행한다. 이 게임은 생존, 채집, 제작을 중심으로 한 플레이어의 선택과 행동을 통해 생존의 과정을 재생하며, 각 선택이 다음 상태와 접근 가능성에 영향을 미친다. 플레이어는 생존의 과정에서 각 단계의 위험, 보상, 그리고 선택의 결과를 경험하며, 이는 게임의 핵심 재미와 진정한 생존의 감정을 전달한다.",
+      "playerChoice": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 중심 역할을 수행한다. 이 게임은 생존, 채집, 제작을 중심으로 한 플레이어의 선택과 행동을 통해 생존의 과정을 재생하며, 각 선택이 다음 상태와 접근 가능성에 영향을 미친다. 플레이어는 생존의 과정에서 각 단계의 위험, 보상, 그리고 선택의 결과를 경험하며, 이는 게임의 핵심 재미와 진정한 생존의 감정을 전달한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1027064,
-      "lastMs": 106497,
+      "totalMs": 1236322,
+      "lastMs": 144251,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:55:48.609Z"
+      "updatedAt": "2026-10-08T08:59:17.885Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:38:41.495Z",
-  "updatedAt": "2026-10-08T08:55:48.613Z",
+  "updatedAt": "2026-10-08T08:59:17.885Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2515,12 +2630,50 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:55:48.613Z",
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 완전히 처음부터 다시 설계한다.의 주체가 되어 세계 상태와 다음 선택을 바꾼다.의 대표 행동과 선택이 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용을 포함하는 게임의 중심 정체성.의 시그니처 세계 규칙은 플레이어의 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.과 선택이 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.의 시그니처 세계 규칙은 플레이어의 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.과 선택이 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.의 시그니처 세계 규칙은 플레이어의 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.과 선택이 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.의 시그니처 세계 규칙은 플레이어의 Fight through an escalating horde in a short real-time生存跑在",
+      "playerFantasy": "나의 생존기에서는 플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 중심 역할을 수행한다. 이 게임은 생존, 채집, 제작을 중심으로 한 플레이어의 선택과 행동을 통해 생존의 과정을 재생하며, 각 선택이 다음 상태와 접근 가능성에 영향을 미친다. 플레이어는 생존의 과정에서 각 단계의 위험, 보상, 그리고 선택의 결과를 경험하며, 이는 게임의 핵심 재미와 진정한 생존의 감정을 전달한다.",
+      "coreFun": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 중심 역할을 수행한다. 이 게임은 생존, 채집, 제작을 중심으로 한 플레이어의 선택과 행동을 통해 생존의 과정을 재생하며, 각 선택이 다음 상태와 접근 가능성에 영향을 미친다. 플레이어는 생존의 과정에서 각 단계의 위험, 보상, 그리고 선택의 결과를 경험하며, 이는 게임의 핵심 재미와 진정한 생존의 감정을 전달한다.",
+      "coreLoop": [
+        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+      ],
+      "multiplayerMode": "HYBRID"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T08:59:17.885Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
