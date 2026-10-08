@@ -505,25 +505,40 @@
     },
     "local_authoring_parts::7cb8b1f06fb969041128dd8ccc5064b1cafc671c4cd4d5ae6b90d466134f3f55:trigger": {
       "trigger": "플레이어가 환경의 위험과 압박 속에서 즉각적인 상태 변화를 경험하며, 주로 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 한 선택 결과에 따라 월드 상태와 접근"
+    },
+    "local_authoring_parts::7cb8b1f06fb969041128dd8ccc5064b1cafc671c4cd4d5ae6b90d466134f3f55:stateChange": {
+      "stateChange": "플레이어가 환경의 위험과 압박 속에서 즉각적인 상태 변화를 경험하며, 주로 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 한 선택 결과에 따라 월드 상태와 접근"
+    },
+    "local_authoring_parts::62448aace5d7a7f68f5f7ce0cd7d18f5a1445311ef3c58e835dff1a295e28e75:systemInterconnections:1": {
+      "fromId": "RUN_RESULT",
+      "toId": "WORLD_STATE_CHANGE",
+      "stateKeys": [
+        "RUN_RESULT",
+        "PLAYER_ACTION"
+      ],
+      "fromSystem": "RUN_RESULT",
+      "toSystem": "WORLD_STATE_CHANGE",
+      "trigger": "플레이어가 환경의 위험과 압박 속에서 즉각적인 상태 변화를 경험하며, 주로 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 한 선택 결과에 따라 월드 상태와 접근",
+      "stateChange": "플레이어가 환경의 위험과 압박 속에서 즉각적인 상태 변화를 경험하며, 주로 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 한 선택 결과에 따라 월드 상태와 접근"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 24,
-      "successes": 24,
+      "calls": 25,
+      "successes": 25,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1509940,
-      "lastMs": 60259,
+      "totalMs": 1570257,
+      "lastMs": 60317,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:54:19.419Z"
+      "updatedAt": "2026-10-08T18:55:19.737Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:29:09.382Z",
-  "updatedAt": "2026-10-08T18:54:19.419Z",
+  "updatedAt": "2026-10-08T18:55:19.739Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2921,7 +2936,7 @@
       "progressionDirection": "FIGHT-UPGRADES-SURVIVE-PROGRESSION"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:54:19.419Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:55:19.739Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
