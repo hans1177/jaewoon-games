@@ -499,6 +499,9 @@ jobs:
           const independent=JSON.parse(fs.readFileSync(root+'/unity-web-independent-qa.json','utf8'));
           const regression=JSON.parse(fs.readFileSync(root+'/unity-web-regression.json','utf8'));
           const checks=[play,independent,regression];
+          // 3회 실제 브라우저 부팅 증거가 없는 경우 다른 성공 표식으로 대체하지 않는다.
+          if(checks.some(e=>e.playableBrowserTest!==true||e.boot?.pass!==true))
+            throw new Error('UNITY_WEB_ACTUAL_PLAY_BOOT_EVIDENCE_REQUIRED');
           // 실제 3회 브라우저에서 부팅·터치·전투·보상·저장이 확인된 경우만 테스트 링크 허용.
           // 소프트웨어 모바일 렌더러 FPS 미달은 QA FAIL로 보존하며 정식 출시를 금지한다.
           const playable=checks.every(e=>e.playableBrowserTest===true
