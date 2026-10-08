@@ -818,25 +818,43 @@
     },
     "local_authoring_parts::45c8a828c7411e7b2aeebfcadb8ec75a0b5725c080200b07f8f6589c20638051:trigger": {
       "trigger": "게임 내에서 다음 전투 wave의 타입을 파악하고, 적의 공격 경로에 적절한 타워 또는 방어 기관을 빠르게 배치하여, 공격의 위험을 줄이고, 전략적 전략을 조정하는 행동"
+    },
+    "local_authoring_parts::45c8a828c7411e7b2aeebfcadb8ec75a0b5725c080200b07f8f6589c20638051:stateChange": {
+      "stateChange": "게임 내에서 다음 전투 wave의 타입을 파악하고, 적의 공격 경로에 적절한 타워 또는 방어 기관을 빠르게 배치하여, 공격의 위험을 줄이고, 전략적 전략을 조정하는 행동"
+    },
+    "local_authoring_parts::dfa43ad5a8f494fdc8f36b22251e92c35f155d9ffd1c31421287630c2570fe2e:systemInterconnections:1": {
+      "fromId": "MAIN_01",
+      "toId": "MAIN_02",
+      "stateKeys": [
+        "defendedLane",
+        "newPlacement",
+        "tacticalChange",
+        "resourceAllocation",
+        "nextEnemyWave"
+      ],
+      "fromSystem": "ENEMY_WAVE_ADAPTATION_SYSTEM_MAIN_01",
+      "toSystem": "ENEMY_WAVE_ADAPTATION_SYSTEM_MAIN_02",
+      "trigger": "게임 내에서 다음 전투 wave의 타입을 파악하고, 적의 공격 경로에 적절한 타워 또는 방어 기관을 빠르게 배치하여, 공격의 위험을 줄이고, 전략적 전략을 조정하는 행동",
+      "stateChange": "게임 내에서 다음 전투 wave의 타입을 파악하고, 적의 공격 경로에 적절한 타워 또는 방어 기관을 빠르게 배치하여, 공격의 위험을 줄이고, 전략적 전략을 조정하는 행동"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 31,
-      "successes": 30,
+      "calls": 32,
+      "successes": 31,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2427768,
-      "lastMs": 61525,
+      "totalMs": 2489357,
+      "lastMs": 61589,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T12:49:23.089Z"
+      "updatedAt": "2026-10-08T12:50:24.680Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:08:55.008Z",
-  "updatedAt": "2026-10-08T12:49:23.089Z",
+  "updatedAt": "2026-10-08T12:50:24.682Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3195,7 +3213,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:49:23.089Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:50:24.682Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
