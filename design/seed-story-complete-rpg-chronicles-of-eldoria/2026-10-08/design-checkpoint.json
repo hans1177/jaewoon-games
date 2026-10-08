@@ -1194,25 +1194,44 @@
         "Narrative Progress Status"
       ],
       "fromSystem": "ELDORIAN_CORE_01_SYSTEM_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_"
+    },
+    "local_authoring_parts::c0cb8ad61b5d6a52553f311af82f0f5f4bfb9616edb11a656c933d176a73036e:toSystem,trigger,stateChange": {
+      "toSystem": "ELDORIAN_CORE_02_SYSTEM_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_",
+      "trigger": "Player choices directly affect the game's world state, determining the next set of gameplay options. Exploration, character interaction, quest progression, and narrative advancement are interdependent and mutually reinforcing, with each state transition influencing the next.",
+      "stateChange": "Exploration Status → Area Expansion Status, Character Interaction Status → Character Development Status, Quest Completion Status → Quest Progression Status, Narrative Progress Status → Narrative Advancement Status"
+    },
+    "local_authoring_parts::04c910dfa406efff4edeeea217131474c3608422d0fc4d9b4231179cee4fd136:systemInterconnections:4": {
+      "fromId": "ELDORIAN_CORE_01",
+      "toId": "ELDORIAN_CORE_02",
+      "stateKeys": [
+        "Exploration Status",
+        "Character Interaction Status",
+        "Quest Completion Status",
+        "Narrative Progress Status"
+      ],
+      "fromSystem": "ELDORIAN_CORE_01_SYSTEM_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_",
+      "toSystem": "ELDORIAN_CORE_02_SYSTEM_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_",
+      "trigger": "Player choices directly affect the game's world state, determining the next set of gameplay options. Exploration, character interaction, quest progression, and narrative advancement are interdependent and mutually reinforcing, with each state transition influencing the next.",
+      "stateChange": "Exploration Status → Area Expansion Status, Character Interaction Status → Character Development Status, Quest Completion Status → Quest Progression Status, Narrative Progress Status → Narrative Advancement Status"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 41,
-      "successes": 38,
+      "calls": 42,
+      "successes": 39,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 3314191,
-      "lastMs": 45142,
+      "totalMs": 3360379,
+      "lastMs": 46188,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T16:22:22.083Z"
+      "updatedAt": "2026-10-08T16:23:08.272Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:23:19.708Z",
-  "updatedAt": "2026-10-08T16:22:22.083Z",
+  "updatedAt": "2026-10-08T16:23:08.280Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3552,7 +3571,7 @@
   },
   "sliceRepairAttempts": {
     "designer_draft_slices::identity-core": 1,
-    "designer_draft_slices::systems-progression": 1
+    "designer_draft_slices::systems-progression": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3601,10 +3620,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:22:22.083Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T16:23:08.276Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
