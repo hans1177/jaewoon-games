@@ -2089,7 +2089,10 @@ export function auditMotionContinuityTrace({sourceHash='',expectedSourceHash='',
 export function evaluateMotionTransition({
   from={},
   to={},
-  metrics={}
+  metrics={},
+  continuityTrace=null,
+  blendDurationSeconds=null,
+  proposeSmoothing=true
 }={}){
   const required=['poseDiscontinuity','rootVelocityDelta','angularVelocityDelta','footContactBreak','handContactBreak','contactMarkerOffset','blendDurationPenalty','silhouettePop'];
   const missing=required.filter(key=>typeof metrics[key]!=='number'||!Number.isFinite(metrics[key])||metrics[key]<0||metrics[key]>100);
@@ -2107,8 +2110,48 @@ export function evaluateMotionTransition({
   if(Number(metrics.footContactBreak||0)>=80)hardFailures.push('FOOT_CONTACT_SNAP');
   if(metrics.pairAlignmentBreak===true)hardFailures.push('PAIR_ALIGNMENT_BREAK');
   if(metrics.gameplayEventDesync===true)hardFailures.push('GAMEPLAY_EVENT_DESYNC');
+  // 동일 모션 디렉터의 연속 프레임 실측 검사에 전환 구간을 연결한다.
+  const continuity=continuityTrace===null?null:auditMotionContinuityTrace(continuityTrace);
+  const blendSpecified=blendDurationSeconds!==null;
+  const blendMeasured=blendSpecified&&typeof blendDurationSeconds==='number'&&Number.isFinite(blendDurationSeconds)&&blendDurationSeconds>0;
+  const minBlendSeconds=.08;
+  if(continuity?.verdict==='FAIL')hardFailures.push('MEASURED_TRANSITION_DISCONTINUITY');
+  if(blendMeasured&&blendDurationSeconds<minBlendSeconds&&continuity?.verdict==='FAIL')hardFailures.push('SHORT_BLEND_WITH_MEASURED_POP');
+  const shortBlendReview=blendMeasured&&blendDurationSeconds<minBlendSeconds;
+  // 원본 타이밍·이벤트·루트 이동은 건드리지 않는다. 시각 관절 키만 제한적으로 재배치한 후보를 반환한다.
+  const corrections=[];
+  let correctionTrace=null;
+  if(continuity?.verdict==='FAIL'&&proposeSmoothing===true&&Array.isArray(continuityTrace?.frames)){
+    const original=continuityTrace.frames;
+    const candidate=original.map(frame=>({...frame,jointPositions:{...frame.jointPositions}}));
+    const bodyScale=Number(continuityTrace.characterHeightMeters);
+    const maxCorrection=bodyScale*.025;
+    const touched=new Set();
+    for(const finding of continuity.violations.filter(row=>['maxJointSpeed','maxJointAcceleration'].includes(row.kind))){
+      const joint=finding.region;
+      for(let index=Math.max(1,finding.frameRange[0]);index<=Math.min(original.length-2,finding.frameRange[1]);index++){
+        const before=original[index-1]?.jointPositions?.[joint],center=original[index]?.jointPositions?.[joint],after=original[index+1]?.jointPositions?.[joint];
+        if(!Array.isArray(before)||!Array.isArray(center)||!Array.isArray(after)||original[index]?.contacts?.[joint]?.planted===true)continue;
+        const desired=center.map((value,axis)=>(before[axis]+after[axis])/2-value);
+        const distance=Math.hypot(...desired);
+        if(!Number.isFinite(distance)||distance<=0)continue;
+        const weight=Math.min(.5,maxCorrection/distance);
+        const corrected=center.map((value,axis)=>value+desired[axis]*weight);
+        candidate[index].jointPositions[joint]=corrected;
+        const key=index+':'+joint;
+        if(!touched.has(key)){
+          corrections.push(Object.freeze({frame:index,joint,original:Object.freeze([...center]),proposed:Object.freeze(corrected),
+            displacementMeters:Math.hypot(...corrected.map((value,axis)=>value-center[axis]))}));
+          touched.add(key);
+        }
+      }
+    }
+    if(corrections.length)correctionTrace=auditMotionContinuityTrace({...continuityTrace,frames:candidate});
+  }
   const score=missing.length?null:Math.round((pose+root+angular+foot+hand+marker+blend+silhouette)/8);
-  const verdict=hardFailures.length?'FAIL':missing.length?'UNVERIFIED':score>=85?'PASS':score>=70?'WARN':'FAIL';
+  let verdict=hardFailures.length?'FAIL':missing.length?'UNVERIFIED':score>=85?'PASS':score>=70?'WARN':'FAIL';
+  if(continuity?.verdict==='UNVERIFIED'||(continuity&&blendSpecified&&!blendMeasured))verdict=hardFailures.length?'FAIL':'UNVERIFIED';
+  if(verdict==='PASS'&&shortBlendReview)verdict='WARN';
   return Object.freeze({
     fromId:text(from.id||from.MOTION_ID),
     toId:text(to.id||to.MOTION_ID),
@@ -2118,6 +2161,14 @@ export function evaluateMotionTransition({
     blocksVerifiedPromotion:verdict!=='PASS',
     hardFailures:Object.freeze(hardFailures),
     metrics:Object.freeze({pose,root,angular,foot,hand,marker,blend,silhouette}),
+    measuredContinuity:continuity,
+    blendDuration:Object.freeze({measured:blendMeasured,seconds:blendMeasured?blendDurationSeconds:null,
+      reviewBelowSeconds:minBlendSeconds,shortBlendReview}),
+    smoothingProposal:Object.freeze({generated:corrections.length>0,corrections:freezeList(corrections),
+      correctedTraceVerdict:correctionTrace?.verdict||null,nativeReplayRequired:true,
+      authoredOriginalUntouched:true,gameplayTimingUnchanged:true,
+      automaticAssetPromotionAllowed:false}),
+    runtimeVerified:false,
     gameplayWindowAuthority:false
   });
 }
