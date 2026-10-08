@@ -85,25 +85,42 @@
       "name": "CASUAL_GAME_FLOW_EXPANSION",
       "purpose": "A와 MAIN의 결과를 다른 핵심 판단 구조로 연결하는 두 번째 대축.",
       "playerChoice": "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+    },
+    "local_authoring_parts::d0c95423c56e995f03ee3b3105a66104fefce059715e1d9ccdaed4a0e185e408:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "START_STATE",
+        "RUN_STATE",
+        "RESULT_STATE"
+      ],
+      "stateOutputs": [
+        "NEXT_WORLD_STATE",
+        "NEW_CHOICE_STATE",
+        "PROGRESSION_STATE"
+      ],
+      "name": "CASUAL_GAME_FLOW_EXPANSION_CROSS_PATH",
+      "purpose": "게임 내에서 MAIN/A/B의 선택 결과와 세계 인과법칙에 따라 다른 경로, 위험, 보상을 열어 재방문 및 숙련을 가능하게 한다.",
+      "playerChoice": "게임 내에서 MAIN/A/B의 선택 결과와 세계 인과법칙에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 468714,
-      "lastMs": 53782,
+      "totalMs": 535067,
+      "lastMs": 66353,
       "lastError": null,
-      "updatedAt": "2026-10-08T22:13:45.493Z"
+      "updatedAt": "2026-10-08T22:14:51.847Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T22:05:56.751Z",
-  "updatedAt": "2026-10-08T22:13:45.493Z",
+  "updatedAt": "2026-10-08T22:14:51.847Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2027,7 +2044,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T22:13:45.493Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T22:14:51.847Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
