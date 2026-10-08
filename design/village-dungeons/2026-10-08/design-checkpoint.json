@@ -853,25 +853,40 @@
     },
     "local_authoring_parts::3f5cc37ec23aae5ca027efaf1ee3824c11acd33a3a71796b11922ef0660dd96e:resourceFlow": {
       "resourceFlow": "Player's initial input and menu transitions in the game lead to contextual loss in the game, which in turn triggers the error recovery mechanism and results in a state and cost regression, based on the original rules and established game mechanics."
+    },
+    "local_authoring_parts::3f5cc37ec23aae5ca027efaf1ee3824c11acd33a3a71796b11922ef0660dd96e:balanceRules": {
+      "balanceRules": "Player's initial input and menu transitions in the game lead to contextual loss in the game, which in turn triggers the error recovery mechanism and results in a state and cost regression, based on the original rules and established game mechanics."
+    },
+    "local_authoring_parts::96ed583be338ed0eb24a1183861cc6eb85525292e7c632155d164b7f7a64745b:progressionEconomyBalance": {
+      "progressionLoop": "Player's initial input and menu transitions in the game lead to contextual loss in the game, which in turn triggers the error recovery mechanism and results in a state and cost regression, based on the original rules and established game mechanics.",
+      "resourceFlow": "Player's initial input and menu transitions in the game lead to contextual loss in the game, which in turn triggers the error recovery mechanism and results in a state and cost regression, based on the original rules and established game mechanics.",
+      "balanceRules": "Player's initial input and menu transitions in the game lead to contextual loss in the game, which in turn triggers the error recovery mechanism and results in a state and cost regression, based on the original rules and established game mechanics."
+    },
+    "local_authoring_parts::ac6d0e555cf0aafa0519af9e51d4adea54416898c34eb085c58c2a7e0e3a9d41:progressionEconomyBalance": {
+      "progressionEconomyBalance": {
+        "progressionLoop": "Player's initial input and menu transitions in the game lead to contextual loss in the game, which in turn triggers the error recovery mechanism and results in a state and cost regression, based on the original rules and established game mechanics.",
+        "resourceFlow": "Player's initial input and menu transitions in the game lead to contextual loss in the game, which in turn triggers the error recovery mechanism and results in a state and cost regression, based on the original rules and established game mechanics.",
+        "balanceRules": "Player's initial input and menu transitions in the game lead to contextual loss in the game, which in turn triggers the error recovery mechanism and results in a state and cost regression, based on the original rules and established game mechanics."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 48,
-      "successes": 48,
+      "calls": 49,
+      "successes": 49,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3539916,
-      "lastMs": 48678,
+      "totalMs": 3587693,
+      "lastMs": 47777,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:08:53.520Z"
+      "updatedAt": "2026-10-08T16:09:41.299Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:39:54.867Z",
-  "updatedAt": "2026-10-08T16:08:53.520Z",
+  "updatedAt": "2026-10-08T16:09:41.314Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2951,23 +2966,6 @@
   "sliceRepairFeedback": {
     "designer_draft_slices::systems-progression": [
       {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "progressionEconomyBalance.resourceFlow",
-          "value": "INPUT_AND_MENU_TRANSITIONS"
-        },
-        "requiredAction": "progressionEconomyBalance.resourceFlow의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "progressionEconomyBalance"
-        ]
-      },
-      {
         "code": "DESIGN_STATE_EXCHANGE_BROKEN",
         "kind": "HARD_GATE",
         "axis": "CORE_LOOP_DESIGN",
@@ -2975,9 +2973,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "coreLoop[0]→coreLoop[1]의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "INPUT_AND_MENU_TRANSITIONS→CONTEXT_LOSS의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: coreLoop[0]→coreLoop[1]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: INPUT_AND_MENU_TRANSITIONS→CONTEXT_LOSS의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2992,9 +2990,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "coreLoop[1]→coreLoop[2]의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "INPUT_AND_MENU_TRANSITIONS→CONTEXT_LOSS의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: coreLoop[1]→coreLoop[2]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: INPUT_AND_MENU_TRANSITIONS→CONTEXT_LOSS의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3009,9 +3007,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "coreLoop[2]→coreLoop[3]의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "INPUT_AND_MENU_TRANSITIONS→CONTEXT_LOSS의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: coreLoop[2]→coreLoop[3]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: INPUT_AND_MENU_TRANSITIONS→CONTEXT_LOSS의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3026,9 +3024,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "coreLoop[3]→coreLoop[4]의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "INPUT_AND_MENU_TRANSITIONS→CONTEXT_LOSS의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: coreLoop[3]→coreLoop[4]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: INPUT_AND_MENU_TRANSITIONS→CONTEXT_LOSS의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3043,9 +3041,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "coreLoop[4]→coreLoop[4]의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "INPUT_AND_MENU_TRANSITIONS→CONTEXT_LOSS의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: coreLoop[4]→coreLoop[4]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: INPUT_AND_MENU_TRANSITIONS→CONTEXT_LOSS의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3072,11 +3070,16 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 1
+    "designer_draft_slices::systems-progression": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
       "progressionDirection": "forward",
+      "progressionEconomyBalance": {
+        "progressionLoop": "Player's initial input and menu transitions in the game lead to contextual loss in the game, which in turn triggers the error recovery mechanism and results in a state and cost regression, based on the original rules and established game mechanics.",
+        "resourceFlow": "Player's initial input and menu transitions in the game lead to contextual loss in the game, which in turn triggers the error recovery mechanism and results in a state and cost regression, based on the original rules and established game mechanics.",
+        "balanceRules": "Player's initial input and menu transitions in the game lead to contextual loss in the game, which in turn triggers the error recovery mechanism and results in a state and cost regression, based on the original rules and established game mechanics."
+      },
       "contentExpansionPlan": [
         {
           "milestone": "coreLoop[0]",
@@ -3115,10 +3118,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:08:53.520Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T16:09:41.307Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
