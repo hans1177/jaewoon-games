@@ -87,25 +87,182 @@
       "name": "탐험 시스템",
       "purpose": "플레이어가 탐험(타겟 식별) 과정에서 세계의 역사, 생활, 경제, 지역 기능에 대한 인식과 이해를 강화하는 시스템",
       "playerChoice": "타겟 위치 및 위험 요소를 파악하여 새로운 월드 상태를 생성하는 선택"
+    },
+    "local_authoring_parts::52b7d201dbd2de40945ed7ff605114318d91978afe5960f871a05ef2dc856dd2:signatureSystems:4": {
+      "id": "signatureSystems[4]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "worldState"
+      ],
+      "stateOutputs": [
+        "newWorldState"
+      ],
+      "name": "탐험 시스템",
+      "purpose": "플레이어가 탐험(타겟 식별) 과정에서 세계의 역사, 생활, 경제, 지역 기능에 대한 인식과 이해를 강화하는 시스템",
+      "playerChoice": "타겟 위치 및 위험 요소를 파악하여 새로운 월드 상태를 생성하는 선택"
+    },
+    "local_authoring_parts::5fad4e9702aa7a090a8d163a0817e29baa065bf1a4d2430647568dedc4107d61:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "세계 원인 시스템",
+          "purpose": "플레이어가 세계의 역사, 생활, 경제, 지역 기능에 대한 인식과 이해를 강화하는 시스템",
+          "playerChoice": "지역, 캐릭터, 적, 아이템, UI와의 관계 및 위험/보상 차이를 시각 언어로 표현하기 위한 선택"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "탐험 시스템",
+          "purpose": "플레이어가 탐험(타겟 식별) 과정에서 세계의 역사, 생활, 경제, 지역 기능에 대한 인식과 이해를 강화하는 시스템",
+          "playerChoice": "타겟 위치 및 위험 요소를 파악하여 새로운 월드 상태를 생성하는 선택"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "탐험 시스템",
+          "purpose": "플레이어가 탐험(타겟 식별) 과정에서 세계의 역사, 생활, 경제, 지역 기능에 대한 인식과 이해를 강화하는 시스템",
+          "playerChoice": "타겟 위치 및 위험 요소를 파악하여 새로운 월드 상태를 생성하는 선택"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "탐험 시스템",
+          "purpose": "플레이어가 탐험(타겟 식별) 과정에서 세계의 역사, 생활, 경제, 지역 기능에 대한 인식과 이해를 강화하는 시스템",
+          "playerChoice": "타겟 위치 및 위험 요소를 파악하여 새로운 월드 상태를 생성하는 선택"
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "탐험 시스템",
+          "purpose": "플레이어가 탐험(타겟 식별) 과정에서 세계의 역사, 생활, 경제, 지역 기능에 대한 인식과 이해를 강화하는 시스템",
+          "playerChoice": "타겟 위치 및 위험 요소를 파악하여 새로운 월드 상태를 생성하는 선택"
+        }
+      ]
+    },
+    "local_authoring_parts::d0cc8b5ef5aa81996f03857328d93a9e80208d9e68a4ce0146d1ef76d8fea8e9:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 연결",
+        "탐험(타겟 식별) → 위험(경보 사격) → 성공(알 훔침) → 실패(발각 감지) → 성장(보상 획득)",
+        "플레이어는 'Scout a small area and identify the target egg and patrol risk.' 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다.",
+        "적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결되어 있으며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "세계 원인 시스템",
+          "purpose": "플레이어가 세계의 역사, 생활, 경제, 지역 기능에 대한 인식과 이해를 강화하는 시스템",
+          "playerChoice": "지역, 캐릭터, 적, 아이템, UI와의 관계 및 위험/보상 차이를 시각 언어로 표현하기 위한 선택"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "탐험 시스템",
+          "purpose": "플레이어가 탐험(타겟 식별) 과정에서 세계의 역사, 생활, 경제, 지역 기능에 대한 인식과 이해를 강화하는 시스템",
+          "playerChoice": "타겟 위치 및 위험 요소를 파악하여 새로운 월드 상태를 생성하는 선택"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "탐험 시스템",
+          "purpose": "플레이어가 탐험(타겟 식별) 과정에서 세계의 역사, 생활, 경제, 지역 기능에 대한 인식과 이해를 강화하는 시스템",
+          "playerChoice": "타겟 위치 및 위험 요소를 파악하여 새로운 월드 상태를 생성하는 선택"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "탐험 시스템",
+          "purpose": "플레이어가 탐험(타겟 식별) 과정에서 세계의 역사, 생활, 경제, 지역 기능에 대한 인식과 이해를 강화하는 시스템",
+          "playerChoice": "타겟 위치 및 위험 요소를 파악하여 새로운 월드 상태를 생성하는 선택"
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "탐험 시스템",
+          "purpose": "플레이어가 탐험(타겟 식별) 과정에서 세계의 역사, 생활, 경제, 지역 기능에 대한 인식과 이해를 강화하는 시스템",
+          "playerChoice": "타겟 위치 및 위험 요소를 파악하여 새로운 월드 상태를 생성하는 선택"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 949097,
-      "lastMs": 105794,
+      "totalMs": 1055050,
+      "lastMs": 105953,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:16:15.946Z"
+      "updatedAt": "2026-10-08T18:18:01.901Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:00:26.817Z",
-  "updatedAt": "2026-10-08T18:16:15.946Z",
+  "updatedAt": "2026-10-08T18:18:01.903Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1967,7 +2124,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:16:15.946Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:18:01.903Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
