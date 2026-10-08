@@ -715,25 +715,28 @@
     },
     "local_authoring_parts::6b8bf24dcb7ab21571f3bb3983dae2e85f1625fb1e80bb80c539f7b5a5279ef6:toSystem": {
       "toSystem": "PROGRESSION_RESOURCES"
+    },
+    "local_authoring_parts::6b8bf24dcb7ab21571f3bb3983dae2e85f1625fb1e80bb80c539f7b5a5279ef6:trigger": {
+      "trigger": "플레이어가 자동으로 적군을 공격하는 과정에서 'PLAYER_FIGHT_AUTO' 상태가 발생하여 'PROGRESSION_RESOURCES' 리소스 생성에 기초한 상태 교환을 수행해야 한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 49,
-      "successes": 49,
+      "calls": 50,
+      "successes": 50,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1786544,
-      "lastMs": 31634,
+      "totalMs": 1820830,
+      "lastMs": 34286,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:14:55.576Z"
+      "updatedAt": "2026-10-08T19:15:29.863Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:45:08.916Z",
-  "updatedAt": "2026-10-08T19:14:55.576Z",
+  "updatedAt": "2026-10-08T19:15:29.863Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3488,7 +3491,7 @@
       "progressionDirection": "{\"from\": \"AUTO_FIGHT\", \"to\": \"RESOURCE_COLLECTION\"}"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T19:14:55.576Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:15:29.863Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
