@@ -332,25 +332,241 @@
           "playerChoice": "Select and place towers or defenders on lanes or positions that cover the threatened route before resource pressure increases."
         }
       ]
+    },
+    "local_authoring_parts::8a34352aec3e560f29f4b6ecbca7a35fe6234e245521dea95c5b936a7e0a041f:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::59af0bb29843992120985d483d5b81a5092264826102d79f084ebaea2d7c4dcb:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "threatened route",
+            "enemy wave",
+            "towers or defenders",
+            "lanes or positions"
+          ],
+          "stateOutputs": [
+            "resources",
+            "upgrades",
+            "new placements",
+            "tactical changes"
+          ],
+          "name": "Enemy Wave Management System",
+          "purpose": "Manages the flow of enemy waves to maintain strategic pressure and resource accumulation.",
+          "playerChoice": "Select and place towers or defenders on lanes or positions that cover the threatened route before resource pressure increases."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "threatened route",
+            "enemy wave",
+            "towers or defenders",
+            "lanes or positions"
+          ],
+          "stateOutputs": [
+            "resources",
+            "upgrades",
+            "new placements",
+            "tactical changes"
+          ],
+          "name": "Enemy Wave Management System",
+          "purpose": "Manages the flow of enemy waves to maintain strategic pressure and resource accumulation.",
+          "playerChoice": "Select and place towers or defenders on lanes or positions that cover the threatened route before resource pressure increases."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "threatened route",
+            "enemy wave",
+            "towers or defenders",
+            "lanes or positions"
+          ],
+          "stateOutputs": [
+            "resources",
+            "upgrades",
+            "new placements",
+            "tactical changes"
+          ],
+          "name": "Enemy Wave Management System",
+          "purpose": "Manages the flow of enemy waves to maintain strategic pressure and resource accumulation.",
+          "playerChoice": "Select and place towers or defenders on lanes or positions that cover the threatened route before resource pressure increases."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "threatened route",
+            "enemy wave",
+            "towers or defenders",
+            "lanes or positions"
+          ],
+          "stateOutputs": [
+            "resources",
+            "upgrades",
+            "new placements",
+            "tactical changes"
+          ],
+          "name": "Enemy Wave Management System",
+          "purpose": "Manages the flow of enemy waves to maintain strategic pressure and resource accumulation.",
+          "playerChoice": "Select and place towers or defenders on lanes or positions that cover the threatened route before resource pressure increases."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "threatened route",
+            "enemy wave",
+            "towers or defenders",
+            "lanes or positions"
+          ],
+          "stateOutputs": [
+            "resources",
+            "upgrades",
+            "new placements",
+            "tactical changes"
+          ],
+          "name": "Enemy Wave Management System",
+          "purpose": "Manages the flow of enemy waves to maintain strategic pressure and resource accumulation.",
+          "playerChoice": "Select and place towers or defenders on lanes or positions that cover the threatened route before resource pressure increases."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "천상의 보루는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임이다. 플레이어는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 중심으로 세계 상태와 다음 선택을 바꾼다. 이 게임은 단순 반복과 다른 경로·위험·결과를 만든다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공한다. 게임은 단일 디펜스 전략의 핵심 재미를 최우선으로 두고 RPG식 시스템을 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다. 게임은 기존 SINGLE_DEFENSE_STRATEGY 관습을 최종 장르로 고정하지 않고 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 결과가 A/B/c와 세계 인과법칙을 거치며 다시 MAIN을 바꾸게 한다. 게임은 기존 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고 RPG식 시스템을 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다. 게임은 기존 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고 RPG식 시스템을 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다. 게임은 기존 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고 RPG식 시스템을 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다. 게임은 기존 SINGLE",
+      "playerFantasy": "천상의 보루는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임이다. 플레이어는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 중심으로 세계 상태와 다음 선택을 바꾼다. 이 게임은 단순 반복과 다른 경로·위험·결과를 만든다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공한다. 게임은 단일 디펜스 전략의 핵심 재미를 최우선으로 두고 RPG식 시스템을 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다. 게임은 기존 SINGLE_DEFENSE_STRATEGY 관습을 최종 장르로 고정하지 않고 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 결과가 A/B/c와 세계 인과법칙을 거치며 다시 MAIN을 바꾸게 한다.",
+      "coreFun": "천상의 보루는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임이다. 플레이어는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 중심으로 세계 상태와 다음 선택을 바꾼다. 이 게임은 단순 반복과 다른 경로·위험·결과를 만든다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공한다. 게임은 단일 디펜스 전략의 핵심 재미를 최우선으로 두고 RPG식 시스템을 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다. 게임은 기존 SINGLE_DEFENSE_STRATEGY 관습을 최종 장르로 고정하지 않고 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 결과가 A/B/c와 세계 인과법칙을 거치며 다시 MAIN을 바꾸게 한다. 게임은 기존 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고 RPG식 시스템을 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다. 게임은 기존 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고 RPG식 시스템을 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다. 게임",
+      "coreLoop": [
+        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "threatened route",
+            "enemy wave",
+            "towers or defenders",
+            "lanes or positions"
+          ],
+          "stateOutputs": [
+            "resources",
+            "upgrades",
+            "new placements",
+            "tactical changes"
+          ],
+          "name": "Enemy Wave Management System",
+          "purpose": "Manages the flow of enemy waves to maintain strategic pressure and resource accumulation.",
+          "playerChoice": "Select and place towers or defenders on lanes or positions that cover the threatened route before resource pressure increases."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "threatened route",
+            "enemy wave",
+            "towers or defenders",
+            "lanes or positions"
+          ],
+          "stateOutputs": [
+            "resources",
+            "upgrades",
+            "new placements",
+            "tactical changes"
+          ],
+          "name": "Enemy Wave Management System",
+          "purpose": "Manages the flow of enemy waves to maintain strategic pressure and resource accumulation.",
+          "playerChoice": "Select and place towers or defenders on lanes or positions that cover the threatened route before resource pressure increases."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "threatened route",
+            "enemy wave",
+            "towers or defenders",
+            "lanes or positions"
+          ],
+          "stateOutputs": [
+            "resources",
+            "upgrades",
+            "new placements",
+            "tactical changes"
+          ],
+          "name": "Enemy Wave Management System",
+          "purpose": "Manages the flow of enemy waves to maintain strategic pressure and resource accumulation.",
+          "playerChoice": "Select and place towers or defenders on lanes or positions that cover the threatened route before resource pressure increases."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "threatened route",
+            "enemy wave",
+            "towers or defenders",
+            "lanes or positions"
+          ],
+          "stateOutputs": [
+            "resources",
+            "upgrades",
+            "new placements",
+            "tactical changes"
+          ],
+          "name": "Enemy Wave Management System",
+          "purpose": "Manages the flow of enemy waves to maintain strategic pressure and resource accumulation.",
+          "playerChoice": "Select and place towers or defenders on lanes or positions that cover the threatened route before resource pressure increases."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "threatened route",
+            "enemy wave",
+            "towers or defenders",
+            "lanes or positions"
+          ],
+          "stateOutputs": [
+            "resources",
+            "upgrades",
+            "new placements",
+            "tactical changes"
+          ],
+          "name": "Enemy Wave Management System",
+          "purpose": "Manages the flow of enemy waves to maintain strategic pressure and resource accumulation.",
+          "playerChoice": "Select and place towers or defenders on lanes or positions that cover the threatened route before resource pressure increases."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 923251,
-      "lastMs": 99817,
+      "totalMs": 1122875,
+      "lastMs": 180067,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:25:57.408Z"
+      "updatedAt": "2026-10-08T12:29:17.047Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:10:34.121Z",
-  "updatedAt": "2026-10-08T12:25:57.411Z",
+  "updatedAt": "2026-10-08T12:29:17.051Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2541,12 +2757,171 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:25:57.411Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "26953523671dd9ba3d24b09640d05c3fa4ff18a4a77ce09479bd2e7b28e36916"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "enemy_wave→resources의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: enemy_wave→resources의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "resources→upgrades의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: resources→upgrades의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "resources→new_placements의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: resources→new_placements의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "resources→tactical_changes의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: resources→tactical_changes의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "threatened_route→enemy_wave의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: threatened_route→enemy_wave의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::systems-progression": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "Linear",
+      "progressionEconomyBalance": {
+        "progressionLoop": "Enemy Wave Management System",
+        "resourceFlow": "Resource Accumulation System",
+        "balanceRules": "Resource Pressure Increase -> Upgrade Selection -> New Placement Strategy -> Tactical Optimization"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "Enemy Wave Composition Adaptation",
+          "newGameplay": "Adaptation and Optimization of Enemy Wave Strategy",
+          "systemImpact": "Enhanced Strategic Flexibility"
+        },
+        {
+          "milestone": "Resource Allocation and Distribution",
+          "newGameplay": "Dynamic Resource Allocation and Distribution",
+          "systemImpact": "Improved Resource Management and Efficiency"
+        },
+        {
+          "milestone": "New Placement Strategy and Execution",
+          "newGameplay": "New Placement Strategy and Execution",
+          "systemImpact": "Enhanced Tactical Flexibility and Execution"
+        },
+        {
+          "milestone": "Tactical Optimization and Execution",
+          "newGameplay": "Tactical Optimization and Execution",
+          "systemImpact": "Improved Tactical Strategy and Execution"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "Enemy Wave Composition Unpredictability",
+          "Resource Pressure Peak Unpreparedness",
+          "Tactical Strategy Inadequacy"
+        ],
+        "retryFlow": "Adaptation and Optimization -> Resource Allocation -> New Placement Strategy -> Tactical Optimization",
+        "riskPressure": "Resource Pressure Increase -> Upgrade Selection -> New Placement Strategy -> Tactical Optimization",
+        "recoveryRules": "Adaptation and Optimization -> Resource Allocation -> New Placement Strategy -> Tactical Optimization"
+      }
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T12:29:17.047Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/seed-single-defense-strat-celestial-bastion/2026-10-08/design-seed.json",
+    "contentDigest": "154e54cf36b7560f2597a964727f17be4f808ee3d3227f1c6718b38d31648223",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
