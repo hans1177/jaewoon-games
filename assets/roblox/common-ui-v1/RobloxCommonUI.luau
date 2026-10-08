@@ -3340,8 +3340,9 @@ function RobloxCommonUI.CreateWorldPropActionWheel(options)
         local captured=index
         button.Activated:Connect(function()
           local current=actions[captured]
-          if not current or current.available==false then return end
-          if type(options.onSelect)=="function"then options.onSelect(current.id,current)end
+          if not current or (type(current)=="table"and current.available==false)then return end
+          local actionId=type(current)=="table"and (current.id or tostring(captured))or tostring(captured)
+          if type(options.onSelect)=="function"then options.onSelect(actionId,current)end
         end)
       end
       local button=buttons[index]
@@ -3349,10 +3350,12 @@ function RobloxCommonUI.CreateWorldPropActionWheel(options)
       button.AnchorPoint=Vector2.new(.5,.5)
       button.Position=UDim2.new(.5,math.cos(angle)*125,.5,math.sin(angle)*125)
       button.Name="Action"..index
-      button.Text=tostring(row.label or row.id or "상호작용")
-      button.Active=row.available~=false;button.AutoButtonColor=row.available~=false
+      local name=type(row)=="table"and (row.label or row.id)or row
+      local enabled=type(row)~="table"or row.available~=false
+      button.Text=tostring(name or "상호작용")
+      button.Active=enabled;button.AutoButtonColor=enabled
       button.Visible=true
-      button:SetAttribute("InteractionActionId",tostring(row.id or index))
+      button:SetAttribute("InteractionActionId",tostring(type(row)=="table"and (row.id or index)or index))
       button:SetAttribute("MinimumTouchHeight",48)
     end
     for index=#actions+1,#buttons do buttons[index].Visible=false end
