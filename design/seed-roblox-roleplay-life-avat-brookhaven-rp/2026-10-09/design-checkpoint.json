@@ -68,25 +68,42 @@
       "name": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
       "purpose": "Player selects from available rewards/experience to upgrade their build, affecting future gameplay states.",
       "playerChoice": "Select from available rewards/experience to upgrade your build with new items/perks/weapons/skills that alter your progression path in the game world."
+    },
+    "local_authoring_parts::e23bf89c4121223632e5e4db52d5229e9128b5bbcb2353c00d0e01013cf6d200:signatureSystems:2": {
+      "id": "CORE-03",
+      "grammarRole": "B",
+      "stateInputs": [
+        "FIGHT_THROUGH_ELEVATING_HORDE",
+        "COLLECT_RUN_REWARDS_OR_EXPERIENCE",
+        "CHOOSE_UPGRADES_PERKS_WEAPONS_SKILLS"
+      ],
+      "stateOutputs": [
+        "INCREASED_DIFFICULTY_STATE",
+        "NEW_GAME_STATES_GENERATED",
+        "PROGRESSION_OPPORTUNITIES_CREATED"
+      ],
+      "name": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+      "purpose": "Player chooses to collect rewards or gain experience, then upgrade their build with new items, which affects the next state of the game world.",
+      "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 431207,
-      "lastMs": 44051,
+      "totalMs": 479320,
+      "lastMs": 48113,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:10:10.094Z"
+      "updatedAt": "2026-10-08T21:10:58.208Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:02:58.858Z",
-  "updatedAt": "2026-10-08T21:10:10.094Z",
+  "updatedAt": "2026-10-08T21:10:58.208Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2287,7 +2304,7 @@
     "local_authoring_parts::e23bf89c4121223632e5e4db52d5229e9128b5bbcb2353c00d0e01013cf6d200:signatureSystems:0": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:10:10.094Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:10:58.208Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
