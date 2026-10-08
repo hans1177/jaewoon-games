@@ -695,21 +695,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 15,
-      "successes": 15,
+      "calls": 16,
+      "successes": 16,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1211258,
-      "lastMs": 101502,
+      "totalMs": 1414984,
+      "lastMs": 203726,
       "lastError": null,
-      "updatedAt": "2026-10-08T11:05:57.742Z"
+      "updatedAt": "2026-10-08T11:09:21.474Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:45:46.438Z",
-  "updatedAt": "2026-10-08T11:05:57.747Z",
+  "updatedAt": "2026-10-08T11:09:21.477Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1423,17 +1423,160 @@
     "assetFacts": {}
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "79fdceb50ee04e72e9a8c309adfa22611003c026fb0ea83b30d8c17b1c8c046d"
   },
-  "sliceRepairFeedback": {},
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "MAIN_01→MAIN_02의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: MAIN_01→MAIN_02의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "MAIN_02→MAIN_03의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: MAIN_02→MAIN_03의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "MAIN_03→c_01의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: MAIN_03→c_01의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "c_01→DELVE_01의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: c_01→DELVE_01의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "DELVE_01→MAIN_01의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: DELVE_01→MAIN_01의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 1,
+    "designer_draft_slices::systems-progression": 1
   },
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T11:05:57.743Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "감염 스킬 선택 → 역할 선호 선택 → AI 충원 → 감염 공격 및 정화 → 역할 변화 → AI 충원 → 감염 전환 시스템",
+      "progressionEconomyBalance": {
+        "progressionLoop": "감염 공격 및 정화",
+        "resourceFlow": "감염 스킬 선택 → 감염 공격 → 정화 공격 → 감염 전환",
+        "balanceRules": "감염 스킬 선택은 감염 공격의 우선순위, 정화 공격은 감염 전환의 우선순위"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "감염 스킬 선택",
+          "newGameplay": "감염 스킬 선택은 감염 공격의 우선순위, 정화 공격은 감염 전환의 우선순위",
+          "systemImpact": "감염 스킬 선택은 감염 공격의 우선순위, 정화 공격은 감염 전환의 우선순위"
+        },
+        {
+          "milestone": "감염 공격 및 정화",
+          "newGameplay": "감염 공격 및 정화는 감염 전환의 우선순위, 정화 공격은 감염 전환의 우선순위",
+          "systemImpact": "감염 공격 및 정화는 감염 전환의 우선순위, 정화 공격은 감염 전환의 우선순위"
+        },
+        {
+          "milestone": "감염 전환 시스템",
+          "newGameplay": "감염 전환 시스템은 감염 공격의 우선순위, 정화 공격은 감염 전환의 우선순위",
+          "systemImpact": "감염 전환 시스템은 감염 공격의 우선순위, 정화 공격은 감염 전환의 우선순위"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "감염 스킬 선택",
+          "감염 공격 및 정화",
+          "감염 전환 시스템"
+        ],
+        "retryFlow": "감염 스킬 선택 → 감염 공격 및 정화 → 감염 전환 시스템",
+        "riskPressure": "감염 스킬 선택은 감염 공격의 우선순위, 정화 공격은 감염 전환의 우선순위",
+        "recoveryRules": "감염 스킬 선택은 감염 공격의 우선순위, 정화 공격은 감염 전환의 우선순위"
+      }
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T11:09:21.474Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
