@@ -373,25 +373,64 @@
       "name": "READ THE NEXT ENEMY WAVE AND PLACE TOWERS OR DEFENDERS ON Lanes OR POSITIONS THAT COVER THE THREATENED ROUTE",
       "purpose": "플레이어가 주체로 세계 상태와 다음 선택을 바꾼다.",
       "playerChoice": "세계 상태 변경, 다음 선택 결정, 게임 진행 방향 제안 및 재방문 가능성 제공."
+    },
+    "local_authoring_parts::933976e71aef80a30c8f5ab9d41793c03ab4be4494ab58519dad22ca3ff41e4a:signatureSystems:1": {
+      "id": "골목 군단 대전 - READ THE NEXT ENEMY WAVE AND PLACE TOWERS OR DEFENDERS ON Lanes OR PO",
+      "grammarRole": "A",
+      "stateInputs": [
+        "월드 상태"
+      ],
+      "stateOutputs": [
+        "다음 월드 상태"
+      ],
+      "name": "READ THE NEXT ENEMY WAVE AND PLACE TOWERS OR DEFENDERS ON Lanes OR POSITIONS THAT COVER THE THREATENED ROUTE",
+      "purpose": "플레이어가 주체로 세계 상태와 다음 선택을 바꾼다.",
+      "playerChoice": "세계 상태 변경, 다음 선택 결정, 게임 진행 방향 제안 및 재방문 가능성 제공."
+    },
+    "local_authoring_parts::933976e71aef80a30c8f5ab9d41793c03ab4be4494ab58519dad22ca3ff41e4a:signatureSystems:2": {
+      "id": "골목 군단 대전 - READ THE NEXT ENEMY WAVE AND PLACE TOWERS OR DEFENDERS ON Lanes OR PO",
+      "grammarRole": "B",
+      "stateInputs": [
+        "월드 상태"
+      ],
+      "stateOutputs": [
+        "다음 월드 상태"
+      ],
+      "name": "READ THE NEXT ENEMY WAVE AND PLACE TOWERS OR DEFENDERS ON Lanes OR POSITIONS THAT COVER THE THREATENED ROUTE",
+      "purpose": "플레이어가 주체로 세계 상태와 다음 선택을 바꾼다.",
+      "playerChoice": "세계 상태 변경, 다음 선택 결정, 게임 진행 방향 제안 및 재방문 가능성 제공."
+    },
+    "local_authoring_parts::933976e71aef80a30c8f5ab9d41793c03ab4be4494ab58519dad22ca3ff41e4a:signatureSystems:3": {
+      "id": "골목 군단 대전 - READ THE NEXT ENEMY WAVE AND PLACE TOWERS OR DEFENDERS ON Lanes OR PO",
+      "grammarRole": "c",
+      "stateInputs": [
+        "월드 상태"
+      ],
+      "stateOutputs": [
+        "다음 월드 상태"
+      ],
+      "name": "READ THE NEXT ENEMY WAVE AND PLACE TOWERS OR DEFENDERS ON Lanes OR POSITIONS THAT COVER THE THREATENED ROUTE",
+      "purpose": "플레이어가 주체로 세계 상태와 다음 선택을 바꾼다.",
+      "playerChoice": "세계 상태 변경, 다음 선택 결정, 게임 진행 방향 제안 및 재방문 가능성 제공."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 14,
+      "successes": 14,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 806637,
-      "lastMs": 72494,
+      "totalMs": 1025431,
+      "lastMs": 73765,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:07:44.239Z"
+      "updatedAt": "2026-10-08T18:11:23.038Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:54:17.473Z",
-  "updatedAt": "2026-10-08T18:07:44.239Z",
+  "updatedAt": "2026-10-08T18:11:23.038Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2646,7 +2685,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:07:44.239Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:11:23.038Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
