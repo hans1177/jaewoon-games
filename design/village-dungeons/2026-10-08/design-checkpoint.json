@@ -636,25 +636,42 @@
     },
     "local_authoring_parts::784c6105ebd0d2d38f4ab8f6efbbca1720ede045362ef7245c3c21178260c8fb:trigger": {
       "trigger": "Player's initial input and menu transitions in the game lead to contextual loss in the game, which in turn triggers the error recovery mechanism and results in a state and cost regression."
+    },
+    "local_authoring_parts::784c6105ebd0d2d38f4ab8f6efbbca1720ede045362ef7245c3c21178260c8fb:stateChange": {
+      "stateChange": "Player's initial input and menu transitions in the game lead to contextual loss in the game, which in turn triggers the error recovery mechanism and results in a state and cost regression."
+    },
+    "local_authoring_parts::cce110ff085b0b1a8b7099c0e631924790236f96b678ed857699ff3609011196:systemInterconnections:1": {
+      "fromId": "INPUT_AND_MENU_TRANSITIONS",
+      "toId": "CONTEXT_LOSS",
+      "stateKeys": [
+        "INPUT_AND_MENU_TRANSITIONS",
+        "CONTEXT_LOSS",
+        "ERROR_RECOVERY",
+        "STATE_AND_COST_REGRESSION"
+      ],
+      "fromSystem": "INPUT_AND_MENU_TRANSITIONS",
+      "toSystem": "CONTEXT_LOSS",
+      "trigger": "Player's initial input and menu transitions in the game lead to contextual loss in the game, which in turn triggers the error recovery mechanism and results in a state and cost regression.",
+      "stateChange": "Player's initial input and menu transitions in the game lead to contextual loss in the game, which in turn triggers the error recovery mechanism and results in a state and cost regression."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 24,
-      "successes": 24,
+      "calls": 25,
+      "successes": 25,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2394826,
-      "lastMs": 91265,
+      "totalMs": 2486524,
+      "lastMs": 91698,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:19:49.945Z"
+      "updatedAt": "2026-10-08T13:21:21.645Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:39:54.867Z",
-  "updatedAt": "2026-10-08T13:19:49.945Z",
+  "updatedAt": "2026-10-08T13:21:21.646Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2898,7 +2915,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:19:49.945Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:21:21.646Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
