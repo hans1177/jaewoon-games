@@ -11,16 +11,16 @@
   "status": "AUTHORED_CANDIDATE",
   "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
   "originalSource": null,
-  "fingerprint": "ac289d616b81b07ca689434ccc69071bfa3341ce64de2c688546cfc7d74839ce",
-  "engineDigest": "095ef19579f8737b9f588a24419948d2c32ca87934148e55fede6ceec471ddff",
-  "contentDigest": "3cdc25c833754d9083f5b9ebff5ef79a4141df2c308f9bf66b4dfb30e0b1d083",
+  "fingerprint": "4807ab976c17ed7e6bd686538342af2b86bafb956fa333a910825236e629b7b1",
+  "engineDigest": "99d97cd218cc96b09d93fa3463e513ee6dfe6cf6cb4cecf8f023674a19c6620b",
+  "contentDigest": "af9fdaf674dfbda37d1a8b502917f7cc709ef76e2524ccf4d29440ad6f6a02c7",
   "externalSeedRequired": false,
   "designPass": false,
   "runtimePass": false,
   "content": {
-    "identity": "퇴마 사무소 - 시작 즉시 단순 한 손 tap 또는 swipe 입력 및 점수, 거리, 짧은 세션 목표 중심으로 플레이어 역할 재설명 및 시그니처 세계 규칙 연결됨에 따라 독특한 핵심 재미 및 시스템 연결 확정됨. 게임 정체성: 캐릭터, 장소, 주제, 기능, 관계의 복합적 표현. 대표 행동: 시작 즉시 단순 한 손 tap 또는 swipe 입력, 대표 선택: 짧은 런 중 피드백, 보상, 위험, 다음 선택 연결. 시그니처 세계 규칙: START → RUN → FINISH/FAIL → RESTART 순환 구조 포함. 진입 방식: 모바일에서 즉시 이해 가능한 기본적인 입력과 피드백 제공. 시스템 구성: MAIN × A × B × c + @ 형태로 이루어진 복합장르. 원본 규칙 및 수치를 모두 유지하며 설계 깊이와 구조는 최초 설계부터 지속적으로 확보됨.",
-    "playerFantasy": "퇴마 사무소에서 플레이어는 시작 즉시 단순 한 손 tap 또는 swipe 입력과 점수, 거리, 혹은 짧은 세션 목표 중심으로 플레이하여 세계 상태와 다음 선택을 바꾼다. 이 행동은 모바일 환경에서 즉시 이해 가능한 기본적인 입력과 피드백 제공을 통해 게임의 핵심 재미와 시스템 연결을 확정하며, 대표 행동은 'START'로, 대표 선택은 'RUN', 보상은 'SCORE/REWARD', 위험은 'RISK/ROUTE CHOICE', 다음 선택은 'RESTART'이다.",
-    "coreFun": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.과 Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용",
+    "identity": "퇴마 사무소은 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 플레이어는 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾼다. 이는 핵심 행동인 'Start'과 대축 A/B의 선택에 의해 시스템적으로 연결된다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.",
+    "playerFantasy": "퇴마 사무소에서 플레이어는 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾼다. 이는 핵심 행동인 'Start'과 대축 A/B의 선택에 의해 시스템적으로 연결된다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.",
+    "coreFun": "{\"identity\": \"퇴마 사무소은 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다.\", \"playerFantasy\": \"퇴마 사무소에서 플레이어는 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾼다. 이는 핵심 행동인 'Start'과 대축 A/B의 선택에 의해 시스템적으로 연결된다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.\"}",
     "coreLoop": [
       "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
       "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
@@ -31,90 +31,89 @@
         "id": "SIGNATURE_SYSTEM_0",
         "grammarRole": "MAIN",
         "stateInputs": [
-          "START",
-          "RUN",
-          "FINISH/FAIL",
-          "RESTART"
+          "START_STATE",
+          "RUN_STATE",
+          "RESULT_STATE"
         ],
         "stateOutputs": [
-          "SCORE/REWARD",
-          "RISK/ROUTE CHOICE",
-          "PROGRESSION BENEFIT"
+          "NEXT_WORLD_STATE",
+          "NEW_CHOICE_STATE",
+          "PROGRESSION_STATE"
         ],
-        "name": "시그니처 시스템",
-        "purpose": "플레이어가 시작 즉시 단순 한 손 tap 또는 swipe 입력 및 점수, 거리, 혹은 짧은 세션 목표 중심으로 플레이하여 세계 상태와 다음 선택을 바꾼다.",
-        "playerChoice": "START → RUN → FINISH/FAIL → RESTART 순환 구조 포함."
+        "name": "CASUAL_GAME_FLOW",
+        "purpose": "플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾼다.",
+        "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다."
       },
       {
         "id": "SIGNATURE_SYSTEM_1",
         "grammarRole": "A",
         "stateInputs": [
-          "START",
-          "RUN",
-          "PROGRESSION BENEFIT"
+          "START_STATE",
+          "RUN_STATE",
+          "RESULT_STATE"
         ],
         "stateOutputs": [
-          "SCORE/REWARD",
-          "RISK/ROUTE CHOICE",
-          "PROGRESSION BENEFIT"
+          "NEXT_WORLD_STATE",
+          "NEW_CHOICE_STATE",
+          "PROGRESSION_STATE"
         ],
-        "name": "시그니처 시스템 2",
-        "purpose": "플레이어가 시작 즉시 단순 한 손 tap 또는 swipe 입력 및 점수, 거리, 혹은 짧은 세션 목표 중심으로 플레이하여 세계 상태와 다음 선택을 바꾼다.",
-        "playerChoice": "START → RUN → PROGRESSION BENEFIT 순환 구조 포함."
+        "name": "CASUAL_GAME_FLOW_EXPANSION",
+        "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축",
+        "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
       },
       {
         "id": "SIGNATURE_SYSTEM_2",
         "grammarRole": "B",
         "stateInputs": [
-          "START",
-          "RUN",
-          "PROGRESSION BENEFIT"
+          "START_STATE",
+          "RUN_STATE",
+          "RESULT_STATE"
         ],
         "stateOutputs": [
-          "SCORE/REWARD",
-          "RISK/ROUTE CHOICE",
-          "PROGRESSION BENEFIT"
+          "NEXT_WORLD_STATE",
+          "NEW_CHOICE_STATE",
+          "PROGRESSION_STATE"
         ],
-        "name": "시그니처 시스템 2",
-        "purpose": "플레이어가 시작 즉시 단순 한 손 tap 또는 swipe 입력 및 점수, 거리, 혹은 짧은 세션 목표 중심으로 플레이하여 세계 상태와 다음 선택을 바꾼다.",
-        "playerChoice": "START → RUN → PROGRESSION BENEFIT 순환 구조 포함."
+        "name": "CASUAL_GAME_FLOW_EXPANSION",
+        "purpose": "A와 MAIN의 결과를 다른 핵심 판단 구조로 연결하는 두 번째 대축.",
+        "playerChoice": "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
       },
       {
         "id": "SIGNATURE_SYSTEM_3",
         "grammarRole": "c",
         "stateInputs": [
-          "START",
-          "RUN",
-          "PROGRESSION BENEFIT"
+          "START_STATE",
+          "RUN_STATE",
+          "RESULT_STATE"
         ],
         "stateOutputs": [
-          "SCORE/REWARD",
-          "RISK/ROUTE CHOICE",
-          "PROGRESSION BENEFIT"
+          "NEXT_WORLD_STATE",
+          "NEW_CHOICE_STATE",
+          "PROGRESSION_STATE"
         ],
-        "name": "시그니처 시스템 3",
-        "purpose": "플레이어가 시작 즉시 단순 한 손 tap 또는 swipe 입력 및 점수, 거리, 혹은 짧은 세션 목표 중심으로 플레이하여 세계 상태와 다음 선택을 바꾼다.",
-        "playerChoice": "START → RUN → PROGRESSION BENEFIT 순환 구조 포함."
+        "name": "CASUAL_GAME_FLOW_EXPANSION_CROSS_PATH",
+        "purpose": "게임 내에서 MAIN/A/B의 선택 결과와 세계 인과법칙에 따라 다른 경로, 위험, 보상을 열어 재방문 및 숙련을 가능하게 한다.",
+        "playerChoice": "게임 내에서 MAIN/A/B의 선택 결과와 세계 인과법칙에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 합니다."
       },
       {
         "id": "SIGNATURE_SYSTEM_4",
         "grammarRole": "DELVE",
         "stateInputs": [
-          "START",
-          "RUN",
-          "PROGRESSION BENEFIT"
+          "START_STATE",
+          "RUN_STATE",
+          "RESULT_STATE"
         ],
         "stateOutputs": [
-          "SCORE/REWARD",
-          "RISK/ROUTE CHOICE",
-          "PROGRESSION BENEFIT"
+          "NEXT_WORLD_STATE",
+          "NEW_CHOICE_STATE",
+          "PROGRESSION_STATE"
         ],
-        "name": "시그니처 시스템 4",
-        "purpose": "플레이어가 시작 즉시 단순 한 손 tap 또는 swipe 입력 및 점수, 거리, 혹은 짧은 세션 목표 중심으로 플레이하여 세계 상태와 다음 선택을 바꾼다.",
-        "playerChoice": "START → RUN → PROGRESSION BENEFIT 순환 구조 포함."
+        "name": "CASUAL_GAME_FLOW_DELVE_PATH",
+        "purpose": "플레이어가 선택 결과와 세계 상태 간의 복잡한 인과 관계를 통해 새로운 경로, 대응법, 또는 발견을 열어 재미있는 플레이 경험을 제공한다.",
+        "playerChoice": "선택 결과에 따라 다양한 시스템적 변주 및 진입 방식을 적용하여 게임의 깊이와 유연성을 높인다."
       }
     ],
     "multiplayerMode": "HYBRID"
   },
-  "updatedAt": "2026-10-08T18:20:04.710Z"
+  "updatedAt": "2026-10-08T22:16:49.835Z"
 }

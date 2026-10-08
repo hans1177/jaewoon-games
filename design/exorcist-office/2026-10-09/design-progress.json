@@ -8,25 +8,30 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 13,
-  "lastSuccessfulModelCallAt": "2026-10-08T22:15:59.531Z",
+  "cachedTaskCount": 16,
+  "lastSuccessfulModelCallAt": "2026-10-08T22:16:49.828Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
-  "designerSeed": null,
+  "designerSeed": {
+    "file": "design/exorcist-office/2026-10-09/design-seed.json",
+    "contentDigest": "af9fdaf674dfbda37d1a8b502917f7cc709ef76e2524ccf4d29440ad6f6a02c7",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 602747,
-      "lastMs": 67680,
+      "totalMs": 653040,
+      "lastMs": 50293,
       "lastError": null,
-      "updatedAt": "2026-10-08T22:15:59.528Z"
+      "updatedAt": "2026-10-08T22:16:49.825Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T22:15:59.532Z"
+  "updatedAt": "2026-10-08T22:16:49.836Z"
 }
