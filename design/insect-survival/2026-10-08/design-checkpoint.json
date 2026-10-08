@@ -935,25 +935,47 @@
     },
     "local_authoring_parts::6ac5943b439a67ec6e9bfeb8d5c2a76014b9b7127afa17035be8d09d1c1f006e:toSystem": {
       "toSystem": "GAMEPLAY_SKETCH v4"
+    },
+    "local_authoring_parts::6ac5943b439a67ec6e9bfeb8d5c2a76014b9b7127afa17035be8d09d1c1f006e:trigger": {
+      "trigger": "EcoRiskHandler manages ecological risk through adaptive survival choices, with state transitions: playerChoice → environmentalRisk → ecologicalThreshold → survivalTool, safeRoute, ecologicalInsight."
+    },
+    "local_authoring_parts::6ac5943b439a67ec6e9bfeb8d5c2a76014b9b7127afa17035be8d09d1c1f006e:stateChange": {
+      "stateChange": "PlayerChoice → EnvironmentalRisk → EcologicalThreshold → SurvivalTool, SafeRoute, EcologicalInsight"
+    },
+    "local_authoring_parts::b21699979b69006883fdd5e294791ba1a9c530ccad91fa500cd2e8c630599c9b:systemInterconnections:0": {
+      "fromId": "GAMEPLAY_SKETCH v4",
+      "toId": "GAMEPLAY_SKETCH v4",
+      "stateKeys": [
+        "playerChoice",
+        "environmentalRisk",
+        "ecologicalThreshold",
+        "survivalTool",
+        "safeRoute",
+        "ecologicalInsight"
+      ],
+      "fromSystem": "GAMEPLAY_SKETCH v4",
+      "toSystem": "GAMEPLAY_SKETCH v4",
+      "trigger": "EcoRiskHandler manages ecological risk through adaptive survival choices, with state transitions: playerChoice → environmentalRisk → ecologicalThreshold → survivalTool, safeRoute, ecologicalInsight.",
+      "stateChange": "PlayerChoice → EnvironmentalRisk → EcologicalThreshold → SurvivalTool, SafeRoute, EcologicalInsight"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 32,
-      "successes": 29,
+      "calls": 34,
+      "successes": 31,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 3309344,
-      "lastMs": 89096,
+      "totalMs": 3490201,
+      "lastMs": 89641,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T15:39:05.881Z"
+      "updatedAt": "2026-10-08T15:42:06.741Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:02:11.066Z",
-  "updatedAt": "2026-10-08T15:39:05.881Z",
+  "updatedAt": "2026-10-08T15:42:06.743Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3382,7 +3404,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:39:05.881Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:42:06.743Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
