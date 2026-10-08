@@ -736,25 +736,45 @@
       "name": "10층 탑 RPG",
       "purpose": "플레이어가 반복적으로 수행하는 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 기반으로, 선택 결과가 다음 월드 상태를 바꾸는 시그니처 세계 규칙에 참여하며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견을 열어 같은 콘텐츠를 다르게 사용하게 된다.",
       "playerChoice": "시그니처 세계 규칙에 참여하며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견을 열어 같은 콘텐츠를 다르게 사용하게 된다."
+    },
+    "local_authoring_parts::4ba489a7c93b329a6963ab9326c6453f4df04d048cddb10321fbf8935d2cb1c9:signatureSystems:3": {
+      "id": "10층 탑 RPG",
+      "grammarRole": "c",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount",
+        "RunRewards",
+        "UpgradeOptions",
+        "SkillOptions",
+        "WeaponOptions"
+      ],
+      "stateOutputs": [
+        "NextWorldState",
+        "PlayerBuild"
+      ],
+      "name": "10층 탑 RPG",
+      "purpose": "플레이어가 반복적으로 수행하는 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 기반으로, 선택 결과가 다음 월드 상태를 바꾸는 시그니처 세계 규칙에 참여하며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견을 열어 같은 콘텐츠를 다르게 사용하게 된다.",
+      "playerChoice": "시그니처 세계 규칙에 참여하며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견을 열어 같은 콘텐츠를 다르게 사용하게 된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 19,
+      "calls": 20,
+      "successes": 20,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1947056,
-      "lastMs": 44901,
+      "totalMs": 1992570,
+      "lastMs": 45514,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:57:00.856Z"
+      "updatedAt": "2026-10-08T10:57:46.371Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:01:03.860Z",
-  "updatedAt": "2026-10-08T10:57:00.856Z",
+  "updatedAt": "2026-10-08T10:57:46.371Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2991,7 +3011,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:57:00.856Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:57:46.371Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
