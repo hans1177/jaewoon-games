@@ -94,25 +94,203 @@
       "name": "ISLAND_RESOURCES_AND_VILLAGE_INFRASTRUCTURE",
       "purpose": "Provides the foundation for village growth and survival through resource management and infrastructure development.",
       "playerChoice": "Selects resources to build or improve village functions, unlocking new residents, areas, and goals."
+    },
+    "local_authoring_parts::c748593721a9422911881fb3e04ec401fe42c55eba090362e9cb5ed2c026c978:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "Resource accumulation",
+        "Infrastructure upgrade"
+      ],
+      "stateOutputs": [
+        "New population/land added",
+        "Enhanced daily life"
+      ],
+      "name": "ISLAND_RESOURCES_AND_VILLAGE_INFRASTRUCTURE",
+      "purpose": "Establishes the core mechanism for resource gathering and infrastructure development in the island village.",
+      "playerChoice": "Selectively gather resources and upgrade village functions to unlock new areas and improve survival chances."
+    },
+    "local_authoring_parts::05f7f52ac1dd978c343e2f93544347930ffd8b8f8f19576641b2dff11d0f75d4:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "Resource accumulation",
+            "Infrastructure upgrade"
+          ],
+          "stateOutputs": [
+            "New population/land added",
+            "Enhanced daily life"
+          ],
+          "name": "ISLAND_RESOURCES_AND_VILLAGE_INFRASTRUCTURE",
+          "purpose": "Establishes the core mechanism for resource gathering and village improvement, linking player choices to tangible game state changes.",
+          "playerChoice": "Gather focused island resources → Build or improve one village function → Unlock new resident/area → Progress toward next village goal."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "Resource accumulation",
+            "Infrastructure upgrade"
+          ],
+          "stateOutputs": [
+            "New population/land added",
+            "Enhanced daily life"
+          ],
+          "name": "ISLAND_RESOURCES_AND_VILLAGE_INFRASTRUCTURE",
+          "purpose": "Establishes the relationship between island resources and village infrastructure, enabling players to build and improve the environment through resource gathering.",
+          "playerChoice": "Gather a focused set of island resources and use them to build or improve one village function."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "Resource accumulation",
+            "Infrastructure upgrade"
+          ],
+          "stateOutputs": [
+            "New population/land added",
+            "Enhanced daily life"
+          ],
+          "name": "ISLAND_RESOURCES_AND_VILLAGE_INFRASTRUCTURE",
+          "purpose": "Provides the foundation for village growth and survival through resource gathering and infrastructure development.",
+          "playerChoice": "Gather resources, upgrade infrastructure, expand population or land, and improve daily life outcomes."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "Resource accumulation",
+            "Infrastructure upgrade"
+          ],
+          "stateOutputs": [
+            "New population/land added",
+            "Enhanced daily life"
+          ],
+          "name": "ISLAND_RESOURCES_AND_VILLAGE_INFRASTRUCTURE",
+          "purpose": "Provides the foundation for village growth and survival through resource management and infrastructure development.",
+          "playerChoice": "Selects resources to build or improve village functions, unlocking new residents, areas, and goals."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "Resource accumulation",
+            "Infrastructure upgrade"
+          ],
+          "stateOutputs": [
+            "New population/land added",
+            "Enhanced daily life"
+          ],
+          "name": "ISLAND_RESOURCES_AND_VILLAGE_INFRASTRUCTURE",
+          "purpose": "Establishes the core mechanism for resource gathering and infrastructure development in the island village.",
+          "playerChoice": "Selectively gather resources and upgrade village functions to unlock new areas and improve survival chances."
+        }
+      ]
+    },
+    "local_authoring_parts::3ab0b3c9916610cd89397eff15c7ee8f327eef952f5704fd849f497b80ceec93:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Gather a focused set of island resources → State change: Resource accumulation → Reward: Improved village infrastructure",
+        "Use them to build or improve one village function → State change: Infrastructure upgrade → Reward: Enhanced daily life",
+        "Unlock new resident/area → State change: New population/land added → Reward: Increased survival chances"
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "Resource accumulation",
+            "Infrastructure upgrade"
+          ],
+          "stateOutputs": [
+            "New population/land added",
+            "Enhanced daily life"
+          ],
+          "name": "ISLAND_RESOURCES_AND_VILLAGE_INFRASTRUCTURE",
+          "purpose": "Establishes the core mechanism for resource gathering and village improvement, linking player choices to tangible game state changes.",
+          "playerChoice": "Gather focused island resources → Build or improve one village function → Unlock new resident/area → Progress toward next village goal."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "Resource accumulation",
+            "Infrastructure upgrade"
+          ],
+          "stateOutputs": [
+            "New population/land added",
+            "Enhanced daily life"
+          ],
+          "name": "ISLAND_RESOURCES_AND_VILLAGE_INFRASTRUCTURE",
+          "purpose": "Establishes the relationship between island resources and village infrastructure, enabling players to build and improve the environment through resource gathering.",
+          "playerChoice": "Gather a focused set of island resources and use them to build or improve one village function."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "Resource accumulation",
+            "Infrastructure upgrade"
+          ],
+          "stateOutputs": [
+            "New population/land added",
+            "Enhanced daily life"
+          ],
+          "name": "ISLAND_RESOURCES_AND_VILLAGE_INFRASTRUCTURE",
+          "purpose": "Provides the foundation for village growth and survival through resource gathering and infrastructure development.",
+          "playerChoice": "Gather resources, upgrade infrastructure, expand population or land, and improve daily life outcomes."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "Resource accumulation",
+            "Infrastructure upgrade"
+          ],
+          "stateOutputs": [
+            "New population/land added",
+            "Enhanced daily life"
+          ],
+          "name": "ISLAND_RESOURCES_AND_VILLAGE_INFRASTRUCTURE",
+          "purpose": "Provides the foundation for village growth and survival through resource management and infrastructure development.",
+          "playerChoice": "Selects resources to build or improve village functions, unlocking new residents, areas, and goals."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "Resource accumulation",
+            "Infrastructure upgrade"
+          ],
+          "stateOutputs": [
+            "New population/land added",
+            "Enhanced daily life"
+          ],
+          "name": "ISLAND_RESOURCES_AND_VILLAGE_INFRASTRUCTURE",
+          "purpose": "Establishes the core mechanism for resource gathering and infrastructure development in the island village.",
+          "playerChoice": "Selectively gather resources and upgrade village functions to unlock new areas and improve survival chances."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 805761,
-      "lastMs": 102929,
+      "totalMs": 908185,
+      "lastMs": 102424,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:01:23.681Z"
+      "updatedAt": "2026-10-08T21:03:06.106Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:47:57.452Z",
-  "updatedAt": "2026-10-08T21:01:23.681Z",
+  "updatedAt": "2026-10-08T21:03:06.109Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2193,7 +2371,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:01:23.681Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:03:06.109Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
