@@ -2318,6 +2318,7 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     `designContext=${JSON.stringify(d?.designImplementationContext||{})}`,
     `gameplayContract=${JSON.stringify({coreFun:d?.gameIdentityAndNonNegotiables?.coreFun,coreLoop:d?.gameIdentityAndNonNegotiables?.coreLoop,signatureSystems:d?.gameIdentityAndNonNegotiables?.signatureSystems,systemInterconnections:d?.designImplementationContext?.systemInterconnections,progressionDirection:d?.gameIdentityAndNonNegotiables?.progressionDirection,grammar:d?.identityReinforcement?.causalGrammarEvidence?.existingGameGrammarMap})}`,
     `designCodePlatform=${clean(codingTrace.activePlatform)||'UNKNOWN'};source=${clean(codingTrace?.platformCodingPlans?.find(row=>row.platform===codingTrace.activePlatform)?.canonicalGameSourceRoot)};mode=${clean(codingTrace.multiplayerMode)};minPlayers=${Number(codingTrace.minimumParticipants||2)};runtime=UNVERIFIED`,
+    `designCodeBinding=design:${clean(codingTrace.designFingerprint)||'UNVERIFIED'};source:${clean(codingTrace.sourceTreeFingerprint)||'UNVERIFIED'};verify:EXACT_CURRENT_DESIGN_AND_SOURCE_BEFORE_CLAIM`,
     ...designRoleRows.map(row=>`designCodeRole=${row.role};id=${row.systemId};in=${row.inputs.join(',')};out=${row.outputs.join(',')};owner=${row.owner};status=${row.status}`),
     'designCodeVerification=MAIN/A/B/c/@ must refer to actual authored rule IDs and existing gameplay state dependencies. Inspect and edit executable owner functions, preserve save/balance and authority, verify real gameplay action/state/result/reconnect in the same platform and its independent QA. Markers, plan labels, source presence, UI-only evidence and unexecuted source tests MUST NOT claim implementation PASS.',
     'graphicsContract=Follow company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation: final gameplay world must be 2.5D or 3D; UI overlays may remain 2D. Bind compatible library models/materials/motion into actual render or scene consumers, not only manifests or preview paths. Registry bindings, dimension labels and source changes alone do not prove runtime graphics. Require current-source build and actual play evidence; report missing evidence as pending.',
@@ -2369,11 +2370,11 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   if(!compact&&!responsiblePaths.length)return block;
   const keepPrefixes=focusedRobloxVisual?[
     'robloxProduction','gameProduction',
-    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeRole=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','designCodeRole=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'visual=','platform=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
   ]:[
     'robloxProduction','gameProduction',
-    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeRole=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','designCodeRole=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'nextVibeAction=','contentExpansionVersion=','contentTheme=','contentBreadth=','existingCompletenessReview=','contentBundle=',
     'antiClone=','continuity=','derivedRuleEvolution=','contentCompletionAcceptance=','contentRule=',
     ...(focusedPresentation?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
@@ -2409,7 +2410,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
 
   const essentialPrefixes=[
     ...['robloxProduction','gameProduction'].flatMap(prefix=>['CONCEPT','IDEA','CONNECTION','FILES','QUALITY','SCOPE','OWNER','DEPTH','SPATIAL','SPATIAL_SCHEMA','SPATIAL_RULE','INTERFACE','INTERFACE_RULE'].map(field=>prefix+field+'=')),
-    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeRole=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','designCodeRole=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'contentTheme=','contentCompletionAcceptance=',
     ...(focusedPresentation||focusedRobloxVisual?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
     'platform=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
