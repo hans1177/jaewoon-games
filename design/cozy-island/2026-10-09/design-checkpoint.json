@@ -27,25 +27,32 @@
       "identity": "작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임. 큰 머리와 둥근 얼굴, 짧고 굵은 팔다리의 치비 주민과 하나의 연결된 실루엣으로 보이는 야생동물을 사용하며, 움직이는 왕국의 확장감과 성장감을 표현합니다. 플레이어는 단순히 나무와 식량을 채집해 주민을 고용하고, 병사들을 모집하여 거점에 점령하는 역할을 수행해야 합니다. 이 과정에서는 지역별 특성과 자원의 다양성을 바탕으로 다양한 선택이 가능하며, 최종적으로는 강력한 왕국을 조성하게 됩니다.",
       "playerFantasy": "플레이어는 작은 섬에서 나무와 식량을 직접 채집해 주민을 고용하고 병사들을 모집하여 거점에 점령하는 역할을 수행해야 합니다. 이 과정에서는 지역별 특성과 자원의 다양성을 바탕으로 다양한 선택이 가능하며, 최종적으로는 강력한 왕국을 조성하게 됩니다.",
       "coreFun": "플레이어는 작은 섬에서 나무와 식량을 직접 채집해 주민을 고용하고 병사들을 모집하여 거점에 점령하는 역할을 수행해야 합니다. 이 과정에서는 지역별 특성과 자원의 다양성을 바탕으로 다양한 선택이 가능하며, 최종적으로는 강력한 왕국을 조성하게 됩니다."
+    },
+    "local_authoring_parts::10db8bd578727d82c24b56314640daa30c281d81c4ee813987ddb8555e584499:coreLoop": {
+      "coreLoop": [
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT SELECT",
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/ NEXT SELECT",
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/ NEXT SELECT"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 141607,
-      "lastMs": 22349,
+      "totalMs": 162690,
+      "lastMs": 21083,
       "lastError": null,
-      "updatedAt": "2026-10-08T20:48:07.881Z"
+      "updatedAt": "2026-10-08T20:48:28.967Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:45:46.220Z",
-  "updatedAt": "2026-10-08T20:48:07.882Z",
+  "updatedAt": "2026-10-08T20:48:28.967Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -600,7 +607,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T20:48:07.882Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T20:48:28.967Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
