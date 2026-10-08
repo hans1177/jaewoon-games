@@ -1,3 +1,5 @@
+// 파일명: qa/company-unity-web-floor-bootstrap.test.mjs
+// 역할: 유니티 웹 기존 부트스트랩·학습·승인 환경 생성의 소스 및 비권한 계약 회귀 검사.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -277,5 +279,108 @@ test('Unity Web/native shared source no longer treats primitive root motion as c
     assert.match(runtime,/BindNativeMotionActors\(\)/);
     assert.match(runtime,/reason=ANIMATOR_REQUIRED/);
     assert.doesNotMatch(runtime,/JAEWOON_UNITY_WEB_QA MOTION game=" \+ GameId \+ " status=PASS"/);
+  }
+});
+
+test('approved Unity Web design generates playable-scene visual data in canonical Unity project only',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-web-approved-layout-'));
+  const before=process.cwd();
+  try{
+    process.chdir(root);
+    const baseline=path.join(root,'design-revised.json');
+    const input={
+      content:{
+        identity:'Mountain village for Unity Web',coreLoop:['EXPLORE','ENTER_SETTLEMENT'],
+        platformProfiles:{UNITY:{platform:'UNITY'}},
+        spatialLayout:{dimension:'3D',proceduralWorld:{
+          approvedDesign:true,seed:'unity-web-layout-1',dimension:'3D',
+          width:24,height:24,cellSize:2,mobile:true,density:.75,
+          biome:'MOUNTAIN',climate:'COLD_WET',buildingStyle:'GOTHIC'
+        }}
+      }
+    };
+    fs.writeFileSync(baseline,JSON.stringify(input));
+    const playbooks=writeVerifiedPlaybooks(root);
+    execFileSync(process.execPath,[tool.pathname,
+      '--game-id=approved-world','--game-name=Approved World',
+      '--baseline='+baseline,'--playbooks='+playbooks,'--output=unity-games/approved-world'
+    ],{stdio:'pipe'});
+    const project='unity-games/approved-world';
+    const manifest=JSON.parse(fs.readFileSync(path.join(project,'unity-web-floor-source.json'),'utf8'));
+    const dataFile=path.join(project,'Assets/Resources/vibe-world-layout.json');
+    const layout=JSON.parse(fs.readFileSync(dataFile,'utf8'));
+    const runtime=fs.readFileSync(path.join(project,'Assets/Scripts/UnityWebFloorGame.cs'),'utf8');
+    assert.equal(manifest.proceduralEnvironment.approval,'APPROVED_DESIGN_3D_ONLY');
+    assert.equal(manifest.proceduralEnvironment.status,'DATA_AUTHORED_RUNTIME_UNVERIFIED');
+    assert.equal(manifest.proceduralEnvironment.renderedInRuntime,false);
+    assert.equal(manifest.proceduralEnvironment.visualMeshAuthoringSource,true);
+    assert.equal(manifest.proceduralEnvironment.terrainCells,24*24);
+    assert.equal(manifest.proceduralEnvironment.buildingCount,layout.buildings.length);
+    assert.equal(manifest.proceduralEnvironment.vegetationCount,layout.vegetation.length);
+    assert.equal(manifest.upperPlatformReady,false);
+    assert.equal(manifest.releaseOrDeploymentAuthority,false);
+    assert.equal(manifest.buildMethod,'UnityWebFloorBuild.BuildWeb');
+    assert.equal(layout.version,1);
+    assert.equal(layout.heights.length,576);
+    assert.equal(layout.types.length,576);
+    assert.ok(layout.types.some(type=>type===1),'approved mountain must include ridge');
+    assert.ok(layout.roads.length>0);
+    assert.ok(layout.buildings.length>0);
+    assert.ok(layout.buildings.length<=22);
+    assert.ok(layout.vegetation.length<=64);
+    assert.ok(layout.buildings.every(lot=>lot.roof===1&&lot.size===2));
+    assert.ok(layout.buildings.every(lot=>Number.isFinite(lot.x)&&Number.isFinite(lot.z)&&Number.isFinite(lot.door)));
+    assert.equal(layout.gameplayCollisionAuthority,false);
+    assert.equal(layout.saveMutation,false);
+    assert.equal(layout.engineRuntimeVerified,false);
+    assert.match(runtime,/private void BuildApprovedWorldVisuals\(\)/);
+    assert.match(runtime,/BuildApprovedWorldVisuals\(\);/);
+    assert.match(runtime,/Resources.Load<TextAsset>\("vibe-world-layout"\)/);
+    assert.match(runtime,/surface.SetTriangles\(groups\[k\],k\)/);
+    assert.match(runtime,/roads.vertices=roadV.ToArray\(\)/);
+    assert.match(runtime,/baked.CombineMeshes\(models\[k\].ToArray\(\),true,true\)/);
+    assert.match(runtime,/collider=UNCHANGED save=UNCHANGED native_qa=REQUIRED/);
+    assert.doesNotMatch(runtime,/BuildApprovedWorldVisuals\(\);[\s\S]*UNITY_WEB_WORLD=PASS/);
+    assert.match(runtime,/PlayerPrefs\.Save\(\)/);
+    assert.match(runtime,/status=REPAIR_REQUIRED reason=BOOTSTRAP_ONLY_GAMEPLAY_NOT_IMPLEMENTED/);
+  }finally{
+    process.chdir(before);
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
+
+test('Unity Web world authoring stays opt-in and rejects unapproved or disconnected world layouts',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-web-procedural-guards-'));
+  const before=process.cwd();
+  try{
+    process.chdir(root);
+    const baseline=path.join(root,'design-revised.json');
+    const playbooks=writeVerifiedPlaybooks(root);
+    const original={content:{identity:'Existing unchanged world',platformProfiles:{UNITY:{platform:'UNITY'}},
+      spatialLayout:{dimension:'3D',proceduralWorld:{approvedDesign:false,dimension:'3D',width:24,height:24,seed:'not-approved'}}}};
+    fs.writeFileSync(baseline,JSON.stringify(original));
+    const args=['--game-id=unchanged-world','--baseline='+baseline,'--playbooks='+playbooks,'--output=unity-games/unchanged-world'];
+    execFileSync(process.execPath,[tool.pathname,...args],{stdio:'pipe'});
+    const unchanged='unity-games/unchanged-world';
+    const src=JSON.parse(fs.readFileSync(path.join(unchanged,'unity-web-floor-source.json'),'utf8'));
+    const runtime=fs.readFileSync(path.join(unchanged,'Assets/Scripts/UnityWebFloorGame.cs'),'utf8');
+    assert.equal(src.proceduralEnvironment,null);
+    assert.equal(fs.existsSync(path.join(unchanged,'Assets/Resources/vibe-world-layout.json')),false);
+    assert.doesNotMatch(runtime,/BuildApprovedWorldVisuals/);
+    original.content.spatialLayout.dimension='2D';
+    original.content.spatialLayout.proceduralWorld={approvedDesign:true,dimension:'2D',seed:'2d-not-3d'};
+    fs.writeFileSync(baseline,JSON.stringify(original));
+    assert.throws(()=>execFileSync(process.execPath,[tool.pathname,...args],{stdio:'pipe'}));
+    original.content.spatialLayout.dimension='3D';
+    original.content.spatialLayout.proceduralWorld={
+      approvedDesign:true,dimension:'3D',width:24,height:24,seed:'blocked',
+      reservedCells:Array.from({length:24},(_,z)=>({x:12,z}))
+    };
+    fs.writeFileSync(baseline,JSON.stringify(original));
+    assert.throws(()=>execFileSync(process.execPath,[tool.pathname,...args],{stdio:'pipe'}));
+    assert.equal(fs.existsSync(path.join(unchanged,'Assets/Resources/vibe-world-layout.json')),false);
+  }finally{
+    process.chdir(before);
+    fs.rmSync(root,{recursive:true,force:true});
   }
 });
