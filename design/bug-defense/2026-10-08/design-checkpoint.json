@@ -952,25 +952,28 @@
       "toSystem": "World state change and next selection",
       "trigger": "Players must interpret the incoming insect wave and its threat pattern, then place or adjust defenders and spend limited resources on the highest-value counter to survive and advance.",
       "stateChange": "Players must interpret the incoming insect wave and its threat pattern, then place or adjust defenders and spend limited resources on the highest-value counter to survive and advance. This action directly results in a world state change, where the game's environment is altered based on the player's strategic response to the current threat pattern."
+    },
+    "local_authoring_parts::485f4ae77cf7477f076030dcc80ff9708d9ca8de3b2c8659fe6b1879a87e6097:fromId": {
+      "fromId": "Read the incoming insect wave and its threat pattern."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 39,
-      "successes": 36,
+      "calls": 40,
+      "successes": 37,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 3143974,
-      "lastMs": 34776,
+      "totalMs": 3176419,
+      "lastMs": 32445,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T15:42:00.826Z"
+      "updatedAt": "2026-10-08T15:42:33.275Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:47:19.560Z",
-  "updatedAt": "2026-10-08T15:42:00.828Z",
+  "updatedAt": "2026-10-08T15:42:33.275Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3396,7 +3399,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:42:00.828Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:42:33.275Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
