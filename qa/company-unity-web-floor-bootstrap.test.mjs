@@ -429,7 +429,7 @@ test('Unity Web and Android share verified-only destructible world interactions 
       identity:'Verified procedural resource gathering',multiplayerMode:'SINGLE_PLAYER',
       verifiedRuntimeInteractionContract:true,platformProfiles:{UNITY:{platform:'UNITY'}},
       spatialLayout:{dimension:'3D',proceduralWorld:{
-        approvedDesign:true,seed:'world-harvest-1',width:24,height:24,density:.8,
+        approvedDesign:true,seed:'rpg-mountain-1',width:24,height:24,density:.8,biome:'MOUNTAIN',climate:'COLD_WET',buildingStyle:'GOTHIC',
         runtimeInteractionsApproved:true,
         interactionRules:{
           GATHER:{maxHealth:80,hitDamage:20,rewardItemId:'wood_01',minDrop:2,maxDrop:3,respawnSeconds:60},
@@ -451,6 +451,7 @@ test('Unity Web and Android share verified-only destructible world interactions 
     const build=fs.readFileSync(path.join(output,'Assets/Editor/UnityWebFloorBuild.cs'),'utf8');
     const manifest=JSON.parse(fs.readFileSync(path.join(output,'unity-web-floor-source.json'),'utf8'));
     assert.ok(data.vegetation.some(node=>node.maxHealth===80&&node.rewardItemId==='wood_01'));
+    assert.ok(data.vegetation.some(node=>node.maxHealth===120&&node.rewardItemId==='stone_01'));
     assert.ok(data.vegetation.every(node=>node.maxHealth===0||node.hitDamage>0));
     assert.match(runtime,/public interface IInteractable/);
     assert.match(runtime,/class VibeHarvestableObject : MonoBehaviour, IInteractable/);
