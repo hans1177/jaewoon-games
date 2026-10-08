@@ -191,6 +191,30 @@ test('central policy enables the real BUILD_UP directive and prompt with no new 
   assert.equal(make({policy:{}}),null);
 });
 
+test('approved procedural world reaches actual Roblox and Unity production plans through existing source handoff',()=>{
+  const spec={approvedDesign:true,seed:'planner-integration',dimension:'3D',width:24,height:24,density:.7,climate:'WET',biome:'MOUNTAIN'};
+  const design={identity:'산악 마을 탐험',genre:'RPG',spatialLayout:{dimension:'3D',proceduralWorld:spec},coreLoop:['마을에서 출발','산길 탐험']};
+  for(const [platform,files] of [
+    ['ROBLOX',['roblox-games/mountain/server/World.server.luau','roblox-games/mountain/client/HUD.client.luau']],
+    ['UNITY_WEB',['unity-games/mountain/Assets/Scripts/World.cs','unity-games/mountain/Assets/Scripts/HUDView.cs']]
+  ]){
+    const activePolicy={...policy,status:'ACTIVE_EXECUTABLE_CONTRACT',platforms:['ROBLOX','UNITY','WEB'],spatialBlueprint:{enabled:true}};
+    const actual=buildRobloxProductionPlan({gameId:'mountain',platform,design,source:{sourceTreeFingerprint:'e2e-v1'},responsibleFiles:files,focus:'CORE_FUN',policy:activePolicy});
+    assert.ok(actual);
+    assert.equal(actual.mode,'CONNECTED_CONTENT_IMPLEMENTATION');
+    assert.equal(actual.spatialBlueprintContract?.macroSketch?.proceduralWorldStudy?.status,'STATIC_LAYOUT_PROPOSED');
+    const world=productionBlueprintContractsForFiles(actual,{responsibleFiles:[files[0]]});
+    const menu=productionBlueprintContractsForFiles(actual,{responsibleFiles:[files[1]]});
+    assert.equal(world.spatial.required,true);
+    assert.equal(menu.spatial.required,false);
+    assert.match(robloxProductionPromptLines(actual,{responsibleFiles:[files[0]]}).join('\n'),/planner-integration/);
+    assert.doesNotMatch(robloxProductionPromptLines(actual,{responsibleFiles:[files[1]]}).join('\n'),/planner-integration/);
+    assert.equal(actual.spatialBlueprintContract.runtimeVerified,false);
+    const repair=buildRobloxProductionPlan({gameId:'mountain',platform,design,source:{sourceTreeFingerprint:'e2e-v1'},responsibleFiles:files,focus:'STABILITY',policy:activePolicy});
+    assert.equal(repair.spatialBlueprintContract,null);
+  }
+});
+
 test('approved procedural landscapes reach only the existing world source worker and remain unverified proposals',()=>{
   const world='roblox-games/landscape/server/World.luau',menu='roblox-games/landscape/client/Menu.luau';
   const spec={approvedDesign:true,seed:'winter-village',dimension:'3D',width:24,height:24,density:.7,biome:'MOUNTAIN',climate:'COLD_WET'};
