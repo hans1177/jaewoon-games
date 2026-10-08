@@ -1,5 +1,5 @@
 {
-  "version": 86,
+  "version": 87,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -155,7 +155,19 @@
     "directReviewRequired": true,
     "bypassForbidden": true,
     "authorizedResolutionMode": "AUTHORIZED_POLICY_REVIEW_PASS",
-    "reviewedPolicyLearningDefault": "HOLD_POLICY_REVIEW_ONLY_UNLESS_SEPARATELY_APPROVED"
+    "reviewedPolicyLearningDefault": "HOLD_POLICY_REVIEW_ONLY_UNLESS_SEPARATELY_APPROVED",
+    "relevanceClassification": {
+      "authority": "OWNER_DIRECTIVE_2026-10-08",
+      "source": "EXACT_BASE_AND_HEAD_JSON_DIFF",
+      "productionDesignContentOnly": "DIAGNOSTIC_NO_SECURITY_REVIEW_OR_SECURITY_CONTRACT_SUITE",
+      "productionDesignScope": "platform-release-roadmap.json#directNativeDualPlatformDevelopment.design",
+      "securityAuthorityAndPermissionChanges": "DIRECT_REVIEW_REQUIRED",
+      "mixedOrUnclassifiableChanges": "KEEP_SECURITY_REVIEW",
+      "secretsMalwareAndPrivilegeScanAlways": true,
+      "deletionMayNotRemoveAuthorityProtectionSilently": true,
+      "qualityAndFinalDesignReviewUnchanged": true,
+      "newWorkflowOrGate": false
+    }
   },
   "externalAiCandidateQuarantine": {
     "persistBeforePullRequest": true,
