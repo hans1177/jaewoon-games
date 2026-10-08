@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::197b4b3554267b10552dff26f05c5b757591cfc735b0c5c032604ec2769653ae:identity": {
+      "identity": "숲의 생존자들에서 플레이어는 Explore the forest for a needed resource while reading environmental and creature danger.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 숲의 생존자들은 협력하여 자원을 확보하며, 위험에 노출되어서는 안 되는 환경을 이해하고, 그에 따라 행동을 결정해야 한다. 이 과정에서 플레이어는 다양한 선택을 하며, 그 선택이 주변의 상태와 관계를 변화시켜 나간다. 이러한 선택은 새로운 상태로 전환되며, 이를 통해 플레이어는 더 깊은 세계 속에서 살아남아야 한다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 206580,
+      "lastMs": 206580,
+      "lastError": null,
+      "updatedAt": "2026-10-08T18:27:08.657Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:23:42.058Z",
-  "updatedAt": "2026-10-08T18:23:42.072Z",
+  "updatedAt": "2026-10-08T18:27:08.657Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2237,5 +2253,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-08T18:27:08.657Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
