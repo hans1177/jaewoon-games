@@ -2960,6 +2960,8 @@ test('GLB production inspection rejects poisoned payloads and malformed import b
     ['GLB_NODE_HIERARCHY_INVALID',d=>d.nodes[1].children=[0]],
     ['GLB_NODE_TRANSFORM_INVALID',d=>d.nodes[1].rotation=[0,0,0,0]],
     ['GLB_MATERIAL_FACTOR_INVALID',d=>d.materials[0].pbrMetallicRoughness.roughnessFactor=2],
+    ['GLB_MATERIAL_BINDING_INVALID',d=>d.meshes[0].primitives[0].material=7],
+    ['GLB_UV_DATA_INVALID',d=>{d.accessors.push({...d.accessors[2],count:2});d.meshes[0].primitives[0].attributes.TEXCOORD_1=4;}],
     ['GLB_MATERIAL_TEXTURE_BINDING_INVALID',d=>d.materials[0].normalTexture={index:5}],
     ['GLB_SPARSE_MATERIALIZATION_REQUIRED',d=>d.accessors[0].sparse={count:1}],
     ['GLB_VISIBLE_GEOMETRY_REQUIRED',d=>d.scenes[0].nodes=[]]

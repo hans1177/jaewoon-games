@@ -227,6 +227,8 @@ export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
   // and contact placement for every mesh family, including a single static rock.
   const finiteVector=(value,length)=>Array.isArray(value)&&value.length===length&&value.every(Number.isFinite);
   const geometryRows=(document.meshes||[]).flatMap((mesh,meshIndex)=>mesh.primitives.map((primitive,primitiveIndex)=>{
+    // 명시된 재질은 실제 슬롯이어야 한다. 재질 생략은 glTF 기본 재질을 보존한다.
+    if(primitive.material!==undefined&&(!Number.isInteger(primitive.material)||primitive.material<0||primitive.material>=materials.length))issues.push('GLB_MATERIAL_BINDING_INVALID');
     const position=accessorInfo(primitive.attributes.POSITION),normal=accessorInfo(primitive.attributes.NORMAL);
     const bounds={min:[Infinity,Infinity,Infinity],max:[-Infinity,-Infinity,-Infinity]};
     let invalidPositionCount=0,invalidNormalCount=0,invalidUvCount=0,invalidIndexCount=0;
@@ -244,7 +246,7 @@ export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
     }else invalidNormalCount++;
     for(const [semantic,index] of Object.entries(primitive.attributes))if(/^TEXCOORD_\d+$/.test(semantic)){
       const uv=accessorInfo(index);
-      if(!uv.valid||uv.type!=='VEC2'||!(uv.componentType===5126||[5121,5123].includes(uv.componentType)&&uv.normalized)){invalidUvCount++;continue;}
+      if(!uv.valid||uv.count!==position.count||uv.type!=='VEC2'||!(uv.componentType===5126||[5121,5123].includes(uv.componentType)&&uv.normalized)){invalidUvCount++;continue;}
       for(let v=0;v<uv.count;v++)for(let c=0;c<2;c++)if(!Number.isFinite(readAccessorComponent(uv,v,c)))invalidUvCount++;
     }
     const indices=primitive.indices===undefined?null:accessorInfo(primitive.indices);
