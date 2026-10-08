@@ -306,6 +306,7 @@ def surface_distribution():
             for i in range(3):
                 first[i]+=weight*total[i]/3;orientation[i]+=weight*(cross[i]/length)**2
                 for j in range(3): second[i*3+j]+=weight*(total[i]*total[j]+sum(v[i]*v[j] for v in p))/12
+    if not area>0: raise RuntimeError('NATIVE_GLB_EMPTY_TRIANGLE_SURFACE')
     center=[v/area for v in first]
     covariance=[v/area-center[i//3]*center[i%3] for i,v in enumerate(second)]
     trace=covariance[0]+covariance[4]+covariance[8]
@@ -331,23 +332,11 @@ for index,mat in enumerate(glb_document.get('materials',[])):
         'web':{'metalness':metal,'roughness':rough,'colorSpace':'SRGB_BASE_COLOR_LINEAR_DATA'},
         'unity':{'metallic':metal,'smoothness':1-rough,'texturePacking':'METALLIC_R_SMOOTHNESS_A'},
         'roblox':{'metalness':metal,'roughness':rough,'texturePacking':'SEPARATE_GRAYSCALE_METALNESS_AND_ROUGHNESS','requires':'MeshPart_SurfaceAppearance_supported_import'}})
-# 메인: Blender 실제 삼각형 표면과 GLB 내보내기 좌표(Y-up) 메타데이터를 동기화한다.
-# 표면 통계는 시각·제작 참고값이며 충돌체, 질량, 게임 피해 판정이 아니다.
-surface_area=0.0
-surface_moment=Vector((0.0,0.0,0.0))
-for obj in ASSET_OBJECTS:
-    if hasattr(obj.data,'calc_loop_triangles'):
-        obj.data.calc_loop_triangles()
-    for triangle in obj.data.loop_triangles:
-        p0,p1,p2=(obj.matrix_world @ obj.data.vertices[index].co for index in triangle.vertices)
-        area_value=(p1-p0).cross(p2-p0).length/2
-        if area_value>0 and math.isfinite(area_value):
-            surface_area+=area_value
-            surface_moment+=(p0+p1+p2)*(area_value/3)
-centroid=surface_moment/surface_area if surface_area>0 else None
+# 기존 geometrySurface와 2차 surfaceDistribution은 같은 삼각형 적분 결과를 공유한다.
+# 모델 표면은 물리 질량·충돌 판정의 권위가 아니다.
 geometry_surface={
-    'areaSquareMeters':surface_area,
-    'centroidMeters':[centroid.x,centroid.z,-centroid.y] if centroid is not None else None,
+    'areaSquareMeters':physical_analysis['surfaceAreaM2'],
+    'centroidMeters':physical_analysis['centroidMeters'],
     'nonAuthoritative':True
 }
 
@@ -384,7 +373,6 @@ area('Rim',(0,4.3,5.0),720,3.0,(.65,.80,1.0))
 
 cam_data=bpy.data.cameras.new('PreviewCamera')
 cam=bpy.data.objects.new('PreviewCamera',cam_data); SCENE.collection.objects.link(cam)
-cam.location=(6.1,-7.2,5.0) if ARGS.profile in ('background','environment') else (4.5,-5.7,3.6)
 target=Vector((0,0,BOUNDS_SIZE[2]*.5))
 cam.location=target+Vector((1.5,-1.9,1.25))*max(BOUNDS_SIZE)
 cam.rotation_euler=(target-Vector(cam.location)).to_track_quat('-Z','Y').to_euler()
