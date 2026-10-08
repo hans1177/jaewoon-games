@@ -783,25 +783,55 @@
         "resourceFlow": "기본",
         "balanceRules": "기본"
       }
+    },
+    "local_authoring_parts::8c01518da8f8d31a61f7986dd6ad2edcca119b17c2266521bfee10e06d7abb9e:contentExpansionPlan,failureRetryRisk": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "게임 시작",
+          "newGameplay": "플레이어는 블드 레이블로 시작하는 반복적 PUZZLE 게임의 핵심 재미와 시스템 연결을 확정한다.",
+          "systemImpact": "게임은 시작 단계에서 목표, 제한, 장애물, 또는 흐름 있는 퀘스트 형태로 진행되며, 선택이 즉시 상태 변화를 만든다. 게임은 단순 반복과 다른 경로·위험·결과를 만든다. 성장은 행동·경로·조합·관계·발견·대응법을 열"
+        },
+        {
+          "milestone": "게임 진행",
+          "newGameplay": "플레이어는 시작 단계에서 목표, 제한, 장애물, 또는 흐름 있는 퀘스트 형태로 진행되며, 선택이 즉시 상태 변화를 만든다. 게임은 단순 반복과 다른 경로·위험·결과를 만든다. 성장은 행동·경로·조합·관계·발견·대응법을 열",
+          "systemImpact": "게임은 단순 반복과 다른 경로·위험·결과를 만든다. 성장은 행동·경로·조합·관계·발견·대응법을 열"
+        },
+        {
+          "milestone": "게임 종료",
+          "newGameplay": "플레이어는 시작 단계에서 목표, 제한, 장애물, 또는 흐름 있는 퀘스트 형태로 진행되며, 선택이 즉시 상태 변화를 만든다. 게임은 단순 반복과 다른 경로·위험·결과를 만든다. 성장은 행동·경로·조합·관계·발견·대응법을 열",
+          "systemImpact": "게임은 단순 반복과 다른 경로·위험·결과를 만든다. 성장은 행동·경로·조합·관계·발견·대응법을 열"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "게임_시작_목표_2",
+          "제한_이동_수_2",
+          "장애물_집합_2",
+          "시그니처_규칙_4"
+        ],
+        "retryFlow": "게임_시작_목표_2 설정, 제한_이동_수_2 선택, 장애물_집합_2 해결, 시그니처_규칙_4 적용",
+        "riskPressure": "게임은 단순 반복과 다른 경로·위험·결과를 만든다. 성장은 행동·경로·조합·관계·발견·대응법을 열",
+        "recoveryRules": "게임_시작_목표_2 설정, 제한_이동_수_2 선택, 장애물_집합_2 해결, 시그니처_규칙_4 적용"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 16,
+      "calls": 18,
+      "successes": 17,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1675697,
-      "lastMs": 155298,
+      "totalMs": 1800660,
+      "lastMs": 124963,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T13:21:13.530Z"
+      "updatedAt": "2026-10-08T13:23:18.495Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:53:17.663Z",
-  "updatedAt": "2026-10-08T13:21:13.530Z",
+  "updatedAt": "2026-10-08T13:23:18.500Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2835,17 +2865,161 @@
     }
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "beef0c87c90b9d539cec6d3cda726d2c405865b1c421888a25049b32cd5848b8"
   },
-  "sliceRepairFeedback": {},
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "별길 개척자-게임_시그니처_1→별길 개척자-게임_시그니처_2의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: 별길 개척자-게임_시그니처_1→별길 개척자-게임_시그니처_2의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "별길 개척자-게임_시그니처_2→별길 개척자-게임_시그니처_3의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: 별길 개척자-게임_시그니처_2→별길 개척자-게임_시그니처_3의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "별길 개척자-게임_시그니처_3→별길 개척자-게임_시그니처_4의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: 별길 개척자-게임_시그니처_3→별길 개척자-게임_시그니처_4의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "별길 개척자-게임_시그니처_4→별길 개척자-게임_시그니처_5의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: 별길 개척자-게임_시그니처_4→별길 개척자-게임_시그니처_5의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "별길 개척자-게임_시그니처_5→별길 개척자-게임_시그니처_1의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: 별길 개척자-게임_시그니처_5→별길 개척자-게임_시그니처_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 1,
+    "designer_draft_slices::systems-progression": 1
   },
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:21:13.530Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "선형",
+      "progressionEconomyBalance": {
+        "progressionLoop": "기본",
+        "resourceFlow": "기본",
+        "balanceRules": "기본"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "게임 시작",
+          "newGameplay": "플레이어는 블드 레이블로 시작하는 반복적 PUZZLE 게임의 핵심 재미와 시스템 연결을 확정한다.",
+          "systemImpact": "게임은 시작 단계에서 목표, 제한, 장애물, 또는 흐름 있는 퀘스트 형태로 진행되며, 선택이 즉시 상태 변화를 만든다. 게임은 단순 반복과 다른 경로·위험·결과를 만든다. 성장은 행동·경로·조합·관계·발견·대응법을 열"
+        },
+        {
+          "milestone": "게임 진행",
+          "newGameplay": "플레이어는 시작 단계에서 목표, 제한, 장애물, 또는 흐름 있는 퀘스트 형태로 진행되며, 선택이 즉시 상태 변화를 만든다. 게임은 단순 반복과 다른 경로·위험·결과를 만든다. 성장은 행동·경로·조합·관계·발견·대응법을 열",
+          "systemImpact": "게임은 단순 반복과 다른 경로·위험·결과를 만든다. 성장은 행동·경로·조합·관계·발견·대응법을 열"
+        },
+        {
+          "milestone": "게임 종료",
+          "newGameplay": "플레이어는 시작 단계에서 목표, 제한, 장애물, 또는 흐름 있는 퀘스트 형태로 진행되며, 선택이 즉시 상태 변화를 만든다. 게임은 단순 반복과 다른 경로·위험·결과를 만든다. 성장은 행동·경로·조합·관계·발견·대응법을 열",
+          "systemImpact": "게임은 단순 반복과 다른 경로·위험·결과를 만든다. 성장은 행동·경로·조합·관계·발견·대응법을 열"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "게임_시작_목표_2",
+          "제한_이동_수_2",
+          "장애물_집합_2",
+          "시그니처_규칙_4"
+        ],
+        "retryFlow": "게임_시작_목표_2 설정, 제한_이동_수_2 선택, 장애물_집합_2 해결, 시그니처_규칙_4 적용",
+        "riskPressure": "게임은 단순 반복과 다른 경로·위험·결과를 만든다. 성장은 행동·경로·조합·관계·발견·대응법을 열",
+        "recoveryRules": "게임_시작_목표_2 설정, 제한_이동_수_2 선택, 장애물_집합_2 해결, 시그니처_규칙_4 적용"
+      }
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T13:23:18.497Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
