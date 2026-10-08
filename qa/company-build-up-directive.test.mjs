@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import {runInNewContext} from 'node:vm';
 import {repairDesignRequiredFields} from '../tools/company-design-prepromotion-repair.mjs';
 import {
   BUILD_UP_DOMAINS,
@@ -1020,4 +1021,45 @@ test('design-to-native trace is fail-closed for absent owners, incomplete roles 
     assert.match(worker,/designCodeVerification=/);
     assert.match(worker,/KEEP EVERY MAIN\/A\/B\/c\/@ ROLE/);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('focused and oversized Vibe source prompt retains all five designer-to-code roles',()=>{
+  const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  const start=worker.indexOf('function gameSpecificBuildUpDirectiveGuidance(');
+  const finish=worker.indexOf('export function buildRobloxNativeSourceInspection',start);
+  assert.ok(start>=0&&finish>start);
+  const {guide,compact}=runInNewContext(worker.slice(start,finish)
+    +'\n({guide:gameSpecificBuildUpDirectiveGuidance,compact:buildUpDirectiveBlockFromPrompt})',{
+      clean:v=>String(v??'').trim(),posix:v=>String(v??'').replaceAll('\\\\','/'),
+      unique:v=>[...new Set(v)],robloxProductionPromptLines:()=>[],
+      boundedPromptText:(v,max)=>String(v).slice(0,Math.max(256,Number(max)||768)),
+      COMPACT_DIRECTIVE_LINE_BYTES:768,SOURCE_REPAIR_DIRECTIVE_PREFIXES:[],
+      Buffer,console:{log(){}}
+    });
+  const owner='roblox-games/demo/server/Game.server.luau';
+  const roles=['MAIN','A','B','c','@'];
+  const row={directiveId:'demo',gameId:'demo',generation:1,
+    gameIdentityAndNonNegotiables:{identity:'공통 원본'},
+    thisLoopPrimaryGoal:'CODE_OWNER_REPAIR '.repeat(2400),
+    designToPlatformCodingTrace:{
+      activePlatform:'ROBLOX',multiplayerMode:'COOP',minimumParticipants:2,
+      platformCodingPlans:[{platform:'ROBLOX',canonicalGameSourceRoot:'roblox-games/demo'}],
+      roleBindings:roles.map((role,index)=>({
+        role,systemId:'system-'+index,stateInputs:['CurrentState'],
+        stateOutputs:['NextState'],suggestedExistingOwnerFiles:[owner],
+        codingStatus:'SOURCE_OWNER_CANDIDATE_UNVERIFIED'
+      }))
+    }
+  };
+  const original=guide({target:'roblox',gameId:'demo',buildUpDirective:row},[owner]);
+  for(const variant of [
+    original,
+    compact(original,{compact:true,responsiblePaths:[owner]}),
+    compact(original,{compact:true,focusedRobloxVisual:true,selectedPath:owner})
+  ]){
+    for(const role of roles)assert.ok(variant.includes('designCodeRole='+role+';'),
+      role+' source requirement must survive focused/oversized recovery');
+    assert.match(variant,/designCodePlatform=ROBLOX/);
+    assert.match(variant,/designCodeVerification=/);
+  }
 });
