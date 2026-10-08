@@ -98,25 +98,214 @@
       "name": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.",
       "purpose": "Read the current border pressure and choose one territory objective based on regional characteristics.",
       "playerChoice": "Select a territory objective that balances immediate needs with long-term strategic goals."
+    },
+    "local_authoring_parts::24fe65c821c630e13b4473bb7d52056f17354d642c51d16d734bc768bf5c63bb:signatureSystems:4": {
+      "id": "territory-war",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "currentBorderPressure"
+      ],
+      "stateOutputs": [
+        "selectedTerritoryObjective",
+        "resourceDistribution",
+        "movementPaths",
+        "riskRewardRatio"
+      ],
+      "name": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.",
+      "purpose": "Read the current border pressure and choose one territory objective based on regional characteristics.",
+      "playerChoice": "Select a territory objective that balances immediate needs with long-term strategic goals."
+    },
+    "local_authoring_parts::8312d6a36db8e11ca265822a8a0b8ce376594df070176485d8539ae62b9954f1:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "territory-war",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "currentBorderPressure"
+          ],
+          "stateOutputs": [
+            "selectedTerritoryObjective",
+            "resourceDistribution",
+            "movementPaths",
+            "riskRewardRatio"
+          ],
+          "name": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.",
+          "purpose": "Read the current border pressure and choose one territory objective.",
+          "playerChoice": "Select a territory objective based on the current border pressure and regional characteristics."
+        },
+        {
+          "id": "territory-war",
+          "grammarRole": "A",
+          "stateInputs": [
+            "currentBorderPressure"
+          ],
+          "stateOutputs": [
+            "selectedTerritoryObjective",
+            "resourceDistribution",
+            "movementPaths",
+            "riskRewardRatio"
+          ],
+          "name": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.",
+          "purpose": "Read the current border pressure and choose one territory objective.",
+          "playerChoice": "Select a territory objective based on the current border pressure and regional characteristics."
+        },
+        {
+          "id": "territory-war",
+          "grammarRole": "B",
+          "stateInputs": [
+            "currentBorderPressure"
+          ],
+          "stateOutputs": [
+            "selectedTerritoryObjective",
+            "resourceDistribution",
+            "movementPaths",
+            "riskRewardRatio"
+          ],
+          "name": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.",
+          "purpose": "Read the current border pressure and choose one territory objective.",
+          "playerChoice": "Select a territory objective based on the current border pressure and regional characteristics."
+        },
+        {
+          "id": "territory-war",
+          "grammarRole": "c",
+          "stateInputs": [
+            "currentBorderPressure"
+          ],
+          "stateOutputs": [
+            "selectedTerritoryObjective",
+            "resourceDistribution",
+            "movementPaths",
+            "riskRewardRatio"
+          ],
+          "name": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.",
+          "purpose": "Read the current border pressure and choose one territory objective based on regional characteristics.",
+          "playerChoice": "Select a territory objective that balances immediate needs with long-term strategic goals."
+        },
+        {
+          "id": "territory-war",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "currentBorderPressure"
+          ],
+          "stateOutputs": [
+            "selectedTerritoryObjective",
+            "resourceDistribution",
+            "movementPaths",
+            "riskRewardRatio"
+          ],
+          "name": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.",
+          "purpose": "Read the current border pressure and choose one territory objective based on regional characteristics.",
+          "playerChoice": "Select a territory objective that balances immediate needs with long-term strategic goals."
+        }
+      ]
+    },
+    "local_authoring_parts::37139e8fe04de7fb271b720ac071c57ab8370a1e622697538251556b60323d7f:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Read the current border pressure and choose one territory objective.",
+        "Commit units or resources to attack, reinforce or expand economy.",
+        "Resolve the territorial change and adapt the next plan to the new front line."
+      ],
+      "signatureSystems": [
+        {
+          "id": "territory-war",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "currentBorderPressure"
+          ],
+          "stateOutputs": [
+            "selectedTerritoryObjective",
+            "resourceDistribution",
+            "movementPaths",
+            "riskRewardRatio"
+          ],
+          "name": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.",
+          "purpose": "Read the current border pressure and choose one territory objective.",
+          "playerChoice": "Select a territory objective based on the current border pressure and regional characteristics."
+        },
+        {
+          "id": "territory-war",
+          "grammarRole": "A",
+          "stateInputs": [
+            "currentBorderPressure"
+          ],
+          "stateOutputs": [
+            "selectedTerritoryObjective",
+            "resourceDistribution",
+            "movementPaths",
+            "riskRewardRatio"
+          ],
+          "name": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.",
+          "purpose": "Read the current border pressure and choose one territory objective.",
+          "playerChoice": "Select a territory objective based on the current border pressure and regional characteristics."
+        },
+        {
+          "id": "territory-war",
+          "grammarRole": "B",
+          "stateInputs": [
+            "currentBorderPressure"
+          ],
+          "stateOutputs": [
+            "selectedTerritoryObjective",
+            "resourceDistribution",
+            "movementPaths",
+            "riskRewardRatio"
+          ],
+          "name": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.",
+          "purpose": "Read the current border pressure and choose one territory objective.",
+          "playerChoice": "Select a territory objective based on the current border pressure and regional characteristics."
+        },
+        {
+          "id": "territory-war",
+          "grammarRole": "c",
+          "stateInputs": [
+            "currentBorderPressure"
+          ],
+          "stateOutputs": [
+            "selectedTerritoryObjective",
+            "resourceDistribution",
+            "movementPaths",
+            "riskRewardRatio"
+          ],
+          "name": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.",
+          "purpose": "Read the current border pressure and choose one territory objective based on regional characteristics.",
+          "playerChoice": "Select a territory objective that balances immediate needs with long-term strategic goals."
+        },
+        {
+          "id": "territory-war",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "currentBorderPressure"
+          ],
+          "stateOutputs": [
+            "selectedTerritoryObjective",
+            "resourceDistribution",
+            "movementPaths",
+            "riskRewardRatio"
+          ],
+          "name": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.",
+          "purpose": "Read the current border pressure and choose one territory objective based on regional characteristics.",
+          "playerChoice": "Select a territory objective that balances immediate needs with long-term strategic goals."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 625834,
-      "lastMs": 71714,
+      "totalMs": 697279,
+      "lastMs": 71445,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:51:05.649Z"
+      "updatedAt": "2026-10-08T18:52:17.095Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:40:39.764Z",
-  "updatedAt": "2026-10-08T18:51:05.649Z",
+  "updatedAt": "2026-10-08T18:52:17.098Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2140,7 +2329,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:51:05.649Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:52:17.098Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
