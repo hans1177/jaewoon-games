@@ -12,25 +12,32 @@
   "tasks": {
     "local_authoring_parts::ac3c84927f6ecd6458e73191e8a718d30642af859a85efff439bb4f3716c51ea:identity": {
       "identity": "잃어버린 별의 메아리 - 플레이어가 희망하는 과거에 빠져 있는 현실적인 생존 게임, 주체는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다."
+    },
+    "local_authoring_parts::ac3c84927f6ecd6458e73191e8a718d30642af859a85efff439bb4f3716c51ea:playerFantasy": {
+      "playerFantasy": "플레이어는 희망하는 과거에 빠져 있는 현실적인 생존 게임이다. 주체는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다."
+    },
+    "local_authoring_parts::94ae3f7293cebcc2bc58d5892e8096808529a4648aeb86e82d39ae7120e21560:identity,playerFantasy": {
+      "identity": "잃어버린 별의 메아리 - 플레이어가 희망하는 과거에 빠져 있는 현실적인 생존 게임, 주체는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.",
+      "playerFantasy": "플레이어는 희망하는 과거에 빠져 있는 현실적인 생존 게임이다. 주체는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 147570,
-      "lastMs": 147570,
+      "totalMs": 177660,
+      "lastMs": 30090,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:59:56.213Z"
+      "updatedAt": "2026-10-08T22:00:26.304Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:57:28.495Z",
-  "updatedAt": "2026-10-08T21:59:56.213Z",
+  "updatedAt": "2026-10-08T22:00:26.306Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2229,7 +2236,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:59:56.213Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T22:00:26.306Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
