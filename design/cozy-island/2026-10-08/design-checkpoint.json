@@ -51,25 +51,53 @@
         "자원 거점 선택 및 보상 획득",
         "전략적 조합 및 병종 확보"
       ]
+    },
+    "local_authoring_parts::6fbc11e7ee351566c1d217bc6fd84b6211262b6fd32da7caea3fd241554aea3f:name,purpose,playerChoice": {
+      "name": "COZY_CHIBI_KINGDOM_WORLD_V8",
+      "purpose": "자원 수집 및 주민 고용, 병력 강화 및 거점 점령, 자동전투 및 협동 지원, 왕국 확장 및 성장 감각, 자원 거점 선택 및 보상 획득, 전략적 조합 및 병종 확보",
+      "playerChoice": "자원의 수집, 주민의 고용, 병력의 강화, 거점의 점령, 자동전투, 협동 지원의 순차적 진행"
+    },
+    "local_authoring_parts::1d6d16563228e8d8553e32c8ef41051e783ff25319a4e73bf0fcaa0160b633ce:signatureSystems:0": {
+      "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "나무·식량 직접 채집",
+        "주민 고용과 벌목/농업 자동화",
+        "병영 강화와 병사 모집",
+        "다음 자원 거점 선택",
+        "보이는 자동전투와 점령 보상",
+        "협동 지원으로 강한 거점 공략"
+      ],
+      "stateOutputs": [
+        "자원 수집 및 주민 고용",
+        "병력 강화 및 거점 점령",
+        "자동전투 및 협동 지원",
+        "왕국 확장 및 성장 감각",
+        "자원 거점 선택 및 보상 획득",
+        "전략적 조합 및 병종 확보"
+      ],
+      "name": "COZY_CHIBI_KINGDOM_WORLD_V8",
+      "purpose": "자원 수집 및 주민 고용, 병력 강화 및 거점 점령, 자동전투 및 협동 지원, 왕국 확장 및 성장 감각, 자원 거점 선택 및 보상 획득, 전략적 조합 및 병종 확보",
+      "playerChoice": "자원의 수집, 주민의 고용, 병력의 강화, 거점의 점령, 자동전투, 협동 지원의 순차적 진행"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 5,
+      "calls": 10,
+      "successes": 6,
       "failures": 4,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 713758,
-      "lastMs": 24561,
+      "totalMs": 730487,
+      "lastMs": 16729,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T03:42:28.498Z"
+      "updatedAt": "2026-10-08T03:42:45.228Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T03:30:34.599Z",
-  "updatedAt": "2026-10-08T03:42:28.498Z",
+  "updatedAt": "2026-10-08T03:42:45.229Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -662,7 +690,7 @@
   "sliceRepairAttempts": {
     "designer_draft_slices::identity-core": 1
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T03:42:28.498Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T03:42:45.228Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
