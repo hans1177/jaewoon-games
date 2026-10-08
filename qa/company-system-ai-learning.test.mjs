@@ -399,6 +399,8 @@ test('System AI learns two hypotheses for exact Roblox failures without inventin
     ['ROBLOX_F0_SOURCE_PREFLIGHT_FAILED','F0_SOURCE_PREFLIGHT'],
     ['ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING','PRIVATE_RUNTIME_CANDIDATE_DEPLOY'],
     ['ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE','TARGET_PLATFORM_RUNTIME_FOUNDATION'],
+    ['ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED','TARGET_PLATFORM_RUNTIME_FOUNDATION'],
+    ['ROBLOX_FIRST_FRAME_GROUNDING_FAILED','TARGET_PLATFORM_RUNTIME_FOUNDATION'],
     ['roblox-package-asset-binding-failed','TARGET_PLATFORM_BUILD_OR_PACKAGE']
   ]){
     const context=buildSystemAiLearningContext({
@@ -411,6 +413,11 @@ test('System AI learns two hypotheses for exact Roblox failures without inventin
     assert.equal(context.floorRecovery.hypotheses.length,2);
     assert.equal(context.floorRecovery.independentVerificationRequired,true);
     assert.equal(context.floorRecovery.verifiedSuccessPromotionOnly,true);
+    if(signature.startsWith('ROBLOX_FIRST_FRAME_')){
+      assert.equal(context.floorRecovery.sourceRepairRequiresVerifiedCause,true);
+      assert.match(context.floorRecovery.next,/exact|Exact|EXACT/);
+      assert.match(context.floorRecovery.preserve,/not a runtime PASS|must invalidate/);
+    }
     assert.equal(context.authorityExpanded,false);
     assert.match(context.guidance,/EXACT F0-F9 RECOVERY/);
   }

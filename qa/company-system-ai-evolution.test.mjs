@@ -567,3 +567,56 @@ test('canonical reusable parent keeps final fan-in while successful games hand o
   assert.ok(ai.includes('--development-queue=/tmp/system-ai-development-queue.json'));
   assert.ok(ai.includes('SYSTEM_AI_DEVELOPMENT_QUEUE_SNAPSHOT=UNAVAILABLE'));
 });
+
+/* ── F1 실제 게임 세계 관측: 정확한 후보에서만 세계 부재와 지면 결함을 구분 ── */
+test('exact first-frame evidence groups unobserved boot separately from proven unsupported spawn',()=>{
+  const revision='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
+  const base={
+    productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
+    robloxSourceCommit:revision,robloxBuildSourceRevision:revision,robloxBuildArtifactIdentity:artifact,
+    robloxBuildOrPackagePassed:true,robloxBuildPreflightPassed:true,robloxFoundationF0Passed:true,
+    robloxFoundationF0Evidence:{sourceRevision:revision,artifactIdentity:artifact,artifactRunId:123},
+    robloxRuntimeCandidateEvidence:{published:true,sourceRevision:revision,artifactIdentity:artifact,versionNumber:7,placeId:'123456'},
+    robloxFailureStage:'TARGET_PLATFORM_RUNTIME_FOUNDATION',
+    robloxFailureSignature:'ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED'
+  };
+  const noBoot={observed:true,sameLuauExecutionSession:true,runtimeWorldReady:false,basePartCount:1,spawnCount:0,
+    spawnGroundingObserved:false,unsupportedSpawns:0,floatingSpawns:0};
+  const unsupported={observed:true,sameLuauExecutionSession:true,runtimeWorldReady:true,basePartCount:21,spawnCount:2,
+    spawnGroundingObserved:true,unsupportedSpawns:1,floatingSpawns:0};
+  const result=analyzeSystemAiBottlenecks({developmentQueue:{items:[
+    {...base,gameId:'amusement-tycoon',robloxFirstFrameGroundingEvidence:noBoot},
+    {...base,gameId:'bug-defense',robloxFirstFrameGroundingEvidence:noBoot},
+    {...base,gameId:'simulation-off',robloxFirstFrameGroundingEvidence:{
+      ...noBoot,sourceRevision:revision,artifactIdentity:artifact,placeId:'123456',candidateVersionNumber:7,
+      simulationRunningAfter:false,serverContextExecuted:true
+    }},
+    {...base,gameId:'stale-first-frame-binding',robloxFirstFrameGroundingEvidence:{
+      ...noBoot,sourceRevision:'c'.repeat(40),artifactIdentity:artifact,placeId:'123456',candidateVersionNumber:7
+    }},
+    {...base,gameId:'geometry-test',robloxFailureSignature:'ROBLOX_FIRST_FRAME_GROUNDING_FAILED',robloxFirstFrameGroundingEvidence:unsupported},
+    {...base,gameId:'quality-blocked',robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:revision,robloxFirstFrameGroundingEvidence:noBoot},
+    {...base,gameId:'superseded',robloxRuntimeCandidateEvidence:{...base.robloxRuntimeCandidateEvidence,sourceRevision:'c'.repeat(40)},robloxFirstFrameGroundingEvidence:noBoot}
+  ]}});
+  assert.equal(result.development.firstFrameWorldBootstrapUnobservedCount,3);
+  assert.equal(result.development.firstFrameServerSimulationNotRunningCount,1);
+  assert.equal(result.development.firstFrameGroundingFailedCount,1);
+  assert.equal(result.development.qualityBlockedCount,1);
+  assert.equal(result.development.pendingCandidateCount,1);
+  const empty=result.development.rows.find(x=>x.gameId==='amusement-tycoon');
+  assert.equal(empty.classification,'EXACT_PRIVATE_CANDIDATE_WORLD_BOOTSTRAP_UNOBSERVED');
+  assert.equal(empty.stage,'TARGET_PLATFORM_RUNTIME_FOUNDATION');
+  assert.equal(empty.firstFrameObservation.basePartCount,1);
+  assert.equal(empty.firstFrameObservation.spawnCount,0);
+  assert.equal(empty.firstFrameObservation.renderedScreenshotClaimed,false);
+  assert.equal(result.development.rows.find(x=>x.gameId==='simulation-off').classification,'EXACT_PRIVATE_GAME_SERVER_SIMULATION_NOT_RUNNING');
+  assert.equal(result.development.rows.find(x=>x.gameId==='stale-first-frame-binding').firstFrameObservation,null);
+  assert.equal(result.development.rows.find(x=>x.gameId==='geometry-test').classification,'EXACT_PRIVATE_CANDIDATE_SPAWN_GROUNDING_FAILED');
+  assert.equal(result.development.rows.find(x=>x.gameId==='quality-blocked').classification,'QUALITY_GATE_BLOCKS_CANDIDATE_HANDOFF');
+  assert.equal(result.development.rows.find(x=>x.gameId==='superseded').firstFrameObservation,null);
+  assert.deepEqual(result.development.commonFailureCohorts[0].gameIds,['amusement-tycoon','bug-defense']);
+  assert.equal(result.development.commonFailureCohorts[0].representativeGameId,'amusement-tycoon');
+  assert.ok(result.actions.includes('TRACE_EXACT_PRIVATE_RUNTIME_WORLD_BOOTSTRAP'));
+  assert.ok(result.actions.includes('REPAIR_VERIFIED_SPAWN_GROUNDING'));
+  assert.ok(result.development.rows.every(x=>x.automaticPassClaim===false));
+});
