@@ -902,25 +902,28 @@
         "riskPressure": "위험 및 기회비용 평가 과정에서 플레이어에게 선택의 복잡성과 결과의 불확실성이 전달되며, 재방문 및 숙련의 필요성이 강조된다.",
         "recoveryRules": "보상 중복 수령과 진행 유실은 검증되어야 하며, 소확행에 수치/재화 보상을 사용할 수 있으나 그것만으로 깊이를 대체하지 않는다."
       }
+    },
+    "local_authoring_parts::3318c3d66ec868f4cf2170a856ff9591641516533a1d5f47c0e8799aaa90a009:fromId": {
+      "fromId": "systemInterconnections[0].stateChange"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 27,
-      "successes": 24,
+      "calls": 28,
+      "successes": 25,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2482938,
-      "lastMs": 174719,
+      "totalMs": 2533833,
+      "lastMs": 50895,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T22:47:19.777Z"
+      "updatedAt": "2026-10-08T22:48:10.682Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T22:05:56.751Z",
-  "updatedAt": "2026-10-08T22:47:19.784Z",
+  "updatedAt": "2026-10-08T22:48:10.682Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3074,10 +3077,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T22:47:19.780Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-08T22:48:10.682Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
