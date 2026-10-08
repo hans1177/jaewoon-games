@@ -678,25 +678,42 @@
         "writeState: 'Transition to next world state based on player choices'"
       ],
       "fromSystem": "signatureSystems_0"
+    },
+    "local_authoring_parts::06a1c6120fc4795370b3e0c144d9e1179c14604642659fc2381e13142ee0315a:toSystem,trigger,stateChange": {
+      "toSystem": "signatureSystems_1",
+      "trigger": "Fight through an escalating horde in a short real-time survival run",
+      "stateChange": "Transition to next world state based on player choices"
+    },
+    "local_authoring_parts::f97672bfa53690024f56d7594db0c2ae05a995e3cd144090f42929b5227f3a2a:systemInterconnections:1": {
+      "fromId": "signatureSystems_0",
+      "toId": "signatureSystems_1",
+      "stateKeys": [
+        "readState: 'Fight through an escalating horde in a short real-time survival run'",
+        "writeState: 'Transition to next world state based on player choices'"
+      ],
+      "fromSystem": "signatureSystems_0",
+      "toSystem": "signatureSystems_1",
+      "trigger": "Fight through an escalating horde in a short real-time survival run",
+      "stateChange": "Transition to next world state based on player choices"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 19,
+      "calls": 20,
+      "successes": 20,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2122905,
-      "lastMs": 93264,
+      "totalMs": 2215701,
+      "lastMs": 92796,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:40:01.941Z"
+      "updatedAt": "2026-10-08T12:41:34.739Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:04:38.961Z",
-  "updatedAt": "2026-10-08T12:40:01.941Z",
+  "updatedAt": "2026-10-08T12:41:34.741Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3041,7 +3058,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:40:01.941Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:41:34.741Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
