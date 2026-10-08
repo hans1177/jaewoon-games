@@ -1018,25 +1018,37 @@
       "toSystem": "wild-survival-weather-systems-16chars-minimum-16chars-maximum-24chars-minimum-24chars-maximum-24chars-minimum-24chars-maximum-24chars-minimum-24chars-24chars-maximum-24chars-minium",
       "trigger": "weatherStorm",
       "stateChange": "weather affects player decisions and resource availability"
+    },
+    "local_authoring_parts::de0eb918ce6a3b9088e8b9d5c89e0579dc7ed754955fb21fe19a71f50894f0a0:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "wild-survival-core",
+      "toId": "wild-survival-weather",
+      "stateKeys": [
+        "월드 상태",
+        "대상",
+        "자원",
+        "위험",
+        "진행 상태"
+      ],
+      "fromSystem": "wild-survival-core-systems-16chars-minimum-16chars-maximum-24chars-minimum-24chars-maximum-24chars-minimum-24chars-maximum-24chars-minimum-24chars-24chars-maximum-24chars-minimum-2"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 37,
-      "successes": 37,
+      "calls": 38,
+      "successes": 38,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1269217,
-      "lastMs": 12266,
+      "totalMs": 1292534,
+      "lastMs": 23317,
       "lastError": null,
-      "updatedAt": "2026-10-08T09:49:29.664Z"
+      "updatedAt": "2026-10-08T09:49:52.984Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:16:20.952Z",
-  "updatedAt": "2026-10-08T09:49:29.665Z",
+  "updatedAt": "2026-10-08T09:49:52.984Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3251,7 +3263,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T09:49:29.665Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:49:52.984Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
