@@ -1,6 +1,9 @@
+// 파일명: qa/company-game-seed-gameplay-sketch.test.mjs
+// 임포트
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import vm from 'node:vm';
 import {GAME_SEED_REQUIRED_FIELDS,GAME_SEED_POLICY,validateGameSeed} from '../tools/company-game-seed-contract.mjs';
 import {buildGameFlowArchitecture,evaluateGameFlowArchitecture} from '../tools/company-vibe2-game-flow-architect.mjs';
 
@@ -270,9 +273,113 @@ test('GAMEPLAY_SKETCH v4 creates emergent genre from material grammar × MAIN×A
   assert.ok(flowArchitecture.systemBlueprint.novelGrammarContract.gameplaySystemFusion.subElements.length>=2);
   assert.equal(flowArchitecture.systemBlueprint.novelGrammarContract.delveLayer.role,'DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS');
   assert.equal(flowArchitecture.systemBlueprint.novelGrammarContract.emergentGenre.categoryRole,'SEED_DISCOVERY_HINT_ONLY_NOT_FINAL_GENRE');
+  // 현재 스키마를 통과한 시드가 bootstrap의 퇴역 필드 검사에 다시 막히면 안 된다.
+  assert.equal(Object.hasOwn(grammar,'escalation'),false);
+  const authoring=loadSeedAuthoring();
+  assert.doesNotThrow(()=>authoring.validateProposal({requestId:'CURRENT-V4',category:seed.GAME_CATEGORY,platform:'ROBLOX',lockedPlatform:true},{
+    requestId:'CURRENT-V4',category:seed.GAME_CATEGORY,gameName:'합의현실 소문 퍼즐극',
+    coreLoop:seed.CORE_LOOP,coreFunToLearn:seed.CORE_FUN_TO_LEARN,distinctIdentity:seed.DISTINCT_IDENTITY,
+    initialTargetPlatform:'ROBLOX',multiplayerDesignMode:'SINGLE',gameplaySketch:seed.GAMEPLAY_SKETCH
+  }));
   const broken=structuredClone(seed);
   broken.GAMEPLAY_SKETCH.novelGameGrammar.delveLayer.role='SYSTEM_AXIS_D';
   const fail=validateGameSeed(broken);
   assert.equal(fail.pass,false);
   assert.ok(fail.errors.some(error=>error.includes('not a general system axis')));
+});
+
+// 테스트 유틸: 실제 책임 함수와 스키마만 읽고 저장·모델 네트워크 부작용을 격리한다.
+function loadSeedAuthoring(fetchImpl=async()=>{throw new Error('TEST_NETWORK_FORBIDDEN');}){
+  const source=fs.readFileSync('tools/company-game-seed-bootstrap.mjs','utf8');
+  const schemaStart=source.indexOf('const TEXT=');
+  const schemaEnd=source.indexOf('\nfunction profileFor(',schemaStart);
+  const functionStart=source.indexOf('function validateProposal(');
+  const functionEnd=source.indexOf('\nfunction buildSeed(',functionStart);
+  assert.ok(schemaStart>=0&&schemaEnd>schemaStart&&functionStart>=0&&functionEnd>functionStart);
+  const clean=v=>String(v??'').trim();
+  let openTimers=0;
+  const context={
+    clean,uniq:values=>[...new Set((values||[]).map(clean).filter(Boolean))],
+    allowedTargetPlatforms:['ROBLOX','UNITY','FORTNITE_UEFN'],normalizeSeedPlatform:v=>clean(v).toUpperCase(),
+    model:'test-model',MODEL_TIMEOUT_MS:1000,AbortController,
+    setTimeout:()=>{openTimers++;return {};},clearTimeout:()=>{openTimers--;},
+    console:{log:()=>{}},fetch:fetchImpl,
+  };
+  const loaded=vm.runInNewContext(`${source.slice(schemaStart,schemaEnd)}\n${source.slice(functionStart,functionEnd)}\n({validateProposal,callModelBatch,schema:batchSchema(1)});`,context);
+  return{...loaded,source,openTimers:()=>openTimers};
+}
+
+test('초기 설계는 게임별 출력과 문맥을 독립 배정하고 모델 호출을 직렬화한다',async()=>{
+  const requests=[];
+  let active=0,peak=0;
+  const authoring=loadSeedAuthoring(async(url,init)=>{
+    assert.equal(url,'http://127.0.0.1:11434/api/chat');
+    const body=JSON.parse(init.body);
+    const prompt=body.messages.find(x=>x.role==='user').content;
+    const marker=prompt.lastIndexOf('\nREQUESTS=');
+    assert.ok(marker>=0);
+    const rows=JSON.parse(prompt.slice(marker+'\nREQUESTS='.length).split('\n')[0]);
+    assert.equal(rows.length,1);
+    requests.push({body,row:rows[0],prompt});
+    active++;peak=Math.max(peak,active);
+    await Promise.resolve();
+    return{ok:true,json:async()=>{active--;return{done:true,done_reason:'stop',prompt_eval_count:5000,eval_count:9000,message:{content:JSON.stringify({proposals:[{requestId:rows[0].requestId,category:rows[0].category}]})}};}};
+  });
+  const targets=[1,2,3].map(n=>({requestId:`DETAIL-${n}`,category:`CATEGORY-${n}`,platform:'ROBLOX',lockedPlatform:true,materialSelection:{count:2},materials:[{materialId:`material-${n}`,causalDNA:['ONE','TWO']}],benchmarkCandidates:[]}));
+  const results=await authoring.callModelBatch(targets);
+  assert.deepEqual(Array.from(results,x=>x.requestId),targets.map(x=>x.requestId));
+  assert.equal(requests.length,targets.length);
+  assert.equal(peak,1);
+  assert.equal(authoring.openTimers(),0);
+  for(const {body,row,prompt} of requests){
+    assert.equal(body.options.num_ctx,32768);
+    assert.equal(body.options.num_predict,12288);
+    assert.equal(body.think,false);
+    assert.equal(body.format.properties.proposals.minItems,1);
+    assert.equal(body.format.properties.proposals.maxItems,1);
+    assert.equal(row.seedMaterials.length,1);
+    assert.match(prompt,/발동 조건·입력·읽는 상태·변경되는 상태/);
+    assert.match(prompt,/MAIN→A, A→B/);
+    assert.match(prompt,/B→MAIN/);
+    assert.match(prompt,/저장\/종료/);
+    assert.match(prompt,/실패복구/);
+  }
+  const schema=authoring.schema.properties.proposals.items.properties;
+  assert.equal(schema.distinctIdentity.maxLength,2400);
+  assert.equal(schema.gameplaySketch.properties.worldModel.maxLength,1800);
+  assert.equal(schema.gameplaySketch.properties.interactionChains.items.maxLength,1200);
+  assert.equal(schema.gameplaySketch.properties.novelGameGrammar.properties.gameplaySystemFusion.properties.majorAxes.maxItems,2);
+  assert.match(authoring.source,/modelCalls:proposalProvider\?0:targets\.length/);
+});
+
+test('초기 설계는 잘림·다른 게임 응답·배치 혼입·HTTP 실패를 거절하고 타이머를 정리한다',async t=>{
+  const target={requestId:'EXACT',category:'PUZZLE',platform:'ROBLOX',materials:[],benchmarkCandidates:[]};
+  const proposal={requestId:'EXACT',category:'PUZZLE'};
+  const cases=[
+    {name:'출력 상한 잘림',body:{done:true,done_reason:'length',message:{content:JSON.stringify({proposals:[proposal]})}},error:/GAME_SEED_OUTPUT_TRUNCATED/},
+    {name:'미완료 응답',body:{done:false,message:{content:JSON.stringify({proposals:[proposal]})}},error:/GAME_SEED_OUTPUT_TRUNCATED/},
+    {name:'다른 요청',body:{done:true,message:{content:JSON.stringify({proposals:[{...proposal,requestId:'OTHER'}]})}},error:/GAME_SEED_REQUEST_MISMATCH/},
+    {name:'다른 카테고리',body:{done:true,message:{content:JSON.stringify({proposals:[{...proposal,category:'OTHER'}]})}},error:/GAME_SEED_REQUEST_MISMATCH/},
+    {name:'복수 게임 혼입',body:{done:true,message:{content:JSON.stringify({proposals:[proposal,proposal]})}},error:/GAME_SEED_BATCH_COUNT_MISMATCH/},
+    {name:'빈 제안',body:{done:true,message:{content:JSON.stringify({proposals:[]})}},error:/GAME_SEED_BATCH_COUNT_MISMATCH/},
+    {name:'깨진 JSON',body:{done:true,message:{content:'{' }},error:/JSON|Unexpected|position/},
+    {name:'모델 HTTP 실패',httpFailure:true,error:/ollama 503/},
+  ];
+  for(const scenario of cases)await t.test(scenario.name,async()=>{
+    let calls=0;
+    const authoring=loadSeedAuthoring(async()=>{
+      calls++;
+      return scenario.httpFailure?{ok:false,status:503,text:async()=>'unavailable'}:{ok:true,json:async()=>scenario.body};
+    });
+    await assert.rejects(()=>authoring.callModelBatch([target,{...target,requestId:'NEXT'}]),scenario.error);
+    assert.equal(calls,1);
+    assert.equal(authoring.openTimers(),0);
+  });
+});
+
+test('빈 초기 설계 입력은 모델을 호출하지 않는다',async()=>{
+  const authoring=loadSeedAuthoring();
+  const result=await authoring.callModelBatch([]);
+  assert.equal(result.length,0);
+  assert.equal(authoring.openTimers(),0);
 });
