@@ -367,6 +367,25 @@ public sealed class JaewoonNativeMotionActor : MonoBehaviour
     }
 }
 
+${worldData?`// Unity WebGL과 Android가 동일한 Unity 소스의 로컬 싱글플레이 권한을 사용한다.
+public interface IInteractable
+{
+    string InteractionPrompt { get; }
+    bool CanInteract(Transform actor);
+    void OnInteract(Transform actor);
+}
+public sealed class VibeHarvestableObject : MonoBehaviour, IInteractable
+{
+    public UnityWebFloorGame Owner;
+    public string StableId, RewardItemId;
+    public int MaxHealth, Health, HitDamage, MinDrop, MaxDrop, RespawnSeconds;
+    public long RespawnAtUtc;
+    public string InteractionPrompt => "채집: " + RewardItemId;
+    public bool CanInteract(Transform actor) => Owner != null && Owner.CanHarvest(this, actor);
+    public void OnInteract(Transform actor) { if (CanInteract(actor)) Owner.HitHarvest(this); }
+}
+`:""}
+
 public sealed class UnityWebFloorGame : MonoBehaviour
 {
     private const string GameId = "${csharp(gameId)}";
