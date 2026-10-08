@@ -252,25 +252,49 @@
       "name": "보스 동료 해금 시스템",
       "purpose": "영입 가능한 보스를 처음 격파하면 해당 보스가 AI 동료로 영구 해금된다. 별도 인간형 캐릭터 제작 없이 보스 실루엣/정체성을 동료에 재사용한다.",
       "playerChoice": "플레이어는 보스 동료를 영입하고, 보스의 실루엣/정체성을 동료에 재사용할 수 있다. 보스 동료는 플레이어의 리더 레벨에 자동 동기화되어, 별도 장비 없이 사용된다."
+    },
+    "local_authoring_parts::6c1abb2ade133548aa67faab743a24e1f95b92fb5df5de016bbeeb3389de9e63:id,grammarRole,stateInputs,stateOutputs": {
+      "id": "RPG_STYLIZED_TOY_DARK_FANTASY",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "플레이어 1명 + 보스 동료 3명 파티",
+        "마을 편성",
+        "포탈 전투 시작",
+        "15킬 파티사냥",
+        "퀘스트 진행",
+        "보상 획득",
+        "풀회복",
+        "귀환 금지"
+      ],
+      "stateOutputs": [
+        "전투 HUD와 파티/장비 화면 분리",
+        "전투/보상 서버 authoritative",
+        "DataStore 저장",
+        "보스 첫 처치 동료 해금 저장",
+        "플레이어+동료 최대 3명 파티",
+        "보스 동료 리더 레벨 자동 동기화",
+        "보스 동료 전용 장비 없음",
+        "Lv60 레벨캡"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 15,
-      "successes": 11,
+      "calls": 16,
+      "successes": 12,
       "failures": 4,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1710055,
-      "lastMs": 98516,
+      "totalMs": 1811019,
+      "lastMs": 100964,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T03:01:36.369Z"
+      "updatedAt": "2026-10-08T03:03:17.335Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T02:33:06.288Z",
-  "updatedAt": "2026-10-08T03:01:36.370Z",
+  "updatedAt": "2026-10-08T03:03:17.335Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1694,7 +1718,7 @@
     "5b911938fcf044e2c08368656f612314a4dfbaa0cc913a56fd60a349189a6088": true,
     "c8518cadd2e88cb75716eacc83cc6777b9017a9ae74c98390df43d58c6dd72ae": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T03:01:36.370Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T03:03:17.335Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
