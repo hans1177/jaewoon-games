@@ -85,25 +85,42 @@
       "name": "DELVE",
       "purpose": "Explore the forest for a needed resource while reading environmental and creature danger.",
       "playerChoice": "Explore the forest for a needed resource while reading environmental and creature danger."
+    },
+    "local_authoring_parts::d9eb839216d4f90e95d38656ec5f108abc92f9d96fd5625e7ee758ac3b777a7b:signatureSystems:3": {
+      "id": "SURVIVAL2-DELVE-3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "environmentalAndCreatureDanger",
+        "currentSupplies",
+        "groupReadiness"
+      ],
+      "stateOutputs": [
+        "newResource",
+        "newShelter",
+        "newEquipment"
+      ],
+      "name": "DELVE",
+      "purpose": "Discover a new resource, find a new shelter, and acquire new equipment based on environmental danger, current supplies, and group readiness.",
+      "playerChoice": "Discover a new resource, find a new shelter, and acquire new equipment based on environmental danger, current supplies, and group readiness."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 730557,
-      "lastMs": 78494,
+      "totalMs": 813339,
+      "lastMs": 82782,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:09:33.675Z"
+      "updatedAt": "2026-10-08T13:10:56.458Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:57:22.913Z",
-  "updatedAt": "2026-10-08T13:09:33.675Z",
+  "updatedAt": "2026-10-08T13:10:56.458Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2331,7 +2348,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:09:33.675Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:10:56.458Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
