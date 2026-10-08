@@ -27,25 +27,62 @@
       "identity": "킹샷 광고풍은 플레이어가 매 게임 시작 시 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이라는 중심 행동을 수행하며, 이 선택 결과가 다음 월드 상태로 연결되는 SINGLE_DEFENSE_STRATEGY 게임이다. 게임의 핵심 재미는 진입 즉각적인 위험-보상 관계와 반복 가능한 전략적 선택에서 비롯된다. 주요 인물은 전투 중에 팀 내부의 정체성과 대외의 신뢰도를 유지하는 데 초점을 맞춘다. 세계 규칙은 단순한 방어 전술부터 지속적으로 복잡화되어, 플레이어가 성장하면서 새로운 행동 조합과 경로를 열어간다.",
       "playerFantasy": "플레이어는 매 게임 시작 시 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이라는 중심 행동을 수행하며, 이 선택 결과가 다음 월드 상태로 연결되는 SINGLE_DEFENSE_STRATEGY 게임이다. 게임의 핵심 재미는 진입 즉각적인 위험-보상 관계와 반복 가능한 전략적 선택에서 비롯된다. 주요 인물은 전투 중에 팀 내부의 정체성과 대외의 신뢰도를 유지하는 데 초점을 맞춘다. 세계 규칙은 단순한 방어 전술부터 지속적으로 복잡화되어, 플레이어가 성장하면서 새로운 행동 조합과 경로를 열어간다.",
       "coreFun": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 결과가 다음 월드 상태로 연결되는 SINGLE_DEFENSE_STRATEGY 게임이다. 주요 인물은 전투 중에 팀 내부의 정체성과 대외의 신뢰도를 유지하는 데 초점을 맞춘다. 세계 규칙은 단순한 방어 전술부터 지속적으로 복잡화되어, 플레이어가 성장하면서 새로운 행동 조합과 경로를 열어간다."
+    },
+    "local_authoring_parts::d5c950a3102c22cb66471aeb78a1ce19cb35b167221a926ec1c8b632c0d67273:coreLoop": {
+      "coreLoop": [
+        "INPUT: Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "STATE CHANGE: The game state shifts to a new defensive configuration, increasing pressure and resource availability.",
+        "OUTPUT: Player gains resources, which are used for upgrades, placements, or tactical changes before pressure increases."
+      ]
+    },
+    "local_authoring_parts::f8c87cc847fe218a2a2d331750b4bc2f7020a51533151a0ce3f493ee241bac7b:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "ENEMY_WAVE",
+        "TOWER_PLACEMENT"
+      ],
+      "stateOutputs": [
+        "DEFENSE_CONFIGURATION",
+        "RESOURCE_POOL"
+      ],
+      "name": "WAVES_AND_DEFENSE",
+      "purpose": "Player's action of reading the next enemy wave and placing towers or defenders on lanes/positions that cover the threatened route results in a new defensive configuration, increasing pressure and resource availability.",
+      "playerChoice": "Read the next enemy wave and place towers or defenders on lanes/positions that cover the threatened route to gain resources for upgrades, placements, or tactical changes before pressure increases."
+    },
+    "local_authoring_parts::f8c87cc847fe218a2a2d331750b4bc2f7020a51533151a0ce3f493ee241bac7b:signatureSystems:1": {
+      "id": "SIGNATURE_SYSTEM_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "ENEMY_WAVE",
+        "TOWER_PLACEMENT"
+      ],
+      "stateOutputs": [
+        "DEFENSE_CONFIGURATION",
+        "RESOURCE_POOL"
+      ],
+      "name": "ADAPTATION_AND_STRATEGY",
+      "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
+      "playerChoice": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 111573,
-      "lastMs": 17431,
+      "totalMs": 181054,
+      "lastMs": 16786,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:49:14.352Z"
+      "updatedAt": "2026-10-08T21:50:23.844Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:47:22.544Z",
-  "updatedAt": "2026-10-08T21:49:14.354Z",
+  "updatedAt": "2026-10-08T21:50:23.850Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2237,11 +2274,24 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::f8c87cc847fe218a2a2d331750b4bc2f7020a51533151a0ce3f493ee241bac7b:signatureSystems:2": [
+      {
+        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+        "grammarRole": "B",
+        "previousRuleIds": [
+          "SIGNATURE_SYSTEM_0",
+          "SIGNATURE_SYSTEM_1"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::f8c87cc847fe218a2a2d331750b4bc2f7020a51533151a0ce3f493ee241bac7b:signatureSystems:2": 1
+  },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:49:14.354Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-08T21:50:23.844Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:B",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
 }
