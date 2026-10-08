@@ -349,11 +349,22 @@ const reserved=createVibeProceduralWorldLayout({...seedWorld,reservedCells:Array
 assert.ok(reserved.issues.some(issue=>issue.includes('REQUIRED_ROUTE_BLOCKED')||issue.includes('REQUIRED_OBJECTIVE_UNREACHABLE')));
 assert.equal(reserved.runtimeVerified,false);
 const generated2D=createVibeProceduralWorldLayout({...seedWorld,dimension:'2D'});
-assert.equal(generated2D.coordinateSystem,'GRID_XZ_REQUIRES_2D_AXIS_MAPPING');
+assert.equal(generated2D.coordinateSystem,'GRID_XZ_TO_TOP_DOWN_XY_PROPOSED');
+assert.equal(generated2D.native2DPositionProjectionProvided,true);
 assert.equal(generated2D.native2DWorldCoordinateMappingRequired,true);
 assert.equal(generated2D.terrain.length,generated.terrain.length);
 const aridWorld=createVibeProceduralWorldLayout({...seedWorld,biome:'DESERT',climate:'ARID'});
 assert.equal(aridWorld.riverType,'SEASONAL_DRY_CHANNEL');
 assert.deepEqual(generated2D.roadCells,generated.roadCells);
+assert.ok(generated2D.roads.every(route=>route.cells.length===route.worldPath.length));
+assert.ok(generated.roads.every(route=>route.cells.length===route.worldPath.length));
+assert.ok(generated2D.roads.every(route=>route.worldPath.every(point=>Number.isFinite(point.x)&&Number.isFinite(point.y)&&!('z' in point))));
+assert.ok(generated.roads.every(route=>route.worldPath.every(point=>Number.isFinite(point.x)&&Number.isFinite(point.y)&&Number.isFinite(point.z))));
+assert.ok(generated2D.buildings.every(building=>Number.isFinite(building.position.y)&&!('z' in building.position)));
+assert.ok(generated.buildings.every(building=>building.position.y===building.foundation.levelY&&Number.isFinite(building.position.z)));
+assert.ok(generated2D.vegetation.every(item=>Number.isFinite(item.position.y)&&!('z' in item.position)));
+assert.ok(generated.vegetation.every(item=>Number.isFinite(item.position.y)&&Number.isFinite(item.position.z)));
+assert.ok(generated2D.instancingPlan.every(group=>group.transforms.every(position=>Number.isFinite(position.y)&&!('z' in position))));
+assert.ok(generated.instancingPlan.every(group=>group.transforms.every(position=>Number.isFinite(position.y)&&Number.isFinite(position.z))));
 
 console.log('vibe-world-macro-causality: ok');
