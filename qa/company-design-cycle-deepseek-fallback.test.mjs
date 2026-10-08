@@ -63,7 +63,7 @@ test('game designer schema supplies every stage gate v2 evidence axis',()=>{
     'platformFitPlan','uxAccessibilityPlan','artAudioDirection','implementationTraceability'
   ]) assert.match(design,new RegExp(field));
   assert.match(design,/signatureSystems:\{type:'array',minItems:5/);
-  assert.match(design,/systemInterconnections:\{type:'array',minItems:3/);
+  assert.match(design,/systemInterconnections:\{type:'array',minItems:5/);
   assert.match(design,/contentExpansionPlan:\{type:'array',minItems:3/);
   assert.match(design,/failureStates:\{type:'array',minItems:2/);
   assert.match(design,/implementationTraceability:\{type:'array',minItems:3/);
