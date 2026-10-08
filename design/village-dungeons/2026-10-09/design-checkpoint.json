@@ -34,25 +34,43 @@
         "SELECT: Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.\n",
         "OUTPUT: Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
       ]
+    },
+    "local_authoring_parts::4af6bea4ab1c1102290e9d88ffec4981898c013cc4a711d664725158f7450cba:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "START_INPUT",
+        "SCORE_DISTANCE",
+        "SHORT_SESSION"
+      ],
+      "stateOutputs": [
+        "FINISH_OR_FAILE",
+        "RECEIVE_SCORE_REWARD",
+        "UNLOCK_PROGRESSION_BENEFIT",
+        "RETRY_WITH_MINIMAL_FRIC"
+      ],
+      "name": "월드 상태 교환 시스템",
+      "purpose": "플레이어가 즉시 시작하여 단순한 터치 또는 스ワイ프 입력을 하며 점수나 거리, 혹은 짧은 세션 목표를 설정하는 데 초점을 맞춘다.",
+      "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 334885,
-      "lastMs": 44652,
+      "totalMs": 375744,
+      "lastMs": 40859,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:17:22.502Z"
+      "updatedAt": "2026-10-08T19:18:03.363Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T19:11:47.590Z",
-  "updatedAt": "2026-10-08T19:17:22.502Z",
+  "updatedAt": "2026-10-08T19:18:03.363Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2129,7 +2147,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T19:17:22.502Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:18:03.363Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
