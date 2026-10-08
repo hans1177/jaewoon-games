@@ -617,25 +617,28 @@
       "toSystem": "CORE_LOOP_DESIGN",
       "trigger": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation.",
       "stateChange": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation."
+    },
+    "local_authoring_parts::9e4098d536da2aa794445e267939febbf4d606a567aeafad038f0f03b9bc57c3:fromId": {
+      "fromId": "ENEMY_WAVE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 39,
-      "successes": 39,
+      "calls": 40,
+      "successes": 40,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2475465,
-      "lastMs": 61199,
+      "totalMs": 2535397,
+      "lastMs": 59932,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:40:46.798Z"
+      "updatedAt": "2026-10-08T21:41:46.733Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:59:31.174Z",
-  "updatedAt": "2026-10-08T21:40:46.800Z",
+  "updatedAt": "2026-10-08T21:41:46.733Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3044,7 +3047,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T21:40:46.800Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:41:46.733Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
