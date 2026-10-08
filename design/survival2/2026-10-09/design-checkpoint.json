@@ -27,25 +27,32 @@
       "identity": "숲의 생존자들에서 플레이어는 Explore the forest for a needed resource while reading environmental and creature danger.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 숲의 생존자들은 협력하여 자원을 확보하며, 위험에 노출되어서는 안 되는 환경을 이해하고, 그에 따라 행동을 결정해야 한다. 이 과정에서 플레이어는 다양한 선택을 하며, 그 선택이 주변의 상태와 관계를 변화시켜 나간다. 이러한 선택은 새로운 상태로 전환되며, 이를 통해 플레이어는 더 깊은 세계 속에서 살아남아야 한다.",
       "playerFantasy": "숲의 생존자들에서 플레이어는 Explore the forest for a needed resource while reading environmental and creature danger.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 숲의 생존자들은 협력하여 자원을 확보하며, 위험에 노출되어서는 안 되는 환경을 이해하고, 그에 따라 행동을 결정해야 한다. 이 과정에서 플레이어는 다양한 선택을 하며, 그 선택이 주변의 상태와 관계를 변화시켜 나간다. 이러한 선택은 새로운 상태로 전환되며, 이를 통해 플레이어는 더 깊은 세계 속에서 살아남아야 한다.",
       "coreFun": "숲의 생존자들에서 플레이어는 Explore the forest for a needed resource while reading environmental and creature danger.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 숲의 생존자들은 협력하여 자원을 확보하며, 위험에 노출되어서는 안 되는 환경을 이해하고, 그에 따라 행동을 결정해야 한다. 이 과정에서 플레이어는 다양한 선택을 하며, 그 선택이 주변의 상태와 관계를 변화시켜 나간다. 이러한 선택은 새로운 상태로 전환되며, 이를 통해 플레이어는 더 깊은 세계 속에서 살아남아야 한다."
+    },
+    "local_authoring_parts::c20ea9f931defe08dc7bd686779693e2bf2d813a6108d973cd41db5f874388a0:coreLoop": {
+      "coreLoop": [
+        "INPUT: Explore the forest for a needed resource while reading environmental and creature danger.\nSELECT: Return or push deeper based on current supplies and group readiness.\nOUTPUT: Status change to reflect new resources, risks, and group dynamics.\nACTION: Main loop continues with new state, leading to next choice.",
+        "INPUT: Craft a survival advantage, improve shelter or equipment and prepare for the next stronger threat.\nSELECT: Choose action that enhances survival, modifies shelter/equipment, or prepares for future risk.\nOUTPUT: New status reflects improved capabilities, altered environment, or preparedness for higher threats.\nACTION: Main loop adapт",
+        "INPUT: Discover hidden patterns in the forest, understand ecological shifts, and make decisions based on knowledge gained.\nSELECT: Make choices that alter the world state through discovery, mastery, or re-exploration.\nOUTPUT: New status includes learned patterns, changed environment, or redefined goals.\nACTION: Main loop continues with re"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 284193,
-      "lastMs": 41421,
+      "totalMs": 342951,
+      "lastMs": 58758,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:28:26.274Z"
+      "updatedAt": "2026-10-08T18:29:25.036Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:23:42.058Z",
-  "updatedAt": "2026-10-08T18:28:26.276Z",
+  "updatedAt": "2026-10-08T18:29:25.036Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2273,7 +2280,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:28:26.276Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:29:25.036Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
