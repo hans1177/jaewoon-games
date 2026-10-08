@@ -9,10 +9,10 @@
   "completedPhases": [],
   "completedPhaseCount": 0,
   "cachedTaskCount": 26,
-  "lastSuccessfulModelCallAt": "2026-10-08T15:20:27.144Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T15:25:26.911Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "designerSeed": {
     "file": "design/zombie-survival/2026-10-08/design-seed.json",
     "contentDigest": "dfe1f10e2fb84185a3eade7d5d0d005be1e1072f0b3d29537ee7167b495abf5b",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 20,
+      "calls": 21,
+      "successes": 21,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1887069,
-      "lastMs": 103064,
+      "totalMs": 2186828,
+      "lastMs": 299759,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:20:27.142Z"
+      "updatedAt": "2026-10-08T15:25:26.911Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T15:20:27.152Z"
+  "updatedAt": "2026-10-08T15:25:26.916Z"
 }
