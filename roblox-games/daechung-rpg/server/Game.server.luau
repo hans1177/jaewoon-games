@@ -1580,6 +1580,8 @@ RunService.Heartbeat:Connect(function(dt)
     if n(p,"CurrentZone",0)==e.zone then local r=root(p);local h=hum(p);if r and h and h.Health>0 then local d=(r.Position-e.part.Position).Magnitude;if d<bd then target=p;bd=d end end end
    end
    if target then
+    e.lastPlayerObservedAt=now
+    e.roamTarget=nil
     -- 보스의 실제 첫 조우 사건만 대사/컷신 후보로 전달한다. 공격·보상·페이즈는 기존 전투 시스템 담당.
     if e.boss==true and e.def and e.def.Id then
      local id=tostring(e.def.Id)
@@ -1597,7 +1599,21 @@ RunService.Heartbeat:Connect(function(dt)
     if tr and(tr.Position-e.part.Position).Magnitude<=engage and now>=(e.nextAttackAt or 0)and now>=(e.stunnedUntil or 0)then beginEnemyAttack(e,target,now)end
    else
     local back=Vector3.new(e.spawn.X-e.part.Position.X,0,e.spawn.Z-e.part.Position.Z)
-    if back.Magnitude>2 then e.part.CFrame=e.part.CFrame+back.Unit*math.min(back.Magnitude,9*dt)end
+    -- 기존 전투 추적·귀환은 그대로 두고, 비전투 일반 몬스터만 자기 서식지에서 관찰·이동한다.
+    if e.boss or e.runBoss or e.hiddenBoss or now-(e.lastPlayerObservedAt or -100)>20 or back.Magnitude>18 then
+     if back.Magnitude>2 then e.part.CFrame=e.part.CFrame+back.Unit*math.min(back.Magnitude,9*dt)end
+     e.roamTarget=nil
+    elseif not e.attackPending and now>=(e.stunnedUntil or 0) then
+     -- 고유 개체의 스폰 좌표와 낮은 빈도의 시간 블록으로 목표를 정한다. 모델 호출·새 스폰 없음.
+     if not e.roamTarget or now>=(e.nextRoamAt or 0) then
+      local phase=(math.floor(math.abs(e.spawn.X*3+e.spawn.Z*7))+math.floor(now/8))%12
+      local a=phase/12*math.pi*2
+      e.roamTarget=e.spawn+Vector3.new(math.cos(a)*8,0,math.sin(a)*8)
+      e.nextRoamAt=now+6
+     end
+     local step=Vector3.new(e.roamTarget.X-e.part.Position.X,0,e.roamTarget.Z-e.part.Position.Z)
+     if step.Magnitude>.75 then e.part.CFrame=e.part.CFrame+step.Unit*math.min(step.Magnitude,(e.speed or 7)*.24*dt)end
+    end
    end
    if (e.part.Position-e.spawn).Magnitude>z.Leash then e.part.CFrame=CFrame.new(e.spawn)end
    end
