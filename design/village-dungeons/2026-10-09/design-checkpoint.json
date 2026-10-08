@@ -106,25 +106,236 @@
       "name": "재방문 상태 교환 시스템",
       "purpose": "플레이어가 즉시 시작하여 단순한 터치 또는 스ワイ프 입력을 하며 점수나 거리, 혹은 짧은 세션 목표를 설정하는 데 초점을 맞춘다.",
       "playerChoice": "재방문 깊이로 구분되어진 선택 결과에 따라 세계의 기본 규칙과 상호작용하며, 발견과 숙련에 따른 새로운 용도와 조합을 생성한다."
+    },
+    "local_authoring_parts::4af6bea4ab1c1102290e9d88ffec4981898c013cc4a711d664725158f7450cba:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "START_INPUT",
+        "SCORE_DISTANCE",
+        "SHORT_SESSION"
+      ],
+      "stateOutputs": [
+        "FINISH_OR_FAILE",
+        "RECEIVE_SCORE_REWARD",
+        "UNLOCK_PROGRESSION_BENEFIT",
+        "RETRY_WITH_MINIMAL_FRIC"
+      ],
+      "name": "재방문 상태 교환 시스템",
+      "purpose": "플레이어가 즉시 시작하여 단순한 터치 또는 스ワイ프 입력을 하며 점수나 거리, 혹은 짧은 세션 목표를 설정하는 데 초점을 맞춘다.",
+      "playerChoice": "재방문 깊이로 구분되어진 선택 결과에 따라 세계의 기본 규칙과 상호작용하며, 발견과 숙련에 따른 새로운 용도와 조합을 생성한다."
+    },
+    "local_authoring_parts::7cb396689fe21580f34b74ad9ca01c850911e7d0960d76510ee01b72fc33bde0:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_DISTANCE",
+            "SHORT_SESSION"
+          ],
+          "stateOutputs": [
+            "FINISH_OR_FAILE",
+            "RECEIVE_SCORE_REWARD",
+            "UNLOCK_PROGRESSION_BENEFIT",
+            "RETRY_WITH_MINIMAL_FRIC"
+          ],
+          "name": "월드 상태 교환 시스템",
+          "purpose": "플레이어가 즉시 시작하여 단순한 터치 또는 스ワイ프 입력을 하며 점수나 거리, 혹은 짧은 세션 목표를 설정하는 데 초점을 맞춘다.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_DISTANCE",
+            "SHORT_SESSION"
+          ],
+          "stateOutputs": [
+            "FINISH_OR_FAILE",
+            "RECEIVE_SCORE_REWARD",
+            "UNLOCK_PROGRESSION_BENEFIT",
+            "RETRY_WITH_MINIMAL_FRIC"
+          ],
+          "name": "시작 상태 교환 시스템",
+          "purpose": "플레이어가 즉시 시작하여 단순한 터치 또는 스ワイ프 입력을 하며 점수나 거리, 혹은 짧은 세션 목표를 설정하는 데 초점을 맞춘다.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_DISTANCE",
+            "SHORT_SESSION"
+          ],
+          "stateOutputs": [
+            "FINISH_OR_FAILE",
+            "RECEIVE_SCORE_REWARD",
+            "UNLOCK_PROGRESSION_BENEFIT",
+            "RETRY_WITH_MINIMAL_FRIC"
+          ],
+          "name": "시작 상태 교환 시스템",
+          "purpose": "플레이어가 즉시 시작하여 단순한 터치 또는 스ワイ프 입력을 하며 점수나 거리, 혹은 짧은 세션 목표를 설정하는 데 초점을 맞춘다.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_DISTANCE",
+            "SHORT_SESSION"
+          ],
+          "stateOutputs": [
+            "FINISH_OR_FAILE",
+            "RECEIVE_SCORE_REWARD",
+            "UNLOCK_PROGRESSION_BENEFIT",
+            "RETRY_WITH_MINIMAL_FRIC"
+          ],
+          "name": "재방문 상태 교환 시스템",
+          "purpose": "플레이어가 즉시 시작하여 단순한 터치 또는 스ワイ프 입력을 하며 점수나 거리, 혹은 짧은 세션 목표를 설정하는 데 초점을 맞춘다.",
+          "playerChoice": "재방문 깊이로 구분되어진 선택 결과에 따라 세계의 기본 규칙과 상호작용하며, 발견과 숙련에 따른 새로운 용도와 조합을 생성한다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_DISTANCE",
+            "SHORT_SESSION"
+          ],
+          "stateOutputs": [
+            "FINISH_OR_FAILE",
+            "RECEIVE_SCORE_REWARD",
+            "UNLOCK_PROGRESSION_BENEFIT",
+            "RETRY_WITH_MINIMAL_FRIC"
+          ],
+          "name": "재방문 상태 교환 시스템",
+          "purpose": "플레이어가 즉시 시작하여 단순한 터치 또는 스ワイ프 입력을 하며 점수나 거리, 혹은 짧은 세션 목표를 설정하는 데 초점을 맞춘다.",
+          "playerChoice": "재방문 깊이로 구분되어진 선택 결과에 따라 세계의 기본 규칙과 상호작용하며, 발견과 숙련에 따른 새로운 용도와 조합을 생성한다."
+        }
+      ]
+    },
+    "local_authoring_parts::4a9e7f7c7d79de25df1606074fc2378ebbd6654b9aecf17bd26ffaa244b77288:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT: Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.\n",
+        "SELECT: Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.\n",
+        "OUTPUT: Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_DISTANCE",
+            "SHORT_SESSION"
+          ],
+          "stateOutputs": [
+            "FINISH_OR_FAILE",
+            "RECEIVE_SCORE_REWARD",
+            "UNLOCK_PROGRESSION_BENEFIT",
+            "RETRY_WITH_MINIMAL_FRIC"
+          ],
+          "name": "월드 상태 교환 시스템",
+          "purpose": "플레이어가 즉시 시작하여 단순한 터치 또는 스ワイ프 입력을 하며 점수나 거리, 혹은 짧은 세션 목표를 설정하는 데 초점을 맞춘다.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_DISTANCE",
+            "SHORT_SESSION"
+          ],
+          "stateOutputs": [
+            "FINISH_OR_FAILE",
+            "RECEIVE_SCORE_REWARD",
+            "UNLOCK_PROGRESSION_BENEFIT",
+            "RETRY_WITH_MINIMAL_FRIC"
+          ],
+          "name": "시작 상태 교환 시스템",
+          "purpose": "플레이어가 즉시 시작하여 단순한 터치 또는 스ワイ프 입력을 하며 점수나 거리, 혹은 짧은 세션 목표를 설정하는 데 초점을 맞춘다.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_DISTANCE",
+            "SHORT_SESSION"
+          ],
+          "stateOutputs": [
+            "FINISH_OR_FAILE",
+            "RECEIVE_SCORE_REWARD",
+            "UNLOCK_PROGRESSION_BENEFIT",
+            "RETRY_WITH_MINIMAL_FRIC"
+          ],
+          "name": "시작 상태 교환 시스템",
+          "purpose": "플레이어가 즉시 시작하여 단순한 터치 또는 스ワイ프 입력을 하며 점수나 거리, 혹은 짧은 세션 목표를 설정하는 데 초점을 맞춘다.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_DISTANCE",
+            "SHORT_SESSION"
+          ],
+          "stateOutputs": [
+            "FINISH_OR_FAILE",
+            "RECEIVE_SCORE_REWARD",
+            "UNLOCK_PROGRESSION_BENEFIT",
+            "RETRY_WITH_MINIMAL_FRIC"
+          ],
+          "name": "재방문 상태 교환 시스템",
+          "purpose": "플레이어가 즉시 시작하여 단순한 터치 또는 스ワイ프 입력을 하며 점수나 거리, 혹은 짧은 세션 목표를 설정하는 데 초점을 맞춘다.",
+          "playerChoice": "재방문 깊이로 구분되어진 선택 결과에 따라 세계의 기본 규칙과 상호작용하며, 발견과 숙련에 따른 새로운 용도와 조합을 생성한다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_DISTANCE",
+            "SHORT_SESSION"
+          ],
+          "stateOutputs": [
+            "FINISH_OR_FAILE",
+            "RECEIVE_SCORE_REWARD",
+            "UNLOCK_PROGRESSION_BENEFIT",
+            "RETRY_WITH_MINIMAL_FRIC"
+          ],
+          "name": "재방문 상태 교환 시스템",
+          "purpose": "플레이어가 즉시 시작하여 단순한 터치 또는 스ワイ프 입력을 하며 점수나 거리, 혹은 짧은 세션 목표를 설정하는 데 초점을 맞춘다.",
+          "playerChoice": "재방문 깊이로 구분되어진 선택 결과에 따라 세계의 기본 규칙과 상호작용하며, 발견과 숙련에 따른 새로운 용도와 조합을 생성한다."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 624180,
-      "lastMs": 103505,
+      "totalMs": 727819,
+      "lastMs": 103639,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:22:11.803Z"
+      "updatedAt": "2026-10-08T19:23:55.443Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T19:11:47.590Z",
-  "updatedAt": "2026-10-08T19:22:11.803Z",
+  "updatedAt": "2026-10-08T19:23:55.445Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2201,7 +2412,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T19:22:11.803Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:23:55.445Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
