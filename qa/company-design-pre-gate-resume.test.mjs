@@ -249,6 +249,22 @@ test('real repeated-sentence output rejects only its field without treating repe
   assert.equal(validateDesignAuthoringContent({design:valid,fields:['identity']}).some(row=>row.code==='DESIGN_REPEATED_CONTENT'),false);
 });
 
+test('preservation design rejects action descriptions in input and output state keys without mutating healthy fields',()=>{
+  const seed={REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION:true,OWNER_REBUILD_MODE:'PRESERVATION_PRESENTATION_UPGRADE'};
+  const valid={identity:'기존 플레이 규칙과 저장 의미를 그대로 보존하며 시각적 표현만 개선한다.',signatureSystems:['MAIN','A','B','c','DELVE'].map((role,index)=>({id:`RULE_${index}`,grammarRole:role,stateInputs:['WOOD'],stateOutputs:['WOOD']}))};
+  assert.equal(validateDesignAuthoringContent({design:valid,seed,fields:['identity','signatureSystems']}).some(row=>row.code==='DESIGN_STATE_KEY_IS_INSTRUCTION'),false);
+  for(const field of ['stateInputs','stateOutputs']){
+    const content=structuredClone(valid);
+    content.signatureSystems[0][field]=['INPUT: 직접 채집 → STATE: 나무 증가'];
+    const before=JSON.stringify(content);
+    const failures=validateDesignAuthoringContent({design:content,seed,fields:['identity','signatureSystems']}).filter(row=>row.code==='DESIGN_STATE_KEY_IS_INSTRUCTION');
+    assert.equal(failures.length,1);
+    assert.deepEqual(failures[0].fields,['signatureSystems']);
+    assert.equal(failures[0].evidence.path,`signatureSystems.RULE_0.${field}`);
+    assert.equal(JSON.stringify(content),before,'validator must keep original designer fields intact');
+  }
+});
+
 test('truncated local output splits required fields and resumes only the unfinished part',async()=>{
   const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
   const taskSource=design.slice(design.indexOf('async function runCheckpointTask('),design.indexOf('function isParallelPressure('));
