@@ -590,25 +590,28 @@
       "toSystem": "WORLD_STATUS_CHANGE",
       "trigger": "Enemy wave type and composition adaptation, objective protection, and stage/boss clearing to unlock harder defense choices.",
       "stateChange": "Enemy wave type and composition adaptation, objective protection, and stage/boss clearing to unlock harder defense choices. Resulting in a world status change that reflects the updated defensive strategy and resource allocation."
+    },
+    "local_authoring_parts::1b50a53fce1706aecff262ae5a586402f8031fb9c2b36c60353b36270bb98db0:fromId": {
+      "fromId": "ENEMY_WAVE_STATE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 19,
+      "calls": 21,
+      "successes": 20,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2180799,
-      "lastMs": 97932,
+      "totalMs": 2275085,
+      "lastMs": 94286,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T18:23:07.423Z"
+      "updatedAt": "2026-10-08T18:24:41.713Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:46:46.549Z",
-  "updatedAt": "2026-10-08T18:23:07.425Z",
+  "updatedAt": "2026-10-08T18:24:41.713Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3000,7 +3003,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:23:07.425Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:24:41.713Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
