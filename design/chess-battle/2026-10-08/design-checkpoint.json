@@ -644,25 +644,43 @@
         "playerChoice"
       ],
       "fromSystem": "MAIN"
+    },
+    "local_authoring_parts::dbf1e429d22fe2cd2d60aaa9c0d4aa6ff24caf360d634cd242670fbeb0ead671:toSystem,trigger,stateChange": {
+      "toSystem": "SIGNATURE_SYSTEMS",
+      "trigger": "BOARD_READING_AND_TACTICAL_DECISION_MAKING",
+      "stateChange": "BOARD_STATE_UPDATED_AND_TACTICAL_MOVE_COMMITTED"
+    },
+    "local_authoring_parts::4e18efbda43c29a916a054c6e5dc1bcd6c7d2b4dbf86653c2b56460ccab80628:systemInterconnections:1": {
+      "fromId": "identity-core",
+      "toId": "signature-systems-1",
+      "stateKeys": [
+        "boardState",
+        "enemyThreats",
+        "playerChoice"
+      ],
+      "fromSystem": "MAIN",
+      "toSystem": "SIGNATURE_SYSTEMS",
+      "trigger": "BOARD_READING_AND_TACTICAL_DECISION_MAKING",
+      "stateChange": "BOARD_STATE_UPDATED_AND_TACTICAL_MOVE_COMMITTED"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 15,
+      "calls": 17,
+      "successes": 16,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2013668,
-      "lastMs": 92617,
+      "totalMs": 2105640,
+      "lastMs": 91972,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T13:29:37.637Z"
+      "updatedAt": "2026-10-08T13:31:09.611Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:56:03.898Z",
-  "updatedAt": "2026-10-08T13:29:37.637Z",
+  "updatedAt": "2026-10-08T13:31:09.613Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2937,7 +2955,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:29:37.637Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:31:09.613Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
