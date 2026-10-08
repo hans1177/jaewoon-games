@@ -71,25 +71,40 @@
       "name": "자원 전환 및 병력 확보 시스템",
       "purpose": "자원은 병력으로 전환하여 거점 공략에 활용되며, 병사는 전투력으로 자원을 확보하여 거점 점령에 기여한다. 각 거점은 서로 다른 적과 보상을 가진다.",
       "playerChoice": "자원 전환 및 병력 확보를 순차적으로 수행하며, 거점 점령에 기여하는 게임 경험을 선사한다."
+    },
+    "local_authoring_parts::226628274fd0b985f741ecb76f1be31dc2b27b96616596b5f13ba6aa74294c8a:signatureSystems:2": {
+      "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+      "grammarRole": "B",
+      "stateInputs": [
+        "INPUT: 직접 채집",
+        "INPUT: 자원 전환"
+      ],
+      "stateOutputs": [
+        "STATE: 나무·식량 수집 상태 변화",
+        "STATE: 병사 전투력 확보 상태 변화"
+      ],
+      "name": "자원 전환 및 병력 확보 시스템",
+      "purpose": "자원은 병력으로 전환하여 거점 공략에 활용되며, 병사는 전투력으로 자원을 확보하여 거점 점령에 기여한다. 각 거점은 서로 다른 적과 보상을 가진다.",
+      "playerChoice": "자원 전환 및 병력 확보를 순차적으로 수행하며, 거점 점령에 기여하는 게임 경험을 선사한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 678861,
-      "lastMs": 64015,
+      "totalMs": 748472,
+      "lastMs": 69611,
       "lastError": null,
-      "updatedAt": "2026-10-08T07:59:58.368Z"
+      "updatedAt": "2026-10-08T08:01:07.981Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:48:39.217Z",
-  "updatedAt": "2026-10-08T07:59:58.369Z",
+  "updatedAt": "2026-10-08T08:01:07.981Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -644,7 +659,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T07:59:58.368Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:01:07.981Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
