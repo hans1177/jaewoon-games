@@ -1154,25 +1154,43 @@
     },
     "local_authoring_parts::8b8b633df83ed63d8a79e9439c9251ed6e327c5ec2d21fd04ee0dabf74adc172:trigger": {
       "trigger": "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 자원, 위험, 진행 상태를 변화시키는 반복 가능한 게임 루프를 구축"
+    },
+    "local_authoring_parts::8b8b633df83ed63d8a79e9439c9251ed6e327c5ec2d21fd04ee0dabf74adc172:stateChange": {
+      "stateChange": "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 자원, 위험, 진행 상태를 변화시키는 반복 가능한 게임 루프를 구축"
+    },
+    "local_authoring_parts::ad61812c95c6089cad6c5c849adccc87e1c12589d7cc3b095d00dbe7f80f4897:systemInterconnections:4": {
+      "fromId": "systemInterconnections[4]",
+      "toId": "systemInterconnections[4]",
+      "stateKeys": [
+        "currentWorldState",
+        "playerTarget",
+        "availableResources",
+        "potentialHazards",
+        "progressionStatus"
+      ],
+      "fromSystem": "GAMEPLAY_SKETCH v4 emergent grammar: emergentGenre.name/newPrimaryVerb를 identity 또는 coreFun에 유지하고 causalDNA id 최소 2개를 referenceHomagePlan 또는 narrativeDialoguePlan에 추적 가능하게 남긴다.MAIN",
+      "toSystem": "GAMEPLAY_SKETCH v4 emergent grammar: emergentGenre.name/newPrimaryVerb를 identity 또는 coreFun에 유지하고 causalDNA id 최소 2개를 referenceHomagePlan 또는 narrativeDialoguePlan에 추적 가능하게 남긴다.MAIN",
+      "trigger": "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 자원, 위험, 진행 상태를 변화시키는 반복 가능한 게임 루프를 구축",
+      "stateChange": "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 자원, 위험, 진행 상태를 변화시키는 반복 가능한 게임 루프를 구축"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 65,
-      "successes": 65,
+      "calls": 66,
+      "successes": 66,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1763796,
-      "lastMs": 35309,
+      "totalMs": 1798559,
+      "lastMs": 34763,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:33:27.649Z"
+      "updatedAt": "2026-10-08T15:34:02.414Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:29:02.212Z",
-  "updatedAt": "2026-10-08T15:33:27.649Z",
+  "updatedAt": "2026-10-08T15:34:02.421Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3233,84 +3251,16 @@
   "sliceRepairFeedback": {
     "designer_draft_slices::systems-progression": [
       {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
         "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "axis": "CORE_LOOP_DESIGN",
         "evidenceLevel": null,
         "minimumRequired": null,
         "evidence": {
-          "path": "systemInterconnections[0].trigger",
-          "value": "ACTION_PLAYER_INPUT"
+          "path": "systemInterconnections",
+          "detail": "systemInterconnections[0]→systemInterconnections[0]의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections[0].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[1].trigger",
-          "value": "ACTION_PLAYER_INPUT"
-        },
-        "requiredAction": "systemInterconnections[1].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[2].trigger",
-          "value": "ACTION_PLAYER_INPUT"
-        },
-        "requiredAction": "systemInterconnections[2].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[3].trigger",
-          "value": "ACTION_PLAYER_INPUT"
-        },
-        "requiredAction": "systemInterconnections[3].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[4].trigger",
-          "value": "ACTION_PLAYER_INPUT"
-        },
-        "requiredAction": "systemInterconnections[4].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "requiredAction": "systemInterconnections: systemInterconnections[0]→systemInterconnections[0]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3325,9 +3275,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "systemInterconnections[0]→systemInterconnections[1]의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "systemInterconnections[1]→systemInterconnections[1]의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: systemInterconnections[0]→systemInterconnections[1]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: systemInterconnections[1]→systemInterconnections[1]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3342,9 +3292,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "systemInterconnections[1]→systemInterconnections[2]의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "systemInterconnections[2]→systemInterconnections[2]의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: systemInterconnections[1]→systemInterconnections[2]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: systemInterconnections[2]→systemInterconnections[2]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3359,9 +3309,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "systemInterconnections[2]→systemInterconnections[3]의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "systemInterconnections[3]→systemInterconnections[3]의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: systemInterconnections[2]→systemInterconnections[3]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: systemInterconnections[3]→systemInterconnections[3]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3376,26 +3326,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "systemInterconnections[3]→systemInterconnections[4]의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "systemInterconnections[4]→systemInterconnections[4]의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: systemInterconnections[3]→systemInterconnections[4]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "systemInterconnections[0]→systemInterconnections[1]의 출력과 입력 상태가 연결되지 않는다"
-        },
-        "requiredAction": "systemInterconnections: systemInterconnections[0]→systemInterconnections[1]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: systemInterconnections[4]→systemInterconnections[4]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3422,7 +3355,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 3
+    "designer_draft_slices::systems-progression": 4
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3463,10 +3396,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:33:27.649Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T15:34:02.417Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
