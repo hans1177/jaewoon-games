@@ -462,25 +462,40 @@
       "name": "생존의 선택과 결과의 진화의 재방문",
       "purpose": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 중심 역할을 수행한다. 이 게임은 생존, 채집, 제작을 중심으로 한 플레이어의 선택과 행동을 통해 생존의 과정을 재생하며, 각 선택이 다음 상태와 접근 가능성에 영향을 미친다. 플레이어는 생존의 과정에서 각 단계의 위험, 보상, 그리고 선택의 결과를 경험하며, 이는 게임의 핵심 재미와 진정한 생존의 감정을 전달한다.",
       "playerChoice": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 중심 역할을 수행한다. 이 게임은 생존, 채집, 제작을 중심으로 한 플레이어의 선택과 행동을 통해 생존의 과정을 재생하며, 각 선택이 다음 상태와 접근 가능성에 영향을 미친다. 플레이어는 생존의 과정에서 각 단계의 위험, 보상, 그리고 선택의 결과를 경험하며, 이는 게임의 핵심 재미와 진정한 생존의 감정을 전달한다."
+    },
+    "local_authoring_parts::d43121e4ff1ec2cf65c318498222338ae144c015fe7c15e3fc0a14823c2a7422:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_1",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "GAME_STATE_1",
+        "GAME_STATE_2"
+      ],
+      "stateOutputs": [
+        "GAME_STATE_3",
+        "GAME_STATE_4"
+      ],
+      "name": "생존의 선택과 결과의 재방문",
+      "purpose": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 중심 역할을 수행한다. 이 게임은 생존, 채집, 제작을 중심으로 한 플레이어의 선택과 행동을 통해 생존의 과정을 재생하며, 각 선택이 다음 상태와 접근 가능성에 영향을 미친다. 플레이어는 생존의 과정에서 각 단계의 위험, 보상, 그리고 선택의 결과를 경험하며, 이는 게임의 핵심 재미와 진정한 생존의 감정을 전달한다.",
+      "playerChoice": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 중심 역할을 수행한다. 이 게임은 생존, 채집, 제작을 중심으로 한 플레이어의 선택과 행동을 통해 생존의 과정을 재생하며, 각 선택이 다음 상태와 접근 가능성에 영향을 미친다. 플레이어는 생존의 과정에서 각 단계의 위험, 보상, 그리고 선택의 결과를 경험하며, 이는 게임의 핵심 재미와 진정한 생존의 감정을 전달한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 14,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1676979,
-      "lastMs": 149377,
+      "totalMs": 1826644,
+      "lastMs": 149665,
       "lastError": null,
-      "updatedAt": "2026-10-08T09:06:38.548Z"
+      "updatedAt": "2026-10-08T09:09:08.215Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:38:41.495Z",
-  "updatedAt": "2026-10-08T09:06:38.548Z",
+  "updatedAt": "2026-10-08T09:09:08.222Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2700,7 +2715,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2715,10 +2730,10 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T09:06:38.548Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T09:09:08.217Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
