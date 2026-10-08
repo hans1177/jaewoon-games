@@ -557,25 +557,33 @@
       "toSystem": "A",
       "trigger": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
       "stateChange": "Main state is transformed into a new defensive configuration based on player strategy and resource allocation."
+    },
+    "local_authoring_parts::840f516a7ebd741ec9452c82246d1745b58e05521c3c8e82ae09da90f7c242fa:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "MAIN",
+      "toId": "A",
+      "stateKeys": [
+        "Main state"
+      ],
+      "fromSystem": "MAIN"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 16,
+      "calls": 18,
+      "successes": 17,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1785251,
-      "lastMs": 94937,
+      "totalMs": 1877394,
+      "lastMs": 92143,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T18:17:06.298Z"
+      "updatedAt": "2026-10-08T18:18:38.445Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:47:20.978Z",
-  "updatedAt": "2026-10-08T18:17:06.300Z",
+  "updatedAt": "2026-10-08T18:18:38.445Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2925,7 +2933,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:17:06.300Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:18:38.445Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
