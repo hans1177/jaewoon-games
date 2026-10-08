@@ -651,25 +651,28 @@
           "playerChoice": "[\"Rule ID Assignment\",\"State Transition\"]"
         }
       ]
+    },
+    "local_authoring_parts::34030d9aed34388952ffd703e4e1a5a3a7c6943bef2ef2f310e0ba7467f5606a:fromId": {
+      "fromId": "RULE_01"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 16,
+      "calls": 17,
+      "successes": 17,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1926592,
-      "lastMs": 289498,
+      "totalMs": 2013670,
+      "lastMs": 87078,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:23:46.745Z"
+      "updatedAt": "2026-10-08T13:25:13.829Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:51:40.085Z",
-  "updatedAt": "2026-10-08T13:23:46.749Z",
+  "updatedAt": "2026-10-08T13:25:13.829Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3252,10 +3255,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:23:46.745Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:25:13.829Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
