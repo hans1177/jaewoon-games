@@ -90,7 +90,11 @@ export function buildPracticeDataset({ inputDir, outDir, minSamples = 12 }) {
   const evalCount = Math.max(2, Math.min(Math.floor(deduped.length * 0.2), deduped.length - 1));
   // A family stays in one split: revisions of one exercise cannot inflate eval.
   const evalFamilies=new Set();
+  const codeFamilies=[...new Set(deduped.filter(row=>row.sampleKind==='CODE_IMPLEMENTATION').map(row=>row.familyId))];
+  // A loss measured only on prose cannot evaluate implementation learning.
+  if(codeFamilies.length>=2)evalFamilies.add(codeFamilies[0]);
   for(const row of deduped){if(deduped.filter(item=>evalFamilies.has(item.familyId)).length>=evalCount)break;evalFamilies.add(row.familyId);}
+  if(codeFamilies.length>=2&&codeFamilies.every(id=>evalFamilies.has(id)))evalFamilies.delete(codeFamilies.at(-1));
   const evalRows = deduped.filter(row=>evalFamilies.has(row.familyId));
   const trainRows = deduped.filter(row=>!evalFamilies.has(row.familyId));
   if(!trainRows.length)throw new Error('practice split requires independent exercise families');

@@ -75,6 +75,7 @@ test('real implementation targets join the existing practice dataset without hid
     assert(result.implementationWritten>=5);
     const manifest=buildPracticeDataset({inputDir:samples,outDir:path.join(root,'dataset')});
     assert(manifest.stats.codeImplementationTrain>0);
+    assert(manifest.stats.codeImplementationEval>0);
     const curriculum=JSON.parse(fs.readFileSync('company-learning/roblox-practice.json','utf8'));
     for(const name of fs.readdirSync(samples).filter(x=>x.startsWith('gpt-u-code-'))){
       const sample=JSON.parse(fs.readFileSync(path.join(samples,name),'utf8'));
