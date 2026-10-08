@@ -1828,20 +1828,35 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
   options=options or {}
   local theme=cloneTheme(options.theme)
   local root,body=surfaceShell(options,"INVENTORY_FULL_SCREEN","INVENTORY_FULL_SCREEN")
-  local search=RobloxCommonUI.CreateSearchField({size=UDim2.new(0.42,0,0,48),theme=theme});search.Parent=body
-  local sort=RobloxCommonUI.CreateSortControl({size=UDim2.fromOffset(170,48),theme=theme});sort.AnchorPoint=Vector2.new(1,0);sort.Parent=body
-  local filters=RobloxCommonUI.CreateFilterBar({size=UDim2.new(1,0,0,52),theme=theme});filters.Parent=body
+  local search=RobloxCommonUI.CreateSearchField({
+    size=UDim2.new(0.42,0,0,48),theme=theme,placeholder="보유 아이템 검색"
+  })
+  search.Parent=body
+  local sort=RobloxCommonUI.CreateSortControl({
+    size=UDim2.fromOffset(170,48),theme=theme,text="정렬: 기본순"
+  })
+  sort.AnchorPoint=Vector2.new(1,0);sort.Parent=body
+  local filters,filterButtons=RobloxCommonUI.CreateFilterBar({
+    filters=options.filters or {"전체"},size=UDim2.new(1,0,0,52),theme=theme
+  })
+  filters.Parent=body
   local scroll=Instance.new("ScrollingFrame")
   scroll.Name="InventoryScroll";scroll.BackgroundTransparency=1;scroll.BorderSizePixel=0;scroll.ScrollBarThickness=4
-  scroll.ScrollingDirection=Enum.ScrollingDirection.Y;scroll.CanvasSize=UDim2.fromOffset(0,0);scroll.AutomaticCanvasSize=Enum.AutomaticSize.Y
+  scroll.ScrollingDirection=Enum.ScrollingDirection.Y
+  scroll.CanvasSize=UDim2.fromOffset(0,0);scroll.AutomaticCanvasSize=Enum.AutomaticSize.Y
   scroll.Active=true;scroll.Parent=body
   local grid,cellLayout,slots=RobloxCommonUI.CreateInventoryGrid({
     name="FullInventoryGrid",columns=options.columns or 6,
     slotCount=options.slotCount or (options.items and #options.items or 1),
     size=UDim2.new(1,-8,0,160),theme=theme
-  });grid.Parent=scroll
-  local rows={}
+  })
+  grid.Parent=scroll
+  -- 기존 실제 게임 소유 목록은 그대로 유지하고, 화면에서 보이는 결과만 분류한다.
+  local rows,shown,filterNames={},{},{}
   local selectedId=nil
+  local currentFilter="전체"
+  local sortByName=false
+  local refresh
   local function resizeGrid()
     local available=scroll.AbsoluteSize.X-8
     if available<=0 then return end
@@ -1855,21 +1870,84 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
     local compact=body.AbsoluteSize.X<560
     if compact then
       search.Size=UDim2.new(1,0,0,48)
-      sort.AnchorPoint=Vector2.new(0,0);sort.Position=UDim2.fromOffset(0,56);sort.Size=UDim2.new(1,0,0,48)
+      sort.AnchorPoint=Vector2.new(0,0)
+      sort.Position=UDim2.fromOffset(0,56);sort.Size=UDim2.new(1,0,0,48)
       filters.Position=UDim2.fromOffset(0,112)
       scroll.Position=UDim2.fromOffset(0,172);scroll.Size=UDim2.new(1,0,1,-172)
     else
       search.Size=UDim2.new(0.42,0,0,48)
-      sort.AnchorPoint=Vector2.new(1,0);sort.Position=UDim2.new(1,0,0,0);sort.Size=UDim2.fromOffset(170,48)
+      sort.AnchorPoint=Vector2.new(1,0)
+      sort.Position=UDim2.new(1,0,0,0);sort.Size=UDim2.fromOffset(170,48)
       filters.Position=UDim2.fromOffset(0,58)
       scroll.Position=UDim2.fromOffset(0,116);scroll.Size=UDim2.new(1,0,1,-116)
     end
     root:SetAttribute("MobileStackedLayout",compact)
     resizeGrid()
   end
-  local function sync(items)
-    rows=type(items)=="table"and items or {}
-    for i,row in ipairs(rows)do
+  local function updateFilters()
+    filterNames={}
+    if type(options.filters)=="table"and #options.filters>0 then
+      for _,name in ipairs(options.filters)do filterNames[#filterNames+1]=tostring(name)end
+    else
+      filterNames[1]="전체"
+      local found={["전체"]=true}
+      for _,row in ipairs(rows)do
+        local category=tostring(row.category or "")
+        if category~=""and not found[category]then
+          filterNames[#filterNames+1]=category;found[category]=true
+        end
+      end
+    end
+    if not table.find(filterNames,currentFilter)then currentFilter=filterNames[1]or"전체"end
+    for i,name in ipairs(filterNames)do
+      if not filterButtons[i]then
+        local index=i
+        local button=RobloxCommonUI.CreateTabButton({
+          name="Filter"..i,text=name,size=UDim2.fromOffset(96,48),theme=theme
+        })
+        button.LayoutOrder=i;button.Parent=filters
+        filterButtons[i]=button
+        button.Activated:Connect(function()
+          local selected=filterNames[index]
+          if selected then currentFilter=selected;refresh()end
+        end)
+      end
+      local button=filterButtons[i]
+      button.Text=name;button.Visible=true
+      button:SetAttribute("FilterIndex",i)
+      button:SetAttribute("Selected",name==currentFilter)
+      button.BackgroundColor3=name==currentFilter and theme.Primary or theme.PanelRaised
+    end
+    for i=#filterNames+1,#filterButtons do filterButtons[i].Visible=false end
+  end
+  -- 이미 생성된 최초 필터 버튼도 이후 분류가 바뀌어도 최신 결과를 선택한다.
+  for i,button in ipairs(filterButtons)do
+    local index=i
+    button.Activated:Connect(function()
+      local selected=filterNames[index]
+      if selected then currentFilter=selected;refresh()end
+    end)
+  end
+  refresh=function()
+    updateFilters()
+    shown={}
+    local query=string.lower(tostring(search.Text or ""))
+    for _,row in ipairs(rows)do
+      local category=tostring(row.category or "")
+      local name=string.lower(tostring(row.name or row.title or row.id or ""))
+      if (currentFilter=="전체"or currentFilter==category)
+        and (query==""or string.find(name,query,1,true))then
+        shown[#shown+1]=row
+      end
+    end
+    if sortByName then
+      table.sort(shown,function(left,right)
+        local a=string.lower(tostring(left.name or left.title or left.id or ""))
+        local b=string.lower(tostring(right.name or right.title or right.id or ""))
+        return a==b and tostring(left.id or "")<tostring(right.id or "") or a<b
+      end)
+    end
+    for i,row in ipairs(shown)do
       if not slots[i]then
         local slot=RobloxCommonUI.CreateInventorySlot({name="Slot"..i,theme=theme})
         slot.LayoutOrder=i;slot.Parent=grid;slots[i]=slot
@@ -1879,13 +1957,15 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
         slot:SetAttribute("InventoryInputBound",true)
         local index=i
         slot.Activated:Connect(function()
-          local current=rows[index]
-          if current and type(options.onSelect)=="function"then options.onSelect(current.id,current)end
+          local current=shown[index]
+          if not current or current.id==nil or current.locked==true then return end
+          selectedId=current.id
+          refresh()
+          if type(options.onSelect)=="function"then options.onSelect(current.id,current)end
         end)
       end
       slot.Visible=true
-      slot.Name="Slot"..i
-      slot.LayoutOrder=i
+      slot.Name="Slot"..i;slot.LayoutOrder=i
       slot:SetAttribute("BoundItemId",tostring(row.id or ""))
       slot:SetAttribute("BoundFromGameState",true)
       local icon=slot:FindFirstChild("Icon")
@@ -1894,12 +1974,25 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
       if icon then icon.Image=tostring(row.image or "")end
       if quantity then quantity.Text=tostring(row.quantity or row.count or "")end
       if highlight then highlight.Visible=row.selected==true or (selectedId~=nil and selectedId==row.id)end
-      slot.Active=row.locked~=true
+      slot.Active=row.id~=nil and row.locked~=true
     end
-    for i=#rows+1,#slots do slots[i].Visible=false end
+    for i=#shown+1,#slots do slots[i].Visible=false end
     root:SetAttribute("BoundItemCount",#rows)
+    root:SetAttribute("BoundVisibleItemCount",#shown)
+    root:SetAttribute("CurrentInventoryFilter",currentFilter)
+    root:SetAttribute("InventorySortByName",sortByName)
     resizeGrid()
   end
+  local function sync(items)
+    rows=type(items)=="table"and items or {}
+    refresh()
+  end
+  search:GetPropertyChangedSignal("Text"):Connect(refresh)
+  sort.Activated:Connect(function()
+    sortByName=not sortByName
+    sort.Text=sortByName and "정렬: 이름순"or"정렬: 기본순"
+    refresh()
+  end)
   body:GetPropertyChangedSignal("AbsoluteSize"):Connect(placePanels)
   scroll:GetPropertyChangedSignal("AbsoluteSize"):Connect(resizeGrid)
   cellLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
@@ -1911,7 +2004,8 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
   root:SetAttribute("OwnsInventoryAuthority",false)
   root:SetAttribute("OwnsSaveAuthority",false)
   root:SetAttribute("OwnsRemoteAuthority",false)
-  return root,{search=search,sort=sort,filters=filters,grid=grid,scroll=scroll,slots=slots,Sync=sync}
+  return root,{search=search,sort=sort,filters=filters,grid=grid,scroll=scroll,
+    slots=slots,Sync=sync}
 end
 
 function RobloxCommonUI.CreateEquipmentFullScreen(options)
