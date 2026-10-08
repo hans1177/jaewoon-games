@@ -740,12 +740,13 @@ local objectHidden=ProximityPromptService.PromptHidden:Connect(function(pr)
  if objectStateConnection then objectStateConnection:Disconnect();objectStateConnection=nil end
  refreshObjectInteraction()
 end)
-p.AttributeChanged:Connect(function(key)
+local objectClaimChanged=p.AttributeChanged:Connect(function(key)
  if activeObjectPrompt and key==activeObjectPrompt:GetAttribute("ClaimAttribute")then refreshObjectInteraction()end
 end)
-gui:GetAttributeChangedSignal("RPGMenuOpen"):Connect(refreshObjectInteraction)
+local objectMenuChanged=gui:GetAttributeChangedSignal("RPGMenuOpen"):Connect(refreshObjectInteraction)
 gui.Destroying:Connect(function()
  objectShown:Disconnect();objectHidden:Disconnect()
+ objectClaimChanged:Disconnect();objectMenuChanged:Disconnect()
  if objectStateConnection then objectStateConnection:Disconnect()end
 end)
 
