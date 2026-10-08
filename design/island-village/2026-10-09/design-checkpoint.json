@@ -76,25 +76,39 @@
       "name": "RELAXED_DAILY_GOALS",
       "purpose": "Enables players to choose relaxed daily goals that gradually evolve the game, providing a sense of progression and variety without strict constraints.",
       "playerChoice": "Select a specific goal or activity that aligns with the current village state, ensuring it is both achievable and meaningful in the long term."
+    },
+    "local_authoring_parts::dadfd98b0352503bcbf54ce8082bb2826be6e15e616632291c9e785dc355a61e:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "VILLAGE_RESOURCES"
+      ],
+      "stateOutputs": [
+        "NEW_PLAY_OPTION",
+        "NEXT_OPEN_QUESTION"
+      ],
+      "name": "RESOURCE_TO_VILLAGE_PROGRESSION",
+      "purpose": "Establishes the progression of resources to village functions, enabling players to build or improve one village function through focused resource gathering.",
+      "playerChoice": "Select a specific resource type and determine how it will be used to enhance a village function in the next step of the game."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 467023,
-      "lastMs": 66575,
+      "totalMs": 533090,
+      "lastMs": 66067,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:53:52.974Z"
+      "updatedAt": "2026-10-08T17:54:59.042Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:46:05.904Z",
-  "updatedAt": "2026-10-08T17:53:52.974Z",
+  "updatedAt": "2026-10-08T17:54:59.042Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2175,7 +2189,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:53:52.974Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:54:59.042Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
