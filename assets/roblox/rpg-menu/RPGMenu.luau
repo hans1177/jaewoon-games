@@ -123,12 +123,12 @@ function Menu.install(config,gui,player,options)
   "티어 장비 재판매 가격은 기존 규칙에 없어 판매할 수 없어.\n구매는 마을 상인 가까이에서 서버가 확인해.",14)
  saleNotice.Size=UDim2.new(1,-8,0,94);saleNotice.TextColor3=colors.muted
  buyWeapon.Activated:Connect(function()
-  local offer=Model.shop(player:GetAttributes(),config).weapon
+  local offer=Model.shop(player:GetAttributes(),config,type(options.merchantAccess)=="function"and options.merchantAccess()or nil).weapon
   if not opened or activeTab~="상점"or not offer.canBuy then return end
   if options.buyWeapon then options.buyWeapon()end
  end)
  buyArmor.Activated:Connect(function()
-  local offer=Model.shop(player:GetAttributes(),config).armor
+  local offer=Model.shop(player:GetAttributes(),config,type(options.merchantAccess)=="function"and options.merchantAccess()or nil).armor
   if not opened or activeTab~="상점"or not offer.canBuy then return end
   if options.buyArmor then options.buyArmor()end
  end)
@@ -220,9 +220,14 @@ function Menu.install(config,gui,player,options)
    character.armorTier,character.armorBonus,character.relic,
    character.advancement~=""and character.advancement or "없음",
    character.secondaryAdvancement~=""and character.secondaryAdvancement or "없음")
-  local offers=Model.shop(a,config)
-  shopSummary.Text=string.format("골드 %d    ·    %s\n무기·방어구 강화는 서버 상태와 즉시 동기화돼.",
-   offers.gold,offers.inVillage and "마을 상인에게 가까이 가서 구매"or"상점 이용은 마을에서만 가능")
+  local access=type(options.merchantAccess)=="function"and options.merchantAccess()or nil
+  local offers=Model.shop(a,config,access)
+  local shopLocation=not offers.inVillage and "상점 이용은 마을에서만 가능"
+   or offers.proximityObserved and not offers.weapon.nearMerchant and not offers.armor.nearMerchant
+      and "마을 상인 가까이로 이동하면 구매할 수 있어"
+   or "현재 위치의 상인에게서 구매할 수 있어"
+  shopSummary.Text=string.format("골드 %d    ·    %s\n실제 구매 조건은 서버에서 다시 확인해.",
+   offers.gold,shopLocation)
   weaponOffer.Text=offers.weapon.price and
    string.format("무기 T%d → T%d   ·   %dG",offers.weapon.tier,offers.weapon.nextTier,offers.weapon.price) or
    "무기 최고 티어 보유"
@@ -294,6 +299,17 @@ function Menu.install(config,gui,player,options)
  end
  local watched={Level=true,Gold=true,ClassId=true,MaxHP=true,AttackPower=true,WeaponTier=true,ArmorTier=true,RelicId=true,QuestPortal=true,QuestKills=true,QuestNeed=true,RoomCode=true,PartyCount=true,PartyKills=true,Contribution=true,UnlockedCompanions=true,CompanionUnlockCount=true,LastAction=true,CurrentZone=true,XP=true,AdvancementId=true,SecondAdvancementId=true}
  table.insert(connections,player.AttributeChanged:Connect(function(name)if watched[name]then scheduleRefresh()end end))
+ -- 게임에서 상인 위치를 제공할 때만 상점 탭을 저빈도로 갱신한다.
+ -- 메뉴가 닫힌 동안 전체 인벤토리를 반복 갱신하지 않으며 서버 권한은 그대로다.
+ if type(options.merchantAccess)=="function"then
+  local lastShopRefresh=0
+  table.insert(connections,game:GetService("RunService").Heartbeat:Connect(function()
+   if not opened or activeTab~="상점"then return end
+   local now=os.clock()
+   if now-lastShopRefresh<0.5 then return end
+   lastShopRefresh=now;refresh()
+  end))
+ end
  local function watchTools()
   for _,c in ipairs(toolConnections)do c:Disconnect()end;toolConnections={}
   for _,container in pairs({backpack=player:FindFirstChildOfClass("Backpack"),character=player.Character})do
