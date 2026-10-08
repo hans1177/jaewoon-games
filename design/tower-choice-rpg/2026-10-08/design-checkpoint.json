@@ -499,25 +499,39 @@
       "name": "ACTION_SURVIVAL_ROGUELITE_SIGNATURE_SYSTEM",
       "purpose": "플레이어가 반복적으로 수행하는 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 기반으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 재미와 시스템 연결을 확정한다.",
       "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+    },
+    "local_authoring_parts::6875384ae87157ef3eac8fe758cb70420fedca69874bf1d6429bb1620eed9ab5:signatureSystems:1": {
+      "id": "ACTION_SURVIVAL_ROGUELITE_SIGNATURE_SYSTEM",
+      "grammarRole": "A",
+      "stateInputs": [
+        "플레이어가 반복적으로 수행하는 중심 행동인 'Fight through an escalating horde in a short real-time ",
+        "게임은 단순 반복을 넘어, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프를 구현하며, 모바일에서도 즉시 이해되는 입력과 피드백을 제공함"
+      ],
+      "stateOutputs": [
+        "게임의 세계 규칙은 플레이어의 선택과 행동에 따라 변화하며, 시스템은 MAIN/A/B/c/@의 상태 교환을 통해 유연하게 확장할 수 있음"
+      ],
+      "name": "ACTION_SURVIVAL_ROGUELITE_SIGNATURE_SYSTEM",
+      "purpose": "플레이어가 반복적으로 수행하는 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 기반으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 재미와 시스템 연결을 확정한다.",
+      "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 16,
+      "calls": 17,
+      "successes": 17,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1946935,
-      "lastMs": 114612,
+      "totalMs": 2058739,
+      "lastMs": 111804,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:28:24.461Z"
+      "updatedAt": "2026-10-08T16:30:16.267Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:15:46.246Z",
-  "updatedAt": "2026-10-08T16:28:24.461Z",
+  "updatedAt": "2026-10-08T16:30:16.267Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2752,7 +2766,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:28:24.461Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:30:16.267Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
