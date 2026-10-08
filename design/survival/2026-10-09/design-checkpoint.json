@@ -395,25 +395,38 @@
       "name": "생존: 개인의 생존 기록과 채집/제작 선택이 다음 하루의 가능성을 바꾼다.",
       "purpose": "플레이어가 '생존'이라는 중심 행동을 수행하며, 채집/제작 선택에 따라 다음 하루의 가능성들을 바꾼다.",
       "playerChoice": "채집 또는 제작 선택 중 하나를 선택하여 주체인 '나'의 생존 방향성과 가치를 결정한다."
+    },
+    "local_authoring_parts::1328aefa0dad6b94d859a1423502d50b15fc50dda4cff2aedd8ca718f84d757a:signatureSystems:4": {
+      "id": "SURVIVAL_DELVE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "world_state"
+      ],
+      "stateOutputs": [
+        "new_world_state"
+      ],
+      "name": "생존: 개인의 생존 기록과 채집/제작 선택이 다음 하루의 가능성을 바꾼다.",
+      "purpose": "플레이어가 '생존'이라는 중심 행동을 수행하며, 채집/제작 선택에 따라 다음 하루의 가능성들을 바꾼다.",
+      "playerChoice": "채집 또는 제작 선택 중 하나를 선택하여 주체인 '나'의 생존 방향성과 가치를 결정한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 14,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 771769,
-      "lastMs": 97490,
+      "totalMs": 869656,
+      "lastMs": 97887,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:09:29.604Z"
+      "updatedAt": "2026-10-08T19:11:07.492Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:56:37.782Z",
-  "updatedAt": "2026-10-08T19:09:29.604Z",
+  "updatedAt": "2026-10-08T19:11:07.499Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2657,7 +2670,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2673,10 +2686,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T19:09:29.604Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T19:11:07.493Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_MAIN_A_B_c_DELVE_REQUIRED,DESIGN_RULE_STATE_MISSING",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
