@@ -456,25 +456,41 @@
       "name": "ELDORIA_C",
       "purpose": "플레이어가 탐험, 위험, 성공, 실패, 성장의 상태 변화를 통해 세계의 역사, 생활, 경제, 지역 기능을 이해하고, 인물, 적, 아이템, UI의 역할과 위험/보상 차이를 시각 언어로 표현하며, 선택 결과와 세계 규칙의 상호작용을 통해 핵심 재미를 구현한다.",
       "playerChoice": "플레이어는 탐험을 통해 세계의 원인을 파악하고, 위험을 통해 인물의 목표와 두려움을 반영하며, 성공과 실패를 통해 선택의 결과와 세계의 상태 변화를 관찰하고, 성장으로 새로운 행동·경로·조합·관계·발견·대응법을 열어 같은 콘텐츠를 다르게 사용하게 된다."
+    },
+    "local_authoring_parts::6f6f4b8f32e6d9fcb3c03f811fc97e30e46879ac4a95735637113947ab145a4b:signatureSystems:4": {
+      "id": "ELDORIA_DELVE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "worldState",
+        "playerSelection",
+        "gameProgression"
+      ],
+      "stateOutputs": [
+        "newWorldState",
+        "updatedGameProgression"
+      ],
+      "name": "ELDORIA DELVE",
+      "purpose": "플레이어가 탐험, 위험, 성공, 실패, 성장의 상태 변화를 통해 세계의 역사, 생활, 경제, 지역 기능을 이해하고, 인물, 적, 아이템, UI의 역할과 위험/보상 차이를 시각 언어로 표현하며, 선택 결과와 세계 규칙의 상호작용을 통해 핵심 재미를 구현한다.",
+      "playerChoice": "플레이어는 탐험을 통해 세계의 원인을 파악하고, 위험을 통해 인물의 목표와 두려움을 반영하며, 성공과 실패를 통해 선택의 결과와 세계의 상태 변화를 관찰하고, 성장으로 새로운 행동·경로·조합·관계·발견·대응법을 열어 같은 콘텐츠를 다르게 사용하게 된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 14,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1602925,
-      "lastMs": 120884,
+      "totalMs": 1722756,
+      "lastMs": 119831,
       "lastError": null,
-      "updatedAt": "2026-10-08T09:22:32.488Z"
+      "updatedAt": "2026-10-08T09:24:32.320Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:55:49.512Z",
-  "updatedAt": "2026-10-08T09:22:32.488Z",
+  "updatedAt": "2026-10-08T09:24:32.325Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2708,67 +2724,16 @@
   "sliceRepairFeedback": {
     "designer_draft_slices::identity-core": [
       {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "code": "DESIGN_RULE_STATE_MISSING",
         "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "axis": "CORE_LOOP_DESIGN",
         "evidenceLevel": null,
         "minimumRequired": null,
         "evidence": {
-          "path": "signatureSystems[0].purpose",
-          "value": "ACTION_RESULT_DELAYED_TO_EFFECTIVE_FUTURE"
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
         },
-        "requiredAction": "signatureSystems[0].purpose의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "signatureSystems"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "signatureSystems[0].playerChoice",
-          "value": "ACTION_RESULT_DELAYED_TO_EFFECTIVE_FUTURE"
-        },
-        "requiredAction": "signatureSystems[0].playerChoice의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "signatureSystems"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "signatureSystems[1].playerChoice",
-          "value": "PLAYER_LEGITIMACY_AND_REGION_CONTROL"
-        },
-        "requiredAction": "signatureSystems[1].playerChoice의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "signatureSystems"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "signatureSystems[2].playerChoice",
-          "value": "PLAYER_LEGITIMACY_AND_REGION_CONTROL"
-        },
-        "requiredAction": "signatureSystems[2].playerChoice의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2778,7 +2743,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2793,10 +2758,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T09:22:32.488Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T09:24:32.322Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
