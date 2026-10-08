@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::e319bc5149801605963ae32004e350015e17496f92de3e019ad26b2cb4f61c26:identity": {
+      "identity": "퇴마 사무소은 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 게임의 핵심 재미는 성장의 과정에서 새로운 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 플레이어는 시작 시점에서 즉시 상태 변화를 만드는 중심 행동을 수행하며, 선택 결과가 다음 월드 상태를 바꾸는 반복 가능한 핵심 루프를 형성한다. 게임의 세계 상태는 플레이어의 시작 입력과 선택 결과가 서로 영향을 주는 시그니처 상호작용을 통해 실제 월드/시스템 상태 변화로 연결된다. 게임의 시스템은 MAIN/A/B/c/@와 같은 인과축을 통해 상태 변화를 구체화하고, 보상·위험·다음 선택의 연결을 포함한다. 게임의 인과법칙은 기존 게임 문법을 비튼다. 게임의 인과법칙은 기존 게임의 인과법칙과 일관되며, 게임의 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 인과법칙은 기존 게임의 인과법칙과 일관되며, 게임의 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 인과법칙은 기존 게임의 인과법칙과 일관되며, 게임의 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 인과법칙은 기존 게임의 인과법칙과 일관되며, 게임의 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 인과법칙은 기존 게임의 인과법칙과 일관되며, 게임의 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 인과법칙은 기존 게"
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 293151,
+      "lastMs": 293151,
+      "lastError": null,
+      "updatedAt": "2026-10-08T12:01:10.817Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:56:17.645Z",
-  "updatedAt": "2026-10-08T11:56:17.660Z",
+  "updatedAt": "2026-10-08T12:01:10.817Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1933,5 +1949,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-08T12:01:10.817Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
