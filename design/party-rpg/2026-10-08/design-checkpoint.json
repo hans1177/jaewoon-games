@@ -1011,25 +1011,45 @@
         "OBSTACLE_PATTERN"
       ],
       "fromSystem": "BOARD_RULE_0"
+    },
+    "local_authoring_parts::ca60b42995330f03a77a6fbf4f6e69954544abc0ec3ada922dbaa50287abedb3:toSystem,trigger,stateChange": {
+      "toSystem": "BOARD_RULE_1",
+      "trigger": "SIGNATURE_SYSTEM_0 → BOARD_RULE_1",
+      "stateChange": "BOARD_STATE, PLAYER_ACTION, LEVEL_GOAL, REWARD_SYSTEM, OBSTACLE_PATTERN"
+    },
+    "local_authoring_parts::54e0ff2b7f37a47ac017d4ae5e98b00e882e73216d9a59284c8ff27bf834ddd7:systemInterconnections:1": {
+      "fromId": "SIGNATURE_SYSTEM_0",
+      "toId": "BOARD_RULE_1",
+      "stateKeys": [
+        "BOARD_STATE",
+        "PLAYER_ACTION",
+        "LEVEL_GOAL",
+        "REWARD_SYSTEM",
+        "OBSTACLE_PATTERN"
+      ],
+      "fromSystem": "BOARD_RULE_0",
+      "toSystem": "BOARD_RULE_1",
+      "trigger": "SIGNATURE_SYSTEM_0 → BOARD_RULE_1",
+      "stateChange": "BOARD_STATE, PLAYER_ACTION, LEVEL_GOAL, REWARD_SYSTEM, OBSTACLE_PATTERN"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 62,
-      "successes": 62,
+      "calls": 63,
+      "successes": 63,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4710001,
-      "lastMs": 66104,
+      "totalMs": 4773113,
+      "lastMs": 63112,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:53:57.959Z"
+      "updatedAt": "2026-10-08T10:55:01.072Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:34:25.615Z",
-  "updatedAt": "2026-10-08T10:53:57.959Z",
+  "updatedAt": "2026-10-08T10:55:01.073Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3214,7 +3234,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:53:57.959Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:55:01.073Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
