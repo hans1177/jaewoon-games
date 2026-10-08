@@ -376,6 +376,42 @@ test('Roblox village NPC roam and first-sighting boss scene keep original server
   assert.match(client,/p:GetAttributeChangedSignal\("BossIntroId"\):Connect\(showBossCinematic\)/);
   assert.doesNotMatch(client,/remote:FireServer\("BossIntroId"/);
 });
+test('Roblox quest and service NPCs walk existing village routes without erasing active kill counts',()=>{
+  const server=fs.readFileSync(new URL('../roblox-games/daechung-rpg/server/Game.server.luau',import.meta.url),'utf8');
+  const client=fs.readFileSync(new URL('../roblox-games/daechung-rpg/client/Game.client.luau',import.meta.url),'utf8');
+  const world=server.slice(server.indexOf('local function addServiceRoam('),server.indexOf('local portalAngles=',server.indexOf('local function addServiceRoam(')));
+  const chief=server.slice(server.indexOf('prompt(chief,"마을 이장"'),server.indexOf('local weapon=humanoidFigure(',server.indexOf('prompt(chief,"마을 이장"')));
+  const life=server.slice(server.indexOf('-- 메인: 6명의 주민은'),server.indexOf('-- 몬스터: 같은 지역 플레이어만 추적'));
+  assert.match(world,/local function addServiceRoam\(part,role,dx,dz\)/);
+  assert.match(world,/part\.CanCollide=false/);
+  assert.match(world,/home\+Vector3\.new\(dx,0,dz\)/);
+  assert.match(world,/table\.insert\(livingResidents,\{part=part,role=role/);
+  for(const [id,label] of [
+    ['chief','마을 이장'],['weapon','무기상인'],
+    ['armor','방어구상인'],['healer','치유사'],['master','전직 교관']
+  ]){
+    assert.match(world,new RegExp('addServiceRoam\\('+id+',"' +id+'"'));
+    assert.ok(world.includes(label),label);
+  }
+  assert.match(life,/resident\.route\[resident\.nextAnchor\]/);
+  assert.match(life,/part\.CFrame=CFrame\.lookAt\(nextPos,nextPos\+direction\)/);
+  assert.match(life,/local line=villageActorAdvice\(player,resident\.role\)/);
+  assert.match(world,/local zone=n\(p,"QuestPortal",0\);local need=n\(p,"QuestNeed",0\);local kills=n\(p,"QuestKills",0\)/);
+  assert.match(world,/local cost=C\.WeaponPrices\[n\(p,"WeaponTier",1\)\+1\]/);
+  assert.match(world,/local cost=C\.ArmorPrices\[n\(p,"ArmorTier",1\)\+1\]/);
+  assert.match(world,/h\.Health<h\.MaxHealth\*\.6/);
+  assert.match(world,/n\(p,"Level",1\)<C\.AdvancementLevel/);
+  // 대화 반복 시 의뢰 수행 중에는 return으로 빠져나가고 기존 완료·보상 함수는 수정하지 않았다.
+  assert.match(chief,/if zone>=1 and zone<=#C\.Portals and need>kills then[\s\S]*?return[\s\S]*?end/);
+  assert.ok(chief.indexOf('if zone>=1 and zone<=#C.Portals and need>kills then') <
+    chief.indexOf('p:SetAttribute("QuestKills",0)'), 'progress should be guarded before the reset');
+  assert.match(chief,/n\(p,"CurrentZone",0\)~=0 or not pr or\(pr\.Position-chief\.Position\)\.Magnitude>12/);
+  assert.match(client,/v:find\("QUEST_ACCEPT",1,true\)then showNpcSpeech\(\)end/);
+  assert.match(server,/local SAVE_SCHEMA_VERSION=3/);
+  assert.match(server,/local SAVE=\{"Gold","XP","Level"/);
+  assert.match(server,/if count>=C\.PartySlots-1 then/);
+  assert.match(server,/if\(e\.part\.Position-e\.spawn\)\.Magnitude>z\.Leash/);
+});
 test('common AI memory is bounded idempotent and relationships remain directional state',()=>{
   const ai=new JaewoonCommonAI({memoryLimit:4});
   assert.equal(ai.remember({id:'e1',type:'help'}),true);
