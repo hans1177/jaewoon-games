@@ -217,7 +217,7 @@ test('actual Daechung Unity scene mesh and texture proof is native, fails closed
 test('Daechung mobile menu uses responsive safe-area tabs, one visible panel, scroll restoration and a fixed dock',()=>{
   const runtime=daechungUnitySource;
   assert.match(runtime,/Screen\.safeArea/);
-  assert.match(runtime,/private static readonly string\[\] MenuTabs = \{ "WORLD", "COMBAT", "SOCIAL" \}/);
+  assert.match(runtime,/private static readonly string\[\] MenuTabs = \{ "월드", "전투", "파티", "캐릭터", "가방", "상점" \}/);
   assert.match(runtime,/GUI\.Toolbar\(tabsRect, _menuPage, MenuTabs\)/);
   assert.match(runtime,/_menuScrollPositions\[_menuPage\] = _scroll/);
   assert.match(runtime,/_scroll = _menuScrollPositions\[_menuPage\]/);
