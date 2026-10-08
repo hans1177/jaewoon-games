@@ -656,25 +656,43 @@
       "name": "Last Lantern Core Loop System",
       "purpose": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. - Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. - Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.",
       "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. - Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. - Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination. - Choose a new board pattern or obstacle combination to continue the game."
+    },
+    "local_authoring_parts::81d1b215e862e1f30e7c019d7e1a92c8dd5667158e7cb5f2022d4e058bd43cd6:signatureSystems:4": {
+      "id": "Last Lantern - DELVE System",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "START_GOAL",
+        "LIMITED_MOVES",
+        "OBSTACLES",
+        "VISIBLE_PUZZLE_CONSTRAINT"
+      ],
+      "stateOutputs": [
+        "MATCHES_CREATED",
+        "COMBOS_FORMED",
+        "BOARD_FEEDBACK_RECEIVED"
+      ],
+      "name": "Last Lantern DELVE System",
+      "purpose": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. - Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. - Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.",
+      "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. - Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. - Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination. - Choose a new board pattern or obstacle combination to continue the game."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 24,
-      "successes": 24,
+      "calls": 25,
+      "successes": 25,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2425128,
-      "lastMs": 111779,
+      "totalMs": 2536533,
+      "lastMs": 111405,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:21:55.168Z"
+      "updatedAt": "2026-10-08T10:23:46.574Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:36:57.405Z",
-  "updatedAt": "2026-10-08T10:21:55.168Z",
+  "updatedAt": "2026-10-08T10:23:46.580Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2732,7 +2750,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 3
+    "designer_draft_slices::identity-core": 4
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2747,10 +2765,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:21:55.168Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T10:23:46.575Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
