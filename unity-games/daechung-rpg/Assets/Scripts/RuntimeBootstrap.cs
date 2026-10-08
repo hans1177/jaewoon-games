@@ -82,15 +82,21 @@ namespace JaewoonGames.DaechungRpg
 #endif
 
             if (_core == null) return;
+            var playerPosition = _visuals != null ? _visuals.PlayerPosition : Vector3.zero;
             _multiplayer?.ObserveLocalState(_core.Player.currentRegionId, _enemy != null ? _enemy.id : "",
-                _enemyHp, _core.Player.currentHp);
+                _enemyHp, _core.Player.currentHp, playerPosition);
             if (_multiplayer != null)
             {
-                _visuals?.SetCoopParty(_multiplayer.Connected && _multiplayer.ParticipantCount >= 2);
+                // 상대는 같은 사냥터에서 수신한 최신 좌표가 있을 때만 시각적으로 등장한다.
+                // 네트워크로 수신한 HP/적 보상/저장값은 이 함수에서 사용하지 않는다.
+                var partnerVisible = _multiplayer.HasFreshPartnerState
+                    && _multiplayer.PeerRegion == _core.Player.currentRegionId;
+                _visuals?.SetCoopParty(partnerVisible);
+                if (partnerVisible) _visuals?.SetCoopPartnerPosition(_multiplayer.PeerPosition);
                 if (_coopActionSeen != _multiplayer.RemoteActionVersion)
                 {
                     _coopActionSeen = _multiplayer.RemoteActionVersion;
-                    _visuals?.PlayCoopAction();
+                    if (partnerVisible) _visuals?.PlayCoopAction();
                 }
             }
             if (Time.unscaledTime < _qaHeartbeatAt) return;
