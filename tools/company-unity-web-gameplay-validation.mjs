@@ -293,10 +293,27 @@ try{
     &&(!withinNativeViewport(nativeUiRect.topLeft,nativeUiRect.topY,nativeUiRect.topWidth,nativeUiRect.topHeight)
       ||!withinNativeViewport(nativeUiRect.controlsLeft,nativeUiRect.controlsY,nativeUiRect.controlsWidth,nativeUiRect.controlsHeight));
   const nativeUiMissing=gameId==='daechung-rpg'&&!nativeUiMeasured;
+  const nativeMeshMarker=markers.slice().reverse().find(line=>line.includes(' MESH_INTEGRITY ')
+    &&line.includes(`game=${gameId}`)&&line.includes('source=UNITY_MESH_FILTER'))||'';
+  const nativeMeshMetric=key=>{
+    const token=nativeMeshMarker.split(/\s+/).find(value=>value.startsWith(key+'='));
+    return token===undefined?null:Number(token.slice(key.length+1));
+  };
+  const nativeMeshProof={
+    inspected:nativeMeshMetric('inspected'),validMeshes:nativeMeshMetric('validMeshes'),
+    triangles:nativeMeshMetric('triangles'),materialPass:nativeMeshMetric('materialPass'),
+    texturePass:nativeMeshMetric('texturePass')
+  };
+  const nativeMeshVerified=Boolean(nativeMeshMarker)&&nativeMeshMarker.includes('status=PASS')
+    &&Number.isSafeInteger(nativeMeshProof.inspected)&&nativeMeshProof.inspected>0
+    &&nativeMeshProof.validMeshes===nativeMeshProof.inspected
+    &&Number.isSafeInteger(nativeMeshProof.triangles)&&nativeMeshProof.triangles>0
+    &&nativeMeshProof.materialPass===1&&nativeMeshProof.texturePass===1;
+  const nativeMeshMissing=gameId==='daechung-rpg'&&!nativeMeshVerified;
   const shaderLikelyMissing=visualPixels.magentaRatio>=.25;
   const blankOrFrozenFrame=visualPixels.pixelCount<100||visualPixels.dominantColorRatio>=.997;
   const visualBlocked=shaderLikelyMissing||blankOrFrozenFrame||mobileUiBounds.clipped.length>0
-    ||nativeUiOffscreen||nativeUiMissing;
+    ||nativeUiOffscreen||nativeUiMissing||nativeMeshMissing;
 
   await canvas.focus();
   await page.keyboard.press('KeyR');
@@ -365,6 +382,10 @@ try{
       nativeUnityUi:{measurementState:nativeUiMeasured?'UNITY_ONGUI_RUNTIME':'NOT_MEASURED',
         pass:nativeUiMeasured?!nativeUiOffscreen:null,missingRequiredCapture:nativeUiMissing,
         sourceMarker:nativeUiMeasured?nativeUiMarker:null,rects:nativeUiMeasured?nativeUiRect:null},
+      nativeUnityMesh:{measurementState:nativeMeshMarker?'UNITY_RUNTIME_MESH_INSPECTION':'NOT_MEASURED',
+        pass:nativeMeshMarker?nativeMeshVerified:null,missingRequiredCapture:nativeMeshMissing,
+        inspector:'UNITY_MESH_FILTER',metrics:nativeMeshMarker?nativeMeshProof:null,sourceMarker:nativeMeshMarker||null,
+        libraryAssetPromotionGranted:false},
       realDeviceVerified:false,
     },
     nativeRenderBudget:{
@@ -405,7 +426,7 @@ try{
   }
   if(visualBlocked)throw new Error('UNITY_WEB_QA_VISUAL_RUNTIME_REPAIR_REQUIRED:'+JSON.stringify({
     shaderLikelyMissing,blankOrFrozenFrame,clippedControls:mobileUiBounds.clipped,
-    nativeUiOffscreen,nativeUiMissing,nativeUiRect,visualPixels
+    nativeUiOffscreen,nativeUiMissing,nativeUiRect,nativeMeshMissing,nativeMeshProof,visualPixels
   }));
   if(renderBudgetExceeded)throw new Error('UNITY_WEB_QA_NATIVE_RENDER_BUDGET_EXCEEDED:'+JSON.stringify({
     drawCalls:nativeDrawCalls,triangles:nativeTriangles,limits:renderBudget
