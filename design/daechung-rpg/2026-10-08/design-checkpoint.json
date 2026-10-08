@@ -73,25 +73,42 @@
       "name": "초원 시드형 로그라이크 럭",
       "purpose": "초원 기본 몬스터 10종은 서로 다른 전조·사거리·패링 가능 여부·특수공격을 가진다. 비밀 숲에서 백색 송곳니 또는 고목의 심장 히든 보스가 확률 출현한다.",
       "playerChoice": "플레이어는 런 시작부터 실루엣·전조·사거리·패링·특수공격을 모두 선택할 수 있으며, 런의 진행 중에는 보스 동료의 런 상태와 플레이어의 런 상태를 동시에 관리해야 한다."
+    },
+    "local_authoring_parts::aa7888a529db7cedc9b4b1094aefa9abfebf1a19a9b015c9bccaf85f230d8c42:signatureSystems:2": {
+      "id": "초원 시드형 로그라이크 럭",
+      "grammarRole": "B",
+      "stateInputs": [
+        "플레이어의 런 선택",
+        "초원 포탈의 런 상태",
+        "보스 동료의 런 상태"
+      ],
+      "stateOutputs": [
+        "플레이어의 런 상태",
+        "초원 포탈의 런 상태",
+        "보스 동료의 런 상태"
+      ],
+      "name": "초원 시드형 로그라이크 럭",
+      "purpose": "초원 기본 몬스터 10종은 서로 다른 전조·사거리·패링 가능 여부·특수공격을 가진다. 비밀 숲에서 백색 송곳니 또는 고목의 심장 히든 보스가 확률 출현한다.",
+      "playerChoice": "플레이어는 런 시작부터 실루엣·전조·사거리·패링·특수공격을 모두 선택할 수 있으며, 런의 진행 중에는 보스 동료의 런 상태와 플레이어의 런 상태를 동시에 관리해야 한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 490905,
-      "lastMs": 49063,
+      "totalMs": 553968,
+      "lastMs": 63063,
       "lastError": null,
-      "updatedAt": "2026-10-08T07:51:33.651Z"
+      "updatedAt": "2026-10-08T07:52:36.716Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:43:22.719Z",
-  "updatedAt": "2026-10-08T07:51:33.652Z",
+  "updatedAt": "2026-10-08T07:52:36.716Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1510,7 +1527,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T07:51:33.652Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T07:52:36.716Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
