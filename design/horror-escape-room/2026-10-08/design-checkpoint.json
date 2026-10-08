@@ -213,25 +213,265 @@
         "InfectionProgress",
         "InfectionProgress2"
       ]
+    },
+    "local_authoring_parts::9bfbf778c4bf951b8304dd8a021b497c78e46cfd1c5cd505068d3138265f8f59:name,purpose,playerChoice": {
+      "name": "DELVE",
+      "purpose": "Role Assignment and Infection Status Tracking",
+      "playerChoice": "Player-Driven Role Assignment and Infection Status Update"
+    },
+    "local_authoring_parts::0cb36d55842761d48afc18d41412de09a09cd1fa732a3db04982b6ac758f329d:signatureSystems:4": {
+      "id": "DELVE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount",
+        "Energy"
+      ],
+      "stateOutputs": [
+        "RoleAssignment",
+        "InfectionStatus",
+        "SurvivalProgress",
+        "CombatOutcome",
+        "InfectionProgress",
+        "InfectionProgress2"
+      ],
+      "name": "DELVE",
+      "purpose": "Role Assignment and Infection Status Tracking",
+      "playerChoice": "Player-Driven Role Assignment and Infection Status Update"
+    },
+    "local_authoring_parts::5d04e07afb1e0d86f7ad3985b71e20b4d4954eacf71f5f18c3360868b68d7269:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "DELVE",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount",
+            "Energy"
+          ],
+          "stateOutputs": [
+            "RoleAssignment",
+            "InfectionStatus",
+            "SurvivalProgress",
+            "CombatOutcome"
+          ],
+          "name": "DELVE",
+          "purpose": "Role Assignment and Infection Status Tracking",
+          "playerChoice": "Player-Driven Role Assignment and Infection Status Update"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "A",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount",
+            "Energy"
+          ],
+          "stateOutputs": [
+            "RoleAssignment",
+            "InfectionStatus",
+            "SurvivalProgress",
+            "CombatOutcome"
+          ],
+          "name": "DELVE",
+          "purpose": "Role Assignment and Infection Status Tracking",
+          "playerChoice": "Player-Driven Role Assignment and Infection Status Update"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "B",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount",
+            "Energy"
+          ],
+          "stateOutputs": [
+            "RoleAssignment",
+            "InfectionStatus",
+            "SurvivalProgress",
+            "CombatOutcome",
+            "InfectionProgress"
+          ],
+          "name": "DELVE",
+          "purpose": "Role Assignment and Infection Status Tracking",
+          "playerChoice": "Player-Driven Role Assignment and Infection Status Update"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "c",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount",
+            "Energy"
+          ],
+          "stateOutputs": [
+            "RoleAssignment",
+            "InfectionStatus",
+            "SurvivalProgress",
+            "CombatOutcome",
+            "InfectionProgress",
+            "InfectionProgress2"
+          ],
+          "name": "DELVE",
+          "purpose": "Role Assignment and Infection Status Tracking",
+          "playerChoice": "Player-Driven Role Assignment and Infection Status Update"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount",
+            "Energy"
+          ],
+          "stateOutputs": [
+            "RoleAssignment",
+            "InfectionStatus",
+            "SurvivalProgress",
+            "CombatOutcome",
+            "InfectionProgress",
+            "InfectionProgress2"
+          ],
+          "name": "DELVE",
+          "purpose": "Role Assignment and Infection Status Tracking",
+          "playerChoice": "Player-Driven Role Assignment and Infection Status Update"
+        }
+      ]
+    },
+    "local_authoring_parts::09431ad8b73a3d591b7ecb1a49da9b7206df2d0e973559a196e3278ea0297ca8:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT: PLAYER FANTASY - PLAYER ROLE: HUMAN SURVIVOR WITH SPECIALIZED ABILITIES AND STRATEGIC CHOICES IN A SURVIVAL HORROR GAME WITH REALISTIC HUMAN AND ABERRANT MONSTER DYNAMICS AND INFECTION MECHANICS IN A MULTIPLAYER SETTING WITH AI-DRIVEN ROLES AND PLAYER-DRIVEN COMBAT AND SURVIVAL CHOICES IN A COMPETITIVE MULTIPLAYER ENVIRONMENT WITH ",
+        "STATE TRANSITION: SURVIVAL HORROR GAME WITH REALISTIC HUMAN AND ABERRANT MONSTER DYNAMICS AND INFECTION MECHANICS IN A MULTIPLAYER SETTING WITH AI-DRIVEN ROLES AND PLAYER-DRIVEN COMBAT AND SURVIVAL CHOICES IN A COMPETITIVE MULTIPLAYER ENVIRONMENT WITH REALISTIC COMBAT, SURVIVAL, AND INFECTION MECHANICS IN A SURVIVAL HORROR GAME WITH REAL-",
+        "OUTPUT: PLAYER SURVIVAL AND INFECTION STRATEGY - PLAYER-DRIVEN COMBAT AND SURVIVAL CHOICES IN A COMPETITIVE MULTIPLAYER ENVIRONMENT WITH REALISTIC COMBAT, SURVIVAL, AND INFECTION MECHANICS IN A SURVIVAL HORROR GAME WITH REALISTIC HUMAN AND ABERRANT MONSTER DYNAMICS AND INFECTION MECHANICS IN A MULTIPLAYER SETTING WITH AI-DRIVEN ROLES AND",
+        "CAUSAL DNAS: HUMAN SURVIVOR WITH SPECIALIZED ABILITIES AND STRATEGIC CHOICES IN A SURVIVAL HORROR GAME WITH REALISTIC HUMAN AND ABERRANT MONSTER DYNAMICS AND INFECTION MECHANICS IN A MULTIPLAYER SETTING WITH AI-DRIVEN ROLES AND PLAYER-DRIVEN COMBAT AND SURVIVAL CHOICES IN A COMPETITIVE MULTIPLAYER ENVIRONMENT WITH REALISTIC COMBAT, SURVIV"
+      ],
+      "signatureSystems": [
+        {
+          "id": "DELVE",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount",
+            "Energy"
+          ],
+          "stateOutputs": [
+            "RoleAssignment",
+            "InfectionStatus",
+            "SurvivalProgress",
+            "CombatOutcome"
+          ],
+          "name": "DELVE",
+          "purpose": "Role Assignment and Infection Status Tracking",
+          "playerChoice": "Player-Driven Role Assignment and Infection Status Update"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "A",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount",
+            "Energy"
+          ],
+          "stateOutputs": [
+            "RoleAssignment",
+            "InfectionStatus",
+            "SurvivalProgress",
+            "CombatOutcome"
+          ],
+          "name": "DELVE",
+          "purpose": "Role Assignment and Infection Status Tracking",
+          "playerChoice": "Player-Driven Role Assignment and Infection Status Update"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "B",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount",
+            "Energy"
+          ],
+          "stateOutputs": [
+            "RoleAssignment",
+            "InfectionStatus",
+            "SurvivalProgress",
+            "CombatOutcome",
+            "InfectionProgress"
+          ],
+          "name": "DELVE",
+          "purpose": "Role Assignment and Infection Status Tracking",
+          "playerChoice": "Player-Driven Role Assignment and Infection Status Update"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "c",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount",
+            "Energy"
+          ],
+          "stateOutputs": [
+            "RoleAssignment",
+            "InfectionStatus",
+            "SurvivalProgress",
+            "CombatOutcome",
+            "InfectionProgress",
+            "InfectionProgress2"
+          ],
+          "name": "DELVE",
+          "purpose": "Role Assignment and Infection Status Tracking",
+          "playerChoice": "Player-Driven Role Assignment and Infection Status Update"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount",
+            "Energy"
+          ],
+          "stateOutputs": [
+            "RoleAssignment",
+            "InfectionStatus",
+            "SurvivalProgress",
+            "CombatOutcome",
+            "InfectionProgress",
+            "InfectionProgress2"
+          ],
+          "name": "DELVE",
+          "purpose": "Role Assignment and Infection Status Tracking",
+          "playerChoice": "Player-Driven Role Assignment and Infection Status Update"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 13,
+      "calls": 18,
+      "successes": 14,
       "failures": 4,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 843886,
-      "lastMs": 39665,
+      "totalMs": 876520,
+      "lastMs": 32634,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T03:41:42.214Z"
+      "updatedAt": "2026-10-08T03:42:14.849Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T03:27:38.135Z",
-  "updatedAt": "2026-10-08T03:41:42.214Z",
+  "updatedAt": "2026-10-08T03:42:14.852Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -987,7 +1227,7 @@
   "sliceRepairAttempts": {
     "designer_draft_slices::identity-core": 1
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T03:41:42.214Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T03:42:14.852Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
