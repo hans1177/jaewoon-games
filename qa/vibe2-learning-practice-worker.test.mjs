@@ -218,6 +218,27 @@ test('repair budget is bounded and malformed responses remain failures',async()=
   assert.equal(calls,3);assert.equal(result.evaluation.pass,false);
 });
 
+// 공개 실패식과 같은 코드 반복을 구분하며 숨긴 평가 내용은 수정 입력에 넣지 않는다.
+test('repeated failing implementation is measured and public repair instructions follow candidate data',async()=>{
+  const prompts=[];
+  const drill={platform:'unity',feedbackTests:['public'],tests:['hidden']};
+  const result=await runPracticeRepairSession({order:{executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE]'},drill,
+    request:async prompt=>{prompts.push(prompt);return JSON.stringify({...practiceAnswer,code:'same failing code'});},
+    evaluate:(_,options)=>({pass:false,codeVerification:{reason:'REGRESSION_OR_FIXTURE_FAILED',baselineRejected:true,referencePassed:true,diagnostics:[options.drill.tests[0]==='public'?'PRACTICE_CASE_1_CHECK_2: s.Gold==4':'HIDDEN_SECRET']}})});
+  assert.deepEqual(result.repairEvidence.attempts.map(row=>row.unchangedFailedImplementation),[false,true,true]);
+  assert(prompts[2].includes('Repeating it is not a repair'));
+  assert(prompts[1].indexOf('PRACTICE_CASE_1_CHECK_2')>prompts[1].indexOf('YOUR PREVIOUS CODE'));
+  assert(!prompts.join('\n').includes('HIDDEN_SECRET'));
+  assert.equal(result.repairEvidence.finalPass,false);
+});
+
+test('C# public failed assertion reports its expression without exposing hidden checks',{skip:!process.env.VIBE2_TEST_CSHARP_RUNTIME},()=>{
+  const drill=robloxCurriculum.platformDrills.find(row=>row.id==='unity-menu-batch-transaction');
+  const result=evaluatePracticeAnswer({...practiceAnswer,code:drill.broken},{drill:{...drill,tests:drill.feedbackTests}});
+  assert.equal(result.pass,false);
+  assert(result.codeVerification.diagnostics.some(line=>line.includes('s.Gold==4')&&line.includes('PRACTICE_CASE_1_CHECK_2')),JSON.stringify(result.codeVerification));
+});
+
 test('repair receives public execution and answer diagnostics but no hidden diagnostics',async()=>{
   const prompts=[];
   const drill={platform:'unity',supportCode:'public class Progress { public int Currency; }',feedbackTests:['public'],tests:['private']};
