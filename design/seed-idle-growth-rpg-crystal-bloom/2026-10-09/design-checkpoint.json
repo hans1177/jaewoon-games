@@ -889,25 +889,28 @@
     },
     "local_authoring_parts::7d3fd30e20c2312c3827221adfc3d26789faa3d8e4da0244a765231f36b86e54:retryFlow": {
       "retryFlow": "플레이어가 자동으로 적군을 공격하는 과정에서 'PLAYER_FIGHT_AUTO' 상태가 발생하면, 이 상태가 'PROGRESSION_RESOURCES' 리소스 생성에 기초한 상태 교환을 수행해야 한다."
+    },
+    "local_authoring_parts::7d3fd30e20c2312c3827221adfc3d26789faa3d8e4da0244a765231f36b86e54:riskPressure": {
+      "riskPressure": "플레이어가 자동으로 적군을 공격하는 과정에서 'PLAYER_FIGHT_AUTO' 상태가 발생하면, 이 상태가 'PROGRESSION_RESOURCES' 리소스 생성에 기초한 상태 교환을 수행해야 한다. 플레이어가 리소서 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 65,
-      "successes": 65,
+      "calls": 66,
+      "successes": 66,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2331583,
-      "lastMs": 33332,
+      "totalMs": 2368790,
+      "lastMs": 37207,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:24:00.709Z"
+      "updatedAt": "2026-10-08T19:24:37.918Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:45:08.916Z",
-  "updatedAt": "2026-10-08T19:24:00.709Z",
+  "updatedAt": "2026-10-08T19:24:37.918Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3662,7 +3665,7 @@
       "progressionDirection": "{\"from\": \"AUTO_FIGHT\", \"to\": \"RESOURCE_COLLECTION\"}"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T19:24:00.709Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:24:37.918Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
