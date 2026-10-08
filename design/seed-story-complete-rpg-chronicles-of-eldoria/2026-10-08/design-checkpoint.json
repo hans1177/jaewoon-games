@@ -925,25 +925,29 @@
         }
       ],
       "progressionDirection": "Recursive Narrative-Driven Loop with Exploration, Character Interaction, and Quest Progression as Core Axes"
+    },
+    "local_authoring_parts::ff931dca76f9796d11f99ed8bad0db6337d1a38bdc5aa23201b3cf340092bb58:progressionLoop,resourceFlow": {
+      "progressionLoop": "Recursive Narrative-Driven Loop with Exploration, Character Interaction, and Quest Progression as Core Axes",
+      "resourceFlow": "Player choices directly affect the game's world state, determining the next set of gameplay options. Exploration, character interaction, quest progression, and narrative advancement are interdependent and mutually reinforcing, with each state transition influencing the next. The resource flow is governed by the core gameplay mechanics, with exploration enabling character interaction, character interaction enabling quest progression, and quest progression enabling narrative advancement. Each state transition is a deliberate choice that affects the overall progression of the game world."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 29,
-      "successes": 26,
+      "calls": 30,
+      "successes": 27,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2751790,
-      "lastMs": 33142,
+      "totalMs": 2790193,
+      "lastMs": 38403,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T16:12:59.593Z"
+      "updatedAt": "2026-10-08T16:13:37.999Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:23:19.708Z",
-  "updatedAt": "2026-10-08T16:12:59.595Z",
+  "updatedAt": "2026-10-08T16:13:37.999Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3179,7 +3183,7 @@
     "designer_draft_slices::identity-core": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T16:12:59.595Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:13:37.999Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
