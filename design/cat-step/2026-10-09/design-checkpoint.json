@@ -34,25 +34,45 @@
         "플레이어는 게임 공간에서 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 바탕으로 선택을 하며, 그 결과는 다음 상태로 영향을 주고, 그 비용/위험/보상 구조에 연결된다. 이러한 선택은 캐릭터의 역할과 세계 규칙 간의 깊이 있는 상호작용을 제공하며, 성장에 따라 다양한 경로와 대응법을 열어, 단순한 레벨 진행보다 더 복잡한 인과 관계와 위험/보상을 통해 진입 가능한 PUZZLE 게임의 핵심 루프를 형성한다.",
         "플레이어는 게임 공간에서 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 바탕으로 선택을 하며, 그 결과는 다음 상태로 영향을 주고, 그 비용/위험/보상 구조에 연결된다. 이러한 선택은 캐릭터의 역할과 세계 규칙 간의 깊이 있는 상호작용을 제공하며, 성장에 따라 다양한 경로와 대응법을 열어, 단순한 레벨 진행보다 더 복잡한 인과 관계와 위험/보상을 통해 진입 가능한 PUZZLE 게임의 핵심 루프를 형성한다."
       ]
+    },
+    "local_authoring_parts::bd9bdf1116ead1b0a2cae8b0d206fc72c3dc661fbff701b5847231148920de7d:signatureSystems:0": {
+      "id": "cat-step",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "START",
+        "GOAL",
+        "MOVES",
+        "OBSTACLES",
+        "CONFLICT"
+      ],
+      "stateOutputs": [
+        "CLEAR_LEVEL",
+        "UNLOCK_NEXT_STAGE",
+        "NEW_PATTERN",
+        "NEW_CONFLICT"
+      ],
+      "name": "CAT STEP",
+      "purpose": "Player chooses a board or grid level with clear goal, limited moves, obstacles, or visible puzzle constraint.",
+      "playerChoice": "Select a configuration that challenges the player to solve a complex puzzle within constraints and earn rewards for progression."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 397720,
-      "lastMs": 160287,
+      "totalMs": 462301,
+      "lastMs": 64581,
       "lastError": null,
-      "updatedAt": "2026-10-08T20:55:24.536Z"
+      "updatedAt": "2026-10-08T20:56:29.119Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:48:46.570Z",
-  "updatedAt": "2026-10-08T20:55:24.536Z",
+  "updatedAt": "2026-10-08T20:56:29.119Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2089,7 +2109,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T20:55:24.536Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T20:56:29.119Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
