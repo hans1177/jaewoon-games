@@ -405,25 +405,40 @@
       "name": "생존자 역할 재설계",
       "purpose": "플레이어는 숲의 생존자들에서 'Explore the forest for a needed resource while reading environmental and creature danger.'의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다. 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다.",
       "playerChoice": "Explore the forest for a needed resource while reading environmental and creature danger.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다. 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다."
+    },
+    "local_authoring_parts::6437dfd7738636103f44b5e66c540d62ea3f5c0f192350fe2c6b2888ea62d8a3:signatureSystems:3": {
+      "id": "숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임으로 재설계한다.",
+      "grammarRole": "c",
+      "stateInputs": [
+        "worldState",
+        "nextAction"
+      ],
+      "stateOutputs": [
+        "worldState",
+        "nextAction"
+      ],
+      "name": "생존자 역할 재설계",
+      "purpose": "플레이어는 숲의 생존자들에서 'Explore the forest for a needed resource while reading environmental and creature danger.'의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다. 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다.",
+      "playerChoice": "Explore the forest for a needed resource while reading environmental and creature danger.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다. 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 13,
+      "calls": 14,
+      "successes": 14,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1241115,
-      "lastMs": 117244,
+      "totalMs": 1360552,
+      "lastMs": 119437,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:04:27.638Z"
+      "updatedAt": "2026-10-08T08:06:27.076Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:43:46.463Z",
-  "updatedAt": "2026-10-08T08:04:27.638Z",
+  "updatedAt": "2026-10-08T08:06:27.077Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2687,7 +2702,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T08:04:27.638Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:06:27.076Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
