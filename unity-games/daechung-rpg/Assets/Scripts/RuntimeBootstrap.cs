@@ -182,7 +182,7 @@ namespace JaewoonGames.DaechungRpg
                 && Time.unscaledTime >= _qaUiBoundsAt)
             {
                 _qaUiBoundsAt = Time.unscaledTime + 2f;
-                Debug.Log($"JAEWOON_UNITY_WEB_QA UI_BOUNDS game=daechung-rpg surface=UNITY_ONGUI screenWidth={Screen.width} screenHeight={Screen.height} topLeft={left:F2} topY={topY:F2} topWidth={width:F2} topHeight={topHeight:F2} controlsLeft={controlsRect.x:F2} controlsY={controlsRect.y:F2} controlsWidth={controlsRect.width:F2} controlsHeight={controlsRect.height:F2} tabsLeft={tabsRect.x:F2} tabsY={tabsRect.y:F2} tabsWidth={tabsRect.width:F2} tabsHeight={tabsRect.height:F2} actionLeft={_actionButtonRect.x:F2} actionY={_actionButtonRect.y:F2} actionWidth={_actionButtonRect.width:F2} actionHeight={_actionButtonRect.height:F2}");
+                Debug.Log($"JAEWOON_UNITY_WEB_QA UI_BOUNDS game=daechung-rpg surface=UNITY_ONGUI screenWidth={Screen.width} screenHeight={Screen.height} topLeft={left:F2} topY={topY:F2} topWidth={width:F2} topHeight={topHeight:F2} controlsLeft={controlsRect.x:F2} controlsY={controlsRect.y:F2} controlsWidth={controlsRect.width:F2} controlsHeight={controlsRect.height:F2} tabsLeft={tabsRect.x:F2} tabsY={tabsRect.y:F2} tabsWidth={tabsRect.width:F2} tabsHeight={tabsRect.height:F2} tabsCount={MenuTabs.Length} actionLeft={_actionButtonRect.x:F2} actionY={_actionButtonRect.y:F2} actionWidth={_actionButtonRect.width:F2} actionHeight={_actionButtonRect.height:F2}");
                 var target = new Vector2(tabsRect.x + tabsRect.width * (2.5f / MenuTabs.Length), tabsRect.center.y);
                 Debug.Log($"JAEWOON_UNITY_WEB_QA MENU_TARGET game=daechung-rpg role=tab index=2 x={target.x / Screen.width:F4} y={target.y / Screen.height:F4}");
             }
