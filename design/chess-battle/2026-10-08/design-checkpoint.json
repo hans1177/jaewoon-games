@@ -52,25 +52,59 @@
       "name": "Board Reading and Tactical Decision Making",
       "purpose": "Player-controlled board state and tactical move generation",
       "playerChoice": "Read the board and enemy threat information, then commit a move or ability that changes control of key spaces, and resolve the tactical exchange to plan the next decisive turn"
+    },
+    "local_authoring_parts::4582b58ec866351afdc4ea1d5eb05fb2aae28ee52822565d523cbefcfa3ab224:signatureSystems:1": {
+      "id": "signature-systems-1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "boardState",
+        "enemyThreats",
+        "playerChoice"
+      ],
+      "stateOutputs": [
+        "updatedBoardState",
+        "newMove",
+        "nextTurn"
+      ],
+      "name": "Board Reading and Tactical Decision Making",
+      "purpose": "Player-controlled board state and tactical move generation",
+      "playerChoice": "Read the board and enemy threat information, then commit a move or ability that changes control of key spaces, and resolve the tactical exchange to plan the next decisive turn"
+    },
+    "local_authoring_parts::4582b58ec866351afdc4ea1d5eb05fb2aae28ee52822565d523cbefcfa3ab224:signatureSystems:2": {
+      "id": "signature-systems-2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "boardState",
+        "enemyThreats",
+        "playerChoice"
+      ],
+      "stateOutputs": [
+        "updatedBoardState",
+        "newMove",
+        "nextTurn"
+      ],
+      "name": "Board Reading and Tactical Decision Making",
+      "purpose": "Player-controlled board state and tactical move generation",
+      "playerChoice": "Read the board and enemy threat information, then commit a move or ability that changes control of key spaces, and resolve the tactical exchange to plan the next decisive turn"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 694166,
-      "lastMs": 99548,
+      "totalMs": 896163,
+      "lastMs": 100504,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:07:38.095Z"
+      "updatedAt": "2026-10-08T13:11:00.095Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:56:03.898Z",
-  "updatedAt": "2026-10-08T13:07:38.095Z",
+  "updatedAt": "2026-10-08T13:11:00.095Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2199,7 +2233,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:07:38.095Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:11:00.095Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
