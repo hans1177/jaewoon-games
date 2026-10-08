@@ -14,6 +14,11 @@ namespace JaewoonGames.DaechungRpg
         private int _enemyHp;
         private string _message = "Select a hunting field to begin.";
         private Vector2 _scroll;
+        // 모바일 메뉴: 한 번에 필요한 화면만 그려 재계산 비용을 줄이고 탭별 스크롤을 유지한다.
+        private static readonly string[] MenuTabs = { "WORLD", "COMBAT", "SOCIAL" };
+        private readonly Vector2[] _menuScrollPositions = new Vector2[3];
+        private int _menuPage;
+        private Rect _actionButtonRect;
         private PrototypeAnimatedVisuals _visuals;
         private MultiplayerSession _multiplayer;
         private float _qaHeartbeatAt;
@@ -139,56 +144,95 @@ namespace JaewoonGames.DaechungRpg
         {
             if (_core == null)
             {
-                GUI.Label(new Rect(24, 24, Screen.width - 48, 60), "GameCore is not ready.");
+                GUI.Label(new Rect(24, 24, Mathf.Max(1f, Screen.width - 48f), 60), "GameCore is not ready.");
                 return;
             }
 
-            var scale = Mathf.Clamp(Screen.dpi > 0 ? Screen.dpi / 180f : 1.5f, 1.1f, 2f);
-            var width = Mathf.Min(Screen.width - 24f, 760f * scale);
-            var left = (Screen.width - width) * 0.5f;
-            var topHeight = Mathf.Min(220f * scale, Screen.height * 0.29f);
-            var controlsY = Screen.height * 0.60f;
-            var controlsHeight = Mathf.Max(1f, Screen.height - controlsY - 12f);
+            // 모바일: 안전 영역과 화면 회전에 맞추고, 공격 버튼 아래에 스크롤 콘텐츠를 깔지 않는다.
+            var safe = Screen.safeArea;
+            if (safe.width <= 0f || safe.height <= 0f)
+                safe = new Rect(0f, 0f, Screen.width, Screen.height);
+            var scale = Mathf.Clamp(Screen.dpi > 0 ? Screen.dpi / 180f : 1.2f, 1f, 1.6f);
+            var width = Mathf.Max(1f, Mathf.Min(safe.width - 24f, 760f * scale));
+            var left = safe.xMin + (safe.width - width) * 0.5f;
+            var topY = safe.yMin + 12f;
+            var topHeight = Mathf.Min(194f * scale, safe.height * 0.29f);
+            var controlsY = Mathf.Max(topY + topHeight + 12f, safe.yMin + safe.height * 0.50f);
+            var tabsHeight = Mathf.Max(48f, 38f * scale);
+            var tabsRect = new Rect(left, controlsY, width, tabsHeight);
+
+            var margin = Mathf.Max(12f, safe.width * 0.04f);
+            var buttonWidth = Mathf.Min(Mathf.Max(1f, safe.width - margin * 2f), Mathf.Clamp(safe.width * 0.34f, 120f, 180f));
+            var buttonHeight = Mathf.Min(Mathf.Max(1f, safe.height - margin * 2f), Mathf.Clamp(safe.height * 0.08f, 56f, 84f));
+            _actionButtonRect = new Rect(safe.xMax - buttonWidth - margin, safe.yMax - buttonHeight - margin, buttonWidth, buttonHeight);
+            var menuY = tabsRect.yMax + 6f;
+            var controlsHeight = Mathf.Max(1f, _actionButtonRect.yMin - 10f - menuY);
+            var controlsRect = new Rect(left, menuY, width, controlsHeight);
 
 #if UNITY_WEBGL && !UNITY_EDITOR
             if (Application.absoluteURL.Contains("qa=1") && Event.current.type == EventType.Repaint
                 && Time.unscaledTime >= _qaUiBoundsAt)
             {
                 _qaUiBoundsAt = Time.unscaledTime + 2f;
-                Debug.Log($"JAEWOON_UNITY_WEB_QA UI_BOUNDS game=daechung-rpg surface=UNITY_ONGUI screenWidth={Screen.width} screenHeight={Screen.height} topLeft={left:F2} topY=12 topWidth={width:F2} topHeight={topHeight:F2} controlsLeft={left:F2} controlsY={controlsY:F2} controlsWidth={width:F2} controlsHeight={controlsHeight:F2}");
+                Debug.Log($"JAEWOON_UNITY_WEB_QA UI_BOUNDS game=daechung-rpg surface=UNITY_ONGUI screenWidth={Screen.width} screenHeight={Screen.height} topLeft={left:F2} topY={topY:F2} topWidth={width:F2} topHeight={topHeight:F2} controlsLeft={controlsRect.x:F2} controlsY={controlsRect.y:F2} controlsWidth={controlsRect.width:F2} controlsHeight={controlsRect.height:F2} tabsLeft={tabsRect.x:F2} tabsY={tabsRect.y:F2} tabsWidth={tabsRect.width:F2} tabsHeight={tabsRect.height:F2} actionLeft={_actionButtonRect.x:F2} actionY={_actionButtonRect.y:F2} actionWidth={_actionButtonRect.width:F2} actionHeight={_actionButtonRect.height:F2}");
+                var target = new Vector2(tabsRect.x + tabsRect.width * (2.5f / MenuTabs.Length), tabsRect.center.y);
+                Debug.Log($"JAEWOON_UNITY_WEB_QA MENU_TARGET game=daechung-rpg role=tab index=2 x={target.x / Screen.width:F4} y={target.y / Screen.height:F4}");
             }
 #endif
 
             GUI.skin.label.fontSize = Mathf.RoundToInt(17f * scale);
             GUI.skin.button.fontSize = Mathf.RoundToInt(17f * scale);
             GUI.skin.box.fontSize = Mathf.RoundToInt(17f * scale);
-            GUI.skin.button.fixedHeight = 46f * scale;
+            GUI.skin.button.fixedHeight = Mathf.Max(48f, 42f * scale);
 
-            GUILayout.BeginArea(new Rect(left, 12f, width, topHeight), GUI.skin.box);
+            GUILayout.BeginArea(new Rect(left, topY, width, topHeight), GUI.skin.box);
             GUILayout.Label("DAECHUNG RPG · ANIMATED PROTOTYPE");
-            GUILayout.Label("Combat / growth / save / regions + verified animated actors");
+            if (safe.height > 560f)
+                GUILayout.Label("Combat / growth / save / regions + verified animated actors");
             DrawPlayerStatus();
             GUILayout.Label("ASSET  " + (_visuals != null ? _visuals.StatusText : "STARTING"));
             GUILayout.EndArea();
 
-            GUILayout.BeginArea(new Rect(left, controlsY, width, controlsHeight), GUI.skin.box);
+            // 탭 자체도 충분한 터치 높이를 유지한다. 변경하지 않은 탭의 스크롤 위치는 보존한다.
+            var selectedPage = GUI.Toolbar(tabsRect, _menuPage, MenuTabs);
+            if (selectedPage >= 0 && selectedPage < MenuTabs.Length && selectedPage != _menuPage)
+            {
+                _menuScrollPositions[_menuPage] = _scroll;
+                _menuPage = selectedPage;
+                _scroll = _menuScrollPositions[_menuPage];
+#if UNITY_WEBGL && !UNITY_EDITOR
+                if (Application.absoluteURL.Contains("qa=1"))
+                    Debug.Log($"JAEWOON_UNITY_WEB_QA MENU_INPUT game=daechung-rpg role=tab index={_menuPage} status=PASS");
+#endif
+            }
+
+            GUILayout.BeginArea(controlsRect, GUI.skin.box);
             _scroll = GUILayout.BeginScrollView(_scroll);
-
-            DrawRegionControls();
-            GUILayout.Space(6f * scale);
-            DrawCombatControls();
-            GUILayout.Space(6f * scale);
-            DrawTownControls();
-            GUILayout.Space(6f * scale);
-            _multiplayer?.DrawControls(scale);
-            GUILayout.Space(6f * scale);
-
-            GUILayout.Label("LOG");
-            GUILayout.TextArea(_message, GUILayout.MinHeight(58f * scale));
-
+            if (_menuPage == 0)
+            {
+                DrawRegionControls();
+                GUILayout.Space(6f * scale);
+                DrawTownControls();
+            }
+            else if (_menuPage == 1)
+            {
+                DrawCombatControls();
+                GUILayout.Space(6f * scale);
+                GUILayout.Label("LOG");
+                GUILayout.TextArea(_message, GUILayout.MinHeight(58f * scale));
+            }
+            else
+            {
+                _multiplayer?.DrawControls(scale);
+                GUILayout.Space(6f * scale);
+                GUILayout.Label("LOG");
+                GUILayout.TextArea(_message, GUILayout.MinHeight(58f * scale));
+            }
             GUILayout.EndScrollView();
+            _menuScrollPositions[_menuPage] = _scroll;
             GUILayout.EndArea();
 
+            // 하단 행동 버튼은 메뉴를 스크롤하거나 탭을 바꿔도 같은 위치에서 동작한다.
             DrawPrimaryCombatActionButton();
         }
 
@@ -261,15 +305,7 @@ namespace JaewoonGames.DaechungRpg
             var canEnterHunt = _enemy == null && _core != null && _core.Player.currentRegionId == "town";
             if (_enemy == null && !canEnterHunt) return;
 
-            var margin = Mathf.Max(12f, Screen.width * 0.04f);
-            var buttonWidth = Mathf.Min(Mathf.Max(1f, Screen.width - margin * 2f), Mathf.Clamp(Screen.width * 0.34f, 120f, 180f));
-            var buttonHeight = Mathf.Min(Mathf.Max(1f, Screen.height - margin * 2f), Mathf.Clamp(Screen.height * 0.08f, 56f, 84f));
-            var actionRect = new Rect(
-                Screen.width - buttonWidth - margin,
-                Screen.height - buttonHeight - margin,
-                buttonWidth,
-                buttonHeight
-            );
+            var actionRect = _actionButtonRect;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
             var qaMode = Application.absoluteURL.Contains("qa=1");
