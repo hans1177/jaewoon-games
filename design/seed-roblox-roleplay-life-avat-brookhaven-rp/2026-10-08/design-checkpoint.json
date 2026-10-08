@@ -667,21 +667,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 15,
+      "calls": 18,
+      "successes": 16,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 2702576,
-      "lastMs": 100220,
+      "totalMs": 2856287,
+      "lastMs": 153711,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T10:47:11.323Z"
+      "updatedAt": "2026-10-08T10:49:45.046Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:33:55.519Z",
-  "updatedAt": "2026-10-08T10:47:11.333Z",
+  "updatedAt": "2026-10-08T10:49:45.052Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2883,22 +2883,6 @@
   "sliceRepairFeedback": {
     "designer_draft_slices::systems-progression": [
       {
-        "code": "DESIGN_REPEATED_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "CONTENT_EXPANSION_PLAN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "name": "failureRetryRisk"
-        },
-        "requiredAction": "서로 다른 항목을 같은 설명으로 채우지 않는다. 동선·전조·대응·위험·보상·복구가 각각 어떤 규칙인지 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "failureRetryRisk"
-        ]
-      },
-      {
         "code": "DESIGN_STATE_EXCHANGE_BROKEN",
         "kind": "HARD_GATE",
         "axis": "CORE_LOOP_DESIGN",
@@ -3003,7 +2987,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 1
+    "designer_draft_slices::systems-progression": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3029,13 +3013,23 @@
           "newGameplay": "Harbor Days의 핵심 재미와 시스템 연결을 확정한 고유한 정체성은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, 선택 결과는 다음 월에 이어진다. 이는 게임의 중심 행동으로서, 플레이어가 단순한 공격과 조합을 통해 시스템을 점진적으로 발전시키는 과정을 반영한다.",
           "systemImpact": "게임의 시스템은 'Build Evolution System'을 통해 동적인 건축 발전을 가능하게 하며, 'Progression Dynamics System'은 플레이어가 단순한 조합을 통해 복잡한 진입 절차를 생성할 수 있도록 한다. 'Progression Dynamics System B'와 'C'는 플레이어가 건축을 발전시키면서 새로운 게임 메커니즘과 적응적인 도전층을 추가할 수 있도록 한다. 'Progression Dynamics System D'는 플레이어가 진입 절차를 조정하면서 기존의 게임 메커니즘과 진입 구조를 유지하면서도, 새로운 게임 경험을 제공할 수 있도록 한다. 이는 게임의 깊이를 증가시키고, 플레이어가 선택을 통해 게임을 점진적으로 발전시킬 수 있는 구조를 제공한다."
         }
-      ]
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+          "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        ],
+        "retryFlow": "Players can retry the progression by selecting different upgrades, perks, or weapons that alter the current build and influence the next progression choice.",
+        "riskPressure": "Players may face higher difficulty in surviving harder waves or facing a boss, which could lead to failure.",
+        "recoveryRules": "Players can recover by refining their progression choice based on evolving build, enemy pressure, and run outcomes, while maintaining the core gameplay mechanics and progression structure."
+      }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:47:11.329Z",
-  "failedPhase": "designer_draft_slices",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:49:45.046Z",
+  "failedPhase": "designer_draft",
   "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_REPEATED_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
