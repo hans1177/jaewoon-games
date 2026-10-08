@@ -1,7 +1,7 @@
 // Owner-directed redesign reset intake for existing games. This feeds the existing DESIGN_ONLY pipeline; it is not a parallel production path.
 import fs from 'node:fs';
 import path from 'node:path';
-import {assertGameSeed} from './company-game-seed-contract.mjs';
+import {validateGameSeed} from './company-game-seed-contract.mjs';
 
 export const OWNER_DESIGN_RESET_FILE='owner-design-reset-queue.json';
 const clean=value=>String(value??'').trim();
@@ -65,7 +65,8 @@ export function ownerDesignResetSeedForGame(gameId,file=OWNER_DESIGN_RESET_FILE)
       UNITY_WEB_VALIDATION_SURFACE:{role:'VALIDATION_SURFACE_ONLY',canonicalSourceRoot:'unity-games/'+game,outputRoot:'web-games/'+game,sameCanonicalUnityProjectRequired:true,nativeReleaseGate:false,developmentAdmissionGate:false,legacyDirectWebAuthoring:false}
     };
     if(!['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(seed.MULTIPLAYER_DESIGN_MODE))seed.MULTIPLAYER_DESIGN_MODE=platformProfile.multiplayerRequired===false?'SINGLE':'HYBRID';
-    assertGameSeed(seed);
+    const inputCheck=validateGameSeed(seed);
+    if(!inputCheck.pass)seed.inputRepairNotes=inputCheck.errors;
     seed.GAMEPLAY_SKETCH.source='OWNER_BRIEF_COMPATIBILITY_INPUT_NOT_AUTHORED_DESIGN';
   }else seed=clone(request.seed);
   seed.gameId=clean(request.gameId);

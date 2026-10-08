@@ -1,5 +1,5 @@
 {
-  "version": 331,
+  "version": 332,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3833,7 +3833,20 @@
         "sharedRuleGraphBeforeMapsAndAssets": true,
         "abilityAndRoleContractsBeforeAlternatives": true,
         "numericPlaythroughAndParticipantReplay": true,
-        "existingRemoteQa": ".github/workflows/vibe2-core-qa.yml"
+        "existingRemoteQa": ".github/workflows/vibe2-core-qa.yml",
+        "designerSeed": {
+          "owner": "tools/company-design-cycle.mjs",
+          "stage": "identity-core",
+          "inputRecordRole": "ROUTING_AND_ORIGINAL_INPUT_ONLY",
+          "output": "design/<gameId>/<date>/design-seed.json",
+          "externalPreparedSeedRequired": false,
+          "sameDesignerContinuesDetailedDesign": true,
+          "preAuthoringSeedAndClassGate": false,
+          "draftScoreAdmissionGate": false,
+          "finalStrictReviewRequired": true,
+          "newWorkerOrPipeline": false,
+          "consumer": "tools/company-baseline-gate.mjs"
+        }
       }
     },
     "unityWebDevelopmentLane": {
@@ -4460,7 +4473,7 @@
       ]
     }
   },
-  "updatedAt": "2026-10-05",
+  "updatedAt": "2026-10-08T02:14:34.456Z",
   "centralDocumentationTopology": {
     "version": 2,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",

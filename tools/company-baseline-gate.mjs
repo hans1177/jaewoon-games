@@ -90,7 +90,7 @@ const revalidation=latestDesignValidation(gameId,'development-revalidation.json'
 const minimumDesign=latestMinimumDesign('.',gameId);
 const upperReadiness=upperPlatformReadiness(gameId);
 const meetingConflicts=Number(status.meeting?.conflictCount||0);const meetingHolds=Number(status.meeting?.holdCount||0);const blockers=[];let state='NOT_APPLICABLE';let ready=false;
-let advisoryDisposition=null;let unanimousFatalDiscard=false;let designMultiplayerMode=null;let designMultiplayerModeValid=false;let deterministicDesignEvidence=null;
+let advisoryDisposition=null;let unanimousFatalDiscard=false;let designMultiplayerMode=null;let designMultiplayerModeValid=false;let deterministicDesignEvidence=null;let designerSeedEvidence=null;
 
 if(productionClass===PRODUCTION_CLASSES.DESIGN_ONLY){
   if(status.status!=='COMPLETE')throw new Error('DESIGN_ONLY cycle must complete before baseline gate');
@@ -100,10 +100,23 @@ if(productionClass===PRODUCTION_CLASSES.DESIGN_ONLY){
     if(seedAny){markSeedDiscarded(seedState,gameId,{reason:'DESIGN_ONLY_FATAL_REVIEW',timestamp:new Date().toISOString()});saveSeedState(seedState);}
     state='DISCARDED';blockers.push('design-discarded-after-revision-and-five-department-rereview');
   }
-  const requiredSeedFields=GAME_SEED_REQUIRED_FIELDS;
+  // 디자이너가 생성한 현재 시드를 검수한다. 미완성 접수 기록을 다시 설계 선행조건으로 요구하지 않는다.
+  const revisedRecord=readJson(path.join('design',gameId,date,'design-revised.json'),null);
+  const revised=revisedRecord?.content||null;
+  const designerSeedPath=path.join('design',gameId,date,'design-seed.json');
+  const authoredSeed=readJson(designerSeedPath,null);
+  const authoredFields=['identity','playerFantasy','coreFun','coreLoop','signatureSystems','multiplayerMode'];
+  const currentDesignerSeed=Boolean(authoredSeed?.gameId===gameId&&authoredSeed?.date===date
+    &&authoredSeed?.authorRole==='GAME_DESIGNER_AI'&&clean(authoredSeed?.authorModel)&&authoredSeed.authorModel===revisedRecord?.authorModel
+    &&authoredSeed?.sourceStage==='identity-core'&&authoredSeed?.seedId===seedActive?.seedId
+    &&clean(authoredSeed?.engineDigest)&&authoredSeed.engineDigest===status.runtimeMetrics?.checkpoint?.engineDigest
+    &&clean(authoredSeed?.contentDigest)&&authoredSeed.contentDigest===crypto.createHash('sha256').update(JSON.stringify(authoredSeed.content||{})).digest('hex')
+    &&authoredFields.every(field=>hasValue(authoredSeed.content?.[field])&&JSON.stringify(authoredSeed.content[field])===JSON.stringify(revised?.[field])));
+  if(currentDesignerSeed)designerSeedEvidence={source:designerSeedPath,authorModel:authoredSeed.authorModel,contentDigest:authoredSeed.contentDigest};
+  if(revisedRecord?.gameSeedSource===designerSeedPath&&!currentDesignerSeed)blockers.push('designer-authored-seed-evidence-mismatch');
+  const requiredSeedFields=currentDesignerSeed?[]:GAME_SEED_REQUIRED_FIELDS;
   if(!seedActive)blockers.push('active-game-seed-required');
   for(const field of requiredSeedFields)if(!hasValue(seedActive?.[field]))blockers.push(`game-seed-field-required:${field}`);
-  const revised=readJson(path.join('design',gameId,date,'design-revised.json'),null)?.content||null;
   designMultiplayerMode=clean(revised?.multiplayerMode).toUpperCase()||null;
   designMultiplayerModeValid=MULTIPLAYER_MODES.has(designMultiplayerMode);
   if(!clean(revised?.identity))blockers.push('distinct-game-identity-required');
@@ -170,7 +183,7 @@ if(productionClass===PRODUCTION_CLASSES.DESIGN_ONLY){
 
 const developmentRequired=productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED;
 const evidence={
-  gameSeed:{required:productionClass===PRODUCTION_CLASSES.DESIGN_ONLY,present:Boolean(seedActive),seedId:seedActive?.seedId||null,source:seedActive?'game-seed-state.json':null},
+  gameSeed:{required:productionClass===PRODUCTION_CLASSES.DESIGN_ONLY,present:Boolean(seedActive),seedId:seedActive?.seedId||null,source:designerSeedEvidence?.source||(seedActive?'game-seed-state.json':null),designerSeed:designerSeedEvidence},
   designMultiplayer:{required:productionClass===PRODUCTION_CLASSES.DESIGN_ONLY,mode:designMultiplayerMode,valid:designMultiplayerModeValid,decisionStage:'GAME_DESIGN',allowedModes:[...MULTIPLAYER_MODES]},
   deterministicDesignGate:{required:productionClass===PRODUCTION_CLASSES.DESIGN_ONLY&&deterministicDesignGateEnabled,authority:deterministicDesignGateEnabled?'DETERMINISTIC_EVIDENCE':null,...(deterministicDesignEvidence||{pass:null,path:null,phase:null,totalScore:null,passMinimum:null,hardFailures:[],criticalAxisFailures:[]})},
   webSmoke:{supportingOnly:true,pass:webSmokePass,source:webSmoke?'company-qa-runtime-evidence.json':null},

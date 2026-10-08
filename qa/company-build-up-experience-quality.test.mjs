@@ -261,3 +261,25 @@ test('unscoped directive never inherits unrelated repository files as implementa
   assert.ok(directive.currentImplementationFindings.sourceObservations.includes('CURRENT_SOURCE_MISSING_OR_UNREADABLE'));
   assert.equal(directive.effectivenessMeasurement.baseline.runtimePassed,false);
 });
+
+
+test('all-game multiplayer requirement creates local implementation work without blocking legacy single development',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'mandatory-multiplayer-'));
+  try{
+    fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
+    const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8')).directNativeDualPlatformDevelopment.multiplayerImplementation;
+    fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify({directNativeDualPlatformDevelopment:{multiplayerImplementation:policy}}));
+    for(const platform of ['ROBLOX','UNITY','WEB']){
+      const source=sourceObservation();source.signals.multiplayer=0;source.signals.errorRecovery=0;
+      const directive=buildGameSpecificBuildUpDirective({gameId:'legacy-single',platform,repoRoot:root,designRecord:{content:{identity:'원본 퍼즐',coreLoop:['입력','판정','다음 선택'],multiplayerMode:'SINGLE'}},sourceObservation:source});
+      assert.ok(directive.directiveId);
+      assert.equal(directive.gameIdentityAndNonNegotiables.multiplayerMode,'SINGLE','source history is not rewritten as designer output');
+      assert.equal(directive.qualityGapMap.find(row=>row.domain==='MULTIPLAYER_AND_SYNC').state,'GAP');
+      assert.equal(directive.multiplayerImplementation.required,true);
+      assert.equal(directive.multiplayerImplementation.developmentAdmissionGate,false);
+      assert.equal(directive.multiplayerImplementation.otherGamesAndIndependentWorkContinue,true);
+      assert.equal(directive.multiplayerImplementation.actualMultiplayerPlayVerified,false);
+      assert.match(directivePrompt(directive),/전 게임 멀티 필수/);
+    }
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});

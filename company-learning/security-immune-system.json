@@ -1,5 +1,5 @@
 {
-  "version": 85,
+  "version": 86,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -472,7 +472,7 @@
     "failureAction": "QUARANTINE_AFFECTED_ASSET_OR_SCOPE_AND_ROUTE_ASSET_REPAIR_REQUIRED",
     "wholeCompanyStopDefault": false
   },
-  "updatedAt": "2026-10-05",
+  "updatedAt": "2026-10-08T02:14:34.456Z",
   "graphicsProductionUnificationSecurity": {
     "version": 1,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -933,7 +933,16 @@
       "designSimulationCannotClaimGameRuntimePass": true,
       "originalAbilityNumbersAndHumanInfectedMappingPreserved": true,
       "paraphraseCannotSatisfyStrategicDifference": true,
-      "roleAndRightsEvidenceBeforeAssetSelection": true
+      "roleAndRightsEvidenceBeforeAssetSelection": true,
+      "designerSeed": {
+        "automaticIntakeCannotClaimModelAuthorship": true,
+        "onlyValidatedModelContentMayBecomeSeed": true,
+        "seedIsCandidateNotDesignOrRuntimePass": true,
+        "originalRulesAndRemovedGamesRemainProtected": true,
+        "inputOrEngineChangeInvalidatesStaleSeedEvidence": true,
+        "preAuthoringGateRemovalDoesNotGrantReleaseOrRuntimePass": true,
+        "mustMatchCurrentDesignModelDigestAndEngine": true
+      }
     }
   },
   "minimumNecessaryDevelopmentSecurity": {

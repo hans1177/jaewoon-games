@@ -271,7 +271,9 @@ assert.match(designCycle,/QUOTA_VIBE_REPAIR_COMPATIBLE_ENGINE_CHANGE_NO_REPLAY/)
 assert.match(designCycle,/PERSIST_GEMINI_DAILY_QUARANTINE_WITHOUT_REPLAY/);
 assert.doesNotMatch(designCycle,/GEMINI_MODEL_QUARANTINE_RESTORED=/);
 assert.doesNotMatch(designCycle,/persistentGeminiUnavailableStatus/);
-assert.match(designCycle,/DESIGN_PRE_GATE_REPAIR_CHECKPOINTS_PRESERVED=YES/);
+assert.match(designCycle,/DESIGN_PRE_GATE=REMOVED/);
+assert.doesNotMatch(designCycle,/status:'PRE_GATE_BLOCKED'/);
+assert.match(designCycle,/DESIGN_CHECKPOINT_RESUME=YES/);
 assert.doesNotMatch(designCycle,/delete designCheckpoint\.phases\[key\]/);
 assert.match(designCycle,/DESIGN_LOCAL_SPLIT=/);
 assert.match(designCycle,/arrayChild\?'ARRAY_ITEMS':objectChild\?'NESTED_OBJECT':'FIELDS'/);

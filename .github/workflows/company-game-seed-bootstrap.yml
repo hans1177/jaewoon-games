@@ -66,6 +66,11 @@ jobs:
               fi
             done
             if [ -f /tmp/game-seed-state.json ]; then cp /tmp/game-seed-state.json game-seed-state.json; fi
+            # 오너 요청의 원본 설계는 상태와 같은 런타임 브랜치에서 읽는다.
+            if git cat-file -e "origin/$COMPANY_RUNTIME_BRANCH:design" 2>/dev/null; then
+              git checkout "origin/$COMPANY_RUNTIME_BRANCH" -- design
+              git reset -- design >/dev/null
+            fi
           fi
           test -f game-seed-state.json
           cp game-seed-state.json /tmp/company-runtime-seed-state-before.json
@@ -177,10 +182,10 @@ jobs:
           GAME_SEED_MARKET_EVIDENCE_FILE: game-seed-market-evidence.json
         run: node tools/company-game-seed-semantic-normalize.mjs
 
-      - name: Enforce GAME_SEED quality contract
+      - name: Diagnose intake and retain source integrity checks
         env:
           GAME_SEED_MARKET_EVIDENCE_FILE: game-seed-market-evidence.json
-        run: node tools/company-game-seed-quality-gate.mjs
+        run: node tools/company-game-seed-quality-gate.mjs --designer-intake
 
       - name: Persist GAME_SEED state to company runtime branch
         id: persist

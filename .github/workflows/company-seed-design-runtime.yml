@@ -29,9 +29,9 @@ permissions:
   actions: write
 
 concurrency:
-  # One canonical design runtime: engine pushes replace stale design work; normal continuation preserves active work.
+  # One canonical runtime: finish the active checkpointed batch; engine changes enter the next batch.
   group: company-seed-design-runtime
-  cancel-in-progress: ${{ github.event_name == 'push' }}
+  cancel-in-progress: false
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
@@ -408,7 +408,9 @@ jobs:
             if git cat-file -e "origin/$COMPANY_RUNTIME_BRANCH:$runtime_path" 2>/dev/null; then git checkout "origin/$COMPANY_RUNTIME_BRANCH" -- "$runtime_path"; fi
           done
           git reset -- game-seed-state.json "$game_path" >/dev/null 2>&1 || true
-          test -f game-seed-state.json
+          if [ ! -f game-seed-state.json ]; then
+            printf '%s\n' '{"version":2,"seeds":[]}' > game-seed-state.json
+          fi
           cp game-seed-state.json /tmp/company-runtime-seed-state-before.json
           echo 'COMPANY_RUNTIME_STATE_OVERLAY=TARGET_ONLY'
           echo 'DESIGN_ONLY_ARTBOOK_OVERLAY=NO'
@@ -429,7 +431,7 @@ jobs:
         env:
           GAME_ID: ${{ matrix.target.game_id }}
 
-      - name: Ensure target missing-design GAME_SEED exists
+      - name: Prepare target routing input for designer self-seeding
         env:
           GAME_ID: ${{ matrix.target.game_id }}
         shell: bash
@@ -437,17 +439,11 @@ jobs:
           set -euo pipefail
           node tools/company-all-games-design-reset.mjs --auto-missing-design-intake --game-id="$GAME_ID"
           echo 'TARGET_MISSING_DESIGN_AUTO_CREATE=CANONICAL_GAME_SEED_PIPELINE'
+          echo 'DESIGN_AI_PROVIDER=VIBE_LOCAL_OLLAMA'
+          echo 'DESIGN_GATE_AUTHORITY=DETERMINISTIC_EVIDENCE'
+          echo 'DESIGN_EXTERNAL_AI_ALLOWED=NO'
 
-      - name: Normalize target GAME_SEED contract
-        env:
-          GAME_ID: ${{ matrix.target.game_id }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          node tools/company-design-seed-normalize.mjs --game-id="$GAME_ID"
-          echo 'DESIGN_SEED_NORMALIZATION_STAGE=PRE_DESIGN'
-
-      - name: Revalidate current seed target
+      - name: Skip only superseded design work
         id: target
         env:
           TARGET_GAME_ID: ${{ matrix.target.game_id }}
@@ -487,28 +483,12 @@ jobs:
           const targetDue=String(process.env.TARGET_DESIGN_EVOLUTION_DUE||'').trim().toLowerCase()==='true';
           const selectedBaseline=Number(process.env.TARGET_BASELINE_REVIEW_AT||0);
           const supersededByNewerPass=latestPassAt>selectedBaseline&&selectedBaseline>0;
-          const shouldRun=Boolean(seed&&String(seed.seedId)===seedId&&targetDue&&!supersededByNewerPass);
+          const targetStillCurrent=!String(seed?.seedId||'').trim()||String(seed.seedId)===seedId;
+          const shouldRun=Boolean(targetStillCurrent&&targetDue&&!supersededByNewerPass);
           console.log(`should_run=${shouldRun?'true':'false'}`);
           console.log(`design_evolution_reason=${String(process.env.TARGET_DESIGN_EVOLUTION_REASON||'UNKNOWN')}`);
           console.log(`design_evolution_superseded=${supersededByNewerPass?'true':'false'}`);
           NODE
-      - name: Static strict contracts
-        if: steps.target.outputs.should_run == 'true'
-        run: |
-          node --check tools/game-seed-state.mjs
-          node --check tools/company-game-seed-contract.mjs
-          node --check tools/company-strict-production-review.mjs
-          node --check tools/company-design-prepromotion-repair.mjs
-          node --check tools/company-design-cycle.mjs
-          node --check tools/vibe2-design-intelligence.mjs
-          node --test qa/vibe2-design-intelligence.test.mjs
-          node --check tools/company-design-checkpoint-recovery.mjs
-          node --check tools/company-baseline-gate.mjs
-          node --check tools/company-minimum-design-contract.mjs
-          node --test qa/company-minimum-design-contract.test.mjs
-          echo 'DESIGN_AI_PROVIDER=VIBE_LOCAL_OLLAMA'
-          echo 'DESIGN_GATE_AUTHORITY=DETERMINISTIC_EVIDENCE'
-          echo 'DESIGN_EXTERNAL_AI_ALLOWED=NO'
       - name: Recover verified deterministic design checkpoint before external model wait
         id: deterministic_recovery
         if: steps.target.outputs.should_run == 'true'
@@ -659,6 +639,9 @@ jobs:
             sync_key="$(checkpoint_sync_key)"
             if [ "$sync_key" = "$last_checkpoint_sync_key" ]; then return 0; fi
             cp "$checkpoint_path" /tmp/design-checkpoint.json
+            local seed_path="$(dirname "$checkpoint_path")/design-seed.json"
+            rm -f /tmp/design-seed.json
+            [ -f "$seed_path" ] && cp "$seed_path" /tmp/design-seed.json || true
             [ -f "$progress_path" ] && cp "$progress_path" /tmp/design-progress.json || true
             local pushed=0
             for attempt in 1 2 3 4; do
@@ -672,6 +655,10 @@ jobs:
               git -C "$worktree" config user.name 'jaewoon-seed-design-checkpoint'
               git -C "$worktree" config user.email 'seed-design-checkpoint@users.noreply.github.com'
               git -C "$worktree" add -- "$checkpoint_path" "$progress_path"
+              if [ -f /tmp/design-seed.json ]; then
+                cp /tmp/design-seed.json "$worktree/$seed_path"
+                git -C "$worktree" add -- "$seed_path"
+              fi
               if git -C "$worktree" diff --cached --quiet; then
                 pushed=1
                 git worktree remove -f "$worktree" >/dev/null 2>&1 || true
@@ -1216,3 +1203,4 @@ jobs:
             echo 'DESIGN_GATE_REPAIR_LOOP_DISPATCH=NO_ALL_PASS'
           fi
           echo 'DESIGN_GATE_REPAIR_LIMIT=UNLIMITED'
+

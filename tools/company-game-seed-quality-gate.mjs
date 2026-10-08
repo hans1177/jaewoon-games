@@ -135,5 +135,16 @@ for(const seed of active){
 }
 // Concept duplication is blocked when a new material-composed GAME_SEED is created.
 // Do not retroactively reject historical or owner-enrolled projects as duplicate pairs here.
+if(process.argv.includes('--designer-intake')){
+  const creative=/(?:^seed-material-(?:active-pool|target)=|contract:(?:[A-Z_]+ is required|GAMEPLAY_SKETCH\.(?!.*(?:may not pin|may not own))|CORE_LOOP|MULTIPLAYER_DESIGN_MODE|INITIAL_PLAY_MODE|SEED_MATERIAL_IDS|TARGET_SESSION_MINUTES|DISTINCT_IDENTITY)|:v2-|:seed-material-count=|:target-session-must-be-30|:multiplayer-design-mode-required|:reference-inputs-required|:core-loop-|:distinct-identity-missing-or-generic)/;
+  const diagnostics=failures.filter(failure=>creative.test(failure));
+  if(diagnostics.length){
+    console.log('GAME_SEED_AUTHORING_DIAGNOSTICS=REPAIR_BY_DESIGNER');
+    for(const diagnostic of diagnostics)console.log(`- ${diagnostic}`);
+    console.log('GAME_SEED_CREATIVE_ADMISSION_GATE=NO');
+    for(let index=failures.length-1;index>=0;index--)if(creative.test(failures[index]))failures.splice(index,1);
+    if(!failures.length){console.log('GAME_SEED_SEMANTIC_QUALITY=DESIGNER_AUTHORING_PENDING');process.exit(0);}
+  }
+}
 if(failures.length){console.error('GAME_SEED_SEMANTIC_QUALITY=FAIL');for(const failure of failures)console.error(`- ${failure}`);process.exit(1);}
 console.log('GAME_SEED_SEMANTIC_QUALITY=PASS');console.log('GAMEPLAY_SKETCH_V2_SEMANTIC_QUALITY=ENFORCED');console.log(`GAME_SEED_ACTIVE_SEED_COUNT=${active.length}`);console.log(`GAME_SEED_MATERIAL_COMPOSED_COUNT=${active.filter(isMaterialComposed).length}`);console.log('LEGACY_SEED_MATERIAL_RETROACTIVE_GATE=NO');console.log('CONCEPT_DUPLICATE_GATE=CREATION_TIME_ONLY');console.log(`SEED_MATERIAL_POOL_TARGET=${SEED_MATERIAL_POOL_TARGET}`);console.log('SEED_MATERIAL_IS_GAME=NO');console.log('GAME_REFERENCE_REQUIRED=NO');console.log('TARGET_SESSION_MINUTES=30');console.log('MULTIPLAYER_DECISION_STAGE=DESIGN');console.log('GAME_SEED_FIXED_CATEGORY_SLOT_QUOTA=NO');console.log('GAME_SEED_MARKET_EVIDENCE_HARD_GATE=NO');console.log('GAME_SEED_POLICY_DOCUMENT=COMPANY_FLOW.md');

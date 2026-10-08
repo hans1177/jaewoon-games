@@ -510,7 +510,7 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
       const preOutput=new Map(outputs.map(relative=>{const file=path.resolve(cwd,relative);return[relative,fs.existsSync(file)&&fs.statSync(file).isFile()?{sha256:sha256File(file),size:fs.statSync(file).size}:null];}));
       let stdout='',recipeSucceeded=false;
       try{
-        stdout=execFileSync(blenderExecutable,['--background','--python',scriptAbs,'--',...(recipe?.args||[]).map(value=>String(value))],{cwd,encoding:'utf8',timeout:600000,maxBuffer:64*1024*1024,stdio:['ignore','pipe','pipe']});
+        stdout=execFileSync(blenderExecutable,['--background','--python-exit-code','1','--python',scriptAbs,'--',...(recipe?.args||[]).map(value=>String(value))],{cwd,encoding:'utf8',timeout:600000,maxBuffer:64*1024*1024,stdio:['ignore','pipe','pipe']});
         const generated=outputs.map(relative=>{
           const file=path.resolve(cwd,relative);
           if(!fs.existsSync(file)||!fs.statSync(file).isFile()||fs.statSync(file).size<=0)throw new Error('NATIVE_DCC_OUTPUT_MISSING:'+relative);

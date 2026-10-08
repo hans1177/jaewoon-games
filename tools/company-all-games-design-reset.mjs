@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
-import {assertGameSeed} from './company-game-seed-contract.mjs';
+import {validateGameSeed} from './company-game-seed-contract.mjs';
 import {normalizeGameplaySketch} from './company-game-seed-bootstrap.mjs';
 
 export const CATALOG_FILE='game-catalog.json';
@@ -144,7 +144,8 @@ function upgradeCanonicalNovelGrammarSeed(seed,game,timestamp){
   signals.push({id:CANONICAL_NOVEL_GRAMMAR_V4_SOURCE,type:'NOVEL_GRAMMAR_V4_BACKFILL',status:'OPEN',createdAt:timestamp,source:'CANONICAL_GAME_SEED'});
   seed.designEvolutionSignals=signals;
   seed.updatedAt=timestamp;
-  assertGameSeed(seed);
+  const inputCheck=validateGameSeed(seed);
+  if(!inputCheck.pass)seed.inputRepairNotes=inputCheck.errors;
   return true;
 }
 export function makeAutoMissingDesignSeed(game,{serial=1,timestamp=new Date().toISOString()}={}){
@@ -191,7 +192,8 @@ export function makeAutoMissingDesignSeed(game,{serial=1,timestamp=new Date().to
     autoMissingDesignIntake:true,
     createdAt:timestamp,updatedAt:timestamp
   };
-  assertGameSeed(seed);
+  const inputCheck=validateGameSeed(seed);
+  if(!inputCheck.pass)seed.inputRepairNotes=inputCheck.errors;
   return seed;
 }
 function resetSeed(game,existing={},timestamp=new Date().toISOString()){
