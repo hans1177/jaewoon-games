@@ -753,25 +753,36 @@
         "riskPressure": "플레이어는 매 차례마다 새로운 전략을 수립하고, 이전 선택의 결과를 기반으로 다음 상태를 변화시키는 반복 가능한 핵심 루프를 구축한다.",
         "recoveryRules": "플레이어는 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 사용한다."
       }
+    },
+    "local_authoring_parts::6daf242a76c1c507b4ff6961a56eba75f461cf9285905cc827c5e1d8a7a3051a:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "MAIN",
+      "toId": "A",
+      "stateKeys": [
+        "towersPlaced",
+        "defendersDeployed",
+        "resourceSpent",
+        "defenseAdaptation"
+      ],
+      "fromSystem": "systemInterconnections_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 17,
+      "calls": 19,
+      "successes": 18,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2432922,
-      "lastMs": 146046,
+      "totalMs": 2540693,
+      "lastMs": 107771,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T11:08:37.896Z"
+      "updatedAt": "2026-10-08T11:10:25.675Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:28:04.579Z",
-  "updatedAt": "2026-10-08T11:08:37.902Z",
+  "updatedAt": "2026-10-08T11:10:25.675Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3114,10 +3125,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T11:08:37.897Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-08T11:10:25.675Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
