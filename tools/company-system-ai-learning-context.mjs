@@ -102,6 +102,49 @@ function advancedBottleneckPlaybook(task={},policy={}){
   };
 }
 
+
+/* ── 검증된 지식 검색과 함께 전달할 단계별 원인 가설. 자동 PASS·게이트 우회 권한은 없다. ── */
+function developmentFloorRecoveryCase(task={},playbook={}) {
+  if(playbook.applied!==true)return null;
+  const signature=failureSignature(task)||'';
+  const cases={
+    ROBLOX_F0_SOURCE_PREFLIGHT_FAILED:{
+      stage:'F0_SOURCE_PREFLIGHT',
+      hypotheses:['PACKAGE_SOURCE_REVISION_OR_ARTIFACT_MISMATCH','EXACT_LUAU_OR_ROJO_PREFLIGHT_FAILURE'],
+      next:'Compare source revision, artifact hash and failing validator; repair the responsible source and rerun exact F0.',
+      preserve:'Previous F0 is reusable only if source and artifact identity are still exact.'
+    },
+    ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING:{
+      stage:'PRIVATE_RUNTIME_CANDIDATE_DEPLOY',
+      hypotheses:['GAMEPLAY_QUALITY_BUILDUP_GATE_CURRENT_SOURCE','EXACT_PRIVATE_VALIDATION_DISPATCH_MISSING_OR_SUPERSEDED'],
+      next:'Check matching F0 evidence, quality build-up blocker, and release-promotion dispatch logs before retrying an exact private candidate.',
+      preserve:'Never publish or claim F1-F9 while a source-quality gate remains active.'
+    },
+    ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE:{
+      stage:'TARGET_PLATFORM_RUNTIME_FOUNDATION',
+      hypotheses:['OPEN_CLOUD_TRANSIENT_OR_RATE_LIMIT','MISSING_PERMISSION_OR_WRONG_PLACE_VERSION'],
+      next:'Compare HTTP status, scope, place and version with last immutable candidate. Retry transient external probe only with real server evidence.',
+      preserve:'Keep exact package and private candidate when still bound; transient failures do not invalidate unrelated F0.'
+    },
+    'roblox-package-asset-binding-failed':{
+      stage:'TARGET_PLATFORM_BUILD_OR_PACKAGE',
+      hypotheses:['ASSET_FAMILY_NOT_ACTUALLY_REFERENCED_BY_GAMEPLAY','PACKAGE_MANIFEST_AND_RUNTIME_BINDING_DRIFT'],
+      next:'Repair the missing asset family in the canonical game source and regenerate the package before F0. Never relabel a missing binding as PASS.',
+      preserve:'Only checkpoints whose source/package fingerprints are unchanged may be reused.'
+    }
+  };
+  const selected=cases[signature]||cases[signature.toUpperCase()]||null;
+  if(!selected)return null;
+  return{
+    signature,stage:selected.stage,hypotheses:selected.hypotheses,
+    next:selected.next,preserve:selected.preserve,
+    representativeCanaryRequiredForSharedSignature:true,
+    independentVerificationRequired:true,
+    reattemptFailedStrategyOnlyWithNewEvidence:true,
+    verifiedSuccessPromotionOnly:true
+  };
+}
+
 export function buildSystemAiLearningContext({task={},experienceInput={},codePatternsInput={},masteryInput={},externalAiDistilledInput={},policyInput=null}={}){
   const resolvedTarget=inferLearningTarget(task);
   const retrieval=retrieveUnifiedLearning({
@@ -115,6 +158,7 @@ export function buildSystemAiLearningContext({task={},experienceInput={},codePat
   const gameId=clean(task.gameId)||null;
   const policy=policyInput&&typeof policyInput==='object'?policyInput:readJson('company-learning/platform-release-roadmap.json',{});
   const bottleneckPlaybook=advancedBottleneckPlaybook(task,policy);
+  const floorRecovery=developmentFloorRecoveryCase(task,bottleneckPlaybook);
   const baseGuidance=learningGuidance(retrieval);
   return {
     version:2,
@@ -135,7 +179,10 @@ export function buildSystemAiLearningContext({task={},experienceInput={},codePat
     freshQaRequiredOnReuse:true,
     knowledgeTraceRequired:exactKnowledgeIds.length>0,
     bottleneckPlaybook,
-    guidance:[baseGuidance,bottleneckPlaybook.guidance].filter(Boolean).join('\n'),
+    floorRecovery,
+    guidance:[baseGuidance,bottleneckPlaybook.guidance,
+      floorRecovery&&('EXACT F0-F9 RECOVERY (hypotheses only, require fresh evidence): '+JSON.stringify(floorRecovery))
+    ].filter(Boolean).join('\n'),
     rawModelOutputIncluded:false,
     verifiedOnly:true,
     advisoryOnly:true,
