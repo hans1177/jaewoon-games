@@ -598,25 +598,119 @@
           "playerChoice": "Explore the forest for a needed resource while reading environmental and creature danger."
         }
       ]
+    },
+    "local_authoring_parts::ce6d0f28d57b8bc9efc5b62df21f1f93cf01eab25c380f8eb6cd3af0436f897a:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "MAIN",
+          "toId": "A",
+          "stateKeys": [
+            "worldState",
+            "nextAction"
+          ],
+          "fromSystem": "MAIN",
+          "toSystem": "A",
+          "trigger": "Explore the forest for a needed resource while reading environmental and creature danger.",
+          "stateChange": "newWorldState, newNextAction"
+        },
+        {
+          "fromId": "MAIN",
+          "toId": "B",
+          "stateKeys": [
+            "worldState",
+            "nextAction"
+          ],
+          "fromSystem": "MAIN",
+          "toSystem": "B",
+          "trigger": "Craft a survival advantage, improve shelter or equipment and prepare for the next stronger threat.",
+          "stateChange": "newWorldState, newNextAction"
+        },
+        {
+          "fromId": "MAIN",
+          "toId": "c",
+          "stateKeys": [
+            "worldState",
+            "nextAction"
+          ],
+          "fromSystem": "MAIN",
+          "toSystem": "c",
+          "trigger": "Explore the forest for a needed resource while reading environmental and creature danger.",
+          "stateChange": "newWorldState, newNextAction"
+        },
+        {
+          "fromId": "A",
+          "toId": "MAIN",
+          "stateKeys": [
+            "worldState",
+            "nextAction"
+          ],
+          "fromSystem": "A",
+          "toSystem": "MAIN",
+          "trigger": "Explore the forest for a needed resource while reading environmental and creature danger.",
+          "stateChange": "newWorldState, newNextAction"
+        },
+        {
+          "fromId": "B",
+          "toId": "MAIN",
+          "stateKeys": [
+            "worldState",
+            "nextAction"
+          ],
+          "fromSystem": "B",
+          "toSystem": "MAIN",
+          "trigger": "Return or push deeper based on current supplies and group readiness.",
+          "stateChange": "newWorldState, newNextAction"
+        },
+        {
+          "fromId": "c",
+          "toId": "MAIN",
+          "stateKeys": [
+            "worldState",
+            "nextAction"
+          ],
+          "fromSystem": "c",
+          "toSystem": "MAIN",
+          "trigger": "Explore the forest for a needed resource while reading environmental and creature danger.",
+          "stateChange": "newWorldState, newNextAction"
+        },
+        {
+          "fromId": "DELVE",
+          "toId": "MAIN",
+          "stateKeys": [
+            "worldState",
+            "nextAction"
+          ],
+          "fromSystem": "DELVE",
+          "toSystem": "MAIN",
+          "trigger": "Explore the forest for a needed resource while reading environmental and creature danger.",
+          "stateChange": "newWorldState, newNextAction"
+        }
+      ],
+      "progressionDirection": "Linear",
+      "progressionEconomyBalance": {
+        "progressionLoop": "Linear",
+        "resourceFlow": "Circular",
+        "balanceRules": "Equilibrium"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 21,
-      "successes": 20,
+      "calls": 22,
+      "successes": 21,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2139405,
-      "lastMs": 300100,
+      "totalMs": 2411416,
+      "lastMs": 272011,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T09:57:00.483Z"
+      "updatedAt": "2026-10-08T10:01:32.496Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:43:46.463Z",
-  "updatedAt": "2026-10-08T09:57:00.483Z",
+  "updatedAt": "2026-10-08T10:01:32.496Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2848,7 +2942,7 @@
     "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T09:52:00.376Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:01:32.496Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
