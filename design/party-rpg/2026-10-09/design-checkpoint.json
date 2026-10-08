@@ -60,25 +60,38 @@
       "name": "MATCH_GAME",
       "purpose": "MAIN × A × B × c의 관계에서 선택 결과가 다음 상태로 연결하는 첫 번째 대축",
       "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective with a clear goal and limited moves, obstacles, or another visible puzzle constraint in the current state of the game."
+    },
+    "local_authoring_parts::5edd8b9674b19d17bf517d3597ecfddcf586fe2bd036172ec2153afa2b9883bf:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "BOARD_STATE"
+      ],
+      "stateOutputs": [
+        "NEW_BOARD_STATE"
+      ],
+      "name": "MATCH_GAME",
+      "purpose": "게임의 중심 행동인 START 이후 선택 결과가 다음 상태로 연결되는 두 번째 대축",
+      "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective with a clear goal and limited moves, obstacles, or another visible puzzle constraint in the current state of the game, leading to a new board pattern or obstacle combination that can be cleared for rewards or unlocking the next stage of the game."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 350649,
-      "lastMs": 32191,
+      "totalMs": 385409,
+      "lastMs": 34760,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:37:31.210Z"
+      "updatedAt": "2026-10-08T21:38:05.971Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:31:40.536Z",
-  "updatedAt": "2026-10-08T21:37:31.210Z",
+  "updatedAt": "2026-10-08T21:38:05.971Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2115,7 +2128,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:37:31.210Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:38:05.971Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
