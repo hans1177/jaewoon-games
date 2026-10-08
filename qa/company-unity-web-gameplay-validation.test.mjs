@@ -6,6 +6,36 @@ import fs from 'node:fs';
 
 const source=fs.readFileSync(new URL('../tools/company-unity-web-gameplay-validation.mjs',import.meta.url),'utf8');
 
+const daechungUnitySource=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs',import.meta.url),'utf8');
+
+test('Daechung Unity Web exposes a genuine initial hunt control before browser QA touches it',()=>{
+  const start=daechungUnitySource.indexOf('private void DrawPrimaryCombatActionButton()');
+  const end=daechungUnitySource.indexOf('private void DrawTownControls()',start);
+  assert.ok(start>=0&&end>start);
+  const action=daechungUnitySource.slice(start,end);
+  assert.match(action,/canEnterHunt = _enemy == null && _core != null && _core\.Player\.currentRegionId == "town"/);
+  assert.match(action,/if \(_enemy == null && !canEnterHunt\) return;/);
+  assert.match(action,/MOBILE_TARGET game=daechung-rpg role=action/);
+  assert.match(action,/GUI\.Button\(actionRect, canEnterHunt \? "HUNT" : "ATTACK"\)/);
+  assert.match(action,/if \(canEnterHunt\) MoveTo\("field-1"\);\s*else AttackEnemy\(\);/);
+  assert.match(action,/MOBILE_INPUT game=daechung-rpg role=action status=PASS/);
+  assert.ok(action.indexOf('MOBILE_TARGET')<action.indexOf('GUI.Button(actionRect'));
+  assert.doesNotMatch(action,/if \(_enemy == null\) return;/);
+});
+
+test('Daechung WebGL request always builds the exact current main source and claims no synthetic QA PASS',()=>{
+  const file=new URL('../.build-requests/unity-web/daechung-rpg.json',import.meta.url);
+  const request=JSON.parse(fs.readFileSync(file,'utf8'));
+  assert.equal(request.kind,'UNITY_WEB_DEVELOPMENT_FLOOR_BUILD');
+  assert.equal(request.gameId,'daechung-rpg');
+  assert.equal(request.projectPath,'unity-games/daechung-rpg');
+  assert.equal(request.buildMethod,'JaewoonGames.DaechungRpg.Editor.AndroidTestBuild.BuildWeb');
+  assert.equal(request.sourceCommit,'');
+  assert.equal(request.outputRoot,'web-games/daechung-rpg');
+  assert.equal(request.fullGameplayPassAuthority,undefined);
+  assert.equal(request.postGatePlatformPipelineChanged,undefined);
+});
+
 test('Unity Web performance QA samples live gameplay frames instead of treating boot time as FPS proof',()=>{
   const gameplay=source.indexOf('UNITY_WEB_QA_GENRE_CORE_FUN_EVIDENCE_MISSING');
   const frame=source.indexOf('const framePacing=await page.evaluate');
