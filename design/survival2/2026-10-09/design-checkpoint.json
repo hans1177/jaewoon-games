@@ -402,25 +402,54 @@
       "name": "DELVE",
       "purpose": "Exploration and resource acquisition in the forest",
       "playerChoice": "Choose action that enhances survival, modifies shelter/equipment, or prepares for future risk."
+    },
+    "local_authoring_parts::2a24946d745706aca5830bec94f9744db81d709f811cdd1316e29e59926107f4:signatureSystems:3": {
+      "id": "숲의 생존자들",
+      "grammarRole": "c",
+      "stateInputs": [
+        "Explore the forest for a needed resource while reading environmental andcreature"
+      ],
+      "stateOutputs": [
+        "Status change to reflect new resources, risks, and group dynamics.",
+        "New status reflects improved capabilities, altered environment, or preparedness.",
+        "New status includes learned patterns, changed environment, or redefined goals."
+      ],
+      "name": "DELVE",
+      "purpose": "Exploration and resource acquisition in the forest with ecological insight and adaptive decision-making",
+      "playerChoice": "Make choices that alter the world state through discovery, mastery, or re-exploration."
+    },
+    "local_authoring_parts::2a24946d745706aca5830bec94f9744db81d709f811cdd1316e29e59926107f4:signatureSystems:4": {
+      "id": "숲의 생존자들",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "Explore the forest for a needed resource while reading environmental andcreature"
+      ],
+      "stateOutputs": [
+        "Status change to reflect new resources, risks, and group dynamics.",
+        "New status reflects improved capabilities, altered environment, or preparedness."
+      ],
+      "name": "DELVE",
+      "purpose": "Exploration and resource acquisition in the forest with ecological insight and adaptive decision-making",
+      "playerChoice": "Make choices that alter the world state through discovery, mastery, or re-exploration."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 13,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1146087,
-      "lastMs": 98203,
+      "totalMs": 1343293,
+      "lastMs": 99881,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:42:48.202Z"
+      "updatedAt": "2026-10-08T18:46:05.410Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:23:42.058Z",
-  "updatedAt": "2026-10-08T18:42:48.202Z",
+  "updatedAt": "2026-10-08T18:46:05.416Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2693,7 +2722,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2708,10 +2737,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:42:48.202Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T18:46:05.412Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_MAIN_A_B_c_DELVE_REQUIRED,DESIGN_RULE_STATE_MISSING",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
