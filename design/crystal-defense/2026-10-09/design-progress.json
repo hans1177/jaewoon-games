@@ -9,10 +9,10 @@
   "completedPhases": [],
   "completedPhaseCount": 0,
   "cachedTaskCount": 16,
-  "lastSuccessfulModelCallAt": "2026-10-08T18:52:41.201Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T18:55:42.446Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "designerSeed": {
     "file": "design/crystal-defense/2026-10-09/design-seed.json",
     "contentDigest": "d7dccad81e4a7962d1a7e25f8e66c3b532fde7b67f4851984cc28cdb6446fd5f",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 734282,
-      "lastMs": 58295,
+      "totalMs": 915520,
+      "lastMs": 181238,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:52:41.198Z"
+      "updatedAt": "2026-10-08T18:55:42.446Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T18:52:41.207Z"
+  "updatedAt": "2026-10-08T18:55:42.451Z"
 }
