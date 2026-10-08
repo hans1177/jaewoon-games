@@ -27,25 +27,32 @@
       "identity": "마을 던전 RPG은 플레이어가 즉시 시작할 수 있는 단순한 입력(1 손 tap/swipe)과 명확한 점수, 거리, 또는 짧은 세션 목표를 중심으로, 반복 가능한 핵심 루프와 즉각적인 피드백을 제공하는 CASUAL 게임이다. 플레이어는 시작 즉시 단순한 입력을 하며, 점수, 거리, 또는 짧은 세션 목표를 통해 세계 상태를 바꾸는 중심 행동을 수행한다. 이는 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임은 단순한 반복과 다른 경로, 위험, 결과를 만든다. 성장은 수치 증가뿐만 아니라 새 행동, 경로, 조합, 관계, 발견, 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공한다. 게임은 기존의 RPG식 시스템을 강제하지 않지만, CASUAL의 핵심 재미를 최우선으로 두고, 정체성 질문만 장르에 맞게 적용한다. 게임은 단순한 반복과 다른 경로, 위험, 결과를 만든다. 게임은 플레이어가 즉시 시작할 수 있는 단순한 입력과 명확한 점수, 거리, 또는 짧은 세션 목표를 중심으로, 반복 가능한 핵심 루프와 즉각적인 피드백을 제공한다. 게임은 플레이어가 시작 즉시 단순한 입력을 하며, 점수, 거리, 또는 짧은 세션 목표를 통해 세계 상태를 바꾸는 중심 행동을 수행한다. 이는 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임은 단순한 반복과 다른 경로, 위험, 결과를 만든다. 성장은 수치 증가뿐만 아니라 새 행동, 경로, 조합, 관계, 발견, 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공한다. 게임은 기존의 RPG식 시스템을 강제하지 않지만, CASUAL의 핵심 재미를 최우선으로 두고, 정체성 질문만 장르에 맞게 적용한다. 게임은 단순한 반복과 다른 경로, 위험, 결과를 만든다. 게임은 플레이어가 즉시 시작할 수 있는 단순한 입력과 명확한 점수, 거리, 또는 짧은 세션 목표를 중심으로, 반복 가능한 핵심 루프와 즉각적인 피드백을 제공한다. 게임은 플레이어가",
       "playerFantasy": "마을 던전 RPG에서 플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임은 단순한 반복과 다른 경로, 위험, 결과를 만든다. 성장은 수치 증가뿐만 아니라 새 행동, 경로, 조합, 관계, 발견, 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공한다. 게임은 기존의 RPG식 시스템을 강제하지 않지만, CASUAL의 핵심 재미를 최우선으로 두고, 정체성 질문만 장르에 맞게 적용한다.",
       "coreFun": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 결과가 다음 월드 상태를 바꾸는 CASUAL 게임의 중심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다. 게임은 단순한 반복과 다른 경로, 위험, 결과를 만든다. 성장은 수치 증가뿐만 아니라 새 행동, 경로, 조합, 관계, 발견, 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공한다. 게임은 기존의 RPG식 시스템을 강제하지 않지만, CASUAL의 핵심 재미를 최우선으로 두고, 정체성 질문만 장르에 맞게 적용한다."
+    },
+    "local_authoring_parts::a91779ff1e8407c2a20b6239a5aea9e833feba753f5b8bec5018e26821a8736f:coreLoop": {
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 379837,
-      "lastMs": 64498,
+      "totalMs": 440973,
+      "lastMs": 61136,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:46:14.901Z"
+      "updatedAt": "2026-10-08T12:47:16.041Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:39:54.867Z",
-  "updatedAt": "2026-10-08T12:46:14.902Z",
+  "updatedAt": "2026-10-08T12:47:16.041Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2122,7 +2129,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:46:14.902Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:47:16.041Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
