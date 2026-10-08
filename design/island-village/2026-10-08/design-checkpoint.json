@@ -326,25 +326,237 @@
           "playerChoice": "Select a new village goal, acquire a focused set of resources, and unlock a new resident, activity, or area to proceed to the next stage of village development."
         }
       ]
+    },
+    "local_authoring_parts::dcc06a451cf41e7aee953a8d6f7395558144491fbcb2a7b1fddb527c350c2d8e:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::23f67720af151076e798d8872d4b2327c6a6cdf13d76543d13dc5ce07b4bae77:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "Gather a focused set of island resources.",
+        "Use them to build or improve one village function.",
+        "Unlock a new resident, activity or area and choose the next village goal."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount",
+            "IslandResources"
+          ],
+          "stateOutputs": [
+            "VillageFunction",
+            "ResidentCount",
+            "ActivityType",
+            "AreaType"
+          ],
+          "name": "IslandResourceManagementSystem",
+          "purpose": "Manages the acquisition, allocation, and utilization of island resources to build or improve village functions.",
+          "playerChoice": "Gather a focused set of island resources to build or improve one village function, and unlock a new resident, activity, or area to choose the next village goal."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount",
+            "IslandResources"
+          ],
+          "stateOutputs": [
+            "VillageFunction",
+            "ResidentCount",
+            "ActivityType",
+            "AreaType"
+          ],
+          "name": "IslandResourceManagementSystem",
+          "purpose": "Manages the acquisition, allocation, and utilization of island resources to build or improve village functions.",
+          "playerChoice": "Gather a focused set of island resources to build or improve one village function, and unlock a new resident, activity, or area to choose the next village goal."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount",
+            "IslandResources"
+          ],
+          "stateOutputs": [
+            "VillageFunction",
+            "ResidentCount",
+            "ActivityType",
+            "AreaType"
+          ],
+          "name": "IslandResourceManagementSystem",
+          "purpose": "Manages the acquisition, allocation, and utilization of island resources to build or improve village functions.",
+          "playerChoice": "Gather a focused set of island resources to build or improve one village function, and unlock a new resident, activity, or area to choose the next village goal."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "VillageFunction",
+            "ResidentCount",
+            "ActivityType",
+            "AreaType"
+          ],
+          "stateOutputs": [
+            "NextVillageGoal",
+            "NewResourceSet",
+            "VillageProgression"
+          ],
+          "name": "VillageProgressionSystem",
+          "purpose": "Manages the progression of the village through different stages of development, including unlocking new goals, acquiring new resources, and advancing the village's state.",
+          "playerChoice": "Select a new village goal, acquire a focused set of resources, and unlock a new resident, activity, or area to proceed to the next stage of village development."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "VillageFunction",
+            "ResidentCount",
+            "ActivityType",
+            "AreaType"
+          ],
+          "stateOutputs": [
+            "NextVillageGoal",
+            "NewResourceSet",
+            "VillageProgression"
+          ],
+          "name": "VillageProgressionSystem",
+          "purpose": "Manages the progression of the village through different stages of development, including unlocking new goals, acquiring new resources, and advancing the village's state.",
+          "playerChoice": "Select a new village goal, acquire a focused set of resources, and unlock a new resident, activity, or area to proceed to the next stage of village development."
+        }
+      ],
+      "multiplayerMode": "COOP"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다. 플레이어는 무인도 마을에서 Gather a focused set of island resources.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다. 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다. 게임은 무인도 마을의 실제 플레이 공간은 CASUAL 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 플레이어의 Gather a focused set of island resources.과 선택이 무인도 마을의 실제 플레이 공간은 CASUAL 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다.의 다음 상태와 접근 가능성을 실제로 바꾼다. 게임은 무인도 마을의 실제 플레이 공간은 CASUAL 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다.의 다음 상태와 접근 가능성을 실제로 바꾼다. 게임은 무인도 마을의 실제 플레이 공간은 CASUAL 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다.의 다음 상태와 접근 가능성을 실제로 바꾼다. 게임은 무인도 마을의 실제 플레이 공간은 CASUAL 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다.의 다음 상태와 접근 가능성을 실제로 바꾼다. 게임은 무인도 마을의 실제 플레이 공간은 CASUAL 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다.의 다음 상태와 접근 가능성을 실제로 바꾼다. 게임은 무인도 마을의 실제 플레이 공간은 CASUAL 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다.의 다음 상태와 접근",
+      "playerFantasy": "무인도 마을에서 플레이어는 Gather a focused set of island resources.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다. 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다. 게임은 무인도 마을의 실제 플레이 공간은 CASUAL 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 플레이어의 Gather a focused set of island resources.과 선택이 무인도 마을의 실제 플레이 공간은 CASUAL 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다.의 다음 상태와 접근 가능성을 실제로 바꾼다.",
+      "coreFun": "Gather a focused set of island resources.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다. 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다.",
+      "coreLoop": [
+        "Gather a focused set of island resources.",
+        "Use them to build or improve one village function.",
+        "Unlock a new resident, activity or area and choose the next village goal."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount",
+            "IslandResources"
+          ],
+          "stateOutputs": [
+            "VillageFunction",
+            "ResidentCount",
+            "ActivityType",
+            "AreaType"
+          ],
+          "name": "IslandResourceManagementSystem",
+          "purpose": "Manages the acquisition, allocation, and utilization of island resources to build or improve village functions.",
+          "playerChoice": "Gather a focused set of island resources to build or improve one village function, and unlock a new resident, activity, or area to choose the next village goal."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount",
+            "IslandResources"
+          ],
+          "stateOutputs": [
+            "VillageFunction",
+            "ResidentCount",
+            "ActivityType",
+            "AreaType"
+          ],
+          "name": "IslandResourceManagementSystem",
+          "purpose": "Manages the acquisition, allocation, and utilization of island resources to build or improve village functions.",
+          "playerChoice": "Gather a focused set of island resources to build or improve one village function, and unlock a new resident, activity, or area to choose the next village goal."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount",
+            "IslandResources"
+          ],
+          "stateOutputs": [
+            "VillageFunction",
+            "ResidentCount",
+            "ActivityType",
+            "AreaType"
+          ],
+          "name": "IslandResourceManagementSystem",
+          "purpose": "Manages the acquisition, allocation, and utilization of island resources to build or improve village functions.",
+          "playerChoice": "Gather a focused set of island resources to build or improve one village function, and unlock a new resident, activity, or area to choose the next village goal."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "VillageFunction",
+            "ResidentCount",
+            "ActivityType",
+            "AreaType"
+          ],
+          "stateOutputs": [
+            "NextVillageGoal",
+            "NewResourceSet",
+            "VillageProgression"
+          ],
+          "name": "VillageProgressionSystem",
+          "purpose": "Manages the progression of the village through different stages of development, including unlocking new goals, acquiring new resources, and advancing the village's state.",
+          "playerChoice": "Select a new village goal, acquire a focused set of resources, and unlock a new resident, activity, or area to proceed to the next stage of village development."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "VillageFunction",
+            "ResidentCount",
+            "ActivityType",
+            "AreaType"
+          ],
+          "stateOutputs": [
+            "NextVillageGoal",
+            "NewResourceSet",
+            "VillageProgression"
+          ],
+          "name": "VillageProgressionSystem",
+          "purpose": "Manages the progression of the village through different stages of development, including unlocking new goals, acquiring new resources, and advancing the village's state.",
+          "playerChoice": "Select a new village goal, acquire a focused set of resources, and unlock a new resident, activity, or area to proceed to the next stage of village development."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1032246,
-      "lastMs": 102157,
+      "totalMs": 1120818,
+      "lastMs": 88572,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:53:52.114Z"
+      "updatedAt": "2026-10-08T12:55:20.690Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:36:39.832Z",
-  "updatedAt": "2026-10-08T12:53:52.117Z",
+  "updatedAt": "2026-10-08T12:55:20.705Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2421,12 +2633,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:53:52.117Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:55:20.693Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/island-village/2026-10-08/design-seed.json",
+    "contentDigest": "f3f8e93ec44273e70689e44f7f85c075f5ac056c8a02fd82862d58ba9c40b47b",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
