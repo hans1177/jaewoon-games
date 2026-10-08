@@ -419,25 +419,38 @@
       "name": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.",
       "purpose": "플레이어가 현재 경계 압력에 따라 영토 목표를 선택하며, 이 선택은 다음 월드 상태와 관계 변화를 유발합니다.",
       "playerChoice": "영토 목표 선택 및 다음 월드 상태와 관계 변화의 예측 및 대응 구체화를 수행합니다."
+    },
+    "local_authoring_parts::ef37f77215c2aef9171f3b67afb793b2b906ac00370a2154cb7bc785ab82a41d:signatureSystems:3": {
+      "id": "territory-war-identity-core",
+      "grammarRole": "c",
+      "stateInputs": [
+        "currentBorderPressure"
+      ],
+      "stateOutputs": [
+        "territoryObjective"
+      ],
+      "name": "깊이의 기준에 따른 영토 전략 게임의 중심 행동 및 상태 교환 방식",
+      "purpose": "플레이어가 현재 경계 압력에 따라 영토 목표를 선택하며, 이 선택은 다음 월드 상태와 관계 변화를 유발합니다.",
+      "playerChoice": "영토 목표 선택 및 다음 월드 상태와 관계 변화의 예측 및 대응 구체화를 수행합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 13,
+      "calls": 14,
+      "successes": 14,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 974299,
-      "lastMs": 71813,
+      "totalMs": 1041695,
+      "lastMs": 67396,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:56:54.132Z"
+      "updatedAt": "2026-10-08T18:58:01.529Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:40:39.764Z",
-  "updatedAt": "2026-10-08T18:56:54.132Z",
+  "updatedAt": "2026-10-08T18:58:01.529Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2521,7 +2534,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:56:54.132Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:58:01.529Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
