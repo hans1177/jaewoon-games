@@ -226,6 +226,30 @@ test('equipment slots stay scrollable and authority-safe on narrow mobile screen
  assert.doesNotMatch(body,/DataStoreService|FireServer|SetAsync|UpdateAsync|RenderStepped/);
 });
 
+test('codex screen binds real discovered entries and hides unverified data from mobile labels',()=>{
+ const source=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const a=source.indexOf('function RobloxCommonUI.CreateCodexScreen(options)');
+ const b=source.indexOf('function RobloxCommonUI.CreateCollectionProgress(options)',a);
+ assert.ok(a>=0 && b>a);
+ const body=source.slice(a,b);
+ assert.match(body,/sync\(options\.codex or \{\}\)/);
+ assert.match(body,/entries=type\(state\.entries\)=="table"and state\.entries or \{\}/);
+ assert.match(body,/selectedCategory="전체"/);
+ assert.match(body,/row\.unlocked==true and tostring\(row\.name or row\.title or ""\) or "미발견"/);
+ assert.match(body,/selected\.unlocked==true and tostring\(selected\.description or selected\.details or ""\)/);
+ assert.match(body,/root:SetAttribute\("BoundCodexEntryCount",#entries\)/);
+ assert.match(body,/root:SetAttribute\("CodexStateRevision"/);
+ assert.match(body,/body\.AbsoluteSize\.X<560/);
+ assert.match(body,/root:SetAttribute\("MobileStackedLayout",compact\)/);
+ assert.match(body,/root:SetAttribute\("TouchScrollable",true\)/);
+ assert.match(body,/OwnsDiscoveryAuthority",false/);
+ assert.match(body,/OwnsRewardAuthority",false/);
+ assert.match(body,/OwnsSaveAuthority",false/);
+ assert.match(body,/OwnsRemoteAuthority",false/);
+ assert.match(body,/return root,\{nav=categories,categories=categories,entries=list,detail=detail,Sync=sync\}/);
+ assert.doesNotMatch(body,/DataStoreService|FireServer|RemoteEvent|SetAsync|UpdateAsync|new GameSaveData/);
+});
+
 test('quest and crafting menus render only owner-supplied state and never invent quests or recipes',()=>{
  const source=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
  const section=(first,next)=>source.slice(source.indexOf('function RobloxCommonUI.'+first+'(options)'),
