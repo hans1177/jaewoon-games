@@ -183,8 +183,8 @@ test('Unity prose and unsafe API source cannot pass a code drill',()=>{
 
 test('repair uses public execution feedback without leaking hidden checks or reference answers',async()=>{
   const drill={id:'opaque',platform:'unity',scenario:'Implement the requested state transition.',broken:'BROKEN',reference:'PRIVATE_REFERENCE',feedbackTests:['PUBLIC_EXAMPLE'],tests:['PRIVATE_ACCEPTANCE']};
-  const prompts=[];
-  const request=async prompt=>{prompts.push(prompt);return JSON.stringify({...practiceAnswer,code:prompts.length===1?'WRONG':'FIXED'});};
+  const prompts=[],formats=[];
+  const request=async (prompt,options)=>{prompts.push(prompt);formats.push(options.format);return JSON.stringify({...practiceAnswer,code:prompts.length===1?'WRONG':'FIXED'});};
   const evaluate=(answer)=>({pass:answer.code==='FIXED',codeVerification:{pass:answer.code==='FIXED',baselineRejected:true,referencePassed:true,reason:answer.code==='FIXED'?'VERIFIED_LOGIC_ONLY':'REGRESSION_OR_FIXTURE_FAILED'}});
   const result=await runPracticeRepairSession({order:{executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE]'},drill,request,evaluate});
   assert.equal(result.repairEvidence.firstAttemptPass,false);
@@ -192,6 +192,8 @@ test('repair uses public execution feedback without leaking hidden checks or ref
   assert.equal(result.repairEvidence.recovered,true);
   assert.equal(result.repairEvidence.execution,'INJECTED_TEST_PROVIDER');
   assert.equal(prompts.length,2);
+  assert(formats.every(format=>format.required.includes('code')&&format.properties.tests.minItems===3&&format.additionalProperties===false));
+  assert.match(prompts[0],/Sandbox contract: no using directives/);
   for(const prompt of prompts){assert(!prompt.includes('PRIVATE_REFERENCE'));assert(!prompt.includes('PRIVATE_ACCEPTANCE'));}
   assert(prompts[1].includes('WRONG'));
   assert(!JSON.stringify(result.repairEvidence).includes('FIXED'));

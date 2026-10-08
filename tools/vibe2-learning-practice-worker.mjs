@@ -51,6 +51,7 @@ export function buildPracticePrompt(order={}, {drill=null}={}){
       : drill?'Return JSON only with keys: diagnosis, strategy, tests, avoidPatterns, reusablePatterns, code. code must implement exactly the requested function or class.':'Solve the drill by returning JSON only with keys: diagnosis, strategy, tests, avoidPatterns, reusablePatterns.',
     'diagnosis and strategy must each be strings of at least 12 characters. tests must be an array of at least 3 concrete verification strings. avoidPatterns and reusablePatterns must be arrays of strings with at least one lesson between them.',
     unityDrill?'The harness supplies all state types below. Return ONLY public static class Practice in code; do not redeclare the harness types or include Program/Main.':'',
+    unityDrill?'Sandbox contract: no using directives or System, Console, Environment, Process, File, Directory, Reflection, Assembly, DllImport, unsafe, extern, or dynamic identifiers. Use primitive types, arrays, loops and local helpers; primitive APIs such as double.IsNaN are allowed.':drill&&!webArtifact?'Return a self-contained Luau module; do not require another module or use loadstring, getfenv, setfenv, or debug.':'',
     unityDrill?'HARNESS STATE TYPES:\n'+(drill.supportCode||'public class PracticeState { public bool Active,InputEnabled,Paused; public int Subscriptions,LiveObjects,Score,SavedScore; }'):'',
     webArtifact?'The artifact must have visible state change from a tappable button, clear text feedback in [data-practice-value] or #score, responsive viewport, and no fetch/WebSocket/external http(s) URLs. Mark the primary button with data-practice-action. A real mobile browser will tap it and rotate the viewport.':'',
     previousArtifactScoreFromOrder(order)!==null?`Previous verified artifact score=${previousArtifactScoreFromOrder(order)}. ${drill?'Preserve or improve this quality while solving fresh hidden input and lifecycle variants; do not exceed the 100-point scale.':'Improve the artifact beyond this score while keeping the drill goal.'}`:'',
@@ -61,10 +62,10 @@ export function buildPracticePrompt(order={}, {drill=null}={}){
   ].filter(Boolean).join('\n');
 }
 
-export async function requestPracticeModel(prompt,{model=DEFAULT_MODEL,responseFile='',timeoutMs=DEFAULT_TIMEOUT,maxPredict=1200}={}){
+export async function requestPracticeModel(prompt,{model=DEFAULT_MODEL,responseFile='',timeoutMs=DEFAULT_TIMEOUT,maxPredict=1200,format='json'}={}){
   const fake=clean(responseFile||process.env.VIBE2_MODEL_RESPONSE_FILE);
   if(fake)return fs.readFileSync(fake,'utf8');
-  const body=JSON.stringify({model,prompt,stream:false,think:false,format:'json',options:{num_ctx:8192,num_predict:maxPredict,temperature:.12,seed:20261008}});
+  const body=JSON.stringify({model,prompt,stream:false,think:false,format,options:{num_ctx:8192,num_predict:maxPredict,temperature:.12,seed:20261008}});
   return await new Promise((resolve,reject)=>{
     const req=http.request({hostname:'127.0.0.1',port:11434,path:'/api/generate',method:'POST',headers:{'content-type':'application/json','content-length':Buffer.byteLength(body)}},res=>{
       let data='';res.setEncoding('utf8');res.on('data',x=>data+=x);res.on('end',()=>{
@@ -261,10 +262,17 @@ export async function runPracticeRepairSession({order={},drill=null,model=DEFAUL
   const canRepair=Boolean(!responseFile&&drill?.platform!=='web'&&drill?.feedbackTests?.length);
   const limit=canRepair?Math.max(1,Math.min(3,Number(maxAttempts)||1)):1;
   const attempts=[];
+  const format={type:'object',additionalProperties:false,properties:{
+    diagnosis:{type:'string',minLength:12},strategy:{type:'string',minLength:12},
+    tests:{type:'array',minItems:3,items:{type:'string',minLength:1}},
+    avoidPatterns:{type:'array',items:{type:'string'}},reusablePatterns:{type:'array',minItems:1,items:{type:'string',minLength:1}}
+  },required:['diagnosis','strategy','tests','avoidPatterns','reusablePatterns']};
+  const artifactKey=clean(order.executionRoute)==='learning-web-artifact'?'artifactHtml':drill?'code':null;
+  if(artifactKey){format.properties[artifactKey]={type:'string',minLength:1};format.required.push(artifactKey);}
   let prompt=basePrompt,parsed={},raw='',evaluation={pass:false},firstHidden=null;
   for(let index=0;index<limit;index++){
     const started=Date.now();
-    raw=await request(prompt,{model,responseFile,maxPredict:drill||clean(order.executionRoute)==='learning-web-artifact'?3072:1200});
+    raw=await request(prompt,{model,responseFile,format,maxPredict:drill||clean(order.executionRoute)==='learning-web-artifact'?3072:1200});
     let validJson=true;
     try{parsed=parseJson(raw);}catch{parsed={};validJson=false;}
     const publicDrill=canRepair?{...drill,tests:drill.feedbackTests}:drill;
