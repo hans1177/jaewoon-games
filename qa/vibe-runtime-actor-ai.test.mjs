@@ -192,6 +192,34 @@ test('social director combines selfhood relationship inner state dialogue initia
   assert.ok(director.dialogueIntent.allowedSpeechActs.includes('disagree'));
 });
 
+test('living director binds authored story NPC invites, visible village anchors and boss cinematic only to engine evidence',()=>{
+  const npc=planVibeLivingActorDirector({
+    actor:{id:'chief',role:'npc',named:true},player:{id:'player'},
+    world:{playerVisible:true,authoredAnchors:[{id:'town-square',type:'MEETING_SPOT',region:'town'}]},
+    storyBeat:{id:'arrival',sourceEventId:'player-town',engineApproved:true},
+    party:{recruitable:true,engineApproved:true,openSlots:1}
+  });
+  assert.equal(npc.socialInitiative.canInitiateConversation,true);
+  assert.equal(npc.socialInitiative.proposedPartyInvitation.candidateOnly,true);
+  assert.equal(npc.socialInitiative.proposedStoryConversation.sourceEventId,'player-town');
+  assert.equal(npc.roaming.anchors[0].id,'town-square');
+  assert.equal(npc.bossPresentation,null);
+  const blocked=planVibeLivingActorDirector({actor:{id:'chief',role:'npc'},player:{id:'player'},
+    storyBeat:{id:'arrival',sourceEventId:'player-town',engineApproved:false},
+    party:{recruitable:true,engineApproved:false,openSlots:2}});
+  assert.equal(blocked.socialInitiative.proposedPartyInvitation,null);
+  assert.equal(blocked.socialInitiative.proposedStoryConversation,null);
+  const boss=planVibeLivingActorDirector({actor:{id:'ogre',role:'boss'},player:{id:'player'},
+    world:{playerVisible:true},bossScene:{id:'ogre-intro',sourceEventId:'ogre-saw-player',
+      authoredDialogue:'You enter my territory.',engineApproved:true,maxDurationMs:4200}});
+  assert.equal(boss.socialInitiative.proposedPartyInvitation,null);
+  assert.equal(boss.bossPresentation.skipAllowed,true);
+  assert.equal(boss.bossPresentation.presentationOnly,true);
+  assert.equal(boss.bossPresentation.maxDurationMs,4200);
+  assert.equal(boss.policy.engineAuthoritative,true);
+  assert.equal(planVibeLivingActorDirector({actor:{id:'ogre',role:'boss'},bossScene:{id:'fake',engineApproved:false}}).bossPresentation,null);
+});
+
 test('common local AI personality changes allowed tactical preference but never gameplay authority',()=>{
   const cautious=new JaewoonCommonAI({personality:{caution:.9,courage:-.4,aggression:-.3}});
   const bold=new JaewoonCommonAI({personality:{caution:-.4,courage:.8,aggression:.8}});
@@ -204,6 +232,150 @@ test('common local AI personality changes allowed tactical preference but never 
   assert.equal(boldDecision.gameplayAuthority,false);
 });
 
+// 메인: 실제 AI 제안은 기존 엔진의 대화·파티·좌표·스토리·전투 권한을 대신하지 않는다.
+test('NPC story conversation is event-grounded, proximity gated and idempotent',()=>{
+  const actor=new JaewoonCommonAI({config:{socialCooldownMs:3000}});
+  const beat={id:'village-arrival',sourceEventId:'player-entered-village',eligible:true,engineApproved:true};
+  const context={entityKind:'npc',now:1000,playerVisible:true,playerNearby:true,
+    canInitiateDialogue:true,canInteract:false,authoredStoryBeat:beat};
+  const proposal=actor.decide(context);
+  assert.equal(proposal.state,JaewoonCommonAI.State.TALK);
+  assert.equal(proposal.target.sourceEventId,beat.sourceEventId);
+  assert.equal(proposal.gameplayAuthority,false);
+  assert.notEqual(actor.decide({...context,now:21000}).state,JaewoonCommonAI.State.TALK);
+  assert.equal(actor.decide({...context,now:22000,authoredStoryBeat:{...beat,id:'new-episode'}}).state,JaewoonCommonAI.State.TALK);
+  assert.notEqual(new JaewoonCommonAI().decide({...context,playerNearby:false}).state,JaewoonCommonAI.State.TALK);
+  assert.notEqual(new JaewoonCommonAI().decide({...context,authoredStoryBeat:{...beat,engineApproved:false}}).state,JaewoonCommonAI.State.TALK);
+});
+
+test('NPC party invitations require explicit prior engine admission and available slots',()=>{
+  const party={recruitable:true,engineApproved:true,openSlots:1,playerId:'player'};
+  const context={entityKind:'npc',now:1000,playerVisible:true,playerNearby:true,canInitiateDialogue:true,
+    partyInvitation:party};
+  const npc=new JaewoonCommonAI();
+  const invitation=npc.decide(context);
+  assert.equal(invitation.state,JaewoonCommonAI.State.INVITE);
+  assert.equal(invitation.targetId,'player');
+  assert.equal(invitation.gameplayAuthority,false);
+  assert.notEqual(npc.decide({...context,now:21000}).state,JaewoonCommonAI.State.INVITE);
+  for(const bad of [{openSlots:0},{engineApproved:false},{recruitable:false}]){
+    assert.notEqual(new JaewoonCommonAI().decide({...context,partyInvitation:{...party,...bad}}).state,JaewoonCommonAI.State.INVITE);
+  }
+});
+
+test('observed hints respect actor silence, danger and explicit companion orders',()=>{
+  const tip={id:'equipment-gap',text:'Check your unlocked weapon before the hunt',observed:true};
+  const npc={entityKind:'npc',now:1000,playerVisible:true,playerNearby:true,canInitiateDialogue:true,knownAdvice:tip};
+  assert.equal(new JaewoonCommonAI().decide(npc).state,JaewoonCommonAI.State.GUIDE);
+  assert.notEqual(new JaewoonCommonAI().decide({...npc,knownAdvice:{...tip,observed:false}}).state,JaewoonCommonAI.State.GUIDE);
+  const companion={entityKind:'companion',now:1000,playerVisible:true,ownerDistance:2,canInitiateDialogue:true,knownAdvice:tip,enemies:[]};
+  assert.equal(new JaewoonCommonAI().decide(companion).state,JaewoonCommonAI.State.GUIDE);
+  const enemy={id:'wolf',distance:2,threat:1,hpRatio:1};
+  assert.equal(new JaewoonCommonAI().decide({...companion,enemies:[enemy]}).state,JaewoonCommonAI.State.ATTACK);
+  const loyal=new JaewoonCommonAI();
+  loyal.setOrder(JaewoonCommonAI.Order.HOLD);
+  assert.equal(loyal.decide(companion).state,JaewoonCommonAI.State.GUARD);
+});
+
+test('NPC life route only proposes real nearby authored anchors and never teleports',()=>{
+  const context={entityKind:'npc',canRoam:true,movementAuthorized:true,regionId:'town',
+    currentActivity:{anchorId:'smith-shop'},authoredAnchors:[
+      {id:'smith-shop',regionId:'town',x:130,y:260},
+      {id:'foreign',regionId:'field-1',x:500,y:200}
+    ],patrolReady:false};
+  const npc=new JaewoonCommonAI();
+  const route=npc.decide(context);
+  assert.equal(route.state,JaewoonCommonAI.State.PATROL);
+  assert.equal(route.reason,'npc_authored_daily_route');
+  assert.equal(route.target.id,'smith-shop');
+  assert.equal(route.gameplayAuthority,false);
+  assert.notEqual(npc.decide({...context,movementAuthorized:false}).reason,'npc_authored_daily_route');
+  assert.notEqual(npc.decide({...context,currentActivity:{anchorId:'foreign'}}).reason,'npc_authored_daily_route');
+  assert.notEqual(npc.decide({...context,authoredAnchors:[{id:'bad',x:Infinity,y:2}]}).reason,'npc_authored_daily_route');
+});
+
+test('boss introduction uses authored dialogue once and preserves current attack logic',()=>{
+  const scene={id:'ogre-intro',sourceEventId:'ogre-seen-player',engineApproved:true,
+    authoredDialogue:'This is my domain.',requiredPhase:'PHASE_1'};
+  const context={entityKind:'boss',playerVisible:true,canPresentBossScene:true,
+    currentPhase:'PHASE_1',bossScene:scene,enemies:[{id:'player',distance:2,threat:1,hpRatio:1}]};
+  const boss=new JaewoonCommonAI();
+  const reveal=boss.decide(context);
+  assert.equal(reveal.state,JaewoonCommonAI.State.TALK);
+  assert.equal(reveal.reason,'boss_authored_cinematic');
+  assert.equal(reveal.target.skipAllowed,true);
+  assert.equal(reveal.target.presentationOnly,true);
+  assert.equal(reveal.gameplayAuthority,false);
+  assert.equal(boss.decide(context).state,JaewoonCommonAI.State.ATTACK);
+  assert.equal(new JaewoonCommonAI().decide({...context,currentPhase:'PHASE_2'}).state,JaewoonCommonAI.State.ATTACK);
+  assert.equal(new JaewoonCommonAI().decide({...context,bossScene:{...scene,engineApproved:false}}).state,JaewoonCommonAI.State.ATTACK);
+});
+
+// Unity 원본 소스 정적 회귀: 실물 런타임 조작이 아니며 APK/WebGL 실행 통과로 간주하지 않는다.
+test('Unity village life, story save, scout opt-in and boss reveal remain on original engine-owned paths',()=>{
+  const core=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/GameCore.cs',import.meta.url),'utf8');
+  const runtime=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs',import.meta.url),'utf8');
+  const visual=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs',import.meta.url),'utf8');
+  assert.match(core,/private const string SaveKey = "daechung-rpg-save-v1"/);
+  assert.match(core,/public List<string> witnessedStoryEvents = new\(\)/);
+  assert.match(core,/public bool TryRecordStoryEvent\(string eventId\)/);
+  assert.match(core,/Player\.witnessedStoryEvents\.Contains\(eventId\)/);
+  assert.match(core,/public bool TrySetScoutCompanion\(bool accompanying\)/);
+  assert.match(core,/Player\.scoutAccompanying = accompanying;/);
+  assert.match(core,/Player\.witnessedStoryEvents == null/);
+  assert.match(runtime,/DrawSocialControls\(\)/);
+  assert.match(runtime,/IsVillageResidentNearby\(id\)/);
+  assert.match(runtime,/TalkWithResident\(string id\)/);
+  assert.match(runtime,/TryRecordStoryEvent\("chief-introduction"\)/);
+  assert.match(runtime,/TryRecordStoryEvent\("smith-visit"\)/);
+  assert.match(runtime,/TryRecordStoryEvent\("ogre-sighted"\)/);
+  assert.match(runtime,/TryRecordStoryEvent\("ogre-defeated"\)/);
+  assert.match(runtime,/TrySetScoutCompanion\(true\)/);
+  assert.match(runtime,/TrySetScoutCompanion\(false\)/);
+  assert.match(runtime,/DrawStoryPrompt\(Rect safe, float scale\)/);
+  assert.match(runtime,/GUI\.Button\(skip, "SKIP"\)/);
+  assert.match(visual,/Vector3\.MoveTowards\(at, destination/);
+  assert.match(visual,/InitializeVillageResidents\(\)/);
+  assert.match(visual,/public bool IsVillageResidentNearby\(string id\)/);
+  assert.match(visual,/public void PlayBossReveal\(\)/);
+  assert.match(visual,/public void SkipBossReveal\(\)/);
+  assert.match(visual,/public void SetNarrativeCompanion\(bool accompanying\)/);
+  assert.doesNotMatch(runtime,/ParticipantCount\s*\+\s*1|Connected\s*=\s*true/);
+  const storyOnly=core.slice(core.indexOf('public bool TryRecordStoryEvent('),core.indexOf('public bool HasStoryEvent('));
+  assert.doesNotMatch(storyOnly,/baseAttack\s*[+\-]=|gold\s*[+\-]=|experience\s*[+\-]=/);
+});
+test('Roblox village NPC roam and first-sighting boss scene keep original server save and party authority',()=>{
+  const server=fs.readFileSync(new URL('../roblox-games/daechung-rpg/server/Game.server.luau',import.meta.url),'utf8');
+  const client=fs.readFileSync(new URL('../roblox-games/daechung-rpg/client/Game.client.luau',import.meta.url),'utf8');
+  const config=fs.readFileSync(new URL('../roblox-games/daechung-rpg/shared/GameConfig.luau',import.meta.url),'utf8');
+  assert.match(server,/GetDataStore\("daechung-rpg-portal-v1"\)/);
+  assert.match(config,/MultiplayerRequired\s*=\s*true,MinimumParticipants=2,PartySlots=4/);
+  assert.match(server,/local livingResidents=\{\}/);
+  assert.match(server,/table\.insert\(livingResidents,\{part=npc,route=/);
+  assert.match(server,/prompt\(npc,"주민 "\.\.i,"대화하기"\)/);
+  assert.match(server,/n\(p,"CurrentZone",0\)~=0/);
+  assert.match(server,/resident\.route\[resident\.nextAnchor\]/);
+  assert.match(server,/part\.CFrame=CFrame\.lookAt\(nextPos,nextPos\+direction\)/);
+  assert.match(server,/nextNpcGreeting\[player\]=now\+28/);
+  assert.match(server,/feedback\(player,"NPC_INITIATED_TALK"\)/);
+  assert.match(server,/bossSceneSeen\[target\]\[id\]=true/);
+  assert.match(server,/target:SetAttribute\("BossIntroLine"/);
+  assert.match(server,/target:SetAttribute\("BossIntroId",id\)/);
+  assert.match(server,/e\.lastPlayerObservedAt=now/);
+  assert.match(server,/e\.roamTarget=e\.spawn\+Vector3\.new\(math\.cos\(a\)\*8,0,math\.sin\(a\)\*8\)/);
+  assert.match(server,/now-\(e\.lastPlayerObservedAt or -1000000\)<4/);
+  assert.match(server,/if e\.boss or e\.runBoss or e\.hiddenBoss or/);
+  assert.match(server,/if \(e\.part\.Position-e\.spawn\)\.Magnitude>z\.Leash then e\.part\.CFrame=CFrame\.new\(e\.spawn\)end/);
+  assert.match(server,/beginEnemyAttack\(e,target,now\)/);
+
+  assert.match(server,/if count>=C\.PartySlots-1 then/);
+  assert.match(server,/parties\[p\]\[def\.Id\]=true;spawnActiveCompanion/);
+  assert.match(client,/NPCSpeech/);
+  assert.match(client,/SkipBossCinematic/);
+  assert.match(client,/bossSkip\.Activated:Connect\(endBossCinematic\)/);
+  assert.match(client,/p:GetAttributeChangedSignal\("BossIntroId"\):Connect\(showBossCinematic\)/);
+  assert.doesNotMatch(client,/remote:FireServer\("BossIntroId"/);
+});
 test('common AI memory is bounded idempotent and relationships remain directional state',()=>{
   const ai=new JaewoonCommonAI({memoryLimit:4});
   assert.equal(ai.remember({id:'e1',type:'help'}),true);

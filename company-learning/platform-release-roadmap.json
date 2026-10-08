@@ -1,5 +1,5 @@
 {
-  "version": 552,
+  "version": 553,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-07",
@@ -6444,7 +6444,7 @@
       }
     }
   },
-  "updatedAt": "2026-10-08T03:50:17.989Z",
+  "updatedAt": "2026-10-08T17:08:21.082Z",
   "priorityTiers": [
     {
       "tier": 1,
@@ -8677,6 +8677,19 @@
       "gamePrimaryWorkBudgetMode": "MAXIMUM_NOT_MINIMUM",
       "gamePrimaryWorkBudgetAppliesTo": "ALL_GAME_PRIMARY_GAME_BUILD_UP_WORKERS_PRE_AND_POST_RELEASE",
       "modelCallTimeoutAndRetryUnchanged": true
+    },
+    "ownerThreePlatformTargets20261009": {
+      "ownerDirective": "ROBLOX_UNITY_ANDROID_UNITY_WEB_ARE_THREE_TARGET_PLATFORMS",
+      "targetCount": 3,
+      "source": "directNativeDualPlatformDevelopment.platformCountingPolicy",
+      "existingNativeAdapterKeys": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "existingUnityWebDevelopmentLane": "directNativeDualPlatformDevelopment.unityWebDevelopmentLane",
+      "unityProjectSharedAndDistinctTargetBuilds": true,
+      "noSequenceOrRuntimeReleaseAuthorityChange": true,
+      "noNewPipeline": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -25372,6 +25385,33 @@
       "staticCodeEvidenceIsActualMultiplayerPlay": false,
       "completionEvidence": "ACTUAL_TWO_OR_MORE_CLIENTS_SAME_SESSION_ACTION_STATE_RESULT_AND_RECONNECT",
       "releaseValidationPolicyUnchanged": true
+    },
+    "platformCountingPolicy": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-10-09",
+      "targetCount": 3,
+      "targets": [
+        "ROBLOX",
+        "UNITY_ANDROID",
+        "UNITY_WEB"
+      ],
+      "existingExecutionBindings": {
+        "ROBLOX": "ROBLOX",
+        "UNITY_ANDROID": "UNITY",
+        "UNITY_WEB": "UNITY_WEB_FLOOR"
+      },
+      "nativeRouterKeysUnchanged": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "unityAndroidAndWebShareCanonicalUnityProject": true,
+      "unityWebUsesExistingFullDevelopmentFloor": true,
+      "unityWebRequiresOwnWebglBuildBrowserPlayIndependentQaAndRegression": true,
+      "unityWebIsNotASeparateLegacyWebGameplayCodebase": true,
+      "fortniteUefnExcluded": true,
+      "originalGameRulesSaveAndMultiplayerPreserved": true,
+      "existingF0F9OrderAndRuntimeSecurityQaReleaseGatesPreserved": true,
+      "noNewAdapterWorkflowOrShadowPipeline": true
     }
   },
   "centralDocumentation": {

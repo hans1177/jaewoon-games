@@ -2,6 +2,7 @@
 // 역할: 대충 RPG Unity 재개발의 Android 플레이 가능 초안
 // 초안 그래픽: 검증된 무료 애니메이션 Pirate/Skeleton 에셋을 실제 전투 상태와 연결한다.
 
+using System.Collections.Generic;
 using UnityEngine;
 using Unity.Profiling;
 
@@ -30,6 +31,16 @@ namespace JaewoonGames.DaechungRpg
         private float _qaMobileTargetAt;
         private float _qaUiBoundsAt;
         private int _coopActionSeen;
+        // 메인: 이야기·대화는 기존 GameCore에 기록하며 NPC의 연출/제안은 전투와 멀티 동기화를 바꾸지 않는다.
+        private static readonly string[] ResidentIds = { "chief", "smith", "merchant", "scout" };
+        private static readonly string[] ResidentNames = { "촌장", "대장장이", "상인", "정찰병" };
+        private string _pendingResidentId = string.Empty;
+        private bool _scoutInvitationPending;
+        private float _nextResidentOfferAt = 4f;
+        private float _bossSceneUntil;
+        private string _bossSceneName = string.Empty;
+        private string _bossSceneDialogue = string.Empty;
+        private readonly HashSet<string> _presentedBossScenes = new HashSet<string>();
         // 실제 WebGL 게임의 렌더 카운터. 프로파일러 미지원 환경은 값 미측정으로 둔다.
         private ProfilerRecorder _drawCallsRecorder;
         private ProfilerRecorder _trianglesRecorder;
@@ -91,6 +102,7 @@ namespace JaewoonGames.DaechungRpg
             }
 
             _visuals = PrototypeAnimatedVisuals.EnsureCreated();
+            _visuals?.SetNarrativeCompanion(_core != null && _core.Player.scoutAccompanying);
             _multiplayer = GetComponent<MultiplayerSession>();
             if (_multiplayer == null) _multiplayer = gameObject.AddComponent<MultiplayerSession>();
 
@@ -120,6 +132,28 @@ namespace JaewoonGames.DaechungRpg
 #endif
 
             if (_core == null) return;
+            // 중요한 주민은 플레이어가 말을 걸지 않아도 주변에서 인사를 제안한다.
+            // 화면에 있는 주민만 선택하며 반복 대사/제안은 한 번에 하나로 제한한다.
+            if (_core.Player.currentRegionId == "town")
+            {
+                if (Time.unscaledTime >= _nextResidentOfferAt && string.IsNullOrEmpty(_pendingResidentId))
+                {
+                    _nextResidentOfferAt = Time.unscaledTime + 18f;
+                    foreach (var id in ResidentIds)
+                    {
+                        if (_visuals == null || !_visuals.IsVillageResidentNearby(id)) continue;
+                        if (id == "scout" && _core.Player.scoutAccompanying) continue;
+                        _pendingResidentId = id;
+                        break;
+                    }
+                }
+            }
+            else _pendingResidentId = string.Empty;
+            if (_bossSceneUntil > 0f && Time.unscaledTime >= _bossSceneUntil)
+            {
+                _bossSceneUntil = 0f;
+                _visuals?.SkipBossReveal();
+            }
             _multiplayer?.ObserveLocalState(_core.Player.currentRegionId, _enemy != null ? _enemy.id : "",
                 _enemyHp, _core.Player.currentHp);
             if (_multiplayer != null)
@@ -245,6 +279,8 @@ namespace JaewoonGames.DaechungRpg
             {
                 _multiplayer?.DrawControls(scale);
                 GUILayout.Space(6f * scale);
+                DrawSocialControls();
+                GUILayout.Space(6f * scale);
                 GUILayout.Label("LOG");
                 GUILayout.TextArea(_message, GUILayout.MinHeight(58f * scale));
             }
@@ -274,6 +310,7 @@ namespace JaewoonGames.DaechungRpg
 
             // 하단 행동 버튼은 메뉴를 스크롤하거나 탭을 바꿔도 같은 위치에서 동작한다.
             DrawPrimaryCombatActionButton();
+            DrawStoryPrompt(safe, scale);
         }
 
         // 캐릭터: 실제 저장된 Player와 GameCatalog에서 파생한 능력치만 표시한다.
@@ -509,6 +546,7 @@ namespace JaewoonGames.DaechungRpg
             if (_core.Player.currentRegionId != "town") return;
 
             GUILayout.Label("TOWN");
+            GUILayout.Label("STORY · " + _core.GetStoryGuidance());
             if (GUILayout.Button("상점 / 장비 매매창 열기")) ChangeMenuPage(5);
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("FULL HEAL"))
@@ -538,6 +576,123 @@ namespace JaewoonGames.DaechungRpg
                 if (GUILayout.Button("ARCHER")) TryChangeJob(JobType.Archer);
                 if (GUILayout.Button("MAGE")) TryChangeJob(JobType.Mage);
                 GUILayout.EndHorizontal();
+            }
+        }
+
+        // 메인: 캐릭터별 대화는 실제 거리에 접근한 뒤 플레이어의 터치/승인으로만 진행한다.
+        private void DrawSocialControls()
+        {
+            GUILayout.Label("VILLAGE LIFE / SOCIAL");
+            if (_core.Player.currentRegionId != "town")
+            {
+                GUILayout.Label("마을에 돌아오면 주민들과 대화할 수 있어.");
+                return;
+            }
+            GUILayout.Label(_core.GetStoryGuidance());
+            for (var i = 0; i < ResidentIds.Length; i++)
+            {
+                var id = ResidentIds[i];
+                var near = _visuals != null && _visuals.IsVillageResidentNearby(id);
+                GUI.enabled = near;
+                if (GUILayout.Button(ResidentNames[i] + (near ? " · 대화" : " · 이동 중")))
+                    TalkWithResident(id);
+                GUI.enabled = true;
+            }
+            if (_scoutInvitationPending)
+            {
+                GUILayout.Label("정찰병이 동행을 제안했다. 네트워크 협동 인원에는 포함되지 않는 비전투 NPC야.");
+                GUILayout.BeginHorizontal();
+                if (GUILayout.Button("동행 수락"))
+                {
+                    if (_core.TrySetScoutCompanion(true))
+                    {
+                        _visuals?.SetNarrativeCompanion(true);
+                        _message = "정찰병이 함께 길을 걸어간다. 전투 보상·공격력과 멀티 인원은 변하지 않는다.";
+                    }
+                    _scoutInvitationPending = false;
+                }
+                if (GUILayout.Button("나중에")) _scoutInvitationPending = false;
+                GUILayout.EndHorizontal();
+            }
+            else if (_core.Player.scoutAccompanying && GUILayout.Button("정찰병과 잠시 헤어지기"))
+            {
+                if (_core.TrySetScoutCompanion(false))
+                {
+                    _visuals?.SetNarrativeCompanion(false);
+                    _message = "정찰병은 마을 일상으로 돌아간다.";
+                }
+            }
+        }
+
+        private void TalkWithResident(string id)
+        {
+            if (_core.Player.currentRegionId != "town" || _visuals == null || !_visuals.IsVillageResidentNearby(id))
+            {
+                _message = "상대가 가까이 걸어올 때 대화할 수 있어.";
+                return;
+            }
+            _visuals.ReactVillageResident(id);
+            _pendingResidentId = string.Empty;
+            _nextResidentOfferAt = Time.unscaledTime + 18f;
+            switch (id)
+            {
+                case "chief":
+                    if (_core.HasStoryEvent("ogre-defeated") && _core.TryRecordStoryEvent("chief-ogre-report"))
+                        _message = "촌장: 그 오우거를 쓰러뜨렸구나. 마을 사람들에게도 이 일을 전하마.";
+                    else if (_core.TryRecordStoryEvent("chief-introduction"))
+                        _message = "촌장: 균열의 흔적이 사냥터로 이어진다. 안전한 곳부터 연습하고 대장장이를 만나보게.";
+                    else _message = "촌장: " + _core.GetStoryGuidance();
+                    break;
+                case "smith":
+                    if (_core.TryRecordStoryEvent("smith-visit"))
+                        _message = "대장장이: 철의 소리가 거칠어졌어. 균열 근처엔 강한 괴물이 있다더군. 장비를 확인해.";
+                    else _message = "대장장이: 오래 쓰는 장비일수록 꼼꼼하게 살펴봐. 장비 구매는 마을 메뉴에서 할 수 있어.";
+                    break;
+                case "merchant":
+                    _message = "상인: 무기와 갑옷은 마을 메뉴에서 준비하고, 자원이 모자라면 낮은 사냥터로 돌아가.";
+                    break;
+                case "scout":
+                    if (!_core.HasStoryEvent("chief-introduction"))
+                        _message = "정찰병: 먼저 촌장에게 인사해. 이 지역의 사정을 자세히 알고 계셔.";
+                    else if (_core.Player.scoutAccompanying)
+                        _message = "정찰병: 바쁜 길을 같이 걸어가자. 전투나 보상은 너의 선택 그대로야.";
+                    else
+                    {
+                        _scoutInvitationPending = true;
+                        _message = "정찰병: 사냥터로 가기 전에 같이 다닐래? 따라가며 위험한 곳을 알려줄게.";
+                    }
+                    break;
+            }
+        }
+
+        // 연출: 컷신은 실제 보스 조우 사건에서만 시작하고 건너뛰기 가능하다.
+        private void DrawStoryPrompt(Rect safe, float scale)
+        {
+            if (_bossSceneUntil > Time.unscaledTime)
+            {
+                var height = Mathf.Min(105f * scale, safe.height * 0.20f);
+                var box = new Rect(safe.xMin + 10f, safe.yMin + safe.height * 0.31f,
+                    Mathf.Max(1f, safe.width - 20f), height);
+                GUI.Box(box, _bossSceneName + "\n" + _bossSceneDialogue);
+                var skip = new Rect(safe.xMax - Mathf.Min(112f * scale, safe.width * 0.30f) - 10f,
+                    box.yMax + 2f, Mathf.Min(112f * scale, safe.width * 0.30f), Mathf.Min(50f * scale, 56f));
+                if (GUI.Button(skip, "SKIP"))
+                {
+                    _bossSceneUntil = 0f;
+                    _visuals?.SkipBossReveal();
+                }
+            }
+            if (_core.Player.currentRegionId != "town" || string.IsNullOrEmpty(_pendingResidentId)) return;
+            if (_visuals == null || !_visuals.IsVillageResidentNearby(_pendingResidentId)) return;
+            var left = _actionButtonRect.xMin - _actionButtonRect.width - 8f;
+            if (left < safe.xMin + 8f) return;
+            var prompt = new Rect(left, _actionButtonRect.y, _actionButtonRect.width, _actionButtonRect.height);
+            if (GUI.Button(prompt, "TALK"))
+            {
+                _menuScrollPositions[_menuPage] = _scroll;
+                _menuPage = 2;
+                _scroll = _menuScrollPositions[_menuPage];
+                TalkWithResident(_pendingResidentId);
             }
         }
 
@@ -574,6 +729,7 @@ namespace JaewoonGames.DaechungRpg
 
             if (regionId == "town")
             {
+                _visuals?.SetNarrativeCompanion(_core.Player.scoutAccompanying);
                 _visuals?.ShowTown();
                 _message = "Returned to town.";
                 return;
@@ -613,6 +769,17 @@ namespace JaewoonGames.DaechungRpg
                 _message = $"Encountered {_enemy.displayName}.";
             }
             if (resetVisual) _visuals?.ShowBattle();
+            if (_enemy.id == "ogre" && _core.Player.currentRegionId == "field-6")
+            {
+                _core.TryRecordStoryEvent("ogre-sighted");
+                if (_presentedBossScenes.Add("ogre-introduction"))
+                {
+                    _bossSceneName = "오우거 · 6번 사냥터";
+                    _bossSceneDialogue = "감히 내 영역을 밟았느냐. 돌아갈 마지막 기회다.";
+                    _bossSceneUntil = Time.unscaledTime + 3.5f;
+                    _visuals?.PlayBossReveal();
+                }
+            }
         }
 
         private void AttackEnemy()
@@ -630,6 +797,7 @@ namespace JaewoonGames.DaechungRpg
                 var defeated = _enemy;
                 _multiplayer?.ObserveDefeat(_core.Player.currentRegionId, defeated.id);
                 RewardEnemyDefeat(defeated);
+                if (defeated.id == "ogre") _core.TryRecordStoryEvent("ogre-defeated");
                 SpawnFirstEnemyInCurrentRegion(false, false);
                 return;
             }
