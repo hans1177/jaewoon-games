@@ -303,3 +303,30 @@ test('NPC object menus and world action wheel never fabricate available actions 
    assert.doesNotMatch(text,/RemoteEvent|FireServer|SetAsync|DataStoreService|RunService|RenderStepped/);
  }
 });
+
+test('all per-object factory panels bind observed chest harvest bed light and inspection state instead of placeholder actions',()=>{
+ const script=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const section=(a,b)=>script.slice(script.indexOf('function RobloxCommonUI.'+a+'(options)'),
+   script.indexOf('function RobloxCommonUI.'+b+'(options)'));
+ const rows=[
+  ['CreateBedInteractionPrompt','CreateHarvestInteractionPrompt',['state.action','state.respawnPoint','state.requirements']],
+  ['CreateHarvestInteractionPrompt','CreateContainerInteractionPrompt',['state.requiredTool','state.progress','state.resourceCategory']],
+  ['CreateContainerInteractionPrompt','CreateLightControlPrompt',['state.status','state.capacity','state.access']],
+  ['CreateLightControlPrompt','CreateReadInspectPanel',['state.status','state.connection','state.requirements']],
+  ['CreateReadInspectPanel','CreateInventorySmartSortPreview',['state.target','state.description','state.related']]
+ ];
+ for(const [name,next,props] of rows){
+   const body=section(name,next);
+   assert.match(body,/local function sync\(state\)/,name);
+   assert.match(body,/Sync=sync/,name);
+   assert.match(body,/BoundInteractionId/,name);
+   assert.match(body,/SourceAuthority/,name);
+   assert.match(body,/OwnsInteractionAuthority",false/,name);
+   assert.doesNotMatch(body,/RemoteEvent|FireServer|DataStoreService|SetAsync|UpdateAsync|while true/,name);
+   for(const prop of props)assert.ok(body.includes(prop),name+': '+prop);
+ }
+ const progress=section('CreateInteractionProgress','CreateInteractionStateCard');
+ assert.match(progress,/controller\.SetRatio\(state\.ratio,state\.text or state\.label\)/);
+ assert.match(progress,/root:SetAttribute\("OwnsInteractionDuration",false\)/);
+ assert.match(progress,/return root,controller,sync/);
+});
