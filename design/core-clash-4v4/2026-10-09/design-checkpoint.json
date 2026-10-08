@@ -77,25 +77,39 @@
       "name": "Run and upgrade to progress",
       "purpose": "Player progresses through the game by running and upgrading their build.",
       "playerChoice": "Run and upgrade your current build to unlock new progression options in the next stage of the game."
+    },
+    "local_authoring_parts::520973cb2d3d82754e8dc7c93c530f786b345b424fceb4b607117f52f3c9e1f1:signatureSystems:3": {
+      "id": "CORE-4V4-SIGNATURE-4",
+      "grammarRole": "c",
+      "stateInputs": [
+        "RUN",
+        "UPGRADE"
+      ],
+      "stateOutputs": [
+        "NEXT_PROGRESSION"
+      ],
+      "name": "Run and upgrade to progress",
+      "purpose": "게임 진행에 기여하는 보조 요소로, 주체인 플레이어가 선택 결과와 상태 변화를 변주하며 콘텐츠를 다르게 사용하게 한다.",
+      "playerChoice": "Run and upgrade to progress with a focus on survival and progression in the short real-time survival run environment."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 511051,
-      "lastMs": 45756,
+      "totalMs": 568290,
+      "lastMs": 57239,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:37:20.267Z"
+      "updatedAt": "2026-10-08T21:38:17.508Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:28:49.180Z",
-  "updatedAt": "2026-10-08T21:37:20.267Z",
+  "updatedAt": "2026-10-08T21:38:17.508Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2294,7 +2308,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:37:20.267Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:38:17.508Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
