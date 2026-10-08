@@ -83,25 +83,41 @@
       "name": "TERRITORY PRESSURE AND OBJECTIVE",
       "purpose": "READ THE CURRENT BORDER PRESSURE AND CHOOSING ONE TERRITORY OBJECTIVE",
       "playerChoice": "ATTACK, REINFORCE, EXPAND ECONOMY"
+    },
+    "local_authoring_parts::6294af16e4dbaef83114d87e8d671e271922454f138ec5ba19968c0fecb8cf7e:signatureSystems:3": {
+      "id": "c",
+      "grammarRole": "c",
+      "stateInputs": [
+        "currentBorderPressure",
+        "territoryObjective"
+      ],
+      "stateOutputs": [
+        "attacked",
+        "reinforced",
+        "expandedEconomy"
+      ],
+      "name": "TERRITORY PRESSURE AND OBJECTIVE",
+      "purpose": "READ THE CURRENT BORDER PRESSURE AND CHOOSING ONE TERRITORY OBJECTIVE",
+      "playerChoice": "ATTACK, REINFORCE, EXPAND ECONOMY"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 787794,
-      "lastMs": 95139,
+      "totalMs": 883978,
+      "lastMs": 96184,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:29:30.737Z"
+      "updatedAt": "2026-10-08T12:31:06.922Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:16:22.910Z",
-  "updatedAt": "2026-10-08T12:29:30.737Z",
+  "updatedAt": "2026-10-08T12:31:06.922Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2125,7 +2141,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:29:30.737Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:31:06.922Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
