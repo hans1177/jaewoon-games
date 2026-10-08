@@ -246,25 +246,185 @@
           "playerChoice": "색채, 형태, 공간, 시간의 해석 또는 비용 변경을 선택하여 게임 내 상태를 바꿈"
         }
       ]
+    },
+    "local_authoring_parts::50c8578b79794321210984ed37f49b5dd6e21ddf0abebd1c2a00c9be52d44910:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::e1779bc5ee1eab031fe48f2cfa2df12f54edc836d67031d0c49e6b8ff8a986ce:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "INPUT: 플레이어가 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행합니다.",
+        "SELECT: 선택 결과가 다음 월드 상태로 연결되는 PUZZLE 게임의 핵심 루프에 참여하게 됩니다.",
+        "OUTPUT: 선택 결과가 즉각적 상태 변화를 만듭니다.",
+        "STATE: 선택 결과가 위험·보상·다음 선택의 관계를 형성하여 월드 상태를 바꿉니다.",
+        "ACTION: 다음 선택을 결정하며, 주요 인물의 목표, 두려움, 비밀은 핵심 인과법칙에 의해 실제 선택과 관계 변화를 만듭니다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "세계 인과법칙 시스템",
+          "purpose": "생태·저주·정치·기억 중 하나로 구체화된 몬스터 존재",
+          "playerChoice": "세계 인과법칙의 해석 또는 비용 변경을 선택하여 공간 사용법을 바꿈"
+        },
+        {
+          "id": "signatureSystems_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "색채 인과법칙 시스템",
+          "purpose": "색채, 형태, 공간, 시간 중 하나로 구체화된 플레이어 존재",
+          "playerChoice": "색채, 형태, 공간, 시간의 해석 또는 비용 변경을 선택하여 게임 내 상태를 바꿈"
+        },
+        {
+          "id": "signatureSystems_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "색채 인과법칙 시스템",
+          "purpose": "색채, 형태, 공간, 시간 중 하나로 구체화된 플레이어 존재",
+          "playerChoice": "색채, 형태, 공간, 시간의 해석 또는 비용 변경을 선택하여 게임 내 상태를 바꿈"
+        },
+        {
+          "id": "signatureSystems_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "색채 인과법칙 시스템",
+          "purpose": "색채, 형태, 공간, 시간 중 하나로 구체화된 플레이어 존재",
+          "playerChoice": "색채, 형태, 공간, 시간의 해석 또는 비용 변경을 선택하여 게임 내 상태를 바꿈"
+        },
+        {
+          "id": "signatureSystems_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "색채 인과법칙 시스템",
+          "purpose": "색채, 형태, 공간, 시간 중 하나로 구체화된 플레이어 존재",
+          "playerChoice": "색채, 형태, 공간, 시간의 해석 또는 비용 변경을 선택하여 게임 내 상태를 바꿈"
+        }
+      ],
+      "multiplayerMode": "HYBRID"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "색채의 연쇄은 플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.이라는 중심 행동을 통해, 선택 결과가 다음 월드 상태로 연결되는 PUZZLE 게임이다. 이 게임은 단순 반복보다는 다양한 경로, 위험, 보상, 그리고 성장 가능성이 실제 플레이에 열린다. 주요 인물의 목표, 두려움, 비밀은 핵심 인과법칙에 의해 실제 선택과 관계 변화를 만든다. 몬스터는 세계 인과법칙이 생태·저주·정치·기억 중 하나로 구체화된 존재이며, 지역마다 같은 인과법칙의 다른 해석이나 비용이 적용되어 공간 사용법이 달라진다. 스토리 사건은 컷신으로만 진행되지 않고 핵심 문법을 사용한 결과로 다음 조건이 바뀐다. 낯선 규칙은 역사·문화·생활·권력·신앙·생태의 이유로 설명되어 세계 안에서는 자연스럽게 느껴져야 한다.",
+      "playerFantasy": "플레이어는 시작 단계에서 '색채의 연쇄' 게임의 중심 행동인 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'을 수행하며, 선택 결과가 다음 월드 상태로 연결되는 PUZZLE 게임의 핵심 루프에 참여하게 된다. 이 루프는 진입 시점부터 다양한 경로, 위험, 보상, 그리고 성장 가능성이 실제 플레이에 열린다. 주요 인물의 목표, 두려움, 비밀은 핵심 인과법칙에 의해 실제 선택과 관계 변화를 만든다. 몬스터는 세계 인과법칙이 생태·저주·정치·기억 중 하나로 구체화된 존재이며, 지역마다 같은 인과법칙의 다른 해석이나 비용이 적용되어 공간 사용법이 달라진다. 스토리 사건은 컷신으로만 진행되지 않고 핵심 문법을 사용한 결과로 다음 조건이 바뀐다. 낯선 규칙은 역사·문화·생활·권력·신앙·생태의 이유로 설명되어 세계 안에서는 자연스럽게 느껴져야 한다.",
+      "coreFun": "색채의 연쇄은 플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.이라는 중심 행동을 통해, 선택 결과가 다음 월드 상태로 연결되는 PUZZLE 게임이다. 이 게임은 단순 반복보다는 다양한 경로, 위험, 보상, 그리고 성장 가능성이 실제 플레이에 열린다. 주요 인물의 목표, 두려움, 비밀은 핵심 인과법칙에 의해 실제 선택과 관계 변화를 만든다. 몬스터는 세계 인과법칙이 생태·저주·정치·기억 중 하나로 구체화된 존재이며, 지역마다 같은 인과법칙의 다른 해석이나 비용이 적용되어 공간 사용법이 달라진다. 스토리 사건은 컷신으로만 진행되지 않고 핵심 문법을 사용한 결과로 다음 조건이 바뀐다. 낯선 규칙은 역사·문화·생활·권력·신앙·생태의 이유로 설명되어 세계 안에서는 자연스럽게 느껴져야 한다.",
+      "coreLoop": [
+        "INPUT: 플레이어가 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행합니다.",
+        "SELECT: 선택 결과가 다음 월드 상태로 연결되는 PUZZLE 게임의 핵심 루프에 참여하게 됩니다.",
+        "OUTPUT: 선택 결과가 즉각적 상태 변화를 만듭니다.",
+        "STATE: 선택 결과가 위험·보상·다음 선택의 관계를 형성하여 월드 상태를 바꿉니다.",
+        "ACTION: 다음 선택을 결정하며, 주요 인물의 목표, 두려움, 비밀은 핵심 인과법칙에 의해 실제 선택과 관계 변화를 만듭니다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "세계 인과법칙 시스템",
+          "purpose": "생태·저주·정치·기억 중 하나로 구체화된 몬스터 존재",
+          "playerChoice": "세계 인과법칙의 해석 또는 비용 변경을 선택하여 공간 사용법을 바꿈"
+        },
+        {
+          "id": "signatureSystems_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "색채 인과법칙 시스템",
+          "purpose": "색채, 형태, 공간, 시간 중 하나로 구체화된 플레이어 존재",
+          "playerChoice": "색채, 형태, 공간, 시간의 해석 또는 비용 변경을 선택하여 게임 내 상태를 바꿈"
+        },
+        {
+          "id": "signatureSystems_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "색채 인과법칙 시스템",
+          "purpose": "색채, 형태, 공간, 시간 중 하나로 구체화된 플레이어 존재",
+          "playerChoice": "색채, 형태, 공간, 시간의 해석 또는 비용 변경을 선택하여 게임 내 상태를 바꿈"
+        },
+        {
+          "id": "signatureSystems_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "색채 인과법칙 시스템",
+          "purpose": "색채, 형태, 공간, 시간 중 하나로 구체화된 플레이어 존재",
+          "playerChoice": "색채, 형태, 공간, 시간의 해석 또는 비용 변경을 선택하여 게임 내 상태를 바꿈"
+        },
+        {
+          "id": "signatureSystems_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "색채 인과법칙 시스템",
+          "purpose": "색채, 형태, 공간, 시간 중 하나로 구체화된 플레이어 존재",
+          "playerChoice": "색채, 형태, 공간, 시간의 해석 또는 비용 변경을 선택하여 게임 내 상태를 바꿈"
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 893391,
-      "lastMs": 98072,
+      "totalMs": 1220429,
+      "lastMs": 240106,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:44:28.263Z"
+      "updatedAt": "2026-10-08T18:49:55.316Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:29:34.840Z",
-  "updatedAt": "2026-10-08T18:44:28.266Z",
+  "updatedAt": "2026-10-08T18:49:55.320Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2297,12 +2457,396 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:44:28.266Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "bd59fde5328d8f9df1972a70ca56cd05a1721ecb731322cae0deaa2889d0dccb"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[0].trigger",
+          "value": "GAME_CATEGORY_UPDATE"
+        },
+        "requiredAction": "systemInterconnections[0].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[0].stateChange",
+          "value": "GAME_CATEGORY_CHANGE"
+        },
+        "requiredAction": "systemInterconnections[0].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[1].trigger",
+          "value": "SYSTEM_INTERDEPENDENCE_TRIGGER"
+        },
+        "requiredAction": "systemInterconnections[1].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[1].stateChange",
+          "value": "SYSTEM_INTERDEPENDENCE_CHANGE"
+        },
+        "requiredAction": "systemInterconnections[1].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[2].trigger",
+          "value": "CONTEXTUAL_ACTIONS_TRIGGER"
+        },
+        "requiredAction": "systemInterconnections[2].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[2].stateChange",
+          "value": "CONTEXTUAL_ACTIONS_CHANGE"
+        },
+        "requiredAction": "systemInterconnections[2].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[3].trigger",
+          "value": "EASY_ENTRY_TRIGGER"
+        },
+        "requiredAction": "systemInterconnections[3].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[3].stateChange",
+          "value": "EASY_ENTRY_CHANGE"
+        },
+        "requiredAction": "systemInterconnections[3].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[4].trigger",
+          "value": "COMBINATORIAL_NEW_USES_TRIGGER"
+        },
+        "requiredAction": "systemInterconnections[4].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[4].stateChange",
+          "value": "COMBINATORIAL_NEW_USES_CHANGE"
+        },
+        "requiredAction": "systemInterconnections[4].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[5].trigger",
+          "value": "MULTIPLE_VIABLE_SOLUTIONS_TRIGGER"
+        },
+        "requiredAction": "systemInterconnections[5].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[5].stateChange",
+          "value": "MULTIPLE_VIABLE_SOLUTIONS_CHANGE"
+        },
+        "requiredAction": "systemInterconnections[5].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "CORE_FUN_TO_LEARN→GAME_CATEGORY의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: CORE_FUN_TO_LEARN→GAME_CATEGORY의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "CORE_LOOP→SYSTEM_INTERCONNECTIONS의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: CORE_LOOP→SYSTEM_INTERCONNECTIONS의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "CORE_FUN_TO_LEARN→SYSTEM_INTERCONNECTIONS의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: CORE_FUN_TO_LEARN→SYSTEM_INTERCONNECTIONS의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "CORE_LOOP→SYSTEM_INTERCONNECTIONS의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: CORE_LOOP→SYSTEM_INTERCONNECTIONS의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "CORE_LOOP→SYSTEM_INTERCONNECTIONS의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: CORE_LOOP→SYSTEM_INTERCONNECTIONS의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "CORE_LOOP→SYSTEM_INTERCONNECTIONS의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: CORE_LOOP→SYSTEM_INTERCONNECTIONS의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::systems-progression": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "{\"fromId\": \"CORE_FUN_TO_LEARN\", \"toId\": \"GAME_CATEGORY\", \"stateKeys\": [\"GAME_CATEGORY\"] , \"fromSystem\": \"CORE_FUN_TO_LEARN\", \"toSystem\": \"GAME_CATEGORY\", \"trigger\": \"GAME_CATEGORY_UPDATE\", \"stateChange\": \"GAME_CATEGORY_CHANGE\"}",
+      "progressionEconomyBalance": {
+        "progressionLoop": "INPUT: 플레이어가 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행합니다.",
+        "resourceFlow": "색채, 형태, 공간, 시간 중 하나로 구체화된 플레이어 존재",
+        "balanceRules": "색채, 형태, 공간, 시간의 해석 또는 비용 변경을 선택하여 게임 내 상태를 바꿈"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "START",
+          "newGameplay": "플레이어는 세계 인과법칙 시스템에 참여하여 새로운 상태 변화를 일으킵니다.",
+          "systemImpact": "세계 인과법칙 시스템이 플레이어의 행동 방향을 결정하며, 색채, 형태, 공간, 시간의 해석 또는 비용 변경을 통해 게임 내 상태를 변형합니다."
+        },
+        {
+          "milestone": "COLOR",
+          "newGameplay": "플레이어는 색채 인과법칙 시스템에 참여하여 색채, 형태, 공간, 시간의 해석 또는 비용 변경을 선택합니다.",
+          "systemImpact": "색채, 형태, 공간, 시간의 해석 또는 비용 변경으로 인해 게임 내 상태가 재조정됩니다."
+        },
+        {
+          "milestone": "SHAPE",
+          "newGameplay": "플레이어는 색채 인과법칙 시스템에 참여하여 색채, 형태, 공간, 시간의 해석 또는 비용 변경을 선택합니다.",
+          "systemImpact": "색채, 형태, 공간, 시간의 해석 또는 비용 변경으로 인해 게임 내 상태가 재조정됩니다."
+        },
+        {
+          "milestone": "SPACE",
+          "newGameplay": "플레이어는 색채 인과법칙 시스템에 참여하여 색채, 형태, 공간, 시간의 해석 또는 비용 변경을 선택합니다.",
+          "systemImpact": "색채, 형태, 공간, 시간의 해석 또는 비용 변경으로 인해 게임 내 상태가 재조정됩니다."
+        },
+        {
+          "milestone": "TIME",
+          "newGameplay": "플레이어는 색채 인과법칙 시스템에 참여하여 색채, 형태, 공간, 시간의 해석 또는 비용 변경을 선택합니다.",
+          "systemImpact": "색채, 형태, 공간, 시간의 해석 또는 비용 변경으로 인해 게임 내 상태가 재조정됩니다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "세계 인과법칙 시스템이 불확실한 경우",
+          "색채, 형태, 공간, 시간의 해석이 부족한 경우"
+        ],
+        "retryFlow": "플레이어는 세계 인과법칙 시스템을 다시 탐구하고, 색채, 형태, 공간, 시간의 해석을 강화하여 새로운 상태 변화를 일으킵니다.",
+        "riskPressure": "플레이어는 세계 인과법칙 시스템의 불확실성이나 색채, 형태, 공간, 시간의 해석 부족으로 인해 재도전을 고려해야 합니다.",
+        "recoveryRules": "플레이어는 세계 인과법칙 시스템을 다시 탐구하고, 색채, 형태, 공간, 시간의 해석을 강화하여 새로운 상태 변화를 일으킵니다."
+      }
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T18:49:55.316Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/seed-puzzle-chromatic-cascade/2026-10-09/design-seed.json",
+    "contentDigest": "14286eb752fd5137006a4b76cfae69b63ab496eb7da23a21edb9c77a82927916",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
