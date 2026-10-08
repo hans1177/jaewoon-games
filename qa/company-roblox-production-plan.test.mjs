@@ -294,3 +294,38 @@ test('owner feature removal survives repeated evolution and only a newer explici
   assert.notEqual(next.ownerChangeFingerprint,previous.ownerChangeFingerprint);
 });
 
+
+test('existing Vibe2 game authoring ties AI, native physics and rendering to the responsible platform source',()=>{
+  const nativePolicy={...policy,status:'ACTIVE_EXECUTABLE_CONTRACT',platforms:['ROBLOX','UNITY','WEB']};
+  const cases=[
+    {platform:'ROBLOX',owner:['roblox-games/garden/server/World.server.luau','roblox-games/garden/client/Actor.client.luau'],binding:/SERVER_AI_HUMANOID_WORKSPACE_PHYSICS_CLIENT_ANIMATOR_AND_VISUALS/,rule:/Roblox: retain current server-side AI/},
+    {platform:'UNITY',owner:['unity-games/garden/Assets/Scripts/World.cs','unity-games/garden/Assets/Scripts/ActorView.cs'],binding:/EXISTING_CSHARP_UPDATE_FIXEDUPDATE_RIGIDBODY_ANIMATOR_RENDERER/,rule:/physics with FixedUpdate/},
+    {platform:'UNITY_WEB',owner:['unity-games/garden/Assets/Scripts/World.cs','unity-games/garden/Assets/Scripts/ActorView.cs'],binding:/EXISTING_CSHARP_UPDATE_FIXEDUPDATE_RIGIDBODY_ANIMATOR_RENDERER/,rule:/UNITY_WEB uses the same Unity project/},
+    {platform:'WEB',owner:['web-games/garden/game.js','web-games/garden/render.js'],binding:/EXISTING_BROWSER_GAME_TICK_CANVAS_OR_WEBGL_RENDER_CONSUMER/,rule:/requestAnimationFrame Canvas\/WebGL/}
+  ];
+  for(const row of cases){
+    const plan=buildRobloxProductionPlan({gameId:'garden',platform:row.platform,design,source:{sourceTreeFingerprint:'existing-garden',topFiles:row.owner.map(file=>({file,score:10}))},responsibleFiles:row.owner,focus:'CORE_FUN',policy:nativePolicy});
+    assert.ok(plan,row.platform);
+    assert.equal(plan.newWorkflow,false);
+    assert.equal(plan.newQaStage,false);
+    assert.equal(plan.qualityContract.runtimeVerified,false);
+    assert.equal(plan.qualityContract.actorFrameContract.runtimeVerified,false);
+    assert.equal(plan.qualityContract.actorFrameContract.sourceEvidenceRequired,true);
+    assert.deepEqual(plan.qualityContract.actorFrameContract.steps,['INPUT_AND_AI_INTENT','ENGINE_PHYSICS_AND_COLLISION','GAMEPLAY_STATE_DRIVEN_ANIMATION','NATIVE_RENDER_AND_UI']);
+    assert.ok(plan.qualityContract.required.includes('EXISTING_INPUT_AI_PHYSICS_ANIMATION_RENDER_CHAIN_WHEN_APPLICABLE'));
+    assert.match(plan.qualityContract.actorFrameContract.platformBinding,row.binding);
+    assert.deepEqual(plan.implementationPackages.flatMap(pkg=>pkg.files).sort(),[...row.owner].sort());
+    const lines=robloxProductionPromptLines(plan,{responsibleFiles:[row.owner.at(-1)]});
+    const instruction=lines.find(line=>line.includes('RUNTIME_CHAIN_RULE='));
+    assert.ok(instruction,row.platform);
+    assert.match(instruction,row.rule);
+    assert.match(instruction,/Physics may run at a fixed engine step independently of render frames/);
+    assert.match(instruction,/never detection, hit, physics or gameplay results/);
+    assert.match(instruction,/NOT runtime PASS/);
+    assert.doesNotMatch(lines.find(line=>line.includes('FILES=')),new RegExp(row.owner[0].replace(/[.*+?^${}()|[\]\\]/g,'\\$&')),'worker should not inherit sibling owner files');
+    const presentation=buildRobloxProductionPlan({gameId:'garden',platform:row.platform,design,source:{topFiles:row.owner.map(file=>({file}))},responsibleFiles:row.owner,focus:'PRESENTATION',policy:nativePolicy});
+    assert.equal(presentation.contentRule,'PRESENT_EXISTING_BEHAVIOR_ONLY');
+    assert.match(robloxProductionPromptLines(presentation,{responsibleFiles:[row.owner.at(-1)]}).join('\n'),/PRESENTATION-only work must not change game-state or server authority/);
+    assert.equal(presentation.qualityContract.actorFrameContract.runtimeVerified,false);
+  }
+});
