@@ -519,6 +519,9 @@ test('Roblox survival object gathering keeps legacy reward and save rules until 
   assert.match(source,/rule.HitDamage/);
   assert.match(source,/math.random\(rule.MinDrop, rule.MaxDrop\)/);
   assert.match(source,/resourceEffectPool/);
+  assert.match(source,/interactWithResource\(player, target, rule, true\)/);
+  assert.match(source,/if not alreadyRateLimited then/);
+  assert.match(source,/if rule then[\s\S]*?interactWithResource\(player, target, rule, true\)[\s\S]*?else\s+gatherResource\(player\)/);
   assert.match(source,/piece.AssemblyLinearVelocity/);
   assert.match(source,/prepareResourceEffects\(\)/);
   assert.match(source,/gatherResource\(player\)/);
