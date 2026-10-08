@@ -88,3 +88,19 @@ test('graphics candidate scoping rejects traversal, absolute paths and URLs whil
   assert.deepEqual(plan.scope, [local]);
   assert.equal(Graphics.graphicsImplementationImpact({ changedFiles: [local, unsafe[0]] }).pass, false);
 });
+
+// 메인: 잘못된 렌더 계측값은 그래픽 품질 승격의 성공 증거가 아니다.
+test('nonfinite rendering measurements cannot turn failed A/B candidates into passing scores', () => {
+  const baseline=fullEvidence(.9);
+  const invalid={...baseline,readability:Infinity};
+  assert.equal(Graphics.graphicsScore(baseline).total,90);
+  assert.equal(Graphics.graphicsScore(invalid).total,76.5);
+  assert.equal(Graphics.graphicsScore({...baseline,mobilePerformance:NaN}).total,81);
+  const result=Graphics.evaluateGraphicsExperiment({
+    baseline:{evidence:baseline},
+    candidates:[{id:'invalid-telemetry',target:'candidate',evidence:invalid}],
+    conditions:{sameDevice:true,sameScene:true,sameCharacter:true,sameInput:true,samePerformanceLimit:true}
+  });
+  assert.equal(result.pass,false);
+  assert.equal(result.winner,null);
+});
