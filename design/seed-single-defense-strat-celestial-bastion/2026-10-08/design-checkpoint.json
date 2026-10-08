@@ -34,25 +34,44 @@
         "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
         "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
       ]
+    },
+    "local_authoring_parts::8ada17cee77b1c79beac12362c021ff90a2a5bba2531cee78337204527ea6dbd:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "threatened route",
+        "enemy wave",
+        "towers or defenders",
+        "lanes or positions"
+      ],
+      "stateOutputs": [
+        "resources",
+        "upgrades",
+        "new placements",
+        "tactical changes"
+      ],
+      "name": "Enemy Wave Management System",
+      "purpose": "Manages the flow of enemy waves to maintain strategic pressure and resource accumulation.",
+      "playerChoice": "Select and place towers or defenders on lanes or positions that cover the threatened route before resource pressure increases."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 430473,
-      "lastMs": 60575,
+      "totalMs": 528877,
+      "lastMs": 98404,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:17:44.622Z"
+      "updatedAt": "2026-10-08T12:19:23.028Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:10:34.121Z",
-  "updatedAt": "2026-10-08T12:17:44.622Z",
+  "updatedAt": "2026-10-08T12:19:23.028Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2247,7 +2266,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:17:44.622Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:19:23.028Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
