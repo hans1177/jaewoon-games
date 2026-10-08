@@ -27,25 +27,32 @@
       "identity": "Last Lantern은 시작 단계부터 다시 설계된 고유한 핵심 재미와 시스템 연결을 확정하는 PUZZLE 게임이다. 플레이어는 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 반복 가능한 핵심 루프를 만든다. 모바일에서도 즉시 이해되는 입력과 피드백을 제공한다. 게임의 핵심 재미는 성장과 반복의 조합, 위험과 보상의 연결, 그리고 선택의 결과가 다음 상태로 이어지는 시스템 구조로 구성된다. 게임의 정체성은 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'과 'Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.'의 결과가 월드 상태로 연결되어야 한다. 게임의 대표 행동은 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이며, 대표 선택은 'Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.'이다. 게임의 시그니처 세계 규칙은 'Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.'을 포함할",
       "playerFantasy": "플레이어는 시작 단계부터 게임의 핵심 재미와 시스템 연결을 재설계하는 반복 가능한 핵심 루프를 만드는 데 참여한다. 게임의 대표 행동은 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이며, 대표 선택은 'Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.'이다. 게임의 시그니처 세계 규칙은 'Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.'을 포함하며, 선택의 결과가 다음 월드 상태로 이어지는 시스템 구조를 구축한다.",
       "coreFun": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.과 Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.의 결과가 월드 상태로 연결되어 있는 반복 가능한 핵심 루프를 만드는 게임의 대표 행동과 선택은 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'과 'Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.'이며, 시그니처 세계 규칙은 'Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.'을 포함한다. 게임의 핵심 재미는 성장과 반복의 조합, 위험과 보상의 연결, 선택의 결과가 다음 상태로 이어지는 시스템 구조로 구성된다. 게임의 정체성은 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'과 'Make matches or deliberate puzzle moves,创建"
+    },
+    "local_authoring_parts::474d398cbb98209cb80fc878b4fbf9611ad748e81b6b51d9be1c3e59f8acb66e:coreLoop": {
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 396909,
-      "lastMs": 96445,
+      "totalMs": 454076,
+      "lastMs": 57167,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:43:34.338Z"
+      "updatedAt": "2026-10-08T08:44:31.509Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:36:57.405Z",
-  "updatedAt": "2026-10-08T08:43:34.339Z",
+  "updatedAt": "2026-10-08T08:44:31.509Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2082,7 +2089,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:43:34.339Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:44:31.509Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
