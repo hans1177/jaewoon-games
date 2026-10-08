@@ -405,25 +405,101 @@
           "changedChoice": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하"
         }
       ]
+    },
+    "local_authoring_parts::8622a69d68e7edc886ed09d1fdec0794e320d827c8efe5b96c76bb6e13bd46fc:regions": {
+      "regions": [
+        {
+          "ruleIds": [
+            "SIGNATURE_FIGHT_SURVIVAL"
+          ],
+          "name": "마력숲",
+          "traversal": "기존 18000×12000 마력숲 월드와 수정 지역",
+          "riskReward": "생존 압박 유지",
+          "landmark": "연구소, 퀘스트 공간",
+          "encounterPattern": "전투, 채집, 이동",
+          "resourcePressure": "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결",
+          "storyContext": "생존, 제작, 전투, 스토리 진행"
+        },
+        {
+          "ruleIds": [
+            "SIGNATURE_FIGHT_SURVIVAL"
+          ],
+          "name": "수정 지역",
+          "traversal": "기존 18000×12000 마력숲 월드와 수정 지역",
+          "riskReward": "생존 압박 유지",
+          "landmark": "연구소, 퀘스트 공간",
+          "encounterPattern": "전투, 채집, 이동",
+          "resourcePressure": "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결",
+          "storyContext": "생존, 제작, 전투, 스토리 진행"
+        }
+      ]
+    },
+    "local_authoring_parts::45932aa7c264e29f4ca3154dc553ca7e6594debe03ac84a52cbf4144ec9ee9b8:abilities,roleTransitions,regions": {
+      "roleTransitions": [
+        {
+          "humanId": "PLAYER",
+          "humanTool": "플레이어",
+          "humanAbilityId": "FIGHT_SURVIVAL",
+          "infectedAbilityId": "FIGHT_SURVIVAL",
+          "retainedState": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하",
+          "removedState": "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결",
+          "changedChoice": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하"
+        },
+        {
+          "humanId": "PLAYER",
+          "humanTool": "플레이어",
+          "humanAbilityId": "FIGHT_SURVIVAL",
+          "infectedAbilityId": "FIGHT_SURVIVAL",
+          "retainedState": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하",
+          "removedState": "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결",
+          "changedChoice": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하"
+        }
+      ],
+      "regions": [
+        {
+          "ruleIds": [
+            "SIGNATURE_FIGHT_SURVIVAL"
+          ],
+          "name": "마력숲",
+          "traversal": "기존 18000×12000 마력숲 월드와 수정 지역",
+          "riskReward": "생존 압박 유지",
+          "landmark": "연구소, 퀘스트 공간",
+          "encounterPattern": "전투, 채집, 이동",
+          "resourcePressure": "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결",
+          "storyContext": "생존, 제작, 전투, 스토리 진행"
+        },
+        {
+          "ruleIds": [
+            "SIGNATURE_FIGHT_SURVIVAL"
+          ],
+          "name": "수정 지역",
+          "traversal": "기존 18000×12000 마력숲 월드와 수정 지역",
+          "riskReward": "생존 압박 유지",
+          "landmark": "연구소, 퀘스트 공간",
+          "encounterPattern": "전투, 채집, 이동",
+          "resourcePressure": "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결",
+          "storyContext": "생존, 제작, 전투, 스토리 진행"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 10,
+      "calls": 14,
+      "successes": 11,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2250883,
-      "lastMs": 179478,
+      "totalMs": 2382489,
+      "lastMs": 131606,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T12:52:45.913Z"
+      "updatedAt": "2026-10-08T12:54:57.520Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:15:14.939Z",
-  "updatedAt": "2026-10-08T12:52:45.913Z",
+  "updatedAt": "2026-10-08T12:54:57.522Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2625,7 +2701,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:52:45.913Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:54:57.522Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
