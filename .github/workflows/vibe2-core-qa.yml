@@ -21,6 +21,7 @@ on:
       - 'assets/vibe-change-set.js'
       - 'assets/vibe-quality-intelligence.js'
       - 'assets/vibe-art-pipeline.js'
+      - 'assets/native-authoring/build-game-visual.py'
       - 'assets/vibe-visual-quality-gate.js'
       - 'tools/autonomous-safe-edit.mjs'
       - 'tools/vibe2-auto-planner.mjs'
@@ -513,6 +514,20 @@ jobs:
           VIBE2_TEST_LUAU_COMPILER="$VIBE2_LUAU_COMPILER" node --test --test-name-pattern="internal motion sampler" qa/vibe2-source-worker.test.mjs
           node --test qa/vibe3-roblox-studio-lessons.test.mjs
           node --test qa/vibe2-learning-practice-worker.test.mjs
+          node --test --test-name-pattern="managed spawn executes" qa/company-development-roblox-runtime-foundation.test.mjs
+      - name: Execute native GLB authoring and platform material checks
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends blender
+          VIBE2_BLENDER_BINARY=blender node --test --test-name-pattern="actual Blender authoring|GLB production inspection|native asset recipe preserves" qa/vibe2-native-asset-production.test.mjs
+      - name: Preserve authored GLB and preview evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-glb-authoring-evidence
+          path: ${{ runner.temp }}/vibe2-glb-authoring-evidence
+          if-no-files-found: error
+          retention-days: 14
       - name: Prepare the existing local Vibe model for coding measurement
         if: needs.scope.outputs.coding_benchmark == 'YES'
         uses: ./.github/actions/prepare-ollama

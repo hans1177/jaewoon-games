@@ -59,6 +59,14 @@ test('official Luau compiles every teaching module and executes pure boundary/re
   }
   const definitions=ROBLOX_STUDIO_LESSONS.map(row=>`L["${row.id}"]=(function()\n${row.exampleCode}\nend)()`).join('\n');
   const harness=`local L = {}\n${definitions}\n`+String.raw`
+local pivot=L.IMPORTED_MESH_GROUND_PIVOT(-2,2,10,.5,2,"R6",2)
+assert(pivot.visualRootY==14 and pivot.characterRootY==13.5)
+assert(L.IMPORTED_MESH_GROUND_PIVOT(0,1,0,2,2,"R15").clearance==3)
+assert(L.IMPORTED_MESH_GROUND_PIVOT(0,1,0,0,2,"R6",nil)==nil)
+assert(L.IMPORTED_MESH_GROUND_PIVOT(0,0,0,0,2,"R15")==nil)
+local material=L.GLTF_PBR_CHANNEL_TRANSFER(.8,.2,.5,1)
+assert(math.abs(material.unity.smoothness-.6)<.00001 and material.roblox.metalness==.2)
+assert(L.GLTF_PBR_CHANNEL_TRANSFER(0/0,0,1,1)==nil)
 local decode = L.REMOTE_PAYLOAD_SCHEMA
 assert(decode({action="Attack",sequence=1}).sequence == 1)
 for _, value in ipairs({math.huge,-math.huge,0/0,-1,1.5,"1"}) do

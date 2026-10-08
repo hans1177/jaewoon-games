@@ -24,7 +24,7 @@ import {bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} fro
 import {createRobloxWalkTeachingRecipe,createStudioMotionActionProfile} from '../assets/vibe-motion-director.js';
 import {createAssetProductionTeachingRecipe} from '../assets/vibe-studio-asset-universe.js';
 import {detectRobloxStudioAssetSystems,robloxStudioAssetFamilyBoundInText,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from './company-development-roblox-bootstrap.mjs';
-import {evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType} from './vibe2-asset-production-plan.mjs';
+import {inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType} from './vibe2-asset-production-plan.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -539,6 +539,14 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
           masterGlbQa=evaluateCrossPlatform3dMasterGlb({repoRoot:cwd,source:{path:nativeArtifact.path},family,role});
           if(masterGlbQa.pass!==true)throw new Error('CROSS_PLATFORM_MASTER_GLB_QA_FAILED:'+clean(recipe?.id)+':'+(masterGlbQa.blockers||[]).join(','));
         }
+        const glbInspection=/\.glb$/i.test(nativeArtifact.path)?masterGlbQa?.inspection||inspectVibeSourceGlb({repoRoot:cwd,source:{path:nativeArtifact.path,sourceHash:nativeArtifact.sha256}}):null;
+        if(glbInspection&&glbInspection.status!=='INSPECTED_RECONSTRUCTION_INPUT')throw new Error('NATIVE_GLB_DATA_QA_FAILED:'+clean(recipe?.id)+':'+(glbInspection.issues||[]).join(','));
+        const applicationOutput=generated.find(row=>row.path.endsWith('/application.json'));
+        let platformApplication=null;
+        if(applicationOutput){
+          platformApplication=JSON.parse(fs.readFileSync(path.resolve(cwd,applicationOutput.path),'utf8'));
+          if(platformApplication.masterSha256!==nativeArtifact.sha256||platformApplication.nativeRuntimeVerified!==false||platformApplication.automaticPromotionAllowed!==false)throw new Error('NATIVE_GLB_APPLICATION_IDENTITY_INVALID:'+clean(recipe?.id));
+        }
         const priorNative=preOutput.get(nativeArtifact.path);
         const reproducesExistingNativeArtifact=Boolean(priorNative&&priorNative.sha256===nativeArtifact.sha256);
         const editableSourceHash=sha256File(scriptAbs);
@@ -564,6 +572,7 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
             animatedJointCount:Number(masterGlbQa?.inspection?.inventory?.animatedJointCount||0),
             sourceHash:masterGlbQa?.sourceHash||null
           }):null,
+          glbDataQaPass:glbInspection?glbInspection.status==='INSPECTED_RECONSTRUCTION_INPUT':null,glbSpatial:glbInspection?.inventory?.spatial||null,platformApplication,
           reproducesExistingNativeArtifact,persistedForCandidate:persist,candidateUsable:persist||reproducesExistingNativeArtifact,
           stdoutTail:String(stdout||'').slice(-2000),runtimeVerified:false,companyPromotionEligible:false
         }));
@@ -6246,4 +6255,3 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     throw error;
   }
 }
-

@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "authority": "PRACTICE_ONLY",
   "sourceKind": "teacher",
   "synthetic": true,
@@ -327,6 +327,50 @@
         "for(int n=2;n<22;n++){var s=new Progress{Done=new bool[n],Currency=11};for(int i=0;i<n;i++){var deps=i==0?new int[0]:new int[]{i-1,i-1};Check(Practice.Complete(s,i,deps,3));Check(!Practice.Complete(s,i,deps,3));}Check(s.Currency==11+n*3);}",
         "var s=new Progress{Done=new bool[]{true,false,false},Currency=int.MaxValue-1};Check(!Practice.Complete(s,1,new int[]{0},2));Check(!s.Done[1]&&s.Currency==int.MaxValue-1);Check(!Practice.Complete(s,1,new int[]{0,2},0));Check(!s.Done[1]);Check(!Practice.Complete(s,1,new int[]{1},0));Check(!Practice.Complete(s,3,new int[0],0));Check(!Practice.Complete(s,1,new int[]{-1},0));",
         "Check(!Practice.Complete(null,0,new int[0],0));var s=new Progress{Done=new bool[1],Currency=8};Check(!Practice.Complete(s,0,null,0));Check(!Practice.Complete(s,0,new int[0],-1));Check(!s.Done[0]&&s.Currency==8);Check(Practice.Complete(s,0,new int[0],0));Check(s.Currency==8);"
+      ]
+    },
+    {
+      "id": "unity-gltf-material-channels",
+      "platform": "unity",
+      "level": "응용",
+      "failure": "GLTF_MATERIAL_CHANNEL_TRANSFER",
+      "domains": [
+        "ASSET_LIBRARY",
+        "MATERIAL",
+        "PLATFORM_ADAPTATION"
+      ],
+      "scenario": "Implement public static class Practice with bool Convert(float green,float blue,float roughnessFactor,float metallicFactor,out float metallic,out float smoothness). glTF metallic-roughness textures contain linear roughness in G and linear metalness in B. Convert to Unity URP Lit metallic and smoothness: metallic=blue*metallicFactor; smoothness=1-green*roughnessFactor. Reject NaN, infinity or any input outside [0,1]. On rejection set both outputs to zero and return false. Do not apply sRGB gamma to data channels. This pure calculation does not prove native renderer quality.",
+      "broken": "public static class Practice { public static bool Convert(float green,float blue,float roughnessFactor,float metallicFactor,out float metallic,out float smoothness){metallic=green;smoothness=blue;return true;} }",
+      "reference": "public static class Practice { private static bool Unit(float v){return !float.IsNaN(v)&&!float.IsInfinity(v)&&v>=0&&v<=1;} public static bool Convert(float green,float blue,float roughnessFactor,float metallicFactor,out float metallic,out float smoothness){metallic=0;smoothness=0;if(!Unit(green)||!Unit(blue)||!Unit(roughnessFactor)||!Unit(metallicFactor))return false;metallic=blue*metallicFactor;smoothness=1-green*roughnessFactor;return true;} }",
+      "supportCode": "",
+      "feedbackTests": [
+        "float m,s;Check(Practice.Convert(.8f,.2f,.5f,1f,out m,out s));Check(m>.199f&&m<.201f&&s>.599f&&s<.601f);Check(!Practice.Convert(float.NaN,0,1,1,out m,out s));Check(m==0&&s==0);"
+      ],
+      "tests": [
+        "float m,s;for(int g=0;g<=10;g++)for(int b=0;b<=10;b++){Check(Practice.Convert(g/10f,b/10f,.4f,.7f,out m,out s));float dm=m-b/10f*.7f,ds=s-(1-g/10f*.4f);Check(dm>-.0001f&&dm<.0001f&&ds>-.0001f&&ds<.0001f);}",
+        "float m,s;foreach(float bad in new float[]{-1,2,float.NaN,float.PositiveInfinity,float.NegativeInfinity}){Check(!Practice.Convert(bad,0,1,1,out m,out s)&&m==0&&s==0);Check(!Practice.Convert(0,bad,1,1,out m,out s));Check(!Practice.Convert(0,0,bad,1,out m,out s));Check(!Practice.Convert(0,0,1,bad,out m,out s));}Check(Practice.Convert(1,1,0,0,out m,out s)&&m==0&&s==1);"
+      ]
+    },
+    {
+      "id": "unity-import-ground-pivot",
+      "platform": "unity",
+      "level": "응용",
+      "failure": "IMPORTED_MESH_FLOATING_PIVOT",
+      "domains": [
+        "ASSET_LIBRARY",
+        "SPATIAL_LAYOUT",
+        "PLATFORM_ADAPTATION"
+      ],
+      "scenario": "Implement public static class Practice with bool Place(float minY,float maxY,float scale,float groundY,float gap,out float rootY). Bounds are already evaluated in the intended unscaled Y-up orientation, not untransformed accessor declarations. Compute rootY so the scaled mesh bottom rests gap units above ground: groundY+gap-minY*scale. Reject nonfinite inputs, minY>maxY, scale<=0, gap<0, or nonfinite result. On rejection set rootY=0 and return false. This is static visual placement only: collider, animation deformation, spawn contact and native runtime need independent verification.",
+      "broken": "public static class Practice { public static bool Place(float minY,float maxY,float scale,float groundY,float gap,out float rootY){rootY=groundY+(maxY-minY)*.5f;return true;} }",
+      "reference": "public static class Practice { private static bool Finite(float v){return !float.IsNaN(v)&&!float.IsInfinity(v);} public static bool Place(float minY,float maxY,float scale,float groundY,float gap,out float rootY){rootY=0;if(!Finite(minY)||!Finite(maxY)||!Finite(scale)||!Finite(groundY)||!Finite(gap)||minY>maxY||scale<=0||gap<0)return false;float y=groundY+gap-minY*scale;if(!Finite(y))return false;rootY=y;return true;} }",
+      "supportCode": "",
+      "feedbackTests": [
+        "float y;Check(Practice.Place(-2,3,2,10,.1f,out y));Check(y>14.09f&&y<14.11f);Check(!Practice.Place(0,1,0,0,0,out y)&&y==0);"
+      ],
+      "tests": [
+        "float y;for(int low=-10;low<10;low++){Check(Practice.Place(low,low+3,1.5f,-4,.25f,out y));float bottom=y+low*1.5f;Check(bottom>-3.751f&&bottom<-3.749f);}",
+        "float y;Check(!Practice.Place(2,1,1,0,0,out y));Check(!Practice.Place(0,1,-1,0,0,out y));Check(!Practice.Place(0,1,1,0,-1,out y));Check(!Practice.Place(float.NaN,1,1,0,0,out y));Check(!Practice.Place(0,float.PositiveInfinity,1,0,0,out y));Check(!Practice.Place(0,1,1,float.NaN,0,out y));Check(!Practice.Place(-float.MaxValue,1,2,0,0,out y)&&y==0);"
       ]
     }
   ],

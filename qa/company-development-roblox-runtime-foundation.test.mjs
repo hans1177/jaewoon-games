@@ -1377,3 +1377,73 @@ test('Open Cloud grounding rejects zero spawn and incomplete grounding observati
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
   assert.match(workflow,/worldEvidence\?\.spawnGroundingObserved!==true/);
 });
+
+test('managed spawn executes destination grounding and rejects stale blocked or floating characters',{skip:!process.env.VIBE2_LUAU_BINARY},async()=>{
+ const {foundationCharacterSource}=await import('../tools/company-development-roblox-bootstrap.mjs');
+ const os=await import('node:os'),path=await import('node:path');
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'foundation-execution-'));
+ const harness=`
+local clock=0
+local os={clock=function() return clock end}
+local mt={}
+local function vec(x,y,z) return setmetatable({X=x,Y=y,Z=z},mt) end
+mt.__add=function(a,b) return vec(a.X+b.X,a.Y+b.Y,a.Z+b.Z) end
+mt.__sub=function(a,b) return vec(a.X-b.X,a.Y-b.Y,a.Z-b.Z) end
+mt.__mul=function(a,b) return vec(a.X*b.X,a.Y*b.Y,a.Z*b.Z) end
+mt.__index=function(a,k) if k=="Magnitude" then return math.sqrt(a.X*a.X+a.Y*a.Y+a.Z*a.Z) end end
+local Vector3={new=vec,zero=vec(0,0,0)}
+local CFrame={new=function(v) return v end}
+local Enum={HumanoidRigType={R6=6,R15=15},Material={Air="Air"}}
+local RaycastParams={new=function() return {} end}
+local OverlapParams={new=function() return {} end}
+local function object(kind)
+ local o={Parent=true,Anchored=true,CanCollide=true,attrs={}}
+ function o:IsA(k) return k==kind or k=="BasePart" and kind=="SpawnLocation" end
+ function o:GetAttribute(k) return self.attrs[k] end
+ function o:SetAttribute(k,v) self.attrs[k]=v end
+ return o
+end
+local foundationSpawn=object("SpawnLocation");foundationSpawn.Position=vec(10,.55,20);foundationSpawn.Size=vec(8,1,8)
+local floor=object("BasePart");floor.attrs.WalkableGround=true
+local rootPart=object("BasePart");rootPart.Position=vec(90,400,90);rootPart.Size=vec(2,2,1);rootPart.CollisionGroup="Default";rootPart.AssemblyLinearVelocity=vec(0,0,0)
+local humanoid={HipHeight=2,RigType=15,Health=100,FloorMaterial="Concrete",Running={Connect=function() return {Disconnect=function() end} end}}
+local character=object("Model")
+function character:WaitForChild(k) return k=="Humanoid" and humanoid or rootPart end
+function character:FindFirstChild(k) if k=="Left Leg" then return {Size=vec(1,2,1)} end end
+function character:GetPivot() return rootPart.Position end
+function character:PivotTo(v) rootPart.Position=v;self.moves=(self.moves or 0)+1 end
+local player={Character=character}
+local Players={GetPlayerFromCharacter=function() return player end,GetPlayers=function() return {player} end}
+local blocked=false;local badContact=false;local rays={}
+local workspace={GetDescendants=function() return {floor,foundationSpawn} end,
+ GetPartBoundsInBox=function() return blocked and {object("BasePart")} or {} end,
+ Raycast=function(_,origin,delta,params)
+  table.insert(rays,origin)
+  assert(params.RespectCanCollide and params.ExcludeInstances and params.IncludeInstances[1]==floor)
+  return {Position=vec(origin.X,badContact and #rays>1 and -4 or 0,origin.Z),Normal=vec(0,1,0),Instance=floor}
+ end}
+local task={wait=function(dt) clock+=dt end}
+`;
+ const body=foundationCharacterSource('bindFoundationCharacter','foundationSpawn');
+ const checks=`
+bindFoundationCharacter(character)
+assert(character.attrs.GROUND_CONTACT==true and character.attrs.NativeFoundationGroundingVersion==3)
+assert(rootPart.Position.X==10 and rootPart.Position.Z==20 and math.abs(rootPart.Position.Y-3.05)<.0001)
+assert(rays[1].Y<3 and foundationSpawn.CanCollide==false)
+assert(clock>=.2)
+-- A stale character must not move after waiting for its parts.
+local moves=character.moves;player.Character={};bindFoundationCharacter(character);assert(character.moves==moves)
+player.Character=character;blocked=true;bindFoundationCharacter(character);assert(character.moves==moves and character.attrs.FoundationFailure=="SPAWN_CLEARANCE_BLOCKED")
+blocked=false;badContact=true;rays={};bindFoundationCharacter(character)
+assert(character.attrs.GROUND_CONTACT==false and character.attrs.FoundationFailure=="GROUND_CONTACT_FAILURE")
+badContact=false;rays={};humanoid.RigType=6;humanoid.HipHeight=.5;bindFoundationCharacter(character)
+assert(math.abs(rootPart.Position.Y-3.55)<.0001 and character.attrs.GROUND_CONTACT==true)
+print("FOUNDATION_PHYSICS_LOGIC_ONLY")
+`;
+ try{
+  const file=path.join(root,'check.luau');fs.writeFileSync(file,harness+body+'\n'+checks);
+  const run=spawnSync(process.env.VIBE2_LUAU_BINARY,[file],{encoding:'utf8',timeout:10000});
+  assert.equal(run.status,0,run.stdout+'\n'+run.stderr);
+  assert.match(run.stdout,/FOUNDATION_PHYSICS_LOGIC_ONLY/);
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
+});

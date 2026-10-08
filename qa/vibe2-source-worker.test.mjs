@@ -1242,12 +1242,25 @@ test('persisted Roblox DCC assets bind exact path and hash before local-model re
   assert.ok(promotion.every(row=>row.promotionState==='PENDING_EXACT_NATIVE_RUNTIME'));
 });
 
+function dccFixtureGlb(){
+  const bin=Buffer.alloc(104);
+  [0,0,0,2,0,0,0,1,0].forEach((v,i)=>bin.writeFloatLE(v,i*4));
+  [0,0,1,0,0,1,0,0,1].forEach((v,i)=>bin.writeFloatLE(v,36+i*4));
+  [0,0,1,0,0,1].forEach((v,i)=>bin.writeFloatLE(v,72+i*4));
+  [0,1,2].forEach((v,i)=>bin.writeUInt16LE(v,96+i*2));
+  const doc={asset:{version:'2.0'},buffers:[{byteLength:104}],bufferViews:[{buffer:0,byteOffset:0,byteLength:36},{buffer:0,byteOffset:36,byteLength:36},{buffer:0,byteOffset:72,byteLength:24},{buffer:0,byteOffset:96,byteLength:6}],accessors:[{bufferView:0,componentType:5126,type:'VEC3',count:3,min:[0,0,0],max:[2,1,0]},{bufferView:1,componentType:5126,type:'VEC3',count:3},{bufferView:2,componentType:5126,type:'VEC2',count:3},{bufferView:3,componentType:5123,type:'SCALAR',count:3}],materials:[{pbrMetallicRoughness:{metallicFactor:0,roughnessFactor:.8}}],meshes:[{primitives:[{attributes:{POSITION:0,NORMAL:1,TEXCOORD_0:2},indices:3,material:0}]}],nodes:[{translation:[10,3,-2],children:[1]},{mesh:0,scale:[2,2,2]}],scenes:[{nodes:[0]}],scene:0};
+  const text=JSON.stringify(doc),json=Buffer.from(text+' '.repeat((4-Buffer.byteLength(text)%4)%4));
+  const header=Buffer.alloc(20);header.writeUInt32LE(0x46546c67);header.writeUInt32LE(2,4);header.writeUInt32LE(28+json.length+bin.length,8);header.writeUInt32LE(json.length,12);header.writeUInt32LE(0x4e4f534a,16);
+  const binaryHeader=Buffer.alloc(8);binaryHeader.writeUInt32LE(bin.length);binaryHeader.writeUInt32LE(0x004e4942,4);
+  return Buffer.concat([header,json,binaryHeader,bin]);
+}
+
 test('declared Blender verification executes only declared recipe and restores the repository',()=>{
   const root=tempRoot();
   try{
     fs.mkdirSync(path.join(root,'assets/test/native/model'),{recursive:true});
     fs.writeFileSync(path.join(root,'assets/test/build.py'),'# fixture recipe\n');
-    fs.writeFileSync(path.join(root,'assets/test/native/model/model.glb'),'fixture-glb');
+    fs.writeFileSync(path.join(root,'assets/test/native/model/model.glb'),dccFixtureGlb());
     fs.writeFileSync(path.join(root,'assets/test/native/model/preview.png'),'fixture-preview');
     fs.writeFileSync(path.join(root,'assets/test/native/model/evidence.json'),JSON.stringify({runtimeVerificationState:'STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING',productionVerified:false}));
     const blender=path.join(root,'fake-blender');
@@ -1258,7 +1271,7 @@ test('declared Blender verification executes only declared recipe and restores t
       'const at=process.argv.indexOf("--");const args=at>=0?process.argv.slice(at+1):[];',
       'const oi=args.indexOf("--output");const out=oi>=0?args[oi+1]:"assets/test/native/model";',
       'fs.mkdirSync(out,{recursive:true});',
-      'fs.writeFileSync(path.join(out,"model.glb"),"fixture-glb");',
+      'fs.writeFileSync(path.join(out,"model.glb"),Buffer.from('+JSON.stringify(dccFixtureGlb().toString('base64'))+',"base64"));',
       'fs.writeFileSync(path.join(out,"preview.png"),"fixture-preview");',
       'fs.writeFileSync(path.join(out,"evidence.json"),JSON.stringify({runtimeVerificationState:"STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING",productionVerified:false}));'
     ].join('\n')+'\n');
@@ -1280,6 +1293,7 @@ test('declared Blender verification executes only declared recipe and restores t
     assert.equal(result.candidateUsable,true);
     assert.equal(result.status,'DCC_RECIPE_REPRODUCED_EXISTING_ARTIFACT');
     assert.equal(result.recipes[0].runtimeVerified,false);
+    assert.equal(result.recipes[0].glbDataQaPass,true);
     assert.equal(execFileSync('git',['status','--porcelain'],{cwd:root,encoding:'utf8'}),'');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
@@ -1296,7 +1310,7 @@ test('declared Blender authoring persists exact generated outputs only inside th
       'const at=process.argv.indexOf("--");const args=at>=0?process.argv.slice(at+1):[];',
       'const oi=args.indexOf("--output");const out=oi>=0?args[oi+1]:"assets/test/native/model";',
       'fs.mkdirSync(out,{recursive:true});',
-      'fs.writeFileSync(path.join(out,"model.glb"),"candidate-glb");',
+      'fs.writeFileSync(path.join(out,"model.glb"),Buffer.from('+JSON.stringify(dccFixtureGlb().toString('base64'))+',"base64"));',
       'fs.writeFileSync(path.join(out,"preview.png"),"candidate-preview");',
       'fs.writeFileSync(path.join(out,"evidence.json"),JSON.stringify({runtimeVerificationState:"STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING",productionVerified:false}));'
     ].join('\n')+'\n');

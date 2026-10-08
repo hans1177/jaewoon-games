@@ -1175,8 +1175,10 @@ test('generic environment and prop authoring declares task-specific Blender outp
   assert.equal(unityOutputs.some(file=>robloxOutputs.has(file)),false);
 
   const web=buildVibeAssetProductionPlan({target:'web',task,manifest:{assets:[]},presetCatalog:{presets:[]}});
-  assert.equal(web.nativeAuthoringExecution.dcc.executionRequired,false);
-  assert.equal(web.nativeAuthoringExecution.dcc.executionRecipes.length,0);
+  assert.equal(web.nativeAuthoringExecution.dcc.executionRequired,true);
+  assert.ok(web.nativeAuthoringExecution.dcc.executionRecipes.length>0);
+  const twoD=buildVibeAssetProductionPlan({target:'web',task:{gameId:'flat-ui',goal:'2D 소품 아이콘 제작'},manifest:{assets:[]},presetCatalog:{presets:[]}});
+  assert.equal(twoD.nativeAuthoringExecution.dcc.executionRequired,false);
 });
 
 test('Web 3D actor work requires the shared Master GLB DCC path without forcing 2D Web actors',()=>{
@@ -2901,4 +2903,93 @@ test('registered assets are shared by family while all original safety and platf
     assert.ok(asset.family,asset.id);
     assert.ok(asset.fileRoles,asset.id);
   }
+});
+
+function writeInspectionTriangle(root,change=()=>{}){
+  const bin=Buffer.alloc(104);
+  [0,0,0,2,0,0,0,1,0].forEach((v,i)=>bin.writeFloatLE(v,i*4));
+  [0,0,1,0,0,1,0,0,1].forEach((v,i)=>bin.writeFloatLE(v,36+i*4));
+  [0,0,1,0,0,1].forEach((v,i)=>bin.writeFloatLE(v,72+i*4));
+  [0,1,2].forEach((v,i)=>bin.writeUInt16LE(v,96+i*2));
+  const doc={asset:{version:'2.0'},buffers:[{byteLength:104}],bufferViews:[{buffer:0,byteOffset:0,byteLength:36},{buffer:0,byteOffset:36,byteLength:36},{buffer:0,byteOffset:72,byteLength:24},{buffer:0,byteOffset:96,byteLength:6}],accessors:[{bufferView:0,componentType:5126,type:'VEC3',count:3,min:[0,0,0],max:[2,1,0]},{bufferView:1,componentType:5126,type:'VEC3',count:3},{bufferView:2,componentType:5126,type:'VEC2',count:3},{bufferView:3,componentType:5123,type:'SCALAR',count:3}],materials:[{pbrMetallicRoughness:{metallicFactor:0,roughnessFactor:.8}}],meshes:[{primitives:[{attributes:{POSITION:0,NORMAL:1,TEXCOORD_0:2},indices:3,material:0}]}],nodes:[{translation:[10,3,-2],children:[1]},{mesh:0,scale:[2,2,2]}],scenes:[{nodes:[0]}],scene:0};
+  change(doc,bin);
+  const text=JSON.stringify(doc),json=Buffer.from(text+' '.repeat((4-Buffer.byteLength(text)%4)%4));
+  const header=Buffer.alloc(20);header.writeUInt32LE(0x46546c67);header.writeUInt32LE(2,4);header.writeUInt32LE(28+json.length+bin.length,8);header.writeUInt32LE(json.length,12);header.writeUInt32LE(0x4e4f534a,16);
+  const binaryHeader=Buffer.alloc(8);binaryHeader.writeUInt32LE(bin.length);binaryHeader.writeUInt32LE(0x004e4942,4);
+  fs.writeFileSync(path.join(root,'triangle.glb'),Buffer.concat([header,json,binaryHeader,bin]));
+  return inspectVibeSourceGlb({repoRoot:root,source:{path:'triangle.glb'}});
+}
+
+test('GLB production inspection measures transformed geometry and ground pivot for static props',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'glb-spatial-'));
+  try{
+    const result=writeInspectionTriangle(root);
+    assert.equal(result.status,'INSPECTED_RECONSTRUCTION_INPUT',JSON.stringify(result.issues));
+    assert.deepEqual(result.inventory.spatial.bounds,{min:[10,3,-2],max:[14,5,-2]});
+    assert.deepEqual(result.inventory.spatial.groundTranslation,[-12,-3,2]);
+    assert.equal(result.inventory.spatial.triangleCount,1);
+    assert.equal(result.runtimeVerified,false);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('GLB production inspection rejects poisoned payloads and malformed import bindings',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'glb-payload-'));
+  const cases=[
+    ['GLB_POSITION_DATA_INVALID',(_,b)=>b.writeFloatLE(NaN,0)],
+    ['GLB_NORMAL_DATA_INVALID',(_,b)=>b.writeFloatLE(0,44)],
+    ['GLB_UV_DATA_INVALID',(_,b)=>b.writeFloatLE(Infinity,72)],
+    ['GLB_INDEX_DATA_INVALID',(_,b)=>b.writeUInt16LE(20,98)],
+    ['GLB_POSITION_BOUNDS_MISMATCH',d=>d.accessors[0].max=[20,1,0]],
+    ['GLB_NODE_HIERARCHY_INVALID',d=>d.nodes[1].children=[0]],
+    ['GLB_NODE_TRANSFORM_INVALID',d=>d.nodes[1].rotation=[0,0,0,0]],
+    ['GLB_MATERIAL_FACTOR_INVALID',d=>d.materials[0].pbrMetallicRoughness.roughnessFactor=2],
+    ['GLB_MATERIAL_TEXTURE_BINDING_INVALID',d=>d.materials[0].normalTexture={index:5}],
+    ['GLB_SPARSE_MATERIALIZATION_REQUIRED',d=>d.accessors[0].sparse={count:1}],
+    ['GLB_VISIBLE_GEOMETRY_REQUIRED',d=>d.scenes[0].nodes=[]]
+  ];
+  try{for(const [reason,change] of cases){const result=writeInspectionTriangle(root,change);assert(result.issues.includes(reason),reason+': '+JSON.stringify(result.issues));assert.notEqual(result.status,'INSPECTED_RECONSTRUCTION_INPUT');}}
+  finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('native asset recipe preserves explicit concept style over genre words and shares it across platforms',()=>{
+  const task={gameId:'cozy-horror',genre:'HORROR',goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] horror 바위 소품 3D 제작',assetSubject:'rock',styleFamily:'COZY'};
+  for(const target of ['web','roblox','unity']){
+    const plan=buildVibeAssetProductionPlan({target,task,manifest:{assets:[]},presetCatalog:{presets:[]}});
+    const recipe=plan.nativeAuthoringExecution.dcc.executionRecipes.find(row=>row.types.includes('prop'));
+    assert(recipe,target);
+    const args=recipe.args;
+    assert.equal(args[args.indexOf('--subject')+1],'rock');
+    const style=JSON.parse(args[args.indexOf('--style-json')+1]);
+    assert.equal(style.sourceStyleFamily,'COZY');
+    assert.equal(style.axes.SHAPE_TEMPER,'ROUND');
+    assert.equal(args[args.indexOf('--genre')+1],'HORROR');
+    assert(recipe.outputs.some(value=>value.endsWith('/application.json')));
+  }
+});
+
+test('actual Blender authoring preserves a styled master across platforms and exports inspected ground bounds',{skip:!process.env.VIBE2_BLENDER_BINARY,timeout:480000},()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-blender-quality-'));
+  const rows=[];
+  try{
+    for(const [target,style] of [['web','COZY'],['roblox','COZY'],['unity','COZY'],['web','LOW_POLY']]){
+      const folder=path.join(root,target+'-'+style);
+      const expression={sourceStyleFamily:style,axes:{SHAPE_TEMPER:style==='COZY'?'ROUND':'SHARP',COLOR_ENERGY:'NATURAL',DAMAGE_WEAR:'LIGHT_WORN'}};
+      execFileSync(process.env.VIBE2_BLENDER_BINARY,['--background','--threads','2','--python','assets/native-authoring/build-game-visual.py','--','--output',folder,'--asset-id','quality-rock','--profile','prop','--subject','rock','--target',target,'--style-json',JSON.stringify(expression),'--genre','EXPLORATION'],{timeout:110000,maxBuffer:4*1024*1024,stdio:['ignore','pipe','pipe']});
+      const inspection=inspectVibeSourceGlb({repoRoot:root,source:{path:path.relative(root,path.join(folder,'asset.glb'))}});
+      assert.equal(inspection.status,'INSPECTED_RECONSTRUCTION_INPUT',JSON.stringify(inspection.issues));
+      assert(Math.abs(inspection.inventory.spatial.bounds.min[1])<.001);
+      const application=JSON.parse(fs.readFileSync(path.join(folder,'application.json'),'utf8'));
+      assert.equal(application.masterSha256,inspection.sourceHash);
+      assert.equal(application.nativeRuntimeVerified,false);
+      assert.equal(application.style.sourceStyleFamily,style);
+      assert(application.materials.every(row=>Math.abs(row.unity.smoothness+row.web.roughness-1)<1e-6));
+      assert(fs.statSync(path.join(folder,'preview.png')).size>1000);
+      rows.push({target,style,sha256:inspection.sourceHash,spatial:inspection.inventory.spatial});
+    }
+    assert.equal(new Set(rows.slice(0,3).map(row=>row.sha256)).size,1,'target export must preserve the same styled master');
+    assert.notEqual(rows[0].sha256,rows[3].sha256,'explicit style must affect authored bytes');
+    assert(rows[3].spatial.triangleCount<rows[0].spatial.triangleCount);
+    console.log('VIBE_GLB_AUTHORING_MEASUREMENT='+JSON.stringify({nativeRuntimeVerified:false,rows}));
+    if(process.env.RUNNER_TEMP){fs.cpSync(root,path.join(process.env.RUNNER_TEMP,'vibe2-glb-authoring-evidence'),{recursive:true});}
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
