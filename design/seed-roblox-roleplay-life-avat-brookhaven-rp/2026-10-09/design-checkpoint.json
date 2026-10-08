@@ -19,25 +19,40 @@
     "local_authoring_parts::fab74c06de49ef814c6604045ec8ffaeff38662cdb6e5a4bcd59fe4d4779d410:identity,playerFantasy": {
       "identity": "Harbor Days은 플레이어가 주체로 '진입'하는 단일 게임이며, 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'입니다. 이 행동은 즉시 상태 변화를 유발하며, 선택 결과는 다음 월드 상태에 영향을 미칩니다. 게임은 ACTION_SURVIVAL_ROGUELITE 장르의 핵심 루프인 반복 가능한 선택-위험-보상 시스템을 기반으로 설계됩니다. MAIN/A/B/c/@와 관련된 시스템은 모두 실제 게임 상태 변화로 구현되어 있습니다.",
       "playerFantasy": "Harbor Days은 플레이어가 주체로 '진입'하는 단일 게임이며, 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'입니다. 이 행동은 즉시 상태 변화를 유발하며, 선택 결과는 다음 월드 상태에 영향을 미칩니다. 게임은 ACTION_SURVIVAL_ROGUELITE 장르의 핵심 루프인 반복 가능한 선택-위험-보상 시스템을 기반으로 설계됩니다. MAIN/A/B/c/@와 관련된 시스템은 모두 실제 게임 상태 변화로 구현되어 있습니다."
+    },
+    "local_authoring_parts::fab74c06de49ef814c6604045ec8ffaeff38662cdb6e5a4bcd59fe4d4779d410:coreFun": {
+      "coreFun": "Harbor Days은 플레이어가 주체로 '진입'하는 단일 게임이며, 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'입니다. 이 행동은 즉시 상태 변화를 유발하며, 선택 결과는 다음 월드 상태에 영향을 미칩니다. 게임은 ACTION_SURVIVAL_ROGUELITE 장르의 핵심 루프인 반복 가능한 선택-위험-보상 시스템을 기반으로 설계됩니다. MAIN/A/B/c/@와 관련된 시스템은 모두 실제 게임 상태 변화로 구현되어 있습니다."
+    },
+    "local_authoring_parts::6abfeea4e274889d3e4f636d7a00d7ec38230daf74362204f561b4d348f45466:identity,playerFantasy,coreFun": {
+      "identity": "Harbor Days은 플레이어가 주체로 '진입'하는 단일 게임이며, 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'입니다. 이 행동은 즉시 상태 변화를 유발하며, 선택 결과는 다음 월드 상태에 영향을 미칩니다. 게임은 ACTION_SURVIVAL_ROGUELITE 장르의 핵심 루프인 반복 가능한 선택-위험-보상 시스템을 기반으로 설계됩니다. MAIN/A/B/c/@와 관련된 시스템은 모두 실제 게임 상태 변화로 구현되어 있습니다.",
+      "playerFantasy": "Harbor Days은 플레이어가 주체로 '진입'하는 단일 게임이며, 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'입니다. 이 행동은 즉시 상태 변화를 유발하며, 선택 결과는 다음 월드 상태에 영향을 미칩니다. 게임은 ACTION_SURVIVAL_ROGUELITE 장르의 핵심 루프인 반복 가능한 선택-위험-보상 시스템을 기반으로 설계됩니다. MAIN/A/B/c/@와 관련된 시스템은 모두 실제 게임 상태 변화로 구현되어 있습니다.",
+      "coreFun": "Harbor Days은 플레이어가 주체로 '진입'하는 단일 게임이며, 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'입니다. 이 행동은 즉시 상태 변화를 유발하며, 선택 결과는 다음 월드 상태에 영향을 미칩니다. 게임은 ACTION_SURVIVAL_ROGUELITE 장르의 핵심 루프인 반복 가능한 선택-위험-보상 시스템을 기반으로 설계됩니다. MAIN/A/B/c/@와 관련된 시스템은 모두 실제 게임 상태 변화로 구현되어 있습니다."
+    },
+    "local_authoring_parts::26eb6e3e9145c280ef274f94ba81c985d23ae401ec80c467c7ad28183acf1f4d:coreLoop": {
+      "coreLoop": [
+        "INPUT: 플레이어가 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 수행하며 즉시 상태 변화를 유발합니다.",
+        "SELECT: 선택 결과는 다음 월드 상태에 영향을 미칩니다. 이 선택은 주로 두 가지 방식 중 하나로 이루어집니다 - 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.' 또는 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'",
+        "OUTPUT: 위험 및 보상을 기반으로 한 다음 선택의 가능성과 새로운 상태 변화를 생성합니다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 245752,
-      "lastMs": 36176,
+      "totalMs": 346981,
+      "lastMs": 59672,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:43:34.508Z"
+      "updatedAt": "2026-10-08T18:45:15.743Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:39:28.729Z",
-  "updatedAt": "2026-10-08T18:43:34.510Z",
+  "updatedAt": "2026-10-08T18:45:15.743Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2236,7 +2251,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:43:34.510Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:45:15.743Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
