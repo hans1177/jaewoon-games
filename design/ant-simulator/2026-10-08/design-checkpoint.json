@@ -56,25 +56,46 @@
       "name": "월드 상태 변환 시스템",
       "purpose": "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 자원, 위험, 진행 상태를 변화시키는 반복 가능한 게임 루프를 구축",
       "playerChoice": "개미 종족을 선택하고, 월드 상태를 변화시키며, 보상, 위험, 목표를 통해 게임을 진행하는 반복 가능한 게임 루프를 경험하며, 모바일에서도 즉시 이해 가능한 입력·피드백·실패·재도전 흐름을 가진다"
+    },
+    "local_authoring_parts::713809e664e8d306d523a4cfa3db0ff0928d5904e7ac376461a7240136c71299:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "currentWorldState",
+        "playerTarget",
+        "availableResources",
+        "potentialHazards",
+        "progressionStatus"
+      ],
+      "stateOutputs": [
+        "updatedWorldState",
+        "newPlayerTarget",
+        "modifiedResources",
+        "reducedHazards",
+        "newProgressionStatus"
+      ],
+      "name": "자원과 위험 조절 시스템",
+      "purpose": "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 자원과 위험을 조절하여 게임 루프를 구축",
+      "playerChoice": "자원을 효율적으로 관리하고, 위험을 줄이며, 목표를 설정하여 게임을 진행하는 반복 가능한 게임 루프를 경험하며, 모바일에서도 즉시 이해 가능한 입력·피드백·실패·재도전 흐름을 가진다"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 151620,
-      "lastMs": 21043,
+      "totalMs": 172291,
+      "lastMs": 20671,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:31:34.006Z"
+      "updatedAt": "2026-10-08T12:31:54.678Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:29:02.212Z",
-  "updatedAt": "2026-10-08T12:31:34.006Z",
+  "updatedAt": "2026-10-08T12:31:54.678Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2132,7 +2153,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:31:34.006Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:31:54.678Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
