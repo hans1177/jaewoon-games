@@ -56,25 +56,40 @@
       "name": "자원 모집 및 거점 점령 시스템",
       "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득하며, 주민은 자동화를 통해 반복 노동을 자동화하고, 병사는 자원을 전투력으로 전환하여 거점 공략에 참여한다. 각 거점은 서로 다른 적과 보상을 가진다. 주민은 자동화를 통해 반복 노동을 자동화하고, 병사는 전투력으로 자원을 확보하여 거점 점령에 기여한다. 점령 후 보상은 자원 수확과 전투력 강화로 이어지며, 협동 지원을 통해 강한 거점 공략이 가능하다.",
       "playerChoice": "주민 고용, 자원 전환, 거점 선택, 협동 지원을 순차적으로 수행하며, 성장감을 느끼는 게임 경험을 선사한다."
+    },
+    "local_authoring_parts::226628274fd0b985f741ecb76f1be31dc2b27b96616596b5f13ba6aa74294c8a:signatureSystems:1": {
+      "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+      "grammarRole": "A",
+      "stateInputs": [
+        "INPUT: 직접 채집",
+        "INPUT: 자원 전환"
+      ],
+      "stateOutputs": [
+        "STATE: 나무·식량 수집 상태 변화",
+        "STATE: 병사 전투력 확보 상태 변화"
+      ],
+      "name": "자원 전환 및 병력 확보 시스템",
+      "purpose": "자원은 병력으로 전환하여 거점 공략에 활용되며, 병사는 전투력으로 자원을 확보하여 거점 점령에 기여한다. 각 거점은 서로 다른 적과 보상을 가진다.",
+      "playerChoice": "자원 전환 및 병력 확보를 순차적으로 수행하며, 거점 점령에 기여하는 게임 경험을 선사한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 614846,
-      "lastMs": 84809,
+      "totalMs": 678861,
+      "lastMs": 64015,
       "lastError": null,
-      "updatedAt": "2026-10-08T07:58:54.352Z"
+      "updatedAt": "2026-10-08T07:59:58.368Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:48:39.217Z",
-  "updatedAt": "2026-10-08T07:58:54.352Z",
+  "updatedAt": "2026-10-08T07:59:58.369Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -629,7 +644,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T07:58:54.352Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T07:59:58.368Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
