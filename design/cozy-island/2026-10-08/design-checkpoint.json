@@ -517,25 +517,156 @@
           "playerChoice": "자원의 수집, 주민의 고용, 병력의 강화, 거점의 점령, 자동전투, 협동 지원의 순차적 진행"
         }
       ]
+    },
+    "local_authoring_parts::04bf47a5d672118143179e05365393266a1dc8ab1a7cc12b36865cc3022def13:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::da230584fd4e84a762f2aeaa5a7ff43b3bc8c8f7809e0f0e9adfd80e4de9d568:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "나무·식량 직접 채집",
+        "주민 고용과 벌목/농업 자동화",
+        "병영 강화와 병사 모집",
+        "다음 자원 거점 선택",
+        "보이는 자동전투와 점령 보상",
+        "협동 지원으로 강한 거점 공략"
+      ],
+      "signatureSystems": [
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "나무·식량 직접 채집",
+            "주민 고용과 벌목/농업 자동화",
+            "병영 강화와 병사 모집",
+            "다음 자원 거점 선택",
+            "보이는 자동전투와 점령 보상",
+            "협동 지원으로 강한 거점 공략"
+          ],
+          "stateOutputs": [
+            "자원 수집 및 주민 고용",
+            "병력 강화 및 거점 점령",
+            "자동전투 및 협동 지원",
+            "왕국 확장 및 성장 감각",
+            "자원 거점 선택 및 보상 획득",
+            "전략적 조합 및 병종 확보"
+          ],
+          "name": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "purpose": "자원 수집 및 주민 고용, 병력 강화 및 거점 점령, 자동전투 및 협동 지원, 왕국 확장 및 성장 감각, 자원 거점 선택 및 보상 획득, 전략적 조합 및 병종 확보",
+          "playerChoice": "자원의 수집, 주민의 고용, 병력의 강화, 거점의 점령, 자동전투, 협동 지원의 순차적 진행"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "A",
+          "stateInputs": [
+            "나무·식량 직접 채집",
+            "주민 고용과 벌목/농업 자동화",
+            "병영 강화와 병사 모집",
+            "다음 자원 거점 선택",
+            "보이는 자동전투와 점령 보상",
+            "협동 지원으로 강한 거점 공략"
+          ],
+          "stateOutputs": [
+            "자원 수집 및 주민 고용",
+            "병력 강화 및 거점 점령",
+            "자동전투 및 협동 지원",
+            "왕국 확장 및 성장 감각",
+            "자원 거점 선택 및 보상 획득",
+            "전략적 조합 및 본종 확보"
+          ],
+          "name": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "purpose": "자원 수집 및 주민 고용, 병력 강화 및 거점 점령, 자동전투 및 협동 지원, 왕국 확장 및 성장 감각, 자원 거점 선택 및 보상 획득, 전략적 조합 및 병종 확보",
+          "playerChoice": "자원의 수집, 주민의 고용, 병력의 강화, 거점의 점령, 자동전투, 협동 지원의 순차적 진행"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "B",
+          "stateInputs": [
+            "나무·식량 직접 채집",
+            "주민 고용과 벌목/농업 자동화",
+            "병영 강화와 병사 모집",
+            "다음 자원 거점 선택",
+            "보이는 자동전투와 점령 보상",
+            "협동 지원으로 강한 거점 공략"
+          ],
+          "stateOutputs": [
+            "자원 수집 및 주민 고용",
+            "병력 강화 및 거점 점령",
+            "자동전투 및 협동 지원",
+            "왕국 확장 및 성장 감각",
+            "자원 거점 선택 및 보상 획득",
+            "전략적 조합 및 본종 확보"
+          ],
+          "name": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "purpose": "자원 수집 및 주민 고용, 병력 강화 및 거점 점령, 자동전투 및 협동 지원, 왕국 확장 및 성장 감각, 자원 거점 선택 및 보상 획득, 전략적 조합 및 병종 확보",
+          "playerChoice": "자원의 수집, 주민의 고용, 병력의 강화, 거점의 점령, 자동전투, 협동 지원의 순차적 진행"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "c",
+          "stateInputs": [
+            "나무·식량 직접 채집",
+            "주민 고용과 벌목/농업 자동화",
+            "병영 강화와 병사 모집",
+            "다음 자원 거점 선택",
+            "보이는 자동전투와 점령 보상",
+            "협동 지원으로 강한 거점 공략"
+          ],
+          "stateOutputs": [
+            "자원 수집 및 주민 고용",
+            "병력 강화 및 거점 점령",
+            "자동전투 및 협동 지원",
+            "왕국 확장 및 성장 감각",
+            "자원 거점 선택 및 보상 획득",
+            "전략적 조합 및 병종 확보"
+          ],
+          "name": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "purpose": "자원 수집 및 주민 고용, 병력 강화 및 거점 점령, 자동전투 및 협동 지원, 왕국 확장 및 성장 감각, 자원 거점 선택 및 보상 획득, 전략적 조합 및 병종 확보",
+          "playerChoice": "자원의 수집, 주민의 고용, 병력의 강화, 거점의 점령, 자동전투, 협동 지원의 순차적 진행"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "나무·식량 직접 채집",
+            "주민 고용과 벌목/농업 자동화",
+            "병영 강화와 병사 모집",
+            "다음 자원 거점 선택",
+            "보이는 자동전투와 점령 보상",
+            "협동 지원으로 강한 거점 공략"
+          ],
+          "stateOutputs": [
+            "자원 수집 및 주민 고용",
+            "병력 강화 및 거점 점령",
+            "자동전투 및 협동 지원",
+            "왕국 확장 및 성장 감각",
+            "자원 거점 선택 및 보상 획득",
+            "전략적 조합 및 본종 확보"
+          ],
+          "name": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "purpose": "자원 수집 및 주민 고용, 병력 강화 및 거점 점령, 자동전투 및 협동 지원, 왕국 확장 및 성장 감각, 자원 거점 선택 및 보상 획득, 전략적 조합 및 병종 확보",
+          "playerChoice": "자원의 수집, 주민의 고용, 병력의 강화, 거점의 점령, 자동전투, 협동 지원의 순차적 진행"
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 14,
+      "calls": 19,
+      "successes": 15,
       "failures": 4,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1048075,
-      "lastMs": 38102,
+      "totalMs": 1078667,
+      "lastMs": 30592,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T03:48:02.828Z"
+      "updatedAt": "2026-10-08T03:48:33.424Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T03:30:34.599Z",
-  "updatedAt": "2026-10-08T03:48:02.831Z",
+  "updatedAt": "2026-10-08T03:48:33.468Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1090,33 +1221,16 @@
   "sliceRepairFeedback": {
     "designer_draft_slices::identity-core": [
       {
-        "code": "DESIGN_RULE_ROLE_MISSING",
+        "code": "DESIGN_RULE_STATE_MISSING",
         "kind": "HARD_GATE",
         "axis": "CORE_LOOP_DESIGN",
         "evidenceLevel": null,
         "minimumRequired": null,
         "evidence": {
           "path": "signatureSystems",
-          "detail": "A 역할과 그 상태 입출력을 명확히 구분해야 한다"
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
         },
-        "requiredAction": "signatureSystems: A 역할과 그 상태 입출력을 명확히 구분해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "signatureSystems"
-        ]
-      },
-      {
-        "code": "DESIGN_RULE_ROLE_MISSING",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "signatureSystems",
-          "detail": "DELVE 역할과 그 상태 입출력을 명확히 구분해야 한다"
-        },
-        "requiredAction": "signatureSystems: DELVE 역할과 그 상태 입출력을 명확히 구분해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -1126,14 +1240,14 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 2
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T03:48:02.831Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T03:48:33.426Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
   "localAuthoringSplits": {
     "da230584fd4e84a762f2aeaa5a7ff43b3bc8c8f7809e0f0e9adfd80e4de9d568": true,
     "164e1bc49c11f90f6e059dfac3e9d90af34613f2f8e4ae45133c3a01a5e75279": true,
