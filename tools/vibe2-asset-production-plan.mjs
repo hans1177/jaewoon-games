@@ -4277,6 +4277,131 @@ export function buildVibeAssetProductionPlan({
       missingAuthoringToolLeavesExactAuthoringStagePending:true
     })
   });
+  // 장르별 UI 아이디어를 기존 에셋 제작 입력으로 통합한다. 게임/저장/경제 로직 소유권은 그대로 둔다.
+  const menuSeed=createCompanySeedAssetIdeationPlan({seeds:[{
+    gameId:clean(task.gameId),gameName:clean(task.gameName),
+    genre:clean(task.genre||task.gameplayGenre||task.subgenre),
+    coreFun:clean(task.goal||task.request),
+    coreLoop:Array.isArray(task.coreLoop)?task.coreLoop:[],
+    signatureSystems:Array.isArray(task.signatureSystems)?task.signatureSystems:[]
+  }]});
+  const menuRolesBySignal=freeze({
+    RPG_PROGRESSION:['CHARACTER','INVENTORY','EQUIPMENT','TRADE','QUEST'],
+    ACTION_COMBAT:['EQUIPMENT','DEFENSE'],
+    SURVIVAL:['SURVIVAL','INVENTORY','CRAFT','MAP'],
+    ROGUELITE_RUN:['EQUIPMENT','GROWTH','DEFENSE'],
+    PUZZLE:['PUZZLE'],CASUAL_SHORT_RUN:['GROWTH'],
+    IDLE_GROWTH:['GROWTH','EQUIPMENT'],
+    TYCOON_SIM:['HOUSING','TRADE','GROWTH'],
+    SOCIAL_ROLEPLAY:['CHARACTER','DIALOGUE','PARTY'],
+    HORROR:['QUEST','CODEX','INTERACTION'],
+    DEFENSE:['DEFENSE','EQUIPMENT','GROWTH'],
+    NARRATIVE:['DIALOGUE','QUEST','CODEX'],
+    EXPLORATION:['MAP','CODEX'],SANDBOX_HOUSING:['HOUSING','INVENTORY'],
+    COZY_FARMING:['FARM','INVENTORY','CRAFT'],
+    COOP_MULTIPLAYER:['PARTY','MAP']
+  });
+  const menuRoleFactories=freeze({
+    NAV:'CreateOneHandBottomNav',CHARACTER:'CreateCharacterDetailScreen',
+    INVENTORY:'CreateInventoryFullScreen',EQUIPMENT:'CreateEquipmentFullScreen',
+    TRADE:'CreateBuySellPanel',QUEST:'CreateQuestLog',
+    CODEX:'CreateCodexScreen',CRAFT:'CreateCraftingFullScreen',MAP:'CreateMapFullScreen',
+    PARTY:'CreatePartyRoleOverview',DIALOGUE:'CreateDialoguePanel',
+    HOUSING:'CreateBuildCatalogPanel',FARM:'CreateFarmPlotPanel',
+    GROWTH:'CreateProgressBar',DEFENSE:'CreateWaveForecastRibbon',
+    PUZZLE:'CreateProgressBar',SURVIVAL:'CreateStatusEffectChip',
+    INTERACTION:'CreateNpcInteractionPrompt'
+  });
+  const menuRoleSourceHints=freeze({
+    NAV:/menu|navigation|tab|screen|메뉴|화면/i,
+    CHARACTER:/character|player|level|classId|health|캐릭터/i,
+    INVENTORY:/inventory|backpack|ownedWeapons|ownedArmors|items|인벤토리|배낭/i,
+    EQUIPMENT:/equipment|equip|weapon|armor|gear|장비|무기/i,
+    TRADE:/merchant|vendor|trade|shop|buy|sell|gold|price|매매|상점/i,
+    QUEST:/quest|objective|mission|퀘스트|의뢰/i,
+    CODEX:/codex|collection|discovery|도감|발견/i,
+    CRAFT:/craft|recipe|workbench|제작/i,MAP:/map|region|world|minimap|지도|지역/i,
+    PARTY:/party|multiplayer|companion|co-?op|파티|멀티/i,
+    DIALOGUE:/dialogue|npc|conversation|대화/i,
+    HOUSING:/build|place|construction|housing|건축|배치/i,
+    FARM:/farm|crop|harvest|농사|농장|작물/i,
+    GROWTH:/level|xp|experience|progress|score|성장|레벨/i,
+    DEFENSE:/wave|defense|tower|boss|웨이브|디펜스/i,
+    PUZZLE:/puzzle|tile|board|grid|퍼즐/i,
+    SURVIVAL:/survival|hunger|thirst|temperature|생존/i,
+    INTERACTION:/interact|prompt|clue|clickdetector|상호작용|단서/i
+  });
+  const nativeMenuMethodHints=freeze({
+    CHARACTER:['DrawCharacterWindow','Model.character'],
+    INVENTORY:['DrawEquipmentInventory','CreateInventoryFullScreen'],
+    EQUIPMENT:['DrawEquipmentInventory','Model.equipment'],
+    TRADE:['DrawShopWindow','Model.shop'],
+    QUEST:['DrawRegionControls','Model.quest'],
+    PARTY:['DrawControls','Model.partySummary']
+  });
+  const safeMenuGameId=/^[a-z0-9][a-z0-9_-]*$/i.test(currentGameId)?currentGameId:'';
+  const uiLibrarySourcePath='assets/roblox/common-ui-v1/RobloxCommonUI.luau';
+  let uiLibrarySource='';
+  try{uiLibrarySource=fs.readFileSync(path.join(repoRoot,uiLibrarySourcePath),'utf8');}catch{}
+  const uiLibraryHash=uiLibrarySource?crypto.createHash('sha256').update(uiLibrarySource).digest('hex'):null;
+  const nativeMenuPaths=!safeMenuGameId?[]:resolvedTarget==='roblox'?[
+    'roblox-games/'+safeMenuGameId+'/shared/RPGMenu.luau',
+    'roblox-games/'+safeMenuGameId+'/shared/RPGMenuModel.luau',
+    'roblox-games/'+safeMenuGameId+'/client/Game.client.luau',
+    'roblox-games/'+safeMenuGameId+'/shared/GameConfig.luau'
+  ]:resolvedTarget==='unity'?[
+    'unity-games/'+safeMenuGameId+'/Assets/Scripts/RuntimeBootstrap.cs',
+    'unity-games/'+safeMenuGameId+'/Assets/Scripts/GameCore.cs'
+  ]:[];
+  const nativeMenuSources=nativeMenuPaths.flatMap(file=>{
+    try{
+      const full=path.join(repoRoot,file),stat=fs.statSync(full);
+      if(!stat.isFile()||stat.size>750000)return[];
+      const content=fs.readFileSync(full,'utf8');
+      return[freeze({file,content,sha256:crypto.createHash('sha256').update(content).digest('hex')})];
+    }catch{return[];}
+  });
+  const currentMenuIdeaIds=menuSeed.ideas.filter(idea=>idea.domain==='UI');
+  const selectedMenuRoles=new Map([['NAV',new Set(['ALWAYS'])]]);
+  for(const signal of menuSeed.detectedSignals){
+    for(const role of menuRolesBySignal[signal]||[]){
+      if(!selectedMenuRoles.has(role))selectedMenuRoles.set(role,new Set());
+      selectedMenuRoles.get(role).add(signal);
+    }
+  }
+  const menuFeatureSuggestions=freezeList([...selectedMenuRoles].map(([role,signalSet])=>{
+    const factory=menuRoleFactories[role],methodHints=nativeMenuMethodHints[role]||[];
+    const gameSystemSource=nativeMenuSources.filter(row=>menuRoleSourceHints[role].test(row.content));
+    const existingNativeUiSource=nativeMenuSources.filter(row=>methodHints.some(method=>row.content.includes(method)));
+    const status=existingNativeUiSource.length?'NATIVE_UI_SOURCE_PRESENT_RUNTIME_QA_REQUIRED'
+      :gameSystemSource.length?'EXISTING_SYSTEM_NATIVE_UI_BINDING_REQUIRED':'IDEA_ONLY_GAME_SYSTEM_NOT_CONFIRMED';
+    return freeze({
+      role,factory,signalIds:freezeList([...signalSet]),
+      sourceIdeaIds:freezeList(currentMenuIdeaIds.filter(row=>
+        row.sourceSignals.some(signal=>signalSet.has(signal))).map(row=>row.ideaId)),
+      companyUiSource:uiLibrarySourcePath,companyUiSourceSha256:uiLibraryHash,
+      companyFactoryPresent:uiLibrarySource.includes('function RobloxCommonUI.'+factory+'(options)'),
+      platform:resolvedTarget.toUpperCase(),
+      gameSystemSourceRefs:freezeList(gameSystemSource.map(row=>freeze({path:row.file,sha256:row.sha256}))),
+      existingNativeUiRefs:freezeList(existingNativeUiSource.map(row=>freeze({path:row.file,sha256:row.sha256}))),
+      status,nextAction:existingNativeUiSource.length?'VERIFY_NATIVE_RUNTIME_MOBILE_UI_AND_STATE_SYNCHRONIZATION'
+        :gameSystemSource.length?'BIND_EXISTING_GAME_RESPONSIBLE_SOURCE'
+          :'CHECK_GAME_SYSTEM_BEFORE_UI_ADDITION',
+      applyVia:'EXISTING_BUILD_UP_GRAPHICS_PRODUCTION_INPUT_ONLY',
+      sourceOnlyNotRuntimePass:true,gameplaySaveNetworkEconomyAuthorityRetained:true
+    });
+  }));
+  const genreMenuRecommendations=freeze({
+    version:1,signals:freezeList(menuSeed.detectedSignals),
+    companySeedUiIdeaIds:freezeList(currentMenuIdeaIds.map(row=>row.ideaId)),
+    uiFactorySource:uiLibrarySourcePath,uiFactorySha256:uiLibraryHash,
+    nativeGameSourceCount:nativeMenuSources.length,
+    candidateFeatures:menuFeatureSuggestions,
+    nativeSourceBoundCandidateCount:menuFeatureSuggestions.filter(row=>row.existingNativeUiRefs.length>0).length,
+    runtimeVerifiedCount:0,newQueueCreated:false,shadowUiPipelineCreated:false,
+    implementationOwner:'VIBE2_VIBE3_EXISTING_GAME_SOURCE',dataOwner:'GAMEPLAY_AND_SERVER',
+    missingGameSystemCannotBeInvented:true,existingGameplayAndSaveMustRemain:true
+  });
   const assetSupplySummary=buildAssetSupplyDecisionSummary({
     gameId:task.gameId,
     target:resolvedTarget,
@@ -4305,6 +4430,7 @@ export function buildVibeAssetProductionPlan({
     internalLibraryEvolution:effectiveInternalLibraryEvolution,
     flowAssetRequirements,
     assetSupplySummary,
+    genreMenuRecommendations,
     registrySync:freeze({
       changed:librarySync.changed===true,
       persisted:librarySync.persisted===true,
@@ -4849,6 +4975,18 @@ export function assetProductionGuidance(plan={}){
   if(plan?.kind!=='vibe2-asset-production-plan') return '';
   const lines=[
     '[GRAPHICS_PRODUCTION / ASSET INPUT]',
+
+    plan.genreMenuRecommendations?.candidateFeatures?.length?'[GENRE MENU FEATURE SYNCHRONIZATION] '+
+      JSON.stringify({
+        signals:plan.genreMenuRecommendations.signals,
+        ideas:plan.genreMenuRecommendations.companySeedUiIdeaIds,
+        features:plan.genreMenuRecommendations.candidateFeatures.map(row=>({
+          role:row.role,factory:row.factory,sourceSha256:row.companyUiSourceSha256,
+          gameSources:row.gameSystemSourceRefs,implementedNativeSources:row.existingNativeUiRefs,
+          status:row.status,nextAction:row.nextAction
+        }))
+      })+
+      '. 장르는 기능 추천일 뿐 필수 게임 시스템 추가 권한이 아니다. GAME_SYSTEM_NOT_CONFIRMED는 아이디어로 유지한다. 실제 게임에 이미 있는 UI·인벤토리·상점·캐릭터·퀘스트 기능만 대상 엔진의 기존 책임 함수에서 직접 연결한다. Roblox Luau 공용 팩을 Unity C#에 그대로 복사하지 않는다. 새 wrapper, shadow sync, 큐를 만들지 않는다. 값은 서버/게임 상태와 기존 저장 원본만 읽으며, 버튼은 서버의 기존 가격/소유/권한 검증 경로로 요청한다. 실제 재접속·터치·스와이프·세로/가로·게임패드·스크롤·게임 실행 검수 전에는 SOURCE_ONLY_UNVERIFIED다.':'',
     plan.companyGraphicsLibrary?.baseMotionQualityWorkSession?.defaultMinutes?`[BASE MOTION QUALITY WORK] ${JSON.stringify(plan.companyGraphicsLibrary.baseMotionQualityWorkSession)}. 현재 승인된 내부 자산 모션 수정 1회차는 기존 오브젝트 1개와 기존 동작 1개만 선택한다. task.motionRepairWorkUnit에 실제 objectId/clipId/책임 sourcePath/현재 sourceHash/정확한 sourceWindow와 원본 바인딩 근거를 고정한다. 약 60분은 준비·검수·보고를 제외한 실제 수정 작업량의 추정치다. 같은 동작 안에서 자세·체중 15분, 관절 곡선·접촉 20분, 후행·반동·복귀·루프 15분, 남은 디테일 재수정 10분 분량을 계획한다. 여러 오브젝트나 여러 동작의 수정량을 합산하지 않는다. 같은 대상을 검토가 끝날 때까지 유지하고 별도 워커나 큐를 만들지 않는다. 기존 책임 경로 밖 원본이나 지원하지 않는 authoring 도구가 필요하면 정확한 단계로 남기며 새 권한을 만들지 않는다. 대기나 호출 반복으로 시간을 채우지 않는다. 준비→중심 이동→접촉→반동→회복을 기존 책임 함수에서 수정하고 클립 길이와 기존 판정 이벤트 시점은 보존한다. owner나 ChatGPT를 기다리지 않고 같은 ASSET_DEVELOPMENT 작업을 진행한다. 경과시간·키프레임 수는 품질 증거가 아니며 같은 조건의 전후 비교와 실제 native 재생 전에는 품질 통과나 제작 완료를 주장하지 않는다.`:'',
     plan.internalLibraryEvolution?.nextQualityActions?.length?`[INTERNAL ASSET DETAIL REPAIR] 현재 선택 작업의 activeDetailImprovement 또는 QUALITY_UP_1000.action에 지정된 assetId/sourceFiles/weakestAxis/detailSteps를 기존 책임 함수에 적용한다. 측정이 없는 INSPECT_ASSET_QUALITY는 결함 확정이나 임의 점수 부여가 아니라 현재 원본·동일 조건 비교부터 수행한다. 접합부·재질 반응·상태·모션을 구체적으로 보강하고 preserveAxes와 정체성·게임 의미는 유지한다. 비교와 모바일 예산 확인 전에는 수정 완료나 품질 상승을 주장하지 않는다. 이 목록은 기존 책임 범위를 확대하는 권한이 아니며 다른 게임 소스나 격리 자산을 수정하지 않는다.`:'',
     plan.internalLibraryEvolution?.phase?`[INTERNAL LIBRARY EVOLUTION] ${JSON.stringify(internalLibraryEvolutionGuidanceSummary(plan.internalLibraryEvolution))}. VOLUME_UP에서는 company-asset-library.json#internalAssetLibraryAutomation.nextVolumeActions의 우선순위를 먼저 소비하고 각 항목을 REUSE_EXISTING→DERIVE_VARIANT→RECOMBINE_EXISTING→LICENSE_VERIFIED_FREE_SOURCE_ADAPT→NEW_AUTHORING 순서로 해결한다. 외부 무료 원본은 CC0 또는 상업 이용·수정 허용이 명확하고 출처/계보를 남길 수 있는 경우만 사용한다. 후보 카탈로그가 충분하면 미리 다운로드하지 말고 메타데이터만 유지하며, 실제 선택된 worklist 항목에서 기존 내부자산 재사용·변형·재조합이 부족할 때만 원본을 자동 취득해 회사 스타일·플랫폼에 맞게 수정한다. 소스 카탈로그가 충분한 동안 작업 집중도는 퀄리티와 자동화 디테일에 둔다. 기존 안전 자산의 품질 작업이 있으면 권장 수량과 무관하게 QUALITY_UP_1000을 우선한다. 현재 로블록스 출시·출시 준비 게임에서 실제 사용하는 자산의 최약 축부터 개선하며 신규 수량은 현재 게임에 필요한 결손을 기존 자산 재사용으로 해결할 수 없을 때만 늘린다. 내부 1000점은 production/runtime 검증과 별개이며 실제 런타임 증거 없이 productionVerified를 올리지 않는다. progressionComplexityProfiles는 VERY_SIMPLE/SURVIVAL_SIMPLE/DEEP_RPG 중 게임 설계에 맞는 표현 깊이를 선택하는 자산 표현 프로필이며 게임 규칙 권한이 아니다. Audio roleContractCount와 actualVerifiedAudioAssetCount를 분리하고 실제 검증 음원이 없으면 음원 파일 보유를 주장하지 않는다. BGM·적응형 음악, 환경 BED/NEAR/MID/DISTANT/SCATTER, 동물 울음·하울링, 전투·스킬·상호작용 SFX, 실내외·오클루전·리버브·거리 밴드, 반복 변형 세트를 서로 다른 역할군으로 관리하고 단일 루프 반복으로 볼륨을 가장하지 않는다. 기존 오디오도 매 유지관리 회차마다 변형 폭·공간감·믹스 우선순위·음악 전환·모바일 예산의 최약 축부터 계속 품질업한다. 정상적인 안전 자산 작업은 owner나 ChatGPT 존재를 기다리지 않고 기존 ASSET_DEVELOPMENT 루프에서 autonomousNextAction을 계속 소비한다. 특정 자산이 라이선스·권리·보안 이유로 막히면 그 자산만 격리하고 다음 안전 작업을 계속하며, 기존 자산 품질 작업이 생기면 즉시 QUALITY_UP_1000 최약 축 개선으로 돌아간다. 작업 수나 내부 점수는 실제 게임 품질 통과 증거가 아니다.`:'',
