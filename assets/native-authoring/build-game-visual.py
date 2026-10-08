@@ -228,7 +228,8 @@ for obj in ASSET_OBJECTS:
     bpy.ops.uv.smart_project(angle_limit=math.radians(66),island_margin=.025)
     bpy.ops.object.mode_set(mode='OBJECT')
 bpy.context.view_layer.update()
-points=[obj.matrix_world@Vector(corner) for obj in ASSET_OBJECTS for corner in obj.bound_box]
+# Match the GLB inspector: rotated bounding-box corners are not mesh contact.
+points=[obj.matrix_world@vertex.co for obj in ASSET_OBJECTS for vertex in obj.data.vertices]
 lo=Vector(tuple(min(p[i] for p in points) for i in range(3)))
 hi=Vector(tuple(max(p[i] for p in points) for i in range(3)))
 shift=Vector((-(lo.x+hi.x)/2,-(lo.y+hi.y)/2,-lo.z))

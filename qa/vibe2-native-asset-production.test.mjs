@@ -3006,6 +3006,7 @@ test('actual Blender authoring preserves a styled master across platforms and ex
       assert(Math.abs(inspection.inventory.spatial.bounds.min[1])<.001);
       const application=JSON.parse(fs.readFileSync(path.join(folder,'application.json'),'utf8'));
       assert.equal(application.masterSha256,inspection.sourceHash);
+      assert(application.boundsSizeMeters.every((value,axis)=>Math.abs(value-inspection.inventory.spatial.size[axis])<1e-5),'Blender and exported GLB must measure the same actual geometry');
       assert.equal(application.nativeRuntimeVerified,false);
       assert.equal(application.style.sourceStyleFamily,style);
       assert(application.materials.every(row=>Math.abs(row.unity.smoothness+row.web.roughness-1)<1e-6));
