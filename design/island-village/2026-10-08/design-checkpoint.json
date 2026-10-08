@@ -598,25 +598,66 @@
       "toSystem": "IslandResourceManagementSystem_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0",
       "trigger": "Acquire a focused set of island resources.",
       "stateChange": "Proceed to the next stage of village development, and unlock a new resident, activity, or area."
+    },
+    "local_authoring_parts::abc58491fa52a7ef55de06f6d2a0dc5c1a2fcbe5ade2dde4c1757ffd36ad0278:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "signatureSystems[3]",
+      "toId": "signatureSystems[4]",
+      "stateKeys": [
+        "VillageFunction",
+        "ResidentCount",
+        "ActivityType",
+        "AreaType"
+      ],
+      "fromSystem": "VillageProgressionSystem"
+    },
+    "local_authoring_parts::abc58491fa52a7ef55de06f6d2a0dc5c1a2fcbe5ade2dde4c1757ffd36ad0278:toSystem,trigger,stateChange": {
+      "toSystem": "VillageProgressionSystem",
+      "trigger": "Unlock a new resident, activity, or area",
+      "stateChange": "Select a new village goal, acquire a focused set of resources, and unlock a new resident, activity, or area to proceed to the next stage of village development"
+    },
+    "local_authoring_parts::c93aaf1d216a1e45dc4bd000b6bdef4991cf9781f98d6552631509825df2b5ff:systemInterconnections:2": {
+      "fromId": "signatureSystems[3]",
+      "toId": "signatureSystems[4]",
+      "stateKeys": [
+        "VillageFunction",
+        "ResidentCount",
+        "ActivityType",
+        "AreaType"
+      ],
+      "fromSystem": "VillageProgressionSystem",
+      "toSystem": "VillageProgressionSystem",
+      "trigger": "Unlock a new resident, activity, or area",
+      "stateChange": "Select a new village goal, acquire a focused set of resources, and unlock a new resident, activity, or area to proceed to the next stage of village development"
+    },
+    "local_authoring_parts::73be8085d01e08af4e575f83512a5165f21af4e0fcc72c8dbce8c9375f88281e:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "signatureSystems[3]",
+      "toId": "signatureSystems[4]",
+      "stateKeys": [
+        "VillageFunction",
+        "ResidentCount",
+        "ActivityType",
+        "AreaType"
+      ],
+      "fromSystem": "VillageProgressionSystem"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 15,
-      "successes": 15,
+      "calls": 18,
+      "successes": 18,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1710753,
-      "lastMs": 105232,
+      "totalMs": 1993037,
+      "lastMs": 93596,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:05:10.654Z"
+      "updatedAt": "2026-10-08T13:09:52.946Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:36:39.832Z",
-  "updatedAt": "2026-10-08T13:05:10.656Z",
+  "updatedAt": "2026-10-08T13:09:52.946Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2826,7 +2867,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:05:10.656Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:09:52.946Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
