@@ -360,6 +360,9 @@ export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
   if(!Number.isFinite(surface.area)||surface.centroidSum.some(value=>!Number.isFinite(value))
     ||surface.squareSum.some(value=>!Number.isFinite(value))
     ||sceneBounds.max.some((value,axis)=>!Number.isFinite(value-sceneBounds.min[axis])))issues.push('GLB_SURFACE_STATS_NONFINITE');
+  // GLB 노드의 숫자가 유한해도 최종 월드 정점이 GPU float32 범위를 넘을 수 있다.
+  if([...sceneBounds.min,...sceneBounds.max].some(value=>!Number.isFinite(value)||Math.abs(value)>3.4028234663852886e38))
+    issues.push('GLB_WORLD_TRANSFORM_FLOAT32_OVERFLOW');
   const spatial=boundedPrimitiveCount&&[...sceneBounds.min,...sceneBounds.max].every(Number.isFinite)?{
     coordinateSystem:'GLTF_RIGHT_HANDED_Y_UP_METERS',scope:'STATIC_NODE_TRANSFORM_BOUNDS_NOT_ANIMATION_OR_SKIN_DEFORMATION',
     bounds:sceneBounds,size:sceneBounds.max.map((v,i)=>v-sceneBounds.min[i]),
