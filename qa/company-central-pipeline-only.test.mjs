@@ -810,6 +810,7 @@ test('Unity Web actual play supplies boot proof without a duplicate browser smok
   assert.doesNotMatch(web,/name: Browser boot smoke/);
   assert.doesNotMatch(web,/boot-mobile\.png/);
   assert.match(web,/UNITY_WEB_ACTUAL_PLAY_BOOT_EVIDENCE_REQUIRED/);
+  assert.match(web,/checks\.some\(e=>e\.playableBrowserTest!==true\|\|e\.boot\?\.pass!==true\)/);
   assert.match(web,/UNITY_WEB_BOOT_SMOKE=PASS:ACTUAL_PLAY_EVIDENCE/);
   assert.match(web,/play\.boot\?\.pass!==true/);
   assert.match(web,/bootSmoke:'PASS'/);
