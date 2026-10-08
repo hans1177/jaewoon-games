@@ -1,5 +1,38 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-5ty03g",
+      "worker": "vibe2",
+      "taskId": "horror-escape-room-studio-evolution-unity-web-presentation-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "unity-games/horror-escape-room/Assets/Editor/UnityWebFloorBuild.cs",
+        "unity-games/horror-escape-room/Assets/Scripts/UnityWebFloorGame.cs",
+        "assets/roblox/world-ghosts/native/spider/spider.glb",
+        "assets/roblox/world-ghosts/native/spider/spider.png",
+        "assets/roblox/world-ghosts/native/spider/evidence.json",
+        "assets/generated/unity/horror-escape-room/background/asset.glb",
+        "assets/generated/unity/horror-escape-room/background/preview.png",
+        "assets/generated/unity/horror-escape-room/background/evidence.json",
+        "assets/generated/unity/horror-escape-room/item/asset.glb",
+        "assets/generated/unity/horror-escape-room/item/preview.png",
+        "assets/generated/unity/horror-escape-room/item/evidence.json",
+        "assets/generated/unity/horror-escape-room/prop/asset.glb",
+        "assets/generated/unity/horror-escape-room/prop/preview.png",
+        "assets/generated/unity/horror-escape-room/prop/evidence.json"
+      ],
+      "baseSha": "8de9ab6ed9ad5989fbfa02fbb62201650f0972b4",
+      "runId": "37726946336",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-08T05:02:55.860Z",
+      "expiresAt": "2026-10-08T05:47:55.860Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:horror-escape-room-studio-evolution-unity-web-presentation-v1"
+      ]
+    }
+  ]
 }
