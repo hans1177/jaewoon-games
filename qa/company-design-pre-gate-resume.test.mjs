@@ -237,6 +237,55 @@ test('truncated local output splits required fields and resumes only the unfinis
   assert.equal(health.filter(row=>row.success===false).length,2);
 });
 
+test('long seed descriptions keep a usable output budget after splitting',async()=>{
+  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
+  const taskSource=design.slice(design.indexOf('async function runCheckpointTask('),design.indexOf('function isParallelPressure('));
+  const fields=['identity','playerFantasy','coreFun'];
+  const schema={type:'object',required:fields,properties:Object.fromEntries(fields.map(field=>[field,{type:'string',maxLength:1000}])),additionalProperties:false};
+  const checkpoint={tasks:{}},calls=[];
+  const author=runInNewContext(taskSource+'\n'+source+'\ncallLocalDesignerModel',{
+    createHash,designAssetLibraryContext:{status:'UNAVAILABLE'},localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'local',
+    designerRoute:{id:'ollama:local'},designCheckpoint:checkpoint,modelCallStats:[],console:{log(){}},clean:String,
+    parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,assertSchemaValue:assertDesignSchema,recordModelHealth(){},persistDesignCheckpoint(){},
+    requestLocalDesignerRaw:async(prompt,{schema:contract,predict})=>{
+      const requested=Object.keys(contract.properties);calls.push({fields:requested,predict});
+      if(requested.length>1||predict<900)throw new Error('OLLAMA_DESIGN_OUTPUT_TRUNCATED');
+      return JSON.stringify({[requested[0]]:'model-authored description '.repeat(25)});
+    }
+  });
+  const result=await author('designer','owner original',schema,{predict:1200});
+  assert.deepEqual(Object.keys(result),fields);
+  assert.equal(calls.length,3,'no doomed multi-description request before the useful calls');
+  assert.deepEqual(calls.map(row=>row.predict),[1200,1200,1200],'subdivision must not shrink the useful field budget to 600/512');
+  assert.ok(Object.values(result).every(value=>value.length>512),'the authored content is preserved instead of clipped');
+});
+
+test('an indivisible truncated field expands once and resumes at the learned budget without double-counting time',async()=>{
+  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
+  const schema={type:'object',required:['identity'],properties:{identity:{type:'string',maxLength:1000}},additionalProperties:false};
+  const checkpoint={tasks:{}},calls=[],health=[],stats=[];let now=0,forceTruncated=false;
+  const author=runInNewContext(source+'\ncallLocalDesignerModel',{
+    createHash,Date:class extends Date{constructor(){super(now);}static now(){return now;}},designAssetLibraryContext:{status:'UNAVAILABLE'},localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'local',
+    designerRoute:{id:'ollama:local'},designCheckpoint:checkpoint,modelCallStats:stats,console:{log(){}},clean:String,
+    parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,assertSchemaValue:assertDesignSchema,recordModelHealth:(model,row)=>health.push(row),persistDesignCheckpoint(){},
+    requestLocalDesignerRaw:async(prompt,{predict,timeoutMs})=>{
+      calls.push({prompt,predict,timeoutMs});now+=predict<2000?100:70;
+      if(predict<2000||forceTruncated)throw new Error('OLLAMA_DESIGN_OUTPUT_TRUNCATED');
+      return '{"identity":"designer-authored original"}';
+    }
+  });
+  assert.equal((await author('designer','original',schema,{predict:1200})).identity,'designer-authored original');
+  assert.equal((await author('designer','original',schema,{predict:1200})).identity,'designer-authored original');
+  assert.deepEqual(calls.map(row=>row.predict),[1200,2400,2400]);
+  assert.equal(calls[0].prompt,calls[1].prompt,'retry reuses the same owner/rule context prefix');
+  assert.ok(calls.every(row=>row.timeoutMs===300000));
+  assert.deepEqual(health.map(row=>[row.success,row.elapsedMs]),[[false,100],[true,70],[true,70]]);
+  assert.deepEqual(stats.map(row=>row.elapsedMs),[70,70]);
+  forceTruncated=true;
+  await assert.rejects(author('designer','over-cap request',schema,{predict:8192}),/OLLAMA_DESIGN_OUTPUT_TRUNCATED/);
+  assert.equal(calls.length,4,'the existing output ceiling still fails without inventing content');
+});
+
 test('workflow warms the same local context before declaring authoring ready and fails closed',async()=>{
   const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
   const start=workflow.indexOf('      - name: Prepare Vibe local design fallback');
