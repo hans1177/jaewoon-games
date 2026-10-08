@@ -18,6 +18,7 @@ namespace JaewoonGames.DaechungRpg
         private MultiplayerSession _multiplayer;
         private float _qaHeartbeatAt;
         private float _qaMobileTargetAt;
+        private float _qaUiBoundsAt;
         private int _coopActionSeen;
         // 실제 WebGL 게임의 렌더 카운터. 프로파일러 미지원 환경은 값 미측정으로 둔다.
         private ProfilerRecorder _drawCallsRecorder;
@@ -147,7 +148,16 @@ namespace JaewoonGames.DaechungRpg
             var left = (Screen.width - width) * 0.5f;
             var topHeight = Mathf.Min(220f * scale, Screen.height * 0.29f);
             var controlsY = Screen.height * 0.60f;
-            var controlsHeight = Mathf.Max(120f, Screen.height - controlsY - 12f);
+            var controlsHeight = Mathf.Max(1f, Screen.height - controlsY - 12f);
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+            if (Application.absoluteURL.Contains("qa=1") && Event.current.type == EventType.Repaint
+                && Time.unscaledTime >= _qaUiBoundsAt)
+            {
+                _qaUiBoundsAt = Time.unscaledTime + 2f;
+                Debug.Log($"JAEWOON_UNITY_WEB_QA UI_BOUNDS game=daechung-rpg surface=UNITY_ONGUI screenWidth={Screen.width} screenHeight={Screen.height} topLeft={left:F2} topY=12 topWidth={width:F2} topHeight={topHeight:F2} controlsLeft={left:F2} controlsY={controlsY:F2} controlsWidth={width:F2} controlsHeight={controlsHeight:F2}");
+            }
+#endif
 
             GUI.skin.label.fontSize = Mathf.RoundToInt(17f * scale);
             GUI.skin.button.fontSize = Mathf.RoundToInt(17f * scale);
@@ -252,8 +262,8 @@ namespace JaewoonGames.DaechungRpg
             if (_enemy == null && !canEnterHunt) return;
 
             var margin = Mathf.Max(12f, Screen.width * 0.04f);
-            var buttonWidth = Mathf.Clamp(Screen.width * 0.34f, 120f, 180f);
-            var buttonHeight = Mathf.Clamp(Screen.height * 0.08f, 56f, 84f);
+            var buttonWidth = Mathf.Min(Mathf.Max(1f, Screen.width - margin * 2f), Mathf.Clamp(Screen.width * 0.34f, 120f, 180f));
+            var buttonHeight = Mathf.Min(Mathf.Max(1f, Screen.height - margin * 2f), Mathf.Clamp(Screen.height * 0.08f, 56f, 84f));
             var actionRect = new Rect(
                 Screen.width - buttonWidth - margin,
                 Screen.height - buttonHeight - margin,
