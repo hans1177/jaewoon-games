@@ -570,25 +570,40 @@
       "name": "Start Immediately with Simple One-Thumb Tap or Swipe Input and Clear Score, Distance, or Short-Session Goal",
       "purpose": "Establishes the core gameplay mechanism where players start the game with simple input and a clear objective, leading to a transition to the next world state.",
       "playerChoice": "Player chooses to start the game with simple input and a clear objective, resulting in a transition to the next world state."
+    },
+    "local_authoring_parts::0e919cbf2922900abbf90afcacf260cabd8898fe17d3e9230b264ebaecf9e4f2:signatureSystems:2": {
+      "id": "START_IMMEDIATELY_WITH_SIMPLE_INPUT_AND_CLEAR_GOAL",
+      "grammarRole": "B",
+      "stateInputs": [
+        "simple one-thumb tap or swipe input",
+        "clear score, distance, or short-session goal"
+      ],
+      "stateOutputs": [
+        "next world state",
+        "player's choice"
+      ],
+      "name": "Start Immediately with Simple One-Thumb Tap or Swipe Input and Clear Score, Distance, or Short-Session Goal",
+      "purpose": "Establishes the core gameplay mechanism where players start the game with simple input and a clear objective, leading to a transition to the next world state.",
+      "playerChoice": "Player chooses to start the game with simple input and a clear objective, resulting in a transition to the next world state."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 22,
-      "successes": 22,
+      "calls": 23,
+      "successes": 23,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2496493,
-      "lastMs": 102796,
+      "totalMs": 2598443,
+      "lastMs": 101950,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:46:22.310Z"
+      "updatedAt": "2026-10-08T15:48:04.261Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:41:26.595Z",
-  "updatedAt": "2026-10-08T15:46:22.310Z",
+  "updatedAt": "2026-10-08T15:48:04.261Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2548,7 +2563,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:46:22.310Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:48:04.261Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
