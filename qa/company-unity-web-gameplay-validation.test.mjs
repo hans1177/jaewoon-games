@@ -170,3 +170,14 @@ test('Unity Web renderer cost evidence is measured only from real Unity markers,
   assert.match(source,/automaticLodOrTextureMutationPerformed:false/);
   assert.match(source,/UNITY_WEB_QA_NATIVE_RENDER_BUDGET_EXCEEDED/);
 });
+
+test('Daechung real Unity renderer exposes only measured draw calls and polygons in WebGL QA',()=>{
+  const runtime=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs',import.meta.url),'utf8');
+  assert.match(runtime,/using Unity\.Profiling;/);
+  assert.match(runtime,/ProfilerRecorder\.StartNew\(ProfilerCategory\.Render, "Draw Calls Count"\)/);
+  assert.match(runtime,/ProfilerRecorder\.StartNew\(ProfilerCategory\.Render, "Triangles Count"\)/);
+  assert.match(runtime,/_drawCallsRecorder\.LastValue > 0 && _trianglesRecorder\.LastValue > 0/);
+  assert.match(runtime,/RENDER_STATS game=daechung-rpg source=UNITY_NATIVE_RENDERER/);
+  assert.match(runtime,/_drawCallsRecorder\.Dispose\(\)/);
+  assert.match(runtime,/_trianglesRecorder\.Dispose\(\)/);
+});
