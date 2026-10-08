@@ -542,25 +542,54 @@
         "resourceFlow": "주변 자원 수집 후 장비/스킬 선택, 기존 단순 반복 벗어나 새로운 행동 패턴 개발, 진입 조건 설정, 상황별 대응 및 재방문 가능 여부 결정하기 위한 플레이어 선택 시스템 구축 및 실행 제안이 필요하다.",
         "balanceRules": "재미와 보상은 승인된 메인 A/B/C 조합의 큰 재미, 짧은 발견·수집·꾸미기·작은 목표의 소확행, 선택적으로 깊게 투자하는 장기 즐길거리를 구분해 연결한다. 보상 조건·비용·누적 진척·약속한 확정 보상·확률 보상의 실제 확률·중복 보상의 쓰임·중단 후 이어하기를 게임에 맞게 설계하고 메뉴에 보인다."
       }
+    },
+    "local_authoring_parts::611663ff3f0408cf0722612d8ac0a7fdfaa0db7f6ef5918160adec1e7019464a:contentExpansionPlan,failureRetryRisk": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "기존 마력숲 생존기 세계관 및 게임 규칙 복사",
+          "newGameplay": "플레이어가 환경에 뿤금처럼 숨어 있는 힘을 바탕으로, 전투 중 이동하며 적의 압박을 피하면서 동시에 캐릭터가 살아 움직여야 하는 방식으로 게임 진행을 수행해야 한다.",
+          "systemImpact": "기존의 단순 반복적인 플레이 패턴을 벗어나, 장비/스킬 선택과 새로운 행동 패턴 개발을 통해 진입 조건 설정 및 상황별 대응 시스템을 구축한다."
+        },
+        {
+          "milestone": "Vibe 폴리시 시스템 구축",
+          "newGameplay": "카메라와 모바일 폴리시를 단계적으로 올리는 데 사용되는 Vibe 폴리시 기반의 새로운 플레이 패턴 개발이 필요하다.",
+          "systemImpact": "모바일 환경에서의 캐릭터 이동, 자원 수집, 장비/스킬 선택 등을 통해 게임 진행 방식을 개발하고, 애니메이션, VFX, 음악 상태 전환을 유연하게 적용한다."
+        },
+        {
+          "milestone": "모바일 플랫폼 특성 반영",
+          "newGameplay": "모바일 플랫폼의 실제 세계 깊이·가림·조명과 모바일 브라우저 플레이 검증 계획을 UNITY 프로필에 설계해야 한다.",
+          "systemImpact": "플레이어가 실제 진행 중인 맵, 자원, 능력, 대안 등 모든 요소에 기반해, 전투 중 이동하면서 적의 압박을 피하되 동시에 캐릭터를 살아 움직여야 하는 방식으로 게임을 수행한다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "기존 마력숲 생존기 세계관 및 게임 규칙 복사 시 발생할 수 있는 실패 사례: 단순 반복 패턴 유지, 진입 조건 설정 미흡, 상황별 대응 부족",
+          "Vibe 폴리시 시스템 구축 과정에서 발생할 수 있는 실패 사례: 카메라/폴리시 상태 변화 불확실, 애니메이션/음악 상태 전환 오류",
+          "모바일 환경에서의 플레이어 선택 시스템 구축 과정에서 발생할 수 있는 실패 사례: 자원 수집 후 장비/스킬 선택 무의미, 새로운 행동 패턴 개발 실패"
+        ],
+        "retryFlow": "플레이어는 주변 자원을 수집하여 자신에게 유리하게 변형하는 장비나 스킬을 선택해 기존의 단순 반복을 벗어나 새로운 행동 패턴을 개발하고, 이 과정에서 실패 시 재도전 준비를 통해 해결책을 찾고 실행한다.",
+        "riskPressure": "재미와 보상은 승인된 메인 A/B/C 조합의 큰 재미, 짧은 발견·수집·꾸미기·작은 목표의 소확행, 선택적으로 깊게 투자하는 장기 즐길거리를 구분해 연결하며, 보상 조건·비용·누적 진척·약속한 확정 보상·확률 보상의 실제 확률 및 중단 후 이어하기를 게임에 맞게 설계해야 한다.",
+        "recoveryRules": "실패 시 플레이어는 재도전 준비를 통해 해결책을 찾고 실행할 수 있으며, 이 과정에서 보상 조건과 비용이 명확히 설정되어야 하며, 중단 후 이어지는 방식으로 게임을 진행해야 한다."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 11,
+      "calls": 13,
+      "successes": 12,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1378178,
-      "lastMs": 160465,
+      "totalMs": 1555137,
+      "lastMs": 176959,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T21:55:29.021Z"
+      "updatedAt": "2026-10-08T21:58:25.981Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:32:30.796Z",
-  "updatedAt": "2026-10-08T21:55:29.021Z",
+  "updatedAt": "2026-10-08T21:58:25.988Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2756,15 +2785,74 @@
     }
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "dccc57a9f2d196ece19ded0caae3929f95f8a4d633db153eae9abc6ca04f57c5"
   },
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:55:29.021Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_PRESERVATION_GRAMMAR_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "SYSTEM_INTERCONNECTION_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "edgeCount": 5,
+          "connected": false
+        },
+        "requiredAction": "기존 규칙의 실제 상태 출력과 입력으로 MAIN/A/B/c/@를 연결하고 A/B 양방향 상태 교환을 증명한다. 임시 가짜 기능이나 새 보상을 만들지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::systems-progression": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "기존 마력숲 생존기 세계관 및 게임 규칙 복사, Vibe 폴리시 시스템 구축, 모바일 플랫폼 특성 반영",
+      "progressionEconomyBalance": {
+        "progressionLoop": "플레이어가 환경에 뿤금처럼 숨어 있는 힘을 바탕으로 전투 중 이동하며 적의 압박을 피하면서 동시에 캐릭터가 살아 움직여야 하는 방식으로 게임 진행을 수행해야 한다.",
+        "resourceFlow": "주변 자원 수집 후 장비/스킬 선택, 기존 단순 반복 벗어나 새로운 행동 패턴 개발, 진입 조건 설정, 상황별 대응 및 재방문 가능 여부 결정하기 위한 플레이어 선택 시스템 구축 및 실행 제안이 필요하다.",
+        "balanceRules": "재미와 보상은 승인된 메인 A/B/C 조합의 큰 재미, 짧은 발견·수집·꾸미기·작은 목표의 소확행, 선택적으로 깊게 투자하는 장기 즐길거리를 구분해 연결한다. 보상 조건·비용·누적 진척·약속한 확정 보상·확률 보상의 실제 확률·중복 보상의 쓰임·중단 후 이어하기를 게임에 맞게 설계하고 메뉴에 보인다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "기존 마력숲 생존기 세계관 및 게임 규칙 복사",
+          "newGameplay": "플레이어가 환경에 뿤금처럼 숨어 있는 힘을 바탕으로, 전투 중 이동하며 적의 압박을 피하면서 동시에 캐릭터가 살아 움직여야 하는 방식으로 게임 진행을 수행해야 한다.",
+          "systemImpact": "기존의 단순 반복적인 플레이 패턴을 벗어나, 장비/스킬 선택과 새로운 행동 패턴 개발을 통해 진입 조건 설정 및 상황별 대응 시스템을 구축한다."
+        },
+        {
+          "milestone": "Vibe 폴리시 시스템 구축",
+          "newGameplay": "카메라와 모바일 폴리시를 단계적으로 올리는 데 사용되는 Vibe 폴리시 기반의 새로운 플레이 패턴 개발이 필요하다.",
+          "systemImpact": "모바일 환경에서의 캐릭터 이동, 자원 수집, 장비/스킬 선택 등을 통해 게임 진행 방식을 개발하고, 애니메이션, VFX, 음악 상태 전환을 유연하게 적용한다."
+        },
+        {
+          "milestone": "모바일 플랫폼 특성 반영",
+          "newGameplay": "모바일 플랫폼의 실제 세계 깊이·가림·조명과 모바일 브라우저 플레이 검증 계획을 UNITY 프로필에 설계해야 한다.",
+          "systemImpact": "플레이어가 실제 진행 중인 맵, 자원, 능력, 대안 등 모든 요소에 기반해, 전투 중 이동하면서 적의 압박을 피하되 동시에 캐릭터를 살아 움직여야 하는 방식으로 게임을 수행한다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "기존 마력숲 생존기 세계관 및 게임 규칙 복사 시 발생할 수 있는 실패 사례: 단순 반복 패턴 유지, 진입 조건 설정 미흡, 상황별 대응 부족",
+          "Vibe 폴리시 시스템 구축 과정에서 발생할 수 있는 실패 사례: 카메라/폴리시 상태 변화 불확실, 애니메이션/음악 상태 전환 오류",
+          "모바일 환경에서의 플레이어 선택 시스템 구축 과정에서 발생할 수 있는 실패 사례: 자원 수집 후 장비/스킬 선택 무의미, 새로운 행동 패턴 개발 실패"
+        ],
+        "retryFlow": "플레이어는 주변 자원을 수집하여 자신에게 유리하게 변형하는 장비나 스킬을 선택해 기존의 단순 반복을 벗어나 새로운 행동 패턴을 개발하고, 이 과정에서 실패 시 재도전 준비를 통해 해결책을 찾고 실행한다.",
+        "riskPressure": "재미와 보상은 승인된 메인 A/B/C 조합의 큰 재미, 짧은 발견·수집·꾸미기·작은 목표의 소확행, 선택적으로 깊게 투자하는 장기 즐길거리를 구분해 연결하며, 보상 조건·비용·누적 진척·약속한 확정 보상·확률 보상의 실제 확률 및 중단 후 이어하기를 게임에 맞게 설계해야 한다.",
+        "recoveryRules": "실패 시 플레이어는 재도전 준비를 통해 해결책을 찾고 실행할 수 있으며, 이 과정에서 보상 조건과 비용이 명확히 설정되어야 하며, 중단 후 이어지는 방식으로 게임을 진행해야 한다."
+      }
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T21:58:25.983Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PRESERVATION_GRAMMAR_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
