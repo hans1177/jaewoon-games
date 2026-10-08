@@ -528,25 +528,52 @@
       "name": "ACTION_SURVIVAL_ROGUELITE_SIGNATURE_SYSTEM_01",
       "purpose": "플레이어는 현실 건축가에서 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 이 선택은 현실 건축가의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.",
       "playerChoice": "FIGHT THROUGH HORDE"
+    },
+    "local_authoring_parts::0b03dad74e66f6e5ac6a039bf7880693ca45658a3d08c0bed7651ac42ddab63a:signatureSystems:1": {
+      "id": "ACTION_SURVIVAL_ROGUELITE_SIGNATURE_SYSTEM_02",
+      "grammarRole": "A",
+      "stateInputs": [
+        "PLAYER CHOICE -> STATE CHANGE: POSITIONING AROUND ENEMY PRESSURE -> REWARD: RUN "
+      ],
+      "stateOutputs": [
+        "RUN RESULT -> NEXT CHOICE: NEXT PROGRESSION CHOICE"
+      ],
+      "name": "ACTION_SURVIVAL_ROGUELITE_SIGNATURE_SYSTEM_02",
+      "purpose": "플레이어는 현실 건축가에서 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 이 선택은 현실 건축가의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.",
+      "playerChoice": "POSITIONING AROUND ENEMY PRESSURE"
+    },
+    "local_authoring_parts::0b03dad74e66f6e5ac6a039bf7880693ca45658a3d08c0bed7651ac42ddab63a:signatureSystems:2": {
+      "id": "ACTION_SURVIVAL_ROGUELITE_SIGNATURE_SYSTEM_03",
+      "grammarRole": "B",
+      "stateInputs": [
+        "PLAYER CHOICE -> STATE CHANGE: COMBINE UPGRADES INTO STRONGER BUILD -> REWARD: R",
+        ">// "
+      ],
+      "stateOutputs": [
+        "RUN RESULT -> NEXT CHOICE: CONVERSION TO NEXT PROGRESSION CHOICE"
+      ],
+      "name": "ACTION_SURVIVAL_ROGUELITE_SIGNATURE_SYSTEM_03",
+      "purpose": "플레이어는 현실 건축가에서 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 이 선택은 현실 건축가의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.",
+      "playerChoice": "COMBINE UPGRADES INTO STRONGER BUILD"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 16,
+      "calls": 18,
+      "successes": 18,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1539986,
-      "lastMs": 111404,
+      "totalMs": 1761160,
+      "lastMs": 113212,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:50:21.801Z"
+      "updatedAt": "2026-10-08T10:54:02.978Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:14:49.595Z",
-  "updatedAt": "2026-10-08T10:50:21.801Z",
+  "updatedAt": "2026-10-08T10:54:02.978Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2934,7 +2961,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:50:21.801Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:54:02.978Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
