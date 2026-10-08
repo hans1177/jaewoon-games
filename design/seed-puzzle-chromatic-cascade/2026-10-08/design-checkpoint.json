@@ -3,30 +3,18 @@
   "gameId": "seed-puzzle-chromatic-cascade",
   "date": "2026-10-08",
   "seedId": "OWNER-ALL-DESIGN-RESET-SEED-PUZZLE-CHROMATIC-CASCADE-20260917",
-  "fingerprint": "da3af818909facee5ced866168d16cb39ed35889fabb1995aba5631f07576106",
+  "fingerprint": "033a24fb93a8f7a04f82d1be9b6a9b8da62f1442b1c083c7f917f946b5c64333",
   "policyDigest": "0fda28f71ac3a214ad795ba2e2df1e0f6e7da837204b05182cdebecce33c9ade",
   "engineDigest": "d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
   "tasks": {},
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 0,
-      "failures": 1,
-      "timeouts": 1,
-      "jsonFailures": 0,
-      "totalMs": 300096,
-      "lastMs": 300096,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T08:43:58.645Z"
-    }
-  },
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-08T08:38:58.524Z",
-  "updatedAt": "2026-10-08T08:43:58.653Z",
+  "createdAt": "2026-10-08T10:05:38.680Z",
+  "updatedAt": "2026-10-08T10:05:38.770Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2058,12 +2046,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms"
+  }
 }
