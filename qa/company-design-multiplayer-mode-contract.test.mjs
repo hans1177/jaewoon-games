@@ -61,7 +61,7 @@ test('all design stages require MAIN/A/B/c/@ and the inherited multiplayer modes
   assert.match(design,/systemInterconnections:value\.systemInterconnections/);
   assert.match(scorer,/DESIGN_MAIN_A_B_c_DELVE_REQUIRED/);
   assert.match(scorer,/DESIGN_MULTIPLAYER_CONTRADICTION/);
-  assert.match(design,/MULTIPLAYER_MODES=\$\{JSON\.stringify\(MULTIPLAYER_MODES\)\}/);
+  assert.match(design,/MULTIPLAYER_ALLOWED_MODES=\$\{JSON\.stringify\(MULTIPLAYER_MODES\)\}/);
   assert.deepEqual(modes,['COOP','COMPETITIVE','HYBRID']);
 });
 
