@@ -415,25 +415,53 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::9d013f02a11b9681183d9941bfbfb4edaf648cb41b74e96c4ec845f550a390c8:signatureSystems:0": {
+      "id": "RPG_STYLIZED_TOY_DARK_FANTASY",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "RoomCode",
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount",
+        "SkillSlot"
+      ],
+      "stateOutputs": [
+        "SkillSlot",
+        "PlayerFantasy",
+        "CoreFun",
+        "CoreLoop",
+        "SignatureSystems",
+        "ProgressionDirection",
+        "TechnicalAssumptions",
+        "PlayabilityRequirements",
+        "PlatformProfile",
+        "GraphicsConcept",
+        "MVPScope",
+        "VisualDirection"
+      ],
+      "name": "RPG_STYLIZED_TOY_DARK_FANTASY",
+      "purpose": "AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG의 핵심 요소인 전투, 파티, 보스 공략, 성장, 보상, 보안, 저장, 네트워크, 퀘스트, 장비, 직업, 레벨, 숙련, 동료, 동기화, 전투/보상 서버 권한, 데이터 저장, 마을 귀환, 풀회복, 전투 중 귀환 금지, 퀘스트 기본 50골드+50XP, 레벨업 최대체력+10/공격력+10, 파티사냥 15킬, RoomCode 1~10, 전투/보상 서버 authoritative, DataStore 저장, 보스 첫 처치 동료 해금 저장, 플레이어+동료 최대3명, 보스 동료 리더 레벨 자동 동기화, 동료 전용 장비 없음, Lv60 레벨캡",
+      "playerChoice": "AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG에서, 플레이어는 4직업/전직 실루엣을 유지하며, AI 동료는 격파한 보스의 고유 실루엣과 핵심 이펙트를 축소·정리해 그대로 동료 정체성으로 사용한다. 게임은 로블로크 플랫폼에 구현되며, 마을 귀환 시 풀회복, 전투 중 귀환 금지, 퀘스트 기본 50골드+50XP, 레벨업 최대체력+10/공격력+10, 파티사냥 15킬, RoomCode 1~10, 전투/보상 서버 authoritative, DataStore 저장, 보스 첫 처치 동료 해금 저장, 플레이어+동료 최대3명, 보스 동료 리더 레벨 자동 동기화, 동료 전용 장비 없음, Lv60 레벨캡 등이 적용된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 758950,
-      "lastMs": 51458,
+      "totalMs": 967310,
+      "lastMs": 208360,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:09:48.020Z"
+      "updatedAt": "2026-10-08T12:13:16.390Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:57:09.033Z",
-  "updatedAt": "2026-10-08T12:09:48.029Z",
+  "updatedAt": "2026-10-08T12:13:16.390Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1893,10 +1921,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:09:48.024Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:13:16.390Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
