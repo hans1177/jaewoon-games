@@ -386,25 +386,38 @@
       "name": "병종 생태와 위협의 시그니처 세계 규칙",
       "purpose": "플레이어가 곤충의 생태, 위협, 방어 전략에 기반한 단일 전략 게임에서 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 바꾼다",
       "playerChoice": "Read the incoming insect wave and its threat pattern.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복하며, 이 과정에서 세계 상태가 즉각적으로 변형되어 새로운 행동·관계·발견을 열어 나간다"
+    },
+    "local_authoring_parts::3056ca32247cc3babc53e3d31dfae629433f4884343dd2f5a4243a166abfbfe7:signatureSystems:2": {
+      "id": "병종 생태와 위협의 시그니처 세계 규칙",
+      "grammarRole": "B",
+      "stateInputs": [
+        "worldState"
+      ],
+      "stateOutputs": [
+        "defensiveStrategy"
+      ],
+      "name": "병종 생태와 위협의 시그니처 세계 규칙",
+      "purpose": "플레이어가 곤충의 생태, 위협, 방어 전략에 기반한 단일 전략 게임에서 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 바꾼다",
+      "playerChoice": "Read the incoming insect wave and its threat pattern.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복하며, 이 과정에서 세계 상태가 즉각적으로 변형되어 새로운 행동·관계·발견을 열어 나간다"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1203182,
-      "lastMs": 106271,
+      "totalMs": 1309942,
+      "lastMs": 106760,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:52:03.579Z"
+      "updatedAt": "2026-10-08T18:53:50.341Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:32:00.339Z",
-  "updatedAt": "2026-10-08T18:52:03.580Z",
+  "updatedAt": "2026-10-08T18:53:50.341Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2663,7 +2676,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:52:03.579Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:53:50.341Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
