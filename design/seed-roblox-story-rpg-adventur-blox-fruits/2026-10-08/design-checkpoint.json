@@ -729,25 +729,28 @@
         "Board State Transition System",
         "Clear the level goal to earn rewards or unlock the next stage, then face a new板"
       ]
+    },
+    "local_authoring_parts::508729823c67ce10556d217d46c258b8bc3796649d12480f98f61496bceffcf9:fromSystem": {
+      "fromSystem": "Board State Transition System"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 26,
-      "successes": 25,
+      "calls": 27,
+      "successes": 26,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1897068,
-      "lastMs": 66108,
+      "totalMs": 1957581,
+      "lastMs": 60513,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T10:27:06.238Z"
+      "updatedAt": "2026-10-08T10:28:06.753Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:01:25.970Z",
-  "updatedAt": "2026-10-08T10:27:06.239Z",
+  "updatedAt": "2026-10-08T10:28:06.753Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2993,7 +2996,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:27:06.238Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:28:06.753Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
