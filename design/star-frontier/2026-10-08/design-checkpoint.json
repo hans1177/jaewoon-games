@@ -56,25 +56,69 @@
       "name": "BOARD_GAME_SYSTEM",
       "purpose": "Implement a dynamic board game system where players interact with a mutable board state, face move limitations, and navigate through obstacle sets to achieve rewards and unlock new stages.",
       "playerChoice": "Select a move from the available move limit, navigate through obstacle sets, and acquire rewards to progress through the game stage."
+    },
+    "local_authoring_parts::dd8712b530a61abf451c6d0079f29eec88b9e312a1630a984422b7c3100c2170:signatureSystems:1": {
+      "id": "STAR-FRONTIER-MAIN",
+      "grammarRole": "A",
+      "stateInputs": [
+        "BOARD_STATE",
+        "MOVE_LIMIT",
+        "OBSTACLE_SET",
+        "REWARD_POOL",
+        "NEXT_STAGE_PATTERN",
+        "CURRENT_STAGE_PATTERN"
+      ],
+      "stateOutputs": [
+        "GAME_STATE",
+        "PLAYER_ACTION",
+        "SYSTEM_RESPONSE",
+        "NEXT_STAGE_PATTERN",
+        "REWARD_ACQUIRED"
+      ],
+      "name": "BOARD_GAME_SYSTEM",
+      "purpose": "Implement a dynamic board game system where players interact with a mutable board state, face move limitations, and navigate through obstacle sets to achieve rewards and unlock new stages.",
+      "playerChoice": "Select a move from the available move limit, navigate through obstacle sets, and acquire rewards to progress through the game stage."
+    },
+    "local_authoring_parts::dd8712b530a61abf451c6d0079f29eec88b9e312a1630a984422b7c3100c2170:signatureSystems:2": {
+      "id": "STAR-FRONTIER-DELVE",
+      "grammarRole": "B",
+      "stateInputs": [
+        "BOARD_STATE",
+        "MOVE_LIMIT",
+        "OBSTACLE_SET",
+        "REWARD_POOL",
+        "NEXT_STAGE_PATTERN",
+        "CURRENT_STAGE_PATTERN"
+      ],
+      "stateOutputs": [
+        "GAME_STATE",
+        "PLAYER_ACTION",
+        "SYSTEM_RESPONSE",
+        "NEXT_STAGE_PATTERN",
+        "REWARD_ACQUIRED"
+      ],
+      "name": "BOARD_GAME_SYSTEM",
+      "purpose": "Implement a dynamic board game system where players interact with a mutable board state, face move limitations, and navigate through obstacle sets to achieve rewards and unlock new stages.",
+      "playerChoice": "Select a move from the available move limit, navigate through obstacle sets, and acquire rewards to progress through the game stage."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 447408,
-      "lastMs": 41140,
+      "totalMs": 593423,
+      "lastMs": 73248,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:00:45.113Z"
+      "updatedAt": "2026-10-08T13:03:11.130Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:53:17.663Z",
-  "updatedAt": "2026-10-08T13:00:45.113Z",
+  "updatedAt": "2026-10-08T13:03:11.130Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2111,7 +2155,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:00:45.113Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:03:11.130Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
