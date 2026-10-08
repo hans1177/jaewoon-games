@@ -102,25 +102,225 @@
       "name": "Puzzle Evolution",
       "purpose": "Player-controlled puzzle evolution through dynamic constraint and configuration changes",
       "playerChoice": "Select a puzzle constraint, configuration, or progression path to initiate the next phase of the game"
+    },
+    "local_authoring_parts::be9f3500f83693dd63425daa08ab169bf06cc6e46fc9fcddb7ed460ff7148b49:signatureSystems:4": {
+      "id": "DELVE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "boardPattern",
+        "obstacleCombination",
+        "playerChoice"
+      ],
+      "stateOutputs": [
+        "nextBoardPattern",
+        "newObstacleCombination",
+        "playerState"
+      ],
+      "name": "Puzzle Evolution",
+      "purpose": "Player-controlled puzzle evolution through dynamic constraint and configuration changes",
+      "playerChoice": "Select a puzzle constraint, configuration, or progression path to initiate the next phase of the game"
+    },
+    "local_authoring_parts::bc2ac4e2eb815852439c90c0a1ed3861f18b4504a0ce45bfda81541aa1e10bf7:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "MAIN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "boardPattern",
+            "obstacleCombination",
+            "playerChoice"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "newObstacleCombination",
+            "playerState"
+          ],
+          "name": "Board Evolution",
+          "purpose": "Player-controlled board pattern and obstacle combination evolution",
+          "playerChoice": "Select a board pattern, obstacle combination, or puzzle constraint to initiate the next phase of the game"
+        },
+        {
+          "id": "A",
+          "grammarRole": "A",
+          "stateInputs": [
+            "boardPattern",
+            "obstacleCombination",
+            "playerChoice"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "newObstacleCombination",
+            "playerState"
+          ],
+          "name": "Board Evolution",
+          "purpose": "Player-controlled board pattern and obstacle combination evolution",
+          "playerChoice": "Select a board pattern, obstacle combination, or puzzle constraint to initiate the next phase of the game"
+        },
+        {
+          "id": "c",
+          "grammarRole": "B",
+          "stateInputs": [
+            "boardPattern",
+            "obstacleCombination",
+            "playerChoice"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "newObstacleCombination",
+            "playerState"
+          ],
+          "name": "Board Evolution",
+          "purpose": "Player-controlled board pattern and obstacle combination evolution",
+          "playerChoice": "Select a board pattern, obstacle combination, or puzzle constraint to initiate the next phase of the game"
+        },
+        {
+          "id": "c",
+          "grammarRole": "c",
+          "stateInputs": [
+            "boardPattern",
+            "obstacleCombination",
+            "playerChoice"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "newObstacleCombination",
+            "playerState"
+          ],
+          "name": "Puzzle Evolution",
+          "purpose": "Player-controlled puzzle evolution through dynamic constraint and configuration changes",
+          "playerChoice": "Select a puzzle constraint, configuration, or progression path to initiate the next phase of the game"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "boardPattern",
+            "obstacleCombination",
+            "playerChoice"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "newObstacleCombination",
+            "playerState"
+          ],
+          "name": "Puzzle Evolution",
+          "purpose": "Player-controlled puzzle evolution through dynamic constraint and configuration changes",
+          "playerChoice": "Select a puzzle constraint, configuration, or progression path to initiate the next phase of the game"
+        }
+      ]
+    },
+    "local_authoring_parts::4bfac9aac4a171924bd2bf650a218a5189187d1c330472fb82502db8146f9ec9:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ],
+      "signatureSystems": [
+        {
+          "id": "MAIN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "boardPattern",
+            "obstacleCombination",
+            "playerChoice"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "newObstacleCombination",
+            "playerState"
+          ],
+          "name": "Board Evolution",
+          "purpose": "Player-controlled board pattern and obstacle combination evolution",
+          "playerChoice": "Select a board pattern, obstacle combination, or puzzle constraint to initiate the next phase of the game"
+        },
+        {
+          "id": "A",
+          "grammarRole": "A",
+          "stateInputs": [
+            "boardPattern",
+            "obstacleCombination",
+            "playerChoice"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "newObstacleCombination",
+            "playerState"
+          ],
+          "name": "Board Evolution",
+          "purpose": "Player-controlled board pattern and obstacle combination evolution",
+          "playerChoice": "Select a board pattern, obstacle combination, or puzzle constraint to initiate the next phase of the game"
+        },
+        {
+          "id": "c",
+          "grammarRole": "B",
+          "stateInputs": [
+            "boardPattern",
+            "obstacleCombination",
+            "playerChoice"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "newObstacleCombination",
+            "playerState"
+          ],
+          "name": "Board Evolution",
+          "purpose": "Player-controlled board pattern and obstacle combination evolution",
+          "playerChoice": "Select a board pattern, obstacle combination, or puzzle constraint to initiate the next phase of the game"
+        },
+        {
+          "id": "c",
+          "grammarRole": "c",
+          "stateInputs": [
+            "boardPattern",
+            "obstacleCombination",
+            "playerChoice"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "newObstacleCombination",
+            "playerState"
+          ],
+          "name": "Puzzle Evolution",
+          "purpose": "Player-controlled puzzle evolution through dynamic constraint and configuration changes",
+          "playerChoice": "Select a puzzle constraint, configuration, or progression path to initiate the next phase of the game"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "boardPattern",
+            "obstacleCombination",
+            "playerChoice"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "newObstacleCombination",
+            "playerState"
+          ],
+          "name": "Puzzle Evolution",
+          "purpose": "Player-controlled puzzle evolution through dynamic constraint and configuration changes",
+          "playerChoice": "Select a puzzle constraint, configuration, or progression path to initiate the next phase of the game"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 413954,
-      "lastMs": 36573,
+      "totalMs": 451275,
+      "lastMs": 37321,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:08:19.968Z"
+      "updatedAt": "2026-10-08T08:08:57.291Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:01:25.970Z",
-  "updatedAt": "2026-10-08T08:08:19.968Z",
+  "updatedAt": "2026-10-08T08:08:57.295Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2157,7 +2357,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:08:19.968Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:08:57.295Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
