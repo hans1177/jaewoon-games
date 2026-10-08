@@ -34,25 +34,40 @@
         "ACTION: Place or adjust defenders and spend limited resources on the highest-value counter.",
         "RESULT: World state change and next selection"
       ]
+    },
+    "local_authoring_parts::1260bee3ee39bd05f3753bed97da3f92b7004ba4dcc2d0e42108cf18c179d99e:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_1",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "INCOMING_INSECT_WAVE",
+        "THREAT_LEVEL"
+      ],
+      "stateOutputs": [
+        "MODIFIED_DEFENDER_LAYOUT",
+        "RESOURCES_ALLOCATED"
+      ],
+      "name": "WAVE_DEFENSE_READABILITY",
+      "purpose": "Establishes the core gameplay mechanism for wave-based defense, ensuring readability and meaningful placement choices.",
+      "playerChoice": "Player chooses which insect to target, based on threat level, and allocates resources to optimize defense strategy."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 447289,
-      "lastMs": 54450,
+      "totalMs": 479548,
+      "lastMs": 32259,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:54:46.878Z"
+      "updatedAt": "2026-10-08T12:55:19.140Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:47:19.560Z",
-  "updatedAt": "2026-10-08T12:54:46.879Z",
+  "updatedAt": "2026-10-08T12:55:19.140Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2251,7 +2266,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:54:46.879Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:55:19.140Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
