@@ -462,25 +462,38 @@
       "name": "몬스터 어드벤처의 핵심 루프",
       "purpose": "플레이어가 즉시 시작할 수 있는 'Start' 행동과 선택 중심의 CASUAL 게임",
       "playerChoice": "단순 한 번의 터치 또는 스위핑 입력 및 명확한 점수, 거리, 혹은 짧은 세션 목표로 시작하여 상태변화와 보상/위험을 통해 콘텐츠를 오래 연구할 만한 규칙과 관계를 형성"
+    },
+    "local_authoring_parts::cdcbb9d306dbacb6cce0f9a2aa7299ae3c3861f1768ae3af0ea28a437c29a1e0:signatureSystems:3": {
+      "id": "MONSTER_ADVENTURE_CORE_LOOP_C",
+      "grammarRole": "c",
+      "stateInputs": [
+        "START_INPUT"
+      ],
+      "stateOutputs": [
+        "END_STATE"
+      ],
+      "name": "몬스터 어드벤처의 핵심 루프 변주",
+      "purpose": "플레이어가 즉시 시작할 수 있는 'Start' 행동과 선택 중심의 CASUAL 게임에서의 상태 변주 및 복잡한 용도 확장",
+      "playerChoice": "단순 한 번의 터치 또는 스위핑 입력 및 명확한 점수, 거리, 혹은 짧은 세션 목표로 시작하여 상태변화와 보상/위험을 통해 콘텐츠를 오래 연구할 만한 규칙과 관계를 형성하며, 주요 인물의 목표, 두려움, 비밀이 실제 선택과 관계 변화를 만들어냅니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 13,
+      "calls": 14,
+      "successes": 14,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 977559,
-      "lastMs": 69564,
+      "totalMs": 1056033,
+      "lastMs": 78474,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:16:05.448Z"
+      "updatedAt": "2026-10-08T18:17:23.923Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:59:47.811Z",
-  "updatedAt": "2026-10-08T18:16:05.448Z",
+  "updatedAt": "2026-10-08T18:17:23.923Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2627,7 +2640,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:16:05.448Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:17:23.923Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
