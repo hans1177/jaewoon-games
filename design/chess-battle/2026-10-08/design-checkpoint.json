@@ -771,25 +771,44 @@
     },
     "local_authoring_parts::daee509bcdfad0d8057d7edca478e55f50b6ee2726c70d6e125ba3d242eb2c27:trigger": {
       "trigger": "READ_BOARD_AND_THREAT_INFO_TRIGGERED"
+    },
+    "local_authoring_parts::daee509bcdfad0d8057d7edca478e55f50b6ee2726c70d6e125ba3d242eb2c27:stateChange": {
+      "stateChange": "BOARD_STATE_UPDATED_BY_READ_BOARD_AND_THREAT_INFO_TRIGGERED"
+    },
+    "local_authoring_parts::f9fa77743e728fdc82678dbc337c79e7d8e2e991511ad8b2211b00fad5828175:systemInterconnections:0": {
+      "fromId": "identity-core",
+      "toId": "signature-systems-1",
+      "stateKeys": [
+        "boardState",
+        "enemyThreats",
+        "playerChoice",
+        "updatedBoardState",
+        "newMove",
+        "nextTurn"
+      ],
+      "fromSystem": "BOARD_READING_CORE_LOOP','toSystem':'SIGNATURE_SYSTEMS_1','trigger':'READ_BOARD_AND_THREAT_INFO','stateChange':'BOARD_STATE_UPDATED'}</think> ملحوظة: 이 응답은 원본 규칙에 근거하여 실제 조건·행동·상태변",
+      "toSystem": "SIGNATURE_SYSTEMS_1",
+      "trigger": "READ_BOARD_AND_THREAT_INFO_TRIGGERED",
+      "stateChange": "BOARD_STATE_UPDATED_BY_READ_BOARD_AND_THREAT_INFO_TRIGGERED"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 29,
-      "successes": 28,
+      "calls": 30,
+      "successes": 29,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2988581,
-      "lastMs": 59884,
+      "totalMs": 3048603,
+      "lastMs": 60022,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T15:14:40.437Z"
+      "updatedAt": "2026-10-08T15:15:40.460Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:56:03.898Z",
-  "updatedAt": "2026-10-08T15:14:40.437Z",
+  "updatedAt": "2026-10-08T15:15:40.461Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3234,7 +3253,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:14:40.437Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:15:40.461Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
