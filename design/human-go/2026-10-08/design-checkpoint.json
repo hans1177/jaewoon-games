@@ -566,25 +566,42 @@
       "name": "ACTION_INTERACTION",
       "purpose": "플레이어는 휴먼 GO에서 탐험 활동 공간을 확장하고, 사람, 작업, 수집 가능한 기회를 발견하여 월드 상태를 변화시키는 CASUAL 게임의 중심 행동이다. 대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다. 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다.",
       "playerChoice": "Explore a compact activity space and discover a person, task or collectible opportunity.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다. 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다."
+    },
+    "local_authoring_parts::006428c914c1a1e20a4ca20bf20c1965813f6e43cd40ae960a8e28ffa1042702:signatureSystems:3": {
+      "id": "signatureSystem_04",
+      "grammarRole": "c",
+      "stateInputs": [
+        "humanCount",
+        "monsterCount",
+        "eliminatedCount"
+      ],
+      "stateOutputs": [
+        "newActivitySpace",
+        "discoveredObject",
+        "newObjective"
+      ],
+      "name": "ACTION_EXPANSION",
+      "purpose": "플레이어는 휴먼 GO에서 탐험 활동 공간을 확장하고, 사람, 작업, 수집 가능한 기회를 발견하여 월드 상태를 변화시키는 CASUAL 게임의 보조 요소로, 이들을 변주하여 다양한 경로와 결과를 생성한다.",
+      "playerChoice": "Explore a compact activity space and discover a person, task or collectible opportunity.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다. 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 18,
+      "calls": 19,
+      "successes": 19,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1943601,
-      "lastMs": 116000,
+      "totalMs": 2054632,
+      "lastMs": 111031,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:22:27.452Z"
+      "updatedAt": "2026-10-08T15:24:18.485Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:17:47.490Z",
-  "updatedAt": "2026-10-08T15:22:27.452Z",
+  "updatedAt": "2026-10-08T15:24:18.486Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2548,7 +2565,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:22:27.452Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:24:18.486Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
