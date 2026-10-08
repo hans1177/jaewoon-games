@@ -655,25 +655,100 @@
         "Read the incoming insect wave and its threat pattern."
       ],
       "fromSystem": "MAIN"
+    },
+    "local_authoring_parts::a7d61caf974c45fee6d658f77bdc409f609436f795a90f2a2a7c071b43945403:toSystem,trigger,stateChange": {
+      "toSystem": "A",
+      "trigger": "Read the incoming insect wave and its threat pattern.",
+      "stateChange": "World state change and next selection."
+    },
+    "local_authoring_parts::740245746d5a1545ed6affffc3902f7b4886ca90c9980575a4564faef0034789:systemInterconnections:4": {
+      "fromId": "MAIN",
+      "toId": "A",
+      "stateKeys": [
+        "Read the incoming insect wave and its threat pattern."
+      ],
+      "fromSystem": "MAIN",
+      "toSystem": "A",
+      "trigger": "Read the incoming insect wave and its threat pattern.",
+      "stateChange": "World state change and next selection."
+    },
+    "local_authoring_parts::5e84fea49e5e2eb59b3afbeeb58817cc63a4e509fb02047172c623142c11ac3e:systemInterconnections": {
+      "systemInterconnections": [
+        {
+          "fromId": "MAIN",
+          "toId": "A",
+          "stateKeys": [
+            "Read the incoming insect wave and its threat pattern."
+          ],
+          "fromSystem": "MAIN",
+          "toSystem": "A",
+          "trigger": "Read the incoming insect wave and its threat pattern.",
+          "stateChange": "World state change and next selection"
+        },
+        {
+          "fromId": "MAIN",
+          "toId": "A",
+          "stateKeys": [
+            "Read the incoming insect wave and its threat pattern."
+          ],
+          "fromSystem": "MAIN",
+          "toSystem": "A",
+          "trigger": "Read the incoming insect wave and its threat pattern.",
+          "stateChange": "World state change and next selection"
+        },
+        {
+          "fromId": "MAIN",
+          "toId": "A",
+          "stateKeys": [
+            "Read the incoming insect wave and its threat pattern."
+          ],
+          "fromSystem": "MAIN",
+          "toSystem": "A",
+          "trigger": "Read the incoming insect wave and its threat pattern.",
+          "stateChange": "World state change and next selection."
+        },
+        {
+          "fromId": "MAIN",
+          "toId": "A",
+          "stateKeys": [
+            "Read the incoming insect wave and its threat pattern."
+          ],
+          "fromSystem": "MAIN",
+          "toSystem": "A",
+          "trigger": "Read the incoming insect wave and its threat pattern.",
+          "stateChange": "World state change and next selection."
+        },
+        {
+          "fromId": "MAIN",
+          "toId": "A",
+          "stateKeys": [
+            "Read the incoming insect wave and its threat pattern."
+          ],
+          "fromSystem": "MAIN",
+          "toSystem": "A",
+          "trigger": "Read the incoming insect wave and its threat pattern.",
+          "stateChange": "World state change and next selection."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 27,
-      "successes": 24,
+      "calls": 28,
+      "successes": 25,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2734408,
-      "lastMs": 33748,
+      "totalMs": 2766994,
+      "lastMs": 32586,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T15:35:11.230Z"
+      "updatedAt": "2026-10-08T15:35:43.819Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:47:19.560Z",
-  "updatedAt": "2026-10-08T15:35:11.231Z",
+  "updatedAt": "2026-10-08T15:35:43.821Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2876,7 +2951,7 @@
     "designer_draft_slices::identity-core": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T15:35:11.230Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:35:43.821Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
