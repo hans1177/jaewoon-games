@@ -1042,25 +1042,40 @@
     },
     "local_authoring_parts::316b3b8087272d138a5c30b7d84dcc7e48bba295e376f5dc419f60659e539cba:trigger": {
       "trigger": "플레이어는 현재 경계 압박을 읽고 지역 특성과 전선 변화를 결합하여 새로운 전략을 세운다."
+    },
+    "local_authoring_parts::316b3b8087272d138a5c30b7d84dcc7e48bba295e376f5dc419f60659e539cba:stateChange": {
+      "stateChange": "플레이어는 현재 경계 압박을 읽고 지역 특성과 전선 변화를 결합하여 새로운 전략을 세운다."
+    },
+    "local_authoring_parts::bef621d61fb395ede4f1d2ac03ec06295d8edf7e80edaae1ae685219aba39d6a:systemInterconnections:4": {
+      "fromId": "border_pressure_to_territory_objective_connection_1",
+      "toId": "territory_objective",
+      "stateKeys": [
+        "border_pressure",
+        "territory_objective"
+      ],
+      "fromSystem": "BOUNDARY_PRESSURE_ANALYSIS_SYSTEM_0123456789ABCDEF0123456789ABCDEFABCDEFGHIJKLMNOPQRSTUVWXYZ",
+      "toSystem": "BOUNDARY_PRESSURE_ANALYSIS_SYSTEM_0123456789ABCDEF0123456789ABCDEFABCDEFGHIJKLMNOPQRSTUVWXYZ",
+      "trigger": "플레이어는 현재 경계 압박을 읽고 지역 특성과 전선 변화를 결합하여 새로운 전략을 세운다.",
+      "stateChange": "플레이어는 현재 경계 압박을 읽고 지역 특성과 전선 변화를 결합하여 새로운 전략을 세운다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 61,
-      "successes": 58,
+      "calls": 62,
+      "successes": 59,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 3778484,
-      "lastMs": 30026,
+      "totalMs": 3808601,
+      "lastMs": 30117,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T23:30:28.315Z"
+      "updatedAt": "2026-10-08T23:30:58.434Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:48:16.553Z",
-  "updatedAt": "2026-10-08T23:30:28.315Z",
+  "updatedAt": "2026-10-08T23:30:58.440Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3087,91 +3102,6 @@
   "sliceRepairFeedback": {
     "designer_draft_slices::systems-progression": [
       {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[0].trigger",
-          "value": "READ_BORDER_PRESSURE_AND_CHOOSE_TERRITORY_OBJECTIVE"
-        },
-        "requiredAction": "systemInterconnections[0].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[1].trigger",
-          "value": "READ_BORDER_PRESSURE_AND_CHOOSE_TERRITORY_OBJECTIVE"
-        },
-        "requiredAction": "systemInterconnections[1].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[2].trigger",
-          "value": "READ_BORDER_PRESSURE_AND_CHOOSE_TERRITORY_OBJECTIVE"
-        },
-        "requiredAction": "systemInterconnections[2].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[3].trigger",
-          "value": "READ_BORDER_PRESSURE_AND_CHOOSE_TERRITORY_OBJECTIVE"
-        },
-        "requiredAction": "systemInterconnections[3].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[4].trigger",
-          "value": "READ_BORDER_PRESSURE_AND_CHOOSE_TERRITORY_OBJECTIVE"
-        },
-        "requiredAction": "systemInterconnections[4].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
         "code": "DESIGN_STATE_EXCHANGE_BROKEN",
         "kind": "HARD_GATE",
         "axis": "CORE_LOOP_DESIGN",
@@ -3196,9 +3126,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "border_pressure→territory_objective의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "border_pressure_to_territory_objective_connection_1→territory_objective의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: border_pressure→territory_objective의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: border_pressure_to_territory_objective_connection_1→territory_objective의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3213,9 +3143,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "border_pressure→territory_objective의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "border_pressure_to_territory_objective_connection_1→territory_objective의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: border_pressure→territory_objective의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: border_pressure_to_territory_objective_connection_1→territory_objective의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3230,9 +3160,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "border_pressure→territory_objective의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "border_pressure_to_territory_objective_connection_1→territory_objective의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: border_pressure→territory_objective의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: border_pressure_to_territory_objective_connection_1→territory_objective의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3247,9 +3177,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "border_pressure→territory_objective의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "border_pressure_to_territory_objective_connection_1→territory_objective의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: border_pressure→territory_objective의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: border_pressure_to_territory_objective_connection_1→territory_objective의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3276,7 +3206,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 1
+    "designer_draft_slices::systems-progression": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3314,10 +3244,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T23:30:28.315Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T23:30:58.437Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
