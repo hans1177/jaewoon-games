@@ -774,25 +774,45 @@
         "progressionStatus"
       ],
       "fromSystem": "SYSTEM_WORLD_STATE_TRANSFORMATION_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01"
+    },
+    "local_authoring_parts::ff486f6564f32f5ead50c2625e06820ad3903196f41a7b3056df79f35710bb2f:toSystem,trigger,stateChange": {
+      "toSystem": "SYSTEM_WORLD_STATE_TRANSFORMATION_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01",
+      "trigger": "ACTION_PLAYER_INPUT",
+      "stateChange": "{ \"currentWorldState\": \"OPENING\", \"playerTarget\": \"OPENING\", \"availableResources\": \"OPENING\", \"potentialHazards\": \"OPENING\", \"progressionStatus\": \"OPENING\" } -> { \"updatedWorldState\": \"OPENING\", \"newPlayerTarget\": \"OPENING\", \"modifiedResources\": \"OPENING\", \"reducedHazards\": \"OPENING\", \"newProgressionStatus\": \"OPENING\" }"
+    },
+    "local_authoring_parts::c0381f5e6e75bd2178f8307f4194a77212c828ef4f4a1e1ff49c93964f1b587a:systemInterconnections:0": {
+      "fromId": "systemInterconnections[0]",
+      "toId": "systemInterconnections[1]",
+      "stateKeys": [
+        "currentWorldState",
+        "playerTarget",
+        "availableResources",
+        "potentialHazards",
+        "progressionStatus"
+      ],
+      "fromSystem": "SYSTEM_WORLD_STATE_TRANSFORMATION_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01",
+      "toSystem": "SYSTEM_WORLD_STATE_TRANSFORMATION_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01",
+      "trigger": "ACTION_PLAYER_INPUT",
+      "stateChange": "{ \"currentWorldState\": \"OPENING\", \"playerTarget\": \"OPENING\", \"availableResources\": \"OPENING\", \"potentialHazards\": \"OPENING\", \"progressionStatus\": \"OPENING\" } -> { \"updatedWorldState\": \"OPENING\", \"newPlayerTarget\": \"OPENING\", \"modifiedResources\": \"OPENING\", \"reducedHazards\": \"OPENING\", \"newProgressionStatus\": \"OPENING\" }"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 22,
-      "successes": 22,
+      "calls": 23,
+      "successes": 23,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 767176,
-      "lastMs": 73029,
+      "totalMs": 791250,
+      "lastMs": 24074,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:16:50.942Z"
+      "updatedAt": "2026-10-08T15:17:15.018Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:29:02.212Z",
-  "updatedAt": "2026-10-08T15:16:50.943Z",
+  "updatedAt": "2026-10-08T15:17:15.019Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2998,7 +3018,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:16:50.942Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:17:15.019Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
