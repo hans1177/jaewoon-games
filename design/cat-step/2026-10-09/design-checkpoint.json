@@ -412,25 +412,38 @@
       "name": "Board Level Start",
       "purpose": "시각적 인과 법칙에 따른 반복 가능한 선택 및 위험/보상 구조 형성",
       "playerChoice": "세부적인 상태 변화와 새로운 패턴 도입의 선택"
+    },
+    "local_authoring_parts::441da6749cc626d7fd67b1db71b9c626bb87ce632bda960d6cb4f8a2326a5cbd:signatureSystems:4": {
+      "id": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "BOARD_PATTERN"
+      ],
+      "stateOutputs": [
+        "LEVEL_COMPLETED"
+      ],
+      "name": "Board Level Delve",
+      "purpose": "시각적 인과 법칙에 따른 반복 가능한 선택 및 위험/보상 구조 형성",
+      "playerChoice": "세부적인 상태 변화와 새로운 패턴 도입의 선택"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 14,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1125394,
-      "lastMs": 95274,
+      "totalMs": 1221972,
+      "lastMs": 96578,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:19:12.916Z"
+      "updatedAt": "2026-10-08T19:20:49.496Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T19:00:27.464Z",
-  "updatedAt": "2026-10-08T19:19:12.916Z",
+  "updatedAt": "2026-10-08T19:20:49.501Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2512,7 +2525,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2527,10 +2540,10 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T19:19:12.916Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T19:20:49.497Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_MAIN_A_B_c_DELVE_REQUIRED,DESIGN_RULE_STATE_MISSING",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
