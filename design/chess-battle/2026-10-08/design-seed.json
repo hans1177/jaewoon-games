@@ -11,99 +11,110 @@
   "status": "AUTHORED_CANDIDATE",
   "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
   "originalSource": null,
-  "fingerprint": "2156743fdbf42411e7ee3b447288a99bdba0c1a5b6c5fef2c62eb9ac04c7db87",
+  "fingerprint": "96aebb971749598b16e4a7f12c155803cfe5bb29fa000b21d8414d3e715b259b",
   "engineDigest": "d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904",
-  "contentDigest": "da1a9caf67af03375ae062d4457fede08b81c2a2ecd3af9d256ed178a72764de",
+  "contentDigest": "759438671a5a7b061c40cc2ac3f0c2594839831b5d8549b569f3304a0d9c1c0e",
   "externalSeedRequired": false,
   "designPass": false,
   "runtimePass": false,
   "content": {
-    "identity": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다. 플레이어는 Read the board and enemy threat information.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 Read the board and enemy threat information.이며, 두 대축은 Commit a move or ability that changes control of key spaces.와 Resolve the tactical exchange and use the new board state to plan the next decisive turn.의 상태 교환을 담당한다. 보조 요소는 @로, 발견·숙련·재방문의 깊이를 구분한다. 게임 규칙은 세계 상태와 다음 선택의 상호작용을 통해 구체화하며, 시그니처 시스템은 MAIN/A/B/c/DELVE(@)의 역할을 각각 포함한다. 게임의 핵심은 입력/선택 -> 상태 변화 -> 보상/위험/다음 선택의 연결을 통해 구현하며, 인과법칙은 기존 규칙과 일관되게 유지한다. 게임의 설계는 기존 원본과 일관되며, 설계 수정은 기존 검증과 보안을 유지한다. 게임의 성장은 수치 증가뿐만 아니라 새로운 행동·경로·관계·발견·대응법을 열어 다양한 플레이 경험을 제공한다. 게임의 플랫폼별 구현은 원본과 일관되며, 멀티플레이 모드는 기존 규칙을 따르며 확장 가능성이 존재한다. 게임의 전략은 입력 직후의 상태 변화와 피드백을 통해 구현하며, 안전·속도·보상·자원 중 최소 하나의 실제 트레이드오프가 다음 선택을 바꾼다. 게임의 진행은 단순 반복을 피하고, 새로운 압박 유형·지역 규칙·적 행동·목표 또는 시스템 연결을 통해 확장한다. 게임의 설계는 기존 원본과 일관되며, 설계 수정은 기존 검증과 보안을 유지한다. 게임의 성장은 숫자 상승뿐 아니라 새로운 행동 조합·경로·대응법을 통해 구현하며, 발견 후 다음 질문으로 이어지는 방식으로 설계된다. 게임의 인과법칙은 기존 규칙과 일관되며",
-    "playerFantasy": "체스 배틀에서 플레이어는 Read the board and enemy threat information.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 Read the board and enemy threat information.이며, 두 대축은 Commit a move or ability that changes control of key spaces.와 Resolve the tactical exchange and use the new board state to plan the next decisive turn.의 상태 교환을 담당한다. 보조 요소는 @로, 발견·숙련·재방문의 깊이를 구분한다. 게임 규칙은 세계 상태와 다음 선택의 상호작용을 통해 구체화하며, 시그니처 시스템은 MAIN/A/B/c/DELVE(@)의 역할을 각각 포함한다. 게임의 핵심은 입력/선택 -> 상태 변화 -> 보상/위험/다음 선택의 연결을 통해 구현하며, 인과법칙은 기존 규칙과 일관되게 유지한다. 게임의 설계는 기존 원본과 일관되며, 설계 수정은 기존 검증과 보안을 유지한다. 게임의 성장은 수치 증가뿐 아니라 새로운 행동·경로·관계·발견·대응법을 열어 다양한 플레이 경험을 제공한다. 게임의 플랫폼별 구현은 원본과 일관되며, 멀티플레이 모드는 기존 규칙을 따르며 확장 가능성이 존재한다. 게임의 전략은 입력 직후의 상태 변화와 피드백을 통해 구현하며, 안전·속도·보상·자원 중 최소 하나의 실제 트레이드오프가 다음 선택을 바꾼다. 게임의 진행은 단순 반복을 피하고, 새로운 압박 유형·지역 규칙·적 행동·목표 또는 시스템 연결을 통해 확장한다. 게임의 설계는 기존 원본과 일관되며, 설계 수정은 기존 검증과 보안을 유지한다. 게임의 성장은 숫자 상승뿐 아니라 새로운 행동 조합·경로·대응법을 통해 구현하며,",
-    "coreFun": "Read the board and enemy threat information.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 Read the board and enemy threat information.이며, 두 대축은 Commit a move or ability that changes control of key spaces.와 Resolve the tactical exchange and use the new board state to plan the next decisive turn.의 상태 교환을 담당한다. 보조 요소는 @로, 발견·숙련·재방문의 깊이를 구분한다. 게임 규칙은 세계 상태와 다음 선택의 상호작용을 통해 구체화하며, 시그니처 시스템은 MAIN/A/B/c/DELVE(@)의 역할을 각각 포함한다. 게임의 핵심은 입력/선택 -> 상태 변화 -> 보상/위험/다음 선택의 연결을 통해 구현하며, 인과법칙은 기존 규칙과 일관되게 유지한다. 게임의 설계는 기존 원본과 일관되며, 설계 수정은 기존 검증과 보안을 유지한다. 게임의 성장은 수치 증가뿐 아니라 새로운 행동·경로·관계·발견·대응법을 열어 다양한 플레이 경험을 제공한다. 게임의 플랫폼별 구현은 원본과 일관되며, 멀티플레이 모드는 기존 규칙을 따르며 확장 가능성이 존재한다. 게임의 전략은 입력 직후의 상태 변화와 피드백을 통해 구현하며, 안전·속도·보상·자원 중 최소 하나의 실제 트레이드오프가 다음 선택을 바꾼다. 게임의 진행은 단순 반복을 피하고, 새로운 압박 유형·지역 규칙·적 행동·목표 또는 시스템 연결을 통해 확장한다. 게임의 설계는 기존 원본과 일관되며, 설계 수정은 기존 검증과 보안을 유지한다. 게임의 성장은 숫자 상승뿐 아니라 새로운 행동 조합·경로·대응법을 통해 구현하며, 발견 후 다음 질문으로이",
+    "identity": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다. 플레이어는 Read the board and enemy threat information.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 Read the board and enemy threat information.이며, 두 대축은 Commit a move or ability that changes control of key spaces.와 Resolve the tactical exchange and use the new board state to plan the next decisive turn.의 상태 교환, 보조 요소는 DELVE(@)이며, 규칙은 게임의 핵심 재미를 최우선으로 두고, 상태 변화는 즉각적 보상·위험·다음 선택을 포함한다. 게임의 씨앗은 정체성·플레이어 판타지·핵심 재미·핵심 루프·MAIN/A/B/c/@와 상태 변화를 직접 생성한다. 게임의 씨앗은 공통 원본으로 유지하며, 플랫폼별 구현은 네이티브에 맞게 적용한다. 실패·중단·재접속·저장은 원본 의미를 보존한다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 최소 두 실제 대안을 비교하고 선택안을 한 판의 시작·전개·결말로 재생한다. 한 판과 전체 세션 시간을 구분하며 검증되지 않은 시간·품질·실행 결과를 확정하지 않는다. 공공영역 고전의 원형은 게임에 맞게 재해석하고 현대 보호 작품은 추상적 기법만 참고한다. 보호된 인물·대사·장면은 복제하지 않는다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 점수와 통과 판정은 결정론적 검증기가 담당한다. 게임의 씨앗은 공통 원본으로 유지하며, 플랫폼별 구현은 네이티브에 맞게 적용한다. 게임의 씨앗은 정체성·플레이어 판타지·핵심 재미·핵심 루프·MAIN/A/B/c/@와 상태 변화를 직접 생성한다. 게임의 씨앗은 공통 원본으로 유지하며, 플랫폼별 구현은 네이티브에 맞게 적용한다. 실패·중단·재접속·젡",
+    "playerFantasy": "체스 배틀에서 플레이어는 Read the board and enemy threat information.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 Read the board and enemy threat information.이며, 두 대축은 Commit a move or ability that changes control of key spaces.와 Resolve the tactical exchange and use the new board state to plan the next decisive turn.의 상태 교환, 보조 요소는 DELVE(@)이며, 규칙은 게임의 핵심 재미를 최우선으로 두고, 상태 변화는 즉각적 보상·위험·다음 선택을 포함한다. 게임의 씨앗은 정체성·플레이어 판타지·핵심 재미·핵심 루프·MAIN/A/B/c/@와 상태 변화를 직접 생성한다. 게임의 씨앗은 공통 원본으로 유지하며, 플랫폼별 구현은 네이티브에 맞게 적용한다. 실패·중단·재접속·저장은 원본 의미를 보존한다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 최소 두 실제 대안을 비교하고 선택안을 한 판의 시작·전개·결말로 재생한다. 한 판과 전체 세션 시간을 구분하며 검증되지 않은 시간·품질·실행 결과를 확정하지 않는다. 공공영역 고전의 원형은 게임에 맞게 재해석하고 현대 보호 작품은 추상적 기법만 참고한다. 보호된 인물·대사·장면은 복제하지 않는다. 점수와 통과 판정은 결정론적 검증기가 담당한다.",
+    "coreFun": "Read the board and enemy threat information.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 Read the board and enemy threat information.이며, 두 대축은 Commit a move or ability that changes control of key spaces.와 Resolve the tactical exchange and use the new board state to plan the next decisive turn.의 상태 교환, 보조 요소는 DELVE(@)이며, 규칙은 게임의 핵심 재미를 최우선으로 두고, 상태 변화는 즉각적 보상·위험·다음 선택을 포함한다. 게임의 씨앗은 정체성·플레이어 판타지·핵심 재미·핵심 루프·MAIN/A/B/c/@와 상태 변화를 직접 생성한다. 게임의 씨앗은 공통 원본으로 유지하며, 플랫폼별 구현은 네이티브에 맞게 적용한다. 실패·중단·재접속·저장은 원본 의미를 보존한다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 최소 두 실제 대안을 비교하고 선택안을 한 판의 시작·전개·결말로 재생한다. 한 판과 전체 세션 시간을 구분하며 검증되지 않은 시간·품질·실행 결과를 확정하지 않는다. 공공영역 고전의 원형은 게임에 맞게 재해석하고 현대 보호 작품은 추상적 기법만 참고한다. 보호된 인물·대사·장면은 복제하지 않는다. 점수와 통과 판정은 결정론적 검증기가 담당한다.",
     "coreLoop": [
-      "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE",
-      "READ BOARD AND ENEMY THREAT INFORMATION -> COMMIT MOVE/ABILITY -> RESOLVE TACTICAL EXCHANGE -> USE NEW BOARD STATE TO PLAN NEXT DECISIVE TURN",
-      "READ BOARD AND ENEMY THREAT INFORMATION -> COMMIT MOVE/ABILITY -> RESOLVE TACTICAL EXCHANGE -> USE NEW BOARD STATE TO PLAN NEXT DECISIVE TURN"
+      "입력/선택 → 상태변화 → 보상·위험·다음 선택의 연결을 포함하는 최소 3개의 실제 플레이 단계. 중심 행동은 'Read the board and enemy threat information.'이며, 두 대축은 'Commit a move or ability that changes control of key spaces.'과 'Resolve the tactical exchange and use the new board state to plan the next decisive turn.'의 상태 교환, 보조 요소는 DELVE(@)이며, 규칙은 게임의 핵심 재미를 최우선으로 두고, 상태 변화는 즉각적 보상·",
+      "signatureSystems”: [",
+      "multiplayerMode”: ",
+      "}</think> ملحوظة: النص المُقدم يحتوي على تكرار ونقص في البنية، ويتطلب تعديلات لتوحيد البنية والملاءمة للقواعد المُحددة. يُرجى التحقق من البنية والملاءمة وتعديل النص لتوحيد البنية والملاءمة وفقًا للقواعد المُحددة. يُرجى التحقق من البنية والملاءمة وتعديل النص لتوحيد البنية والملاءمة وفقًا للقواعد المُحددة. يُرجى التحقق من البنية والملاءمة و"
     ],
     "signatureSystems": [
       {
-        "id": "signatureSystems[0]",
+        "id": "identity-core",
         "grammarRole": "MAIN",
         "stateInputs": [
-          "worldState",
-          "enemyThreatInfo"
+          "boardState",
+          "enemyThreats",
+          "playerChoice"
         ],
         "stateOutputs": [
-          "newWorldState",
-          "nextMoveChoice"
+          "updatedBoardState",
+          "newMove",
+          "nextTurn"
         ],
-        "name": "BoardStateTransitionSystem",
-        "purpose": "Manages the transition between the current board state and the next move, ensuring tactical resolution and strategic planning.",
-        "playerChoice": "Commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
+        "name": "Board Reading and Tactical Decision Making",
+        "purpose": "Player-controlled board state and tactical move generation",
+        "playerChoice": "Read the board and enemy threat information, then commit a move or ability that changes control of key spaces, and resolve the tactical exchange to plan the next decisive turn"
       },
       {
-        "id": "signatureSystems[1]",
+        "id": "signature-systems-1",
         "grammarRole": "A",
         "stateInputs": [
-          "worldState",
-          "enemyThreatInfo"
+          "boardState",
+          "enemyThreats",
+          "playerChoice"
         ],
         "stateOutputs": [
-          "newWorldState",
-          "nextMoveChoice"
+          "updatedBoardState",
+          "newMove",
+          "nextTurn"
         ],
-        "name": "TacticalResolutionSystem",
-        "purpose": "Manages the tactical resolution of the board state after the initial read and commit, ensuring the player can plan the next decisive turn based on the new board configuration.",
-        "playerChoice": "Commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
+        "name": "Board Reading and Tactical Decision Making",
+        "purpose": "Player-controlled board state and tactical move generation",
+        "playerChoice": "Read the board and enemy threat information, then commit a move or ability that changes control of key spaces, and resolve the tactical exchange to plan the next decisive turn"
       },
       {
-        "id": "signatureSystems[2]",
+        "id": "signature-systems-2",
         "grammarRole": "B",
         "stateInputs": [
-          "worldState",
-          "enemyThreatInfo"
+          "boardState",
+          "enemyThreats",
+          "playerChoice"
         ],
         "stateOutputs": [
-          "newWorldState",
-          "nextMoveChoice"
+          "updatedBoardState",
+          "newMove",
+          "nextTurn"
         ],
-        "name": "TacticalDecisionSystem",
-        "purpose": "Manages the tactical decision-making process, allowing the player to evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn.",
-        "playerChoice": "Evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
+        "name": "Board Reading and Tactical Decision Making",
+        "purpose": "Player-controlled board state and tactical move generation",
+        "playerChoice": "Read the board and enemy threat information, then commit a move or ability that changes control of key spaces, and resolve the tactical exchange to plan the next decisive turn"
       },
       {
-        "id": "signatureSystems[3]",
+        "id": "signature-systems-3",
         "grammarRole": "c",
         "stateInputs": [
-          "worldState",
-          "enemyThreatInfo"
+          "boardState",
+          "enemyThreats",
+          "playerChoice"
         ],
         "stateOutputs": [
-          "newWorldState",
-          "nextMoveChoice"
+          "updatedBoardState",
+          "newMove",
+          "nextTurn"
         ],
-        "name": "TacticalInsightSystem",
-        "purpose": "Manages the player's tactical insight and decision-making process, allowing them to evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn.",
-        "playerChoice": "Evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
+        "name": "Board Reading and Tactical Decision Making",
+        "purpose": "Player-controlled board state and tactical move generation",
+        "playerChoice": "Read the board and enemy threat information, then commit a move or ability that changes control of key spaces, and resolve the tactical exchange to plan the next decisive turn"
       },
       {
-        "id": "signatureSystems[4]",
+        "id": "signature-systems-4",
         "grammarRole": "DELVE",
         "stateInputs": [
-          "worldState",
-          "enemyThreatInfo"
+          "boardState",
+          "enemyThreats",
+          "playerChoice"
         ],
         "stateOutputs": [
-          "newWorldState",
-          "nextMoveChoice"
+          "updatedBoardState",
+          "newMove",
+          "nextTurn"
         ],
-        "name": "TacticalInsightAndDecisionSystem",
-        "purpose": "Manages the player's tactical insight and decision-making process, allowing them to evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn.",
-        "playerChoice": "Evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
+        "name": "Board Reading and Tactical Decision Making",
+        "purpose": "Player-controlled board state and tactical move generation",
+        "playerChoice": "Read the board and enemy threat information, then commit a move or ability that changes control of key spaces, and resolve the tactical exchange to plan the next decisive turn"
       }
     ],
-    "multiplayerMode": "HYBRID"
+    "multiplayerMode": "COOP"
   },
-  "updatedAt": "2026-10-08T10:56:21.476Z"
+  "updatedAt": "2026-10-08T13:15:46.266Z"
 }
