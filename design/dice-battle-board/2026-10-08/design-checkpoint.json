@@ -332,25 +332,133 @@
           "playerChoice": "Select a board pattern, manage obstacles, and strategically plan moves to clear levels and unlock new challenges. The choice of board pattern and obstacle configuration directly influences the game's progression and the emergence of new puzzle elements."
         }
       ]
+    },
+    "local_authoring_parts::78844fb4afb21b8b51a0b5a68a7dc5ec9c266958e1c8a8d4e7d50752be737f36:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::74d485fcf8789e0b9aac929d56928712057b276caa35fe4aaf9511d31201d786:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ],
+      "signatureSystems": [
+        {
+          "id": "MAIN-01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "DiceResult",
+            "BoardPattern",
+            "ObstacleConfiguration",
+            "PlayerChoice"
+          ],
+          "stateOutputs": [
+            "BoardState",
+            "GameProgress",
+            "RewardSystem",
+            "NextLevelPattern"
+          ],
+          "name": "Dice Battle Board",
+          "purpose": "A puzzle game where players navigate a board with goals, constraints, and feedback to achieve progression.",
+          "playerChoice": "Select a board pattern, manage obstacles, and strategically plan moves to clear levels and unlock new challenges."
+        },
+        {
+          "id": "MAIN-01",
+          "grammarRole": "A",
+          "stateInputs": [
+            "DiceResult",
+            "BoardPattern",
+            "ObstacleConfiguration",
+            "PlayerChoice"
+          ],
+          "stateOutputs": [
+            "BoardState",
+            "GameProgress",
+            "RewardSystem",
+            "NextLevelPattern"
+          ],
+          "name": "Dice Battle Board",
+          "purpose": "A puzzle game where players navigate a board with goals, constraints, and feedback to achieve progression.",
+          "playerChoice": "Select a board pattern, manage obstacles, and strategically plan moves to clear levels and unlock new challenges."
+        },
+        {
+          "id": "MAIN-02",
+          "grammarRole": "B",
+          "stateInputs": [
+            "DiceResult",
+            "BoardPattern",
+            "ObstacleConfiguration",
+            "PlayerChoice"
+          ],
+          "stateOutputs": [
+            "BoardState",
+            "GameProgress",
+            "RewardSystem",
+            "NextLevelPattern"
+          ],
+          "name": "Dice Battle Board",
+          "purpose": "A puzzle game where players navigate a board with goals, constraints, and feedback to achieve progression. The game emphasizes strategic planning, obstacle management, and the dynamic evolution of the board pattern to create new challenges and opportunities.",
+          "playerChoice": "Select a board pattern, manage obstacles, and strategically plan moves to clear levels and unlock new challenges. The choice of board pattern and obstacle configuration directly influences the game's progression and the emergence of new puzzle elements."
+        },
+        {
+          "id": "c-01",
+          "grammarRole": "c",
+          "stateInputs": [
+            "DiceResult",
+            "BoardPattern",
+            "ObstacleConfiguration",
+            "PlayerChoice"
+          ],
+          "stateOutputs": [
+            "BoardState",
+            "GameProgress",
+            "RewardSystem",
+            "NextLevelPattern"
+          ],
+          "name": "Dice Battle Board",
+          "purpose": "A puzzle game where players navigate a board with goals, constraints, and feedback to achieve progression. The game emphasizes strategic planning, obstacle management, and the dynamic evolution of the board pattern to create new challenges and opportunities.",
+          "playerChoice": "Select a board pattern, manage obstacles, and strategically plan moves to clear levels and unlock new challenges. The choice of board pattern and obstacle configuration directly influences the game's progression and the emergence of new puzzle elements."
+        },
+        {
+          "id": "DELVE-01",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "DiceResult",
+            "BoardPattern",
+            "ObstacleConfiguration",
+            "PlayerChoice"
+          ],
+          "stateOutputs": [
+            "BoardState",
+            "GameProgress",
+            "RewardSystem",
+            "NextLevelPattern"
+          ],
+          "name": "Dice Battle Board",
+          "purpose": "A puzzle game where players navigate a board with goals, constraints, and feedback to achieve progression. The game emphasizes strategic planning, obstacle management, and the dynamic evolution of the board pattern to create new challenges and opportunities.",
+          "playerChoice": "Select a board pattern, manage obstacles, and strategically plan moves to clear levels and unlock new challenges. The choice of board pattern and obstacle configuration directly influences the game's progression and the emergence of new puzzle elements."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1051112,
-      "lastMs": 75770,
+      "totalMs": 1095552,
+      "lastMs": 44440,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:14:20.651Z"
+      "updatedAt": "2026-10-08T13:15:05.095Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:56:49.507Z",
-  "updatedAt": "2026-10-08T13:14:20.653Z",
+  "updatedAt": "2026-10-08T13:15:05.103Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2278,12 +2386,50 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:14:20.653Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "주사위 전투 보드는 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다. 플레이어는 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다. 대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다. 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다. 게임의 핵심 재미는 시작 단계부터 반복 가능한 선택과 즉각적인 상태 변화, 위험·보상, 그리고 재방문의 루프로 구성된다. 게임의 세계는 플레이어의 선택과 세계 규칙이 서로 영향을 주는 시그니처 상호작용을 통해 구축된다. 게임의 시스템은 MAIN×A×B×c의 조합으로 구성되어 있으며, 각각의 상태는 실제 게임 상태로 구현된다. 게임의 인과법칙은 주사위의 결과와 세계의 상태 변화, 그리고 플레이어의 선택과의 관계를 통해 구체화된다. 게임의 인과법칙은 기존의 인과문법과 차이를 보존하며, 각각의 시스템은 실제 게임 상태로 구현된다. 게임의 인과법칙은 플레이어의 선택과 세계의 상태 변화, 그리고 게임의 재방문의 루프를 통해 구체화된다. 게임의 인과법칙은 기존의 인과문법과 차이를 보존하며, 각각의 시스템은 실제 게임 상태로 구현된다. 게임의 인과법칙은 플레이어의 선택과 세계의 상태 변화, 그리고 게임의 재방문의 루프를 통해 구체화된다. 게임의 인과법칙은 기존의 인과문법과 차이를 보존하며, 각각의 시스템은 실제 게임 상태로 구현된다. 게임의 인과법칙은 플레이어의 선택과 세계의 상태 변화, 그리고 게임의 재방문의 루프를 통해 구체화된다. 게임의 인과법칙은 기존의 인과문법과 차이를 보존하며, 각각의 시스템은 실제 게임 상태로 구현된다. 게임의 인과법칙은 플레이어의 선택과 세계의 상태變化",
+      "playerFantasy": "주사위 전투 보드는 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다. 플레이어는 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다. 대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다. 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다. 게임의 핵심 재미는 시작 단계부터 반복 가능한 선택과 즉각적인 상태 변화, 위험·보상, 그리고 재방문의 루프로 구성된다. 게임의 세계는 플레이어의 선택과 세계 규칙이 서로 영향을 주는 시그니처 상호작용을 통해 구축된다. 게임의 시스템은 MAIN×A×B×c의 조합으로 구성되어 있으며, 각각의 상태는 실제 게임 상태로 구현된다. 게임의 인과법칙은 주사위의 결과와 세계의 상태 변화, 그리고 플레이어의 선택과의 관계를 통해 구체화된다. 게임의 인과법칙은 기존의 인과문법과 차이를 보존하며, 각각의 시스템은 실제 게임 상태로 구현된다. 게임의 인과법칙은 플레이어의 선택과 세계의 상태 변화, 그리고 게임의 재방문의 루프를 통해 구체화된다. 게임의 인과법칙은 기존의 인과문법과 차이를 보존하며, 각각의 시스템은 실제 게임 상태로 구현된다. 게임의 인과법칙은 플레이어의 선택과 세계의 상태 변화, 그리고 게임의 재방문의 루프를 통해 구체화된다. 게임의 인과법칙은 기존의 인과문법과 차이를 보존하며, 각각의 시스템은 실제 게임 상태로 구현된다. 게임의 인과법칙은 플레이어의 선택과 세계의 상태 변화, 그리고 게임의 재방",
+      "coreFun": "주사위 전투 보드는 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다. 플레이어는 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다. 대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다. 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다. 게임의 핵심 재미는 시작 단계부터 반복 가능한 선택과 즉각적인 상태 변화, 위험·보상, 그리고 재방문의 루프로 구성된다. 게임의 세계는 플레이어의 선택과 세계 규칙이 서로 영향을 주는 시그니처 상호작용을 통해 구축된다. 게임의 시스템은 MAIN×A×B×c의 조합으로 구성되어 있으며, 각각의 상태는 실제 게임 상태로 구현된다. 게임의 인과법칙은 주사위의 결과와 세계의 상태 변화, 그리고 플레이어의 선택과의 관계를 통해 구체화된다. 게임의 인과법칙은 기존의 인과문법과 차이를 보존하며, 각각의 시스템은 실제 게임 상태로 구현된다. 게임의 인과법칙은 플레이어의 선택과 세계의 상태 변화, 그리고 게임의 재방문의 루프를 통해 구체화된다. 게임의 인과법칙은 기존의 인과문법과 차이를 보존하며, 각각의 시스템은 실제 게임 상태로 구현된다. 게임의 인과법칙은 플레이어의 선택과 세계의 상태 변화, 그리고 게임의 재방문의 루프를 통해 구체화된다. 게임의 인과법칙은 기존의 인과문법과 차이를 보존하며, 각각의 시스템은 실제 게임 상태로 구현된다. 게임의 인과법칙은 플레이어의 선택과 세계의 상태 변화, 그리고 게임의 재방",
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ],
+      "multiplayerMode": "COOP"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T13:15:05.098Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
