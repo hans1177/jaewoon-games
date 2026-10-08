@@ -322,57 +322,40 @@ jobs:
 
 
   dispatch-roblox:
-    name: Dispatch independent Roblox runtime for ${{ matrix.game_id }}
+    name: Run ready Roblox upper-platform lanes
     needs: native-plan
     if: needs.native-plan.result == 'success' && needs.native-plan.outputs.roblox_count != '0'
     strategy:
       fail-fast: false
       matrix:
         game_id: ${{ fromJSON(needs.native-plan.outputs.roblox_json) }}
-    runs-on: ubuntu-slim
-    timeout-minutes: 5
     permissions:
-      contents: read
+      contents: write
+      pull-requests: write
       actions: write
-    steps:
-      - name: Start existing per-game Roblox workflow without holding the portfolio cycle
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GAME_ID: ${{ matrix.game_id }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID"
-          echo "DEVELOPMENT_ROBLOX_GAME_DISPATCHED=$GAME_ID"
-          echo 'DEVELOPMENT_ROBLOX_PARENT_WAITS_FOR_RUNTIME=NO'
+    uses: ./.github/workflows/company-development-roblox-runtime.yml
+    with:
+      game_id: ${{ matrix.game_id }}
+    secrets: inherit
 
   dispatch-unity:
-    name: Dispatch independent Unity runtime for ${{ matrix.game_id }}
+    name: Run ready Unity upper-platform lanes
     needs: native-plan
     if: needs.native-plan.result == 'success' && needs.native-plan.outputs.unity_count != '0'
     strategy:
       fail-fast: false
       matrix:
         game_id: ${{ fromJSON(needs.native-plan.outputs.unity_json) }}
-    runs-on: ubuntu-slim
-    timeout-minutes: 5
     permissions:
-      contents: read
+      contents: write
       actions: write
-    steps:
-      - name: Start existing per-game Unity workflow without holding the portfolio cycle
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GAME_ID: ${{ matrix.game_id }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          gh workflow run company-development-unity-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID"
-          echo "DEVELOPMENT_UNITY_GAME_DISPATCHED=$GAME_ID"
-          echo 'DEVELOPMENT_UNITY_PARENT_WAITS_FOR_RUNTIME=NO'
+    uses: ./.github/workflows/company-development-unity-runtime.yml
+    with:
+      game_id: ${{ matrix.game_id }}
+    secrets: inherit
 
   dispatch-unity-web-floor:
-    name: Dispatch Unity Web development floor for ${{ matrix.game_id }}
+    name: Run Unity Web development floor
     needs: native-plan
     if: needs.native-plan.result == 'success' && needs.native-plan.outputs.unity_web_ids != ''
     strategy:
@@ -380,52 +363,38 @@ jobs:
       matrix:
         game_id: ${{ fromJSON(needs.native-plan.outputs.unity_web_json) }}
     concurrency:
-      group: unity-web-floor-call-${{ matrix.game_id }}-${{ github.sha }}
+      group: unity-web-floor-call-${{ matrix.game_id }}
       cancel-in-progress: false
-    runs-on: ubuntu-slim
-    timeout-minutes: 5
     permissions:
-      contents: read
+      contents: write
+      pull-requests: write
       actions: write
-    steps:
-      - name: Start existing per-game Unity Web floor and preserve pinned source
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GAME_ID: ${{ matrix.game_id }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          gh workflow run unity-web-first-stage-build.yml --repo "$GITHUB_REPOSITORY" --ref main \
-            -f game_id="$GAME_ID" -f project_path="unity-games/$GAME_ID" \
-            -f source_commit="$GITHUB_SHA" -f publish_to_main=true
-          echo "DEVELOPMENT_UNITY_WEB_FLOOR_DISPATCHED=$GAME_ID:$GITHUB_SHA"
+    uses: ./.github/workflows/unity-web-first-stage-build.yml
+    with:
+      game_id: ${{ matrix.game_id }}
+      project_path: unity-games/${{ matrix.game_id }}
+      source_commit: ${{ github.sha }}
+      publish_to_main: true
+    secrets: inherit
 
   dispatch-unity-web-bootstrap:
-    name: Dispatch Unity Web source bootstrap for ${{ matrix.game_id }}
+    name: Bootstrap Unity Web source ${{ matrix.game_id }}
     needs: native-plan
     if: needs.native-plan.result == 'success' && needs.native-plan.outputs.unity_web_bootstrap_ids != ''
     strategy:
       fail-fast: false
       matrix:
         game_id: ${{ fromJSON(needs.native-plan.outputs.unity_web_bootstrap_json) }}
-    runs-on: ubuntu-slim
-    timeout-minutes: 5
     permissions:
-      contents: read
-      actions: write
-    steps:
-      - name: Start existing per-game Unity Web source bootstrap
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GAME_ID: ${{ matrix.game_id }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          gh workflow run unity-web-floor-source-bootstrap.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID"
-          echo "DEVELOPMENT_UNITY_WEB_BOOTSTRAP_DISPATCHED=$GAME_ID"
+      contents: write
+      pull-requests: write
+    uses: ./.github/workflows/unity-web-floor-source-bootstrap.yml
+    with:
+      game_id: ${{ matrix.game_id }}
+    secrets: inherit
 
   continue-cycle:
-    name: Refill after dispatching independent game workflows
+    name: Continue DEVELOPMENT_CONFIRMED cycle after isolated game outcomes
     needs: [native-plan, dispatch-roblox, dispatch-unity, dispatch-unity-web-floor, dispatch-unity-web-bootstrap]
     if: ${{ always() && needs.native-plan.result == 'success' && (needs.native-plan.outputs.roblox_count != '0' || needs.native-plan.outputs.unity_count != '0' || needs.native-plan.outputs.unity_web_ids != '' || needs.native-plan.outputs.unity_web_bootstrap_ids != '') }}
     runs-on: ubuntu-slim
@@ -434,7 +403,7 @@ jobs:
       actions: write
       contents: read
     steps:
-      - name: Re-open after per-game handoff without waiting for slow platform runtimes
+      - name: Re-open the next development wave regardless of individual game failure
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -444,4 +413,3 @@ jobs:
             -f trigger_source=CONTINUOUS_PER_GAME_ISOLATED_CYCLE
           echo 'DEVELOPMENT_CONTINUOUS_CYCLE_REOPENED=YES'
           echo 'SINGLE_GAME_FAILURE_BLOCKS_GLOBAL_CYCLE=NO'
-          echo 'DEVELOPMENT_PARENT_FAN_IN_WAITS_FOR_GAME_COMPLETION=NO'
