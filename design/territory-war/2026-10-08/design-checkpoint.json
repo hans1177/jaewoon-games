@@ -35,25 +35,57 @@
         "ATTACK, REINFORCE, EXPAND ECONOMY",
         "RESOLVE TERRITORY CHANGE AND ADAPT NEXT PLAN TO NEW FRONT LINE"
       ]
+    },
+    "local_authoring_parts::6294af16e4dbaef83114d87e8d671e271922454f138ec5ba19968c0fecb8cf7e:signatureSystems:0": {
+      "id": "MAIN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "currentBorderPressure",
+        "territoryObjective"
+      ],
+      "stateOutputs": [
+        "attacked",
+        "reinforced",
+        "expandedEconomy"
+      ],
+      "name": "TERRITORY PRESSURE AND OBJECTIVE",
+      "purpose": "READ THE CURRENT BORDER PRESSURE AND CHOOSING ONE TERRITORY OBJECTIVE",
+      "playerChoice": "ATTACK, REINFORCE, EXPAND ECONOMY"
+    },
+    "local_authoring_parts::6294af16e4dbaef83114d87e8d671e271922454f138ec5ba19968c0fecb8cf7e:signatureSystems:1": {
+      "id": "c",
+      "grammarRole": "A",
+      "stateInputs": [
+        "currentBorderPressure",
+        "territoryObjective"
+      ],
+      "stateOutputs": [
+        "attacked",
+        "reinforced",
+        "expandedEconomy"
+      ],
+      "name": "TERRITORY PRESSURE AND OBJECTIVE",
+      "purpose": "READ THE CURRENT BORDER PRESSURE AND CHOOSING ONE TERRITORY OBJECTIVE",
+      "playerChoice": "ATTACK, REINFORCE, EXPAND ECONOMY"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 500470,
-      "lastMs": 92407,
+      "totalMs": 692655,
+      "lastMs": 96367,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:24:43.408Z"
+      "updatedAt": "2026-10-08T12:27:55.596Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:16:22.910Z",
-  "updatedAt": "2026-10-08T12:24:43.408Z",
+  "updatedAt": "2026-10-08T12:27:55.596Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2077,7 +2109,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:24:43.408Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:27:55.596Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
