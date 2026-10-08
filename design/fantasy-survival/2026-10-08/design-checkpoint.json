@@ -52,25 +52,125 @@
       "name": "마력숲 생존기 - 시그니처 시스템",
       "purpose": "플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 플레이어 역할을 수행하며, 이 선택은 기존 마력숲 생존기의 세계관과 게임 규칙을 그대로 보존하고, 플레이어 이동·채집·전투·제작·퀘스트 상태가 같은 월드 상태에 연결된다.",
       "playerChoice": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 플레이어 역할을 수행하며, 이 선택은 기존 마력숲 생존기의 세계관과 게임 규칙을 그대로 보존하고, 플레이어 이동·채집·전투·제작·퀘스트 상태가 같은 월드 상태에 연결된다."
+    },
+    "local_authoring_parts::2cf1b28de51ef09ce4b7875e7c746126bf9b95df115a212b2a304b3be67ccefc:signatureSystems:1": {
+      "stateInputs": [
+        "playerPosition",
+        "currentBuild",
+        "availableResources",
+        "enemyPressureLevel"
+      ],
+      "stateOutputs": [
+        "newWorldState",
+        "updatedBuild",
+        "newResourcePool",
+        "adjustedEnemyPressure"
+      ],
+      "name": "마력숲 생존기 - 시그니처 시스템",
+      "purpose": "플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 플레이어 역할을 수행하며, 이 선택은 기존 마력숲 생존기의 세계관과 게임 규칙을 그대로 보존하고, 플레이어 이동·채집·전투·제작·퀘스트 상태가 같은 월드 상태에 연결된다.",
+      "playerChoice": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 플레이어 역할을 수행하며, 이 선택은 기존 마력숲 생존기의 세계관과 게임 규칙을 그대로 보존하고, 플레이어 이동·채집·전투·제작·퀘스트 상태가 같은 월드 상태에 연결된다."
+    },
+    "local_authoring_parts::fec0e9bf4f412652cb5b3e6a575f99e08a605feaef799c18634d74ba0a33c37b:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_01",
+          "stateInputs": [
+            "playerPosition",
+            "currentBuild",
+            "availableResources",
+            "enemyPressureLevel"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "updatedBuild",
+            "newResourcePool",
+            "adjustedEnemyPressure"
+          ],
+          "name": "마력숲 생존기 - 시그니처 시스템",
+          "purpose": "플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 플레이어 역할을 수행하며, 이 선택은 기존 마력숲 생존기의 세계관과 게임 규칙을 그대로 보존하고, 플레이어 이동·채집·전투·제작·퀘스트 상태가 같은 월드 상태에 연결된다.",
+          "playerChoice": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 플레이어 역할을 수행하며, 이 선택은 기존 마력숲 생존기의 세계관과 게임 규칙을 그대로 보존하고, 플레이어 이동·채집·전투·제작·퀘스트 상태가 같은 월드 상태에 연결된다."
+        },
+        {
+          "stateInputs": [
+            "playerPosition",
+            "currentBuild",
+            "availableResources",
+            "enemyPressureLevel"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "updatedBuild",
+            "newResourcePool",
+            "adjustedEnemyPressure"
+          ],
+          "name": "마력숲 생존기 - 시그니처 시스템",
+          "purpose": "플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 플레이어 역할을 수행하며, 이 선택은 기존 마력숲 생존기의 세계관과 게임 규칙을 그대로 보존하고, 플레이어 이동·채집·전투·제작·퀘스트 상태가 같은 월드 상태에 연결된다.",
+          "playerChoice": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 플레이어 역할을 수행하며, 이 선택은 기존 마력숲 생존기의 세계관과 게임 규칙을 그대로 보존하고, 플레이어 이동·채집·전투·제작·퀘스트 상태가 같은 월드 상태에 연결된다."
+        }
+      ]
+    },
+    "local_authoring_parts::b94e6e02d192ce30430f4656f4d5fc4b45c35287b763636bd8020e2c23de5220:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상·위험·다음 선택의 연결을 포함한 최소 3개의 실제 플레이 단계를 구체화합니다.",
+        "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 플레이어 역할을 수행하며, 이 선택은 기존 마력숲 생존기의 세계관과 게임 규칙을 그대로 보존하고, 플레이어 이동·채집·전투·제작·퀘스트 상태가 같은 월드 상태에 연결됩니다.",
+        "이 선택은 기존 게임의 보존형 표현 업그레이드를 통해, 게임의 재미와 플레이어 경험을 높이기 위한 설계입니다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_01",
+          "stateInputs": [
+            "playerPosition",
+            "currentBuild",
+            "availableResources",
+            "enemyPressureLevel"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "updatedBuild",
+            "newResourcePool",
+            "adjustedEnemyPressure"
+          ],
+          "name": "마력숲 생존기 - 시그니처 시스템",
+          "purpose": "플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 플레이어 역할을 수행하며, 이 선택은 기존 마력숲 생존기의 세계관과 게임 규칙을 그대로 보존하고, 플레이어 이동·채집·전투·제작·퀘스트 상태가 같은 월드 상태에 연결된다.",
+          "playerChoice": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 플레이어 역할을 수행하며, 이 선택은 기존 마력숲 생존기의 세계관과 게임 규칙을 그대로 보존하고, 플레이어 이동·채집·전투·제작·퀘스트 상태가 같은 월드 상태에 연결된다."
+        },
+        {
+          "stateInputs": [
+            "playerPosition",
+            "currentBuild",
+            "availableResources",
+            "enemyPressureLevel"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "updatedBuild",
+            "newResourcePool",
+            "adjustedEnemyPressure"
+          ],
+          "name": "마력숲 생존기 - 시그니처 시스템",
+          "purpose": "플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 플레이어 역할을 수행하며, 이 선택은 기존 마력숲 생존기의 세계관과 게임 규칙을 그대로 보존하고, 플레이어 이동·채집·전투·제작·퀘스트 상태가 같은 월드 상태에 연결된다.",
+          "playerChoice": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 플레이어 역할을 수행하며, 이 선택은 기존 마력숲 생존기의 세계관과 게임 규칙을 그대로 보존하고, 플레이어 이동·채집·전투·제작·퀘스트 상태가 같은 월드 상태에 연결된다."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 546506,
-      "lastMs": 91085,
+      "totalMs": 638214,
+      "lastMs": 91708,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:01:46.632Z"
+      "updatedAt": "2026-10-08T08:03:18.341Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:52:40.073Z",
-  "updatedAt": "2026-10-08T08:01:46.632Z",
+  "updatedAt": "2026-10-08T08:03:18.357Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2269,7 +2369,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:01:46.632Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:03:18.357Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
