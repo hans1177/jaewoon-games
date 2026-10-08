@@ -440,25 +440,61 @@
       "name": "Last Lantern Core Loop Signature System",
       "purpose": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. - Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. - Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.",
       "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. - Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. - Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+    },
+    "local_authoring_parts::8c5208d65eb3e034c20ef91eb221eaf62c579212da8577103cdcf20ea9b8e8ae:signatureSystems:2": {
+      "id": "Last Lantern - Core Loop Signature System",
+      "grammarRole": "B",
+      "stateInputs": [
+        "START_GOAL",
+        "LIMITED_MOVES",
+        "OBSTACLES",
+        "VISIBLE_PUZZLE_CONSTRAINT"
+      ],
+      "stateOutputs": [
+        "MATCHES_CREATED",
+        "COMBOS_FORMED",
+        "BOARD_FEEDBACK_RECEIVED"
+      ],
+      "name": "Last Lantern Core Loop Signature System",
+      "purpose": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. - Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. - Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.",
+      "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. - Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. - Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+    },
+    "local_authoring_parts::8c5208d65eb3e034c20ef91eb221eaf62c579212da8577103cdcf20ea9b8e8ae:signatureSystems:3": {
+      "id": "Last Lantern - Core Loop Signature System",
+      "grammarRole": "c",
+      "stateInputs": [
+        "START_GOAL",
+        "LIMITED_MOVES",
+        "OBSTACLES",
+        "VISIBLE_PUZZLE_CONSTRAINT"
+      ],
+      "stateOutputs": [
+        "MATCHES_CREATED",
+        "COMBOS_FORMED",
+        "BOARD_FEEDBACK_RECEIVED"
+      ],
+      "name": "Last Lantern Core Loop Signature System",
+      "purpose": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. - Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. - Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.",
+      "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. - Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. - Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 14,
+      "successes": 14,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1145180,
-      "lastMs": 120428,
+      "totalMs": 1377351,
+      "lastMs": 119209,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:56:02.640Z"
+      "updatedAt": "2026-10-08T08:59:54.815Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:36:57.405Z",
-  "updatedAt": "2026-10-08T08:56:02.640Z",
+  "updatedAt": "2026-10-08T08:59:54.815Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2531,7 +2567,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T08:56:02.640Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:59:54.815Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
