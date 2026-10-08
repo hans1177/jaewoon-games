@@ -443,3 +443,24 @@ test('live Vibe coding: first attempt versus public-feedback repair on held-out 
   assert.equal(report.regressed,0,'a repair must not lose an already passing implementation');
   assert(report.finalPass>0,'no generated implementation passed; do not claim coding improvement');
 });
+
+test('C# diagnostic retains array types while stripping only trailing project path',()=>{
+  const diagnostic=candidateDiagnostics({stdout:"/tmp/Candidate.cs(1,14): error CS1061: 'int[]' does not contain a definition for 'Sum' [/tmp/Practice.csproj]"},'csharp');
+  assert.deepEqual(diagnostic,["Candidate.cs(1,14): error CS1061: 'int[]' does not contain a definition for 'Sum'"]);
+});
+
+test('coding guidance clarifies language execution hazards without injecting an answer',()=>{
+  const order={executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE]'};
+  const luau=robloxCurriculum.drills.find(row=>row.id==='save');
+  const csharp=robloxCurriculum.platformDrills.find(row=>row.id==='unity-menu-batch-transaction');
+  const lp=buildPracticePrompt(order,{drill:luau}),cp=buildPracticePrompt(order,{drill:csharp});
+  assert.match(lp,/callCompleted and callbackResult separately/);
+  assert.match(cp,/before reading any array entry or Length/);
+  assert.match(cp,/not only adjacent entries/);
+  assert.match(cp,/Promote an operand to long before/);
+  assert.match(cp,/one short sentence each/);
+  for(const [prompt,drill] of [[lp,luau],[cp,csharp]]){
+    assert(!prompt.includes(drill.reference));
+    for(const hidden of drill.tests)assert(!prompt.includes(hidden));
+  }
+});
