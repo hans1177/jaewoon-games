@@ -462,25 +462,39 @@
       "name": "Wave Defense Readability",
       "purpose": "Read the incoming insect wave and its threat pattern. This is the core gameplay action that players must perform to understand the world state and make strategic decisions.",
       "playerChoice": "Place or adjust defenders and spend limited resources on the highest-value counter. This is the representative choice that defines the structure of the game through state changes and causal laws."
+    },
+    "local_authoring_parts::92df1f51403bf02b1c120d64e6cd0f84f295081237aa85f5ccd89542132dd9c1:signatureSystems:4": {
+      "id": "wave-defense-readability",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "threatPattern"
+      ],
+      "stateOutputs": [
+        "defenderPlacement",
+        "resourceAllocation"
+      ],
+      "name": "Wave Defense Readability",
+      "purpose": "Read the incoming insect wave and its threat pattern. This is the core gameplay action that players must perform to understand the world state and make strategic decisions.",
+      "playerChoice": "Place or adjust defenders and spend limited resources on the highest-value counter. This is the representative choice that defines the structure of the game through state changes and causal laws."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 14,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1273680,
-      "lastMs": 98440,
+      "totalMs": 1372367,
+      "lastMs": 98687,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:27:12.901Z"
+      "updatedAt": "2026-10-08T10:28:51.590Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:05:59.166Z",
-  "updatedAt": "2026-10-08T10:27:12.901Z",
+  "updatedAt": "2026-10-08T10:28:51.596Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2700,7 +2714,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2717,10 +2731,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:27:12.901Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T10:28:51.592Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
