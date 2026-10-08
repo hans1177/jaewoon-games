@@ -64,25 +64,40 @@
       "name": "ISLAND_RESOURCES_AND_VILLAGE_INFRASTRUCTURE",
       "purpose": "Establishes the relationship between island resources and village infrastructure, enabling players to build and improve the environment through resource gathering.",
       "playerChoice": "Gather a focused set of island resources and use them to build or improve one village function."
+    },
+    "local_authoring_parts::c748593721a9422911881fb3e04ec401fe42c55eba090362e9cb5ed2c026c978:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "Resource accumulation",
+        "Infrastructure upgrade"
+      ],
+      "stateOutputs": [
+        "New population/land added",
+        "Enhanced daily life"
+      ],
+      "name": "ISLAND_RESOURCES_AND_VILLAGE_INFRASTRUCTURE",
+      "purpose": "Provides the foundation for village growth and survival through resource gathering and infrastructure development.",
+      "playerChoice": "Gather resources, upgrade infrastructure, expand population or land, and improve daily life outcomes."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 600944,
-      "lastMs": 104304,
+      "totalMs": 702832,
+      "lastMs": 101888,
       "lastError": null,
-      "updatedAt": "2026-10-08T20:57:58.862Z"
+      "updatedAt": "2026-10-08T20:59:40.751Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:47:57.452Z",
-  "updatedAt": "2026-10-08T20:57:58.862Z",
+  "updatedAt": "2026-10-08T20:59:40.751Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2163,7 +2178,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T20:57:58.862Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T20:59:40.751Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
