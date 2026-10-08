@@ -34,25 +34,85 @@
         "성장은 즉각적으로 나타나며 새로운 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 플레이 경험을 제공한다.",
         "입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 연결을 포함하여 반복 가능한 핵심 루프가 형성된다."
       ]
+    },
+    "local_authoring_parts::ea8de65cad5adb891afdf9af7158f4e8e0c0706087edbb5641c97b7e453266c3:signatureSystems:0": {
+      "id": "KARMA_RETURN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "PLAYER_ACTION",
+        "RUN_RESULT"
+      ],
+      "stateOutputs": [
+        "WORLD_STATE_CHANGE",
+        "SYSTEM_PROGRESSION"
+      ],
+      "name": "KARMA_RETURN",
+      "purpose": "ACTION_SURVIVAL_ROGUELITE의 핵심 재미와 시스템 연결을 확정하며, 플레이어의 선택 결과가 미래 적·지역·관계 규칙의 원인이 된다.",
+      "playerChoice": "플레이어는 희망에 빠진 실시간 생존 게임에서 점점 더 어려워지는 적군과 맞서며 생명을 걸어가는 중심 행동을 수행하며, 선택의 결과로 다음 상태와 세계 규칙을 바꾼다."
+    },
+    "local_authoring_parts::ea8de65cad5adb891afdf9af7158f4e8e0c0706087edbb5641c97b7e453266c3:signatureSystems:1": {
+      "id": "MANDATE_LEGITIMACY",
+      "grammarRole": "A",
+      "stateInputs": [
+        "PLAYER_ACTION",
+        "RUN_RESULT"
+      ],
+      "stateOutputs": [
+        "WORLD_STATE_CHANGE",
+        "SYSTEM_PROGRESSION"
+      ],
+      "name": "MANDATE_LEGITIMACY",
+      "purpose": "통치 권한은 힘만이 아니라 인정·질서·민심에 의해 유지된다.",
+      "playerChoice": "플레이어는 희망에 빠진 실시간 생존 게임에서 점점 더 어려워지는 적군과 맞서며 생명을 걸어가는 중심 행동을 수행하며, 선택의 결과로 다음 상태와 세계 규칙을 바꾼다."
+    },
+    "local_authoring_parts::ea8de65cad5adb891afdf9af7158f4e8e0c0706087edbb5641c97b7e453266c3:signatureSystems:2": {
+      "id": "B",
+      "grammarRole": "B",
+      "stateInputs": [
+        "PLAYER_ACTION",
+        "RUN_RESULT"
+      ],
+      "stateOutputs": [
+        "WORLD_STATE_CHANGE",
+        "SYSTEM_PROGRESSION"
+      ],
+      "name": "ACTION_SURVIVAL_ROGUELITE_B",
+      "purpose": "A/B 대축에서 선택 결과가 다음 상태와 세계 규칙을 바꾸며, MAIN의 결과와 A의 선택을 서로 연결하는 핵심 인과 법칙이다.",
+      "playerChoice": "플레이어는 희망에 빠진 실시간 생존 게임에서 점점 더 어려워지는 적군과 맞서며 생명을 걸어가는 중심 행동을 수행하며, 선택의 결과로 다음 상태와 세계 규칙을 바꾼다."
+    },
+    "local_authoring_parts::ea8de65cad5adb891afdf9af7158f4e8e0c0706087edbb5641c97b7e453266c3:signatureSystems:3": {
+      "id": "c",
+      "grammarRole": "c",
+      "stateInputs": [
+        "PLAYER_ACTION",
+        "RUN_RESULT"
+      ],
+      "stateOutputs": [
+        "WORLD_STATE_CHANGE",
+        "SYSTEM_PROGRESSION"
+      ],
+      "name": "ACTION_SURVIVAL_ROGUELITE_C",
+      "purpose": "플레이어가 희망에 빠진 실시간 생존 게임에서 점점 더 어려워지는 적군과 맞서며 생명을 걸어가는 중심 행동을 수행하며, 선택의 결과로 다음 상태와 세계 규칙을 바꾼다.",
+      "playerChoice": "플레이어는 희망에 빠진 실시간 생존 게임에서 점점 더 어려워지는 적군과 맞서며 생명을 걸어가는 중심 행동을 수행하며, 선택의 결과로 다음 상태와 세계 규칙을 바꾼다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 140634,
-      "lastMs": 23483,
+      "totalMs": 246246,
+      "lastMs": 30628,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:50:19.437Z"
+      "updatedAt": "2026-10-08T18:52:05.057Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:47:58.761Z",
-  "updatedAt": "2026-10-08T18:50:19.437Z",
+  "updatedAt": "2026-10-08T18:52:05.057Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2404,7 +2464,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:50:19.437Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:52:05.057Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
