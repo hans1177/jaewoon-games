@@ -361,6 +361,13 @@ test('Roblox village NPC roam and first-sighting boss scene keep original server
   assert.match(server,/bossSceneSeen\[target\]\[id\]=true/);
   assert.match(server,/target:SetAttribute\("BossIntroLine"/);
   assert.match(server,/target:SetAttribute\("BossIntroId",id\)/);
+  assert.match(server,/e\.lastPlayerObservedAt=now/);
+  assert.match(server,/e\.roamTarget=e\.spawn\+Vector3\.new\(math\.cos\(a\)\*8,0,math\.sin\(a\)\*8\)/);
+  assert.match(server,/now-\(e\.lastPlayerObservedAt or -1000000\)<4/);
+  assert.match(server,/if e\.boss or e\.runBoss or e\.hiddenBoss or/);
+  assert.match(server,/if \(e\.part\.Position-e\.spawn\)\.Magnitude>z\.Leash then e\.part\.CFrame=CFrame\.new\(e\.spawn\)end/);
+  assert.match(server,/beginEnemyAttack\(e,target,now\)/);
+
   assert.match(server,/if count>=C\.PartySlots-1 then/);
   assert.match(server,/parties\[p\]\[def\.Id\]=true;spawnActiveCompanion/);
   assert.match(client,/NPCSpeech/);
