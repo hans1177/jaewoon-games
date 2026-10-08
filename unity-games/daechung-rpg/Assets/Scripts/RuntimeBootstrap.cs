@@ -192,7 +192,10 @@ namespace JaewoonGames.DaechungRpg
 
         private void DrawPrimaryCombatActionButton()
         {
-            if (_enemy == null) return;
+            // 마을에서도 동일한 실제 터치 버튼으로 사냥을 시작한다.
+            // 첫 WebGL 화면에 버튼이 없어 모바일 QA 타깃이 사라지던 문제를 수정한다.
+            var canEnterHunt = _enemy == null && _core != null && _core.Player.currentRegionId == "town";
+            if (_enemy == null && !canEnterHunt) return;
 
             var margin = Mathf.Max(12f, Screen.width * 0.04f);
             var buttonWidth = Mathf.Clamp(Screen.width * 0.34f, 120f, 180f);
@@ -216,7 +219,7 @@ namespace JaewoonGames.DaechungRpg
             }
 #endif
 
-            if (GUI.Button(actionRect, "ATTACK"))
+            if (GUI.Button(actionRect, canEnterHunt ? "HUNT" : "ATTACK"))
             {
 #if UNITY_WEBGL && !UNITY_EDITOR
                 if (qaMode)
@@ -224,7 +227,8 @@ namespace JaewoonGames.DaechungRpg
                     Debug.Log("JAEWOON_UNITY_WEB_QA MOBILE_INPUT game=daechung-rpg role=action status=PASS");
                 }
 #endif
-                AttackEnemy();
+                if (canEnterHunt) MoveTo("field-1");
+                else AttackEnemy();
             }
         }
 
