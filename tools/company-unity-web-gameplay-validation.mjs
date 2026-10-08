@@ -181,6 +181,38 @@ try{
   const mobileInputObserved=markers.slice(mobileMarkerStart).some(x=>x.includes(' MOBILE_INPUT ')&&x.includes('role=action')&&x.includes('status=PASS'));
   if(!mobileInputObserved)throw new Error('UNITY_WEB_QA_REAL_MOBILE_ACTION_NOT_OBSERVED');
 
+  // 모바일 메뉴를 실제 손가락 입력으로 전환하고 다시 복귀시킨다. 텍스트 표시는 작동 증거가 아니다.
+  let mobileMenuInteraction=null;
+  if(gameId==='daechung-rpg'){
+    const navTarget=markers.slice().reverse().find(line=>line.includes(' MENU_TARGET ')
+      &&line.includes('game=daechung-rpg')&&line.includes('role=tab')&&line.includes('index=2'))||'';
+    const navX=Number(navTarget.match(/\bx=([0-9.]+)/)?.[1]);
+    const navY=Number(navTarget.match(/\by=([0-9.]+)/)?.[1]);
+    if(!navTarget||!Number.isFinite(navX)||!Number.isFinite(navY)||navX<=0||navX>=1||navY<=0||navY>=1)
+      throw new Error('UNITY_WEB_QA_MOBILE_MENU_TARGET_MISSING');
+    const menuTarget={x:canvasBox.x+canvasBox.width*navX,y:canvasBox.y+canvasBox.height*navY};
+    if(menuTarget.x<0||menuTarget.x>=mobileViewport.width||menuTarget.y<0||menuTarget.y>=mobileViewport.height)
+      throw new Error('UNITY_WEB_QA_MOBILE_MENU_TARGET_OFFSCREEN');
+    const menuInputStart=markers.length;
+    await page.touchscreen.tap(menuTarget.x,menuTarget.y);
+    await page.waitForTimeout(600);
+    if(!markers.slice(menuInputStart).some(line=>line.includes(' MENU_INPUT ')&&line.includes('index=2')&&line.includes('status=PASS')))
+      throw new Error('UNITY_WEB_QA_MOBILE_MENU_SOCIAL_NOT_INTERACTIVE');
+    // 동일한 탭 줄의 첫 탭으로 돌아가 원래 화면을 복구한다.
+    const boundsLine=markers.slice().reverse().find(line=>line.includes(' UI_BOUNDS ')&&line.includes('game=daechung-rpg'))||'';
+    const getBound=key=>Number(boundsLine.match(new RegExp('\\b'+key+'=([0-9.]+)'))?.[1]);
+    const firstTabX=(getBound('tabsLeft')+getBound('tabsWidth')/6)/getBound('screenWidth');
+    if(!Number.isFinite(firstTabX)||firstTabX<=0||firstTabX>=1)throw new Error('UNITY_WEB_QA_MOBILE_MENU_BOUNDS_INVALID');
+    const firstTapX=canvasBox.x+canvasBox.width*firstTabX;
+    const firstMenuInputStart=markers.length;
+    await page.touchscreen.tap(firstTapX,menuTarget.y);
+    await page.waitForTimeout(600);
+    if(!markers.slice(firstMenuInputStart).some(line=>line.includes(' MENU_INPUT ')&&line.includes('index=0')&&line.includes('status=PASS')))
+      throw new Error('UNITY_WEB_QA_MOBILE_MENU_WORLD_RETURN_FAILED');
+    mobileMenuInteraction={pass:true,actualBrowserTouch:true,visitedPages:['SOCIAL','WORLD'],
+      target:menuTarget,returnedToWorld:true};
+  }
+
   await canvas.focus();
   for(let i=0;i<20&&!markers.some(x=>x.includes(' REWARD ')||x.includes(' PROGRESS '));i++){
     await page.keyboard.press('Space');
@@ -280,7 +312,8 @@ try{
   const nativeUiMarker=markers.slice().reverse().find(line=>line.includes(' UI_BOUNDS ')
     &&line.includes(`game=${gameId}`)&&line.includes('surface=UNITY_ONGUI'))||'';
   const nativeUiKeys=['screenWidth','screenHeight','topLeft','topY','topWidth','topHeight',
-    'controlsLeft','controlsY','controlsWidth','controlsHeight'];
+    'controlsLeft','controlsY','controlsWidth','controlsHeight',
+    'tabsLeft','tabsY','tabsWidth','tabsHeight','actionLeft','actionY','actionWidth','actionHeight'];
   const nativeUiRect=Object.fromEntries(nativeUiKeys.map(key=>{
     const token=nativeUiMarker.split(/\s+/).find(value=>value.startsWith(key+'='));
     return [key,token===undefined?null:Number(token.slice(key.length+1))];
@@ -291,7 +324,13 @@ try{
     &&left+width<=nativeUiRect.screenWidth+2&&top+height<=nativeUiRect.screenHeight+2;
   const nativeUiOffscreen=nativeUiMeasured
     &&(!withinNativeViewport(nativeUiRect.topLeft,nativeUiRect.topY,nativeUiRect.topWidth,nativeUiRect.topHeight)
-      ||!withinNativeViewport(nativeUiRect.controlsLeft,nativeUiRect.controlsY,nativeUiRect.controlsWidth,nativeUiRect.controlsHeight));
+      ||!withinNativeViewport(nativeUiRect.controlsLeft,nativeUiRect.controlsY,nativeUiRect.controlsWidth,nativeUiRect.controlsHeight)
+      ||!withinNativeViewport(nativeUiRect.tabsLeft,nativeUiRect.tabsY,nativeUiRect.tabsWidth,nativeUiRect.tabsHeight)
+      ||!withinNativeViewport(nativeUiRect.actionLeft,nativeUiRect.actionY,nativeUiRect.actionWidth,nativeUiRect.actionHeight));
+  const nativeUiOverlap=nativeUiMeasured
+    &&(nativeUiRect.topY+nativeUiRect.topHeight>nativeUiRect.tabsY+2
+      ||nativeUiRect.tabsY+nativeUiRect.tabsHeight>nativeUiRect.controlsY+2
+      ||nativeUiRect.controlsY+nativeUiRect.controlsHeight>nativeUiRect.actionY-6);
   const nativeUiMissing=gameId==='daechung-rpg'&&!nativeUiMeasured;
   const nativeMeshMarker=markers.slice().reverse().find(line=>line.includes(' MESH_INTEGRITY ')
     &&line.includes(`game=${gameId}`)&&line.includes('source=UNITY_MESH_FILTER'))||'';
@@ -313,7 +352,7 @@ try{
   const shaderLikelyMissing=visualPixels.magentaRatio>=.25;
   const blankOrFrozenFrame=visualPixels.pixelCount<100||visualPixels.dominantColorRatio>=.997;
   const visualBlocked=shaderLikelyMissing||blankOrFrozenFrame||mobileUiBounds.clipped.length>0
-    ||nativeUiOffscreen||nativeUiMissing||nativeMeshMissing;
+    ||nativeUiOffscreen||nativeUiOverlap||nativeUiMissing||nativeMeshMissing;
 
   await canvas.focus();
   await page.keyboard.press('KeyR');
@@ -380,7 +419,8 @@ try{
       magentaShaderLikelyMissing:shaderLikelyMissing,
       blankOrFrozenFrame,visualPixels,mobileUiBounds,
       nativeUnityUi:{measurementState:nativeUiMeasured?'UNITY_ONGUI_RUNTIME':'NOT_MEASURED',
-        pass:nativeUiMeasured?!nativeUiOffscreen:null,missingRequiredCapture:nativeUiMissing,
+        pass:nativeUiMeasured?!nativeUiOffscreen&&!nativeUiOverlap:null,offscreen:nativeUiOffscreen,
+        overlapping:nativeUiOverlap,missingRequiredCapture:nativeUiMissing,
         sourceMarker:nativeUiMeasured?nativeUiMarker:null,rects:nativeUiMeasured?nativeUiRect:null},
       nativeUnityMesh:{measurementState:nativeMeshMarker?'UNITY_RUNTIME_MESH_INSPECTION':'NOT_MEASURED',
         pass:nativeMeshMarker?nativeMeshVerified:null,missingRequiredCapture:nativeMeshMissing,
@@ -397,7 +437,8 @@ try{
       automaticLodOrTextureMutationPerformed:false,
     },
     mobile:{
-      pass:mobileInputObserved,
+      pass:mobileInputObserved&&(!mobileMenuInteraction||mobileMenuInteraction.pass===true),
+      menuInteraction:mobileMenuInteraction,
       viewport:mobileViewport,
       layout:mobileLayout,
       touch:true,
@@ -426,7 +467,7 @@ try{
   }
   if(visualBlocked)throw new Error('UNITY_WEB_QA_VISUAL_RUNTIME_REPAIR_REQUIRED:'+JSON.stringify({
     shaderLikelyMissing,blankOrFrozenFrame,clippedControls:mobileUiBounds.clipped,
-    nativeUiOffscreen,nativeUiMissing,nativeUiRect,nativeMeshMissing,nativeMeshProof,visualPixels
+    nativeUiOffscreen,nativeUiOverlap,nativeUiMissing,nativeUiRect,nativeMeshMissing,nativeMeshProof,visualPixels
   }));
   if(renderBudgetExceeded)throw new Error('UNITY_WEB_QA_NATIVE_RENDER_BUDGET_EXCEEDED:'+JSON.stringify({
     drawCalls:nativeDrawCalls,triangles:nativeTriangles,limits:renderBudget
