@@ -440,25 +440,140 @@
       "name": "퇴마 사무소의 실제 상태 교환",
       "purpose": "플레이어의 시작 입력과 선택 결과가 서로 영향을 주는 시그니처 상호작용을 통해 실제 월드/시스템 상태 변화로 연결된다. 게임의 인과법칙은 기존 게임 문법을 비튼다. 게임의 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다.",
       "playerChoice": "MAIN/A/B/c/@를 통해 실제 상태 변화를 구체화하고, 보상·위험·다음 선택의 연결을 포함하며, 콘텐츠를 다르게 사용하여 성장의 과정을 확장한다."
+    },
+    "local_authoring_parts::d2e37968ffeaa26218e18fc2924a3ae458bf3cd5d0b4c6af731ad802f351ce24:signatureSystems:4": {
+      "id": "RULE_05",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "Score",
+        "Distance",
+        "ProgressionBenefit"
+      ],
+      "stateOutputs": [
+        "WorldState",
+        "SelectionOutcome",
+        "ProgressionUnlock"
+      ],
+      "name": "퇴마 사무소의 실제 상태 교환",
+      "purpose": "플레이어의 시작 입력과 선택 결과가 서로 영향을 주는 시그니처 상호작용을 통해 실제 월드/시스템 상태 변화로 연결된다. 게임의 인과법칙은 기존 게임 문법을 비튼다. 게임의 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다.",
+      "playerChoice": "MAIN/A/B/c/@를 통해 실제 상태 변화를 구체화하고, 보상·위험·다음 선택의 연결을 포함하며, 콘텐츠를 다르게 사용하여 성장의 과정을 확장한다."
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "퇴마 사무소은 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 게임의 핵심 재미는 성장의 과정에서 새로운 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 플레이어는 시작 시점에서 즉시 상태 변화를 만드는 중심 행동을 수행하며, 선택 결과가 다음 월드 상태를 바꾸는 반복 가능한 핵심 루프를 형성한다. 게임의 세계 상태는 플레이어의 시작 입력과 선택 결과가 서로 영향을 주는 시그니처 상호작용을 통해 실제 월드/시스템 상태 변화로 연결된다. 게임의 시스템은 MAIN/A/B/c/@와 같은 인과축을 통해 상태 변화를 구체화하고, 보상·위험·다음 선택의 연결을 포함한다. 게임의 인과법칙은 기존 게임 문법을 비튼다. 게임의 인과법칙은 기존 게임의 인과법칙과 일관되며, 게임의 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 인과법칙은 기존 게임의 인과법칙과 일관되며, 게임의 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 인과법칙은 기존 게임의 인과법칙과 일관되며, 게임의 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 인과법칙은 기존 게임의 인과법칙과 일관되며, 게임의 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 인과법칙은 기존 게임의 인과법칙과 일관되며, 게임의 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 인과법칙은 기존 게",
+      "playerFantasy": "퇴마 사무소에서 플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임의 핵심 재미는 성장의 과정에서 새로운 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 플레이어는 시작 시점에서 즉시 상태 변화를 만드는 중심 행동을 수행하며, 선택 결과가 다음 월드 상태를 바꾸는 반복 가능한 핵심 루프를 형성한다. 게임의 세계 상태는 플레이어의 시작 입력과 선택 결과가 서로 영향을 주는 시그니처 상호작용을 통해 실제 월드/시스템 상태 변화로 연결된다. 게임의 시스템은 MAIN/A/B/c/@와 같은 인과축을 통해 상태 변화를 구체화하고, 보상·위험·다음 선택의 연결을 포함한다. 게임의 인과법칙은 기존 게임 문법을 비튼다. 게임의 인과법칙은 기존 게임의 인과법칙과 일관되며, 게임의 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 인과법칙은 기존 게임의 인과법칙과 일관되며, 게임의 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 인과법칙은 기존 게임의 인과법칙과 일관되며, 게임의 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 인과법칙은 기존 게임의 인과법칙과 일관되며, 게임의 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 인과법칙은 기존 게임의 인과",
+      "coreFun": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 결과가 다음 월드 상태를 바꾸는 반복 가능한 핵심 루프를 형성하며, 플레이어는 시작 시점에서 즉시 상태 변화를 만드는 중심 행동을 수행한다. 게임의 세계 상태는 플레이어의 시작 입력과 선택 결과가 서로 영향을 주는 시그니처 상호작용을 통해 실제 월드/시스템 상태 변화로 연결된다. 게임의 시스템은 MAIN/A/B/c/@와 같은 인과축을 통해 상태 변화를 구체화하고, 보상·위험·다음 선택의 연결을 포함한다. 게임의 인과법칙은 기존 게임 문법을 비튼다. 게임의 인과법칙은 기존 게임의 인과법칙과 일관되며, 게임의 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다.",
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "multiplayerMode": "HYBRID",
+      "signatureSystems": [
+        {
+          "id": "RULE_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "Score",
+            "Distance",
+            "ProgressionBenefit"
+          ],
+          "name": "퇴마 사무소의 시작 입력",
+          "purpose": "플레이어는 시작 시점에서 즉시 상태 변화를 만드는 중심 행동을 수행하며, 선택 결과가 다음 월드 상태를 바꾸는 반복 가능한 핵심 루프를 형성한다.",
+          "playerChoice": "단일 손 tap 또는 swipe 입력을 통해 명확한 점수, 거리, 또는 짧은 세션 목표를 설정하고, 선택 결과가 다음 월드 상태를 바꾸는 반복 가능한 루프를 형성한다."
+        },
+        {
+          "id": "RULE_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "Score",
+            "Distance",
+            "ProgressionBenefit"
+          ],
+          "stateOutputs": [
+            "WorldState",
+            "SelectionOutcome",
+            "ProgressionUnlock"
+          ],
+          "name": "퇴마 사무소의 선택 결과",
+          "purpose": "플레이어의 시작 입력과 선택 결과가 서로 영향을 주는 시그니처 상호작용을 통해 실제 월드/시스템 상태 변화로 연결된다. 게임의 인과법칙은 기존 게임 문법을 비튼다. 게임의 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다.",
+          "playerChoice": "플레이어는 시작 입력을 통해 명확한 점수, 거리, 또는 짧은 세션 목표를 설정하고, 선택 결과를 통해 다음 월드 상태를 바꾸는 반복 가능한 루프를 형성한다."
+        },
+        {
+          "id": "RULE_03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "Score",
+            "Distance",
+            "ProgressionBenefit"
+          ],
+          "stateOutputs": [
+            "WorldState",
+            "SelectionOutcome",
+            "ProgressionUnlock"
+          ],
+          "name": "퇴마 사무소의 반복 루프",
+          "purpose": "플레이어의 시작 입력과 선택 결과가 서로 영향을 주는 시그니처 상호작용을 통해 실제 월드/시스템 상태 변화로 연결된다. 게임의 인과법칙은 기존 게임 문법을 비튼다. 게임의 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다.",
+          "playerChoice": "플레이어는 시작 입력을 통해 명확한 점수, 거리, 또는 짧은 세션 목표를 설정하고, 선택 결과를 통해 다음 월드 상태를 바꾸는 반복 가능한 루프를 형성한다."
+        },
+        {
+          "id": "RULE_04",
+          "grammarRole": "c",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "WorldState",
+            "SelectionOutcome",
+            "ProgressionUnlock"
+          ],
+          "name": "퇴마 사무소의 실제 상태 교환",
+          "purpose": "플레이어의 시작 입력과 선택 결과가 서로 영향을 주는 시그니처 상호작용을 통해 실제 월드/시스템 상태 변화로 연결된다. 게임의 인과법칙은 기존 게임 문법을 비튼다. 게임의 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다.",
+          "playerChoice": "MAIN/A/B/c/@를 통해 실제 상태 변화를 구체화하고, 보상·위험·다음 선택의 연결을 포함하며, 콘텐츠를 다르게 사용하여 성장의 과정을 확장한다."
+        },
+        {
+          "id": "RULE_05",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "Score",
+            "Distance",
+            "ProgressionBenefit"
+          ],
+          "stateOutputs": [
+            "WorldState",
+            "SelectionOutcome",
+            "ProgressionUnlock"
+          ],
+          "name": "퇴마 사무소의 실제 상태 교환",
+          "purpose": "플레이어의 시작 입력과 선택 결과가 서로 영향을 주는 시그니처 상호작용을 통해 실제 월드/시스템 상태 변화로 연결된다. 게임의 인과법칙은 기존 게임 문법을 비튼다. 게임의 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다.",
+          "playerChoice": "MAIN/A/B/c/@를 통해 실제 상태 변화를 구체화하고, 보상·위험·다음 선택의 연결을 포함하며, 콘텐츠를 다르게 사용하여 성장의 과정을 확장한다."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 14,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1714802,
-      "lastMs": 118031,
+      "totalMs": 1834004,
+      "lastMs": 119202,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:24:52.499Z"
+      "updatedAt": "2026-10-08T12:26:51.703Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:56:17.645Z",
-  "updatedAt": "2026-10-08T12:24:52.499Z",
+  "updatedAt": "2026-10-08T12:26:51.709Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2381,47 +2496,21 @@
   "sliceDependencies": {
     "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
   },
-  "sliceRepairFeedback": {
-    "designer_draft_slices::identity-core": [
-      {
-        "code": "DESIGN_RULE_STATE_MISSING",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "signatureSystems",
-          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
-        },
-        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "signatureSystems"
-        ]
-      }
-    ]
-  },
+  "sliceRepairFeedback": {},
   "sliceRepairAttempts": {
     "designer_draft_slices::identity-core": 1
   },
-  "slicePartialResults": {
-    "designer_draft_slices::identity-core": {
-      "identity": "퇴마 사무소은 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 게임의 핵심 재미는 성장의 과정에서 새로운 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 플레이어는 시작 시점에서 즉시 상태 변화를 만드는 중심 행동을 수행하며, 선택 결과가 다음 월드 상태를 바꾸는 반복 가능한 핵심 루프를 형성한다. 게임의 세계 상태는 플레이어의 시작 입력과 선택 결과가 서로 영향을 주는 시그니처 상호작용을 통해 실제 월드/시스템 상태 변화로 연결된다. 게임의 시스템은 MAIN/A/B/c/@와 같은 인과축을 통해 상태 변화를 구체화하고, 보상·위험·다음 선택의 연결을 포함한다. 게임의 인과법칙은 기존 게임 문법을 비튼다. 게임의 인과법칙은 기존 게임의 인과법칙과 일관되며, 게임의 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 인과법칙은 기존 게임의 인과법칙과 일관되며, 게임의 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 인과법칙은 기존 게임의 인과법칙과 일관되며, 게임의 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 인과법칙은 기존 게임의 인과법칙과 일관되며, 게임의 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 인과법칙은 기존 게임의 인과법칙과 일관되며, 게임의 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 인과법칙은 기존 게",
-      "playerFantasy": "퇴마 사무소에서 플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임의 핵심 재미는 성장의 과정에서 새로운 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 플레이어는 시작 시점에서 즉시 상태 변화를 만드는 중심 행동을 수행하며, 선택 결과가 다음 월드 상태를 바꾸는 반복 가능한 핵심 루프를 형성한다. 게임의 세계 상태는 플레이어의 시작 입력과 선택 결과가 서로 영향을 주는 시그니처 상호작용을 통해 실제 월드/시스템 상태 변화로 연결된다. 게임의 시스템은 MAIN/A/B/c/@와 같은 인과축을 통해 상태 변화를 구체화하고, 보상·위험·다음 선택의 연결을 포함한다. 게임의 인과법칙은 기존 게임 문법을 비튼다. 게임의 인과법칙은 기존 게임의 인과법칙과 일관되며, 게임의 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 인과법칙은 기존 게임의 인과법칙과 일관되며, 게임의 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 인과법칙은 기존 게임의 인과법칙과 일관되며, 게임의 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 인과법칙은 기존 게임의 인과법칙과 일관되며, 게임의 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 인과법칙은 기존 게임의 인과",
-      "coreFun": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 결과가 다음 월드 상태를 바꾸는 반복 가능한 핵심 루프를 형성하며, 플레이어는 시작 시점에서 즉시 상태 변화를 만드는 중심 행동을 수행한다. 게임의 세계 상태는 플레이어의 시작 입력과 선택 결과가 서로 영향을 주는 시그니처 상호작용을 통해 실제 월드/시스템 상태 변화로 연결된다. 게임의 시스템은 MAIN/A/B/c/@와 같은 인과축을 통해 상태 변화를 구체화하고, 보상·위험·다음 선택의 연결을 포함한다. 게임의 인과법칙은 기존 게임 문법을 비튼다. 게임의 인과법칙은 기존 게임의 인과법칙과 일관되며, 게임의 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다.",
-      "coreLoop": [
-        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
-        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
-        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
-      ],
-      "multiplayerMode": "HYBRID"
-    }
-  },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:24:52.499Z",
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-08T12:26:51.705Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
-  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/exorcist-office/2026-10-08/design-seed.json",
+    "contentDigest": "7cef2d1d06674fa3eae245875d250b790e06c963a8f7fb6551d820157ba5e66a",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
