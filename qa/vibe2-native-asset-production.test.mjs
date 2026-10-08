@@ -29,6 +29,17 @@ test('Vibe genre menu recommendations bind source-backed existing UI without own
     fs.mkdirSync(gameRoot,{recursive:true});
     fs.writeFileSync(path.join(gameRoot,'RPGMenu.luau'),
       'local character=Model.character(state,config)\nlocal shop=Model.shop(state,config)\nlocal gear=Model.equipment(state,config)\n');
+    // UI 문자열만으로 시스템을 추정하지 않으며, 실제 게임 소스의 책임 함수가 필요하다.
+    const serverDir=path.join(root,'roblox-games','demo-rpg','server');
+    fs.mkdirSync(serverDir,{recursive:true});
+    fs.writeFileSync(path.join(serverDir,'Game.server.luau'),[
+      'local function purchaseMerchantEquipment(player,kind)',
+      '  player:SetAttribute("Gold",0)',
+      '  player:SetAttribute("WeaponTier",2)',
+      '  player:SetAttribute("MaxHP",100)',
+      'end',
+      'local function acceptQuest(player) player:SetAttribute("QuestPortal",1) end'
+    ].join('\n'));
     const task={gameId:'demo-rpg',genre:'RPG',goal:'현재 캐릭터 장비 인벤토리 상점 메뉴를 실제 게임 상태와 동기화'};
     const request={target:'roblox',repoRoot:root,task,manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}};
     const plan=buildVibeAssetProductionPlan(request);
@@ -54,9 +65,14 @@ test('Vibe genre menu recommendations bind source-backed existing UI without own
     assert.match(guidance,/게임 상태/);
     assert.match(guidance,/NATIVE_UI_SOURCE_PRESENT_RUNTIME_QA_REQUIRED/);
     fs.unlinkSync(path.join(gameRoot,'RPGMenu.luau'));
+    const noUi=buildVibeAssetProductionPlan(request).genreMenuRecommendations;
+    const unbound=noUi.candidateFeatures.find(row=>row.role==='CHARACTER');
+    assert.equal(unbound.status,'EXISTING_SYSTEM_NATIVE_UI_BINDING_REQUIRED');
+    assert.equal(unbound.existingNativeUiRefs.length,0);
+    fs.unlinkSync(path.join(serverDir,'Game.server.luau'));
     const noSource=buildVibeAssetProductionPlan(request).genreMenuRecommendations;
-    const unconfirmed=noSource.candidateFeatures.find(row=>row.role==='CHARACTER');
-    assert.equal(unconfirmed.status,'IDEA_ONLY_GAME_SYSTEM_NOT_CONFIRMED');
+    assert.equal(noSource.candidateFeatures.find(row=>row.role==='CHARACTER').status,
+      'IDEA_ONLY_GAME_SYSTEM_NOT_CONFIRMED');
     assert.equal(noSource.runtimeVerifiedCount,0);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
@@ -86,6 +102,39 @@ test('genre-specific menu ideas reuse official genre signals without inventing m
       assert.equal(item.applyVia,'EXISTING_BUILD_UP_GRAPHICS_PRODUCTION_INPUT_ONLY');
       assert.equal(suggestions.runtimeVerifiedCount,0);
     }
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('genre UI detection rejects unowned menu keywords and platform-incompatible Roblox factories',()=>{
+  const root=tempRoot();
+  try{
+    const folder=path.join(root,'roblox-games','menu-proof-demo');
+    fs.mkdirSync(path.join(folder,'server'),{recursive:true});
+    fs.mkdirSync(path.join(folder,'shared'),{recursive:true});
+    fs.writeFileSync(path.join(folder,'server','Game.server.luau'),
+      'local shopkeeper = "weapon shop"\nlocal progressBar = "level"\nlocal mapTitle = "world"');
+    fs.writeFileSync(path.join(folder,'shared','RPGMenu.luau'),
+      'local character=Model.character(state,config)\nlocal shop=Model.shop(state,config)');
+    const task={gameId:'menu-proof-demo',genre:'RPG',goal:'상점 캐릭터 메뉴'};
+    const config={target:'roblox',repoRoot:root,task,manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}};
+    const unowned=buildVibeAssetProductionPlan(config).genreMenuRecommendations;
+    for(const role of ['CHARACTER','TRADE','INVENTORY','EQUIPMENT']){
+      const row=unowned.candidateFeatures.find(item=>item.role===role);
+      assert.equal(row.status,'IDEA_ONLY_GAME_SYSTEM_NOT_CONFIRMED',role);
+      assert.equal(row.existingNativeUiRefs.length,0,role);
+    }
+    fs.writeFileSync(path.join(folder,'server','Trade.server.luau'),
+      'local function purchaseMerchantEquipment(player,kind) player:SetAttribute("Gold",0) end');
+    const owned=buildVibeAssetProductionPlan(config).genreMenuRecommendations;
+    assert.equal(owned.candidateFeatures.find(row=>row.role==='TRADE').status,
+      'NATIVE_UI_SOURCE_PRESENT_RUNTIME_QA_REQUIRED',
+      'additional server source file must be discovered without hardcoded RPG filenames');
+    assert.equal(owned.candidateFeatures.find(row=>row.role==='CHARACTER').status,
+      'IDEA_ONLY_GAME_SYSTEM_NOT_CONFIRMED');
+    const unity=buildVibeAssetProductionPlan({...config,target:'unity',
+      task:{gameId:'menu-proof-demo',genre:'RPG'}}).genreMenuRecommendations;
+    assert.equal(unity.uiFactorySource,null);
+    assert.equal(unity.candidateFeatures.find(row=>row.role==='CHARACTER').factory,null);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
