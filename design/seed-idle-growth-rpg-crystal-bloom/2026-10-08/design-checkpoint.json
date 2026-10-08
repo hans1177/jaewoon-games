@@ -102,25 +102,225 @@
       "name": "DELVE(@)",
       "purpose": "Establishes the core gameplay loop that drives progression and player engagement in the idle growth RPG. Players choose between two distinct action sets: CLAIM REWARDS, UPGRADATION, EQUIPMENT, and HERO STAT PATH CHANGES, or PUSH STAGE/BOSSES, GROWTH LAYERS, and RETURN TO IDLE REWARD COLLECTION.",
       "playerChoice": "Players choose between two distinct action sets: CLAIM REWARDS, UPGRADATION, EQUIPMENT, and HERO STAT PATH CHANGES, or PUSH STAGE/BOSSES, GROWTH LAYERS, and RETURN TO IDLE REWARD COLLECTION."
+    },
+    "local_authoring_parts::69d6a59d6ffe6f877a684bb3229d43161aa97d31081c74119388dcb22ef8b13a:signatureSystems:4": {
+      "id": "DELVE(@)",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "PROGRESSION_RESOURCES",
+        "PLAYER_CHOICE",
+        "GAME_STATE"
+      ],
+      "stateOutputs": [
+        "PROGRESSION_RESOURCES_UPDATED",
+        "PLAYER_CHOICE_UPDATED",
+        "GAME_STATE_UPDATED"
+      ],
+      "name": "DELVE(@)",
+      "purpose": "Establishes the core gameplay loop that drives progression and player engagement in the idle growth RPG. Players choose between two distinct action sets: CLAIM REWARDS, UPGRADATION, EQUIPMENT, and HERO STAT PATH CHANGES, or PUSH STAGE/BOSSES, GROWTH LAYERS, and RETURN TO IDLE REWARD COLLECTION.",
+      "playerChoice": "Players choose between two distinct action sets: CLAIM REWARDS, UPGRADATION, EQUIPMENT, and HERO STAT PATH CHANGES, or PUSH STAGE/BOSSES, GROWTH LAYERS, and RETURN TO IDLE REWARD COLLECTION."
+    },
+    "local_authoring_parts::63eb8a3b863884617982a3fd83859515411de5f99a6957c209d2422495707dff:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "MAIN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "PROGRESSION_RESOURCES",
+            "PLAYER_CHOICE",
+            "GAME_STATE"
+          ],
+          "stateOutputs": [
+            "PROGRESSION_RESOURCES_UPDATED",
+            "PLAYER_CHOICE_UPDATED",
+            "GAME_STATE_UPDATED"
+          ],
+          "name": "MAIN",
+          "purpose": "Establishes the core gameplay loop that drives progression and player engagement in the idle growth RPG.",
+          "playerChoice": "Players choose between two distinct action sets: CLAIM REWARDS, UPGRADATION, EQUIPMENT, and HERO STAT PATH CHANGES, or PUSH STAGE/BOSSES, GROWTH LAYERS, and RETURN TO IDLE REWARD COLLECTION."
+        },
+        {
+          "id": "A",
+          "grammarRole": "A",
+          "stateInputs": [
+            "PROGRESSION_RESOURCES",
+            "PLAYER_CHOICE",
+            "GAME_STATE"
+          ],
+          "stateOutputs": [
+            "PROGRESSION_RESOURCES_UPDATED",
+            "PLAYER_CHOICE_UPDATED",
+            "GAME_STATE_UPDATED"
+          ],
+          "name": "A",
+          "purpose": "Establishes the core gameplay loop that drives progression and player engagement in the idle growth RPG. Players choose between two distinct action sets: CLAIM REWARDS, UPGRADATION, EQUIPMENT, and HERO STAT PATH CHANGES, or PUSH STAGE/BOSSES, GROWTH LAYERS, and RETURN TO IDLE REWARD COLLECTION.",
+          "playerChoice": "Players choose between two distinct action sets: CLAIM REWARDS, UPGRADATION, EQUIPMENT, and HERO STAT PATH CHANGES, or PUSH STAGE/BOSSES, GROWTH LAYERS, and RETURN TO IDLE REWARD COLLECTION."
+        },
+        {
+          "id": "B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "PROGRESSION_RESOURCES",
+            "PLAYER_CHOICE",
+            "GAME_STATE"
+          ],
+          "stateOutputs": [
+            "PROGRESSION_RESOURCES_UPDATED",
+            "PLAYER_CHOICE_UPDATED",
+            "GAME_STATE_UPDATED"
+          ],
+          "name": "B",
+          "purpose": "Establishes the core gameplay loop that drives progression and player engagement in the idle growth RPG. Players choose between two distinct action sets: CLAIM REWARDS, UPGRADATION, EQUIPMENT, and HERO STAT PATH CHANGES, or PUSH STAGE/BOSSES, GROWTH LAYERS, and RETURN TO IDLE REWARD COLLECTION.",
+          "playerChoice": "Players choose between two distinct action sets: CLAIM REWARDS, UPGRADATION, EQUIPMENT, and HERO STAT PATH CHANGES, or PUSH STAGE/BOSSES, GROWTH LAYERS, and RETURN TO IDLE REWARD COLLECTION."
+        },
+        {
+          "id": "c",
+          "grammarRole": "c",
+          "stateInputs": [
+            "PROGRESSION_RESOURCES",
+            "PLAYER_CHOICE",
+            "GAME_STATE"
+          ],
+          "stateOutputs": [
+            "PROGRESSION_RESOURCES_UPDATED",
+            "PLAYER_CHOICE_UPDATED",
+            "GAME_STATE_UPDATED"
+          ],
+          "name": "DELVE(@)",
+          "purpose": "Establishes the core gameplay loop that drives progression and player engagement in the idle growth RPG. Players choose between two distinct action sets: CLAIM REWARDS, UPGRADATION, EQUIPMENT, and HERO STAT PATH CHANGES, or PUSH STAGE/BOSSES, GROWTH LAYERS, and RETURN TO IDLE REWARD COLLECTION.",
+          "playerChoice": "Players choose between two distinct action sets: CLAIM REWARDS, UPGRADATION, EQUIPMENT, and HERO STAT PATH CHANGES, or PUSH STAGE/BOSSES, GROWTH LAYERS, and RETURN TO IDLE REWARD COLLECTION."
+        },
+        {
+          "id": "DELVE(@)",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "PROGRESSION_RESOURCES",
+            "PLAYER_CHOICE",
+            "GAME_STATE"
+          ],
+          "stateOutputs": [
+            "PROGRESSION_RESOURCES_UPDATED",
+            "PLAYER_CHOICE_UPDATED",
+            "GAME_STATE_UPDATED"
+          ],
+          "name": "DELVE(@)",
+          "purpose": "Establishes the core gameplay loop that drives progression and player engagement in the idle growth RPG. Players choose between two distinct action sets: CLAIM REWARDS, UPGRADATION, EQUIPMENT, and HERO STAT PATH CHANGES, or PUSH STAGE/BOSSES, GROWTH LAYERS, and RETURN TO IDLE REWARD COLLECTION.",
+          "playerChoice": "Players choose between two distinct action sets: CLAIM REWARDS, UPGRADATION, EQUIPMENT, and HERO STAT PATH CHANGES, or PUSH STAGE/BOSSES, GROWTH LAYERS, and RETURN TO IDLE REWARD COLLECTION."
+        }
+      ]
+    },
+    "local_authoring_parts::21dad2c16d20d75891101702ee9c9d3d666fa18837d9ec45a88258edab3c7421:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.",
+        "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment.",
+        "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle."
+      ],
+      "signatureSystems": [
+        {
+          "id": "MAIN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "PROGRESSION_RESOURCES",
+            "PLAYER_CHOICE",
+            "GAME_STATE"
+          ],
+          "stateOutputs": [
+            "PROGRESSION_RESOURCES_UPDATED",
+            "PLAYER_CHOICE_UPDATED",
+            "GAME_STATE_UPDATED"
+          ],
+          "name": "MAIN",
+          "purpose": "Establishes the core gameplay loop that drives progression and player engagement in the idle growth RPG.",
+          "playerChoice": "Players choose between two distinct action sets: CLAIM REWARDS, UPGRADATION, EQUIPMENT, and HERO STAT PATH CHANGES, or PUSH STAGE/BOSSES, GROWTH LAYERS, and RETURN TO IDLE REWARD COLLECTION."
+        },
+        {
+          "id": "A",
+          "grammarRole": "A",
+          "stateInputs": [
+            "PROGRESSION_RESOURCES",
+            "PLAYER_CHOICE",
+            "GAME_STATE"
+          ],
+          "stateOutputs": [
+            "PROGRESSION_RESOURCES_UPDATED",
+            "PLAYER_CHOICE_UPDATED",
+            "GAME_STATE_UPDATED"
+          ],
+          "name": "A",
+          "purpose": "Establishes the core gameplay loop that drives progression and player engagement in the idle growth RPG. Players choose between two distinct action sets: CLAIM REWARDS, UPGRADATION, EQUIPMENT, and HERO STAT PATH CHANGES, or PUSH STAGE/BOSSES, GROWTH LAYERS, and RETURN TO IDLE REWARD COLLECTION.",
+          "playerChoice": "Players choose between two distinct action sets: CLAIM REWARDS, UPGRADATION, EQUIPMENT, and HERO STAT PATH CHANGES, or PUSH STAGE/BOSSES, GROWTH LAYERS, and RETURN TO IDLE REWARD COLLECTION."
+        },
+        {
+          "id": "B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "PROGRESSION_RESOURCES",
+            "PLAYER_CHOICE",
+            "GAME_STATE"
+          ],
+          "stateOutputs": [
+            "PROGRESSION_RESOURCES_UPDATED",
+            "PLAYER_CHOICE_UPDATED",
+            "GAME_STATE_UPDATED"
+          ],
+          "name": "B",
+          "purpose": "Establishes the core gameplay loop that drives progression and player engagement in the idle growth RPG. Players choose between two distinct action sets: CLAIM REWARDS, UPGRADATION, EQUIPMENT, and HERO STAT PATH CHANGES, or PUSH STAGE/BOSSES, GROWTH LAYERS, and RETURN TO IDLE REWARD COLLECTION.",
+          "playerChoice": "Players choose between two distinct action sets: CLAIM REWARDS, UPGRADATION, EQUIPMENT, and HERO STAT PATH CHANGES, or PUSH STAGE/BOSSES, GROWTH LAYERS, and RETURN TO IDLE REWARD COLLECTION."
+        },
+        {
+          "id": "c",
+          "grammarRole": "c",
+          "stateInputs": [
+            "PROGRESSION_RESOURCES",
+            "PLAYER_CHOICE",
+            "GAME_STATE"
+          ],
+          "stateOutputs": [
+            "PROGRESSION_RESOURCES_UPDATED",
+            "PLAYER_CHOICE_UPDATED",
+            "GAME_STATE_UPDATED"
+          ],
+          "name": "DELVE(@)",
+          "purpose": "Establishes the core gameplay loop that drives progression and player engagement in the idle growth RPG. Players choose between two distinct action sets: CLAIM REWARDS, UPGRADATION, EQUIPMENT, and HERO STAT PATH CHANGES, or PUSH STAGE/BOSSES, GROWTH LAYERS, and RETURN TO IDLE REWARD COLLECTION.",
+          "playerChoice": "Players choose between two distinct action sets: CLAIM REWARDS, UPGRADATION, EQUIPMENT, and HERO STAT PATH CHANGES, or PUSH STAGE/BOSSES, GROWTH LAYERS, and RETURN TO IDLE REWARD COLLECTION."
+        },
+        {
+          "id": "DELVE(@)",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "PROGRESSION_RESOURCES",
+            "PLAYER_CHOICE",
+            "GAME_STATE"
+          ],
+          "stateOutputs": [
+            "PROGRESSION_RESOURCES_UPDATED",
+            "PLAYER_CHOICE_UPDATED",
+            "GAME_STATE_UPDATED"
+          ],
+          "name": "DELVE(@)",
+          "purpose": "Establishes the core gameplay loop that drives progression and player engagement in the idle growth RPG. Players choose between two distinct action sets: CLAIM REWARDS, UPGRADATION, EQUIPMENT, and HERO STAT PATH CHANGES, or PUSH STAGE/BOSSES, GROWTH LAYERS, and RETURN TO IDLE REWARD COLLECTION.",
+          "playerChoice": "Players choose between two distinct action sets: CLAIM REWARDS, UPGRADATION, EQUIPMENT, and HERO STAT PATH CHANGES, or PUSH STAGE/BOSSES, GROWTH LAYERS, and RETURN TO IDLE REWARD COLLECTION."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 353585,
-      "lastMs": 43381,
+      "totalMs": 394725,
+      "lastMs": 41140,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:56:20.810Z"
+      "updatedAt": "2026-10-08T08:57:01.951Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:50:27.155Z",
-  "updatedAt": "2026-10-08T08:56:20.810Z",
+  "updatedAt": "2026-10-08T08:57:01.953Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2352,7 +2552,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:56:20.810Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:57:01.953Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
