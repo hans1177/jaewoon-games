@@ -34,7 +34,8 @@ test('Vibe genre menu recommendations bind source-backed existing UI without own
     fs.mkdirSync(serverDir,{recursive:true});
     fs.writeFileSync(path.join(serverDir,'Game.server.luau'),[
       'local function purchaseMerchantEquipment(player,kind)',
-      '  player:SetAttribute("Gold",0)',
+      '  local cost=50',
+      '  player:SetAttribute("Gold",player:GetAttribute("Gold")-cost)',
       '  player:SetAttribute("WeaponTier",2)',
       '  player:SetAttribute("MaxHP",100)',
       'end',
@@ -124,7 +125,12 @@ test('genre UI detection rejects unowned menu keywords and platform-incompatible
       assert.equal(row.existingNativeUiRefs.length,0,role);
     }
     fs.writeFileSync(path.join(folder,'server','Trade.server.luau'),
-      'local function purchaseMerchantEquipment(player,kind) player:SetAttribute("Gold",0) end');
+      'local function purchaseMerchantEquipment(player,kind) end');
+    const stub=buildVibeAssetProductionPlan(config).genreMenuRecommendations;
+    assert.equal(stub.candidateFeatures.find(row=>row.role==='TRADE').status,
+      'IDEA_ONLY_GAME_SYSTEM_NOT_CONFIRMED','stubs may not become live shop features');
+    fs.writeFileSync(path.join(folder,'server','Trade.server.luau'),
+      'local function purchaseMerchantEquipment(player,kind)\\n local cost=50\\n player:SetAttribute("Gold",player:GetAttribute("Gold")-cost)\\n end');
     const owned=buildVibeAssetProductionPlan(config).genreMenuRecommendations;
     assert.equal(owned.candidateFeatures.find(row=>row.role==='TRADE').status,
       'NATIVE_UI_SOURCE_PRESENT_RUNTIME_QA_REQUIRED',
