@@ -34,25 +34,42 @@
         "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
         "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
       ]
+    },
+    "local_authoring_parts::d0c95423c56e995f03ee3b3105a66104fefce059715e1d9ccdaed4a0e185e408:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "START_STATE",
+        "RUN_STATE",
+        "RESULT_STATE"
+      ],
+      "stateOutputs": [
+        "NEXT_WORLD_STATE",
+        "NEW_CHOICE_STATE",
+        "PROGRESSION_STATE"
+      ],
+      "name": "CASUAL_GAME_FLOW",
+      "purpose": "플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾼다.",
+      "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 310622,
-      "lastMs": 41303,
+      "totalMs": 372317,
+      "lastMs": 61695,
       "lastError": null,
-      "updatedAt": "2026-10-08T22:11:07.396Z"
+      "updatedAt": "2026-10-08T22:12:09.093Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T22:05:56.751Z",
-  "updatedAt": "2026-10-08T22:11:07.396Z",
+  "updatedAt": "2026-10-08T22:12:09.093Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1976,7 +1993,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T22:11:07.396Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T22:12:09.093Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
