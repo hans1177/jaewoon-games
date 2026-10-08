@@ -10,23 +10,23 @@
   "completedPhaseCount": 0,
   "cachedTaskCount": 0,
   "lastSuccessfulModelCallAt": null,
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
   "designerSeed": null,
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
+      "calls": 3,
       "successes": 0,
-      "failures": 2,
+      "failures": 3,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 100468,
-      "lastMs": 31907,
+      "totalMs": 132194,
+      "lastMs": 31726,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T05:20:33.067Z"
+      "updatedAt": "2026-10-08T05:21:04.793Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T05:20:33.067Z"
+  "updatedAt": "2026-10-08T05:21:04.797Z"
 }
