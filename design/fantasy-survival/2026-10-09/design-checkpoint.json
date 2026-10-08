@@ -12,25 +12,32 @@
   "tasks": {
     "local_authoring_parts::f170af6295259dcb6a01566a07d8197fbbc32f0e199970aba39a1b9f68f6740a:identity": {
       "identity": "마력숲 생존기 - 수정 지역, 화산, 세계수, 연구소 및 생존·제작·전투·스토리 진행 중인 기존 마력숲 생존기의 정체성과 게임 규칙을 그대로 보존하며, 새로운 시그니처 세계 규칙을 통해 플레이어가 즉각적으로 상태 변화를 경험하는 중심 행동을 확립한다. 이는 주로 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 한 선택 결과에 따라 월드 상태와 접근 가능성을 실제 바꾼다."
+    },
+    "local_authoring_parts::f170af6295259dcb6a01566a07d8197fbbc32f0e199970aba39a1b9f68f6740a:playerFantasy": {
+      "playerFantasy": "마력숲 생존기에서 플레이어는 환경의 위험과 압박 속에서 즉각적인 상태 변화를 경험하며, 주로 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 한 선택 결과에 따라 월드 상태와 접근 가능성을 실제 바꾼다."
+    },
+    "local_authoring_parts::a9f8389c3b568f7296a7d41b9f11e4dc3c169cb7cb112d013789e4f3a8ec35ef:identity,playerFantasy": {
+      "identity": "마력숲 생존기 - 수정 지역, 화산, 세계수, 연구소 및 생존·제작·전투·스토리 진행 중인 기존 마력숲 생존기의 정체성과 게임 규칙을 그대로 보존하며, 새로운 시그니처 세계 규칙을 통해 플레이어가 즉각적으로 상태 변화를 경험하는 중심 행동을 확립한다. 이는 주로 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 한 선택 결과에 따라 월드 상태와 접근 가능성을 실제 바꾼다.",
+      "playerFantasy": "마력숲 생존기에서 플레이어는 환경의 위험과 압박 속에서 즉각적인 상태 변화를 경험하며, 주로 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 한 선택 결과에 따라 월드 상태와 접근 가능성을 실제 바꾼다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 151488,
-      "lastMs": 151488,
+      "totalMs": 185450,
+      "lastMs": 33962,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:31:40.908Z"
+      "updatedAt": "2026-10-08T18:32:14.871Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:29:09.382Z",
-  "updatedAt": "2026-10-08T18:31:40.908Z",
+  "updatedAt": "2026-10-08T18:32:14.873Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2229,7 +2236,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:31:40.908Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:32:14.873Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
