@@ -634,25 +634,105 @@
           "playerChoice": "자원 모집, 주민 고용, 병사 모집, 거점 점령, 보상 획득, 협동 공략"
         }
       ]
+    },
+    "local_authoring_parts::4d69f6b3fbb800567b5cb8847a0f420ad421fe2568c0bef74b52c8f2baf2552e:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "toId": "COZY_CHIBI_KINGDOM_WORLD_V9",
+          "stateKeys": [
+            "직접 채집",
+            "주민 고용",
+            "자원 전환",
+            "거점 선택"
+          ],
+          "fromSystem": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "toSystem": "COZY_CHIBI_KINGDOM_WORLD_V9",
+          "trigger": "자원 모집",
+          "stateChange": "주민 고용"
+        },
+        {
+          "fromId": "COZY_CHIBI_KINGDOM_WORLD_V9",
+          "toId": "COZY_CHIBI_KINGDOM_WORLD_V10",
+          "stateKeys": [
+            "직접 채집",
+            "주민 고용",
+            "자원 전환",
+            "거점 선택"
+          ],
+          "fromSystem": "COZY_CHIBI_KINGDOM_WORLD_V9",
+          "toSystem": "COZY_CHIBI_KINGDOM_WORLD_V10",
+          "trigger": "병사 모집",
+          "stateChange": "병사 모집"
+        },
+        {
+          "fromId": "COZY_CHIBI_KINGDOM_WORLD_V10",
+          "toId": "COZY_CHIBI_KINGDOM_WORLD_V11",
+          "stateKeys": [
+            "직접 채집",
+            "주민 고용",
+            "자원 전환",
+            "거점 선택"
+          ],
+          "fromSystem": "COZY_CHIBI_KINGDOM_WORLD_V10",
+          "toSystem": "COZY_CHIBI_KINGDOM_WORLD_V11",
+          "trigger": "거점 점령",
+          "stateChange": "거점 점령"
+        },
+        {
+          "fromId": "COZY_CHIBI_KINGDOM_WORLD_V11",
+          "toId": "COZY_CHIBI_KINGDOM_WORLD_DELVE",
+          "stateKeys": [
+            "직접 채집",
+            "주민 고용",
+            "자원 전환",
+            "거점 선택"
+          ],
+          "fromSystem": "COZY_CHIBI_KINGDOM_WORLD_V11",
+          "toSystem": "COZY_CHIBI_KINGDOM_WORLD_DELVE",
+          "trigger": "보상 획득",
+          "stateChange": "보상 획득"
+        },
+        {
+          "fromId": "COZY_CHIBI_KINGDOM_WORLD_DELVE",
+          "toId": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "stateKeys": [
+            "직접 채집",
+            "주민 고용",
+            "자원 전환",
+            "거점 선택"
+          ],
+          "fromSystem": "COZY_CHIBI_KINGDOM_WORLD_DELVE",
+          "toSystem": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "trigger": "협동 공략",
+          "stateChange": "협동 공략"
+        }
+      ],
+      "progressionDirection": "초반 직접 노동 → 주민 자동화 → 병영/병사 → 지역 기지 점령 → 특수자원 확보 → 고급 병종/무역 → 해전·공성 → 대형 섬/왕국 정복 순서로 확장한다",
+      "progressionEconomyBalance": {
+        "progressionLoop": "직접 채집 → 주민 고용 → 병사 모집 → 거점 선택 → 보상 획득 → 협동 공략",
+        "resourceFlow": "나무·식량 → 주민 자동화 → 병사 전투력",
+        "balanceRules": "직접 채집과 주민 고용은 동일한 자원을 사용하며, 병사 모집은 전투력으로 전환되어 거점 공략에 활용된다. 보상은 자원 수확과 전투력 강화의 조합으로, 협동 공략은 다른 플레이어의 병력 지원을 통해 강화된다."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 16,
+      "calls": 19,
+      "successes": 17,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 2330543,
-      "lastMs": 300076,
+      "totalMs": 2563834,
+      "lastMs": 233291,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T08:27:30.139Z"
+      "updatedAt": "2026-10-08T08:31:23.431Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:48:39.217Z",
-  "updatedAt": "2026-10-08T08:27:30.139Z",
+  "updatedAt": "2026-10-08T08:31:23.431Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1211,7 +1291,7 @@
     "designer_draft_slices::identity-core": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:22:30.058Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:31:23.431Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
