@@ -945,25 +945,43 @@
         "coreFun"
       ],
       "fromSystem": "Vibe 폴리시 시스템 (보완)"
+    },
+    "local_authoring_parts::20b7bb6360450eabc5f5a782c517ea89d138060f41308ac138df890e6002a749:toSystem,trigger,stateChange": {
+      "toSystem": "Vibe 폴리시 시스템 (보완)",
+      "trigger": "게임 진행 중",
+      "stateChange": "기존 마력숲 생존기 세계관 및 게임 규칙 복사 후, 모바일 플랫폼 특성 반영을 통해 새로운 행동 패턴 개발"
+    },
+    "local_authoring_parts::4a74613dcb4cc72c1d7de8077b72322396c69deb1d105c9d850179689e09c03a:systemInterconnections:3": {
+      "fromId": "signatureSystems[0]",
+      "toId": "signatureSystems[3]",
+      "stateKeys": [
+        "gameProgress",
+        "playerFantasy",
+        "coreFun"
+      ],
+      "fromSystem": "Vibe 폴리시 시스템 (보완)",
+      "toSystem": "Vibe 폴리시 시스템 (보완)",
+      "trigger": "게임 진행 중",
+      "stateChange": "기존 마력숲 생존기 세계관 및 게임 규칙 복사 후, 모바일 플랫폼 특성 반영을 통해 새로운 행동 패턴 개발"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 40,
-      "successes": 39,
+      "calls": 41,
+      "successes": 40,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3511809,
-      "lastMs": 58489,
+      "totalMs": 3572778,
+      "lastMs": 60969,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T23:34:57.148Z"
+      "updatedAt": "2026-10-08T23:35:58.119Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:32:30.796Z",
-  "updatedAt": "2026-10-08T23:34:57.148Z",
+  "updatedAt": "2026-10-08T23:35:58.121Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3223,7 +3241,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T23:34:57.148Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T23:35:58.121Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
