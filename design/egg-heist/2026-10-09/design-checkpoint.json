@@ -60,25 +60,38 @@
       "name": "DELVE(@)",
       "purpose": "World exploration and resource acquisition",
       "playerChoice": "Explore new areas, collect resources, and gain insight into the world's history, geography, and culture through gameplay and interaction with characters, items, and UI elements."
+    },
+    "local_authoring_parts::b26e8980077c4e956ac75228f625a95ea14b978e5a2e469ee773d52f196b9ec4:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "world_state"
+      ],
+      "stateOutputs": [
+        "new_world_state"
+      ],
+      "name": "DELVE(@)",
+      "purpose": "世界の歴史・生活・経済・地域機能を基にした探検とリスク管理",
+      "playerChoice": "探索範囲を選定し、目標エッグを見つけ、巡視リスクを評価する選択肢を提供する。"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 637407,
-      "lastMs": 94965,
+      "totalMs": 733439,
+      "lastMs": 96032,
       "lastError": null,
-      "updatedAt": "2026-10-08T20:57:53.712Z"
+      "updatedAt": "2026-10-08T20:59:29.745Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:47:16.280Z",
-  "updatedAt": "2026-10-08T20:57:53.712Z",
+  "updatedAt": "2026-10-08T20:59:29.746Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1940,7 +1953,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T20:57:53.712Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T20:59:29.745Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
