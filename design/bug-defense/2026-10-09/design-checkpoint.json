@@ -64,25 +64,55 @@
       "name": "MANDATE LEGITIMACY",
       "purpose": "Player's strategic decision impacts future world state through delayed consequences.",
       "playerChoice": "Adjust defender positions and resource distribution based on enemy threat patterns, with long-term effects on survival rates and strategy evolution."
+    },
+    "local_authoring_parts::80022b36efc072dcdf5e0bd7a845716e706c3178368f1e2d59d2f1571bf1c154:signatureSystems:2": {
+      "id": "INVESTIGATE_THREAT_PATTERN",
+      "grammarRole": "B",
+      "stateInputs": [
+        "threat pattern",
+        "defender configuration"
+      ],
+      "stateOutputs": [
+        "resource allocation",
+        "enemy behavior analysis"
+      ],
+      "name": "INVESTIGATE_THREAT_PATTERN",
+      "purpose": "Player's strategic decision impacts future world state through delayed consequences.",
+      "playerChoice": "Investigate the enemy threat pattern and adjust defender positions and resource distribution to optimize survival rates and strategy evolution."
+    },
+    "local_authoring_parts::80022b36efc072dcdf5e0bd7a845716e706c3178368f1e2d59d2f1571bf1c154:signatureSystems:3": {
+      "id": "INVESTIGATE_THREAT_PATTERN",
+      "grammarRole": "c",
+      "stateInputs": [
+        "threat pattern",
+        "defender configuration"
+      ],
+      "stateOutputs": [
+        "resource allocation",
+        "enemy behavior analysis"
+      ],
+      "name": "INVESTIGATE_THREAT_PATTERN",
+      "purpose": "Player's strategic decision impacts future world state through delayed consequences.",
+      "playerChoice": "Investigate the enemy threat pattern and adjust defender positions and resource distribution to optimize survival rates and strategy evolution."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 609264,
-      "lastMs": 238159,
+      "totalMs": 806064,
+      "lastMs": 98249,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:42:09.638Z"
+      "updatedAt": "2026-10-08T18:45:26.441Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:32:00.339Z",
-  "updatedAt": "2026-10-08T18:42:09.638Z",
+  "updatedAt": "2026-10-08T18:45:26.441Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2281,7 +2311,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:42:09.638Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:45:26.441Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
