@@ -1021,25 +1021,29 @@
       "label": "PLAN_B",
       "concept": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하",
       "playerFantasy": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하"
+    },
+    "local_authoring_parts::3d7b35778803ef1e967c70a79d21c7b2b73f63c62186233d9b26086756911d9d:genreDirection,coreLoopShift": {
+      "genreDirection": "ACTION_SURVIVAL_ROGUELITE",
+      "coreLoopShift": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 25,
-      "successes": 21,
+      "calls": 26,
+      "successes": 22,
       "failures": 4,
       "timeouts": 4,
       "jsonFailures": 0,
-      "totalMs": 3856971,
-      "lastMs": 150217,
+      "totalMs": 3955299,
+      "lastMs": 98328,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T15:43:42.438Z"
+      "updatedAt": "2026-10-08T15:45:20.768Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:15:14.939Z",
-  "updatedAt": "2026-10-08T15:43:42.438Z",
+  "updatedAt": "2026-10-08T15:45:20.768Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3242,7 +3246,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T15:43:42.438Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:45:20.768Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
