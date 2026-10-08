@@ -678,25 +678,45 @@
         "진행 상태"
       ],
       "fromSystem": "wild-survival-core-to-wild-survival-resources"
+    },
+    "local_authoring_parts::382fbc2083ad2cc5de45bd11f337f358acea94a1d917b8e10536e1ae28ee4891:toSystem,trigger,stateChange": {
+      "toSystem": "wild-survival-resources",
+      "trigger": "resourceDepletion",
+      "stateChange": "resource depletion affects player progression and survival"
+    },
+    "local_authoring_parts::729075728840ba20ae0282d716c9a7527d237294be37b3cb584bc9b516b3615d:systemInterconnections:2": {
+      "fromId": "wild-survival-core",
+      "toId": "wild-survival-resources",
+      "stateKeys": [
+        "월드 상태",
+        "대상",
+        "자원",
+        "위험",
+        "진행 상태"
+      ],
+      "fromSystem": "wild-survival-core-to-wild-survival-resources",
+      "toSystem": "wild-survival-resources",
+      "trigger": "resourceDepletion",
+      "stateChange": "resource depletion affects player progression and survival"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 16,
+      "calls": 17,
+      "successes": 17,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 970815,
-      "lastMs": 21669,
+      "totalMs": 981320,
+      "lastMs": 10505,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:32:31.834Z"
+      "updatedAt": "2026-10-08T08:32:42.340Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:16:20.952Z",
-  "updatedAt": "2026-10-08T08:32:31.834Z",
+  "updatedAt": "2026-10-08T08:32:42.342Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2911,7 +2931,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T08:32:31.834Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:32:42.342Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
