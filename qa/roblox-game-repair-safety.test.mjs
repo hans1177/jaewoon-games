@@ -136,3 +136,80 @@ corrupted=false;loadPlayer(p);assert(p:GetAttribute('Score')==90)
 p:SetAttribute('Coins',31);callbacks.remove(p);assert(writes==1 and saved.Coins==31 and saved.FutureKey=='keep')
 `);
 });
+
+test('survival preserves saved resources and unknown world fields across DataStore outages',{skip:!luau},()=>{
+  const source=read('roblox-games/survival/server/Game.server.luau');
+  const helpers=source.slice(source.indexOf('local function readNumber'),source.indexOf('local function ensureWorldPart'));
+  const load=source.slice(source.indexOf('local verifiedSaveRead = {}'),source.indexOf('remote.OnServerEvent:Connect'));
+  const save=source.slice(source.indexOf('Players.PlayerRemoving:Connect(function(player)'),source.indexOf('-- native-foundation-sentinel-v1'));
+  assert.ok(helpers.includes('local function initializePlayer'));
+  assert.ok(load.includes('local function loadPlayer(player)'));
+  assert.ok(save.includes('store:UpdateAsync'));
+  runLuau(`
+local Config={InitialState={ResourceWood=0,ResourceStone=0,Coins=0}}
+local callbacks={}
+local Players={}
+Players.PlayerAdded={Connect=function(_,fn)callbacks.add=fn end}
+Players.PlayerRemoving={Connect=function(_,fn)callbacks.remove=fn end}
+function Players:GetPlayers()return{}end
+local p={Parent=Players,UserId=99,attributes={}}
+function p:GetAttribute(k)return self.attributes[k]end
+function p:SetAttribute(k,v)self.attributes[k]=v end
+local lastAction={}
+local worldObjectStates={}
+local function validResourceRule()return nil end
+local recorded={ResourceWood=80,ResourceStone=30,Coins=10,FutureField='keep',
+  WorldObjects={
+    ['SURVIVAL:RESOURCE:WoodResourceNode']={health=4,depletedUntil=100,VersionTwoField='keep'},
+    ['EXTRA:OBJECT']={future=true}
+  }}
+local writes=0
+local readsFail=true
+local corrupt=false
+local writesFail=false
+local store={}
+function store:GetAsync(key)
+ assert(key=='player:99')
+ if readsFail then error('temporary read outage')end
+ if corrupt then return 'invalid existing record'end
+ return recorded
+end
+function store:UpdateAsync(key,update)
+ assert(key=='player:99')
+ writes+=1
+ if writesFail then error('temporary write outage')end
+ local changed=update(recorded)
+ if changed~=nil then recorded=changed end
+end
+${helpers}
+${load}
+${save}
+callbacks.add(p)
+assert(p:GetAttribute('SaveLoadStatus')=='REPAIR_REQUIRED')
+callbacks.remove(p)
+assert(writes==0 and recorded.ResourceWood==80 and recorded.FutureField=='keep')
+readsFail=false
+corrupt=true
+callbacks.add(p)
+callbacks.remove(p)
+assert(writes==0 and recorded.Coins==10)
+corrupt=false
+callbacks.add(p)
+assert(p:GetAttribute('ResourceWood')==80 and p:GetAttribute('ResourceStone')==30)
+p:SetAttribute('ResourceWood',81)
+callbacks.remove(p)
+assert(writes==1 and recorded.ResourceWood==81 and recorded.FutureField=='keep')
+assert(recorded.WorldObjects['EXTRA:OBJECT'].future==true)
+callbacks.add(p)
+worldObjectStates[p]={['SURVIVAL:RESOURCE:WoodResourceNode']={health=2,depletedUntil=110}}
+callbacks.remove(p)
+assert(writes==2 and recorded.WorldObjects['SURVIVAL:RESOURCE:WoodResourceNode'].health==2)
+assert(recorded.WorldObjects['SURVIVAL:RESOURCE:WoodResourceNode'].VersionTwoField=='keep')
+assert(recorded.WorldObjects['EXTRA:OBJECT'].future==true)
+callbacks.add(p)
+writesFail=true
+p:SetAttribute('ResourceStone',50)
+callbacks.remove(p)
+assert(writes==3 and recorded.ResourceStone==30)
+`);
+});
