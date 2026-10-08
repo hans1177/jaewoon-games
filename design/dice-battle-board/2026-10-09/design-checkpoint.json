@@ -34,25 +34,42 @@
         "INPUT: Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.\n\nSELECT: Navigate through different levels, gain experience, and progress in the game.\n\nOUTPUT: New state that represents advancement and unlocks further gameplay options.\n\nSTATE CHANGE",
         "INPUT: Use the board's feedback system to make strategic decisions and manage resources effectively.\n\nSELECT: Adjust your strategy based on real-time information and environmental conditions.\n\nOUTPUT: A dynamic state that evolves as the player interacts with the environment.\n\nSTATE CHANGE"
       ]
+    },
+    "local_authoring_parts::451fccf9c33f70e2448d94583f20410994fa176745d2fb8d9c28208b89f1101e:signatureSystems:0": {
+      "id": "KARMA_RETURN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "LEVEL_GOAL",
+        "MOVE_LIMIT",
+        "OBSTACLE_SET"
+      ],
+      "stateOutputs": [
+        "ADVANCED_LEVEL_STATE",
+        "RESOURCE_GAIN",
+        "PROGRESS_INDICATOR"
+      ],
+      "name": "KARMA RETURN",
+      "purpose": "Player's action results in delayed consequences for the player, their relationships, and future governance.",
+      "playerChoice": "Make strategic decisions that affect long-term outcomes and influence the game's progression through various systems and interactions."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 355950,
-      "lastMs": 60637,
+      "totalMs": 394866,
+      "lastMs": 38916,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:39:16.811Z"
+      "updatedAt": "2026-10-08T21:39:55.729Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:33:20.839Z",
-  "updatedAt": "2026-10-08T21:39:16.811Z",
+  "updatedAt": "2026-10-08T21:39:55.729Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1984,7 +2001,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:39:16.811Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:39:55.729Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
