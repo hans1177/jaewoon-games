@@ -313,3 +313,18 @@ test('equip and sell reject unowned items, preserve existing prices and do not m
   assert.doesNotMatch(equip,/Player\.baseMaxHp\s*=/);
   assert.doesNotMatch(equip,/Player\.experience\s*=/);
 });
+
+test('actual Unity browser touch visits character, inventory and shop with synchronized gold evidence',()=>{
+  assert.match(daechungUnitySource,/tabsCount=\{MenuTabs\.Length\}/);
+  assert.match(source,/tabCount=getBound\('tabsCount'\)/);
+  assert.match(source,/for\(const \[index,name\] of \[\[3,'CHARACTER'\],\[4,'INVENTORY'\],\[5,'SHOP'\]\]\)/);
+  assert.match(source,/await page\.touchscreen\.tap\(tapX,menuTarget\.y\)/);
+  assert.match(source,/UNITY_WEB_QA_MOBILE_MENU_PAGE_NOT_INTERACTIVE:/);
+  assert.match(source,/UNITY_WEB_QA_MOBILE_MENU_PLAYER_STATE_MISSING:/);
+  assert.match(source,/source=GAMECORE_V1_STATE/);
+  assert.match(source,/screenGold!==stateGold/);
+  assert.match(source,/UNITY_WEB_QA_MOBILE_MENU_GAMECORE_STATE_MISMATCH:/);
+  assert.match(source,/nativePlayerStateObserved:true/);
+  assert.match(source,/visitedPages\.push\('WORLD'\)/);
+  assert.doesNotMatch(source,/mobileMenuInteraction=\{pass:true,actualBrowserTouch:true,visitedPages:\['SOCIAL','WORLD'\]/);
+});
