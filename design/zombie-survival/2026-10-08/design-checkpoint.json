@@ -360,25 +360,42 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::34f4d7c402717f5243345dc710ba8073e3fe50030784dffe4730d27d9885249d:signatureSystems:0": {
+      "id": "CORE_FIGHT_LOOP",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "플레이어의 '진행' - 선택",
+        "판정: '위험' - 선택",
+        "OUTPUT: '보상' - 선택"
+      ],
+      "stateOutputs": [
+        "플레이어의 '진행' - 선택 -> 상태 변화",
+        "판정: '위험' - 선택 -> 보상/다음 선택",
+        "OUTPUT: '보상' - 선택 -> 다음 선택"
+      ],
+      "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "purpose": "플레이어가 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프를 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다.",
+      "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.과 Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 842913,
-      "lastMs": 87613,
+      "totalMs": 951522,
+      "lastMs": 108609,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:35:50.929Z"
+      "updatedAt": "2026-10-08T13:37:39.548Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:21:47.979Z",
-  "updatedAt": "2026-10-08T13:35:50.937Z",
+  "updatedAt": "2026-10-08T13:37:39.548Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2613,10 +2630,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:35:50.932Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:37:39.548Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
