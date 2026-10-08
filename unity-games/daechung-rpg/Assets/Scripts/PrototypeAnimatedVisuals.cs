@@ -34,6 +34,8 @@ namespace JaewoonGames.DaechungRpg
         private SpriteRenderer _backdrop;
         private MeshRenderer _depthGround;
         private MeshRenderer _depthPath;
+        private Camera _sceneCamera;
+        private float _lastCameraAspect = -1f;
         private string _enemyId = "skeleton";
         private readonly Dictionary<string, Sprite> _regions = new Dictionary<string, Sprite>();
         private readonly Dictionary<string, Sprite[]> _actorFrames = new Dictionary<string, Sprite[]>();
@@ -75,7 +77,7 @@ namespace JaewoonGames.DaechungRpg
             QualitySettings.vSyncCount = 0;
 #endif
 
-            SetupCamera();
+            _sceneCamera = SetupCamera();
             _player = new AnimatedActor("PrototypePlayer", new Vector3(0f, -1.65f, 0f), true);
             _enemy = new AnimatedActor("PrototypeEnemy", new Vector3(2.85f, -1.65f, 0.65f), false);
             _enemy.SetVisible(false);
@@ -106,6 +108,14 @@ namespace JaewoonGames.DaechungRpg
 
         private void Update()
         {
+            // 모바일 세로 화면에서 플레이어/몬스터가 화면 밖으로 잘리지 않도록 원근 시야만 조절한다.
+            if (_sceneCamera != null && Mathf.Abs(_sceneCamera.aspect - _lastCameraAspect) > 0.01f)
+            {
+                _lastCameraAspect = _sceneCamera.aspect;
+                _sceneCamera.fieldOfView = Mathf.Clamp(
+                    2f * Mathf.Atan(4f / (13f * Mathf.Max(0.4f, _lastCameraAspect))) * Mathf.Rad2Deg,
+                    40f, 72f);
+            }
             _player?.Tick(Time.time);
             _enemy?.Tick(Time.time);
             _coopPartner?.Tick(Time.time);
@@ -619,7 +629,7 @@ namespace JaewoonGames.DaechungRpg
             _player.SetVisible(true);
             _enemy.SetVisible(true);
             _coopPartner.SetVisible(_hasCoopPartner);
-            _coopPartner.Position = new Vector3(-0.65f, -1.65f, 0f);
+            _coopPartner.Position = new Vector3(-0.65f, -1.65f, -0.45f);
             if (_hasCoopPartner) _coopPartner.Play("walk", true, true);
             _player.Dead = false;
             _enemy.Dead = false;
@@ -681,7 +691,7 @@ namespace JaewoonGames.DaechungRpg
             _player.SetVisible(true);
             _enemy.SetVisible(true);
             _coopPartner.SetVisible(_hasCoopPartner);
-            _coopPartner.Position = new Vector3(-0.65f, -1.65f, 0f);
+            _coopPartner.Position = new Vector3(-0.65f, -1.65f, -0.45f);
             if (_hasCoopPartner) _coopPartner.Play("idle", true, true);
             _player.Position = new Vector3(-2.65f, -1.65f, 0f);
             _enemy.Position = new Vector3(2.65f, -1.65f, 0.65f);
@@ -689,7 +699,7 @@ namespace JaewoonGames.DaechungRpg
             _enemy.Play("idle", true, true);
         }
 
-        private static void SetupCamera()
+        private static Camera SetupCamera()
         {
             var camera = Camera.main;
             if (camera == null)
@@ -711,6 +721,7 @@ namespace JaewoonGames.DaechungRpg
             camera.transform.LookAt(new Vector3(0f, -0.35f, 0f));
             camera.clearFlags = CameraClearFlags.SolidColor;
             camera.backgroundColor = new Color(0.055f, 0.075f, 0.105f, 1f);
+            return camera;
         }
 
         [Serializable]
