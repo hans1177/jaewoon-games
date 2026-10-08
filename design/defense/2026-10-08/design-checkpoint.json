@@ -944,25 +944,122 @@
     },
     "local_authoring_parts::9195c0d18d72428f8ebb616acb9f79ef3c133e9d2f2a0590b9389b6bac425dce:trigger": {
       "trigger": "게임 내에서 다음 전투 wave의 타입을 파악하고, 적의 공격 경로에 적절한 타워 또는 방어 기관을 빠르게 배치하여, 공격의 위험을 줄이고, 전략적 전략을 조정하는 행동"
+    },
+    "local_authoring_parts::9195c0d18d72428f8ebb616acb9f79ef3c133e9d2f2a0590b9389b6bac425dce:stateChange": {
+      "stateChange": "게임 내에서 다음 전투 wave의 타입을 파악하고, 적의 공격 경로에 적절한 타워 또는 방어 기관을 빠르게 배치하여, 공격의 위험을 줄이고, 전략적 전략을 조정하는 행동"
+    },
+    "local_authoring_parts::dfa43ad5a8f494fdc8f36b22251e92c35f155d9ffd1c31421287630c2570fe2e:systemInterconnections:4": {
+      "fromId": "DELVE_01",
+      "toId": "DELVE_01",
+      "stateKeys": [
+        "defendedLane",
+        "newPlacement",
+        "tacticalChange",
+        "resourceAllocation",
+        "nextEnemyWave"
+      ],
+      "fromSystem": "ENEMY_WAVE_ADAPTATION_SYSTEM_DELVE",
+      "toSystem": "ENEMY_WAVE_ADAPTATION_SYSTEM_DELVE",
+      "trigger": "게임 내에서 다음 전투 wave의 타입을 파악하고, 적의 공격 경로에 적절한 타워 또는 방어 기관을 빠르게 배치하여, 공격의 위험을 줄이고, 전략적 전략을 조정하는 행동",
+      "stateChange": "게임 내에서 다음 전투 wave의 타입을 파악하고, 적의 공격 경로에 적절한 타워 또는 방어 기관을 빠르게 배치하여, 공격의 위험을 줄이고, 전략적 전략을 조정하는 행동"
+    },
+    "local_authoring_parts::5523291ebd291d92fc8529ddb34e890997fe5a99dd197b6c480577eb090c1f2b:systemInterconnections": {
+      "systemInterconnections": [
+        {
+          "fromId": "MAIN_01",
+          "toId": "MAIN_02",
+          "stateKeys": [
+            "defendedLane",
+            "newPlacement",
+            "tacticalChange",
+            "resourceAllocation",
+            "nextEnemyWave"
+          ],
+          "fromSystem": "ENEMY_WAVE_ADAPTATION_SYSTEM_MAIN_01",
+          "toSystem": "ENEMY_WAVE_ADAPTATION_SYSTEM_MAIN_02",
+          "trigger": "게임 내에서 다음 전투 wave의 타입을 파악하고, 적의 공격 경로에 적절한 타워 또는 방어 기관을 빠르게 배치하여, 공격의 위험을 줄이고, 전략적 전략을 조정하는 행동",
+          "stateChange": "게임 내에서 다음 전투 wave의 타입을 파악하고, 적의 공격 경로에 적절한 타워 또는 방어 기관을 빠르게 배치하여, 공격의 위험을 줄이고, 전략적 전략을 조정하는 행동"
+        },
+        {
+          "fromId": "MAIN_01",
+          "toId": "MAIN_02",
+          "stateKeys": [
+            "defendedLane",
+            "newPlacement",
+            "tacticalChange",
+            "resourceAllocation",
+            "nextEnemyWave"
+          ],
+          "fromSystem": "ENEMY_WAVE_ADAPTATION_SYSTEM_MAIN_01",
+          "toSystem": "ENEMY_WAVE_ADAPTATION_SYSTEM_MAIN_02",
+          "trigger": "게임 내에서 다음 전투 wave의 타입을 파악하고, 적의 공격 경로에 적절한 타워 또는 방어 기관을 빠르게 배치하여, 공격의 위험을 줄이고, 전략적 전략을 조정하는 행동",
+          "stateChange": "게임 내에서 다음 전투 wave의 타입을 파악하고, 적의 공격 경로에 적절한 타워 또는 방어 기관을 빠르게 배치하여, 공격의 위험을 줄이고, 전략적 전략을 조정하는 행동"
+        },
+        {
+          "fromId": "DELVE_01",
+          "toId": "MAIN_01",
+          "stateKeys": [
+            "defendedLane",
+            "newPlacement",
+            "tacticalChange",
+            "resourceAllocation",
+            "nextEnemyWave"
+          ],
+          "fromSystem": "ENEMY_WAVE_ADAPTATION_SYSTEM_DELVE",
+          "toSystem": "ENEMY_WAVE_ADAPTATION_SYSTEM_MAIN_01",
+          "trigger": "게임 내에서 다음 전투 wave의 타입을 파악하고, 적의 공격 경로에 적절한 타워 또는 방어 기관을 빠르게 배치하여, 공격의 위험을 줄이고, 전략적 전략을 조정하는 행동",
+          "stateChange": "게임 내에서 다음 전투 wave의 타입을 파악하고, 적의 공격 경로에 적절한 타워 또는 방어 기관을 빠르게 배치하여, 공격의 위험을 줄이고, 전략적 전략을 조정하는 행동"
+        },
+        {
+          "fromId": "DELVE_01",
+          "toId": "DELVE_01",
+          "stateKeys": [
+            "defendedLane",
+            "newPlacement",
+            "tacticalChange",
+            "resourceAllocation",
+            "nextEnemyWave"
+          ],
+          "fromSystem": "ENEMY_WAVE_ADAPTATION_SYSTEM_DELVE",
+          "toSystem": "ENEMY_WAVE_ADAPTATION_SYSTEM_DELVE",
+          "trigger": "게임 내에서 다음 전투 wave의 타입을 파악하고, 적의 공격 경로에 적절한 타워 또는 방어 기관을 빠르게 배치하여, 공격의 위험을 줄이고, 전략적 전략을 조정하는 행동",
+          "stateChange": "게임 내에서 다음 전투 wave의 타입을 파악하고, 적의 공격 경로에 적절한 타워 또는 방어 기관을 빠르게 배치하여, 공격의 위험을 줄이고, 전략적 전략을 조정하는 행동"
+        },
+        {
+          "fromId": "DELVE_01",
+          "toId": "DELVE_01",
+          "stateKeys": [
+            "defendedLane",
+            "newPlacement",
+            "tacticalChange",
+            "resourceAllocation",
+            "nextEnemyWave"
+          ],
+          "fromSystem": "ENEMY_WAVE_ADAPTATION_SYSTEM_DELVE",
+          "toSystem": "ENEMY_WAVE_ADAPTATION_SYSTEM_DELVE",
+          "trigger": "게임 내에서 다음 전투 wave의 타입을 파악하고, 적의 공격 경로에 적절한 타워 또는 방어 기관을 빠르게 배치하여, 공격의 위험을 줄이고, 전략적 전략을 조정하는 행동",
+          "stateChange": "게임 내에서 다음 전투 wave의 타입을 파악하고, 적의 공격 경로에 적절한 타워 또는 방어 기관을 빠르게 배치하여, 공격의 위험을 줄이고, 전략적 전략을 조정하는 행동"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 52,
-      "successes": 51,
+      "calls": 53,
+      "successes": 52,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 4220437,
-      "lastMs": 92822,
+      "totalMs": 4313950,
+      "lastMs": 93513,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T15:51:43.766Z"
+      "updatedAt": "2026-10-08T15:53:17.281Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:08:55.008Z",
-  "updatedAt": "2026-10-08T15:51:43.766Z",
+  "updatedAt": "2026-10-08T15:53:17.284Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3321,7 +3418,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:51:43.766Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:53:17.284Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
