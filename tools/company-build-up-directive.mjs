@@ -609,11 +609,13 @@ export function buildDesignToPlatformCodingTrace({
     const candidate=raw.startsWith(selectedRoot+'/')?raw:`${selectedRoot}/${raw}`;
     if(!candidate.startsWith(selectedRoot+'/')||!['.lua','.luau','.cs'].some(ext=>candidate.toLowerCase().endsWith(ext)))return'';
     const full=path.resolve(rootReal,candidate);
-    if(!full.startsWith(rootReal+path.sep))return'';
+    const canonicalOwnerRoot=path.resolve(rootReal,selectedRoot);
+    if(!full.startsWith(canonicalOwnerRoot+path.sep)||!full.startsWith(rootReal+path.sep))return'';
     try{
       if(!fs.statSync(full).isFile())return'';
       const real=fs.realpathSync(full);
-      if(!real.startsWith(rootReal+path.sep))return'';
+      const realOwnerRoot=fs.realpathSync(canonicalOwnerRoot);
+      if(!real.startsWith(realOwnerRoot+path.sep)||!real.startsWith(rootReal+path.sep))return'';
       return candidate;
     }catch{return'';}
   };
