@@ -460,25 +460,144 @@
       "name": "Scout a small area and identify the target egg and patrol risk",
       "purpose": "Explore and assess the environment for potential targets and risks in a casual gameplay context.",
       "playerChoice": "Select an area to scout, identify a target egg, and patrol for risks, with outcomes affecting the next world state."
+    },
+    "local_authoring_parts::e1a45ca2d4f816590110564b4c48205d92697ab5ecad42dc7514cf9b0ec056eb:signatureSystems:4": {
+      "id": "delve-core-1",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "delve-core-1-1",
+        "delve-core-1-2",
+        "delve-core-1-3"
+      ],
+      "stateOutputs": [
+        "delve-core-1-4",
+        "delve-core-1-5",
+        "delve-core-1-6"
+      ],
+      "name": "Scout a small area and identify the target egg and patrol risk",
+      "purpose": "Explore and assess the environment for potential targets and risks in a casual gameplay context.",
+      "playerChoice": "Select an area to scout, identify a target egg, and patrol for risks, with outcomes affecting the next world state."
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다. 플레이어는 알 도둑 대작전의 실제 플레이 공간에서 'Scout a small area and identify the target egg and patrol risk.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명한다. 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다. 게임의 핵심 재미는 'Scout a small area and identify the target egg and patrol risk.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명한다. 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다. 게임의 핵심 재미는 'Scout a small area and identify the target egg and patrol risk.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는대",
+      "playerFantasy": "플레이어는 알 도둑 대작전의 실제 플레이 공간에서 'Scout a small area and identify the target egg and patrol risk.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명한다. 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
+      "coreFun": "알 도둑 대작전의 실제 플레이 공간에서 'Scout a small area and identify the target egg and patrol risk.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명한다. 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
+      "coreLoop": [
+        "입력/선택 → 상태변화 → 보상·위험·다음 선택의 연결을 포함하는 최소 3개의 실제 플레이 단계",
+        "플레이어는 'Scout a small area and identify the target egg and patrol risk.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다",
+        "성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다",
+        "세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명한다",
+        "지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다",
+        "탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다",
+        "적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다"
+      ],
+      "multiplayerMode": "COOP",
+      "signatureSystems": [
+        {
+          "id": "identity-core-1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "identity-core-1-1",
+            "identity-core-1-2",
+            "identity-core-1-3"
+          ],
+          "stateOutputs": [
+            "identity-core-1-4",
+            "identity-core-1-5",
+            "identity-core-1-6"
+          ],
+          "name": "Scout a small area and identify the target egg and patrol risk",
+          "purpose": "Explore and assess the environment for potential targets and risks in a casual gameplay context.",
+          "playerChoice": "Select an area to scout, identify a target egg, and patrol for risks, with outcomes affecting the next world state."
+        },
+        {
+          "id": "identity-core-2",
+          "grammarRole": "A",
+          "stateInputs": [
+            "identity-core-2-1",
+            "identity-core-2-2",
+            "identity-core-2-3"
+          ],
+          "stateOutputs": [
+            "identity-core-2-4",
+            "identity-core-2-5",
+            "identity-core-2-6"
+          ],
+          "name": "Scout a small area and identify the target egg and patrol risk",
+          "purpose": "Explore and assess the environment for potential targets and risks in a casual gameplay context.",
+          "playerChoice": "Select an area to scout, identify a target egg, and patrol for risks, with outcomes affecting the next world state."
+        },
+        {
+          "id": "identity-B-1",
+          "grammarRole": "B",
+          "stateInputs": [
+            "identity-B-1-1",
+            "identity-B-1-2",
+            "identity-B-1-3"
+          ],
+          "stateOutputs": [
+            "identity-B-1-4",
+            "identity-B-1-5",
+            "identity-B-1-6"
+          ],
+          "name": "Scout a small area and identify the target egg and patrol risk",
+          "purpose": "Explore and assess the environment for potential targets and risks in a casual gameplay context.",
+          "playerChoice": "Select an area to scout, identify a target egg, and patrol for risks, with outcomes affecting the next world state."
+        },
+        {
+          "id": "identity-c-1",
+          "grammarRole": "c",
+          "stateInputs": [
+            "identity-c-1-1",
+            "identity-c-1-2",
+            "identity-c-1-3"
+          ],
+          "stateOutputs": [
+            "identity-c-1-4",
+            "identity-c-1-5",
+            "identity-c-1-6"
+          ],
+          "name": "Scout a small area and identify the target egg and patrol risk",
+          "purpose": "Explore and assess the environment for potential targets and risks in a casual gameplay context.",
+          "playerChoice": "Select an area to scout, identify a target egg, and patrol for risks, with outcomes affecting the next world state."
+        },
+        {
+          "id": "delve-core-1",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "delve-core-1-1",
+            "delve-core-1-2",
+            "delve-core-1-3"
+          ],
+          "stateOutputs": [
+            "delve-core-1-4",
+            "delve-core-1-5",
+            "delve-core-1-6"
+          ],
+          "name": "Scout a small area and identify the target egg and patrol risk",
+          "purpose": "Explore and assess the environment for potential targets and risks in a casual gameplay context.",
+          "playerChoice": "Select an area to scout, identify a target egg, and patrol for risks, with outcomes affecting the next world state."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 14,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1280681,
-      "lastMs": 70207,
+      "totalMs": 1351988,
+      "lastMs": 71307,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:12:20.102Z"
+      "updatedAt": "2026-10-08T08:13:31.410Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:50:59.270Z",
-  "updatedAt": "2026-10-08T08:12:20.102Z",
+  "updatedAt": "2026-10-08T08:13:31.414Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2339,51 +2458,21 @@
   "sliceDependencies": {
     "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
   },
-  "sliceRepairFeedback": {
-    "designer_draft_slices::identity-core": [
-      {
-        "code": "DESIGN_RULE_STATE_MISSING",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "signatureSystems",
-          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
-        },
-        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "signatureSystems"
-        ]
-      }
-    ]
-  },
+  "sliceRepairFeedback": {},
   "sliceRepairAttempts": {
     "designer_draft_slices::identity-core": 1
   },
-  "slicePartialResults": {
-    "designer_draft_slices::identity-core": {
-      "identity": "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다. 플레이어는 알 도둑 대작전의 실제 플레이 공간에서 'Scout a small area and identify the target egg and patrol risk.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명한다. 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다. 게임의 핵심 재미는 'Scout a small area and identify the target egg and patrol risk.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명한다. 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다. 게임의 핵심 재미는 'Scout a small area and identify the target egg and patrol risk.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는대",
-      "playerFantasy": "플레이어는 알 도둑 대작전의 실제 플레이 공간에서 'Scout a small area and identify the target egg and patrol risk.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명한다. 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
-      "coreFun": "알 도둑 대작전의 실제 플레이 공간에서 'Scout a small area and identify the target egg and patrol risk.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명한다. 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
-      "coreLoop": [
-        "입력/선택 → 상태변화 → 보상·위험·다음 선택의 연결을 포함하는 최소 3개의 실제 플레이 단계",
-        "플레이어는 'Scout a small area and identify the target egg and patrol risk.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다",
-        "성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다",
-        "세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명한다",
-        "지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다",
-        "탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다",
-        "적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다"
-      ],
-      "multiplayerMode": "COOP"
-    }
-  },
-  "lastSuccessfulModelCallAt": "2026-10-08T08:12:20.102Z",
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-08T08:13:31.412Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
-  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/egg-heist/2026-10-08/design-seed.json",
+    "contentDigest": "eb16dc68d0349940e59aa30a36567ebf8da4c588da932d40c6c4efc160005553",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
