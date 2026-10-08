@@ -282,25 +282,117 @@
           "playerChoice": "자원 거점 선택, 병력 확장, 전투력 강화, 자원 수집, 보상 획득, 전략적 확장을 선택하여 게임을 진행한다. 각 선택은 자원 거점의 상태 변화와 보상, 위험을 반영하여 게임의 전개를 결정한다."
         }
       ]
+    },
+    "local_authoring_parts::72e494f081982968c1d33e8906cb1099fd30b3aca6d95d688c918c19bd45d2a5:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::512a9c50be292c150ffdd93eb75d086ee171106a806f371a9103f7f9d9001224:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "INPUT: 직접 채집 → STATE: 나무·식량 수집 상태 변화",
+        "SELECT: NPC 마을 방문 → STATE: 주민 고용 및 자동화 상태 변화",
+        "INPUT: 병사 모집 → STATE: 병력 확장 및 전투력 증가",
+        "INPUT: 5개 거점 선택 → STATE: 자원 거점 상태 변화 및 점령 상태 변화",
+        "OUTPUT: 자동전투 시작 → STATE: 자동전투 및 점령 보상 상태 변화"
+      ],
+      "signatureSystems": [
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무·식량 수집 상태 변화",
+            "SELECT: NPC 마을 방문 → STATE: 주민 고용 및 자동화 상태 변화",
+            "INPUT: 병사 모집 → STATE: 병력 확장 및 전투력 증가",
+            "INPUT: 5개 거점 선택 → STATE: 자원 거점 상태 변화 및 점령 상태 변화"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 자동전투 시작 → STATE: 자동전투 및 점령 보상 상태 변화"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "자원 거점은 서로 다른 적과 보상을 가진 5개 거점으로 구성되어 있으며, 플레이어는 순차적으로 점령하여 전략적 확장이 가능하다. 각 거점은 자원, 전략, 전투력 등 다양한 요소를 포함하며, 점령 시 보상과 위험을 동시에 처리한다.",
+          "playerChoice": "자원 거점 선택, 병력 확장, 전투력 강화, 자원 수집, 보상 획득, 전략적 확장을 선택하여 게임을 진행한다. 각 선택은 자원 거점의 상태 변화와 보상, 위험을 반영하여 게임의 전개를 결정한다."
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무·식량 수집 상태 변화",
+            "SELECT: NPC 마을 방문 → STATE: 주민 고용 및 자동화 상태 변화",
+            "INPUT: 병사 모집 → STATE: 병력 확장 및 전투력 증가",
+            "INPUT: 5개 거점 선택 → STATE: 자원 거점 상태 변화 및 점령 상태 변화"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 자동전투 시작 → STATE: 자동전투 및 점령 보상 상태 변화"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "자원 거점은 서로 다른 적과 보상을 가진 5개 거점으로 구성되어 있으며, 플레이어는 순차적으로 점령하여 전략적 확장이 가능하다. 각 거점은 자원, 전략, 전투력 등 다양한 요소를 포함하며, 점령 시 보상과 위험을 동시에 처리한다.",
+          "playerChoice": "자원 거점 선택, 병력 확장, 전투력 강화, 자원 수집, 보상 획득, 전략적 확장을 선택하여 게임을 진행한다. 각 선택은 자원 거점의 상태 변화와 보상, 위험을 반영하여 게임의 전개를 결정한다."
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무·식량 수집 상태 변화",
+            "INPUT: 병사 모집 → STATE: 병력 확장 및 전투력 증가",
+            "INPUT: 5개 거점 선택 → STATE: 자원 거점 상태 변화 및 점령 상태 변화"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 자동전투 시작 → STATE: 자동전투 및 점령 보상 상태 변화"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "자원 거점은 서로 다른 적과 보상을 가진 5개 거점으로 구성되어 있으며, 플레이어는 순차적으로 점령하여 전략적 확장이 가능하다. 각 거점은 자원, 전략, 전투력 등 다양한 요소를 포함하며, 점령 시 보상과 위험을 동시에 처리한다.",
+          "playerChoice": "자원 거점 선택, 병력 확장, 전투력 강화, 자원 수집, 보상 획득, 전략적 확장을 선택하여 게임을 진행한다. 각 선택은 자원 거점의 상태 변화와 보상, 위험을 반영하여 게임의 전개를 결정한다."
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무·식량 수집 상태 변화",
+            "INPUT: 병사 모집 → STATE: 병력 확장 및 전투력 증가",
+            "INPUT: 5개 거점 선택 → STATE: 자원 거점 상태 변화 및 점령 상태 변화"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 자동전투 시작 → STATE: 자동전투 및 점령 보상 상태 변화"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "자원 거점은 서로 다른 적과 보상을 가진 5개 거점으로 구성되어 있으며, 플레이어는 순차적으로 점령하여 전략적 확장이 가능하다. 각 거점은 자원, 전략, 전투력 등 다양한 요소를 포함하며, 점령 시 보상과 위험을 동시에 처리한다.",
+          "playerChoice": "자원 거점 선택, 병력 확장, 전투력 강화, 자원 수집, 보상 획득, 전략적 확장을 선택하여 게임을 진행한다. 각 선택은 자원 거점의 상태 변화와 보상, 위험을 반영하여 게임의 전개를 결정한다."
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무·식량 수집 상태 변화",
+            "INPUT: 병사 모집 → STATE: 병력 확장 및 전투력 증가",
+            "INPUT: 5개 거점 선택 → STATE: 자원 거점 상태 변화 및 점령 상태 변화"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 자동전투 시작 → STATE: 자동전투 및 점령 보상 상태 변화"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "자원 거점은 서로 다른 적과 보상을 가진 5개 거점으로 구성되어 있으며, 플레이어는 순차적으로 점령하여 전략적 확장이 가능하다. 각 거점은 자원, 전략, 전투력 등 다양한 요소를 포함하며, 점령 시 보상과 위험을 동시에 처리한다.",
+          "playerChoice": "자원 거점 선택, 병력 확장, 전투력 강화, 자원 수집, 보상 획득, 전략적 확장을 선택하여 게임을 진행한다. 각 선택은 자원 거점의 상태 변화와 보상, 위험을 반영하여 게임의 전개를 결정한다."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1030781,
-      "lastMs": 137925,
+      "totalMs": 1079211,
+      "lastMs": 48430,
       "lastError": null,
-      "updatedAt": "2026-10-08T06:59:43.149Z"
+      "updatedAt": "2026-10-08T07:00:31.584Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T06:42:32.069Z",
-  "updatedAt": "2026-10-08T06:59:43.152Z",
+  "updatedAt": "2026-10-08T07:00:31.593Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -851,12 +943,52 @@
     },
     "assetFacts": {}
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T06:59:43.152Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임. 큰 머리와 둥근 얼굴, 짧고 굵은 팔다리의 치비 주민과 하나의 연결된 실루엣으로 보이는 야생동물을 사용한다. 손으로 시작한 작은 섬이 주민 자동화와 병사 진군으로 실제 움직이는 왕국이 되고, 5개 거점을 하나씩 점령하며 확장되는 성장감. 나무·식량 직접 채집, 주민 고용과 벌목/농업 자동화, 병영 강화와 병사 모집, 다음 자원 거점 선택, 보이는 자동전투와 점령 보상, 협동 지원으로 강한 거점 공략. 자동전투와 협동 지원 계산은 서버 권한으로 처리된다. 데이터 저장은 DataStore에 개인 자원·주민·병영·병사·점령 기지·특수자원 해금을 저장한다. 자동전투와 협동 지원 계산은 서버 권한으로 처리된다. 병력과 자원은 서버 권한으로 집계된다. 병력과 자원은 서버 권한으로 집계된다. 병력과 자원은 서버 권한으로 집계된다. 병력과 자원은 서버 권한으로 집계된다. 병력과 자원은 서버 권한으로 집계된다. 병력과 자원은 서버 권한으로 집계된다. 병력과 자원은 서버 권한으로 집계된다. 병력과 자원은 서버 권한으로 집계된다. 병력과 자원은 서버 권한으로 집계된다. 병력과 자원은 서버 권한으로 집계된다. 병력과 자원은 서버 권한으로 집계된다. 병력과 자원은 서버 권한으로 집계된다. 병력과 자원은 서버 권한으로 집계된다. 병력과 자원은 서버 권한으로 집계된다. 병력과 자원은 서버 권한으로 집계된다. 병력과 자원은 서버 권한으로 집계된다. 병력과 자원은 서버 권한으로 집계된다. 병력과 자원은 서버 권한으로 집계된다. 병력과 자원은 서버 권한으로 집계된다. 병력과 자원은 서버 권한으로 집계된다. 병력과 자원은 서버 권한으로 집계된다. 병력과 자원은 서버 권한으로 집계된다. 병력과 자원은 서버 권한으로 집계된다. 병력과 자원은 서버 권한으로 집계된다. 병력과 자원은 서버 권한으로 집계된다. 병력과 자원은 서버 권한으로 집계된다. 병력과 자원은 서버 권한으로 집계되",
+      "playerFantasy": "작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임. 손으로 시작한 작은 섬이 주민 자동화와 병사 진군으로 실제 움직이는 왕국이 되고, 5개 거점을 하나씩 점령하며 확장되는 성장감. 나무·식량 직접 채집, 주민 고용과 벌목/농업 자동화, 병영 강화와 병사 모집, 다음 자원 거점 선택, 보이는 자동전투와 점령 보상, 협동 지원으로 강한 거점 공략. 자동전투와 협동 지원 계산은 서버 권한으로 처리된다. 데이터 저장은 DataStore에 개인 자원·주민·병영·병사·점령 기지·특수자원 해금을 저장한다. 자동전투와 협동 지원 계산은 서버 권한으로 처리된다. 병력과 자원은 서버 권한으로 집계된다.",
+      "coreFun": "손으로 시작한 작은 섬이 주민 자동화와 병사 진군으로 실제 움직이는 왕국이 되고, 5개 거점을 하나씩 점령하며 확장되는 성장감. 나무·식량 직접 채집, 주민 고용과 벌목/농업 자동화, 병영 강화와 병사 모집, 다음 자원 거점 선택, 보이는 자동전투와 점령 보상, 협동 지원으로 강한 거점 공략. 자동전투와 협동 지원 계산은 서버 권한으로 처리된다. 데이터 저장은 DataStore에 개인 자원·주민·병영·병사·점령 기지·특수자원 해금을 저장한다. 자동전투와 협동 지원 계산은 서버 권한으로 처리된다. 병력과 자원은 서버 권한으로 집계된다.",
+      "coreLoop": [
+        "INPUT: 직접 채집 → STATE: 나무·식량 수집 상태 변화",
+        "SELECT: NPC 마을 방문 → STATE: 주민 고용 및 자동화 상태 변화",
+        "INPUT: 병사 모집 → STATE: 병력 확장 및 전투력 증가",
+        "INPUT: 5개 거점 선택 → STATE: 자원 거점 상태 변화 및 점령 상태 변화",
+        "OUTPUT: 자동전투 시작 → STATE: 자동전투 및 점령 보상 상태 변화"
+      ],
+      "multiplayerMode": "COOP"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T07:00:31.588Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
