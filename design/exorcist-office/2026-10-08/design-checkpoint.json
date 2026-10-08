@@ -97,25 +97,209 @@
       "name": "Start",
       "purpose": "Initiate the core gameplay loop with immediate feedback and progression",
       "playerChoice": "Choose a simple input, receive feedback, and decide to retry or progress"
+    },
+    "local_authoring_parts::d679ae95edb83a5fe735d2c2eafb8201137d0e0ca4225b5ec1add45cbc81b7e5:signatureSystems:4": {
+      "id": "DELVE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "Start immediately with simple one-thumb tap or swipe input",
+        "Play a brief run with readable feedback"
+      ],
+      "stateOutputs": [
+        "Unlock a small progression benefit",
+        "Retry quickly with minimal friction"
+      ],
+      "name": "Start",
+      "purpose": "Initiate the core gameplay loop with immediate feedback and progression",
+      "playerChoice": "Choose a simple input, receive feedback, and decide to retry or progress"
+    },
+    "local_authoring_parts::47d0a732f9c19cbaaee8b6ed6d261d065c197b3bf56abbac69859aeb56350f87:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "MAIN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "Start immediately with simple one-thumb tap or swipe input",
+            "Play a brief run with readable feedback",
+            "Finish or fail, receive a score or reward"
+          ],
+          "stateOutputs": [
+            "Unlock a small progression benefit",
+            "Retry quickly with minimal friction"
+          ],
+          "name": "Start",
+          "purpose": "Initiate the core gameplay loop with immediate feedback and progression",
+          "playerChoice": "Choose a simple input, receive feedback, and decide to retry or progress"
+        },
+        {
+          "id": "c",
+          "grammarRole": "A",
+          "stateInputs": [
+            "Start immediately with simple one-thumb tap or swipe input",
+            "Play a brief run with readable feedback"
+          ],
+          "stateOutputs": [
+            "Unlock a small progression benefit",
+            "Retry quickly with minimal friction"
+          ],
+          "name": "Start",
+          "purpose": "Initiate the core gameplay loop with immediate feedback and progression",
+          "playerChoice": "Choose a simple input, receive feedback, and decide to retry or progress"
+        },
+        {
+          "id": "B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "Start immediately with simple one-thumb tap or swipe input and a clear score,距离,",
+            "Play a brief run with readable feedback, collect rewards, and make a small risk或",
+            "Finish or fail, receive a score or reward, unlock a small progression benefit,",
+            "and retry quickly with minimal friction."
+          ],
+          "stateOutputs": [
+            "Unlock a small progression benefit",
+            "Retry quickly with minimal friction"
+          ],
+          "name": "Start",
+          "purpose": "Initiate the core gameplay loop with immediate feedback and progression",
+          "playerChoice": "Choose a simple input, receive feedback, and decide to retry or progress"
+        },
+        {
+          "id": "c",
+          "grammarRole": "c",
+          "stateInputs": [
+            "Start immediately with simple one-thumb tap or swipe input",
+            "Play a brief run with readable feedback"
+          ],
+          "stateOutputs": [
+            "Unlock a small progression benefit",
+            "Retry quickly with minimal friction"
+          ],
+          "name": "Start",
+          "purpose": "Initiate the core gameplay loop with immediate feedback and progression",
+          "playerChoice": "Choose a simple input, receive feedback, and decide to retry or progress"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "Start immediately with simple one-thumb tap or swipe input",
+            "Play a brief run with readable feedback"
+          ],
+          "stateOutputs": [
+            "Unlock a small progression benefit",
+            "Retry quickly with minimal friction"
+          ],
+          "name": "Start",
+          "purpose": "Initiate the core gameplay loop with immediate feedback and progression",
+          "playerChoice": "Choose a simple input, receive feedback, and decide to retry or progress"
+        }
+      ]
+    },
+    "local_authoring_parts::aef0420acf52bc86d645e3205d36858be4820a2bef19424fbeb6664516459ce8:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "signatureSystems": [
+        {
+          "id": "MAIN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "Start immediately with simple one-thumb tap or swipe input",
+            "Play a brief run with readable feedback",
+            "Finish or fail, receive a score or reward"
+          ],
+          "stateOutputs": [
+            "Unlock a small progression benefit",
+            "Retry quickly with minimal friction"
+          ],
+          "name": "Start",
+          "purpose": "Initiate the core gameplay loop with immediate feedback and progression",
+          "playerChoice": "Choose a simple input, receive feedback, and decide to retry or progress"
+        },
+        {
+          "id": "c",
+          "grammarRole": "A",
+          "stateInputs": [
+            "Start immediately with simple one-thumb tap or swipe input",
+            "Play a brief run with readable feedback"
+          ],
+          "stateOutputs": [
+            "Unlock a small progression benefit",
+            "Retry quickly with minimal friction"
+          ],
+          "name": "Start",
+          "purpose": "Initiate the core gameplay loop with immediate feedback and progression",
+          "playerChoice": "Choose a simple input, receive feedback, and decide to retry or progress"
+        },
+        {
+          "id": "B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "Start immediately with simple one-thumb tap or swipe input and a clear score,距离,",
+            "Play a brief run with readable feedback, collect rewards, and make a small risk或",
+            "Finish or fail, receive a score or reward, unlock a small progression benefit,",
+            "and retry quickly with minimal friction."
+          ],
+          "stateOutputs": [
+            "Unlock a small progression benefit",
+            "Retry quickly with minimal friction"
+          ],
+          "name": "Start",
+          "purpose": "Initiate the core gameplay loop with immediate feedback and progression",
+          "playerChoice": "Choose a simple input, receive feedback, and decide to retry or progress"
+        },
+        {
+          "id": "c",
+          "grammarRole": "c",
+          "stateInputs": [
+            "Start immediately with simple one-thumb tap or swipe input",
+            "Play a brief run with readable feedback"
+          ],
+          "stateOutputs": [
+            "Unlock a small progression benefit",
+            "Retry quickly with minimal friction"
+          ],
+          "name": "Start",
+          "purpose": "Initiate the core gameplay loop with immediate feedback and progression",
+          "playerChoice": "Choose a simple input, receive feedback, and decide to retry or progress"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "Start immediately with simple one-thumb tap or swipe input",
+            "Play a brief run with readable feedback"
+          ],
+          "stateOutputs": [
+            "Unlock a small progression benefit",
+            "Retry quickly with minimal friction"
+          ],
+          "name": "Start",
+          "purpose": "Initiate the core gameplay loop with immediate feedback and progression",
+          "playerChoice": "Choose a simple input, receive feedback, and decide to retry or progress"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1049635,
-      "lastMs": 103695,
+      "totalMs": 1153449,
+      "lastMs": 103814,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:13:47.315Z"
+      "updatedAt": "2026-10-08T12:15:31.130Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:56:17.645Z",
-  "updatedAt": "2026-10-08T12:13:47.315Z",
+  "updatedAt": "2026-10-08T12:15:31.133Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2039,7 +2223,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:13:47.315Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:15:31.133Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
