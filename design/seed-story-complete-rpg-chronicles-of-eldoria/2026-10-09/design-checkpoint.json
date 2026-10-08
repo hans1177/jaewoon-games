@@ -628,25 +628,54 @@
         "resourceFlow": "CONTINUOUS",
         "balanceRules": "BALANCED"
       }
+    },
+    "local_authoring_parts::a77c0879a4bcc4d387489c281c314270aad2ed6a041cc1ccf512115121ac4b36:contentExpansionPlan,failureRetryRisk": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "탐험 중 새로운 지역 발견",
+          "newGameplay": "플레이어가 탐험 중에 새로운 지역을 발견하면, 이 지역의 역사, 경제, 지역 기능에 대한 이해가 확대된다.",
+          "systemImpact": "월드 상태 전환 시스템에서 'LOCATION_CHANGE_STATE'로 전환하며, 새로운 정보와 아이템을 획득하게 된다."
+        },
+        {
+          "milestone": "인물 및 적 만나기",
+          "newGameplay": "플레이어는 다양한 인물을 만날 수 있으며, 그들의 존재 이유와 플레이 규칙, 보상, 정보, 관계에 깊이 연결되어 있다.",
+          "systemImpact": "인물 상호작용 시스템에서 'CHARACTER_INTERACTION_STATE'로 전환되며, 이름만 다르지만 실제 의미를 제공한다."
+        },
+        {
+          "milestone": "퀘스트 완료 및 스토리 진행",
+          "newGameplay": "퀘스트를 완료하면, 다음 단계로 진입할 수 있고, 해당 퀘斯特의 내용과 결과는 게임 내에서 반복적으로 재구성될 수 있다.",
+          "systemImpact": "퀘스트 시스템에서 'QUEST_ACCEPTANCE_STATE'로 전환하며, 스토리 진행 과정이 계속됨"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "탐험 중 지역 변화 없음",
+          "인물 상호작용 실패",
+          "퀘스트 완료 실패"
+        ],
+        "retryFlow": "플레이어는 실패 후 다시 탐험하거나, 새로운 선택을 하여 상태를 회복하고, 이어서 다음 월드 상태로 이동하게 된다.",
+        "riskPressure": "실패에 따른 감각적 영향은 소리와 음악으로 강화된다. 또한, 보상 조건과 비용은 플레이어에게 명확히 약속되어 있어 재도전 기회가 제공된다.",
+        "recoveryRules": "실패 이후에는 플레이어는 새로운 정보나 선택을 바탕으로 상태를 회복하고, 다음 월드 상태로 이동할 수 있으며, 이 과정에서는 깊이 있는 파고들기 및 재해석이 이루어진다."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 11,
+      "calls": 13,
+      "successes": 12,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1318448,
-      "lastMs": 141060,
+      "totalMs": 1455443,
+      "lastMs": 136995,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T21:12:45.056Z"
+      "updatedAt": "2026-10-08T21:15:02.054Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:50:46.559Z",
-  "updatedAt": "2026-10-08T21:12:45.056Z",
+  "updatedAt": "2026-10-08T21:15:02.061Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2875,15 +2904,227 @@
     }
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "808c338443a65fb194f7e29710f496765f7dc02b5bb31c8a1b235f7eb2b1573f"
   },
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:12:45.056Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[0].stateChange",
+          "value": "LOCATED_NEW_REGION"
+        },
+        "requiredAction": "systemInterconnections[0].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[1].trigger",
+          "value": "CHARACTER_RELATED_EVENT"
+        },
+        "requiredAction": "systemInterconnections[1].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[4].trigger",
+          "value": "NEW_CONTENT_DISCOVERED"
+        },
+        "requiredAction": "systemInterconnections[4].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[4].stateChange",
+          "value": "EXTENDED_WORLD_VIEW"
+        },
+        "requiredAction": "systemInterconnections[4].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "EXPLORATION_STATE→LOCATION_CHANGE_STATE의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: EXPLORATION_STATE→LOCATION_CHANGE_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "CHARACTER_INTERACTION_STATE→ITEM_GAINED_STATE의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: CHARACTER_INTERACTION_STATE→ITEM_GAINED_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "QUEST_ACCEPTANCE_STATE→SKILL_ACQUIRED_STATE의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: QUEST_ACCEPTANCE_STATE→SKILL_ACQUIRED_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "ENEMY_DEFEATED_STATE→ENEMY_DEFeated_STATE의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: ENEMY_DEFEATED_STATE→ENEMY_DEFeated_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "EXPLORATION_STATE→CONTENT_EXPANSION_STATE의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: EXPLORATION_STATE→CONTENT_EXPANSION_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::systems-progression": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "SEQUENTIAL",
+      "progressionEconomyBalance": {
+        "progressionLoop": "REPEATABLE",
+        "resourceFlow": "CONTINUOUS",
+        "balanceRules": "BALANCED"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "탐험 중 새로운 지역 발견",
+          "newGameplay": "플레이어가 탐험 중에 새로운 지역을 발견하면, 이 지역의 역사, 경제, 지역 기능에 대한 이해가 확대된다.",
+          "systemImpact": "월드 상태 전환 시스템에서 'LOCATION_CHANGE_STATE'로 전환하며, 새로운 정보와 아이템을 획득하게 된다."
+        },
+        {
+          "milestone": "인물 및 적 만나기",
+          "newGameplay": "플레이어는 다양한 인물을 만날 수 있으며, 그들의 존재 이유와 플레이 규칙, 보상, 정보, 관계에 깊이 연결되어 있다.",
+          "systemImpact": "인물 상호작용 시스템에서 'CHARACTER_INTERACTION_STATE'로 전환되며, 이름만 다르지만 실제 의미를 제공한다."
+        },
+        {
+          "milestone": "퀘스트 완료 및 스토리 진행",
+          "newGameplay": "퀘스트를 완료하면, 다음 단계로 진입할 수 있고, 해당 퀘斯特의 내용과 결과는 게임 내에서 반복적으로 재구성될 수 있다.",
+          "systemImpact": "퀘스트 시스템에서 'QUEST_ACCEPTANCE_STATE'로 전환하며, 스토리 진행 과정이 계속됨"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "탐험 중 지역 변화 없음",
+          "인물 상호작용 실패",
+          "퀘스트 완료 실패"
+        ],
+        "retryFlow": "플레이어는 실패 후 다시 탐험하거나, 새로운 선택을 하여 상태를 회복하고, 이어서 다음 월드 상태로 이동하게 된다.",
+        "riskPressure": "실패에 따른 감각적 영향은 소리와 음악으로 강화된다. 또한, 보상 조건과 비용은 플레이어에게 명확히 약속되어 있어 재도전 기회가 제공된다.",
+        "recoveryRules": "실패 이후에는 플레이어는 새로운 정보나 선택을 바탕으로 상태를 회복하고, 다음 월드 상태로 이동할 수 있으며, 이 과정에서는 깊이 있는 파고들기 및 재해석이 이루어진다."
+      }
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T21:15:02.056Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
