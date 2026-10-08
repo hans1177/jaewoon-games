@@ -57,9 +57,11 @@ test('실제 플레이 가능한 개발 WebGL만 공개하되 저성능 QA 실�
   const saveAt=source.indexOf("fs.writeFileSync(output,JSON.stringify(evidence");
   const failAt=source.indexOf("throw new Error('UNITY_WEB_QA_FRAME_PACING_FAILED:");
   assert.ok(frameAt>=0&&saveAt>frameAt&&failAt>saveAt,'store honest failure evidence before rejecting FPS QA');
-  assert.match(source,/pass:!framePacingFailed/);
+  assert.match(source,/pass:!performanceBlocked/);
+  assert.match(source,/const performanceBlocked=framePacingFailed\|\|bootMilliseconds>90000/);
   assert.match(source,/playableBrowserTest:true/);
-  assert.match(source,/reason:framePacingFailed\?'UNITY_WEB_QA_FRAME_PACING_FAILED':null/);
+  assert.match(source,/reason:framePacingFailed\?'UNITY_WEB_QA_FRAME_PACING_FAILED':/);
+  assert.match(source,/bootMilliseconds>90000\?'UNITY_WEB_QA_BOOT_SLOW_FAILED':null/);
   assert.equal((workflow.match(/continue-on-error: \$\{\{ steps\.request\.outputs\.game_id == 'daechung-rpg' \}\}/g)||[]).length,3);
   assert.match(workflow,/const playable=checks\.every\(e=>e\.playableBrowserTest===true/);
   assert.match(workflow,/if\(!playable\)throw new Error\('UNITY_WEB_REAL_BROWSER_PLAYABILITY_REQUIRED'\)/);
