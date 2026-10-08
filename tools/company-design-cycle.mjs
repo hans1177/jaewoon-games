@@ -315,7 +315,7 @@ const checkpointV3CompatibleEngineMigrationEligible=designCheckpoint?.contractVe
   &&clean(designCheckpoint?.seedId)===clean(seed.seedId)
   &&clean(designCheckpoint?.policyDigest)===policyDigest
   &&(checkpointCompatibleEngineDigests.has(clean(designCheckpoint?.engineDigest))
-    ||(clean(designCheckpoint?.engineDigest)==='cc088ad7a8676ded2864387d1c00a39b024f9e9a4e72f50308346406aea805a9'
+    ||(['cc088ad7a8676ded2864387d1c00a39b024f9e9a4e72f50308346406aea805a9','d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904'].includes(clean(designCheckpoint?.engineDigest))
       &&designCheckpoint.fingerprint===createHash('sha256').update(JSON.stringify({...checkpointInputContext,engineDigest:designCheckpoint.engineDigest})).digest('hex')))
   &&designCheckpoint?.phases&&typeof designCheckpoint.phases==='object'
   &&designCheckpoint?.tasks&&typeof designCheckpoint.tasks==='object'
@@ -346,6 +346,11 @@ if(!checkpointReusable&&(checkpointV2MigrationEligible||checkpointV3CompatibleEn
     },
     updatedAt:new Date().toISOString()
   };
+  if(previousEngineDigest==='d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904'){
+    // 작성 응답 조각은 유지하고 기존 완성 단계만 새로운 내용 검사로 재검토한다.
+    delete designCheckpoint.phases.designer_draft;
+    designCheckpoint.completedPhases=designCheckpoint.completedPhases.filter(phase=>phase!=='designer_draft');
+  }
   writeJson(checkpointPath,designCheckpoint);
   console.log(`DESIGN_CHECKPOINT_MIGRATED=${previousContractVersion===2?'V2_TO_V3':'V3_COMPATIBLE_ENGINE'}|phases=${designCheckpoint.completedPhases.length}|tasks=${Object.keys(designCheckpoint.tasks).length}|replay=NO`);
 }else if(!checkpointReusable){
@@ -793,7 +798,7 @@ function repairStructureContract(fields){
   if(fields.includes('technicalAssumptions'))rules.push('technicalAssumptions: 서로 다른 구현 가정 최소 2개이며 각 항목은 JS String.length 기준 최소 24자 이상.');
   if(fields.includes('validationQuestions'))rules.push('validationQuestions: 서로 다른 검증 질문 최소 2개이며 각 항목은 JS String.length 기준 최소 24자 이상.');
   if(fields.includes('systemInterconnections'))rules.push('systemInterconnections: 최소 3개 서로 다른 객체. JS String.length 기준 fromSystem/toSystem은 각각 최소 16자, trigger/stateChange는 각각 최소 24자 이상으로 구체적으로 작성.');
-  if(fields.includes('signatureSystems'))rules.push('signatureSystems의 id는 고정 규칙 ID다. grammarRole은 MAIN/A/B 각각 하나, c와 DELVE(@)는 하나 이상이다. 각 stateInputs/stateOutputs에 실제 상태 키를 정의한다. 감염전은 HumanCount/MonsterCount/EliminatedCount와 능력 자원을 포함한다. 맵·능력·자산·대안은 이 ID와 상태 키만 참조한다.');
+  if(fields.includes('signatureSystems'))rules.push('signatureSystems의 id는 고정 규칙 ID다. grammarRole은 MAIN/A/B 각각 하나, c와 DELVE(@)는 하나 이상이다. 각 stateInputs/stateOutputs에는 실제 상태 키만 정의한다. coreLoop 문장, INPUT/SELECT/OUTPUT/STATE 설명, 화살표로 연결한 행동 순서를 상태 키에 넣지 않는다. 감염전은 HumanCount/MonsterCount/EliminatedCount와 능력 자원을 포함한다. 맵·능력·자산·대안은 이 ID와 상태 키만 참조한다.');
   if(fields.includes('systemInterconnections'))rules.push('fromId의 stateOutputs와 toId의 stateInputs에 실제로 존재하는 같은 stateKeys를 연결한다. A/B는 양방향으로 값을 주고받고 MAIN/c/DELVE도 연결돼야 한다. fromSystem/toSystem 설명만 같은 것으로 대체하지 않는다.');
   if(fields.includes('contentVarietyPlan'))rules.push('abilities에는 현재 게임 원본에 실제로 존재하는 능력을 각각 작성한다. 다른 장르의 능력을 추가하지 않는다. id/kind/ownerId/ruleId, trigger, range/rangeUnit, resource/cost, cooldownSeconds, telegraph/avoidance/effect, stateInputs/stateOutputs/source가 필수다. 자원이나 재사용이 없으면 0과 이유를 적는다. 원본 수치가 있는 능력은 rangeKey/costKey/cooldownKey를 원본 technicalAssumptions 키에 연결한다. regions는 공통 id와 ruleIds로 뒤의 전략 비교에 사용한다.');
   if(fields.includes('contentVarietyPlan')&&playableRequirements.infection)rules.push('감염전 abilities에는 원본의 모든 인간 능력·감염 후 능력·몬스터 능력·기본 감염/정화를 각각 작성한다. roleTransitions는 원본 humanRoster 각 id마다 인간 도구와 능력→원본 이름 그대로의 감염 능력, 유지/제거 상태, 바뀌는 선택을 연결한다.');
@@ -1092,6 +1097,9 @@ async function requestLocalDesignerRaw(prompt,{predict=1600,temperature=0.1,numC
     options:{
       num_predict:Math.min(8192,Math.max(512,Number(predict||1600))),
       temperature:Number.isFinite(Number(temperature))?Number(temperature):0.1,
+      // 내부 모델의 같은 문장 반복 생성만 억제한다. 구조와 규칙 숫자는 바꾸지 않는다.
+      repeat_penalty:1.15,
+      repeat_last_n:256,
       num_ctx:Math.min(24576,Math.max(4096,Number(numCtx||8192)))
     }
   });
@@ -1133,7 +1141,7 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
   const timeoutMs=localDesignerCallTimeoutMs;
   const started=Date.now();
   const assetContext=includeAssetContext?`DESIGN_ASSET_LIBRARY=${JSON.stringify(designAssetLibraryContext)}\n자산 목록은 사실 근거다. 게임당 설계 원본은 하나이며 플랫폼별 적용만 구분한다. 후보의 역할 적합성을 컨셉과 대조하고 기존 technicalAssumptions/implementationTraceability/artAudioDirection/platformProfiles에 재사용 ID, 개선·추가 제작 필요, 플랫폼 적응을 명시하라. 점수는 내부 평가이며 런타임 품질 통과가 아니다. USE_AS_IS도 실제 게임 검증을 뜻하지 않는다. NATIVE_REAUTHOR_BASE는 네이티브 재제작이며 바이너리 직접 재사용이 아니다. referenceOnly는 참고용이다. UNAVAILABLE은 미확인이며 자산이 없다는 뜻이 아니다. 후보 요약 밖의 호환 자산도 자격을 유지한다. 자산 사정으로 원본 게임 규칙을 바꾸지 마라.`:'DESIGN_ASSET_REVIEW=AFTER_PLAY_FLOW_AND_CONTRADICTION_REPAIR';
-  const prompt=`${system}\n\n${assetContext}\n\n${user}\n\nLOCAL_AUTHORING_RULES=JSON_OBJECT_ONLY;DO_NOT_DECIDE_GATE_PASS_FAIL;PRESERVE_OWNER_INTENT;REPAIR_ONLY_REQUESTED_SCOPE`;
+  const prompt=`${system}\n\n${assetContext}\n\n${user}\n\nLOCAL_AUTHORING_RULES=JSON_OBJECT_ONLY;DO_NOT_DECIDE_GATE_PASS_FAIL;PRESERVE_OWNER_INTENT;REPAIR_ONLY_REQUESTED_SCOPE\n문자 수 상한은 목표 분량이 아니다. 각 설명은 필요한 조건·행동·상태 변화를 짧고 완결된 문장으로 작성하고 같은 문장을 반복하지 않는다. 필요한 설명을 마치면 문자열과 JSON을 닫는다. 고정 ID·수치·원본 규칙은 보존한다.`;
   const identity=createHash('sha256').update(JSON.stringify({system,user,schema,librarySha256:includeAssetContext?designAssetLibraryContext.sha256||null:null,includeAssetContext,...(isolateFields?{isolateFields:true}:{})})).digest('hex');
   predict=Math.min(8192,Math.max(512,Number(predict)||1600,Number(designCheckpoint.localAuthoringBudgets?.[identity])||0));
   console.log(`DESIGN_LOCAL_AUTHORING_BUDGET_MS=${timeoutMs}|predict=${predict}|context=${numCtx}|promptChars=${prompt.length}`);

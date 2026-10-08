@@ -135,6 +135,14 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
     if((!identifier&&/^[A-Z][A-Z0-9]*(?:_[A-Z0-9]+){2,}$/.test(text))||/\b(?:TODO|TBD|PLACEHOLDER)\b|작성 예정|추후 작성|^미정$/i.test(text)){
       reject('DESIGN_PLACEHOLDER_CONTENT','IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY',[root],{path,value:text.slice(0,160)},`${path}의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.`);
     }
+    // 실제 생성에서 한 문장을 수십 번 반복한 응답은 분량이나 설계 완성도로 인정하지 않는다.
+    if(!identifier){
+      const sentences=text.split(/[.!?。！？\n]+/u).map(clean).filter(sentence=>sentence.length>=12);
+      const counts=new Map();
+      for(const sentence of sentences)counts.set(sentence,(counts.get(sentence)||0)+1);
+      const repeated=[...counts].find(([,count])=>count>=3);
+      if(repeated)reject('DESIGN_REPEATED_CONTENT','IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY',[root],{path,sentence:repeated[0].slice(0,160),count:repeated[1]},`${path}에서 같은 문장을 반복하지 않는다. 필요한 조건·선택·상태 변화만 간결하게 직접 다시 작성하고 다른 정상 필드는 유지한다.`);
+    }
   };
   for(const field of proseFields)if(selected.has(field))scan(design[field],field,field);
   // 정식 설계의 MAIN/A/B/c/@는 태그만 붙여서는 안 되고 각각 고유 규칙과 상태 입출력이 있어야 한다.
@@ -149,6 +157,14 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
     if(!rolesReady||!statesReady)reject('DESIGN_MAIN_A_B_c_DELVE_REQUIRED','CORE_LOOP_DESIGN',['signatureSystems'],
       {counts,systemCount:systems.length,statesReady},
       '메인 중심 행동, A/B 서로 다른 두 축, c 보조 변주, @ 발견·숙련을 기존 규칙에 맞춰 최소 5개 고유 시스템과 실제 상태 입력·출력으로 작성한다. 기존 밸런스·저장·진행은 유지한다.');
+    // 보존형 설계에서도 행동 설명은 실제 상태 키가 아니다.
+    for(const row of systems)for(const field of ['stateInputs','stateOutputs']){
+      if(list(row[field]).some(key=>/→|->|\b(?:INPUT|SELECT|OUTPUT|STATE)\s*:/i.test(clean(key)))){
+        const keyPath=`signatureSystems.${row.id}.${field}`;
+        const detail='플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다';
+        reject('DESIGN_STATE_KEY_IS_INSTRUCTION','CORE_LOOP_DESIGN',['signatureSystems'],{path:keyPath,detail},`${keyPath}: ${detail}. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.`);
+      }
+    }
   }
   const declared=clean(seed.MULTIPLAYER_DESIGN_MODE||seed.INITIAL_PLAY_MODE).toUpperCase();
   if(design.multiplayerMode&&['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(declared)&&!(multiplayerRequired&&declared==='SINGLE')&&design.multiplayerMode!==declared){
