@@ -3788,37 +3788,42 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
   // 다른 파일, 장르 이름만 맞는 가상 기능, 검증되지 않은 상태는 구현 완료로 취급하지 않는다.
   const existingGenreMenus=order.assetProduction?.genreMenuRecommendations;
   const menuImplementationRequested=/(?:메뉴|인벤토리|장비|상점|매매|캐릭터|퀘스트|도감|제작|건설|농사|파티|터치|화면|상호작용|오브젝트|조사|열기|제단|상자|포탈|NPC|UI|HUD|MENU|INVENTORY|EQUIPMENT|TRADE|SHOP|QUEST|CHARACTER|INTERACT|INTERACTION|OBJECT|CHEST|PORTAL)/i.test(craftGoal);
+  // Planner refs are repository-relative; Vibe source edits are rooted at order.source.root.
+  // An exact hash must also match the complete editable file in the selected game root.
+  const currentMenuSourceRoot=posix(order?.source?.root);
+  const resolveMenuRefEditPath=ref=>{
+    const repoPath=posix(ref?.path);
+    if(!repoPath||!ref?.sha256)return null;
+    if(!currentMenuSourceRoot)return repoPath;
+    if(!repoPath.startsWith(currentMenuSourceRoot+'/'))return null;
+    return repoPath.slice(currentMenuSourceRoot.length+1);
+  };
+  const exactMenuRefMatches=ref=>{
+    const editPath=resolveMenuRefEditPath(ref);
+    return Boolean(editPath&&responsibleFiles.includes(editPath)
+      &&context.files.some(file=>file.path===editPath&&file.editable!==false
+        &&file.truncated!==true&&typeof file.content==='string'
+        &&crypto.createHash('sha256').update(file.content).digest('hex')===ref.sha256));
+  };
+  const editableMenuRef=ref=>({...ref,editPath:resolveMenuRefEditPath(ref)});
   const sourceBoundGenreMenus=menuImplementationRequested?(existingGenreMenus?.candidateFeatures||[]).filter(row=>
     row.status!=='IDEA_ONLY_GAME_SYSTEM_NOT_CONFIRMED'
-    &&[...(row.existingNativeUiRefs||[]),...(row.gameSystemSourceRefs||[])].some(ref=>
-      responsibleFiles.includes(ref.path)
-      &&context.files.some(file=>file.path===ref.path&&file.editable!==false
-        &&file.truncated!==true&&typeof file.content==='string'
-        &&crypto.createHash('sha256').update(file.content).digest('hex')===ref.sha256)
-    )
+    &&[...(row.existingNativeUiRefs||[]),...(row.gameSystemSourceRefs||[])].some(exactMenuRefMatches)
   ).map(row=>({
     role:row.role,factory:row.factory,
     companyUiSource:row.companyUiSource,companyUiSourceSha256:row.companyUiSourceSha256,
     sourceIdeaIds:row.sourceIdeaIds,
-    exactGameSourceRefs:[...(row.existingNativeUiRefs||[]),...(row.gameSystemSourceRefs||[])].filter(ref=>responsibleFiles.includes(ref.path)),
+    exactGameSourceRefs:[...(row.existingNativeUiRefs||[]),...(row.gameSystemSourceRefs||[])]
+      .filter(exactMenuRefMatches).map(editableMenuRef),
     status:row.status,sourceOnlyNotRuntimePass:true
   })):[];
   const sourceBoundObjectInteractions=menuImplementationRequested?(existingGenreMenus?.objectInteractions||[]).filter(row=>
-    [...(row.gameSourceRefs||[]),...(row.clientConsumerRefs||[])].some(ref=>
-      responsibleFiles.includes(ref.path)
-      &&context.files.some(file=>file.path===ref.path&&file.editable!==false
-        &&file.truncated!==true&&typeof file.content==='string'
-        &&crypto.createHash('sha256').update(file.content).digest('hex')===ref.sha256)
-    )
+    [...(row.gameSourceRefs||[]),...(row.clientConsumerRefs||[])].some(exactMenuRefMatches)
   ).map(row=>({
     kind:row.kind,factory:row.factory,purpose:row.purpose,
     status:row.status,
-    sourceRefs:[...(row.gameSourceRefs||[]),...(row.clientConsumerRefs||[])].filter(ref=>
-      responsibleFiles.includes(ref.path)
-      &&context.files.some(file=>file.path===ref.path&&file.editable!==false
-        &&file.truncated!==true&&typeof file.content==='string'
-        &&crypto.createHash('sha256').update(file.content).digest('hex')===ref.sha256)
-    ),
+    sourceRefs:[...(row.gameSourceRefs||[]),...(row.clientConsumerRefs||[])]
+      .filter(exactMenuRefMatches).map(editableMenuRef),
     nativeRuntimeVerified:false,serverGameplayAuthorityRetained:true
   })):[];
   const genreMenuImplementationBlock=sourceBoundGenreMenus.length||sourceBoundObjectInteractions.length?[
