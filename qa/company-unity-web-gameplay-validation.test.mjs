@@ -187,14 +187,14 @@ test('Daechung real Unity renderer exposes only measured draw calls and polygons
 test('native Unity canvas UI stays inside mobile bounds with real runtime measurements',()=>{
   const runtime=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs',import.meta.url),'utf8');
   assert.match(runtime,/UI_BOUNDS game=daechung-rpg surface=UNITY_ONGUI/);
-  assert.match(runtime,/controlsHeight = Mathf\.Max\(1f, Screen\.height - controlsY - 12f\)/);
-  assert.match(runtime,/buttonWidth = Mathf\.Min\(Mathf\.Max\(1f, Screen\.width - margin \* 2f\)/);
+  assert.match(runtime,/controlsHeight = Mathf\.Max\(1f, _actionButtonRect\.yMin - 10f - menuY\)/);
+  assert.match(runtime,/buttonWidth = Mathf\.Min\(Mathf\.Max\(1f, safe\.width - margin \* 2f\)/);
   assert.match(source,/const nativeUiMarker=markers\.slice\(\)\.reverse\(\)\.find/);
   assert.match(source,/const nativeUiOffscreen=nativeUiMeasured/);
   assert.match(source,/withinNativeViewport\(nativeUiRect\.controlsLeft,nativeUiRect\.controlsY,nativeUiRect\.controlsWidth,nativeUiRect\.controlsHeight\)/);
   assert.match(source,/nativeUiMissing=gameId==='daechung-rpg'&&!nativeUiMeasured/);
   assert.match(source,/nativeUnityUi:\{measurementState:nativeUiMeasured\?'UNITY_ONGUI_RUNTIME':'NOT_MEASURED'/);
-  assert.match(source,/nativeUiOffscreen\|\|nativeUiMissing/);
+  assert.match(source,/nativeUiOffscreen\|\|nativeUiOverlap\|\|nativeUiMissing/);
 });
 
 test('actual Daechung Unity scene mesh and texture proof is native, fails closed, and never promotes library assets',()=>{
@@ -212,4 +212,38 @@ test('actual Daechung Unity scene mesh and texture proof is native, fails closed
   assert.match(source,/nativeMeshMissing=gameId==='daechung-rpg'&&!nativeMeshVerified/);
   assert.match(source,/nativeMeshMissing;/);
   assert.match(source,/libraryAssetPromotionGranted:false/);
+});
+
+test('Daechung mobile menu uses responsive safe-area tabs, one visible panel, scroll restoration and a fixed dock',()=>{
+  const runtime=daechungUnitySource;
+  assert.match(runtime,/Screen\.safeArea/);
+  assert.match(runtime,/private static readonly string\[\] MenuTabs = \{ "WORLD", "COMBAT", "SOCIAL" \}/);
+  assert.match(runtime,/GUI\.Toolbar\(tabsRect, _menuPage, MenuTabs\)/);
+  assert.match(runtime,/_menuScrollPositions\[_menuPage\] = _scroll/);
+  assert.match(runtime,/_scroll = _menuScrollPositions\[_menuPage\]/);
+  assert.match(runtime,/if \(_menuPage == 0\)[\s\S]*DrawRegionControls\(\);[\s\S]*DrawTownControls\(\);/);
+  assert.match(runtime,/else if \(_menuPage == 1\)[\s\S]*DrawCombatControls\(\);/);
+  assert.match(runtime,/_multiplayer\?\.DrawControls\(scale\)/);
+  assert.match(runtime,/DrawPrimaryCombatActionButton\(\);/);
+  assert.match(runtime,/var actionRect = _actionButtonRect/);
+  assert.match(runtime,/Mathf\.Max\(48f, 38f \* scale\)/);
+  assert.match(runtime,/MENU_TARGET game=daechung-rpg role=tab index=2/);
+  assert.match(runtime,/MENU_INPUT game=daechung-rpg role=tab/);
+  assert.match(runtime,/_menuPage = regionId == "town" \? 0 : 1/);
+  assert.doesNotMatch(runtime,/PlayerPrefs\.Set/);
+});
+
+test('Unity Web mobile QA touches the real menu, checks all menu rectangles and rejects docking overlap',()=>{
+  const start=source.indexOf("if(gameId==='daechung-rpg'){");
+  const input=source.indexOf("await page.touchscreen.tap(menuTarget.x,menuTarget.y)",start);
+  const returnTap=source.indexOf("await page.touchscreen.tap(firstTapX,menuTarget.y)",input);
+  const screenshot=source.indexOf("const liveCapture=await page.screenshot");
+  assert.ok(start>0&&input>start&&returnTap>input&&screenshot>returnTap);
+  assert.match(source,/UNITY_WEB_QA_MOBILE_MENU_SOCIAL_NOT_INTERACTIVE/);
+  assert.match(source,/UNITY_WEB_QA_MOBILE_MENU_WORLD_RETURN_FAILED/);
+  assert.match(source,/menuInteraction:mobileMenuInteraction/);
+  assert.match(source,/'tabsLeft','tabsY','tabsWidth','tabsHeight','actionLeft','actionY','actionWidth','actionHeight'/);
+  assert.match(source,/const nativeUiOverlap=nativeUiMeasured/);
+  assert.match(source,/nativeUiRect\.controlsY\+nativeUiRect\.controlsHeight>nativeUiRect\.actionY-6/);
+  assert.match(source,/pass:nativeUiMeasured\?!nativeUiOffscreen&&!nativeUiOverlap:null/);
 });
