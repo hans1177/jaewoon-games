@@ -795,25 +795,31 @@
     },
     "local_authoring_parts::ae3ba1690de14807278bfee18d958d328f92a2e00c76037730559d3d2f717c27:toId": {
       "toId": "Player-selected board patterns or obstacle combinations that determine the next级"
+    },
+    "local_authoring_parts::ae3ba1690de14807278bfee18d958d328f92a2e00c76037730559d3d2f717c27:stateKeys": {
+      "stateKeys": [
+        "Delve Evolution",
+        "Player-selected board patterns or obstacle combinations that determine the next级"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 39,
-      "successes": 38,
+      "calls": 40,
+      "successes": 39,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2731986,
-      "lastMs": 63219,
+      "totalMs": 2796269,
+      "lastMs": 64283,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T10:41:01.191Z"
+      "updatedAt": "2026-10-08T10:42:05.475Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:01:25.970Z",
-  "updatedAt": "2026-10-08T10:41:01.191Z",
+  "updatedAt": "2026-10-08T10:42:05.475Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3059,7 +3065,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:41:01.191Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:42:05.475Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
