@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::71f9271734c0f6b0112c9028f141ae9d485073f9e4324b007435d5034e8a6b0d:identity": {
+      "identity": "주사위 전투 보드은 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다.\n\n플레이어는 주사위로 시작하여 단순한 레벨 패턴에서 복잡한 콘텐츠까지 이르게 되며, 각 레벨의 목표는 즉시 반영되어야 하며, 이를 통해 플레이어는 새로운 행동·경로·조합을 탐색하게 된다.\n\n성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.\n\n주사위 전투 보드의 핵심 재미는 실제 플레이 선택으로 재정의되고, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프를 구축하며, 모바일에서도 즉시 이해되는 입력과 피드백을 제공한다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 214065,
+      "lastMs": 214065,
+      "lastError": null,
+      "updatedAt": "2026-10-08T21:36:54.919Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:33:20.839Z",
-  "updatedAt": "2026-10-08T21:33:20.848Z",
+  "updatedAt": "2026-10-08T21:36:54.919Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1941,5 +1957,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-08T21:36:54.919Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
