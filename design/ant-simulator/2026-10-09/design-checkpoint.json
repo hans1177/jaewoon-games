@@ -34,25 +34,69 @@
         "실제 입력을 통해 월드 상태, 자원, 위험, 그리고 다음 선택에 따라 진행되는 반복 가능한 루프 적용",
         "보상/위험의 실질적인 압박감 제공 및 숙련으로 이어지는 플레이 사례 포함"
       ]
+    },
+    "local_authoring_parts::a35c8b4ca689f9aaf154889536b2b316d668901863db1cdbb44f9b6c966058b3:signatureSystems:0": {
+      "id": "ANT_SIMULATION_SIGNATURE_SYSTEM_01",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "플레이어가 개미 종족 중 하나를 선택하여 월드 진입 후 목표 확인",
+        "실제 입력을 통해 월드 상태, 자원, 위험, 그리고 다음 선택에 따라 진행되는 반복 가능한 루프 적용"
+      ],
+      "stateOutputs": [
+        "보상/위험의 실질적인 압박감 제공 및 숙련으로 이어지는 플레이 사례 포함"
+      ],
+      "name": "OPENING_WORLD_STATE_TRANSITION",
+      "purpose": "월드 진입 시 초기 상태 변환 및 기본 플레이 패턴 구축",
+      "playerChoice": "개미 종족 선택 및 월드 진입 결정"
+    },
+    "local_authoring_parts::a35c8b4ca689f9aaf154889536b2b316d668901863db1cdbb44f9b6c966058b3:signatureSystems:1": {
+      "id": "ANT_SIMULATION_SIGNATURE_SYSTEM_02",
+      "grammarRole": "A",
+      "stateInputs": [
+        "실제 입력을 통해 월드 상태, 자원, 위험, 그리고 다음 선택에 따라 진행되는 반복 가능한 루프 적용",
+        "플레이어가 개미 종족 중 하나를 선택하여 월드 진입 후 목표 확인"
+      ],
+      "stateOutputs": [
+        "보상/위험의 실질적인 압박감 제공 및 숙련으로 이어지는 플레이 사례 포함",
+        "월드 상태와 자원 관리 기능 구현"
+      ],
+      "name": "WORLD_STATE_TRANSITION",
+      "purpose": "월드 상태 변환 및 자원 관리를 통한 전략적 의사소통",
+      "playerChoice": "월드 상태, 자원, 위험, 그리고 다음 선택에 따른 실제 입력 수행"
+    },
+    "local_authoring_parts::a35c8b4ca689f9aaf154889536b2b316d668901863db1cdbb44f9b6c966058b3:signatureSystems:2": {
+      "id": "ANT_SIMULATION_SIGNATURE_SYSTEM_03",
+      "grammarRole": "B",
+      "stateInputs": [
+        "실제 입력을 통해 월드 상태, 자원, 위험, 그리고 다음 선택에 따라 진행되는 반복 가능한 루프 적용",
+        "플레이어가 개미 종족 중 하나를 선택하여 월드 진입 후 목표 확인"
+      ],
+      "stateOutputs": [
+        "보상/위험의 실질적인 압박감 제공 및 숙련으로 이어지는 플레이 사례 포함",
+        "월드 상태와 자원 관리 기능 구현"
+      ],
+      "name": "WORLD_STATE_TRANSITION",
+      "purpose": "월드 상태 변환 및 자원 관리를 통한 전략적 의사소통",
+      "playerChoice": "월드 상태, 자원, 위험, 그리고 다음 선택에 따른 실제 입력 수행"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 240111,
-      "lastMs": 40537,
+      "totalMs": 351939,
+      "lastMs": 42355,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:48:56.746Z"
+      "updatedAt": "2026-10-08T17:50:48.579Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:44:56.607Z",
-  "updatedAt": "2026-10-08T17:48:56.746Z",
+  "updatedAt": "2026-10-08T17:50:48.579Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2110,7 +2154,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:48:56.746Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:50:48.579Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
