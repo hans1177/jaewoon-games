@@ -459,25 +459,37 @@
       "toSystem": "RESOURCE_TO_VILLAGE_PROGRESSION",
       "trigger": "VILLAGE_RESOURCES→NEW_VILLAGE_FUNCTION의 상태 변화가 실제 발생했으며, 이 과정에서 주민들의 생활 연결망이 확장되는 방식으로 이루어진다.",
       "stateChange": "VILLAGE_RESOURCES→NEW_VILLAGE_FUNCTION의 상태 변화가 실제 발생했으며, 이 과정에서 주민들의 생활 연결망이 확장되는 방식으로 이루어진다."
+    },
+    "local_authoring_parts::d454eb3217b05c063f6b7b6ea2b55e37f819fa57c4954919e8b253e279d94cfe:fromId": {
+      "fromId": "VILLAGE_RESOURCES→NEW_VILLAGE_FUNCTION"
+    },
+    "local_authoring_parts::d454eb3217b05c063f6b7b6ea2b55e37f819fa57c4954919e8b253e279d94cfe:toId": {
+      "toId": "NEW_VILLAGE_FUNCTION"
+    },
+    "local_authoring_parts::d454eb3217b05c063f6b7b6ea2b55e37f819fa57c4954919e8b253e279d94cfe:stateKeys": {
+      "stateKeys": [
+        "VILLAGE_RESOURCES",
+        "NEW_VILLAGE_FUNCTION"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 18,
+      "calls": 21,
+      "successes": 21,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1190105,
-      "lastMs": 59705,
+      "totalMs": 1359794,
+      "lastMs": 57275,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:05:56.105Z"
+      "updatedAt": "2026-10-08T18:08:45.947Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:46:05.904Z",
-  "updatedAt": "2026-10-08T18:05:56.107Z",
+  "updatedAt": "2026-10-08T18:08:45.947Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2949,7 +2961,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:05:56.107Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:08:45.947Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
