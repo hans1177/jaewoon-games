@@ -36,7 +36,7 @@ local verifiedLearningRoot = gui
 local verifiedLearningSemanticVariant = "SOCIAL_CONTEXT"
 local verifiedLearningSemanticDomain = "CORE_GAMEPLAY_FEEL"
 local verifiedLearningSemanticColor = Color3.fromRGB(238, 170, 255)
-local verifiedLearningSemanticMood = "WELCOMING_SPACE"
+local verifiedLearningSemanticMood = "PRESERVE_AUTHORED_PRESENTATION"
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningNativeBindingVersion", VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION)
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningPrincipleCount", #verifiedLearningPrinciples)
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningAxisCount", #verifiedLearningAxes)
@@ -55,9 +55,9 @@ if not verifiedLearningColorGrade then
   verifiedLearningColorGrade.Name = "VerifiedLearningColorGrade"
   verifiedLearningColorGrade.Parent = verifiedLearningLighting
 end
-verifiedLearningColorGrade.Saturation = 0.1
-verifiedLearningColorGrade.Contrast = 0.03
-verifiedLearningColorGrade.Brightness = 0.02
+verifiedLearningColorGrade.Saturation = 0
+verifiedLearningColorGrade.Contrast = 0
+verifiedLearningColorGrade.Brightness = 0
 verifiedLearningColorGrade:SetAttribute("VerifiedLearningSemanticMood", verifiedLearningSemanticMood)
 if verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
 -- Survival alone receives atmospheric depth and threat haze.
