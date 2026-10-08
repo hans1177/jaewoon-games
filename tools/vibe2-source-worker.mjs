@@ -3787,7 +3787,7 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
   // 기존 Vibe 소스 생성 프롬프트 안에서만 UI 추천을 실제 책임 함수에 전달한다.
   // 다른 파일, 장르 이름만 맞는 가상 기능, 검증되지 않은 상태는 구현 완료로 취급하지 않는다.
   const existingGenreMenus=order.assetProduction?.genreMenuRecommendations;
-  const menuImplementationRequested=/(?:메뉴|인벤토리|장비|상점|매매|캐릭터|퀘스트|도감|제작|건설|농사|파티|터치|화면|UI|HUD|MENU|INVENTORY|EQUIPMENT|TRADE|SHOP|QUEST|CHARACTER)/i.test(craftGoal);
+  const menuImplementationRequested=/(?:메뉴|인벤토리|장비|상점|매매|캐릭터|퀘스트|도감|제작|건설|농사|파티|터치|화면|상호작용|오브젝트|조사|열기|제단|상자|포탈|NPC|UI|HUD|MENU|INVENTORY|EQUIPMENT|TRADE|SHOP|QUEST|CHARACTER|INTERACT|INTERACTION|OBJECT|CHEST|PORTAL)/i.test(craftGoal);
   const sourceBoundGenreMenus=menuImplementationRequested?(existingGenreMenus?.candidateFeatures||[]).filter(row=>
     row.status!=='IDEA_ONLY_GAME_SYSTEM_NOT_CONFIRMED'
     &&[...(row.existingNativeUiRefs||[]),...(row.gameSystemSourceRefs||[])].some(ref=>
@@ -3803,11 +3803,30 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
     exactGameSourceRefs:[...(row.existingNativeUiRefs||[]),...(row.gameSystemSourceRefs||[])].filter(ref=>responsibleFiles.includes(ref.path)),
     status:row.status,sourceOnlyNotRuntimePass:true
   })):[];
-  const genreMenuImplementationBlock=sourceBoundGenreMenus.length?[
+  const sourceBoundObjectInteractions=menuImplementationRequested?(existingGenreMenus?.objectInteractions||[]).filter(row=>
+    [...(row.gameSourceRefs||[]),...(row.clientConsumerRefs||[])].some(ref=>
+      responsibleFiles.includes(ref.path)
+      &&context.files.some(file=>file.path===ref.path&&file.editable!==false
+        &&file.truncated!==true&&typeof file.content==='string'
+        &&crypto.createHash('sha256').update(file.content).digest('hex')===ref.sha256)
+    )
+  ).map(row=>({
+    kind:row.kind,factory:row.factory,purpose:row.purpose,
+    status:row.status,
+    sourceRefs:[...(row.gameSourceRefs||[]),...(row.clientConsumerRefs||[])].filter(ref=>
+      responsibleFiles.includes(ref.path)
+      &&context.files.some(file=>file.path===ref.path&&file.editable!==false
+        &&file.truncated!==true&&typeof file.content==='string'
+        &&crypto.createHash('sha256').update(file.content).digest('hex')===ref.sha256)
+    ),
+    nativeRuntimeVerified:false,serverGameplayAuthorityRetained:true
+  })):[];
+  const genreMenuImplementationBlock=sourceBoundGenreMenus.length||sourceBoundObjectInteractions.length?[
     '[EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN]',
     JSON.stringify({target:order.target,sourceRevision:order.sourceRevision||order.assetProduction?.sourceRevision||null,
-      detectedSignals:existingGenreMenus.signals,menuFeatures:sourceBoundGenreMenus,allowedPaths:responsibleFiles}),
-    'Implement only systems already present in current editable game source; modify their existing responsible functions directly, never create a new shadow UI framework, wrapper or synchronization queue. UI source suggestions are presentation examples, not proof of implementation. Check each exact original source hash before editing. Bind character, inventory, equipment, quest, crafting, shop and trade controls to existing authoritative state, ownership and price validation. Preserve save key/schema, gameplay balance, combat timing, rewards and multiplayer authority. Unknown system or cross-platform incompatible factory remains IDEA_ONLY. Re-test actual mobile touch, safe area, orientation, loading, save and server state after change; static PASS cannot claim runtime PASS.',
+      detectedSignals:existingGenreMenus.signals,menuFeatures:sourceBoundGenreMenus,
+      objectInteractions:sourceBoundObjectInteractions,allowedPaths:responsibleFiles}),
+    'Implement only systems already present in current editable game source; modify their existing responsible functions directly, never create a new shadow UI framework, wrapper or synchronization queue. UI source suggestions are presentation examples, not proof of implementation. Check each exact original source hash before editing. Preserve per-object InteractionKind, InteractionId and existing ProximityPrompt / ClickDetector gameplay ownership; observe replicated object/player state, never award loot or gold in GUI. Bind character, inventory, equipment, quest, crafting, shop and trade controls to existing authoritative state, ownership and price validation. Preserve save key/schema, gameplay balance, combat timing, rewards and multiplayer authority. Unknown system or cross-platform incompatible factory remains IDEA_ONLY. Re-test actual mobile touch, safe area, orientation, loading, save and server state after change; static PASS cannot claim runtime PASS.',
     '[EXISTING GENRE MENU SOURCE SYNCHRONIZATION END]'
   ].join('\n'):'';
   const precisionProduction=order.assetProduction?.precisionProduction;
