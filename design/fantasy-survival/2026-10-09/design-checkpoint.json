@@ -523,25 +523,34 @@
     },
     "local_authoring_parts::2c906adac0754021eddac2a4b1b75b2bec6032db3dad5fc247cd6ccf56902e2a:fromId": {
       "fromId": "RUN_RESULT"
+    },
+    "local_authoring_parts::2c906adac0754021eddac2a4b1b75b2bec6032db3dad5fc247cd6ccf56902e2a:toId": {
+      "toId": "WORLD_STATE_CHANGE"
+    },
+    "local_authoring_parts::2c906adac0754021eddac2a4b1b75b2bec6032db3dad5fc247cd6ccf56902e2a:stateKeys": {
+      "stateKeys": [
+        "RUN_RESULT",
+        "PLAYER_ACTION"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 26,
-      "successes": 26,
+      "calls": 28,
+      "successes": 28,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1618688,
-      "lastMs": 48431,
+      "totalMs": 1720501,
+      "lastMs": 52116,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:56:08.171Z"
+      "updatedAt": "2026-10-08T18:57:49.993Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:29:09.382Z",
-  "updatedAt": "2026-10-08T18:56:08.171Z",
+  "updatedAt": "2026-10-08T18:57:49.993Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2939,7 +2948,7 @@
       "progressionDirection": "FIGHT-UPGRADES-SURVIVE-PROGRESSION"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:56:08.171Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:57:49.993Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
