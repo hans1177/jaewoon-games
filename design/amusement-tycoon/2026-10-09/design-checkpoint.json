@@ -34,25 +34,38 @@
         "반복 가능한 학습 및 위험 조절",
         "즉각적 피드백과 결과 관리"
       ]
+    },
+    "local_authoring_parts::28b8a0962de0cf58b003d3ab18efa042b35fdac474b70ceab3d655de90909f29:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "START_INPUT"
+      ],
+      "stateOutputs": [
+        "END_STATE"
+      ],
+      "name": "START_IMMEDIATE_ACTION",
+      "purpose": "플레이어가 즉시 상태 변화를 만드는 중심 플레이",
+      "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 378375,
-      "lastMs": 43402,
+      "totalMs": 411172,
+      "lastMs": 32797,
       "lastError": null,
-      "updatedAt": "2026-10-08T22:13:24.699Z"
+      "updatedAt": "2026-10-08T22:13:57.498Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T22:07:06.296Z",
-  "updatedAt": "2026-10-08T22:13:24.699Z",
+  "updatedAt": "2026-10-08T22:13:57.498Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1976,7 +1989,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T22:13:24.699Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T22:13:57.498Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
