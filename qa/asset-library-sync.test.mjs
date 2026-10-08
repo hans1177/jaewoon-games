@@ -133,3 +133,51 @@ test('asset homepage all tab exposes every registry family while preserving reti
  assert.match(script,/사용 게임:/);
  assert.match(script,/internalAuditGrade/);
 });
+
+test('Roblox shared main menu and bottom navigation use touch scrolling with no replacement system',()=>{
+ const script=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const section=(start,end)=>script.slice(script.indexOf('function RobloxCommonUI.'+start+'(options)'),script.indexOf('function RobloxCommonUI.'+end+'(options)'));
+ const main=section('CreateMainMenu','CreateTopBar');
+ assert.match(main,/ScrollingFrame/);
+ assert.match(main,/AutomaticCanvasSize = Enum\.AutomaticSize\.Y/);
+ assert.match(main,/body:GetPropertyChangedSignal\("AbsoluteSize"\):Connect\(refreshLayout\)/);
+ assert.match(main,/body\.AbsoluteSize\.X < 580/);
+ assert.match(main,/hero\.Size = UDim2\.new\(1, 0, 0, bannerHeight\)/);
+ assert.match(main,/actions\.Size = UDim2\.new\(1, 0, 1, -bannerHeight - 8\)/);
+ assert.match(main,/return root, buttons/);
+ const nav=section('CreateOneHandBottomNav','CreateSetProgressTracker');
+ assert.match(nav,/root\.AnchorPoint = Vector2\.new\(0\.5, 1\)/);
+ assert.match(nav,/root\.Position = options\.position or UDim2\.new\(0\.5, 0, 1, -12\)/);
+ assert.match(nav,/scroller\.ScrollingDirection = Enum\.ScrollingDirection\.X/);
+ assert.match(nav,/scroller\.AutomaticCanvasSize = Enum\.AutomaticSize\.X/);
+ assert.match(nav,/button\.Activated:Connect\(function\(\)/);
+ assert.match(nav,/button:SetAttribute\("MinimumTouchHeight", 48\)/);
+ assert.match(nav,/if type\(options\.onSelect\)=="function" then options\.onSelect\(i, label\) end/);
+ assert.match(nav,/return root, \{inner=scroller, list=scroller, labels=buttons, buttons=buttons\}/);
+ assert.match(nav,/OwnsSystemAuthority", false/);
+ assert.match(nav,/OwnsRemoteAuthority", false/);
+ assert.doesNotMatch(nav,/RunService|RenderStepped|while true/);
+});
+
+test('Roblox inventory menu stacks controls on narrow screens and does not clip slots or filters',()=>{
+ const script=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const section=(start,end)=>script.slice(script.indexOf('function RobloxCommonUI.'+start+'(options)'),script.indexOf('function RobloxCommonUI.'+end+'(options)'));
+ const filter=section('CreateFilterBar','CreateSortControl');
+ assert.match(filter,/Instance\.new\("ScrollingFrame"\)/);
+ assert.match(filter,/Enum\.ScrollingDirection\.X/);
+ assert.match(filter,/Enum\.AutomaticSize\.X/);
+ assert.match(filter,/utf8\.len/);
+ assert.match(filter,/UDim2\.fromOffset\(width,48\)/);
+ const inventory=section('CreateInventoryFullScreen','CreateEquipmentFullScreen');
+ assert.match(inventory,/CreateInventoryGrid/);
+ assert.match(inventory,/scroll\.ScrollingDirection=Enum\.ScrollingDirection\.Y/);
+ assert.match(inventory,/scroll\.AutomaticCanvasSize=Enum\.AutomaticSize\.Y/);
+ assert.match(inventory,/body\.AbsoluteSize\.X<560/);
+ assert.match(inventory,/search\.Size=UDim2\.new\(1,0,0,48\)/);
+ assert.match(inventory,/sort\.Position=UDim2\.fromOffset\(0,56\)/);
+ assert.match(inventory,/scroll\.Position=UDim2\.fromOffset\(0,172\)/);
+ assert.match(inventory,/cellLayout\.CellSize=UDim2\.fromOffset\(cell,cell\)/);
+ assert.match(inventory,/cellLayout:GetPropertyChangedSignal\("AbsoluteContentSize"\)/);
+ assert.match(inventory,/root:SetAttribute\("OwnsInventoryAuthority",false\)/);
+ assert.doesNotMatch(inventory,/RemoteEvent|DataStoreService|RunService|RenderStepped/);
+});
