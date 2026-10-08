@@ -332,25 +332,133 @@
           "playerChoice": "FIGHT THROUGH HORDE IN SHORT REAL-TIME SURVIVAL RUN WHILE POSITIONING AROUND ENEMY PRESSURE"
         }
       ]
+    },
+    "local_authoring_parts::1196fb761db7de443ca139df572692500f609772c4bbfdbc56c5c6824c8153f7:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::4795aca65f880d661eb5e659989948c1b98d62a0c272e88113b068d9e82547be:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "INPUT: PLAYER CHOICE -> STATE CHANGE: FIGHT THROUGH HORDE -> REWARD: RUN REWARDS / UPGRADES / SKILLS -> NEXT CHOICE: BUILD STRONGER BUILD",
+        "INPUT: PLAYER CHOICE -> STATE CHANGE: POSITIONING AROUND ENEMY PRESSURE -> REWARD: RUN RESULT -> NEXT CHOICE: NEXT PROGRESSION CHOICE",
+        "INPUT: PLAYER CHOICE -> STATE CHANGE: COMBINE UPGRADES INTO STRONGER BUILD -> REWARD: RUN RESULT -> NEXT CHOICE: CONVERSION TO NEXT PROGRESSION CHOICE"
+      ],
+      "signatureSystems": [
+        {
+          "id": "realistic-builder-delve-1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "PLAYER CHOICE",
+            "ENEMY PRESSURE",
+            "RUN REWARDS/UPGRADES/WEAPONS/PERKS/SKILLS",
+            "BUILD STRONGER BUILD"
+          ],
+          "stateOutputs": [
+            "FIGHT THROUGH HORDE",
+            "POSITIONING AROUND ENEMY PRESSURE",
+            "RUN RESULT",
+            "CONVERSION TO NEXT PROGRESSION CHOICE"
+          ],
+          "name": "REALISTIC-BUILDER-DELVE-1",
+          "purpose": "ACTION_SURVIVAL_ROGUELITE",
+          "playerChoice": "FIGHT THROUGH HORDE IN SHORT REAL-TIME SURVIVAL RUN WHILE POSITIONING AROUND ENEMY PRESSURE"
+        },
+        {
+          "id": "realistic-builder-delve-1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "PLAYER CHOICE",
+            "ENEMY PRESSURE",
+            "RUN REWARDS/UPGRADES/WEAPONS/PERKS/SKILLS",
+            "BUILD STRONGER BUILD"
+          ],
+          "stateOutputs": [
+            "FIGHT THROUGH HORDE",
+            "POSITIONING AROUND ENEMY PRESSURE",
+            "RUN RESULT",
+            "CONVERSION TO NEXT PROGRESSION CHOICE"
+          ],
+          "name": "REALISTIC-BUILDER-DELVE-1",
+          "purpose": "ACTION_SURVIVAL_ROGUELITE",
+          "playerChoice": "FIGHT THROUGH HORDE IN SHORT REAL-TIME SURVIVAL RUN WHILE POSITIONING AROUND ENEMY PRESSURE"
+        },
+        {
+          "id": "realistic-builder-delve-2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "PLAYER CHOICE",
+            "ENEMY PRESSURE",
+            "RUN REWARDS/UPGRADES/WEAPONS/PERKS/SKILLS",
+            "BUILD STRONGER BUILD"
+          ],
+          "stateOutputs": [
+            "FIGHT THROUGH HORDE",
+            "POSITIONING AROUND ENEMY PRESSURE",
+            "RUN RESULT",
+            "CONVERSION TO NEXT PROGRESSION CHOICE"
+          ],
+          "name": "REALISTIC-BUILDER-DELVE-2",
+          "purpose": "ACTION_SURVIVAL_ROGUELITE",
+          "playerChoice": "FIGHT THROUGH HORDE IN SHORT REAL-TIME SURVIVAL RUN WHILE POSITIONING AROUND ENEMY PRESSURE"
+        },
+        {
+          "id": "realistic-builder-delve-3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "PLAYER CHOICE",
+            "ENEMY PRESSURE",
+            "RUN REWARDS/UPGRADES/WEAPONS/PERKS/SKILLS",
+            "BUILD STRONGER BUILD"
+          ],
+          "stateOutputs": [
+            "FIGHT THROUGH HORDE",
+            "POSITIONING AROUND ENEMY PRESSURE",
+            "RUN RESULT",
+            "CONVERSION TO NEXT PROGRESSION CHOICE"
+          ],
+          "name": "REALISTIC-BUILDER-DELVE-3",
+          "purpose": "ACTION_SURVIVAL_ROGUELITE",
+          "playerChoice": "FIGHT THROUGH HORDE IN SHORT REAL-TIME SURVIVAL RUN WHILE POSITIONING AROUND ENEMY PRESSURE"
+        },
+        {
+          "id": "realistic-builder-delve-4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "PLAYER CHOICE",
+            "ENEMY PRESSURE",
+            "RUN REWARDS/UPGRADES/WEAPONS/PERKS/SKILLS",
+            "BUILD STRONGER BUILD"
+          ],
+          "stateOutputs": [
+            "FIGHT THROUGH HORDE",
+            "POSITIONING AROUND ENEMY PRESSURE",
+            "RUN RESULT",
+            "CONVERSION TO NEXT PROGRESSION CHOICE"
+          ],
+          "name": "REALISTIC-BUILDER-DELVE-4",
+          "purpose": "ACTION_SURVIVAL_ROGUELITE",
+          "playerChoice": "FIGHT THROUGH HORDE IN SHORT REAL-TIME SURVIVAL RUN WHILE POSITIONING AROUND ENEMY PRESSURE"
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 914174,
-      "lastMs": 74847,
+      "totalMs": 973237,
+      "lastMs": 59063,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:30:03.841Z"
+      "updatedAt": "2026-10-08T08:31:02.908Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:14:49.595Z",
-  "updatedAt": "2026-10-08T08:30:03.843Z",
+  "updatedAt": "2026-10-08T08:31:02.916Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2698,12 +2806,135 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:30:03.843Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems[0].purpose",
+          "value": "ACTION_SURVIVAL_ROGUELITE"
+        },
+        "requiredAction": "signatureSystems[0].purpose의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems[1].purpose",
+          "value": "ACTION_SURVIVAL_ROGUELITE"
+        },
+        "requiredAction": "signatureSystems[1].purpose의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems[2].purpose",
+          "value": "ACTION_SURVIVAL_ROGUELITE"
+        },
+        "requiredAction": "signatureSystems[2].purpose의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems[3].purpose",
+          "value": "ACTION_SURVIVAL_ROGUELITE"
+        },
+        "requiredAction": "signatureSystems[3].purpose의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems[4].purpose",
+          "value": "ACTION_SURVIVAL_ROGUELITE"
+        },
+        "requiredAction": "signatureSystems[4].purpose의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "현실 건축가의 핵심 재미와 시스템 연결을 확정한 단일 Game Designer AI의 정체성입니다. 게임은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임입니다. 플레이어는 현실 건축가의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정합니다. 게임은 반복 가능한 핵심 루프, 즉시 이해되는 입력과 피드백, 그리고 현실 건축가의 핵심 재미를 실제 플레이 선택으로 재정의합니다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, MAIN/A/B/c/@와 규칙·상태·진행·멀티 의미는 이 원본에서만 작성됩니다. 플랫폼별 구현 제약은 같은 원본의 platformProfiles에 따릅니다. 게임은 단일 게임 원본이며, 기존 게임 원본과 오너 의도를 최우선으로 보존합니다. 게임은 기존 게임 원본과 오너 의도를 최우선으로 보존하고, 요청된 설계 필드만 구체적으로 작성합니다. 게임은 기존 게임 원본과 오너 의도를 최우선으로 보존하고, 요청된 설계 필드만 구체적으로 작성합니다. 게임은 기존 게임 원본과 오너 의도를 최우선으로 보존하고, 요청된 설계 필드만 구체적으로 작성합니다. 게임은 기존 게임 원본과 오너 의도를 최우선으로 보존하고, 요청된 설계 필드만 구체적으로 작성합니다. 게임은 기존 게임 원본과 오너 의도를 최우선으로 보존하고, 요청된 설계 필드만 구체적으로 작성합니다. 게임은 기존 게임 원본과 오너 의도를 최우선으로 보존하고, 요청된 설계 필드만 구체적으로 작성합니다. 게임은 기존 게임 원본과 오너 의도를 최우선으로 보존하고, 요청된 설계 필드만 구체적으로 작성합니다. 게임은 기존 게임 원본과 오너 의도를 최우선으로 보존하고, 요청된 설계 필드만 구체적으로 작성합니다.게",
+      "playerFantasy": "플레이어는 현실 건축가에서 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 이 선택은 현실 건축가의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다. 플레이어는 현실 건축가의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다. 게임은 반복 가능한 핵심 루프, 즉시 이해되는 입력과 피드백, 그리고 현실 건축가의 핵심 재미를 실제 플레이 선택으로 재정의한다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, MAIN/A/B/c/@와 규칙·상태·진행·멀티 의미는 이 원본에서만 작성된다. 플랫폼별 구현 제약은 같은 원본의 platformProfiles에 따릅니다. 게임은 단일 게임 원본이며, 기존 게임 원본과 오너 의도를 최우선으로 보존합니다. 게임은 기존 게임 원본과 오너 의도를 최우선으로 보존하고, 요청된 설계 필드만 구체적으로 작성합니다. 게임은 기존 게임 원본과 오너 의도를 최우선으로 보존하고, 요청된 설계 필드만 구체적으로 작성합니다. 게임은 기존 게임 원본과 오너 의도를 최우선으로 보존하고, 요청된 설계 필드만 구체적으로 작성합니다. 게임은 기존 게임 원본과 오너 의도를 최우선으로 보존하고, 요청된 설계 필드만 구체적으로 작성합니다. 게임은 기존 게임 원본과 오너 의도를 최우선으로 보존하고, 요청된 설계 필드만 구체적으로 작성합니다. 게임은 기존 게임 원본과 오너 의도를 최우선으로",
+      "coreFun": "플레이어는 현실 건축가에서 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 이 선택은 현실 건축가의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다. 게임은 반복 가능한 핵심 루프, 즉시 이해되는 입력과 피드백, 그리고 현실 건축가의 핵심 재미를 실제 플레이 선택으로 재정의한다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, MAIN/A/B/c/@와 규칙·상태·진행·멀티 의미는 이 원본에서만 작성된다. 플랫폼별 구현 제약은 같은 원본의 platformProfiles에 따릅니다. 게임은 단일 게임 원본이며, 기존 게임 원본과 오너 의도를 최우선으로 보존합니다. 게임은 기존 게임 원본과 오너 의도를 최우선으로 보존하고, 요청된 설계 필드만 구체적으로 작성합니다. 게임은 기존 게임 원본과 오너 의도를 최우선으로 보존하고, 요청된 설계 필드만 구체적으로 작성합니다. 게임은 기존 게임 원본과 오너 의도를 최우선으로 보존하고, 요청된 설계 필드만 구체적으로 작성합니다. 게임은 기존 게임 원본과 오너 의도를 최우선으로 보존하고, 요청된 설계 필드만 구체적으로 작성합니다. 게임은 기존 게임 원본과 오너 의도를 최우선으로 보존하고, 요청된 설계 필드만 구체적으로 작성합니다. 게임은 기존 게임 원본과 오너 의도를 최우선으로 보존하고, 요청된 설계 필드만 구체적으로 작성합니다. 게임은 기존 게임 원본과 오너 의도를 최우선으로 보존하고, 요청된 설계",
+      "coreLoop": [
+        "INPUT: PLAYER CHOICE -> STATE CHANGE: FIGHT THROUGH HORDE -> REWARD: RUN REWARDS / UPGRADES / SKILLS -> NEXT CHOICE: BUILD STRONGER BUILD",
+        "INPUT: PLAYER CHOICE -> STATE CHANGE: POSITIONING AROUND ENEMY PRESSURE -> REWARD: RUN RESULT -> NEXT CHOICE: NEXT PROGRESSION CHOICE",
+        "INPUT: PLAYER CHOICE -> STATE CHANGE: COMBINE UPGRADES INTO STRONGER BUILD -> REWARD: RUN RESULT -> NEXT CHOICE: CONVERSION TO NEXT PROGRESSION CHOICE"
+      ],
+      "multiplayerMode": "COOP"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T08:31:02.911Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_RULE_STATE_MISSING",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
