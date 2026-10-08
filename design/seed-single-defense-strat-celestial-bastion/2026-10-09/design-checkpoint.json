@@ -320,25 +320,39 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::c42e31b266579b6af7b286050911194c23d2e5cb8aa2b8a01181cf7969096c51:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_01",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "WORLD_STATE_CHANGE"
+      ],
+      "stateOutputs": [
+        "RESOURCE_GAIN",
+        "DEFENSE_STRATEGY_UPDATE"
+      ],
+      "name": "STRATEGIC_DETERMINATION_SYSTEM",
+      "purpose": "Player makes strategic decisions that directly impact the world state.",
+      "playerChoice": "TOWER_PLACEMENT_STRATEGY_IMPLEMENTATION"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 822555,
-      "lastMs": 228590,
+      "totalMs": 926632,
+      "lastMs": 104077,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:06:21.957Z"
+      "updatedAt": "2026-10-08T19:08:06.045Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:52:39.359Z",
-  "updatedAt": "2026-10-08T19:06:21.966Z",
+  "updatedAt": "2026-10-08T19:08:06.045Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2593,10 +2607,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T19:06:21.960Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_MAIN_A_B_c_DELVE_REQUIRED,DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:08:06.045Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
