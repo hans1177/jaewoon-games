@@ -648,25 +648,28 @@
         "resourceFlow": "{\"from\": \"MATCH_GAME\", \"to\": \"BOARD_STATE\", \"purpose\": \"게임의 중심 행동인 START 이후 선택 결과가 다음 상태로 연결되는 두 번째 대축\",\"playerChoice\": \"Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective with a clear goal and limited moves, obstacles, or another visible puzzle constraint.\"}",
         "balanceRules": "{\"from\": \"MATCH_GAME\", \"to\": \"BOARD_STATE\", \"purpose\": \"게임의 중심 행동인 START 이후 선택 결과가 다음 상태로 연결되는 두 번째 대축\",\"playerChoice\": \"Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective with a clear goal and limited moves, obstacles, or another visible puzzle constraint.\"}"
       }
+    },
+    "local_authoring_parts::6e6a7d6416679ba617cba31accc629e036aa9885533d72e721195b1c384dc2bd:milestone": {
+      "milestone": "게임 시작 후 목표 설정 및 초기 상태 전환"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 49,
-      "successes": 49,
+      "calls": 50,
+      "successes": 50,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3315013,
-      "lastMs": 56778,
+      "totalMs": 3359480,
+      "lastMs": 44467,
       "lastError": null,
-      "updatedAt": "2026-10-08T23:58:46.184Z"
+      "updatedAt": "2026-10-08T23:59:30.658Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:31:40.536Z",
-  "updatedAt": "2026-10-08T23:58:46.188Z",
+  "updatedAt": "2026-10-08T23:59:30.658Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3106,7 +3109,7 @@
       "progressionDirection": "{\"from\": \"START_GAME\", \"to\": \"MATCH_GAME\"}"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T23:58:46.188Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T23:59:30.658Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
