@@ -512,25 +512,43 @@
       "name": "Last Lantern Core Loop Signature System",
       "purpose": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. - Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. - Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.",
       "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. - Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. - Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination. - Choose from multiple viable solutions and adapt to new board patterns or obstacle组合s"
+    },
+    "local_authoring_parts::2372cc4814fa587748788d61c12130b5756e4d0feccee0a720e7b60e54850468:signatureSystems:1": {
+      "id": "Last Lantern - Core Loop Signature System",
+      "grammarRole": "A",
+      "stateInputs": [
+        "START_GOAL",
+        "LIMITED_MOVES",
+        "OBSTACLES",
+        "VISIBLE_PUZZLE_CONSTRAINT"
+      ],
+      "stateOutputs": [
+        "MATCHES_CREATED",
+        "COMBOS_FORMED",
+        "BOARD_FEEDBACK_RECEIVED"
+      ],
+      "name": "Last Lantern Core Loop Signature System",
+      "purpose": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. - Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. - Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.",
+      "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. - Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. - Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination. - Choose from multiple viable solutions and adapt to new board patterns or obstacle组合s"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 16,
+      "calls": 17,
+      "successes": 17,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1606938,
-      "lastMs": 110949,
+      "totalMs": 1718398,
+      "lastMs": 111460,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:08:16.959Z"
+      "updatedAt": "2026-10-08T10:10:08.421Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:36:57.405Z",
-  "updatedAt": "2026-10-08T10:08:16.959Z",
+  "updatedAt": "2026-10-08T10:10:08.421Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2603,7 +2621,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:08:16.959Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:10:08.421Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
