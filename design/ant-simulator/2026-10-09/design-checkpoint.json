@@ -79,25 +79,40 @@
       "name": "OPEN_WORLD_ADAPTATION_SYSTEM_B",
       "purpose": "개미 시뮬레이터의 현재 상태와 목표를 읽고, 실제 입력 및 상호작용 결과로 월드 상태와 대상 목표가 변하게 되어 다음 선택에 영향을 미친다.",
       "playerChoice": "실제 입력과 상호작용 결과로 월드 상태와 대상 목표가 변하게 되었으며, 변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택이 결정된다."
+    },
+    "local_authoring_parts::b3eedb7cdf6d5a0d84366d8b7d4343c5945a7222609772ad2ee6f65e361bb77f:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "c",
+      "stateInputs": [
+        "worldState",
+        "targetGoal"
+      ],
+      "stateOutputs": [
+        "newWorldState",
+        "nextTargetGoal"
+      ],
+      "name": "OPEN_WORLD_ADAPTATION_SYSTEM_C",
+      "purpose": "개미 시뮬레이터의 상태 변주 및 재방문 기능을 수행하여 게임 루프의 깊이와 다양성을 증대함",
+      "playerChoice": "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하게 되어, 변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택으로 이어간다"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 198133,
-      "lastMs": 18582,
+      "totalMs": 216787,
+      "lastMs": 18654,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:51:19.595Z"
+      "updatedAt": "2026-10-08T21:51:38.250Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:48:01.443Z",
-  "updatedAt": "2026-10-08T21:51:19.595Z",
+  "updatedAt": "2026-10-08T21:51:38.250Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2155,7 +2170,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:51:19.595Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:51:38.250Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
