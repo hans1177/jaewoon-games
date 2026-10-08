@@ -8,25 +8,30 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 13,
-  "lastSuccessfulModelCallAt": "2026-10-08T21:02:46.620Z",
+  "cachedTaskCount": 16,
+  "lastSuccessfulModelCallAt": "2026-10-08T21:04:12.913Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
-  "designerSeed": null,
+  "designerSeed": {
+    "file": "design/egg-heist/2026-10-09/design-seed.json",
+    "contentDigest": "bbd97b7c6f8dd4cf4208fa1613e88ffecb02b21afe767127229551556a0d6646",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 930308,
-      "lastMs": 98630,
+      "totalMs": 1016597,
+      "lastMs": 86289,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:02:46.617Z"
+      "updatedAt": "2026-10-08T21:04:12.910Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T21:02:46.620Z"
+  "updatedAt": "2026-10-08T21:04:12.921Z"
 }
