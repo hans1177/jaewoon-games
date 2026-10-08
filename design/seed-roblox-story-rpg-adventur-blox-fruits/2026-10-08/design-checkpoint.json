@@ -679,25 +679,66 @@
         "resourceFlow": "BOARD_STATE_TRANSITION",
         "balanceRules": "BOARD_STATE_TRANSITION"
       }
+    },
+    "local_authoring_parts::c8bdb13b2b8c88ae99803307df79f039626c0bb34cebc6f1523f0e6f0c2c63f8:contentExpansionPlan,failureRetryRisk": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "Board State Transition System",
+          "newGameplay": "Player-selected board patterns or obstacle combinations that determine the next level's state and objective.",
+          "systemImpact": "Establishes the core mechanism by which player choices drive the evolution of the game world."
+        },
+        {
+          "milestone": "Board Pattern Evolution",
+          "newGameplay": "Player-selected board patterns or obstacle combinations that determine the next level's state and objective.",
+          "systemImpact": "Establishes the core mechanism by which player choices drive the evolution of the game world."
+        },
+        {
+          "milestone": "Level Evolution",
+          "newGameplay": "Player-selected board patterns or obstacle combinations that determine the next level's state and objective.",
+          "systemImpact": "Establishes the core mechanism by which player choices drive the evolution of the game world."
+        },
+        {
+          "milestone": "Delve Evolution",
+          "newGameplay": "Player-selected board patterns or obstacle combinations that determine the next level's state and objective.",
+          "systemImpact": "Establishes the core mechanism by which player choices drive the evolution of the game world."
+        },
+        {
+          "milestone": "Delve Result Evolution",
+          "newGameplay": "Player-selected board patterns or obstacle combinations that determine the next level's state and objective.",
+          "systemImpact": "Establishes the core mechanism by which player choices drive the evolution of the game world."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "Player-selected board patterns or obstacle combinations that determine the next level's state and objective.",
+          "Player-selected board patterns or obstacle combinations that determine the next level's state and objective."
+        ],
+        "retryFlow": "Player-selected board patterns or obstacle combinations that determine the next level's state and objective.",
+        "riskPressure": "Player-selected board patterns or obstacle combinations that determine the next level's state and objective.",
+        "recoveryRules": "Player-selected board patterns or obstacle combinations that determine the next level's state and objective."
+      }
+    },
+    "local_authoring_parts::508729823c67ce10556d217d46c258b8bc3796649d12480f98f61496bceffcf9:fromId": {
+      "fromId": "Board State Transition System"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 22,
-      "successes": 21,
+      "calls": 24,
+      "successes": 23,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1552252,
-      "lastMs": 144947,
+      "totalMs": 1768290,
+      "lastMs": 61460,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T10:21:21.405Z"
+      "updatedAt": "2026-10-08T10:24:57.457Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:01:25.970Z",
-  "updatedAt": "2026-10-08T10:21:21.405Z",
+  "updatedAt": "2026-10-08T10:24:57.457Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2731,14 +2772,219 @@
     }
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "ce2b518e208a2fc5c7e6c9ac60afa061a2aa07b42435884d6b42928c6a53642d"
   },
-  "sliceRepairFeedback": {},
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "progressionEconomyBalance.progressionLoop",
+          "value": "BOARD_STATE_TRANSITION"
+        },
+        "requiredAction": "progressionEconomyBalance.progressionLoop의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "progressionEconomyBalance"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "progressionEconomyBalance.resourceFlow",
+          "value": "BOARD_STATE_TRANSITION"
+        },
+        "requiredAction": "progressionEconomyBalance.resourceFlow의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "progressionEconomyBalance"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "progressionEconomyBalance.balanceRules",
+          "value": "BOARD_STATE_TRANSITION"
+        },
+        "requiredAction": "progressionEconomyBalance.balanceRules의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "progressionEconomyBalance"
+        ]
+      },
+      {
+        "code": "DESIGN_REPEATED_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "CONTENT_EXPANSION_PLAN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "name": "failureRetryRisk"
+        },
+        "requiredAction": "서로 다른 항목을 같은 설명으로 채우지 않는다. 동선·전조·대응·위험·보상·복구가 각각 어떤 규칙인지 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "failureRetryRisk"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "MAIN→A의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: MAIN→A의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "A→B의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: A→B의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "B→C의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: B→C의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "C→DELVE의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: C→DELVE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "DELVE→MAIN의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: DELVE→MAIN의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 2
+    "designer_draft_slices::identity-core": 2,
+    "designer_draft_slices::systems-progression": 1
   },
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T10:21:21.405Z",
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "SEQUENTIAL",
+      "contentExpansionPlan": [
+        {
+          "milestone": "Board State Transition System",
+          "newGameplay": "Player-selected board patterns or obstacle combinations that determine the next level's state and objective.",
+          "systemImpact": "Establishes the core mechanism by which player choices drive the evolution of the game world."
+        },
+        {
+          "milestone": "Board Pattern Evolution",
+          "newGameplay": "Player-selected board patterns or obstacle combinations that determine the next level's state and objective.",
+          "systemImpact": "Establishes the core mechanism by which player choices drive the evolution of the game world."
+        },
+        {
+          "milestone": "Level Evolution",
+          "newGameplay": "Player-selected board patterns or obstacle combinations that determine the next level's state and objective.",
+          "systemImpact": "Establishes the core mechanism by which player choices drive the evolution of the game world."
+        },
+        {
+          "milestone": "Delve Evolution",
+          "newGameplay": "Player-selected board patterns or obstacle combinations that determine the next level's state and objective.",
+          "systemImpact": "Establishes the core mechanism by which player choices drive the evolution of the game world."
+        },
+        {
+          "milestone": "Delve Result Evolution",
+          "newGameplay": "Player-selected board patterns or obstacle combinations that determine the next level's state and objective.",
+          "systemImpact": "Establishes the core mechanism by which player choices drive the evolution of the game world."
+        }
+      ]
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T10:24:57.457Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
