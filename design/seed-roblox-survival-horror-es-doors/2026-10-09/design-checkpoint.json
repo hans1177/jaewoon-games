@@ -47,25 +47,51 @@
       "name": "Board State Transition System",
       "purpose": "Main system that governs the evolution of the game through player choices, risk/reward dynamics, and emergent gameplay patterns.",
       "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. (INPUT: LEVEL_GOAL_STATE) → Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. (SELECT: NEXT_BOARD_PATTERN_STATE)"
+    },
+    "local_authoring_parts::65bcd5eebd670f99928fbac34d7a72f8257e988904325f1aae3c89e2e22357fa:signatureSystems:1": {
+      "id": "SIGNATURE_SYSTEM_02",
+      "grammarRole": "A",
+      "stateInputs": [
+        "BOARD_STATE"
+      ],
+      "stateOutputs": [
+        "NEXT_BOARD_PATTERN_STATE"
+      ],
+      "name": "Board State Transition System",
+      "purpose": "Main system that governs the evolution of board states through player choices, risk/reward dynamics, and emergent gameplay patterns.",
+      "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+    },
+    "local_authoring_parts::65bcd5eebd670f99928fbac34d7a72f8257e988904325f1aae3c89e2e22357fa:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_03",
+      "grammarRole": "B",
+      "stateInputs": [
+        "BOARD_STATE"
+      ],
+      "stateOutputs": [
+        "NEXT_BOARD_PATTERN_STATE"
+      ],
+      "name": "Board State Transition System (Secondary Axis)",
+      "purpose": "Establishes a secondary axis of board state transition, allowing for alternative pathways and risk/reward dynamics in gameplay.",
+      "playerChoice": "Make strategic decisions that alter the current board state to achieve specific goals or unlock new game mechanics while maintaining core gameplay principles."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 148179,
-      "lastMs": 16809,
+      "totalMs": 176077,
+      "lastMs": 13368,
       "lastError": null,
-      "updatedAt": "2026-10-08T20:52:07.874Z"
+      "updatedAt": "2026-10-08T20:52:35.774Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:49:39.552Z",
-  "updatedAt": "2026-10-08T20:52:07.874Z",
+  "updatedAt": "2026-10-08T20:52:35.774Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2102,7 +2128,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T20:52:07.874Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T20:52:35.774Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
