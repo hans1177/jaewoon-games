@@ -49,25 +49,40 @@
       "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
       "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
       "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+    },
+    "local_authoring_parts::a653676fd1a3a9bf0c207e095e922f3e39818525cd8f1a64273f2fde858f87bf:signatureSystems:1": {
+      "id": "A",
+      "grammarRole": "A",
+      "stateInputs": [
+        "INPUT: 플레이어의 'Fight through an escalating horde in a short real-time survivalrun"
+      ],
+      "stateOutputs": [
+        "OUTPUT: 즉각적인 상태 변화 (예: 생명력 감소, 보상 획득, 전략 변경)",
+        "OUTPUT: 새로운 상태 변화 (예: 보조 자원 획득, 전략 강화)",
+        "OUTPUT: 상태 변화의 재정의 (예: 전략 조합, 보상 변화)"
+      ],
+      "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+      "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 381349,
-      "lastMs": 45802,
+      "totalMs": 424667,
+      "lastMs": 43318,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:49:28.065Z"
+      "updatedAt": "2026-10-08T08:50:11.384Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:43:06.687Z",
-  "updatedAt": "2026-10-08T08:49:28.065Z",
+  "updatedAt": "2026-10-08T08:50:11.384Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2266,7 +2281,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:49:28.065Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:50:11.384Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
