@@ -243,7 +243,8 @@ test('Vibe common character equipment inventory and trading screens sync exact o
  assert.match(character,/state\.stats/);
  assert.match(character,/state\.revision/);
  assert.match(equipment,/row\.equipped==true/);
- assert.match(equipment,/if row and row\.id and type\(options\.onEquip\)=="function"then options\.onEquip\(row\.id,row\)end/);
+ assert.match(equipment,/if row and row\.id and row\.locked~=true and type\(options\.onEquip\)=="function"then/);
+ assert.match(equipment,/options\.onEquip\(row\.id,row\)/);
  assert.match(inventory,/slot:SetAttribute\("BoundItemId",tostring\(row\.id or ""\)\)/);
  assert.match(inventory,/if current and type\(options\.onSelect\)=="function"then options\.onSelect\(current\.id,current\)end/);
  assert.match(inventory,/for i=#rows\+1,#slots do slots\[i\]\.Visible=false end/);
