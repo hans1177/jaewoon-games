@@ -265,6 +265,55 @@ test('preservation design rejects action descriptions in input and output state 
   }
 });
 
+// 메인: MAIN/A/B/c/@ 실제 역할을 원본 디자이너가 각각 작성·복구하는지 검증한다.
+test('cloned MAIN A B c DELVE rules repair only invalid role and retain valid checkpoint entries',async()=>{
+  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
+  const taskSource=design.slice(design.indexOf('async function runCheckpointTask('),design.indexOf('function isParallelPressure('));
+  const roles=['MAIN','A','B','c','DELVE'];
+  const item={type:'object',required:['id','grammarRole','name','purpose','playerChoice','stateInputs','stateOutputs'],properties:{
+    id:{type:'string'},grammarRole:{type:'string',enum:roles},name:{type:'string'},
+    purpose:{type:'string'},playerChoice:{type:'string'},
+    stateInputs:{type:'array',minItems:1,items:{type:'string'}},
+    stateOutputs:{type:'array',minItems:1,items:{type:'string'}}
+  },additionalProperties:false};
+  const schema={type:'object',required:['signatureSystems'],properties:{signatureSystems:{type:'array',minItems:5,items:item}},additionalProperties:false};
+  const checkpoint={tasks:{}},calls=[],logs=[];
+  const author=runInNewContext(taskSource+'\n'+source+'\ncallLocalDesignerModel',{
+    createHash,designAssetLibraryContext:{status:'UNAVAILABLE'},localDesignerFallbackReady:true,
+    localDesignerCallTimeoutMs:300000,localDesignerModel:'local',designerRoute:{id:'ollama:local'},
+    designCheckpoint:checkpoint,modelCallStats:[],console:{log:line=>logs.push(line)},
+    clean:v=>String(v??'').trim(),parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,
+    assertSchemaValue:assertDesignSchema,recordModelHealth(){},persistDesignCheckpoint(){},
+    requestLocalDesignerRaw:async(prompt,{schema:contract})=>{
+      const role=contract.properties.grammarRole.enum[0];
+      calls.push({role,prompt});
+      const attempt=calls.filter(row=>row.role===role).length;
+      const cloned=role==='A'&&attempt===1;
+      const id=cloned?'RULE_MAIN':'RULE_'+role;
+      return JSON.stringify({
+        id,grammarRole:role,name:cloned?'주요 자원 규칙':'원본 '+role+' 규칙',
+        purpose:cloned?'원본 주요 자원 전환을 설계한다':'원본 '+role+' 규칙에서 고유한 상태 판단을 수행한다',
+        playerChoice:cloned?'플레이어가 주요 자원 배분을 선택한다':'플레이어가 '+role+'의 대응 순서를 선택한다',
+        stateInputs:role==='c'&&attempt===1?['INPUT: 채집 → STATE: 나무 증가']:['WoodCount'],
+        stateOutputs:['WoodCount']
+      });
+    }
+  });
+  const result=await author('designer','원본 게임의 자원·저장·멀티 규칙 보존',schema,{predict:1600,includeAssetContext:false});
+  const rows=JSON.parse(JSON.stringify(result.signatureSystems));
+  assert.deepEqual(rows.map(row=>row.grammarRole),roles);
+  assert.equal(new Set(rows.map(row=>row.id)).size,5,'rules must not share the same game identity as their ID');
+  assert.deepEqual(calls.map(row=>row.role),['MAIN','A','A','B','c','c','DELVE']);
+  assert.equal(Object.keys(checkpoint.tasks).length,5,'successful siblings are persisted for resume');
+  assert.ok(calls[2].prompt.includes('DESIGN_GRAMMAR_RULE_ID_REUSED'));
+  assert.ok(calls[5].prompt.includes('DESIGN_STATE_KEY_IS_INSTRUCTION'));
+  assert.ok(calls.every(row=>!row.prompt.includes('INPUT: 직접 채집 → STATE: 나무·식량 수집 상태')),'do not feed a cloned prose state trace as a rule key');
+  assert.ok(logs.some(line=>line.includes('DESIGN_GRAMMAR_ROLE_REPAIR=A|')));
+  const before=calls.length;
+  await author('designer','원본 게임의 자원·저장·멀티 규칙 보존',schema,{predict:1600,includeAssetContext:false});
+  assert.equal(calls.length,before,'previously validated MAIN/A/B/c/@ rule checkpoints are reused');
+});
+
 test('truncated local output splits required fields and resumes only the unfinished part',async()=>{
   const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
   const taskSource=design.slice(design.indexOf('async function runCheckpointTask('),design.indexOf('function isParallelPressure('));
