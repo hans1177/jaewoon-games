@@ -3784,6 +3784,30 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
     'Use target-compatible assets that already have a real path, native variant, or existing same-game binding before starting new authoring. When quality is comparable, prefer the candidate with the lowest integration cost, especially an already-bound same-game asset. Apply it into the existing responsible game system first. Judge quality by explicit axes such as silhouette, proportion, anatomy/structure, face-hands-feet, material response, rig, sockets, motion, secondary motion, LOD and UI states. Keep strong axes and rebuild only failed axes. Other compatible candidates may donate parts, rig structure, material language, sockets, motion, or native variants; recombine them only when compatibility and provenance are preserved. Build detail from GAME_CAMERA to MID_RANGE to CLOSEUP to CONTACT. Random clutter, texture noise, excessive decals, or extra polygons without construction/function/contact cause do not count as detail. Preserve the original asset and gameplay semantics. A verified or production-safe asset is not automatically high visual quality. Spend detail effort first on assets with high screen-space occupancy, player dwell time, interaction frequency, hero/boss/signature role, camera proximity, repeated visibility, or gameplay readability needs. Distant or rare assets may use simpler LOD/material detail. Polygon count, texture size, or verification status alone must not decide visual quality. Full new authoring is last, only when core identity or structural quality remains blocked after targeted derivation and candidate reuse.',
     '[APPLY USABLE ASSETS FIRST END]'
   ].join('\n'):'';
+  // 기존 Vibe 소스 생성 프롬프트 안에서만 UI 추천을 실제 책임 함수에 전달한다.
+  // 다른 파일, 장르 이름만 맞는 가상 기능, 검증되지 않은 상태는 구현 완료로 취급하지 않는다.
+  const existingGenreMenus=order.assetProduction?.genreMenuRecommendations;
+  const menuImplementationRequested=/(?:메뉴|인벤토리|장비|상점|매매|캐릭터|퀘스트|도감|제작|건설|농사|파티|터치|화면|UI|HUD|MENU|INVENTORY|EQUIPMENT|TRADE|SHOP|QUEST|CHARACTER)/i.test(craftGoal);
+  const sourceBoundGenreMenus=menuImplementationRequested?(existingGenreMenus?.candidateFeatures||[]).filter(row=>
+    row.status!=='IDEA_ONLY_GAME_SYSTEM_NOT_CONFIRMED'
+    &&[...(row.existingNativeUiRefs||[]),...(row.gameSystemSourceRefs||[])].some(ref=>
+      responsibleFiles.includes(ref.path)
+      &&context.files.some(file=>file.path===ref.path&&file.editable!==false)
+    )
+  ).map(row=>({
+    role:row.role,factory:row.factory,
+    companyUiSource:row.companyUiSource,companyUiSourceSha256:row.companyUiSourceSha256,
+    sourceIdeaIds:row.sourceIdeaIds,
+    exactGameSourceRefs:[...(row.existingNativeUiRefs||[]),...(row.gameSystemSourceRefs||[])].filter(ref=>responsibleFiles.includes(ref.path)),
+    status:row.status,sourceOnlyNotRuntimePass:true
+  })):[];
+  const genreMenuImplementationBlock=sourceBoundGenreMenus.length?[
+    '[EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN]',
+    JSON.stringify({target:order.target,sourceRevision:order.sourceRevision||order.assetProduction?.sourceRevision||null,
+      detectedSignals:existingGenreMenus.signals,menuFeatures:sourceBoundGenreMenus,allowedPaths:responsibleFiles}),
+    'Implement only systems already present in current editable game source; modify their existing responsible functions directly, never create a new shadow UI framework, wrapper or synchronization queue. UI source suggestions are presentation examples, not proof of implementation. Check each exact original source hash before editing. Bind character, inventory, equipment, quest, crafting, shop and trade controls to existing authoritative state, ownership and price validation. Preserve save key/schema, gameplay balance, combat timing, rewards and multiplayer authority. Unknown system or cross-platform incompatible factory remains IDEA_ONLY. Re-test actual mobile touch, safe area, orientation, loading, save and server state after change; static PASS cannot claim runtime PASS.',
+    '[EXISTING GENRE MENU SOURCE SYNCHRONIZATION END]'
+  ].join('\n'):'';
   const precisionProduction=order.assetProduction?.precisionProduction;
   const assetImplementationBlock=order.assetProduction?[
     '[ASSET IMPLEMENTATION CONTRACT BEGIN]',
@@ -3857,6 +3881,7 @@ singleMotionBlock,
 assetTeachingBlock,
 applyFirstBlock,
 assetImplementationBlock,
+genreMenuImplementationBlock,
 precisionProductionBlock,
 order.imageAssetObservation?.required?'[IMAGE ASSET OBSERVATION BEGIN]\n'+JSON.stringify(order.imageAssetObservation)+'\nVisible observations are proposals from actual pixels. Hidden geometry and motion are creative proposals. Implement editable native assets, then compare close-up/full-turnaround/game-camera/action frames to the source; no placeholder or declaration-only completion.\n[IMAGE ASSET OBSERVATION END]':'',
 studioQualityWorkerGuidance(order),
