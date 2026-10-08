@@ -803,25 +803,40 @@
     },
     "local_authoring_parts::3cd1b81094291642b6d1fbba8c70e2002d287a8949d6958d3abcfaff241959ab:resourceFlow": {
       "resourceFlow": "플레이어가 리소스 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다."
+    },
+    "local_authoring_parts::3cd1b81094291642b6d1fbba8c70e2002d287a8949d6958d3abcfaff241959ab:balanceRules": {
+      "balanceRules": "플레이어가 리소스 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다."
+    },
+    "local_authoring_parts::f9191bfeb1ea0b746063b40e73995c4b11087328dfacba393441e1e37e4bf63b:progressionEconomyBalance": {
+      "progressionLoop": "프로세스 루프에서 'resourceFlow' 상태가 발생하여 'balanceRules' 상태 교환을 수행해야 한다. 플레이어가 리소스 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다.",
+      "resourceFlow": "플레이어가 리소스 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다.",
+      "balanceRules": "플레이어가 리소스 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다."
+    },
+    "local_authoring_parts::f08c92865585e5ba91e788d235edf1390b7dc2fca5c17773d586711a6c4f0550:progressionEconomyBalance": {
+      "progressionEconomyBalance": {
+        "progressionLoop": "프로세스 루프에서 'resourceFlow' 상태가 발생하여 'balanceRules' 상태 교환을 수행해야 한다. 플레이어가 리소스 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다.",
+        "resourceFlow": "플레이어가 리소스 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다.",
+        "balanceRules": "플레이어가 리소스 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 53,
-      "successes": 53,
+      "calls": 54,
+      "successes": 54,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1923780,
-      "lastMs": 32736,
+      "totalMs": 1956576,
+      "lastMs": 32796,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:17:12.877Z"
+      "updatedAt": "2026-10-08T19:17:45.674Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:45:08.916Z",
-  "updatedAt": "2026-10-08T19:17:12.877Z",
+  "updatedAt": "2026-10-08T19:17:45.677Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3576,7 +3591,7 @@
       "progressionDirection": "{\"from\": \"AUTO_FIGHT\", \"to\": \"RESOURCE_COLLECTION\"}"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T19:17:12.877Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:17:45.677Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
