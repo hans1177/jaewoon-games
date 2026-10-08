@@ -714,25 +714,42 @@
         "crystalDefensePlacement"
       ],
       "fromSystem": "GAMEPLAY_SKETCH v4"
+    },
+    "local_authoring_parts::dc0af87cd5bc02f2c14769fe3d8060c60494fa9aa4fdf497ea4a2533f68dc2f3:toSystem,trigger,stateChange": {
+      "toSystem": "GAMEPLAY_SKETCH v4",
+      "trigger": "attackPattern",
+      "stateChange": "crystalDefensePlacement"
+    },
+    "local_authoring_parts::92a67e43f69d9148fe91d4164e6b0f8a77b24ab7555f33d9dc916bbafc20a0ff:systemInterconnections:2": {
+      "fromId": "attackPattern",
+      "toId": "crystalDefensePlacement",
+      "stateKeys": [
+        "attackPattern",
+        "crystalDefensePlacement"
+      ],
+      "fromSystem": "GAMEPLAY_SKETCH v4",
+      "toSystem": "GAMEPLAY_SKETCH v4",
+      "trigger": "attackPattern",
+      "stateChange": "crystalDefensePlacement"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 17,
+      "calls": 19,
+      "successes": 18,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1687874,
-      "lastMs": 59838,
+      "totalMs": 1746894,
+      "lastMs": 59020,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T12:27:18.123Z"
+      "updatedAt": "2026-10-08T12:28:17.144Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:59:10.064Z",
-  "updatedAt": "2026-10-08T12:27:18.123Z",
+  "updatedAt": "2026-10-08T12:28:17.260Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3104,7 +3121,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:27:18.123Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:28:17.260Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
