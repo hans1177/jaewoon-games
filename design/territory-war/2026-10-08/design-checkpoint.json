@@ -289,25 +289,119 @@
           "playerChoice": "ATTACK, REINFORCE, EXPAND ECONOMY"
         }
       ]
+    },
+    "local_authoring_parts::8aae57fc3b19709c19a7e1879b042e2c6aff17148584156e853a11131fd90a69:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::bd4a5039209b0e97369fd31c4a4853698ae486ea2246c0af71b6018521b87546:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "INPUT/SELECT -> STATUS CHANGE -> REWARD/RISE/ NEXT CHOICE",
+        "READ THE CURRENT BORDER PRESSURE AND CHOOSING ONE TERRITORY OBJECTIVE",
+        "ATTACK, REINFORCE, EXPAND ECONOMY",
+        "RESOLVE TERRITORY CHANGE AND ADAPT NEXT PLAN TO NEW FRONT LINE"
+      ],
+      "signatureSystems": [
+        {
+          "id": "MAIN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "currentBorderPressure",
+            "territoryObjective"
+          ],
+          "stateOutputs": [
+            "attacked",
+            "reinforced",
+            "expandedEconomy"
+          ],
+          "name": "TERRITORY PRESSURE AND OBJECTIVE",
+          "purpose": "READ THE CURRENT BORDER PRESSURE AND CHOOSING ONE TERRITORY OBJECTIVE",
+          "playerChoice": "ATTACK, REINFORCE, EXPAND ECONOMY"
+        },
+        {
+          "id": "c",
+          "grammarRole": "A",
+          "stateInputs": [
+            "currentBorderPressure",
+            "territoryObjective"
+          ],
+          "stateOutputs": [
+            "attacked",
+            "reinforced",
+            "expandedEconomy"
+          ],
+          "name": "TERRITORY PRESSURE AND OBJECTIVE",
+          "purpose": "READ THE CURRENT BORDER PRESSURE AND CHOOSING ONE TERRITORY OBJECTIVE",
+          "playerChoice": "ATTACK, REINFORCE, EXPAND ECONOMY"
+        },
+        {
+          "id": "c",
+          "grammarRole": "B",
+          "stateInputs": [
+            "currentBorderPressure",
+            "territoryObjective"
+          ],
+          "stateOutputs": [
+            "attacked",
+            "reinforced",
+            "expandedEconomy"
+          ],
+          "name": "TERRITORY PRESSURE AND OBJECTIVE",
+          "purpose": "READ THE CURRENT BORDER PRESSURE AND CHOOSING ONE TERRITORY OBJECTIVE",
+          "playerChoice": "ATTACK, REINFORCE, EXPAND ECONOMY"
+        },
+        {
+          "id": "c",
+          "grammarRole": "c",
+          "stateInputs": [
+            "currentBorderPressure",
+            "territoryObjective"
+          ],
+          "stateOutputs": [
+            "attacked",
+            "reinforced",
+            "expandedEconomy"
+          ],
+          "name": "TERRITORY PRESSURE AND OBJECTIVE",
+          "purpose": "READ THE CURRENT BORDER PRESSURE AND CHOOSING ONE TERRITORY OBJECTIVE",
+          "playerChoice": "ATTACK, REINFORCE, EXPAND ECONOMY"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "currentBorderPressure",
+            "territoryObjective"
+          ],
+          "stateOutputs": [
+            "attacked",
+            "reinforced",
+            "expandedEconomy"
+          ],
+          "name": "TERRITORY PRESSURE AND OBJECTIVE",
+          "purpose": "READ THE CURRENT BORDER PRESSURE AND CHOOSING ONE TERRITORY OBJECTIVE",
+          "playerChoice": "ATTACK, REINFORCE, EXPAND ECONOMY"
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 979818,
-      "lastMs": 95840,
+      "totalMs": 1065377,
+      "lastMs": 85559,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:32:42.763Z"
+      "updatedAt": "2026-10-08T12:34:08.326Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:16:22.910Z",
-  "updatedAt": "2026-10-08T12:32:42.766Z",
+  "updatedAt": "2026-10-08T12:34:08.335Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2327,12 +2421,51 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:32:42.766Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다. 플레이어는 영토전쟁의 실제 플레이 공간은 SINGLE_DEFENSE_STRATEGY 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_",
+      "playerFantasy": "영토전쟁에서 플레이어는 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOS",
+      "coreFun": "영토전쟁에서 플레이어는 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOS",
+      "coreLoop": [
+        "INPUT/SELECT -> STATUS CHANGE -> REWARD/RISE/ NEXT CHOICE",
+        "READ THE CURRENT BORDER PRESSURE AND CHOOSING ONE TERRITORY OBJECTIVE",
+        "ATTACK, REINFORCE, EXPAND ECONOMY",
+        "RESOLVE TERRITORY CHANGE AND ADAPT NEXT PLAN TO NEW FRONT LINE"
+      ],
+      "multiplayerMode": "HYBRID"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T12:34:08.330Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
