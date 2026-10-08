@@ -845,25 +845,43 @@
         "PlayerChoice"
       ],
       "fromSystem": "MAIN,omitempty/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/"
+    },
+    "local_authoring_parts::edd001c0ec910cb2e77d4475f29255043714a26c89faa90670a4135c4443da5e:toSystem,trigger,stateChange": {
+      "toSystem": "A",
+      "trigger": "BuildProgress",
+      "stateChange": "RunProgress"
+    },
+    "local_authoring_parts::d7aa882c6af17b3882b2968a68d516f5e7c7b59d96691ee47c43fcc135d4ddbf:systemInterconnections:3": {
+      "fromId": "MAIN",
+      "toId": "A",
+      "stateKeys": [
+        "BuildProgress",
+        "RunProgress",
+        "PlayerChoice"
+      ],
+      "fromSystem": "MAIN,omitempty/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/MAIN/",
+      "toSystem": "A",
+      "trigger": "BuildProgress",
+      "stateChange": "RunProgress"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 19,
+      "calls": 21,
+      "successes": 20,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2585791,
-      "lastMs": 94715,
+      "totalMs": 2676597,
+      "lastMs": 90806,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T12:41:33.558Z"
+      "updatedAt": "2026-10-08T16:29:22.802Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:58:27.660Z",
-  "updatedAt": "2026-10-08T16:27:51.992Z",
+  "updatedAt": "2026-10-08T16:29:22.804Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3207,7 +3225,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:41:33.558Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:29:22.804Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
