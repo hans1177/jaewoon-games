@@ -242,25 +242,103 @@
           "playerChoice": "USE DISCOVERY AND MASTERY TO EXPAND CONTENT AND REFRESH GAMEPLAY"
         }
       ]
+    },
+    "local_authoring_parts::d61f5e9884af8ecedf463e1b0e2fe0ef69c5c5704680758b8edc0e85ec953430:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::c73f47dc7b1240f38a5c237e4759e0046c65faeb82e486c7f95f6965522a32fd:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE",
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/ NEXT CHOICE",
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/ NEXT CHOICE"
+      ],
+      "signatureSystems": [
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+          ],
+          "stateOutputs": [
+            "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+          ],
+          "name": "KARMA RETURN",
+          "purpose": "ACTION RESULT DELAY TO SUBSEQUENT STATES",
+          "playerChoice": "USE ACTION RESULT TO ALTER MAIN AND A/B/C STATES"
+        },
+        {
+          "id": "MANDATE_LEGITIMACY",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+          ],
+          "stateOutputs": [
+            "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+          ],
+          "name": "MANDATE LEGITIMACY",
+          "purpose": "POWER OF AUTHORITY BASED ON CONSENT, ORDER, AND POPULARITY",
+          "playerChoice": "USE POWER TO ALTER ESTATE, RELATIONSHIP, OR GOAL STATUS"
+        },
+        {
+          "id": "B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+          ],
+          "stateOutputs": [
+            "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+          ],
+          "name": "NEW AUTHORITY STRUCTURE",
+          "purpose": "POWER OF AUTHORITY BASED ON CONSENT, ORDER, AND POPULARITY",
+          "playerChoice": "USE POWER TO ALTER ESTATE, RELATIONSHIP, OR GOAL STATUS"
+        },
+        {
+          "id": "C",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+          ],
+          "stateOutputs": [
+            "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+          ],
+          "name": "CONTENT EXPANSION",
+          "purpose": "EXPAND CONTENT BASED ON DISCOVERY AND MASTERY TO ENHANCE PLAYABILITY",
+          "playerChoice": "USE DISCOVERY AND MASTERY TO EXPAND CONTENT AND REFRESH GAMEPLAY"
+        },
+        {
+          "id": "DELVE_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+          ],
+          "stateOutputs": [
+            "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+          ],
+          "name": "DISCOVERY_EXPANSION",
+          "purpose": "EXPAND CONTENT BASED ON DISCOVERY AND MASTERY TO ENHANCE PLAYABILITY",
+          "playerChoice": "USE DISCOVERY AND MASTERY TO EXPAND CONTENT AND REFRESH GAMEPLAY"
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 391760,
-      "lastMs": 43435,
+      "totalMs": 413462,
+      "lastMs": 21702,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:50:53.261Z"
+      "updatedAt": "2026-10-08T17:51:14.967Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:44:21.449Z",
-  "updatedAt": "2026-10-08T17:50:53.264Z",
+  "updatedAt": "2026-10-08T17:51:14.974Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2184,12 +2262,203 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:50:53.264Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.KARMA_RETURN.stateInputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.KARMA_RETURN.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.KARMA_RETURN.stateOutputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.KARMA_RETURN.stateOutputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.MANDATE_LEGITIMACY.stateInputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.MANDATE_LEGITIMACY.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.MANDATE_LEGITIMACY.stateOutputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.MANDATE_LEGITIMACY.stateOutputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.B.stateInputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.B.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.B.stateOutputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.B.stateOutputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.C.stateInputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.C.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.C.stateOutputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.C.stateOutputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.DELVE_4.stateInputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.DELVE_4.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.DELVE_4.stateOutputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.DELVE_4.stateOutputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "사람들의 행동과 관계를 수집·발견·성장 대상으로 삼는 가벼운 생활 탐험 게임으로 완전히 처음부터 다시 설계한다.",
+      "playerFantasy": "휴먼 GO에서는 플레이어가 단순한 탐험과 수집을 하며, 사람들의 행동과 관계를 수집·발现·성장시키는 데 초점을 맞춘 게임입니다. 이 게임에서 플레이어는 주체로 자신의 선택을 통해 세계 상태를 바꾸고, 새로운 경로와 결과를 만들어갑니다.",
+      "coreFun": "휴먼 GO에서는 플레이어가 단순한 탐험과 수집을 하며, 사람들의 행동과 관계를 수집·발现·성장시키는 데 초점을 맞춘 게임입니다. 이 게임에서 플레이어는 주체로 자신의 선택을 통해 세계 상태를 바꾸고, 새로운 경로와 결과를 만들어갑니다.",
+      "coreLoop": [
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE",
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/ NEXT CHOICE",
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/ NEXT CHOICE"
+      ],
+      "multiplayerMode": "COOP"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T17:51:14.970Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
