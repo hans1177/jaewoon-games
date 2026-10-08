@@ -2387,9 +2387,85 @@ function RobloxCommonUI.CreateMaterialTracker(options)
 end
 
 function RobloxCommonUI.CreateBuySellPanel(options)
-  local root,parts=deepSystemPanel(options,"BUY_SELL_PANEL","BUY_SELL_PANEL","거래",{"구매 탭 / 판매 탭","선택 상품","수량","현재 재화","가격 비교","장바구니"})
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,inner=RobloxCommonUI.CreatePanel({
+    name=options.name or "BuySellPanel",size=options.size or UDim2.fromOffset(460,360),theme=theme
+  })
+  tag(root,"BUY_SELL_PANEL")
+  commonText(inner,"Title",options.title or "장비 매매",UDim2.fromOffset(14,8),UDim2.new(1,-28,0,34),theme.Text,20,true)
+  local buyTab=RobloxCommonUI.CreateTabButton({name="TradeBuyTab",text="구매",selected=true,size=UDim2.new(.5,-4,0,48),theme=theme})
+  buyTab.Position=UDim2.fromOffset(10,44);buyTab.Parent=inner
+  local sellTab=RobloxCommonUI.CreateTabButton({name="TradeSellTab",text="판매",selected=false,size=UDim2.new(.5,-4,0,48),theme=theme})
+  sellTab.Position=UDim2.new(.5,4,0,44);sellTab.Parent=inner
+  local scroll=Instance.new("ScrollingFrame")
+  scroll.Name="TradeItems";scroll.Position=UDim2.fromOffset(10,102);scroll.Size=UDim2.new(1,-20,1,-160)
+  scroll.BackgroundTransparency=1;scroll.BorderSizePixel=0;scroll.ScrollBarThickness=4;scroll.Active=true
+  scroll.AutomaticCanvasSize=Enum.AutomaticSize.Y;scroll.CanvasSize=UDim2.fromOffset(0,0);scroll.Parent=inner
+  local layout=commonList(scroll,false,6)
+  layout.VerticalAlignment=Enum.VerticalAlignment.Top
+  local action=RobloxCommonUI.CreatePrimaryButton({name="TradeAction",text="상품을 선택해",size=UDim2.new(1,-20,0,48),theme=theme})
+  action.Position=UDim2.new(0,10,1,-52);action.Parent=inner
+  local buttons,items,visible={}, {},{}
+  local mode="BUY"
+  local selected=nil
+  local gold=0
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    items=type(state.items)=="table"and state.items or {}
+    gold=tonumber(state.gold)or 0
+    visible={}
+    for _,item in ipairs(items)do
+      local price=mode=="BUY"and item.price or item.sellPrice
+      if price~=nil then visible[#visible+1]=item end
+    end
+    for index,item in ipairs(visible)do
+      if not buttons[index]then
+        local button=RobloxCommonUI.CreateTabButton({name="TradeItem"..index,size=UDim2.new(1,-6,0,48),theme=theme})
+        button.LayoutOrder=index;button.Parent=scroll;buttons[index]=button
+        local at=index
+        button.Activated:Connect(function()
+          local itemNow=visible[at]
+          if itemNow then selected=itemNow.id;sync({items=items,gold=gold})end
+        end)
+      end
+      local price=mode=="BUY"and item.price or item.sellPrice
+      buttons[index].Visible=true
+      buttons[index].Text=tostring(item.name or item.id or "아이템").." · "..tostring(price).."G"
+      buttons[index].BackgroundColor3=item.id==selected and theme.Primary or theme.PanelRaised
+      buttons[index]:SetAttribute("BoundItemId",tostring(item.id or ""))
+    end
+    for index=#visible+1,#buttons do buttons[index].Visible=false end
+    local chosen
+    for _,item in ipairs(visible)do if item.id==selected then chosen=item;break end end
+    local enabled=chosen~=nil and ((mode=="BUY"and chosen.canBuy==true and type(options.onBuy)=="function")
+      or(mode=="SELL"and chosen.canSell==true and type(options.onSell)=="function"))
+    action.Active=enabled
+    action.AutoButtonColor=enabled
+    action.Text=enabled and (mode=="BUY"and"구매하기"or"판매하기")or"거래 가능한 상품을 선택해"
+    buyTab.BackgroundColor3=mode=="BUY"and theme.Primary or theme.PanelRaised
+    sellTab.BackgroundColor3=mode=="SELL"and theme.Primary or theme.PanelRaised
+    root:SetAttribute("BoundTradeItemCount",#visible)
+    root:SetAttribute("TradeMode",mode)
+  end
+  buyTab.Activated:Connect(function()mode="BUY";selected=nil;sync({items=items,gold=gold})end)
+  sellTab.Activated:Connect(function()mode="SELL";selected=nil;sync({items=items,gold=gold})end)
+  action.Activated:Connect(function()
+    if not action.Active then return end
+    for _,item in ipairs(visible)do
+      if item.id==selected then
+        if mode=="BUY"and item.canBuy==true and type(options.onBuy)=="function"then options.onBuy(item.id,item)
+        elseif mode=="SELL"and item.canSell==true and type(options.onSell)=="function"then options.onSell(item.id,item)end
+        return
+      end
+    end
+  end)
+  sync({items=options.items or {},gold=options.gold or 0})
   root:SetAttribute("OwnsTradeAuthority",false)
-  return root,parts
+  root:SetAttribute("OwnsEconomyAuthority",false)
+  root:SetAttribute("OwnsSaveAuthority",false)
+  root:SetAttribute("OwnsRemoteAuthority",false)
+  return root,{inner=inner,list=scroll,labels=buttons,buy=buyTab,sell=sellTab,action=action,Sync=sync}
 end
 
 function RobloxCommonUI.CreateBuybackPanel(options)
