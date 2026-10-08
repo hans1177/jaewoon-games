@@ -564,25 +564,53 @@
         "ecologicalInsight"
       ],
       "fromSystem": "GAMEPLAY_SKETCH v4"
+    },
+    "local_authoring_parts::0b1a50fe90928b5d790e5bb56f6f5d76867a85162ab92e4c925be02f53f54367:toSystem,trigger,stateChange": {
+      "toSystem": "GAMEPLAY_SKETCH v4",
+      "trigger": "EcoRiskHandler",
+      "stateChange": "survivalTool, safeRoute, ecologicalInsight"
+    },
+    "local_authoring_parts::8d9a05eb0170633e645c5f7e03e364d7b6e11997f16098e12310fdb621a0b113:systemInterconnections:2": {
+      "fromId": "MAIN",
+      "toId": "A",
+      "stateKeys": [
+        "survivalTool",
+        "safeRoute",
+        "ecologicalInsight"
+      ],
+      "fromSystem": "GAMEPLAY_SKETCH v4",
+      "toSystem": "GAMEPLAY_SKETCH v4",
+      "trigger": "EcoRiskHandler",
+      "stateChange": "survivalTool, safeRoute, ecologicalInsight"
+    },
+    "local_authoring_parts::fa7945454d1021254333f676e15dc510feda096760e0e07d4be697d834decb39:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "MAIN",
+      "toId": "A",
+      "stateKeys": [
+        "survivalTool",
+        "safeRoute",
+        "ecologicalInsight"
+      ],
+      "fromSystem": "GAMEPLAY_SKETCH v4"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 15,
+      "calls": 20,
+      "successes": 17,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2232918,
-      "lastMs": 25801,
+      "totalMs": 2313425,
+      "lastMs": 60936,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T12:39:24.103Z"
+      "updatedAt": "2026-10-08T12:40:44.618Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:02:11.066Z",
-  "updatedAt": "2026-10-08T12:39:24.103Z",
+  "updatedAt": "2026-10-08T12:40:44.618Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2816,7 +2844,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:39:24.103Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:40:44.618Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
