@@ -86,25 +86,181 @@
       "name": "DELVE_3",
       "purpose": "Player choice that triggers the emergence of new gameplay mechanics and progression pathways",
       "playerChoice": "Player selects a strategy to navigate the horde, which results in the activation of new gameplay mechanics and progression pathways"
+    },
+    "local_authoring_parts::7269c3d22aa1e8ed3cd1a235ccade63bb78b0bed8fe032f1c0f12d32864d68e9:signatureSystems:4": {
+      "id": "DELVE_3",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "PLAYER_ACTION: Fight through an escalating horde in a short real-time survival r"
+      ],
+      "stateOutputs": [
+        "WORLD_RULE: Fight through an escalating horde in a short real-time survival r"
+      ],
+      "name": "DELVE_3",
+      "purpose": "Player choice that triggers the emergence of new gameplay mechanics and progression pathways",
+      "playerChoice": "Player selects a strategy to navigate the horde, which results in the activation of new gameplay mechanics and progression pathways"
+    },
+    "local_authoring_parts::b1836b65f816b1ac1e705a61256d4e5f057387cc7e151daeb72db5b47b5e34cc:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "PLAYER_ACTION: Fight through an escalating horde in a short real-time survival r"
+          ],
+          "stateOutputs": [
+            "WORLD_RULE: Fight through an escalating horde in a short real-time survival r"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "Player choice that triggers the emergence of new gameplay mechanics and progression pathways",
+          "playerChoice": "Player selects a strategy to navigate the horde, which results in the activation of new gameplay mechanics and progression pathways"
+        },
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "A",
+          "stateInputs": [
+            "PLAYER_ACTION: Fight through an escalating horde in a short real-time survival r"
+          ],
+          "stateOutputs": [
+            "WORLD_RULE: Fight through an escalating horde in a short real-time survival r"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "Player choice that triggers the emergence of new gameplay mechanics and progression pathways",
+          "playerChoice": "Player selects a strategy to navigate the horde, which results in the activation of new gameplay mechanics and progression pathways"
+        },
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "B",
+          "stateInputs": [
+            "PLAYER_ACTION: Fight through an escalating horde in a short real-time survival r"
+          ],
+          "stateOutputs": [
+            "WORLD_RULE: Fight through an escalating horde in a short real-time survival r"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "Player choice that triggers the emergence of new gameplay mechanics and progression pathways",
+          "playerChoice": "Player selects a strategy to navigate the horde, which results in the activation of new gameplay mechanics and progression pathways"
+        },
+        {
+          "id": "DELVE_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "PLAYER_ACTION: Fight through an escalating horde in a short real-time survival r"
+          ],
+          "stateOutputs": [
+            "WORLD_RULE: Fight through an escalating horde in a short real-time survival r"
+          ],
+          "name": "DELVE_3",
+          "purpose": "Player choice that triggers the emergence of new gameplay mechanics and progression pathways",
+          "playerChoice": "Player selects a strategy to navigate the horde, which results in the activation of new gameplay mechanics and progression pathways"
+        },
+        {
+          "id": "DELVE_3",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "PLAYER_ACTION: Fight through an escalating horde in a short real-time survival r"
+          ],
+          "stateOutputs": [
+            "WORLD_RULE: Fight through an escalating horde in a short real-time survival r"
+          ],
+          "name": "DELVE_3",
+          "purpose": "Player choice that triggers the emergence of new gameplay mechanics and progression pathways",
+          "playerChoice": "Player selects a strategy to navigate the horde, which results in the activation of new gameplay mechanics and progression pathways"
+        }
+      ]
+    },
+    "local_authoring_parts::43d2cf6755bbbc23856a3321254ab6fcf8dfb62fb016a869efe280557d54659c:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT: 플레이어의 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.' 선택 → 상태 변화: 즉각적 보상(점수/실패/위험) 및 다음 선택(업그레이드/보상/선택) 발생",
+        "INPUT: 선택 결과가 다음 월드 상태로 전환 → 상태 변화: 보상/위험/다음 선택의 순차적 연결",
+        "INPUT: 성장이 발생 → 상태 변화: 새 행동 조합/경로/관계/발견/대응법 열림"
+      ],
+      "signatureSystems": [
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "PLAYER_ACTION: Fight through an escalating horde in a short real-time survival r"
+          ],
+          "stateOutputs": [
+            "WORLD_RULE: Fight through an escalating horde in a short real-time survival r"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "Player choice that triggers the emergence of new gameplay mechanics and progression pathways",
+          "playerChoice": "Player selects a strategy to navigate the horde, which results in the activation of new gameplay mechanics and progression pathways"
+        },
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "A",
+          "stateInputs": [
+            "PLAYER_ACTION: Fight through an escalating horde in a short real-time survival r"
+          ],
+          "stateOutputs": [
+            "WORLD_RULE: Fight through an escalating horde in a short real-time survival r"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "Player choice that triggers the emergence of new gameplay mechanics and progression pathways",
+          "playerChoice": "Player selects a strategy to navigate the horde, which results in the activation of new gameplay mechanics and progression pathways"
+        },
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "B",
+          "stateInputs": [
+            "PLAYER_ACTION: Fight through an escalating horde in a short real-time survival r"
+          ],
+          "stateOutputs": [
+            "WORLD_RULE: Fight through an escalating horde in a short real-time survival r"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "Player choice that triggers the emergence of new gameplay mechanics and progression pathways",
+          "playerChoice": "Player selects a strategy to navigate the horde, which results in the activation of new gameplay mechanics and progression pathways"
+        },
+        {
+          "id": "DELVE_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "PLAYER_ACTION: Fight through an escalating horde in a short real-time survival r"
+          ],
+          "stateOutputs": [
+            "WORLD_RULE: Fight through an escalating horde in a short real-time survival r"
+          ],
+          "name": "DELVE_3",
+          "purpose": "Player choice that triggers the emergence of new gameplay mechanics and progression pathways",
+          "playerChoice": "Player selects a strategy to navigate the horde, which results in the activation of new gameplay mechanics and progression pathways"
+        },
+        {
+          "id": "DELVE_3",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "PLAYER_ACTION: Fight through an escalating horde in a short real-time survival r"
+          ],
+          "stateOutputs": [
+            "WORLD_RULE: Fight through an escalating horde in a short real-time survival r"
+          ],
+          "name": "DELVE_3",
+          "purpose": "Player choice that triggers the emergence of new gameplay mechanics and progression pathways",
+          "playerChoice": "Player selects a strategy to navigate the horde, which results in the activation of new gameplay mechanics and progression pathways"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 789946,
-      "lastMs": 101671,
+      "totalMs": 892420,
+      "lastMs": 102474,
       "lastError": null,
-      "updatedAt": "2026-10-08T07:58:54.358Z"
+      "updatedAt": "2026-10-08T08:00:36.834Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:45:44.378Z",
-  "updatedAt": "2026-10-08T07:58:54.358Z",
+  "updatedAt": "2026-10-08T08:00:36.838Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2303,7 +2459,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T07:58:54.358Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:00:36.838Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
