@@ -630,25 +630,28 @@
     },
     "local_authoring_parts::3d9e180a331bb575cd92cd7ef3501c5408088161ad5f6b6cc275054001f2a8be:progressionLoop": {
       "progressionLoop": "{\"from\": \"START_GAME\", \"to\": \"MATCH_GAME\", \"purpose\": \"게임의 중심 행동인 START 이후 선택 결과가 다음 상태로 연결되는 두 번째 대축\",\"playerChoice\": \"Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective with a clear goal and limited moves, obstacles, or another visible puzzle constraint.\"}"
+    },
+    "local_authoring_parts::3d9e180a331bb575cd92cd7ef3501c5408088161ad5f6b6cc275054001f2a8be:resourceFlow": {
+      "resourceFlow": "{\"from\": \"MATCH_GAME\", \"to\": \"BOARD_STATE\", \"purpose\": \"게임의 중심 행동인 START 이후 선택 결과가 다음 상태로 연결되는 두 번째 대축\",\"playerChoice\": \"Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective with a clear goal and limited moves, obstacles, or another visible puzzle constraint.\"}"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 47,
-      "successes": 47,
+      "calls": 48,
+      "successes": 48,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3202373,
-      "lastMs": 56064,
+      "totalMs": 3258235,
+      "lastMs": 55862,
       "lastError": null,
-      "updatedAt": "2026-10-08T23:56:53.541Z"
+      "updatedAt": "2026-10-08T23:57:49.405Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:31:40.536Z",
-  "updatedAt": "2026-10-08T23:56:53.541Z",
+  "updatedAt": "2026-10-08T23:57:49.405Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3088,7 +3091,7 @@
       "progressionDirection": "{\"from\": \"START_GAME\", \"to\": \"MATCH_GAME\"}"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T23:56:53.541Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T23:57:49.405Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
