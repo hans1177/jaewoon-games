@@ -54,25 +54,45 @@
       "name": "BOARD_RULE_0",
       "purpose": "플레이어가 시작하는 보드/그리드 레벨에서 명확한 목표, 제한된 이동, 장애물, 또는 명확한 퀴즈를 통해 반복 가능한 핵심 루프를 구축하는 PUZZLE 게임의 중심 행동과 목표를 수행하며, 선택 결과가 다음 월드 상태와 접근 가능성에 영향을 미친다.",
       "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.의 결과를 이용해 다음 월드 상태와 접근 가능성을 바꾼다."
+    },
+    "local_authoring_parts::ca733330dfb32cc630d4e4274c677475db59b551e3685f17a2874eeb649fb8ec:signatureSystems:1": {
+      "id": "SIGNATURE_SYSTEM_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "BOARD_STATE",
+        "PLAYER_ACTION",
+        "LEVEL_GOAL",
+        "REWARD_SYSTEM",
+        "OBSTACLE_PATTERN"
+      ],
+      "stateOutputs": [
+        "CHANGED_BOARD_STATE",
+        "NEW_PLAYER_ACTION",
+        "REWARD_SYSTEM_UPDATED",
+        "OBSTACLE_PATTERN_MODIFIED"
+      ],
+      "name": "BOARD_RULE_1",
+      "purpose": "플레이어가 시작하는 보드/그리드 레벨에서 명확한 목표, 제한된 이동, 장애물, 또는 명확한 퀴즈를 통해 반복 가능한 핵심 루프를 구축하는 PUZZLE 게임의 중심 행동과 목표를 수행하며, 선택 결과가 다음 월드 상태와 접근 가능성에 영향을 미친다.",
+      "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.의 결과를 이용해 다음 월드 상태와 접근 가능성을 바꾼다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 356055,
-      "lastMs": 46042,
+      "totalMs": 404742,
+      "lastMs": 48687,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:40:21.699Z"
+      "updatedAt": "2026-10-08T08:41:10.387Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:34:25.615Z",
-  "updatedAt": "2026-10-08T08:40:21.699Z",
+  "updatedAt": "2026-10-08T08:41:10.387Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2109,7 +2129,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:40:21.699Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:41:10.387Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
