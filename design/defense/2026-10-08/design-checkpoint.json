@@ -57,25 +57,46 @@
       "name": "Forest Defense Strategy System",
       "purpose": "Player-controlled defensive strategy evolution based on enemy wave composition and resource availability.",
       "playerChoice": "Select and revise defensive positions, upgrade resources, or adjust strategies in real-time based on threat levels and enemy wave patterns."
+    },
+    "local_authoring_parts::92eb5ed99b2c52f4b27c47212f131d1b2e833c9239f10ba3883e2ba994adc29e:signatureSystems:1": {
+      "id": "forest-defense-signature-system-2",
+      "grammarRole": "A",
+      "stateInputs": [
+        "enemyWaveCount",
+        "defenderPosition",
+        "resourcePool",
+        "threatLevel",
+        "defensiveStrategy"
+      ],
+      "stateOutputs": [
+        "defensiveStrategyUpdated",
+        "resourcePoolExpanded",
+        "threatLevelReduced",
+        "defenderPositionRevised",
+        "gameProgressionEnhanced"
+      ],
+      "name": "Dynamic Defensive Strategy System",
+      "purpose": "A real-time adaptive system that evolves defensive strategies based on enemy wave composition, resource availability, and threat levels. It allows players to dynamically adjust positions, upgrade resources, or modify strategies in response to changing game conditions.",
+      "playerChoice": "Adjust defensive positions, upgrade resources, or modify strategies in real-time based on threat levels and enemy wave patterns."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 680458,
-      "lastMs": 102652,
+      "totalMs": 782802,
+      "lastMs": 102344,
       "lastError": null,
-      "updatedAt": "2026-10-08T09:01:28.215Z"
+      "updatedAt": "2026-10-08T09:03:10.561Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:50:07.728Z",
-  "updatedAt": "2026-10-08T09:01:28.215Z",
+  "updatedAt": "2026-10-08T09:03:10.561Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2270,7 +2291,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T09:01:28.215Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:03:10.561Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
