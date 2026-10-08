@@ -448,25 +448,95 @@
         }
       ],
       "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::9a53442f2757810f313016d10c6ea65e51aa1e71c7cb75f0bacd646f5f7f50fa:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "signatureSystems[0]",
+          "toId": "signatureSystems[1]",
+          "stateKeys": [
+            "worldState",
+            "playerAction"
+          ],
+          "fromSystem": "SurvivalHordeSystem",
+          "toSystem": "SurvivalResourceSystem",
+          "trigger": "Resource consolidation",
+          "stateChange": "Resource optimization"
+        },
+        {
+          "fromId": "signatureSystems[1]",
+          "toId": "signatureSystems[2]",
+          "stateKeys": [
+            "worldState",
+            "playerAction"
+          ],
+          "fromSystem": "SurvivalResourceSystem",
+          "toSystem": "SurvivalProgressionSystem",
+          "trigger": "Upgrade combination",
+          "stateChange": "Progression optimization"
+        },
+        {
+          "fromId": "signatureSystems[2]",
+          "toId": "signatureSystems[3]",
+          "stateKeys": [
+            "worldState",
+            "playerAction"
+          ],
+          "fromSystem": "SurvivalProgressionSystem",
+          "toSystem": "SurvivalDepthSystem",
+          "trigger": "Exploration",
+          "stateChange": "Depth optimization"
+        },
+        {
+          "fromId": "signatureSystems[3]",
+          "toId": "signatureSystems[4]",
+          "stateKeys": [
+            "worldState",
+            "playerAction"
+          ],
+          "fromSystem": "SurvivalDepthSystem",
+          "toSystem": "SurvivalDiscoverySystem",
+          "trigger": "Discovery",
+          "stateChange": "Discovery optimization"
+        },
+        {
+          "fromId": "signatureSystems[4]",
+          "toId": "signatureSystems[0]",
+          "stateKeys": [
+            "worldState",
+            "playerAction"
+          ],
+          "fromSystem": "SurvivalDiscoverySystem",
+          "toSystem": "SurvivalHordeSystem",
+          "trigger": "Re-discovery",
+          "stateChange": "Re-discovery optimization"
+        }
+      ],
+      "progressionDirection": "Survival progression through horde encounters, resource management, and progression choices",
+      "progressionEconomyBalance": {
+        "progressionLoop": "SurvivalHordeSystem → SurvivalResourceSystem → SurvivalProgressionSystem → SurvivalDepthSystem → SurvivalDiscoverySystem",
+        "resourceFlow": "Resource collection → Resource consolidation → Resource optimization → Resource depth → Resource discovery",
+        "balanceRules": "Resource conservation for immediate survival, resource optimization for long-term strategy, and resource depth for progression"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 10,
+      "calls": 12,
+      "successes": 11,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1117420,
-      "lastMs": 300075,
+      "totalMs": 1386766,
+      "lastMs": 269346,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T13:16:44.612Z"
+      "updatedAt": "2026-10-08T13:21:13.960Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:58:07.049Z",
-  "updatedAt": "2026-10-08T13:16:44.612Z",
+  "updatedAt": "2026-10-08T13:21:13.960Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2667,7 +2737,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:11:44.494Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:21:13.960Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
