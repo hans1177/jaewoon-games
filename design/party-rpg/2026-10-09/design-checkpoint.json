@@ -106,25 +106,236 @@
       "name": "BOARD_STATE_EXPANSION",
       "purpose": "플레이어가 매번 새로운 상태로 이동하며 콘텐츠 재사용 가능성 및 다양한 해법을 열어간다.",
       "playerChoice": "Expand the board state with new elements and strategies to deepen gameplay."
+    },
+    "local_authoring_parts::9ce8485f31dcfdb7f57e26f2b6a07d1551beec841f1a05892d49cc0483cad0e1:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_04",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "INPUT",
+        "SELECT",
+        "OUTPUT",
+        "STATE"
+      ],
+      "stateOutputs": [
+        "RESULT",
+        "ACTION",
+        "NEXT_STEP"
+      ],
+      "name": "BOARD_STATE_RELATIONSHIP",
+      "purpose": "플레이어가 매번 새로운 상태로 이동하며 콘텐츠 재사용 가능성 및 다양한 해법을 열어간다.",
+      "playerChoice": "Establish and maintain relationships between board states through strategic transitions, fostering emergent gameplay patterns and deepening the player's understanding of the game's mechanics."
+    },
+    "local_authoring_parts::17df34018a5667bc7697eb7bbc1f7aba0120128a5ffbd18787604cdcff6a9fca:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "ACTION",
+            "NEXT_STEP"
+          ],
+          "name": "BOARD_STATE_TRANSFORMATION",
+          "purpose": "플레이어가 매번 새로운 상태로 이동하며 콘텐츠 재사용 가능성 및 다양한 해법을 열어간다.",
+          "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "ACTION",
+            "NEXT_STEP"
+          ],
+          "name": "BOARD_STATE_REDUCTION",
+          "purpose": "플레이어가 매번 새로운 상태로 이동하며 콘텐츠 재사용 가능성 및 다양한 해법을 열어간다.",
+          "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_02",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "ACTION",
+            "NEXT_STEP"
+          ],
+          "name": "BOARD_STATE_REDUCTION",
+          "purpose": "플레이어가 매번 새로운 상태로 이동하며 콘텐츠 재사용 가능성 및 다양한 해법을 열어간다.",
+          "playerChoice": "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_03",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "ACTION",
+            "NEXT_STEP"
+          ],
+          "name": "BOARD_STATE_EXPANSION",
+          "purpose": "플레이어가 매번 새로운 상태로 이동하며 콘텐츠 재사용 가능성 및 다양한 해법을 열어간다.",
+          "playerChoice": "Expand the board state with new elements and strategies to deepen gameplay."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_04",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "ACTION",
+            "NEXT_STEP"
+          ],
+          "name": "BOARD_STATE_RELATIONSHIP",
+          "purpose": "플레이어가 매번 새로운 상태로 이동하며 콘텐츠 재사용 가능성 및 다양한 해법을 열어간다.",
+          "playerChoice": "Establish and maintain relationships between board states through strategic transitions, fostering emergent gameplay patterns and deepening the player's understanding of the game's mechanics."
+        }
+      ]
+    },
+    "local_authoring_parts::8f56665c9cef8eb7399b1aa3a809949bc8fd4955ca6e1389225ee8c0be83133d:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택",
+        "플레이어가 매번 새로운 상태로 이동하며 콘텐츠 재사용 가능성 및 다양한 해법을 열어간다.",
+        "게임의 중심 행동은 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이며 주체는 플레이어 자신이다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "ACTION",
+            "NEXT_STEP"
+          ],
+          "name": "BOARD_STATE_TRANSFORMATION",
+          "purpose": "플레이어가 매번 새로운 상태로 이동하며 콘텐츠 재사용 가능성 및 다양한 해법을 열어간다.",
+          "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "ACTION",
+            "NEXT_STEP"
+          ],
+          "name": "BOARD_STATE_REDUCTION",
+          "purpose": "플레이어가 매번 새로운 상태로 이동하며 콘텐츠 재사용 가능성 및 다양한 해법을 열어간다.",
+          "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_02",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "ACTION",
+            "NEXT_STEP"
+          ],
+          "name": "BOARD_STATE_REDUCTION",
+          "purpose": "플레이어가 매번 새로운 상태로 이동하며 콘텐츠 재사용 가능성 및 다양한 해법을 열어간다.",
+          "playerChoice": "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_03",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "ACTION",
+            "NEXT_STEP"
+          ],
+          "name": "BOARD_STATE_EXPANSION",
+          "purpose": "플레이어가 매번 새로운 상태로 이동하며 콘텐츠 재사용 가능성 및 다양한 해법을 열어간다.",
+          "playerChoice": "Expand the board state with new elements and strategies to deepen gameplay."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_04",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "ACTION",
+            "NEXT_STEP"
+          ],
+          "name": "BOARD_STATE_RELATIONSHIP",
+          "purpose": "플레이어가 매번 새로운 상태로 이동하며 콘텐츠 재사용 가능성 및 다양한 해법을 열어간다.",
+          "playerChoice": "Establish and maintain relationships between board states through strategic transitions, fostering emergent gameplay patterns and deepening the player's understanding of the game's mechanics."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 473501,
-      "lastMs": 40426,
+      "totalMs": 572551,
+      "lastMs": 99050,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:58:15.600Z"
+      "updatedAt": "2026-10-08T17:59:54.653Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:50:22.065Z",
-  "updatedAt": "2026-10-08T17:58:15.600Z",
+  "updatedAt": "2026-10-08T17:59:54.656Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2161,7 +2372,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:58:15.600Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:59:54.656Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
