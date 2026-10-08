@@ -34,25 +34,39 @@
         "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
         "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
       ]
+    },
+    "local_authoring_parts::5a9e47c91c997d3e48f52d520cde28558006b2c796b475e57a2b8f8da5a062cc:signatureSystems:0": {
+      "id": "MONSTER_ADVENTURE_CORE_FUN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "START_INPUT",
+        "SCORE_DISTANCE_SHORT_SESSION"
+      ],
+      "stateOutputs": [
+        "END_WORLD_STATE"
+      ],
+      "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+      "purpose": "Plays as an immediate action that transforms the world state by initiating the game loop and unlocking progression opportunities through casual gameplay.",
+      "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 265769,
-      "lastMs": 38614,
+      "totalMs": 308477,
+      "lastMs": 42708,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:23:33.510Z"
+      "updatedAt": "2026-10-08T21:24:16.220Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:19:07.722Z",
-  "updatedAt": "2026-10-08T21:23:33.511Z",
+  "updatedAt": "2026-10-08T21:24:16.220Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2138,7 +2152,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:23:33.510Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:24:16.220Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
