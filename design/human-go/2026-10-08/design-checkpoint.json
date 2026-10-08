@@ -600,25 +600,44 @@
       "name": "ACTION_EXPANSION",
       "purpose": "플레이어는 휴먼 GO에서 탐험 활동 공간을 확장하고, 사람, 작업, 수집 가능한 기회를 발견하여 월드 상태를 변화시키는 CASUAL 게임의 보조 요소로, 이들을 변주하여 다양한 경로와 결과를 생성한다.",
       "playerChoice": "Explore a compact activity space and discover a person, task or collectible opportunity.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다. 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다."
+    },
+    "local_authoring_parts::765f10c0eddafa21af13036bb7098a2700a72a15abcfd6639a6f8489ea6cc9f7:signatureSystems:0": {
+      "id": "identity-core",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다.",
+        "signatureSystems: 각 시스템의 id는 고정 규칙 ID다.",
+        "signatureSystems: purpose는 최소 20자 이상의 구체적 내용을 담는다.",
+        "signatureSystems: playerChoice는 최소 20자 이상의 구체적 내용을 담는다."
+      ],
+      "stateOutputs": [
+        "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다.",
+        "signatureSystems: 각 시스템의 id는 고정 규칙 ID다.",
+        "signatureSystems: purpose는 최소 20자 이상의 구체적 내용을 담는다.",
+        "signatureSystems: playerChoice는 최소 20자 이상의 구체적 내용을 담는다."
+      ],
+      "name": "활동 공간 탐험 시스템",
+      "purpose": "플레이어가 휴먼 GO에서 단순한 활동 공간을 탐험하고, 인물, 작업, 수집 가능한 기회를 발견하는 과정을 담당하는 시스템.",
+      "playerChoice": "활동 공간을 탐험하고, 인물, 작업, 또는 수집 가능한 기회를 발견하는 선택."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 20,
+      "calls": 21,
+      "successes": 21,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2164446,
-      "lastMs": 109814,
+      "totalMs": 2203719,
+      "lastMs": 39273,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:26:08.301Z"
+      "updatedAt": "2026-10-08T15:26:47.583Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:17:47.490Z",
-  "updatedAt": "2026-10-08T15:26:08.309Z",
+  "updatedAt": "2026-10-08T15:26:47.583Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2582,10 +2601,10 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:26:08.303Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:26:47.583Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
