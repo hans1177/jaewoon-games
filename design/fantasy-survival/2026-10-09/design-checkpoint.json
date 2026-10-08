@@ -272,25 +272,201 @@
           "playerChoice": "'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'"
         }
       ]
+    },
+    "local_authoring_parts::555d32b9a6f3dfa7be7af62c4f7e6e016a8cf3ac1ca734f387eb7f41db19843c:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::293d2dd8c982c5ed52fcbd147a5f80f70dd7de26f09aa82dab026c65db2d526f:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "RUN_RESULT",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE",
+            "ACCESSABILITY_MODIFICATION"
+          ],
+          "name": "세계 인과법칙",
+          "purpose": "플레이어가 환경의 위험과 압박 속에서 즉각적인 상태 변화를 경험하며, 주로 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 한 선택 결과에 따라 월드 상태와 접근 가능성을 실제 바꾼다.",
+          "playerChoice": "'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "RUN_RESULT",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE",
+            "ACCESSABILITY_MODIFICATION"
+          ],
+          "name": "세계 속성 변환 시스템",
+          "purpose": "플레이어가 환경의 위험과 압박 속에서 즉각적인 상태 변화를 경험하며, 주로 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 한 선택 결과에 따라 월드 상태와 접근 가능성을 실제 바꾼다.",
+          "playerChoice": "'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "RUN_RESULT",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE",
+            "ACCESSABILITY_MODIFICATION"
+          ],
+          "name": "세계 속성 변환 시스템 2",
+          "purpose": "플레이어가 환경의 위험과 압박 속에서 즉각적인 상태 변화를 경험하며, 주로 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 한 선택 결과에 따라 월드 상태와 접근 가능성을 실제 바꾼다.",
+          "playerChoice": "'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "RUN_RESULT",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE",
+            "ACCESSABILITY_MODIFICATION"
+          ],
+          "name": "세계 재방문 시스템",
+          "purpose": "플레이어가 환경의 위험과 압박 속에서 즉각적인 상태 변화를 경험하며, 주로 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 한 선택 결과에 따라 월드 상태와 접근 가능성을 실제 바꾼다.",
+          "playerChoice": "'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "RUN_RESULT",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE",
+            "ACCESSABILITY_MODIFICATION"
+          ],
+          "name": "세계 재방문 시스템 2",
+          "purpose": "플레이어가 환경의 위험과 압박 속에서 즉각적인 상태 변화를 경험하며, 주로 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 한 선택 결과에 따라 월드 상태와 접근 가능성을 실제 바꾼다.",
+          "playerChoice": "'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'"
+        }
+      ],
+      "multiplayerMode": "HYBRID"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "마력숲 생존기 - 수정 지역, 화산, 세계수, 연구소 및 생존·제작·전투·스토리 진행 중인 기존 마력숲 생존기의 정체성과 게임 규칙을 그대로 보존하며, 새로운 시그니처 세계 규칙을 통해 플레이어가 즉각적으로 상태 변화를 경험하는 중심 행동을 확립한다. 이는 주로 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 한 선택 결과에 따라 월드 상태와 접근 가능성을 실제 바꾼다.",
+      "playerFantasy": "마력숲 생존기에서 플레이어는 환경의 위험과 압박 속에서 즉각적인 상태 변화를 경험하며, 주로 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 한 선택 결과에 따라 월드 상태와 접근 가능성을 실제 바꾼다.",
+      "coreFun": "플레이어가 환경의 위험과 압박 속에서 즉각적인 상태 변화를 경험하며, 주로 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 한 선택 결과에 따라 월드 상태와 접근 가능성을 실제 바꾼다.",
+      "coreLoop": [
+        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "RUN_RESULT",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE",
+            "ACCESSABILITY_MODIFICATION"
+          ],
+          "name": "세계 인과법칙",
+          "purpose": "플레이어가 환경의 위험과 압박 속에서 즉각적인 상태 변화를 경험하며, 주로 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 한 선택 결과에 따라 월드 상태와 접근 가능성을 실제 바꾼다.",
+          "playerChoice": "'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "RUN_RESULT",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE",
+            "ACCESSABILITY_MODIFICATION"
+          ],
+          "name": "세계 속성 변환 시스템",
+          "purpose": "플레이어가 환경의 위험과 압박 속에서 즉각적인 상태 변화를 경험하며, 주로 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 한 선택 결과에 따라 월드 상태와 접근 가능성을 실제 바꾼다.",
+          "playerChoice": "'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "RUN_RESULT",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE",
+            "ACCESSABILITY_MODIFICATION"
+          ],
+          "name": "세계 속성 변환 시스템 2",
+          "purpose": "플레이어가 환경의 위험과 압박 속에서 즉각적인 상태 변화를 경험하며, 주로 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 한 선택 결과에 따라 월드 상태와 접근 가능성을 실제 바꾼다.",
+          "playerChoice": "'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "RUN_RESULT",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE",
+            "ACCESSABILITY_MODIFICATION"
+          ],
+          "name": "세계 재방문 시스템",
+          "purpose": "플레이어가 환경의 위험과 압박 속에서 즉각적인 상태 변화를 경험하며, 주로 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 한 선택 결과에 따라 월드 상태와 접근 가능성을 실제 바꾼다.",
+          "playerChoice": "'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "RUN_RESULT",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE",
+            "ACCESSABILITY_MODIFICATION"
+          ],
+          "name": "세계 재방문 시스템 2",
+          "purpose": "플레이어가 환경의 위험과 압박 속에서 즉각적인 상태 변화를 경험하며, 주로 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 한 선택 결과에 따라 월드 상태와 접근 가능성을 실제 바꾼다.",
+          "playerChoice": "'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'"
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 616212,
-      "lastMs": 77620,
+      "totalMs": 664907,
+      "lastMs": 48695,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:39:25.648Z"
+      "updatedAt": "2026-10-08T18:40:14.347Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:29:09.382Z",
-  "updatedAt": "2026-10-08T18:39:25.651Z",
+  "updatedAt": "2026-10-08T18:40:14.358Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2485,12 +2661,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:39:25.651Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:40:14.351Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/fantasy-survival/2026-10-09/design-seed.json",
+    "contentDigest": "4fc1da5a1c0138b3a622a046c06bd78bb75d74d5d691239faffd4c4b9a8179d9",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }

@@ -8,25 +8,30 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 13,
-  "lastSuccessfulModelCallAt": "2026-10-08T18:39:25.651Z",
+  "cachedTaskCount": 16,
+  "lastSuccessfulModelCallAt": "2026-10-08T18:40:14.351Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
-  "designerSeed": null,
+  "designerSeed": {
+    "file": "design/fantasy-survival/2026-10-09/design-seed.json",
+    "contentDigest": "4fc1da5a1c0138b3a622a046c06bd78bb75d74d5d691239faffd4c4b9a8179d9",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 616212,
-      "lastMs": 77620,
+      "totalMs": 664907,
+      "lastMs": 48695,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:39:25.648Z"
+      "updatedAt": "2026-10-08T18:40:14.347Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T18:39:25.652Z"
+  "updatedAt": "2026-10-08T18:40:14.359Z"
 }
