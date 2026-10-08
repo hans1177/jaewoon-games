@@ -100,25 +100,47 @@
       "name": "Board Dynamics",
       "purpose": "Player's second action to continue level progression and establish game state through board interaction.",
       "playerChoice": "Continue level progression by maintaining board state, managing obstacles, and using combo mechanics to sustain gameplay and unlock new levels or rewards."
+    },
+    "local_authoring_parts::b8f5a524e4a3270204a92ec781ab03235d3cc86f5fda113ba8a00c4f127cfcc2:signatureSystems:3": {
+      "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "BOARD_STATE",
+        "PLAYER_ACTION",
+        "LEVEL_GOAL",
+        "OBSTACLES",
+        "COMBO_COUNT",
+        "REWARD_SYSTEM"
+      ],
+      "stateOutputs": [
+        "NEW_BOARD_STATE",
+        "PLAYER_REWARD",
+        "NEXT_LEVEL_PATTERN",
+        "PLAYER_CHOICE",
+        "GAME_STATE"
+      ],
+      "name": "Content Expansion",
+      "purpose": "Player's final action to complete level progression, unlock new content, and establish game state through strategic decision-making and content expansion.",
+      "playerChoice": "Complete level progression by consolidating existing content, unlocking new levels or rewards, and establishing a new game state through strategic decision-making and content expansion."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 426217,
-      "lastMs": 32757,
+      "totalMs": 472408,
+      "lastMs": 46191,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:15:22.805Z"
+      "updatedAt": "2026-10-08T12:16:08.997Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:08:16.555Z",
-  "updatedAt": "2026-10-08T12:15:22.805Z",
+  "updatedAt": "2026-10-08T12:16:08.997Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2155,7 +2177,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:15:22.805Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:16:08.997Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
