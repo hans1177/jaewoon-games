@@ -35,6 +35,7 @@ export class JaewoonCommonAI {
     // 유틸: 관계·대화 제안의 반복 발화를 막는 비저장, 비권한 타이머.
     this.lastSocialAt = -Infinity;
     this.lastSocialTopic = '';
+    this.presentedBossScenes = new Set();
     this.order = JaewoonCommonAI.Order.AUTO;
     this.focusTargetId = '';
     this.protectTargetId = '';
@@ -165,13 +166,15 @@ export class JaewoonCommonAI {
     const story = context.authoredStoryBeat;
     const party = context.partyInvitation;
     const advice = context.knownAdvice;
-    if (canOffer && story?.eligible === true && story?.sourceEventId && story?.id) {
+    if (canOffer && story?.eligible === true && story?.engineApproved === true && story?.sourceEventId && story?.id
+      && this.lastSocialTopic !== 'story:' + String(story.id)) {
       this.lastSocialAt = now;
       this.lastSocialTopic = 'story:' + story.id;
       return this.action(S.TALK, 'npc_authored_story_offer', { id: String(story.id), sourceEventId: String(story.sourceEventId) });
     }
     if (canOffer && party?.recruitable === true && party?.engineApproved === true
-      && Number(party.openSlots) > 0 && party?.playerId) {
+      && Number(party.openSlots) > 0 && party?.playerId
+      && this.lastSocialTopic !== 'party:' + String(party.playerId)) {
       this.lastSocialAt = now;
       this.lastSocialTopic = 'party:' + String(party.playerId);
       return this.action(S.INVITE, 'npc_party_invitation_proposal', { id: String(party.playerId) });
@@ -185,7 +188,12 @@ export class JaewoonCommonAI {
 
     // 마을/필드의 기존 경로만 따라 걸으며 실제 좌표·충돌·스폰 판정은 엔진에 위임한다.
     if (context.canRoam === true && context.movementAuthorized === true && Array.isArray(context.authoredAnchors)) {
-      const anchor = context.authoredAnchors.find(item => item && item.id && Number.isFinite(item.x) && Number.isFinite(item.y));
+      const activityAnchor = String(context.currentActivity?.anchorId || context.nextAnchorId || '');
+      const allowedRegion = String(context.regionId || '');
+      const anchor = context.authoredAnchors.find(item => item && item.id
+        && (!activityAnchor || item.id === activityAnchor)
+        && (!allowedRegion || !item.regionId || item.regionId === allowedRegion)
+        && Number.isFinite(item.x) && Number.isFinite(item.y));
       if (anchor) return this.action(S.PATROL, 'npc_authored_daily_route', { id: String(anchor.id), x: anchor.x, y: anchor.y });
     }
     if (context.canInteract && this.personality.sociability >= -0.35) return this.action(S.INTERACT, 'player_nearby');
@@ -206,6 +214,20 @@ export class JaewoonCommonAI {
     const retreatLine = this.clamp(this.config.retreatHpRatio + personality.caution * 0.14 - personality.courage * 0.10 - personality.aggression * 0.05);
     const pressure = personality.aggression * 0.35 + personality.courage * 0.20 - personality.caution * 0.20;
     const target = this.chooseEnemy(enemies);
+    // 보스 소개 장면은 승인된 원본 대사/현재 페이즈에만 연결한다. 연출 이후 전투 수치는 그대로다.
+    const bossScene = context.bossScene;
+    if (context.entityKind === 'boss' && bossScene?.engineApproved === true
+      && bossScene?.sourceEventId && bossScene?.id && bossScene?.authoredDialogue
+      && context.playerVisible === true && context.canPresentBossScene === true
+      && (!bossScene.requiredPhase || bossScene.requiredPhase === context.currentPhase)
+      && !this.presentedBossScenes.has(String(bossScene.id))) {
+      this.presentedBossScenes.add(String(bossScene.id));
+      return this.action(S.TALK, 'boss_authored_cinematic', {
+        id: String(bossScene.id), sourceEventId: String(bossScene.sourceEventId),
+        text: String(bossScene.authoredDialogue).slice(0, 320),
+        skipAllowed: true, presentationOnly: true
+      });
+    }
     if (hp <= retreatLine && context.canRetreat !== false) return this.action(S.RETREAT, 'enemy_self_preservation', target);
     if (context.allyLostRecently && personality.loyalty > 0.35 && target) return this.action(S.ATTACK, 'enemy_ally_loss_pressure', target);
     if (danger > 0.8 && personality.courage < 0.1) return this.action(S.DODGE, 'enemy_high_danger');
