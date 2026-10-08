@@ -730,25 +730,92 @@
           "stateChange": "World state change and next selection."
         }
       ]
+    },
+    "local_authoring_parts::5e84fea49e5e2eb59b3afbeeb58817cc63a4e509fb02047172c623142c11ac3e:progressionDirection": {
+      "progressionDirection": "DISCOVERABLE_CLUE"
+    },
+    "local_authoring_parts::150851e5a0ddb9b6386e2b880237478a865438ca20de8a681d6a727200c4e6fe:systemInterconnections,progressionDirection": {
+      "systemInterconnections": [
+        {
+          "fromId": "MAIN",
+          "toId": "A",
+          "stateKeys": [
+            "Read the incoming insect wave and its threat pattern."
+          ],
+          "fromSystem": "MAIN",
+          "toSystem": "A",
+          "trigger": "Read the incoming insect wave and its threat pattern.",
+          "stateChange": "World state change and next selection"
+        },
+        {
+          "fromId": "MAIN",
+          "toId": "A",
+          "stateKeys": [
+            "Read the incoming insect wave and its threat pattern."
+          ],
+          "fromSystem": "MAIN",
+          "toSystem": "A",
+          "trigger": "Read the incoming insect wave and its threat pattern.",
+          "stateChange": "World state change and next selection"
+        },
+        {
+          "fromId": "MAIN",
+          "toId": "A",
+          "stateKeys": [
+            "Read the incoming insect wave and its threat pattern."
+          ],
+          "fromSystem": "MAIN",
+          "toSystem": "A",
+          "trigger": "Read the incoming insect wave and its threat pattern.",
+          "stateChange": "World state change and next selection."
+        },
+        {
+          "fromId": "MAIN",
+          "toId": "A",
+          "stateKeys": [
+            "Read the incoming insect wave and its threat pattern."
+          ],
+          "fromSystem": "MAIN",
+          "toSystem": "A",
+          "trigger": "Read the incoming insect wave and its threat pattern.",
+          "stateChange": "World state change and next selection."
+        },
+        {
+          "fromId": "MAIN",
+          "toId": "A",
+          "stateKeys": [
+            "Read the incoming insect wave and its threat pattern."
+          ],
+          "fromSystem": "MAIN",
+          "toSystem": "A",
+          "trigger": "Read the incoming insect wave and its threat pattern.",
+          "stateChange": "World state change and next selection."
+        }
+      ],
+      "progressionDirection": "DISCOVERABLE_CLUE"
+    },
+    "local_authoring_parts::131f42744cdf8e5dca19546119148096a1e13af0be239b4a8d7b3c53fa92d56d:progressionLoop,resourceFlow": {
+      "progressionLoop": "DISCOVERABLE_CLUE",
+      "resourceFlow": "BATCH_PREVIEW_AND_COMMIT"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 28,
-      "successes": 25,
+      "calls": 30,
+      "successes": 27,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2766994,
-      "lastMs": 32586,
+      "totalMs": 2830940,
+      "lastMs": 32704,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T15:35:43.819Z"
+      "updatedAt": "2026-10-08T15:36:47.771Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:47:19.560Z",
-  "updatedAt": "2026-10-08T15:35:43.821Z",
+  "updatedAt": "2026-10-08T15:36:47.771Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2951,7 +3018,7 @@
     "designer_draft_slices::identity-core": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T15:35:43.821Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:36:47.771Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
