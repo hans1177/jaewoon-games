@@ -271,6 +271,14 @@ const DESIGN_CHECKPOINT_CONTRACT_VERSION=4;
 const checkpointPath=path.join(base,'design-checkpoint.json');
 const progressPath=path.join(base,'design-progress.json');
 const policyDigest=createHash('sha256').update(fs.readFileSync(CANONICAL_POLICY_PATH,'utf8')).digest('hex');
+// 중앙정책 본문 SHA가 정확히 이전/변경 승인 정책일 때만 동일 입력 체크포인트를 승계한다.
+const threePlatformOnlyPolicyRevision=policyDigest==='976fe18afb5cd559146ab42808b3edbd106181d079356a0a22ee3c69d8932c7d'&&(()=>{
+  const roadmap=readJson(CANONICAL_POLICY_PATH,{}),counting=roadmap.directNativeDualPlatformDevelopment?.platformCountingPolicy;
+  return roadmap.version===553&&roadmap.finalDevelopmentLock?.sequenceLock?.status==='LOCKED'
+    &&counting?.targetCount===3&&JSON.stringify(counting.targets)===JSON.stringify(['ROBLOX','UNITY_ANDROID','UNITY_WEB'])
+    &&counting?.noNewAdapterWorkflowOrShadowPipeline===true
+    &&roadmap.changeRecord?.ownerThreePlatformTargets20261009?.targetCount===3;
+})();
 const engineFiles=[
   'tools/company-design-cycle.mjs',
   'tools/vibe2-design-intelligence.mjs',
@@ -309,6 +317,19 @@ const checkpointCompatibleEngineDigests=new Set([
   '81b77ec5e350f8737109235df27ddb3a375a99cf53bfce58e356fcdea285920b',
   '4392f6c8aaf3b4a62d3195d1aa9afdb76cd0ba1f633317503035d6af19a057b9'
 ]);
+// 기존 책임 함수: 정책상 플랫폼 개수 표시만 변경된 경우, 원본 입력 전체 SHA 일치 시 캐시 보존.
+const checkpointThreePlatformPolicyMigrationEligible=designCheckpoint?.contractVersion===DESIGN_CHECKPOINT_CONTRACT_VERSION
+  &&threePlatformOnlyPolicyRevision
+  &&clean(designCheckpoint?.policyDigest)==='0fda28f71ac3a214ad795ba2e2df1e0f6e7da837204b05182cdebecce33c9ade'
+  &&clean(designCheckpoint?.gameId)===gameId&&clean(designCheckpoint?.date)===date
+  &&clean(designCheckpoint?.seedId)===clean(seed.seedId)
+  &&(clean(designCheckpoint?.engineDigest)===engineDigest
+    ||checkpointCompatibleEngineDigests.has(clean(designCheckpoint?.engineDigest))
+    ||['cc088ad7a8676ded2864387d1c00a39b024f9e9a4e72f50308346406aea805a9','d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904','dac95f134b0ededc03820f0bcdc338c5fdb495164c8cd165653789fa6a468cc4'].includes(clean(designCheckpoint?.engineDigest)))
+  &&designCheckpoint.fingerprint===createHash('sha256').update(JSON.stringify({...checkpointInputContext,policyDigest:designCheckpoint.policyDigest,engineDigest:designCheckpoint.engineDigest})).digest('hex')
+  &&designCheckpoint?.phases&&typeof designCheckpoint.phases==='object'
+  &&designCheckpoint?.tasks&&typeof designCheckpoint.tasks==='object'
+  &&designCheckpoint?.modelHealth&&typeof designCheckpoint.modelHealth==='object';
 const checkpointV3CompatibleEngineMigrationEligible=designCheckpoint?.contractVersion===DESIGN_CHECKPOINT_CONTRACT_VERSION
   &&clean(designCheckpoint?.gameId)===gameId
   &&clean(designCheckpoint?.date)===date
@@ -320,7 +341,7 @@ const checkpointV3CompatibleEngineMigrationEligible=designCheckpoint?.contractVe
   &&designCheckpoint?.phases&&typeof designCheckpoint.phases==='object'
   &&designCheckpoint?.tasks&&typeof designCheckpoint.tasks==='object'
   &&designCheckpoint?.modelHealth&&typeof designCheckpoint.modelHealth==='object';
-if(!checkpointReusable&&(checkpointV2MigrationEligible||checkpointV3CompatibleEngineMigrationEligible)){
+if(!checkpointReusable&&(checkpointV2MigrationEligible||checkpointV3CompatibleEngineMigrationEligible||checkpointThreePlatformPolicyMigrationEligible)){
   const previousContractVersion=Number(designCheckpoint.contractVersion||0);
   const previousEngineDigest=clean(designCheckpoint.engineDigest);
   designCheckpoint={
@@ -338,7 +359,7 @@ if(!checkpointReusable&&(checkpointV2MigrationEligible||checkpointV3CompatibleEn
     checkpointMigration:{
       fromContractVersion:previousContractVersion,
       toContractVersion:DESIGN_CHECKPOINT_CONTRACT_VERSION,
-      reason:checkpointV2MigrationEligible?'PERSIST_GEMINI_DAILY_QUARANTINE_WITHOUT_REPLAY':'QUOTA_VIBE_REPAIR_COMPATIBLE_ENGINE_CHANGE_NO_REPLAY',
+      reason:checkpointThreePlatformPolicyMigrationEligible?'THREE_PLATFORM_COUNT_EXACT_POLICY_IDENTITY_MIGRATION':checkpointV2MigrationEligible?'PERSIST_GEMINI_DAILY_QUARANTINE_WITHOUT_REPLAY':'QUOTA_VIBE_REPAIR_COMPATIBLE_ENGINE_CHANGE_NO_REPLAY',
       previousEngineDigest,
       preservedPhaseCount:Object.keys(designCheckpoint.phases).length,
       preservedTaskCount:Object.keys(designCheckpoint.tasks).length,
@@ -346,7 +367,7 @@ if(!checkpointReusable&&(checkpointV2MigrationEligible||checkpointV3CompatibleEn
     },
     updatedAt:new Date().toISOString()
   };
-  if(previousEngineDigest==='d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904'){
+  if(checkpointThreePlatformPolicyMigrationEligible||previousEngineDigest==='d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904'){
     // 작성 응답 조각은 유지하고 기존 완성 단계만 새로운 내용 검사로 재검토한다.
     delete designCheckpoint.phases.designer_draft;
     designCheckpoint.completedPhases=designCheckpoint.completedPhases.filter(phase=>phase!=='designer_draft');

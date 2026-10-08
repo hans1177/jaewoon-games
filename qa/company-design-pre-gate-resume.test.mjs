@@ -860,6 +860,23 @@ test('placeholder feedback keeps audit evidence while retries receive paths and 
   assert.equal(checkpoint.sliceRepairFeedback[key],undefined);
 });
 
+test('three-platform policy-only checkpoint migration matches original SHA and excludes other inputs',()=>{
+  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  assert.deepEqual(roadmap.directNativeDualPlatformDevelopment.platformCountingPolicy.targets,['ROBLOX','UNITY_ANDROID','UNITY_WEB']);
+  const snippet=design.slice(design.indexOf('const checkpointThreePlatformPolicyMigrationEligible='),design.indexOf('const checkpointV3CompatibleEngineMigrationEligible='));
+  const prior='0fda28f71ac3a214ad795ba2e2df1e0f6e7da837204b05182cdebecce33c9ade',oldEngine='dac95f134b0ededc03820f0bcdc338c5fdb495164c8cd165653789fa6a468cc4';
+  const context={contractVersion:4,gameId:'cozy-island',date:'2026-10-08',seed:{seedId:'original'},evidence:{source:'unchanged'},policyDigest:'current',engineDigest:'current'};
+  const checkpoint={contractVersion:4,gameId:'cozy-island',date:'2026-10-08',seedId:'original',policyDigest:prior,engineDigest:oldEngine,phases:{},tasks:{authored:'preserved'},modelHealth:{}};
+  checkpoint.fingerprint=createHash('sha256').update(JSON.stringify({...context,policyDigest:prior,engineDigest:oldEngine})).digest('hex');
+  const allowed=(cp=checkpoint,ctx=context,only=true)=>runInNewContext(snippet+'\ncheckpointThreePlatformPolicyMigrationEligible',{designCheckpoint:cp,checkpointInputContext:ctx,DESIGN_CHECKPOINT_CONTRACT_VERSION:4,threePlatformOnlyPolicyRevision:only,gameId:'cozy-island',date:'2026-10-08',seed:{seedId:'original'},engineDigest:'current',checkpointCompatibleEngineDigests:new Set(),createHash,clean:String});
+  assert.equal(Boolean(allowed()),true);
+  assert.equal(Boolean(allowed({...checkpoint,fingerprint:'tampered'})),false);
+  assert.equal(Boolean(allowed({...checkpoint,policyDigest:'other-policy'})),false);
+  assert.equal(Boolean(allowed(checkpoint,{...context,evidence:{source:'changed'}})),false);
+  assert.equal(Boolean(allowed(checkpoint,context,false)),false);
+  assert.equal(Boolean(allowed({...checkpoint,engineDigest:'unrecognized'})),false);
+});
+
 test('transport repair reuses previous drafts only when every original input still matches',()=>{
   const source=design.slice(design.indexOf('const checkpointV3CompatibleEngineMigrationEligible='),design.indexOf('if(!checkpointReusable'));
   for(const oldEngine of ['cc088ad7a8676ded2864387d1c00a39b024f9e9a4e72f50308346406aea805a9','d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904','dac95f134b0ededc03820f0bcdc338c5fdb495164c8cd165653789fa6a468cc4']){
