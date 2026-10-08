@@ -454,25 +454,33 @@
     },
     "local_authoring_parts::9622f859fc4c5c3936a4b1a6d6442051da5f4ed2bc5b90962b5e339d1d4aca32:toId": {
       "toId": "NEXT_PLAYER_CHOICE"
+    },
+    "local_authoring_parts::9622f859fc4c5c3936a4b1a6d6442051da5f4ed2bc5b90962b5e339d1d4aca32:stateKeys": {
+      "stateKeys": [
+        "BOARD_STATE",
+        "PLAYER_ACTION",
+        "NEW_BOARD_STATE",
+        "NEXT_PLAYER_CHOICE"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 13,
+      "calls": 14,
+      "successes": 14,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1006023,
-      "lastMs": 57075,
+      "totalMs": 1064474,
+      "lastMs": 58451,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:04:13.748Z"
+      "updatedAt": "2026-10-08T18:05:12.200Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:47:27.560Z",
-  "updatedAt": "2026-10-08T18:04:13.748Z",
+  "updatedAt": "2026-10-08T18:05:12.200Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2764,7 +2772,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:04:13.748Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:05:12.200Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
