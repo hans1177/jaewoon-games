@@ -94,25 +94,203 @@
       "name": "SurvivalDepthSystem",
       "purpose": "Implement the core gameplay mechanic of deepening survival through strategic exploration, resource management, and progression, with the ability to uncover new possibilities and generate new questions for the next iteration of gameplay.",
       "playerChoice": "Explore new territories, discover hidden resources, and uncover the potential for new gameplay options that can reshape the world state and influence the next player action."
+    },
+    "local_authoring_parts::cf423ba85f3f1e874a4dc0378a0726462ad50f11a16a3186dcdda7bc4ec2601a:signatureSystems:4": {
+      "id": "signatureSystems[4]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "worldState",
+        "playerAction"
+      ],
+      "stateOutputs": [
+        "newWorldState",
+        "nextPlayerAction"
+      ],
+      "name": "SurvivalDiscoverySystem",
+      "purpose": "Implement the core gameplay mechanic of deepening survival through strategic exploration, resource management, and progression, with the ability to uncover new possibilities and generate new questions for the next iteration of gameplay.",
+      "playerChoice": "Explore new territories, discover hidden resources, and uncover the potential for new gameplay options that can reshape the world state and influence the next player action."
+    },
+    "local_authoring_parts::851549d5e01e1dc88f3cba332e302cc22c07828a8e8e3b73187fc54420b91f7f:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "worldState",
+            "playerAction"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextPlayerAction"
+          ],
+          "name": "SurvivalHordeSystem",
+          "purpose": "Implement the core gameplay mechanic of fighting an escalating horde in real-time while positioning around enemies, with the ability to upgrade resources through strategic choices.",
+          "playerChoice": "Choose between collecting rewards or experience, and upgrading weapons, perks, or skills to enhance your survival strategy. Alternatively, consolidate resources to survive tougher waves or bosses and transition to the next progression phase."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "worldState",
+            "playerAction"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextPlayerAction"
+          ],
+          "name": "SurvivalResourceSystem",
+          "purpose": "Implement the core gameplay mechanic of resource management and strategic decision-making in a survival context, with the ability to optimize resources through tactical choices.",
+          "playerChoice": "Choose between collecting resources for immediate survival or consolidating them for long-term strategic advantages, with the ability to upgrade tools, skills, or systems to enhance survival efficiency."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "worldState",
+            "playerAction"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextPlayerAction"
+          ],
+          "name": "SurvivalProgressionSystem",
+          "purpose": "Implement the core gameplay mechanic of progressing through survival challenges by combining upgrades, surviving waves, and converting run results into progression choices. This system enables players to advance through the game by strategically combining resources, overcoming challenges, and transitioning to new phases of gameplay.",
+          "playerChoice": "Choose between combining upgrades into a stronger build, surviving harder waves or a boss, and converting the run result into the next progression choice. This allows players to optimize their strategy by leveraging resource efficiency, overcoming difficulty, and advancing through the game's progression system."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "worldState",
+            "playerAction"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextPlayerAction"
+          ],
+          "name": "SurvivalDepthSystem",
+          "purpose": "Implement the core gameplay mechanic of deepening survival through strategic exploration, resource management, and progression, with the ability to uncover new possibilities and generate new questions for the next iteration of gameplay.",
+          "playerChoice": "Explore new territories, discover hidden resources, and uncover the potential for new gameplay options that can reshape the world state and influence the next player action."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "worldState",
+            "playerAction"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextPlayerAction"
+          ],
+          "name": "SurvivalDiscoverySystem",
+          "purpose": "Implement the core gameplay mechanic of deepening survival through strategic exploration, resource management, and progression, with the ability to uncover new possibilities and generate new questions for the next iteration of gameplay.",
+          "playerChoice": "Explore new territories, discover hidden resources, and uncover the potential for new gameplay options that can reshape the world state and influence the next player action."
+        }
+      ]
+    },
+    "local_authoring_parts::799a776dd6f93c5ef23641ed807c20eb7b278fe12cd3a6b781a1603ccdcd6fd0:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "worldState",
+            "playerAction"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextPlayerAction"
+          ],
+          "name": "SurvivalHordeSystem",
+          "purpose": "Implement the core gameplay mechanic of fighting an escalating horde in real-time while positioning around enemies, with the ability to upgrade resources through strategic choices.",
+          "playerChoice": "Choose between collecting rewards or experience, and upgrading weapons, perks, or skills to enhance your survival strategy. Alternatively, consolidate resources to survive tougher waves or bosses and transition to the next progression phase."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "worldState",
+            "playerAction"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextPlayerAction"
+          ],
+          "name": "SurvivalResourceSystem",
+          "purpose": "Implement the core gameplay mechanic of resource management and strategic decision-making in a survival context, with the ability to optimize resources through tactical choices.",
+          "playerChoice": "Choose between collecting resources for immediate survival or consolidating them for long-term strategic advantages, with the ability to upgrade tools, skills, or systems to enhance survival efficiency."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "worldState",
+            "playerAction"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextPlayerAction"
+          ],
+          "name": "SurvivalProgressionSystem",
+          "purpose": "Implement the core gameplay mechanic of progressing through survival challenges by combining upgrades, surviving waves, and converting run results into progression choices. This system enables players to advance through the game by strategically combining resources, overcoming challenges, and transitioning to new phases of gameplay.",
+          "playerChoice": "Choose between combining upgrades into a stronger build, surviving harder waves or a boss, and converting the run result into the next progression choice. This allows players to optimize their strategy by leveraging resource efficiency, overcoming difficulty, and advancing through the game's progression system."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "worldState",
+            "playerAction"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextPlayerAction"
+          ],
+          "name": "SurvivalDepthSystem",
+          "purpose": "Implement the core gameplay mechanic of deepening survival through strategic exploration, resource management, and progression, with the ability to uncover new possibilities and generate new questions for the next iteration of gameplay.",
+          "playerChoice": "Explore new territories, discover hidden resources, and uncover the potential for new gameplay options that can reshape the world state and influence the next player action."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "worldState",
+            "playerAction"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextPlayerAction"
+          ],
+          "name": "SurvivalDiscoverySystem",
+          "purpose": "Implement the core gameplay mechanic of deepening survival through strategic exploration, resource management, and progression, with the ability to uncover new possibilities and generate new questions for the next iteration of gameplay.",
+          "playerChoice": "Explore new territories, discover hidden resources, and uncover the potential for new gameplay options that can reshape the world state and influence the next player action."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 689413,
-      "lastMs": 70766,
+      "totalMs": 760992,
+      "lastMs": 71579,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:09:36.554Z"
+      "updatedAt": "2026-10-08T13:10:48.134Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:58:07.049Z",
-  "updatedAt": "2026-10-08T13:09:36.554Z",
+  "updatedAt": "2026-10-08T13:10:48.137Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2311,7 +2489,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:09:36.554Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:10:48.136Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
