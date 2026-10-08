@@ -813,25 +813,36 @@
         "riskPressure": "게임은 단순 반복과 다른 경로·위험·결과를 만든다. 성장은 행동·경로·조합·관계·발견·대응법을 열",
         "recoveryRules": "게임_시작_목표_2 설정, 제한_이동_수_2 선택, 장애물_집합_2 해결, 시그니처_규칙_4 적용"
       }
+    },
+    "local_authoring_parts::17f470ac8cb5c03978f81d780d79af230edaadbcd133c46e3ee08f06d2631b0c:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "별길 개척자-게임_시그니처_1",
+      "toId": "별길 개척자-게임_시그니처_2",
+      "stateKeys": [
+        "게임_결과_상태",
+        "선택_바뀐_상태",
+        "게임_진행_상태",
+        "시그니처_규칙_2"
+      ],
+      "fromSystem": "별길 개척자 - 게임_시그니처_1"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 17,
+      "calls": 19,
+      "successes": 18,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1800660,
-      "lastMs": 124963,
+      "totalMs": 1864766,
+      "lastMs": 64106,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T13:23:18.495Z"
+      "updatedAt": "2026-10-08T13:24:22.608Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:53:17.663Z",
-  "updatedAt": "2026-10-08T13:23:18.500Z",
+  "updatedAt": "2026-10-08T13:24:22.608Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3016,10 +3027,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:23:18.497Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:24:22.608Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
