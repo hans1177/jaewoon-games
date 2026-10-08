@@ -64,25 +64,40 @@
       "name": "ARMOR_STRIKE_DEFENSE_FIELD",
       "purpose": "플레이어가 주체가 되어 전투 유닛의 방어 계획을 재설계하여 새로운 전략을 실행하는 데 사용된다.",
       "playerChoice": "Enemy type is analyzed, and defense layout is adjusted. This action triggers the deployment of tower upgrades and new placement strategies to optimize future combat scenarios."
+    },
+    "local_authoring_parts::1f8caf8f10277a7214593abac2e9109f2cd675052811b5c28f4946c94b2879de:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_03",
+      "grammarRole": "B",
+      "stateInputs": [
+        "ENEMY_TYPE",
+        "DEFENSE_LAYOUT"
+      ],
+      "stateOutputs": [
+        "TOWER_UPGRADES",
+        "NEW_PLACEMENT_STRATEGY"
+      ],
+      "name": "ARMOR_STRIKE_DEFENSE_FIELD_BETA",
+      "purpose": "플레이어가 주체가 되어 전투 유닛의 방어 계획을 재설계하여 새로운 전략을 실행하는 데 사용된다.",
+      "playerChoice": "Enemy type is analyzed, and defense layout is adjusted. This action triggers the deployment of tower upgrades and new placement strategies to optimize future combat scenarios."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 458635,
-      "lastMs": 39073,
+      "totalMs": 532363,
+      "lastMs": 73728,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:01:56.135Z"
+      "updatedAt": "2026-10-08T18:03:09.865Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:54:17.473Z",
-  "updatedAt": "2026-10-08T18:01:56.136Z",
+  "updatedAt": "2026-10-08T18:03:09.865Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2277,7 +2292,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:01:56.135Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:03:09.865Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
