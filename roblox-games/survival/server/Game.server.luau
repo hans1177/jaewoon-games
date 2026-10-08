@@ -95,6 +95,8 @@ local function buildSurvivalWorld()
     enemies.Parent = world
   end
 
+  -- 기존 캠프·자원·적 출현 위치가 모두 실제 지면에 놓이도록 월드 충돌 지형을 보장한다.
+  ensureWorldPart(world, "SurvivalGround", Vector3.new(160, 1, 160), Vector3.new(0, -0.5, 0), Enum.Material.Grass, Color3.fromRGB(81, 120, 72))
   ensureWorldPart(world, "SurvivalLandmarkCamp", Vector3.new(18, 1, 18), Vector3.new(0, 0, 0), Enum.Material.Slate, Color3.fromRGB(86, 91, 82))
   ensureWorldPart(world, "SurvivalObjectiveWorkbench", Vector3.new(5, 2, 3), Vector3.new(8, 1, 0), Enum.Material.WoodPlanks, Color3.fromRGB(126, 91, 58))
   ensureWorldPart(resources, "WoodResourceNode", Vector3.new(3, 5, 3), Vector3.new(-12, 2.5, 8), Enum.Material.Wood, Color3.fromRGB(94, 74, 48))
@@ -638,7 +640,7 @@ local function bindNativeFoundationCharacter(character)
   -- The existing spawn rests on verified world geometry; it cannot be its own ground proof.
   local spawnHit = workspace:Raycast(nativeFoundationSpawn.Position + Vector3.new(0, 64, 0), Vector3.new(0, -576, 0), params)
   if spawnHit and spawnHit.Normal.Y >= 0.55 then
-    nativeFoundationSpawn.Position = Vector3.new(nativeFoundationSpawn.Position.X, spawnHit.Position.Y - nativeFoundationSpawn.Size.Y * 0.5 + 0.05, nativeFoundationSpawn.Position.Z)
+    nativeFoundationSpawn.Position = Vector3.new(nativeFoundationSpawn.Position.X, spawnHit.Position.Y + nativeFoundationSpawn.Size.Y * 0.5 + 0.05, nativeFoundationSpawn.Position.Z)
   end
   local target = groundHit.Position + Vector3.new(0, clearance + 0.1, 0)
   character:PivotTo(character:GetPivot() + (target - rootPart.Position))
