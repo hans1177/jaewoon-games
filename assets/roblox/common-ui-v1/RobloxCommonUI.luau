@@ -989,83 +989,105 @@ function RobloxCommonUI.CreateDialogueHistory(options)
 end
 
 function RobloxCommonUI.CreateNpcInteractionPrompt(options)
-  options = options or {}
-  local theme = cloneTheme(options.theme)
-  local root = Instance.new("Frame")
-  root.Name = options.name or "NpcInteractionPrompt"
-  root.Size = options.size or UDim2.fromOffset(300, 64)
-  root.BackgroundColor3 = theme.Panel
-  root.BackgroundTransparency = 0.06
-  root.BorderSizePixel = 0
-  tag(root, "NPC_INTERACTION_PROMPT")
-  corner(root, 14)
-  stroke(root, theme.BorderBright, 1.3, 0.10)
-  gradient(root, theme.PanelRaised, theme.Panel, 90)
-
-  local key = commonText(root, "Key", options.keyText or "E", UDim2.fromOffset(10, 10), UDim2.fromOffset(44, 44), theme.Text, 16, true)
-  key.TextXAlignment = Enum.TextXAlignment.Center
-  key.BackgroundColor3 = theme.Primary
-  key.BackgroundTransparency = 0
-  corner(key, 11)
-  stroke(key, theme.PrimaryTop, 1, 0.05)
-
-  local title = commonText(root, "Title", options.title or "대화하기", UDim2.fromOffset(66, 9), UDim2.new(1, -76, 0, 24), theme.Text, 14, true)
-  local subtitle = commonText(root, "Subtitle", options.subtitle or "", UDim2.fromOffset(66, 32), UDim2.new(1, -76, 0, 18), theme.MutedText, 11, false)
-  root:SetAttribute("PresentationRole", "NPC_INTERACTION_PROMPT")
-  root:SetAttribute("InteractionId", tostring(options.interactionId or ""))
-  root:SetAttribute("OwnsInteractionAuthority", false)
-  return root, key, title, subtitle
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=Instance.new("Frame")
+  root.Name=options.name or "NpcInteractionPrompt"
+  root.Size=options.size or UDim2.fromOffset(300,64)
+  root.BackgroundColor3=theme.Panel
+  root.BackgroundTransparency=0.06;root.BorderSizePixel=0
+  tag(root,"NPC_INTERACTION_PROMPT")
+  corner(root,14);stroke(root,theme.BorderBright,1.3,0.10)
+  gradient(root,theme.PanelRaised,theme.Panel,90)
+  local key=commonText(root,"Key",options.keyText or "E",
+    UDim2.fromOffset(10,10),UDim2.fromOffset(44,44),theme.Text,16,true)
+  key.TextXAlignment=Enum.TextXAlignment.Center
+  key.BackgroundColor3=theme.Primary;key.BackgroundTransparency=0;corner(key,11);stroke(key,theme.PrimaryTop,1,0.05)
+  local title=commonText(root,"Title",options.title or "상호작용",
+    UDim2.fromOffset(66,9),UDim2.new(1,-76,0,24),theme.Text,14,true)
+  local subtitle=commonText(root,"Subtitle",options.subtitle or "",
+    UDim2.fromOffset(66,32),UDim2.new(1,-76,0,18),theme.MutedText,11,false)
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    key.Text=tostring(state.keyText or options.keyText or "E")
+    title.Text=tostring(state.title or options.title or "상호작용")
+    subtitle.Text=tostring(state.subtitle or state.reason or options.subtitle or "")
+    local enabled=state.available~=false
+    subtitle.TextColor3=enabled and theme.MutedText or theme.Warning
+    root:SetAttribute("InteractionId",tostring(state.id or options.interactionId or ""))
+    root:SetAttribute("InteractionKind",tostring(state.kind or "NPC"))
+    root:SetAttribute("InteractionAvailable",enabled)
+    root:SetAttribute("InteractionStateRevision",tostring(state.revision or "UNKNOWN"))
+  end
+  sync(options.interaction or {})
+  root:SetAttribute("PresentationRole","NPC_INTERACTION_PROMPT")
+  root:SetAttribute("OwnsInteractionAuthority",false)
+  root:SetAttribute("OwnsRemoteAuthority",false)
+  return root,key,title,subtitle,sync
 end
 
 function RobloxCommonUI.CreateNpcInteractionMenu(options)
-  options = options or {}
-  local theme = cloneTheme(options.theme)
-  local root, inner = RobloxCommonUI.CreatePanel({
-    name = options.name or "NpcInteractionMenu",
-    size = options.size or UDim2.fromOffset(330, 300),
-    theme = theme,
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,inner=RobloxCommonUI.CreatePanel({
+    name=options.name or "NpcInteractionMenu",
+    size=options.size or UDim2.new(1,-24,1,-24),theme=theme
   })
-  tag(root, "NPC_INTERACTION_MENU")
-
-  commonText(inner, "Title", options.title or "상호작용", UDim2.fromOffset(12, 8), UDim2.new(1, -24, 0, 26), theme.Text, 17, true)
-  commonText(inner, "NpcName", options.npcName or "", UDim2.fromOffset(12, 34), UDim2.new(1, -24, 0, 18), theme.Accent, 12, true)
-
-  local list = Instance.new("Frame")
-  list.Name = "Actions"
-  list.Position = UDim2.fromOffset(12, 62)
-  list.Size = UDim2.new(1, -24, 1, -74)
-  list.BackgroundTransparency = 1
-  list.Parent = inner
-  commonList(list, false, 7)
-
-  local buttons = {}
-  for index, action in ipairs(options.actions or {
-    {id="TALK", label="대화"},
-    {id="QUEST", label="의뢰"},
-    {id="TRADE", label="거래"},
-    {id="GIVE_ITEM", label="아이템 전달"},
-  }) do
-    local button = RobloxCommonUI.CreateDialogueChoice({
-      name = tostring(action.id or ("Action" .. index)),
-      text = tostring(action.label or action.id or "상호작용"),
-      theme = theme,
-      size = UDim2.new(1, 0, 0, 46),
-    })
-    button.LayoutOrder = index
-    button.Parent = list
-    button:SetAttribute("InteractionActionId", tostring(action.id or index))
-    button:SetAttribute("Locked", action.locked == true)
-    if action.locked == true then
-      button.TextColor3 = theme.MutedText
-      button.BackgroundTransparency = 0.45
+  tag(root,"NPC_INTERACTION_MENU")
+  local title=commonText(inner,"Title",options.title or "상호작용",
+    UDim2.fromOffset(12,8),UDim2.new(1,-24,0,26),theme.Text,17,true)
+  local npc=commonText(inner,"NpcName",options.npcName or "",
+    UDim2.fromOffset(12,34),UDim2.new(1,-24,0,18),theme.Accent,12,true)
+  local list=Instance.new("ScrollingFrame")
+  list.Name="Actions";list.Position=UDim2.fromOffset(12,62);list.Size=UDim2.new(1,-24,1,-74)
+  list.BackgroundTransparency=1;list.BorderSizePixel=0;list.ScrollBarThickness=4
+  list.ScrollingDirection=Enum.ScrollingDirection.Y
+  list.CanvasSize=UDim2.fromOffset(0,0);list.AutomaticCanvasSize=Enum.AutomaticSize.Y
+  list.Active=true;list.Parent=inner
+  local layout=commonList(list,false,7)
+  layout.VerticalAlignment=Enum.VerticalAlignment.Top
+  local buttons,rows={},{}
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    rows=type(state.actions)=="table"and state.actions or {}
+    title.Text=tostring(state.title or options.title or "상호작용")
+    npc.Text=tostring(state.npcName or options.npcName or "")
+    for index,row in ipairs(rows)do
+      if not buttons[index]then
+        local button=RobloxCommonUI.CreateDialogueChoice({
+          name="NpcAction"..index,text="",size=UDim2.new(1,0,0,48),theme=theme
+        })
+        button.LayoutOrder=index;button.Parent=list;buttons[index]=button
+        local captured=index
+        button.Activated:Connect(function()
+          local selected=rows[captured]
+          if not selected or selected.available==false then return end
+          if type(options.onSelect)=="function"then options.onSelect(selected.id,selected)end
+        end)
+      end
+      local button=buttons[index]
+      button.Text=tostring(row.label or row.id or "상호작용")
+      button.Name="NpcAction"..index
+      button.LayoutOrder=index;button.Visible=true
+      button.Active=row.available~=false
+      button.AutoButtonColor=row.available~=false
+      button.TextColor3=row.available==false and theme.MutedText or theme.Text
+      button:SetAttribute("InteractionActionId",tostring(row.id or index))
+      button:SetAttribute("Locked",row.available==false)
+      button:SetAttribute("MinimumTouchHeight",48)
     end
-    buttons[index] = button
+    for index=#rows+1,#buttons do buttons[index].Visible=false end
+    root:SetAttribute("InteractionId",tostring(state.id or options.interactionId or ""))
+    root:SetAttribute("BoundInteractionActionCount",#rows)
+    root:SetAttribute("InteractionStateRevision",tostring(state.revision or "UNKNOWN"))
   end
-  root:SetAttribute("PresentationRole", "NPC_INTERACTION_MENU")
-  root:SetAttribute("OwnsInteractionAuthority", false)
-  root:SetAttribute("OwnsQuestAuthority", false)
-  root:SetAttribute("OwnsTradeAuthority", false)
-  return root, inner, list, buttons
+  sync(options.interaction or {actions=options.actions or {}})
+  root:SetAttribute("PresentationRole","NPC_INTERACTION_MENU")
+  root:SetAttribute("OwnsInteractionAuthority",false)
+  root:SetAttribute("OwnsQuestAuthority",false)
+  root:SetAttribute("OwnsTradeAuthority",false)
+  root:SetAttribute("OwnsRemoteAuthority",false)
+  return root,inner,list,buttons,sync
 end
 
 function RobloxCommonUI.CreateNpcRelationshipCard(options)
