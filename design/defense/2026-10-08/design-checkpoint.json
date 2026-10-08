@@ -34,25 +34,42 @@
         "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
         "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
       ]
+    },
+    "local_authoring_parts::e4038e09e25cbcbf538c565d87ec6a4d12cfc7e8998d4128e787a4b3f7b2cebb:signatureSystems:0": {
+      "id": "SINGLE_DEFENSE_STRATEGY",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "enemyWave",
+        "defenses",
+        "resources"
+      ],
+      "stateOutputs": [
+        "newDefenses",
+        "resources",
+        "pressure"
+      ],
+      "name": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+      "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+      "playerChoice": "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 324693,
-      "lastMs": 46449,
+      "totalMs": 358050,
+      "lastMs": 33357,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:14:19.952Z"
+      "updatedAt": "2026-10-08T12:14:53.311Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:08:55.008Z",
-  "updatedAt": "2026-10-08T12:14:19.953Z",
+  "updatedAt": "2026-10-08T12:14:53.311Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2247,7 +2264,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:14:19.952Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:14:53.311Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
