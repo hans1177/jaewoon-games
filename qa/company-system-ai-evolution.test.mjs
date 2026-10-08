@@ -547,6 +547,9 @@ test('portfolio refill dispatches existing independent game workflows rather tha
     'unity-web-first-stage-build.yml','unity-web-floor-source-bootstrap.yml'
   ])assert.ok(workflow.includes('gh workflow run '+name),'missing existing game handoff: '+name);
   assert.match(workflow,/continue-cycle:\n\s+name: Refill after dispatching independent game workflows/);
+  assert.match(workflow,/--arg control_sha "\$GITHUB_SHA"/);
+  assert.match(workflow,/select\(\.head_sha == \$control_sha\)/);
+  assert.match(workflow,/DEVELOPMENT_COORDINATOR_OLDER_MAIN_RUNS_MAY_NOT_BLOCK_NEW_REVISION=YES/);
   assert.match(workflow,/DEVELOPMENT_PARENT_FAN_IN_WAITS_FOR_GAME_COMPLETION=NO/);
   assert.match(workflow,/fail-fast: false/);
   const sensor=fs.readFileSync('.github/workflows/company-system-ai-workers.yml','utf8');
