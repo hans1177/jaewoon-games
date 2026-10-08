@@ -685,7 +685,7 @@ bossText.Font=Enum.Font.GothamBold;bossText.TextSize=touchEnabled and 16 or 19
 bossText.TextWrapped=true;bossText.TextColor3=Color3.fromRGB(255,215,171)
 bossText.ZIndex=31;bossText.Parent=bossScene
 local bossSkip=button(bossScene,"건너뛰기",Color3.fromRGB(87,66,79))
-bossSkip.Name="SkipBossCinematic";bossSkip.Size=UDim2.fromOffset(110,40)
+bossSkip.Name="SkipBossCinematic";bossSkip.Size=UDim2.fromOffset(120,48)
 bossSkip.AnchorPoint=Vector2.new(.5,1);bossSkip.Position=UDim2.new(.5,0,1,-8)
 bossSkip.ZIndex=32
 local function endBossCinematic()
