@@ -1280,9 +1280,9 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
       const evidence=new Set((row.verificationEvidence||[]).map(clean));
       // Resolve instructions from current verified sources, never from raw practice text.
       // Revoked or revised evidence must stop supplying its previous implementation advice.
-      const patterns=(codePatternsInput.patterns||[]).filter(item=>item.verified===true&&item.rawCodeStored!==true&&upper(item.independentQa)==='PASS'
+      const patterns=(codePatternsInput.patterns||[]).filter(item=>item.verified===true&&item.rawCodeStored!==true&&item.retrievalEligible!==false&&upper(item.independentQa)==='PASS'&&knowledgeStateFor(mastery,'CODE_PATTERN',item.id)!=='RETIRED'
         &&evidence.has('code-pattern:'+clean(item.id)+':'+(clean(item.sourceRevision)||clean(item.id))));
-      const experiences=(experienceInput.records||[]).filter(item=>item.verified===true&&item.reusable===true&&lower(item.taskType)!=='game-study'
+      const experiences=(normalizedExperience.records||[]).filter(item=>item.verified===true&&item.reusable===true&&item.retrievalEligible!==false&&lower(item.taskType)!=='game-study'&&knowledgeStateFor(mastery,'EXPERIENCE',item.id)!=='RETIRED'
         &&evidence.has('experience:'+clean(item.id||item.fingerprint)+':'+(clean(item.gameId)||clean(item.id))));
       return{id:clean(row.id),domain:upper(row.domain),confirmations:Math.max(1,Number(row.confirmations)||1),verificationEvidence:[...evidence].slice(0,6),
         reusablePatterns:uniq([...patterns.map(item=>item.pattern),...experiences.flatMap(item=>item.reusablePatterns||[])]).slice(0,4),

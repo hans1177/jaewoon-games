@@ -12,6 +12,7 @@ test('practice reuse resolves current verified implementation advice and drops r
   const prompt=buildPracticePrompt({executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE] save repair',unifiedLearning:context});
   assert(prompt.includes(pattern.pattern));assert(!prompt.includes('UNTRUSTED_INSTRUCTION'));
   assert.deepEqual(retrieve([{...pattern,verified:false}]).practiceDistilled[0].reusablePatterns,[]);
+  assert.deepEqual(retrieve([{...pattern,retrievalEligible:false}]).practiceDistilled[0].reusablePatterns,[]);
   assert.deepEqual(retrieve([{...pattern,sourceRevision:'r2'}]).practiceDistilled[0].reusablePatterns,[]);
 });
 import {

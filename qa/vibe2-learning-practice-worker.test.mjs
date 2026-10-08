@@ -216,6 +216,13 @@ test('repair budget is bounded and malformed responses remain failures',async()=
   assert.equal(calls,3);assert.equal(result.evaluation.pass,false);
 });
 
+test('registered Unity coding drills prepare the existing executor and persist repair evidence',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+  assert.match(workflow,/platformDrills\?\.some\(d=>d\.id===id&&d\.platform==='unity'\)/);
+  assert.doesNotMatch(workflow,/codingPracticeDrill==='unity-lifecycle'/);
+  assert.match(workflow,/practiceArtifact,practiceRepair,neuralDiagnosis/);
+});
+
 for(const drill of robloxCurriculum.platformDrills.filter(row=>row.platform==='unity'&&row.id!=='unity-lifecycle')){
   test('executable coding contract, baseline, and held-out inputs: '+drill.id,{skip:!process.env.VIBE2_TEST_CSHARP_RUNTIME},()=>{
     for(const tests of [drill.feedbackTests,drill.tests]){
