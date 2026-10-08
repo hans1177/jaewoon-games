@@ -84,25 +84,246 @@
       "name": "WAVE_DEFENSE_STRATEGY",
       "purpose": "Establishes the core gameplay mechanism for wave-based defense, ensuring strategic decision-making and reward-based progression through the use of advanced play patterns and complex decision-making frameworks.",
       "playerChoice": "Player chooses the optimal play pattern and decision-making framework to maximize the effectiveness of their defense strategy, considering the threat level, reward value, and next selection."
+    },
+    "local_authoring_parts::1260bee3ee39bd05f3753bed97da3f92b7004ba4dcc2d0e42108cf18c179d99e:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_4",
+      "grammarRole": "c",
+      "stateInputs": [
+        "INCOMING_INSECT_WAVE",
+        "THREAT_LEVEL",
+        "REWARD_VALUE",
+        "NEXT_SELECTION"
+      ],
+      "stateOutputs": [
+        "MODIFIED_DEFENDER_LAYOUT",
+        "RESOURCES_ALLOCATED",
+        "NEXT_SELECTION"
+      ],
+      "name": "WAVE_DEFENSE_ADVANCED_PLAY",
+      "purpose": "Establishes the core gameplay mechanism for wave-based defense, ensuring advanced play patterns and complex decision-making frameworks through the use of emergent gameplay and dynamic state transitions.",
+      "playerChoice": "Player chooses the optimal play pattern and decision-making framework to maximize the effectiveness of their defense strategy, considering the threat level, reward value, and next selection, while incorporating emergent gameplay and dynamic state transitions."
+    },
+    "local_authoring_parts::1260bee3ee39bd05f3753bed97da3f92b7004ba4dcc2d0e42108cf18c179d99e:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "INCOMING_INSECT_WAVE",
+        "THREAT_LEVEL",
+        "REWARD_VALUE",
+        "NEXT_SELECTION"
+      ],
+      "stateOutputs": [
+        "MODIFIED_DEFENDER_LAYOUT",
+        "RESOURCES_ALLOCATED",
+        "NEXT_SELECTION"
+      ],
+      "name": "WAVE_DEFENSE_ADVANCED_PLAY",
+      "purpose": "Establishes the core gameplay mechanism for wave-based defense, ensuring advanced play patterns and complex decision-making frameworks through the use of emergent gameplay and dynamic state transitions.",
+      "playerChoice": "Player chooses the optimal play pattern and decision-making framework to maximize the effectiveness of their defense strategy, considering the threat level, reward value, and next selection, while incorporating emergent gameplay and dynamic state transitions."
+    },
+    "local_authoring_parts::09fdebe173c9721534be9cb569c80940ee4f23640173416ce2aa44a390698ae0:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE",
+            "THREAT_LEVEL"
+          ],
+          "stateOutputs": [
+            "MODIFIED_DEFENDER_LAYOUT",
+            "RESOURCES_ALLOCATED"
+          ],
+          "name": "WAVE_DEFENSE_READABILITY",
+          "purpose": "Establishes the core gameplay mechanism for wave-based defense, ensuring readability and meaningful placement choices.",
+          "playerChoice": "Player chooses which insect to target, based on threat level, and allocates resources to optimize defense strategy."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE",
+            "THREAT_LEVEL",
+            "REWARD_VALUE"
+          ],
+          "stateOutputs": [
+            "MODIFIED_DEFENDER_LAYOUT",
+            "RESOURCES_ALLOCATED",
+            "NEXT_SELECTION"
+          ],
+          "name": "WAVE_DEFENSE_MASTERY",
+          "purpose": "Establishes the core gameplay mechanism for wave-based defense, ensuring mastery through strategic decision-making and reward-based progression.",
+          "playerChoice": "Player chooses which insect to target, based on threat level and reward value, and allocates resources to optimize defense strategy with a focus on long-term progression."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE",
+            "THREAT_LEVEL",
+            "REWARD_VALUE",
+            "NEXT_SELECTION"
+          ],
+          "stateOutputs": [
+            "MODIFIED_DEFENDER_LAYOUT",
+            "RESOURCES_ALLOCATED",
+            "NEXT_SELECTION"
+          ],
+          "name": "WAVE_DEFENSE_STRATEGY",
+          "purpose": "Establishes the core gameplay mechanism for wave-based defense, ensuring strategic decision-making and reward-based progression through the use of advanced play patterns and complex decision-making frameworks.",
+          "playerChoice": "Player chooses the optimal play pattern and decision-making framework to maximize the effectiveness of their defense strategy, considering the threat level, reward value, and next selection."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE",
+            "THREAT_LEVEL",
+            "REWARD_VALUE",
+            "NEXT_SELECTION"
+          ],
+          "stateOutputs": [
+            "MODIFIED_DEFENDER_LAYOUT",
+            "RESOURCES_ALLOCATED",
+            "NEXT_SELECTION"
+          ],
+          "name": "WAVE_DEFENSE_ADVANCED_PLAY",
+          "purpose": "Establishes the core gameplay mechanism for wave-based defense, ensuring advanced play patterns and complex decision-making frameworks through the use of emergent gameplay and dynamic state transitions.",
+          "playerChoice": "Player chooses the optimal play pattern and decision-making framework to maximize the effectiveness of their defense strategy, considering the threat level, reward value, and next selection, while incorporating emergent gameplay and dynamic state transitions."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE",
+            "THREAT_LEVEL",
+            "REWARD_VALUE",
+            "NEXT_SELECTION"
+          ],
+          "stateOutputs": [
+            "MODIFIED_DEFENDER_LAYOUT",
+            "RESOURCES_ALLOCATED",
+            "NEXT_SELECTION"
+          ],
+          "name": "WAVE_DEFENSE_ADVANCED_PLAY",
+          "purpose": "Establishes the core gameplay mechanism for wave-based defense, ensuring advanced play patterns and complex decision-making frameworks through the use of emergent gameplay and dynamic state transitions.",
+          "playerChoice": "Player chooses the optimal play pattern and decision-making framework to maximize the effectiveness of their defense strategy, considering the threat level, reward value, and next selection, while incorporating emergent gameplay and dynamic state transitions."
+        }
+      ]
+    },
+    "local_authoring_parts::50fba990de0ff3093d1af6e3476a65ce53cb2c0a43015d9955c8d286fef92978:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT: Read the incoming insect wave and its threat pattern.",
+        "ACTION: Place or adjust defenders and spend limited resources on the highest-value counter.",
+        "RESULT: World state change and next selection"
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE",
+            "THREAT_LEVEL"
+          ],
+          "stateOutputs": [
+            "MODIFIED_DEFENDER_LAYOUT",
+            "RESOURCES_ALLOCATED"
+          ],
+          "name": "WAVE_DEFENSE_READABILITY",
+          "purpose": "Establishes the core gameplay mechanism for wave-based defense, ensuring readability and meaningful placement choices.",
+          "playerChoice": "Player chooses which insect to target, based on threat level, and allocates resources to optimize defense strategy."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE",
+            "THREAT_LEVEL",
+            "REWARD_VALUE"
+          ],
+          "stateOutputs": [
+            "MODIFIED_DEFENDER_LAYOUT",
+            "RESOURCES_ALLOCATED",
+            "NEXT_SELECTION"
+          ],
+          "name": "WAVE_DEFENSE_MASTERY",
+          "purpose": "Establishes the core gameplay mechanism for wave-based defense, ensuring mastery through strategic decision-making and reward-based progression.",
+          "playerChoice": "Player chooses which insect to target, based on threat level and reward value, and allocates resources to optimize defense strategy with a focus on long-term progression."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE",
+            "THREAT_LEVEL",
+            "REWARD_VALUE",
+            "NEXT_SELECTION"
+          ],
+          "stateOutputs": [
+            "MODIFIED_DEFENDER_LAYOUT",
+            "RESOURCES_ALLOCATED",
+            "NEXT_SELECTION"
+          ],
+          "name": "WAVE_DEFENSE_STRATEGY",
+          "purpose": "Establishes the core gameplay mechanism for wave-based defense, ensuring strategic decision-making and reward-based progression through the use of advanced play patterns and complex decision-making frameworks.",
+          "playerChoice": "Player chooses the optimal play pattern and decision-making framework to maximize the effectiveness of their defense strategy, considering the threat level, reward value, and next selection."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE",
+            "THREAT_LEVEL",
+            "REWARD_VALUE",
+            "NEXT_SELECTION"
+          ],
+          "stateOutputs": [
+            "MODIFIED_DEFENDER_LAYOUT",
+            "RESOURCES_ALLOCATED",
+            "NEXT_SELECTION"
+          ],
+          "name": "WAVE_DEFENSE_ADVANCED_PLAY",
+          "purpose": "Establishes the core gameplay mechanism for wave-based defense, ensuring advanced play patterns and complex decision-making frameworks through the use of emergent gameplay and dynamic state transitions.",
+          "playerChoice": "Player chooses the optimal play pattern and decision-making framework to maximize the effectiveness of their defense strategy, considering the threat level, reward value, and next selection, while incorporating emergent gameplay and dynamic state transitions."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE",
+            "THREAT_LEVEL",
+            "REWARD_VALUE",
+            "NEXT_SELECTION"
+          ],
+          "stateOutputs": [
+            "MODIFIED_DEFENDER_LAYOUT",
+            "RESOURCES_ALLOCATED",
+            "NEXT_SELECTION"
+          ],
+          "name": "WAVE_DEFENSE_ADVANCED_PLAY",
+          "purpose": "Establishes the core gameplay mechanism for wave-based defense, ensuring advanced play patterns and complex decision-making frameworks through the use of emergent gameplay and dynamic state transitions.",
+          "playerChoice": "Player chooses the optimal play pattern and decision-making framework to maximize the effectiveness of their defense strategy, considering the threat level, reward value, and next selection, while incorporating emergent gameplay and dynamic state transitions."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 696469,
-      "lastMs": 109279,
+      "totalMs": 917771,
+      "lastMs": 110959,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:58:56.064Z"
+      "updatedAt": "2026-10-08T13:02:37.368Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:47:19.560Z",
-  "updatedAt": "2026-10-08T12:58:56.064Z",
+  "updatedAt": "2026-10-08T13:02:37.371Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2301,7 +2522,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:58:56.064Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:02:37.371Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
