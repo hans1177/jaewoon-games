@@ -85,25 +85,42 @@
       "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
       "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
       "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.과 Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과가 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다."
+    },
+    "local_authoring_parts::7bbf32d25a0d8d8502676fb4ab2abe8985f3b72a42b7f9b23cd99681d317f89d:signatureSystems:3": {
+      "id": "ACTION_SURVIVAL_ROGUELITE",
+      "grammarRole": "c",
+      "stateInputs": [
+        "FIGHT_STATE",
+        "RUN_REWARD",
+        "UPGRADE_SELECTION"
+      ],
+      "stateOutputs": [
+        "SURVIVAL_STATE",
+        "BUILD_UPGRADE",
+        "PROGRESSION_STEP"
+      ],
+      "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+      "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.과 Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과가 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 814771,
-      "lastMs": 225388,
+      "totalMs": 920567,
+      "lastMs": 105796,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:52:16.313Z"
+      "updatedAt": "2026-10-08T08:54:02.111Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:38:41.495Z",
-  "updatedAt": "2026-10-08T08:52:16.314Z",
+  "updatedAt": "2026-10-08T08:54:02.111Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2302,7 +2319,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:52:16.313Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:54:02.111Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
