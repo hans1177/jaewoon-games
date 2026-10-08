@@ -12,25 +12,32 @@
   "tasks": {
     "local_authoring_parts::642efa78561e66c69b8aa87f61052ae35e229106a592d0eb32ee4e5c4517e913:identity": {
       "identity": "파티 RPG은 사용자 직접 업로드 웹게임으로, 플레이어가 시작하는 보드/그리드 레벨에서 명확한 목표, 제한된 이동, 장애물, 또는 명확한 퀴즈를 통해 반복 가능한 핵심 루프를 구축하는 PUZZLE 게임이다. 플레이어는 시작 단계에서 세계 상태를 바꾸는 중심 행동과 목표를 수행하며, 선택 결과가 다음 월드 상태와 접근 가능성에 영향을 미친다. 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견·대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 기존 게임 원본과의 연계성을 유지한다."
+    },
+    "local_authoring_parts::642efa78561e66c69b8aa87f61052ae35e229106a592d0eb32ee4e5c4517e913:playerFantasy": {
+      "playerFantasy": "파티 RPG에서 플레이어는 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임의 중심 행동과 목표를 수행하며, 선택 결과가 다음 월드 상태와 접근 가능성에 영향을 미친다. 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견·대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 기존 게임 원본과의 연계성을 유지한다."
+    },
+    "local_authoring_parts::e82b02d3bf4ba5fbe7691c48bf4caa26c4aae98b320247f253ad76849b2021b5:identity,playerFantasy": {
+      "identity": "파티 RPG은 사용자 직접 업로드 웹게임으로, 플레이어가 시작하는 보드/그리드 레벨에서 명확한 목표, 제한된 이동, 장애물, 또는 명확한 퀴즈를 통해 반복 가능한 핵심 루프를 구축하는 PUZZLE 게임이다. 플레이어는 시작 단계에서 세계 상태를 바꾸는 중심 행동과 목표를 수행하며, 선택 결과가 다음 월드 상태와 접근 가능성에 영향을 미친다. 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견·대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 기존 게임 원본과의 연계성을 유지한다.",
+      "playerFantasy": "파티 RPG에서 플레이어는 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임의 중심 행동과 목표를 수행하며, 선택 결과가 다음 월드 상태와 접근 가능성에 영향을 미친다. 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견·대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 기존 게임 원본과의 연계성을 유지한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 193801,
-      "lastMs": 193801,
+      "totalMs": 225945,
+      "lastMs": 32144,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:37:39.435Z"
+      "updatedAt": "2026-10-08T08:38:11.581Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:34:25.615Z",
-  "updatedAt": "2026-10-08T08:37:39.436Z",
+  "updatedAt": "2026-10-08T08:38:11.583Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2067,7 +2074,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:37:39.435Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:38:11.583Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
