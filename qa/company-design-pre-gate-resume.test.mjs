@@ -226,10 +226,27 @@ test('local transport accepts a late completed response and rejects incomplete o
     else await assert.rejects(request('private design input',{schema}),mode==='timeout'?/OLLAMA_DESIGN_TIMEOUT 300000ms/:mode==='truncated'?/OLLAMA_DESIGN_OUTPUT_TRUNCATED/:/OLLAMA_DESIGN_INCOMPLETE_RESPONSE/);
     assert.equal(delay,300000);assert.equal(destroyed,true);
     assert.equal(requestBody.keep_alive,'10m');assert.equal(requestBody.think,false);
+    assert.equal(requestBody.options.repeat_penalty,1.15);
+    assert.equal(requestBody.options.repeat_last_n,256);
     assert.deepEqual(requestBody.format,schema);
     assert.equal(logs.some(row=>row.includes('private design input')),false);
     assert.equal(logs.some(row=>row.includes('DESIGN_LOCAL_TIMING=')),mode==='complete'||mode==='truncated');
   }
+});
+
+test('real repeated-sentence output rejects only its field without treating repeated rule IDs as prose',()=>{
+  const repeated='병력과 자원은 서버 권한으로 집계된다.';
+  const content={identity:'나무와 식량을 모으고 주민 자동화와 협동 지원으로 전략 거점을 점령한다. '+repeated.repeat(25),coreFun:'다음 거점의 방어를 보고 주민 생산과 병사 모집 중 먼저 투자할 대상을 선택한다.',signatureSystems:[{id:'MAIN',stateInputs:['WOOD','WOOD','WOOD'],stateOutputs:['WOOD']}]};
+  const before=JSON.stringify(content);
+  const failures=validateDesignAuthoringContent({design:content,fields:['identity','coreFun','signatureSystems']});
+  const repeatFailures=failures.filter(row=>row.code==='DESIGN_REPEATED_CONTENT');
+  assert.equal(repeatFailures.length,1);
+  assert.deepEqual(repeatFailures[0].fields,['identity']);
+  assert.equal(repeatFailures[0].evidence.path,'identity');
+  assert.equal(repeatFailures[0].evidence.count,25);
+  assert.equal(JSON.stringify(content),before,'validation must not trim or rewrite designer content');
+  const valid={identity:'병력은 거점을 공격한다. 자원은 주민 생산으로 모은다. 병력과 자원은 다음 공략 대상을 선택할 때 함께 사용한다.'};
+  assert.equal(validateDesignAuthoringContent({design:valid,fields:['identity']}).some(row=>row.code==='DESIGN_REPEATED_CONTENT'),false);
 });
 
 test('truncated local output splits required fields and resumes only the unfinished part',async()=>{
@@ -748,7 +765,7 @@ test('placeholder feedback keeps audit evidence while retries receive paths and 
 
 test('transport repair reuses previous drafts only when every original input still matches',()=>{
   const source=design.slice(design.indexOf('const checkpointV3CompatibleEngineMigrationEligible='),design.indexOf('if(!checkpointReusable'));
-  const oldEngine='cc088ad7a8676ded2864387d1c00a39b024f9e9a4e72f50308346406aea805a9';
+  for(const oldEngine of ['cc088ad7a8676ded2864387d1c00a39b024f9e9a4e72f50308346406aea805a9','d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904']){
   const checkpointInputContext={gameId:'g',date:'d',seed:{seedId:'s'},evidence:{librarySha:'unchanged'},policyDigest:'p',engineDigest:'new-engine'};
   const fingerprint=createHash('sha256').update(JSON.stringify({...checkpointInputContext,engineDigest:oldEngine})).digest('hex');
   const cp={contractVersion:4,gameId:'g',date:'d',seedId:'s',policyDigest:'p',engineDigest:oldEngine,fingerprint,phases:{},tasks:{identity:'authored'},modelHealth:{}};
@@ -758,6 +775,7 @@ test('transport repair reuses previous drafts only when every original input sti
   assert.equal(Boolean(eligible(checkpointInputContext)),true);
   assert.equal(Boolean(eligible({...checkpointInputContext,evidence:{librarySha:'changed'}})),false);
   assert.equal(Boolean(eligible({...checkpointInputContext,seed:{seedId:'s',newOwnerRequest:'changed'}})),false);
+  }
 });
 
 // 플레이 계약 회귀: 아래 데이터는 검사기 전용 합성 사례이며 실제 게임 설계/런타임 증거가 아니다.
@@ -792,6 +810,7 @@ test('playable contract replays one infection round without changing original nu
     [d=>d.contentVarietyPlan.abilities[0].cost=1,'DESIGN_ORIGINAL_NUMBER_CHANGED'],
     [d=>d.contentVarietyPlan.abilities[0].telegraph='','DESIGN_ABILITY_CONTRACT_MISSING'],
     [d=>d.systemInterconnections[0].stateKeys=['invented'],'DESIGN_STATE_EXCHANGE_BROKEN'],
+    [d=>d.signatureSystems[0].stateInputs=['INPUT: 직접 채집 → STATE: 나무·식량 수집 상태 변화'],'DESIGN_STATE_KEY_IS_INSTRUCTION'],
     [d=>d.artAudioDirection.assetBindings[0].assetId='spider','DESIGN_ASSET_ROLE_MISMATCH'],
     [d=>d.designIntegrityPlan.flowAudit[2].recovery='','DESIGN_FULL_FLOW_AUDIT_MISSING']
   ]){

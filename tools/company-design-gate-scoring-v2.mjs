@@ -135,6 +135,14 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
     if((!identifier&&/^[A-Z][A-Z0-9]*(?:_[A-Z0-9]+){2,}$/.test(text))||/\b(?:TODO|TBD|PLACEHOLDER)\b|작성 예정|추후 작성|^미정$/i.test(text)){
       reject('DESIGN_PLACEHOLDER_CONTENT','IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY',[root],{path,value:text.slice(0,160)},`${path}의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.`);
     }
+    // 실제 생성에서 한 문장을 수십 번 반복한 응답은 분량이나 설계 완성도로 인정하지 않는다.
+    if(!identifier){
+      const sentences=text.split(/[.!?。！？\n]+/u).map(clean).filter(sentence=>sentence.length>=12);
+      const counts=new Map();
+      for(const sentence of sentences)counts.set(sentence,(counts.get(sentence)||0)+1);
+      const repeated=[...counts].find(([,count])=>count>=3);
+      if(repeated)reject('DESIGN_REPEATED_CONTENT','IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY',[root],{path,sentence:repeated[0].slice(0,160),count:repeated[1]},`${path}에서 같은 문장을 반복하지 않는다. 필요한 조건·선택·상태 변화만 간결하게 직접 다시 작성하고 다른 정상 필드는 유지한다.`);
+    }
   };
   for(const field of proseFields)if(selected.has(field))scan(design[field],field,field);
   const declared=clean(seed.MULTIPLAYER_DESIGN_MODE||seed.INITIAL_PLAY_MODE).toUpperCase();
@@ -195,6 +203,9 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
         if(count<1||(['MAIN','A','B'].includes(role)&&count!==1))invalid('DESIGN_RULE_ROLE_MISSING',['signatureSystems'],'signatureSystems',`${role} 역할과 그 상태 입출력을 명확히 구분해야 한다`);
       }
       if(!distinctIds(systems)||systems.some(row=>!list(row.stateInputs).length||!list(row.stateOutputs).length))invalid('DESIGN_RULE_STATE_MISSING',['signatureSystems'],'signatureSystems','중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다');
+      for(const row of systems)for(const field of ['stateInputs','stateOutputs']){
+        if(list(row[field]).some(key=>/→|->|\b(?:INPUT|SELECT|OUTPUT|STATE)\s*:/i.test(clean(key))))invalid('DESIGN_STATE_KEY_IS_INSTRUCTION',['signatureSystems'],`signatureSystems.${row.id}.${field}`,'플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다');
+      }
     }
     if(selected.has('systemInterconnections')){
       const edges=list(design.systemInterconnections),graph=new Map(systems.map(row=>[row.id,[]]));
