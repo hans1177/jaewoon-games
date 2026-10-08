@@ -400,25 +400,42 @@
         }
       ],
       "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::0fedf73b19c876dc51bf3494a9630c2bebfa437d24418cc0a081572704fffc86:signatureSystems:0": {
+      "id": "identity-core",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount"
+      ],
+      "stateOutputs": [
+        "BuildProgression",
+        "RunResult",
+        "GameEndCondition"
+      ],
+      "name": "Survival Core System",
+      "purpose": "Reinforce the core gameplay loop through daily choices in a mobile survival roguelite, with progression based on real-time combat and resource management.",
+      "playerChoice": "Select upgrades, build combinations, or skill trees that affect current strategy while navigating enemy pressure and evolving threats."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 938645,
-      "lastMs": 86595,
+      "totalMs": 1039242,
+      "lastMs": 100597,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:09:16.675Z"
+      "updatedAt": "2026-10-08T18:10:57.283Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:53:37.989Z",
-  "updatedAt": "2026-10-08T18:09:16.684Z",
+  "updatedAt": "2026-10-08T18:10:57.283Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2677,10 +2694,10 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:09:16.677Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_MAIN_A_B_c_DELVE_REQUIRED,DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:10:57.283Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
