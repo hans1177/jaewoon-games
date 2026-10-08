@@ -511,25 +511,48 @@
     },
     "local_authoring_parts::7fc8a7ad7469e0fb72c4c90eedb85bd7359e426253b5d8316a5a2bf6b1b7aaa2:trigger": {
       "trigger": "플레이어가 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행하면서, 입력(BOARD_STATE) → 판정(PLAYER_ACTION) → 상태 변화(NEW_BOARD_STATE) → 보상(NEXT_PLAYER_CHOICE)의 순환적 루프를 형성합니다."
+    },
+    "local_authoring_parts::7fc8a7ad7469e0fb72c4c90eedb85bd7359e426253b5d8316a5a2bf6b1b7aaa2:stateChange": {
+      "stateChange": "플레이어가 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행하면서, 입력(BOARD_STATE) → 판정(PLAYER_ACTION) → 상태 변화(NEW_BOARD_STATE) → 보상(NEXT_PLAYER_CHOICE)의 순환적 루프를 형성합니다."
+    },
+    "local_authoring_parts::d414e88fdf3c26c36ad8afc5474e1b7d38f05fd7f8939708ade264f55d674b0d:systemInterconnections:1": {
+      "fromId": "BOARD_STATE",
+      "toId": "NEXT_PLAYER_CHOICE",
+      "stateKeys": [
+        "BOARD_STATE",
+        "PLAYER_ACTION",
+        "NEW_BOARD_STATE",
+        "NEXT_PLAYER_CHOICE"
+      ],
+      "fromSystem": "BOARD_STATE -> NEXT_PLAYER_CHOICE",
+      "toSystem": "PLAYER_CHOICE",
+      "trigger": "플레이어가 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행하면서, 입력(BOARD_STATE) → 판정(PLAYER_ACTION) → 상태 변화(NEW_BOARD_STATE) → 보상(NEXT_PLAYER_CHOICE)의 순환적 루프를 형성합니다.",
+      "stateChange": "플레이어가 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행하면서, 입력(BOARD_STATE) → 판정(PLAYER_ACTION) → 상태 변화(NEW_BOARD_STATE) → 보상(NEXT_PLAYER_CHOICE)의 순환적 루프를 형성합니다."
+    },
+    "local_authoring_parts::12aed46ca3650741bc1c8397594b2b7ddebf4ad34c9ca3d3797ca2e1b51e770f:fromId": {
+      "fromId": "BOARD_STATE"
+    },
+    "local_authoring_parts::12aed46ca3650741bc1c8397594b2b7ddebf4ad34c9ca3d3797ca2e1b51e770f:toId": {
+      "toId": "NEXT_PLAYER_CHOICE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 24,
-      "successes": 24,
+      "calls": 27,
+      "successes": 27,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1655816,
-      "lastMs": 64154,
+      "totalMs": 1832903,
+      "lastMs": 57018,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:15:03.559Z"
+      "updatedAt": "2026-10-08T18:18:00.651Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:47:27.560Z",
-  "updatedAt": "2026-10-08T18:15:03.559Z",
+  "updatedAt": "2026-10-08T18:18:00.651Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2821,7 +2844,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:15:03.559Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:18:00.651Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
