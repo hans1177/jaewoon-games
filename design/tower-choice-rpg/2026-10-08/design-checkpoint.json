@@ -776,25 +776,75 @@
       "name": "10층 탑 RPG",
       "purpose": "플레이어가 반복적으로 수행하는 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 기반으로, 선택 결과가 다음 월드 상태를 바꾸는 시그니처 세계 규칙에 참여하며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견을 열어 같은 콘텐츠를 다르게 사용하게 된다.",
       "playerChoice": "시그니처 세계 규칙에 참여하며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견을 열어 같은 콘텐츠를 다르게 사용하게 된다."
+    },
+    "local_authoring_parts::b649f9ac5ecaf402077652c39e269194b0827a666ff8c38fe604e1d3a3637004:signatureSystems:0": {
+      "id": "10층 탑 RPG",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount",
+        "RunRewards",
+        "Experience",
+        "Upgrades",
+        "Perks",
+        "Weapons",
+        "Skills"
+      ],
+      "stateOutputs": [
+        "NextWorldState",
+        "PlayerBuild",
+        "ProgressionDirection",
+        "EmergentGenre",
+        "CoreLoop"
+      ],
+      "name": "10층 탑 RPG",
+      "purpose": "플레이어가 반복적으로 수행하는 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 기반으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE의 핵심 루프를 설계한다.",
+      "playerChoice": "시그니처 세계 규칙에 참여하며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견을 열어 같은 콘텐츠를 다르게 사용하게 된다."
+    },
+    "local_authoring_parts::b649f9ac5ecaf402077652c39e269194b0827a666ff8c38fe604e1d3a3637004:signatureSystems:1": {
+      "id": "10층 탑 RPG",
+      "grammarRole": "A",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount",
+        "RunRewards",
+        "Experience",
+        "Upgrades",
+        "Perks",
+        "Weapons",
+        "Skills"
+      ],
+      "stateOutputs": [
+        "NextWorldState",
+        "PlayerBuild",
+        "ProgressionDirection",
+        "EmergentGenre",
+        "CoreLoop"
+      ],
+      "name": "10층 탑 RPG",
+      "purpose": "플레이어가 반복적으로 수행하는 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 기반으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE의 핵심 루프를 설계한다.",
+      "playerChoice": "시그니처 세계 규칙에 참여하며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견을 열어 같은 콘텐츠를 다르게 사용하게 된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 21,
-      "successes": 21,
+      "calls": 23,
+      "successes": 23,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2037965,
-      "lastMs": 45395,
+      "totalMs": 2101090,
+      "lastMs": 45190,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:58:31.767Z"
+      "updatedAt": "2026-10-08T10:59:34.902Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:01:03.860Z",
-  "updatedAt": "2026-10-08T10:58:31.773Z",
+  "updatedAt": "2026-10-08T10:59:34.902Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3031,10 +3081,10 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:58:31.769Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:59:34.902Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
