@@ -302,25 +302,221 @@
           "playerChoice": "플레이어는 주요 선택에 따라 다양한 전략, 경로, 성장 가능성을 생성하며, 이 과정에서 세계 상태와 보상이 서로 영향을 미친다."
         }
       ]
+    },
+    "local_authoring_parts::86b830dd5e6cb52b03a3503f063c7936c650320d0edbf70c9276e03b33b12ad6:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::bed24f117b4bfaf793d4cd1c22a44d31be48fab3afe536c2f2201fe030ecaaff:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "플레이어는 Read the next attack pattern and choose where crystal defenses create the most value.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 단일 웨이브 게임이다.\n\n세계 상태는 MAIN×A×B×c의 관계에서 영향을 주며, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 구조로 구성된다.\n\n보조 요소 c는 MAIN/A/B의 관계를 상황별로 변주하며, 발견·숙련·재방문 깊이로 역할을 분리한다.",
+        "Spend limited resources on placement, resonance or upgrades.",
+        "Survive the wave and use the result to prepare a different counter for the next threat."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "PLACEMENT",
+            "RESONANCE",
+            "UPGRADES"
+          ],
+          "stateOutputs": [
+            "STRATEGY",
+            "PATH",
+            "GROWTH"
+          ],
+          "name": "DEFENSE_STRATEGIC_BALANCE",
+          "purpose": "Balances placement, resonance, and upgrades to create optimal defense strategies.",
+          "playerChoice": "Choose where crystal defenses create the most value based on attack patterns and resource allocation."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "PLACEMENT",
+            "RESONANCE",
+            "UPGRADES"
+          ],
+          "stateOutputs": [
+            "STRATEGY",
+            "PATH",
+            "GROWTH"
+          ],
+          "name": "DEFENSE_STRATEGIC_BALANCE_REINTERPRETED",
+          "purpose": "Balances strategic choices across placement, resonance, and upgrades to optimize defense effectiveness.",
+          "playerChoice": "Choose the most valuable resource allocation for each wave based on current threat patterns and player strategy evolution."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "PLACEMENT",
+            "RESONANCE",
+            "UPGRADES"
+          ],
+          "stateOutputs": [
+            "STRATEGY",
+            "PATH",
+            "GROWTH"
+          ],
+          "name": "DEFENSE_STRATEGIC_BALANCE_REINTERPRETED_B",
+          "purpose": "Balances placement, resonance, and upgrades to create strategic depth and growth potential.",
+          "playerChoice": "Choose where crystal defenses create the most value based on current threat patterns and player strategy evolution."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "PLACEMENT",
+            "RESONANCE",
+            "UPGRADES"
+          ],
+          "stateOutputs": [
+            "STRATEGY",
+            "PATH",
+            "GROWTH"
+          ],
+          "name": "DEFENSE_STRATEGIC_BALANCE_REINTERPRETED_C",
+          "purpose": "Adapts the strategic balance of defense by reinterpreting placement, resonance, and upgrades in response to dynamic gameplay conditions.",
+          "playerChoice": "Reconfigures defense strategies based on current wave patterns, enemy behavior, and available resources."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "PLACEMENT",
+            "RESONANCE",
+            "UPGRADES"
+          ],
+          "stateOutputs": [
+            "STRATEGY",
+            "PATH",
+            "GROWTH"
+          ],
+          "name": "DEFENSE_STRATEGIC_BALANCE_REINTERPRETED_D",
+          "purpose": "시그니처 시스템의 복잡한 조합 및 재방문 깊이로 활용되는 최종 전략 구조",
+          "playerChoice": "플레이어는 주요 선택에 따라 다양한 전략, 경로, 성장 가능성을 생성하며, 이 과정에서 세계 상태와 보상이 서로 영향을 미친다."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.\n\n플레이어는 Read the next attack pattern and choose where crystal defenses create the most value.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 단일 웨이브 게임이다.\n\n세계 상태는 MAIN×A×B×c의 관계에서 영향을 주며, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 구조로 구성된다.\n\n보조 요소 c는 MAIN/A/B의 관계를 상황별로 변주하며, 발견·숙련·재방문 깊이로 역할을 분리한다.\n\n시그니처 시스템은 MAIN, A, B, c 각각 최소 2개의 기존 또는 신규 시스템으로 구성되며, 저장·보상·진행에 밸런스가 임의 변경되지 않는다.",
+      "playerFantasy": "플레이어는 Read the next attack pattern and choose where crystal defenses create the most value.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 단일 웨이브 게임이다.\n\n세계 상태는 MAIN×A×B×c의 관계에서 영향을 주며, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 구조로 구성된다.\n\n보조 요소 c는 MAIN/A/B의 관계를 상황별로 변주하며, 발견·숙련·재방문 깊이로 역할을 분리한다.",
+      "coreFun": "플레이어는 Read the next attack pattern and choose where crystal defenses create the most value.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 단일 웨이브 게임이다.\n\n세계 상태는 MAIN×A×B×c의 관계에서 영향을 주며, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 구조로 구성된다.\n\n보조 요소 c는 MAIN/A/B의 관계를 상황별로 변주하며, 발견·숙련·재방문 깊이로 역할을 분리한다.",
+      "coreLoop": [
+        "플레이어는 Read the next attack pattern and choose where crystal defenses create the most value.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 단일 웨이브 게임이다.\n\n세계 상태는 MAIN×A×B×c의 관계에서 영향을 주며, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 구조로 구성된다.\n\n보조 요소 c는 MAIN/A/B의 관계를 상황별로 변주하며, 발견·숙련·재방문 깊이로 역할을 분리한다.",
+        "Spend limited resources on placement, resonance or upgrades.",
+        "Survive the wave and use the result to prepare a different counter for the next threat."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "PLACEMENT",
+            "RESONANCE",
+            "UPGRADES"
+          ],
+          "stateOutputs": [
+            "STRATEGY",
+            "PATH",
+            "GROWTH"
+          ],
+          "name": "DEFENSE_STRATEGIC_BALANCE",
+          "purpose": "Balances placement, resonance, and upgrades to create optimal defense strategies.",
+          "playerChoice": "Choose where crystal defenses create the most value based on attack patterns and resource allocation."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "PLACEMENT",
+            "RESONANCE",
+            "UPGRADES"
+          ],
+          "stateOutputs": [
+            "STRATEGY",
+            "PATH",
+            "GROWTH"
+          ],
+          "name": "DEFENSE_STRATEGIC_BALANCE_REINTERPRETED",
+          "purpose": "Balances strategic choices across placement, resonance, and upgrades to optimize defense effectiveness.",
+          "playerChoice": "Choose the most valuable resource allocation for each wave based on current threat patterns and player strategy evolution."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "PLACEMENT",
+            "RESONANCE",
+            "UPGRADES"
+          ],
+          "stateOutputs": [
+            "STRATEGY",
+            "PATH",
+            "GROWTH"
+          ],
+          "name": "DEFENSE_STRATEGIC_BALANCE_REINTERPRETED_B",
+          "purpose": "Balances placement, resonance, and upgrades to create strategic depth and growth potential.",
+          "playerChoice": "Choose where crystal defenses create the most value based on current threat patterns and player strategy evolution."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "PLACEMENT",
+            "RESONANCE",
+            "UPGRADES"
+          ],
+          "stateOutputs": [
+            "STRATEGY",
+            "PATH",
+            "GROWTH"
+          ],
+          "name": "DEFENSE_STRATEGIC_BALANCE_REINTERPRETED_C",
+          "purpose": "Adapts the strategic balance of defense by reinterpreting placement, resonance, and upgrades in response to dynamic gameplay conditions.",
+          "playerChoice": "Reconfigures defense strategies based on current wave patterns, enemy behavior, and available resources."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "PLACEMENT",
+            "RESONANCE",
+            "UPGRADES"
+          ],
+          "stateOutputs": [
+            "STRATEGY",
+            "PATH",
+            "GROWTH"
+          ],
+          "name": "DEFENSE_STRATEGIC_BALANCE_REINTERPRETED_D",
+          "purpose": "시그니처 시스템의 복잡한 조합 및 재방문 깊이로 활용되는 최종 전략 구조",
+          "playerChoice": "플레이어는 주요 선택에 따라 다양한 전략, 경로, 성장 가능성을 생성하며, 이 과정에서 세계 상태와 보상이 서로 영향을 미친다."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 844045,
-      "lastMs": 101248,
+      "totalMs": 933174,
+      "lastMs": 89129,
       "lastError": null,
-      "updatedAt": "2026-10-08T22:00:56.165Z"
+      "updatedAt": "2026-10-08T22:02:25.298Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:46:52.091Z",
-  "updatedAt": "2026-10-08T22:00:56.168Z",
+  "updatedAt": "2026-10-08T22:02:25.310Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2507,12 +2703,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T22:00:56.168Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T22:02:25.301Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/crystal-defense/2026-10-09/design-seed.json",
+    "contentDigest": "5e7aa5c53e1b57285d23e5db78da4eb1c76102f5f8d20c60092910504e03559c",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
