@@ -49,25 +49,40 @@
       "name": "BoardStateTransitionSystem",
       "purpose": "Manages the transition between the current board state and the next move, ensuring tactical resolution and strategic planning.",
       "playerChoice": "Commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
+    },
+    "local_authoring_parts::3d723d484d8fce2dc965be365f43fa6d49efc4711d497a99b7b2839a7f807996:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "worldState",
+        "enemyThreatInfo"
+      ],
+      "stateOutputs": [
+        "newWorldState",
+        "nextMoveChoice"
+      ],
+      "name": "TacticalResolutionSystem",
+      "purpose": "Manages the tactical resolution of the board state after the initial read and commit, ensuring the player can plan the next decisive turn based on the new board configuration.",
+      "playerChoice": "Commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 682832,
-      "lastMs": 97274,
+      "totalMs": 781879,
+      "lastMs": 99047,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:03:02.932Z"
+      "updatedAt": "2026-10-08T08:04:41.981Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:51:40.071Z",
-  "updatedAt": "2026-10-08T08:03:02.933Z",
+  "updatedAt": "2026-10-08T08:04:41.981Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2196,7 +2211,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:03:02.932Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:04:41.981Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
