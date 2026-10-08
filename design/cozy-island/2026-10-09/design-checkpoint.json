@@ -12,25 +12,32 @@
   "tasks": {
     "local_authoring_parts::78e317063d0f92e403485560a87abf444a8fac8e32cae9a01cda9eab98e1e3d0:identity": {
       "identity": "작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임. 큰 머리와 둥근 얼굴, 짧고 굵은 팔다리의 치비 주민과 하나의 연결된 실루엣으로 보이는 야생동물을 사용하며, 움직이는 왕국의 확장감과 성장감을 표현합니다. 플레이어는 단순히 나무와 식량을 채집해 주민을 고용하고, 병사들을 모집하여 거점에 점령하는 역할을 수행해야 합니다. 이 과정에서는 지역별 특성과 자원의 다양성을 바탕으로 다양한 선택이 가능하며, 최종적으로는 강력한 왕국을 조성하게 됩니다."
+    },
+    "local_authoring_parts::78e317063d0f92e403485560a87abf444a8fac8e32cae9a01cda9eab98e1e3d0:playerFantasy": {
+      "playerFantasy": "플레이어는 작은 섬에서 나무와 식량을 직접 채집해 주민을 고용하고 병사들을 모집하여 거점에 점령하는 역할을 수행해야 합니다. 이 과정에서는 지역별 특성과 자원의 다양성을 바탕으로 다양한 선택이 가능하며, 최종적으로는 강력한 왕국을 조성하게 됩니다."
+    },
+    "local_authoring_parts::b0f31b18a0040355fe8b76c7bc08d0858463c3a9dda9cb5fdd3e05422e532b5b:identity,playerFantasy": {
+      "identity": "작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임. 큰 머리와 둥근 얼굴, 짧고 굵은 팔다리의 치비 주민과 하나의 연결된 실루엣으로 보이는 야생동물을 사용하며, 움직이는 왕국의 확장감과 성장감을 표현합니다. 플레이어는 단순히 나무와 식량을 채집해 주민을 고용하고, 병사들을 모집하여 거점에 점령하는 역할을 수행해야 합니다. 이 과정에서는 지역별 특성과 자원의 다양성을 바탕으로 다양한 선택이 가능하며, 최종적으로는 강력한 왕국을 조성하게 됩니다.",
+      "playerFantasy": "플레이어는 작은 섬에서 나무와 식량을 직접 채집해 주민을 고용하고 병사들을 모집하여 거점에 점령하는 역할을 수행해야 합니다. 이 과정에서는 지역별 특성과 자원의 다양성을 바탕으로 다양한 선택이 가능하며, 최종적으로는 강력한 왕국을 조성하게 됩니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 98940,
-      "lastMs": 98940,
+      "totalMs": 119258,
+      "lastMs": 20318,
       "lastError": null,
-      "updatedAt": "2026-10-08T20:47:25.212Z"
+      "updatedAt": "2026-10-08T20:47:45.531Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:45:46.220Z",
-  "updatedAt": "2026-10-08T20:47:25.213Z",
+  "updatedAt": "2026-10-08T20:47:45.532Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -585,7 +592,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T20:47:25.213Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T20:47:45.532Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
