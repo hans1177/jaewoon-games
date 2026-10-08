@@ -607,7 +607,7 @@ export function buildDesignToPlatformCodingTrace({
     const raw=posix(clean(value));
     if(!selectedRoot||!raw)return'';
     const candidate=raw.startsWith(selectedRoot+'/')?raw:`${selectedRoot}/${raw}`;
-    if(!candidate.startsWith(selectedRoot+'/')||!/(?:\\.lua|\\.luau|\\.cs)$/i.test(candidate))return'';
+    if(!candidate.startsWith(selectedRoot+'/')||!['.lua','.luau','.cs'].some(ext=>candidate.toLowerCase().endsWith(ext)))return'';
     const full=path.resolve(rootReal,candidate);
     if(!full.startsWith(rootReal+path.sep))return'';
     try{
@@ -628,9 +628,9 @@ export function buildDesignToPlatformCodingTrace({
   const priority=(file,role)=>{
     const name=file.toLowerCase();
     if(selected==='ROBLOX'){
-      if(role==='c')return /\\/client\\//.test(name)?6:/\\/shared\\//.test(name)?3:0;
-      if(role==='DELVE')return /\\/server\\//.test(name)?6:/\\/shared\\//.test(name)?4:0;
-      return /\\/server\\//.test(name)?6:/\\/shared\\//.test(name)?4:/\\/client\\//.test(name)?1:0;
+      if(role==='c')return name.includes('/client/')?6:name.includes('/shared/')?3:0;
+      if(role==='DELVE')return name.includes('/server/')?6:name.includes('/shared/')?4:0;
+      return name.includes('/server/')?6:name.includes('/shared/')?4:name.includes('/client/')?1:0;
     }
     if(role==='c')return /visual|render|anim|present|camera|vfx/.test(name)?6:/runtime|bootstrap/.test(name)?3:1;
     if(role==='DELVE')return /gamecore|save|progress|session/.test(name)?6:/runtime/.test(name)?4:1;
