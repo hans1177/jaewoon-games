@@ -630,25 +630,64 @@
       "name": "Color Chain",
       "purpose": "Players navigate a series of interconnected puzzle levels, where each choice alters the board state and triggers new challenges.",
       "playerChoice": "Select a path through a puzzle level, facing obstacles and earning rewards that lead to new board configurations."
+    },
+    "local_authoring_parts::d5475909dee826abd6d9d3602c9f0b96e1f1d1711073a98137cb23280332b300:signatureSystems:0": {
+      "id": "COLOR_CHAIN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or a 3D"
+      ],
+      "stateOutputs": [
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new 3"
+      ],
+      "name": "Color Chain",
+      "purpose": "Players navigate a board or grid level with a clear goal, limited moves, obstacles, or a 3D puzzle, where each choice alters the world state to create new levels.",
+      "playerChoice": "Choose a path, create combos, and use immediate feedback to solve the current objective."
+    },
+    "local_authoring_parts::d5475909dee826abd6d9d3602c9f0b96e1f1d1711073a98137cb23280332b300:signatureSystems:1": {
+      "id": "COLOR_CHAIN",
+      "grammarRole": "A",
+      "stateInputs": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or a 3D"
+      ],
+      "stateOutputs": [
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new 3"
+      ],
+      "name": "Color Chain",
+      "purpose": "Players navigate a board or grid level with a clear goal, limited moves, obstacles, or a 3D puzzle, where each choice alters the world state to create new levels.",
+      "playerChoice": "Choose a path, create combos, and use immediate feedback to solve the current objective."
+    },
+    "local_authoring_parts::d5475909dee826abd6d9d3602c9f0b96e1f1d1711073a98137cb23280332b300:signatureSystems:2": {
+      "id": "COLOR_CHAIN",
+      "grammarRole": "B",
+      "stateInputs": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or a 3D"
+      ],
+      "stateOutputs": [
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new 3"
+      ],
+      "name": "Color Chain",
+      "purpose": "Players navigate a board or grid level with a clear goal, limited moves, obstacles, or a 3D puzzle, where each choice alters the world state to create new levels.",
+      "playerChoice": "Choose a path, create combos, and use immediate feedback to solve the current objective."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 20,
+      "calls": 23,
+      "successes": 23,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1812124,
-      "lastMs": 71092,
+      "totalMs": 1986651,
+      "lastMs": 75713,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:47:51.684Z"
+      "updatedAt": "2026-10-08T15:50:46.223Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:53:41.331Z",
-  "updatedAt": "2026-10-08T15:47:51.690Z",
+  "updatedAt": "2026-10-08T15:50:46.223Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2721,10 +2760,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:47:51.685Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:50:46.223Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
