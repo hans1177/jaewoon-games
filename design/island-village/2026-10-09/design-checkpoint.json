@@ -722,25 +722,28 @@
       "toSystem": "Village infrastructure",
       "trigger": "플레이어는 특정 섬 자원을 수집하여 이를 바탕으로 주변 시설을 개선하는 선택을 하며, 이 과정에서 자원 축적 및 시설 업그레이드가 발생한다.",
       "stateChange": "플레이어는 특정 섬 자원을 수집하여 이를 바탕으로 주변 시설을 개선하는 선택을 하며, 이 과정에서 자원 축적 및 시설 업그레이드가 발생한다."
+    },
+    "local_authoring_parts::2e64a7cf4fa69a1e401d91c5c9bb1b062a4fc459b9d62dd841be2d9bcf75129b:fromId": {
+      "fromId": "RESOURCE_A→VILLAGE_B"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 49,
-      "successes": 49,
+      "calls": 50,
+      "successes": 50,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3019814,
-      "lastMs": 33235,
+      "totalMs": 3050257,
+      "lastMs": 30443,
       "lastError": null,
-      "updatedAt": "2026-10-08T23:31:42.386Z"
+      "updatedAt": "2026-10-08T23:32:12.832Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:47:57.452Z",
-  "updatedAt": "2026-10-08T23:31:42.388Z",
+  "updatedAt": "2026-10-08T23:32:12.832Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3141,7 +3144,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T23:31:42.388Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T23:32:12.832Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
