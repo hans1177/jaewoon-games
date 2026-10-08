@@ -439,25 +439,43 @@
       "name": "C",
       "purpose": "Use what was learned about the ecosystem to survive stronger pressure and reach the next meaningful objective.",
       "playerChoice": "Choose to use ecological knowledge to adapt and progress toward a more sustainable path."
+    },
+    "local_authoring_parts::ba9be3c2084a693cf32e6c3a939ab3d7b412c77dae9f9f6ea1a24af091e5b98e:signatureSystems:4": {
+      "id": "MATERIAL_CAUSAL_GRAMMAR_DELVE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "EXPLORED_HABITAT",
+        "IDENTIFIED_FOOD_THREAT",
+        "DETECTED_MATERIAL_RISK",
+        "NOTIFIED_INSECT_DANGER"
+      ],
+      "stateOutputs": [
+        "MODIFIED_SURVIVAL_TOOL_SET",
+        "CHANGED_ROUTE_PLAN",
+        "UPDATED_ECOLOGY_INSIGHT"
+      ],
+      "name": "DELVE",
+      "purpose": "Explore a dangerous small-scale habitat and identify food, material and insect threats.",
+      "playerChoice": "Choose to gather or fight, then convert the result into survival tools or a safer route."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 14,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 541304,
-      "lastMs": 38385,
+      "totalMs": 580110,
+      "lastMs": 38806,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:54:40.180Z"
+      "updatedAt": "2026-10-08T17:55:18.987Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:45:38.832Z",
-  "updatedAt": "2026-10-08T17:54:40.180Z",
+  "updatedAt": "2026-10-08T17:55:18.993Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2715,91 +2733,6 @@
         ]
       },
       {
-        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR.stateInputs",
-          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
-        },
-        "requiredAction": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "signatureSystems"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR.stateInputs",
-          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
-        },
-        "requiredAction": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "signatureSystems"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR_B.stateInputs",
-          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
-        },
-        "requiredAction": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR_B.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "signatureSystems"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR_C.stateInputs",
-          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
-        },
-        "requiredAction": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR_C.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "signatureSystems"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR_DELVE.stateInputs",
-          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
-        },
-        "requiredAction": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR_DELVE.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "signatureSystems"
-        ]
-      },
-      {
         "code": "DESIGN_RULE_STATE_MISSING",
         "kind": "HARD_GATE",
         "axis": "CORE_LOOP_DESIGN",
@@ -2819,7 +2752,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2836,10 +2769,10 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T17:54:40.180Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T17:55:18.989Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_MAIN_A_B_c_DELVE_REQUIRED,DESIGN_RULE_STATE_MISSING",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
