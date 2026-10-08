@@ -599,25 +599,43 @@
         "introducedStrategicOptions"
       ],
       "fromSystem": "CORE_LOOP_DESIGN_CORE_FUNCTONALITY_01A_01B_01C_01D_01E_01F_01G_01H_01I_01J_01K_01L_01M_01N_01O_01P_01Q_01R_01S_01T_01U_01V_01W_01X_01Y_01Z_01AA_01AB_01AC_01AD_01AE_01AF_01AG_01AH_0"
+    },
+    "local_authoring_parts::4601f79ff131d3c232cdc0005cd76b4986301a826ae8a75f9d1347a124506bd9:toSystem,trigger,stateChange": {
+      "toSystem": "CORE_LOOP_DESIGN_CORE_FUNCTONALITY_01A_01B_01C_01D_01E_01F_01G_01H_01I_01J_01K_01L_01M_01N_01O_01P_01Q_01R_01S_01T_01U_01V_01W_01X_01Y_01Z_01AA_01AB_01AC_01AD_01AE_01AF_01AG_01AH_0",
+      "trigger": "coreFun→coreLoop",
+      "stateChange": "updatedFrontLine,reallocatedResources,introducedStrategicOptions"
+    },
+    "local_authoring_parts::fde0e58d84b0c4a291882aa03491b53a577f92796e6aa524e80282f0387f9108:systemInterconnections:4": {
+      "fromId": "coreFun",
+      "toId": "coreLoop",
+      "stateKeys": [
+        "updatedFrontLine",
+        "reallocatedResources",
+        "introducedStrategicOptions"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN_CORE_FUNCTONALITY_01A_01B_01C_01D_01E_01F_01G_01H_01I_01J_01K_01L_01M_01N_01O_01P_01Q_01R_01S_01T_01U_01V_01W_01X_01Y_01Z_01AA_01AB_01AC_01AD_01AE_01AF_01AG_01AH_0",
+      "toSystem": "CORE_LOOP_DESIGN_CORE_FUNCTONALITY_01A_01B_01C_01D_01E_01F_01G_01H_01I_01J_01K_01L_01M_01N_01O_01P_01Q_01R_01S_01T_01U_01V_01W_01X_01Y_01Z_01AA_01AB_01AC_01AD_01AE_01AF_01AG_01AH_0",
+      "trigger": "coreFun→coreLoop",
+      "stateChange": "updatedFrontLine,reallocatedResources,introducedStrategicOptions"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 20,
+      "calls": 21,
+      "successes": 21,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2246846,
-      "lastMs": 105453,
+      "totalMs": 2350282,
+      "lastMs": 103436,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:24:05.740Z"
+      "updatedAt": "2026-10-08T08:25:49.177Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:46:38.814Z",
-  "updatedAt": "2026-10-08T08:24:05.740Z",
+  "updatedAt": "2026-10-08T08:25:49.185Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2668,9 +2686,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "coreLoop→signatureSystems[0]의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "coreFun→coreLoop의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: coreLoop→signatureSystems[0]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: coreFun→coreLoop의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2685,9 +2703,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "signatureSystems[0]→coreLoop의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "coreFun→coreLoop의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: signatureSystems[0]→coreLoop의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: coreFun→coreLoop의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2702,9 +2720,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "coreLoop→signatureSystems[1]의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "coreFun→coreLoop의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: coreLoop→signatureSystems[1]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: coreFun→coreLoop의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2719,128 +2737,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "signatureSystems[1]→coreLoop의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "coreFun→coreLoop의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: signatureSystems[1]→coreLoop의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "coreLoop→signatureSystems[2]의 출력과 입력 상태가 연결되지 않는다"
-        },
-        "requiredAction": "systemInterconnections: coreLoop→signatureSystems[2]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "signatureSystems[2]→coreLoop의 출력과 입력 상태가 연결되지 않는다"
-        },
-        "requiredAction": "systemInterconnections: signatureSystems[2]→coreLoop의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "coreLoop→signatureSystems[3]의 출력과 입력 상태가 연결되지 않는다"
-        },
-        "requiredAction": "systemInterconnections: coreLoop→signatureSystems[3]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "signatureSystems[3]→coreLoop의 출력과 입력 상태가 연결되지 않는다"
-        },
-        "requiredAction": "systemInterconnections: signatureSystems[3]→coreLoop의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "coreLoop→signatureSystems[4]의 출력과 입력 상태가 연결되지 않는다"
-        },
-        "requiredAction": "systemInterconnections: coreLoop→signatureSystems[4]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "signatureSystems[4]→coreLoop의 출력과 입력 상태가 연결되지 않는다"
-        },
-        "requiredAction": "systemInterconnections: signatureSystems[4]→coreLoop의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "coreLoop→DELVE의 출력과 입력 상태가 연결되지 않는다"
-        },
-        "requiredAction": "systemInterconnections: coreLoop→DELVE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: coreFun→coreLoop의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2867,7 +2766,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 1
+    "designer_draft_slices::systems-progression": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -2906,10 +2805,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T08:24:05.740Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T08:25:49.180Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
