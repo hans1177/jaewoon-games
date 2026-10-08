@@ -303,6 +303,24 @@ export function validateSharedWorkerContext({
   for(const file of [policyFile,logMapFile,architectureFile,securityPolicyFile])if(!fs.existsSync(resolveInput(file)))fail(`MISSING:${file}`);
   const policyBuffer=readBuffer(policyFile),logMapBuffer=readBuffer(logMapFile),architectureBuffer=readBuffer(architectureFile),securityPolicyBuffer=readBuffer(securityPolicyFile);
   const policy=parseJsonBuffer(policyBuffer,policyFile),logMap=parseJsonBuffer(logMapBuffer,logMapFile),architecture=parseJsonBuffer(architectureBuffer,architectureFile),securityPolicy=parseJsonBuffer(securityPolicyBuffer,securityPolicyFile);
+  const authority=policy?.developmentLifecycleMachine?.developmentToolAuthority;
+  if(authority?.codex?.allUseForbidden===true){
+    // Codex 비사용: 중앙정책과 실행 아키텍처가 모두 비활성이고, 기존 로컬 Vibe가 유일한 게임 코드 생성 책임자여야 한다.
+    const codex=authority.codex;
+    if(clean(codex.role)!=='DISABLED'||!Array.isArray(codex.allowedScopes)||codex.allowedScopes.length)
+      fail('CODEX_NO_USE_POLICY_DRIFT');
+    if(clean(architecture?.workerRoles?.CODEX)!=='DISABLED'||!architecture?.forbidden?.includes('CODEX_ANY_SCOPE'))
+      fail('CODEX_NO_USE_ARCHITECTURE_DRIFT');
+    if(clean(authority.gameSourceGenerationProvider)!=='LOCAL_OLLAMA'
+      ||clean(authority.gameSourceWritePolicy?.allowedWorker)!=='tools/vibe2-source-worker.mjs')
+      fail('CODEX_NO_USE_CANONICAL_ALTERNATIVE_DRIFT');
+    if(clean(authority.enforcement?.requiredEnvironment?.VIBE2_CODEX_ROLE)!=='DISABLED'
+      ||clean(authority.enforcement?.requiredEnvironment?.VIBE2_CODEX_GAME_SOURCE_WRITE)!=='FORBIDDEN')
+      fail('CODEX_NO_USE_ENVIRONMENT_DRIFT');
+    const runtimeRole=clean(process.env.VIBE2_CODEX_ROLE).toUpperCase();
+    if(runtimeRole&&runtimeRole!=='DISABLED')fail('CODEX_RUNTIME_ROLE_FORBIDDEN');
+  }
+
   const constitution=compileOwnerCanonicalConstitution(policy);
   if(!constitution.valid)fail(`OWNER_CANONICAL_CONSTITUTION:${constitution.errors.join('|')||'UNKNOWN'}`);
   const architectureProjection=compileCentralArchitectureProjection(policy);
