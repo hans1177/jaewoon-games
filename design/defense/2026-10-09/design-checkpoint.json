@@ -930,25 +930,35 @@
       "toSystem": "SINGLE_DEFENSE_STRATEGY_CONTENT_EXPANSION",
       "trigger": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
       "stateChange": "Defense coverage increases, resource accumulation accelerates, strategic flexibility expands"
+    },
+    "local_authoring_parts::e88c7fe37bb4cbec3a7a30ff3a76679fb2ea9a7ab67de83651d9a45ea9bfef37:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "SIGNATURE_SYSTEM_0",
+      "toId": "SIGNATURE_SYSTEM_3",
+      "stateKeys": [
+        "DEFENSE_COVERAGE",
+        "RESOURCE_ACUMULATION",
+        "TACTICAL_FLEXIBILITY"
+      ],
+      "fromSystem": "SINGLE_DEFENSE_STRATEGY_CORE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 29,
-      "successes": 26,
+      "calls": 30,
+      "successes": 27,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 3052979,
-      "lastMs": 54786,
+      "totalMs": 3108075,
+      "lastMs": 55096,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T23:20:14.323Z"
+      "updatedAt": "2026-10-08T23:21:09.424Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:50:18.458Z",
-  "updatedAt": "2026-10-08T23:20:14.326Z",
+  "updatedAt": "2026-10-08T23:21:09.424Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3288,7 +3298,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T23:20:14.326Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T23:21:09.424Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
