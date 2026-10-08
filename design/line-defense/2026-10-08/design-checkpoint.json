@@ -909,25 +909,33 @@
       "toSystem": "EnemyDefenseSynergy",
       "trigger": "enemyWaveType",
       "stateChange": "defensiveStrategy"
+    },
+    "local_authoring_parts::ddb13ac802cbff468b151aad521f6054e2720473d3b5ead8796beb53457c355e:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "enemyWaveType",
+      "toId": "defensiveStrategy",
+      "stateKeys": [
+        "DefensiveStrategy"
+      ],
+      "fromSystem": "EnemyDefenseSynergy\",\"toSystem\":\"EnemyDefenseSynergy\",\"description\":\"enemyWaveType→defensiveStrategy의 출력과 입력 상태가 연결되지 않는다\",\"requiredAction\":\"systemInterconnections: enemyWaveType→\""
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 39,
-      "successes": 39,
+      "calls": 40,
+      "successes": 40,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2579089,
-      "lastMs": 90460,
+      "totalMs": 2673029,
+      "lastMs": 93940,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:37:06.487Z"
+      "updatedAt": "2026-10-08T16:38:40.430Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:10:25.792Z",
-  "updatedAt": "2026-10-08T16:37:06.489Z",
+  "updatedAt": "2026-10-08T16:38:40.430Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3280,7 +3288,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:37:06.489Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:38:40.430Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
