@@ -62,6 +62,8 @@ local STUDIO_ASSET_FAMILY_STATUS = {
 -- STUDIO_ASSET_BINDING_CLIENT_END
 local remote = ReplicatedStorage:WaitForChild(Config.RemoteName)
 local participantCount = 1
+local coopAssists = 0
+local teammateEnemyHealth = 0
 
 local gui = Instance.new("ScreenGui")
 gui.Name = "ApprovedScopeHud"
@@ -449,22 +451,67 @@ for index, action in ipairs(Config.Actions) do
   button.Parent = list
   button.Activated:Connect(function() remote:FireServer(action.Id) end)
 end
-local watched = {"Score","Coins","Level","Progress","Health","Wave","Position","Objective","Combo","EnemyHealth","PuzzleChain","Towers","BaseHealth","SocialBond","SharedObjective","RoundScore","LastApprovedScope"}
+-- 기존 모바일 액션 목록 다음에 서버가 판정하는 동료 지원을 노출한다.
+local coopButton = Instance.new("TextButton")
+coopButton.Name = "CoopAssist"
+coopButton.LayoutOrder = #Config.Actions + 1
+coopButton.Size = UDim2.new(1, -4, 0, 56)
+coopButton.TextWrapped = true
+coopButton.TextScaled = true
+coopButton.TextColor3 = Color3.fromRGB(245, 248, 255)
+coopButton.Parent = list
+coopButton.Activated:Connect(function()
+  if participantCount >= 2 then remote:FireServer("coop-assist") end
+end)
+
+local watched = {"Score","Coins","Level","Progress","Health","Wave","Position","Objective","Combo","EnemyHealth","PuzzleChain","Towers","BaseHealth","SocialBond","SharedObjective","RoundScore","LastApprovedScope","SaveLoadStatus"}
 local function render()
-  status.Text = string.format("Score %d · Lv %d · Progress %d · HP %d · Wave %d · 서버 %d명", player:GetAttribute("Score") or 0, player:GetAttribute("Level") or 1, player:GetAttribute("Progress") or 0, player:GetAttribute("Health") or 100, player:GetAttribute("Wave") or 1, participantCount)
+  local saveStatus = player:GetAttribute("SaveLoadStatus")
+  status.Text = string.format(
+    "점수 %d · Lv %d · 진행 %d · W%d · 동료 %d명\n기지 HP %d · 지원 %d%s",
+    player:GetAttribute("Score") or 0,
+    player:GetAttribute("Level") or 1,
+    player:GetAttribute("Progress") or 0,
+    player:GetAttribute("Wave") or 1,
+    participantCount,
+    player:GetAttribute("BaseHealth") or 100,
+    coopAssists,
+    saveStatus == "REPAIR_REQUIRED" and " · 저장 확인 필요" or ""
+  )
+  coopButton.Active = participantCount >= 2
+  coopButton.BackgroundColor3 = coopButton.Active and Color3.fromRGB(59, 118, 93) or Color3.fromRGB(77, 82, 94)
+  coopButton.Text = coopButton.Active
+    and string.format("동료 해충 지원 · 대상 HP %d", teammateEnemyHealth)
+    or "협동 지원 · 동료 입장 대기"
 end
 for _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end
 render()
 
--- 기본 멀티 상태 수신
+-- 기존 동기화 수신기에서 서버의 실제 전투·참가·이탈 상태를 직접 표시한다.
 remote.OnClientEvent:Connect(function(eventName, snapshot)
   if eventName ~= "MULTIPLAYER_SYNC" or typeof(snapshot) ~= "table" then return end
   participantCount = math.max(1, math.floor(tonumber(snapshot.ParticipantCount) or 1))
+  coopAssists = 0
+  teammateEnemyHealth = 0
+  if typeof(snapshot.Participants) == "table" then
+    for _, member in ipairs(snapshot.Participants) do
+      if typeof(member) == "table" then
+        if member.UserId == player.UserId then
+          coopAssists = math.max(0, math.floor(tonumber(member.CoopAssists) or 0))
+        elseif member.SessionActive == true then
+          teammateEnemyHealth = math.max(0, math.floor(tonumber(member.EnemyHealth) or 0))
+        end
+      end
+    end
+  end
   gui:SetAttribute("ParticipantCount", participantCount)
   gui:SetAttribute("MultiplayerSyncAt", os.clock())
   gui:SetAttribute("MultiplayerSnapshotVersion", tonumber(snapshot.Version) or 1)
+  gui:SetAttribute("CoopLastActorUserId", tonumber(snapshot.ChangedUserId) or 0)
   render()
 end)
+-- 첫 브로드캐스트를 놓치더라도 최신 같은 세션 상태를 서버에서 재요청한다.
+remote:FireServer("coop-sync")
 
 if #Config.Actions > 0 then
   ContextActionService:BindAction("VibePrimaryAction", function(_, inputState)
