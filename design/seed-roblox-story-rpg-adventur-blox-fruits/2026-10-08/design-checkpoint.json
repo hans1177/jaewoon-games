@@ -931,25 +931,35 @@
     },
     "local_authoring_parts::c10722e43a3776ced0a8ffdd9f6db8f6113ce72bfe8796176ee0b3211ec29deb:toId": {
       "toId": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1"
+    },
+    "local_authoring_parts::c10722e43a3776ced0a8ffdd9f6db8f6113ce72bfe8796176ee0b3211ec29deb:stateKeys": {
+      "stateKeys": [
+        "BOARD_STATE",
+        "PLAYER_ACTION",
+        "LEVEL_GOAL",
+        "OBSTACLES",
+        "COMBO_COUNT",
+        "REWARD_SYSTEM"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 44,
-      "successes": 44,
+      "calls": 45,
+      "successes": 45,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4180645,
-      "lastMs": 89837,
+      "totalMs": 4272827,
+      "lastMs": 92182,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:32:48.445Z"
+      "updatedAt": "2026-10-08T16:34:20.628Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:08:16.555Z",
-  "updatedAt": "2026-10-08T16:32:48.445Z",
+  "updatedAt": "2026-10-08T16:34:20.628Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3222,7 +3232,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:32:48.445Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:34:20.628Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
