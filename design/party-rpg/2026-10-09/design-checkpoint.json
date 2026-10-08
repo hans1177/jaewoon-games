@@ -449,25 +449,28 @@
     },
     "local_authoring_parts::b97618c25a9984c5c4aba0abdd88eeccaffe4c4a85716886e81f05242ab52b2e:toSystem": {
       "toSystem": "MATCH_GAME"
+    },
+    "local_authoring_parts::b97618c25a9984c5c4aba0abdd88eeccaffe4c4a85716886e81f05242ab52b2e:trigger": {
+      "trigger": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective with a clear goal and limited moves, obstacles, or another visible puzzle constraint."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 23,
-      "successes": 23,
+      "calls": 24,
+      "successes": 24,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1744929,
-      "lastMs": 87502,
+      "totalMs": 1834460,
+      "lastMs": 89531,
       "lastError": null,
-      "updatedAt": "2026-10-08T22:00:45.533Z"
+      "updatedAt": "2026-10-08T22:02:15.065Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:31:40.536Z",
-  "updatedAt": "2026-10-08T22:00:45.533Z",
+  "updatedAt": "2026-10-08T22:02:15.065Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2907,7 +2910,7 @@
       "progressionDirection": "{\"from\": \"START_GAME\", \"to\": \"MATCH_GAME\"}"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T22:00:45.533Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T22:02:15.065Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
