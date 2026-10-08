@@ -1,10 +1,16 @@
-# 몬스터 어드벤처 — Unity Web Development Floor
+# 몬스터 어드벤처 — DEVELOPMENT_CONFIRMED Unity app native development baseline
 
 - gameId: `monster-adventure`
-- canonical source: `unity-games/monster-adventure/`
-- WebGL build method: `UnityWebFloorBuild.BuildWeb`
-- future Unity app build method: `UnityWebFloorBuild.Build`
-- readiness gate: `UPPER_PLATFORM_DEVELOPMENT_READY`
-- release/deployment authority: **NO**
+- mode: `GENERAL`
+- Unity editor: `6000.6.0f1` (f7f8ed4d1e24)
+- source design: `design/monster-adventure/2026-09-19/design-revised.json`
+- BUILD_UP directive: monster-adventure-build-up-g14-24227622af8f (generation 14)
+- verified external APK black-box learning: 100% (7/7)
+- Unity app profile: `design-revised.json#content.platformProfiles.UNITY`
+- build method: `SeedAndroidBuild.Build`
+- Android graphics profile: `OpenGLES3 with ES 3.0 minimum compatibility`
+- purpose: `TARGET_PLATFORM_NATIVE_APP_DEVELOPMENT`
+- public/release authority: **NO**
 
-Generated from the locked common design and Unity platform profile. This source must still pass real WebGL build, browser play, independent QA, regression, and the seven-domain upper-platform readiness gate.
+This project is generated directly from the locked design baseline. Unity Web is not used. The project is generated from the common game design plus the Unity app platform profile.
+It remains DEVELOPMENT_CONFIRMED until platform runtime, independent QA, regression, and release evidence pass.
