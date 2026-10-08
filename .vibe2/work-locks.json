@@ -1,5 +1,47 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-k2f56c",
+      "worker": "vibe2",
+      "taskId": "survival-unity-web-base-implementation-v1",
+      "gameId": "survival",
+      "files": [
+        "unity-games/survival/Assets/Scripts/GameCore.cs",
+        "unity-games/survival/Assets/Scripts/RuntimeBootstrap.cs",
+        "assets/roblox/world-ghosts/native/spider/spider.glb",
+        "assets/roblox/world-ghosts/native/spider/spider.png",
+        "assets/roblox/world-ghosts/native/spider/evidence.json",
+        "assets/generated/unity/survival/background/asset.glb",
+        "assets/generated/unity/survival/background/master.glb",
+        "assets/generated/unity/survival/background/preview.png",
+        "assets/generated/unity/survival/background/preview-master.png",
+        "assets/generated/unity/survival/background/application.json",
+        "assets/generated/unity/survival/background/evidence.json",
+        "assets/generated/unity/survival/item/asset.glb",
+        "assets/generated/unity/survival/item/master.glb",
+        "assets/generated/unity/survival/item/preview.png",
+        "assets/generated/unity/survival/item/preview-master.png",
+        "assets/generated/unity/survival/item/application.json",
+        "assets/generated/unity/survival/item/evidence.json",
+        "assets/generated/unity/survival/prop/asset.glb",
+        "assets/generated/unity/survival/prop/master.glb",
+        "assets/generated/unity/survival/prop/preview.png",
+        "assets/generated/unity/survival/prop/preview-master.png",
+        "assets/generated/unity/survival/prop/application.json",
+        "assets/generated/unity/survival/prop/evidence.json"
+      ],
+      "baseSha": "9722b1411b611d58694b3c69494541cb5a0ce2f4",
+      "runId": "37793721753",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-08T16:37:53.215Z",
+      "expiresAt": "2026-10-08T17:22:53.215Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:survival-unity-web-base-implementation-v1"
+      ]
+    }
+  ]
 }
