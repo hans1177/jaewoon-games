@@ -721,25 +721,34 @@
         "riskPressure": "Players must balance risk and reward, with the risk of environmental danger and resource depletion.",
         "recoveryRules": "Players can recover from failure by re-evaluating their strategy and resource management."
       }
+    },
+    "local_authoring_parts::6f10887235e538f45e832b9f4648831d1bcd53ff0bd2389379c0e8da266f5440:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "MAIN",
+      "toId": "A",
+      "stateKeys": [
+        "worldState",
+        "nextAction"
+      ],
+      "fromSystem": "MAIN"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 23,
-      "successes": 22,
+      "calls": 24,
+      "successes": 23,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2500215,
-      "lastMs": 88799,
+      "totalMs": 2561984,
+      "lastMs": 61769,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T10:03:01.297Z"
+      "updatedAt": "2026-10-08T10:04:03.073Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:43:46.463Z",
-  "updatedAt": "2026-10-08T10:03:01.302Z",
+  "updatedAt": "2026-10-08T10:04:03.073Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3148,10 +3157,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:03:01.298Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:04:03.073Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
