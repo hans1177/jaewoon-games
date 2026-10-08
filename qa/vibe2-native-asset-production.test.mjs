@@ -2928,6 +2928,15 @@ test('GLB production inspection measures transformed geometry and ground pivot f
     assert.deepEqual(result.inventory.spatial.bounds,{min:[10,3,-2],max:[14,5,-2]});
     assert.deepEqual(result.inventory.spatial.groundTranslation,[-12,-3,2]);
     assert.equal(result.inventory.spatial.triangleCount,1);
+    const surface=result.inventory.spatial.geometrySurface;
+    assert.equal(surface.measurement,'VISIBLE_TRIANGLES_AREA_WEIGHTED_GLTF_METERS');
+    assert.equal(surface.areaSquareMeters,4);
+    assert.equal(surface.triangleCount,1);
+    assert.deepEqual(surface.centroidMeters.map(x=>Math.round(x*1e6)/1e6),[11.333333,3.666667,-2]);
+    assert.deepEqual(surface.varianceSquareMeters.map(x=>Math.round(x*1e6)/1e6),[.888889,.222222,0]);
+    assert.equal(surface.broadphaseAabbVolumeCubicMeters,0,'a triangle is not a closed volume');
+    assert.equal(surface.collisionAuthority,false);
+    assert.equal(surface.massDensityMeasured,false);
     assert.equal(result.runtimeVerified,false);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
@@ -2946,6 +2955,9 @@ test('GLB production inspection measures actual rotated surfaces and counts only
     assert(Math.abs(spatial.bounds.min[1]-(3-2*Math.SQRT2))<1e-9,'empty bounding-box corners must not move ground contact');
     assert(Math.abs(spatial.groundTranslation[1]-(2*Math.SQRT2-3))<1e-9);
     assert.equal(spatial.triangleCount,2,'count visible mesh instances, excluding unattached meshes');
+    assert(Math.abs(spatial.geometrySurface.areaSquareMeters-8)<1e-8,'count actual transformed visible surfaces only');
+    assert.equal(spatial.geometrySurface.triangleCount,2);
+    assert.equal(spatial.geometrySurface.nonTrianglePrimitives,0);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
@@ -3009,6 +3021,11 @@ test('actual Blender authoring preserves a styled master across platforms and ex
       const application=JSON.parse(fs.readFileSync(path.join(folder,'application.json'),'utf8'));
       assert.equal(application.masterSha256,inspection.sourceHash);
       assert(application.boundsSizeMeters.every((value,axis)=>Math.abs(value-inspection.inventory.spatial.size[axis])<1e-5),'Blender and exported GLB must measure the same actual geometry');
+      const measured=inspection.inventory.spatial.geometrySurface,declared=application.geometrySurface;
+      assert.equal(declared.nonAuthoritative,true);
+      assert(Math.abs(measured.areaSquareMeters-declared.areaSquareMeters)<Math.max(1e-5,measured.areaSquareMeters*1e-4),'Blender and GLB surface area must match');
+      assert(declared.centroidMeters.every((v,i)=>Math.abs(v-measured.centroidMeters[i])<Math.max(1e-5,Math.max(...inspection.inventory.spatial.size)*1e-4)),'Blender and GLB surface centroid must match');
+      assert.equal(measured.collisionAuthority,false);
       assert.equal(application.nativeRuntimeVerified,false);
       assert.equal(application.style.sourceStyleFamily,style);
       assert.equal(application.materials.length,inspection.inventory.materials.length);
