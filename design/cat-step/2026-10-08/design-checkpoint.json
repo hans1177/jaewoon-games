@@ -114,25 +114,258 @@
       "name": "Puzzle System",
       "purpose": "Establishes the core gameplay mechanics through a series of structured, interactive puzzle challenges that evolve with player progression.",
       "playerChoice": "Player selects a level with a clear goal, limited moves, obstacles, or a visible puzzle constraint. They then make strategic moves, create combos, and use immediate feedback to solve the objective. Upon clearing the level, they earn rewards or unlock new stages, which introduce new board patterns or obstacle combinations for continued engagement."
+    },
+    "local_authoring_parts::3016d96ce70aaaae75e82460df2a2f84fcce4b4ade4556e2c4fbfdeeedb51d72:signatureSystems:4": {
+      "id": "cat-step-signature-systems-4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "LEVEL_GOAL",
+        "LIMITED_MOVES",
+        "OBSTACLES",
+        "VISIBLE_PUZZLE_CONSTRAINT"
+      ],
+      "stateOutputs": [
+        "MATCHES",
+        "DELIVERED_FEEDBACK",
+        "CLEAR_LEVEL_GOAL",
+        "REWARD",
+        "NEXT_BOARD_PATTERN"
+      ],
+      "name": "Puzzle System",
+      "purpose": "Establishes the core gameplay mechanics through a series of structured, interactive puzzle challenges that evolve with player progression. These challenges are designed to foster player engagement through strategic decision-making, immediate feedback, and the progression of game states.",
+      "playerChoice": "Player selects a level with a clear goal, limited moves, obstacles, or a visible puzzle constraint. They then make strategic moves, create combos, and use immediate feedback to solve the objective. Upon clearing the level, they earn rewards or unlock new stages, which introduce new board patterns or obstacle combinations for continued engagement."
+    },
+    "local_authoring_parts::6ed16c24b31ef88296286e702ba3bb9e66a373f3ec44cde3c7e73698b73470de:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "cat-step-signature-systems-0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "LEVEL_GOAL",
+            "LIMITED_MOVES",
+            "OBSTACLES",
+            "VISIBLE_PUZZLE_CONSTRAINT"
+          ],
+          "stateOutputs": [
+            "MATCHES",
+            "DELIVERED_FEEDBACK",
+            "CLEAR_LEVEL_GOAL",
+            "REWARD",
+            "NEXT_BOARD_PATTERN"
+          ],
+          "name": "Puzzle System",
+          "purpose": "Establishes the core gameplay mechanics through a series of structured, interactive puzzle challenges that evolve with player progression.",
+          "playerChoice": "Player selects a level with a clear goal, limited moves, obstacles, or a visible puzzle constraint. They then make strategic moves, create combos, and use immediate feedback to solve the objective. Upon clearing the level, they earn rewards or unlock new stages, which introduce new board patterns or obstacle combinations for continued engagement."
+        },
+        {
+          "id": "cat-step-signature-systems-1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "LEVEL_GOAL",
+            "LIMITED_MOVES",
+            "OBSTACLES",
+            "VISIBLE_PUZZLE_CONSTRAINT"
+          ],
+          "stateOutputs": [
+            "MATCHES",
+            "DELIVERED_FEEDBACK",
+            "CLEAR_LEVEL_GOAL",
+            "REWARD",
+            "NEXT_BOARD_PATTERN"
+          ],
+          "name": "Puzzle System",
+          "purpose": "Establishes the core gameplay mechanics through a series of structured, interactive puzzle challenges that evolve with player progression.",
+          "playerChoice": "Player selects a level with a clear goal, limited moves, obstacles, or a visible puzzle constraint. They then make strategic moves, create combos, and use immediate feedback to solve the objective. Upon clearing the level, they earn rewards or unlock new stages, which introduce new board patterns or obstacle combinations for continued engagement."
+        },
+        {
+          "id": "cat-step-signature-systems-2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "LEVEL_GOAL",
+            "LIMITED_MOVES",
+            "OBSTACLES",
+            "VISIBLE_PUZZLE_CONSTRAINT"
+          ],
+          "stateOutputs": [
+            "MATCHES",
+            "DELIVERED_FEEDBACK",
+            "CLEAR_LEVEL_GOAL",
+            "REWARD",
+            "NEXT_BOARD_PATTERN"
+          ],
+          "name": "Puzzle System",
+          "purpose": "Establishes the core gameplay mechanics through a series of structured, interactive puzzle challenges that evolve with player progression.",
+          "playerChoice": "Player selects a level with a clear goal, limited moves, obstacles, or a visible puzzle constraint. They then make strategic moves, create combos, and use immediate feedback to solve the objective. Upon clearing the level, they earn rewards or unlock new stages, which introduce new board patterns or obstacle combinations for continued engagement."
+        },
+        {
+          "id": "cat-step-signature-systems-3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "LEVEL_GOAL",
+            "LIMITED_MOVES",
+            "OBSTACLES",
+            "VISIBLE_PUZZLE_CONSTRAINT"
+          ],
+          "stateOutputs": [
+            "MATCHES",
+            "DELIVERED_FEEDBACK",
+            "CLEAR_LEVEL_GOAL",
+            "REWARD",
+            "NEXT_BOARD_PATTERN"
+          ],
+          "name": "Puzzle System",
+          "purpose": "Establishes the core gameplay mechanics through a series of structured, interactive puzzle challenges that evolve with player progression.",
+          "playerChoice": "Player selects a level with a clear goal, limited moves, obstacles, or a visible puzzle constraint. They then make strategic moves, create combos, and use immediate feedback to solve the objective. Upon clearing the level, they earn rewards or unlock new stages, which introduce new board patterns or obstacle combinations for continued engagement."
+        },
+        {
+          "id": "cat-step-signature-systems-4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "LEVEL_GOAL",
+            "LIMITED_MOVES",
+            "OBSTACLES",
+            "VISIBLE_PUZZLE_CONSTRAINT"
+          ],
+          "stateOutputs": [
+            "MATCHES",
+            "DELIVERED_FEEDBACK",
+            "CLEAR_LEVEL_GOAL",
+            "REWARD",
+            "NEXT_BOARD_PATTERN"
+          ],
+          "name": "Puzzle System",
+          "purpose": "Establishes the core gameplay mechanics through a series of structured, interactive puzzle challenges that evolve with player progression. These challenges are designed to foster player engagement through strategic decision-making, immediate feedback, and the progression of game states.",
+          "playerChoice": "Player selects a level with a clear goal, limited moves, obstacles, or a visible puzzle constraint. They then make strategic moves, create combos, and use immediate feedback to solve the objective. Upon clearing the level, they earn rewards or unlock new stages, which introduce new board patterns or obstacle combinations for continued engagement."
+        }
+      ]
+    },
+    "local_authoring_parts::a4352fb83408490f98bd60a3de18815df51f2ca8d623b64c806892186464b58e:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ],
+      "signatureSystems": [
+        {
+          "id": "cat-step-signature-systems-0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "LEVEL_GOAL",
+            "LIMITED_MOVES",
+            "OBSTACLES",
+            "VISIBLE_PUZZLE_CONSTRAINT"
+          ],
+          "stateOutputs": [
+            "MATCHES",
+            "DELIVERED_FEEDBACK",
+            "CLEAR_LEVEL_GOAL",
+            "REWARD",
+            "NEXT_BOARD_PATTERN"
+          ],
+          "name": "Puzzle System",
+          "purpose": "Establishes the core gameplay mechanics through a series of structured, interactive puzzle challenges that evolve with player progression.",
+          "playerChoice": "Player selects a level with a clear goal, limited moves, obstacles, or a visible puzzle constraint. They then make strategic moves, create combos, and use immediate feedback to solve the objective. Upon clearing the level, they earn rewards or unlock new stages, which introduce new board patterns or obstacle combinations for continued engagement."
+        },
+        {
+          "id": "cat-step-signature-systems-1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "LEVEL_GOAL",
+            "LIMITED_MOVES",
+            "OBSTACLES",
+            "VISIBLE_PUZZLE_CONSTRAINT"
+          ],
+          "stateOutputs": [
+            "MATCHES",
+            "DELIVERED_FEEDBACK",
+            "CLEAR_LEVEL_GOAL",
+            "REWARD",
+            "NEXT_BOARD_PATTERN"
+          ],
+          "name": "Puzzle System",
+          "purpose": "Establishes the core gameplay mechanics through a series of structured, interactive puzzle challenges that evolve with player progression.",
+          "playerChoice": "Player selects a level with a clear goal, limited moves, obstacles, or a visible puzzle constraint. They then make strategic moves, create combos, and use immediate feedback to solve the objective. Upon clearing the level, they earn rewards or unlock new stages, which introduce new board patterns or obstacle combinations for continued engagement."
+        },
+        {
+          "id": "cat-step-signature-systems-2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "LEVEL_GOAL",
+            "LIMITED_MOVES",
+            "OBSTACLES",
+            "VISIBLE_PUZZLE_CONSTRAINT"
+          ],
+          "stateOutputs": [
+            "MATCHES",
+            "DELIVERED_FEEDBACK",
+            "CLEAR_LEVEL_GOAL",
+            "REWARD",
+            "NEXT_BOARD_PATTERN"
+          ],
+          "name": "Puzzle System",
+          "purpose": "Establishes the core gameplay mechanics through a series of structured, interactive puzzle challenges that evolve with player progression.",
+          "playerChoice": "Player selects a level with a clear goal, limited moves, obstacles, or a visible puzzle constraint. They then make strategic moves, create combos, and use immediate feedback to solve the objective. Upon clearing the level, they earn rewards or unlock new stages, which introduce new board patterns or obstacle combinations for continued engagement."
+        },
+        {
+          "id": "cat-step-signature-systems-3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "LEVEL_GOAL",
+            "LIMITED_MOVES",
+            "OBSTACLES",
+            "VISIBLE_PUZZLE_CONSTRAINT"
+          ],
+          "stateOutputs": [
+            "MATCHES",
+            "DELIVERED_FEEDBACK",
+            "CLEAR_LEVEL_GOAL",
+            "REWARD",
+            "NEXT_BOARD_PATTERN"
+          ],
+          "name": "Puzzle System",
+          "purpose": "Establishes the core gameplay mechanics through a series of structured, interactive puzzle challenges that evolve with player progression.",
+          "playerChoice": "Player selects a level with a clear goal, limited moves, obstacles, or a visible puzzle constraint. They then make strategic moves, create combos, and use immediate feedback to solve the objective. Upon clearing the level, they earn rewards or unlock new stages, which introduce new board patterns or obstacle combinations for continued engagement."
+        },
+        {
+          "id": "cat-step-signature-systems-4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "LEVEL_GOAL",
+            "LIMITED_MOVES",
+            "OBSTACLES",
+            "VISIBLE_PUZZLE_CONSTRAINT"
+          ],
+          "stateOutputs": [
+            "MATCHES",
+            "DELIVERED_FEEDBACK",
+            "CLEAR_LEVEL_GOAL",
+            "REWARD",
+            "NEXT_BOARD_PATTERN"
+          ],
+          "name": "Puzzle System",
+          "purpose": "Establishes the core gameplay mechanics through a series of structured, interactive puzzle challenges that evolve with player progression. These challenges are designed to foster player engagement through strategic decision-making, immediate feedback, and the progression of game states.",
+          "playerChoice": "Player selects a level with a clear goal, limited moves, obstacles, or a visible puzzle constraint. They then make strategic moves, create combos, and use immediate feedback to solve the objective. Upon clearing the level, they earn rewards or unlock new stages, which introduce new board patterns or obstacle combinations for continued engagement."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 369377,
-      "lastMs": 41183,
+      "totalMs": 411435,
+      "lastMs": 42058,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:04:21.729Z"
+      "updatedAt": "2026-10-08T12:05:03.789Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:58:12.306Z",
-  "updatedAt": "2026-10-08T12:04:21.729Z",
+  "updatedAt": "2026-10-08T12:05:03.792Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2169,7 +2402,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:04:21.729Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:05:03.792Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
