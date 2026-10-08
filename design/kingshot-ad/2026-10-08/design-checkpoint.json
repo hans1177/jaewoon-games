@@ -1048,25 +1048,45 @@
         "level"
       ],
       "fromSystem": "GAMEPLAY_SKETCH v4"
+    },
+    "local_authoring_parts::13436e4c43328896e0f23d5df5208ffad8d766cedaffd336b2f90c90e094e133:toSystem,trigger,stateChange": {
+      "toSystem": "GAMEPLAY_SKETCH v4",
+      "trigger": "enemy_wave",
+      "stateChange": "defensive_structure_reconfigured"
+    },
+    "local_authoring_parts::0d72f015e340fad6fd23145063ec0b59527a7b0cd096b29c60e864804adaef47:systemInterconnections:4": {
+      "fromId": "enemy_wave",
+      "toId": "defensive_structure",
+      "stateKeys": [
+        "enemy_wave",
+        "defensive_structure",
+        "resource",
+        "strategy",
+        "level"
+      ],
+      "fromSystem": "GAMEPLAY_SKETCH v4",
+      "toSystem": "GAMEPLAY_SKETCH v4",
+      "trigger": "enemy_wave",
+      "stateChange": "defensive_structure_reconfigured"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 40,
-      "successes": 40,
+      "calls": 41,
+      "successes": 41,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2954287,
-      "lastMs": 49515,
+      "totalMs": 2997742,
+      "lastMs": 43455,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:10:04.111Z"
+      "updatedAt": "2026-10-08T10:10:47.568Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:32:33.592Z",
-  "updatedAt": "2026-10-08T10:10:04.111Z",
+  "updatedAt": "2026-10-08T10:10:47.575Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3368,7 +3388,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 3
+    "designer_draft_slices::systems-progression": 4
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3417,10 +3437,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:10:04.111Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T10:10:47.571Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
