@@ -356,25 +356,51 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::6e336371fe3e6ff3ed089adc9c7420c1d778d345f9ca47e9cd92212313e6e2c6:signatureSystems:0": {
+      "id": "ANT_SIMULATOR_01",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "월드 진입 후 목표 확인"
+      ],
+      "stateOutputs": [
+        "개미 종족 선택 및 행동 선택"
+      ],
+      "name": "OPEN_WILDERNESS_ACADEMY",
+      "purpose": "플레이어가 개미 종족 중 하나를 선택하여 거대한 정원을 탐험하고 굴을 지키며 생존하는 오픈월드 멀티 플레이 게임의 중심 행동입니다.",
+      "playerChoice": "월드 진입 후 목표 확인 이후 개미 종족 선택 및 행동 선택을 하여 상태변화 및 보상/위험의 결과를 경험하며, 이를 바탕으로 다음 목표와 전략 결정을 합니다."
+    },
+    "local_authoring_parts::6e336371fe3e6ff3ed089adc9c7420c1d778d345f9ca47e9cd92212313e6e2c6:signatureSystems:1": {
+      "id": "ANT_SIMULATOR_02",
+      "grammarRole": "A",
+      "stateInputs": [
+        "월드 진입 후 목표 확인"
+      ],
+      "stateOutputs": [
+        "개미 종족 선택 및 행동 선택"
+      ],
+      "name": "OPEN_WILDERNESS_ACADEMY",
+      "purpose": "플레이어가 개미 종족 중 하나를 선택하여 거대한 정원을 탐험하고 굴을 지키며 생존하는 오픈월드 멀티 플레이 게임의 독립적 상태 변환입니다.",
+      "playerChoice": "월드 진입 후 목표 확인 이후 개미 종족 선택 및 행동 선택을 하여 월드 상태, 자원, 위험, 그리고 다음 선택에 따라 진행되는 반복 가능한 루프 적용."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 491909,
-      "lastMs": 37567,
+      "totalMs": 636575,
+      "lastMs": 37784,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:53:08.557Z"
+      "updatedAt": "2026-10-08T17:55:33.237Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:44:56.607Z",
-  "updatedAt": "2026-10-08T17:53:08.567Z",
+  "updatedAt": "2026-10-08T17:55:33.237Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2492,10 +2518,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T17:53:08.560Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_MAIN_A_B_c_DELVE_REQUIRED,DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:55:33.237Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
