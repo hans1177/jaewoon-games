@@ -52,25 +52,43 @@
       "name": "World Exploration System",
       "purpose": "Facilitates player-driven exploration of the game world",
       "playerChoice": "Explore, discover, and interact with the environment to advance the narrative and gain new experiences"
+    },
+    "local_authoring_parts::7fbbc403a5d5d6d0c11cc3918ef43ddad7e24921bdff92f2093a1bbdc58dbdb7:signatureSystems:1": {
+      "id": "signature-system-2",
+      "grammarRole": "A",
+      "stateInputs": [
+        "area",
+        "characters",
+        "quests",
+        "information"
+      ],
+      "stateOutputs": [
+        "next-area",
+        "next-quests",
+        "next-information"
+      ],
+      "name": "World Progression System",
+      "purpose": "Facilitates player-driven progression through the game world's narrative and experience structure",
+      "playerChoice": "Progress, unlock new content, and advance the story through structured encounters and events"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 235489,
-      "lastMs": 35123,
+      "totalMs": 271056,
+      "lastMs": 35567,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:55:42.687Z"
+      "updatedAt": "2026-10-08T10:56:18.256Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:51:46.975Z",
-  "updatedAt": "2026-10-08T10:55:42.687Z",
+  "updatedAt": "2026-10-08T10:56:18.257Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2302,7 +2320,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T10:55:42.687Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:56:18.256Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
