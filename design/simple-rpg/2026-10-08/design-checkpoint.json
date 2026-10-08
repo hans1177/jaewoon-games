@@ -34,25 +34,42 @@
         "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
         "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
       ]
+    },
+    "local_authoring_parts::d149c3d5b3c809b99e86c138927f36e41d708fd786bc0ce29ed2629861149949:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "boardPattern",
+        "obstacleCombination",
+        "playerChoice"
+      ],
+      "stateOutputs": [
+        "nextBoardPattern",
+        "newObstacleCombination",
+        "rewardSystem"
+      ],
+      "name": "BoardPatternSystem",
+      "purpose": "Establish a clear initial board configuration with defined goals, constraints, and visual cues to guide player progression.",
+      "playerChoice": "Select a starting board pattern, define the objective, and set up the initial constraints for the game level."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 251016,
-      "lastMs": 34010,
+      "totalMs": 288202,
+      "lastMs": 37186,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:01:06.235Z"
+      "updatedAt": "2026-10-08T13:01:43.423Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:56:55.190Z",
-  "updatedAt": "2026-10-08T13:01:06.235Z",
+  "updatedAt": "2026-10-08T13:01:43.423Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2089,7 +2106,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:01:06.235Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:01:43.423Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
