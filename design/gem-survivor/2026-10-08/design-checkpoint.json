@@ -27,25 +27,47 @@
       "identity": "보석 생존전의 핵심 재미와 시스템 연결을 확정한 고유한 정체성입니다. 게임의 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, 선택 결과는 다음 월드 상태와 세계 규칙의 연결을 통해 진화합니다. 이 정체성은 게임의 반복 루프, 위험, 보상, 그리고 플레이어의 성장과 관련된 시스템을 포함합니다. 게임의 핵심 재미는 '성장'을 통해 새로운 행동·경로·조합·관계·발견을 열어, 플레이어가 다양한 방식으로 게임을 경험할 수 있도록 설계되었습니다. 이 정체성은 기존 게임의 점수나 관문을 승계하지 않고, 설계 단계부터 다시 검토하여, 게임의 구조와 규칙을 재정의하고, 플레이어의 경험을 다양화하는 방식으로 구축되었습니다.",
       "playerFantasy": "플레이어는 '보석 생존전'에서 가장 반복적으로 수행하는 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 통해, 즉시 상태 변화를 만드는 데 주체가 되며, 선택 결과는 다음 월드 상태와 세계 규칙의 연결을 통해 진화합니다. 이 선택은 게임의 반복 루프, 위험, 보상, 그리고 플레이어의 성장과 관련된 시스템을 포함하며, 플레이어가 다양한 방식으로 게임을 경험할 수 있도록 설계되었습니다. 게임의 핵심 재미는 '성장'을 통해 새로운 행동·경로·조합·관계·발견을 열어, 플레이어가 다양한 방식으로 게임을 경험할 수 있도록 설계되었습니다.",
       "coreFun": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태와 세계 규칙의 연결을 통해 진화하는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 행동이다. 이 선택은 게임의 반복 루프, 위험, 보상, 그리고 플레이어의 성장과 관련된 시스템을 포함하며, 플레이어가 다양한 방식으로 게임을 경험할 수 있도록 설계되었다. 이 선택은 기존 게임의 점수나 관문을 승계하지 않고, 설계 단계부터 다시 검토하여, 게임의 구조와 규칙을 재정의하고, 플레이어의 경험을 다양화하는 방식으로 구축되었다."
+    },
+    "local_authoring_parts::b7c2a7a5c99c9847c2c0f2949b9e5ee2ce4d42e7212a9274e56c190133d56d57:coreLoop": {
+      "coreLoop": [
+        "INPUT: 플레이어의 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.' 선택 -> STATE: 즉각적인 상태 변화 (예: 생명력 감소, 보상 획득, 전략 변경) -> OUTCOME: 반복 루프의 위험, 보상, 다음 선택 결정",
+        "INPUT: 보상 획득 또는 전략 변경 선택 -> STATE: 새로운 상태 변화 (예: 보조 자원 획득, 전략 강화) -> OUTCOME: 다음 선택의 위험, 보상, 다음 상태 변화 결정",
+        "INPUT: 전략 변경 또는 보조 자원 획득 선택 -> STATE: 상태 변화의 재정의 (예: 전략 조합, 보상 변화) -> OUTCOME: 다음 선택의 위험, 보상, 다음 상태 변화 결정"
+      ]
+    },
+    "local_authoring_parts::a653676fd1a3a9bf0c207e095e922f3e39818525cd8f1a64273f2fde858f87bf:signatureSystems:0": {
+      "id": "MAIN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "INPUT: 플레이어의 'Fight through an escalating horde in a short real-time survivalrun"
+      ],
+      "stateOutputs": [
+        "OUTPUT: 즉각적인 상태 변화 (예: 생명력 감소, 보상 획득, 전략 변경)",
+        "OUTPUT: 새로운 상태 변화 (예: 보조 자원 획득, 전략 강화)",
+        "OUTPUT: 상태 변화의 재정의 (예: 전략 조합, 보상 변화)"
+      ],
+      "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+      "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 278752,
-      "lastMs": 42534,
+      "totalMs": 381349,
+      "lastMs": 45802,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:47:45.463Z"
+      "updatedAt": "2026-10-08T08:49:28.065Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:43:06.687Z",
-  "updatedAt": "2026-10-08T08:47:45.464Z",
+  "updatedAt": "2026-10-08T08:49:28.065Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2244,7 +2266,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:47:45.464Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:49:28.065Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
