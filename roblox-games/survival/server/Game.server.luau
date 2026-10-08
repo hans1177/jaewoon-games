@@ -258,7 +258,7 @@ local function showResourceImpact(part, destroyed)
   end
 end
 
-local function interactWithResource(player, part, rule)
+local function interactWithResource(player, part, rule, alreadyRateLimited)
   local character = player.Character
   local humanoid = character and character:FindFirstChildOfClass("Humanoid")
   local root = character and character:FindFirstChild("HumanoidRootPart")
@@ -268,9 +268,11 @@ local function interactWithResource(player, part, rule)
     player:SetAttribute("WorldHarvestStatus", "TOOL_REQUIRED")
     return
   end
-  local now = os.clock()
-  if now - (lastAction[player] or -1e6) < Config.RateLimitSeconds then return end
-  lastAction[player] = now
+  if not alreadyRateLimited then
+    local now = os.clock()
+    if now - (lastAction[player] or -1e6) < Config.RateLimitSeconds then return end
+    lastAction[player] = now
+  end
 
   local amount = 1
   if rule then
@@ -397,7 +399,16 @@ local function exploreGatherAndCraft(player)
   setNumber(player, "Position", (readNumber(player, "Position", 0) + 3) % 12)
   setNumber(player, "Score", readNumber(player, "Score", 0) + 5)
   setNumber(player, "Progress", readNumber(player, "Progress", 0) + 8)
-  gatherResource(player)
+  -- 내구도 규칙이 승인된 노드는 기존 액션 버튼도 서버 거리·도구·내구도 판정을 반드시 통과한다.
+  local chooseWood = readNumber(player, "ResourceWood", 0) <= readNumber(player, "ResourceStone", 0)
+  local targetName = chooseWood and "WoodResourceNode" or "StoneResourceNode"
+  local target = survivalResources:FindFirstChild(targetName)
+  local rule = validResourceRule(targetName)
+  if rule then
+    if target and target:IsA("BasePart") then interactWithResource(player, target, rule, true) end
+  else
+    gatherResource(player)
+  end
   craftAndEquipTool(player)
   markAction(player, "scope-coreloop-0-bfe946a409", "input-drag-touch")
 end
