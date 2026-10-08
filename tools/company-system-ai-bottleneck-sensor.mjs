@@ -69,10 +69,18 @@ function developmentFloorSnapshot(developmentQueue={}) {
     const signature=clean(item.robloxFailureSignature);
     // Only the exact previously-published private candidate may supply first-frame evidence.
     const firstFrame=item.robloxFirstFrameGroundingEvidence||{};
-    const firstFrameObservation=candidateExact&&firstFrame.observed===true&&firstFrame.sameLuauExecutionSession===true?{
+    const firstFrameEvidenceExact=(!clean(firstFrame.sourceRevision)||clean(firstFrame.sourceRevision)===revision)
+      &&(!clean(firstFrame.artifactIdentity)||clean(firstFrame.artifactIdentity)===artifact)
+      &&(!clean(firstFrame.placeId)||clean(firstFrame.placeId)===clean(candidate.placeId))
+      &&(!Number(firstFrame.candidateVersionNumber||0)||Number(firstFrame.candidateVersionNumber)===Number(candidate.versionNumber));
+    const firstFrameObservation=candidateExact&&firstFrameEvidenceExact
+      &&firstFrame.observed===true&&firstFrame.sameLuauExecutionSession===true?{
       observed:true,
       runtimeWorldReady:firstFrame.runtimeWorldReady===true,
       groundingObserved:firstFrame.spawnGroundingObserved===true,
+      serverContextExecuted:typeof firstFrame.serverContextExecuted==='boolean'?firstFrame.serverContextExecuted:null,
+      simulationRunningAfter:typeof firstFrame.simulationRunningAfter==='boolean'?firstFrame.simulationRunningAfter:null,
+      simulationStartSucceeded:typeof firstFrame.simulationStartSucceeded==='boolean'?firstFrame.simulationStartSucceeded:null,
       basePartCount:Math.max(0,Number(firstFrame.basePartCount)||0),
       spawnCount:Math.max(0,Number(firstFrame.spawnCount)||0),
       unsupportedSpawns:Math.max(0,Number(firstFrame.unsupportedSpawns)||0),
@@ -103,7 +111,9 @@ function developmentFloorSnapshot(developmentQueue={}) {
     }else if(signature==='ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED'){
       stage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
       if(firstFrameObservation&&!firstFrameObservation.runtimeWorldReady&&firstFrameObservation.spawnCount===0){
-        classification='EXACT_PRIVATE_CANDIDATE_WORLD_BOOTSTRAP_UNOBSERVED';
+        classification=firstFrameObservation.simulationRunningAfter===false
+          ?'EXACT_PRIVATE_GAME_SERVER_SIMULATION_NOT_RUNNING'
+          :'EXACT_PRIVATE_CANDIDATE_WORLD_BOOTSTRAP_UNOBSERVED';
         repair='TRACE_EXACT_PLACE_VERSION_AND_SERVER_WORLD_INITIALIZATION_BEFORE_SOURCE_MUTATION';
       }else{
         classification='FIRST_FRAME_SPAWN_GROUNDING_EVIDENCE_INCOMPLETE';
@@ -150,7 +160,8 @@ function developmentFloorSnapshot(developmentQueue={}) {
     pendingCandidateCount:rows.filter(x=>x.classification==='F0_PASSED_CANDIDATE_NOT_PUBLISHED').length,
     qualityBlockedCount:rows.filter(x=>x.qualitySourceRepairRequired).length,
     exactCandidateCount:rows.filter(x=>x.exactCandidateCheckpoint).length,
-    firstFrameWorldBootstrapUnobservedCount:rows.filter(x=>x.classification==='EXACT_PRIVATE_CANDIDATE_WORLD_BOOTSTRAP_UNOBSERVED').length,
+    firstFrameWorldBootstrapUnobservedCount:rows.filter(x=>['EXACT_PRIVATE_CANDIDATE_WORLD_BOOTSTRAP_UNOBSERVED','EXACT_PRIVATE_GAME_SERVER_SIMULATION_NOT_RUNNING'].includes(x.classification)).length,
+    firstFrameServerSimulationNotRunningCount:rows.filter(x=>x.classification==='EXACT_PRIVATE_GAME_SERVER_SIMULATION_NOT_RUNNING').length,
     firstFrameGroundingFailedCount:rows.filter(x=>x.classification==='EXACT_PRIVATE_CANDIDATE_SPAWN_GROUNDING_FAILED').length,
     unityF9ReportedCount:rows.filter(x=>x.unityF9Reported).length,
     unityF9IdentityBoundCount:rows.filter(x=>x.unityF9EvidenceIdentityBound).length,
@@ -359,6 +370,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log('SYSTEM_AI_DEVELOPMENT_F0_CANDIDATE_HANDOFF_PENDING='+result.development.pendingCandidateCount);
   console.log('SYSTEM_AI_DEVELOPMENT_QUALITY_GATE_BLOCKED='+result.development.qualityBlockedCount);
   console.log('SYSTEM_AI_DEVELOPMENT_FIRST_FRAME_WORLD_BOOTSTRAP_UNOBSERVED='+result.development.firstFrameWorldBootstrapUnobservedCount);
+  console.log('SYSTEM_AI_DEVELOPMENT_FIRST_FRAME_SERVER_SIMULATION_NOT_RUNNING='+result.development.firstFrameServerSimulationNotRunningCount);
   console.log('SYSTEM_AI_DEVELOPMENT_FIRST_FRAME_GROUNDING_FAILED='+result.development.firstFrameGroundingFailedCount);
   console.log('SYSTEM_AI_DEVELOPMENT_SHARED_FAILURE_COHORTS='+result.development.commonFailureCohorts.length);
   console.log('SYSTEM_AI_BOTTLENECK_STALE_RESERVATIONS='+result.staleReservations.length);
