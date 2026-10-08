@@ -191,11 +191,11 @@ test('repair uses public execution feedback without leaking hidden checks or ref
   assert.equal(result.repairEvidence.finalPass,true);
   assert.equal(result.repairEvidence.recovered,true);
   assert.equal(result.repairEvidence.execution,'INJECTED_TEST_PROVIDER');
-  assert.equal(prompts.length,2);
+  assert.equal(prompts.length,3);
   assert(formats.every(format=>format.required.includes('code')&&format.properties.tests.minItems===3&&format.additionalProperties===false));
   assert.match(prompts[0],/Sandbox contract: no using directives/);
   assert(generation.every(options=>options.think===true&&options.maxPredict===6144));
-  assert.deepEqual(generation.map(options=>options.attempt),[0,1]);
+  assert.deepEqual(generation.map(options=>options.attempt),[0,1,2]);
   assert(prompts.every(prompt=>prompt.includes(JSON.stringify(formats[0]))));
   for(const prompt of prompts){assert(!prompt.includes('PRIVATE_REFERENCE'));assert(!prompt.includes('PRIVATE_ACCEPTANCE'));}
   assert(prompts[1].includes('WRONG'));
@@ -217,9 +217,43 @@ test('hidden-only failure never becomes a repair oracle and missing executors do
     const result=await runPracticeRepairSession({order:{executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE]'},drill,
       request:async()=>{calls++;return JSON.stringify({...practiceAnswer,code:'partial'});},
       evaluate:(_,options)=>({pass:!infrastructure&&options.drill.tests[0]==='public',codeVerification:{reason:infrastructure?'CSHARP_EXECUTOR_UNAVAILABLE':'REGRESSION_OR_FIXTURE_FAILED',baselineRejected:true,referencePassed:true}})});
-    assert.equal(calls,1);assert.equal(result.repairEvidence.finalPass,false);
+    assert.equal(calls,infrastructure?1:2);assert.equal(result.repairEvidence.finalPass,false);
     assert.equal(result.repairEvidence.hiddenChecksUsedForRepair,false);
   }
+});
+
+test('specification review is independent of hidden outcomes and preserves a verified public candidate',async()=>{
+  const drill={id:'review',platform:'unity',scenario:'Preserve state when any validation fails.',broken:'BROKEN',reference:'SECRET_REFERENCE',feedbackTests:['PUBLIC_EXAMPLE'],tests:['SECRET_ACCEPTANCE']};
+  const histories=[];
+  for(const hiddenPass of [true,false]){
+    const prompts=[];
+    const result=await runPracticeRepairSession({order:{executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE]'},drill,
+      request:async(prompt)=>{prompts.push(prompt);return JSON.stringify({...practiceAnswer,code:prompts.length===1?'PUBLIC_VALID':'REGRESSION'});},
+      evaluate:(answer,{drill:check})=>({pass:answer.code==='PUBLIC_VALID'&&(check.tests[0]==='PUBLIC_EXAMPLE'||hiddenPass),codeVerification:{baselineRejected:true,referencePassed:true,reason:'REGRESSION_OR_FIXTURE_FAILED'}})});
+    assert.equal(prompts.length,3);
+    assert.match(prompts[1],/REVIEW THE COMPLETE STATED SPECIFICATION/);
+    assert.equal(result.parsed.code,'PUBLIC_VALID');
+    assert.equal(result.repairEvidence.selectedAttempt,1);
+    assert.equal(result.repairEvidence.finalPass,hiddenPass);
+    assert.equal(result.repairEvidence.hiddenChecksUsedForRepair,false);
+    assert(!JSON.stringify(prompts).includes('SECRET_'));
+    histories.push(prompts);
+  }
+  assert.deepEqual(histories[0],histories[1],'hidden results must not affect model calls or prompts');
+});
+
+test('public success still receives a bounded full-contract review before final evaluation',async()=>{
+  const prompts=[];
+  const result=await runPracticeRepairSession({order:{executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE]'},
+    drill:{platform:'unity',scenario:'Handle callback failure before committing.',feedbackTests:['PUBLIC'],tests:['HIDDEN'],reference:'PRIVATE'},
+    request:async(prompt)=>{prompts.push(prompt);return JSON.stringify({...practiceAnswer,code:prompts.length===1?'PARTIAL':'COMPLETE'});},
+    evaluate:(answer,{drill})=>({pass:drill.tests[0]==='PUBLIC'||answer.code==='COMPLETE',codeVerification:{baselineRejected:true,referencePassed:true,reason:'VERIFIED_LOGIC_ONLY'}})});
+  assert.equal(prompts.length,2);
+  assert.equal(result.repairEvidence.firstAttemptPass,false);
+  assert.equal(result.repairEvidence.finalPass,true);
+  assert.equal(result.repairEvidence.selectedAttempt,2);
+  assert(!JSON.stringify(prompts).includes('HIDDEN'));
+  assert(!JSON.stringify(prompts).includes('PRIVATE'));
 });
 
 test('public repair activates bounded hybrid inference without duplicating failed source in the task',async()=>{
@@ -235,7 +269,7 @@ test('public repair activates bounded hybrid inference without duplicating faile
   assert(!calls[1].messages[0].content.includes('FAILED_SOURCE'));
   assert(!calls[1].messages[0].content.includes('BROKEN_INPUT'));
   assert.equal(JSON.parse(calls[1].messages[1].content).code,'FAILED_SOURCE');
-  assert.deepEqual(result.candidateHistory.map(row=>row.code),['FAILED_SOURCE','REPAIRED_SOURCE']);
+  assert.deepEqual(result.candidateHistory.map(row=>row.code),['FAILED_SOURCE','REPAIRED_SOURCE','REPAIRED_SOURCE']);
   assert.equal(result.repairEvidence.recovered,true);
   assert(!JSON.stringify(calls).includes('PRIVATE_CASE'));
   assert(!JSON.stringify(result.candidateHistory).includes('PRIVATE_REFERENCE'));
@@ -261,7 +295,7 @@ test('generation timeout retries a shorter mode without exposing hidden inputs o
       drill:{platform:'unity',scenario:'PUBLIC_CONTRACT',feedbackTests:['PUBLIC_CASE'],tests:['HIDDEN_CASE'],reference:'PRIVATE_REFERENCE'},model:'qwen3:1.7b',captureCandidates:true,
       request:async(prompt,options)=>{calls.push({prompt,...options});if(calls.length===1||!recovers)throw new Error('practice model timeout');return JSON.stringify({...practiceAnswer,code:'FIXED_SOURCE'});},
       evaluate:answer=>({pass:answer.code==='FIXED_SOURCE',codeVerification:{reason:'VERIFIED_LOGIC_ONLY',baselineRejected:true,referencePassed:true}})});
-    assert.equal(calls.length,recovers?2:3);
+    assert.equal(calls.length,3);
     assert.equal(calls[0].inference.think,true);
     assert.equal(calls[1].inference.think,false);
     assert.equal(calls[1].maxPredict,3072);
