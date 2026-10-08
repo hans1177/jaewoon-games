@@ -94,25 +94,203 @@
       "name": "PROGRESSION_SYSTEM",
       "purpose": "플레이어의 '진행' - 선택 -> 상태 변화를 구체화한 반복 가능한 핵심 루프",
       "playerChoice": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+    },
+    "local_authoring_parts::511a852a05f9fd4580639a7bd799f4beaad1d3a3f9ce8de4323b2def2ccd6111:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "BUILD_UPGRADE",
+        "NEXT_PROGRESSION_CHOICE"
+      ],
+      "stateOutputs": [
+        "BUILD_UPGRADE",
+        "NEXT_PROGRESSION_CHOICE"
+      ],
+      "name": "PROGRESSION_SYSTEM",
+      "purpose": "플레이어의 '진행' - 선택 -> 상태 변화를 구체화한 반복 가능한 핵심 루프",
+      "playerChoice": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+    },
+    "local_authoring_parts::9afc1cef16907d28fe8f1d300205fe138b1689471543d8e05ebc9f8c31de0efa:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "RUN_REWARDS",
+            "EXPERIENCE"
+          ],
+          "stateOutputs": [
+            "BUILD_UPGRADE",
+            "NEXT_PROGRESSION_CHOICE"
+          ],
+          "name": "RUN_REWARD_SYSTEM",
+          "purpose": "플레이어의 '진행' - 선택 -> 상태 변화를 구체화한 반복 가능한 핵심 루프",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BUILD_UPGRADE",
+            "NEXT_PROGRESSION_CHOICE"
+          ],
+          "stateOutputs": [
+            "BUILD_UPGRADE",
+            "NEXT_PROGRESSION_CHOICE"
+          ],
+          "name": "BUILD_UPGRADE_SYSTEM",
+          "purpose": "플레이어의 '진행' - 선택 -> 상태 변화를 구체화한 반복 가능한 핵심 루프",
+          "playerChoice": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BUILD_UPGRADE",
+            "NEXT_PROGRESSION_CHOICE"
+          ],
+          "stateOutputs": [
+            "BUILD_UPGRADE",
+            "NEXT_PROGRESSION_CHOICE"
+          ],
+          "name": "PROGRESSION_SYSTEM",
+          "purpose": "플레이어의 '진행' - 선택 -> 상태 변화를 구체화한 반복 가능한 핵심 루프",
+          "playerChoice": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BUILD_UPGRADE",
+            "NEXT_PROGRESSION_CHOICE"
+          ],
+          "stateOutputs": [
+            "BUILD_UPGRADE",
+            "NEXT_PROGRESSION_CHOICE"
+          ],
+          "name": "PROGRESSION_SYSTEM",
+          "purpose": "플레이어의 '진행' - 선택 -> 상태 변화를 구체화한 반복 가능한 핵심 루프",
+          "playerChoice": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BUILD_UPGRADE",
+            "NEXT_PROGRESSION_CHOICE"
+          ],
+          "stateOutputs": [
+            "BUILD_UPGRADE",
+            "NEXT_PROGRESSION_CHOICE"
+          ],
+          "name": "PROGRESSION_SYSTEM",
+          "purpose": "플레이어의 '진행' - 선택 -> 상태 변화를 구체화한 반복 가능한 핵심 루프",
+          "playerChoice": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        }
+      ]
+    },
+    "local_authoring_parts::ef5e0f9abf6060cf4d62bd0237c89e58472d9b8df5b2e41337ae0216bb451f2d:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT: 플레이어의 '진행' - 선택 -> 상태 변화",
+        "판정: '위험' - 선택 -> 보상/다음 선택",
+        "OUTPUT: '보상' - 선택 -> 다음 선택"
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "RUN_REWARDS",
+            "EXPERIENCE"
+          ],
+          "stateOutputs": [
+            "BUILD_UPGRADE",
+            "NEXT_PROGRESSION_CHOICE"
+          ],
+          "name": "RUN_REWARD_SYSTEM",
+          "purpose": "플레이어의 '진행' - 선택 -> 상태 변화를 구체화한 반복 가능한 핵심 루프",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BUILD_UPGRADE",
+            "NEXT_PROGRESSION_CHOICE"
+          ],
+          "stateOutputs": [
+            "BUILD_UPGRADE",
+            "NEXT_PROGRESSION_CHOICE"
+          ],
+          "name": "BUILD_UPGRADE_SYSTEM",
+          "purpose": "플레이어의 '진행' - 선택 -> 상태 변화를 구체화한 반복 가능한 핵심 루프",
+          "playerChoice": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BUILD_UPGRADE",
+            "NEXT_PROGRESSION_CHOICE"
+          ],
+          "stateOutputs": [
+            "BUILD_UPGRADE",
+            "NEXT_PROGRESSION_CHOICE"
+          ],
+          "name": "PROGRESSION_SYSTEM",
+          "purpose": "플레이어의 '진행' - 선택 -> 상태 변화를 구체화한 반복 가능한 핵심 루프",
+          "playerChoice": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BUILD_UPGRADE",
+            "NEXT_PROGRESSION_CHOICE"
+          ],
+          "stateOutputs": [
+            "BUILD_UPGRADE",
+            "NEXT_PROGRESSION_CHOICE"
+          ],
+          "name": "PROGRESSION_SYSTEM",
+          "purpose": "플레이어의 '진행' - 선택 -> 상태 변화를 구체화한 반복 가능한 핵심 루프",
+          "playerChoice": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BUILD_UPGRADE",
+            "NEXT_PROGRESSION_CHOICE"
+          ],
+          "stateOutputs": [
+            "BUILD_UPGRADE",
+            "NEXT_PROGRESSION_CHOICE"
+          ],
+          "name": "PROGRESSION_SYSTEM",
+          "purpose": "플레이어의 '진행' - 선택 -> 상태 변화를 구체화한 반복 가능한 핵심 루프",
+          "playerChoice": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 655810,
-      "lastMs": 97316,
+      "totalMs": 755300,
+      "lastMs": 99490,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:32:43.821Z"
+      "updatedAt": "2026-10-08T13:34:23.312Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:21:47.979Z",
-  "updatedAt": "2026-10-08T13:32:43.821Z",
+  "updatedAt": "2026-10-08T13:34:23.315Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2311,7 +2489,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:32:43.821Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:34:23.315Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
