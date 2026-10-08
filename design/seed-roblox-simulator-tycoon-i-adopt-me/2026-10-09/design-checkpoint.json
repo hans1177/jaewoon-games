@@ -34,25 +34,40 @@
         "SELECT: Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
         "OUTPUT: Status change due to defensive adjustments and resource allocation."
       ]
+    },
+    "local_authoring_parts::e7f8d748d3c09e96a3797298ce2c9b587b480edc42f3f9ee2dd9f8b4af38caeb:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "ENEMY_WAVE",
+        "RESOURCE_POOL"
+      ],
+      "stateOutputs": [
+        "DEFENSE_STRUCTURE_CHANGED",
+        "RESOURCE_ALLOCATED"
+      ],
+      "name": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+      "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+      "playerChoice": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 398933,
-      "lastMs": 52750,
+      "totalMs": 432494,
+      "lastMs": 33561,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:10:28.383Z"
+      "updatedAt": "2026-10-08T19:11:01.946Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T19:03:49.423Z",
-  "updatedAt": "2026-10-08T19:10:28.383Z",
+  "updatedAt": "2026-10-08T19:11:01.946Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2247,7 +2262,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T19:10:28.383Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:11:01.946Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
