@@ -477,25 +477,44 @@
       "name": "EnemyTypeResponseSystem",
       "purpose": "게임 내에서 다음 적군 종류를 읽고, 위협 대상 위치를 기반으로 방어 구조를 조정하고, 자원을 효율적으로 사용하여 월드 상태를 변화시킨다.",
       "playerChoice": "적군 종류를 읽고, 방어 위치를 조정하고, 자원을 사용하여 전략적 변화를 적용하여 다음 월드 상태를 바꾼다."
+    },
+    "local_authoring_parts::c7933efec33b43cad1ebd0421e54d2fd1e6f19adb1ef874db7cc88f80296f5a6:signatureSystems:3": {
+      "id": "signatureSystem_04",
+      "grammarRole": "c",
+      "stateInputs": [
+        "enemyType",
+        "threatenedPosition",
+        "currentDefenses",
+        "resourcesAvailable"
+      ],
+      "stateOutputs": [
+        "updatedDefenses",
+        "newPlacements",
+        "tacticalChanges",
+        "resourceSpent"
+      ],
+      "name": "EnemyTypeAdaptationSystem",
+      "purpose": "게임 내에서 다음 적군 종류를 읽고, 방어 구조를 유연하게 조정하여, 위협 대상 위치에 맞춘 전략적 변화를 적용하여 월드 상태를 변화시킨다.",
+      "playerChoice": "적군 종류를 읽고, 방어 구조를 유연하게 조정하여, 위협 대상 위치에 맞춘 전략적 변화를 적용하여 다음 월드 상태를 바꾼다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 13,
+      "calls": 14,
+      "successes": 14,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1408939,
-      "lastMs": 109938,
+      "totalMs": 1519610,
+      "lastMs": 110671,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:48:45.543Z"
+      "updatedAt": "2026-10-08T12:50:36.215Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:25:16.552Z",
-  "updatedAt": "2026-10-08T12:48:45.543Z",
+  "updatedAt": "2026-10-08T12:50:36.215Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2726,7 +2745,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:48:45.543Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:50:36.215Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
