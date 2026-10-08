@@ -510,25 +510,40 @@
       "name": "Survival System",
       "purpose": "Player-driven survival with escalating challenges and adaptive upgrades",
       "playerChoice": "Choose from a variety of upgrades, weapons, and skills to optimize survival strategy"
+    },
+    "local_authoring_parts::9720338fa56e2625f5903d9b252d5b8f81bb56a45e6373ed758a6199c17139f3:signatureSystems:2": {
+      "id": "signatureSystems_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "readState: 'Fight through an escalating horde in a short real-time survival run'",
+        "writeState: 'Transition to next world state based on player choices'"
+      ],
+      "stateOutputs": [
+        "readState: 'Collect run rewards or experience'",
+        "writeState: 'Upgrade build and prepare for next wave'"
+      ],
+      "name": "Survival System",
+      "purpose": "Player-driven survival with escalating challenges and adaptive upgrades",
+      "playerChoice": "Choose from a variety of upgrades, weapons, and skills to optimize survival strategy"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1323677,
-      "lastMs": 101582,
+      "totalMs": 1424306,
+      "lastMs": 100629,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:26:42.692Z"
+      "updatedAt": "2026-10-08T12:28:23.322Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:04:38.961Z",
-  "updatedAt": "2026-10-08T12:26:42.692Z",
+  "updatedAt": "2026-10-08T12:28:23.322Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2763,7 +2778,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:26:42.692Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:28:23.322Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
