@@ -385,25 +385,40 @@
       "name": "CORE_LOOP_DESIGN",
       "purpose": "플레이어가 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이의 핵심 루프를 구축한다. 이 루프는 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 확보한다.",
       "playerChoice": "READ_NEXT_ENEMY_WAVE과 EARN_RESOURCES의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용을 반복하여, 플레이어가 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이의 핵심 루프를 구축한다. 이 루프는 반복, 위험, 보상, 자원의 연결을 통해 플레이어의 선택과 상태 변화를 유도하며, 게임의 재미와 구조를 강화한다."
+    },
+    "local_authoring_parts::c9cd49eaf343a98e9ba23e212d08b4fa627fcd42b0e858d64cbad4a6c0c77cc8:signatureSystems:3": {
+      "id": "CORE_LOOP_DESIGN",
+      "grammarRole": "c",
+      "stateInputs": [
+        "READ_NEXT_ENEMY_WAVE",
+        "EARN_RESOURCES"
+      ],
+      "stateOutputs": [
+        "PLACE_TOWERS_OR_DEFENDERS",
+        "SPEND_RESOURCES_ON_UPGRADES"
+      ],
+      "name": "CORE_LOOP_DESIGN",
+      "purpose": "플레이어가 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이의 핵심 루프를 구축한다. 이 루프는 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 확보한다.",
+      "playerChoice": "READ_NEXT_ENEMY_WAVE과 EARN_RESOURCES의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용을 반복하여, 플레이어가 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이의 핵심 루프를 구축한다. 이 루프는 반복, 위험, 보상, 자원의 연결을 통해 플레이어의 선택과 상태 변화를 유도하며, 게임의 재미와 구조를 강화한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 13,
+      "calls": 14,
+      "successes": 14,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1347825,
-      "lastMs": 119823,
+      "totalMs": 1465534,
+      "lastMs": 117709,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:14:29.803Z"
+      "updatedAt": "2026-10-08T13:16:27.513Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:52:01.924Z",
-  "updatedAt": "2026-10-08T13:14:29.803Z",
+  "updatedAt": "2026-10-08T13:16:27.513Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2634,7 +2649,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:14:29.803Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:16:27.513Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
