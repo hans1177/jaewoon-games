@@ -591,25 +591,40 @@
     },
     "local_authoring_parts::6d2c6d31ab6b40647cae4e9232deaf9ff75beb30be4b1dcb2bfe3371875cff9c:trigger": {
       "trigger": "시스템은 MAIN→A 상태 변화에 해당하는 조건을 검증하고, 해당 조건에 맞는 선택을 수행하여 상태를 업데이트한다. 이 과정에서 시스템은 MAIN→A 상태의 입력을 검증하고, 해당 상태 변화에 맞는 조건을 선택하여 다음 상태로 전환한다."
+    },
+    "local_authoring_parts::6d2c6d31ab6b40647cae4e9232deaf9ff75beb30be4b1dcb2bfe3371875cff9c:stateChange": {
+      "stateChange": "시스템은 MAIN→A 상태 변화에 해당하는 조건을 검증하고, 해당 조건에 맞는 선택을 수행하여 상태를 업데이트한다. 이 과정에서 시스템은 MAIN→A 상태의 입력을 검증하고, 해당 상태 변화에 맞는 조건을 선택하여 다음 상태로 전환한다."
+    },
+    "local_authoring_parts::3eb9d022182677f3582138b9645b63887c17093cbd49ab3bfbe56750971075c9:systemInterconnections:2": {
+      "fromId": "MAIN→A",
+      "toId": "systemInterconnections[2].stateChange",
+      "stateKeys": [
+        "MAIN→A",
+        "systemInterconnections[2].stateChange"
+      ],
+      "fromSystem": "시스템은 MAIN→A 상태 변화에 해당하는 조건을 검증하고, 해당 조건에 맞는 선택을 수행하여 상태를 업데이트한다. 이 과정에서 시스템은 MAIN→A 상태의 입력을 검증하고, 해당 상태 변화에 맞는 조건을 선택하여 다음 상태로 전환한다.",
+      "toSystem": "시스템은 MAIN→A 상태 변화에 해당하는 조건을 검증하고, 해당 조건에 맞는 선택을 수행하여 상태를 업데이트한다. 이 과정에서 시스템은 MAIN→A 상태의 입력을 검증하고, 해당 상태 변화에 맞는 조건을 선택하여 다음 상태로 전환한다.",
+      "trigger": "시스템은 MAIN→A 상태 변화에 해당하는 조건을 검증하고, 해당 조건에 맞는 선택을 수행하여 상태를 업데이트한다. 이 과정에서 시스템은 MAIN→A 상태의 입력을 검증하고, 해당 상태 변화에 맞는 조건을 선택하여 다음 상태로 전환한다.",
+      "stateChange": "시스템은 MAIN→A 상태 변화에 해당하는 조건을 검증하고, 해당 조건에 맞는 선택을 수행하여 상태를 업데이트한다. 이 과정에서 시스템은 MAIN→A 상태의 입력을 검증하고, 해당 상태 변화에 맞는 조건을 선택하여 다음 상태로 전환한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 31,
-      "successes": 31,
+      "calls": 32,
+      "successes": 32,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1273416,
-      "lastMs": 34969,
+      "totalMs": 1308434,
+      "lastMs": 35018,
       "lastError": null,
-      "updatedAt": "2026-10-08T09:11:40.691Z"
+      "updatedAt": "2026-10-08T09:12:15.711Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:50:27.155Z",
-  "updatedAt": "2026-10-08T09:11:40.691Z",
+  "updatedAt": "2026-10-08T09:12:15.716Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3316,7 +3331,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T09:11:40.691Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:12:15.716Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
