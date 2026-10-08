@@ -923,25 +923,28 @@
       "toSystem": "cat-step-signature-systems-1",
       "trigger": "Player selects a level with a clear goal, limited moves, obstacles, or a visible puzzle constraint. They then make strategic moves, create combos, and use immediate feedback to solve the current objective. The selected level's goal is recorded as the current objective. The game's state is updated to",
       "stateChange": "Player selects a level with a clear goal, limited moves, obstacles, or a visible puzzle constraint. The selected level's goal is recorded as the current objective. The game's state is updated to reflect the new objective, and the player is prompted to make strategic moves, create combos, and use immediate feedback to solve the current objective."
+    },
+    "local_authoring_parts::094105a8d60ddd4a22865208052c330a9983838d97af12a7e8c6f8e2af9b6f4b:fromId": {
+      "fromId": "cat-step-signature-systems-0→cat-step-signature-systems-1"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 49,
-      "successes": 49,
+      "calls": 50,
+      "successes": 50,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2583758,
-      "lastMs": 65391,
+      "totalMs": 2644403,
+      "lastMs": 60645,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:08:28.725Z"
+      "updatedAt": "2026-10-08T16:09:29.373Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:58:12.306Z",
-  "updatedAt": "2026-10-08T16:08:28.727Z",
+  "updatedAt": "2026-10-08T16:09:29.373Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3209,7 +3212,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:08:28.727Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:09:29.373Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
