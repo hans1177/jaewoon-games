@@ -19,25 +19,42 @@
     "local_authoring_parts::0ecfeec1fd238c526ab58cb76139678d9637f2d238e14358e4297d987d8206cc:identity,playerFantasy": {
       "identity": "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계한다. 게임의 중심 행동은 'Read the incoming insect wave and its threat pattern.'이며, 이는 플레이어가 세계 상태와 다음 선택을 바꾸는 핵심 플레이 단계이다. 게임의 대표 선택은 'Place or adjust defenders and spend limited resources on the highest-value counter.'로, 이는 MAIN/A/B/c/@의 상태 변화와 인과법칙을 통해 게임의 구조를 형성한다. 게임의 시그니처 시스템은 'wave defense readability', 'meaningful placement choices', 'enemy-type counterplay'로 구성되어, 플레이어의 행동과 세계 상태 변화가 직접 연결되어야 한다. 게임의 씨앗은 'identity' 필드에 담고, 'playerFantasy'와 'coreFun' 필드는 게임의 플레이어 역할과 대표 행동을 명확히 정의한다. 게임의 구조는 'INPUT → CONDITION/판정 → 상태 변화 → 대응 → 다음 선택'의 순서로 구성되어, 게임의 설계 깊이와 규칙을 보존하고 확장한다. 게임의 시그니처 시스템은 'MAIN', 'A', 'B', 'c', 'DELVE(@)'로 구성되어, 각 시스템은 실제 상태 변화와 인과법칙을 통해 게임의 구조를 형성한다. 게임의 씨앗은 'identity' 필드에 담고, 'playerFantasy'와 'coreFun' 필드는 게임의 플레이어 역할과 대표 행동을 명확히 정의한다. 게임의 구조는 'INPUT → CONDITION/판정 → 상태 변화 → 대응 → 다음 선택'의 순서로 구성되어, 게임의 설계 깊이와 규칙을 보존하고 확장한다. 게임의 시그니처 시스템은 'MAIN', 'A', 'B', 'c', 'DELVE(@)'로 구성되어, 각 시스템은 실제 상태 변화와 인과법칙을 통해 게임의 구조를 형성할",
       "playerFantasy": "플레이어는 곤충의 병종과 서식 환경을 이해하고, 그에 따라 세계 상태를 읽고 선택을 하며, 이 선택이 다음 상태와 인과법칙에 따라 변화하는 게임의 중심 역할을 수행한다. 플레이어는 곤충의 병종을 이해하고, 그에 따라 전략을 수립하고, 방어 구조를 조정하여 위험을 줄이고, 성장의 기회를 창출하는 역할을 맡는다."
+    },
+    "local_authoring_parts::0ecfeec1fd238c526ab58cb76139678d9637f2d238e14358e4297d987d8206cc:coreFun": {
+      "coreFun": "Read the incoming insect wave and its threat pattern.의 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임의 중심 플레이 단계이다. 플레이어는 곤충의 병종과 서식 환경을 이해하고, 그에 따라 세계 상태를 읽고 선택을 하며, 이 선택이 다음 상태와 인과법칙에 따라 변화하는 게임의 중심 역할을 수행한다. 플레이어는 곤충의 병종을 이해하고, 그에 따라 전략을 수립하고, 방어 구조를 조정하여 위험을 줄이고, 성장의 기회를 창출하는 역할을 맡는다."
+    },
+    "local_authoring_parts::9640857abd118edc205c570948019daf802207c23ff61316dadfcc95d72b5b1e:identity,playerFantasy,coreFun": {
+      "identity": "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계한다. 게임의 중심 행동은 'Read the incoming insect wave and its threat pattern.'이며, 이는 플레이어가 세계 상태와 다음 선택을 바꾸는 핵심 플레이 단계이다. 게임의 대표 선택은 'Place or adjust defenders and spend limited resources on the highest-value counter.'로, 이는 MAIN/A/B/c/@의 상태 변화와 인과법칙을 통해 게임의 구조를 형성한다. 게임의 시그니처 시스템은 'wave defense readability', 'meaningful placement choices', 'enemy-type counterplay'로 구성되어, 플레이어의 행동과 세계 상태 변화가 직접 연결되어야 한다. 게임의 씨앗은 'identity' 필드에 담고, 'playerFantasy'와 'coreFun' 필드는 게임의 플레이어 역할과 대표 행동을 명확히 정의한다. 게임의 구조는 'INPUT → CONDITION/판정 → 상태 변화 → 대응 → 다음 선택'의 순서로 구성되어, 게임의 설계 깊이와 규칙을 보존하고 확장한다. 게임의 시그니처 시스템은 'MAIN', 'A', 'B', 'c', 'DELVE(@)'로 구성되어, 각 시스템은 실제 상태 변화와 인과법칙을 통해 게임의 구조를 형성한다. 게임의 씨앗은 'identity' 필드에 담고, 'playerFantasy'와 'coreFun' 필드는 게임의 플레이어 역할과 대표 행동을 명확히 정의한다. 게임의 구조는 'INPUT → CONDITION/판정 → 상태 변화 → 대응 → 다음 선택'의 순서로 구성되어, 게임의 설계 깊이와 규칙을 보존하고 확장한다. 게임의 시그니처 시스템은 'MAIN', 'A', 'B', 'c', 'DELVE(@)'로 구성되어, 각 시스템은 실제 상태 변화와 인과법칙을 통해 게임의 구조를 형성할",
+      "playerFantasy": "플레이어는 곤충의 병종과 서식 환경을 이해하고, 그에 따라 세계 상태를 읽고 선택을 하며, 이 선택이 다음 상태와 인과법칙에 따라 변화하는 게임의 중심 역할을 수행한다. 플레이어는 곤충의 병종을 이해하고, 그에 따라 전략을 수립하고, 방어 구조를 조정하여 위험을 줄이고, 성장의 기회를 창출하는 역할을 맡는다.",
+      "coreFun": "Read the incoming insect wave and its threat pattern.의 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임의 중심 플레이 단계이다. 플레이어는 곤충의 병종과 서식 환경을 이해하고, 그에 따라 세계 상태를 읽고 선택을 하며, 이 선택이 다음 상태와 인과법칙에 따라 변화하는 게임의 중심 역할을 수행한다. 플레이어는 곤충의 병종을 이해하고, 그에 따라 전략을 수립하고, 방어 구조를 조정하여 위험을 줄이고, 성장의 기회를 창출하는 역할을 맡는다."
+    },
+    "local_authoring_parts::eedf1b197fed94a982875ac5a0f7279ae52ca890e17e75aa7cbc7b812d0ca797:coreLoop": {
+      "coreLoop": [
+        "INPUT: Read the incoming insect wave and its threat pattern.",
+        "CONDITION/DECISION: Place or adjust defenders and spend limited resources on the highest-value counter.",
+        "STATE CHANGE: The world state is transformed based on the player's action and the resulting threat pattern.",
+        "REWARD/CONSEQUENCE: The player gains experience, resources, or strategic advantage.",
+        "NEXT ACTION: The player chooses a new strategy or defense decision based on the current state."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 285062,
-      "lastMs": 40157,
+      "totalMs": 385969,
+      "lastMs": 52491,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:10:44.250Z"
+      "updatedAt": "2026-10-08T10:12:25.163Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:05:59.166Z",
-  "updatedAt": "2026-10-08T10:10:44.252Z",
+  "updatedAt": "2026-10-08T10:12:25.163Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2236,7 +2253,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T10:10:44.252Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:12:25.163Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
