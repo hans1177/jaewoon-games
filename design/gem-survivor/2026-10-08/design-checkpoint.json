@@ -1008,25 +1008,44 @@
         "OUTPUT: 상태 변화의 재정의 (예: 전략 조합, 보상 변화)"
       ],
       "fromSystem": "MAIN"
+    },
+    "local_authoring_parts::d8942637162fe5d5deeeabc390648bc864474402d8f2d017af632888077ecc96:toSystem,trigger,stateChange": {
+      "toSystem": "A",
+      "trigger": "INPUT: 플레이어의 'Fight through an escalating horde in a short real-time survivalrun'",
+      "stateChange": "OUTPUT: 즉각적인 상태 변화 (예: 생명력 감소, 보상 획득, 전략 변경)\nOUTPUT: 새로운 상태 변화 (예: 보조 자원 획득, 전략 강화)\nOUTPUT: 상태 변화의 재정의 (예: 전략 조합, 보상 변화)"
+    },
+    "local_authoring_parts::27dc08a6035d114f507676175b08dd30742f3cb29ced575e25182a4de8de8df9:systemInterconnections:4": {
+      "fromId": "MAIN",
+      "toId": "A",
+      "stateKeys": [
+        "INPUT: 플레이어의 'Fight through an escalating horde in a short real-time survivalrun",
+        "OUTPUT: 즉각적인 상태 변화 (예: 생명력 감소, 보상 획득, 전략 변경)",
+        "OUTPUT: 새로운 상태 변화 (예: 보조 자원 획득, 전략 강화)",
+        "OUTPUT: 상태 변화의 재정의 (예: 전략 조합, 보상 변화)"
+      ],
+      "fromSystem": "MAIN",
+      "toSystem": "A",
+      "trigger": "INPUT: 플레이어의 'Fight through an escalating horde in a short real-time survivalrun'",
+      "stateChange": "OUTPUT: 즉각적인 상태 변화 (예: 생명력 감소, 보상 획득, 전략 변경)\nOUTPUT: 새로운 상태 변화 (예: 보조 자원 획득, 전략 강화)\nOUTPUT: 상태 변화의 재정의 (예: 전략 조합, 보상 변화)"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 42,
-      "successes": 41,
+      "calls": 43,
+      "successes": 42,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 3510376,
-      "lastMs": 68327,
+      "totalMs": 3578384,
+      "lastMs": 68008,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T10:28:27.371Z"
+      "updatedAt": "2026-10-08T10:29:35.381Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:43:06.687Z",
-  "updatedAt": "2026-10-08T10:28:27.371Z",
+  "updatedAt": "2026-10-08T10:29:35.388Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3332,7 +3351,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 3
+    "designer_draft_slices::systems-progression": 4
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3370,10 +3389,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:28:27.371Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T10:29:35.384Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
