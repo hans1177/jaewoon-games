@@ -310,11 +310,18 @@ export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
   if(!Array.isArray(roots))issues.push('GLB_SCENE_INVALID');
   while(pending.length){const index=pending.pop();if(!Number.isInteger(index)||!nodes[index]){issues.push('GLB_SCENE_INVALID');continue;}if(activeNodes.has(index))continue;activeNodes.add(index);pending.push(...(Array.isArray(nodes[index].children)?nodes[index].children:[]));}
   const sceneBounds={min:[Infinity,Infinity,Infinity],max:[-Infinity,-Infinity,-Infinity]};let boundedPrimitiveCount=0,visibleTriangleCount=0;
+  // 메인: 보이는 노드 수가 많아도 모든 메시를 반복 스캔하지 않는다.
+  const geometryByMesh=new Map();
+  for(const row of geometryRows){
+    if(!row.bounds||row.invalidIndexCount)continue;
+    if(!geometryByMesh.has(row.meshIndex))geometryByMesh.set(row.meshIndex,[]);
+    geometryByMesh.get(row.meshIndex).push(row);
+  }
   // 메인: 실제 표시 삼각형의 면적 통계. 질량·충돌·게임 물리 권위는 유지한다.
   const surface={area:0,centroidSum:[0,0,0],squareSum:[0,0,0],measuredTriangles:0,nonTrianglePrimitives:0};
   for(const index of activeNodes){
     const matrix=worldMatrices.get(index);if(!matrix)continue;
-    for(const row of geometryRows.filter(row=>row.meshIndex===nodes[index].mesh&&row.bounds&&!row.invalidIndexCount)){
+    for(const row of geometryByMesh.get(nodes[index].mesh)||[]){
       const primitive=document.meshes[row.meshIndex].primitives[row.primitiveIndex];
       const position=accessorInfo(primitive.attributes.POSITION);
       const indices=primitive.indices===undefined?null:accessorInfo(primitive.indices);
