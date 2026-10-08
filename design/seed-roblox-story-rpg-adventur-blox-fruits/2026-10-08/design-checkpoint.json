@@ -732,25 +732,28 @@
     },
     "local_authoring_parts::508729823c67ce10556d217d46c258b8bc3796649d12480f98f61496bceffcf9:fromSystem": {
       "fromSystem": "Board State Transition System"
+    },
+    "local_authoring_parts::508729823c67ce10556d217d46c258b8bc3796649d12480f98f61496bceffcf9:toSystem": {
+      "toSystem": "Player-selected board patterns or obstacle combinations that determine the next level's state and objective."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 27,
-      "successes": 26,
+      "calls": 28,
+      "successes": 27,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1957581,
-      "lastMs": 60513,
+      "totalMs": 2020450,
+      "lastMs": 62869,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T10:28:06.753Z"
+      "updatedAt": "2026-10-08T10:29:09.625Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:01:25.970Z",
-  "updatedAt": "2026-10-08T10:28:06.753Z",
+  "updatedAt": "2026-10-08T10:29:09.626Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2996,7 +2999,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:28:06.753Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:29:09.625Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
