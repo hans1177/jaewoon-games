@@ -244,25 +244,183 @@
           "playerChoice": "타겟 위치 및 위험 요소를 파악하여 새로운 월드 상태를 생성하는 선택"
         }
       ]
+    },
+    "local_authoring_parts::d0cc8b5ef5aa81996f03857328d93a9e80208d9e68a4ce0146d1ef76d8fea8e9:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::fcdec2b263224a74321d154384cc59ca849000b9845039e30f47aa5031e5f970:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 연결",
+        "탐험(타겟 식별) → 위험(경보 사격) → 성공(알 훔침) → 실패(발각 감지) → 성장(보상 획득)",
+        "플레이어는 'Scout a small area and identify the target egg and patrol risk.' 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다.",
+        "적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결되어 있으며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "세계 원인 시스템",
+          "purpose": "플레이어가 세계의 역사, 생활, 경제, 지역 기능에 대한 인식과 이해를 강화하는 시스템",
+          "playerChoice": "지역, 캐릭터, 적, 아이템, UI와의 관계 및 위험/보상 차이를 시각 언어로 표현하기 위한 선택"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "탐험 시스템",
+          "purpose": "플레이어가 탐험(타겟 식별) 과정에서 세계의 역사, 생활, 경제, 지역 기능에 대한 인식과 이해를 강화하는 시스템",
+          "playerChoice": "타겟 위치 및 위험 요소를 파악하여 새로운 월드 상태를 생성하는 선택"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "탐험 시스템",
+          "purpose": "플레이어가 탐험(타겟 식별) 과정에서 세계의 역사, 생활, 경제, 지역 기능에 대한 인식과 이해를 강화하는 시스템",
+          "playerChoice": "타겟 위치 및 위험 요소를 파악하여 새로운 월드 상태를 생성하는 선택"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "탐험 시스템",
+          "purpose": "플레이어가 탐험(타겟 식별) 과정에서 세계의 역사, 생활, 경제, 지역 기능에 대한 인식과 이해를 강화하는 시스템",
+          "playerChoice": "타겟 위치 및 위험 요소를 파악하여 새로운 월드 상태를 생성하는 선택"
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "탐험 시스템",
+          "purpose": "플레이어가 탐험(타겟 식별) 과정에서 세계의 역사, 생활, 경제, 지역 기능에 대한 인식과 이해를 강화하는 시스템",
+          "playerChoice": "타겟 위치 및 위험 요소를 파악하여 새로운 월드 상태를 생성하는 선택"
+        }
+      ],
+      "multiplayerMode": "HYBRID"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다. 플레이어는 알 도둑 대작전에서 'Scout a small area and identify the target egg and patrol risk.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화된다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
+      "playerFantasy": "플레이어는 알 도둑 대작전에서 'Scout a small area and identify the target egg and patrol risk.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 이 과정에서는 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화된다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결되어 있으며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다.",
+      "coreFun": "플레이어는 알 도둑 대작전에서 'Scout a small area and identify the target egg and patrol risk.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화된다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결되어 있으며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다.",
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 연결",
+        "탐험(타겟 식별) → 위험(경보 사격) → 성공(알 훔침) → 실패(발각 감지) → 성장(보상 획득)",
+        "플레이어는 'Scout a small area and identify the target egg and patrol risk.' 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다.",
+        "적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결되어 있으며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "세계 원인 시스템",
+          "purpose": "플레이어가 세계의 역사, 생활, 경제, 지역 기능에 대한 인식과 이해를 강화하는 시스템",
+          "playerChoice": "지역, 캐릭터, 적, 아이템, UI와의 관계 및 위험/보상 차이를 시각 언어로 표현하기 위한 선택"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "탐험 시스템",
+          "purpose": "플레이어가 탐험(타겟 식별) 과정에서 세계의 역사, 생활, 경제, 지역 기능에 대한 인식과 이해를 강화하는 시스템",
+          "playerChoice": "타겟 위치 및 위험 요소를 파악하여 새로운 월드 상태를 생성하는 선택"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "탐험 시스템",
+          "purpose": "플레이어가 탐험(타겟 식별) 과정에서 세계의 역사, 생활, 경제, 지역 기능에 대한 인식과 이해를 강화하는 시스템",
+          "playerChoice": "타겟 위치 및 위험 요소를 파악하여 새로운 월드 상태를 생성하는 선택"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "탐험 시스템",
+          "purpose": "플레이어가 탐험(타겟 식별) 과정에서 세계의 역사, 생활, 경제, 지역 기능에 대한 인식과 이해를 강화하는 시스템",
+          "playerChoice": "타겟 위치 및 위험 요소를 파악하여 새로운 월드 상태를 생성하는 선택"
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "탐험 시스템",
+          "purpose": "플레이어가 탐험(타겟 식별) 과정에서 세계의 역사, 생활, 경제, 지역 기능에 대한 인식과 이해를 강화하는 시스템",
+          "playerChoice": "타겟 위치 및 위험 요소를 파악하여 새로운 월드 상태를 생성하는 선택"
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1055050,
-      "lastMs": 105953,
+      "totalMs": 1149824,
+      "lastMs": 94774,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:18:01.901Z"
+      "updatedAt": "2026-10-08T18:19:36.678Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:00:26.817Z",
-  "updatedAt": "2026-10-08T18:18:01.903Z",
+  "updatedAt": "2026-10-08T18:19:36.687Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2120,12 +2278,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:18:01.903Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:19:36.680Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/egg-heist/2026-10-09/design-seed.json",
+    "contentDigest": "ec69cc94cd4a52bc001476294c27da154f012824cdb656fcfe99d554f0fc63e9",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
