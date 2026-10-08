@@ -266,8 +266,8 @@ try{
     return {viewport,clipped:clipped.slice(0,10)};
   });
   const nativeRenderMarker=markers.slice().reverse().find(line=>line.includes(' RENDER_STATS ')&&line.includes(`game=${gameId}`)&&line.includes('source=UNITY_NATIVE_RENDERER'))||'';
-  const nativeDrawCalls=Number(nativeRenderMarker.match(/\\bdrawCalls=(\\d+)\\b/)?.[1]);
-  const nativeTriangles=Number(nativeRenderMarker.match(/\\btriangles=(\\d+)\\b/)?.[1]);
+  const nativeDrawCalls=Number(nativeRenderMarker.match(/\bdrawCalls=(\d+)\b/)?.[1]);
+  const nativeTriangles=Number(nativeRenderMarker.match(/\btriangles=(\d+)\b/)?.[1]);
   const nativeRenderCountersMeasured=Boolean(nativeRenderMarker)&&Number.isSafeInteger(nativeDrawCalls)&&nativeDrawCalls>=0&&Number.isSafeInteger(nativeTriangles)&&nativeTriangles>=0;
   const renderBudget={drawCallsMax:500,trianglesMax:250000};
   const renderBudgetExceeded=nativeRenderCountersMeasured&&(nativeDrawCalls>renderBudget.drawCallsMax||nativeTriangles>renderBudget.trianglesMax);
