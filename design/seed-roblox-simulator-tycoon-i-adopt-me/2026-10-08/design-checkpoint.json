@@ -606,25 +606,64 @@
         "resourceFlow": "Linear",
         "balanceRules": "Balanced"
       }
+    },
+    "local_authoring_parts::32d395b92888ff5b03bbf1094f800ce4dd545aec80c1d575aaf8c1152e102b01:contentExpansionPlan,failureRetryRisk": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "Enemy Wave Discovery",
+          "newGameplay": "Player identifies and analyzes the enemy wave composition.",
+          "systemImpact": "Enhances the player's awareness of enemy patterns and strategies."
+        },
+        {
+          "milestone": "Defensive Strategy Formation",
+          "newGameplay": "Player develops and optimizes defensive strategies based on enemy wave data.",
+          "systemImpact": "Improves the adaptability and effectiveness of the defense system."
+        },
+        {
+          "milestone": "Placement Optimization",
+          "newGameplay": "Player places towers and defenders to maximize threat coverage.",
+          "systemImpact": "Enhances the efficiency of defensive positioning and resource allocation."
+        },
+        {
+          "milestone": "Stage Clearing and Boss Unlocking",
+          "newGameplay": "Player clears stages and unlocks bosses to progress through the game.",
+          "systemImpact": "Increases the difficulty and reward structure of the game."
+        },
+        {
+          "milestone": "Multi-Level Defense System",
+          "newGameplay": "Player engages in multi-level defense strategies that combine various defensive elements.",
+          "systemImpact": "Expands the depth and complexity of the defense system."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "Enemy Wave Misidentification",
+          "Optimal Placement Not Achieved",
+          "Defensive Strategy Ineffectiveness"
+        ],
+        "retryFlow": "Player attempts to re-evaluate and adjust their strategy, leading to iterative improvements.",
+        "riskPressure": "Player faces challenges in maintaining effective defense, prompting them to seek alternative strategies or resource allocations.",
+        "recoveryRules": "Player can retry and refine their approach, leading to gradual improvement in defensive performance."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 12,
+      "calls": 14,
+      "successes": 13,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1819769,
-      "lastMs": 270496,
+      "totalMs": 2089130,
+      "lastMs": 269361,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T09:08:43.191Z"
+      "updatedAt": "2026-10-08T09:13:12.554Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:38:23.364Z",
-  "updatedAt": "2026-10-08T09:08:43.191Z",
+  "updatedAt": "2026-10-08T09:13:12.559Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2816,17 +2855,170 @@
     }
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "49a1af1051bce3a2407d7ff08eef0b3d6d4e7e32f894038898a7e61e1fa70b9c"
   },
-  "sliceRepairFeedback": {},
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "enemyWave→worldState의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: enemyWave→worldState의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "towers→worldState의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: towers→worldState의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "defenders→worldState의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: defenders→worldState의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "lanes→worldState의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: lanes→worldState의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "positions→worldState의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: positions→worldState의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 1,
+    "designer_draft_slices::systems-progression": 1
   },
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T09:08:43.191Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "Incremental",
+      "progressionEconomyBalance": {
+        "progressionLoop": "Repetitive",
+        "resourceFlow": "Linear",
+        "balanceRules": "Balanced"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "Enemy Wave Discovery",
+          "newGameplay": "Player identifies and analyzes the enemy wave composition.",
+          "systemImpact": "Enhances the player's awareness of enemy patterns and strategies."
+        },
+        {
+          "milestone": "Defensive Strategy Formation",
+          "newGameplay": "Player develops and optimizes defensive strategies based on enemy wave data.",
+          "systemImpact": "Improves the adaptability and effectiveness of the defense system."
+        },
+        {
+          "milestone": "Placement Optimization",
+          "newGameplay": "Player places towers and defenders to maximize threat coverage.",
+          "systemImpact": "Enhances the efficiency of defensive positioning and resource allocation."
+        },
+        {
+          "milestone": "Stage Clearing and Boss Unlocking",
+          "newGameplay": "Player clears stages and unlocks bosses to progress through the game.",
+          "systemImpact": "Increases the difficulty and reward structure of the game."
+        },
+        {
+          "milestone": "Multi-Level Defense System",
+          "newGameplay": "Player engages in multi-level defense strategies that combine various defensive elements.",
+          "systemImpact": "Expands the depth and complexity of the defense system."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "Enemy Wave Misidentification",
+          "Optimal Placement Not Achieved",
+          "Defensive Strategy Ineffectiveness"
+        ],
+        "retryFlow": "Player attempts to re-evaluate and adjust their strategy, leading to iterative improvements.",
+        "riskPressure": "Player faces challenges in maintaining effective defense, prompting them to seek alternative strategies or resource allocations.",
+        "recoveryRules": "Player can retry and refine their approach, leading to gradual improvement in defensive performance."
+      }
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T09:13:12.555Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
