@@ -1597,32 +1597,76 @@ function RobloxCommonUI.CreateMainMenu(options)
   local root, body = surfaceShell(options, "MAIN_MENU", "MAIN_MENU")
   local hero = Instance.new("Frame")
   hero.Name = "Hero"
-  hero.Size = UDim2.new(0.58,-8,1,0)
   hero.BackgroundColor3 = theme.PanelInset
   hero.BackgroundTransparency = 0.20
   hero.BorderSizePixel = 0
   hero.Parent = body
   corner(hero, theme.Corner)
   stroke(hero, theme.Border, 1.2, 0.25)
-  commonText(hero,"Logo",options.logoText or options.gameTitle or "JAEWOON GAMES",UDim2.fromOffset(22,22),UDim2.new(1,-44,0,52),theme.Text,32,true)
-  commonText(hero,"Tagline",options.tagline or "계속하기 · 새 게임 · 설정",UDim2.fromOffset(22,78),UDim2.new(1,-44,0,48),theme.MutedText,15,false)
+  local logo = commonText(hero, "Logo", options.logoText or options.gameTitle or "JAEWOON GAMES",
+    UDim2.fromOffset(22, 22), UDim2.new(1, -44, 0, 52), theme.Text, 32, true)
+  local tagline = commonText(hero, "Tagline", options.tagline or "계속하기 · 새 게임 · 설정",
+    UDim2.fromOffset(22, 78), UDim2.new(1, -44, 0, 48), theme.MutedText, 15, false)
 
-  local actions = Instance.new("Frame")
+  -- 작고 낮은 화면에서도 모든 메뉴가 보이도록 수직 스크롤을 사용한다.
+  local actions = Instance.new("ScrollingFrame")
   actions.Name = "Actions"
-  actions.Position = UDim2.new(0.60,8,0,0)
-  actions.Size = UDim2.new(0.40,-8,1,0)
   actions.BackgroundTransparency = 1
+  actions.BorderSizePixel = 0
+  actions.ScrollingDirection = Enum.ScrollingDirection.Y
+  actions.ScrollBarThickness = 4
+  actions.CanvasSize = UDim2.fromOffset(0, 0)
+  actions.AutomaticCanvasSize = Enum.AutomaticSize.Y
+  actions.Active = true
   actions.Parent = body
-  commonList(actions,false,10)
+  local layout = commonList(actions, false, 10)
+  layout.VerticalAlignment = Enum.VerticalAlignment.Top
+
   local labels = options.actions or {"계속하기","새 게임","게임 선택","설정","종료"}
   local buttons = {}
-  for i,label in ipairs(labels) do
-    local button = RobloxCommonUI.CreatePrimaryButton({name="MenuAction"..i,text=tostring(label),size=UDim2.new(1,0,0,52),theme=theme})
-    button.LayoutOrder=i
-    button.Parent=actions
-    buttons[i]=button
+  for i, label in ipairs(labels) do
+    local button = RobloxCommonUI.CreatePrimaryButton({
+      name="MenuAction"..i, text=tostring(label), size=UDim2.new(1, -8, 0, 52), theme=theme
+    })
+    button.LayoutOrder = i
+    button.Parent = actions
+    buttons[i] = button
   end
-  root:SetAttribute("InformationHierarchy","BRAND>PRIMARY_ACTIONS>SECONDARY_STATUS")
+
+  -- 부모에 붙인 뒤의 실제 뷰포트 너비만 이용한다. 상시 RenderStepped 갱신은 없다.
+  local function refreshLayout()
+    local compact = body.AbsoluteSize.X < 580
+    if compact then
+      local bannerHeight = math.clamp(math.floor(body.AbsoluteSize.Y * 0.30), 104, 160)
+      hero.Position = UDim2.fromOffset(0, 0)
+      hero.Size = UDim2.new(1, 0, 0, bannerHeight)
+      logo.Position = UDim2.fromOffset(14, 8)
+      logo.Size = UDim2.new(1, -28, 0, 54)
+      logo.TextSize = 24
+      tagline.Position = UDim2.fromOffset(14, 64)
+      tagline.Size = UDim2.new(1, -28, 0, 30)
+      tagline.TextSize = 13
+      actions.Position = UDim2.fromOffset(0, bannerHeight + 8)
+      actions.Size = UDim2.new(1, 0, 1, -bannerHeight - 8)
+    else
+      hero.Position = UDim2.fromOffset(0, 0)
+      hero.Size = UDim2.new(0.58, -8, 1, 0)
+      logo.Position = UDim2.fromOffset(22, 22)
+      logo.Size = UDim2.new(1, -44, 0, 52)
+      logo.TextSize = 32
+      tagline.Position = UDim2.fromOffset(22, 78)
+      tagline.Size = UDim2.new(1, -44, 0, 48)
+      tagline.TextSize = 15
+      actions.Position = UDim2.new(0.60, 8, 0, 0)
+      actions.Size = UDim2.new(0.40, -8, 1, 0)
+    end
+    root:SetAttribute("MobileStackedLayout", compact)
+  end
+  body:GetPropertyChangedSignal("AbsoluteSize"):Connect(refreshLayout)
+  refreshLayout()
+  root:SetAttribute("InformationHierarchy", "BRAND>PRIMARY_ACTIONS>SECONDARY_STATUS")
+  root:SetAttribute("MobileResponsive", true)
+  root:SetAttribute("OwnsNavigationAuthority", false)
   return root, buttons
 end
 
@@ -1717,11 +1761,35 @@ end
 function RobloxCommonUI.CreateFilterBar(options)
   options=options or {}
   local theme=cloneTheme(options.theme)
-  local root=Instance.new("Frame");root.Name=options.name or "FilterBar";root.Size=options.size or UDim2.new(1,0,0,48);root.BackgroundTransparency=1;tag(root,"FILTER_BAR")
-  local layout=commonList(root,true,8);layout.HorizontalAlignment=Enum.HorizontalAlignment.Left
+  -- 좁은 화면에서 필터를 잘라내지 않고 가로 스와이프로 모두 접근할 수 있게 한다.
+  local root=Instance.new("ScrollingFrame")
+  root.Name=options.name or "FilterBar"
+  root.Size=options.size or UDim2.new(1,0,0,52)
+  root.BackgroundTransparency=1
+  root.BorderSizePixel=0
+  root.ScrollingDirection=Enum.ScrollingDirection.X
+  root.ScrollBarThickness=3
+  root.CanvasSize=UDim2.fromOffset(0,0)
+  root.AutomaticCanvasSize=Enum.AutomaticSize.X
+  root.Active=true
+  tag(root,"FILTER_BAR")
+  local layout=commonList(root,true,8)
+  layout.HorizontalAlignment=Enum.HorizontalAlignment.Left
   local filters=options.filters or {"전체","추천","새 항목","사용 가능","잠김"}
   local buttons={}
-  for i,label in ipairs(filters) do local b=RobloxCommonUI.CreateTabButton({text=tostring(label),selected=i==(options.selectedIndex or 1),size=UDim2.fromOffset(math.max(76,string.len(tostring(label))*10+34),44),theme=theme});b.LayoutOrder=i;b.Parent=root;b:SetAttribute("FilterIndex",i);buttons[i]=b end
+  for i,label in ipairs(filters) do
+    local glyphs=utf8.len(tostring(label)) or string.len(tostring(label))
+    local width=math.max(92,glyphs*12+30)
+    local button=RobloxCommonUI.CreateTabButton({
+      name="Filter"..i,text=tostring(label),selected=i==(options.selectedIndex or 1),
+      size=UDim2.fromOffset(width,48),theme=theme
+    })
+    button.LayoutOrder=i
+    button.Parent=root
+    button:SetAttribute("FilterIndex",i)
+    buttons[i]=button
+  end
+  root:SetAttribute("TouchScrollable",true)
   root:SetAttribute("OwnsFilterAuthority",false)
   return root,buttons
 end
@@ -1738,12 +1806,73 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
   options=options or {}
   local theme=cloneTheme(options.theme)
   local root,body=surfaceShell(options,"INVENTORY_FULL_SCREEN","INVENTORY_FULL_SCREEN")
-  local search=RobloxCommonUI.CreateSearchField({size=UDim2.new(0.42,0,0,48),theme=theme});search.Parent=body
-  local sort=RobloxCommonUI.CreateSortControl({size=UDim2.fromOffset(170,48),theme=theme});sort.AnchorPoint=Vector2.new(1,0);sort.Position=UDim2.new(1,0,0,0);sort.Parent=body
-  local filters=RobloxCommonUI.CreateFilterBar({size=UDim2.new(1,0,0,48),theme=theme});filters.Position=UDim2.fromOffset(0,58);filters.Parent=body
-  local grid=RobloxCommonUI.CreateInventoryGrid({name="FullInventoryGrid",columns=options.columns or 6,slotCount=options.slotCount or 30,size=UDim2.new(1,0,1,-116),theme=theme});grid.Position=UDim2.fromOffset(0,116);grid.Parent=body
+  local search=RobloxCommonUI.CreateSearchField({size=UDim2.new(0.42,0,0,48),theme=theme})
+  search.Parent=body
+  local sort=RobloxCommonUI.CreateSortControl({size=UDim2.fromOffset(170,48),theme=theme})
+  sort.AnchorPoint=Vector2.new(1,0)
+  sort.Parent=body
+  local filters=RobloxCommonUI.CreateFilterBar({size=UDim2.new(1,0,0,52),theme=theme})
+  filters.Parent=body
+
+  -- 실제 아이템 슬롯은 기존 공용 Grid 그대로 두고, 내용 높이에 따라 스크롤만 동기화한다.
+  local scroll=Instance.new("ScrollingFrame")
+  scroll.Name="InventoryScroll"
+  scroll.BackgroundTransparency=1
+  scroll.BorderSizePixel=0
+  scroll.ScrollBarThickness=4
+  scroll.ScrollingDirection=Enum.ScrollingDirection.Y
+  scroll.CanvasSize=UDim2.fromOffset(0,0)
+  scroll.AutomaticCanvasSize=Enum.AutomaticSize.Y
+  scroll.Active=true
+  scroll.Parent=body
+
+  local grid,cellLayout=RobloxCommonUI.CreateInventoryGrid({
+    name="FullInventoryGrid",columns=options.columns or 6,slotCount=options.slotCount or 30,
+    size=UDim2.new(1,-8,0,160),theme=theme
+  })
+  grid.Parent=scroll
+
+  local function resizeGrid()
+    local available=scroll.AbsoluteSize.X-8
+    if available<=0 then return end
+    local desired=math.max(2,math.floor((available-20+8)/76))
+    local columns=math.clamp(math.min(desired,tonumber(options.columns) or 6),2,6)
+    local cell=math.max(52,math.floor((available-20-(columns-1)*8)/columns))
+    cellLayout.CellSize=UDim2.fromOffset(cell,cell)
+    grid.Size=UDim2.new(1,-8,0,cellLayout.AbsoluteContentSize.Y+20)
+  end
+
+  local function placePanels()
+    local compact=body.AbsoluteSize.X<560
+    if compact then
+      search.Size=UDim2.new(1,0,0,48)
+      sort.AnchorPoint=Vector2.new(0,0)
+      sort.Position=UDim2.fromOffset(0,56)
+      sort.Size=UDim2.new(1,0,0,48)
+      filters.Position=UDim2.fromOffset(0,112)
+      scroll.Position=UDim2.fromOffset(0,172)
+      scroll.Size=UDim2.new(1,0,1,-172)
+    else
+      search.Size=UDim2.new(0.42,0,0,48)
+      sort.AnchorPoint=Vector2.new(1,0)
+      sort.Position=UDim2.new(1,0,0,0)
+      sort.Size=UDim2.fromOffset(170,48)
+      filters.Position=UDim2.fromOffset(0,58)
+      scroll.Position=UDim2.fromOffset(0,116)
+      scroll.Size=UDim2.new(1,0,1,-116)
+    end
+    root:SetAttribute("MobileStackedLayout",compact)
+    resizeGrid()
+  end
+  body:GetPropertyChangedSignal("AbsoluteSize"):Connect(placePanels)
+  scroll:GetPropertyChangedSignal("AbsoluteSize"):Connect(resizeGrid)
+  cellLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    grid.Size=UDim2.new(1,-8,0,cellLayout.AbsoluteContentSize.Y+20)
+  end)
+  placePanels()
+  root:SetAttribute("TouchScrollable",true)
   root:SetAttribute("OwnsInventoryAuthority",false)
-  return root,{search=search,sort=sort,filters=filters,grid=grid}
+  return root,{search=search,sort=sort,filters=filters,grid=grid,scroll=scroll}
 end
 
 function RobloxCommonUI.CreateEquipmentFullScreen(options)
@@ -3037,9 +3166,67 @@ function RobloxCommonUI.CreateMenuContextQuickActionSheet(options)
 end
 
 function RobloxCommonUI.CreateOneHandBottomNav(options)
-  local root,parts=deepSystemPanel(options,"ONE_HAND_BOTTOM_NAV","ONE_HAND_BOTTOM_NAV","한손 하단 메뉴",{"핵심 시스템","엄지 도달 영역","현재 선택","빠른 전환"})
-  root:SetAttribute("OwnsSystemAuthority",false)
-  return root,parts
+  options = options or {}
+  local theme = cloneTheme(options.theme)
+  -- 기존 더미 카드 대신 모바일에서 실제로 스와이프/터치 가능한 하단 메뉴를 만든다.
+  local root = Instance.new("Frame")
+  root.Name = options.name or "OneHandBottomNav"
+  root.AnchorPoint = Vector2.new(0.5, 1)
+  root.Position = options.position or UDim2.new(0.5, 0, 1, -12)
+  root.Size = options.size or UDim2.new(1, -24, 0, 76)
+  root.BackgroundColor3 = theme.Panel
+  root.BorderSizePixel = 0
+  root.ClipsDescendants = true
+  tag(root, "ONE_HAND_BOTTOM_NAV")
+  corner(root, theme.Corner)
+  stroke(root, theme.BorderBright, 1.2, 0.14)
+
+  local scroller = Instance.new("ScrollingFrame")
+  scroller.Name = "Items"
+  scroller.Position = UDim2.fromOffset(7, 5)
+  scroller.Size = UDim2.new(1, -14, 1, -10)
+  scroller.BackgroundTransparency = 1
+  scroller.BorderSizePixel = 0
+  scroller.ScrollBarThickness = 3
+  scroller.ScrollingDirection = Enum.ScrollingDirection.X
+  scroller.CanvasSize = UDim2.fromOffset(0, 0)
+  scroller.AutomaticCanvasSize = Enum.AutomaticSize.X
+  scroller.Active = true
+  scroller.Parent = root
+  local layout = commonList(scroller, true, 8)
+  layout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+
+  local items = options.items or {"인벤토리","장비","지도","퀘스트","제작","도감"}
+  local buttons, underlines = {}, {}
+  local selected = math.clamp(tonumber(options.selectedIndex) or 1, 1, math.max(1, #items))
+  for i, label in ipairs(items) do
+    local button, underline = RobloxCommonUI.CreateTabButton({
+      name="Navigation"..i, text=tostring(label), selected=i==selected,
+      size=UDim2.fromOffset(108, 52), theme=theme
+    })
+    button.LayoutOrder = i
+    button.Parent = scroller
+    button:SetAttribute("NavigationIndex", i)
+    button:SetAttribute("MinimumTouchHeight", 48)
+    button.Activated:Connect(function()
+      selected = i
+      for index, other in ipairs(buttons) do
+        other.BackgroundColor3 = index==selected and theme.Primary or theme.PanelRaised
+        underlines[index].Visible = index==selected
+      end
+      root:SetAttribute("SelectedNavigationIndex", selected)
+      if type(options.onSelect)=="function" then options.onSelect(i, label) end
+    end)
+    buttons[i], underlines[i] = button, underline
+  end
+  root:SetAttribute("SelectedNavigationIndex", selected)
+  root:SetAttribute("PresentationRole", "ONE_HAND_BOTTOM_NAV")
+  root:SetAttribute("MobileThumbReachable", true)
+  root:SetAttribute("OwnsSystemAuthority", false)
+  root:SetAttribute("OwnsNavigationAuthority", false)
+  root:SetAttribute("OwnsSaveAuthority", false)
+  root:SetAttribute("OwnsRemoteAuthority", false)
+  return root, {inner=scroller, list=scroller, labels=buttons, buttons=buttons}
 end
 
 function RobloxCommonUI.CreateSetProgressTracker(options)

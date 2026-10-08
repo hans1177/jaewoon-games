@@ -980,6 +980,14 @@ test('studio asset universe requires GLB 2.0 masters for final 3D character and 
   assert.equal(wildlife.masterAssetFormat,'GLB_2_0');
 });
 
+// 실제 에디터/스튜디오 검사 결과와 같은 필드를 사용하되, 테스트 표본은 승인 근거가 아니다.
+const nativeRenderFixture=(assetId,sourceHash,artifactHash)=>({
+  inspector:'ROBLOX_STUDIO_RUNTIME',assetId,gameId:'survival',sourceHash,artifactHash,
+  sceneId:'fixture-verified-actor-scene',captureSha256:'f'.repeat(64),actualRenderObserved:true,
+  meshes:[{component:'MeshPart',vertexCount:600,triangleCount:980,materialBound:true,materialMode:'TEXTURED',
+    textures:[{assigned:true,decoded:true,width:256,height:256}]}]
+});
+
 test('company asset promotion is impossible without actual native runtime consumer evidence',()=>{
   const asset={id:'wolf-runtime',family:'CREATURE',platform:'ROBLOX',path:'assets/wolf.roblox',license:'project-original',sourceHash:'wolf-v1',artifactHash:'wolf-native-v1',masterGlb:'assets/wolf.glb',masterGlbHash:'wolf-master-v1',derivedFromMasterGlbHash:'wolf-master-v1',masterGlbStaticQaPass:true,masterGlbQaAuthority:'tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb'};
   const blocked=evaluateCompanyAssetPromotion({
@@ -993,8 +1001,22 @@ test('company asset promotion is impossible without actual native runtime consum
   const evidence={
     id:'studio-run-1',assetId:'wolf-runtime',platform:'ROBLOX',gameId:'survival',sourceHash:'wolf-v1',artifactHash:'wolf-native-v1',
     masterGlbHash:'wolf-master-v1',derivedFromMasterGlbHash:'wolf-master-v1',
-    nativeBindingPass:true,visualRuntimePass:true,mobilePerformancePass:true,regressionPass:true,licenseProvenancePass:true
+    nativeBindingPass:true,visualRuntimePass:true,mobilePerformancePass:true,regressionPass:true,licenseProvenancePass:true,
+    nativeRenderInspection:nativeRenderFixture('wolf-runtime','wolf-v1','wolf-native-v1')
   };
+  const noNativeInspection=evaluateCompanyAssetPromotion({asset,consumer:{gameId:'survival'},runtimeEvidence:{...evidence,nativeRenderInspection:null}});
+  assert.equal(noNativeInspection.eligible,false);
+  assert.ok(noNativeInspection.blockers.includes('NATIVE_MESH_RENDER_EVIDENCE_REQUIRED'));
+  const brokenGeometry=evaluateCompanyAssetPromotion({asset,consumer:{gameId:'survival'},runtimeEvidence:{
+    ...evidence,nativeRenderInspection:{...evidence.nativeRenderInspection,meshes:[{...evidence.nativeRenderInspection.meshes[0],triangleCount:0}]}
+  }});
+  assert.ok(brokenGeometry.blockers.includes('NATIVE_MESH_GEOMETRY_OR_MATERIAL_INVALID'));
+  const brokenTexture=evaluateCompanyAssetPromotion({asset,consumer:{gameId:'survival'},runtimeEvidence:{
+    ...evidence,nativeRenderInspection:{...evidence.nativeRenderInspection,meshes:[
+      {...evidence.nativeRenderInspection.meshes[0],textures:[{assigned:true,decoded:false,width:256,height:256}]}
+    ]}
+  }});
+  assert.ok(brokenTexture.blockers.includes('NATIVE_TEXTURE_BINDING_OR_DECODE_INVALID'));
   const hashless=evaluateCompanyAssetPromotion({
     asset,consumer:{gameId:'survival',platform:'ROBLOX'},
     runtimeEvidence:{assetId:'wolf-runtime',platform:'ROBLOX',gameId:'survival',nativeBindingPass:true,visualRuntimePass:true,mobilePerformancePass:true,regressionPass:true,licenseProvenancePass:true}
@@ -1040,7 +1062,8 @@ test('company asset promotion is impossible without actual native runtime consum
     consumer:{gameId:'survival',platform:'ROBLOX'},
     runtimeEvidence:{
       id:'studio-run-2',platform:'ROBLOX',gameId:'survival',assetIds:['wolf-derived'],
-      assets:[{assetId:'wolf-derived',sourceHash:'source-v1',artifactHash:'artifact-v2',masterGlbHash:'wolf-derived-master-v1',derivedFromMasterGlbHash:'wolf-derived-master-v1'}],
+      assets:[{assetId:'wolf-derived',sourceHash:'source-v1',artifactHash:'artifact-v2',masterGlbHash:'wolf-derived-master-v1',derivedFromMasterGlbHash:'wolf-derived-master-v1',
+        nativeRenderInspection:nativeRenderFixture('wolf-derived','source-v1','artifact-v2')}],
       nativeBindingPass:true,visualRuntimePass:true,mobilePerformancePass:true,regressionPass:true,licenseProvenancePass:true
     }
   });
@@ -1056,7 +1079,8 @@ test('company asset promotion is impossible without actual native runtime consum
         assetId:'generated-boss',family:'CREATURE',path:'assets/roblox/survival/native/boss.rbxm',
         license:'project-original',sourceHash:'generated-source',artifactHash:'generated-artifact',
         masterGlb:'assets/roblox/survival/master/boss.glb',masterGlbHash:'generated-boss-master',derivedFromMasterGlbHash:'generated-boss-master',masterGlbStaticQaPass:true,masterGlbQaAuthority:'tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb',
-        generatedByDeclaredRecipe:true,persistedForCandidate:true
+        generatedByDeclaredRecipe:true,persistedForCandidate:true,
+        nativeRenderInspection:nativeRenderFixture('generated-boss','generated-source','generated-artifact')
       }],
       nativeBindingPass:true,visualRuntimePass:true,mobilePerformancePass:true,regressionPass:true,licenseProvenancePass:true
     }

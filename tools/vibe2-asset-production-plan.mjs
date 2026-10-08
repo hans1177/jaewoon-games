@@ -141,6 +141,99 @@ export function discoverRuntimeVisualEvidence({task={},target='',evidenceRoot=pr
   });
 }
 
+// 정적 OBJ 실물 검사. 이름/카탈로그 경로만 있는 항목은 메시로 간주하지 않는다.
+// 네이티브 엔진 렌더링이나 품질 승인 권한은 여기서 생성하지 않는다.
+export function inspectVibeSourceObj({repoRoot=process.cwd(),source={}}={}){
+  const relative=clean(source?.path).replaceAll('\\','/').replace(/^\/+/,'');
+  const invalid=!relative||!relative.toLowerCase().endsWith('.obj')
+    ||relative.split('/').some(part=>part==='..'||part==='.')
+    ||/^[a-z]+:/i.test(relative);
+  if(invalid)return freeze({status:'SOURCE_OBJ_REQUIRED',issues:freezeList(['REPOSITORY_LOCAL_OBJ_PATH_REQUIRED']),runtimeVerified:false});
+  const issues=[],warnings=[],vertices=[],materialNames=new Set(),referencedMaterials=new Set(),materialSources=[];
+  let faceCount=0,triangleCount=0,nondegenerateTriangleCount=0,invalidFaceCount=0;
+  let fileSha256='',fileBytes=0;
+  try{
+    const root=fs.realpathSync(repoRoot),file=fs.realpathSync(path.resolve(root,relative));
+    if(!file.startsWith(root+path.sep))throw new Error('OBJ_SOURCE_OUTSIDE_REPOSITORY');
+    const stat=fs.statSync(file);
+    if(!stat.isFile()||stat.size<=0||stat.size>16*1024*1024)throw new Error('OBJ_SIZE_INVALID');
+    const raw=fs.readFileSync(file);
+    fileBytes=raw.length;
+    fileSha256=crypto.createHash('sha256').update(raw).digest('hex');
+    const expected=clean(source?.objSha256||source?.fileSha256);
+    if(expected&&expected.toLowerCase()!==fileSha256)issues.push('OBJ_SOURCE_HASH_MISMATCH');
+    const contents=raw.toString('utf8');
+    for(const sourceLine of contents.split(/\r?\n/)){
+      const line=sourceLine.split('#')[0].trim();
+      if(!line)continue;
+      const values=line.split(/\s+/),kind=values[0];
+      if(kind==='v'){
+        const point=values.slice(1,4).map(Number);
+        if(point.length!==3||point.some(value=>!Number.isFinite(value)))issues.push('OBJ_VERTEX_INVALID');
+        else vertices.push(point);
+      }else if(kind==='mtllib'){
+        for(const name of values.slice(1))materialSources.push(name);
+      }else if(kind==='usemtl'){
+        if(values[1])referencedMaterials.add(values[1]);
+        else issues.push('OBJ_MATERIAL_REFERENCE_INVALID');
+      }else if(kind==='f'){
+        faceCount++;
+        const face=values.slice(1).map(token=>{
+          const rawIndex=token.split('/')[0],index=Number(rawIndex);
+          return /^-?\d+$/.test(rawIndex)&&Number.isSafeInteger(index)&&index!==0
+            ?index>0?index-1:vertices.length+index:-1;
+        });
+        if(face.length<3||face.some(index=>!Number.isSafeInteger(index)||index<0||index>=vertices.length)){
+          invalidFaceCount++;continue;
+        }
+        for(let i=1;i<face.length-1;i++){
+          triangleCount++;
+          const a=vertices[face[0]],b=vertices[face[i]],c=vertices[face[i+1]];
+          const ab=a.map((value,k)=>b[k]-value),ac=a.map((value,k)=>c[k]-value);
+          const area2=Math.hypot(ab[1]*ac[2]-ab[2]*ac[1],ab[2]*ac[0]-ab[0]*ac[2],ab[0]*ac[1]-ab[1]*ac[0]);
+          if(area2>1e-12)nondegenerateTriangleCount++;
+        }
+      }
+    }
+    if(vertices.length<3||faceCount<1||nondegenerateTriangleCount<1)issues.push('OBJ_NONDEGENERATE_MESH_REQUIRED');
+    if(invalidFaceCount)issues.push('OBJ_FACE_INDEX_OUT_OF_RANGE');
+    if(nondegenerateTriangleCount<triangleCount)warnings.push('OBJ_DEGENERATE_TRIANGLES_PRESENT');
+    const mtlDirectory=path.dirname(file);
+    for(const name of new Set(materialSources)){
+      if(name.includes('/')||name.includes('\\')||name==='.'||name==='..') {issues.push('OBJ_MATERIAL_PATH_UNSAFE');continue;}
+      let materialFile;
+      try{materialFile=fs.realpathSync(path.resolve(mtlDirectory,name));}catch{issues.push('OBJ_MATERIAL_FILE_MISSING');continue;}
+      if(path.dirname(materialFile)!==mtlDirectory){issues.push('OBJ_MATERIAL_OUTSIDE_SOURCE_DIRECTORY');continue;}
+      for(const row of fs.readFileSync(materialFile,'utf8').split(/\r?\n/)){
+        const values=row.split('#')[0].trim().split(/\s+/),kind=values[0];
+        if(kind==='newmtl'&&values[1])materialNames.add(values[1]);
+        if(['map_Kd','map_Ks','map_Bump','bump','norm','map_d'].includes(kind)){
+          const image=values.at(-1);
+          if(!image||image==='.'||image==='..'||image.includes('/')||image.includes('\\')){
+            issues.push('OBJ_MATERIAL_TEXTURE_PATH_UNSAFE');continue;
+          }
+          let texturePath;
+          try{texturePath=fs.realpathSync(path.resolve(mtlDirectory,image));}catch{issues.push('OBJ_MATERIAL_TEXTURE_MISSING');continue;}
+          if(path.dirname(texturePath)!==mtlDirectory||!fs.statSync(texturePath).isFile()||fs.statSync(texturePath).size===0)
+            issues.push('OBJ_MATERIAL_TEXTURE_INVALID');
+        }
+      }
+    }
+    if(referencedMaterials.size&&!materialSources.length)issues.push('OBJ_MATERIAL_LIBRARY_REQUIRED');
+    if([...referencedMaterials].some(name=>!materialNames.has(name)))issues.push('OBJ_MATERIAL_NAME_MISSING');
+    const result=freeze({status:issues.length?'OBJ_REPAIR_REQUIRED':'OBJ_STATIC_GEOMETRY_PASS',path:relative,
+      fileBytes,fileSha256,vertexCount:vertices.length,faceCount,triangleCount,nondegenerateTriangleCount,
+      invalidFaceCount,materialCount:materialNames.size,referencedMaterialCount:referencedMaterials.size,
+      issues:freezeList(unique(issues)),warnings:freezeList(unique(warnings)),
+      evidenceSource:'EXACT_REPOSITORY_OBJ_FILE_BYTES',actualRuntimeRenderObserved:false,
+      nativeTextureDecodeVerified:false,runtimeVerified:false,productionVerified:false});
+    return result;
+  }catch(error){
+    return freeze({status:'SOURCE_OBJ_REQUIRED',path:relative,issues:freezeList([clean(error?.code)==='ENOENT'?'OBJ_SOURCE_FILE_MISSING':clean(error?.message)||'OBJ_INSPECTION_FAILED']),
+      actualRuntimeRenderObserved:false,runtimeVerified:false,productionVerified:false});
+  }
+}
+
 // 사용자 기본 GLB의 실제 JSON 청크를 검사한다. 파일 존재나 이름만으로 커마·리깅 가능을 가정하지 않는다.
 // 표면 분포의 정확한 삼각형 적분. 정점 수/분할 밀도를 물리 질량으로 오인하지 않는다.
 // 균일한 얇은 껍질 가정이며 실제 밀도·마찰·충돌·열역학을 측정했다는 뜻은 아니다.
@@ -2453,6 +2546,9 @@ function matchedForType(selector={},type='',manifest={},target='',repoRoot=proce
     const actorFamily=clean(asset?.family||asset?.category).toUpperCase();
     const masterGlbQa=evaluateCrossPlatform3dMasterGlb({repoRoot,source:asset,family:actorFamily,role:asset?.role||asset?.subfamily||type});
     const crossPlatformMasterSource=asset?.crossPlatformMasterSource===true;
+    const objPath=clean(row.path||asset.path);
+    const sourceObjQa=/\.obj$/i.test(objPath)?inspectVibeSourceObj({repoRoot,source:{path:objPath,
+      objSha256:asset.objSha256,fileSha256:asset.fileSha256}}):null;
     const resolvedPath=crossPlatformMasterSource&&masterGlbQa.pass===true?clean(masterGlbQa.path):clean(row.path||asset.path);
     const actorLineageRequired=masterGlbQa.required===true;
     const editableSourceHash=clean(asset.editableSourceHash||asset.sourceHash||asset.sourceSha256||asset.masterGlbSourceHash||(!actorLineageRequired?(asset.contentHash||asset.sha256):''));
@@ -2495,6 +2591,11 @@ function matchedForType(selector={},type='',manifest={},target='',repoRoot=proce
       masterGlbStaticQaPass:masterGlbQa.required?masterGlbQa.pass:null,
       masterGlbQaAuthority:masterGlbQa.required?'tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb':null,
       masterGlbBlockers:freezeList(masterGlbQa.blockers||[]),
+      sourceObjQa:sourceObjQa?freeze({status:sourceObjQa.status,path:sourceObjQa.path,fileSha256:sourceObjQa.fileSha256||null,
+        vertexCount:sourceObjQa.vertexCount||0,triangleCount:sourceObjQa.triangleCount||0,
+        nondegenerateTriangleCount:sourceObjQa.nondegenerateTriangleCount||0,
+        materialCount:sourceObjQa.materialCount||0,issues:freezeList(sourceObjQa.issues||[]),warnings:freezeList(sourceObjQa.warnings||[]),
+        runtimeVerified:false}):null,
       crossPlatformMasterSource,
       adaptationBaseOnly,
       finalUseStillRequiresOriginalSelectorContract:adaptationBaseOnly,
@@ -2889,6 +2990,7 @@ function assetApplyFirstCandidate(asset={},target='',binding={}){
   const requestedType=normalizeActorType(binding?.type);
   const masterGlbRequired=isCrossPlatform3dActorType(requestedType);
   const masterGlbReady=!masterGlbRequired||asset.masterGlbStaticQaPass===true;
+  const sourceObjReady=!asset.sourceObjQa||asset.sourceObjQa.status==='OBJ_STATIC_GEOMETRY_PASS';
   const hasNativeReference=Boolean(sameGame&&(asset.path||asset.robloxAssetId)||variant?.path||asset.path||asset.robloxAssetId);
   const nativeReady=Boolean(masterGlbReady&&asset.crossPlatformMasterSource!==true&&(sameGame||variant?.path||asset.productionVerified===true));
   const adaptable=Boolean(masterGlbReady&&!nativeReady&&hasNativeReference&&(asset.retargetable===true||asset.rigType||asset.sourceHash));
@@ -2931,7 +3033,9 @@ function assetApplyFirstCandidate(asset={},target='',binding={}){
     acquiredExternal:asset.acquiredExternal===true,
     acquisitionOrigin:asset.acquisitionOrigin||null,
     productionVerified:asset.productionVerified===true,
-    ready:Boolean(masterGlbReady&&hasNativeReference&&asset.downloaded!==false&&lane!=='D_AUTHORING_REQUIRED'),
+    ready:Boolean(masterGlbReady&&sourceObjReady&&hasNativeReference&&asset.downloaded!==false&&lane!=='D_AUTHORING_REQUIRED'),
+    sourceObjQa:asset.sourceObjQa||null,
+    nativeRuntimeStillRequired:true,
     masterGlbRequired,
     masterGlbReady,
     masterGlbStaticQaPass:masterGlbRequired?asset.masterGlbStaticQaPass===true:null,

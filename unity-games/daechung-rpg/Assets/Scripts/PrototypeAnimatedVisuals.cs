@@ -247,6 +247,39 @@ namespace JaewoonGames.DaechungRpg
                     gloomy ? new Color(0.35f, 0.31f, 0.36f) :
                     tropical ? new Color(0.40f, 0.37f, 0.24f) : new Color(0.58f, 0.46f, 0.31f);
             }
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+            // 실제 생성된 MeshFilter, 삼각형, 재질과 Texture2D를 검사한다.
+            // 등록 경로와 로그 문자열만으로 네이티브 그래픽 통과를 만들지 않는다.
+            if (Application.absoluteURL.Contains("qa=1"))
+            {
+                int inspected = 0, validMeshes = 0, triangles = 0;
+                bool materialsValid = true;
+                foreach (var renderer in new[] { _depthGround, _depthPath })
+                {
+                    if (renderer == null) { materialsValid = false; continue; }
+                    inspected++;
+                    var filter = renderer.GetComponent<MeshFilter>();
+                    var mesh = filter != null ? filter.sharedMesh : null;
+                    if (mesh == null || mesh.vertexCount < 3 || mesh.subMeshCount < 1)
+                        continue;
+                    int validTriangles = 0;
+                    for (int subMesh = 0; subMesh < mesh.subMeshCount; subMesh++)
+                    {
+                        if (mesh.GetTopology(subMesh) == MeshTopology.Triangles)
+                            validTriangles += (int)(mesh.GetIndexCount(subMesh) / 3);
+                    }
+                    if (validTriangles > 0) { validMeshes++; triangles += validTriangles; }
+                    materialsValid &= renderer.sharedMaterial != null
+                        && renderer.sharedMaterial.shader != null && renderer.sharedMaterial.shader.isSupported;
+                }
+                var backdropTexture = _backdrop != null && _backdrop.sprite != null ? _backdrop.sprite.texture : null;
+                bool textureDecoded = backdropTexture != null && backdropTexture.width > 0 && backdropTexture.height > 0;
+                bool geometryPass = inspected == 2 && validMeshes == 2 && triangles > 0
+                    && materialsValid && textureDecoded;
+                Debug.Log($"JAEWOON_UNITY_WEB_QA MESH_INTEGRITY game=daechung-rpg source=UNITY_MESH_FILTER inspected={inspected} validMeshes={validMeshes} triangles={triangles} materialPass={(materialsValid ? 1 : 0)} texturePass={(textureDecoded ? 1 : 0)} status={(geometryPass ? "PASS" : "REPAIR_REQUIRED")}");
+            }
+#endif
         }
 
         public void SetCoopParty(bool hasPartner)
