@@ -76,25 +76,39 @@
       "name": "Enemy Defense Synergy II",
       "purpose": "플레이어가 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이의 핵심 루프를 구축하며, 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 확보한다.",
       "playerChoice": "READ_NEXT_ENEMY_WAVE와 EARN_RESOURCES의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용을 반복하여, 플레이어가 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이의 핵심 루프를 구축한다. 이 루프는 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 확보한다. 게임의 정체성은 READ_NEXT_ENEMY_WAVE와 EARN_RESOURCES의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용으로 구성된다. 게임의 핵심 행동은 READ_NEXT_ENEMY_WAVE이며, 선택은 EARN_RESOURCES와 ADAPT_DEFENSE로 구성된다. 이 루프는 반복, 위험, 보상, 자원의 연결을 통해 플레이어의 선택과 상태 변화를 유"
+    },
+    "local_authoring_parts::4fd335e8e2f45e48c3ec3255b76a1210f3a0f4828c86727a6c19ff2defb7453d:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "READ_NEXT_ENEMY_WAVE",
+        "EARN_RESOURCES"
+      ],
+      "stateOutputs": [
+        "ADAPT_DEFENSE"
+      ],
+      "name": "Enemy Defense Synergy III",
+      "purpose": "플레이어가 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이의 핵심 루프를 구축하며, 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 확보한다.",
+      "playerChoice": "READ_NEXT_ENEMY_WAVE와 EARN_RESOURCES의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용을 반복하여, 플레이어가 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이의 핵심 루프를 구축한다. 이 루프는 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 확보한다. 게임의 정체성은 READ_NEXT_ENEMY_WAVE와 EARN_RESOURCES의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용으로 구성된다. 게임의 핵심 행동은 READ_NEXT_ENEMY_WAVE이며, 선택은 EARN_RESOURCES와 ADAPT_DEFENSE로 구성된다. 이 루프는 반복, 위험, 보상, 자원의 연결을 통해 플레이어의 선택과 상태 변화를 유"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 648608,
-      "lastMs": 127149,
+      "totalMs": 774563,
+      "lastMs": 125955,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:02:50.565Z"
+      "updatedAt": "2026-10-08T13:04:56.521Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:52:01.924Z",
-  "updatedAt": "2026-10-08T13:02:50.565Z",
+  "updatedAt": "2026-10-08T13:04:56.521Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2289,7 +2303,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:02:50.565Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:04:56.521Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
