@@ -102,25 +102,225 @@
       "name": "Content Expansion and Progression Direction",
       "purpose": "Expands the game's content through new states and progression opportunities, while maintaining the core gameplay loop.",
       "playerChoice": "Expand the game's content by introducing new states or progression paths that reflect the player's choices and actions in real-time."
+    },
+    "local_authoring_parts::e23bf89c4121223632e5e4db52d5229e9128b5bbcb2353c00d0e01013cf6d200:signatureSystems:4": {
+      "id": "CORE-05",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "FIGHT_THROUGH_ELEVATING_HORDE",
+        "COLLECT_RUN_REWARDS_OR_EXPERIENCE",
+        "CHOOSE_UPGRADES_PERKS_WEAPONS_SKILLS"
+      ],
+      "stateOutputs": [
+        "INCREASED_DIFFICULTY_STATE",
+        "NEW_GAME_STATES_GENERATED",
+        "PROGRESSION_OPPORTUNITIES_CREATED"
+      ],
+      "name": "Delve into Strategic Progression and Content Expansion",
+      "purpose": "Explore the deep interplay between strategic choices, game state evolution, and content expansion through a layered progression system.",
+      "playerChoice": "Engage in multi-layered decision-making that redefines gameplay mechanics, introduces new narrative layers, and expands the game world dynamically through adaptive progression systems."
+    },
+    "local_authoring_parts::d78c0504f286c82760fcf00ecc062a72bcd8a134b452084df9e63d0df6aeb605:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "CORE-01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "FIGHT_THROUGH_ELEVATING_HORDE",
+            "COLLECT_RUN_REWARDS_OR_EXPERIENCE",
+            "CHOOSE_UPGRADES_PERKS_WEAPONS_SKILLS"
+          ],
+          "stateOutputs": [
+            "INCREASED_DIFFICULTY_STATE",
+            "NEW_GAME_STATES_GENERATED",
+            "PROGRESSION_OPPORTUNITIES_CREATED"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "purpose": "Player's core action and progression driver, affecting the next state of the game world.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build."
+        },
+        {
+          "id": "CORE-02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "FIGHT_THROUGH_ELEVATING_HORDE",
+            "COLLECT_RUN_REWARDS_OR_EXPERIENCE",
+            "CHOOSE_UPGRADES_PERKS_WEAPONS_SKILLS"
+          ],
+          "stateOutputs": [
+            "INCREASED_DIFFICULTY_STATE",
+            "NEW_GAME_STATES_GENERATED",
+            "PROGRESSION_OPPORTUNITIES_CREATED"
+          ],
+          "name": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+          "purpose": "Player selects from available rewards/experience to upgrade their build, affecting future gameplay states.",
+          "playerChoice": "Select from available rewards/experience to upgrade your build with new items/perks/weapons/skills that alter your progression path in the game world."
+        },
+        {
+          "id": "CORE-03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "FIGHT_THROUGH_ELEVATING_HORDE",
+            "COLLECT_RUN_REWARDS_OR_EXPERIENCE",
+            "CHOOSE_UPGRADES_PERKS_WEAPONS_SKILLS"
+          ],
+          "stateOutputs": [
+            "INCREASED_DIFFICULTY_STATE",
+            "NEW_GAME_STATES_GENERATED",
+            "PROGRESSION_OPPORTUNITIES_CREATED"
+          ],
+          "name": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+          "purpose": "Player chooses to collect rewards or gain experience, then upgrade their build with new items, which affects the next state of the game world.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build."
+        },
+        {
+          "id": "CORE-04",
+          "grammarRole": "c",
+          "stateInputs": [
+            "FIGHT_THROUGH_ELEVATING_HORDE",
+            "COLLECT_RUN_REWARDS_OR_EXPERIENCE",
+            "CHOOSE_UPGRADES_PERKS_WEAPONS_SKILLS"
+          ],
+          "stateOutputs": [
+            "INCREASED_DIFFICULTY_STATE",
+            "NEW_GAME_STATES_GENERATED",
+            "PROGRESSION_OPPORTUNITIES_CREATED"
+          ],
+          "name": "Content Expansion and Progression Direction",
+          "purpose": "Expands the game's content through new states and progression opportunities, while maintaining the core gameplay loop.",
+          "playerChoice": "Expand the game's content by introducing new states or progression paths that reflect the player's choices and actions in real-time."
+        },
+        {
+          "id": "CORE-05",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "FIGHT_THROUGH_ELEVATING_HORDE",
+            "COLLECT_RUN_REWARDS_OR_EXPERIENCE",
+            "CHOOSE_UPGRADES_PERKS_WEAPONS_SKILLS"
+          ],
+          "stateOutputs": [
+            "INCREASED_DIFFICULTY_STATE",
+            "NEW_GAME_STATES_GENERATED",
+            "PROGRESSION_OPPORTUNITIES_CREATED"
+          ],
+          "name": "Delve into Strategic Progression and Content Expansion",
+          "purpose": "Explore the deep interplay between strategic choices, game state evolution, and content expansion through a layered progression system.",
+          "playerChoice": "Engage in multi-layered decision-making that redefines gameplay mechanics, introduces new narrative layers, and expands the game world dynamically through adaptive progression systems."
+        }
+      ]
+    },
+    "local_authoring_parts::e5d98b2cb9268fa671c12ca538352f33024deddc73d4aea5bbc73c89485e9c4f:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT: Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "SELECT: Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "OUTPUT: Status changes based on player choices, including increased difficulty, new game states, and progression opportunities."
+      ],
+      "signatureSystems": [
+        {
+          "id": "CORE-01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "FIGHT_THROUGH_ELEVATING_HORDE",
+            "COLLECT_RUN_REWARDS_OR_EXPERIENCE",
+            "CHOOSE_UPGRADES_PERKS_WEAPONS_SKILLS"
+          ],
+          "stateOutputs": [
+            "INCREASED_DIFFICULTY_STATE",
+            "NEW_GAME_STATES_GENERATED",
+            "PROGRESSION_OPPORTUNITIES_CREATED"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "purpose": "Player's core action and progression driver, affecting the next state of the game world.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build."
+        },
+        {
+          "id": "CORE-02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "FIGHT_THROUGH_ELEVATING_HORDE",
+            "COLLECT_RUN_REWARDS_OR_EXPERIENCE",
+            "CHOOSE_UPGRADES_PERKS_WEAPONS_SKILLS"
+          ],
+          "stateOutputs": [
+            "INCREASED_DIFFICULTY_STATE",
+            "NEW_GAME_STATES_GENERATED",
+            "PROGRESSION_OPPORTUNITIES_CREATED"
+          ],
+          "name": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+          "purpose": "Player selects from available rewards/experience to upgrade their build, affecting future gameplay states.",
+          "playerChoice": "Select from available rewards/experience to upgrade your build with new items/perks/weapons/skills that alter your progression path in the game world."
+        },
+        {
+          "id": "CORE-03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "FIGHT_THROUGH_ELEVATING_HORDE",
+            "COLLECT_RUN_REWARDS_OR_EXPERIENCE",
+            "CHOOSE_UPGRADES_PERKS_WEAPONS_SKILLS"
+          ],
+          "stateOutputs": [
+            "INCREASED_DIFFICULTY_STATE",
+            "NEW_GAME_STATES_GENERATED",
+            "PROGRESSION_OPPORTUNITIES_CREATED"
+          ],
+          "name": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+          "purpose": "Player chooses to collect rewards or gain experience, then upgrade their build with new items, which affects the next state of the game world.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build."
+        },
+        {
+          "id": "CORE-04",
+          "grammarRole": "c",
+          "stateInputs": [
+            "FIGHT_THROUGH_ELEVATING_HORDE",
+            "COLLECT_RUN_REWARDS_OR_EXPERIENCE",
+            "CHOOSE_UPGRADES_PERKS_WEAPONS_SKILLS"
+          ],
+          "stateOutputs": [
+            "INCREASED_DIFFICULTY_STATE",
+            "NEW_GAME_STATES_GENERATED",
+            "PROGRESSION_OPPORTUNITIES_CREATED"
+          ],
+          "name": "Content Expansion and Progression Direction",
+          "purpose": "Expands the game's content through new states and progression opportunities, while maintaining the core gameplay loop.",
+          "playerChoice": "Expand the game's content by introducing new states or progression paths that reflect the player's choices and actions in real-time."
+        },
+        {
+          "id": "CORE-05",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "FIGHT_THROUGH_ELEVATING_HORDE",
+            "COLLECT_RUN_REWARDS_OR_EXPERIENCE",
+            "CHOOSE_UPGRADES_PERKS_WEAPONS_SKILLS"
+          ],
+          "stateOutputs": [
+            "INCREASED_DIFFICULTY_STATE",
+            "NEW_GAME_STATES_GENERATED",
+            "PROGRESSION_OPPORTUNITIES_CREATED"
+          ],
+          "name": "Delve into Strategic Progression and Content Expansion",
+          "purpose": "Explore the deep interplay between strategic choices, game state evolution, and content expansion through a layered progression system.",
+          "playerChoice": "Engage in multi-layered decision-making that redefines gameplay mechanics, introduces new narrative layers, and expands the game world dynamically through adaptive progression systems."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 528841,
-      "lastMs": 49521,
+      "totalMs": 621699,
+      "lastMs": 41630,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:11:47.730Z"
+      "updatedAt": "2026-10-08T21:13:20.591Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:02:58.858Z",
-  "updatedAt": "2026-10-08T21:11:47.730Z",
+  "updatedAt": "2026-10-08T21:13:20.594Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2318,10 +2518,11 @@
   "sliceDependencies": {},
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {
-    "local_authoring_parts::e23bf89c4121223632e5e4db52d5229e9128b5bbcb2353c00d0e01013cf6d200:signatureSystems:0": 1
+    "local_authoring_parts::e23bf89c4121223632e5e4db52d5229e9128b5bbcb2353c00d0e01013cf6d200:signatureSystems:0": 1,
+    "local_authoring_parts::e23bf89c4121223632e5e4db52d5229e9128b5bbcb2353c00d0e01013cf6d200:signatureSystems:4": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:11:47.730Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:13:20.594Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
