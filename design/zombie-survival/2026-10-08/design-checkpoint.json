@@ -27,25 +27,47 @@
       "identity": "좀비 생존기의 핵심 재미와 시스템 연결을 확정한 고유한 정체성입니다. 게임은 플레이어가 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프를 중심으로 설계되며, 모바일에서도 즉시 이해되는 입력과 피드백을 제공합니다. 게임의 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, 선택은 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'로 구성됩니다. 이는 게임의 핵심 재미와 시스템 연결을 구체화한 결과입니다. 게임의 세계 규칙은 '행동의 결과가 지연되어 행위자·관계·후대에 되돌아온다.'와 '통치 권한은 힘만이 아니라 인정·질서·민심에 의해 유지된다.'와 같은 인과법칙을 기반으로 설계되었습니다. 게임의 플레이어 역할은 '좀비 생존기에서 플레이어는 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다.'로 정의되었습니다. 게임의 시스템은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 'Collect run awards",
       "playerFantasy": "좀비 생존기에서 플레이어는 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프를 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 게임의 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, 선택은 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'로 구성됩니다. 이는 게임의 핵심 재미와 시스템 연결을 구체화한 결과입니다. 게임의 세계 규칙은 '행동의 결과가 지연되어 행위자·관계·후대에 되돌아온다.'와 '통치 권한은 힘만이 아니라 인정·질서·민심에 의해 유지된다.'와 같은 인과법칙을 기반으로 설계되었습니다. 게임의 플레이어 역할은 '좀비 생존기에서 플레이어는 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다.'로 정의되었습니다.",
       "coreFun": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.과 Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용을 구체화한 반복 가능한 핵심 루프를 중심으로, 플레이어가 '진행·위험·보상'을 서로 연결하는 게임입니다. 이는 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 게임의 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, 선택은 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'로 구성됩니다. 이는 게임의 핵심 재미와 시스템 연결을 구체화한 결과이며, 세계 규칙은 '행동의 결과가 지연되어 행위자·관계·후대에 되돌아온다.'와 '통치 권한은 힘만이 아니라 인정·질서·민심에 의해 유지된다.'와 같은 인과법칙을 기반으로 설계되었습니다. 게임의 플레이어 역할은 '좀비 생존기에서 플레이어는"
+    },
+    "local_authoring_parts::9afc1cef16907d28fe8f1d300205fe138b1689471543d8e05ebc9f8c31de0efa:coreLoop": {
+      "coreLoop": [
+        "INPUT: 플레이어의 '진행' - 선택 -> 상태 변화",
+        "판정: '위험' - 선택 -> 보상/다음 선택",
+        "OUTPUT: '보상' - 선택 -> 다음 선택"
+      ]
+    },
+    "local_authoring_parts::511a852a05f9fd4580639a7bd799f4beaad1d3a3f9ce8de4323b2def2ccd6111:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_1",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "RUN_REWARDS",
+        "EXPERIENCE"
+      ],
+      "stateOutputs": [
+        "BUILD_UPGRADE",
+        "NEXT_PROGRESSION_CHOICE"
+      ],
+      "name": "RUN_REWARD_SYSTEM",
+      "purpose": "플레이어의 '진행' - 선택 -> 상태 변화를 구체화한 반복 가능한 핵심 루프",
+      "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 345900,
-      "lastMs": 71051,
+      "totalMs": 428576,
+      "lastMs": 29639,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:27:33.902Z"
+      "updatedAt": "2026-10-08T13:28:56.583Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:21:47.979Z",
-  "updatedAt": "2026-10-08T13:27:33.904Z",
+  "updatedAt": "2026-10-08T13:28:56.583Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2244,7 +2266,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:27:33.903Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:28:56.583Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
