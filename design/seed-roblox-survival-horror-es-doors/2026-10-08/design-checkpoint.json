@@ -703,25 +703,36 @@
       "toSystem": "GAME_SEED_TO_GAME_SEED_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_0",
       "trigger": "Player selects a board or grid level with a clear goal, limited moves, obstacles, or a visible puzzle constraint.",
       "stateChange": "Establishes the visual and procedural structure of the level, defining the initial configuration and the rules governing the progression through the puzzle."
+    },
+    "local_authoring_parts::5f810414ea382152c69b98f898c44b0858e48530c6275ebb8caaf22c41f319b2:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "GAME_SEED",
+      "toId": "GAME_SEED",
+      "stateKeys": [
+        "levelGoal",
+        "limitedMoves",
+        "obstacles",
+        "puzzleConstraint"
+      ],
+      "fromSystem": "GAME_SEED_TO_GAME_SEED_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_0"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 23,
-      "successes": 23,
+      "calls": 24,
+      "successes": 24,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2635137,
-      "lastMs": 108523,
+      "totalMs": 2740672,
+      "lastMs": 105535,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:24:00.604Z"
+      "updatedAt": "2026-10-08T15:25:46.154Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:49:42.483Z",
-  "updatedAt": "2026-10-08T15:24:00.617Z",
+  "updatedAt": "2026-10-08T15:25:46.154Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2913,7 +2924,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:24:00.617Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:25:46.154Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
