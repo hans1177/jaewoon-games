@@ -777,7 +777,8 @@ local function makeVillage()
     line="주민: 보스와 싸울 땐 공격 전조를 먼저 봐. 해금한 보스 동료는 마을 외곽에서 두 번 선택하면 파티에 초대할 수 있어."
    elseif i%3==2 then
     local questId=n(p,"QuestPortal",0)
-    line=questId>0 and("주민: "..C.Portals[questId].Name.."에서 진행 중인 퀘스트가 있어. 이장과 다시 이야기해.")or"주민: 이장에게 말을 걸면 마을의 사건을 이어갈 수 있어."
+    local area=C.Portals[questId]
+    line=area and("주민: "..area.Name.."에서 진행 중인 퀘스트가 있어. 이장과 다시 이야기해.")or"주민: 이장에게 말을 걸면 마을의 사건을 이어갈 수 있어."
    else
     line="주민: 장비는 마을 상인에게 준비하고, 어려우면 낮은 사냥터에서 훈련해."
    end
@@ -1532,14 +1533,31 @@ RunService.Heartbeat:Connect(function(dt)
  for _,player in ipairs(Players:GetPlayers())do
   if n(player,"CurrentZone",0)==0 and player:GetAttribute("InCombat")~=true and now>=(nextNpcGreeting[player]or 0)then
    local pr=root(player)
-   if pr then for _,resident in ipairs(livingResidents)do
-    if resident.part and resident.part.Parent and(pr.Position-resident.part.Position).Magnitude<15 then
-     nextNpcGreeting[player]=now+28
-     player:SetAttribute("NPCSpeech","주민: 안녕! 길이 막히면 이장에게 물어봐. 위험한 전투 전에는 장비도 확인해.")
-     feedback(player,"NPC_INITIATED_TALK")
-     break
+   if pr then
+    local invited=false
+    local roster=world and world:FindFirstChild("BossCompanionRoster")
+    if roster and n(player,"PartyCount",0)<C.PartySlots-1 then
+     for _,def in ipairs(C.BossCompanions or{})do
+      local part=roster:FindFirstChild("Roster_"..def.Id)
+      if part and companionUnlocked(player,def.Id)and not partyHas(player,def.Id)
+       and(pr.Position-part.Position).Magnitude<18 then
+       nextNpcGreeting[player]=now+28
+       player:SetAttribute("NPCSpeech",def.Name.." · 동료: 나와 같이 가겠어? 내 모습을 두 번 선택하면 파티에 합류할게.")
+       feedback(player,"NPC_INITIATED_TALK")
+       invited=true
+       break
+      end
+     end
     end
-   end end
+    if not invited then for _,resident in ipairs(livingResidents)do
+     if resident.part and resident.part.Parent and(pr.Position-resident.part.Position).Magnitude<15 then
+      nextNpcGreeting[player]=now+28
+      player:SetAttribute("NPCSpeech","주민: 안녕! 길이 막히면 이장에게 물어봐. 위험한 전투 전에는 장비도 확인해.")
+      feedback(player,"NPC_INITIATED_TALK")
+      break
+     end
+    end end
+   end
   end
  end
  for _,p in ipairs(Players:GetPlayers())do
