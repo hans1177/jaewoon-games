@@ -983,25 +983,34 @@
       "toSystem": "player_goal_sys",
       "trigger": "world_state_to_player_goal",
       "stateChange": "world_state → player_goal"
+    },
+    "local_authoring_parts::ce8ce570cdb54f0c6f54cc372f6784f3249c16c7b5f803ef97d21dea26e28fa3:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "world_state",
+      "toId": "player_goal",
+      "stateKeys": [
+        "world_state",
+        "player_goal"
+      ],
+      "fromSystem": "world_state_system_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 31,
-      "successes": 31,
+      "calls": 32,
+      "successes": 32,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2900207,
-      "lastMs": 95215,
+      "totalMs": 3125382,
+      "lastMs": 225175,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:25:00.317Z"
+      "updatedAt": "2026-10-08T16:28:45.501Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:57:35.274Z",
-  "updatedAt": "2026-10-08T16:25:00.325Z",
+  "updatedAt": "2026-10-08T16:28:45.501Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3215,10 +3224,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:25:00.321Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:28:45.501Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
