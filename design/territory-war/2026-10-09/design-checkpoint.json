@@ -287,25 +287,144 @@
           "playerChoice": "Select a territory objective that balances immediate needs with long-term strategic goals."
         }
       ]
+    },
+    "local_authoring_parts::37139e8fe04de7fb271b720ac071c57ab8370a1e622697538251556b60323d7f:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::cec26b121e4ca1d801ccdd905538e82d51fd767c7462976f449a3b49e1f1cf49:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "Read the current border pressure and choose one territory objective.",
+        "Commit units or resources to attack, reinforce or expand economy.",
+        "Resolve the territorial change and adapt the next plan to the new front line."
+      ],
+      "signatureSystems": [
+        {
+          "id": "territory-war",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "currentBorderPressure"
+          ],
+          "stateOutputs": [
+            "selectedTerritoryObjective",
+            "resourceDistribution",
+            "movementPaths",
+            "riskRewardRatio"
+          ],
+          "name": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.",
+          "purpose": "Read the current border pressure and choose one territory objective.",
+          "playerChoice": "Select a territory objective based on the current border pressure and regional characteristics."
+        },
+        {
+          "id": "territory-war",
+          "grammarRole": "A",
+          "stateInputs": [
+            "currentBorderPressure"
+          ],
+          "stateOutputs": [
+            "selectedTerritoryObjective",
+            "resourceDistribution",
+            "movementPaths",
+            "riskRewardRatio"
+          ],
+          "name": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.",
+          "purpose": "Read the current border pressure and choose one territory objective.",
+          "playerChoice": "Select a territory objective based on the current border pressure and regional characteristics."
+        },
+        {
+          "id": "territory-war",
+          "grammarRole": "B",
+          "stateInputs": [
+            "currentBorderPressure"
+          ],
+          "stateOutputs": [
+            "selectedTerritoryObjective",
+            "resourceDistribution",
+            "movementPaths",
+            "riskRewardRatio"
+          ],
+          "name": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.",
+          "purpose": "Read the current border pressure and choose one territory objective.",
+          "playerChoice": "Select a territory objective based on the current border pressure and regional characteristics."
+        },
+        {
+          "id": "territory-war",
+          "grammarRole": "c",
+          "stateInputs": [
+            "currentBorderPressure"
+          ],
+          "stateOutputs": [
+            "selectedTerritoryObjective",
+            "resourceDistribution",
+            "movementPaths",
+            "riskRewardRatio"
+          ],
+          "name": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.",
+          "purpose": "Read the current border pressure and choose one territory objective based on regional characteristics.",
+          "playerChoice": "Select a territory objective that balances immediate needs with long-term strategic goals."
+        },
+        {
+          "id": "territory-war",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "currentBorderPressure"
+          ],
+          "stateOutputs": [
+            "selectedTerritoryObjective",
+            "resourceDistribution",
+            "movementPaths",
+            "riskRewardRatio"
+          ],
+          "name": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.",
+          "purpose": "Read the current border pressure and choose one territory objective based on regional characteristics.",
+          "playerChoice": "Select a territory objective that balances immediate needs with long-term strategic goals."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::ef37f77215c2aef9171f3b67afb793b2b906ac00370a2154cb7bc785ab82a41d:signatureSystems:0": {
+      "id": "territory-war-identity-core",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "currentBorderPressure"
+      ],
+      "stateOutputs": [
+        "territoryObjective"
+      ],
+      "name": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.",
+      "purpose": "플레이어가 현재 경계 압력에 따라 영토 목표를 선택하며, 이 선택은 다음 월드 상태와 관계 변화를 유발합니다.",
+      "playerChoice": "영토 목표 선택 및 다음 월드 상태와 관계 변화의 예측 및 대응 구체화를 수행합니다."
+    },
+    "local_authoring_parts::ef37f77215c2aef9171f3b67afb793b2b906ac00370a2154cb7bc785ab82a41d:signatureSystems:1": {
+      "id": "territory-war-identity-core",
+      "grammarRole": "A",
+      "stateInputs": [
+        "currentBorderPressure"
+      ],
+      "stateOutputs": [
+        "territoryObjective"
+      ],
+      "name": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.",
+      "purpose": "플레이어가 현재 경계 압력에 따라 영토 목표를 선택하며, 이 선택은 다음 월드 상태와 관계 변화를 유발합니다.",
+      "playerChoice": "영토 목표 선택 및 다음 월드 상태와 관계 변화의 예측 및 대응 구체화를 수행합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 697279,
-      "lastMs": 71445,
+      "totalMs": 902486,
+      "lastMs": 73896,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:52:17.095Z"
+      "updatedAt": "2026-10-08T18:55:42.318Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:40:39.764Z",
-  "updatedAt": "2026-10-08T18:52:17.098Z",
+  "updatedAt": "2026-10-08T18:55:42.318Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2325,12 +2444,74 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:52:17.098Z",
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_MAIN_A_B_c_DELVE_REQUIRED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "counts": {
+            "MAIN": 1,
+            "A": 1,
+            "B": 1,
+            "c": 1,
+            "DELVE": 1
+          },
+          "systemCount": 5,
+          "statesReady": false
+        },
+        "requiredAction": "메인 중심 행동, A/B 서로 다른 두 축, c 보조 변주, @ 발견·숙련을 기존 규칙에 맞춰 최소 5개 고유 시스템과 실제 상태 입력·출력으로 작성한다. 기존 밸런스·저장·진행은 유지한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다. 플레이어는 현재 경계 압력에 따라 영토 목표를 선택하며, 이 선택은 다음 월드 상태와 관계 변화를 유발한다. 주요 행동은 'Read the current border pressure and choose one territory objective.'이며, 결과로는 자원 배분, 이동 경로, 위험/보상 등 다양한 상태 변화가 발생한다. 세계의 역사, 생활, 경제, 지역 기능이 핵심 플레이 행동의 존재 이유를 설명하며, 시각 언어로 지역, 캐릭터, 적, 아이템, UI가 역할과 위험/보상 차이를 나타낸다. 음악과 소리도 세계 분위기를 강화하여, 성장은 수치 증가뿐만 아니라 새로운 행동, 경로, 관계, 발견, 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.",
+      "playerFantasy": "영토 전쟁에서 플레이어는 현재 경계 압력에 따라 영토 목표를 선택하며, 이 선택은 다음 월드 상태와 관계 변화를 유발한다. 주요 행동은 'Read the current border pressure and choose one territory objective.'이며, 결과로는 자원 배분, 이동 경로, 위험/보상 등 다양한 상태 변화가 발생한다. 세계의 역사, 생활, 경제, 지역 기능이 핵심 플레이 행동의 존재 이유를 설명하며, 시각 언어로 지역, 캐릭터, 적, 아이템, UI가 역할과 위험/보상 차이를 나타낸다. 음악과 소리도 세계 분위기를 강화하여, 성장은 수치 증가뿐만 아니라 새로운 행동, 경로, 관계, 발견, 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.",
+      "coreFun": "{Read the current border pressure and choose one territory objective.}의 결과는 자원 배분, 이동 경로, 위험/보상 등 다양한 상태 변화를 유발하며, 세계의 역사, 생활, 경제, 지역 기능이 핵심 플레이 행동의 존재 이유를 설명합니다. 시각 언어로 지역, 캐릭터, 적, 아이템, UI가 역할과 위험/보상 차이를 나타내며, 음악과 소리도 세계 분위기를 강화하여 성장은 수치 증가뿐만 아니라 새로운 행동, 경로, 관계, 발견, 대응법을 열어 같은 콘텐츠를 다르게 사용하게 합니다.",
+      "coreLoop": [
+        "Read the current border pressure and choose one territory objective.",
+        "Commit units or resources to attack, reinforce or expand economy.",
+        "Resolve the territorial change and adapt the next plan to the new front line."
+      ],
+      "multiplayerMode": "HYBRID"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T18:55:42.318Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
