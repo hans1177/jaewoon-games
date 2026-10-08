@@ -50,25 +50,41 @@
       "name": "교란 송신",
       "purpose": "인간이 감염 공격을 받은 후 즉시 몬스터로 전환하며, 감염 스킬을 얻는다.",
       "playerChoice": "인간은 고유 도구·대시·정화로 생존/반격, 몬스터는 명시적 감염 공격으로 인간을 감염한다."
+    },
+    "local_authoring_parts::fa28b98a7ee96ed34e0908c23ecf3436829977ffd6c2c2376c9280b5b36f7bd6:signatureSystems:1": {
+      "id": "SIGNAL_JAM",
+      "grammarRole": "A",
+      "stateInputs": [
+        "INPUT: 역할 선호 선택 + AI 충원",
+        "선택: 고유 도구·대시·정화 선택"
+      ],
+      "stateOutputs": [
+        "상태 변화: 감염 공격/정화 공격 실행",
+        "보상: 감염 전환/정화 공격 결과",
+        "다음 선택: 인간/몬스터 빈자리 충원"
+      ],
+      "name": "교란 송신",
+      "purpose": "인간이 감염 공격을 받은 후 즉시 몬스터로 전환하며, 감염 스킬을 얻는다.",
+      "playerChoice": "인간은 고유 도구·대시·정화로 생존/반격, 몬스터는 명시적 감염 공격으로 인간을 감염한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 201378,
-      "lastMs": 22466,
+      "totalMs": 223673,
+      "lastMs": 22295,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:00:50.168Z"
+      "updatedAt": "2026-10-08T13:01:12.468Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:57:28.511Z",
-  "updatedAt": "2026-10-08T13:00:50.168Z",
+  "updatedAt": "2026-10-08T13:01:12.468Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -785,7 +801,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:00:50.168Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:01:12.468Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
