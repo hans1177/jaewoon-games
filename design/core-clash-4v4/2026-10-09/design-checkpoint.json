@@ -91,25 +91,362 @@
       "name": "Run and upgrade to progress",
       "purpose": "게임 진행에 기여하는 보조 요소로, 주체인 플레이어가 선택 결과와 상태 변화를 변주하며 콘텐츠를 다르게 사용하게 한다.",
       "playerChoice": "Run and upgrade to progress with a focus on survival and progression in the short real-time survival run environment."
+    },
+    "local_authoring_parts::520973cb2d3d82754e8dc7c93c530f786b345b424fceb4b607117f52f3c9e1f1:signatureSystems:4": {
+      "id": "CORE-4V4-DELVE-1",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "RUN",
+        "UPGRADE"
+      ],
+      "stateOutputs": [
+        "NEXT_PROGRESSION"
+      ],
+      "name": "Run and upgrade to progress",
+      "purpose": "Player progresses through the game by upgrading their build, which leads to new progression choices.",
+      "playerChoice": "Upgrade your build to survive harder waves or a boss, then convert the run result into the next progression choice."
+    },
+    "local_authoring_parts::d2fbcece733a242ef92151c0c4db1ccf77bcfbfedef54df3990a3d58e2350a89:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "CORE-4V4-SIGNATURE-1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT"
+          ],
+          "stateOutputs": [
+            "RESULT"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "purpose": "Player's initial action that triggers the core loop and establishes the game's fundamental structure.",
+          "playerChoice": "Select the path of growth, risk, or reward that defines the current build and determines the next progression choice."
+        },
+        {
+          "id": "CORE-4V4-SIGNATURE-2",
+          "grammarRole": "A",
+          "stateInputs": [
+            "RUN",
+            "UPGRADE"
+          ],
+          "stateOutputs": [
+            "NEXT_PROGRESSION"
+          ],
+          "name": "Run and upgrade to progress",
+          "purpose": "Player runs through a short survival run, upgrades their build, and progresses to the next stage.",
+          "playerChoice": "Run through a short real-time survival run while upgrading your current build to increase your chances of progressing to the next stage in the game flow."
+        },
+        {
+          "id": "CORE-4V4-SIGNATURE-3",
+          "grammarRole": "B",
+          "stateInputs": [
+            "RUN",
+            "UPGRADE"
+          ],
+          "stateOutputs": [
+            "NEXT_PROGRESSION"
+          ],
+          "name": "Run and upgrade to progress",
+          "purpose": "Player progresses through the game by running and upgrading their build.",
+          "playerChoice": "Run and upgrade your current build to unlock new progression options in the next stage of the game."
+        },
+        {
+          "id": "CORE-4V4-SIGNATURE-4",
+          "grammarRole": "c",
+          "stateInputs": [
+            "RUN",
+            "UPGRADE"
+          ],
+          "stateOutputs": [
+            "NEXT_PROGRESSION"
+          ],
+          "name": "Run and upgrade to progress",
+          "purpose": "게임 진행에 기여하는 보조 요소로, 주체인 플레이어가 선택 결과와 상태 변화를 변주하며 콘텐츠를 다르게 사용하게 한다.",
+          "playerChoice": "Run and upgrade to progress with a focus on survival and progression in the short real-time survival run environment."
+        },
+        {
+          "id": "CORE-4V4-DELVE-1",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "RUN",
+            "UPGRADE"
+          ],
+          "stateOutputs": [
+            "NEXT_PROGRESSION"
+          ],
+          "name": "Run and upgrade to progress",
+          "purpose": "Player progresses through the game by upgrading their build, which leads to new progression choices.",
+          "playerChoice": "Upgrade your build to survive harder waves or a boss, then convert the run result into the next progression choice."
+        }
+      ]
+    },
+    "local_authoring_parts::b7ab625acc036260988317a1748ad974210e73d7730497ccc9448f369ebe9dce:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT: 플레이어가 '진입'이라는 순간부터 '성장'에 빠지며, 이 과정에서 '보상', '위험', '재방문' 등 다양한 상태 변화를 경험하게 된다.",
+        "SELECT: 선택의 결과로 월드 상태가 변환되며, 주체인 플레이어에게 즉각적인 영향을 미친다.",
+        "OUTPUT: 새로운 행동·경로·조합·관계를 열어 콘텐츠를 다르게 사용할 수 있는 구조를 갖춘 ACTION_SURVIVAL_ROGUELITE 장르의 게임이다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "CORE-4V4-SIGNATURE-1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT"
+          ],
+          "stateOutputs": [
+            "RESULT"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "purpose": "Player's initial action that triggers the core loop and establishes the game's fundamental structure.",
+          "playerChoice": "Select the path of growth, risk, or reward that defines the current build and determines the next progression choice."
+        },
+        {
+          "id": "CORE-4V4-SIGNATURE-2",
+          "grammarRole": "A",
+          "stateInputs": [
+            "RUN",
+            "UPGRADE"
+          ],
+          "stateOutputs": [
+            "NEXT_PROGRESSION"
+          ],
+          "name": "Run and upgrade to progress",
+          "purpose": "Player runs through a short survival run, upgrades their build, and progresses to the next stage.",
+          "playerChoice": "Run through a short real-time survival run while upgrading your current build to increase your chances of progressing to the next stage in the game flow."
+        },
+        {
+          "id": "CORE-4V4-SIGNATURE-3",
+          "grammarRole": "B",
+          "stateInputs": [
+            "RUN",
+            "UPGRADE"
+          ],
+          "stateOutputs": [
+            "NEXT_PROGRESSION"
+          ],
+          "name": "Run and upgrade to progress",
+          "purpose": "Player progresses through the game by running and upgrading their build.",
+          "playerChoice": "Run and upgrade your current build to unlock new progression options in the next stage of the game."
+        },
+        {
+          "id": "CORE-4V4-SIGNATURE-4",
+          "grammarRole": "c",
+          "stateInputs": [
+            "RUN",
+            "UPGRADE"
+          ],
+          "stateOutputs": [
+            "NEXT_PROGRESSION"
+          ],
+          "name": "Run and upgrade to progress",
+          "purpose": "게임 진행에 기여하는 보조 요소로, 주체인 플레이어가 선택 결과와 상태 변화를 변주하며 콘텐츠를 다르게 사용하게 한다.",
+          "playerChoice": "Run and upgrade to progress with a focus on survival and progression in the short real-time survival run environment."
+        },
+        {
+          "id": "CORE-4V4-DELVE-1",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "RUN",
+            "UPGRADE"
+          ],
+          "stateOutputs": [
+            "NEXT_PROGRESSION"
+          ],
+          "name": "Run and upgrade to progress",
+          "purpose": "Player progresses through the game by upgrading their build, which leads to new progression choices.",
+          "playerChoice": "Upgrade your build to survive harder waves or a boss, then convert the run result into the next progression choice."
+        }
+      ]
+    },
+    "local_authoring_parts::b7ab625acc036260988317a1748ad974210e73d7730497ccc9448f369ebe9dce:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::2f189290c6cce28be14eeba47df8ddefd25cc363004def03b11e24edef4295a1:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "INPUT: 플레이어가 '진입'이라는 순간부터 '성장'에 빠지며, 이 과정에서 '보상', '위험', '재방문' 등 다양한 상태 변화를 경험하게 된다.",
+        "SELECT: 선택의 결과로 월드 상태가 변환되며, 주체인 플레이어에게 즉각적인 영향을 미친다.",
+        "OUTPUT: 새로운 행동·경로·조합·관계를 열어 콘텐츠를 다르게 사용할 수 있는 구조를 갖춘 ACTION_SURVIVAL_ROGUELITE 장르의 게임이다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "CORE-4V4-SIGNATURE-1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT"
+          ],
+          "stateOutputs": [
+            "RESULT"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "purpose": "Player's initial action that triggers the core loop and establishes the game's fundamental structure.",
+          "playerChoice": "Select the path of growth, risk, or reward that defines the current build and determines the next progression choice."
+        },
+        {
+          "id": "CORE-4V4-SIGNATURE-2",
+          "grammarRole": "A",
+          "stateInputs": [
+            "RUN",
+            "UPGRADE"
+          ],
+          "stateOutputs": [
+            "NEXT_PROGRESSION"
+          ],
+          "name": "Run and upgrade to progress",
+          "purpose": "Player runs through a short survival run, upgrades their build, and progresses to the next stage.",
+          "playerChoice": "Run through a short real-time survival run while upgrading your current build to increase your chances of progressing to the next stage in the game flow."
+        },
+        {
+          "id": "CORE-4V4-SIGNATURE-3",
+          "grammarRole": "B",
+          "stateInputs": [
+            "RUN",
+            "UPGRADE"
+          ],
+          "stateOutputs": [
+            "NEXT_PROGRESSION"
+          ],
+          "name": "Run and upgrade to progress",
+          "purpose": "Player progresses through the game by running and upgrading their build.",
+          "playerChoice": "Run and upgrade your current build to unlock new progression options in the next stage of the game."
+        },
+        {
+          "id": "CORE-4V4-SIGNATURE-4",
+          "grammarRole": "c",
+          "stateInputs": [
+            "RUN",
+            "UPGRADE"
+          ],
+          "stateOutputs": [
+            "NEXT_PROGRESSION"
+          ],
+          "name": "Run and upgrade to progress",
+          "purpose": "게임 진행에 기여하는 보조 요소로, 주체인 플레이어가 선택 결과와 상태 변화를 변주하며 콘텐츠를 다르게 사용하게 한다.",
+          "playerChoice": "Run and upgrade to progress with a focus on survival and progression in the short real-time survival run environment."
+        },
+        {
+          "id": "CORE-4V4-DELVE-1",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "RUN",
+            "UPGRADE"
+          ],
+          "stateOutputs": [
+            "NEXT_PROGRESSION"
+          ],
+          "name": "Run and upgrade to progress",
+          "purpose": "Player progresses through the game by upgrading their build, which leads to new progression choices.",
+          "playerChoice": "Upgrade your build to survive harder waves or a boss, then convert the run result into the next progression choice."
+        }
+      ],
+      "multiplayerMode": "COOP"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "코어 전장 4대4은 플레이어가 '진입'하는 순간부터 '성장'에 빠지며, 이 과정에서 '보상', '위험', '재방문' 등 다양한 상태 변화를 경험하게 된다. 게임의 핵심 재미는 선택의 결과로 인해 월드 상태가 변환되며, 이는 주체인 플레이어에게 즉각적인 영향을 미친다. 이는 단순한 반복보다는 새로운 행동·경로·조합·관계를 열어, 콘텐츠를 다르게 사용할 수 있는 구조를 갖춘 ACTION_SURVIVAL_ROGUELITE 장르의 게임이다.",
+      "playerFantasy": "플레이어는 '진입'이라는 순간부터 '성장'에 빠지며, 이 과정에서 '보상', '위험', '재방문' 등 다양한 상태 변화를 경험하게 된다. 게임의 핵심 재미는 선택의 결과로 인해 월드 상태가 변환되며, 이는 주체인 플레이어에게 즉각적인 영향을 미친다. 이는 단순한 반복보다는 새로운 행동·경로·조합·관계를 열어, 콘텐츠를 다르게 사용할 수 있는 구조를 갖춘 ACTION_SURVIVAL_ROGUELITE 장르의 게임이다.",
+      "coreFun": "플레이어는 '진입'이라는 순간부터 '성장'에 빠지며, 이 과정에서 '보상', '위험', '재방문' 등 다양한 상태 변화를 경험하게 된다. 게임의 핵심 재미는 선택의 결과로 인해 월드 상태가 변환되며, 이는 주체인 플레이어에게 즉각적인 영향을 미친다. 이는 단순한 반복보다는 새로운 행동·경로·조합·관계를 열어, 콘텐츠를 다르게 사용할 수 있는 구조를 갖춘 ACTION_SURVIVAL_ROGUELITE 장르의 게임이다.",
+      "coreLoop": [
+        "INPUT: 플레이어가 '진입'이라는 순간부터 '성장'에 빠지며, 이 과정에서 '보상', '위험', '재방문' 등 다양한 상태 변화를 경험하게 된다.",
+        "SELECT: 선택의 결과로 월드 상태가 변환되며, 주체인 플레이어에게 즉각적인 영향을 미친다.",
+        "OUTPUT: 새로운 행동·경로·조합·관계를 열어 콘텐츠를 다르게 사용할 수 있는 구조를 갖춘 ACTION_SURVIVAL_ROGUELITE 장르의 게임이다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "CORE-4V4-SIGNATURE-1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT"
+          ],
+          "stateOutputs": [
+            "RESULT"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "purpose": "Player's initial action that triggers the core loop and establishes the game's fundamental structure.",
+          "playerChoice": "Select the path of growth, risk, or reward that defines the current build and determines the next progression choice."
+        },
+        {
+          "id": "CORE-4V4-SIGNATURE-2",
+          "grammarRole": "A",
+          "stateInputs": [
+            "RUN",
+            "UPGRADE"
+          ],
+          "stateOutputs": [
+            "NEXT_PROGRESSION"
+          ],
+          "name": "Run and upgrade to progress",
+          "purpose": "Player runs through a short survival run, upgrades their build, and progresses to the next stage.",
+          "playerChoice": "Run through a short real-time survival run while upgrading your current build to increase your chances of progressing to the next stage in the game flow."
+        },
+        {
+          "id": "CORE-4V4-SIGNATURE-3",
+          "grammarRole": "B",
+          "stateInputs": [
+            "RUN",
+            "UPGRADE"
+          ],
+          "stateOutputs": [
+            "NEXT_PROGRESSION"
+          ],
+          "name": "Run and upgrade to progress",
+          "purpose": "Player progresses through the game by running and upgrading their build.",
+          "playerChoice": "Run and upgrade your current build to unlock new progression options in the next stage of the game."
+        },
+        {
+          "id": "CORE-4V4-SIGNATURE-4",
+          "grammarRole": "c",
+          "stateInputs": [
+            "RUN",
+            "UPGRADE"
+          ],
+          "stateOutputs": [
+            "NEXT_PROGRESSION"
+          ],
+          "name": "Run and upgrade to progress",
+          "purpose": "게임 진행에 기여하는 보조 요소로, 주체인 플레이어가 선택 결과와 상태 변화를 변주하며 콘텐츠를 다르게 사용하게 한다.",
+          "playerChoice": "Run and upgrade to progress with a focus on survival and progression in the short real-time survival run environment."
+        },
+        {
+          "id": "CORE-4V4-DELVE-1",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "RUN",
+            "UPGRADE"
+          ],
+          "stateOutputs": [
+            "NEXT_PROGRESSION"
+          ],
+          "name": "Run and upgrade to progress",
+          "purpose": "Player progresses through the game by upgrading their build, which leads to new progression choices.",
+          "playerChoice": "Upgrade your build to survive harder waves or a boss, then convert the run result into the next progression choice."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 568290,
-      "lastMs": 57239,
+      "totalMs": 647978,
+      "lastMs": 28117,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:38:17.508Z"
+      "updatedAt": "2026-10-08T21:39:37.203Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:28:49.180Z",
-  "updatedAt": "2026-10-08T21:38:17.508Z",
+  "updatedAt": "2026-10-08T21:39:37.215Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2304,12 +2641,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:38:17.508Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:39:37.207Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/core-clash-4v4/2026-10-09/design-seed.json",
+    "contentDigest": "b77f76531fe4307e6c0d0494925e3dee13b1dcda875fb4ef8218908c607110fe",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
