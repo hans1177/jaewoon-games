@@ -699,25 +699,28 @@
       "toSystem": "Start a board or grid level with a clear goal, limited moves, obstacles, or a visible puzzle constraint.의 결과를 이용해 다음 월드 상태와 접근 가능성을 바꾼다.",
       "trigger": "Start a board or grid level with a clear goal, limited moves, obstacles, or a visible puzzle constraint.의 결과를 이용해 다음 월드 상태와 접근 가능성을 바꾼다.",
       "stateChange": "SIGNATURE_SYSTEM_2의 현재 상태를 BOARD_RULE_1으로 전달하여, BOARD_STATE, PLAYER_ACTION, LEVEL_GOAL, REWARD_SYSTEM, OBSTACLE_PATTERN의 값이 전달됨으로써, 다음 월드 상태와 접근 가능성에 영향을 미친다."
+    },
+    "local_authoring_parts::9076a4459c23dd549bf26977019513ae1e67cb56864f65af3c68960f01bc28f3:fromId": {
+      "fromId": "SIGNATURE_SYSTEM_3"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 32,
-      "successes": 32,
+      "calls": 33,
+      "successes": 33,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2692141,
-      "lastMs": 62166,
+      "totalMs": 2748487,
+      "lastMs": 56346,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:20:19.919Z"
+      "updatedAt": "2026-10-08T10:21:16.269Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:34:25.615Z",
-  "updatedAt": "2026-10-08T10:20:19.921Z",
+  "updatedAt": "2026-10-08T10:21:16.269Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3111,7 +3114,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:20:19.921Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:21:16.269Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
