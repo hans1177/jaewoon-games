@@ -3,30 +3,18 @@
   "gameId": "cozy-island",
   "date": "2026-10-08",
   "seedId": "OWNER-DESIGN-COZY-ISLAND",
-  "fingerprint": "428b09cc5a1a2d03100576081cad50dad175c6c22156f80f9a2a3d6cada1d157",
+  "fingerprint": "7c94202490fc43ebdc916e782715691d9c12113debf611dd97d4442544e2fd10",
   "policyDigest": "0fda28f71ac3a214ad795ba2e2df1e0f6e7da837204b05182cdebecce33c9ade",
-  "engineDigest": "8c8ca966a8888e75b243fb5bc484ff1748c693b0bdfc1b940335641ea6aebba6",
+  "engineDigest": "d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
   "tasks": {},
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 0,
-      "failures": 3,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 394323,
-      "lastMs": 111696,
-      "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T05:51:04.257Z"
-    }
-  },
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-08T05:44:29.915Z",
-  "updatedAt": "2026-10-08T05:51:04.262Z",
+  "createdAt": "2026-10-08T06:42:32.069Z",
+  "updatedAt": "2026-10-08T06:42:32.165Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -576,16 +564,5 @@
       }
     },
     "assetFacts": {}
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "localAuthoringSplits": {
-    "ab356f3d4e394bb302f0009f30cc1a47103a0396592f1c0bc7f58d0a9a0fd0f5": true,
-    "860423541090c3ae3dc328c845c5bcb992e135c8b471f9a289152a10f727ebfb": true
-  },
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED"
+  }
 }
