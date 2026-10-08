@@ -34,25 +34,41 @@
         "Commit units or resources to attack, reinforce or expand economy.",
         "Resolve the territorial change and adapt the next plan to the new front line."
       ]
+    },
+    "local_authoring_parts::51c6916d1b6b7627fbca8e88758ed951a334f3b73be78c39b1b22a10a4b4c972:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "border_pressure",
+        "territory_objective"
+      ],
+      "stateOutputs": [
+        "new_strategy",
+        "updated_front_line",
+        "expanded_resources"
+      ],
+      "name": "READ_BORDER_PRESSURE_AND_CHOOSE_TERRITORY_OBJECTIVE",
+      "purpose": "Player chooses territory objective based on current border pressure and regional characteristics.",
+      "playerChoice": "Read the current border pressure, combine it with regional features, and select a new strategy that aligns with the front line and resource allocation goals."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 342140,
-      "lastMs": 38441,
+      "totalMs": 378304,
+      "lastMs": 36164,
       "lastError": null,
-      "updatedAt": "2026-10-08T20:53:58.714Z"
+      "updatedAt": "2026-10-08T20:54:34.880Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:48:16.553Z",
-  "updatedAt": "2026-10-08T20:53:58.714Z",
+  "updatedAt": "2026-10-08T20:54:34.880Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2076,7 +2092,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T20:53:58.714Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T20:54:34.880Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
