@@ -1806,62 +1806,76 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
   options=options or {}
   local theme=cloneTheme(options.theme)
   local root,body=surfaceShell(options,"INVENTORY_FULL_SCREEN","INVENTORY_FULL_SCREEN")
-  local search=RobloxCommonUI.CreateSearchField({size=UDim2.new(0.42,0,0,48),theme=theme})
-  search.Parent=body
-  local sort=RobloxCommonUI.CreateSortControl({size=UDim2.fromOffset(170,48),theme=theme})
-  sort.AnchorPoint=Vector2.new(1,0)
-  sort.Parent=body
-  local filters=RobloxCommonUI.CreateFilterBar({size=UDim2.new(1,0,0,52),theme=theme})
-  filters.Parent=body
-
-  -- 실제 아이템 슬롯은 기존 공용 Grid 그대로 두고, 내용 높이에 따라 스크롤만 동기화한다.
+  local search=RobloxCommonUI.CreateSearchField({size=UDim2.new(0.42,0,0,48),theme=theme});search.Parent=body
+  local sort=RobloxCommonUI.CreateSortControl({size=UDim2.fromOffset(170,48),theme=theme});sort.AnchorPoint=Vector2.new(1,0);sort.Parent=body
+  local filters=RobloxCommonUI.CreateFilterBar({size=UDim2.new(1,0,0,52),theme=theme});filters.Parent=body
   local scroll=Instance.new("ScrollingFrame")
-  scroll.Name="InventoryScroll"
-  scroll.BackgroundTransparency=1
-  scroll.BorderSizePixel=0
-  scroll.ScrollBarThickness=4
-  scroll.ScrollingDirection=Enum.ScrollingDirection.Y
-  scroll.CanvasSize=UDim2.fromOffset(0,0)
-  scroll.AutomaticCanvasSize=Enum.AutomaticSize.Y
-  scroll.Active=true
-  scroll.Parent=body
-
-  local grid,cellLayout=RobloxCommonUI.CreateInventoryGrid({
-    name="FullInventoryGrid",columns=options.columns or 6,slotCount=options.slotCount or 30,
+  scroll.Name="InventoryScroll";scroll.BackgroundTransparency=1;scroll.BorderSizePixel=0;scroll.ScrollBarThickness=4
+  scroll.ScrollingDirection=Enum.ScrollingDirection.Y;scroll.CanvasSize=UDim2.fromOffset(0,0);scroll.AutomaticCanvasSize=Enum.AutomaticSize.Y
+  scroll.Active=true;scroll.Parent=body
+  local grid,cellLayout,slots=RobloxCommonUI.CreateInventoryGrid({
+    name="FullInventoryGrid",columns=options.columns or 6,
+    slotCount=options.slotCount or (options.items and #options.items or 1),
     size=UDim2.new(1,-8,0,160),theme=theme
-  })
-  grid.Parent=scroll
-
+  });grid.Parent=scroll
+  local rows={}
+  local selectedId=nil
   local function resizeGrid()
     local available=scroll.AbsoluteSize.X-8
     if available<=0 then return end
     local desired=math.max(2,math.floor((available-20+8)/76))
-    local columns=math.clamp(math.min(desired,tonumber(options.columns) or 6),2,6)
+    local columns=math.clamp(math.min(desired,tonumber(options.columns)or 6),2,6)
     local cell=math.max(52,math.floor((available-20-(columns-1)*8)/columns))
     cellLayout.CellSize=UDim2.fromOffset(cell,cell)
     grid.Size=UDim2.new(1,-8,0,cellLayout.AbsoluteContentSize.Y+20)
   end
-
   local function placePanels()
     local compact=body.AbsoluteSize.X<560
     if compact then
       search.Size=UDim2.new(1,0,0,48)
-      sort.AnchorPoint=Vector2.new(0,0)
-      sort.Position=UDim2.fromOffset(0,56)
-      sort.Size=UDim2.new(1,0,0,48)
+      sort.AnchorPoint=Vector2.new(0,0);sort.Position=UDim2.fromOffset(0,56);sort.Size=UDim2.new(1,0,0,48)
       filters.Position=UDim2.fromOffset(0,112)
-      scroll.Position=UDim2.fromOffset(0,172)
-      scroll.Size=UDim2.new(1,0,1,-172)
+      scroll.Position=UDim2.fromOffset(0,172);scroll.Size=UDim2.new(1,0,1,-172)
     else
       search.Size=UDim2.new(0.42,0,0,48)
-      sort.AnchorPoint=Vector2.new(1,0)
-      sort.Position=UDim2.new(1,0,0,0)
-      sort.Size=UDim2.fromOffset(170,48)
+      sort.AnchorPoint=Vector2.new(1,0);sort.Position=UDim2.new(1,0,0,0);sort.Size=UDim2.fromOffset(170,48)
       filters.Position=UDim2.fromOffset(0,58)
-      scroll.Position=UDim2.fromOffset(0,116)
-      scroll.Size=UDim2.new(1,0,1,-116)
+      scroll.Position=UDim2.fromOffset(0,116);scroll.Size=UDim2.new(1,0,1,-116)
     end
     root:SetAttribute("MobileStackedLayout",compact)
+    resizeGrid()
+  end
+  local function sync(items)
+    rows=type(items)=="table"and items or {}
+    for i,row in ipairs(rows)do
+      if not slots[i]then
+        local slot=RobloxCommonUI.CreateInventorySlot({name="Slot"..i,theme=theme})
+        slot.LayoutOrder=i;slot.Parent=grid;slots[i]=slot
+      end
+      local slot=slots[i]
+      if not slot:GetAttribute("InventoryInputBound")then
+        slot:SetAttribute("InventoryInputBound",true)
+        local index=i
+        slot.Activated:Connect(function()
+          local current=rows[index]
+          if current and type(options.onSelect)=="function"then options.onSelect(current.id,current)end
+        end)
+      end
+      slot.Visible=true
+      slot.Name="Slot"..i
+      slot.LayoutOrder=i
+      slot:SetAttribute("BoundItemId",tostring(row.id or ""))
+      slot:SetAttribute("BoundFromGameState",true)
+      local icon=slot:FindFirstChild("Icon")
+      local quantity=slot:FindFirstChild("Quantity")
+      local highlight=slot:FindFirstChild("SelectedRing")
+      if icon then icon.Image=tostring(row.image or "")end
+      if quantity then quantity.Text=tostring(row.quantity or row.count or "")end
+      if highlight then highlight.Visible=row.selected==true or (selectedId~=nil and selectedId==row.id)end
+      slot.Active=row.locked~=true
+    end
+    for i=#rows+1,#slots do slots[i].Visible=false end
+    root:SetAttribute("BoundItemCount",#rows)
     resizeGrid()
   end
   body:GetPropertyChangedSignal("AbsoluteSize"):Connect(placePanels)
@@ -1870,9 +1884,12 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
     grid.Size=UDim2.new(1,-8,0,cellLayout.AbsoluteContentSize.Y+20)
   end)
   placePanels()
+  sync(options.items or {})
   root:SetAttribute("TouchScrollable",true)
   root:SetAttribute("OwnsInventoryAuthority",false)
-  return root,{search=search,sort=sort,filters=filters,grid=grid,scroll=scroll}
+  root:SetAttribute("OwnsSaveAuthority",false)
+  root:SetAttribute("OwnsRemoteAuthority",false)
+  return root,{search=search,sort=sort,filters=filters,grid=grid,scroll=scroll,slots=slots,Sync=sync}
 end
 
 function RobloxCommonUI.CreateEquipmentFullScreen(options)
@@ -1883,23 +1900,79 @@ function RobloxCommonUI.CreateEquipmentFullScreen(options)
   local slots=Instance.new("Frame");slots.Name="EquipmentSlots";slots.Position=UDim2.new(0.46,8,0,0);slots.Size=UDim2.new(0.54,-8,1,0);slots.BackgroundTransparency=1;slots.Parent=body
   local grid=Instance.new("UIGridLayout");grid.CellSize=UDim2.new(0.5,-6,0,110);grid.CellPadding=UDim2.fromOffset(10,10);grid.SortOrder=Enum.SortOrder.LayoutOrder;grid.Parent=slots
   local names=options.slots or {"무기","보조","머리","몸","장갑","신발","장신구","특수"}
-  local built={}
-  for i,label in ipairs(names) do local slot=RobloxCommonUI.CreateEquipmentSlot({name="Equipment"..i,label=label,size=UDim2.new(1,0,1,0),theme=theme});slot.LayoutOrder=i;slot.Parent=slots;built[i]=slot end
+  local built,state={},{}
+  for i,label in ipairs(names)do
+    local slot=RobloxCommonUI.CreateEquipmentSlot({name="Equipment"..i,label=label,size=UDim2.new(1,0,1,0),theme=theme})
+    slot.LayoutOrder=i;slot.Parent=slots;built[i]=slot
+    slot.Activated:Connect(function()
+      local row=state[i]
+      if row and row.id and type(options.onEquip)=="function"then options.onEquip(row.id,row)end
+    end)
+  end
+  local function sync(items)
+    state=type(items)=="table"and items or {}
+    for index,slot in ipairs(built)do
+      local row=state[index]or {}
+      slot:SetAttribute("BoundItemId",tostring(row.id or ""))
+      slot:SetAttribute("BoundFromGameState",true)
+      slot.Active=row.id~=nil and row.locked~=true
+      local icon=slot:FindFirstChild("Icon")
+      local caption=slot:FindFirstChild("Quantity")
+      local highlight=slot:FindFirstChild("SelectedRing")
+      if icon then icon.Image=tostring(row.image or "")end
+      if caption then caption.Text=tostring(row.name or names[index] or "")end
+      if highlight then highlight.Visible=row.equipped==true end
+    end
+    root:SetAttribute("BoundEquipmentCount",#state)
+  end
+  sync(options.equipment or {})
   root:SetAttribute("OwnsEquipAuthority",false)
-  return root,{sheet=sheet,slots=built}
+  root:SetAttribute("OwnsSaveAuthority",false)
+  return root,{sheet=sheet,slots=built,Sync=sync}
 end
 
 function RobloxCommonUI.CreateCharacterDetailScreen(options)
   options=options or {}
   local theme=cloneTheme(options.theme)
   local root,body=surfaceShell(options,"CHARACTER_DETAIL_SCREEN","CHARACTER_DETAIL_SCREEN")
-  local sheet=RobloxCommonUI.CreateCharacterSheet({name="CharacterDetail",size=UDim2.new(0.58,-8,1,0),theme=theme,displayName=options.displayName})
+  local sheet=RobloxCommonUI.CreateCharacterSheet({
+    name="CharacterDetail",size=UDim2.new(0.58,-8,1,0),theme=theme,
+    characterName=options.displayName,stats=options.stats or {}
+  })
   sheet.Parent=body
-  local details=Instance.new("Frame");details.Name="DetailStats";details.Position=UDim2.new(0.58,8,0,0);details.Size=UDim2.new(0.42,-8,1,0);details.BackgroundColor3=theme.PanelInset;details.BorderSizePixel=0;details.Parent=body;corner(details,theme.Corner)
+  local details=Instance.new("Frame")
+  details.Name="DetailStats";details.Position=UDim2.new(0.58,8,0,0);details.Size=UDim2.new(0.42,-8,1,0)
+  details.BackgroundColor3=theme.PanelInset;details.BorderSizePixel=0;details.Parent=body;corner(details,theme.Corner)
   local rows=options.detailRows or {"상태","역할","장비 요약","효과","진행도","최근 획득"}
-  for i,label in ipairs(rows) do commonText(details,"Row"..i,label,UDim2.fromOffset(16,12+(i-1)*44),UDim2.new(1,-32,0,36),i==1 and theme.Accent or theme.Text,14,i==1) end
+  local labels={}
+  for i,name in ipairs(rows)do
+    labels[i]=commonText(details,"Row"..i,name,UDim2.fromOffset(16,12+(i-1)*44),UDim2.new(1,-32,0,36),i==1 and theme.Accent or theme.Text,14,i==1)
+  end
+  local inner=sheet:FindFirstChild("InnerSurface")
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    if inner then
+      if inner:FindFirstChild("CharacterName")then inner.CharacterName.Text=tostring(state.name or "캐릭터")end
+      if inner:FindFirstChild("Class")then inner.Class.Text=tostring(state.className or "")end
+      if inner:FindFirstChild("Level")then inner.Level.Text=tostring(state.levelText or "")end
+      local values=inner:FindFirstChild("Stats")
+      if values then
+        for index,stat in ipairs(state.stats or {})do
+          local row=values:FindFirstChild(tostring(stat.id or ("Stat"..index)))
+          if row then
+            if row:FindFirstChild("Label")then row.Label.Text=tostring(stat.label or stat.id or "")end
+            if row:FindFirstChild("Value")then row.Value.Text=tostring(stat.value or "")end
+          end
+        end
+      end
+    end
+    for i,label in ipairs(labels)do label.Text=tostring((state.details or {})[i]or "")end
+    root:SetAttribute("CharacterStateRevision",tostring(state.revision or "UNKNOWN"))
+  end
+  sync(options.character or {})
   root:SetAttribute("OwnsCharacterStats",false)
-  return root,{sheet=sheet,details=details}
+  root:SetAttribute("OwnsProgressionAuthority",false)
+  return root,{sheet=sheet,details=details,Sync=sync}
 end
 
 function RobloxCommonUI.CreateMapFullScreen(options)
@@ -1945,13 +2018,73 @@ function RobloxCommonUI.CreateShopFullScreen(options)
   local root,body=surfaceShell(options,"SHOP_FULL_SCREEN","SHOP_FULL_SCREEN")
   local search=RobloxCommonUI.CreateSearchField({size=UDim2.new(0.42,0,0,48),theme=theme,placeholder="상품 검색"});search.Parent=body
   local sort=RobloxCommonUI.CreateSortControl({text="정렬: 추천순",theme=theme});sort.AnchorPoint=Vector2.new(1,0);sort.Position=UDim2.new(1,0,0,0);sort.Parent=body
-  local list=Instance.new("ScrollingFrame");list.Name="Products";list.Position=UDim2.fromOffset(0,58);list.Size=UDim2.new(1,0,1,-58);list.BackgroundTransparency=1;list.BorderSizePixel=0;list.AutomaticCanvasSize=Enum.AutomaticSize.Y;list.CanvasSize=UDim2.new();list.Parent=body
-  local grid=Instance.new("UIGridLayout");grid.CellSize=UDim2.new(0.5,-7,0,120);grid.CellPadding=UDim2.fromOffset(10,10);grid.SortOrder=Enum.SortOrder.LayoutOrder;grid.Parent=list
-  local cards={}
-  for i=1,(tonumber(options.previewCount) or 6) do local c=RobloxCommonUI.CreateShopItemCard({name="Product"..i,title="상품 "..i,size=UDim2.new(1,0,1,0),theme=theme});c.LayoutOrder=i;c.Parent=list;cards[i]=c end
+  local list=Instance.new("ScrollingFrame")
+  list.Name="Products";list.Position=UDim2.fromOffset(0,58);list.Size=UDim2.new(1,0,1,-58)
+  list.BackgroundTransparency=1;list.BorderSizePixel=0;list.AutomaticCanvasSize=Enum.AutomaticSize.Y;list.CanvasSize=UDim2.new()
+  list.ScrollBarThickness=4;list.Parent=body
+  local grid=Instance.new("UIGridLayout")
+  grid.CellSize=UDim2.new(0.5,-7,0,142);grid.CellPadding=UDim2.fromOffset(10,10);grid.SortOrder=Enum.SortOrder.LayoutOrder;grid.Parent=list
+  local cards,rows,shown={}, {},{}
+  local sortByPrice=false
+  local function sync(items)
+    rows=type(items)=="table"and items or {}
+    shown={}
+    local query=string.lower(search.Text)
+    for _,item in ipairs(rows)do
+      if query==""or string.find(string.lower(tostring(item.name or item.title or "")),query,1,true)then
+        shown[#shown+1]=item
+      end
+    end
+    if sortByPrice then table.sort(shown,function(a,b)return (tonumber(a.price)or math.huge)<(tonumber(b.price)or math.huge)end)end
+    for i,item in ipairs(shown)do
+      if not cards[i]then
+        local index=i
+        local card,icon,buy=RobloxCommonUI.CreateShopItemCard({
+          name="Product"..i,theme=theme,size=UDim2.new(1,0,1,0)
+        })
+        card.LayoutOrder=i;card.Parent=list;cards[i]=card
+        buy.Activated:Connect(function()
+          local current=shown[index]
+          if not current then return end
+          if current.canSell==true and type(options.onSell)=="function"then options.onSell(current.id,current)
+          elseif current.canBuy==true and type(options.onBuy)=="function"then options.onBuy(current.id,current)end
+        end)
+      end
+      local card=cards[i]
+      card.Visible=true
+      card:SetAttribute("BoundItemId",tostring(item.id or ""))
+      card:SetAttribute("BoundFromGameState",true)
+      card.Name="Product"..i
+      card.LayoutOrder=i
+      card.Icon.Image=tostring(item.image or "")
+      card.Name.Text=tostring(item.name or item.title or "")
+      card.Description.Text=tostring(item.description or "")
+      card.Price.Text=item.price~=nil and tostring(item.price).."G"or"가격 미확인"
+      local buy=card:FindFirstChild("Buy")
+      if buy then
+        local enabled=(item.canSell==true and type(options.onSell)=="function")
+          or(item.canBuy==true and type(options.onBuy)=="function")
+        buy.Active=enabled
+        buy.AutoButtonColor=enabled
+        buy.Text=enabled and(item.canSell==true and"판매"or"구매")or"거래 불가"
+      end
+    end
+    for i=#shown+1,#cards do cards[i].Visible=false end
+    root:SetAttribute("BoundShopItemCount",#shown)
+  end
+  local function resize()
+    grid.CellSize=list.AbsoluteSize.X<430 and UDim2.new(1,-8,0,142)or UDim2.new(0.5,-7,0,142)
+  end
+  list:GetPropertyChangedSignal("AbsoluteSize"):Connect(resize)
+  search:GetPropertyChangedSignal("Text"):Connect(function()sync(rows)end)
+  sort.Activated:Connect(function()sortByPrice=not sortByPrice;sort.Text=sortByPrice and"정렬: 가격순"or"정렬: 추천순";sync(rows)end)
+  resize()
+  sync(options.items or {})
   root:SetAttribute("OwnsPurchaseAuthority",false)
   root:SetAttribute("OwnsEconomyAuthority",false)
-  return root,{search=search,sort=sort,cards=cards}
+  root:SetAttribute("OwnsSaveAuthority",false)
+  root:SetAttribute("OwnsRemoteAuthority",false)
+  return root,{search=search,sort=sort,cards=cards,Sync=sync}
 end
 
 function RobloxCommonUI.CreateConfirmDialog(options)
