@@ -64,25 +64,233 @@
       "name": "진화적 선택의 시스템",
       "purpose": "플레이어가 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행하면서, 입력→판정→상태 변화→보상→다음 선택의 순환적 루프를 형성합니다.",
       "playerChoice": "'Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.'로, 상태 변화에 따라 다양한 결과를 생성할 수 있습니다."
+    },
+    "local_authoring_parts::80fc7bcca9b45a1bc140b70d607fa27c1181d9be17c97051eb5c53a75c33e8b4:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "BOARD_STATE",
+        "PLAYER_ACTION"
+      ],
+      "stateOutputs": [
+        "NEW_BOARD_STATE",
+        "NEXT_PLAYER_CHOICE"
+      ],
+      "name": "진화적 위험의 시스템",
+      "purpose": "플레이어가 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행하면서, 입력→판정→상태 변화→보상→다음 선택의 순환적 루프를 형성합니다.",
+      "playerChoice": "'Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.'로, 상태 변화에 따라 다양한 결과를 생성할 수 있습니다."
+    },
+    "local_authoring_parts::80fc7bcca9b45a1bc140b70d607fa27c1181d9be17c97051eb5c53a75c33e8b4:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "BOARD_STATE",
+        "PLAYER_ACTION"
+      ],
+      "stateOutputs": [
+        "NEW_BOARD_STATE",
+        "NEXT_PLAYER_CHOICE"
+      ],
+      "name": "진화적 대응의 시스템",
+      "purpose": "'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행하면서, 입력→판정→상태 변화→보상→다음 선택의 순환적 루프를 형성합니다.",
+      "playerChoice": "'Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.'로, 상태 변화에 따라 다양한 결과를 생성할 수 있습니다."
+    },
+    "local_authoring_parts::80fc7bcca9b45a1bc140b70d607fa27c1181d9be17c97051eb5c53a75c33e8b4:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "BOARD_STATE",
+        "PLAYER_ACTION"
+      ],
+      "stateOutputs": [
+        "NEW_BOARD_STATE",
+        "NEXT_PLAYER_CHOICE"
+      ],
+      "name": "진화적 대응의 시스템",
+      "purpose": "'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행하면서, 입력→판정→상태 변화→보상→다음 선택의 순환적 루프를 형성합니다.",
+      "playerChoice": "'Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.'로, 상태 변화에 따라 다양한 결과를 생성할 수 있습니다."
+    },
+    "local_authoring_parts::74047873896d526f8cfc17f47795e22c94207a5e7b18987126eb734b345ff71b:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "NEXT_PLAYER_CHOICE"
+          ],
+          "name": "인과 관계의 진화적 루프",
+          "purpose": "플레이어가 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행하면서, 입력→판정→상태 변화→보상→다음 선택의 순환적 루프를 형성합니다.",
+          "playerChoice": "'Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.'로, 상태 변화에 따라 다양한 결과를 생성할 수 있습니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "NEXT_PLAYER_CHOICE"
+          ],
+          "name": "진화적 선택의 시스템",
+          "purpose": "플레이어가 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행하면서, 입력→판정→상태 변화→보상→다음 선택의 순환적 루프를 형성합니다.",
+          "playerChoice": "'Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.'로, 상태 변화에 따라 다양한 결과를 생성할 수 있습니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "NEXT_PLAYER_CHOICE"
+          ],
+          "name": "진화적 위험의 시스템",
+          "purpose": "플레이어가 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행하면서, 입력→판정→상태 변화→보상→다음 선택의 순환적 루프를 형성합니다.",
+          "playerChoice": "'Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.'로, 상태 변화에 따라 다양한 결과를 생성할 수 있습니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "NEXT_PLAYER_CHOICE"
+          ],
+          "name": "진화적 대응의 시스템",
+          "purpose": "'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행하면서, 입력→판정→상태 변화→보상→다음 선택의 순환적 루프를 형성합니다.",
+          "playerChoice": "'Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.'로, 상태 변화에 따라 다양한 결과를 생성할 수 있습니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "NEXT_PLAYER_CHOICE"
+          ],
+          "name": "진화적 대응의 시스템",
+          "purpose": "'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행하면서, 입력→판정→상태 변화→보상→다음 선택의 순환적 루프를 형성합니다.",
+          "playerChoice": "'Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.'로, 상태 변화에 따라 다양한 결과를 생성할 수 있습니다."
+        }
+      ]
+    },
+    "local_authoring_parts::a18a0fcf31c8c5e4fa27dd022694e4afafd77846d42d5ca2985b5a30fca586d5:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "플레이어가 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행하면서, 입력→판정→상태 변화→보상→다음 선택의 순환적 루프를 형성합니다.",
+        "게임은 단순한 패턴 풀이보다는 시스템 내에서의 인과 관계와 진화 가능한 선택 구조를 강조하며, 플레이어에게 즉시 이해되는 피드백을 제공해야 합니다.",
+        "주요 행동은 'Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.'로, 상태 변화에 따라 다양한 결과를 생성할 수 있습니다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "NEXT_PLAYER_CHOICE"
+          ],
+          "name": "인과 관계의 진화적 루프",
+          "purpose": "플레이어가 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행하면서, 입력→판정→상태 변화→보상→다음 선택의 순환적 루프를 형성합니다.",
+          "playerChoice": "'Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.'로, 상태 변화에 따라 다양한 결과를 생성할 수 있습니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "NEXT_PLAYER_CHOICE"
+          ],
+          "name": "진화적 선택의 시스템",
+          "purpose": "플레이어가 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행하면서, 입력→판정→상태 변화→보상→다음 선택의 순환적 루프를 형성합니다.",
+          "playerChoice": "'Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.'로, 상태 변화에 따라 다양한 결과를 생성할 수 있습니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "NEXT_PLAYER_CHOICE"
+          ],
+          "name": "진화적 위험의 시스템",
+          "purpose": "플레이어가 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행하면서, 입력→판정→상태 변화→보상→다음 선택의 순환적 루프를 형성합니다.",
+          "playerChoice": "'Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.'로, 상태 변화에 따라 다양한 결과를 생성할 수 있습니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "NEXT_PLAYER_CHOICE"
+          ],
+          "name": "진화적 대응의 시스템",
+          "purpose": "'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행하면서, 입력→판정→상태 변화→보상→다음 선택의 순환적 루프를 형성합니다.",
+          "playerChoice": "'Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.'로, 상태 변화에 따라 다양한 결과를 생성할 수 있습니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "NEXT_PLAYER_CHOICE"
+          ],
+          "name": "진화적 대응의 시스템",
+          "purpose": "'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행하면서, 입력→판정→상태 변화→보상→다음 선택의 순환적 루프를 형성합니다.",
+          "playerChoice": "'Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.'로, 상태 변화에 따라 다양한 결과를 생성할 수 있습니다."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 370069,
-      "lastMs": 50509,
+      "totalMs": 567071,
+      "lastMs": 72798,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:53:37.730Z"
+      "updatedAt": "2026-10-08T17:56:54.737Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:47:27.560Z",
-  "updatedAt": "2026-10-08T17:53:37.731Z",
+  "updatedAt": "2026-10-08T17:56:54.740Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2119,7 +2327,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:53:37.730Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:56:54.740Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
