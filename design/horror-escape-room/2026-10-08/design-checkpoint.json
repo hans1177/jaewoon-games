@@ -804,25 +804,42 @@
         "AI 충원"
       ],
       "fromSystem": "MAIN_01_SYSTEM_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_"
+    },
+    "local_authoring_parts::0e9f0662ec08e521c71e7934a41153f3963107c3ebd442d8566a0ab6ff3ef089:toSystem,trigger,stateChange": {
+      "toSystem": "MAIN_02_SYSTEM_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_",
+      "trigger": "감염 공격 및 정화",
+      "stateChange": "감염 전환"
+    },
+    "local_authoring_parts::b54ed0b6f728af2c93b1c4fe1903218d50f3b1d250a7a441c8c90d842ffb66ee:systemInterconnections:4": {
+      "fromId": "MAIN_01",
+      "toId": "MAIN_02",
+      "stateKeys": [
+        "역할 변화",
+        "AI 충원"
+      ],
+      "fromSystem": "MAIN_01_SYSTEM_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_",
+      "toSystem": "MAIN_02_SYSTEM_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_",
+      "trigger": "감염 공격 및 정화",
+      "stateChange": "감염 전환"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 25,
-      "successes": 25,
+      "calls": 26,
+      "successes": 26,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2357643,
-      "lastMs": 106221,
+      "totalMs": 2462664,
+      "lastMs": 105021,
       "lastError": null,
-      "updatedAt": "2026-10-08T11:25:04.153Z"
+      "updatedAt": "2026-10-08T11:26:49.175Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:45:46.438Z",
-  "updatedAt": "2026-10-08T11:25:04.153Z",
+  "updatedAt": "2026-10-08T11:26:49.181Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1566,9 +1583,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "MAIN_02→MAIN_03의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "MAIN_01→MAIN_02의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: MAIN_02→MAIN_03의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: MAIN_01→MAIN_02의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -1583,9 +1600,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "MAIN_03→c_01의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "MAIN_01→MAIN_02의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: MAIN_03→c_01의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: MAIN_01→MAIN_02의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -1600,9 +1617,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "c_01→DELVE_01의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "MAIN_01→MAIN_02의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: c_01→DELVE_01의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: MAIN_01→MAIN_02의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -1617,9 +1634,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "DELVE_01→MAIN_01의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "MAIN_01→MAIN_02의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: DELVE_01→MAIN_01의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: MAIN_01→MAIN_02의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -1647,7 +1664,7 @@
   },
   "sliceRepairAttempts": {
     "designer_draft_slices::identity-core": 1,
-    "designer_draft_slices::systems-progression": 1
+    "designer_draft_slices::systems-progression": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -1686,10 +1703,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T11:25:04.153Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T11:26:49.177Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
