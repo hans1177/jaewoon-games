@@ -305,25 +305,141 @@
           "playerChoice": "플레이어는 다양한 선택과 결과의 조합을 통해 게임의 루프를 확장하는 선택을 하며, 이 선택은 새로운 용도, 조합, 숙련, 재방문, 재해석, 고급 운용을 생성하여 게임의 깊이를 강화해야 한다"
         }
       ]
+    },
+    "local_authoring_parts::475f8a0a257a69361247ac0c90642cb4d97cee2de1d6e2a59d6c7bdc3d7e18f6:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::750e60b6ba644224aaaee7cd4af31acd85d3108c42dd409069160ce54b16a815:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE",
+            "DISTANCE",
+            "SESSION_LENGTH"
+          ],
+          "stateOutputs": [
+            "NEXT_WORLD_STATE",
+            "REWARD",
+            "PROGRESSION_BENEFIT"
+          ],
+          "name": "월드 상태 변화 및 보상 시스템",
+          "purpose": "플레이어의 선택과 결과가 월드 상태 변화로 연결되어 반복 가능한 핵심 루프를 형성하며, 보상과 진보를 통해 게임의 핵심 재미를 강화한다",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 결과가 다음 월드 상태 변화로 연결되어야 한다. 이 선택은 보상과 진보를 통해 게임의 핵심 재미를 강화한다"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "RUN_DURATION",
+            "REWARD_TYPE",
+            "PROGRESSION_BENEFIT_TYPE"
+          ],
+          "stateOutputs": [
+            "NEXT_WORLD_STATE",
+            "REWARD",
+            "PROGRESSION_BENEFIT"
+          ],
+          "name": "반복적 보상 및 진보 시스템",
+          "purpose": "플레이어의 선택이 반복적 보상과 진보를 통해 게임의 핵심 재미를 강화하며, 이 과정에서 다양한 선택과 결과가 상호작용하여 게임의 루프를 확장한다",
+          "playerChoice": "플레이어는 반복적 보상과 진보를 통해 게임의 핵심 재미를 강화하는 선택을 하며, 이 선택은 다음 월드 상태 변화와 연결되어야 한다"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "RUN_DURATION",
+            "REWARD_TYPE",
+            "PROGRESSION_BENEFIT_TYPE"
+          ],
+          "stateOutputs": [
+            "NEXT_WORLD_STATE",
+            "REWARD",
+            "PROGRESSION_BENEFIT"
+          ],
+          "name": "다양한 선택과 결과의 조합 시스템",
+          "purpose": "플레이어의 선택이 다양한 선택과 결과의 조합을 통해 게임의 루프를 확장하며, 이 과정에서 새로운 용도, 조합, 숙련, 재방문, 재해석, 고급 운용을 생성하여 게임의 깊이를 강화한다",
+          "playerChoice": "플레이어는 다양한 선택과 결과의 조합을 통해 게임의 루프를 확장하는 선택을 하며, 이 선택은 새로운 용도, 조합, 숙련, 재방문, 재해석, 고급 운용을 생성하여 게임의 깊이를 강화해야 한다"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_03",
+          "grammarRole": "c",
+          "stateInputs": [
+            "RUN_DURATION",
+            "REWARD_TYPE",
+            "PROGRESSION_BENEFIT_TYPE"
+          ],
+          "stateOutputs": [
+            "NEXT_WORLD_STATE",
+            "REWARD",
+            "PROGRESSION_BENEFIT"
+          ],
+          "name": "다양한 선택과 결과의 조합 시스템",
+          "purpose": "플레이어의 선택이 다양한 선택과 결과의 조합을 통해 게임의 루프를 확장하며, 이 과정에서 새로운 용도, 조합, 숙련, 재방문, 재해석, 고급 운용을 생성하여 게임의 깊이를 강화한다",
+          "playerChoice": "플레이어는 다양한 선택과 결과의 조합을 통해 게임의 루프를 확장하는 선택을 하며, 이 선택은 새로운 용도, 조합, 숙련, 재방문, 재해석, 고급 운용을 생성하여 게임의 깊이를 강화해야 한다"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_04",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "RUN_DURATION",
+            "REWARD_TYPE",
+            "PROGRESSION_BENEFIT_TYPE"
+          ],
+          "stateOutputs": [
+            "NEXT_WORLD_STATE",
+            "REWARD",
+            "PROGRESSION_BENEFIT"
+          ],
+          "name": "다양한 선택과 결과의 조합 시스템",
+          "purpose": "플레이어의 선택이 다양한 선택과 결과의 조합을 통해 게임의 루프를 확장하며, 이 과정에서 새로운 용도, 조합, 숙련, 재방문, 재해석, 고급 운용을 생성하여 게임의 깊이를 강화한다",
+          "playerChoice": "플레이어는 다양한 선택과 결과의 조합을 통해 게임의 루프를 확장하는 선택을 하며, 이 선택은 새로운 용도, 조합, 숙련, 재방문, 재해석, 고급 운용을 생성하여 게임의 깊이를 강화해야 한다"
+        }
+      ],
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::8573598f478b2b908d7eee6b33ac7a43fb14caf2e971e78d114caa3be056678f:signatureSystems:0": {
+      "id": "MAIN-DELVE-1",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "GAME_STATE",
+        "PLAYER_CHOICE",
+        "SYSTEM_RULE"
+      ],
+      "stateOutputs": [
+        "NEXT_GAME_STATE",
+        "REWARD",
+        "PROGRESSION_BENEFIT"
+      ],
+      "name": "마을 던전 RPG의 주요 시스템",
+      "purpose": "플레이어가 즉시 시작할 수 있는 단순한 터치 또는 스위프 입력과 명확한 점수, 거리, 또는 짧은 세션 목표를 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임입니다. 플레이어는 시작 즉시 단순한 터치 또는 스위프 입력을 하며, 점수, 거리, 또는 짧은 세션 목표를 설정하고, 이 선택이 다음 월드 상태 변화와 연결되어야 합니다. 이 게임은 플레이어의 선택과 결과가 월드 상태 변화로 연결되어, 반복 가능한 핵심 루프를 형성합니다. 이 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 플레이어의 선택과 결과가 시스템의 핵심 규칙과 연결되어 있습니다.",
+      "playerChoice": "단순한 터치 또는 스위프 입력, 점수, 거리, 또는 짧은 세션 목표 설정, 선택 결과와 월드 상태 변화의 연결성 확보"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 728435,
-      "lastMs": 88706,
+      "totalMs": 873947,
+      "lastMs": 102255,
       "lastError": null,
-      "updatedAt": "2026-10-08T09:05:07.990Z"
+      "updatedAt": "2026-10-08T09:07:33.516Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:52:59.507Z",
-  "updatedAt": "2026-10-08T09:05:07.992Z",
+  "updatedAt": "2026-10-08T09:07:33.516Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2396,12 +2512,50 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T09:05:07.992Z",
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "마을 던전 RPG은 플레이어가 즉시 시작할 수 있는 단순한 터치 또는 스위프 입력과 명확한 점수, 거리, 또는 짧은 세션 목표를 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 플레이어는 시작 즉시 단순한 터치 또는 스위프 입력을 하며, 점수, 거리, 또는 짧은 세션 목표를 설정하고, 이 선택이 다음 월드 상태 변화와 연결되어야 한다. 이 게임은 플레이어의 선택과 결과가 월드 상태 변화로 연결되어, 반복 가능한 핵심 루프를 형성한다. 이 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 플레이어의 선택과 결과가 시스템의 핵심 규칙과 연결되어 있다.",
+      "playerFantasy": "마을 던전 RPG은 플레이어가 즉시 시작할 수 있는 단순한 터치 또는 스위프 입력과 명확한 점수, 거리, 또는 짧은 세션 목표를 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 플레이어는 시작 즉시 단순한 터치 또는 스위프 입력을 하며, 점수, 거리, 또는 짧은 세션 목표를 설정하고, 이 선택이 다음 월드 상태 변화와 연결되어야 한다. 이 게임은 플레이어의 선택과 결과가 월드 상태 변화로 연결되어, 반복 가능한 핵심 루프를 형성한다. 이 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 플레이어의 선택과 결과가 시스템의 핵심 규칙과 연결되어 있다.",
+      "coreFun": "마을 던전 RPG은 플레이어가 즉시 시작할 수 있는 단순한 터치 또는 스위프 입력과 명확한 점수, 거리, 또는 짧은 세션 목표를 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 플레이어는 시작 즉시 단순한 터치 또는 스위프 입력을 하며, 점수, 거리, 또는 짧은 세션 목표를 설정하고, 이 선택이 다음 월드 상태 변화와 연결되어야 한다. 이 게임은 플레이어의 선택과 결과가 월드 상태 변화로 연결되어, 반복 가능한 핵심 루프를 형성한다. 이 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 플레이어의 선택과 결과가 시스템의 핵심 규칙과 연결되어 있다.",
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "multiplayerMode": "HYBRID"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T09:07:33.516Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
