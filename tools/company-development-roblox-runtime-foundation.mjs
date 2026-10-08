@@ -368,7 +368,8 @@ export async function probeRobloxOpenCloudEngine({
     'local scanLimit=#descendants',
     'local basePartCount=0; local spawnCount=0; local markerSpawnCount=0; local landmarkCount=0; local objectiveCount=0; local spawnPositions={}; local spawnParts={}; local supportExclusions={}; local characters={}; local meshPartCount=0; local minX=math.huge; local minY=math.huge; local minZ=math.huge; local maxX=-math.huge; local maxY=-math.huge; local maxZ=-math.huge',
     'for _,player in ipairs(Players:GetPlayers()) do if player.Character then table.insert(characters,player.Character); table.insert(supportExclusions,player.Character) end end',
-    'for i=1,scanLimit do local item=descendants[i]; local lower=string.lower(item.Name); if item:IsA("BasePart") then local characterPart=false; for _,character in ipairs(characters) do if item:IsDescendantOf(character) then characterPart=true; break end end; if not characterPart then basePartCount+=1; if item:IsA("MeshPart") then meshPartCount+=1 end; local isSpawn=item:IsA("SpawnLocation") or item:GetAttribute("SpawnMarkerOnly")==true; local p=item.Position; local h=item.Size*0.5; if not isSpawn and item.CanCollide then minX=math.min(minX,p.X-h.X); minY=math.min(minY,p.Y-h.Y); minZ=math.min(minZ,p.Z-h.Z); maxX=math.max(maxX,p.X+h.X); maxY=math.max(maxY,p.Y+h.Y); maxZ=math.max(maxZ,p.Z+h.Z) end; if isSpawn then spawnCount+=1; if not item:IsA("SpawnLocation") then markerSpawnCount+=1 end; table.insert(spawnPositions,p); table.insert(spawnParts,item); table.insert(supportExclusions,item) end end end; if string.find(lower,"landmark",1,true) or string.find(lower,"hub",1,true) then landmarkCount+=1 end; if string.find(lower,"objective",1,true) or string.find(lower,"goal",1,true) or string.find(lower,"quest",1,true) then objectiveCount+=1 end end',
+    'local worldObjectIds={};local worldObjectCount=0;local worldObjectDuplicateIds=0;local resourcePromptCount=0;local resourcePromptEnabledCount=0',
+    'for i=1,scanLimit do local item=descendants[i]; local lower=string.lower(item.Name); local objectId=item:GetAttribute("WorldObjectId"); if type(objectId)=="string" and objectId~="" then worldObjectCount+=1;if worldObjectIds[objectId] then worldObjectDuplicateIds+=1 else worldObjectIds[objectId]=true end end; if item:IsA("ProximityPrompt") and item.Name=="ResourcePrompt" then resourcePromptCount+=1;if item.Enabled then resourcePromptEnabledCount+=1 end end; if item:IsA("BasePart") then local characterPart=false; for _,character in ipairs(characters) do if item:IsDescendantOf(character) then characterPart=true; break end end; if not characterPart then basePartCount+=1; if item:IsA("MeshPart") then meshPartCount+=1 end; local isSpawn=item:IsA("SpawnLocation") or item:GetAttribute("SpawnMarkerOnly")==true; local p=item.Position; local h=item.Size*0.5; if not isSpawn and item.CanCollide then minX=math.min(minX,p.X-h.X); minY=math.min(minY,p.Y-h.Y); minZ=math.min(minZ,p.Z-h.Z); maxX=math.max(maxX,p.X+h.X); maxY=math.max(maxY,p.Y+h.Y); maxZ=math.max(maxZ,p.Z+h.Z) end; if isSpawn then spawnCount+=1; if not item:IsA("SpawnLocation") then markerSpawnCount+=1 end; table.insert(spawnPositions,p); table.insert(spawnParts,item); table.insert(supportExclusions,item) end end end; if string.find(lower,"landmark",1,true) or string.find(lower,"hub",1,true) then landmarkCount+=1 end; if string.find(lower,"objective",1,true) or string.find(lower,"goal",1,true) or string.find(lower,"quest",1,true) then objectiveCount+=1 end end',
     'local finiteWorldBounds=basePartCount>0 and minX<math.huge and maxX>-math.huge',
     'local spawnOutsideBounds=0; if finiteWorldBounds then for _,p in ipairs(spawnPositions) do if p.X<minX or p.X>maxX or p.Y<minY or p.Y>maxY or p.Z<minZ or p.Z>maxZ then spawnOutsideBounds+=1 end end end',
     'local spawnInBounds=finiteWorldBounds and spawnCount>0 and spawnOutsideBounds==0',
@@ -404,6 +405,10 @@ export async function probeRobloxOpenCloudEngine({
     'print("JAEWOON_OPEN_CLOUD_WORLD_LIGHTING_ATMOSPHERE="..tostring(atmospherePresent))',
     'print("JAEWOON_OPEN_CLOUD_WORLD_STREAMING_ENABLED="..tostring(streamingEnabled))',
     'print("JAEWOON_OPEN_CLOUD_WORLD_SCAN_CAPPED="..tostring(#descendants>scanLimit))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_OBJECT_IDS="..tostring(worldObjectCount))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_DUPLICATE_IDS="..tostring(worldObjectDuplicateIds))',
+    'print("JAEWOON_OPEN_CLOUD_RESOURCE_PROMPTS="..tostring(resourcePromptCount))',
+    'print("JAEWOON_OPEN_CLOUD_RESOURCE_PROMPTS_ENABLED="..tostring(resourcePromptEnabledCount))',
   ].join(';');
   const base=`https://apis.roblox.com/cloud/v2/universes/${encodeURIComponent(universe)}/places/${encodeURIComponent(place)}/versions/${version}`;
   const decode=async(response,label)=>{
@@ -551,6 +556,16 @@ export async function probeRobloxOpenCloudEngine({
     streamingEnabled:joined.includes('JAEWOON_OPEN_CLOUD_WORLD_STREAMING_ENABLED=true'),
     scanCapped:joined.includes('JAEWOON_OPEN_CLOUD_WORLD_SCAN_CAPPED=true'),
     worldGeometryPresent:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_BASEPARTS=(\d+)/)?.[1]||0)>0,
+    // 공식 Open Cloud 서버 실행으로 확인되는 구조 증거만 기록한다. 채집/드롭·터치는 별도 실제 게임 검증 대상이다.
+    worldObjectBinding:Object.freeze({
+      observed:/^JAEWOON_OPEN_CLOUD_WORLD_OBJECT_IDS=\d+$/m.test(joined),
+      stableIdCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_OBJECT_IDS=(\d+)/)?.[1]||0),
+      duplicateStableIdCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_DUPLICATE_IDS=(\d+)/)?.[1]||0),
+      resourcePromptCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_RESOURCE_PROMPTS=(\d+)/)?.[1]||0),
+      enabledResourcePromptCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_RESOURCE_PROMPTS_ENABLED=(\d+)/)?.[1]||0),
+      gameplayInteractionVerified:false,
+      authority:'OPEN_CLOUD_WORLD_STRUCTURE_ONLY'
+    }),
     sameLuauExecutionSession:true
   });
   return Object.freeze({
