@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "daechung-rpg-build-up-g30-f6996e92e3de",
-  "directiveFingerprint": "f6996e92e3de83f575d8afa1d3fce56e37e6e20fa34738f8c7920ee2aeef976a",
-  "previousDirectiveFingerprint": "aed8a632371cae97496951953fe3003749e82ad11d1c6c2fdfde5f2f1dfd67d4",
-  "forbiddenRepeatFingerprint": "aed8a632371cae97496951953fe3003749e82ad11d1c6c2fdfde5f2f1dfd67d4",
+  "directiveId": "daechung-rpg-build-up-g31-dd93c4709619",
+  "directiveFingerprint": "dd93c470961950e87d88aa3ab1936b0aae4035c7ddc6debb9fe2fa2c30e08b9a",
+  "previousDirectiveFingerprint": "f6996e92e3de83f575d8afa1d3fce56e37e6e20fa34738f8c7920ee2aeef976a",
+  "forbiddenRepeatFingerprint": "f6996e92e3de83f575d8afa1d3fce56e37e6e20fa34738f8c7920ee2aeef976a",
   "gameId": "daechung-rpg",
   "gameName": "대충 RPG",
-  "generation": 30,
+  "generation": 31,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/daechung-rpg",
-  "sourceTreeFingerprint": "00838caadafe1808a29a1cffdf3af573a04f83c218388c40451b186d735b6f97",
+  "sourceTreeFingerprint": "1ed7df06323cb41bf1307e2157b35423fbc096313a9d167cfec753774bc1377a",
   "designFingerprint": "b3ff8f8cb043f204db62818ec02ef3f7a4aeb3110fe51e8d8d01c5519d127042",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -79,16 +79,26 @@
         "mode": "EXISTING_GAME_RECONSTRUCTION_FROM_CURRENT_DESIGN_AND_INSPECTED_SOURCE",
         "formula": "MAIN × A × B × c + @",
         "main": "마을과 지역 스토리를 진행해 새로운 AI 동료와 사건을 발견한다.",
+        "source": "LEGACY_DESIGN_HEURISTIC_NOT_IMPLEMENTATION_EVIDENCE",
+        "roleSystemIds": {
+          "MAIN": null,
+          "A": null,
+          "B": null,
+          "c": [],
+          "AT": []
+        },
         "majorAxes": [
           {
             "key": "A",
+            "systemId": null,
             "name": "4인 파티 고정",
-            "source": "CURRENT_DESIGN_SIGNATURE_SYSTEM"
+            "source": "LEGACY_DESIGN_FALLBACK_UNVERIFIED"
           },
           {
             "key": "B",
+            "systemId": null,
             "name": "무한 확장 AI 동료",
-            "source": "CURRENT_DESIGN_SIGNATURE_SYSTEM_OR_LOOP"
+            "source": "LEGACY_DESIGN_FALLBACK_UNVERIFIED"
           }
         ],
         "cSubElements": [
@@ -107,7 +117,7 @@
           "조합 엔딩",
           "특정 4인 파티의 기억과 관계를 충족하면 고유 후일담과 비밀 보스를 연다."
         ],
-        "sourceTreeFingerprint": "00838caadafe1808a29a1cffdf3af573a04f83c218388c40451b186d735b6f97",
+        "sourceTreeFingerprint": "1ed7df06323cb41bf1307e2157b35423fbc096313a9d167cfec753774bc1377a",
         "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -117,6 +127,325 @@
     },
     "buildUpRule": "EACH_BUILD_UP_MUST_STRENGTHEN_OR_PRESERVE_THE_REPRESENTATIVE_ACTION_CHOICE_WORLD_RULE_SIGNATURE_SYSTEM_OR_GROWTH_IDENTITY; GENERIC_FEATURE_COUNT_DOES_NOT_COUNT",
     "genreAdaptationRule": "PRESERVE_THE_GENRE_PRIMARY_ACTION; DO_NOT_FORCE_RPG_STYLE_SYSTEMS_ON_PUZZLE_RACING_TYCOON_DEFENSE_SURVIVAL_ACTION_CARD_BOARD_STRATEGY_CASUAL_OR_OTHER_GENRES"
+  },
+  "designToPlatformCodingTrace": {
+    "version": 1,
+    "authority": "GAME_DESIGN_TO_EXISTING_PLATFORM_BUILD_UP_LINK",
+    "gameId": "daechung-rpg",
+    "requestedPlatform": "ROBLOX",
+    "activePlatform": "ROBLOX",
+    "designFingerprint": "b3ff8f8cb043f204db62818ec02ef3f7a4aeb3110fe51e8d8d01c5519d127042",
+    "sourceTreeFingerprint": "1ed7df06323cb41bf1307e2157b35423fbc096313a9d167cfec753774bc1377a",
+    "multiplayerMode": "COOP",
+    "multiplayerRequired": true,
+    "minimumParticipants": 2,
+    "platformCodingPlans": [
+      {
+        "platform": "ROBLOX",
+        "canonicalGameSourceRoot": "roblox-games/daechung-rpg",
+        "sharedUnitySource": false,
+        "gameCodePlatformProfile": "ROBLOX",
+        "requiresSameServerTwoClientPlay": true,
+        "requiresNativeRuntimeResult": true,
+        "inspectedInThisDirective": true
+      },
+      {
+        "platform": "UNITY_WEB",
+        "canonicalGameSourceRoot": "unity-games/daechung-rpg",
+        "sharedUnitySource": true,
+        "gameCodePlatformProfile": "UNITY",
+        "requiresSameServerTwoClientPlay": true,
+        "requiresNativeRuntimeResult": true,
+        "minimumRenderedDimension": "2.5D",
+        "spatialDesignReady": false,
+        "inspectedInThisDirective": false
+      },
+      {
+        "platform": "UNITY_APP",
+        "canonicalGameSourceRoot": "unity-games/daechung-rpg",
+        "sharedUnitySource": true,
+        "gameCodePlatformProfile": "UNITY",
+        "requiresSameServerTwoClientPlay": true,
+        "requiresNativeRuntimeResult": true,
+        "inspectedInThisDirective": false
+      }
+    ],
+    "roleBindings": [
+      {
+        "role": "MAIN",
+        "grammarRole": "MAIN",
+        "systemId": null,
+        "systemIds": [],
+        "names": [],
+        "name": null,
+        "stateInputs": [],
+        "stateOutputs": [],
+        "connections": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/daechung-rpg/server/Game.server.luau",
+          "roblox-games/daechung-rpg/shared/GameConfig.luau",
+          "roblox-games/daechung-rpg/shared/QACamera.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+            "symbol": "beginEnemyAttack",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+            "symbol": "enemyModel",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+            "symbol": "makeVillage",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/daechung-rpg/shared/QACamera.luau",
+            "symbol": "restoreCamera",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+            "symbol": "spawnEnemy",
+            "kind": "FUNCTION"
+          }
+        ],
+        "designStatus": "DESIGN_REPAIR_REQUIRED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
+        "executableBehaviorVerified": false,
+        "actualRuntimeVerified": false,
+        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
+      },
+      {
+        "role": "A",
+        "grammarRole": "A",
+        "systemId": null,
+        "systemIds": [],
+        "names": [],
+        "name": null,
+        "stateInputs": [],
+        "stateOutputs": [],
+        "connections": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/daechung-rpg/server/Game.server.luau",
+          "roblox-games/daechung-rpg/shared/GameConfig.luau",
+          "roblox-games/daechung-rpg/shared/QACamera.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+            "symbol": "beginEnemyAttack",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+            "symbol": "enemyModel",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+            "symbol": "makeVillage",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/daechung-rpg/shared/QACamera.luau",
+            "symbol": "restoreCamera",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+            "symbol": "spawnEnemy",
+            "kind": "FUNCTION"
+          }
+        ],
+        "designStatus": "DESIGN_REPAIR_REQUIRED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
+        "executableBehaviorVerified": false,
+        "actualRuntimeVerified": false,
+        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
+      },
+      {
+        "role": "B",
+        "grammarRole": "B",
+        "systemId": null,
+        "systemIds": [],
+        "names": [],
+        "name": null,
+        "stateInputs": [],
+        "stateOutputs": [],
+        "connections": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/daechung-rpg/server/Game.server.luau",
+          "roblox-games/daechung-rpg/shared/GameConfig.luau",
+          "roblox-games/daechung-rpg/shared/QACamera.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+            "symbol": "beginEnemyAttack",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+            "symbol": "enemyModel",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+            "symbol": "makeVillage",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/daechung-rpg/shared/QACamera.luau",
+            "symbol": "restoreCamera",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+            "symbol": "spawnEnemy",
+            "kind": "FUNCTION"
+          }
+        ],
+        "designStatus": "DESIGN_REPAIR_REQUIRED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
+        "executableBehaviorVerified": false,
+        "actualRuntimeVerified": false,
+        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
+      },
+      {
+        "role": "c",
+        "grammarRole": "c",
+        "systemId": null,
+        "systemIds": [],
+        "names": [],
+        "name": null,
+        "stateInputs": [],
+        "stateOutputs": [],
+        "connections": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/daechung-rpg/client/Game.client.luau",
+          "roblox-games/daechung-rpg/shared/GameConfig.luau",
+          "roblox-games/daechung-rpg/shared/QACamera.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/daechung-rpg/client/Game.client.luau",
+            "symbol": "endBossCinematic",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/daechung-rpg/shared/QACamera.luau",
+            "symbol": "restoreCamera",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/daechung-rpg/client/Game.client.luau",
+            "symbol": "bindChar",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/daechung-rpg/client/Game.client.luau",
+            "symbol": "playVerifiedLearningActionFeedback",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/daechung-rpg/client/Game.client.luau",
+            "symbol": "playCombatAnimation",
+            "kind": "FUNCTION"
+          }
+        ],
+        "designStatus": "DESIGN_REPAIR_REQUIRED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
+        "executableBehaviorVerified": false,
+        "actualRuntimeVerified": false,
+        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
+      },
+      {
+        "role": "@",
+        "grammarRole": "DELVE",
+        "systemId": null,
+        "systemIds": [],
+        "names": [],
+        "name": null,
+        "stateInputs": [],
+        "stateOutputs": [],
+        "connections": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/daechung-rpg/server/Game.server.luau",
+          "roblox-games/daechung-rpg/shared/GameConfig.luau",
+          "roblox-games/daechung-rpg/shared/QACamera.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+            "symbol": "beginEnemyAttack",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+            "symbol": "enemyModel",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+            "symbol": "makeVillage",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/daechung-rpg/shared/QACamera.luau",
+            "symbol": "restoreCamera",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+            "symbol": "spawnEnemy",
+            "kind": "FUNCTION"
+          }
+        ],
+        "designStatus": "DESIGN_REPAIR_REQUIRED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
+        "executableBehaviorVerified": false,
+        "actualRuntimeVerified": false,
+        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
+      }
+    ],
+    "observedGameCodeFiles": [
+      "roblox-games/daechung-rpg/server/Game.server.luau",
+      "roblox-games/daechung-rpg/shared/GameConfig.luau",
+      "roblox-games/daechung-rpg/client/Game.client.luau",
+      "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+      "roblox-games/daechung-rpg/shared/QACamera.luau",
+      "roblox-games/daechung-rpg/shared/RPGMenuModel.luau",
+      "roblox-games/daechung-rpg/shared/VisualStyle.luau"
+    ],
+    "executableCodeCandidateFiles": [
+      "roblox-games/daechung-rpg/server/Game.server.luau",
+      "roblox-games/daechung-rpg/client/Game.client.luau",
+      "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+      "roblox-games/daechung-rpg/shared/QACamera.luau",
+      "roblox-games/daechung-rpg/shared/RPGMenuModel.luau"
+    ],
+    "gapReasons": [
+      "DESIGN_MAIN_A_B_c_AT_INCOMPLETE",
+      "DESIGN_ROLE_NOT_AUTHORED:MAIN",
+      "DESIGN_ROLE_NOT_AUTHORED:A",
+      "DESIGN_ROLE_NOT_AUTHORED:B",
+      "DESIGN_ROLE_NOT_AUTHORED:c",
+      "DESIGN_ROLE_NOT_AUTHORED:@"
+    ],
+    "codingReviewState": "GAME_STAGE_LOCAL_REPAIR_REQUIRED",
+    "sourceImplementationPassed": false,
+    "actualTwoClientPassed": false,
+    "actualWebglRenderPassed": false,
+    "independentQaPassed": false,
+    "stageLocalAction": "IMPLEMENT_IN_EXISTING_GAME_SOURCE_THEN_VALIDATE_WITH_EXISTING_F0_TO_F9_AND_PLATFORM_RUNTIME",
+    "schemaAndMarkersAloneCannotPass": true,
+    "newPipeline": false,
+    "changesDevelopmentAdmission": false,
+    "saveBalanceAndExistingMultiplayerMeaningPreserved": true
   },
   "designImplementationContext": {
     "source": "LATEST_VERIFIED_DESIGN_FIELDS",
@@ -392,32 +721,32 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 580,
-      "progression": 510,
-      "ai": 61,
+      "combat": 582,
+      "progression": 515,
+      "ai": 77,
       "save": 185,
       "multiplayer": 18,
-      "animation": 53,
-      "motionStates": 688,
+      "animation": 57,
+      "motionStates": 692,
       "gameFeel": 38,
       "vfx": 49,
-      "camera": 93,
+      "camera": 118,
       "audio": 44,
       "audioDynamics": 20,
-      "ui": 213,
-      "uiFlow": 193,
+      "ui": 216,
+      "uiFlow": 195,
       "entryFlow": 8,
       "loadingFlow": 0,
-      "input": 106,
-      "map": 480,
+      "input": 111,
+      "map": 488,
       "landmark": 32,
-      "interaction": 104,
-      "inventory": 58,
+      "interaction": 107,
+      "inventory": 59,
       "equipment": 85,
       "settings": 13,
-      "feedback": 134,
+      "feedback": 137,
       "session": 75,
-      "content": 606,
+      "content": 743,
       "choice": 127,
       "connection": 4,
       "performance": 34,
@@ -429,7 +758,7 @@
     "topFiles": [
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "score": 426
+        "score": 451
       },
       {
         "file": "roblox-games/daechung-rpg/shared/GameConfig.luau",
@@ -437,7 +766,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "score": 289
+        "score": 307
       },
       {
         "file": "roblox-games/daechung-rpg/shared/RPGMenu.luau",
@@ -467,7 +796,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 414,
+        "line": 425,
         "kind": "FUNCTION",
         "symbol": "beginEnemyAttack",
         "context": "local function beginEnemyAttack(e,target,now)",
@@ -475,15 +804,23 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 826,
+        "line": 860,
         "kind": "FUNCTION",
         "symbol": "enemyModel",
         "context": "local function enemyModel(parent,z,pos,boss,enemyDef)",
         "score": 130
       },
       {
+        "file": "roblox-games/daechung-rpg/client/Game.client.luau",
+        "line": 691,
+        "kind": "FUNCTION",
+        "symbol": "endBossCinematic",
+        "context": "local function endBossCinematic()",
+        "score": 122
+      },
+      {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 696,
+        "line": 707,
         "kind": "FUNCTION",
         "symbol": "makeVillage",
         "context": "local function makeVillage()",
@@ -499,7 +836,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 957,
+        "line": 991,
         "kind": "FUNCTION",
         "symbol": "spawnEnemy",
         "context": "local function spawnEnemy(z,boss,index,enemyDef,spawnOverride,hiddenBoss)",
@@ -515,7 +852,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "line": 717,
+        "line": 784,
         "kind": "FUNCTION",
         "symbol": "bindChar",
         "context": "local function bindChar(c)combatTracks={};local h=c:WaitForChild(\"Humanoid\");h.HealthChanged:Connect(render);render()end",
@@ -523,7 +860,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 404,
+        "line": 415,
         "kind": "FUNCTION",
         "symbol": "chooseEnemyAttack",
         "context": "local function chooseEnemyAttack(e)",
@@ -531,7 +868,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 529,
+        "line": 540,
         "kind": "FUNCTION",
         "symbol": "setSaveState",
         "context": "local function setSaveState(p,state)",
@@ -555,7 +892,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 572,
+        "line": 583,
         "kind": "FUNCTION",
         "symbol": "save",
         "context": "local function save(p)",
@@ -563,7 +900,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 636,
+        "line": 647,
         "kind": "FUNCTION",
         "symbol": "unlockBossCompanion",
         "context": "local function unlockBossCompanion(killer,e)",
@@ -571,7 +908,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 1169,
+        "line": 1203,
         "kind": "FUNCTION",
         "symbol": "killEnemy",
         "context": "local function killEnemy(p,e,contribution)",
@@ -594,8 +931,16 @@
         "score": 66
       },
       {
+        "file": "roblox-games/daechung-rpg/client/Game.client.luau",
+        "line": 700,
+        "kind": "FUNCTION",
+        "symbol": "showBossCinematic",
+        "context": "local function showBossCinematic()",
+        "score": 66
+      },
+      {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 532,
+        "line": 543,
         "kind": "FUNCTION",
         "symbol": "init",
         "context": "local function init(p)",
@@ -603,7 +948,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 831,
+        "line": 865,
         "kind": "FUNCTION",
         "symbol": "add",
         "context": "local function add(nm,size,off,col,mat,shape,rot)return attach(rootPart,nm,size,off,col,mat,shape,rot)end",
@@ -611,7 +956,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 1142,
+        "line": 1176,
         "kind": "FUNCTION",
         "symbol": "completeQuestIfNeeded",
         "context": "local function completeQuestIfNeeded(p,zone)",
@@ -619,7 +964,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 1245,
+        "line": 1279,
         "kind": "FUNCTION",
         "symbol": "bossSpecForCompanion",
         "context": "local function bossSpecForCompanion(def)",
@@ -627,7 +972,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 1315,
+        "line": 1349,
         "kind": "FUNCTION",
         "symbol": "makeBossCompanionRoster",
         "context": "local function makeBossCompanionRoster()",
@@ -643,7 +988,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 272,
+        "line": 283,
         "kind": "FUNCTION",
         "symbol": "decorateCharacterModel",
         "context": "local function decorateCharacterModel(model,classId,variant,advancementId)",
@@ -651,7 +996,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 544,
+        "line": 555,
         "kind": "FUNCTION",
         "symbol": "load",
         "context": "local function load(p)",
@@ -659,7 +1004,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 628,
+        "line": 639,
         "kind": "FUNCTION",
         "symbol": "unlockCompanion",
         "context": "local function unlockCompanion(p,id)",
@@ -667,7 +1012,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 1252,
+        "line": 1286,
         "kind": "FUNCTION",
         "symbol": "setCompanionLabel",
         "context": "local function setCompanionLabel(part,text,color)",
@@ -675,7 +1020,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 1450,
+        "line": 1484,
         "kind": "FUNCTION",
         "symbol": "refreshAppearance",
         "context": "local function refreshAppearance()task.defer(function()task.wait(.05);setStats(p,false);applyPlayerAppearance(p)end)end",
@@ -715,7 +1060,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 203,
+        "line": 214,
         "kind": "FUNCTION",
         "symbol": "prompt",
         "context": "local function prompt(target,objectText,actionText)",
@@ -723,7 +1068,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 256,
+        "line": 267,
         "kind": "FUNCTION",
         "symbol": "wearMedievalChest",
         "context": "local function wearMedievalChest(model,folder,variant)",
@@ -731,7 +1076,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 304,
+        "line": 315,
         "kind": "FUNCTION",
         "symbol": "pulseWeaponTrail",
         "context": "local function pulseWeaponTrail(character)",
@@ -739,7 +1084,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 310,
+        "line": 321,
         "kind": "FUNCTION",
         "symbol": "combatFlash",
         "context": "local function combatFlash(pos,color,size)",
@@ -747,7 +1092,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 316,
+        "line": 327,
         "kind": "FUNCTION",
         "symbol": "attackTelegraph",
         "context": "local function attackTelegraph(e,attack,target)",
@@ -832,31 +1177,15 @@
         "symbol": "hasStudioAssetAtom",
         "context": "local function hasStudioAssetAtom(familyOrAtom, atom)",
         "score": 34
-      },
-      {
-        "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "line": 150,
-        "kind": "FUNCTION",
-        "symbol": "bindCreature",
-        "context": "local function bindCreature(instance)",
-        "score": 34
-      },
-      {
-        "file": "roblox-games/daechung-rpg/shared/QACamera.luau",
-        "line": 11,
-        "kind": "FUNCTION",
-        "symbol": "roundify",
-        "context": "local function roundify(target,radius)",
-        "score": 34
       }
     ]
   },
   "previousVersionDelta": {
     "previousGoal": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
     "previousFocus": "PRESENTATION",
-    "previousGeneration": 29,
-    "previousSourceTreeFingerprint": "abad22ca2c6944a0753b3211851cf50e112f49400f167140e774d79a3f165549",
-    "currentSourceTreeFingerprint": "00838caadafe1808a29a1cffdf3af573a04f83c218388c40451b186d735b6f97",
+    "previousGeneration": 30,
+    "previousSourceTreeFingerprint": "00838caadafe1808a29a1cffdf3af573a04f83c218388c40451b186d735b6f97",
+    "currentSourceTreeFingerprint": "1ed7df06323cb41bf1307e2157b35423fbc096313a9d167cfec753774bc1377a",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -864,7 +1193,7 @@
     "platform": "ROBLOX",
     "studioQualityFailure": null,
     "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-    "failureSignature": "ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED",
+    "failureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE",
     "blockers": [],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -1954,9 +2283,9 @@
   ],
   "primaryFocus": "PRESENTATION",
   "thisLoopPrimaryGoal": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 PRESENTATION를 우선한다. 게임 고유 앵커는 \"4인 파티 고정\", 현재 책임 소스는 roblox-games/daechung-rpg/server/Game.server.luau::beginEnemyAttack, roblox-games/daechung-rpg/server/Game.server.luau::enemyModel, roblox-games/daechung-rpg/server/Game.server.luau::makeVillage, roblox-games/daechung-rpg/server/Game.server.luau::spawnEnemy, roblox-games/daechung-rpg/client/Game.client.luau::bindChar, roblox-games/daechung-rpg/server/Game.server.luau::chooseEnemyAttack, roblox-games/daechung-rpg/server/Game.server.luau::setSaveState, roblox-games/daechung-rpg/server/Game.server.luau::save이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 PRESENTATION를 우선한다. 게임 고유 앵커는 \"4인 파티 고정\", 현재 책임 소스는 roblox-games/daechung-rpg/server/Game.server.luau::beginEnemyAttack, roblox-games/daechung-rpg/server/Game.server.luau::enemyModel, roblox-games/daechung-rpg/client/Game.client.luau::endBossCinematic, roblox-games/daechung-rpg/server/Game.server.luau::makeVillage, roblox-games/daechung-rpg/server/Game.server.luau::spawnEnemy, roblox-games/daechung-rpg/client/Game.client.luau::bindChar, roblox-games/daechung-rpg/server/Game.server.luau::chooseEnemyAttack, roblox-games/daechung-rpg/server/Game.server.luau::setSaveState이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 roblox-games/daechung-rpg/server/Game.server.luau::beginEnemyAttack, roblox-games/daechung-rpg/server/Game.server.luau::enemyModel, roblox-games/daechung-rpg/server/Game.server.luau::makeVillage, roblox-games/daechung-rpg/server/Game.server.luau::spawnEnemy, roblox-games/daechung-rpg/client/Game.client.luau::bindChar, roblox-games/daechung-rpg/server/Game.server.luau::chooseEnemyAttack, roblox-games/daechung-rpg/server/Game.server.luau::setSaveState, roblox-games/daechung-rpg/server/Game.server.luau::save에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 roblox-games/daechung-rpg/server/Game.server.luau::beginEnemyAttack, roblox-games/daechung-rpg/server/Game.server.luau::enemyModel, roblox-games/daechung-rpg/client/Game.client.luau::endBossCinematic, roblox-games/daechung-rpg/server/Game.server.luau::makeVillage, roblox-games/daechung-rpg/server/Game.server.luau::spawnEnemy, roblox-games/daechung-rpg/client/Game.client.luau::bindChar, roblox-games/daechung-rpg/server/Game.server.luau::chooseEnemyAttack, roblox-games/daechung-rpg/server/Game.server.luau::setSaveState에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "4인 파티 고정를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "무한 확장 AI 동료가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
     "기획 루프 1 \"마을과 지역 스토리를 진행해 새로운 AI 동료와 사건을 발견한다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
@@ -2016,8 +2345,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 284879,
-        "largestFileBytes": 105650,
+        "sourceBytes": 294278,
+        "largestFileBytes": 111421,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -2048,15 +2377,15 @@
       ],
       "weakExistingContentMayPreemptNewContent": true
     },
-    "selectedTheme": "WORLD_ECOLOGY_STORY_CHAIN",
-    "themeDepth": 10,
-    "selectedThemeReason": "0 explicit GAP(s) and 8 applicable domain(s); focus=PRESENTATION; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=9; uncoveredBefore=4.",
+    "selectedTheme": "QUEST_STORY_PROGRESSION_CHAIN",
+    "themeDepth": 1,
+    "selectedThemeReason": "0 explicit GAP(s) and 8 applicable domain(s); focus=PRESENTATION; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=4.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 10,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 10,
-        "QUEST_STORY_PROGRESSION_CHAIN": 0,
+        "QUEST_STORY_PROGRESSION_CHAIN": 1,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
@@ -2066,7 +2395,6 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -2076,7 +2404,8 @@
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
-        "WORLD_ECOLOGY_STORY_CHAIN"
+        "WORLD_ECOLOGY_STORY_CHAIN",
+        "QUEST_STORY_PROGRESSION_CHAIN"
       ],
       "requiredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -2087,17 +2416,15 @@
         "MID_LATE_ENDGAME_COMPLETION",
         "PRESENTATION_WORLD_COHESION"
       ],
-      "distinctCovered": 3,
+      "distinctCovered": 4,
       "totalThemes": 7,
       "breadthCycleComplete": false,
       "missingThemes": [
-        "QUEST_STORY_PROGRESSION_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "MID_LATE_ENDGAME_COMPLETION"
       ],
       "leastCoveredThemes": [
-        "QUEST_STORY_PROGRESSION_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "MID_LATE_ENDGAME_COMPLETION"
@@ -2105,11 +2432,6 @@
       "selectionPolicy": "SUCCESSFUL_ITERATIONS_PRIORITIZE_UNCOVERED_OR_LEAST_COVERED_COHERENT_THEMES; VERIFIED_FAILURE_MAY_DEEPEN_THE_SAME_CAUSAL_THEME"
     },
     "scoredThemes": [
-      {
-        "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 22,
-        "gapDomains": []
-      },
       {
         "theme": "QUEST_STORY_PROGRESSION_CHAIN",
         "score": 16,
@@ -2131,6 +2453,11 @@
         "gapDomains": []
       },
       {
+        "theme": "WORLD_ECOLOGY_STORY_CHAIN",
+        "score": 4,
+        "gapDomains": []
+      },
+      {
         "theme": "PRESENTATION_WORLD_COHESION",
         "score": -140,
         "gapDomains": [
@@ -2149,14 +2476,13 @@
       }
     ],
     "coherentContentBundle": [
-      "BACKGROUND_ENVIRONMENT_IDENTITY: 배경·지형·조명·소품이 지역 역할과 세계 분위기를 설명해야 한다.",
-      "REGION_TOPOLOGY_AND_LANDMARK: 기존 지역과 이어지는 진입 경로·랜드마크·우회/잠금 경로를 만든다.",
-      "REGION_NATIVE_ENCOUNTER: 그 장소에 존재할 이유가 있는 몬스터/적/상호작용 역할과 서로 다른 행동 패턴을 만든다.",
-      "REGION_RESOURCE_OR_ITEM: 지역 고유 자원·아이템·장비·보상이 탐험이나 전투 선택에 실제 의미를 갖게 한다.",
-      "QUEST_EVENT_REASON_TO_ENTER: 플레이어가 왜 지금 이 지역에 가는지 목표·퀘스트·사건과 연결한다.",
-      "STORY_AND_WORLD_CAUSALITY: 환경 단서·NPC·적·보상·지역 변화가 같은 세계 원인과 결과를 공유하게 한다.",
-      "REGION_RULE_OR_HAZARD: 지형·날씨·시간·위험·상태·접근 조건 중 게임에 맞는 규칙을 플레이 선택과 연결한다.",
-      "RETURN_OR_FORWARD_CONNECTION: 기존 지역으로 돌아올 이유 또는 다음 지역·보스·해금으로 이어지는 결과를 남긴다."
+      "WORLD_REASON: 퀘스트가 세계 상황·NPC 역할·지역 변화에서 자연스럽게 발생해야 한다.",
+      "DISTINCT_OBJECTIVE_STRUCTURE: 단순 수집·처치 숫자 복제 대신 탐색·선택·방어·추적·전투·상호작용을 게임에 맞게 변주한다.",
+      "STATEFUL_PROGRESS: 진행 단계와 선행·후속 상태가 실제 게임 상태에 연결되어야 한다.",
+      "MEANINGFUL_REWARD: 보상은 다음 행동·지역·장비·능력·정보를 열어 플레이 선택을 넓혀야 한다.",
+      "FOLLOWUP_CONSEQUENCE: 완료 결과가 NPC·지역·이벤트·후속 퀘스트 또는 시스템 상태에 반영되어야 한다.",
+      "LORE_THROUGH_PLAY: 긴 설명만 추가하지 말고 플레이 행동·환경·대사·결과로 세계관을 보여준다.",
+      "CHAIN_PACING: 초반→중반→후반의 목표 복잡도와 위험·보상 상승이 갑자기 튀지 않게 이어진다."
     ],
     "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
     "antiCloneContract": {
@@ -2222,11 +2548,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 30,
-    "previousGeneration": 29,
+    "generation": 31,
+    "previousGeneration": 30,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "00838caadafe1808a29a1cffdf3af573a04f83c218388c40451b186d735b6f97",
-    "priorSourceFingerprint": "abad22ca2c6944a0753b3211851cf50e112f49400f167140e774d79a3f165549",
+    "sourceFingerprint": "1ed7df06323cb41bf1307e2157b35423fbc096313a9d167cfec753774bc1377a",
+    "priorSourceFingerprint": "00838caadafe1808a29a1cffdf3af573a04f83c218388c40451b186d735b6f97",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2471,20 +2797,20 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/daechung-rpg/client/Game.client.luau",
-      "roblox-games/daechung-rpg/shared/VisualStyle.luau",
       "roblox-games/daechung-rpg/server/Game.server.luau",
+      "roblox-games/daechung-rpg/client/Game.client.luau",
       "roblox-games/daechung-rpg/shared/GameConfig.luau",
       "roblox-games/daechung-rpg/shared/RPGMenu.luau",
       "roblox-games/daechung-rpg/shared/QACamera.luau",
       "roblox-games/daechung-rpg/launch-mvp.json",
       "roblox-games/daechung-rpg/shared/RPGMenuModel.luau",
-      "roblox-games/daechung-rpg/default.project.json"
+      "roblox-games/daechung-rpg/default.project.json",
+      "roblox-games/daechung-rpg/shared/VisualStyle.luau"
     ],
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 414,
+        "line": 425,
         "kind": "FUNCTION",
         "symbol": "beginEnemyAttack",
         "currentBehavior": "local function beginEnemyAttack(e,target,now)",
@@ -2493,7 +2819,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 826,
+        "line": 860,
         "kind": "FUNCTION",
         "symbol": "enemyModel",
         "currentBehavior": "local function enemyModel(parent,z,pos,boss,enemyDef)",
@@ -2501,8 +2827,17 @@
         "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
+        "file": "roblox-games/daechung-rpg/client/Game.client.luau",
+        "line": 691,
+        "kind": "FUNCTION",
+        "symbol": "endBossCinematic",
+        "currentBehavior": "local function endBossCinematic()",
+        "intendedBehavior": "PRESENTATION primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 endBossCinematic의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/daechung-rpg/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 696,
+        "line": 707,
         "kind": "FUNCTION",
         "symbol": "makeVillage",
         "currentBehavior": "local function makeVillage()",
@@ -2511,7 +2846,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 957,
+        "line": 991,
         "kind": "FUNCTION",
         "symbol": "spawnEnemy",
         "currentBehavior": "local function spawnEnemy(z,boss,index,enemyDef,spawnOverride,hiddenBoss)",
@@ -2520,7 +2855,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "line": 717,
+        "line": 784,
         "kind": "FUNCTION",
         "symbol": "bindChar",
         "currentBehavior": "local function bindChar(c)combatTracks={};local h=c:WaitForChild(\"Humanoid\");h.HealthChanged:Connect(render);render()end",
@@ -2529,7 +2864,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 404,
+        "line": 415,
         "kind": "FUNCTION",
         "symbol": "chooseEnemyAttack",
         "currentBehavior": "local function chooseEnemyAttack(e)",
@@ -2538,20 +2873,11 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 529,
+        "line": 540,
         "kind": "FUNCTION",
         "symbol": "setSaveState",
         "currentBehavior": "local function setSaveState(p,state)",
         "intendedBehavior": "PRESENTATION primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 setSaveState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 572,
-        "kind": "FUNCTION",
-        "symbol": "save",
-        "currentBehavior": "local function save(p)",
-        "intendedBehavior": "PRESENTATION primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 save의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
         "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
@@ -2566,6 +2892,12 @@
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
         "symbol": "enemyModel",
         "role": "SERVER_AUTHORITY",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "roblox-games/daechung-rpg/client/Game.client.luau",
+        "symbol": "endBossCinematic",
+        "role": "CLIENT_INPUT_OR_PRESENTATION",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
@@ -2595,12 +2927,6 @@
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
         "symbol": "setSaveState",
-        "role": "SERVER_AUTHORITY",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "symbol": "save",
         "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
@@ -2687,16 +3013,16 @@
       {
         "role": "SHARED_DEFINITION",
         "files": [
-          "roblox-games/daechung-rpg/shared/VisualStyle.luau",
           "roblox-games/daechung-rpg/shared/GameConfig.luau",
           "roblox-games/daechung-rpg/shared/RPGMenu.luau",
           "roblox-games/daechung-rpg/shared/QACamera.luau",
-          "roblox-games/daechung-rpg/shared/RPGMenuModel.luau"
+          "roblox-games/daechung-rpg/shared/RPGMenuModel.luau",
+          "roblox-games/daechung-rpg/shared/VisualStyle.luau"
         ],
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "00838caadafe1808a29a1cffdf3af573a04f83c218388c40451b186d735b6f97",
+    "sourceTreeFingerprint": "1ed7df06323cb41bf1307e2157b35423fbc096313a9d167cfec753774bc1377a",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -2801,6 +3127,11 @@
             "kind": "FUNCTION"
           },
           {
+            "file": "roblox-games/daechung-rpg/client/Game.client.luau",
+            "symbol": "endBossCinematic",
+            "kind": "FUNCTION"
+          },
+          {
             "file": "roblox-games/daechung-rpg/server/Game.server.luau",
             "symbol": "makeVillage",
             "kind": "FUNCTION"
@@ -2868,6 +3199,11 @@
           {
             "file": "roblox-games/daechung-rpg/client/Game.client.luau",
             "symbol": "playCombatAnimation",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/daechung-rpg/client/Game.client.luau",
+            "symbol": "showBossCinematic",
             "kind": "FUNCTION"
           },
           {
@@ -3019,16 +3355,6 @@
             "file": "roblox-games/daechung-rpg/client/Game.client.luau",
             "symbol": "hasStudioAssetAtom",
             "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-            "symbol": "bindCreature",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/daechung-rpg/shared/QACamera.luau",
-            "symbol": "roundify",
-            "kind": "FUNCTION"
           }
         ],
         "designTraceability": [
@@ -3050,13 +3376,13 @@
         ]
       },
       "sourceFiles": [
-        "roblox-games/daechung-rpg/client/Game.client.luau",
-        "roblox-games/daechung-rpg/shared/VisualStyle.luau",
         "roblox-games/daechung-rpg/server/Game.server.luau",
+        "roblox-games/daechung-rpg/client/Game.client.luau",
         "roblox-games/daechung-rpg/shared/GameConfig.luau",
         "roblox-games/daechung-rpg/shared/RPGMenu.luau",
         "roblox-games/daechung-rpg/shared/QACamera.luau",
-        "roblox-games/daechung-rpg/shared/RPGMenuModel.luau"
+        "roblox-games/daechung-rpg/shared/RPGMenuModel.luau",
+        "roblox-games/daechung-rpg/shared/VisualStyle.luau"
       ],
       "authoringOrder": [
         "MACRO_REGIONS",
@@ -3169,13 +3495,13 @@
         }
       ],
       "sourceFiles": [
-        "roblox-games/daechung-rpg/client/Game.client.luau",
-        "roblox-games/daechung-rpg/shared/VisualStyle.luau",
         "roblox-games/daechung-rpg/server/Game.server.luau",
+        "roblox-games/daechung-rpg/client/Game.client.luau",
         "roblox-games/daechung-rpg/shared/GameConfig.luau",
         "roblox-games/daechung-rpg/shared/RPGMenu.luau",
         "roblox-games/daechung-rpg/shared/QACamera.luau",
-        "roblox-games/daechung-rpg/shared/RPGMenuModel.luau"
+        "roblox-games/daechung-rpg/shared/RPGMenuModel.luau",
+        "roblox-games/daechung-rpg/shared/VisualStyle.luau"
       ],
       "selectionRule": "Choose one observed player friction owned by these files. Explain applicability from existing systems, compare alternatives and record rejected patterns; do not add every reference feature.",
       "scope": "TASK_LOCAL_SCREENS_AND_EXISTING_ENTRY_RETURN_BOUNDARIES",
@@ -3342,16 +3668,16 @@
       {
         "role": "SHARED_DEFINITION",
         "files": [
-          "roblox-games/daechung-rpg/shared/VisualStyle.luau",
           "roblox-games/daechung-rpg/shared/GameConfig.luau",
           "roblox-games/daechung-rpg/shared/RPGMenu.luau",
           "roblox-games/daechung-rpg/shared/QACamera.luau",
-          "roblox-games/daechung-rpg/shared/RPGMenuModel.luau"
+          "roblox-games/daechung-rpg/shared/RPGMenuModel.luau",
+          "roblox-games/daechung-rpg/shared/VisualStyle.luau"
         ],
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "00838caadafe1808a29a1cffdf3af573a04f83c218388c40451b186d735b6f97",
+    "sourceTreeFingerprint": "1ed7df06323cb41bf1307e2157b35423fbc096313a9d167cfec753774bc1377a",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -3456,6 +3782,11 @@
             "kind": "FUNCTION"
           },
           {
+            "file": "roblox-games/daechung-rpg/client/Game.client.luau",
+            "symbol": "endBossCinematic",
+            "kind": "FUNCTION"
+          },
+          {
             "file": "roblox-games/daechung-rpg/server/Game.server.luau",
             "symbol": "makeVillage",
             "kind": "FUNCTION"
@@ -3523,6 +3854,11 @@
           {
             "file": "roblox-games/daechung-rpg/client/Game.client.luau",
             "symbol": "playCombatAnimation",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/daechung-rpg/client/Game.client.luau",
+            "symbol": "showBossCinematic",
             "kind": "FUNCTION"
           },
           {
@@ -3674,16 +4010,6 @@
             "file": "roblox-games/daechung-rpg/client/Game.client.luau",
             "symbol": "hasStudioAssetAtom",
             "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-            "symbol": "bindCreature",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/daechung-rpg/shared/QACamera.luau",
-            "symbol": "roundify",
-            "kind": "FUNCTION"
           }
         ],
         "designTraceability": [
@@ -3705,13 +4031,13 @@
         ]
       },
       "sourceFiles": [
-        "roblox-games/daechung-rpg/client/Game.client.luau",
-        "roblox-games/daechung-rpg/shared/VisualStyle.luau",
         "roblox-games/daechung-rpg/server/Game.server.luau",
+        "roblox-games/daechung-rpg/client/Game.client.luau",
         "roblox-games/daechung-rpg/shared/GameConfig.luau",
         "roblox-games/daechung-rpg/shared/RPGMenu.luau",
         "roblox-games/daechung-rpg/shared/QACamera.luau",
-        "roblox-games/daechung-rpg/shared/RPGMenuModel.luau"
+        "roblox-games/daechung-rpg/shared/RPGMenuModel.luau",
+        "roblox-games/daechung-rpg/shared/VisualStyle.luau"
       ],
       "authoringOrder": [
         "MACRO_REGIONS",
@@ -3824,13 +4150,13 @@
         }
       ],
       "sourceFiles": [
-        "roblox-games/daechung-rpg/client/Game.client.luau",
-        "roblox-games/daechung-rpg/shared/VisualStyle.luau",
         "roblox-games/daechung-rpg/server/Game.server.luau",
+        "roblox-games/daechung-rpg/client/Game.client.luau",
         "roblox-games/daechung-rpg/shared/GameConfig.luau",
         "roblox-games/daechung-rpg/shared/RPGMenu.luau",
         "roblox-games/daechung-rpg/shared/QACamera.luau",
-        "roblox-games/daechung-rpg/shared/RPGMenuModel.luau"
+        "roblox-games/daechung-rpg/shared/RPGMenuModel.luau",
+        "roblox-games/daechung-rpg/shared/VisualStyle.luau"
       ],
       "selectionRule": "Choose one observed player friction owned by these files. Explain applicability from existing systems, compare alternatives and record rejected patterns; do not add every reference feature.",
       "scope": "TASK_LOCAL_SCREENS_AND_EXISTING_ENTRY_RETURN_BOUNDARIES",
@@ -3948,20 +4274,20 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/daechung-rpg/client/Game.client.luau",
-      "roblox-games/daechung-rpg/shared/VisualStyle.luau",
       "roblox-games/daechung-rpg/server/Game.server.luau",
+      "roblox-games/daechung-rpg/client/Game.client.luau",
       "roblox-games/daechung-rpg/shared/GameConfig.luau",
       "roblox-games/daechung-rpg/shared/RPGMenu.luau",
       "roblox-games/daechung-rpg/shared/QACamera.luau",
       "roblox-games/daechung-rpg/launch-mvp.json",
       "roblox-games/daechung-rpg/shared/RPGMenuModel.luau",
-      "roblox-games/daechung-rpg/default.project.json"
+      "roblox-games/daechung-rpg/default.project.json",
+      "roblox-games/daechung-rpg/shared/VisualStyle.luau"
     ],
     "sourceAnchors": [
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 414,
+        "line": 425,
         "kind": "FUNCTION",
         "symbol": "beginEnemyAttack",
         "context": "local function beginEnemyAttack(e,target,now)",
@@ -3973,7 +4299,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 826,
+        "line": 860,
         "kind": "FUNCTION",
         "symbol": "enemyModel",
         "context": "local function enemyModel(parent,z,pos,boss,enemyDef)",
@@ -3984,8 +4310,20 @@
         "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
+        "file": "roblox-games/daechung-rpg/client/Game.client.luau",
+        "line": 691,
+        "kind": "FUNCTION",
+        "symbol": "endBossCinematic",
+        "context": "local function endBossCinematic()",
+        "score": 122,
+        "currentBehavior": "local function endBossCinematic()",
+        "intendedBehavior": "PRESENTATION primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 endBossCinematic의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/daechung-rpg/client/Game.client.luau::endBossCinematic이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/daechung-rpg/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 696,
+        "line": 707,
         "kind": "FUNCTION",
         "symbol": "makeVillage",
         "context": "local function makeVillage()",
@@ -3997,7 +4335,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 957,
+        "line": 991,
         "kind": "FUNCTION",
         "symbol": "spawnEnemy",
         "context": "local function spawnEnemy(z,boss,index,enemyDef,spawnOverride,hiddenBoss)",
@@ -4009,7 +4347,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "line": 717,
+        "line": 784,
         "kind": "FUNCTION",
         "symbol": "bindChar",
         "context": "local function bindChar(c)combatTracks={};local h=c:WaitForChild(\"Humanoid\");h.HealthChanged:Connect(render);render()end",
@@ -4021,7 +4359,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 404,
+        "line": 415,
         "kind": "FUNCTION",
         "symbol": "chooseEnemyAttack",
         "context": "local function chooseEnemyAttack(e)",
@@ -4033,7 +4371,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 529,
+        "line": 540,
         "kind": "FUNCTION",
         "symbol": "setSaveState",
         "context": "local function setSaveState(p,state)",
@@ -4041,18 +4379,6 @@
         "currentBehavior": "local function setSaveState(p,state)",
         "intendedBehavior": "PRESENTATION primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 setSaveState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
         "whyThisAnchor": "roblox-games/daechung-rpg/server/Game.server.luau::setSaveState이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 572,
-        "kind": "FUNCTION",
-        "symbol": "save",
-        "context": "local function save(p)",
-        "score": 74,
-        "currentBehavior": "local function save(p)",
-        "intendedBehavior": "PRESENTATION primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 save의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/daechung-rpg/server/Game.server.luau::save이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
@@ -4097,15 +4423,15 @@
     "gameId": "daechung-rpg",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/daechung-rpg/client/Game.client.luau",
-      "roblox-games/daechung-rpg/shared/VisualStyle.luau",
       "roblox-games/daechung-rpg/server/Game.server.luau",
+      "roblox-games/daechung-rpg/client/Game.client.luau",
       "roblox-games/daechung-rpg/shared/GameConfig.luau",
       "roblox-games/daechung-rpg/shared/RPGMenu.luau",
       "roblox-games/daechung-rpg/shared/QACamera.luau",
       "roblox-games/daechung-rpg/launch-mvp.json",
       "roblox-games/daechung-rpg/shared/RPGMenuModel.luau",
-      "roblox-games/daechung-rpg/default.project.json"
+      "roblox-games/daechung-rpg/default.project.json",
+      "roblox-games/daechung-rpg/shared/VisualStyle.luau"
     ],
     "impact": {
       "version": 1,
@@ -4179,11 +4505,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "00838caadafe1808a29a1cffdf3af573a04f83c218388c40451b186d735b6f97",
+      "sourceTreeFingerprint": "1ed7df06323cb41bf1307e2157b35423fbc096313a9d167cfec753774bc1377a",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "failureSignature": "ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED"
+      "failureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -4234,7 +4560,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 31,
+    "nextGeneration": 32,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -4296,5 +4622,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-08T11:50:05.413Z"
+  "generatedAt": "2026-10-08T18:42:29.438Z"
 }
