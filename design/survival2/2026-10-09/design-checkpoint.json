@@ -272,25 +272,113 @@
           "playerChoice": "Make choices that alter the world state through discovery, mastery, or re-exploration."
         }
       ]
+    },
+    "local_authoring_parts::4c1af297f8f0a6d72e1f12b012cac6ae07719cd4fa1ef218e358fd4920578e41:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::c21b2ce6b8f69ccf00307ef65ed549e8c2c02b1bf1dd4ed99defdff2aa775424:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "INPUT: Explore the forest for a needed resource while reading environmental and creature danger.\nSELECT: Return or push deeper based on current supplies and group readiness.\nOUTPUT: Status change to reflect new resources, risks, and group dynamics.\nACTION: Main loop continues with new state, leading to next choice.",
+        "INPUT: Craft a survival advantage, improve shelter or equipment and prepare for the next stronger threat.\nSELECT: Choose action that enhances survival, modifies shelter/equipment, or prepares for future risk.\nOUTPUT: New status reflects improved capabilities, altered environment, or preparedness for higher threats.\nACTION: Main loop adapт",
+        "INPUT: Discover hidden patterns in the forest, understand ecological shifts, and make decisions based on knowledge gained.\nSELECT: Make choices that alter the world state through discovery, mastery, or re-exploration.\nOUTPUT: New status includes learned patterns, changed environment, or redefined goals.\nACTION: Main loop continues with re"
+      ],
+      "signatureSystems": [
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "resources",
+            "group readiness"
+          ],
+          "stateOutputs": [
+            "new status with altered environment",
+            "changed group dynamics"
+          ],
+          "name": "KARMA RETURN",
+          "purpose": "To reflect the impact of past decisions on current state and future choices.",
+          "playerChoice": "Make choices that alter the world state through discovery, mastery, or re-exploration."
+        },
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "A",
+          "stateInputs": [
+            "resources",
+            "group readiness"
+          ],
+          "stateOutputs": [
+            "new status with altered environment",
+            "changed group dynamics"
+          ],
+          "name": "KARMA RETURN",
+          "purpose": "To reflect the impact of past decisions on current state and future choices.",
+          "playerChoice": "Make choices that alter the world state through discovery, mastery, or re-exploration."
+        },
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "B",
+          "stateInputs": [
+            "resources",
+            "group readiness"
+          ],
+          "stateOutputs": [
+            "new status with altered environment",
+            "changed group dynamics"
+          ],
+          "name": "KARMA RETURN",
+          "purpose": "To reflect the impact of past decisions on current state and future choices.",
+          "playerChoice": "Make choices that alter the world state through discovery, mastery, or re-exploration."
+        },
+        {
+          "id": "DELVE_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "resources",
+            "group readiness"
+          ],
+          "stateOutputs": [
+            "new status with altered environment",
+            "changed group dynamics"
+          ],
+          "name": "DEEPENED_EXPLORATION",
+          "purpose": "To reflect the impact of deepened exploration on world state and future choices.",
+          "playerChoice": "Make choices that alter the world state through discovery, mastery, or re-exploration."
+        },
+        {
+          "id": "DELVE_3",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "resources",
+            "group readiness"
+          ],
+          "stateOutputs": [
+            "new status with altered environment",
+            "changed group dynamics"
+          ],
+          "name": "DEEPENED_EXPLORATION",
+          "purpose": "To reflect the impact of deepened exploration on world state and future choices.",
+          "playerChoice": "Make choices that alter the world state through discovery, mastery, or re-exploration."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 764926,
-      "lastMs": 95964,
+      "totalMs": 851745,
+      "lastMs": 86819,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:36:27.020Z"
+      "updatedAt": "2026-10-08T18:37:53.843Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:23:42.058Z",
-  "updatedAt": "2026-10-08T18:36:27.022Z",
+  "updatedAt": "2026-10-08T18:37:53.855Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2514,12 +2602,74 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:36:27.022Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_MAIN_A_B_c_DELVE_REQUIRED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "counts": {
+            "MAIN": 1,
+            "A": 1,
+            "B": 1,
+            "c": 1,
+            "DELVE": 1
+          },
+          "systemCount": 5,
+          "statesReady": false
+        },
+        "requiredAction": "메인 중심 행동, A/B 서로 다른 두 축, c 보조 변주, @ 발견·숙련을 기존 규칙에 맞춰 최소 5개 고유 시스템과 실제 상태 입력·출력으로 작성한다. 기존 밸런스·저장·진행은 유지한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "숲의 생존자들에서 플레이어는 Explore the forest for a needed resource while reading environmental and creature danger.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 숲의 생존자들은 협력하여 자원을 확보하며, 위험에 노출되어서는 안 되는 환경을 이해하고, 그에 따라 행동을 결정해야 한다. 이 과정에서 플레이어는 다양한 선택을 하며, 그 선택이 주변의 상태와 관계를 변화시켜 나간다. 이러한 선택은 새로운 상태로 전환되며, 이를 통해 플레이어는 더 깊은 세계 속에서 살아남아야 한다.",
+      "playerFantasy": "숲의 생존자들에서 플레이어는 Explore the forest for a needed resource while reading environmental and creature danger.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 숲의 생존자들은 협력하여 자원을 확보하며, 위험에 노출되어서는 안 되는 환경을 이해하고, 그에 따라 행동을 결정해야 한다. 이 과정에서 플레이어는 다양한 선택을 하며, 그 선택이 주변의 상태와 관계를 변화시켜 나간다. 이러한 선택은 새로운 상태로 전환되며, 이를 통해 플레이어는 더 깊은 세계 속에서 살아남아야 한다.",
+      "coreFun": "숲의 생존자들에서 플레이어는 Explore the forest for a needed resource while reading environmental and creature danger.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 숲의 생존자들은 협력하여 자원을 확보하며, 위험에 노출되어서는 안 되는 환경을 이해하고, 그에 따라 행동을 결정해야 한다. 이 과정에서 플레이어는 다양한 선택을 하며, 그 선택이 주변의 상태와 관계를 변화시켜 나간다. 이러한 선택은 새로운 상태로 전환되며, 이를 통해 플레이어는 더 깊은 세계 속에서 살아남아야 한다.",
+      "coreLoop": [
+        "INPUT: Explore the forest for a needed resource while reading environmental and creature danger.\nSELECT: Return or push deeper based on current supplies and group readiness.\nOUTPUT: Status change to reflect new resources, risks, and group dynamics.\nACTION: Main loop continues with new state, leading to next choice.",
+        "INPUT: Craft a survival advantage, improve shelter or equipment and prepare for the next stronger threat.\nSELECT: Choose action that enhances survival, modifies shelter/equipment, or prepares for future risk.\nOUTPUT: New status reflects improved capabilities, altered environment, or preparedness for higher threats.\nACTION: Main loop adapт",
+        "INPUT: Discover hidden patterns in the forest, understand ecological shifts, and make decisions based on knowledge gained.\nSELECT: Make choices that alter the world state through discovery, mastery, or re-exploration.\nOUTPUT: New status includes learned patterns, changed environment, or redefined goals.\nACTION: Main loop continues with re"
+      ],
+      "multiplayerMode": "COOP"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T18:37:53.846Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_MAIN_A_B_c_DELVE_REQUIRED,DESIGN_RULE_STATE_MISSING",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
