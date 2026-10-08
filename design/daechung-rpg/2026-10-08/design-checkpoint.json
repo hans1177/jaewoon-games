@@ -482,25 +482,52 @@
       "name": "CORE_LOOP_DESIGN",
       "purpose": "규칙의 상태 변화를 관리하고, 상태 입력과 출력을 정의하여 규칙의 동작을 명확히 한다.",
       "playerChoice": "마을에서 퀘스트와 장비를 준비, 포탈로 사냥터를 돌며 AI 유저와 파티를 구성, 몬스터를 직접 전투, 보스 첫 처치로 AI 동료 해금, 15마리 파티 사냥과 기여도 보상, 플레이어 + 보스 동료 최대 3명 편성, 보스 공략 → 보스 동료 해금 → 파티 조합 확장, 마을 귀환/회복/강화"
+    },
+    "local_authoring_parts::a862650e7a1512e6ce7992f29c7ae4247900214aefbdb84b7647be3fedba2d70:signatureSystems:1": {
+      "id": "CORE_LOOP_DESIGN",
+      "grammarRole": "A",
+      "stateInputs": [
+        "마을에서 퀘스트와 장비를 준비",
+        "포탈로 사냥터를 돌며 AI 유저와 파티를 구성",
+        "몬스터를 직접 전투",
+        "보스 첫 처치로 AI 동료 해금",
+        "15마리 파티 사냥과 기여도 보상",
+        "플레이어 + 보스 동료 최대 3명 편성",
+        "보스 공략 → 보스 동료 해금 → 파티 조합 확장",
+        "마을 귀환/회복/강화"
+      ],
+      "stateOutputs": [
+        "마을에서 퀘스트와 장비를 준비",
+        "포탈로 사냥터를 돌며 AI 유저와 파티를 구성",
+        "몬스터를 직접 전투",
+        "보스 첫 처치로 AI 동료 해금",
+        "15마리 파티 사냥과 기여도 보상",
+        "플레이어 + 보스 동료 최대 3명 편성",
+        "보스 공략 → 보스 동료 해금 → 파티 조합 확장",
+        "마을 귀환/회복/강화"
+      ],
+      "name": "CORE_LOOP_DESIGN",
+      "purpose": "규칙의 상태 변화를 관리하고, 상태 입력과 출력을 정의하여 규칙의 동작을 명확히 한다.",
+      "playerChoice": "마을에서 퀘스트와 장비를 준비, 포탈로 사냥터를 돌며 AI 유저와 파티를 구성, 몬스터를 직접 전투, 보스 첫 처치로 AI 동료 해금, 15마리 파티 사냥과 기여도 보상, 플레이어 + 보스 동료 최대 3명 편성, 보스 공략 → 보스 동료 해금 → 파티 조합 확장, 마을 귀환/회복/강화"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1182218,
-      "lastMs": 130196,
+      "totalMs": 1311555,
+      "lastMs": 129337,
       "lastError": null,
-      "updatedAt": "2026-10-08T07:07:32.514Z"
+      "updatedAt": "2026-10-08T07:09:41.852Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T06:47:50.251Z",
-  "updatedAt": "2026-10-08T07:07:32.514Z",
+  "updatedAt": "2026-10-08T07:09:41.852Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1960,7 +1987,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T07:07:32.514Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T07:09:41.852Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
