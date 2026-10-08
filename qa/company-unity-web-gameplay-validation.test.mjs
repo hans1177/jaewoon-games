@@ -268,3 +268,48 @@ test('compact landscape keeps the original combat action and real scrollable men
     assert.ok(scrollY+scrollHeight<=actionY-8,'scroll must end above action dock');
   }
 });
+
+test('real character, owned inventory and shop windows bind to existing Unity GameCore and preserve v1 save',()=>{
+  const runtime=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs',import.meta.url),'utf8');
+  const core=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/GameCore.cs',import.meta.url),'utf8');
+  assert.match(runtime,/MenuTabs = \{ "월드", "전투", "파티", "캐릭터", "가방", "상점" \}/);
+  assert.match(runtime,/new Vector2\[MenuTabs\.Length\]/);
+  for(const method of ['DrawCharacterWindow','DrawEquipmentInventory','DrawShopWindow']){
+    assert.match(runtime,new RegExp('private void '+method+'\\('));
+  }
+  assert.match(runtime,/DrawCharacterWindow\(\)/);
+  assert.match(runtime,/DrawEquipmentInventory\(\)/);
+  assert.match(runtime,/DrawShopWindow\(\)/);
+  assert.match(runtime,/GameCatalog\.Weapons\.TryGetValue/);
+  assert.match(runtime,/GameCatalog\.Armors\.TryGetValue/);
+  assert.match(runtime,/foreach \(var id in player\.ownedWeapons\)/);
+  assert.match(runtime,/foreach \(var id in player\.ownedArmors\)/);
+  for(const method of ['TryEquipWeapon','TryEquipArmor','TryBuyWeapon','TryBuyArmor','TrySellWeapon','TrySellArmor']){
+    assert.match(runtime,new RegExp('\\_core\\.'+method+'\\('),'actual menu needs existing owner function: '+method);
+    assert.match(core,new RegExp('public bool '+method+'\\('));
+  }
+  assert.match(runtime,/player\.currentRegionId != "town"/);
+  assert.match(runtime,/SHOP_ACTION game=daechung-rpg/);
+  assert.match(core,/private const string SaveKey = "daechung-rpg-save-v1"/);
+  assert.match(core,/public int version = 1;/);
+  assert.match(core,/PlayerPrefs\.SetString\(SaveKey, JsonUtility\.ToJson\(data\)\)/);
+  assert.doesNotMatch(core,/SaveKey.*v2|class InventoryV2|new GameSaveData\s*\{\s*version\s*=\s*2/);
+});
+test('equip and sell reject unowned items, preserve existing prices and do not mutate combat stat authority',()=>{
+  const core=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/GameCore.cs',import.meta.url),'utf8');
+  const equip=core.slice(core.indexOf('public bool TryEquipWeapon('),core.indexOf('public bool TryChangeJob('));
+  assert.match(equip,/Player\.ownedWeapons\.Contains\(weaponId\)/);
+  assert.match(equip,/Player\.ownedArmors\.Contains\(armorId\)/);
+  assert.match(equip,/Player\.equippedWeaponId = "bare-hands"/);
+  assert.match(equip,/Player\.equippedArmorId = "none"/);
+  assert.match(equip,/Player\.currentHp = Mathf\.Min\(Player\.currentHp, GetMaxHp\(\)\)/);
+  assert.match(equip,/Player\.currentRegionId != "town"/);
+  assert.match(equip,/weapon\.hidden/);
+  assert.match(equip,/Player\.gold \+= weapon\.price/);
+  assert.match(equip,/Player\.gold \+= armor\.price/);
+  assert.match(equip,/Player\.gold > int\.MaxValue - weapon\.price/);
+  assert.match(equip,/Player\.gold > int\.MaxValue - armor\.price/);
+  assert.doesNotMatch(equip,/Player\.baseAttack\s*=/);
+  assert.doesNotMatch(equip,/Player\.baseMaxHp\s*=/);
+  assert.doesNotMatch(equip,/Player\.experience\s*=/);
+});
