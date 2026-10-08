@@ -1134,25 +1134,44 @@
         "Narrative Progress Status"
       ],
       "fromSystem": "ELDORIAN_CORE_01_SYSTEM_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_"
+    },
+    "local_authoring_parts::97b44e14bd9ade64687f429f2dcf7a01045cc8365239e88a4cbe8d8dfd7dc1c8:toSystem,trigger,stateChange": {
+      "toSystem": "ELDORIAN_CORE_02_SYSTEM_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01",
+      "trigger": "Player choices directly affect the game's world state, determining the next set of gameplay options. Exploration, character interaction, quest progression, and narrative advancement are interdependent and mutually reinforcing, with each state transition influencing the next.",
+      "stateChange": "Exploration Status → Area Expansion Status, Character Interaction Status → Character Development Status, Quest Completion Status → Quest Progression Status, Narrative Progress Status → Narrative Advancement Status"
+    },
+    "local_authoring_parts::04c910dfa406efff4edeeea217131474c3608422d0fc4d9b4231179cee4fd136:systemInterconnections:2": {
+      "fromId": "ELDORIAN_CORE_01",
+      "toId": "ELDORIAN_CORE_02",
+      "stateKeys": [
+        "Exploration Status",
+        "Character Interaction Status",
+        "Quest Completion Status",
+        "Narrative Progress Status"
+      ],
+      "fromSystem": "ELDORIAN_CORE_01_SYSTEM_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_",
+      "toSystem": "ELDORIAN_CORE_02_SYSTEM_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01",
+      "trigger": "Player choices directly affect the game's world state, determining the next set of gameplay options. Exploration, character interaction, quest progression, and narrative advancement are interdependent and mutually reinforcing, with each state transition influencing the next.",
+      "stateChange": "Exploration Status → Area Expansion Status, Character Interaction Status → Character Development Status, Quest Completion Status → Quest Progression Status, Narrative Progress Status → Narrative Advancement Status"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 37,
-      "successes": 34,
+      "calls": 38,
+      "successes": 35,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 3130255,
-      "lastMs": 44251,
+      "totalMs": 3176914,
+      "lastMs": 46659,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T16:19:18.098Z"
+      "updatedAt": "2026-10-08T16:20:04.759Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:23:19.708Z",
-  "updatedAt": "2026-10-08T16:19:18.098Z",
+  "updatedAt": "2026-10-08T16:20:04.787Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3541,7 +3560,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:19:18.098Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:20:04.787Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
