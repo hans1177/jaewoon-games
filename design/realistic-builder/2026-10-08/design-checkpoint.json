@@ -813,25 +813,28 @@
     },
     "local_authoring_parts::7b3003c8c80bec0a842ad0ed19dc689717faef2f3ce679f1935652c609f5f03b:toSystem": {
       "toSystem": "SIGNATURE_SYSTEM_DESIGN"
+    },
+    "local_authoring_parts::7b3003c8c80bec0a842ad0ed19dc689717faef2f3ce679f1935652c609f5f03b:trigger": {
+      "trigger": "CORE_LOOP_DESIGN의 출력 상태는 READABLE_STATE 및 MODIFIABLE_STATE로, SIGNATURE_SYSTEM_DESIGN의 입력 상태는 READABLE_STATE 및 MODIFIABLE_STATE로 명확히 정의되어 있으며, 이 두 시스템 간의 상태 교환은 현재 설계에서 명확히 구체화되지 않았음."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 49,
-      "successes": 49,
+      "calls": 50,
+      "successes": 50,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4223881,
-      "lastMs": 60181,
+      "totalMs": 4295969,
+      "lastMs": 72088,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:50:35.131Z"
+      "updatedAt": "2026-10-08T15:51:47.221Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:51:40.085Z",
-  "updatedAt": "2026-10-08T15:50:35.131Z",
+  "updatedAt": "2026-10-08T15:51:47.221Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3414,7 +3417,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:50:35.131Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:51:47.221Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
