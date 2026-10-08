@@ -94,25 +94,379 @@
       "name": "TacticalInsightSystem",
       "purpose": "Manages the player's tactical insight and decision-making process, allowing them to evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn.",
       "playerChoice": "Evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
+    },
+    "local_authoring_parts::3d723d484d8fce2dc965be365f43fa6d49efc4711d497a99b7b2839a7f807996:signatureSystems:4": {
+      "id": "signatureSystems[4]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "worldState",
+        "enemyThreatInfo"
+      ],
+      "stateOutputs": [
+        "newWorldState",
+        "nextMoveChoice"
+      ],
+      "name": "TacticalInsightAndDecisionSystem",
+      "purpose": "Manages the player's tactical insight and decision-making process, allowing them to evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn.",
+      "playerChoice": "Evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
+    },
+    "local_authoring_parts::49a8b3071295dad13613f7dfad8cc2c311bee597b5b29481ad77c2a923cfd87f:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "worldState",
+            "enemyThreatInfo"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextMoveChoice"
+          ],
+          "name": "BoardStateTransitionSystem",
+          "purpose": "Manages the transition between the current board state and the next move, ensuring tactical resolution and strategic planning.",
+          "playerChoice": "Commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "worldState",
+            "enemyThreatInfo"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextMoveChoice"
+          ],
+          "name": "TacticalResolutionSystem",
+          "purpose": "Manages the tactical resolution of the board state after the initial read and commit, ensuring the player can plan the next decisive turn based on the new board configuration.",
+          "playerChoice": "Commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "worldState",
+            "enemyThreatInfo"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextMoveChoice"
+          ],
+          "name": "TacticalDecisionSystem",
+          "purpose": "Manages the tactical decision-making process, allowing the player to evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn.",
+          "playerChoice": "Evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "worldState",
+            "enemyThreatInfo"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextMoveChoice"
+          ],
+          "name": "TacticalInsightSystem",
+          "purpose": "Manages the player's tactical insight and decision-making process, allowing them to evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn.",
+          "playerChoice": "Evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "worldState",
+            "enemyThreatInfo"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextMoveChoice"
+          ],
+          "name": "TacticalInsightAndDecisionSystem",
+          "purpose": "Manages the player's tactical insight and decision-making process, allowing them to evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn.",
+          "playerChoice": "Evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
+        }
+      ]
+    },
+    "local_authoring_parts::d666a4334542fa4f3d8bb6ec32473b4110fc859629011dc52b47da214065246c:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE",
+        "READ BOARD AND ENEMY THREAT INFORMATION -> COMMIT MOVE/ABILITY -> RESOLVE TACTICAL EXCHANGE -> USE NEW BOARD STATE TO PLAN NEXT DECISIVE TURN",
+        "READ BOARD AND ENEMY THREAT INFORMATION -> COMMIT MOVE/ABILITY -> RESOLVE TACTICAL EXCHANGE -> USE NEW BOARD STATE TO PLAN NEXT DECISIVE TURN"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "worldState",
+            "enemyThreatInfo"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextMoveChoice"
+          ],
+          "name": "BoardStateTransitionSystem",
+          "purpose": "Manages the transition between the current board state and the next move, ensuring tactical resolution and strategic planning.",
+          "playerChoice": "Commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "worldState",
+            "enemyThreatInfo"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextMoveChoice"
+          ],
+          "name": "TacticalResolutionSystem",
+          "purpose": "Manages the tactical resolution of the board state after the initial read and commit, ensuring the player can plan the next decisive turn based on the new board configuration.",
+          "playerChoice": "Commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "worldState",
+            "enemyThreatInfo"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextMoveChoice"
+          ],
+          "name": "TacticalDecisionSystem",
+          "purpose": "Manages the tactical decision-making process, allowing the player to evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn.",
+          "playerChoice": "Evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "worldState",
+            "enemyThreatInfo"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextMoveChoice"
+          ],
+          "name": "TacticalInsightSystem",
+          "purpose": "Manages the player's tactical insight and decision-making process, allowing them to evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn.",
+          "playerChoice": "Evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "worldState",
+            "enemyThreatInfo"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextMoveChoice"
+          ],
+          "name": "TacticalInsightAndDecisionSystem",
+          "purpose": "Manages the player's tactical insight and decision-making process, allowing them to evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn.",
+          "playerChoice": "Evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
+        }
+      ]
+    },
+    "local_authoring_parts::d666a4334542fa4f3d8bb6ec32473b4110fc859629011dc52b47da214065246c:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::42a79d2f54d926c5dd731ffc55f61233ac21b6f5914b1b4dd74c0705cc896889:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE",
+        "READ BOARD AND ENEMY THREAT INFORMATION -> COMMIT MOVE/ABILITY -> RESOLVE TACTICAL EXCHANGE -> USE NEW BOARD STATE TO PLAN NEXT DECISIVE TURN",
+        "READ BOARD AND ENEMY THREAT INFORMATION -> COMMIT MOVE/ABILITY -> RESOLVE TACTICAL EXCHANGE -> USE NEW BOARD STATE TO PLAN NEXT DECISIVE TURN"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "worldState",
+            "enemyThreatInfo"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextMoveChoice"
+          ],
+          "name": "BoardStateTransitionSystem",
+          "purpose": "Manages the transition between the current board state and the next move, ensuring tactical resolution and strategic planning.",
+          "playerChoice": "Commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "worldState",
+            "enemyThreatInfo"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextMoveChoice"
+          ],
+          "name": "TacticalResolutionSystem",
+          "purpose": "Manages the tactical resolution of the board state after the initial read and commit, ensuring the player can plan the next decisive turn based on the new board configuration.",
+          "playerChoice": "Commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "worldState",
+            "enemyThreatInfo"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextMoveChoice"
+          ],
+          "name": "TacticalDecisionSystem",
+          "purpose": "Manages the tactical decision-making process, allowing the player to evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn.",
+          "playerChoice": "Evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "worldState",
+            "enemyThreatInfo"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextMoveChoice"
+          ],
+          "name": "TacticalInsightSystem",
+          "purpose": "Manages the player's tactical insight and decision-making process, allowing them to evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn.",
+          "playerChoice": "Evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "worldState",
+            "enemyThreatInfo"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextMoveChoice"
+          ],
+          "name": "TacticalInsightAndDecisionSystem",
+          "purpose": "Manages the player's tactical insight and decision-making process, allowing them to evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn.",
+          "playerChoice": "Evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다. 플레이어는 Read the board and enemy threat information.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 Read the board and enemy threat information.이며, 두 대축은 Commit a move or ability that changes control of key spaces.와 Resolve the tactical exchange and use the new board state to plan the next decisive turn.의 상태 교환을 담당한다. 보조 요소는 @로, 발견·숙련·재방문의 깊이를 구분한다. 게임 규칙은 세계 상태와 다음 선택의 상호작용을 통해 구체화하며, 시그니처 시스템은 MAIN/A/B/c/DELVE(@)의 역할을 각각 포함한다. 게임의 핵심은 입력/선택 -> 상태 변화 -> 보상/위험/다음 선택의 연결을 통해 구현하며, 인과법칙은 기존 규칙과 일관되게 유지한다. 게임의 설계는 기존 원본과 일관되며, 설계 수정은 기존 검증과 보안을 유지한다. 게임의 성장은 수치 증가뿐만 아니라 새로운 행동·경로·관계·발견·대응법을 열어 다양한 플레이 경험을 제공한다. 게임의 플랫폼별 구현은 원본과 일관되며, 멀티플레이 모드는 기존 규칙을 따르며 확장 가능성이 존재한다. 게임의 전략은 입력 직후의 상태 변화와 피드백을 통해 구현하며, 안전·속도·보상·자원 중 최소 하나의 실제 트레이드오프가 다음 선택을 바꾼다. 게임의 진행은 단순 반복을 피하고, 새로운 압박 유형·지역 규칙·적 행동·목표 또는 시스템 연결을 통해 확장한다. 게임의 설계는 기존 원본과 일관되며, 설계 수정은 기존 검증과 보안을 유지한다. 게임의 성장은 숫자 상승뿐 아니라 새로운 행동 조합·경로·대응법을 통해 구현하며, 발견 후 다음 질문으로 이어지는 방식으로 설계된다. 게임의 인과법칙은 기존 규칙과 일관되며",
+      "playerFantasy": "체스 배틀에서 플레이어는 Read the board and enemy threat information.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 Read the board and enemy threat information.이며, 두 대축은 Commit a move or ability that changes control of key spaces.와 Resolve the tactical exchange and use the new board state to plan the next decisive turn.의 상태 교환을 담당한다. 보조 요소는 @로, 발견·숙련·재방문의 깊이를 구분한다. 게임 규칙은 세계 상태와 다음 선택의 상호작용을 통해 구체화하며, 시그니처 시스템은 MAIN/A/B/c/DELVE(@)의 역할을 각각 포함한다. 게임의 핵심은 입력/선택 -> 상태 변화 -> 보상/위험/다음 선택의 연결을 통해 구현하며, 인과법칙은 기존 규칙과 일관되게 유지한다. 게임의 설계는 기존 원본과 일관되며, 설계 수정은 기존 검증과 보안을 유지한다. 게임의 성장은 수치 증가뿐 아니라 새로운 행동·경로·관계·발견·대응법을 열어 다양한 플레이 경험을 제공한다. 게임의 플랫폼별 구현은 원본과 일관되며, 멀티플레이 모드는 기존 규칙을 따르며 확장 가능성이 존재한다. 게임의 전략은 입력 직후의 상태 변화와 피드백을 통해 구현하며, 안전·속도·보상·자원 중 최소 하나의 실제 트레이드오프가 다음 선택을 바꾼다. 게임의 진행은 단순 반복을 피하고, 새로운 압박 유형·지역 규칙·적 행동·목표 또는 시스템 연결을 통해 확장한다. 게임의 설계는 기존 원본과 일관되며, 설계 수정은 기존 검증과 보안을 유지한다. 게임의 성장은 숫자 상승뿐 아니라 새로운 행동 조합·경로·대응법을 통해 구현하며,",
+      "coreFun": "Read the board and enemy threat information.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 Read the board and enemy threat information.이며, 두 대축은 Commit a move or ability that changes control of key spaces.와 Resolve the tactical exchange and use the new board state to plan the next decisive turn.의 상태 교환을 담당한다. 보조 요소는 @로, 발견·숙련·재방문의 깊이를 구분한다. 게임 규칙은 세계 상태와 다음 선택의 상호작용을 통해 구체화하며, 시그니처 시스템은 MAIN/A/B/c/DELVE(@)의 역할을 각각 포함한다. 게임의 핵심은 입력/선택 -> 상태 변화 -> 보상/위험/다음 선택의 연결을 통해 구현하며, 인과법칙은 기존 규칙과 일관되게 유지한다. 게임의 설계는 기존 원본과 일관되며, 설계 수정은 기존 검증과 보안을 유지한다. 게임의 성장은 수치 증가뿐 아니라 새로운 행동·경로·관계·발견·대응법을 열어 다양한 플레이 경험을 제공한다. 게임의 플랫폼별 구현은 원본과 일관되며, 멀티플레이 모드는 기존 규칙을 따르며 확장 가능성이 존재한다. 게임의 전략은 입력 직후의 상태 변화와 피드백을 통해 구현하며, 안전·속도·보상·자원 중 최소 하나의 실제 트레이드오프가 다음 선택을 바꾼다. 게임의 진행은 단순 반복을 피하고, 새로운 압박 유형·지역 규칙·적 행동·목표 또는 시스템 연결을 통해 확장한다. 게임의 설계는 기존 원본과 일관되며, 설계 수정은 기존 검증과 보안을 유지한다. 게임의 성장은 숫자 상승뿐 아니라 새로운 행동 조합·경로·대응법을 통해 구현하며, 발견 후 다음 질문으로이",
+      "coreLoop": [
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE",
+        "READ BOARD AND ENEMY THREAT INFORMATION -> COMMIT MOVE/ABILITY -> RESOLVE TACTICAL EXCHANGE -> USE NEW BOARD STATE TO PLAN NEXT DECISIVE TURN",
+        "READ BOARD AND ENEMY THREAT INFORMATION -> COMMIT MOVE/ABILITY -> RESOLVE TACTICAL EXCHANGE -> USE NEW BOARD STATE TO PLAN NEXT DECISIVE TURN"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "worldState",
+            "enemyThreatInfo"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextMoveChoice"
+          ],
+          "name": "BoardStateTransitionSystem",
+          "purpose": "Manages the transition between the current board state and the next move, ensuring tactical resolution and strategic planning.",
+          "playerChoice": "Commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "worldState",
+            "enemyThreatInfo"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextMoveChoice"
+          ],
+          "name": "TacticalResolutionSystem",
+          "purpose": "Manages the tactical resolution of the board state after the initial read and commit, ensuring the player can plan the next decisive turn based on the new board configuration.",
+          "playerChoice": "Commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "worldState",
+            "enemyThreatInfo"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextMoveChoice"
+          ],
+          "name": "TacticalDecisionSystem",
+          "purpose": "Manages the tactical decision-making process, allowing the player to evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn.",
+          "playerChoice": "Evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "worldState",
+            "enemyThreatInfo"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextMoveChoice"
+          ],
+          "name": "TacticalInsightSystem",
+          "purpose": "Manages the player's tactical insight and decision-making process, allowing them to evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn.",
+          "playerChoice": "Evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "worldState",
+            "enemyThreatInfo"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextMoveChoice"
+          ],
+          "name": "TacticalInsightAndDecisionSystem",
+          "purpose": "Manages the player's tactical insight and decision-making process, allowing them to evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn.",
+          "playerChoice": "Evaluate the current board state, commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 983891,
-      "lastMs": 101716,
+      "totalMs": 1172544,
+      "lastMs": 87649,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:08:03.997Z"
+      "updatedAt": "2026-10-08T08:11:12.655Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:51:40.071Z",
-  "updatedAt": "2026-10-08T08:08:03.997Z",
+  "updatedAt": "2026-10-08T08:11:12.664Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2237,12 +2591,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:08:03.997Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:11:12.658Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/chess-battle/2026-10-08/design-seed.json",
+    "contentDigest": "da1a9caf67af03375ae062d4457fede08b81c2a2ecd3af9d256ed178a72764de",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
