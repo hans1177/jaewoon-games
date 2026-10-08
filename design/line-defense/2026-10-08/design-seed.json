@@ -11,119 +11,124 @@
   "status": "AUTHORED_CANDIDATE",
   "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
   "originalSource": null,
-  "fingerprint": "a459780d6815ab3ae2bcf69031d2745e7aa5488c49e074e6eea65ffbe94e0542",
+  "fingerprint": "e8c42e2723d3c2c54570c1f954127efee8273c2b811053e2c300c63113d4560b",
   "engineDigest": "d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904",
-  "contentDigest": "2951cdb4553fa4151196507bdd7a9b899009964284c9d40bf06c06fda0358c1d",
+  "contentDigest": "699bba902ddcb02e183c9809013d11ef430f4b48b0685f3ad528be5953fb6313",
   "externalSeedRequired": false,
   "designPass": false,
   "runtimePass": false,
   "content": {
-    "identity": "골목 군단 대전은 플레이어가 매 차례마다 새로운 전략을 수립하고, 이전 선택의 결과를 기반으로 다음 상태를 변화시키는 반복 가능한 핵심 루프를 구축하는 게임이다. 이 게임은 단순한 전략 게임이 아니라, 플레이어가 실제 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 갖춘다. 게임의 핵심 재미는 '전략적 선택의 결과가 다음 상태로 이어지는 반복 가능한 루프'이며, 이는 모바일 플랫폼에서도 즉시 이해할 수 있는 입력과 피드백을 제공한다. 게임의 세계 규칙은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'과 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'의 결과가 서로 영향을 주는 시그니처 상호작용을 통해 구축된다. 게임의 시스템은 MAIN, A, B, c, @의 상태 변화를 통해, 플레이어가 반복적으로 수행하는 중심 행동과 독립적인 대축, 보조 요소, 파고들기의 관계를 구체화한다. 게임의 규칙은 기존의 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고, RPG식 시스템은 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다. 게임의 성장은 수치 증가뿐만 아니라, 새 행동·경로·조합·관계·발견·대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않고, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 게임의 성공은 결정론적 검증기가 담당하며, 실패·중단·재접속·저장은 원본 의미를 보존한다. 게임의 구현 버그와 설계 모순의 원인·수정 책임은 구분하고, 안정성을 먼저 다룬다. 같은 증상을 설계와구",
-    "playerFantasy": "골목 군단 대전은 플레이어가 매 차례마다 새로운 전략을 수립하고, 이전 선택의 결과를 기반으로 다음 상태를 변화시키는 반복 가능한 핵심 루프를 구축하는 게임이다. 이 게임은 단순한 전략 게임이 아니라, 플레이어가 실제 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 갖춘다. 게임의 핵심 재미는 '전략적 선택의 결과가 다음 상태로 이어지는 반복 가능한 루프'이며, 이는 모바일 플랫폼에서도 즉시 이해할 수 있는 입력과 피드백을 제공한다. 게임의 세계 규칙은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'과 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'의 결과가 서로 영향을 주는 시그니처 상호작용을 통해 구축된다. 게임의 시스템은 MAIN, A, B, c, @의 상태 변화를 통해, 플레이어가 반복적으로 수행하는 중심 행동과 독립적인 대축, 보조 요소, 파고들기의 관계를 구체화한다. 게임의 규칙은 기존의 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고, RPG식 시스템은 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다. 게임의 성장은 수치 증가뿐만 아니라, 새 행동·경로·조합·관계·발견·대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않고, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 게임의 성공은決定",
-    "coreFun": "골목 군단 대전은 플레이어가 매 차례마다 새로운 전략을 수립하고, 이전 선택의 결과를 기반으로 다음 상태를 변화시키는 반복 가능한 핵심 루프를 구축하는 게임이다. 이 게임은 단순한 전략 게임이 아니라, 플레이어가 실제 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 갖춘다. 게임의 핵심 재미는 '전략적 선택의 결과가 다음 상태로 이어지는 반복 가능한 루프'이며, 이는 모바일 플랫폼에서도 즉시 이해할 수 있는 입력과 피드백을 제공한다. 게임의 세계 규칙은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'과 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'의 결과가 서로 영향을 주는 시그니처 상호작용을 통해 구축된다. 게임의 시스템은 MAIN, A, B, c, @의 상태 변화를 통해, 플레이어가 반복적으로 수행하는 중심 행동과 독립적인 대축, 보조 요소, 파고들기의 관계를 구체화한다. 게임의 규칙은 기존의 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고, RPG식 시스템은 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다. 게임의 성장은 수치 증가뿐만 아니라, 새 행동·경로·조합·관계·발견·대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않고, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 게임의 성공은決定",
+    "identity": "골목 군단 대전은 플레이어가 매 단계에서 '상대의 공격을 막고, 자원을 모아 방어 구조를 강화하며, 다음 전투의 전략을 결정하는' 단순 반복과 달리, **진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프****를 중심으로, **모바일에서도 즉시 이해되는 입력과 피드백****를 제공하는 **SINGLE_DEFENSE_STRATEGY** 게임이다. 플레이어는 매 단계에서 **'상대의 공격을 막고, 자원을 모아 방어 구조를 강화하며, 다음 전투의 전략을 결정하는'**을 중심으로, **진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프****를 바탕으로, **모바일에서도 즉시 이해되는 입력과 피드백****를 제공하는 **SINGLE_DEFENSE_STRATEGY** 게임이다. 플레이어는 매 단계에서 **'상대의 공격을 막고, 자원을 모아 방어 구조를 강화하며, 다음 전투의 전략을 결정하는'**을 중심으로, **진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프****를 바탕으로, **모바일에서도 즉시 이해되는 입력과 피드백****를 제공하는 **SINGLE_DEFENSE_STRATEGY** 게임이다. 플레이어는 매 단계에서 **'상대의 공격을 막고, 자원을 모아 방어 구조를 강화하며, 다음 전투의 전략을 결정하는'**을 중심으로, **진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프****를 바탕으로, **모바일에서도 즉시 이해되는 입력과 피드백****를 제공하는 **SINGLE_DEFENSE_STRATEGY** 게임이다. 플레이어는 매 단계에서 **'상대의 공격을 막고, 자원을 모아 방어 구조를 강화하며, 다음 전투의 전략을 결정하는'**을 중심으로, **진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프****를 바탕으로, **모바일에서도 즉시 이해되는 입력과 피드백****를 제공하는 **SINGLE_DEFENSE_STRATEGY** 게임이다. 플레이어는 매 단계에서 **'상대의 공격을 막고, 자원을 모아 방어 구조를 강화하며, 다음 전투의전",
+    "playerFantasy": "골목 군단 대전은 플레이어가 매 단계에서 '상대의 공격을 막고, 자원을 모아 방어 구조를 강화하며, 다음 전투의 전략을 결정하는'을 중심으로, **진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프**를 바탕으로, **모바일에서도 즉시 이해되는 입력과 피드백**를 제공하는 **SINGLE_DEFENSE_STRATEGY** 게임이다. 플레이어는 매 단계에서 **'상대의 공격을 막고, 자원을 모아 방어 구조를 강화하며, 다음 전투의 전략을 결정하는'**을 중심으로, **진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프**를 바탕으로, **모바일에서도 즉시 이해되는 입력과 피드백**를 제공하는 **SINGLE_DEFENSE_STRATEGY** 게임이다. 플레이어는 매 단계에서 **'상대의 공격을 막고, 자원을 모아 방어 구조를 강화하며, 다음 전투의 전략을 결정하는'**을 중심으로, **진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프**를 바탕으로, **모바일에서도 즉시 이해되는 입력과 피드백**를 제공하는 **SINGLE_DEFENSE_STRATEGY** 게임이다. 플레이어는 매 단계에서 **'상대의 공격을 막고, 자원을 모아 방어 구조를 강화하며, 다음 전투의 전략을 결정하는'**을 중심으로, **진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프**를 바탕으로, **모바일에서도 즉시 이해되는 입력과 피드백**를 제공하는 **SINGLE_DEFENSE_STRATEGY** 게임이다. 플레이어는 매 단계에서 **'상대의 공격을 막고, 자원을 모아 방어 구조를 강화하며, 다음 전투의 전략을 결정하는'**을 중심으로, **진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프**를 바탕으로, **모바일에서도 즉시 이해되는 입력과 피드백**를 제공하는 **SINGLE_DEF轼",
+    "coreFun": "골목 군단 대전은 플레이어가 매 단계에서 '상대의 공격을 막고, 자원을 모아 방어 구조를 강화하며, 다음 전투의 전략을 결정하는'을 중심으로, **진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프**를 바탕으로, **모바일에서도 즉시 이해되는 입력과 피드백**를 제공하는 **SINGLE_DEFENSE_STRATEGY** 게임이다. 플레이어는 매 단계에서 **'상대의 공격을 막고, 자원을 모아 방어 구조를 강화하며, 다음 전투의 전략을 결정하는'**을 중심으로, **진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프**를 바탕으로, **모바일에서도 즉시 이해되는 입력과 피드백**를 제공하는 **SINGLE_DEFENSE_STRATEGY** 게임이다. 플레이어는 매 단계에서 **'상대의 공격을 막고, 자원을 모아 방어 구조를 강화하며, 다음 전투의 전략을 결정하는'**을 중심으로, **진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프**를 바탕으로, **모바일에서도 즉시 이해되는 입력과 피드백**를 제공하는 **SINGLE_DEFENSE_STRATEGY** 게임이다. 플레이어는 매 단계에서 **'상대의 공격을 막고, 자원을 모아 방어 구조를 강화하며, 다음 전투의 전략을 결정하는'**을 중심으로, **진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프**를 바탕으로, **모바일에서도 즉시 이해되는 입력과 피드백**를 제공하는 **SINGLE_DEFENSE_STRATEGY** 게임이다. 플레이어는 매 단계에서 **'상대의 공격을 막고, 자원을 모아 방어 구조를 강화하며, 다음 전투의 전략을 결정하는'**을 중심으로, **진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프**를 바탕으로, **모바일에서도 즉시 이해되는 입력과 피드백**를 제공하는 **SINGLE_DEFЕ",
     "coreLoop": [
-      "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
-      "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
-      "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+      "INPUT: Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+      "PROCESS: Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+      "OUTPUT: Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
     ],
     "signatureSystems": [
       {
-        "id": "signatureSystems_0",
+        "id": "signatureSystems[0]",
         "grammarRole": "MAIN",
         "stateInputs": [
-          "enemyWaveType",
-          "resourcePool",
-          "defenseStrategy",
-          "currentStage"
+          "EnemyWaveType",
+          "DefenderPlacement",
+          "ResourcePool",
+          "EnemyType",
+          "WaveComposition"
         ],
         "stateOutputs": [
-          "towersPlaced",
-          "defendersDeployed",
-          "resourceSpent",
-          "defenseAdaptation"
+          "DefensiveStrategy",
+          "ResourceAllocation",
+          "ObjectiveProtection",
+          "StageClearance"
         ],
-        "name": "골목 군단 대전 시스템",
-        "purpose": "플레이어가 매 차례마다 새로운 전략을 수립하고, 이전 선택의 결과를 기반으로 다음 상태를 변화시키는 반복 가능한 핵심 루프를 구축하는 게임 시스템",
-        "playerChoice": "플레이어는 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 사용한다"
+        "name": "EnemyDefenseSynergy",
+        "purpose": "Establishes the dynamic relationship between enemy wave types, defender placements, and resource allocation to create adaptive and responsive defensive strategies.",
+        "playerChoice": "Player chooses where to place defenders, what resources to allocate, and how to adjust the defense based on enemy wave composition and type."
       },
       {
-        "id": "signatureSystems_1",
+        "id": "signatureSystems[1]",
         "grammarRole": "A",
         "stateInputs": [
-          "enemyWaveType",
-          "resourcePool",
-          "defenseStrategy",
-          "currentStage"
+          "EnemyWaveType",
+          "DefenderPlacement",
+          "ResourcePool",
+          "EnemyType",
+          "WaveComposition"
         ],
         "stateOutputs": [
-          "towersPlaced",
-          "defendersDeployed",
-          "resourceSpent",
-          "defenseAdaptation"
+          "DefensiveStrategy",
+          "ResourceAllocation",
+          "ObjectiveProtection",
+          "StageClearance"
         ],
-        "name": "골목 군단 대전 시스템",
-        "purpose": "플레이어가 매 차례마다 새로운 전략을 수립하고, 이전 선택의 결과를 기반으로 다음 상태를 변화시키는 반복 가능한 핵심 루프를 구축하는 게임 시스템",
-        "playerChoice": "플레이어는 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 사용한다"
+        "name": "EnemyDefenseSynergy",
+        "purpose": "Establishes the dynamic relationship between enemy wave types, defender placements, and resource allocation to create adaptive and responsive defensive strategies.",
+        "playerChoice": "Player chooses where to place defenders, what resources to allocate, and how to adjust the defense based on enemy wave composition and type."
       },
       {
-        "id": "signatureSystems_2",
+        "id": "signatureSystems[2]",
         "grammarRole": "B",
         "stateInputs": [
-          "enemyWaveType",
-          "resourcePool",
-          "defenseStrategy",
-          "currentStage"
+          "EnemyWaveType",
+          "DefenderPlacement",
+          "ResourcePool",
+          "EnemyType",
+          "WaveComposition"
         ],
         "stateOutputs": [
-          "towersPlaced",
-          "defendersDeployed",
-          "resourceSpent",
-          "defenseAdaptation"
+          "DefensiveStrategy",
+          "ResourceAllocation",
+          "ObjectiveProtection",
+          "StageClearance"
         ],
-        "name": "골목 군단 대전 시스템",
-        "purpose": "플레이어가 매 차례마다 새로운 전략을 수립하고, 이전 선택의 결과를 기반으로 다음 상태를 변화시키는 반복 가능한 핵심 루프를 구축하는 게임 시스템",
-        "playerChoice": "플레이어는 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 사용한다"
+        "name": "EnemyDefenseSynergy",
+        "purpose": "Establishes the dynamic relationship between enemy wave types, defender placements, and resource allocation to create adaptive and responsive defensive strategies.",
+        "playerChoice": "Player chooses where to place defenders, what resources to allocate, and how to adjust the defense based on enemy wave composition and type."
       },
       {
-        "id": "signatureSystems_3",
+        "id": "signatureSystems[3]",
         "grammarRole": "c",
         "stateInputs": [
-          "enemyWaveType",
-          "resourcePool",
-          "defenseStrategy",
-          "currentStage"
+          "EnemyWaveType",
+          "DefenderPlacement",
+          "ResourcePool",
+          "EnemyType",
+          "WaveComposition"
         ],
         "stateOutputs": [
-          "towersPlaced",
-          "defendersDeployed",
-          "resourceSpent",
-          "defenseAdaptation"
+          "DefensiveStrategy",
+          "ResourceAllocation",
+          "ObjectiveProtection",
+          "StageClearance"
         ],
-        "name": "골목 군단 대전 시스템",
-        "purpose": "플레이어가 매 차례마다 새로운 전략을 수립하고, 이전 선택의 결과를 기반으로 다음 상태를 변화시키는 반복 가능한 핵심 루프를 구축하는 게임 시스템",
-        "playerChoice": "플레이어는 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 사용한다"
+        "name": "EnemyDefenseSynergy",
+        "purpose": "Establishes the dynamic relationship between enemy wave types, defender placements, and resource allocation to create adaptive and responsive defensive strategies.",
+        "playerChoice": "Player chooses where to place defenders, what resources to allocate, and how to adjust the defense based on enemy wave composition and type."
       },
       {
-        "id": "signatureSystems_4",
+        "id": "signatureSystems[4]",
         "grammarRole": "DELVE",
         "stateInputs": [
-          "enemyWaveType",
-          "resourcePool",
-          "defenseStrategy",
-          "currentStage"
+          "EnemyWaveType",
+          "DefenderPlacement",
+          "ResourcePool",
+          "EnemyType",
+          "WaveComposition"
         ],
         "stateOutputs": [
-          "towersPlaced",
-          "defendersDeployed",
-          "resourceSpent",
-          "defenseAdaptation"
+          "DefensiveStrategy",
+          "ResourceAllocation",
+          "ObjectiveProtection",
+          "StageClearance"
         ],
-        "name": "골목 군단 대전 시스템",
-        "purpose": "플레이어가 매 차례마다 새로운 전략을 수립하고, 이전 선택의 결과를 기반으로 다음 상태를 변화시키는 반복 가능한 핵심 루프를 구축하는 게임 시스템",
-        "playerChoice": "플레이어는 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 사용한다"
+        "name": "EnemyDefenseSynergy",
+        "purpose": "Establishes the dynamic relationship between enemy wave types, defender placements, and resource allocation to create adaptive and responsive defensive strategies.",
+        "playerChoice": "Player chooses where to place defenders, what resources to allocate, and how to adjust the defense based on enemy wave composition and type."
       }
     ],
     "multiplayerMode": "COOP"
   },
-  "updatedAt": "2026-10-08T10:56:12.033Z"
+  "updatedAt": "2026-10-08T12:18:56.314Z"
 }

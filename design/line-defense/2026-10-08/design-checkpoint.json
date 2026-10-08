@@ -347,25 +347,251 @@
           "playerChoice": "Player chooses where to place defenders, what resources to allocate, and how to adjust the defense based on enemy wave composition and type."
         }
       ]
+    },
+    "local_authoring_parts::fe02a1b305086a1b66a32ea76c883923bd6005d8c9b05dde587e0fc8123e275c:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::fac8397558dd5161e65ca0b435b31fd5f50d9d19d6ca74fb6967209b84a6c4d7:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "INPUT: Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "PROCESS: Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "OUTPUT: Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "EnemyWaveType",
+            "DefenderPlacement",
+            "ResourcePool",
+            "EnemyType",
+            "WaveComposition"
+          ],
+          "stateOutputs": [
+            "DefensiveStrategy",
+            "ResourceAllocation",
+            "ObjectiveProtection",
+            "StageClearance"
+          ],
+          "name": "EnemyDefenseSynergy",
+          "purpose": "Establishes the dynamic relationship between enemy wave types, defender placements, and resource allocation to create adaptive and responsive defensive strategies.",
+          "playerChoice": "Player chooses where to place defenders, what resources to allocate, and how to adjust the defense based on enemy wave composition and type."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "EnemyWaveType",
+            "DefenderPlacement",
+            "ResourcePool",
+            "EnemyType",
+            "WaveComposition"
+          ],
+          "stateOutputs": [
+            "DefensiveStrategy",
+            "ResourceAllocation",
+            "ObjectiveProtection",
+            "StageClearance"
+          ],
+          "name": "EnemyDefenseSynergy",
+          "purpose": "Establishes the dynamic relationship between enemy wave types, defender placements, and resource allocation to create adaptive and responsive defensive strategies.",
+          "playerChoice": "Player chooses where to place defenders, what resources to allocate, and how to adjust the defense based on enemy wave composition and type."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "EnemyWaveType",
+            "DefenderPlacement",
+            "ResourcePool",
+            "EnemyType",
+            "WaveComposition"
+          ],
+          "stateOutputs": [
+            "DefensiveStrategy",
+            "ResourceAllocation",
+            "ObjectiveProtection",
+            "StageClearance"
+          ],
+          "name": "EnemyDefenseSynergy",
+          "purpose": "Establishes the dynamic relationship between enemy wave types, defender placements, and resource allocation to create adaptive and responsive defensive strategies.",
+          "playerChoice": "Player chooses where to place defenders, what resources to allocate, and how to adjust the defense based on enemy wave composition and type."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "EnemyWaveType",
+            "DefenderPlacement",
+            "ResourcePool",
+            "EnemyType",
+            "WaveComposition"
+          ],
+          "stateOutputs": [
+            "DefensiveStrategy",
+            "ResourceAllocation",
+            "ObjectiveProtection",
+            "StageClearance"
+          ],
+          "name": "EnemyDefenseSynergy",
+          "purpose": "Establishes the dynamic relationship between enemy wave types, defender placements, and resource allocation to create adaptive and responsive defensive strategies.",
+          "playerChoice": "Player chooses where to place defenders, what resources to allocate, and how to adjust the defense based on enemy wave composition and type."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "EnemyWaveType",
+            "DefenderPlacement",
+            "ResourcePool",
+            "EnemyType",
+            "WaveComposition"
+          ],
+          "stateOutputs": [
+            "DefensiveStrategy",
+            "ResourceAllocation",
+            "ObjectiveProtection",
+            "StageClearance"
+          ],
+          "name": "EnemyDefenseSynergy",
+          "purpose": "Establishes the dynamic relationship between enemy wave types, defender placements, and resource allocation to create adaptive and responsive defensive strategies.",
+          "playerChoice": "Player chooses where to place defenders, what resources to allocate, and how to adjust the defense based on enemy wave composition and type."
+        }
+      ],
+      "multiplayerMode": "COOP"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "골목 군단 대전은 플레이어가 매 단계에서 '상대의 공격을 막고, 자원을 모아 방어 구조를 강화하며, 다음 전투의 전략을 결정하는' 단순 반복과 달리, **진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프****를 중심으로, **모바일에서도 즉시 이해되는 입력과 피드백****를 제공하는 **SINGLE_DEFENSE_STRATEGY** 게임이다. 플레이어는 매 단계에서 **'상대의 공격을 막고, 자원을 모아 방어 구조를 강화하며, 다음 전투의 전략을 결정하는'**을 중심으로, **진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프****를 바탕으로, **모바일에서도 즉시 이해되는 입력과 피드백****를 제공하는 **SINGLE_DEFENSE_STRATEGY** 게임이다. 플레이어는 매 단계에서 **'상대의 공격을 막고, 자원을 모아 방어 구조를 강화하며, 다음 전투의 전략을 결정하는'**을 중심으로, **진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프****를 바탕으로, **모바일에서도 즉시 이해되는 입력과 피드백****를 제공하는 **SINGLE_DEFENSE_STRATEGY** 게임이다. 플레이어는 매 단계에서 **'상대의 공격을 막고, 자원을 모아 방어 구조를 강화하며, 다음 전투의 전략을 결정하는'**을 중심으로, **진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프****를 바탕으로, **모바일에서도 즉시 이해되는 입력과 피드백****를 제공하는 **SINGLE_DEFENSE_STRATEGY** 게임이다. 플레이어는 매 단계에서 **'상대의 공격을 막고, 자원을 모아 방어 구조를 강화하며, 다음 전투의 전략을 결정하는'**을 중심으로, **진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프****를 바탕으로, **모바일에서도 즉시 이해되는 입력과 피드백****를 제공하는 **SINGLE_DEFENSE_STRATEGY** 게임이다. 플레이어는 매 단계에서 **'상대의 공격을 막고, 자원을 모아 방어 구조를 강화하며, 다음 전투의전",
+      "playerFantasy": "골목 군단 대전은 플레이어가 매 단계에서 '상대의 공격을 막고, 자원을 모아 방어 구조를 강화하며, 다음 전투의 전략을 결정하는'을 중심으로, **진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프**를 바탕으로, **모바일에서도 즉시 이해되는 입력과 피드백**를 제공하는 **SINGLE_DEFENSE_STRATEGY** 게임이다. 플레이어는 매 단계에서 **'상대의 공격을 막고, 자원을 모아 방어 구조를 강화하며, 다음 전투의 전략을 결정하는'**을 중심으로, **진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프**를 바탕으로, **모바일에서도 즉시 이해되는 입력과 피드백**를 제공하는 **SINGLE_DEFENSE_STRATEGY** 게임이다. 플레이어는 매 단계에서 **'상대의 공격을 막고, 자원을 모아 방어 구조를 강화하며, 다음 전투의 전략을 결정하는'**을 중심으로, **진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프**를 바탕으로, **모바일에서도 즉시 이해되는 입력과 피드백**를 제공하는 **SINGLE_DEFENSE_STRATEGY** 게임이다. 플레이어는 매 단계에서 **'상대의 공격을 막고, 자원을 모아 방어 구조를 강화하며, 다음 전투의 전략을 결정하는'**을 중심으로, **진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프**를 바탕으로, **모바일에서도 즉시 이해되는 입력과 피드백**를 제공하는 **SINGLE_DEFENSE_STRATEGY** 게임이다. 플레이어는 매 단계에서 **'상대의 공격을 막고, 자원을 모아 방어 구조를 강화하며, 다음 전투의 전략을 결정하는'**을 중심으로, **진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프**를 바탕으로, **모바일에서도 즉시 이해되는 입력과 피드백**를 제공하는 **SINGLE_DEF轼",
+      "coreFun": "골목 군단 대전은 플레이어가 매 단계에서 '상대의 공격을 막고, 자원을 모아 방어 구조를 강화하며, 다음 전투의 전략을 결정하는'을 중심으로, **진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프**를 바탕으로, **모바일에서도 즉시 이해되는 입력과 피드백**를 제공하는 **SINGLE_DEFENSE_STRATEGY** 게임이다. 플레이어는 매 단계에서 **'상대의 공격을 막고, 자원을 모아 방어 구조를 강화하며, 다음 전투의 전략을 결정하는'**을 중심으로, **진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프**를 바탕으로, **모바일에서도 즉시 이해되는 입력과 피드백**를 제공하는 **SINGLE_DEFENSE_STRATEGY** 게임이다. 플레이어는 매 단계에서 **'상대의 공격을 막고, 자원을 모아 방어 구조를 강화하며, 다음 전투의 전략을 결정하는'**을 중심으로, **진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프**를 바탕으로, **모바일에서도 즉시 이해되는 입력과 피드백**를 제공하는 **SINGLE_DEFENSE_STRATEGY** 게임이다. 플레이어는 매 단계에서 **'상대의 공격을 막고, 자원을 모아 방어 구조를 강화하며, 다음 전투의 전략을 결정하는'**을 중심으로, **진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프**를 바탕으로, **모바일에서도 즉시 이해되는 입력과 피드백**를 제공하는 **SINGLE_DEFENSE_STRATEGY** 게임이다. 플레이어는 매 단계에서 **'상대의 공격을 막고, 자원을 모아 방어 구조를 강화하며, 다음 전투의 전략을 결정하는'**을 중심으로, **진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프**를 바탕으로, **모바일에서도 즉시 이해되는 입력과 피드백**를 제공하는 **SINGLE_DEFЕ",
+      "coreLoop": [
+        "INPUT: Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "PROCESS: Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "OUTPUT: Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "EnemyWaveType",
+            "DefenderPlacement",
+            "ResourcePool",
+            "EnemyType",
+            "WaveComposition"
+          ],
+          "stateOutputs": [
+            "DefensiveStrategy",
+            "ResourceAllocation",
+            "ObjectiveProtection",
+            "StageClearance"
+          ],
+          "name": "EnemyDefenseSynergy",
+          "purpose": "Establishes the dynamic relationship between enemy wave types, defender placements, and resource allocation to create adaptive and responsive defensive strategies.",
+          "playerChoice": "Player chooses where to place defenders, what resources to allocate, and how to adjust the defense based on enemy wave composition and type."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "EnemyWaveType",
+            "DefenderPlacement",
+            "ResourcePool",
+            "EnemyType",
+            "WaveComposition"
+          ],
+          "stateOutputs": [
+            "DefensiveStrategy",
+            "ResourceAllocation",
+            "ObjectiveProtection",
+            "StageClearance"
+          ],
+          "name": "EnemyDefenseSynergy",
+          "purpose": "Establishes the dynamic relationship between enemy wave types, defender placements, and resource allocation to create adaptive and responsive defensive strategies.",
+          "playerChoice": "Player chooses where to place defenders, what resources to allocate, and how to adjust the defense based on enemy wave composition and type."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "EnemyWaveType",
+            "DefenderPlacement",
+            "ResourcePool",
+            "EnemyType",
+            "WaveComposition"
+          ],
+          "stateOutputs": [
+            "DefensiveStrategy",
+            "ResourceAllocation",
+            "ObjectiveProtection",
+            "StageClearance"
+          ],
+          "name": "EnemyDefenseSynergy",
+          "purpose": "Establishes the dynamic relationship between enemy wave types, defender placements, and resource allocation to create adaptive and responsive defensive strategies.",
+          "playerChoice": "Player chooses where to place defenders, what resources to allocate, and how to adjust the defense based on enemy wave composition and type."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "EnemyWaveType",
+            "DefenderPlacement",
+            "ResourcePool",
+            "EnemyType",
+            "WaveComposition"
+          ],
+          "stateOutputs": [
+            "DefensiveStrategy",
+            "ResourceAllocation",
+            "ObjectiveProtection",
+            "StageClearance"
+          ],
+          "name": "EnemyDefenseSynergy",
+          "purpose": "Establishes the dynamic relationship between enemy wave types, defender placements, and resource allocation to create adaptive and responsive defensive strategies.",
+          "playerChoice": "Player chooses where to place defenders, what resources to allocate, and how to adjust the defense based on enemy wave composition and type."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "EnemyWaveType",
+            "DefenderPlacement",
+            "ResourcePool",
+            "EnemyType",
+            "WaveComposition"
+          ],
+          "stateOutputs": [
+            "DefensiveStrategy",
+            "ResourceAllocation",
+            "ObjectiveProtection",
+            "StageClearance"
+          ],
+          "name": "EnemyDefenseSynergy",
+          "purpose": "Establishes the dynamic relationship between enemy wave types, defender placements, and resource allocation to create adaptive and responsive defensive strategies.",
+          "playerChoice": "Player chooses where to place defenders, what resources to allocate, and how to adjust the defense based on enemy wave composition and type."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 478004,
-      "lastMs": 39817,
+      "totalMs": 655198,
+      "lastMs": 144832,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:18:23.943Z"
+      "updatedAt": "2026-10-08T12:21:21.148Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:10:25.792Z",
-  "updatedAt": "2026-10-08T12:18:23.945Z",
+  "updatedAt": "2026-10-08T12:21:21.151Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2556,12 +2782,178 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:18:23.945Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "0995a56d43f1bc32a6c1f245a3ac9cb88034edb9896caef6513c0f87c12a3cbc"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "enemyWaveType→defensiveStrategy의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: enemyWaveType→defensiveStrategy의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "defenderPlacement→resourceAllocation의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: defenderPlacement→resourceAllocation의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "resourcePool→objectiveProtection의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: resourcePool→objectiveProtection의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "enemyType→stageClearance의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: enemyType→stageClearance의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "waveComposition→defensiveStrategy의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: waveComposition→defensiveStrategy의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::systems-progression": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "forward",
+      "progressionEconomyBalance": {
+        "progressionLoop": "repeated",
+        "resourceFlow": "steady",
+        "balanceRules": "balanced"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "enemyWaveType",
+          "newGameplay": "EnemyWaveType",
+          "systemImpact": "EnemyDefenseSynergy"
+        },
+        {
+          "milestone": "defenderPlacement",
+          "newGameplay": "DefenderPlacement",
+          "systemImpact": "EnemyDefenseSynergy"
+        },
+        {
+          "milestone": "resourcePool",
+          "newGameplay": "ResourcePool",
+          "systemImpact": "EnemyDefenseSynergy"
+        },
+        {
+          "milestone": "enemyType",
+          "newGameplay": "EnemyType",
+          "systemImpact": "EnemyDefenseSynergy"
+        },
+        {
+          "milestone": "waveComposition",
+          "newGameplay": "WaveComposition",
+          "systemImpact": "EnemyDefenseSynergy"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "enemyWaveType",
+          "defenderPlacement",
+          "resourcePool",
+          "enemyType",
+          "waveComposition"
+        ],
+        "retryFlow": "steady",
+        "riskPressure": "balanced",
+        "recoveryRules": "balanced"
+      }
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T12:21:21.148Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/line-defense/2026-10-08/design-seed.json",
+    "contentDigest": "699bba902ddcb02e183c9809013d11ef430f4b48b0685f3ad528be5953fb6313",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
