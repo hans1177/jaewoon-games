@@ -1,0 +1,14 @@
+{
+  "name": "jaewoon-multiplayer",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node --check worker.js",
+    "test": "node --check worker.js",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "4.131.2"
+  }
+}
