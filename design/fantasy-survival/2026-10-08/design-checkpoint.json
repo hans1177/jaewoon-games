@@ -968,25 +968,78 @@
       "platformAdaptation": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하",
       "implementationScope": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하",
       "validationPlan": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하"
+    },
+    "local_authoring_parts::c4041411870d4e899495e1e795d29bf6bea039405e882745644149b6bcc5e848:strategy,label,concept,playerFantasy": {
+      "strategy": {
+        "routeEdges": [
+          {
+            "from": "월드 상태 (18000×12000 마력숲 월드, 수정 지역, 화산, 세계수, 연구소, 퀘스트 공간)",
+            "to": "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결"
+          },
+          {
+            "from": "월드 상태 (18000×12000 마력숲 월드, 수정 지역, 화산, 세계수, 연구소, 퀘스트 공간)",
+            "to": "다음 상태와 접근 가능성이 바뀐 월드 상태"
+          }
+        ],
+        "resourceSites": [
+          {
+            "stateKey": "월드 상태",
+            "regionId": "18000×12000 마력숲 월드"
+          },
+          {
+            "stateKey": "플레이어 이동",
+            "regionId": "수정 지역"
+          },
+          {
+            "stateKey": "채집",
+            "regionId": "화산"
+          },
+          {
+            "stateKey": "전투",
+            "regionId": "세계수"
+          },
+          {
+            "stateKey": "제작",
+            "regionId": "동굴"
+          },
+          {
+            "stateKey": "퀘스트 상태",
+            "regionId": "연구소"
+          }
+        ],
+        "cooperation": [
+          {
+            "ruleId": "SIGNATURE_FIGHT_SURVIVAL",
+            "regionId": "18000×12000 마력숲 월드",
+            "abilityId": "FIGHT_SURVIVAL"
+          }
+        ],
+        "advantage": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하",
+        "cost": "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결",
+        "bestSituation": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하"
+      },
+      "label": "PLAN_B",
+      "concept": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하",
+      "playerFantasy": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 24,
-      "successes": 20,
+      "calls": 25,
+      "successes": 21,
       "failures": 4,
       "timeouts": 4,
       "jsonFailures": 0,
-      "totalMs": 3706754,
-      "lastMs": 103224,
+      "totalMs": 3856971,
+      "lastMs": 150217,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T15:41:12.214Z"
+      "updatedAt": "2026-10-08T15:43:42.438Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:15:14.939Z",
-  "updatedAt": "2026-10-08T15:41:12.219Z",
+  "updatedAt": "2026-10-08T15:43:42.438Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3189,7 +3242,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T15:41:12.219Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:43:42.438Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
