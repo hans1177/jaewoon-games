@@ -606,25 +606,28 @@
     },
     "local_authoring_parts::7faffd58051cf9b127f2f1b3881e1b011e4e7e476d1a5e34def9adecc8a1d14e:toSystem": {
       "toSystem": "마을 던전 RPG의 주요 시스템"
+    },
+    "local_authoring_parts::7faffd58051cf9b127f2f1b3881e1b011e4e7e476d1a5e34def9adecc8a1d14e:trigger": {
+      "trigger": "systemInterconnections[0].stateChange"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 21,
-      "successes": 21,
+      "calls": 22,
+      "successes": 22,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1674555,
-      "lastMs": 42951,
+      "totalMs": 1717195,
+      "lastMs": 42640,
       "lastError": null,
-      "updatedAt": "2026-10-08T09:20:54.149Z"
+      "updatedAt": "2026-10-08T09:21:36.791Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:52:59.507Z",
-  "updatedAt": "2026-10-08T09:20:54.149Z",
+  "updatedAt": "2026-10-08T09:21:36.791Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3000,7 +3003,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T09:20:54.149Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:21:36.791Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
