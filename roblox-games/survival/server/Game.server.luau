@@ -668,6 +668,9 @@ Players.PlayerRemoving:Connect(function(player)
   else
     warn("SURVIVAL_SAVE_WRITE_SKIPPED_UNVERIFIED_READ")
   end
+  -- 이탈한 플레이어의 전투 모델을 정리하여 남은 동료의 교전 대상이 유령으로 남지 않게 한다.
+  local departingEnemy = currentEnemyFor(player)
+  if departingEnemy then departingEnemy:Destroy() end
   lastAction[player] = nil
   worldObjectStates[player] = nil
   verifiedSaveRead[player] = nil
