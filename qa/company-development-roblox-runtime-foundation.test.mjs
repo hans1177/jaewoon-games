@@ -1268,7 +1268,11 @@ test('Open Cloud engine reuses the same Luau session to capture map and world ev
       {message:'JAEWOON_OPEN_CLOUD_WORLD_TERRAIN_PRESENT=true'},
       {message:'JAEWOON_OPEN_CLOUD_WORLD_LIGHTING_ATMOSPHERE=true'},
       {message:'JAEWOON_OPEN_CLOUD_WORLD_STREAMING_ENABLED=true'},
-      {message:'JAEWOON_OPEN_CLOUD_WORLD_SCAN_CAPPED=false'}
+      {message:'JAEWOON_OPEN_CLOUD_WORLD_SCAN_CAPPED=false'},
+      {message:'JAEWOON_OPEN_CLOUD_WORLD_OBJECT_IDS=3'},
+      {message:'JAEWOON_OPEN_CLOUD_WORLD_DUPLICATE_IDS=1'},
+      {message:'JAEWOON_OPEN_CLOUD_RESOURCE_PROMPTS=2'},
+      {message:'JAEWOON_OPEN_CLOUD_RESOURCE_PROMPTS_ENABLED=0'}
     ]}]}}
   ];
   const fetchImpl=async(url,init={})=>{calls.push({url,init});const row=responses.shift();return {ok:row.ok,status:row.status,text:async()=>JSON.stringify(row.body)};};
@@ -1289,8 +1293,18 @@ test('Open Cloud engine reuses the same Luau session to capture map and world ev
   assert.equal(result.worldEvidence.terrainPresent,true);
   assert.equal(result.worldEvidence.lightingAtmospherePresent,true);
   assert.equal(result.worldEvidence.streamingEnabled,true);
+  assert.equal(result.worldEvidence.worldObjectBinding.observed,true);
+  assert.equal(result.worldEvidence.worldObjectBinding.stableIdCount,3);
+  assert.equal(result.worldEvidence.worldObjectBinding.duplicateStableIdCount,1);
+  assert.equal(result.worldEvidence.worldObjectBinding.resourcePromptCount,2);
+  assert.equal(result.worldEvidence.worldObjectBinding.enabledResourcePromptCount,0);
+  assert.equal(result.worldEvidence.worldObjectBinding.gameplayInteractionVerified,false);
   const body=JSON.parse(calls[0].init.body);
   assert.match(body.script,/JAEWOON_OPEN_CLOUD_WORLD_BOUNDS_SIZE/);
+  assert.match(body.script,/JAEWOON_OPEN_CLOUD_WORLD_OBJECT_IDS/);
+  assert.match(body.script,/JAEWOON_OPEN_CLOUD_WORLD_DUPLICATE_IDS/);
+  assert.match(body.script,/JAEWOON_OPEN_CLOUD_RESOURCE_PROMPTS_ENABLED/);
+  assert.match(body.script,/item:GetAttribute\("WorldObjectId"\)/);
   assert.match(body.script,/pcall\(function\(\) RunService:Run\(\) end\)/);
   assert.match(body.script,/startupWaitDeadline=startupWaitStarted\+8/);
   assert.match(body.script,/while not runtimeWorldReady\(\) and os\.clock\(\)<startupWaitDeadline do task\.wait\(0\.25\) end/);
@@ -1306,6 +1320,24 @@ test('Open Cloud engine reuses the same Luau session to capture map and world ev
   assert.match(workflow,/openCloudWorldEvidence:engineProbe\?\.worldEvidence\|\|null/);
 });
 
+
+
+test('Open Cloud world interaction markers absent never become a fabricated gameplay pass',async()=>{
+  const responses=[
+    {path:'universes/1/places/2/versions/20/luau-execution-sessions/s/tasks/t',state:'COMPLETE'},
+    {luauExecutionSessionTaskLogs:[{messages:[
+      'JAEWOON_OPEN_CLOUD_ENGINE_PLACE=2',
+      'JAEWOON_OPEN_CLOUD_ENGINE_VERSION=20'
+    ]}]}
+  ];
+  const result=await probeRobloxOpenCloudEngine({
+    universeId:'1',placeId:'2',versionNumber:20,apiKey:'test-key',
+    fetchImpl:async()=>({ok:true,status:200,text:async()=>JSON.stringify(responses.shift())})
+  });
+  assert.equal(result.worldEvidence.worldObjectBinding.observed,false);
+  assert.equal(result.worldEvidence.worldObjectBinding.stableIdCount,0);
+  assert.equal(result.worldEvidence.worldObjectBinding.gameplayInteractionVerified,false);
+});
 
 test('Open Cloud requested game is isolated while empty game_id keeps bounded cross-game parallel batch scanning',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
