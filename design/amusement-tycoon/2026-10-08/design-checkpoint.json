@@ -85,25 +85,42 @@
       "name": "타이쿤 놀이 시스템",
       "purpose": "플레이어의 즉각적인 선택과 피드백을 통해 반복 가능한 핵심 루프를 구현",
       "playerChoice": "점수, 거리, 세션 목표 설정 및 선택 결과의 반복적 변화를 관찰"
+    },
+    "local_authoring_parts::d24907a0c4ecb14be4a58508148ba2df462450cf405ddb920c2b7cc188203228:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "score",
+        "distance",
+        "session_goal"
+      ],
+      "stateOutputs": [
+        "progression_benefit",
+        "risk_choice",
+        "reward"
+      ],
+      "name": "타이쿤 놀이 시스템",
+      "purpose": "플레이어의 즉각적인 선택과 피드백을 통해 반복 가능한 핵심 루프를 구현",
+      "playerChoice": "점수, 거리, 세션 목표 설정 및 선택 결과의 반복적 변화를 관찰"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 913975,
-      "lastMs": 101584,
+      "totalMs": 1016770,
+      "lastMs": 102795,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:27:50.713Z"
+      "updatedAt": "2026-10-08T10:29:33.510Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:12:36.705Z",
-  "updatedAt": "2026-10-08T10:27:50.714Z",
+  "updatedAt": "2026-10-08T10:29:33.510Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2027,7 +2044,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T10:27:50.713Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:29:33.510Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
