@@ -58,25 +58,44 @@
       "name": "초원 시드형 로그라이크 런",
       "purpose": "초원 기본 몬스터 10종은 서로 다른 전조·사거리·패링 가능 여부·특수공격을 가진다. 비밀 숲에서 백색 송곳니 또는 고목의 심장 히든 보스가 확률 출현한다.",
       "playerChoice": "초원 기본 몬스터 10종 중 하나를 선택해 로그라이크 런을 시작한다. 백색 송곳니 또는 고목의 심장 히든 보스가 출현하면 런을 종료하고 보스전을 시작한다."
+    },
+    "local_authoring_parts::b5e5d1bc4912e359d411a86cf730d85262e2f34653a33a6c0823d05481ebf641:signatureSystems:1": {
+      "id": "초원 런 보스 봉인 해제 조건",
+      "grammarRole": "A",
+      "stateInputs": [
+        "RoomCode",
+        "PlayerLevel",
+        "MonsterEliminatedCount",
+        "PlayerPartySize"
+      ],
+      "stateOutputs": [
+        "LogRun",
+        "MonsterSpawn",
+        "BattleResult",
+        "PlayerPartyFormation"
+      ],
+      "name": "초원 런 보스 봉인 해제 조건",
+      "purpose": "보스 봉인 해제 조건을 만족할 경우 로그라이크 런을 시작하고 보스전을 시작한다.",
+      "playerChoice": "보스 봉인 해제 조건을 만족할 경우 로그라이크 런을 시작한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 622424,
-      "lastMs": 47945,
+      "totalMs": 663483,
+      "lastMs": 41059,
       "lastError": null,
-      "updatedAt": "2026-10-08T06:58:12.701Z"
+      "updatedAt": "2026-10-08T06:58:53.761Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T06:47:50.251Z",
-  "updatedAt": "2026-10-08T06:58:12.701Z",
+  "updatedAt": "2026-10-08T06:58:53.761Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1495,7 +1514,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T06:58:12.701Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T06:58:53.761Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
