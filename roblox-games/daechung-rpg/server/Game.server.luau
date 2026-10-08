@@ -693,6 +693,45 @@ local function advanceTrial(p,amount)
  end
 end
 
+-- 메뉴와 NPC가 서버의 동일한 매매 로직을 사용한다. 가격과 티어는 GameConfig 원본이다.
+local function purchaseMerchantEquipment(p,kind)
+ local isWeapon=kind=="WEAPON"
+ if not isWeapon and kind~="ARMOR"then return false end
+ local merchantName=isWeapon and "WeaponMerchant"or"ArmorMerchant"
+ local village=world and world:FindFirstChild("Village")
+ local merchant=village and village:FindFirstChild(merchantName)
+ local characterRoot=root(p)
+ local health=hum(p)
+ if not merchant or not characterRoot or not health or health.Health<=0
+  or n(p,"CurrentZone",0)~=0 or p:GetAttribute("InCombat")==true
+  or (characterRoot.Position-merchant.Position).Magnitude>16 then
+  msg(p,"마을 "..(isWeapon and "무기상인"or"방어구상인").." 가까이에서 구매할 수 있어.")
+  feedback(p,"SHOP_RANGE_REJECTED")
+  return false
+ end
+ local tierKey=isWeapon and"WeaponTier"or"ArmorTier"
+ local prices=isWeapon and C.WeaponPrices or C.ArmorPrices
+ local tier=math.floor(n(p,tierKey,1))
+ if tier>=#prices then
+  msg(p,isWeapon and"최고급 무기 보유"or"최고급 방어구 보유")
+  feedback(p,isWeapon and"WEAPON_MAX"or"ARMOR_MAX")
+  return false
+ end
+ local cost=prices[tier+1]
+ if type(cost)~="number"or cost<0 then return false end
+ if n(p,"Gold",0)<cost then
+  msg(p,(isWeapon and"무기"or"방어구").." 구매 골드 부족 · "..cost)
+  feedback(p,isWeapon and"WEAPON_GOLD_SHORT"or"ARMOR_GOLD_SHORT")
+  return false
+ end
+ p:SetAttribute("Gold",n(p,"Gold",0)-cost)
+ p:SetAttribute(tierKey,tier+1)
+ setStats(p,not isWeapon)
+ msg(p,(isWeapon and"무기 "or"방어구 ")..(tier+1).."단계 구매")
+ feedback(p,isWeapon and"WEAPON_UPGRADE"or"ARMOR_UPGRADE")
+ return true
+end
+
 local function makeVillage()
  local f=Instance.new("Folder");f.Name="Village";f.Parent=world
  foundationSpawn=Instance.new("SpawnLocation");foundationSpawn.Name="VillageSpawn";foundationSpawn.Size=Vector3.new(12,1,12);foundationSpawn.Position=C.VillageCenter+Vector3.new(0,2,0);foundationSpawn.Anchored=true;foundationSpawn.Neutral=true;foundationSpawn.Transparency=1;foundationSpawn.CanCollide=true;foundationSpawn.Parent=f
@@ -733,15 +772,11 @@ local function makeVillage()
 
  local weapon=humanoidFigure(f,"WeaponMerchant",Vector3.new(22,6,8),Color3.fromRGB(85,92,112),Color3.fromRGB(170,120,65),.95);label(weapon,"무기상인",Color3.fromRGB(255,215,140),28)
  prompt(weapon,"무기상인","다음 무기 구매").Triggered:Connect(function(p)
-  local tier=n(p,"WeaponTier",1);if tier>=5 then msg(p,"최고급 무기 보유");feedback(p,"WEAPON_MAX")return end
-  local cost=C.WeaponPrices[tier+1];if n(p,"Gold",0)<cost then msg(p,"무기 구매 골드 부족 · "..cost);feedback(p,"WEAPON_GOLD_SHORT")return end
-  p:SetAttribute("Gold",n(p,"Gold",0)-cost);p:SetAttribute("WeaponTier",tier+1);setStats(p,false);msg(p,"무기 "..(tier+1).."단계 구매");feedback(p,"WEAPON_UPGRADE")
+  purchaseMerchantEquipment(p,"WEAPON")
  end)
  local armor=humanoidFigure(f,"ArmorMerchant",Vector3.new(22,6,-10),Color3.fromRGB(92,112,102),Color3.fromRGB(80,91,77),.95);label(armor,"방어구상인",Color3.fromRGB(180,235,190),28)
  prompt(armor,"방어구상인","다음 방어구 구매").Triggered:Connect(function(p)
-  local tier=n(p,"ArmorTier",1);if tier>=5 then msg(p,"최고급 방어구 보유");feedback(p,"ARMOR_MAX")return end
-  local cost=C.ArmorPrices[tier+1];if n(p,"Gold",0)<cost then msg(p,"방어구 구매 골드 부족 · "..cost);feedback(p,"ARMOR_GOLD_SHORT")return end
-  p:SetAttribute("Gold",n(p,"Gold",0)-cost);p:SetAttribute("ArmorTier",tier+1);setStats(p,true);msg(p,"방어구 "..(tier+1).."단계 구매");feedback(p,"ARMOR_UPGRADE")
+  purchaseMerchantEquipment(p,"ARMOR")
  end)
  local healer=humanoidFigure(f,"VillageHealer",Vector3.new(-18,6,-10),Color3.fromRGB(208,221,235),Color3.fromRGB(116,169,193),.95);label(healer,"치유사",Color3.fromRGB(180,232,255),28)
  prompt(healer,"치유사","회복").Triggered:Connect(function(p)local h=hum(p);if h then h.Health=h.MaxHealth;msg(p,"체력 완전 회복");feedback(p,"VILLAGE_HEAL")end end)
@@ -1391,7 +1426,9 @@ remote.OnServerEvent:Connect(function(p,a)
   if now-(lastRequest[p]or 0)<C.RemoteMinInterval then return end;lastRequest[p]=now
  end
  local accepted=false
- if CLASS_ACTIONS[a]then accepted=selectClass(p,CLASS_ACTIONS[a])
+ if a==C.Actions.BUY_WEAPON then accepted=purchaseMerchantEquipment(p,"WEAPON")
+ elseif a==C.Actions.BUY_ARMOR then accepted=purchaseMerchantEquipment(p,"ARMOR")
+ elseif CLASS_ACTIONS[a]then accepted=selectClass(p,CLASS_ACTIONS[a])
  elseif a==C.Actions.ADVANCE_A then accepted=chooseAdvancement(p,"A")
  elseif a==C.Actions.ADVANCE_B then accepted=chooseAdvancement(p,"B")
  elseif a==C.Actions.START_ADVANCEMENT_TRIAL then startAdvancementTrial(p);accepted=true
