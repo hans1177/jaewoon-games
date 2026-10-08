@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
+import {createHash} from 'node:crypto';
 import {analyzeVibeSurfaceDistribution,assetProductionGuidance,buildAllGameDynamicLibraryBindingPlan,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceObj,inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType,crossPlatform3dActorFamilyForType,synchronizeCompanyCommonAssetRegistry} from '../tools/vibe2-asset-production-plan.mjs';
 import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate,buildInternalAssetSourceUsageContract,inspectRobloxNativeCandidateQuality,executeDeclaredNativeDccAuthoringVerification,evaluateNativeAssetAuthoringCandidate,collectNativeAssetRuntimePromotionCandidates,persistedGeneratedAssetBindings} from '../tools/vibe2-source-worker.mjs';
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
@@ -86,6 +87,43 @@ test('genre-specific menu ideas reuse official genre signals without inventing m
       assert.equal(suggestions.runtimeVerifiedCount,0);
     }
   }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('Vibe source worker applies genre menu suggestions only to exact SHA-matched editable responsibility',()=>{
+  const sourcePath='roblox-games/daechung-rpg/shared/RPGMenu.luau';
+  const content=fs.readFileSync(sourcePath,'utf8');
+  const sha256=createHash('sha256').update(content).digest('hex');
+  const plan={
+    genreMenuRecommendations:{
+      signals:['RPG_PROGRESSION'],
+      candidateFeatures:[{
+        role:'CHARACTER',factory:'CreateCharacterDetailScreen',
+        status:'NATIVE_UI_SOURCE_PRESENT_RUNTIME_QA_REQUIRED',
+        companyUiSource:'assets/roblox/common-ui-v1/RobloxCommonUI.luau',
+        companyUiSourceSha256:'a'.repeat(64),sourceIdeaIds:['RPG_QUEST_EQUIPMENT_CODEX_SCREENS'],
+        gameSystemSourceRefs:[{path:sourcePath,sha256}],
+        existingNativeUiRefs:[{path:sourcePath,sha256}]
+      },{
+        role:'FAKE_SHOP',factory:'CreateShopFullScreen',
+        status:'IDEA_ONLY_GAME_SYSTEM_NOT_CONFIRMED',gameSystemSourceRefs:[],existingNativeUiRefs:[]
+      }]
+    }
+  };
+  const order={target:'roblox',goal:'RPG 캐릭터 장비 상점 메뉴 상태 동기화',
+    assetProduction:plan};
+  const exact=buildPrompt(order,{files:[{path:sourcePath,content,editable:true}]},[sourcePath]);
+  assert.match(exact,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
+  assert.match(exact,/RPG_QUEST_EQUIPMENT_CODEX_SCREENS/);
+  assert.match(exact,/CreateCharacterDetailScreen/);
+  assert.match(exact,/Check each exact original source hash/);
+  assert.doesNotMatch(exact,/FAKE_SHOP/);
+  const stale=buildPrompt(order,{files:[{path:sourcePath,content:content+'\n-- changed',editable:true}]},[sourcePath]);
+  assert.doesNotMatch(stale,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
+  const clipped=buildPrompt(order,{files:[{path:sourcePath,content,editable:true,truncated:true}]},[sourcePath]);
+  assert.doesNotMatch(clipped,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
+  const unrelated=buildPrompt({...order,goal:'fix shader normals'},
+    {files:[{path:sourcePath,content,editable:true}]},[sourcePath]);
+  assert.doesNotMatch(unrelated,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
 });
 
 test('OBJ static validation reads actual polygons and material references without self-approving production',()=>{
