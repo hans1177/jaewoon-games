@@ -511,25 +511,43 @@
         "New game states, altered progression paths, and expanded player agency"
       ],
       "fromSystem": "SURVIVAL2-MAIN-01-system-interconnection-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-0"
+    },
+    "local_authoring_parts::a7a8f02d85b4369ed3855b62c2352b1d7775899f4d518e2f0b2c32e3cc1cacf2:toSystem,trigger,stateChange": {
+      "toSystem": "SURVIVAL2-MAIN-02-system-interconnection-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-0",
+      "trigger": "Explore the forest for a needed resource while reading environmental and creature danger.",
+      "stateChange": "World state changes, new survival advantages, risk/reward dynamics, and next act are established through adaptive resource allocation and strategic decision-making."
+    },
+    "local_authoring_parts::9caae7329f7431210c76093cacbea23b7396c02daf9e3669438491553bd076e7:systemInterconnections:1": {
+      "fromId": "SURVIVAL2-MAIN-01",
+      "toId": "SURVIVAL2-MAIN-02",
+      "stateKeys": [
+        "World state changes, new survival advantages, risk/reward dynamics, and next act",
+        "Enhanced gameplay mechanics, improved survival conditions, and strategic depth",
+        "New game states, altered progression paths, and expanded player agency"
+      ],
+      "fromSystem": "SURVIVAL2-MAIN-01-system-interconnection-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-0",
+      "toSystem": "SURVIVAL2-MAIN-02-system-interconnection-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-0",
+      "trigger": "Explore the forest for a needed resource while reading environmental and creature danger.",
+      "stateChange": "World state changes, new survival advantages, risk/reward dynamics, and next act are established through adaptive resource allocation and strategic decision-making."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 15,
-      "successes": 15,
+      "calls": 16,
+      "successes": 16,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1468232,
-      "lastMs": 108966,
+      "totalMs": 1573545,
+      "lastMs": 105313,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:27:59.297Z"
+      "updatedAt": "2026-10-08T21:29:44.612Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:03:31.006Z",
-  "updatedAt": "2026-10-08T21:27:59.297Z",
+  "updatedAt": "2026-10-08T21:29:44.613Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2921,7 +2939,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T21:27:59.297Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:29:44.613Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
