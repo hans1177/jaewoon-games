@@ -86,25 +86,181 @@
       "name": "Board Layout Evolution System",
       "purpose": "Player's initial action defines the game layout, with dynamic layout feedback shaping subsequent states.",
       "playerChoice": "Define a new board pattern or obstacle combination to trigger game progression."
+    },
+    "local_authoring_parts::e646ada1b503ce490d29280a63d31bca0df3071d6fc25840945b3a49e7667608:signatureSystems:4": {
+      "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "BOARD_LAYOUT"
+      ],
+      "stateOutputs": [
+        "GAME_PROGRESS"
+      ],
+      "name": "Board Layout Evolution and Progression",
+      "purpose": "Player's initial action defines the game layout, with dynamic feedback shaping subsequent states. This system enables progression through multiple layers of complexity, including discovery, mastery, and revisitation.",
+      "playerChoice": "Define a new board pattern or obstacle combination to trigger game progression and unlock deeper gameplay layers."
+    },
+    "local_authoring_parts::c5a0d3a21d1012c2aaf43ed4ed53f18aff05939d5d57662b687a7bc6aa75a33b:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "GAME_STATUS"
+          ],
+          "name": "Board State Transition System",
+          "purpose": "Player's initial action defines the game state, with dynamic board feedback shaping subsequent states.",
+          "playerChoice": "Define a new level with clear goal, limited moves, obstacles, or puzzle constraint."
+        },
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_2",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BOARD_PATTERN"
+          ],
+          "stateOutputs": [
+            "GAME_LAYOUT"
+          ],
+          "name": "Board Pattern Evolution System",
+          "purpose": "Player's initial action defines the game layout, with dynamic pattern feedback shaping subsequent states.",
+          "playerChoice": "Define a new board pattern or obstacle combination to trigger game progression."
+        },
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_3",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BOARD_LAYOUT"
+          ],
+          "stateOutputs": [
+            "GAME_PROGRESS"
+          ],
+          "name": "Board Layout Evolution System",
+          "purpose": "Player's initial action defines the game layout, with dynamic layout feedback shaping subsequent states.",
+          "playerChoice": "Define a new board pattern or obstacle combination to trigger game progression."
+        },
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BOARD_LAYOUT"
+          ],
+          "stateOutputs": [
+            "GAME_PROGRESS"
+          ],
+          "name": "Board Layout Evolution System",
+          "purpose": "Player's initial action defines the game layout, with dynamic layout feedback shaping subsequent states.",
+          "playerChoice": "Define a new board pattern or obstacle combination to trigger game progression."
+        },
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BOARD_LAYOUT"
+          ],
+          "stateOutputs": [
+            "GAME_PROGRESS"
+          ],
+          "name": "Board Layout Evolution and Progression",
+          "purpose": "Player's initial action defines the game layout, with dynamic feedback shaping subsequent states. This system enables progression through multiple layers of complexity, including discovery, mastery, and revisitation.",
+          "playerChoice": "Define a new board pattern or obstacle combination to trigger game progression and unlock deeper gameplay layers."
+        }
+      ]
+    },
+    "local_authoring_parts::fa49406fc540cc067d3245e07f2dbeba1e82b30043e79bf1d9773af2ed485cbc:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "GAME_STATUS"
+          ],
+          "name": "Board State Transition System",
+          "purpose": "Player's initial action defines the game state, with dynamic board feedback shaping subsequent states.",
+          "playerChoice": "Define a new level with clear goal, limited moves, obstacles, or puzzle constraint."
+        },
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_2",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BOARD_PATTERN"
+          ],
+          "stateOutputs": [
+            "GAME_LAYOUT"
+          ],
+          "name": "Board Pattern Evolution System",
+          "purpose": "Player's initial action defines the game layout, with dynamic pattern feedback shaping subsequent states.",
+          "playerChoice": "Define a new board pattern or obstacle combination to trigger game progression."
+        },
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_3",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BOARD_LAYOUT"
+          ],
+          "stateOutputs": [
+            "GAME_PROGRESS"
+          ],
+          "name": "Board Layout Evolution System",
+          "purpose": "Player's initial action defines the game layout, with dynamic layout feedback shaping subsequent states.",
+          "playerChoice": "Define a new board pattern or obstacle combination to trigger game progression."
+        },
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BOARD_LAYOUT"
+          ],
+          "stateOutputs": [
+            "GAME_PROGRESS"
+          ],
+          "name": "Board Layout Evolution System",
+          "purpose": "Player's initial action defines the game layout, with dynamic layout feedback shaping subsequent states.",
+          "playerChoice": "Define a new board pattern or obstacle combination to trigger game progression."
+        },
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BOARD_LAYOUT"
+          ],
+          "stateOutputs": [
+            "GAME_PROGRESS"
+          ],
+          "name": "Board Layout Evolution and Progression",
+          "purpose": "Player's initial action defines the game layout, with dynamic feedback shaping subsequent states. This system enables progression through multiple layers of complexity, including discovery, mastery, and revisitation.",
+          "playerChoice": "Define a new board pattern or obstacle combination to trigger game progression and unlock deeper gameplay layers."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 387158,
-      "lastMs": 33599,
+      "totalMs": 426099,
+      "lastMs": 38941,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:51:24.867Z"
+      "updatedAt": "2026-10-08T17:52:03.810Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:44:57.674Z",
-  "updatedAt": "2026-10-08T17:51:24.867Z",
+  "updatedAt": "2026-10-08T17:52:03.813Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2141,7 +2297,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:51:24.867Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:52:03.813Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
