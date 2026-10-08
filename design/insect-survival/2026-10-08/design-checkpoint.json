@@ -780,25 +780,29 @@
         }
       ],
       "progressionDirection": "DISCOVERABLE_CLUE -> EXPERIMENT_OR_MASTERY_CHOICE -> COST_AND_COUNTERPLAY -> NEW_PLAY_OPTION -> NEXT_OPEN_QUESTION"
+    },
+    "local_authoring_parts::5f6ba4b404018717b1a505b48650746d2c509f68eab5cecd1e2e41688a8fc881:progressionLoop,resourceFlow": {
+      "progressionLoop": "DISCOVERABLE_CLUE -> EXPERIMENT_OR_MASTERY_CHOICE -> COST_AND_COUNTERPLAY -> NEW_PLAY_OPTION -> NEXT_OPEN_QUESTION",
+      "resourceFlow": "fromSystem:GAMEPLAY_SKETCH v4, toSystem:GAMEPLAY_SKETCH v4, trigger:EcoRiskHandler, stateChange:survivalTool, safeRoute, ecologicalInsight"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 24,
-      "successes": 21,
+      "calls": 25,
+      "successes": 22,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2547961,
-      "lastMs": 56905,
+      "totalMs": 2639749,
+      "lastMs": 91788,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T12:44:39.166Z"
+      "updatedAt": "2026-10-08T15:27:56.261Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:02:11.066Z",
-  "updatedAt": "2026-10-08T15:26:24.468Z",
+  "updatedAt": "2026-10-08T15:27:56.261Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3032,7 +3036,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:44:39.168Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:27:56.261Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
