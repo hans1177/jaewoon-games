@@ -39,6 +39,17 @@ namespace JaewoonGames.DaechungRpg
         private string _enemyId = "skeleton";
         private readonly Dictionary<string, Sprite> _regions = new Dictionary<string, Sprite>();
         private readonly Dictionary<string, Sprite[]> _actorFrames = new Dictionary<string, Sprite[]>();
+        // 메인: 게임에서 이미 존재하는 마을 캐릭터는 고정 안내판 대신 이동하는 배우로 표현한다.
+        private readonly List<VillageResident> _villageResidents = new List<VillageResident>();
+        private sealed class VillageResident
+        {
+            public string Id;
+            public AnimatedActor Actor;
+            public Vector3[] AuthoredPath;
+            public int NextPoint;
+            public float PauseUntil;
+        }
+
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void AutoCreate()
@@ -100,6 +111,7 @@ namespace JaewoonGames.DaechungRpg
             InstallLocalActor(_player, "hero");
             InstallLocalActor(_enemy, "skeleton");
             InstallLocalActor(_coopPartner, "hero");
+            InitializeVillageResidents();
             _coopPartner.SetTint(new Color(0.64f, 1.0f, 0.8f, 1f));
             _ready = true;
             ShowTown();
@@ -119,6 +131,8 @@ namespace JaewoonGames.DaechungRpg
             _player?.Tick(Time.time);
             _enemy?.Tick(Time.time);
             _coopPartner?.Tick(Time.time);
+            // 주변 인물은 자기 업무/휴식 장소를 실제로 오간다. 매 프레임 새 스폰이나 모델 호출은 없다.
+            UpdateVillageResidents(Time.deltaTime);
         }
 
         public void ShowTown()
@@ -142,6 +156,11 @@ namespace JaewoonGames.DaechungRpg
             if (_hasCoopPartner) _coopPartner.Play("idle", true, true);
             _player.Position = new Vector3(0f, -1.65f, 0f);
             _player.Play("idle", true, true);
+            foreach (var resident in _villageResidents)
+            {
+                resident.Actor.SetVisible(true);
+                resident.Actor.Play("idle", true);
+            }
         }
 
         public void ShowBattle()
@@ -157,6 +176,7 @@ namespace JaewoonGames.DaechungRpg
             }
 
             ResetBattleActors();
+            foreach (var resident in _villageResidents) resident.Actor.SetVisible(false);
         }
 
         public void PlayTravelToBattle()
@@ -177,6 +197,72 @@ namespace JaewoonGames.DaechungRpg
             _combatRoutine = StartCoroutine(CombatExchangeRoutine(enemyDefeated, playerDefeated));
         }
 
+
+        // 메인: 기존 애니메이션 시스템을 그대로 사용한 마을의 생활 경로.
+        // 앵커는 현재 마을 무대의 이동 가능한 연출 공간이며 전투 좌표·스폰·저장 권한을 대신하지 않는다.
+        private void InitializeVillageResidents()
+        {
+            if (_villageResidents.Count > 0) return;
+            AddVillageResident("chief", new Color(1f, 0.85f, 0.59f, 1f),
+                new Vector3(-2.9f, -1.65f, -0.35f), new Vector3(-1.3f, -1.65f, -0.35f));
+            AddVillageResident("smith", new Color(0.69f, 0.83f, 0.95f, 1f),
+                new Vector3(-0.95f, -1.65f, 0.2f), new Vector3(0.55f, -1.65f, 0.2f));
+            AddVillageResident("merchant", new Color(0.72f, 1f, 0.78f, 1f),
+                new Vector3(1.2f, -1.65f, 0.5f), new Vector3(2.9f, -1.65f, 0.5f));
+            AddVillageResident("scout", new Color(1f, 0.7f, 0.9f, 1f),
+                new Vector3(-0.7f, -1.65f, -0.6f), new Vector3(2.4f, -1.65f, -0.6f));
+        }
+
+        private void AddVillageResident(string id, Color tint, params Vector3[] path)
+        {
+            var person = new AnimatedActor("VillageResident_" + id, path[0], true);
+            InstallLocalActor(person, "hero");
+            person.SetTint(tint);
+            person.SetVisible(false);
+            _villageResidents.Add(new VillageResident { Id = id, Actor = person, AuthoredPath = path,
+                NextPoint = path.Length > 1 ? 1 : 0, PauseUntil = Time.time + _villageResidents.Count * 0.55f });
+        }
+
+        private void UpdateVillageResidents(float dt)
+        {
+            foreach (var npc in _villageResidents)
+            {
+                if (_battleVisible || !_ready) { npc.Actor.Tick(Time.time); continue; }
+                var at = npc.Actor.Position;
+                var destination = npc.AuthoredPath[npc.NextPoint];
+                if (Time.time < npc.PauseUntil)
+                {
+                    npc.Actor.Play("idle", true);
+                }
+                else
+                {
+                    npc.Actor.Position = Vector3.MoveTowards(at, destination, Mathf.Min(dt, 0.05f) * 0.68f);
+                    npc.Actor.FaceRight(destination.x >= at.x);
+                    npc.Actor.Play("walk", true);
+                    if (Vector3.Distance(npc.Actor.Position, destination) < 0.05f)
+                    {
+                        npc.NextPoint = (npc.NextPoint + 1) % npc.AuthoredPath.Length;
+                        npc.PauseUntil = Time.time + 1.5f;
+                    }
+                }
+                npc.Actor.Tick(Time.time);
+            }
+        }
+
+        public bool IsVillageResidentNearby(string id)
+        {
+            if (!_ready || _battleVisible || _player == null) return false;
+            var resident = _villageResidents.Find(npc => npc.Id == id);
+            return resident != null && Vector3.Distance(_player.Position, resident.Actor.Position) <= 2.7f;
+        }
+
+        public void ReactVillageResident(string id)
+        {
+            var resident = _villageResidents.Find(npc => npc.Id == id);
+            if (resident == null || _battleVisible) return;
+            resident.PauseUntil = Time.time + 2.5f;
+            resident.Actor.Play("idle", true, true);
+        }
 
         // 메인: 게임 코어/저장값을 바꾸지 않는 지역별 씬과 몬스터 외형.
         public void SetRegionVisual(string id)
@@ -794,6 +880,7 @@ namespace JaewoonGames.DaechungRpg
             }
 
             public void SetTint(Color tint) { _renderer.color = tint; }
+            public void FaceRight(bool facingRight) { _renderer.flipX = facingRight; }
             public void SetMaterial(Material material) { _renderer.sharedMaterial = material; }
 
             public bool Loaded { get; set; }
