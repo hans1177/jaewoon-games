@@ -3011,6 +3011,14 @@ test('actual Blender authoring preserves a styled master across platforms and ex
       assert(application.boundsSizeMeters.every((value,axis)=>Math.abs(value-inspection.inventory.spatial.size[axis])<1e-5),'Blender and exported GLB must measure the same actual geometry');
       assert.equal(application.nativeRuntimeVerified,false);
       assert.equal(application.style.sourceStyleFamily,style);
+      assert.equal(application.materials.length,inspection.inventory.materials.length);
+      for(const material of application.materials){
+        const actual=inspection.inventory.materials[material.sourceMaterialIndex];
+        assert.equal(material.name,actual.name);
+        assert.deepEqual(material.baseColorFactor,actual.baseColorFactor,'exported texture color must not be tinted again by an inactive Blender socket');
+        assert.equal(material.metallicFactor,actual.metallicFactor);
+        assert.equal(material.roughnessFactor,actual.roughnessFactor);
+      }
       assert(application.materials.every(row=>Math.abs(row.unity.smoothness+row.web.roughness-1)<1e-6));
       assert(fs.statSync(path.join(folder,'preview.png')).size>1000);
       rows.push({target,style,sha256:inspection.sourceHash,spatial:inspection.inventory.spatial});

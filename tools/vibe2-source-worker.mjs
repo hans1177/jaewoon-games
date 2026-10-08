@@ -559,6 +559,24 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
             ||spatial.groundTranslation.some(value=>Math.abs(value)>tolerance)){
             throw new Error('NATIVE_GLB_APPLICATION_SPATIAL_MISMATCH:'+clean(recipe?.id));
           }
+          // 색·거칠기·금속성도 실제 출력과 대조한다. 플랫폼 변환 값의
+          // 불일치는 원본을 보존한 채 같은 제작 묶음을 복구한다.
+          if(platformApplication.materials!==undefined){
+            const actualMaterials=glbInspection.inventory.materials,declaredMaterials=platformApplication.materials;
+            const sameFactor=(a,b)=>Number.isFinite(a)&&Math.abs(a-b)<=1e-6;
+            const matched=new Set();
+            const valid=Array.isArray(declaredMaterials)&&declaredMaterials.length===actualMaterials.length&&declaredMaterials.every(row=>{
+              const material=Number.isInteger(row?.sourceMaterialIndex)?actualMaterials[row.sourceMaterialIndex]:actualMaterials.find(value=>value.name===row?.name);
+              if(!material||matched.has(material.index)||row.name!==material.name)return false;
+              matched.add(material.index);
+              return Array.isArray(row.baseColorFactor)&&row.baseColorFactor.length===4&&row.baseColorFactor.every((value,channel)=>sameFactor(value,material.baseColorFactor[channel]))
+                &&sameFactor(row.metallicFactor,material.metallicFactor)&&sameFactor(row.roughnessFactor,material.roughnessFactor)
+                &&sameFactor(row.web?.metalness,material.metallicFactor)&&sameFactor(row.web?.roughness,material.roughnessFactor)
+                &&sameFactor(row.roblox?.metalness,material.metallicFactor)&&sameFactor(row.roblox?.roughness,material.roughnessFactor)
+                &&sameFactor(row.unity?.metallic,material.metallicFactor)&&sameFactor(row.unity?.smoothness,1-material.roughnessFactor);
+            });
+            if(!valid)throw new Error('NATIVE_GLB_APPLICATION_MATERIAL_MISMATCH:'+clean(recipe?.id));
+          }
         }
         const priorNative=preOutput.get(nativeArtifact.path);
         const reproducesExistingNativeArtifact=Boolean(priorNative&&priorNative.sha256===nativeArtifact.sha256);

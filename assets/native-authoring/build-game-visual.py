@@ -265,12 +265,15 @@ bpy.ops.export_scene.gltf(
 )
 
 
-# Preserve one master identity across targets. Native import is a separate measured gate.
+# 플랫폼 재질은 내보낸 GLB 값과 동기화한다. 텍스처 입력에 가려진
+# Blender 소켓 기본색을 다시 곱하면 원본보다 어두워진다.
+glb_bytes=glb.read_bytes()
+glb_document=json.loads(glb_bytes[20:20+int.from_bytes(glb_bytes[12:16],'little')])
 materials=[]
-for mat in sorted({mat for obj in ASSET_OBJECTS for mat in obj.data.materials},key=lambda m:m.name):
-    bsdf=mat.node_tree.nodes.get('Principled BSDF')
-    rough=float(bsdf.inputs['Roughness'].default_value);metal=float(bsdf.inputs['Metallic'].default_value)
-    materials.append({'name':mat.name,'baseColorFactor':list(bsdf.inputs['Base Color'].default_value),
+for index,mat in enumerate(glb_document.get('materials',[])):
+    pbr=mat.get('pbrMetallicRoughness',{})
+    rough=pbr.get('roughnessFactor',1);metal=pbr.get('metallicFactor',1)
+    materials.append({'sourceMaterialIndex':index,'name':mat.get('name',f'material-{index}'),'baseColorFactor':pbr.get('baseColorFactor',[1,1,1,1]),
         'roughnessFactor':rough,'metallicFactor':metal,
         'web':{'metalness':metal,'roughness':rough,'colorSpace':'SRGB_BASE_COLOR_LINEAR_DATA'},
         'unity':{'metallic':metal,'smoothness':1-rough,'texturePacking':'METALLIC_R_SMOOTHNESS_A'},

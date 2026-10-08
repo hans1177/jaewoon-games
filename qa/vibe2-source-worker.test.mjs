@@ -1361,7 +1361,8 @@ test('declared Blender application rejects desynchronized size axes and pivot an
   try{
     const directory='assets/test/native/model',outputs=[directory+'/model.glb',directory+'/application.json'];
     const glb=dccFixtureGlb({grounded:true});
-    const application={version:1,masterSha256:crypto.createHash('sha256').update(glb).digest('hex'),sourceUnits:'METERS',sourceUp:'Y',pivot:'GROUND_CENTER',boundsSizeMeters:[4,2,0],nativeRuntimeVerified:false,automaticPromotionAllowed:false};
+    const material={sourceMaterialIndex:0,name:'material-0',baseColorFactor:[1,1,1,1],metallicFactor:0,roughnessFactor:.8,web:{metalness:0,roughness:.8},roblox:{metalness:0,roughness:.8},unity:{metallic:0,smoothness:.2}};
+    const application={version:1,masterSha256:crypto.createHash('sha256').update(glb).digest('hex'),sourceUnits:'METERS',sourceUp:'Y',pivot:'GROUND_CENTER',boundsSizeMeters:[4,2,0],materials:[material],nativeRuntimeVerified:false,automaticPromotionAllowed:false};
     write(path.join(root,'assets/test/build.py'),'# fixture only\n');
     write(path.join(root,outputs[0]),'original-model');
     write(path.join(root,outputs[1]),'original-application');
@@ -1389,6 +1390,12 @@ test('declared Blender application rejects desynchronized size axes and pivot an
     for(const patch of [{boundsSizeMeters:[4,20,0]},{boundsSizeMeters:[4,2]},{boundsSizeMeters:['4',2,0]},{sourceUp:'Z'},{sourceUnits:'CENTIMETERS'},{pivot:'CENTER'}]){
       setApplication({...application,...patch});
       assert.throws(()=>executeDeclaredNativeDccAuthoringVerification({cwd:root,order:workOrder,blenderExecutable:blender,persistCandidateOutputs:true}),/NATIVE_GLB_APPLICATION_SPATIAL_MISMATCH/);
+      assert.equal(fs.readFileSync(path.join(root,outputs[0]),'utf8'),'original-model');
+      assert.equal(fs.readFileSync(path.join(root,outputs[1]),'utf8'),'original-application');
+    }
+    for(const materials of [null,[],[material,material],[{...material,sourceMaterialIndex:1}],[{...material,name:'wrong'}],[{...material,baseColorFactor:[.4,.4,.4,1]}],[{...material,roughnessFactor:'0.8'}],[{...material,metallicFactor:1}],[{...material,unity:{metallic:0,smoothness:.8}}],[{...material,roblox:{metalness:0,roughness:.2}}]]){
+      setApplication({...application,materials});
+      assert.throws(()=>executeDeclaredNativeDccAuthoringVerification({cwd:root,order:workOrder,blenderExecutable:blender,persistCandidateOutputs:true}),/NATIVE_GLB_APPLICATION_MATERIAL_MISMATCH/);
       assert.equal(fs.readFileSync(path.join(root,outputs[0]),'utf8'),'original-model');
       assert.equal(fs.readFileSync(path.join(root,outputs[1]),'utf8'),'original-application');
     }
