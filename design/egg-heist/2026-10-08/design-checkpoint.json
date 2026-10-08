@@ -392,25 +392,42 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::e1a45ca2d4f816590110564b4c48205d92697ab5ecad42dc7514cf9b0ec056eb:signatureSystems:0": {
+      "id": "identity-core-1",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "identity-core-1-1",
+        "identity-core-1-2",
+        "identity-core-1-3"
+      ],
+      "stateOutputs": [
+        "identity-core-1-4",
+        "identity-core-1-5",
+        "identity-core-1-6"
+      ],
+      "name": "Scout a small area and identify the target egg and patrol risk",
+      "purpose": "Explore and assess the environment for potential targets and risks in a casual gameplay context.",
+      "playerChoice": "Select an area to scout, identify a target egg, and patrol for risks, with outcomes affecting the next world state."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 997485,
-      "lastMs": 55477,
+      "totalMs": 1068461,
+      "lastMs": 70976,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:07:36.806Z"
+      "updatedAt": "2026-10-08T08:08:47.879Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:50:59.270Z",
-  "updatedAt": "2026-10-08T08:07:36.826Z",
+  "updatedAt": "2026-10-08T08:08:47.879Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2312,10 +2329,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T08:07:36.808Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:08:47.879Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
