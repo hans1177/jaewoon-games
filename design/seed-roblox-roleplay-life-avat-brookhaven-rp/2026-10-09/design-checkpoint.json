@@ -27,25 +27,32 @@
       "identity": "Harbor Days is a mobile survival-roguelite game where players navigate through escalating horde battles in real-time, using strategic upgrades and choices to survive and progress. The core gameplay revolves around the action of 'Fight through an escalating horde' while positioning around enemy pressure, with each choice affecting the next state of the game world. This design aims to create a deep, immersive experience that combines tactical decision-making with rapid progression, all within a single-player mode with potential for multiplayer expansion.",
       "playerFantasy": "Harbor Days is a mobile survival-roguelite game where players navigate through escalating horde battles in real-time, using strategic upgrades and choices to survive and progress. The core gameplay revolves around the action of 'Fight through an escalating horde' while positioning around enemy pressure, with each choice affecting the next state of the game world. This design aims to create a deep, immersive experience that combines tactical decision-making with rapid progression, all within a single-player mode with potential for multiplayer expansion.",
       "coreFun": "플레이어는 실시간으로 증가하는 헤르드 전투에서 주변에 적 압박을 회피하며 'Fight through an escalating horde'라는 중심 행동을 수행합니다. 이 선택은 다음 상태로 영향을 미칩니다: 수집 가능한 보상 또는 경험, 업그레이드, 장비/기능 선택, 그리고 새로운 게임 세계 상태의 생성입니다."
+    },
+    "local_authoring_parts::d78c0504f286c82760fcf00ecc062a72bcd8a134b452084df9e63d0df6aeb605:coreLoop": {
+      "coreLoop": [
+        "INPUT: Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "SELECT: Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "OUTPUT: Status changes based on player choices, including increased difficulty, new game states, and progression opportunities."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 261197,
-      "lastMs": 30102,
+      "totalMs": 299237,
+      "lastMs": 38040,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:07:20.073Z"
+      "updatedAt": "2026-10-08T21:07:58.116Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:02:58.858Z",
-  "updatedAt": "2026-10-08T21:07:20.074Z",
+  "updatedAt": "2026-10-08T21:07:58.116Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2244,7 +2251,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:07:20.074Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:07:58.116Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
