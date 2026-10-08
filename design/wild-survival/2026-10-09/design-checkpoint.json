@@ -74,25 +74,353 @@
       "name": "생존 상태 변환 시스템",
       "purpose": "월드 상태에 즉각적인 영향을 미치며, 플레이어 선택에 따라 월드 상태가 변화하는 기반 시스템",
       "playerChoice": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변환된다"
+    },
+    "local_authoring_parts::4131cbe17a58e607b5f57e16cc59cbe76ad6668131c9ff8064a1e087e2150d96:signatureSystems:3": {
+      "id": "wild-survival_signature_systems_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "world_state"
+      ],
+      "stateOutputs": [
+        "new_world_state"
+      ],
+      "name": "생존 상태 변환 시스템 (재방문)",
+      "purpose": "플레이어가 현재 상황을 이해하고, 재방문에 따른 새로운 목표와 전략 선택을 생성하는 데 사용됨.",
+      "playerChoice": "실제 입력 및 상호작용 결과로 월드 상태와 자원의 변화를 기반으로 재방문 가능한 목표·지역·전략 선택을 생성함."
+    },
+    "local_authoring_parts::4131cbe17a58e607b5f57e16cc59cbe76ad6668131c9ff8064a1e087e2150d96:signatureSystems:4": {
+      "id": "wild-survival_signature_systems_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "world_state"
+      ],
+      "stateOutputs": [
+        "new_world_state"
+      ],
+      "name": "생존 상태 변환 시스템 (재방문)",
+      "purpose": "플레이어가 현재 월드 상태와 목표를 이해하고, 재방문에 따른 새로운 선택 및 상태 변화를 유도하는 기능적 시스템",
+      "playerChoice": "월드 상태의 재방문을 통해, 과거의 경험과 현대의 환경 간의 연결성을 강화하여, 더 깊은 숙련과 전략적 결정을 유도함"
+    },
+    "local_authoring_parts::581d4c2a5828142f99253ce78acad5381d71790e64e1f85bf7696228e8d3124a:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "wild-survival_signature_systems_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "world_state"
+          ],
+          "stateOutputs": [
+            "new_world_state"
+          ],
+          "name": "생존 상태 변환 시스템",
+          "purpose": "야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며 월드 상태와 다음 선택을 바꾼다는 의미가 있는 게임 루프의 실행을 관리합니다.",
+          "playerChoice": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변환됩니다."
+        },
+        {
+          "id": "wild-survival_signature_systems_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "world_state"
+          ],
+          "stateOutputs": [
+            "new_world_state"
+          ],
+          "name": "생존 상태 변환 시스템",
+          "purpose": "월드 상태에 대한 실질적 입력 및 선택을 처리하며, 진입 -> 선택 -> 변화 -> 보상/위험 -> 다음 선택 순서로 월드 상태가 변환된다.",
+          "playerChoice": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변환된다."
+        },
+        {
+          "id": "wild-survival_signature_systems_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "world_state"
+          ],
+          "stateOutputs": [
+            "new_world_state"
+          ],
+          "name": "생존 상태 변환 시스템",
+          "purpose": "월드 상태에 즉각적인 영향을 미치며, 플레이어 선택에 따라 월드 상태가 변화하는 기반 시스템",
+          "playerChoice": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변환된다"
+        },
+        {
+          "id": "wild-survival_signature_systems_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "world_state"
+          ],
+          "stateOutputs": [
+            "new_world_state"
+          ],
+          "name": "생존 상태 변환 시스템 (재방문)",
+          "purpose": "플레이어가 현재 상황을 이해하고, 재방문에 따른 새로운 목표와 전략 선택을 생성하는 데 사용됨.",
+          "playerChoice": "실제 입력 및 상호작용 결과로 월드 상태와 자원의 변화를 기반으로 재방문 가능한 목표·지역·전략 선택을 생성함."
+        },
+        {
+          "id": "wild-survival_signature_systems_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "world_state"
+          ],
+          "stateOutputs": [
+            "new_world_state"
+          ],
+          "name": "생존 상태 변환 시스템 (재방문)",
+          "purpose": "플레이어가 현재 월드 상태와 목표를 이해하고, 재방문에 따른 새로운 선택 및 상태 변화를 유도하는 기능적 시스템",
+          "playerChoice": "월드 상태의 재방문을 통해, 과거의 경험과 현대의 환경 간의 연결성을 강화하여, 더 깊은 숙련과 전략적 결정을 유도함"
+        }
+      ]
+    },
+    "local_authoring_parts::bf651efb797fa91c79094b5480bb72eeb9cc4e00d3d76824091e94ada60a62de:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "진입 -> 선택 -> 변화 -> 보상/위험 -> 다음 선택",
+        "플레이어는 야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며 월드 상태와 다음 선택을 바꾼다.",
+        "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변환된다.",
+        "보상 또는 위험 발생 후, 다음 목표·지역·상호작용·전략 선택이 생성되어 게임 루프가 계속 진행된다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "wild-survival_signature_systems_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "world_state"
+          ],
+          "stateOutputs": [
+            "new_world_state"
+          ],
+          "name": "생존 상태 변환 시스템",
+          "purpose": "야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며 월드 상태와 다음 선택을 바꾼다는 의미가 있는 게임 루프의 실행을 관리합니다.",
+          "playerChoice": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변환됩니다."
+        },
+        {
+          "id": "wild-survival_signature_systems_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "world_state"
+          ],
+          "stateOutputs": [
+            "new_world_state"
+          ],
+          "name": "생존 상태 변환 시스템",
+          "purpose": "월드 상태에 대한 실질적 입력 및 선택을 처리하며, 진입 -> 선택 -> 변화 -> 보상/위험 -> 다음 선택 순서로 월드 상태가 변환된다.",
+          "playerChoice": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변환된다."
+        },
+        {
+          "id": "wild-survival_signature_systems_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "world_state"
+          ],
+          "stateOutputs": [
+            "new_world_state"
+          ],
+          "name": "생존 상태 변환 시스템",
+          "purpose": "월드 상태에 즉각적인 영향을 미치며, 플레이어 선택에 따라 월드 상태가 변화하는 기반 시스템",
+          "playerChoice": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변환된다"
+        },
+        {
+          "id": "wild-survival_signature_systems_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "world_state"
+          ],
+          "stateOutputs": [
+            "new_world_state"
+          ],
+          "name": "생존 상태 변환 시스템 (재방문)",
+          "purpose": "플레이어가 현재 상황을 이해하고, 재방문에 따른 새로운 목표와 전략 선택을 생성하는 데 사용됨.",
+          "playerChoice": "실제 입력 및 상호작용 결과로 월드 상태와 자원의 변화를 기반으로 재방문 가능한 목표·지역·전략 선택을 생성함."
+        },
+        {
+          "id": "wild-survival_signature_systems_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "world_state"
+          ],
+          "stateOutputs": [
+            "new_world_state"
+          ],
+          "name": "생존 상태 변환 시스템 (재방문)",
+          "purpose": "플레이어가 현재 월드 상태와 목표를 이해하고, 재방문에 따른 새로운 선택 및 상태 변화를 유도하는 기능적 시스템",
+          "playerChoice": "월드 상태의 재방문을 통해, 과거의 경험과 현대의 환경 간의 연결성을 강화하여, 더 깊은 숙련과 전략적 결정을 유도함"
+        }
+      ]
+    },
+    "local_authoring_parts::bf651efb797fa91c79094b5480bb72eeb9cc4e00d3d76824091e94ada60a62de:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::99a5c263c0dde19711d4ccbcd02216388da2cf0a0a9c7ca4a93787e8f7e9b71f:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "진입 -> 선택 -> 변화 -> 보상/위험 -> 다음 선택",
+        "플레이어는 야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며 월드 상태와 다음 선택을 바꾼다.",
+        "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변환된다.",
+        "보상 또는 위험 발생 후, 다음 목표·지역·상호작용·전략 선택이 생성되어 게임 루프가 계속 진행된다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "wild-survival_signature_systems_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "world_state"
+          ],
+          "stateOutputs": [
+            "new_world_state"
+          ],
+          "name": "생존 상태 변환 시스템",
+          "purpose": "야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며 월드 상태와 다음 선택을 바꾼다는 의미가 있는 게임 루프의 실행을 관리합니다.",
+          "playerChoice": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변환됩니다."
+        },
+        {
+          "id": "wild-survival_signature_systems_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "world_state"
+          ],
+          "stateOutputs": [
+            "new_world_state"
+          ],
+          "name": "생존 상태 변환 시스템",
+          "purpose": "월드 상태에 대한 실질적 입력 및 선택을 처리하며, 진입 -> 선택 -> 변화 -> 보상/위험 -> 다음 선택 순서로 월드 상태가 변환된다.",
+          "playerChoice": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변환된다."
+        },
+        {
+          "id": "wild-survival_signature_systems_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "world_state"
+          ],
+          "stateOutputs": [
+            "new_world_state"
+          ],
+          "name": "생존 상태 변환 시스템",
+          "purpose": "월드 상태에 즉각적인 영향을 미치며, 플레이어 선택에 따라 월드 상태가 변화하는 기반 시스템",
+          "playerChoice": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변환된다"
+        },
+        {
+          "id": "wild-survival_signature_systems_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "world_state"
+          ],
+          "stateOutputs": [
+            "new_world_state"
+          ],
+          "name": "생존 상태 변환 시스템 (재방문)",
+          "purpose": "플레이어가 현재 상황을 이해하고, 재방문에 따른 새로운 목표와 전략 선택을 생성하는 데 사용됨.",
+          "playerChoice": "실제 입력 및 상호작용 결과로 월드 상태와 자원의 변화를 기반으로 재방문 가능한 목표·지역·전략 선택을 생성함."
+        },
+        {
+          "id": "wild-survival_signature_systems_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "world_state"
+          ],
+          "stateOutputs": [
+            "new_world_state"
+          ],
+          "name": "생존 상태 변환 시스템 (재방문)",
+          "purpose": "플레이어가 현재 월드 상태와 목표를 이해하고, 재방문에 따른 새로운 선택 및 상태 변화를 유도하는 기능적 시스템",
+          "playerChoice": "월드 상태의 재방문을 통해, 과거의 경험과 현대의 환경 간의 연결성을 강화하여, 더 깊은 숙련과 전략적 결정을 유도함"
+        }
+      ],
+      "multiplayerMode": "COOP"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "판타지 요소 없이 실제 야생 환경과 동물 행동, 날씨, 체온, 식수와 부상을 관리하는 오픈월드 생존 게임 | 생존 | 오픈월드 | 채집 | 현실 | 플레이어는 야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며 월드 상태와 다음 선택을 바꾼다 | 주체가 되어 세계 상태와 다음 선택을 바꾼다 | 실질적 입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 연결을 포함 | 인터랙티브 흐름 구조에 따라 최소 3단계 진행 | 진입->선택->변화->보상/위험->다음 선택 순서로 구성 | 단일 시스템으로 설계된 게임 루프 | 기능적으로 반복 가능한 게임 루프 | 메커니즘 중심의 게임 구조 | 대표 행동: 현명한 선택 | 대표 선택: 월드 상태 변화 | 대표 결과: 보상 또는 위험 발생 | 이전 선택과 연관된 새로운 목표·지역·상호작용·전략 생성 | 실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태 변환 | 보상/위험/다음 선택이 즉각적인 결과로 나타나며 플레이어는 숙련되어야 하는 선택을 하게 된다 | 캐릭터 역할은 현실적이면서도 창의적인 방식으로 표현됨 | 게임 규칙은 공통이며, 각 플랫폼별 구현 제약은 동일하게 적용됨 | 주체가 되어 세계 상태와 다음 선택을 바꾼다는 의미는 모든 플랫폼에서 일치하는 기본 원칙이다 | 진입 -> 선택 -> 변화 -> 보상/위험 -> 다음 선택 순서로 구성 | 최소 3단계 진행 | 단순하지만 실질적이고 인지 가능하며 재방문 가능성 있는 흐름 | 기존 설계에 부합하고 오너 의도를 존중하여 수정되지 않도록 유지됨 | 시스템 간의 상호 작용은 명확히 정리되고, 각 시스템은 다른 시스템과 연결되어 있어 복잡한 조합이 가능함 | 대표 행동: 현명한 선택 | 대표 선택: 월드 상태 변화 | 대표 결과: 보상 또는 위험 발생 | 이전 선택과 연관된 새로운 목표·지역·상호작용·전략 생성 | 실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태 변환 | 보상/위험/다음 선택이 즉각적인 결과로 나타나며 플레이어는 숙련되어야",
+      "playerFantasy": "플레이어는 야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며 월드 상태와 다음 선택을 바꾼다. 주체가 되어 세계 상태와 다음 선택을 바꾼다는 의미는 모든 플랫폼에서 일치하는 기본 원칙이다. 진입 -> 선택 -> 변화 -> 보상/위험 -> 다음 선택 순서로 구성, 최소 3단계 진행, 단순하지만 실질적이고 인지 가능하며 재방문 가능성 있는 흐름, 기존 설계에 부합하고 오너 의도를 존중하여 수정되지 않도록 유지됨.",
+      "coreFun": "야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며 월드 상태와 다음 선택을 바꾼다. 진입 -> 선택 -> 변화 -> 보상/위험 -> 다음 선택 순서로 구성, 최소 3단계 진행, 단순하지만 실질적이고 인지 가능하며 재방문 가능성 있는 흐름",
+      "coreLoop": [
+        "진입 -> 선택 -> 변화 -> 보상/위험 -> 다음 선택",
+        "플레이어는 야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며 월드 상태와 다음 선택을 바꾼다.",
+        "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변환된다.",
+        "보상 또는 위험 발생 후, 다음 목표·지역·상호작용·전략 선택이 생성되어 게임 루프가 계속 진행된다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "wild-survival_signature_systems_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "world_state"
+          ],
+          "stateOutputs": [
+            "new_world_state"
+          ],
+          "name": "생존 상태 변환 시스템",
+          "purpose": "야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며 월드 상태와 다음 선택을 바꾼다는 의미가 있는 게임 루프의 실행을 관리합니다.",
+          "playerChoice": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변환됩니다."
+        },
+        {
+          "id": "wild-survival_signature_systems_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "world_state"
+          ],
+          "stateOutputs": [
+            "new_world_state"
+          ],
+          "name": "생존 상태 변환 시스템",
+          "purpose": "월드 상태에 대한 실질적 입력 및 선택을 처리하며, 진입 -> 선택 -> 변화 -> 보상/위험 -> 다음 선택 순서로 월드 상태가 변환된다.",
+          "playerChoice": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변환된다."
+        },
+        {
+          "id": "wild-survival_signature_systems_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "world_state"
+          ],
+          "stateOutputs": [
+            "new_world_state"
+          ],
+          "name": "생존 상태 변환 시스템",
+          "purpose": "월드 상태에 즉각적인 영향을 미치며, 플레이어 선택에 따라 월드 상태가 변화하는 기반 시스템",
+          "playerChoice": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변환된다"
+        },
+        {
+          "id": "wild-survival_signature_systems_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "world_state"
+          ],
+          "stateOutputs": [
+            "new_world_state"
+          ],
+          "name": "생존 상태 변환 시스템 (재방문)",
+          "purpose": "플레이어가 현재 상황을 이해하고, 재방문에 따른 새로운 목표와 전략 선택을 생성하는 데 사용됨.",
+          "playerChoice": "실제 입력 및 상호작용 결과로 월드 상태와 자원의 변화를 기반으로 재방문 가능한 목표·지역·전략 선택을 생성함."
+        },
+        {
+          "id": "wild-survival_signature_systems_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "world_state"
+          ],
+          "stateOutputs": [
+            "new_world_state"
+          ],
+          "name": "생존 상태 변환 시스템 (재방문)",
+          "purpose": "플레이어가 현재 월드 상태와 목표를 이해하고, 재방문에 따른 새로운 선택 및 상태 변화를 유도하는 기능적 시스템",
+          "playerChoice": "월드 상태의 재방문을 통해, 과거의 경험과 현대의 환경 간의 연결성을 강화하여, 더 깊은 숙련과 전략적 결정을 유도함"
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 179395,
-      "lastMs": 14097,
+      "totalMs": 226828,
+      "lastMs": 13059,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:08:30.583Z"
+      "updatedAt": "2026-10-08T21:09:18.022Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:05:30.914Z",
-  "updatedAt": "2026-10-08T21:08:30.583Z",
+  "updatedAt": "2026-10-08T21:09:18.030Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2146,12 +2474,22 @@
     },
     "assetFacts": {}
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:08:30.583Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:09:18.024Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/wild-survival/2026-10-09/design-seed.json",
+    "contentDigest": "f4995a5a647297a48331e8f83936de7473af04a2a91c8acfc2e8b69c555c272c",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
