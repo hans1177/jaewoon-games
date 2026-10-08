@@ -175,7 +175,7 @@ jobs:
         run: |
           set -euo pipefail
           test -x /tmp/luau-bin/luau
-          VIBE2_LUAU_BINARY=/tmp/luau-bin/luau node --test --test-name-pattern='survival preserves saved resources' qa/roblox-game-repair-safety.test.mjs
+          VIBE2_LUAU_BINARY=/tmp/luau-bin/luau node --test --test-name-pattern='survival' qa/roblox-game-repair-safety.test.mjs
 
       - name: Check Vibe3 syntax
         run: |
