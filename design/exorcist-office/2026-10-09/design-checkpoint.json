@@ -620,25 +620,112 @@
         "PROGRESSION_STATE"
       ],
       "fromSystem": "SIGNATURE_SYSTEM_0"
+    },
+    "local_authoring_parts::140ed2d815a307aa20ad0f212929f33007d279ef29c003ddd66641fb8c6e8f0c:toSystem,trigger,stateChange": {
+      "toSystem": "SIGNATURE_SYSTEM_0",
+      "trigger": "RESULT_STATE",
+      "stateChange": "FROM_START_TO_RUN"
+    },
+    "local_authoring_parts::14819cb20f123481b8b1823cf379ab2364930f543ec486f4b82c2c0239faa18b:systemInterconnections:4": {
+      "fromId": "START_STATE",
+      "toId": "RUN_STATE",
+      "stateKeys": [
+        "NEXT_WORLD_STATE",
+        "NEW_CHOICE_STATE",
+        "PROGRESSION_STATE"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_0",
+      "toSystem": "SIGNATURE_SYSTEM_0",
+      "trigger": "RESULT_STATE",
+      "stateChange": "FROM_START_TO_RUN"
+    },
+    "local_authoring_parts::487200477adf6cd43cb3d5431438f72c418a77062fd63ca0e978f043daeb57ec:systemInterconnections": {
+      "systemInterconnections": [
+        {
+          "fromId": "START_STATE",
+          "toId": "RUN_STATE",
+          "stateKeys": [
+            "NEXT_WORLD_STATE",
+            "NEW_CHOICE_STATE",
+            "PROGRESSION_STATE"
+          ],
+          "fromSystem": "SIGNATURE_SYSTEM_0",
+          "toSystem": "SIGNATURE_SYSTEM_0",
+          "trigger": "RESULT_STATE",
+          "stateChange": "FROM_START_TO_RUN"
+        },
+        {
+          "fromId": "START_STATE",
+          "toId": "RUN_STATE",
+          "stateKeys": [
+            "NEXT_WORLD_STATE",
+            "NEW_CHOICE_STATE",
+            "PROGRESSION_STATE"
+          ],
+          "fromSystem": "SIGNATURE_SYSTEM_0",
+          "toSystem": "SIGNATURE_SYSTEM_0",
+          "trigger": "RESULT_STATE",
+          "stateChange": "FROM_START_TO_RUN"
+        },
+        {
+          "fromId": "START_STATE",
+          "toId": "RUN_STATE",
+          "stateKeys": [
+            "NEXT_WORLD_STATE",
+            "NEW_CHOICE_STATE",
+            "PROGRESSION_STATE"
+          ],
+          "fromSystem": "SIGNATURE_SYSTEM_0",
+          "toSystem": "SIGNATURE_SYSTEM_0",
+          "trigger": "RESULT_STATE",
+          "stateChange": "FROM_START_TO_RUN"
+        },
+        {
+          "fromId": "START_STATE",
+          "toId": "RUN_STATE",
+          "stateKeys": [
+            "NEXT_WORLD_STATE",
+            "NEW_CHOICE_STATE",
+            "PROGRESSION_STATE"
+          ],
+          "fromSystem": "SIGNATURE_SYSTEM_0",
+          "toSystem": "SIGNATURE_SYSTEM_3",
+          "trigger": "GAMEPLAY_TRIGGER",
+          "stateChange": "FROM_RESULT_TO_RUN"
+        },
+        {
+          "fromId": "START_STATE",
+          "toId": "RUN_STATE",
+          "stateKeys": [
+            "NEXT_WORLD_STATE",
+            "NEW_CHOICE_STATE",
+            "PROGRESSION_STATE"
+          ],
+          "fromSystem": "SIGNATURE_SYSTEM_0",
+          "toSystem": "SIGNATURE_SYSTEM_0",
+          "trigger": "RESULT_STATE",
+          "stateChange": "FROM_START_TO_RUN"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 22,
-      "successes": 19,
+      "calls": 23,
+      "successes": 20,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2061195,
-      "lastMs": 58621,
+      "totalMs": 2115918,
+      "lastMs": 54723,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T22:40:18.017Z"
+      "updatedAt": "2026-10-08T22:41:12.742Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T22:05:56.751Z",
-  "updatedAt": "2026-10-08T22:40:18.017Z",
+  "updatedAt": "2026-10-08T22:41:12.744Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2564,7 +2651,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T22:40:18.017Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T22:41:12.744Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
