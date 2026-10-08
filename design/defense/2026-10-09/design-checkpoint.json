@@ -27,25 +27,32 @@
       "identity": "숲길 디펜스의 핵심 재미를 실제 플레이 선택으로 재정의, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프, 모바일에서도 즉시 이해되는 입력과 피드백을 포함하는 복합장르의 정체성입니다. 게임은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이라는 중심 행동을 바탕으로, 대표 선택인 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'을 통해 세계 상태와 다음 선택을 바꾼다. 이 과정에서 성장은 새로운 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임은 단순한 반복보다는 경쟁·소속·명예 등 인간 갈등에 기반하여 설계된 다층적 구조를 가진다.",
       "playerFantasy": "숲길 디펜스에서 플레이어는 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이라는 중심 행동을 바탕으로, 대표 선택인 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'을 통해 세계 상태와 다음 선택을 바꾼다. 이 과정에서 성장은 새로운 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임은 단순한 반복보다는 경쟁·소속·명예 등 인간 갈등에 기반하여 설계된 다층적 구조를 가진다.",
       "coreFun": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임에서, 대표 선택인 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'을 통해 세계 상태와 다음 선택을 바꾼다. 이 과정에서 성장은 새로운 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임은 단순한 반복보다는 경쟁·소속·명예 등 인간 갈등에 기반하여 설계된 다층적 구조를 가진다."
+    },
+    "local_authoring_parts::9607cf1a612c105669a8b9e44054197bcf4d73e4a25961d9d237debde2953ac0:coreLoop": {
+      "coreLoop": [
+        "INPUT: Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "SELECT: Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "OUTPUT: World state change - increased defense coverage, resource accumulation, and strategic flexibility."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 315116,
-      "lastMs": 50788,
+      "totalMs": 364329,
+      "lastMs": 49213,
       "lastError": null,
-      "updatedAt": "2026-10-08T20:55:33.592Z"
+      "updatedAt": "2026-10-08T20:56:22.809Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:50:18.458Z",
-  "updatedAt": "2026-10-08T20:55:33.594Z",
+  "updatedAt": "2026-10-08T20:56:22.809Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2240,7 +2247,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T20:55:33.594Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T20:56:22.809Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
