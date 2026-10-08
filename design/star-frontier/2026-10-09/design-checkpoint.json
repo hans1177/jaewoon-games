@@ -27,25 +27,32 @@
       "identity": "별길 개척자: 시작하는 브레인스토밍 게임, 단순 반복보다는 새로운 인과법칙과 시스템 연결을 만든다. 플레이어가 실제 선택에 따라 월드 상태가 바뀌며, 성장은 행동·경로·조합·관계·발견·대응법 중 하나로 열린다. 기존 게임의 핵심 재미를 최우선으로 두고, RPG식 시스템은 강제되지 않으며, 정체성 질문만 장르에 맞게 적용한다. 주요 인물의 목표·두려움·비밀은 핵심 인과법칙에 의해 실제 선택과 관계 변화를 만든다. 몬스터는 세계 인과법칙이 생태·저주·정치·기억 중 하나로 구체화된 존재이다. 지역마다 같은 인과법칙의 다른 해석이나 비용이 적용되어 공간 사용법이 달라진다. 스토리 사건은 컷신으로만 진행되지만, 핵심 문법을 사용한 결과로 다음 조건이 바뀐다. 낯선 규칙은 역사·문화·생활·권력·신앙·생태의 이유로 설명되어 세계 안에서는 자연스럽게 느껴져야 한다. 단순 장르 태그나 기능 합산으로 분리할 수 없다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 점수와 통과 판정은 결정론적 검증기가 담당한다.",
       "playerFantasy": "별길 개척자: 플레이어가 실제 선택에 따라 월드 상태가 바뀌며, 성장은 행동·경로·조합·관계·발견·대응법 중 하나로 열린다. 기존 게임의 핵심 재미를 최우선으로 두고, RPG식 시스템은 강제되지 않으며, 정체성 질문만 장르에 맞게 적용된다. 주요 인물의 목표·두려움·비밀은 핵심 인과법칙에 의해 실제 선택과 관계 변화를 만든다. 몬스터는 세계 인과법칙이 생태·저주·정치·기억 중 하나로 구체화된 존재이다. 지역마다 같은 인과법칙의 다른 해석이나 비용이 적용되어 공간 사용법이 달라진다. 스토리 사건은 컷신으로만 진행되지만, 핵심 문법을 사용한 결과로 다음 조건이 바뀐다. 낯선 규칙은 역사·문화·생활·권력·신앙·생태의 이유로 설명되어 세계 안에서는 자연스럽게 느껴져야 한다.",
       "coreFun": "별길 개척자: 플레이어가 실제 선택에 따라 월드 상태가 바뀌며, 성장은 행동·경로·조합·관계·발견·대응법 중 하나로 열린다. 기존 게임의 핵심 재미를 최우선으로 두고, RPG식 시스템은 강제되지 않으며, 정체성 질문만 장르에 맞게 적용된다. 주요 인물의 목표·두려움·비밀은 핵심 인과법칙에 의해 실제 선택과 관계 변화를 만든다. 몬스터는 세계 인과법칙이 생태·저주·정치·기억 중 하나로 구체화된 존재이다. 지역마다 같은 인과법칙의 다른 해석이나 비용이 적용되어 공간 사용법이 달라진다. 스토리 사건은 컷신으로만 진행되지만, 핵심 문법을 사용한 결과로 다음 조건이 바뀐다. 낯선 규칙은 역사·문화·생활·권력·신앙·생태의 이유로 설명되어 세계 안에서는 자연스럽게 느껴져야 한다."
+    },
+    "local_authoring_parts::e8a96e2f13efc0029277ad574eebbf28e47e5f36e33bcff3546dbbbb9bd95e4d:coreLoop": {
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 323391,
-      "lastMs": 59862,
+      "totalMs": 374589,
+      "lastMs": 51198,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:34:17.470Z"
+      "updatedAt": "2026-10-08T21:35:08.671Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:28:53.783Z",
-  "updatedAt": "2026-10-08T21:34:17.472Z",
+  "updatedAt": "2026-10-08T21:35:08.671Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2082,7 +2089,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:34:17.472Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:35:08.671Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
