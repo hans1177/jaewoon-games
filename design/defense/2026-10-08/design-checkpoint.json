@@ -421,25 +421,46 @@
       "name": "ENEMY_WAVE_ADAPTATION_SYSTEM",
       "purpose": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
       "playerChoice": "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases."
+    },
+    "local_authoring_parts::056cde2326e1201239a2cfca52f9da8f26272829d86a93f0a1ae6b59f6db872d:signatureSystems:1": {
+      "id": "MAIN_02",
+      "grammarRole": "A",
+      "stateInputs": [
+        "enemyWaveType",
+        "defenderPlacement",
+        "resourcePool",
+        "upgradeCost",
+        "pressureLevel"
+      ],
+      "stateOutputs": [
+        "defendedLane",
+        "newPlacement",
+        "tacticalChange",
+        "resourceAllocation",
+        "nextEnemyWave"
+      ],
+      "name": "ENEMY_WAVE_ADAPTATION_SYSTEM",
+      "purpose": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+      "playerChoice": "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 722878,
-      "lastMs": 69911,
+      "totalMs": 793904,
+      "lastMs": 71026,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:20:58.158Z"
+      "updatedAt": "2026-10-08T12:22:09.186Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:08:55.008Z",
-  "updatedAt": "2026-10-08T12:20:58.158Z",
+  "updatedAt": "2026-10-08T12:22:09.186Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2670,7 +2691,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:20:58.158Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:22:09.186Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
