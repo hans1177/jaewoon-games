@@ -297,11 +297,11 @@ function proceduralGradientNoise(seed,x,z){
   const u=fade(fx),v=fade(fz),lerp=(a,b,t)=>a+(b-a)*t;
   return lerp(lerp(dot(ix,iz,fx,fz),dot(ix+1,iz,fx-1,fz),u),lerp(dot(ix,iz+1,fx,fz-1),dot(ix+1,iz+1,fx-1,fz-1),u),v);
 }
-export function createVibeProceduralWorldLayout({seed='world',width=24,height=24,cellSize=3,dimension='3D',biome='TEMPERATE',climate='TEMPERATE',buildingStyle='LOCAL',density=.25,mobile=true,approvedDesign=false,reservedCells=[],maxSlopeDegrees=35,fovDegrees=95}={}){
+export function createVibeProceduralWorldLayout({seed='world',width=24,height=24,cellSize=3,dimension='3D',biome='TEMPERATE',climate='TEMPERATE',buildingStyle='LOCAL',density=.25,mobile=true,approvedDesign=false,reservedCells=[],maxSlopeDegrees=35,fovDegrees=95,cameraForward={x:1,z:0}}={}){
   const noMutation={sourceMutationPerformed:false,nativeAssetInstancingPerformed:false,runtimeVerified:false,gameplayRuleMutation:false,saveMeaningMutation:false};
   if(approvedDesign!==true)return Object.freeze({status:'APPROVED_DESIGN_REQUIRED',issues:Object.freeze(['APPROVED_WORLD_DESIGN_REQUIRED']),...noMutation});
   const maximum=mobile?48:72,validNumber=n=>typeof n==='number'&&Number.isFinite(n);
-  if(!Number.isInteger(width)||!Number.isInteger(height)||width<12||height<12||width>maximum||height>maximum||!validNumber(cellSize)||cellSize<=0||!['2D','3D'].includes(dimension)||!validNumber(density)||density<0||density>1||!validNumber(maxSlopeDegrees)||maxSlopeDegrees<=0||maxSlopeDegrees>=90||!validNumber(fovDegrees)||fovDegrees<=0||fovDegrees>180){
+  if(!Number.isInteger(width)||!Number.isInteger(height)||width<12||height<12||width>maximum||height>maximum||!validNumber(cellSize)||cellSize<=0||!['2D','3D'].includes(dimension)||!validNumber(density)||density<0||density>1||!validNumber(maxSlopeDegrees)||maxSlopeDegrees<=0||maxSlopeDegrees>=90||!validNumber(fovDegrees)||fovDegrees<=0||fovDegrees>180||!validNumber(cameraForward?.x)||!validNumber(cameraForward?.z)||Math.hypot(cameraForward.x,cameraForward.z)<1e-6){
     return Object.freeze({status:'INVALID_GENERATION_INPUT',issues:Object.freeze(['DIMENSIONS_OR_BUDGET_INVALID']),...noMutation});
   }
   const w=width,h=height,hash=String(seed).split('').reduce((v,c)=>Math.imul(v^c.charCodeAt(0),16777619)>>>0,2166136261);
@@ -408,9 +408,10 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       footprint.forEach(c=>occupied.add(at(c.x,c.z)));
       const distance=Math.hypot(x-(hub?.x??w/2),z-(hub?.z??h/2));
       const zone=distance<Math.min(w,h)*.23?'COMMERCIAL':x>w*.75?'WORKSHOP':'RESIDENTIAL';
-      const roof=String(climate).toUpperCase().includes('WET')?'PITCHED_ROOF':'ROOF';
+      const climateText=String(climate).toUpperCase(),biomeText=String(biome).toUpperCase();
+      const roof=/WET|RAIN|SNOW|COLD/.test(climateText)?'PITCHED_ROOF':/ARID|DESERT/.test(climateText+' '+biomeText)?'FLAT_ROOF':'ROOF';
       const pivot={x:x*cellSize,y:Math.max(...footing),z:z*cellSize},doorFacing=dx!==0?(dx>0?'WEST':'EAST'):(dz>0?'NORTH':'SOUTH');
-      const building={id:'LOT_'+buildings.length,zone,style,footprint,position:pivot,foundation:{terrainMinY:Math.min(...footing),terrainMaxY:Math.max(...footing),levelY:pivot.y},modules:[style+':FOUNDATION',style+':WALL',style+':DOOR',style+':'+roof],doorFacing,roadAccess:{x:rx,z:rz},gridSnap:cellSize,sourceBindingRequired:true};
+      const building={id:'LOT_'+buildings.length,zone,style,footprint,position:pivot,foundation:{terrainMinY:Math.min(...footing),terrainMaxY:Math.max(...footing),levelY:pivot.y},construction:{climate:climateText,primaryMaterial:/GOTHIC|CASTLE/.test(style)?'STONE':/MODERN/.test(style)?'METAL_GLASS':/ARID|DESERT/.test(climateText+' '+biomeText)?'CLAY':'TIMBER',verifiedStructuralEngineering:false},modules:[style+':FOUNDATION',style+':WALL',style+':DOOR',style+':'+roof],doorFacing,roadAccess:{x:rx,z:rz},gridSnap:cellSize,sourceBindingRequired:true};
       buildings.push(building);
       addInstance('FOUNDATION',x,z);
       addInstance('DOOR',x,z);
@@ -419,26 +420,44 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       break;
     }
   }
-  let sightline={from:hub,to:landmark,fovDegrees,withinFov:false,visible:false,terrainObstructed:false,buildingObstructed:false};
+  // 자연물은 기후·지형과 지표에 연결한다. 기존 동선·건물·시야·예약 셀은 건드리지 않는다.
+  const vegetation=[],natureGroups=new Map(),maxVegetation=mobile?64:160;
+  const climateHint=String(climate).toUpperCase(),biomeHint=String(biome).toUpperCase();
+  for(const tile of terrain){
+    if(vegetation.length>=maxVegetation)break;
+    const key=at(tile.x,tile.z);
+    if(occupied.has(key)||waterway.has(key)||sightCells.has(key)||tile.biome==='WATER'||tile.slopeDegrees>maxSlopeDegrees)continue;
+    const chance=tile.biome==='FOREST'?.44:tile.biome==='PLAIN'?.1:tile.biome==='RIDGE'?.05:tile.biome==='DRY'?.04:0;
+    const roll=proceduralCellHash(hash^0x10face,tile.x,tile.z)/4294967296;
+    if(roll>chance)continue;
+    const kind=tile.biome==='RIDGE'?'ROCK':/DRY|ARID|DESERT/.test(climateHint+' '+biomeHint)?'SCRUB':/COLD|SNOW|ALPINE|MOUNTAIN/.test(climateHint+' '+biomeHint)?'PINE':tile.biome==='FOREST'?'BROADLEAF':'BUSH';
+    const size=+(0.75+(proceduralCellHash(hash^0x992,tile.x,tile.z)/4294967296)*.7).toFixed(2);
+    const placement={id:'NATURE_'+vegetation.length,kind,biome:tile.biome,x:tile.x,z:tile.z,position:{x:tile.x*cellSize,y:tile.elevation*8,z:tile.z*cellSize},scale:size,physicsColliderGenerated:false};
+    vegetation.push(placement);
+    const group=natureGroups.get(kind)||{module:'NATURE:'+kind,count:0,transforms:[]};
+    group.transforms.push({...placement.position,scale:size});group.count++;natureGroups.set(kind,group);
+  }
+  let sightline={from:hub,to:landmark,fovDegrees,cameraForward,withinFov:false,visible:false,terrainObstructed:false,buildingObstructed:false};
   if(hub&&landmark){
     const ax=landmark.x-hub.x,az=landmark.z-hub.z,length=Math.hypot(ax,az);
-    const withinFov=length===0||ax/length>=Math.cos(fovDegrees*Math.PI/360);
+    const norm=Math.hypot(cameraForward.x,cameraForward.z),dot=(ax*cameraForward.x+az*cameraForward.z)/(Math.max(length,1e-9)*norm);
+    const withinFov=length===0||dot>=Math.cos(fovDegrees*Math.PI/360);
     const seen=[...sightCells].some(id=>!roadSet.has(id)&&buildings.some(b=>b.footprint.some(cell=>at(cell.x,cell.z)===id)));
     const startY=terrain[at(hub.x,hub.z)].elevation*8+1.7,endY=terrain[at(landmark.x,landmark.z)].elevation*8+12;
     let terrainObstructed=false;
     for(const id of sightCells){const x=id%w,z=Math.floor(id/w),t=length?Math.hypot(x-hub.x,z-hub.z)/length:0;
       if(t>.03&&t<.95&&terrain[id].elevation*8>startY+(endY-startY)*t)terrainObstructed=true;
     }
-    sightline={from:hub,to:landmark,fovDegrees,withinFov,visible:withinFov&&!seen&&!terrainObstructed,terrainObstructed,buildingObstructed:seen};
+    sightline={from:hub,to:landmark,fovDegrees,cameraForward,withinFov,visible:withinFov&&!seen&&!terrainObstructed,terrainObstructed,buildingObstructed:seen,exactCameraAndOcclusionRuntimeVerified:false};
     if(!sightline.visible)issues.push('LANDMARK_VISIBILITY_REQUIRES_CAMERA_REVIEW');
   }
   const result={
     version:1,status:issues.length?'LAYOUT_REVIEW_REQUIRED':'STATIC_LAYOUT_PROPOSED',issues:Object.freeze(issues),
-    seed:String(seed),dimension,coordinateSystem:dimension==='3D'?'Y_UP_HEIGHTFIELD':'XY_TOP_DOWN',
+    seed:String(seed),dimension,regionalBiome:String(biome).toUpperCase(),climate:String(climate).toUpperCase(),coordinateSystem:dimension==='3D'?'Y_UP_HEIGHTFIELD':'XY_TOP_DOWN',
     size:{width:w,height:h,cellSize},terrain:Object.freeze(terrain),river:Object.freeze(river),roads:Object.freeze(routes),roadCells:Object.freeze([...roadSet].sort((a,b)=>a-b).map(id=>({x:id%w,z:Math.floor(id/w)}))),
-    routeGraph,buildings:Object.freeze(buildings),instancingPlan:Object.freeze([...instanceGroups.values()]),landmark:Object.freeze({cell:landmark,reason:'VISIBLE_NAVIGATION_ANCHOR'}),
-    sightline:Object.freeze(sightline),drainage:'EIGHT_NEIGHBOR_DOWNHILL',noise:'SEEDED_2D_GRADIENT_FBM',snapRules:Object.freeze({moduleGrid:cellSize,entrancesFaceConnectedRoad:true,foundationsFollowTerrain:true}),
-    mobileBudget:Object.freeze({cellCount:terrain.length,buildingLimit:maxBuildings,instanceGroupCount:instanceGroups.size,actualDrawCallsMeasured:false}),
+    routeGraph,buildings:Object.freeze(buildings),vegetation:Object.freeze(vegetation),instancingPlan:Object.freeze([...instanceGroups.values(),...natureGroups.values()]),landmark:Object.freeze({cell:landmark,reason:'VISIBLE_NAVIGATION_ANCHOR'}),
+    sightline:Object.freeze(sightline),drainage:'FOUR_NEIGHBOR_DOWNHILL',noise:'SEEDED_2D_GRADIENT_FBM',snapRules:Object.freeze({moduleGrid:cellSize,entrancesFaceConnectedRoad:true,foundationsFollowTerrain:true}),
+    mobileBudget:Object.freeze({cellCount:terrain.length,buildingLimit:maxBuildings,vegetationLimit:maxVegetation,instanceGroupCount:instanceGroups.size+natureGroups.size,actualDrawCallsMeasured:false}),
     protected:Object.freeze(['existing-transforms','spawns','objective-rules','collision','navigation','economy','save','network-authority']),
     ...noMutation
   };
