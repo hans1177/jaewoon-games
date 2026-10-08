@@ -68,25 +68,42 @@
       "name": "SINGLE_DEFENSE_STRATEGY_ADAPTATION",
       "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
       "playerChoice": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+    },
+    "local_authoring_parts::607662675a505ba7616cdd2ee38cef2263e42dd3ad8ed472fc61f02fc8299269:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "DEFENSE_COVERAGE",
+        "RESOURCE_ACUMULATION",
+        "TACTICAL_FLEXIBILITY"
+      ],
+      "stateOutputs": [
+        "ENEMY_WAVE_CLEARANCE",
+        "STRATEGIC_UPGRADE",
+        "PLAYER_GROWTH"
+      ],
+      "name": "SINGLE_DEFENSE_STRATEGY_ADAPTATION_B",
+      "purpose": "A/B 대축의 선택 결과를 다른 핵심 판단 구조로 연결하는 두 번째 대축.",
+      "playerChoice": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 472410,
-      "lastMs": 45289,
+      "totalMs": 522504,
+      "lastMs": 50094,
       "lastError": null,
-      "updatedAt": "2026-10-08T20:58:10.894Z"
+      "updatedAt": "2026-10-08T20:59:00.990Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:50:18.458Z",
-  "updatedAt": "2026-10-08T20:58:10.894Z",
+  "updatedAt": "2026-10-08T20:59:00.990Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2281,7 +2298,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T20:58:10.894Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T20:59:00.990Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
