@@ -729,25 +729,44 @@
         "AreaType"
       ],
       "fromSystem": "IslandResourceManagementSystem"
+    },
+    "local_authoring_parts::d1ff85724d76dffabfb2f5edda1cc84d331879062960ff49dafba4631225dfd8:toSystem,trigger,stateChange": {
+      "toSystem": "IslandResourceManagementSystem",
+      "trigger": "Gather a focused set of island resources",
+      "stateChange": "Build or improve one village function, and unlock a new resident, activity, or area"
+    },
+    "local_authoring_parts::0936980b567fc52de662cd2e84770a0c98db062592ea62654e92e82d7e9f7964:systemInterconnections:1": {
+      "fromId": "signatureSystems[1]",
+      "toId": "signatureSystems[2]",
+      "stateKeys": [
+        "VillageFunction",
+        "ResidentCount",
+        "ActivityType",
+        "AreaType"
+      ],
+      "fromSystem": "IslandResourceManagementSystem",
+      "toSystem": "IslandResourceManagementSystem",
+      "trigger": "Gather a focused set of island resources",
+      "stateChange": "Build or improve one village function, and unlock a new resident, activity, or area"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 24,
-      "successes": 24,
+      "calls": 25,
+      "successes": 25,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2373063,
-      "lastMs": 32040,
+      "totalMs": 2404523,
+      "lastMs": 31460,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:05:04.351Z"
+      "updatedAt": "2026-10-08T16:05:35.812Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:36:39.832Z",
-  "updatedAt": "2026-10-08T16:05:04.351Z",
+  "updatedAt": "2026-10-08T16:05:35.814Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2974,7 +2993,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:05:04.351Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:05:35.814Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
