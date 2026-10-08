@@ -102,25 +102,225 @@
       "name": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_03",
       "purpose": "IDLE_GROWTH_RPG_CORE_LOOP_01 -> IDLE_GROWTH_RPG_CORE_LOOP_02 -> IDLE_GROWTH_RPG_CORE_LOOP_03",
       "playerChoice": "IDLE_GROWTH_RPG_CORE_LOOP_01 -> IDLE_GROWTH_RPG_CORE_LOOP_02 -> IDLE_GROWTH_RPG_CORE_LOOP_03"
+    },
+    "local_authoring_parts::0748d5c820e5c5b7a173af1fc7f29344f0715dbf2de442ed27ab2fa2d4e594bd:signatureSystems:4": {
+      "id": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_04",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "IDLE_GROWTH_RPG_CORE_LOOP_01",
+        "IDLE_GROWTH_RPG_CORE_LOOP_02",
+        "IDLE_GROWTH_RPG_CORE_LOOP_03"
+      ],
+      "stateOutputs": [
+        "IDLE_GROWTH_RPG_CORE_LOOP_01",
+        "IDLE_GROWTH_RPG_CORE_LOOP_02",
+        "IDLE_GROWTH_RPG_CORE_LOOP_03"
+      ],
+      "name": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_04",
+      "purpose": "IDLE_GROWTH_RPG_CORE_LOOP_01 -> IDLE_GROWTH_RPG_CORE_LOOP_02 -> IDLE_GROWTH_RPG_CORE_LOOP_03",
+      "playerChoice": "IDLE_GROWTH_RPG_CORE_LOOP_01 -> IDLE_GROWTH_RPG_CORE_LOOP_02 -> IDLE_GROWTH_RPG_CORE_LOOP_03"
+    },
+    "local_authoring_parts::fce7623cc72784031b160ea78b70b58aea06688e0733097833ff38006cf929db:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "IDLE_GROWTH_RPG_CORE_LOOP_01",
+            "IDLE_GROWTH_RPG_CORE_LOOP_02",
+            "IDLE_GROWTH_RPG_CORE_LOOP_03"
+          ],
+          "stateOutputs": [
+            "IDLE_GROWTH_RPG_CORE_LOOP_01",
+            "IDLE_GROWTH_RPG_CORE_LOOP_02",
+            "IDLE_GROWTH_RPG_CORE_LOOP_03"
+          ],
+          "name": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_01",
+          "purpose": "IDLE_GROWTH_RPG_CORE_LOOP_01 -> IDLE_GROWTH_RPG_CORE_LOOP_02 -> IDLE_GROWTH_RPG_CORE_LOOP_03",
+          "playerChoice": "IDLE_GROWTH_RPG_CORE_LOOP_01 -> IDLE_GROWTH_RPG_CORE_LOOP_02 -> IDLE_GROWTH_RPG_CORE_LOOP_03"
+        },
+        {
+          "id": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_01",
+          "grammarRole": "A",
+          "stateInputs": [
+            "IDLE_GROWTH_RPG_CORE_LOOP_01",
+            "IDLE_GROWTH_RPG_CORE_LOOP_02",
+            "IDLE_GROWTH_RPG_CORE_LOOP_03"
+          ],
+          "stateOutputs": [
+            "IDLE_GROWTH_RPG_CORE_LOOP_01",
+            "IDLE_GROWTH_RPG_CORE_LOOP_02",
+            "IDLE_GROWTH_RPG_CORE_LOOP_03"
+          ],
+          "name": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_01",
+          "purpose": "IDLE_GROWTH_RPG_CORE_LOOP_01 -> IDLE_GROWTH_RPG_CORE_LOOP_02 -> IDLE_GROWTH_RPG_CORE_LOOP_03",
+          "playerChoice": "IDLE_GROWTH_RPG_CORE_LOOP_01 -> IDLE_GROWTH_RPG_CORE_LOOP_02 -> IDLE_GROWTH_RPG_CORE_LOOP_03"
+        },
+        {
+          "id": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_02",
+          "grammarRole": "B",
+          "stateInputs": [
+            "IDLE_GROWTH_RPG_CORE_LOOP_01",
+            "IDLE_GROWTH_RPG_CORE_LOOP_02",
+            "IDLE_GROWTH_RPG_CORE_LOOP_03"
+          ],
+          "stateOutputs": [
+            "IDLE_GROWTH_RPG_CORE_LOOP_01",
+            "IDLE_GROWTH_RPG_CORE_LOOP_02",
+            "IDLE_GROWTH_RPG_CORE_LOOP_03"
+          ],
+          "name": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_02",
+          "purpose": "IDLE_GROWTH_RPG_CORE_LOOP_01 -> IDLE_GROWTH_RPG_CORE_LOOP_02 -> IDLE_GROWTH_RPG_CORE_LOOP_03",
+          "playerChoice": "IDLE_GROWTH_RPG_CORE_LOOP_01 -> IDLE_GROWTH_RPG_CORE_LOOP_02 -> IDLE_GROWTH_RPG_CORE_LOOP_03"
+        },
+        {
+          "id": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_03",
+          "grammarRole": "c",
+          "stateInputs": [
+            "IDLE_GROWTH_RPG_CORE_LOOP_01",
+            "IDLE_GROWTH_RPG_CORE_LOOP_02",
+            "IDLE_GROWTH_RPG_CORE_LOOP_03"
+          ],
+          "stateOutputs": [
+            "IDLE_GROWTH_RPG_CORE_LOOP_01",
+            "IDLE_GROWTH_RPG_CORE_LOOP_02",
+            "IDLE_GROWTH_RPG_CORE_LOOP_03"
+          ],
+          "name": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_03",
+          "purpose": "IDLE_GROWTH_RPG_CORE_LOOP_01 -> IDLE_GROWTH_RPG_CORE_LOOP_02 -> IDLE_GROWTH_RPG_CORE_LOOP_03",
+          "playerChoice": "IDLE_GROWTH_RPG_CORE_LOOP_01 -> IDLE_GROWTH_RPG_CORE_LOOP_02 -> IDLE_GROWTH_RPG_CORE_LOOP_03"
+        },
+        {
+          "id": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_04",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "IDLE_GROWTH_RPG_CORE_LOOP_01",
+            "IDLE_GROWTH_RPG_CORE_LOOP_02",
+            "IDLE_GROWTH_RPG_CORE_LOOP_03"
+          ],
+          "stateOutputs": [
+            "IDLE_GROWTH_RPG_CORE_LOOP_01",
+            "IDLE_GROWTH_RPG_CORE_LOOP_02",
+            "IDLE_GROWTH_RPG_CORE_LOOP_03"
+          ],
+          "name": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_04",
+          "purpose": "IDLE_GROWTH_RPG_CORE_LOOP_01 -> IDLE_GROWTH_RPG_CORE_LOOP_02 -> IDLE_GROWTH_RPG_CORE_LOOP_03",
+          "playerChoice": "IDLE_GROWTH_RPG_CORE_LOOP_01 -> IDLE_GROWTH_RPG_CORE_LOOP_02 -> IDLE_GROWTH_RPG_CORE_LOOP_03"
+        }
+      ]
+    },
+    "local_authoring_parts::3bafa106d7af3d6a689a0a34ba79e7a8851751d4d9f6d7408f69aec4cc904054:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.",
+        "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment.",
+        "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle."
+      ],
+      "signatureSystems": [
+        {
+          "id": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "IDLE_GROWTH_RPG_CORE_LOOP_01",
+            "IDLE_GROWTH_RPG_CORE_LOOP_02",
+            "IDLE_GROWTH_RPG_CORE_LOOP_03"
+          ],
+          "stateOutputs": [
+            "IDLE_GROWTH_RPG_CORE_LOOP_01",
+            "IDLE_GROWTH_RPG_CORE_LOOP_02",
+            "IDLE_GROWTH_RPG_CORE_LOOP_03"
+          ],
+          "name": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_01",
+          "purpose": "IDLE_GROWTH_RPG_CORE_LOOP_01 -> IDLE_GROWTH_RPG_CORE_LOOP_02 -> IDLE_GROWTH_RPG_CORE_LOOP_03",
+          "playerChoice": "IDLE_GROWTH_RPG_CORE_LOOP_01 -> IDLE_GROWTH_RPG_CORE_LOOP_02 -> IDLE_GROWTH_RPG_CORE_LOOP_03"
+        },
+        {
+          "id": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_01",
+          "grammarRole": "A",
+          "stateInputs": [
+            "IDLE_GROWTH_RPG_CORE_LOOP_01",
+            "IDLE_GROWTH_RPG_CORE_LOOP_02",
+            "IDLE_GROWTH_RPG_CORE_LOOP_03"
+          ],
+          "stateOutputs": [
+            "IDLE_GROWTH_RPG_CORE_LOOP_01",
+            "IDLE_GROWTH_RPG_CORE_LOOP_02",
+            "IDLE_GROWTH_RPG_CORE_LOOP_03"
+          ],
+          "name": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_01",
+          "purpose": "IDLE_GROWTH_RPG_CORE_LOOP_01 -> IDLE_GROWTH_RPG_CORE_LOOP_02 -> IDLE_GROWTH_RPG_CORE_LOOP_03",
+          "playerChoice": "IDLE_GROWTH_RPG_CORE_LOOP_01 -> IDLE_GROWTH_RPG_CORE_LOOP_02 -> IDLE_GROWTH_RPG_CORE_LOOP_03"
+        },
+        {
+          "id": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_02",
+          "grammarRole": "B",
+          "stateInputs": [
+            "IDLE_GROWTH_RPG_CORE_LOOP_01",
+            "IDLE_GROWTH_RPG_CORE_LOOP_02",
+            "IDLE_GROWTH_RPG_CORE_LOOP_03"
+          ],
+          "stateOutputs": [
+            "IDLE_GROWTH_RPG_CORE_LOOP_01",
+            "IDLE_GROWTH_RPG_CORE_LOOP_02",
+            "IDLE_GROWTH_RPG_CORE_LOOP_03"
+          ],
+          "name": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_02",
+          "purpose": "IDLE_GROWTH_RPG_CORE_LOOP_01 -> IDLE_GROWTH_RPG_CORE_LOOP_02 -> IDLE_GROWTH_RPG_CORE_LOOP_03",
+          "playerChoice": "IDLE_GROWTH_RPG_CORE_LOOP_01 -> IDLE_GROWTH_RPG_CORE_LOOP_02 -> IDLE_GROWTH_RPG_CORE_LOOP_03"
+        },
+        {
+          "id": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_03",
+          "grammarRole": "c",
+          "stateInputs": [
+            "IDLE_GROWTH_RPG_CORE_LOOP_01",
+            "IDLE_GROWTH_RPG_CORE_LOOP_02",
+            "IDLE_GROWTH_RPG_CORE_LOOP_03"
+          ],
+          "stateOutputs": [
+            "IDLE_GROWTH_RPG_CORE_LOOP_01",
+            "IDLE_GROWTH_RPG_CORE_LOOP_02",
+            "IDLE_GROWTH_RPG_CORE_LOOP_03"
+          ],
+          "name": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_03",
+          "purpose": "IDLE_GROWTH_RPG_CORE_LOOP_01 -> IDLE_GROWTH_RPG_CORE_LOOP_02 -> IDLE_GROWTH_RPG_CORE_LOOP_03",
+          "playerChoice": "IDLE_GROWTH_RPG_CORE_LOOP_01 -> IDLE_GROWTH_RPG_CORE_LOOP_02 -> IDLE_GROWTH_RPG_CORE_LOOP_03"
+        },
+        {
+          "id": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_04",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "IDLE_GROWTH_RPG_CORE_LOOP_01",
+            "IDLE_GROWTH_RPG_CORE_LOOP_02",
+            "IDLE_GROWTH_RPG_CORE_LOOP_03"
+          ],
+          "stateOutputs": [
+            "IDLE_GROWTH_RPG_CORE_LOOP_01",
+            "IDLE_GROWTH_RPG_CORE_LOOP_02",
+            "IDLE_GROWTH_RPG_CORE_LOOP_03"
+          ],
+          "name": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_04",
+          "purpose": "IDLE_GROWTH_RPG_CORE_LOOP_01 -> IDLE_GROWTH_RPG_CORE_LOOP_02 -> IDLE_GROWTH_RPG_CORE_LOOP_03",
+          "playerChoice": "IDLE_GROWTH_RPG_CORE_LOOP_01 -> IDLE_GROWTH_RPG_CORE_LOOP_02 -> IDLE_GROWTH_RPG_CORE_LOOP_03"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 929066,
-      "lastMs": 116560,
+      "totalMs": 1045138,
+      "lastMs": 116072,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:01:21.548Z"
+      "updatedAt": "2026-10-08T13:03:17.622Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:45:52.443Z",
-  "updatedAt": "2026-10-08T13:01:21.548Z",
+  "updatedAt": "2026-10-08T13:03:17.626Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2352,7 +2552,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:01:21.548Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:03:17.625Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
