@@ -498,25 +498,100 @@
         }
       ],
       "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::a2e785c83cbe63d46fdef5f8dc1b0404b0ef179ca485b496fd9765c207fe63ac:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "INCOMING_INSECT_WAVE",
+          "toId": "DEFENDER_POSITIONS",
+          "stateKeys": [
+            "WORLD_STATE_CHANGE",
+            "NEW_STRATEGY_IMPLEMENTATION",
+            "EXPANDED_GAMEPLAY_POSSIBILITIES"
+          ],
+          "fromSystem": "INSECT_THREAT_ANALYSIS_SYSTEM",
+          "toSystem": "INSECT_DEFENSE_ADAPTABILITY_SYSTEM",
+          "trigger": "Read the incoming insect wave and its threat pattern",
+          "stateChange": "Adaptively adjust defender positions and allocate resources in response to changing threat patterns and environmental conditions"
+        },
+        {
+          "fromId": "INCOMING_INSECT_WAVE",
+          "toId": "RESOURCE_ALLOCATIONS",
+          "stateKeys": [
+            "WORLD_STATE_CHANGE",
+            "NEW_STRATEGY_IMPLEMENTATION",
+            "EXPANDED_GAMEPLAY_POSSIBILITIES"
+          ],
+          "fromSystem": "INSECT_THREAT_ANALYSIS_SYSTEM",
+          "toSystem": "INSECT_DEFENSE_ADAPTABILITY_SYSTEM_B",
+          "trigger": "Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision",
+          "stateChange": "Explore adaptive defense strategies that evolve with changing threat patterns, optimize resource use in real-time, and discover novel gameplay mechanics through iterative experimentation"
+        },
+        {
+          "fromId": "INCOMING_INSECT_WAVE",
+          "toId": "DEFENDER_POSITIONS",
+          "stateKeys": [
+            "WORLD_STATE_CHANGE",
+            "NEW_STRATEGY_IMPLEMENTATION",
+            "EXPANDED_GAMEPLAY_POSSIBILITIES"
+          ],
+          "fromSystem": "INSECT_THREAT_ANALYSIS_SYSTEM",
+          "toSystem": "INSECT_DEFENSE_ADAPTABILITY_DELVE_SYSTEM",
+          "trigger": "Discover and master the dynamic interplay between insect waves, defender positions, and resource allocations",
+          "stateChange": "Provide deep insight into the dynamic interplay between insect threats, defensive positioning, and resource allocation, enabling players to explore new strategies and expand gamep"
+        },
+        {
+          "fromId": "INCOMING_INSECT_WAVE",
+          "toId": "RESOURCE_ALLOCATIONS",
+          "stateKeys": [
+            "WORLD_STATE_CHANGE",
+            "NEW_STRATEGY_IMPLEMENTATION",
+            "EXPANDED_GAMEPLAY_POSSIBILITIES"
+          ],
+          "fromSystem": "INSECT_THREAT_ANALYSIS_SYSTEM",
+          "toSystem": "INSECT_DEFENSE_ADAPTABILITY_C",
+          "trigger": "Explore the evolving relationship between environmental threats, strategic positioning, and adaptive resource management",
+          "stateChange": "Enable players to engage in iterative experimentation, optimize resource use in real-time, and discover novel gameplay mechanics through adaptive defense strategies"
+        },
+        {
+          "fromId": "DEFENDER_POSITIONS",
+          "toId": "RESOURCE_ALLOCATIONS",
+          "stateKeys": [
+            "WORLD_STATE_CHANGE",
+            "NEW_STRATEGY_IMPLEMENTATION",
+            "EXPANDED_GAMEPLAY_POSSIBILITIES"
+          ],
+          "fromSystem": "INSECT_DEFENSE_ADAPTABILITY_SYSTEM_B",
+          "toSystem": "INSECT_DEFENSE_ADAPTABILITY_DELVE_SYSTEM",
+          "trigger": "Adaptively adjust defender positions and allocate resources in response to changing threat patterns and environmental conditions",
+          "stateChange": "Provide deep insight into the dynamic interplay between insect threats, defensive positioning, and resource allocation, enabling players to explore new strategies and expand gamep"
+        }
+      ],
+      "progressionDirection": "From simple wave analysis to complex adaptive strategy development",
+      "progressionEconomyBalance": {
+        "progressionLoop": "Read the incoming insect wave and its threat pattern → Place or adjust defenders → Survive the wave and prepare for next defense decision",
+        "resourceFlow": "Limited resources are spent on highest-value counterplays",
+        "balanceRules": "Maintain strategic depth while ensuring player engagement and progression"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 10,
+      "calls": 12,
+      "successes": 11,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1281920,
-      "lastMs": 300101,
+      "totalMs": 1446884,
+      "lastMs": 164964,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T21:06:34.905Z"
+      "updatedAt": "2026-10-08T21:09:19.871Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:45:12.936Z",
-  "updatedAt": "2026-10-08T21:06:34.905Z",
+  "updatedAt": "2026-10-08T21:09:19.871Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2717,7 +2792,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:01:34.794Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:09:19.871Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
