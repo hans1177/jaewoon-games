@@ -103,25 +103,227 @@
       "name": "Board Evolution System",
       "purpose": "플레이어의 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.과 선택이 PUZZLE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.",
       "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+    },
+    "local_authoring_parts::ff87c7d9e058b3ad95bda39f029abe080c64b85e93908b8c164419db2c9bddba:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_04",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "BOARD_STATE",
+        "LEVEL_GOAL",
+        "REWARD_SYSTEM"
+      ],
+      "stateOutputs": [
+        "NEW_BOARD_STATE",
+        "NEXT_LEVEL_PATTERN",
+        "REWARD_SYSTEM"
+      ],
+      "name": "Board Evolution System",
+      "purpose": "플레이어의 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.과 선택이 PUZZLE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.",
+      "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+    },
+    "local_authoring_parts::474d398cbb98209cb80fc878b4fbf9611ad748e81b6b51d9be1c3e59f8acb66e:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "BOARD_STATE",
+            "MOVE_LIMIT",
+            "OBSTACLE_PATTERN",
+            "LEVEL_GOAL"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "REWARD_SYSTEM",
+            "NEXT_LEVEL_PATTERN"
+          ],
+          "name": "Board Evolution System",
+          "purpose": "플레이어의 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.과 선택이 PUZZLE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.",
+          "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BOARD_STATE",
+            "LEVEL_GOAL",
+            "REWARD_SYSTEM"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "NEXT_LEVEL_PATTERN",
+            "REWARD_SYSTEM"
+          ],
+          "name": "Level Progression System",
+          "purpose": "A의 결과를 월드·상대·목표 또는 관계 상태 변화와 연결하는 보조 규칙. 선택의 결과가 다음 상태로 이어지는 반복 가능한 핸들링 구조를 구축한다.",
+          "playerChoice": "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_02",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BOARD_STATE",
+            "LEVEL_GOAL",
+            "REWARD_SYSTEM"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "NEXT_LEVEL_PATTERN",
+            "REWARD_SYSTEM"
+          ],
+          "name": "Level Progression System",
+          "purpose": "A의 결과를 월드·상대·목표 또는 관계 상태 변화와 연결하는 보조 규칙. 선택의 결과가 다음 상태로 이어지는 반복 가능한 핸들링 구조를 구축한다.",
+          "playerChoice": "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_03",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BOARD_STATE",
+            "LEVEL_GOAL",
+            "REWARD_SYSTEM"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "NEXT_LEVEL_PATTERN",
+            "REWARD_SYSTEM"
+          ],
+          "name": "Board Evolution System",
+          "purpose": "플레이어의 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.과 선택이 PUZZLE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.",
+          "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_04",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BOARD_STATE",
+            "LEVEL_GOAL",
+            "REWARD_SYSTEM"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "NEXT_LEVEL_PATTERN",
+            "REWARD_SYSTEM"
+          ],
+          "name": "Board Evolution System",
+          "purpose": "플레이어의 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.과 선택이 PUZZLE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.",
+          "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+        }
+      ]
+    },
+    "local_authoring_parts::9e1e34b11873de841f22d5ccef5fff872d9357a93751c8b2606402cbf8b2b6bc:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "BOARD_STATE",
+            "MOVE_LIMIT",
+            "OBSTACLE_PATTERN",
+            "LEVEL_GOAL"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "REWARD_SYSTEM",
+            "NEXT_LEVEL_PATTERN"
+          ],
+          "name": "Board Evolution System",
+          "purpose": "플레이어의 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.과 선택이 PUZZLE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.",
+          "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BOARD_STATE",
+            "LEVEL_GOAL",
+            "REWARD_SYSTEM"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "NEXT_LEVEL_PATTERN",
+            "REWARD_SYSTEM"
+          ],
+          "name": "Level Progression System",
+          "purpose": "A의 결과를 월드·상대·목표 또는 관계 상태 변화와 연결하는 보조 규칙. 선택의 결과가 다음 상태로 이어지는 반복 가능한 핸들링 구조를 구축한다.",
+          "playerChoice": "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_02",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BOARD_STATE",
+            "LEVEL_GOAL",
+            "REWARD_SYSTEM"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "NEXT_LEVEL_PATTERN",
+            "REWARD_SYSTEM"
+          ],
+          "name": "Level Progression System",
+          "purpose": "A의 결과를 월드·상대·목표 또는 관계 상태 변화와 연결하는 보조 규칙. 선택의 결과가 다음 상태로 이어지는 반복 가능한 핸들링 구조를 구축한다.",
+          "playerChoice": "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_03",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BOARD_STATE",
+            "LEVEL_GOAL",
+            "REWARD_SYSTEM"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "NEXT_LEVEL_PATTERN",
+            "REWARD_SYSTEM"
+          ],
+          "name": "Board Evolution System",
+          "purpose": "플레이어의 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.과 선택이 PUZZLE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.",
+          "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_04",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BOARD_STATE",
+            "LEVEL_GOAL",
+            "REWARD_SYSTEM"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "NEXT_LEVEL_PATTERN",
+            "REWARD_SYSTEM"
+          ],
+          "name": "Board Evolution System",
+          "purpose": "플레이어의 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.과 선택이 PUZZLE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.",
+          "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 734105,
-      "lastMs": 107628,
+      "totalMs": 840703,
+      "lastMs": 106598,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:49:11.546Z"
+      "updatedAt": "2026-10-08T08:50:58.146Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:36:57.405Z",
-  "updatedAt": "2026-10-08T08:49:11.546Z",
+  "updatedAt": "2026-10-08T08:50:58.149Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2158,7 +2360,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:49:11.546Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:50:58.149Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
