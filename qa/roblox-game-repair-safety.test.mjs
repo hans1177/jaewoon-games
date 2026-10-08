@@ -137,6 +137,21 @@ p:SetAttribute('Coins',31);callbacks.remove(p);assert(writes==1 and saved.Coins=
 `);
 });
 
+test('survival source boots without DataStore permission and preserves the original save key',{skip:!luau},()=>{
+  const source=read('roblox-games/survival/server/Game.server.luau');
+  const acquisition=source.slice(source.indexOf('local store\n'),source.indexOf('local Shared ='));
+  assert.ok(acquisition.includes('survival-development-v1'));
+  assert.ok(acquisition.includes('pcall('));
+  runLuau(`
+local warned={}
+local function warn(value)table.insert(warned,value)end
+local DataStoreService={GetDataStore=function()error('local DataStore unavailable')end}
+${acquisition}
+assert(store==nil and #warned==1)
+assert(warned[1]=='SURVIVAL_DATASTORE_UNAVAILABLE')
+`);
+});
+
 test('survival preserves saved resources and unknown world fields across DataStore outages',{skip:!luau},()=>{
   const source=read('roblox-games/survival/server/Game.server.luau');
   const helpers=source.slice(source.indexOf('local function readNumber'),source.indexOf('local function ensureWorldPart'));
