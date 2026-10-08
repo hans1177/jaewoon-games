@@ -74,25 +74,38 @@
       "name": "탐험 시스템",
       "purpose": "플레이어가 탐험(타겟 식별) 과정에서 세계의 역사, 생활, 경제, 지역 기능에 대한 인식과 이해를 강화하는 시스템",
       "playerChoice": "타겟 위치 및 위험 요소를 파악하여 새로운 월드 상태를 생성하는 선택"
+    },
+    "local_authoring_parts::52b7d201dbd2de40945ed7ff605114318d91978afe5960f871a05ef2dc856dd2:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "c",
+      "stateInputs": [
+        "worldState"
+      ],
+      "stateOutputs": [
+        "newWorldState"
+      ],
+      "name": "탐험 시스템",
+      "purpose": "플레이어가 탐험(타겟 식별) 과정에서 세계의 역사, 생활, 경제, 지역 기능에 대한 인식과 이해를 강화하는 시스템",
+      "playerChoice": "타겟 위치 및 위험 요소를 파악하여 새로운 월드 상태를 생성하는 선택"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 843303,
-      "lastMs": 104543,
+      "totalMs": 949097,
+      "lastMs": 105794,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:14:30.150Z"
+      "updatedAt": "2026-10-08T18:16:15.946Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:00:26.817Z",
-  "updatedAt": "2026-10-08T18:14:30.150Z",
+  "updatedAt": "2026-10-08T18:16:15.946Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1954,7 +1967,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:14:30.150Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:16:15.946Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
