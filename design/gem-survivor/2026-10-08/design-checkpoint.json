@@ -94,25 +94,209 @@
       "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
       "purpose": "플레이어가 가장 반복적으로 수행하며 즉각적인 상태 변화를 만드는 중심 플레이.",
       "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+    },
+    "local_authoring_parts::a653676fd1a3a9bf0c207e095e922f3e39818525cd8f1a64273f2fde858f87bf:signatureSystems:4": {
+      "id": "DELVE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "INPUT: 플레이어의 'Fight through an escalating horde in a short real-time survivalrun",
+        "INPUT: 보상 획득 또는 전략 변경 선택",
+        "INPUT: 전략 변경 또는 보조 자원 획득 선택"
+      ],
+      "stateOutputs": [
+        "OUTPUT: 즉각적인 상태 변화 (예: 생명력 감소, 보상 획득, 전략 변경)",
+        "OUTPUT: 새로운 상태 변화 (예: 보조 자원 획득, 전략 강화)",
+        "OUTPUT: 상태 변화의 재정의 (예: 전략 조합, 보상 변화)"
+      ],
+      "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "purpose": "플레이어가 가장 반복적으로 수행하며 즉각적인 상태 변화를 만드는 중심 플레이.",
+      "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+    },
+    "local_authoring_parts::b7c2a7a5c99c9847c2c0f2949b9e5ee2ce4d42e7212a9274e56c190133d56d57:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "MAIN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT: 플레이어의 'Fight through an escalating horde in a short real-time survivalrun"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 즉각적인 상태 변화 (예: 생명력 감소, 보상 획득, 전략 변경)",
+            "OUTPUT: 새로운 상태 변화 (예: 보조 자원 획득, 전략 강화)",
+            "OUTPUT: 상태 변화의 재정의 (예: 전략 조합, 보상 변화)"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+          "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+        },
+        {
+          "id": "A",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT: 플레이어의 'Fight through an escalating horde in a short real-time survivalrun"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 즉각적인 상태 변화 (예: 생명력 감소, 보상 획득, 전략 변경)",
+            "OUTPUT: 새로운 상태 변화 (예: 보조 자원 획득, 전략 강화)",
+            "OUTPUT: 상태 변화의 재정의 (예: 전략 조합, 보상 변화)"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+          "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+        },
+        {
+          "id": "B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT: 플레이어의 'Fight through an escalating horde in a short real-time survivalrun"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 즉각적인 상태 변화 (예: 생명력 감소, 보상 획득, 전략 변경)",
+            "OUTPUT: 새로운 상태 변화 (예: 보조 자원 획득, 전략 강화)",
+            "OUTPUT: 상태 변화의 재정의 (예: 전략 조합, 보상 변화)"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+          "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+        },
+        {
+          "id": "c",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT: 플레이어의 'Fight through an escalating horde in a short real-time survivalrun"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 즉각적인 상태 변화 (예: 생명력 감소, 보상 획득, 전략 변경)",
+            "OUTPUT: 새로운 상태 변화 (예: 보조 자원 획득, 전략 강화)",
+            "OUTPUT: 상태 변화의 재정의 (예: 전략 조합, 보상 변화)"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "purpose": "플레이어가 가장 반복적으로 수행하며 즉각적인 상태 변화를 만드는 중심 플레이.",
+          "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT: 플레이어의 'Fight through an escalating horde in a short real-time survivalrun",
+            "INPUT: 보상 획득 또는 전략 변경 선택",
+            "INPUT: 전략 변경 또는 보조 자원 획득 선택"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 즉각적인 상태 변화 (예: 생명력 감소, 보상 획득, 전략 변경)",
+            "OUTPUT: 새로운 상태 변화 (예: 보조 자원 획득, 전략 강화)",
+            "OUTPUT: 상태 변화의 재정의 (예: 전략 조합, 보상 변화)"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "purpose": "플레이어가 가장 반복적으로 수행하며 즉각적인 상태 변화를 만드는 중심 플레이.",
+          "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+        }
+      ]
+    },
+    "local_authoring_parts::06a402b29f6602c4def23ae85d3d16ec1a06496b39e09cbe20c3f925d78f5285:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT: 플레이어의 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.' 선택 -> STATE: 즉각적인 상태 변화 (예: 생명력 감소, 보상 획득, 전략 변경) -> OUTCOME: 반복 루프의 위험, 보상, 다음 선택 결정",
+        "INPUT: 보상 획득 또는 전략 변경 선택 -> STATE: 새로운 상태 변화 (예: 보조 자원 획득, 전략 강화) -> OUTCOME: 다음 선택의 위험, 보상, 다음 상태 변화 결정",
+        "INPUT: 전략 변경 또는 보조 자원 획득 선택 -> STATE: 상태 변화의 재정의 (예: 전략 조합, 보상 변화) -> OUTCOME: 다음 선택의 위험, 보상, 다음 상태 변화 결정"
+      ],
+      "signatureSystems": [
+        {
+          "id": "MAIN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT: 플레이어의 'Fight through an escalating horde in a short real-time survivalrun"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 즉각적인 상태 변화 (예: 생명력 감소, 보상 획득, 전략 변경)",
+            "OUTPUT: 새로운 상태 변화 (예: 보조 자원 획득, 전략 강화)",
+            "OUTPUT: 상태 변화의 재정의 (예: 전략 조합, 보상 변화)"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+          "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+        },
+        {
+          "id": "A",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT: 플레이어의 'Fight through an escalating horde in a short real-time survivalrun"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 즉각적인 상태 변화 (예: 생명력 감소, 보상 획득, 전략 변경)",
+            "OUTPUT: 새로운 상태 변화 (예: 보조 자원 획득, 전략 강화)",
+            "OUTPUT: 상태 변화의 재정의 (예: 전략 조합, 보상 변화)"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+          "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+        },
+        {
+          "id": "B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT: 플레이어의 'Fight through an escalating horde in a short real-time survivalrun"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 즉각적인 상태 변화 (예: 생명력 감소, 보상 획득, 전략 변경)",
+            "OUTPUT: 새로운 상태 변화 (예: 보조 자원 획득, 전략 강화)",
+            "OUTPUT: 상태 변화의 재정의 (예: 전략 조합, 보상 변화)"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+          "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+        },
+        {
+          "id": "c",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT: 플레이어의 'Fight through an escalating horde in a short real-time survivalrun"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 즉각적인 상태 변화 (예: 생명력 감소, 보상 획득, 전략 변경)",
+            "OUTPUT: 새로운 상태 변화 (예: 보조 자원 획득, 전략 강화)",
+            "OUTPUT: 상태 변화의 재정의 (예: 전략 조합, 보상 변화)"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "purpose": "플레이어가 가장 반복적으로 수행하며 즉각적인 상태 변화를 만드는 중심 플레이.",
+          "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT: 플레이어의 'Fight through an escalating horde in a short real-time survivalrun",
+            "INPUT: 보상 획득 또는 전략 변경 선택",
+            "INPUT: 전략 변경 또는 보조 자원 획득 선택"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 즉각적인 상태 변화 (예: 생명력 감소, 보상 획득, 전략 변경)",
+            "OUTPUT: 새로운 상태 변화 (예: 보조 자원 획득, 전략 강화)",
+            "OUTPUT: 상태 변화의 재정의 (예: 전략 조합, 보상 변화)"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "purpose": "플레이어가 가장 반복적으로 수행하며 즉각적인 상태 변화를 만드는 중심 플레이.",
+          "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 579724,
-      "lastMs": 104159,
+      "totalMs": 688451,
+      "lastMs": 108727,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:52:46.443Z"
+      "updatedAt": "2026-10-08T08:54:35.171Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:43:06.687Z",
-  "updatedAt": "2026-10-08T08:52:46.443Z",
+  "updatedAt": "2026-10-08T08:54:35.174Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2311,7 +2495,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:52:46.443Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:54:35.174Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
