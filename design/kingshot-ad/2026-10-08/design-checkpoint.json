@@ -533,25 +533,61 @@
       "name": "EnemyWaveDefender",
       "purpose": "플레이어가 다음 적군 파워를 예측하고, 위험을 감지하여 적절한 방어 구조를 생성하는 데 사용되는 시스템입니다. 이 시스템은 게임의 핵심 재미인 성장, 위험, 보상의 반복 루프를 구현합니다.",
       "playerChoice": "적군 파워를 예측하여 방어 구조를 생성하거나, 전략적 전개를 변경하여 보상의 기회를 확보합니다. 이 선택은 다음 월드 상태를 바꿉니다. 예: '적군 파워가 3번 증가하면, 방어 위치를 2개 더 확장해야 한다.'"
+    },
+    "local_authoring_parts::6b7f9f7703b862794d0e20330e5f0a3af8b46723c75c0d34afa7a763249f3375:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "enemyWaveType",
+        "threatenedRoute",
+        "currentDefenses",
+        "resourcesAvailable"
+      ],
+      "stateOutputs": [
+        "nextDefensesPlaced",
+        "resourcesSpent",
+        "newDefensiveStrategy"
+      ],
+      "name": "EnemyWaveDefender",
+      "purpose": "플레이어가 다음 적군 파워를 예측하고, 위험을 감지하여 적절한 방어 구조를 생성하는 데 사용되는 시스템입니다. 이 시스템은 게임의 핵심 재미인 성장, 위험, 보상의 반복 루프를 구현합니다.",
+      "playerChoice": "적군 파워를 예측하여 방어 구조를 생성하거나, 전략적 전개를 변경하여 보상의 기회를 확보합니다. 이 선택은 다음 월드 상태를 바꿉니다. 예: '적군 파워가 3번 증가하면, 방어 위치를 2개 더 확장해야 한다.'"
+    },
+    "local_authoring_parts::6b7f9f7703b862794d0e20330e5f0a3af8b46723c75c0d34afa7a763249f3375:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "enemyWaveType",
+        "threatenedRoute",
+        "currentDefenses",
+        "resourcesAvailable"
+      ],
+      "stateOutputs": [
+        "nextDefensesPlaced",
+        "resourcesSpent",
+        "newDefensiveStrategy"
+      ],
+      "name": "EnemyWaveDefenderB",
+      "purpose": "플레이어가 다음 적군 파워를 예측하고, 위험을 감지하여 적절한 방어 구조를 생성하는 데 사용되는 시스템입니다. 이 시스템은 게임의 핵심 재미인 성장, 위험, 보상의 반복 루프를 구현하며, 주어진 상황에서 전략적 선택을 통해 보상의 기회를 확보합니다.",
+      "playerChoice": "적군 파워를 예측하여 방어 구조를 생성하거나, 전략적 전개를 변경하여 보상의 기회를 확보합니다. 이 선택은 다음 월드 상태를 바꿉니다. 예: '적군 파워가 3번 증가하면, 방어 위치를 2개 더 확장해야 한다.'"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 16,
+      "calls": 18,
+      "successes": 18,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1737872,
-      "lastMs": 109225,
+      "totalMs": 1959631,
+      "lastMs": 113265,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:45:31.587Z"
+      "updatedAt": "2026-10-08T15:49:13.350Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:25:16.552Z",
-  "updatedAt": "2026-10-08T15:45:31.587Z",
+  "updatedAt": "2026-10-08T15:49:13.350Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2782,7 +2818,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:45:31.587Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:49:13.350Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
