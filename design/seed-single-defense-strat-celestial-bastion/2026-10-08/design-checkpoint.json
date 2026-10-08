@@ -548,25 +548,55 @@
         }
       ],
       "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::031b6bffd737c65cf4305f2a34ef73a93e6d88294e918c21ff808cbcbf9ac4ab:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "threatened_route",
+      "toId": "resources",
+      "stateKeys": [
+        "threatened_route",
+        "enemy_wave",
+        "towers or defenders",
+        "lanes or positions"
+      ],
+      "fromSystem": "MAIN/A/B/c/@/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE"
+    },
+    "local_authoring_parts::031b6bffd737c65cf4305f2a34ef73a93e6d88294e918c21ff808cbcbf9ac4ab:toSystem,trigger,stateChange": {
+      "toSystem": "CORE_LOOP_DESIGN",
+      "trigger": "enemy_wave",
+      "stateChange": "resources"
+    },
+    "local_authoring_parts::0699f941e103c21ed3019c9c5545394b14a537d178f0ec7d9ed231a03119415a:systemInterconnections:0": {
+      "fromId": "threatened_route",
+      "toId": "resources",
+      "stateKeys": [
+        "threatened_route",
+        "enemy_wave",
+        "towers or defenders",
+        "lanes or positions"
+      ],
+      "fromSystem": "MAIN/A/B/c/@/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE/DELVE",
+      "toSystem": "CORE_LOOP_DESIGN",
+      "trigger": "enemy_wave",
+      "stateChange": "resources"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1122875,
-      "lastMs": 180067,
+      "totalMs": 1311545,
+      "lastMs": 89013,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:29:17.047Z"
+      "updatedAt": "2026-10-08T12:32:25.725Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:10:34.121Z",
-  "updatedAt": "2026-10-08T12:29:17.051Z",
+  "updatedAt": "2026-10-08T12:32:25.726Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2912,10 +2942,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:29:17.047Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:32:25.726Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
