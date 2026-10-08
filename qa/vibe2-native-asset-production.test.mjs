@@ -2990,12 +2990,12 @@ test('actual Blender authoring preserves a styled master across platforms and ex
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-blender-quality-'));
   const rows=[];
   try{
-    for(const [target,style] of [['web','COZY'],['roblox','COZY'],['unity','COZY'],['web','LOW_POLY']]){
-      const folder=path.join(root,target+'-'+style);
+    for(const [target,style,subject='rock'] of [['web','COZY'],['roblox','COZY'],['unity','COZY'],['web','LOW_POLY'],['web','COZY','crate']]){
+      const folder=path.join(root,target+'-'+style+(subject==='rock'?'':'-'+subject));
       const expression={sourceStyleFamily:style,axes:{SHAPE_TEMPER:style==='COZY'?'ROUND':'SHARP',COLOR_ENERGY:'NATURAL',DAMAGE_WEAR:'LIGHT_WORN'}};
       fs.mkdirSync(folder,{recursive:true});
       try{
-        const output=execFileSync(process.env.VIBE2_BLENDER_BINARY,['--background','--threads','2','--python-exit-code','1','--python','assets/native-authoring/build-game-visual.py','--','--output',folder,'--asset-id','quality-rock','--profile','prop','--subject','rock','--target',target,'--style-json',JSON.stringify(expression),'--genre','EXPLORATION'],{timeout:110000,maxBuffer:4*1024*1024,encoding:'utf8',stdio:['ignore','pipe','pipe']});
+        const output=execFileSync(process.env.VIBE2_BLENDER_BINARY,['--background','--threads','2','--python-exit-code','1','--python','assets/native-authoring/build-game-visual.py','--','--output',folder,'--asset-id','quality-'+subject,'--profile','prop','--subject',subject,'--target',target,'--style-json',JSON.stringify(expression),'--genre','EXPLORATION'],{timeout:110000,maxBuffer:4*1024*1024,encoding:'utf8',stdio:['ignore','pipe','pipe']});
         fs.writeFileSync(path.join(folder,'authoring.log'),output);
       }catch(error){
         const diagnostic=String(error.stdout||'')+'\n'+String(error.stderr||'');
@@ -3013,6 +3013,7 @@ test('actual Blender authoring preserves a styled master across platforms and ex
       const original=inspectVibeSourceGlb({repoRoot:root,source:{path:path.relative(root,path.join(folder,'master.glb'))}});
       assert.equal(original.inventory.visibleGeometrySha256,inspection.inventory.visibleGeometrySha256);
       assert(inspection.bytes<=original.bytes);
+      if(subject==='crate'){assert(application.optimization.reusedMeshCount>0);assert(inspection.bytes<original.bytes);assert(inspection.inventory.meshCount<original.inventory.meshCount);}
       assert(application.optimization.previewComparison.maxPixelError<=1e-5);
       assert.equal(application.optimization.runtimeMemoryBytes,null);
       assert.equal(application.surfaceDistribution.massModel,'UNIFORM_SURFACE_SHELL_ONLY');
@@ -3029,7 +3030,7 @@ test('actual Blender authoring preserves a styled master across platforms and ex
       }
       assert(application.materials.every(row=>Math.abs(row.unity.smoothness+row.web.roughness-1)<1e-6));
       assert(fs.statSync(path.join(folder,'preview.png')).size>1000);
-      rows.push({target,style,sha256:inspection.sourceHash,spatial:inspection.inventory.spatial});
+      rows.push({target,style,subject,sha256:inspection.sourceHash,spatial:inspection.inventory.spatial,surfaceDistribution:inspection.inventory.surfaceDistribution,resourceMetrics:inspection.inventory.resourceMetrics,optimization:application.optimization});
     }
     assert.equal(new Set(rows.slice(0,3).map(row=>row.sha256)).size,1,'target export must preserve the same styled master');
     assert.notEqual(rows[0].sha256,rows[3].sha256,'explicit style must affect authored bytes');

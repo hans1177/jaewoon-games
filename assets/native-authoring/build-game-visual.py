@@ -2,6 +2,7 @@
 # 기존 GRAPHICS_PRODUCTION의 원본 보존 제작·분석·최적화 책임.
 # This is an asset recipe inside the existing pipeline, not a separate graphics pipeline.
 import argparse
+from array import array
 import colorsys
 import hashlib
 import json
@@ -333,7 +334,7 @@ for index,mat in enumerate(glb_document.get('materials',[])):
 application={'version':1,'masterSha256':hashlib.sha256(glb.read_bytes()).hexdigest(),
     'sourceUnits':'METERS','sourceUp':'Y','boundsSizeMeters':[BOUNDS_SIZE[0],BOUNDS_SIZE[2],BOUNDS_SIZE[1]],
     'pivot':'GROUND_CENTER','surfaceDistribution':physical_analysis,'style':STYLE,'genre':ARGS.genre,'subject':ARGS.subject,'materials':materials,
-    'optimization':{'method':'EXACT_MESH_DATA_REUSE','originalFile':'master.glb','originalSha256':hashlib.sha256(master.read_bytes()).hexdigest(),'originalBytes':master.stat().st_size,'deploymentBytes':glb.stat().st_size,'reusedMeshCount':reused_meshes,'runtimeMemoryBytes':None,'loadingTimeMs':None,'drawCalls':None,'runtimeVerified':False},
+    'optimization':{'method':'EXACT_MESH_DATA_REUSE','originalFile':'master.glb','originalSha256':hashlib.sha256(master.read_bytes()).hexdigest(),'originalBytes':master.stat().st_size,'deploymentBytes':glb.stat().st_size,'byteMeasurementScope':'SELECTED_GLB_PAYLOAD_ONLY','deploymentBundleBytes':None,'reusedMeshCount':reused_meshes,'runtimeMemoryBytes':None,'loadingTimeMs':None,'drawCalls':None,'runtimeVerified':False},
     'target':ARGS.target,'nativeRuntimeVerified':False,'automaticPromotionAllowed':False,
     'importRequirements':['EXPLICIT_PROJECT_UNITS_PER_METER','PRESERVE_PIVOT_AND_HANDEDNESS_ONCE','MATERIAL_SLOT_NAME_MATCH','NATIVE_LIGHTING_AND_GAME_CAMERA_REVIEW','INDEPENDENT_COLLISION_AND_SPAWN_CONTACT']}
 (ARGS.output/'application.json').write_text(json.dumps(application,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
@@ -387,7 +388,9 @@ for source,destination in [(master,preview_master),(glb,preview)]:
         SCENE.render.filepath=str(destination)
         bpy.ops.render.render(write_still=True)
         image=bpy.data.images.load(str(destination),check_existing=False)
-        rendered_pixels.append(list(image.pixels))
+        pixels=array('f',[0.])*len(image.pixels)
+        image.pixels.foreach_get(pixels)
+        rendered_pixels.append(pixels)
         bpy.data.images.remove(image)
     finally:
         for obj in imported: bpy.data.objects.remove(obj,do_unlink=True)

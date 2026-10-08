@@ -7726,7 +7726,7 @@ test('declared DCC rollback restores only locked output files and preserves conc
 
 test('asset optimization compares decoded pixels across PNG filters and rejects changed or oversized previews',()=>{
   const make=(filter,value=80,width=2)=>{
-    const chunk=(type,data)=>{const header=Buffer.alloc(8);header.writeUInt32BE(data.length);header.write(type,4);return Buffer.concat([header,data,Buffer.alloc(4)]);};
+    const chunk=(type,data)=>{const header=Buffer.alloc(8);header.writeUInt32BE(data.length);header.write(type,4);let crc=0xffffffff;for(const value of Buffer.concat([Buffer.from(type),data])){crc^=value;for(let bit=0;bit<8;bit++)crc=(crc&1)?0xedb88320^(crc>>>1):crc>>>1;}const tail=Buffer.alloc(4);tail.writeUInt32BE((crc^0xffffffff)>>>0);return Buffer.concat([header,data,tail]);};
     const ihdr=Buffer.alloc(13);ihdr.writeUInt32BE(width);ihdr.writeUInt32BE(2,4);ihdr[8]=8;ihdr[9]=6;
     const raw=Buffer.alloc(18),pixels=Array(8).fill(value);
     for(let y=0;y<2;y++){
@@ -7745,4 +7745,5 @@ test('asset optimization compares decoded pixels across PNG filters and rejects 
   assert.equal(compareVibeAssetPreviewPng(baseline,make(4,81)).maxPixelError,1/255);
   assert.throws(()=>compareVibeAssetPreviewPng(baseline,make(0,80,4096)),/FORMAT_UNSUPPORTED/);
   assert.throws(()=>compareVibeAssetPreviewPng(baseline,baseline.subarray(0,30)),/TRUNCATED/);
+  const corrupt=Buffer.from(baseline);corrupt[29]^=1;assert.throws(()=>compareVibeAssetPreviewPng(baseline,corrupt),/CHECKSUM_INVALID/);
 });

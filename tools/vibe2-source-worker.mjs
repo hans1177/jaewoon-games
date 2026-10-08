@@ -465,12 +465,15 @@ function gitStatusPaths(cwd){
 }
 // 유틸: 제작기가 저장한 두 PNG의 실제 픽셀을 비교한다. 자기보고 오차값만 믿지 않는다.
 export function compareVibeAssetPreviewPng(before,after){
+  const crcTable=Array.from({length:256},(_,value)=>{for(let i=0;i<8;i++)value=(value&1)?0xedb88320^(value>>>1):value>>>1;return value>>>0;});
   const decode=bytes=>{
     if(bytes.length>32*1024*1024||!bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])))throw new Error('ASSET_PREVIEW_PNG_INVALID');
     let width=0,height=0,channels=0,offset=8,ended=false;const chunks=[];
     while(offset+12<=bytes.length){
       const length=bytes.readUInt32BE(offset),kind=bytes.toString('ascii',offset+4,offset+8),start=offset+8;offset+=12+length;
       if(offset>bytes.length)throw new Error('ASSET_PREVIEW_PNG_TRUNCATED');
+      let crc=0xffffffff;for(let at=start-4;at<start+length;at++)crc=crcTable[(crc^bytes[at])&255]^(crc>>>8);
+      if(((crc^0xffffffff)>>>0)!==bytes.readUInt32BE(start+length))throw new Error('ASSET_PREVIEW_PNG_CHECKSUM_INVALID');
       if(kind==='IHDR'){
         if(width||length!==13)throw new Error('ASSET_PREVIEW_PNG_HEADER_INVALID');
         width=bytes.readUInt32BE(start);height=bytes.readUInt32BE(start+4);channels=bytes[start+9]===6?4:bytes[start+9]===2?3:0;
