@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
-import {assetProductionGuidance,buildAllGameDynamicLibraryBindingPlan,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType,crossPlatform3dActorFamilyForType,synchronizeCompanyCommonAssetRegistry} from '../tools/vibe2-asset-production-plan.mjs';
+import {analyzeVibeSurfaceDistribution,assetProductionGuidance,buildAllGameDynamicLibraryBindingPlan,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType,crossPlatform3dActorFamilyForType,synchronizeCompanyCommonAssetRegistry} from '../tools/vibe2-asset-production-plan.mjs';
 import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate,buildInternalAssetSourceUsageContract,inspectRobloxNativeCandidateQuality,executeDeclaredNativeDccAuthoringVerification,evaluateNativeAssetAuthoringCandidate,collectNativeAssetRuntimePromotionCandidates,persistedGeneratedAssetBindings} from '../tools/vibe2-source-worker.mjs';
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
@@ -3029,12 +3029,12 @@ test('actual Blender authoring preserves a styled master across platforms and ex
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-blender-quality-'));
   const rows=[];
   try{
-    for(const [target,style] of [['web','COZY'],['roblox','COZY'],['unity','COZY'],['web','LOW_POLY']]){
-      const folder=path.join(root,target+'-'+style);
+    for(const [target,style,subject='rock'] of [['web','COZY'],['roblox','COZY'],['unity','COZY'],['web','LOW_POLY'],['web','COZY','crate']]){
+      const folder=path.join(root,target+'-'+style+(subject==='rock'?'':'-'+subject));
       const expression={sourceStyleFamily:style,axes:{SHAPE_TEMPER:style==='COZY'?'ROUND':'SHARP',COLOR_ENERGY:'NATURAL',DAMAGE_WEAR:'LIGHT_WORN'}};
       fs.mkdirSync(folder,{recursive:true});
       try{
-        const output=execFileSync(process.env.VIBE2_BLENDER_BINARY,['--background','--threads','2','--python-exit-code','1','--python','assets/native-authoring/build-game-visual.py','--','--output',folder,'--asset-id','quality-rock','--profile','prop','--subject','rock','--target',target,'--style-json',JSON.stringify(expression),'--genre','EXPLORATION'],{timeout:110000,maxBuffer:4*1024*1024,encoding:'utf8',stdio:['ignore','pipe','pipe']});
+        const output=execFileSync(process.env.VIBE2_BLENDER_BINARY,['--background','--threads','2','--python-exit-code','1','--python','assets/native-authoring/build-game-visual.py','--','--output',folder,'--asset-id','quality-'+subject,'--profile','prop','--subject',subject,'--target',target,'--style-json',JSON.stringify(expression),'--genre','EXPLORATION'],{timeout:110000,maxBuffer:4*1024*1024,encoding:'utf8',stdio:['ignore','pipe','pipe']});
         fs.writeFileSync(path.join(folder,'authoring.log'),output);
       }catch(error){
         const diagnostic=String(error.stdout||'')+'\n'+String(error.stderr||'');
@@ -3054,6 +3054,15 @@ test('actual Blender authoring preserves a styled master across platforms and ex
       assert(declared.centroidMeters.every((v,i)=>Math.abs(v-measured.centroidMeters[i])<Math.max(1e-5,Math.max(...inspection.inventory.spatial.size)*1e-4)),'Blender and GLB surface centroid must match');
       assert.equal(measured.collisionAuthority,false);
       assert.equal(application.nativeRuntimeVerified,false);
+      const original=inspectVibeSourceGlb({repoRoot:root,source:{path:path.relative(root,path.join(folder,'master.glb'))}});
+      assert.equal(original.inventory.visibleGeometrySha256,inspection.inventory.visibleGeometrySha256);
+      assert(inspection.bytes<=original.bytes);
+      if(subject==='crate'){assert(application.optimization.reusedMeshCount>0);assert(inspection.bytes<original.bytes);assert(inspection.inventory.meshCount<original.inventory.meshCount);}
+      assert(application.optimization.previewComparison.maxPixelError<=1e-5);
+      assert.equal(application.optimization.runtimeMemoryBytes,null);
+      assert.equal(application.surfaceDistribution.massModel,'UNIFORM_SURFACE_SHELL_ONLY');
+      assert(Math.abs(application.surfaceDistribution.surfaceAreaM2-inspection.inventory.surfaceDistribution.surfaceAreaM2)<1e-4);
+      application.surfaceDistribution.covarianceM2.forEach((v,i)=>assert(Math.abs(v-inspection.inventory.surfaceDistribution.covarianceM2[i])<1e-5));
       assert.equal(application.style.sourceStyleFamily,style);
       assert.equal(application.materials.length,inspection.inventory.materials.length);
       for(const material of application.materials){
@@ -3065,7 +3074,7 @@ test('actual Blender authoring preserves a styled master across platforms and ex
       }
       assert(application.materials.every(row=>Math.abs(row.unity.smoothness+row.web.roughness-1)<1e-6));
       assert(fs.statSync(path.join(folder,'preview.png')).size>1000);
-      rows.push({target,style,sha256:inspection.sourceHash,spatial:inspection.inventory.spatial});
+      rows.push({target,style,subject,sha256:inspection.sourceHash,spatial:inspection.inventory.spatial,surfaceDistribution:inspection.inventory.surfaceDistribution,resourceMetrics:inspection.inventory.resourceMetrics,optimization:application.optimization});
     }
     assert.equal(new Set(rows.slice(0,3).map(row=>row.sha256)).size,1,'target export must preserve the same styled master');
     assert.notEqual(rows[0].sha256,rows[3].sha256,'explicit style must affect authored bytes');
@@ -3076,4 +3085,38 @@ test('actual Blender authoring preserves a styled master across platforms and ex
     if(process.env.RUNNER_TEMP)fs.cpSync(root,path.join(process.env.RUNNER_TEMP,'vibe2-glb-authoring-evidence'),{recursive:true});
     fs.rmSync(root,{recursive:true,force:true});
   }
+});
+
+// 형상 분할 밀도와 배치 변환이 표면 질량 모형을 왜곡하지 않는지 검증.
+test('surface distribution integrates triangles independent of tessellation density',()=>{
+  const triangle=[[0,0,0],[2,0,0],[0,1,0]],mid=[1,.5,0];
+  const a=analyzeVibeSurfaceDistribution([triangle]);
+  const b=analyzeVibeSurfaceDistribution([[triangle[0],triangle[1],mid],[triangle[0],mid,triangle[2]]]);
+  assert.equal(a.surfaceAreaM2,1);
+  assert.deepEqual(a.centroidMeters,[2/3,1/3,0]);
+  const expected=[2/9,-1/18,0,-1/18,1/18,0,0,0,0];
+  for(let i=0;i<9;i++){
+    assert(Math.abs(a.covarianceM2[i]-expected[i])<1e-12);
+    assert(Math.abs(a.covarianceM2[i]-b.covarianceM2[i])<1e-12);
+  }
+  assert.equal(a.physicalDensityKgM3,null);
+  assert.equal(a.dynamicStabilityVerified,false);
+  const translated=triangle.map(p=>p.map((v,i)=>v+[1e6,2e6,-1e6][i]));
+  const shifted=analyzeVibeSurfaceDistribution([translated],{origin:[1e6,2e6,-1e6]});
+  shifted.covarianceM2.forEach((v,i)=>assert(Math.abs(v-expected[i])<1e-12));
+});
+
+test('GLB scene geometry identity survives shared mesh reuse and changes on UV or transform edits',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'glb-resource-identity-'));
+  try{
+    const original=writeInspectionTriangle(root,d=>{d.meshes.push(structuredClone(d.meshes[0]));d.nodes.push({mesh:1,translation:[3,0,0]});d.scenes[0].nodes.push(2);});
+    const shared=writeInspectionTriangle(root,d=>{d.nodes.push({mesh:0,translation:[3,0,0]});d.scenes[0].nodes.push(2);});
+    assert.equal(original.inventory.visibleGeometrySha256,shared.inventory.visibleGeometrySha256);
+    assert.equal(original.inventory.resourceMetrics.meshResources,2);
+    assert.equal(shared.inventory.resourceMetrics.meshResources,1);
+    assert.equal(shared.inventory.resourceMetrics.drawCalls,null);
+    assert.equal(shared.inventory.surfaceDistribution.dynamicStabilityVerified,false);
+    const changed=writeInspectionTriangle(root,(d,b)=>{d.nodes.push({mesh:0,translation:[3,0,0]});d.scenes[0].nodes.push(2);b.writeFloatLE(.25,72);});
+    assert.notEqual(changed.inventory.visibleGeometrySha256,shared.inventory.visibleGeometrySha256);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });

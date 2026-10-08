@@ -444,6 +444,40 @@ test('live Vibe coding: first attempt versus public-feedback repair on held-out 
   assert(report.finalPass>0,'no generated implementation passed; do not claim coding improvement');
 });
 
+// 웹 공개 실행 진단만 반복에 사용하며 숨긴 화면 변형은 다음 생성에 노출하지 않는다.
+test('web repair awaits real evaluator feedback without leaking hidden browser diagnostics',async()=>{
+  const drill=robloxCurriculum.platformDrills.find(row=>row.platform==='web');
+  const prompts=[];
+  const result=await runPracticeRepairSession({order:{executionRoute:'learning-web-artifact',goal:'[VIBE_LEARNING_PRACTICE]'},drill,
+    request:async prompt=>{prompts.push(prompt);return JSON.stringify({...practiceAnswer,artifactHtml:prompts.length===1?'broken':'repaired'});},
+    evaluate:async (answer,{evaluationMode})=>{
+      await Promise.resolve();
+      return {pass:answer.artifactHtml==='repaired',webValidation:{runtime:{executed:true,baselineRejected:true,referencePassed:true,
+        reason:answer.artifactHtml==='repaired'?'VERIFIED_BROWSER_PRACTICE':evaluationMode==='public'?'PUBLIC_INPUT_FAILED':'PRIVATE_BROWSER_DIAGNOSTIC'}}};
+    }});
+  assert.equal(result.repairEvidence.modelCalls,3);
+  assert.equal(result.repairEvidence.firstAttemptPass,false);
+  assert.equal(result.repairEvidence.finalPass,true);
+  assert.equal(result.repairEvidence.recovered,true);
+  assert.match(prompts[1],/PUBLIC_INPUT_FAILED/);
+  assert.match(prompts[1],/replacement implementation in artifactHtml/);
+  assert(!prompts.join('\n').includes('PRIVATE_BROWSER_DIAGNOSTIC'));
+  assert(!JSON.stringify(result.repairEvidence).includes('PRIVATE_BROWSER_DIAGNOSTIC'));
+  assert.equal(result.repairEvidence.hiddenChecksUsedForRepair,false);
+});
+
+test('web public execution repair fixes a real browser failure',{skip:!process.env.VIBE2_PLAYWRIGHT_MODULE},async()=>{
+  const drill=robloxCurriculum.platformDrills.find(row=>row.platform==='web');
+  let calls=0;
+  const result=await runPracticeRepairSession({order:{executionRoute:'learning-web-artifact',goal:'[VIBE_LEARNING_PRACTICE]'},drill,
+    request:async()=>JSON.stringify({...practiceAnswer,artifactHtml:++calls===1?drill.broken:drill.reference})});
+  assert.equal(calls,3);
+  assert.equal(result.repairEvidence.firstAttemptPass,false);
+  assert.equal(result.repairEvidence.finalPass,true);
+  assert.equal(result.evaluation.webValidation.runtime.variants.length,2);
+  assert.equal(result.repairEvidence.attempts[0].feedback,'RESTORE_INITIAL_VALUE');
+});
+
 test('C# diagnostic retains array types while stripping only trailing project path',()=>{
   const diagnostic=candidateDiagnostics({stdout:"/tmp/Candidate.cs(1,14): error CS1061: 'int[]' does not contain a definition for 'Sum' [/tmp/Practice.csproj]"},'csharp');
   assert.deepEqual(diagnostic,["Candidate.cs(1,14): error CS1061: 'int[]' does not contain a definition for 'Sum'"]);
@@ -455,7 +489,7 @@ test('coding guidance clarifies language execution hazards without injecting an 
   const csharp=robloxCurriculum.platformDrills.find(row=>row.id==='unity-menu-batch-transaction');
   const lp=buildPracticePrompt(order,{drill:luau}),cp=buildPracticePrompt(order,{drill:csharp});
   assert.match(lp,/callCompleted and callbackResult separately/);
-  assert.match(cp,/before reading any array entry or Length/);
+  assert.match(cp,/check null before Length, then check index bounds/);
   assert.match(cp,/not only adjacent entries/);
   assert.match(cp,/Promote an operand to long before/);
   assert.match(cp,/one short sentence each/);

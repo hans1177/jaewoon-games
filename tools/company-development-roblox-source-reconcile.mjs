@@ -18,7 +18,7 @@ const sha40=value=>/^[0-9a-f]{40}$/i.test(clean(value));
 
 export function robloxPackageAssetRepairContext({assetLibrary={},baseline={}}={}){
   const hash=value=>crypto.createHash('sha256').update(value).digest('hex');
-  const validators=['company-development-roblox-source-reconcile.mjs','company-development-roblox-package.mjs','company-development-roblox-bootstrap.mjs','vibe3-roblox-learning-context.mjs','company-approved-scope-contract.mjs'];
+  const validators=['company-development-roblox-source-reconcile.mjs','company-development-roblox-package.mjs','company-development-roblox-bootstrap.mjs','vibe3-roblox-learning-context.mjs','vibe3-transformative-recombination.mjs','company-approved-scope-contract.mjs'];
   return {
     libraryFingerprint:hash(JSON.stringify(assetLibrary)),
     baselineFingerprint:hash(JSON.stringify(baseline)),
@@ -128,7 +128,7 @@ function verifiedExternalLearningRefreshState({root='',playbooks={},gameId='',pr
     &&!expectedSubgenre
     &&Boolean(sourceSubgenre);
   const sourceLearning=sourceSubgenreRefinementAllowed
-    ?createRobloxVibe3LearningContext({gameId,profile:sourceProfile,playbooks})
+    ?createRobloxVibe3LearningContext({gameId,profile:{...expectedProfile,...sourceProfile},playbooks})
     :null;
   const acceptedSemanticMappingFingerprints=[...new Set([
     clean(expectedLearning.semanticMappingFingerprint),

@@ -3,6 +3,8 @@
 // 게임별 의미 매핑을 통해 실제 Roblox-native 소스 변경으로 연결한다.
 // 원본 코드·바이너리·에셋 표현은 전달하지 않으며 QA/Android 원칙은 게임 소스에 주입하지 않는다.
 
+import {recombinationDesignAxes,transformativeRecipeCompatibility} from './vibe3-transformative-recombination.mjs';
+
 const clean=value=>String(value??'').trim();
 const unique=values=>[...new Set((values||[]).map(clean).filter(Boolean))];
 const stableHash=value=>{let h=2166136261;for(const ch of String(value??'')){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}return(h>>>0).toString(36);};
@@ -60,7 +62,7 @@ function coreKind(profile={}){
   return'OBJECTIVE';
 }
 
-function selectDistilled(records=[],{gameId='',terms=[],profileText=''}={}){
+function selectDistilled(records=[],{gameId='',terms=[],designAxes={}}={}){
   const eligible=(Array.isArray(records)?records:[]).filter(row=>
     row?.retrievalEligible===true
     &&row?.engine==='roblox'
@@ -75,13 +77,14 @@ function selectDistilled(records=[],{gameId='',terms=[],profileText=''}={}){
   );
   const scored=eligible.map(row=>{
     const patterns=unique(row.patterns||[]),principles=unique(row.principles||[]);
-    const haystack=[...patterns,...principles,...(row.observations||[])].join(' ').toLowerCase();
-    let score=terms.reduce((sum,term)=>sum+(haystack.includes(term)?2:0),0);
-    score+=patterns.reduce((sum,pattern)=>sum+(profileText.includes(pattern.toLowerCase())?2:0),0);
+    const compatibility=transformativeRecipeCompatibility({id:row.id,designAxes:row.designAxes,featureBlend:[...patterns,...principles]},{gameId,terms,designAxes});
+    let score=compatibility.score;
+    if(!compatibility.eligible)return{row,score:0,tie:''};
     if(clean(row.gameId)===clean(gameId)&&row.sourceKind==='internal-roblox-source-runtime')score+=12;
     if(row.sourceKind==='internal-roblox-source-runtime')score+=3;
-    return{row,score,tie:stableHash(clean(gameId)+'|'+clean(row.id))};
-  }).filter(x=>x.score>0||clean(x.row.gameId)===clean(gameId))
+    const applicable=new Set(compatibility.featureBlend);
+    return{row:{...row,patterns:patterns.filter(value=>applicable.has(value)),principles:principles.filter(value=>applicable.has(value))},score,tie:stableHash(clean(gameId)+'|'+clean(row.id))};
+  }).filter(x=>x.score>0)
     .sort((a,b)=>b.score-a.score||a.tie.localeCompare(b.tie));
   const selected=scored.map(x=>x.row);
   return Object.freeze({
@@ -269,18 +272,13 @@ function colorForKind(kind){
   })[kind]||[255,220,124];
 }
 
-function moodForKind(kind){
-  return ({
-    PUZZLE:{id:'BRIGHT_BOARD',saturation:0.12,contrast:0.06,brightness:0.02},
-    DEFENSE:{id:'TACTICAL_WAVE',saturation:0.03,contrast:0.11,brightness:0},
-    COMBAT:{id:'IMPACT_ARENA',saturation:0.08,contrast:0.12,brightness:0},
-    PROGRESSION:{id:'ADVENTURE_GROWTH',saturation:0.07,contrast:0.06,brightness:0.01},
-    ECONOMY:{id:'WARM_BUILDER',saturation:0.11,contrast:0.04,brightness:0.02},
-    SURVIVAL:{id:'TENSE_WILDERNESS',saturation:0.06,contrast:0.04,brightness:0.01},
-    MOVEMENT:{id:'CLEAR_MOTION',saturation:0.08,contrast:0.05,brightness:0.02},
-    SOCIAL:{id:'WELCOMING_SPACE',saturation:0.10,contrast:0.03,brightness:0.02},
-    OBJECTIVE:{id:'READABLE_EXPLORATION',saturation:0.07,contrast:0.05,brightness:0.01}
-  })[kind]||{id:'READABLE_EXPLORATION',saturation:0.07,contrast:0.05,brightness:0.01};
+function moodForDesign(profile={},artbook={}){
+  const axes=recombinationDesignAxes({profile,artbook});
+  const lock=profile.styleLock||artbook?.content?.styleLock||artbook?.styleLock||{};
+  const grade=lock.colorGrade||{};
+  const channel=(key,min,max)=>Number.isFinite(grade[key])?Math.min(max,Math.max(min,grade[key])):0;
+  // 미지정 표현은 기존 게임 조명을 보존한다. 장르로 분위기·색보정을 만들어 넣지 않는다.
+  return{id:axes.concept.mood[0]||axes.concept.id||axes.style.id||'PRESERVE_AUTHORED_PRESENTATION',saturation:channel('saturation',-1,1),contrast:channel('contrast',-1,1),brightness:channel('brightness',-1,1)};
 }
 
 function buildSemanticApplication({gameId='',profile={},rows=[]}={}){
@@ -364,8 +362,11 @@ export function createRobloxVibe3LearningContext({gameId='',profile={},artbook={
   const verifiedExternalDistilledContentComplete=verifiedExternalContract.distilledContentComplete;
   const verifiedExternalLearningCoveragePct=verifiedExternalContract.coveragePct;
   const effectiveProfile=profile?.genre?profile:existingRobloxGameLearningProfile(gameId);
+  const designAxes=recombinationDesignAxes({profile:effectiveProfile,artbook});
   const kind=coreKind(effectiveProfile);
   const semantic=buildSemanticApplication({gameId,profile:effectiveProfile,rows:verifiedExternalReuseRows});
+  const semanticMood=moodForDesign(effectiveProfile,artbook);
+  const semanticMappingFingerprint=stableHash(JSON.stringify({mapping:semantic.mappingFingerprint,style:designAxes.style,concept:designAxes.concept,mood:semanticMood}));
   const verifiedExternalLearningPrinciples=Object.freeze(semantic.mappings.map(row=>row.raw));
   const verifiedExternalGameDevelopmentPrinciples=Object.freeze([...verifiedExternalLearningPrinciples]);
   const verifiedExternalAvoidancePrinciples=unique(verifiedExternalReuseRows.flatMap(row=>row.distilledAvoidancePrinciples||[]));
@@ -387,19 +388,14 @@ export function createRobloxVibe3LearningContext({gameId='',profile={},artbook={
     OBJECTIVE:['goal','objective','session','progression','reward','input']
   }[kind]||['session','progression','input','reward'];
 
-  const artbookText=JSON.stringify(artbook?.content||artbook||{}).toLowerCase();
-  const profileText=[effectiveProfile?.genre,effectiveProfile?.subgenre,effectiveProfile?.playMode,artbookText].map(clean).join(' ').toLowerCase();
   const scored=recipes.map(recipe=>{
-    const features=(recipe.featureBlend||[]).map(clean).filter(Boolean);
-    const haystack=features.join(' ').toLowerCase();
-    let score=terms.reduce((sum,term)=>sum+(haystack.includes(term)?2:0),0);
-    score+=features.reduce((sum,feature)=>sum+(profileText.includes(feature.toLowerCase())?3:0),0);
-    return{recipe,score,tie:stableHash(gameId+'|'+clean(recipe.id))};
-  }).sort((a,b)=>b.score-a.score||a.tie.localeCompare(b.tie));
+    const compatibility=transformativeRecipeCompatibility(recipe,{gameId,designAxes,terms});
+    return{recipe:{...recipe,featureBlend:compatibility.featureBlend},...compatibility};
+  }).filter(row=>row.eligible&&row.score>0).sort((a,b)=>b.score-a.score||a.tie.localeCompare(b.tie));
   const selected=scored[0]?.recipe||null;
   const featureBlend=unique(selected?.featureBlend||[]).slice(0,12);
   const sourceProjects=unique(selected?.sourceProjects||[]).slice(0,6);
-  const distilled=selectDistilled(distillation?.records||[],{gameId,terms,profileText});
+  const distilled=selectDistilled(distillation?.records||[],{gameId,terms,designAxes});
   const verifiedExternalLearningIds=unique(verifiedExternalPlaybookIds);
   const externalBlackBoxAdvisoryIds=unique(distilled.externalIds||[]);
   const verifiedExternalLearningApplyAxes=Object.freeze(unique(semantic.mappings.flatMap(row=>row.domains)));
@@ -417,11 +413,13 @@ export function createRobloxVibe3LearningContext({gameId='',profile={},artbook={
     coreKind:kind,
     gameId:clean(gameId),
     profile:Object.freeze({...effectiveProfile}),
+    designAxes,
+    designSynchronization:Object.freeze({genre:'PLAY_RULES',style:'VISUAL_AND_MOTION',concept:'WORLD_AND_MOOD',unmatchedLearningSkipped:true,preserveCoreLoop:true,preserveBalance:true,preserveSaveMeaning:true,preserveMultiplayerAuthority:true}),
     playbookAuthority:clean(roblox.authority)||null,
     checklist:Object.freeze(checklist),
     reuseProjects:Object.freeze(reuseProjects),
     recipeId:clean(selected?.id)||null,
-    transformationOperator:clean(selected?.transformationOperator)||null,
+    transformationOperator:selected?(/^change-(?:core-goal|input-model|progression-cadence|risk-reward-relationship|session-structure)$/.test(clean(selected.transformationOperator))?'adapt-within-approved-design':clean(selected.transformationOperator)||null):null,
     featureBlend:Object.freeze(featureBlend),
     sourceProjects:Object.freeze(sourceProjects),
     distilledSourceIds:distilled.ids,
@@ -440,10 +438,10 @@ export function createRobloxVibe3LearningContext({gameId='',profile={},artbook={
     verifiedExternalGameDevelopmentPrincipleCount:verifiedExternalGameDevelopmentPrinciples.length,
     verifiedExternalLearningSemanticMappingVersion:ROBLOX_SEMANTIC_MAPPING_VERSION,
     semanticMappingVersion:ROBLOX_SEMANTIC_MAPPING_VERSION,
-    semanticMappingFingerprint:semantic.mappingFingerprint,
+    semanticMappingFingerprint,
     semanticVariant:semantic.variant,
     semanticColor:Object.freeze({r:semantic.color[0],g:semantic.color[1],b:semantic.color[2]}),
-    semanticMood:Object.freeze(moodForKind(kind)),
+    semanticMood:Object.freeze(semanticMood),
     gameSpecificSemanticMappings:Object.freeze(semantic.mappings.map(row=>Object.freeze({...row}))),
     verifiedExternalLearningDispositions,
     verifiedExternalLearningDispositionCount:verifiedExternalLearningDispositions.length,

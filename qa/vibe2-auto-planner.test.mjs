@@ -1117,6 +1117,25 @@ test('creative rebuild receives verified multi-project transformative recombinat
   assert.equal(result.task.evidence.includes('recombination-original-modifier-required:YES'),true);
 });
 
+test('creative rebuild consumes latest approved design axes and skips incompatible recombination',()=>{
+  const root=tempRepo();
+  try{
+    fs.writeFileSync(path.join(root,'web-games','dev-web','index.html'),'<!doctype html><button data-action="start">검증 루프</button>','utf8');
+    writeStudioDesign(root,'dev-web',{genre:'Puzzle',styleLock:{id:'painted'},conceptLock:{id:'forest'}});
+    const recipe=(id,genre)=>({id,sourceProjects:['one','two'],sourceDesignAxes:[{genre:{id:genre},style:{id:'painted'},concept:{id:'forest'}}],featureBlend:['touch-input'],transformationOperator:'change-core-goal',authority:'transformative-recombination-context-only',assetStrategy:{newAssetRequired:true,outputMustBeNewExpression:true},codeStrategy:{newImplementationRequired:true,verbatimSourceReuseAllowed:false}});
+    const args={status:{projects:[]},catalog:{games:[{id:'dev-web',name:'Dev Web',webPath:'/web-games/dev-web/',hasWebArchive:true,homepageWebPlayable:true,homepageCategory:'development-confirmed'}]},queue:{tasks:[]},repoRoot:root,maxConcurrentTasks:4};
+    const selected=planVibe2AutonomousTask({...args,recombinationMemory:{recipes:[recipe('wrong','Shooter'),recipe('right','Puzzle')]}});
+    assert.equal(selected.planned,true);
+    assert.ok(selected.task.evidence.includes('recombination-recipe:right'));
+    assert.equal(selected.task.recombinationDesignAxes.genre.id,'Puzzle');
+    assert.equal(selected.task.recombinationDesignAxes.style.id,'painted');
+    assert.match(selected.task.goal,/transformation=adapt-within-approved-design/);
+    const skipped=planVibe2AutonomousTask({...args,recombinationMemory:{recipes:[recipe('wrong','Shooter')]}});
+    assert.equal(skipped.planned,true);
+    assert.equal(skipped.task.evidence.some(row=>row.startsWith('recombination-recipe:')),false);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 
 test('stale runtime repair state cannot reopen source work when catalog authority is no longer development confirmed',()=>{
   const root=tempRepo();

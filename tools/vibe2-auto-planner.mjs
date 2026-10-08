@@ -16,6 +16,7 @@ import { buildNeuralDiagnosis } from './vibe2-neural-diagnosis.mjs';
 import { simulateNeuralEventRoute, neuralEventRouteEvidence } from './vibe2-neural-event-router.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
 import { createRobloxVibe3LearningContext } from './vibe3-roblox-learning-context.mjs';
+import { recombinationDesignAxes, transformativeRecipeCompatibility } from './vibe3-transformative-recombination.mjs';
 import { latestVerifiedDesign } from './company-all-games-design-reset.mjs';
 import { latestMinimumDesign } from './company-minimum-design-contract.mjs';
 import { robloxDesignProfileFromBaseline } from './company-development-roblox-gameplay-product-readiness.mjs';
@@ -537,6 +538,8 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
       genre:clean(robloxDesignProfile.genre),
       subgenre:clean(robloxDesignProfile.subgenre),
       playMode:clean(robloxDesignProfile.playMode),
+      designAxes:robloxDesignProfile.designAxes,
+      styleLock:robloxDesignProfile.styleLock,
       robloxDesignProfileSource:minimumDesign?.file||null,
       companyDevelopmentQueueSource:true
     };
@@ -872,7 +875,7 @@ function transformativeTaskEligible(taskInput={}){
   if(evidence.has('full-web-game-rebuild')||evidence.has('existing-web-continuation')||evidence.has('existing-web-assessment-required'))return true;
   return /FULL_WEB_GAME_REBUILD|EXISTING_WEB_DEVELOPMENT_CONTINUATION|REBUILD_EXISTING_GAME|NEW_GAME_IMPLEMENTATION/i.test(clean(taskInput.goal));
 }
-function selectTransformativeRecipe(memory={},taskInput={}){
+function selectTransformativeRecipe(memory={},taskInput={},designAxes={}){
   const target=clean(taskInput.gameId);
   const recipes=Array.isArray(memory?.recipes)?memory.recipes.filter(recipe=>{
     const projects=[...new Set((recipe?.sourceProjects||[]).map(clean).filter(Boolean))];
@@ -885,16 +888,21 @@ function selectTransformativeRecipe(memory={},taskInput={}){
       &&recipe?.codeStrategy?.verbatimSourceReuseAllowed===false;
   }):[];
   if(!recipes.length)return null;
-  const seed=parseInt(stableHash([taskInput.id,target,taskInput.target].join('|')),36);
-  return recipes[Number.isFinite(seed)?seed%recipes.length:0]||null;
+  const ranked=recipes.map(recipe=>({recipe,...transformativeRecipeCompatibility(recipe,{gameId:target,designAxes})}))
+    .filter(row=>row.eligible&&row.score>0).sort((a,b)=>b.score-a.score||a.tie.localeCompare(b.tie));
+  return ranked[0]?{...ranked[0].recipe,featureBlend:ranked[0].featureBlend}:null;
 }
-function applyTransformativeRecombination(taskInput={},memory={}){
+function applyTransformativeRecombination(taskInput={},memory={},project={},repoRoot=process.cwd()){
   if(!transformativeTaskEligible(taskInput))return taskInput;
-  const recipe=selectTransformativeRecipe(memory,taskInput);
+  const verifiedDesign=latestVerifiedDesign(repoRoot,taskInput.gameId);
+  const design=verifiedDesign?.record||{};
+  const profile=design?.content?.robloxBuildProfile||project;
+  const designAxes=recombinationDesignAxes({profile,design});
+  const recipe=selectTransformativeRecipe(memory,taskInput,designAxes);
   if(!recipe)return taskInput;
   const features=(recipe.featureBlend||[]).map(clean).filter(Boolean).slice(0,8);
   const sources=(recipe.sourceProjects||[]).map(clean).filter(Boolean).slice(0,4);
-  const operator=clean(recipe.transformationOperator)||'reinterpret-and-recombine';
+  const operator=/^change-(?:core-goal|input-model|progression-cadence|risk-reward-relationship|session-structure)$/.test(clean(recipe.transformationOperator))?'adapt-within-approved-design':clean(recipe.transformationOperator)||'adapt-within-approved-design';
   const context=[
     '',
     '[TRANSFORMATIVE_RECOMBINATION_CONTEXT]',
@@ -902,15 +910,18 @@ function applyTransformativeRecombination(taskInput={},memory={}){
     `source_projects=${sources.join(',')}`,
     `feature_blend=${features.join(',')}`,
     `transformation=${operator}`,
+    `design_axes=${JSON.stringify(designAxes)}`,
+    'Genre constrains play rules; style constrains visual and motion expression; concept constrains world and mood. Unobserved or undeclared values remain unknown.',
     'Use these as abstract design/implementation references only.',
     taskInput?.graphicsReplacementContract
       ?'For this graphics/presentation BUILD_UP, selectively blend compatible visual, motion, VFX, UI, material, environment, or interaction-presentation ideas into one concept-matched project-specific expression. Direct reuse is allowed only when already correct; otherwise adapt/re-style/re-target or recombine.'
-      :'Create a new project-specific mechanic/constraint and new code/asset expression.',
+      :'Create project-specific new code/asset expression within the current approved rules, balance, progression, save meaning and multiplayer authority.',
     'Do not emit raw source files, raw asset bytes, logos, source-specific identifiers, or verbatim implementation.',
     'Preserve the current game identity, approved design, gameplay authority, save meaning, and all existing QA/runtime/regression gates.'
   ].join('\n');
   return{
     ...taskInput,
+    recombinationDesignAxes:designAxes,
     goal:`${taskInput.goal}${context}`,
     evidence:[...new Set([...(taskInput.evidence||[]),`recombination-recipe:${clean(recipe.id)||'unknown'}`,`recombination-sources:${sources.join('+')}`,`recombination-transform:${operator}`,'recombination-copy-mode:NO','recombination-original-modifier-required:YES'])]
   };
@@ -2343,7 +2354,7 @@ export function attachRobloxDistilledLearning(taskInput={},project={}, {playbook
   if(!taskInput||clean(project?.engine).toLowerCase()!=='roblox')return taskInput;
   const context=createRobloxVibe3LearningContext({
     gameId:clean(project.gameId),
-    profile:{genre:clean(project.genre),subgenre:clean(project.subgenre),playMode:clean(project.playMode)},
+    profile:{genre:clean(project.genre),subgenre:clean(project.subgenre),playMode:clean(project.playMode),designAxes:project.designAxes,styleLock:project.styleLock},
     playbooks,
     distillation
   });
@@ -3791,7 +3802,7 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
       }
       continue;
     }
-    packageTasks=packageTasks.map(candidate=>applyTransformativeRecombination(candidate,recombinationMemory));
+    packageTasks=packageTasks.map(candidate=>applyTransformativeRecombination(candidate,recombinationMemory,project,repoRoot));
     packageTasks=packageTasks.map(candidate=>attachRobloxDistilledLearning(candidate,project,{playbooks:robloxPlaybooks,distillation:robloxDistillationLedger}));
     sequence+=1;
     let pkg=buildWorkPackage({tasks:packageTasks,project,sequence,policy});

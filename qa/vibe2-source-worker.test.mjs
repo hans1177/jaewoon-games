@@ -10,6 +10,8 @@ import http from 'node:http';
 import { runInNewContext } from 'node:vm';
 import { robloxProductionPromptLines } from '../tools/company-roblox-production-plan.mjs';
 import crypto from 'node:crypto';
+import { deflateSync } from 'node:zlib';
+import { compareVibeAssetPreviewPng } from '../tools/vibe2-source-worker.mjs';
 import { execFileSync } from 'node:child_process';
 import { learningGuidance } from '../tools/vibe2-learning-motor.mjs';
 import { buildInternalMotionCoaching, singleMotionResponseSchema } from '../tools/vibe2-motion-coaching.mjs';
@@ -18,7 +20,7 @@ import { focusedSymbolContext } from '../tools/vibe2-source-worker.mjs';
 import { requiredBlueprintFieldsFromPrompt } from '../tools/vibe2-source-worker.mjs';
 import { evaluateSingleMotionWorkUnit, SINGLE_MOTION_DEPTH_AXES, generateCandidateWithRecovery, runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateRobloxDesignAnchorGrounding, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, localModelContextLimit, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, attachSelectedInternalAssetApiContext, evaluateRobloxInternalAssetFamilyBindingCandidate, evaluateAllGameDynamicAssetBindingCandidate, assertAllGameDynamicAssetBindingContract, ROBLOX_INTERNAL_ASSET_FAMILIES } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
-import { buildVibeAssetProductionPlan, assetProductionGuidance } from '../tools/vibe2-asset-production-plan.mjs';
+import { buildVibeAssetProductionPlan, assetProductionGuidance, inspectVibeSourceGlb } from '../tools/vibe2-asset-production-plan.mjs';
 import { createVibeContinuousQueue } from '../assets/vibe-continuous-queue.js';
 import { robloxDeterministicPresentationEligible } from '../tools/vibe2-source-worker.mjs';
 import { expandPresentationResponsibleFiles } from '../tools/vibe2-continuous-runner.mjs';
@@ -1378,6 +1380,9 @@ test('declared Blender application rejects desynchronized size axes and pivot an
       fs.chmodSync(blender,0o755);
     };
     setApplication(application);
+    write(path.join(root,'measure.glb'),glb);
+    const distribution=inspectVibeSourceGlb({repoRoot:root,source:{path:'measure.glb'}}).inventory.surfaceDistribution;
+    fs.rmSync(path.join(root,'measure.glb'));
     execFileSync('git',['init'],{cwd:root});
     execFileSync('git',['config','user.email','test@example.invalid'],{cwd:root});
     execFileSync('git',['config','user.name','test'],{cwd:root});
@@ -1412,6 +1417,11 @@ test('declared Blender application rejects desynchronized size axes and pivot an
       assert.equal(fs.readFileSync(path.join(root,outputs[1]),'utf8'),'original-application');
     }
     const floating=dccFixtureGlb();
+    for(const change of [{surfaceAreaM2:999},{centroidMeters:[999,0,0]},{physicalDensityKgM3:1000},{dynamicStabilityVerified:true}]){
+      setApplication({...application,surfaceDistribution:{...distribution,...change}});
+      assert.throws(()=>executeDeclaredNativeDccAuthoringVerification({cwd:root,order:workOrder,blenderExecutable:blender,persistCandidateOutputs:true}),/NATIVE_GLB_SURFACE_DISTRIBUTION_MISMATCH/);
+      assert.equal(fs.readFileSync(path.join(root,outputs[0]),'utf8'),'original-model');
+    }
     setApplication({...application,masterSha256:crypto.createHash('sha256').update(floating).digest('hex')},floating);
     assert.throws(()=>executeDeclaredNativeDccAuthoringVerification({cwd:root,order:workOrder,blenderExecutable:blender,persistCandidateOutputs:true}),/NATIVE_GLB_APPLICATION_SPATIAL_MISMATCH/);
     setApplication(application);
@@ -7688,3 +7698,70 @@ test('package asset repair evidence survives focused and oversized worker prompt
   assert.equal(directive.playtestRuntimeFindings.runtimePassed,false);
 });
 
+// 선언 출력은 복구하고 같은 폴더와 외부 경로의 동시 작업자 변경은 보존한다.
+test('declared DCC rollback restores only locked output files and preserves concurrent sibling changes',()=>{
+  for(const lateRecipeFailure of [true,false]){
+    const root=tempRoot();
+    try{
+      const directory='assets/test/native/model';
+      const outputs=[directory+'/model.glb',directory+'/preview.png',directory+'/evidence.json'];
+      const originals=[Buffer.from('original-model'),Buffer.from('original-preview'),Buffer.from('{"original":true}')];
+      for(const [index,relative] of outputs.entries())write(path.join(root,relative),originals[index]);
+      write(path.join(root,directory,'sibling.txt'),'before-other-worker');
+      write(path.join(root,'outside.txt'),'before-other-worker');
+      write(path.join(root,'assets/test/build.py'),'# fixture only\n');
+      const blender=path.join(root,'fake-blender');
+      fs.writeFileSync(blender,[
+        '#!/usr/bin/env node',
+        'const fs=require("fs"),path=require("path");',
+        'if(process.argv.includes("--version")){console.log("Blender fixture");process.exit(0)}',
+        'const out='+JSON.stringify(directory)+';',
+        'fs.writeFileSync(path.join(out,"model.glb"),Buffer.from('+JSON.stringify(dccFixtureGlb().toString('base64'))+',"base64"));',
+        'fs.writeFileSync(path.join(out,"preview.png"),"generated-preview");',
+        'fs.writeFileSync(path.join(out,"evidence.json"),JSON.stringify({productionVerified:false}));',
+        'fs.writeFileSync(path.join(out,"sibling.txt"),"concurrent-sibling-update");',
+        'fs.writeFileSync(path.join(out,"new-sibling.txt"),"concurrent-new-file");',
+        'fs.writeFileSync("outside.txt","concurrent-outside-update");'
+      ].join('\n')+'\n');
+      fs.chmodSync(blender,0o755);
+      execFileSync('git',['init','-q'],{cwd:root});
+      execFileSync('git',['config','user.email','test@example.invalid'],{cwd:root});
+      execFileSync('git',['config','user.name','test'],{cwd:root});
+      execFileSync('git',['add','.'],{cwd:root});
+      execFileSync('git',['commit','-qm','fixture'],{cwd:root});
+      execFileSync('git',['checkout','-qb','vibe2/candidate/file-rollback'],{cwd:root});
+      const recipe={id:'file-rollback',executor:'BLENDER_PYTHON',script:'assets/test/build.py',runMode:'VERIFY_ONLY',args:[],outputs:[outputs[0]],preview:outputs[1],evidenceJson:outputs[2]};
+      const workOrder={assetProductionLane:true,taskId:'file-rollback',gameId:'demo',target:'roblox',compiledWorkContract:{workLock:{files:outputs}},assetProduction:{nativeAuthoringExecution:{dcc:{executionRecipes:[recipe,...(lateRecipeFailure?[{...recipe,id:'invalid-later',executor:'INVALID'}]:[])]}}}};
+      assert.throws(()=>executeDeclaredNativeDccAuthoringVerification({cwd:root,order:workOrder,blenderExecutable:blender,persistCandidateOutputs:true}),lateRecipeFailure?/NATIVE_DCC_EXECUTOR_FORBIDDEN/:/NATIVE_DCC_CANDIDATE_SCOPE_ESCAPE/);
+      for(const [index,relative] of outputs.entries())assert.deepEqual(fs.readFileSync(path.join(root,relative)),originals[index]);
+      assert.equal(fs.readFileSync(path.join(root,directory,'sibling.txt'),'utf8'),'concurrent-sibling-update');
+      assert.equal(fs.readFileSync(path.join(root,directory,'new-sibling.txt'),'utf8'),'concurrent-new-file');
+      assert.equal(fs.readFileSync(path.join(root,'outside.txt'),'utf8'),'concurrent-outside-update');
+    }finally{fs.rmSync(root,{recursive:true,force:true});}
+  }
+});
+
+
+test('asset optimization compares decoded pixels across PNG filters and rejects changed or oversized previews',()=>{
+  const make=(filter,value=80,width=2)=>{
+    const chunk=(type,data)=>{const header=Buffer.alloc(8);header.writeUInt32BE(data.length);header.write(type,4);let crc=0xffffffff;for(const value of Buffer.concat([Buffer.from(type),data])){crc^=value;for(let bit=0;bit<8;bit++)crc=(crc&1)?0xedb88320^(crc>>>1):crc>>>1;}const tail=Buffer.alloc(4);tail.writeUInt32BE((crc^0xffffffff)>>>0);return Buffer.concat([header,data,tail]);};
+    const ihdr=Buffer.alloc(13);ihdr.writeUInt32BE(width);ihdr.writeUInt32BE(2,4);ihdr[8]=8;ihdr[9]=6;
+    const raw=Buffer.alloc(18),pixels=Array(8).fill(value);
+    for(let y=0;y<2;y++){
+      raw[y*9]=filter;
+      for(let x=0;x<8;x++){
+        const left=x>=4?pixels[x-4]:0,up=y?pixels[x]:0,corner=y&&x>=4?pixels[x-4]:0,p=left+up-corner;
+        const pa=Math.abs(p-left),pb=Math.abs(p-up),pc=Math.abs(p-corner);
+        const prediction=filter===0?0:filter===1?left:filter===2?up:filter===3?Math.floor((left+up)/2):pa<=pb&&pa<=pc?left:pb<=pc?up:corner;
+        raw[y*9+x+1]=(pixels[x]-prediction)&255;
+      }
+    }
+    return Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]),chunk('IHDR',ihdr),chunk('IDAT',deflateSync(raw)),chunk('IEND',Buffer.alloc(0))]);
+  };
+  const baseline=make(0);
+  for(let filter=0;filter<=4;filter++)assert.equal(compareVibeAssetPreviewPng(baseline,make(filter)).maxPixelError,0);
+  assert.equal(compareVibeAssetPreviewPng(baseline,make(4,81)).maxPixelError,1/255);
+  assert.throws(()=>compareVibeAssetPreviewPng(baseline,make(0,80,4096)),/FORMAT_UNSUPPORTED/);
+  assert.throws(()=>compareVibeAssetPreviewPng(baseline,baseline.subarray(0,30)),/TRUNCATED/);
+  const corrupt=Buffer.from(baseline);corrupt[29]^=1;assert.throws(()=>compareVibeAssetPreviewPng(baseline,corrupt),/CHECKSUM_INVALID/);
+});
