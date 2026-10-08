@@ -592,25 +592,53 @@
         "TACTICAL_FLEXIBILITY"
       ],
       "fromSystem": "GAMEPLAY_SKETCH v4"
+    },
+    "local_authoring_parts::80ecc07e0b423a6b9a3425a544140da19c8fb260f633b7c3726bc0d98fca0d10:toSystem,trigger,stateChange": {
+      "toSystem": "GAMEPLAY_SKETCH v4",
+      "trigger": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+      "stateChange": "Defense coverage increases, resource accumulation accelerates, tactical flexibility improves."
+    },
+    "local_authoring_parts::8df684f49f5607eb9ce4616d14acce0b71887cff03d125cd9e15b5612b25a84a:systemInterconnections:3": {
+      "fromId": "MAIN",
+      "toId": "A",
+      "stateKeys": [
+        "DEFENSE_COVERAGE",
+        "RESOURCE_ACUMULATION",
+        "TACTICAL_FLEXIBILITY"
+      ],
+      "fromSystem": "GAMEPLAY_SKETCH v4",
+      "toSystem": "GAMEPLAY_SKETCH v4",
+      "trigger": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+      "stateChange": "Defense coverage increases, resource accumulation accelerates, tactical flexibility improves."
+    },
+    "local_authoring_parts::5752f81f141658f8ddf06996955c9cae4bdc85bef4795a38c14f035ed84d0d7b:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "MAIN",
+      "toId": "A",
+      "stateKeys": [
+        "DEFENSE_COVERAGE",
+        "RESOURCE_ACUMULATION",
+        "TACTICAL_FLEXIBILITY"
+      ],
+      "fromSystem": "GAMEPLAY_SKETCH v4"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 17,
+      "calls": 22,
+      "successes": 19,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2378884,
-      "lastMs": 96999,
+      "totalMs": 2574235,
+      "lastMs": 97982,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T21:29:57.414Z"
+      "updatedAt": "2026-10-08T21:33:12.769Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:50:18.458Z",
-  "updatedAt": "2026-10-08T21:29:57.414Z",
+  "updatedAt": "2026-10-08T21:33:12.769Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2807,7 +2835,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:29:57.414Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:33:12.769Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
