@@ -3,28 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1j74orh",
-      "worker": "vibe2",
-      "taskId": "amusement-tycoon-existing-web-assessment-v1",
-      "gameId": "amusement-tycoon",
-      "files": [
-        "web-games/amusement-tycoon/index.html",
-        "assets/roblox/world-ghosts/native/spider/spider.glb",
-        "assets/roblox/world-ghosts/native/spider/spider.png",
-        "assets/roblox/world-ghosts/native/spider/evidence.json"
-      ],
-      "baseSha": "3080f068ab7badb64e1ea1b189fc42e838e1d911",
-      "runId": "37713358394",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-08T02:25:40.501Z",
-      "expiresAt": "2026-10-08T03:10:40.501Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:amusement-tycoon-existing-web-assessment-v1"
-      ]
-    },
-    {
       "id": "wl-1nwrv0c",
       "worker": "vibe2",
       "taskId": "internal-motion-brahmadaitya-walk-v1",
@@ -60,6 +38,38 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:internal-motion-jiangshi-walk-v1"
+      ]
+    },
+    {
+      "id": "wl-1gr4ao5",
+      "worker": "vibe2",
+      "taskId": "monster-adventure-unity-web-base-implementation-v1",
+      "gameId": "monster-adventure",
+      "files": [
+        "unity-games/monster-adventure/Assets/Scripts/GameCore.cs",
+        "unity-games/monster-adventure/Assets/Scripts/RuntimeBootstrap.cs",
+        "assets/roblox/world-ghosts/native/spider/spider.glb",
+        "assets/roblox/world-ghosts/native/spider/spider.png",
+        "assets/roblox/world-ghosts/native/spider/evidence.json",
+        "assets/generated/unity/monster-adventure/background/asset.glb",
+        "assets/generated/unity/monster-adventure/background/preview.png",
+        "assets/generated/unity/monster-adventure/background/evidence.json",
+        "assets/generated/unity/monster-adventure/item/asset.glb",
+        "assets/generated/unity/monster-adventure/item/preview.png",
+        "assets/generated/unity/monster-adventure/item/evidence.json",
+        "assets/generated/unity/monster-adventure/prop/asset.glb",
+        "assets/generated/unity/monster-adventure/prop/preview.png",
+        "assets/generated/unity/monster-adventure/prop/evidence.json"
+      ],
+      "baseSha": "12269bd9e5dffb27312dacccee2d45100d62f783",
+      "runId": "37720846742",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-08T03:11:25.784Z",
+      "expiresAt": "2026-10-08T03:56:25.784Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:monster-adventure-unity-web-base-implementation-v1"
       ]
     }
   ]
