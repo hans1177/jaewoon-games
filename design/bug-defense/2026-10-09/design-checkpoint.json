@@ -34,25 +34,42 @@
         "SELECT: Place or adjust defenders and spend limited resources on the highest-value counter.",
         "OUTPUT: Status change in world state, new strategy, and expanded gameplay possibilities."
       ]
+    },
+    "local_authoring_parts::700c47434d237990cf562cee70abe47c91b680c5734707c9a5ab90e8330bf99d:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "INCOMING_INSECT_WAVE",
+        "DEFENDER_POSITIONS",
+        "RESOURCE_ALLOCATIONS"
+      ],
+      "stateOutputs": [
+        "WORLD_STATE_CHANGE",
+        "NEW_STRATEGY_IMPLEMENTATION",
+        "EXPANDED_GAMEPLAY_POSSIBILITIES"
+      ],
+      "name": "INSECT_THREAT_ANALYSIS_SYSTEM",
+      "purpose": "Player's action of reading the incoming insect wave and its threat pattern to determine new strategies and expand gameplay possibilities.",
+      "playerChoice": "Read the incoming insect wave and its threat pattern, then implement a new strategy based on resource allocation and defensive positioning."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 287545,
-      "lastMs": 31185,
+      "totalMs": 323838,
+      "lastMs": 36293,
       "lastError": null,
-      "updatedAt": "2026-10-08T20:50:00.503Z"
+      "updatedAt": "2026-10-08T20:50:36.798Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:45:12.936Z",
-  "updatedAt": "2026-10-08T20:50:00.504Z",
+  "updatedAt": "2026-10-08T20:50:36.798Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2251,7 +2268,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T20:50:00.503Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T20:50:36.798Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
