@@ -27,25 +27,32 @@
       "identity": "캣 스텝은 플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다. 게임의 핵심 재미는 반복 가능한 선택과 보상, 위험, 그리고 상태 변화의 유기적인 연결이다. 게임의 세계 규칙은 플레이어의 선택이 월드 상태를 변화시키는 시그니처 상호작용을 통해 구체화된다. 게임의 중심 행동은 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이며, 두 대축 A/B는 'Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.'와 'Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.'으로, 보조 요소 c는 'Discover, master, and revisit'을 통해 게임의 깊이를 증가시킨다. 게임의 시그니처 세계 규칙은 'Puzzle'로, 게임의 인과법칙은 'KARMA_RETURN'와 'MANDATE_LEGITIMACY'로 구성된다. 게임의 플랫폼별 구현은 원본과 일치하며, 게임의 설계는 기존 원본의 규칙과 수치를 보존한다. 게임의 설계는 단일 게임 원본에 기반하여, 플랫폼별로 입력·성능·연출·배포/검증만 네이티브에 맞게 적용된다. 게임의 설계는 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 게임의 설계는 실패·중단·재접속·저장을 원본 의미로 보존한다. 게임의 설계는 기존 설계와 모순시키",
       "playerFantasy": "플레이어는 게임의 중심 행동인 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'을 통해 월드 상태를 변화시키는 선택을 하며, 이 선택은 다음 상태와 접근 가능성을 바꾼다. 선택은 즉시 상태 변화를 일으키고, 이 상태 변화는 보상, 위험, 그리고 다음 선택의 연결을 형성한다. 게임의 핵심 재미는 반복 가능한 선택과 보상, 위험, 그리고 상태 변화의 유기적인 연결이다. 게임의 세계 규칙은 플레이어의 선택이 월드 상태를 변화시키는 시그니처 상호작용을 통해 구체화된다. 게임의 중심 행동은 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이며, 두 대축 A/B는 'Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.'와 'Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.'으로, 보조 요소 c는 'Discover, master, and revisit'을 통해 게임의 깊이를 증가시킨다. 게임의 시그니처 세계 규칙은 'Puzzle'로, 게임의 인과법칙은 'KARMA_RETURN'와 'MANDATE_LEGITIMACY'로 구성된다. 게임의 플랫폼별 구현은 원본과 일치하며, 게임의 설계",
       "coreFun": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.의 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다. 게임의 핵심 재미는 반복 가능한 선택과 보상, 위험, 그리고 상태 변화의 유기적인 연결이다. 게임의 세계 규칙은 플레이어의 선택이 월드 상태를 변화시키는 시그니처 상호작용을 통해 구체화된다. 게임의 중심 행동은 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이며, 두 대축 A/B는 'Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.'와 'Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.'으로, 보조 요소 c는 'Discover, master, and revisit'을 통해 게임의 깊이를 증가시킨다. 게임의 시그니처 세계 규칙은 'Puzzle'로, 게임의 인과법칙은 'KARMA_RETURN'와 'MANDATE_LEGITIMACY'로 구성된다. 게임의 플랫폼별 구현은 원본과 일치하며, 게임의 설계는 기존 원본의 규칙과 수치를 보존한다. 게임의 설계는 단일 게임 원본에 기반하여, 플랫폼별로 입력·성능·연출·배포/검증만 네이티브에 맞게 적용된다. 게임의 설계는 기존 검"
+    },
+    "local_authoring_parts::6ed16c24b31ef88296286e702ba3bb9e66a373f3ec44cde3c7e73698b73470de:coreLoop": {
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 178194,
-      "lastMs": 43407,
+      "totalMs": 204362,
+      "lastMs": 26168,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:01:10.538Z"
+      "updatedAt": "2026-10-08T12:01:36.709Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:58:12.306Z",
-  "updatedAt": "2026-10-08T12:01:10.540Z",
+  "updatedAt": "2026-10-08T12:01:36.709Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2082,7 +2089,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:01:10.539Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:01:36.709Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
