@@ -321,7 +321,7 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     const regionalBiome=String(biome).toUpperCase(),wet=/WET|SWAMP|JUNGLE|RAIN/.test(regionalBiome+' '+climate),dry=/DESERT|ARID|DRY/.test(regionalBiome+' '+climate),mountain=/MOUNTAIN|ALPINE|RIDGE/.test(regionalBiome);
     const elevation=Math.max(.05,Math.min(.95,.48+.5*octave(nx*4,nz*4,0x22bb)+.16*ridge+(mountain?.12:0)));
     const moisture=Math.max(0,Math.min(1,.52+.58*octave(nx*3+11,nz*3-7,0x397a)+(wet?.2:0)-(dry?.25:0)));
-    const type=elevation<.26?'WATER':elevation>.77?'RIDGE':moisture>.66?'FOREST':moisture<.28?'DRY':'PLAIN';
+    const type=elevation<(dry?.25:mountain?.31:.38)?'WATER':elevation>(mountain?.66:.68)?'RIDGE':moisture>.66?'FOREST':moisture<.28?'DRY':'PLAIN';
     terrain.push({x,z,elevation:+elevation.toFixed(4),moisture:+moisture.toFixed(4),biome:type});
   }
   for(const tile of terrain){
