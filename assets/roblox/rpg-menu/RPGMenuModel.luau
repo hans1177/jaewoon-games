@@ -50,22 +50,27 @@ function Model.character(attributes,config)
  }
 end
 
-function Model.shop(attributes,config)
+-- 상점 표시만 담당한다. 실제 구매 가격·거리·재화 변경은 기존 서버 책임 함수에 남긴다.
+function Model.shop(attributes,config,merchantAccess)
  attributes=attributes or {};config=config or {}
  local tierWeapon=math.floor(tonumber(attributes.WeaponTier)or 1)
  local tierArmor=math.floor(tonumber(attributes.ArmorTier)or 1)
  local gold=math.max(0,tonumber(attributes.Gold)or 0)
  local inVillage=(tonumber(attributes.CurrentZone)or 0)==0
- local function offer(tier,prices)
+ local function offer(tier,prices,nearMerchant)
   local maxTier=#prices
   local nextTier=math.min(maxTier,tier+1)
   local price=prices[tier+1]
-  local canBuy=inVillage and price~=nil and gold>=price
-  return {tier=tier,nextTier=nextTier,maxTier=maxTier,price=price,canBuy=canBuy}
+  local canBuy=inVillage and nearMerchant and price~=nil and gold>=price
+  return {tier=tier,nextTier=nextTier,maxTier=maxTier,price=price,canBuy=canBuy,nearMerchant=nearMerchant}
  end
- return {gold=gold,inVillage=inVillage,weapon=offer(tierWeapon,config.WeaponPrices or {}),
-  armor=offer(tierArmor,config.ArmorPrices or {}),sellSupported=false,
-  source="SERVER_REPLICATED_EQUIPMENT_AND_CANONICAL_CATALOG"}
+ -- 호출자가 실측한 주변 상인을 알려주면 UI도 그 상태로 잠근다.
+ -- 인자를 넘기지 않는 기존 메뉴/테스트 호출은 종전 표시 계약 그대로 유지한다.
+ local weaponNearby=merchantAccess==nil or merchantAccess.weapon==true
+ local armorNearby=merchantAccess==nil or merchantAccess.armor==true
+ return {gold=gold,inVillage=inVillage,weapon=offer(tierWeapon,config.WeaponPrices or {},weaponNearby),
+  armor=offer(tierArmor,config.ArmorPrices or {},armorNearby),sellSupported=false,
+  proximityObserved=merchantAccess~=nil,source="SERVER_REPLICATED_EQUIPMENT_AND_CANONICAL_CATALOG"}
 end
 
 function Model.filter(rows, category, query)
