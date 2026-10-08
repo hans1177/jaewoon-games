@@ -473,25 +473,40 @@
     },
     "local_authoring_parts::785512cafe261c3b30d6ca39111521ba9dc4d93344e83337cb483e78619d8384:trigger": {
       "trigger": "systemInterconnections[0].stateChange"
+    },
+    "local_authoring_parts::785512cafe261c3b30d6ca39111521ba9dc4d93344e83337cb483e78619d8384:stateChange": {
+      "stateChange": "플레이어가 선택한 결과 RUN_RESULT와 현재 건축 상태 BUILD_STATE를 기반으로, 세계 상태 MODIFIED_WORLD_STATE를 업데이트하여 다음 진행 선택 NEXT_PROGRESSION_CHOICE를 결정한다."
+    },
+    "local_authoring_parts::bbbe8ed00729066108b4fdce6c87d817b2cfc3d68ec8708b53429f2d4808c9da:systemInterconnections:0": {
+      "fromId": "systemInterconnections[0]",
+      "toId": "systemInterconnections[0]",
+      "stateKeys": [
+        "RUN_RESULT",
+        "BUILD_STATE"
+      ],
+      "fromSystem": "ACTION_SURVIVAL_ROGUELITE_CORE",
+      "toSystem": "ACTION_SURVIVAL_ROGUELITE_CORE",
+      "trigger": "systemInterconnections[0].stateChange",
+      "stateChange": "플레이어가 선택한 결과 RUN_RESULT와 현재 건축 상태 BUILD_STATE를 기반으로, 세계 상태 MODIFIED_WORLD_STATE를 업데이트하여 다음 진행 선택 NEXT_PROGRESSION_CHOICE를 결정한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 17,
+      "calls": 18,
+      "successes": 18,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1367215,
-      "lastMs": 58323,
+      "totalMs": 1429070,
+      "lastMs": 61855,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:08:25.598Z"
+      "updatedAt": "2026-10-08T18:09:27.454Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:45:38.274Z",
-  "updatedAt": "2026-10-08T18:08:25.598Z",
+  "updatedAt": "2026-10-08T18:09:27.456Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3090,7 +3105,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:08:25.598Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:09:27.456Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
