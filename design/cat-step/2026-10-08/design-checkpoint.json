@@ -27,25 +27,32 @@
       "identity": "캣 스텝은 시작 단계에서 플레이어가 게임의 중심 행동으로부터 반복적으로 선택을 통해 세계 상태를 바꾸는 PUZZLE 게임이다. 플레이어는 게임의 핵심 재미인 '판단'과 '선택'을 통해 세계의 원인과 규칙을 직접 경험하며, 이는 시스템의 핵심 인과법칙과 연결되어 진다. 게임의 중심 행동은 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'으로, 이는 플레이어가 즉시 상태 변화를 만드는 핵심 플레이이다. 이는 MAIN의 결과가 A/B/c 서브요소와 상호작용하며, 이는 게임의 반복 규칙과 연결되어 진다. 게임의 핵심 재미는 '진행·위험·보상'이 서로 연결되어 있는 반복 가능한 핵심 루프로, 이는 모바일에서도 즉시 이해되는 입력과 피드백을 제공한다. 게임의 시스템은 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'과 'Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.'으로 구성되어, 이는 게임의 핵심 인과법칙과 연결되어 진다. 게임의 보조 요소는 'c'로, 이는 MAIN/A/B의 관계를 상황별로 변주하며, 이는 게임의 다양한 선택과 결과를 제공한다. 게임의 파고들기 요소는 '@'으로, 이는 발견·숙련·재방문의 깊이를 나타내며, 이는 게임의 다양한 플레이 스타일과 연결되어 진다. 게임의 인과법칙은 'KARMA_RETURN'와 'MANDATE_LEGITIMACY'로 구성되어, 이는 게임의 주요 인과법칙과 연결되어 진다. 게임의 시스템은 'MAIN × A × B × c'로 구성되어, 이는 게임의 다양한 선택과 관",
       "playerFantasy": "플레이어는 게임의 중심 행동인 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'을 통해 세계 상태를 반복적으로 바꾸는 PUZZLE 게임에서, '판단'과 '선택'이라는 핵심 재미를 직접 경험하며, 이는 세계의 원인과 규칙을 이해하고 경험하게 된다. 이는 시스템의 핵심 인과법칙과 연결되어 있으며, 플레이어는 이 과정에서 '진행·위험·보상'이 서로 연결되어 있는 반복 가능한 핵심 루프를 경험하게 된다. 게임의 보조 요소인 'c'는 MAIN/A/B의 관계를 상황별로 변주하며, 이는 다양한 선택과 결과를 제공한다. 파고들기 요소인 '@'는 발견·숙련·재방문의 깊이를 나타내며, 이는 다양한 플레이 스타일과 연결되어 있다. 게임의 인과법칙은 'KARMA_RETURN'와 'MANDATE_LEGITIMACY'로 구성되어, 이는 주요 인과법칙과 연결되어 있다. 게임의 시스템은 'MAIN × A × B × c'로 구성되어, 이는 다양한 선택과 관계를 통해 게임의 반복 규칙과 연결되어 있다.",
       "coreFun": "플레이어는 게임의 중심 행동인 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'을 통해 세계 상태를 반복적으로 바꾸는 PUZZLE 게임에서, '판단'과 '선택'이라는 핵심 재미를 직접 경험하며, 이는 세계의 원인과 규칙을 이해하고 경험하게 된다. 이는 시스템의 핵심 인과법칙과 연결되어 있으며, 플레이어는 이 과정에서 '진행·위험·보상'이 서로 연결되어 있는 반복 가능한 핵심 루프를 경험하게 된다. 게임의 보조 요소인 'c'는 MAIN/A/B의 관계를 상황별로 변주하며, 이는 다양한 선택과 결과를 제공한다. 파고들기 요소인 '@'는 발견·숙련·재방문의 깊이를 나타내며, 이는 다양한 플레이 스타일과 연결되어 있다. 게임의 인과법칙은 'KARMA_RETURN'와 'MANDATE_LEGITIMACY'로 구성되어, 이는 주요 인과법칙과 연결되어 있다. 게임의 시스템은 'MAIN × A × B × c'로 구성되어, 이는 다양한 선택과 관계를 통해 게임의 반복 규칙과 연결되어 있다."
+    },
+    "local_authoring_parts::d15eaf1d6a57630e1677cc98706fd38a2ec014c3117fb34379a49e568204aa5b:coreLoop": {
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 384632,
-      "lastMs": 75401,
+      "totalMs": 448665,
+      "lastMs": 64033,
       "lastError": null,
-      "updatedAt": "2026-10-08T07:48:49.791Z"
+      "updatedAt": "2026-10-08T07:49:53.827Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:42:25.133Z",
-  "updatedAt": "2026-10-08T07:48:49.792Z",
+  "updatedAt": "2026-10-08T07:49:53.827Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2082,7 +2089,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T07:48:49.792Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T07:49:53.827Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
