@@ -455,25 +455,41 @@
       "name": "ACTION_DELVE_SIGNATURE_SYSTEM",
       "purpose": "Player engages in a deep exploration of the world, uncovering hidden rules, systems, and interactions that shape the game's progression and meaning.",
       "playerChoice": "Choose between exploring new areas, discovering hidden mechanisms, or uncovering deeper layers of the game world, with each choice leading to new states and deeper gameplay engagement."
+    },
+    "local_authoring_parts::24dc845d885a9d976d43fc1cdfd781eae72ee3b2f5db1e000ba865a70300db79:signatureSystems:0": {
+      "id": "ACTION_SURVIVAL_ROGUELITE",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "PLAYER_ACTION",
+        "RUN_RESULT",
+        "UPGRADE_BUILD"
+      ],
+      "stateOutputs": [
+        "WORLD_STATE",
+        "PROGRESSION_CHOICE"
+      ],
+      "name": "ACTION_SURVIVAL_ROGUELITE",
+      "purpose": "플레이어가 반복적으로 수행하는 중심 행동과 선택을 바탕으로, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프를 구현합니다.",
+      "playerChoice": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 선택은 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'로 구성된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 15,
-      "successes": 15,
+      "calls": 16,
+      "successes": 16,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1566010,
-      "lastMs": 101209,
+      "totalMs": 1647435,
+      "lastMs": 81425,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:28:17.596Z"
+      "updatedAt": "2026-10-08T16:11:17.335Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:02:11.526Z",
-  "updatedAt": "2026-10-08T16:09:55.789Z",
+  "updatedAt": "2026-10-08T16:11:17.335Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2708,10 +2724,10 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:28:17.597Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:11:17.335Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
