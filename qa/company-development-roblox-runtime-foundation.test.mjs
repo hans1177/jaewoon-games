@@ -1494,3 +1494,21 @@ test('survival anchored world ground contains the camp, resources and enemy spaw
   assert.doesNotMatch(source,/spawnHit\.Position\.Y - nativeFoundationSpawn\.Size\.Y \* 0\.5/);
   assert.match(source,/params\.ExcludeInstances = \{character, nativeFoundationSpawn\}/);
 });
+
+test('bug-defense source contract exposes real two-player server authority without fake runtime PASS',()=>{
+  const server=fs.readFileSync('roblox-games/bug-defense/server/Game.server.luau','utf8');
+  const client=fs.readFileSync('roblox-games/bug-defense/client/Game.client.luau','utf8');
+  const config=fs.readFileSync('roblox-games/bug-defense/shared/GameConfig.luau','utf8');
+  const codeContract=validateRobloxMultiplayerSourceContract({serverSource:server,clientSource:client});
+  assert.equal(codeContract.passed,true);
+  assert.equal(codeContract.runtimeTwoClientExecutionRequired,false);
+  assert.match(config,/MultiplayerRequired = true/);
+  assert.match(config,/CoopRequired = true/);
+  assert.match(config,/MinimumParticipants = 2/);
+  assert.match(server,/remote:FireAllClients\("MULTIPLAYER_SYNC", multiplayerSnapshot/);
+  assert.match(server,/damageEnemy\(teammate, target, \(12 \+ level \* 2\) \* multiplier\)/);
+  assert.match(server,/verifiedSaveRead\[player\] ~= true/);
+  assert.match(server,/BUG_DEFENSE_SAVE_WRITE_SKIPPED_UNVERIFIED_READ/);
+  assert.match(client,/remote.OnClientEvent:Connect\(function\(eventName, snapshot\)/);
+  assert.match(client,/remote:FireServer\("coop-assist"\)/);
+});
