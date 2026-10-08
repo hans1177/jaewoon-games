@@ -459,25 +459,28 @@
       "toSystem": "SURVIVAL_02_SIGNATURE_SYSTEM",
       "trigger": "RUN_REWARDS",
       "stateChange": "RUN_REWARDS가 받기 전에는 SURVIVAL_01_SIGNATURE_SYSTEM의 RUN_REWARDS 상태값이 존재하며, 이 값은 다음 STATE INPUT로 사용된다. SURVIVAL_02_SIGNATURE_SYSTEM의 RUN_REWARDS 상태값은 RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다."
+    },
+    "local_authoring_parts::ea9e6b2bfdc2fbab1418cfb65d32d05f6657ec981be19fc5638df28dfab3f5e6:fromId": {
+      "fromId": "SURVIVAL_02_SIGNATURE_SYSTEM"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 19,
+      "calls": 20,
+      "successes": 20,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1342381,
-      "lastMs": 95079,
+      "totalMs": 1429500,
+      "lastMs": 87119,
       "lastError": null,
-      "updatedAt": "2026-10-08T22:05:29.929Z"
+      "updatedAt": "2026-10-08T22:06:57.050Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:43:07.484Z",
-  "updatedAt": "2026-10-08T22:05:29.930Z",
+  "updatedAt": "2026-10-08T22:06:57.050Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2856,7 +2859,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T22:05:29.930Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T22:06:57.050Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
