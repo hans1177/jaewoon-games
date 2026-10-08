@@ -610,25 +610,28 @@
     },
     "local_authoring_parts::9b37311e7910ea4a4cdd4f04e3d0159b84d75889d5dff99a8620dc98d668d9a6:toSystem": {
       "toSystem": "WORLD_STATE_CHANGE"
+    },
+    "local_authoring_parts::9b37311e7910ea4a4cdd4f04e3d0159b84d75889d5dff99a8620dc98d668d9a6:trigger": {
+      "trigger": "플레이어가 환경의 위험과 압박 속에서 즉각적인 상태 변화를 경험하며, 주로 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 한 선택 결과에 따라 월드 상태와 접근"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 44,
-      "successes": 44,
+      "calls": 45,
+      "successes": 45,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2540642,
-      "lastMs": 48152,
+      "totalMs": 2600763,
+      "lastMs": 60121,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:11:30.161Z"
+      "updatedAt": "2026-10-08T19:12:30.284Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:29:09.382Z",
-  "updatedAt": "2026-10-08T19:11:30.161Z",
+  "updatedAt": "2026-10-08T19:12:30.284Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3026,7 +3029,7 @@
       "progressionDirection": "FIGHT-UPGRADES-SURVIVE-PROGRESSION"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T19:11:30.161Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:12:30.284Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
