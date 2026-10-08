@@ -421,25 +421,46 @@
       "name": "주사위 전투 보드 시그니처 시스템",
       "purpose": "플레이어가 실제 선택에 기반하여 진행·위험·보상을 연결하는 반복 가능한 루프를 구축하며, 주사위 전략 게임의 점수나 관문을 승계하지 않고 새로운 시스템을 설계합니다.",
       "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. 이 과정에서 대표 선택과 세계 규칙이 결합되어 다른 경로와 결과를 만든다. 성장은 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다."
+    },
+    "local_authoring_parts::b440994f34db08001368faf87310531545e88bc6246f996ac3d071747622b3bd:signatureSystems:1": {
+      "id": "dice-battle-board",
+      "grammarRole": "A",
+      "stateInputs": [
+        "boardState",
+        "goal",
+        "movesLeft",
+        "obstacles",
+        "comboScore"
+      ],
+      "stateOutputs": [
+        "newBoardState",
+        "newGoal",
+        "newMovesLeft",
+        "newObstacles",
+        "newComboScore"
+      ],
+      "name": "주사위 전투 보드 시그니처 시스템",
+      "purpose": "플레이어가 실제 선택에 기반하여 진행·위험·보상을 연결하는 반복 가능한 루프를 구축하며, 주사위 전략 게임의 점수나 관문을 승계하지 않고 새로운 시스템을 설계합니다.",
+      "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. 이 과정에서 대표 선택과 세계 규칙이 결합되어 다른 경로와 결과를 만든다. 성장은 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 383435,
-      "lastMs": 42740,
+      "totalMs": 427809,
+      "lastMs": 44374,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:08:28.624Z"
+      "updatedAt": "2026-10-08T18:09:12.999Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:02:05.035Z",
-  "updatedAt": "2026-10-08T18:08:28.624Z",
+  "updatedAt": "2026-10-08T18:09:12.999Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2431,7 +2452,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:08:28.624Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:09:12.999Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
