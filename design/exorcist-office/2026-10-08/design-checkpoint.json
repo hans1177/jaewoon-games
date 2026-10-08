@@ -671,25 +671,46 @@
         "ProgressionBenefit"
       ],
       "fromSystem": "SYSTEM_AVOIDANCE_ZONE_01\",\"toSystem\":\"SYSTEM_AVOIDANCE_ZONE_02\"}"
+    },
+    "local_authoring_parts::1e7d3e5484ef3cb6242a77ded67001ff7068f92d8e338f84d0245993dfd2d621:toSystem,trigger,stateChange": {
+      "toSystem": "SYSTEM_AVOIDANCE_ZONE_02",
+      "trigger": "HumanCount + MonsterCount + EliminatedCount 변화",
+      "stateChange": "Score + Distance + ProgressionBenefit 변화"
+    },
+    "local_authoring_parts::934d9aef38062c93d86a54172f4d21af29a59ab8737ae363ebee0c84c69e9c4e:systemInterconnections:0": {
+      "fromId": "RULE_01",
+      "toId": "RULE_02",
+      "stateKeys": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount",
+        "Score",
+        "Distance",
+        "ProgressionBenefit"
+      ],
+      "fromSystem": "SYSTEM_AVOIDANCE_ZONE_01\",\"toSystem\":\"SYSTEM_AVOIDANCE_ZONE_02\"}",
+      "toSystem": "SYSTEM_AVOIDANCE_ZONE_02",
+      "trigger": "HumanCount + MonsterCount + EliminatedCount 변화",
+      "stateChange": "Score + Distance + ProgressionBenefit 변화"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 18,
+      "calls": 20,
+      "successes": 19,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2538453,
-      "lastMs": 98742,
+      "totalMs": 2599674,
+      "lastMs": 61221,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T12:38:36.172Z"
+      "updatedAt": "2026-10-08T15:58:51.274Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:56:17.645Z",
-  "updatedAt": "2026-10-08T15:57:50.044Z",
+  "updatedAt": "2026-10-08T15:58:51.276Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2759,7 +2780,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:38:36.172Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:58:51.276Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
