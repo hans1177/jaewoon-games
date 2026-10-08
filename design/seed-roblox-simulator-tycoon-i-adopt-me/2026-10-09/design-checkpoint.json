@@ -570,25 +570,42 @@
     },
     "local_authoring_parts::b2eb0cc5f047eb8c00dafda73ea6ed3d59cca077d7f9c0be86fb73fdc84f8b21:trigger": {
       "trigger": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이로, 방어 구조 재설계 과정에서 자원 수집 후 업그레이드 또는 전략 변경을 통해 상태 변화를 유도하는 주요 선택 기회"
+    },
+    "local_authoring_parts::b2eb0cc5f047eb8c00dafda73ea6ed3d59cca077d7f9c0be86fb73fdc84f8b21:stateChange": {
+      "stateChange": "플레이어가 방어 구조 재설계 과정에서 자원 수집 후 업그레이드 또는 전략 변경을 통해 상태 변화를 유도하는 주요 선택 기회로, ENEMY_WAVE 및 RESOURCE_POOL 상태 변화를 일관되게 처리하여 DEFENSE_STRUCTURE_CHANGED 상태 변화를 생성"
+    },
+    "local_authoring_parts::7f47ccc87e99b7ad45d5ff0a13a1f802b6c523db4a50604b32a9a94dce7a8b17:systemInterconnections:0": {
+      "fromId": "ENEMY_WAVE",
+      "toId": "DEFENSE_STRUCTURE_CHANGED",
+      "stateKeys": [
+        "ENEMY_WAVE",
+        "RESOURCE_POOL",
+        "DEFENSE_STRUCTURE_CHANGED",
+        "NEW_STRATEGY_CHOICE"
+      ],
+      "fromSystem": "ENEMY_WAVE",
+      "toSystem": "DEFENSE_STRUCTURE_CHANGED",
+      "trigger": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이로, 방어 구조 재설계 과정에서 자원 수집 후 업그레이드 또는 전략 변경을 통해 상태 변화를 유도하는 주요 선택 기회",
+      "stateChange": "플레이어가 방어 구조 재설계 과정에서 자원 수집 후 업그레이드 또는 전략 변경을 통해 상태 변화를 유도하는 주요 선택 기회로, ENEMY_WAVE 및 RESOURCE_POOL 상태 변화를 일관되게 처리하여 DEFENSE_STRUCTURE_CHANGED 상태 변화를 생성"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 18,
+      "calls": 20,
+      "successes": 19,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2421657,
-      "lastMs": 92543,
+      "totalMs": 2514914,
+      "lastMs": 93257,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T19:44:11.151Z"
+      "updatedAt": "2026-10-08T19:45:44.409Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T19:03:49.423Z",
-  "updatedAt": "2026-10-08T19:44:11.151Z",
+  "updatedAt": "2026-10-08T19:45:44.411Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3026,7 +3043,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T19:44:11.151Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:45:44.411Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
