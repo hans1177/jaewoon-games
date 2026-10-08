@@ -373,25 +373,38 @@
       "name": "월드 원기",
       "purpose": "플레이어가 탐험하는 지역마다 새로운 역사·생활·경제·지역 기능을 경험하며, 캐릭터와 NPC들로부터 전달되는 정보는 게임 내에서의 진보·위험·성공·실패·성장 상태에 영향을 미친다.",
       "playerChoice": "타겟 지역 선택 및 정보 해석"
+    },
+    "local_authoring_parts::a863b7d8839eb788496667001cf5debad57e3affc1ce784111ee32818a9f889b:signatureSystems:1": {
+      "id": "ELDORIA_CORE_01",
+      "grammarRole": "A",
+      "stateInputs": [
+        "WORLD_ORIGIN"
+      ],
+      "stateOutputs": [
+        "NEW_WORLD_STATE"
+      ],
+      "name": "월드 원기",
+      "purpose": "플레이어가 탐험하는 지역마다 새로운 역사·생활·경제·지역 기능을 경험하며, 캐릭터와 NPC들로부터 전달되는 정보는 게임 내에서의 진보·위험·성공·실패·성장 상태에 영향을 미친다.",
+      "playerChoice": "타겟 지역 선택 및 정보 해석"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1073677,
-      "lastMs": 226959,
+      "totalMs": 1174107,
+      "lastMs": 100430,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:21:53.817Z"
+      "updatedAt": "2026-10-08T19:23:34.249Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T19:04:00.090Z",
-  "updatedAt": "2026-10-08T19:21:53.817Z",
+  "updatedAt": "2026-10-08T19:23:34.249Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2683,7 +2696,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T19:21:53.817Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:23:34.249Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
