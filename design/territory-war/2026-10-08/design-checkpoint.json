@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::f3ab5c93f474d85fb616065a377fd81311cf8a9524d6da552a756ec8abb54a54:identity": {
+      "identity": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다. 플레이어는 영토전쟁의 실제 플레이 공간은 SINGLE_DEFENSE_STRATEGY 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_"
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 268994,
+      "lastMs": 268994,
+      "lastError": null,
+      "updatedAt": "2026-10-08T07:51:07.830Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:46:38.814Z",
-  "updatedAt": "2026-10-08T07:46:38.829Z",
+  "updatedAt": "2026-10-08T07:51:07.830Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2033,5 +2049,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-08T07:51:07.830Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
