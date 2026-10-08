@@ -412,6 +412,7 @@ ${nativeWorldRuntime}
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         LoadState();
         BuildWorld();
+        ${worldData?'RestoreWorldObjects();':''}
         Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=" + GameId + " status=PASS");
         Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=character status=PASS");
         Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=enemy status=PASS");
@@ -498,7 +499,7 @@ ${nativeWorldRuntime}
             enemy.transform.position=p;
         }
         if (equipment != null) equipment.transform.Rotate(35f*Time.unscaledDeltaTime,45f*Time.unscaledDeltaTime,0f);
-        if (player != null && started)
+        if (player != null && started && ${worldData?'worldHarvestNodes.Count==0':'true'})
         {
             var p=player.transform.position;
             p.x=-2f+Mathf.Sin(motionClock*1.7f)*0.55f;
@@ -509,6 +510,7 @@ ${nativeWorldRuntime}
         if (Input.GetKeyDown(KeyCode.Space)) PerformAction(false);
         if (Input.GetKeyDown(KeyCode.R)) SafeReturn();
         // 터치는 OnGUI 버튼 하나로만 처리해 같은 탭의 중복 보상을 차단한다.
+        ${worldData?'UpdateWorldInteractions();':''}
     }
 
     private void StartGameplay()
@@ -558,7 +560,10 @@ ${nativeWorldRuntime}
         Debug.Log("JAEWOON_UNITY_WEB_QA STATE game=" + GameId + " progress=" + progress + " level=" + level + " resource=" + resource + " actions=" + actions);
     }
 
-    private void OnGUI()
+    ${worldData?`private void OnApplicationPause(bool paused) { if(paused)SaveWorldObjects(); }
+    private void OnApplicationFocus(bool focused) { if(!focused)SaveWorldObjects(); }
+    private void OnApplicationQuit() { SaveWorldObjects(); }
+    `:""}private void OnGUI()
     {
         float w=Screen.width;
         float h=Screen.height;
@@ -567,6 +572,7 @@ ${nativeWorldRuntime}
         GUI.Label(new Rect(w*0.08f,h*0.13f,w*0.84f,h*0.08f),Identity);
         GUI.Label(new Rect(w*0.08f,h*0.21f,w*0.84f,h*0.08f),"Core: "+CoreLoop);
         if(GUI.Button(new Rect(w*0.18f,h*0.64f,w*0.64f,h*0.16f),"ACTION / TOUCH")) PerformAction(true);
+        ${worldData?'DrawWorldInteractionControls(w,h);':''}
     }
 }
 `;
