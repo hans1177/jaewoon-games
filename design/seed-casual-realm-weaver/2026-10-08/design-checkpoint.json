@@ -68,25 +68,42 @@
       "name": "세계의 직조자 - 입력/선택 -> 상태변화 -> 보상/위험/다음 선택",
       "purpose": "플레이어의 선택과 세계 상태 변화를 통해 시스템과 플레이어의 선택, 위험, 보상이 연결된 캐주얼 세계를 구축",
       "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임은 반복 가능한 핵심 루프를 통해 시스템과 플레이어의 선택, 위험, 보상이 연결된 캐주얼 세계를 만든다. 입력과 피드백은 즉시 이해할 수 있으며, 게임은 단순한 반복을 벗어나 다양한 경로와 위험을 제공한다. 게임의 중심 행동은 플레이어의 선택과 세계 상태 변화를 통해 구체화되며, 보조 요소는 선택의 우선순위를 바꾸고, 파고들기는 발견, 숙련, 재방문의 깊이로 역할을 구분한다. 게임은 기존의 캐주얼 게임 원본을 유지하면서도, 새로운 인과법칙과 시스템을 설계하여 고유한 핵심 재미를 제공한다. 게임의 규칙은 플레이어의 선택과 세계 상태변"
+    },
+    "local_authoring_parts::c4f40701045f7109be0d09aa8e1914dc4bfa2700cbf09598b5c29d04af02f585:signatureSystems:2": {
+      "id": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "worldState",
+        "playerChoice",
+        "systemState"
+      ],
+      "stateOutputs": [
+        "newWorldState",
+        "newPlayerChoice",
+        "newSystemState"
+      ],
+      "name": "세계의 직조자 - 입력/선택 -> 상태변화 -> 보상/위험/다음 선택",
+      "purpose": "플레이어의 선택과 세계 상태 변화를 통해 시스템과 플레이어의 선택, 위험, 보상이 연결된 캐주얼 세계를 구축",
+      "playerChoice": "세계 상태와 다음 선택을 바꾼다. 게임은 반복 가능한 핵심 루프를 통해 시스템과 플레이어의 선택, 위험, 보상이 연결된 캐주얼 세계를 만든다. 입력과 피드백은 즉시 이해할 수 있으며, 게임은 단순한 반복을 벗어나 다양한 경로와 위험을 제공한다. 게임의 중심 행동은 플레이어의 선택과 세계 상태 변화를 통해 구체화되며, 보조 요소는 선택의 우선순위를 바꾸고, 파고들기는 발견, 숙련, 재방문의 깊이로 역할을 구분한다. 게임은 기존의 캐주얼 게임 원본을 유지하면서도, 새로운 인과법칙과 시스템을 설계하여 고유한 핵심 재미를 제공한다. 게임의 규칙은 플레이어의 선택과 세계 상태 변화를 통해 구체화되며, 보상은 발견과 이해에 맞게 약속된다. 게임은 단순한 반복을 벗어나 다양한 경로와 위험을 제공하며, 플레이어는 숙련과 재방문의 깊이를 통해 게임의 재미를 증대시킨다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 802132,
-      "lastMs": 125187,
+      "totalMs": 931835,
+      "lastMs": 129703,
       "lastError": null,
-      "updatedAt": "2026-10-08T11:04:45.434Z"
+      "updatedAt": "2026-10-08T11:06:55.138Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:51:23.271Z",
-  "updatedAt": "2026-10-08T11:04:45.434Z",
+  "updatedAt": "2026-10-08T11:06:55.138Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2010,7 +2027,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T11:04:45.434Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T11:06:55.138Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
