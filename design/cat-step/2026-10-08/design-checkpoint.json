@@ -106,25 +106,236 @@
       "name": "Deep exploration of game state through discovery and mastery",
       "purpose": "Player's action to explore and understand the game state through discovery, mastery, and progression",
       "playerChoice": "Discover, master, and progress through the game state through exploration and deep understanding"
+    },
+    "local_authoring_parts::1eab6a604897492068ce884c309c6a5c41115d1ee55fd8d0b8ade67b48a2e4f5:signatureSystems:4": {
+      "id": "DELVE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "goal",
+        "moves",
+        "obstacles",
+        "puzzleConstraint"
+      ],
+      "stateOutputs": [
+        "status",
+        "rewards",
+        "nextStage"
+      ],
+      "name": "Deep exploration of game state through discovery and mastery",
+      "purpose": "Player's action to explore and understand the game state through discovery, mastery, and progression",
+      "playerChoice": "Discover, master, and progress through the game state through exploration and deep understanding"
+    },
+    "local_authoring_parts::d15eaf1d6a57630e1677cc98706fd38a2ec014c3117fb34379a49e568204aa5b:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "MAIN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "goal",
+            "moves",
+            "obstacles",
+            "puzzleConstraint"
+          ],
+          "stateOutputs": [
+            "status",
+            "rewards",
+            "nextStage"
+          ],
+          "name": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+          "purpose": "Player's core action to initiate gameplay and establish the initial state.",
+          "playerChoice": "Select and configure the initial game state based on the goal, limited moves, obstacles, or puzzle constraint."
+        },
+        {
+          "id": "A",
+          "grammarRole": "A",
+          "stateInputs": [
+            "goal",
+            "moves",
+            "obstacles",
+            "puzzleConstraint"
+          ],
+          "stateOutputs": [
+            "status",
+            "rewards",
+            "nextStage"
+          ],
+          "name": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+          "purpose": "Player's core action to initiate gameplay and establish the initial state.",
+          "playerChoice": "Select and configure the initial game state based on the goal, limited moves, obstacles, or puzzle constraint."
+        },
+        {
+          "id": "B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "goal",
+            "moves",
+            "obstacles",
+            "puzzleConstraint"
+          ],
+          "stateOutputs": [
+            "status",
+            "rewards",
+            "nextStage"
+          ],
+          "name": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+          "purpose": "Player's core action to initiate gameplay and establish the initial state.",
+          "playerChoice": "Select and configure the initial game state based on the goal, limited moves, obstacles, or puzzle constraint."
+        },
+        {
+          "id": "c",
+          "grammarRole": "c",
+          "stateInputs": [
+            "goal",
+            "moves",
+            "obstacles",
+            "puzzleConstraint"
+          ],
+          "stateOutputs": [
+            "status",
+            "rewards",
+            "nextStage"
+          ],
+          "name": "Deep exploration of game state through discovery and mastery",
+          "purpose": "Player's action to explore and understand the game state through discovery, mastery, and progression",
+          "playerChoice": "Discover, master, and progress through the game state through exploration and deep understanding"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "goal",
+            "moves",
+            "obstacles",
+            "puzzleConstraint"
+          ],
+          "stateOutputs": [
+            "status",
+            "rewards",
+            "nextStage"
+          ],
+          "name": "Deep exploration of game state through discovery and mastery",
+          "purpose": "Player's action to explore and understand the game state through discovery, mastery, and progression",
+          "playerChoice": "Discover, master, and progress through the game state through exploration and deep understanding"
+        }
+      ]
+    },
+    "local_authoring_parts::430de13f58d6c2671400f01195650c85f4bb54b312404dc0e3f511572621e2f7:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ],
+      "signatureSystems": [
+        {
+          "id": "MAIN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "goal",
+            "moves",
+            "obstacles",
+            "puzzleConstraint"
+          ],
+          "stateOutputs": [
+            "status",
+            "rewards",
+            "nextStage"
+          ],
+          "name": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+          "purpose": "Player's core action to initiate gameplay and establish the initial state.",
+          "playerChoice": "Select and configure the initial game state based on the goal, limited moves, obstacles, or puzzle constraint."
+        },
+        {
+          "id": "A",
+          "grammarRole": "A",
+          "stateInputs": [
+            "goal",
+            "moves",
+            "obstacles",
+            "puzzleConstraint"
+          ],
+          "stateOutputs": [
+            "status",
+            "rewards",
+            "nextStage"
+          ],
+          "name": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+          "purpose": "Player's core action to initiate gameplay and establish the initial state.",
+          "playerChoice": "Select and configure the initial game state based on the goal, limited moves, obstacles, or puzzle constraint."
+        },
+        {
+          "id": "B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "goal",
+            "moves",
+            "obstacles",
+            "puzzleConstraint"
+          ],
+          "stateOutputs": [
+            "status",
+            "rewards",
+            "nextStage"
+          ],
+          "name": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+          "purpose": "Player's core action to initiate gameplay and establish the initial state.",
+          "playerChoice": "Select and configure the initial game state based on the goal, limited moves, obstacles, or puzzle constraint."
+        },
+        {
+          "id": "c",
+          "grammarRole": "c",
+          "stateInputs": [
+            "goal",
+            "moves",
+            "obstacles",
+            "puzzleConstraint"
+          ],
+          "stateOutputs": [
+            "status",
+            "rewards",
+            "nextStage"
+          ],
+          "name": "Deep exploration of game state through discovery and mastery",
+          "purpose": "Player's action to explore and understand the game state through discovery, mastery, and progression",
+          "playerChoice": "Discover, master, and progress through the game state through exploration and deep understanding"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "goal",
+            "moves",
+            "obstacles",
+            "puzzleConstraint"
+          ],
+          "stateOutputs": [
+            "status",
+            "rewards",
+            "nextStage"
+          ],
+          "name": "Deep exploration of game state through discovery and mastery",
+          "purpose": "Player's action to explore and understand the game state through discovery, mastery, and progression",
+          "playerChoice": "Discover, master, and progress through the game state through exploration and deep understanding"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 847879,
-      "lastMs": 97023,
+      "totalMs": 947908,
+      "lastMs": 100029,
       "lastError": null,
-      "updatedAt": "2026-10-08T07:56:33.047Z"
+      "updatedAt": "2026-10-08T07:58:13.078Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:42:25.133Z",
-  "updatedAt": "2026-10-08T07:56:33.047Z",
+  "updatedAt": "2026-10-08T07:58:13.080Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2161,7 +2372,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T07:56:33.047Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T07:58:13.080Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
