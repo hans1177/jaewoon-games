@@ -455,25 +455,40 @@
     },
     "local_authoring_parts::b6f4722152013f3ff28ff12b14ae643ddf26571e5c5866bddca9005facb2cfce:trigger": {
       "trigger": "플레이어가 시작 단계에서 명확한 목표와 제한된 이동, 장애물 또는 시각적 퀴즈로 구성된 레벨을 수행하며 선택의 결과가 월드 상태에 직접적인 영향을 미친다."
+    },
+    "local_authoring_parts::b6f4722152013f3ff28ff12b14ae643ddf26571e5c5866bddca9005facb2cfce:stateChange": {
+      "stateChange": "플레이어가 시작 단계에서 명확한 목표와 제한된 이동, 장애물 또는 시각적 퀴즈로 구성된 레벨을 수행하며 선택의 결과가 월드 상태에 직접적인 영향을 미친다."
+    },
+    "local_authoring_parts::a7e30fb386eace896fb045e02bcf1fed20b028e0289a6cf98dc5d4575e3144fc:systemInterconnections:1": {
+      "fromId": "SIGNATURE_SYSTEM_0",
+      "toId": "NEXT_LEVEL_PATTERN",
+      "stateKeys": [
+        "LEVEL_STATE",
+        "NEXT_LEVEL_PATTERN"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_0",
+      "toSystem": "NEXT_LEVEL_PATTERN",
+      "trigger": "플레이어가 시작 단계에서 명확한 목표와 제한된 이동, 장애물 또는 시각적 퀴즈로 구성된 레벨을 수행하며 선택의 결과가 월드 상태에 직접적인 영향을 미친다.",
+      "stateChange": "플레이어가 시작 단계에서 명확한 목표와 제한된 이동, 장애물 또는 시각적 퀴즈로 구성된 레벨을 수행하며 선택의 결과가 월드 상태에 직접적인 영향을 미친다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 24,
-      "successes": 24,
+      "calls": 25,
+      "successes": 25,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 877806,
-      "lastMs": 36270,
+      "totalMs": 913415,
+      "lastMs": 35609,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:44:15.732Z"
+      "updatedAt": "2026-10-08T18:44:51.342Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:29:37.860Z",
-  "updatedAt": "2026-10-08T18:44:15.732Z",
+  "updatedAt": "2026-10-08T18:44:51.344Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2663,7 +2678,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:44:15.732Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:44:51.343Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
