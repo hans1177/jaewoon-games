@@ -88,25 +88,183 @@
       "name": "색채 인과법칙 시스템",
       "purpose": "색채, 형태, 공간, 시간 중 하나로 구체화된 플레이어 존재",
       "playerChoice": "색채, 형태, 공간, 시간의 해석 또는 비용 변경을 선택하여 게임 내 상태를 바꿈"
+    },
+    "local_authoring_parts::01bbcfec753ee06e15a699bc6611b718829eb44c3bfef5a744c1977c1d12eae8:signatureSystems:4": {
+      "id": "signatureSystems_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "worldState"
+      ],
+      "stateOutputs": [
+        "newWorldState"
+      ],
+      "name": "색채 인과법칙 시스템",
+      "purpose": "색채, 형태, 공간, 시간 중 하나로 구체화된 플레이어 존재",
+      "playerChoice": "색채, 형태, 공간, 시간의 해석 또는 비용 변경을 선택하여 게임 내 상태를 바꿈"
+    },
+    "local_authoring_parts::a4f07cdfaa2c976cceacd9fdedc611c0e1aa09132963b2be89c0b09760b31ae9:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "세계 인과법칙 시스템",
+          "purpose": "생태·저주·정치·기억 중 하나로 구체화된 몬스터 존재",
+          "playerChoice": "세계 인과법칙의 해석 또는 비용 변경을 선택하여 공간 사용법을 바꿈"
+        },
+        {
+          "id": "signatureSystems_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "색채 인과법칙 시스템",
+          "purpose": "색채, 형태, 공간, 시간 중 하나로 구체화된 플레이어 존재",
+          "playerChoice": "색채, 형태, 공간, 시간의 해석 또는 비용 변경을 선택하여 게임 내 상태를 바꿈"
+        },
+        {
+          "id": "signatureSystems_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "색채 인과법칙 시스템",
+          "purpose": "색채, 형태, 공간, 시간 중 하나로 구체화된 플레이어 존재",
+          "playerChoice": "색채, 형태, 공간, 시간의 해석 또는 비용 변경을 선택하여 게임 내 상태를 바꿈"
+        },
+        {
+          "id": "signatureSystems_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "색채 인과법칙 시스템",
+          "purpose": "색채, 형태, 공간, 시간 중 하나로 구체화된 플레이어 존재",
+          "playerChoice": "색채, 형태, 공간, 시간의 해석 또는 비용 변경을 선택하여 게임 내 상태를 바꿈"
+        },
+        {
+          "id": "signatureSystems_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "색채 인과법칙 시스템",
+          "purpose": "색채, 형태, 공간, 시간 중 하나로 구체화된 플레이어 존재",
+          "playerChoice": "색채, 형태, 공간, 시간의 해석 또는 비용 변경을 선택하여 게임 내 상태를 바꿈"
+        }
+      ]
+    },
+    "local_authoring_parts::50c8578b79794321210984ed37f49b5dd6e21ddf0abebd1c2a00c9be52d44910:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT: 플레이어가 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행합니다.",
+        "SELECT: 선택 결과가 다음 월드 상태로 연결되는 PUZZLE 게임의 핵심 루프에 참여하게 됩니다.",
+        "OUTPUT: 선택 결과가 즉각적 상태 변화를 만듭니다.",
+        "STATE: 선택 결과가 위험·보상·다음 선택의 관계를 형성하여 월드 상태를 바꿉니다.",
+        "ACTION: 다음 선택을 결정하며, 주요 인물의 목표, 두려움, 비밀은 핵심 인과법칙에 의해 실제 선택과 관계 변화를 만듭니다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "세계 인과법칙 시스템",
+          "purpose": "생태·저주·정치·기억 중 하나로 구체화된 몬스터 존재",
+          "playerChoice": "세계 인과법칙의 해석 또는 비용 변경을 선택하여 공간 사용법을 바꿈"
+        },
+        {
+          "id": "signatureSystems_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "색채 인과법칙 시스템",
+          "purpose": "색채, 형태, 공간, 시간 중 하나로 구체화된 플레이어 존재",
+          "playerChoice": "색채, 형태, 공간, 시간의 해석 또는 비용 변경을 선택하여 게임 내 상태를 바꿈"
+        },
+        {
+          "id": "signatureSystems_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "색채 인과법칙 시스템",
+          "purpose": "색채, 형태, 공간, 시간 중 하나로 구체화된 플레이어 존재",
+          "playerChoice": "색채, 형태, 공간, 시간의 해석 또는 비용 변경을 선택하여 게임 내 상태를 바꿈"
+        },
+        {
+          "id": "signatureSystems_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "색채 인과법칙 시스템",
+          "purpose": "색채, 형태, 공간, 시간 중 하나로 구체화된 플레이어 존재",
+          "playerChoice": "색채, 형태, 공간, 시간의 해석 또는 비용 변경을 선택하여 게임 내 상태를 바꿈"
+        },
+        {
+          "id": "signatureSystems_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "worldState"
+          ],
+          "stateOutputs": [
+            "newWorldState"
+          ],
+          "name": "색채 인과법칙 시스템",
+          "purpose": "색채, 형태, 공간, 시간 중 하나로 구체화된 플레이어 존재",
+          "playerChoice": "색채, 형태, 공간, 시간의 해석 또는 비용 변경을 선택하여 게임 내 상태를 바꿈"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 795319,
-      "lastMs": 97891,
+      "totalMs": 893391,
+      "lastMs": 98072,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:42:50.190Z"
+      "updatedAt": "2026-10-08T18:44:28.263Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:29:34.840Z",
-  "updatedAt": "2026-10-08T18:42:50.190Z",
+  "updatedAt": "2026-10-08T18:44:28.266Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2143,7 +2301,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:42:50.190Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:44:28.266Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
