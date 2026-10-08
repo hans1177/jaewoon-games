@@ -27,25 +27,34 @@
       "identity": "휴먼 GO!은 기존 구현의 점수나 관문을 승계하지 않고, 플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'라는 중심 행동을 통해, 선택 결과가 다음 월드 상태로 영향을 주는 ACTION_SURVIVAL_ROGUELITE 게임이다. 이 과정에서 성장은 단순히 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
       "playerFantasy": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'라는 중심 행동을 통해, 선택 결과가 다음 월드 상태로 영향을 주는 ACTION_SURVIVAL_ROGUELITE 게임이다. 이 과정에서 성장은 단순히 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
       "coreFun": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'라는 중심 행동을 통해 선택 결과가 다음 월드 상태로 영향을 주는 ACTION_SURVIVAL_ROGUELITE 게임이다. 이 과정에서 성장은 단순히 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다."
+    },
+    "local_authoring_parts::07e01920bc2c63f570b1609d107021e72842ed46c98953c060206c1ccd9b73a2:coreLoop": {
+      "coreLoop": [
+        "INPUT: 플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'라는 중심 행동을 통해 선택 결과가 다음 월드 상태로 영향을 주는 ACTION_SURVIVAL_ROGUELITE 게임이다.",
+        "SELECT: Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "OUTPUT: MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태를 만든다.",
+        "STATE CHANGE: MAIN의 결과를 다음 위험·보상·자원 또는 경로 상태로 바꾼다.",
+        "NEXT CHOICE: Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 288870,
-      "lastMs": 66858,
+      "totalMs": 353053,
+      "lastMs": 64183,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:04:07.798Z"
+      "updatedAt": "2026-10-08T19:05:11.984Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:59:18.858Z",
-  "updatedAt": "2026-10-08T19:04:07.800Z",
+  "updatedAt": "2026-10-08T19:05:11.984Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2244,7 +2253,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T19:04:07.800Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:05:11.984Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
