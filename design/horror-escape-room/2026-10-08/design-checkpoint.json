@@ -446,25 +446,41 @@
         }
       ],
       "multiplayerMode": "COMPETITIVE"
+    },
+    "local_authoring_parts::58ffa48915fe51319deb0b2c921b4b09e69c23d8776ea5bb46955e271885cf50:signatureSystems:0": {
+      "id": "CORE_LOOP_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "INPUT: 역할 선호 선택 + AI 충원 → 상태 변화: 인물/몬스터 역할 정해짐",
+        "SELECT: 역할 선호 + AI 충원 → 상태 변화: 인물/몬스터 역할 정해짐"
+      ],
+      "stateOutputs": [
+        "ACTION: 감염 공격/정화 → 상태 변화: 인물/몬스터 역할 변화",
+        "REWARD: 승패 결정 → 상태 변화: 게임 종료",
+        "NEXT: AI 충원 + 역할 선호 선택"
+      ],
+      "name": "CORE LOOP MAIN",
+      "purpose": "게임의 실시간 인물/몬스터 역할 변화를 관리하고, 감염 공격/정화의 상태 변화를 처리합니다.",
+      "playerChoice": "인물/몬스터 역할 선호 선택 및 AI 충원"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1081547,
-      "lastMs": 88034,
+      "totalMs": 1189694,
+      "lastMs": 108147,
       "lastError": null,
-      "updatedAt": "2026-10-08T07:04:49.215Z"
+      "updatedAt": "2026-10-08T07:06:37.372Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T06:46:47.632Z",
-  "updatedAt": "2026-10-08T07:04:49.224Z",
+  "updatedAt": "2026-10-08T07:06:37.372Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1219,10 +1235,10 @@
       "multiplayerMode": "COMPETITIVE"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T07:04:49.217Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T07:06:37.372Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
