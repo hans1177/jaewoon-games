@@ -775,25 +775,28 @@
     },
     "local_authoring_parts::0949751d73d2d2ae489ab28d4f35f8d085238a1f427ec00a631ec6dc9b80b9dd:toSystem": {
       "toSystem": "몬스터 어드벤처의 단순한 입력"
+    },
+    "local_authoring_parts::0949751d73d2d2ae489ab28d4f35f8d085238a1f427ec00a631ec6dc9b80b9dd:trigger": {
+      "trigger": "WorldState is transformed into NextAction through a causal chain, with a small reward or benefit, but no progression. This transformation is initiated by the action of pressing a simple one-thumb tap or swipe input, which triggers the core loop of the game. The state change reflects the immediate反馈从"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 44,
-      "successes": 43,
+      "calls": 45,
+      "successes": 44,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 4585491,
-      "lastMs": 87857,
+      "totalMs": 4677371,
+      "lastMs": 91880,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T16:53:17.506Z"
+      "updatedAt": "2026-10-08T16:54:49.388Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:59:07.154Z",
-  "updatedAt": "2026-10-08T16:53:17.506Z",
+  "updatedAt": "2026-10-08T16:54:49.388Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3059,7 +3062,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:53:17.506Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:54:49.388Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
