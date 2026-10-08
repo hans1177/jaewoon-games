@@ -795,25 +795,34 @@
       "toSystem": "MAIN_02_SYSTEM_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_",
       "trigger": "감염 공격 및 정화",
       "stateChange": "감염 전환"
+    },
+    "local_authoring_parts::0e9f0662ec08e521c71e7934a41153f3963107c3ebd442d8566a0ab6ff3ef089:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "MAIN_01",
+      "toId": "MAIN_02",
+      "stateKeys": [
+        "역할 변화",
+        "AI 충원"
+      ],
+      "fromSystem": "MAIN_01_SYSTEM_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 24,
-      "successes": 24,
+      "calls": 25,
+      "successes": 25,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2251422,
-      "lastMs": 105325,
+      "totalMs": 2357643,
+      "lastMs": 106221,
       "lastError": null,
-      "updatedAt": "2026-10-08T11:23:17.930Z"
+      "updatedAt": "2026-10-08T11:25:04.153Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:45:46.438Z",
-  "updatedAt": "2026-10-08T11:23:17.931Z",
+  "updatedAt": "2026-10-08T11:25:04.153Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1677,7 +1686,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T11:23:17.931Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T11:25:04.153Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
