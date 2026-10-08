@@ -738,25 +738,31 @@
     },
     "local_authoring_parts::08e74436d2cd99a265d0704f65d679a1193ecf6ecdba20f0442a18158341dd68:fromSystem": {
       "fromSystem": "주민의 목표·두려움·비밀"
+    },
+    "local_authoring_parts::08e74436d2cd99a265d0704f65d679a1193ecf6ecdba20f0442a18158341dd68:toSystem": {
+      "toSystem": "게임의 핵심 루프와 보상/위험/다음 선택을 반영한 월드 상태"
+    },
+    "local_authoring_parts::08e74436d2cd99a265d0704f65d679a1193ecf6ecdba20f0442a18158341dd68:trigger": {
+      "trigger": "게임의 핵심 루프와 보상/위험/다음 선택을 바탕으로 선택한 월드 상태를 바꾸는 게임 선택"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 48,
-      "successes": 48,
+      "calls": 50,
+      "successes": 50,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4813004,
-      "lastMs": 89598,
+      "totalMs": 4997614,
+      "lastMs": 92973,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:23:00.170Z"
+      "updatedAt": "2026-10-08T10:26:04.782Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:31:29.567Z",
-  "updatedAt": "2026-10-08T10:23:00.170Z",
+  "updatedAt": "2026-10-08T10:26:04.782Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3002,7 +3008,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:23:00.170Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:26:04.782Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
