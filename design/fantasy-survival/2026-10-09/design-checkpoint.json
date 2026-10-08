@@ -34,25 +34,57 @@
         "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
         "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
       ]
+    },
+    "local_authoring_parts::f19218a2703b4dde70e5e0fbee06f8bfb481d725c573013c3e1d9599119e8390:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "gameProgress",
+        "playerFantasy",
+        "coreFun"
+      ],
+      "stateOutputs": [
+        "progressionChoice",
+        "multiplayerMode"
+      ],
+      "name": "기존 마력숲 생존기 세계관 및 게임 규칙 복사",
+      "purpose": "플레이어가 환경에 뿤금처럼 숨어 있는 힘을 바탕으로, 전투 중 이동하며 적의 압박을 피하면서 동시에 캐릭터가 살아 움직여야 하는 방식으로 게임 진행을 수행해야 한다.",
+      "playerChoice": "주변 자원 수집 후 장비/스킬 선택, 기존 단순 반복 벗어나 새로운 행동 패턴 개발, 진입 조건 설정, 상황별 대응 및 재방문 가능 여부 결정하기 위한 플레이어 선택 시스템 구축 및 실행 제안이 필요하다."
+    },
+    "local_authoring_parts::f19218a2703b4dde70e5e0fbee06f8bfb481d725c573013c3e1d9599119e8390:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "gameProgress",
+        "playerFantasy",
+        "coreFun"
+      ],
+      "stateOutputs": [
+        "progressionChoice",
+        "multiplayerMode"
+      ],
+      "name": "Vibe 폴리시 시스템",
+      "purpose": "기존 마력숲 생존기 세계관 및 게임 규칙을 기반으로, 카메라와 모바일 폴리시를 단계적으로 올리는 데 사용됩니다.",
+      "playerChoice": "플레이어는 환경에 뿅금처럼 숨어 있는 힘을 바탕으로, 전투 중 이동하며 적의 압박을 피하면서 동시에 캐릭터가 살아 움직여야 하는 방식으로 게임 진행을 수행해야 합니다. 이 과정에서 플레이어는 주변의 자원을 수집하여 자신에게 유리하게 변형하는 장비나 스킬을 선택해 기존의 단순 반복을 벗어나 새로운 행동 패턴을 개발할 수 있습니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 335895,
-      "lastMs": 40116,
+      "totalMs": 557290,
+      "lastMs": 112621,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:38:06.713Z"
+      "updatedAt": "2026-10-08T21:41:48.112Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:32:30.796Z",
-  "updatedAt": "2026-10-08T21:38:06.713Z",
+  "updatedAt": "2026-10-08T21:41:48.112Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2251,7 +2283,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:38:06.713Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:41:48.112Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
