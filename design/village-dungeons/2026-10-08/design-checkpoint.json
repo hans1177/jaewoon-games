@@ -753,25 +753,28 @@
     },
     "local_authoring_parts::4c8798f80c4fca96084a18f112b179a3d1c0e533f71a95e8c70e8cb8cbdbd46c:toSystem": {
       "toSystem": "CONTEXT_LOSS"
+    },
+    "local_authoring_parts::4c8798f80c4fca96084a18f112b179a3d1c0e533f71a95e8c70e8cb8cbdbd46c:trigger": {
+      "trigger": "Player's initial input and menu transitions in the game lead to contextual loss in the game, which in turn triggers the error recovery mechanism and results in a state and cost regression, based on the original rules and established game mechanics."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 44,
-      "successes": 44,
+      "calls": 45,
+      "successes": 45,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3347171,
-      "lastMs": 40572,
+      "totalMs": 3394638,
+      "lastMs": 47467,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:05:40.759Z"
+      "updatedAt": "2026-10-08T16:06:28.228Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:39:54.867Z",
-  "updatedAt": "2026-10-08T16:05:40.759Z",
+  "updatedAt": "2026-10-08T16:06:28.228Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3015,7 +3018,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:05:40.759Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:06:28.228Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
