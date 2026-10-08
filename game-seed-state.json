@@ -2715,7 +2715,7 @@
       "seedId": "OWNER-FULL-REBUILD-BUG-DEFENSE-20260916",
       "gameId": "bug-defense",
       "gameName": "곤충 디펜스",
-      "status": "ACTIVE",
+      "status": "PAUSED",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-FULL-REBUILD-20260916-1",
       "GAME_CATEGORY": "SINGLE_DEFENSE_STRATEGY",
@@ -4981,7 +4981,7 @@
       },
       "strictDesignReviewRefreshRequired": true,
       "updatedAt": "2026-10-08T09:41:48.857Z",
-      "pausedAt": "2026-10-08T06:39:18.528Z",
+      "pausedAt": "2026-10-08T11:09:46.087Z",
       "novelGrammarBackfill": {
         "version": 4,
         "source": "CANONICAL_GAME_SEED_NOVEL_GRAMMAR_V4_20261007",
@@ -4996,7 +4996,8 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "reactivatedBy": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25"
+      "reactivatedBy": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25",
+      "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG"
     },
     {
       "version": 2,
@@ -5004,8 +5005,8 @@
       "gameId": "insect-survival",
       "gameName": "곤충 생존기",
       "status": "ACTIVE",
-      "generation": "OWNER_REDESIGN_RESET",
-      "ownerResetRevision": "OWNER-FULL-REBUILD-20260916-1",
+      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
+      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
       "GAME_CATEGORY": "ACTION_SURVIVAL_ROGUELITE",
       "REFERENCE_GAMES": [
         "Grounded",
@@ -5035,9 +5036,9 @@
       "INITIAL_TARGET_PLATFORM": "UNITY",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "FROM_SCRATCH_REINTERPRETATION",
-      "SOURCE_CODE_RULE": "NEW_OWN_IMPLEMENTATION_ONLY",
-      "OWNER_REBUILD_MODE": "FROM_SCRATCH",
+      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
+      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
+      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
       "REUSE_PRIOR_DESIGN_BASELINE": false,
       "REUSE_PRIOR_ARTBOOK": false,
       "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
@@ -5055,8 +5056,8 @@
         "zero blocking runtime or console errors"
       ],
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
-      "lifecycleState": "DESIGN_ONLY",
+      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "lifecycleState": "ACTIVE",
       "UNITY_WEB_VALIDATION_SURFACE": {
         "role": "VALIDATION_SURFACE_ONLY",
         "canonicalSourceRoot": "unity-games/insect-survival",
@@ -7100,7 +7101,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-08T07:40:14.493Z",
+      "updatedAt": "2026-10-08T11:09:46.087Z",
       "REFERENCE_INPUTS": [
         {
           "type": "GAME_REFERENCE",
@@ -7123,7 +7124,7 @@
       "seedId": "OWNER-FULL-REBUILD-SURVIVAL-20260916",
       "gameId": "survival",
       "gameName": "나의 생존기",
-      "status": "ACTIVE",
+      "status": "PAUSED",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-FULL-REBUILD-20260916-1",
       "GAME_CATEGORY": "ACTION_SURVIVAL_ROGUELITE",
@@ -9593,7 +9594,7 @@
       },
       "strictDesignReviewRefreshRequired": true,
       "updatedAt": "2026-10-08T09:41:48.857Z",
-      "pausedAt": "2026-10-08T06:39:18.528Z",
+      "pausedAt": "2026-10-08T11:09:46.087Z",
       "novelGrammarBackfill": {
         "version": 4,
         "source": "CANONICAL_GAME_SEED_NOVEL_GRAMMAR_V4_20261007",
@@ -9608,7 +9609,8 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "reactivatedBy": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25"
+      "reactivatedBy": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25",
+      "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG"
     },
     {
       "version": 3,
@@ -9905,7 +9907,7 @@
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
       },
-      "status": "ACTIVE",
+      "status": "PAUSED",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-DESIGNER-ORIGINAL-20261007-2",
       "productionClass": "DEVELOPMENT_CONFIRMED",
@@ -9963,11 +9965,12 @@
       },
       "productionTier": 2,
       "selectedPlatform": "ROBLOX",
-      "pausedAt": "2026-10-08T06:39:18.528Z",
-      "reactivatedBy": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25"
+      "pausedAt": "2026-10-08T11:09:46.087Z",
+      "reactivatedBy": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25",
+      "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG"
     },
     {
-      "version": 1,
+      "version": 2,
       "seedId": "OWNER-ENROLL-CRYSTAL-DEFENSE-20260913",
       "gameId": "crystal-defense",
       "gameName": "수정 디펜스",
@@ -10000,10 +10003,10 @@
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "REINTERPRETATION",
-      "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
+      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
+      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
       "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "DESIGN_ONLY",
+      "lifecycleState": "ACTIVE",
       "UNITY_WEB_VALIDATION_SURFACE": {
         "role": "VALIDATION_SURFACE_ONLY",
         "canonicalSourceRoot": "unity-games/crystal-defense",
@@ -10014,9 +10017,9 @@
         "legacyDirectWebAuthoring": false
       },
       "WEB_GAME_QUALITY_BAR_ROLE": "UNITY_WEB_VALIDATION_OUTPUT_ONLY",
-      "generation": "OWNER_REDESIGN_RESET",
-      "ownerResetRevision": "OWNER-ENROLL-CRYSTAL-DEFENSE-20260913-2",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
+      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
+      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
+      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
       "GAMEPLAY_SKETCH": {
         "version": 4,
         "source": "GAME_SEED_MODEL_OR_NORMALIZED_SKETCH_V4_CAUSAL_GRAMMAR",
@@ -11871,7 +11874,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-08T07:40:14.493Z",
+      "updatedAt": "2026-10-08T11:09:46.087Z",
       "REFERENCE_INPUTS": [
         {
           "type": "GAME_REFERENCE",
@@ -11887,7 +11890,16 @@
         }
       ],
       "TARGET_SESSION_MINUTES": 30,
-      "MULTIPLAYER_DESIGN_MODE": "SINGLE"
+      "MULTIPLAYER_DESIGN_MODE": "SINGLE",
+      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
+      "REUSE_PRIOR_DESIGN_BASELINE": false,
+      "REUSE_PRIOR_ARTBOOK": false,
+      "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
+      "LEGACY_BUILD_ROLE": "PUBLIC_ROLLBACK_REFERENCE_ONLY",
+      "PUBLIC_ROUTE_POLICY": "KEEP_EXISTING_WEB_PATH",
+      "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
+      "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
+      "MOBILE_FIRST": true
     },
     {
       "version": 2,
@@ -11895,8 +11907,8 @@
       "gameId": "human-go",
       "gameName": "휴먼 GO",
       "status": "ACTIVE",
-      "generation": "OWNER_REDESIGN_RESET",
-      "ownerResetRevision": "OWNER-FULL-REBUILD-20260916-1",
+      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
+      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
       "GAME_CATEGORY": "CASUAL",
       "REFERENCE_GAMES": [
         "Pokémon GO",
@@ -11926,9 +11938,9 @@
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER_OR_SOCIAL_EXPANSION_REVIEW",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "FROM_SCRATCH_REINTERPRETATION",
-      "SOURCE_CODE_RULE": "NEW_OWN_IMPLEMENTATION_ONLY",
-      "OWNER_REBUILD_MODE": "FROM_SCRATCH",
+      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
+      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
+      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
       "REUSE_PRIOR_DESIGN_BASELINE": false,
       "REUSE_PRIOR_ARTBOOK": false,
       "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
@@ -11946,8 +11958,8 @@
         "zero blocking runtime console or invalid-resource errors"
       ],
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
-      "lifecycleState": "DESIGN_ONLY",
+      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "lifecycleState": "ACTIVE",
       "UNITY_WEB_VALIDATION_SURFACE": {
         "role": "VALIDATION_SURFACE_ONLY",
         "canonicalSourceRoot": "unity-games/human-go",
@@ -13432,7 +13444,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-08T07:40:14.493Z",
+      "updatedAt": "2026-10-08T11:09:46.087Z",
       "REFERENCE_INPUTS": [
         {
           "type": "GAME_REFERENCE",
@@ -13451,7 +13463,7 @@
       "MULTIPLAYER_DESIGN_MODE": "SINGLE"
     },
     {
-      "version": 1,
+      "version": 2,
       "seedId": "OWNER-ENROLL-ISLAND-VILLAGE-20260913",
       "gameId": "island-village",
       "gameName": "무인도 마을",
@@ -13484,10 +13496,10 @@
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER_OR_SOCIAL_EXPANSION_REVIEW",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "REINTERPRETATION",
-      "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
+      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
+      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
       "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "DESIGN_ONLY",
+      "lifecycleState": "ACTIVE",
       "UNITY_WEB_VALIDATION_SURFACE": {
         "role": "VALIDATION_SURFACE_ONLY",
         "canonicalSourceRoot": "unity-games/island-village",
@@ -13498,9 +13510,9 @@
         "legacyDirectWebAuthoring": false
       },
       "WEB_GAME_QUALITY_BAR_ROLE": "UNITY_WEB_VALIDATION_OUTPUT_ONLY",
-      "generation": "OWNER_REDESIGN_RESET",
-      "ownerResetRevision": "OWNER-ENROLL-ISLAND-VILLAGE-20260913-2",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
+      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
+      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
+      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
       "GAMEPLAY_SKETCH": {
         "version": 4,
         "source": "GAME_SEED_MODEL_OR_NORMALIZED_SKETCH_V4_CAUSAL_GRAMMAR",
@@ -15030,7 +15042,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-08T07:40:14.493Z",
+      "updatedAt": "2026-10-08T11:09:46.087Z",
       "REFERENCE_INPUTS": [
         {
           "type": "GAME_REFERENCE",
@@ -15046,10 +15058,19 @@
         }
       ],
       "TARGET_SESSION_MINUTES": 30,
-      "MULTIPLAYER_DESIGN_MODE": "SINGLE"
+      "MULTIPLAYER_DESIGN_MODE": "SINGLE",
+      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
+      "REUSE_PRIOR_DESIGN_BASELINE": false,
+      "REUSE_PRIOR_ARTBOOK": false,
+      "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
+      "LEGACY_BUILD_ROLE": "PUBLIC_ROLLBACK_REFERENCE_ONLY",
+      "PUBLIC_ROUTE_POLICY": "KEEP_EXISTING_WEB_PATH",
+      "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
+      "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
+      "MOBILE_FIRST": true
     },
     {
-      "version": 1,
+      "version": 2,
       "seedId": "OWNER-ENROLL-EGG-HEIST-20260913",
       "gameId": "egg-heist",
       "gameName": "알 도둑 대작전",
@@ -15082,10 +15103,10 @@
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER_OR_COOP_EXPANSION_REVIEW",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "REINTERPRETATION",
-      "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
+      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
+      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
       "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "DESIGN_ONLY",
+      "lifecycleState": "ACTIVE",
       "UNITY_WEB_VALIDATION_SURFACE": {
         "role": "VALIDATION_SURFACE_ONLY",
         "canonicalSourceRoot": "unity-games/egg-heist",
@@ -15096,9 +15117,9 @@
         "legacyDirectWebAuthoring": false
       },
       "WEB_GAME_QUALITY_BAR_ROLE": "UNITY_WEB_VALIDATION_OUTPUT_ONLY",
-      "generation": "OWNER_REDESIGN_RESET",
-      "ownerResetRevision": "OWNER-ENROLL-EGG-HEIST-20260913-2",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
+      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
+      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
+      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
       "GAMEPLAY_SKETCH": {
         "version": 4,
         "source": "GAME_SEED_MODEL_OR_NORMALIZED_SKETCH_V4_CAUSAL_GRAMMAR",
@@ -16610,7 +16631,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-08T07:40:14.493Z",
+      "updatedAt": "2026-10-08T11:09:46.087Z",
       "REFERENCE_INPUTS": [
         {
           "type": "GAME_REFERENCE",
@@ -16626,10 +16647,19 @@
         }
       ],
       "TARGET_SESSION_MINUTES": 30,
-      "MULTIPLAYER_DESIGN_MODE": "SINGLE"
+      "MULTIPLAYER_DESIGN_MODE": "SINGLE",
+      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
+      "REUSE_PRIOR_DESIGN_BASELINE": false,
+      "REUSE_PRIOR_ARTBOOK": false,
+      "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
+      "LEGACY_BUILD_ROLE": "PUBLIC_ROLLBACK_REFERENCE_ONLY",
+      "PUBLIC_ROUTE_POLICY": "KEEP_EXISTING_WEB_PATH",
+      "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
+      "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
+      "MOBILE_FIRST": true
     },
     {
-      "version": 1,
+      "version": 2,
       "seedId": "OWNER-ENROLL-CHESS-BATTLE-20260913",
       "gameId": "chess-battle",
       "gameName": "체스 배틀",
@@ -16662,10 +16692,10 @@
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER_OR_PVP_EXPANSION_REVIEW",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "REINTERPRETATION",
-      "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
+      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
+      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
       "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "DESIGN_ONLY",
+      "lifecycleState": "ACTIVE",
       "UNITY_WEB_VALIDATION_SURFACE": {
         "role": "VALIDATION_SURFACE_ONLY",
         "canonicalSourceRoot": "unity-games/chess-battle",
@@ -16676,9 +16706,9 @@
         "legacyDirectWebAuthoring": false
       },
       "WEB_GAME_QUALITY_BAR_ROLE": "UNITY_WEB_VALIDATION_OUTPUT_ONLY",
-      "generation": "OWNER_REDESIGN_RESET",
-      "ownerResetRevision": "OWNER-ENROLL-CHESS-BATTLE-20260913-2",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
+      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
+      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
+      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
       "GAMEPLAY_SKETCH": {
         "version": 4,
         "source": "GAME_SEED_MODEL_OR_NORMALIZED_SKETCH_V4_CAUSAL_GRAMMAR",
@@ -18408,7 +18438,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-08T07:40:14.493Z",
+      "updatedAt": "2026-10-08T11:09:46.087Z",
       "REFERENCE_INPUTS": [
         {
           "type": "GAME_REFERENCE",
@@ -18424,10 +18454,19 @@
         }
       ],
       "TARGET_SESSION_MINUTES": 30,
-      "MULTIPLAYER_DESIGN_MODE": "SINGLE"
+      "MULTIPLAYER_DESIGN_MODE": "SINGLE",
+      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
+      "REUSE_PRIOR_DESIGN_BASELINE": false,
+      "REUSE_PRIOR_ARTBOOK": false,
+      "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
+      "LEGACY_BUILD_ROLE": "PUBLIC_ROLLBACK_REFERENCE_ONLY",
+      "PUBLIC_ROUTE_POLICY": "KEEP_EXISTING_WEB_PATH",
+      "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
+      "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
+      "MOBILE_FIRST": true
     },
     {
-      "version": 1,
+      "version": 2,
       "seedId": "OWNER-ENROLL-SURVIVAL2-20260913",
       "gameId": "survival2",
       "gameName": "숲의 생존자들",
@@ -18460,10 +18499,10 @@
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER_OR_COOP_EXPANSION_REVIEW",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "REINTERPRETATION",
-      "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
+      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
+      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
       "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "DESIGN_ONLY",
+      "lifecycleState": "ACTIVE",
       "UNITY_WEB_VALIDATION_SURFACE": {
         "role": "VALIDATION_SURFACE_ONLY",
         "canonicalSourceRoot": "unity-games/survival2",
@@ -18474,9 +18513,9 @@
         "legacyDirectWebAuthoring": false
       },
       "WEB_GAME_QUALITY_BAR_ROLE": "UNITY_WEB_VALIDATION_OUTPUT_ONLY",
-      "generation": "OWNER_REDESIGN_RESET",
-      "ownerResetRevision": "OWNER-ENROLL-SURVIVAL2-20260913-2",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
+      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
+      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
+      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
       "GAMEPLAY_SKETCH": {
         "version": 4,
         "source": "GAME_SEED_MODEL_OR_NORMALIZED_SKETCH_V4_CAUSAL_GRAMMAR",
@@ -20523,7 +20562,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-08T07:40:14.493Z",
+      "updatedAt": "2026-10-08T11:09:46.087Z",
       "REFERENCE_INPUTS": [
         {
           "type": "GAME_REFERENCE",
@@ -20539,10 +20578,19 @@
         }
       ],
       "TARGET_SESSION_MINUTES": 30,
-      "MULTIPLAYER_DESIGN_MODE": "SINGLE"
+      "MULTIPLAYER_DESIGN_MODE": "SINGLE",
+      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
+      "REUSE_PRIOR_DESIGN_BASELINE": false,
+      "REUSE_PRIOR_ARTBOOK": false,
+      "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
+      "LEGACY_BUILD_ROLE": "PUBLIC_ROLLBACK_REFERENCE_ONLY",
+      "PUBLIC_ROUTE_POLICY": "KEEP_EXISTING_WEB_PATH",
+      "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
+      "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
+      "MOBILE_FIRST": true
     },
     {
-      "version": 1,
+      "version": 2,
       "seedId": "OWNER-ENROLL-TERRITORY-WAR-20260913",
       "gameId": "territory-war",
       "gameName": "영토전쟁",
@@ -20575,10 +20623,10 @@
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER_OR_PVP_EXPANSION_REVIEW",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "REINTERPRETATION",
-      "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
+      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
+      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
       "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "DESIGN_ONLY",
+      "lifecycleState": "ACTIVE",
       "OWNER_IMMEDIATE_DEVELOPMENT_REQUEST": true,
       "OWNER_IMMEDIATE_DEVELOPMENT_REQUESTED_AT": "2026-09-22T00:28:00+09:00",
       "OWNER_REQUESTED_PRIMARY_PLATFORM": "ROBLOX",
@@ -20595,9 +20643,9 @@
         "legacyDirectWebAuthoring": false
       },
       "WEB_GAME_QUALITY_BAR_ROLE": "UNITY_WEB_VALIDATION_OUTPUT_ONLY",
-      "generation": "OWNER_REDESIGN_RESET",
-      "ownerResetRevision": "OWNER-ENROLL-TERRITORY-WAR-20260913-2",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
+      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
+      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
+      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
       "GAMEPLAY_SKETCH": {
         "version": 4,
         "source": "GAME_SEED_MODEL_OR_NORMALIZED_SKETCH_V4_CAUSAL_GRAMMAR",
@@ -22369,7 +22417,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-08T07:40:14.493Z",
+      "updatedAt": "2026-10-08T11:09:46.087Z",
       "REFERENCE_INPUTS": [
         {
           "type": "GAME_REFERENCE",
@@ -22385,7 +22433,16 @@
         }
       ],
       "TARGET_SESSION_MINUTES": 30,
-      "MULTIPLAYER_DESIGN_MODE": "SINGLE"
+      "MULTIPLAYER_DESIGN_MODE": "SINGLE",
+      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
+      "REUSE_PRIOR_DESIGN_BASELINE": false,
+      "REUSE_PRIOR_ARTBOOK": false,
+      "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
+      "LEGACY_BUILD_ROLE": "PUBLIC_ROLLBACK_REFERENCE_ONLY",
+      "PUBLIC_ROUTE_POLICY": "KEEP_EXISTING_WEB_PATH",
+      "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
+      "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
+      "MOBILE_FIRST": true
     },
     {
       "version": 3,
@@ -22960,7 +23017,7 @@
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
       },
-      "status": "ACTIVE",
+      "status": "PAUSED",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-DESIGNER-ORIGINAL-20261007-2",
       "productionClass": "DEVELOPMENT_CONFIRMED",
@@ -23018,15 +23075,16 @@
       },
       "productionTier": 2,
       "selectedPlatform": "ROBLOX",
-      "pausedAt": "2026-10-08T06:39:18.528Z",
-      "reactivatedBy": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25"
+      "pausedAt": "2026-10-08T11:09:46.087Z",
+      "reactivatedBy": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25",
+      "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG"
     },
     {
       "version": 2,
       "seedId": "OWNER-ALL-DESIGN-RESET-SEED-ACTION-SURVIVAL-ROGU-ECHOES-OF-THE-LOST-STAR-20260917",
       "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
       "gameName": "잃어버린 별의 메아리",
-      "status": "ACTIVE",
+      "status": "PAUSED",
       "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
       "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
       "GAME_CATEGORY": "ACTION_SURVIVAL_ROGUELITE",
@@ -25446,7 +25504,7 @@
         }
       },
       "strictDesignReviewRefreshRequired": true,
-      "pausedAt": "2026-10-08T06:39:18.528Z",
+      "pausedAt": "2026-10-08T11:09:46.087Z",
       "reactivatedBy": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25",
       "homepageNovelGrammarBackfill": {
         "version": 4,
@@ -25461,14 +25519,15 @@
           "createdAt": "2026-10-07T07:35:07.296Z",
           "source": "CURRENT_HOMEPAGE_WEB_GAME"
         }
-      ]
+      ],
+      "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG"
     },
     {
       "version": 2,
       "seedId": "OWNER-ALL-DESIGN-RESET-SEED-SINGLE-DEFENSE-STRAT-CELESTIAL-BASTION-20260917",
       "gameId": "seed-single-defense-strat-celestial-bastion",
       "gameName": "천상의 보루",
-      "status": "ACTIVE",
+      "status": "PAUSED",
       "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
       "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
       "GAME_CATEGORY": "SINGLE_DEFENSE_STRATEGY",
@@ -27706,7 +27765,7 @@
         }
       },
       "strictDesignReviewRefreshRequired": true,
-      "pausedAt": "2026-10-08T06:39:18.528Z",
+      "pausedAt": "2026-10-08T11:09:46.087Z",
       "reactivatedBy": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25",
       "homepageNovelGrammarBackfill": {
         "version": 4,
@@ -27721,14 +27780,15 @@
           "createdAt": "2026-10-07T07:35:07.296Z",
           "source": "CURRENT_HOMEPAGE_WEB_GAME"
         }
-      ]
+      ],
+      "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG"
     },
     {
       "version": 2,
       "seedId": "OWNER-ALL-DESIGN-RESET-SEED-PUZZLE-CHROMATIC-CASCADE-20260917",
       "gameId": "seed-puzzle-chromatic-cascade",
       "gameName": "색채의 연쇄",
-      "status": "ACTIVE",
+      "status": "PAUSED",
       "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
       "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
       "GAME_CATEGORY": "PUZZLE",
@@ -29775,7 +29835,7 @@
         }
       },
       "strictDesignReviewRefreshRequired": true,
-      "pausedAt": "2026-10-08T06:39:18.528Z",
+      "pausedAt": "2026-10-08T11:09:46.087Z",
       "novelGrammarBackfill": {
         "version": 4,
         "source": "CANONICAL_GAME_SEED_NOVEL_GRAMMAR_V4_20261007",
@@ -29790,14 +29850,15 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "reactivatedBy": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25"
+      "reactivatedBy": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25",
+      "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG"
     },
     {
       "version": 2,
       "seedId": "OWNER-ALL-DESIGN-RESET-SEED-CASUAL-REALM-WEAVER-20260917",
       "gameId": "seed-casual-realm-weaver",
       "gameName": "세계의 직조자",
-      "status": "ACTIVE",
+      "status": "PAUSED",
       "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
       "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
       "GAME_CATEGORY": "CASUAL",
@@ -31779,7 +31840,7 @@
         }
       },
       "strictDesignReviewRefreshRequired": true,
-      "pausedAt": "2026-10-08T06:39:18.528Z",
+      "pausedAt": "2026-10-08T11:09:46.087Z",
       "novelGrammarBackfill": {
         "version": 4,
         "source": "CANONICAL_GAME_SEED_NOVEL_GRAMMAR_V4_20261007",
@@ -31794,14 +31855,15 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "reactivatedBy": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25"
+      "reactivatedBy": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25",
+      "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG"
     },
     {
       "version": 2,
       "seedId": "OWNER-ALL-DESIGN-RESET-SEED-IDLE-GROWTH-RPG-CRYSTAL-BLOOM-20260917",
       "gameId": "seed-idle-growth-rpg-crystal-bloom",
       "gameName": "수정의 개화",
-      "status": "ACTIVE",
+      "status": "PAUSED",
       "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
       "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
       "GAME_CATEGORY": "IDLE_GROWTH_RPG",
@@ -34059,7 +34121,7 @@
         }
       },
       "strictDesignReviewRefreshRequired": true,
-      "pausedAt": "2026-10-08T06:39:18.528Z",
+      "pausedAt": "2026-10-08T11:09:46.087Z",
       "novelGrammarBackfill": {
         "version": 4,
         "source": "CANONICAL_GAME_SEED_NOVEL_GRAMMAR_V4_20261007",
@@ -34074,14 +34136,15 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "reactivatedBy": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25"
+      "reactivatedBy": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25",
+      "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG"
     },
     {
       "version": 2,
       "seedId": "OWNER-ALL-DESIGN-RESET-SEED-STORY-COMPLETE-RPG-CHRONICLES-OF-ELDORIA-20260917",
       "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
       "gameName": "엘도리아 연대기",
-      "status": "ACTIVE",
+      "status": "PAUSED",
       "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
       "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
       "GAME_CATEGORY": "STORY_COMPLETE_RPG",
@@ -36414,7 +36477,7 @@
         }
       },
       "strictDesignReviewRefreshRequired": true,
-      "pausedAt": "2026-10-08T06:39:18.528Z",
+      "pausedAt": "2026-10-08T11:09:46.087Z",
       "novelGrammarBackfill": {
         "version": 4,
         "source": "CANONICAL_GAME_SEED_NOVEL_GRAMMAR_V4_20261007",
@@ -36429,14 +36492,15 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "reactivatedBy": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25"
+      "reactivatedBy": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25",
+      "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG"
     },
     {
       "version": 2,
       "seedId": "OWNER-ALL-DESIGN-RESET-MONSTER-ADVENTURE-20260917",
       "gameId": "monster-adventure",
       "gameName": "몬스터 어드벤처",
-      "status": "ACTIVE",
+      "status": "PAUSED",
       "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
       "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
       "GAME_CATEGORY": "CASUAL",
@@ -38424,7 +38488,7 @@
         }
       },
       "strictDesignReviewRefreshRequired": true,
-      "pausedAt": "2026-10-08T06:39:18.528Z",
+      "pausedAt": "2026-10-08T11:09:46.087Z",
       "reactivatedBy": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25",
       "homepageNovelGrammarBackfill": {
         "version": 4,
@@ -38439,14 +38503,15 @@
           "createdAt": "2026-10-07T07:35:07.296Z",
           "source": "CURRENT_HOMEPAGE_WEB_GAME"
         }
-      ]
+      ],
+      "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG"
     },
     {
       "version": 2,
       "seedId": "OWNER-ALL-DESIGN-RESET-VILLAGE-DUNGEONS-20260917",
       "gameId": "village-dungeons",
       "gameName": "마을 던전 RPG",
-      "status": "ACTIVE",
+      "status": "PAUSED",
       "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
       "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
       "GAME_CATEGORY": "CASUAL",
@@ -40437,7 +40502,7 @@
         }
       },
       "strictDesignReviewRefreshRequired": true,
-      "pausedAt": "2026-10-08T06:39:18.528Z",
+      "pausedAt": "2026-10-08T11:09:46.087Z",
       "reactivatedBy": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25",
       "homepageNovelGrammarBackfill": {
         "version": 4,
@@ -40452,14 +40517,15 @@
           "createdAt": "2026-10-07T07:35:07.296Z",
           "source": "CURRENT_HOMEPAGE_WEB_GAME"
         }
-      ]
+      ],
+      "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG"
     },
     {
       "version": 2,
       "seedId": "OWNER-ALL-DESIGN-RESET-AMUSEMENT-TYCOON-20260917",
       "gameId": "amusement-tycoon",
       "gameName": "놀이공원 타이쿤",
-      "status": "ACTIVE",
+      "status": "PAUSED",
       "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
       "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
       "GAME_CATEGORY": "CASUAL",
@@ -42430,7 +42496,7 @@
         }
       },
       "strictDesignReviewRefreshRequired": true,
-      "pausedAt": "2026-10-08T06:39:18.528Z",
+      "pausedAt": "2026-10-08T11:09:46.087Z",
       "reactivatedBy": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25",
       "homepageNovelGrammarBackfill": {
         "version": 4,
@@ -42445,14 +42511,15 @@
           "createdAt": "2026-10-07T07:35:07.296Z",
           "source": "CURRENT_HOMEPAGE_WEB_GAME"
         }
-      ]
+      ],
+      "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG"
     },
     {
       "version": 2,
       "seedId": "OWNER-ALL-DESIGN-RESET-LINE-DEFENSE-20260917",
       "gameId": "line-defense",
       "gameName": "골목 군단 대전",
-      "status": "ACTIVE",
+      "status": "PAUSED",
       "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
       "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
       "GAME_CATEGORY": "SINGLE_DEFENSE_STRATEGY",
@@ -44676,7 +44743,7 @@
         }
       },
       "strictDesignReviewRefreshRequired": true,
-      "pausedAt": "2026-10-08T06:39:18.528Z",
+      "pausedAt": "2026-10-08T11:09:46.087Z",
       "reactivatedBy": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25",
       "homepageNovelGrammarBackfill": {
         "version": 4,
@@ -44691,7 +44758,8 @@
           "createdAt": "2026-10-07T07:35:07.296Z",
           "source": "CURRENT_HOMEPAGE_WEB_GAME"
         }
-      ]
+      ],
+      "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG"
     },
     {
       "version": 2,
@@ -45544,7 +45612,7 @@
       "seedId": "OWNER-PRESERVE-FANTASY-SURVIVAL-20260920",
       "gameId": "fantasy-survival",
       "gameName": "마력숲 생존기",
-      "status": "ACTIVE",
+      "status": "PAUSED",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-PRESERVE-VIBE-PILOT-FANTASY-SURVIVAL-20260920-1",
       "GAME_CATEGORY": "ACTION_SURVIVAL_ROGUELITE",
@@ -48056,7 +48124,7 @@
         }
       },
       "strictDesignReviewRefreshRequired": true,
-      "pausedAt": "2026-10-08T06:39:18.528Z",
+      "pausedAt": "2026-10-08T11:09:46.087Z",
       "reactivatedBy": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25",
       "homepageNovelGrammarBackfill": {
         "version": 4,
@@ -48071,7 +48139,8 @@
           "createdAt": "2026-10-07T07:35:07.296Z",
           "source": "CURRENT_HOMEPAGE_WEB_GAME"
         }
-      ]
+      ],
+      "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG"
     },
     {
       "version": 2,
@@ -48417,7 +48486,7 @@
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
       "lifecycleState": "ACTIVE",
-      "updatedAt": "2026-10-08T06:39:18.528Z",
+      "updatedAt": "2026-10-08T11:09:46.087Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -50938,7 +51007,7 @@
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
       },
-      "status": "ACTIVE",
+      "status": "PAUSED",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-DESIGNER-ORIGINAL-20261007-2",
       "productionClass": "DEVELOPMENT_CONFIRMED",
@@ -50988,8 +51057,9 @@
       },
       "productionTier": 2,
       "selectedPlatform": "ROBLOX",
-      "pausedAt": "2026-10-08T06:39:18.528Z",
-      "reactivatedBy": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25"
+      "pausedAt": "2026-10-08T11:09:46.087Z",
+      "reactivatedBy": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25",
+      "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG"
     },
     {
       "version": 2,
@@ -51335,7 +51405,7 @@
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
       "lifecycleState": "ACTIVE",
-      "updatedAt": "2026-10-08T06:39:18.528Z",
+      "updatedAt": "2026-10-08T11:09:46.087Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -53694,7 +53764,7 @@
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
       "lifecycleState": "ACTIVE",
-      "updatedAt": "2026-10-08T06:39:18.528Z",
+      "updatedAt": "2026-10-08T11:09:46.087Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -56105,7 +56175,7 @@
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
       "lifecycleState": "ACTIVE",
-      "updatedAt": "2026-10-08T06:39:18.528Z",
+      "updatedAt": "2026-10-08T11:09:46.087Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -58121,7 +58191,7 @@
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
       "lifecycleState": "ACTIVE",
-      "updatedAt": "2026-10-08T06:39:18.528Z",
+      "updatedAt": "2026-10-08T11:09:46.087Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -60587,7 +60657,7 @@
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
       "lifecycleState": "ACTIVE",
-      "updatedAt": "2026-10-08T06:39:18.528Z",
+      "updatedAt": "2026-10-08T11:09:46.087Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -62810,7 +62880,7 @@
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
       "lifecycleState": "ACTIVE",
-      "updatedAt": "2026-10-08T06:39:18.528Z",
+      "updatedAt": "2026-10-08T11:09:46.087Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -64831,7 +64901,7 @@
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
       "lifecycleState": "ACTIVE",
-      "updatedAt": "2026-10-08T06:39:18.528Z",
+      "updatedAt": "2026-10-08T11:09:46.087Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -66842,7 +66912,7 @@
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
       "lifecycleState": "ACTIVE",
-      "updatedAt": "2026-10-08T06:39:18.528Z",
+      "updatedAt": "2026-10-08T11:09:46.087Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -68834,7 +68904,7 @@
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
       "lifecycleState": "ACTIVE",
-      "updatedAt": "2026-10-08T06:39:18.528Z",
+      "updatedAt": "2026-10-08T11:09:46.087Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -71042,7 +71112,7 @@
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
       "lifecycleState": "ACTIVE",
-      "updatedAt": "2026-10-08T06:39:18.528Z",
+      "updatedAt": "2026-10-08T11:09:46.087Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -73071,7 +73141,7 @@
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
       "lifecycleState": "ACTIVE",
-      "updatedAt": "2026-10-08T06:39:18.528Z",
+      "updatedAt": "2026-10-08T11:09:46.087Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -74964,7 +75034,7 @@
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
       "lifecycleState": "ACTIVE",
-      "updatedAt": "2026-10-08T06:39:18.528Z",
+      "updatedAt": "2026-10-08T11:09:46.087Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -77395,7 +77465,7 @@
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
       "lifecycleState": "ACTIVE",
-      "updatedAt": "2026-10-08T06:39:18.528Z",
+      "updatedAt": "2026-10-08T11:09:46.087Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -79859,7 +79929,7 @@
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
       "lifecycleState": "ACTIVE",
-      "updatedAt": "2026-10-08T06:39:18.528Z",
+      "updatedAt": "2026-10-08T11:09:46.087Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -82054,7 +82124,7 @@
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
       "lifecycleState": "ACTIVE",
-      "updatedAt": "2026-10-08T06:39:18.528Z",
+      "updatedAt": "2026-10-08T11:09:46.087Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -84509,7 +84579,7 @@
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
       "lifecycleState": "ACTIVE",
-      "updatedAt": "2026-10-08T06:39:18.528Z",
+      "updatedAt": "2026-10-08T11:09:46.087Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -86526,7 +86596,7 @@
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
       "lifecycleState": "ACTIVE",
-      "updatedAt": "2026-10-08T06:39:18.528Z",
+      "updatedAt": "2026-10-08T11:09:46.087Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -88520,7 +88590,7 @@
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
       "lifecycleState": "ACTIVE",
-      "updatedAt": "2026-10-08T06:39:18.528Z",
+      "updatedAt": "2026-10-08T11:09:46.087Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -90575,7 +90645,7 @@
       "seedId": "AUTO-MISSING-DESIGN-ANT-SIMULATOR",
       "gameId": "ant-simulator",
       "gameName": "개미 시뮬레이터",
-      "status": "ACTIVE",
+      "status": "PAUSED",
       "generation": "AUTO_MISSING_DESIGN_INTAKE",
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25",
@@ -92528,15 +92598,16 @@
       "autoMissingDesignIntake": true,
       "createdAt": "2026-10-07T07:35:07.296Z",
       "updatedAt": "2026-10-08T06:56:54.301Z",
-      "pausedAt": "2026-10-08T06:39:18.528Z",
-      "reactivatedBy": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25"
+      "pausedAt": "2026-10-08T11:09:46.087Z",
+      "reactivatedBy": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25",
+      "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG"
     },
     {
       "version": 2,
       "seedId": "AUTO-MISSING-DESIGN-WILD-SURVIVAL",
       "gameId": "wild-survival",
       "gameName": "야생 생존",
-      "status": "ACTIVE",
+      "status": "PAUSED",
       "generation": "AUTO_MISSING_DESIGN_INTAKE",
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25",
@@ -94489,8 +94560,9 @@
       "autoMissingDesignIntake": true,
       "createdAt": "2026-10-07T07:35:07.296Z",
       "updatedAt": "2026-10-08T06:56:54.301Z",
-      "pausedAt": "2026-10-08T06:39:18.528Z",
-      "reactivatedBy": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25"
+      "pausedAt": "2026-10-08T11:09:46.087Z",
+      "reactivatedBy": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25",
+      "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG"
     }
   ],
   "seedMaterials": [
@@ -100102,7 +100174,7 @@
       "tower-choice-rpg",
       "zombie-survival"
     ],
-    "updatedAt": "2026-10-08T06:39:18.528Z"
+    "updatedAt": "2026-10-08T11:09:46.087Z"
   },
   "ownerPreservationIntake": {
     "source": "owner-design-reset-queue.json",
@@ -100216,5 +100288,6 @@
       "tower-choice-rpg",
       "zombie-survival"
     ]
-  }
+  },
+  "policyDocument": "company-learning/platform-release-roadmap.json"
 }
