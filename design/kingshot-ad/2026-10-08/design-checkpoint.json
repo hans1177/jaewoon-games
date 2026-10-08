@@ -920,25 +920,45 @@
         "level"
       ],
       "fromSystem": "GAMEPLAY_SKETCH v4\",\"toSystem\":\"GAMEPLAY_SKETCH v4\"}</think>IZER</think> initialState: {"
+    },
+    "local_authoring_parts::a204dd4ca054e105c7ed57151ced5d7e81044b1b1ed310860ccaf991b5aab787:toSystem,trigger,stateChange": {
+      "toSystem": "GAMEPLAY_SKETCH v4",
+      "trigger": "enemy_wave",
+      "stateChange": "defensive_structure_reconfigured"
+    },
+    "local_authoring_parts::0d72f015e340fad6fd23145063ec0b59527a7b0cd096b29c60e864804adaef47:systemInterconnections:0": {
+      "fromId": "enemy_wave",
+      "toId": "defensive_structure",
+      "stateKeys": [
+        "enemy_wave",
+        "defensive_structure",
+        "resource",
+        "strategy",
+        "level"
+      ],
+      "fromSystem": "GAMEPLAY_SKETCH v4\",\"toSystem\":\"GAMEPLAY_SKETCH v4\"}</think>IZER</think> initialState: {",
+      "toSystem": "GAMEPLAY_SKETCH v4",
+      "trigger": "enemy_wave",
+      "stateChange": "defensive_structure_reconfigured"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 32,
-      "successes": 32,
+      "calls": 33,
+      "successes": 33,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2581318,
-      "lastMs": 25664,
+      "totalMs": 2626305,
+      "lastMs": 44987,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:03:51.120Z"
+      "updatedAt": "2026-10-08T10:04:36.108Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:32:33.592Z",
-  "updatedAt": "2026-10-08T10:03:51.120Z",
+  "updatedAt": "2026-10-08T10:04:36.111Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3289,7 +3309,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:03:51.120Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:04:36.111Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
