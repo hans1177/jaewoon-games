@@ -337,7 +337,8 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     river.push({x:downstream.x,z:downstream.z});riverVisited.add(at(downstream.x,downstream.z));
     const next=downstream.drainageTo;downstream=next?terrain[at(next.x,next.z)]:null;
   }
-  const waterway=new Set(river.map(c=>at(c.x,c.z)));
+  const riverType=/ARID|DRY|DESERT/.test(String(climate).toUpperCase()+' '+String(biome).toUpperCase())?'SEASONAL_DRY_CHANNEL':'PERENNIAL_FLOW_CANDIDATE';
+  const waterway=new Set(riverType==='SEASONAL_DRY_CHANNEL'?[]:river.map(c=>at(c.x,c.z)));
   const passable=(x,z)=>within(x,z)&&!blocked.has(at(x,z))&&!waterway.has(at(x,z))&&terrain[at(x,z)].biome!=='WATER';
   const nearest=(x,z)=>{
     for(let radius=0;radius<Math.max(w,h);radius++)for(let dz=-radius;dz<=radius;dz++)for(let dx=-radius;dx<=radius;dx++){
@@ -453,11 +454,12 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
   }
   const result={
     version:1,status:issues.length?'LAYOUT_REVIEW_REQUIRED':'STATIC_LAYOUT_PROPOSED',issues:Object.freeze(issues),
-    seed:String(seed),dimension,regionalBiome:String(biome).toUpperCase(),climate:String(climate).toUpperCase(),coordinateSystem:dimension==='3D'?'Y_UP_HEIGHTFIELD':'XY_TOP_DOWN',
-    size:{width:w,height:h,cellSize},terrain:Object.freeze(terrain),river:Object.freeze(river),roads:Object.freeze(routes),roadCells:Object.freeze([...roadSet].sort((a,b)=>a-b).map(id=>({x:id%w,z:Math.floor(id/w)}))),
+    seed:String(seed),dimension,regionalBiome:String(biome).toUpperCase(),climate:String(climate).toUpperCase(),coordinateSystem:dimension==='3D'?'Y_UP_HEIGHTFIELD':'GRID_XZ_REQUIRES_2D_AXIS_MAPPING',
+    size:{width:w,height:h,cellSize},terrain:Object.freeze(terrain),river:Object.freeze(river),riverType,roads:Object.freeze(routes),roadCells:Object.freeze([...roadSet].sort((a,b)=>a-b).map(id=>({x:id%w,z:Math.floor(id/w)}))),
     routeGraph,buildings:Object.freeze(buildings),vegetation:Object.freeze(vegetation),instancingPlan:Object.freeze([...instanceGroups.values(),...natureGroups.values()]),landmark:Object.freeze({cell:landmark,reason:'VISIBLE_NAVIGATION_ANCHOR'}),
     sightline:Object.freeze(sightline),drainage:'FOUR_NEIGHBOR_DOWNHILL',noise:'SEEDED_2D_GRADIENT_FBM',snapRules:Object.freeze({moduleGrid:cellSize,entrancesFaceConnectedRoad:true,foundationsFollowTerrain:true}),
     mobileBudget:Object.freeze({cellCount:terrain.length,buildingLimit:maxBuildings,vegetationLimit:maxVegetation,instanceGroupCount:instanceGroups.size+natureGroups.size,actualDrawCallsMeasured:false}),
+    native2DWorldCoordinateMappingRequired:dimension==='2D',
     protected:Object.freeze(['existing-transforms','spawns','objective-rules','collision','navigation','economy','save','network-authority']),
     ...noMutation
   };
