@@ -832,25 +832,36 @@
         "riskPressure": "EnemyWaveDefender의 상태 변화는 플레이어가 방어 구조를 생성하거나 전략적 전개를 변경하여 보상의 기회를 확보하는 데 직접적인 영향을 미칩니다.",
         "recoveryRules": "EnemyWaveDefender의 상태 변화는 게임의 전략적 선택과 보상의 기회 확보에 중요한 역할을 합니다. 이는 플레이어가 방어 구조를 생성하거나 전략적 전개를 변경하여 보상의 기회를 확보하는 데 기여합니다."
       }
+    },
+    "local_authoring_parts::e50915bd78aa4daf7c2fd9f2c35493a19d216fd5befc83ea5a702d69cbb36576:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "enemyWaveType",
+      "toId": "threatenedRoute",
+      "stateKeys": [
+        "enemyWaveType",
+        "threatenedRoute",
+        "currentDefenses",
+        "resourcesAvailable"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 23,
-      "successes": 22,
+      "calls": 24,
+      "successes": 23,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2891185,
-      "lastMs": 209716,
+      "totalMs": 2965189,
+      "lastMs": 74004,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T16:04:44.924Z"
+      "updatedAt": "2026-10-08T16:05:58.939Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:25:16.552Z",
-  "updatedAt": "2026-10-08T16:04:44.932Z",
+  "updatedAt": "2026-10-08T16:05:58.939Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3210,10 +3221,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:04:44.927Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:05:58.939Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
