@@ -395,25 +395,51 @@
       "name": "OPEN_WILDERNESS_ACADEMY_B",
       "purpose": "플레이어가 개미 종족 중 하나를 선택하여 거대한 정원을 탐험하고 굴을 지키며 생존하는 오픈월드 멀티 플레이 게임의 독립적 상태 변환입니다.",
       "playerChoice": "월드 진입 후 목표 확인 이후 개미 종족 선택 및 행동 선택을 하여 월드 상태, 자원, 위험, 그리고 다음 선택에 따라 진행되는 반복 가능한 루프 적용."
+    },
+    "local_authoring_parts::6e336371fe3e6ff3ed089adc9c7420c1d778d345f9ca47e9cd92212313e6e2c6:signatureSystems:3": {
+      "id": "ANT_SIMULATOR_04",
+      "grammarRole": "c",
+      "stateInputs": [
+        "월드 진입 후 목표 확인"
+      ],
+      "stateOutputs": [
+        "개미 종족 선택 및 행동 선택"
+      ],
+      "name": "OPEN_WILDERNESS_ACADEMY_C",
+      "purpose": "플레이어가 개미 종족 중 하나를 선택하여 거대한 정원을 탐험하고 굴을 지키며 생존하는 오픈월드 멀티 플레이 게임의 보조 요소입니다.",
+      "playerChoice": "월드 진입 후 목표 확인 이후 개미 종족 선택 및 행동 선택을 하여 월드 상태, 자원, 위험, 그리고 다음 선택에 따라 진행되는 반복 가능한 루프 적용."
+    },
+    "local_authoring_parts::6e336371fe3e6ff3ed089adc9c7420c1d778d345f9ca47e9cd92212313e6e2c6:signatureSystems:4": {
+      "id": "ANT_SIMULATOR_04",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "월드 진입 후 목표 확인"
+      ],
+      "stateOutputs": [
+        "개미 종족 선택 및 행동 선택"
+      ],
+      "name": "OPEN_WILDERNESS_ACADEMY_C",
+      "purpose": "플레이어가 개미 종족 중 하나를 선택하여 거대한 정원을 탐험하고 굴을 지키며 생존하는 오픈월드 멀티 플레이 게임의 보조 요소입니다.",
+      "playerChoice": "월드 진입 후 목표 확인 이후 개미 종족 선택 및 행동 선택을 하여 월드 상태, 자원, 위험, 그리고 다음 선택에 따라 진행되는 반복 가능한 루프 적용."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 13,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 679225,
-      "lastMs": 42650,
+      "totalMs": 780634,
+      "lastMs": 53884,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:56:15.888Z"
+      "updatedAt": "2026-10-08T17:57:57.300Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:44:56.607Z",
-  "updatedAt": "2026-10-08T17:56:15.888Z",
+  "updatedAt": "2026-10-08T17:57:57.308Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2516,7 +2542,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2531,10 +2557,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T17:56:15.888Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T17:57:57.302Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_MAIN_A_B_c_DELVE_REQUIRED,DESIGN_RULE_STATE_MISSING",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
