@@ -550,25 +550,40 @@
       "name": "IDLE_GROWTH_RPG_DELVE",
       "purpose": "Players choose which hero or stat path receives the next investment, and push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle.",
       "playerChoice": "Choose which hero or stat path receives the next investment, push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle."
+    },
+    "local_authoring_parts::87a38618bf1d8c61b75ab1547075406a180ca8674d902b02fe1456b209b78dbb:signatureSystems:0": {
+      "id": "IDLE_GROWTH_RPG_CORE_LOOP",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "READABLE_STATE: Heroes or characters fight automatically and continue generating",
+        "CHANGABLE_STATE: World state after player action"
+      ],
+      "stateOutputs": [
+        "READABLE_STATE: Claim rewards, upgrade levels or skills, equip gear, and choose",
+        "CHANGABLE_STATE: World state after player action"
+      ],
+      "name": "IDLE_GROWTH_RPG_CORE_LOOP",
+      "purpose": "Player action leads to world state change in a repeatable loop",
+      "playerChoice": "Choose which hero or stat path receives next investment"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 20,
+      "calls": 21,
+      "successes": 21,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2190578,
-      "lastMs": 103820,
+      "totalMs": 2213939,
+      "lastMs": 23361,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:29:07.246Z"
+      "updatedAt": "2026-10-08T16:29:30.617Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:45:52.443Z",
-  "updatedAt": "2026-10-08T16:29:07.254Z",
+  "updatedAt": "2026-10-08T16:29:30.617Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2836,10 +2851,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:29:07.248Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:29:30.617Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
