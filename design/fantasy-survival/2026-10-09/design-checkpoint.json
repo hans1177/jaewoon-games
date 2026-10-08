@@ -487,25 +487,28 @@
     },
     "local_authoring_parts::7cb8b1f06fb969041128dd8ccc5064b1cafc671c4cd4d5ae6b90d466134f3f55:fromId": {
       "fromId": "RUN_RESULT"
+    },
+    "local_authoring_parts::7cb8b1f06fb969041128dd8ccc5064b1cafc671c4cd4d5ae6b90d466134f3f55:toId": {
+      "toId": "WORLD_STATE_CHANGE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 19,
+      "calls": 20,
+      "successes": 20,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1257131,
-      "lastMs": 49201,
+      "totalMs": 1305805,
+      "lastMs": 48674,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:50:06.602Z"
+      "updatedAt": "2026-10-08T18:50:55.277Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:29:09.382Z",
-  "updatedAt": "2026-10-08T18:50:06.602Z",
+  "updatedAt": "2026-10-08T18:50:55.278Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2903,7 +2906,7 @@
       "progressionDirection": "FIGHT-UPGRADES-SURVIVE-PROGRESSION"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:50:06.602Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:50:55.278Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
