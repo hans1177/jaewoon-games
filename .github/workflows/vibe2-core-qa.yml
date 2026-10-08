@@ -225,9 +225,9 @@ permissions:
   contents: read
 
 concurrency:
-  # 같은 PR의 이전 커밋 검사는 대체한다. 제작 브랜치와 다른 PR 실행은 보존한다.
+  # Main churn makes older exact-SHA regressions obsolete; preserve active runs on non-main refs.
   group: vibe2-core-qa-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
+  cancel-in-progress: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
 jobs:
   scope:
