@@ -37,25 +37,42 @@
         "보이는 자동전투와 점령 보상",
         "협동 지원으로 강한 거점 공략"
       ]
+    },
+    "local_authoring_parts::de41ad84b3bbcc7ebf4a785e49bd9061079fa8c56b4b87187175dc3859cd9502:signatureSystems:0": {
+      "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "나무·식량",
+        "주민",
+        "병력"
+      ],
+      "stateOutputs": [
+        "자원 거점",
+        "협동 지원",
+        "점령 보상"
+      ],
+      "name": "자원 거점 점령 시스템",
+      "purpose": "5개 서로 다른 자원 거점을 순차적으로 점령하며 성장감을 확장하는 게임 규칙",
+      "playerChoice": "자원 거점 선택 및 협동 지원 요청"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 477532,
-      "lastMs": 81624,
+      "totalMs": 509936,
+      "lastMs": 32404,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:21:03.240Z"
+      "updatedAt": "2026-10-08T10:21:35.645Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:13:05.670Z",
-  "updatedAt": "2026-10-08T10:21:03.240Z",
+  "updatedAt": "2026-10-08T10:21:35.646Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -610,7 +627,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T10:21:03.240Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:21:35.645Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
