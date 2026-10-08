@@ -511,25 +511,42 @@
     },
     "local_authoring_parts::c939cf10e6ace50d1dc882718408caaff6953abb6b153b2111add76fcbb824f7:trigger": {
       "trigger": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다. 플레이어는 Read the board and enemy threat information.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 Read the board and enemy threat information.이며, 두 대축은 Commit a move or ability that changes control of key spaces, and resolve the tactical exchange while使用新的板"
+    },
+    "local_authoring_parts::c939cf10e6ace50d1dc882718408caaff6953abb6b153b2111add76fcbb824f7:stateChange": {
+      "stateChange": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다. 플레이어는 Read the board and enemy threat information.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 Read the board and enemy threat information.이며, 두 대축은 Commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
+    },
+    "local_authoring_parts::3bf2a728aab430b6985e1ac65fa096204d001d581888074af26979b52f60b120:systemInterconnections:1": {
+      "fromId": "systemInterconnections[1].trigger",
+      "toId": "systemInterconnections[1].trigger",
+      "stateKeys": [
+        "worldState",
+        "enemyThreatInfo",
+        "newWorldState",
+        "nextMoveChoice"
+      ],
+      "fromSystem": "TacticalResolutionSystem",
+      "toSystem": "TacticalResolutionSystem",
+      "trigger": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다. 플레이어는 Read the board and enemy threat information.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 Read the board and enemy threat information.이며, 두 대축은 Commit a move or ability that changes control of key spaces, and resolve the tactical exchange while使用新的板",
+      "stateChange": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다. 플레이어는 Read the board and enemy threat information.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 Read the board and enemy threat information.이며, 두 대축은 Commit a move or ability that changes control of key spaces, and resolve the tactical exchange while using the new board state to plan the next decisive turn."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 24,
-      "successes": 24,
+      "calls": 25,
+      "successes": 25,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2523779,
-      "lastMs": 99337,
+      "totalMs": 2621573,
+      "lastMs": 97794,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:33:43.928Z"
+      "updatedAt": "2026-10-08T10:57:59.274Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:51:40.071Z",
-  "updatedAt": "2026-10-08T10:56:21.476Z",
+  "updatedAt": "2026-10-08T10:57:59.276Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3066,7 +3083,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T08:33:43.928Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:57:59.276Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
