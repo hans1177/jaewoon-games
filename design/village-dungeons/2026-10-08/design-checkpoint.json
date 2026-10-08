@@ -34,25 +34,44 @@
         "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
         "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
       ]
+    },
+    "local_authoring_parts::027d85f9ac07e08c25396151a468655cd2f80acffe5861b20bb5324c5e84108c:signatureSystems:0": {
+      "id": "KARMA_RETURN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "score",
+        "distance",
+        "session"
+      ],
+      "stateOutputs": [
+        "world_origin",
+        "rules",
+        "rewards",
+        "risks",
+        "growth"
+      ],
+      "name": "KARMA_RETURN",
+      "purpose": "Player action that triggers world origin, rules, rewards, risks, and growth",
+      "playerChoice": "Start immediately with simple one-thumb tap or swipe input and clear score, distance, or session goal"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 187336,
-      "lastMs": 24722,
+      "totalMs": 203613,
+      "lastMs": 16277,
       "lastError": null,
-      "updatedAt": "2026-10-08T09:57:32.485Z"
+      "updatedAt": "2026-10-08T09:57:48.764Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T09:54:25.050Z",
-  "updatedAt": "2026-10-08T09:57:32.485Z",
+  "updatedAt": "2026-10-08T09:57:48.764Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2129,7 +2148,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T09:57:32.485Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:57:48.764Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
