@@ -27,25 +27,33 @@
       "identity": "몬스터 어드벤처의 핵심 재미와 시스템 연결을 확정한 고유 정체성입니다. 게임은 단순한 점수나 관문 승계 없이, 플레이어가 즉시 시작할 수 있는 'Start' 행동과 선택을 중심으로, 진입 -> 상태변화 -> 보상/위험 -> 다음선택의 반복 루프를 통해 콘텐츠를 오래 연구할 만한 규칙과 관계로 구성됩니다. 이는 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 주요 인물의 목표, 두려움, 비밀은 실제 선택과 관계 변화를 만들어냅니다.",
       "playerFantasy": "몬스터 어드벤처에서 플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 이는 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 주요 인물의 목표, 두려움, 비밀은 실제 선택과 관계 변화를 만들어냅니다.",
       "coreFun": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 이는 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 주요 인물의 목표, 두려움, 비밀은 실제 선택과 관계 변화를 만들어냅니다."
+    },
+    "local_authoring_parts::c297cb7c611a5abb602dad8a2d1c80c58179f0fe7b71f3cc541c7a14d13bd43a:coreLoop": {
+      "coreLoop": [
+        "입력 -> 상태변화 -> 보상/위험 -> 다음선택",
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 219688,
-      "lastMs": 29052,
+      "totalMs": 257725,
+      "lastMs": 38037,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:03:27.539Z"
+      "updatedAt": "2026-10-08T18:04:05.579Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:59:47.811Z",
-  "updatedAt": "2026-10-08T18:03:27.540Z",
+  "updatedAt": "2026-10-08T18:04:05.579Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2131,7 +2139,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:03:27.540Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:04:05.579Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
