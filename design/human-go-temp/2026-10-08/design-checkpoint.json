@@ -441,25 +441,41 @@
       "name": "휴먼 GO!",
       "purpose": "게임의 중심 행동으로, 플레이어가 급격히 증가하는 적군을 투입하여 짧은 실시간 생존 러그로 전략적으로 위치 조정하며, 선택 결과가 다음 월드 상태로 전환하는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 재미와 시스템 연결을 확정한다.",
       "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+    },
+    "local_authoring_parts::8bfb15f15a0e92ef8ae58f0300c6f97b44c22543d7bd0d4b9b5fb57f777a13e1:signatureSystems:3": {
+      "id": "c-core",
+      "grammarRole": "c",
+      "stateInputs": [
+        "플레이어의 'Fight through an escalating horde in a short real-time survival run while",
+        "선택 결과가 다음 월드 상태로 전환"
+      ],
+      "stateOutputs": [
+        "즉각적 보상(점수/실패/위험) 및 다음 선택(업그레이드/보상/선택) 발생",
+        "선택 결과가 다음 월드 상태로 전환",
+        "성장이 발생 → 새 행동 조합/경로/관계/발견/대응법 열림"
+      ],
+      "name": "휴먼 GO!",
+      "purpose": "게임의 중심 행동으로, 플레이어가 급격히 증가하는 적군을 투입하여 짧은 실시간 생존 러그로 전략적으로 위치 조정하며, 선택 결과가 다음 월드 상태로 전환하는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 재미와 시스템 연결을 확정한다.",
+      "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 18,
+      "calls": 19,
+      "successes": 19,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1938943,
-      "lastMs": 112931,
+      "totalMs": 2052841,
+      "lastMs": 113898,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:13:46.888Z"
+      "updatedAt": "2026-10-08T10:15:40.788Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:45:44.378Z",
-  "updatedAt": "2026-10-08T10:13:46.889Z",
+  "updatedAt": "2026-10-08T10:15:40.788Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2694,7 +2710,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:13:46.889Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:15:40.788Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
