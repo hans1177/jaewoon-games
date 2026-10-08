@@ -3262,19 +3262,39 @@ function RobloxCommonUI.CreateWorldPropInteractionPrompt(options)
   local theme=cloneTheme(options.theme)
   local root=Instance.new("Frame")
   root.Name=options.name or "WorldPropInteractionPrompt"
-  root.Size=options.size or UDim2.fromOffset(280,52)
+  root.Size=options.size or UDim2.fromOffset(280,64)
   root.BackgroundColor3=theme.Panel
   root.BackgroundTransparency=0.08
   root.BorderSizePixel=0
   tag(root,"WORLD_PROP_INTERACTION_PROMPT")
   corner(root,12)
   stroke(root,theme.BorderBright,1,0.18)
-  local action=commonText(root,"Action",options.actionText or "상호작용",UDim2.fromOffset(12,0),UDim2.new(0.46,-12,1,0),theme.Accent,13,true)
-  local target=commonText(root,"Target",options.targetText or "대상",UDim2.new(0.46,4,0,0),UDim2.new(0.54,-16,1,0),theme.Text,13,false)
+  local action=commonText(root,"Action",options.actionText or "상호작용",
+    UDim2.fromOffset(12,2),UDim2.new(.46,-12,0,27),theme.Accent,13,true)
+  local target=commonText(root,"Target",options.targetText or "대상",
+    UDim2.new(.46,4,0,2),UDim2.new(.54,-16,0,27),theme.Text,13,false)
   target.TextXAlignment=Enum.TextXAlignment.Right
+  local status=commonText(root,"Status","",
+    UDim2.fromOffset(12,32),UDim2.new(1,-24,0,23),theme.MutedText,12,false)
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    action.Text=tostring(state.actionText or options.actionText or "상호작용")
+    target.Text=tostring(state.targetText or options.targetText or "대상")
+    status.Text=tostring(state.statusText or state.reason or "")
+    local available=state.available~=false
+    action.TextColor3=available and theme.Accent or theme.Warning
+    status.TextColor3=available and theme.MutedText or theme.Warning
+    root:SetAttribute("BoundInteractionId",tostring(state.id or options.interactionId or ""))
+    root:SetAttribute("BoundInteractionKind",tostring(state.kind or "GENERIC"))
+    root:SetAttribute("BoundInteractionState",tostring(state.state or "UNVERIFIED"))
+    root:SetAttribute("InteractionAvailable",available)
+    root:SetAttribute("InteractionStateRevision",tostring(state.revision or "UNKNOWN"))
+  end
+  sync(options.interaction or {})
   root:SetAttribute("OwnsInteractionAuthority",false)
+  root:SetAttribute("OwnsRemoteAuthority",false)
   root:SetAttribute("InputModes","TOUCH|KEYBOARD_MOUSE|GAMEPAD")
-  return root,{action=action,target=target}
+  return root,{action=action,target=target,status=status,Sync=sync}
 end
 
 function RobloxCommonUI.CreateWorldPropActionWheel(options)
@@ -3295,9 +3315,22 @@ function RobloxCommonUI.CreateInteractionProgress(options)
 end
 
 function RobloxCommonUI.CreateInteractionStateCard(options)
-  local root,parts=deepSystemPanel(options,"INTERACTION_STATE_CARD","INTERACTION_STATE_CARD",options and options.title or "상호작용 상태",{"사용 가능","조건","현재 사용 중","결과"})
+  options=options or {}
+  local root,parts=deepSystemPanel(options,"INTERACTION_STATE_CARD","INTERACTION_STATE_CARD",options.title or "상호작용 상태",
+    {"대상","현재 상태","조건","결과"})
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    local values={state.target or "",state.status or "",
+      state.requirements or "",state.result or ""}
+    for index,label in ipairs(parts.labels)do label.Text=tostring(values[index] or "")end
+    root:SetAttribute("BoundInteractionId",tostring(state.id or ""))
+    root:SetAttribute("BoundInteractionKind",tostring(state.kind or "GENERIC"))
+    root:SetAttribute("SourceAuthority",tostring(state.source or "UNVERIFIED"))
+    root:SetAttribute("OwnsInteractionAuthority",false)
+  end
+  sync(options.interaction or {})
   root:SetAttribute("OwnsInteractionAuthority",false)
-  return root,parts
+  return root,{inner=parts.inner,list=parts.list,labels=parts.labels,Sync=sync}
 end
 
 function RobloxCommonUI.CreateSeatInteractionPrompt(options)
