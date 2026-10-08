@@ -744,25 +744,37 @@
         "riskPressure": "Players are incentivized to explore different configurations to achieve the goal, creating a natural risk-reward dynamic in gameplay.",
         "recoveryRules": "If the level goal is not met, the player can choose to restart the level with a new configuration or continue with a different approach."
       }
+    },
+    "local_authoring_parts::366da1b4ed1729761459bfa87c0b4bb6b7b5635f7b677bfa6f7a2ddcfe8e7c36:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "coreLoop",
+      "toId": "signatureSystems[0]",
+      "stateKeys": [
+        "newLevelGoal",
+        "newMoveLimit",
+        "newObstacleSet",
+        "newComboTrigger",
+        "newFeedbackType"
+      ],
+      "fromSystem": "coreLoopSystemBase_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 12,
+      "calls": 14,
+      "successes": 13,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1847220,
-      "lastMs": 124156,
+      "totalMs": 1955739,
+      "lastMs": 108519,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T12:35:27.116Z"
+      "updatedAt": "2026-10-08T12:37:15.643Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:04:39.840Z",
-  "updatedAt": "2026-10-08T12:35:27.122Z",
+  "updatedAt": "2026-10-08T12:37:15.644Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2981,10 +2993,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:35:27.118Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:37:15.643Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
