@@ -505,25 +505,67 @@
       "name": "Delve",
       "purpose": "Establishes the core gameplay loop with immediate feedback and adaptive progression, ensuring the game remains engaging and learnable across all platforms.",
       "playerChoice": "Select from: 1) Collect run rewards/experience and choose upgrades, perks, weapons, or skills that change the current build. 2) Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+    },
+    "local_authoring_parts::c240b269c8441f1231eb4a910a382284f0ace193717859eae1097c44c7c97b38:signatureSystems:0": {
+      "id": "core-clash-4v4",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "currentBuild",
+        "runProgression",
+        "enemyPressure",
+        "runRewards",
+        "upgradeChoices"
+      ],
+      "stateOutputs": [
+        "nextBuild",
+        "survivalResult",
+        "progressionChoice",
+        "runOutcome",
+        "playerStrategy"
+      ],
+      "name": "Core Clash 4v4",
+      "purpose": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+    },
+    "local_authoring_parts::c240b269c8441f1231eb4a910a382284f0ace193717859eae1097c44c7c97b38:signatureSystems:1": {
+      "id": "core-clash-4v4",
+      "grammarRole": "A",
+      "stateInputs": [
+        "currentBuild",
+        "runProgression",
+        "enemyPressure",
+        "runRewards",
+        "upgradeChoices"
+      ],
+      "stateOutputs": [
+        "nextBuild",
+        "survivalResult",
+        "progressionChoice",
+        "runOutcome",
+        "playerStrategy"
+      ],
+      "name": "Core Clash 4v4",
+      "purpose": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 15,
-      "successes": 15,
+      "calls": 17,
+      "successes": 17,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 673980,
-      "lastMs": 39331,
+      "totalMs": 884176,
+      "lastMs": 105270,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:26:56.108Z"
+      "updatedAt": "2026-10-08T10:13:09.063Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:15:41.984Z",
-  "updatedAt": "2026-10-08T10:09:38.860Z",
+  "updatedAt": "2026-10-08T10:13:09.063Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2758,10 +2800,10 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T08:26:56.109Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:13:09.063Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
