@@ -906,25 +906,44 @@
     },
     "local_authoring_parts::de4dd8901eea20ef6fae7772787a25842621c470f79b114b16a16e769ac8cfa2:trigger": {
       "trigger": "BOARD_STATE_UPDATED: 시스템 내부에서 BOARD_STATE의 값이 변경됨으로써, SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_0의 상태가 SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1의 상태로 전달됨. 이 과정에서 PLAYER_ACTION, LEVEL_GOAL, OBSTACLES, COMBO_COUNT, REWARD_SYSTEM의 값이 전달되어, SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1의 상태가 업데이트됨. 이 상태 변화는 BOARD_STATE의 변"
+    },
+    "local_authoring_parts::de4dd8901eea20ef6fae7772787a25842621c470f79b114b16a16e769ac8cfa2:stateChange": {
+      "stateChange": "BOARD_STATE_UPDATED: 시스템 내부에서 BOARD_STATE의 값이 변경됨으로써, SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_0의 상태가 SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1의 상태로 전달됨. 이 과정에서 PLAYER_ACTION, LEVEL_GOAL, OBSTACLES, COMBO_COUNT, REWARD_SYSTEM의 값이 전달되어, SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1의 상태가 업데이트됨. 이 상태 변화는 BOARD_STATE의 변환을 통해 이루어지며, 이는 게임의 진행 방향을 결정하는 핵심 조건으로 작용함."
+    },
+    "local_authoring_parts::412a2ff71f5217671eb55aceb9f410e3e0f75a4cb9e55aa58a314fbf6e960381:systemInterconnections:2": {
+      "fromId": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_0",
+      "toId": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1",
+      "stateKeys": [
+        "BOARD_STATE",
+        "PLAYER_ACTION",
+        "LEVEL_GOAL",
+        "OBSTACLES",
+        "COMBO_COUNT",
+        "REWARD_SYSTEM"
+      ],
+      "fromSystem": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_0",
+      "toSystem": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1",
+      "trigger": "BOARD_STATE_UPDATED: 시스템 내부에서 BOARD_STATE의 값이 변경됨으로써, SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_0의 상태가 SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1의 상태로 전달됨. 이 과정에서 PLAYER_ACTION, LEVEL_GOAL, OBSTACLES, COMBO_COUNT, REWARD_SYSTEM의 값이 전달되어, SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1의 상태가 업데이트됨. 이 상태 변화는 BOARD_STATE의 변",
+      "stateChange": "BOARD_STATE_UPDATED: 시스템 내부에서 BOARD_STATE의 값이 변경됨으로써, SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_0의 상태가 SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1의 상태로 전달됨. 이 과정에서 PLAYER_ACTION, LEVEL_GOAL, OBSTACLES, COMBO_COUNT, REWARD_SYSTEM의 값이 전달되어, SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1의 상태가 업데이트됨. 이 상태 변화는 BOARD_STATE의 변환을 통해 이루어지며, 이는 게임의 진행 방향을 결정하는 핵심 조건으로 작용함."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 41,
-      "successes": 41,
+      "calls": 42,
+      "successes": 42,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3897056,
-      "lastMs": 99902,
+      "totalMs": 3998659,
+      "lastMs": 101603,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:28:04.849Z"
+      "updatedAt": "2026-10-08T16:29:46.454Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:08:16.555Z",
-  "updatedAt": "2026-10-08T16:28:04.849Z",
+  "updatedAt": "2026-10-08T16:29:46.456Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3197,7 +3216,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:28:04.849Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:29:46.456Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
