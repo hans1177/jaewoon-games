@@ -3,6 +3,7 @@
 // 초안 그래픽: 검증된 무료 애니메이션 Pirate/Skeleton 에셋을 실제 전투 상태와 연결한다.
 
 using UnityEngine;
+using Unity.Profiling;
 
 namespace JaewoonGames.DaechungRpg
 {
@@ -18,6 +19,9 @@ namespace JaewoonGames.DaechungRpg
         private float _qaHeartbeatAt;
         private float _qaMobileTargetAt;
         private int _coopActionSeen;
+        // 실제 WebGL 게임의 렌더 카운터. 프로파일러 미지원 환경은 값 미측정으로 둔다.
+        private ProfilerRecorder _drawCallsRecorder;
+        private ProfilerRecorder _trianglesRecorder;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void AutoStart()
@@ -42,6 +46,29 @@ namespace JaewoonGames.DaechungRpg
         private void Awake()
         {
             DontDestroyOnLoad(gameObject);
+        }
+
+        private void OnEnable()
+        {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            if (!Application.absoluteURL.Contains("qa=1")) return;
+            try
+            {
+                _drawCallsRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Draw Calls Count");
+                _trianglesRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Triangles Count");
+            }
+            catch (System.Exception)
+            {
+                if (_drawCallsRecorder.Valid) _drawCallsRecorder.Dispose();
+                if (_trianglesRecorder.Valid) _trianglesRecorder.Dispose();
+            }
+#endif
+        }
+
+        private void OnDisable()
+        {
+            if (_drawCallsRecorder.Valid) _drawCallsRecorder.Dispose();
+            if (_trianglesRecorder.Valid) _trianglesRecorder.Dispose();
         }
 
         private void Start()
@@ -97,6 +124,14 @@ namespace JaewoonGames.DaechungRpg
             _qaHeartbeatAt = Time.unscaledTime + 2f;
             var player = _core.Player;
             Debug.Log($"JAEWOON_UNITY_WEB_QA STATE game=daechung-rpg region={player.currentRegionId} level={player.level} hp={player.currentHp} maxHp={_core.GetMaxHp()} exp={player.experience} gold={player.gold} enemy={(_enemy != null ? _enemy.id : "none")} enemyHp={_enemyHp}");
+#if UNITY_WEBGL && !UNITY_EDITOR
+            // 프로파일러 실측값만 전달한다. 미지원 런타임은 가짜 0값을 출력하지 않는다.
+            if (Application.absoluteURL.Contains("qa=1") && _drawCallsRecorder.Valid && _trianglesRecorder.Valid
+                && _drawCallsRecorder.LastValue > 0 && _trianglesRecorder.LastValue > 0)
+            {
+                Debug.Log($"JAEWOON_UNITY_WEB_QA RENDER_STATS game=daechung-rpg source=UNITY_NATIVE_RENDERER drawCalls={_drawCallsRecorder.LastValue} triangles={_trianglesRecorder.LastValue}");
+            }
+#endif
         }
 
         private void OnGUI()
