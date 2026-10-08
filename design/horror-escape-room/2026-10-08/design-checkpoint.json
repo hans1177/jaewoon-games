@@ -3,30 +3,18 @@
   "gameId": "horror-escape-room",
   "date": "2026-10-08",
   "seedId": "OWNER-DESIGN-HORROR-ESCAPE-ROOM",
-  "fingerprint": "0a08aa14445e1442815851f996bd8aad0a16f18ce2e6097516db98daf8680d32",
+  "fingerprint": "fdb3d6a6d9476ffedc031a19be689ccbfb0ab4314431274787f790edf329653c",
   "policyDigest": "0fda28f71ac3a214ad795ba2e2df1e0f6e7da837204b05182cdebecce33c9ade",
-  "engineDigest": "8c8ca966a8888e75b243fb5bc484ff1748c693b0bdfc1b940335641ea6aebba6",
+  "engineDigest": "d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
   "tasks": {},
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 0,
-      "failures": 3,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 465706,
-      "lastMs": 127010,
-      "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T05:52:13.847Z"
-    }
-  },
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-08T05:44:27.996Z",
-  "updatedAt": "2026-10-08T05:52:13.853Z",
+  "createdAt": "2026-10-08T06:46:47.632Z",
+  "updatedAt": "2026-10-08T06:46:47.647Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -738,16 +726,5 @@
       }
     },
     "assetFacts": {}
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "localAuthoringSplits": {
-    "a8eb055def4cb29ca6c592eff6ca80753279b152dc95be3d7c78d4af973b5dc7": true,
-    "1417962845bcd7cd714d0dd2de9675db3dd3db1021e7bdf0bdc566a1aa9d5946": true
-  },
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED"
+  }
 }
