@@ -72,25 +72,44 @@
       "name": "IslandResourceManagementSystem",
       "purpose": "Manages the acquisition, allocation, and utilization of island resources to build or improve village functions.",
       "playerChoice": "Gather a focused set of island resources to build or improve one village function, and unlock a new resident, activity, or area to choose the next village goal."
+    },
+    "local_authoring_parts::0c1d8e5a0d48a36efe3b994df347742623b9184961aab0cced4d4fae96f11fc1:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount",
+        "IslandResources"
+      ],
+      "stateOutputs": [
+        "VillageFunction",
+        "ResidentCount",
+        "ActivityType",
+        "AreaType"
+      ],
+      "name": "IslandResourceManagementSystem",
+      "purpose": "Manages the acquisition, allocation, and utilization of island resources to build or improve village functions.",
+      "playerChoice": "Gather a focused set of island resources to build or improve one village function, and unlock a new resident, activity, or area to choose the next village goal."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 729672,
-      "lastMs": 102057,
+      "totalMs": 832077,
+      "lastMs": 102405,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:48:49.536Z"
+      "updatedAt": "2026-10-08T12:50:31.943Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:36:39.832Z",
-  "updatedAt": "2026-10-08T12:48:49.537Z",
+  "updatedAt": "2026-10-08T12:50:31.943Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2171,7 +2190,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:48:49.536Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:50:31.943Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
