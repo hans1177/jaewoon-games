@@ -223,25 +223,45 @@
       "name": "COZY_CHIBI_KINGDOM_WORLD_V8",
       "purpose": "자원 수집 및 주민 고용, 병력 강화 및 거점 점령, 자동전투 및 협동 지원, 왕국 확장 및 성장 감각, 자원 거점 선택 및 보상 획득, 전략적 조합 및 병종 확보",
       "playerChoice": "자원의 수집, 주민의 고용, 병력의 강화, 거점의 점령, 자동전투, 협동 지원의 순차적 진행"
+    },
+    "local_authoring_parts::2281e34e69bf4e71ed63800b2c8295237ed74c493aaf0d3c08fc5c9e9087e64f:id,grammarRole,stateInputs,stateOutputs": {
+      "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "나무·식량 직접 채집",
+        "주민 고용과 벌목/농업 자동화",
+        "병영 강화와 병사 모집",
+        "다음 자원 거점 선택",
+        "보이는 자동전투와 점령 보상",
+        "협동 지원으로 강한 거점 공략"
+      ],
+      "stateOutputs": [
+        "자원 수집 및 주민 고용",
+        "병력 강화 및 거점 점령",
+        "자동전투 및 협동 지원",
+        "왕국 확장 및 성장 감각",
+        "자원 거점 선택 및 보상 획득",
+        "전략적 조합 및 본종 확보"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 12,
+      "calls": 17,
+      "successes": 13,
       "failures": 4,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 968256,
-      "lastMs": 37895,
+      "totalMs": 1009973,
+      "lastMs": 41717,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T03:46:43.006Z"
+      "updatedAt": "2026-10-08T03:47:24.725Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T03:30:34.599Z",
-  "updatedAt": "2026-10-08T03:46:43.007Z",
+  "updatedAt": "2026-10-08T03:47:24.725Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -834,7 +854,7 @@
   "sliceRepairAttempts": {
     "designer_draft_slices::identity-core": 1
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T03:46:43.007Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T03:47:24.725Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
