@@ -563,25 +563,42 @@
       "name": "감염 반응 시스템",
       "purpose": "감염된 인간이 몬스터로 전환하며, 감염 공격과 정화의 실시간 변화를 통해 역할이 바뀌는 과정을 구체화한다.",
       "playerChoice": "감염 스킬 선택, 역할 선호 선택, AI 충원 여부"
+    },
+    "local_authoring_parts::4fbd39395d8cf9897cbda6bb967ba14ae3699cb0f88909c85c6226cb4dcc87a7:signatureSystems:3": {
+      "id": "c_01",
+      "grammarRole": "c",
+      "stateInputs": [
+        "감염 스킬 선택",
+        "역할 선호 선택",
+        "AI 충원 여부"
+      ],
+      "stateOutputs": [
+        "감염 공격 및 정화",
+        "역할 변화",
+        "AI 충원"
+      ],
+      "name": "감염 반응 시스템",
+      "purpose": "감염된 인간이 몬스터로 전환하며, 감염 공격과 정화의 실시간 변화를 통해 역할이 바뀌는 과정을 구체화한다.",
+      "playerChoice": "감염 스킬 선택, 역할 선호 선택, AI 충원 여부"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 13,
+      "calls": 14,
+      "successes": 14,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1004202,
-      "lastMs": 106293,
+      "totalMs": 1109756,
+      "lastMs": 105554,
       "lastError": null,
-      "updatedAt": "2026-10-08T11:02:30.684Z"
+      "updatedAt": "2026-10-08T11:04:16.239Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:45:46.438Z",
-  "updatedAt": "2026-10-08T11:02:30.684Z",
+  "updatedAt": "2026-10-08T11:04:16.239Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1336,7 +1353,7 @@
       "multiplayerMode": "COMPETITIVE"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T11:02:30.684Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T11:04:16.239Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
