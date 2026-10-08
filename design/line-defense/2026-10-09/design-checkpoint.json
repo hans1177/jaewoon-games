@@ -491,25 +491,28 @@
     },
     "local_authoring_parts::6e06a542aa5982223b0fafc862b8675290336171356b8dff10ec8364d67fbe01:toSystem": {
       "toSystem": "CORE_LOOP_DESIGN"
+    },
+    "local_authoring_parts::6e06a542aa5982223b0fafc862b8675290336171356b8dff10ec8364d67fbe01:trigger": {
+      "trigger": "ENEMY_WAVE → BATTLE_STATUS의 상태 교환"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 16,
+      "calls": 17,
+      "successes": 17,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1076828,
-      "lastMs": 59645,
+      "totalMs": 1136984,
+      "lastMs": 60156,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:17:28.127Z"
+      "updatedAt": "2026-10-08T21:18:28.284Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:59:31.174Z",
-  "updatedAt": "2026-10-08T21:17:28.127Z",
+  "updatedAt": "2026-10-08T21:18:28.284Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2918,7 +2921,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T21:17:28.127Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:18:28.284Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
