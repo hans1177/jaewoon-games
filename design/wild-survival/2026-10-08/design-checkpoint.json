@@ -1018,25 +1018,51 @@
         "player_goal"
       ],
       "fromSystem": "world_state_system_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_"
+    },
+    "local_authoring_parts::301b650ecca7d025c2a967da8261b55746c1eb673e205b12be8daae00dcbebb6:toSystem,trigger,stateChange": {
+      "toSystem": "player_goal_system_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_",
+      "trigger": "world_state_to_player_goal",
+      "stateChange": "world_state → player_goal"
+    },
+    "local_authoring_parts::6af0c982f9c56d370af4f691ab5b9b19029d4bc7459371660721cd6d9a63fb39:systemInterconnections:1": {
+      "fromId": "world_state",
+      "toId": "player_goal",
+      "stateKeys": [
+        "world_state",
+        "player_goal"
+      ],
+      "fromSystem": "world_state_system_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_",
+      "toSystem": "player_goal_system_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_",
+      "trigger": "world_state_to_player_goal",
+      "stateChange": "world_state → player_goal"
+    },
+    "local_authoring_parts::2183eae8d256d475952b5d8d4b9e7cf52f8b4aa145de26063dbcf3f919069cab:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "world_state",
+      "toId": "player_goal",
+      "stateKeys": [
+        "world_state",
+        "player_goal"
+      ],
+      "fromSystem": "world_state_system_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_xyz_1234567890_"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 34,
-      "successes": 34,
+      "calls": 36,
+      "successes": 36,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3218296,
-      "lastMs": 52976,
+      "totalMs": 3313578,
+      "lastMs": 59933,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:30:18.421Z"
+      "updatedAt": "2026-10-08T16:31:53.709Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:57:35.274Z",
-  "updatedAt": "2026-10-08T16:30:18.421Z",
+  "updatedAt": "2026-10-08T16:31:53.709Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3250,7 +3276,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:30:18.421Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:31:53.709Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
