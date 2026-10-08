@@ -50,6 +50,37 @@ local function initializePlayer(player)
   end
 end
 
+
+-- 멀티플레이: 기존 원격 이벤트로 서버가 실제 같은 방의 상태를 동기화한다.
+-- 저장된 단독 플레이 진행값은 서로 섞지 않으며 이 상태는 저장하지 않는다.
+local function multiplayerSnapshot(changedPlayer, excludedPlayer)
+  local participants = {}
+  for _, participant in ipairs(Players:GetPlayers()) do
+    if participant ~= excludedPlayer then
+      table.insert(participants, {
+        UserId = participant.UserId,
+        Name = participant.Name,
+        CurrentDay = readNumber(participant, "CurrentDay", 1),
+        Wave = readNumber(participant, "Wave", 1),
+        EnemyHealth = readNumber(participant, "EnemyHealth", 100),
+        CoopAssists = readNumber(participant, "CoopAssists", 0),
+      })
+    end
+  end
+  table.sort(participants, function(a, b) return a.UserId < b.UserId end)
+  return {
+    Version = 1,
+    ParticipantCount = #participants,
+    ChangedUserId = changedPlayer and changedPlayer.UserId or 0,
+    Participants = participants,
+    ServerTime = os.time(),
+  }
+end
+
+local function broadcastMultiplayerSync(changedPlayer, excludedPlayer)
+  remote:FireAllClients("MULTIPLAYER_SYNC", multiplayerSnapshot(changedPlayer, excludedPlayer))
+end
+
 local function markAction(player, actionId, learningPattern)
   player:SetAttribute("LastApprovedScope", actionId)
   setNumber(player, "ActionSequence", readNumber(player, "ActionSequence", 0) + 1)
@@ -472,6 +503,49 @@ local function useEquippedTool(player)
   markAction(player, "scope-mobileux-4d98ef9e2d", "short-session")
 end
 
+
+-- 같은 서버에서 가까운 동료가 현재 교전 중인 적만 지원한다.
+-- 클라이언트가 대상·피해량·보상을 지정하지 못하며, 처치 보상은 기존 소유자에게만 귀속된다.
+local function coopAssistEnemy(player)
+  if #Players:GetPlayers() < 2 then return end
+  local character = player.Character
+  local root = character and character:FindFirstChild("HumanoidRootPart")
+  local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+  if not root or not humanoid or humanoid.Health <= 0 then return end
+
+  local targetPlayer
+  local nearestDistance = 18
+  for _, teammate in ipairs(Players:GetPlayers()) do
+    if teammate ~= player then
+      local targetCharacter = teammate.Character
+      local targetRoot = targetCharacter and targetCharacter:FindFirstChild("HumanoidRootPart")
+      local targetHumanoid = targetCharacter and targetCharacter:FindFirstChildOfClass("Humanoid")
+      local enemy = currentEnemyFor(teammate)
+      local enemyRoot = enemy and enemy.PrimaryPart
+      local enemyHumanoid = enemy and enemy:FindFirstChildOfClass("Humanoid")
+      if targetRoot and targetHumanoid and targetHumanoid.Health > 0
+        and enemyRoot and enemyHumanoid and enemyHumanoid.Health > 0
+        and (root.Position - targetRoot.Position).Magnitude <= 18 then
+        local distance = (root.Position - enemyRoot.Position).Magnitude
+        if distance <= nearestDistance then
+          nearestDistance = distance
+          targetPlayer = teammate
+        end
+      end
+    end
+  end
+  if not targetPlayer then return end
+
+  local enemy = currentEnemyFor(targetPlayer)
+  if not enemy then return end
+  enemy:SetAttribute("LastAssistBy", player.UserId)
+  -- 기존 공격 판정과 처치·진행도·저장 책임 함수를 재사용한다.
+  attackEnemy(targetPlayer, 12)
+  setNumber(player, "CoopAssists", readNumber(player, "CoopAssists", 0) + 1)
+  player:SetAttribute("LastCoopAssistedUserId", targetPlayer.UserId)
+  markAction(player, "coop-assist", "cooperative-combat")
+end
+
 local handlers = {
   ["genre-core"] = startDayPhase,
   ["scope-corefun-1cd2fbbfbf"] = fightCurrentEnemy,
@@ -480,6 +554,7 @@ local handlers = {
   ["scope-coreloop-2-7bd63ffae3"] = finishNightWave,
   ["scope-coreloop-3-133b4afeb9"] = resetNextDayStrategy,
   ["scope-mobileux-4d98ef9e2d"] = useEquippedTool,
+  ["coop-assist"] = coopAssistEnemy,
 }
 
 -- 파일별 기존 DataStore를 그대로 사용하되, 읽기 실패 세션은 저장으로 덮어쓰지 않는다.
@@ -488,6 +563,9 @@ local playerLoadStarted = {}
 local function loadPlayer(player)
   if playerLoadStarted[player] then return end
   playerLoadStarted[player] = true
+  -- 참여 상태는 저장 구조와 무관한 서버 세션 상태다.
+  player:SetAttribute("CoopAssists", 0)
+  player:SetAttribute("LastCoopAssistedUserId", 0)
   local ok, saved = pcall(function()
     return store:GetAsync("player:" .. player.UserId)
   end)
@@ -527,18 +605,24 @@ local function loadPlayer(player)
     player:SetAttribute("SaveLoadStatus", "REPAIR_REQUIRED")
     warn("SURVIVAL_SAVE_READ_REPAIR_REQUIRED")
   end
+  broadcastMultiplayerSync(player)
 end
 Players.PlayerAdded:Connect(loadPlayer)
 for _, player in ipairs(Players:GetPlayers()) do task.defer(loadPlayer, player) end
 remote.OnServerEvent:Connect(function(player, actionId)
-  if typeof(actionId) ~= "string" then return end
+  if typeof(actionId) ~= "string" or verifiedSaveRead[player] == nil then return end
   local handler = handlers[actionId]
-  if typeof(handler) ~= "function" then return end
+  if typeof(handler) ~= "function" and actionId ~= "coop-sync" then return end
   local now = os.clock()
-  local previous = lastAction[player] or 0
+  local previous = lastAction[player] or -1e6
   if now - previous < Config.RateLimitSeconds then return end
   lastAction[player] = now
+  if actionId == "coop-sync" then
+    remote:FireClient(player, "MULTIPLAYER_SYNC", multiplayerSnapshot(nil))
+    return
+  end
   handler(player)
+  broadcastMultiplayerSync(player)
 end)
 Players.PlayerRemoving:Connect(function(player)
   if verifiedSaveRead[player] == true then
@@ -588,6 +672,7 @@ Players.PlayerRemoving:Connect(function(player)
   worldObjectStates[player] = nil
   verifiedSaveRead[player] = nil
   playerLoadStarted[player] = nil
+  broadcastMultiplayerSync(nil, player)
 end)
 
 
