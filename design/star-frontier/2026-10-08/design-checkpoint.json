@@ -3,30 +3,18 @@
   "gameId": "star-frontier",
   "date": "2026-10-08",
   "seedId": "OWNER-ALL-DESIGN-RESET-STAR-FRONTIER-20260917",
-  "fingerprint": "70f2c804960191b3ea6609a54f58011277313844207f0c22456f228517a09446",
+  "fingerprint": "45d8133810b7a094cd5104c20e80a2295acd142ac8043c8d4886f46b3be2aeae",
   "policyDigest": "0fda28f71ac3a214ad795ba2e2df1e0f6e7da837204b05182cdebecce33c9ade",
   "engineDigest": "d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
   "tasks": {},
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 0,
-      "failures": 2,
-      "timeouts": 2,
-      "jsonFailures": 0,
-      "totalMs": 600162,
-      "lastMs": 300101,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T10:56:36.095Z"
-    }
-  },
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-08T08:43:15.466Z",
-  "updatedAt": "2026-10-08T10:56:36.103Z",
+  "createdAt": "2026-10-08T12:53:17.663Z",
+  "updatedAt": "2026-10-08T12:53:17.680Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2058,12 +2046,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms"
+  }
 }
