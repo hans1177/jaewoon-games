@@ -172,8 +172,16 @@ namespace JaewoonGames.DaechungRpg
                 if (!_actorFrames.TryGetValue(key, out var frames))
                 {
                     frames = new Sprite[4];
+                    // 기존 Unity Art/Resources의 실제 픽셀 애니메이션 시트를 우선 사용한다.
+                    // 리소스가 없는 몬스터는 자체 제작 런타임 아트로 일관되게 대체한다.
+                    var sheet = Resources.Load<Texture2D>("DaechungArt/" + id + "-" + action);
                     for (var frame = 0; frame < frames.Length; frame++)
-                        frames[frame] = CreateActor(id, action, frame);
+                    {
+                        frames[frame] = sheet != null && sheet.width >= 192 && sheet.height >= 56
+                            ? Sprite.Create(sheet, new Rect(frame * 48, 0, 48, 56),
+                                new Vector2(0.5f, 0.05f), 48f)
+                            : CreateActor(id, action, frame);
+                    }
                     _actorFrames[key] = frames;
                 }
                 actor.AddClip(action, frames, action == "walk" ? 8 : 5);
