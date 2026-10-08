@@ -73,25 +73,38 @@
       "name": "DELVE(@)",
       "purpose": "世界の歴史・生活・経済・地域機能を基にした探検とリスク管理",
       "playerChoice": "探索範囲を選定し、目標エッグを見つけ、巡視リスクを評価する選択肢を提供する。"
+    },
+    "local_authoring_parts::b26e8980077c4e956ac75228f625a95ea14b978e5a2e469ee773d52f196b9ec4:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "c",
+      "stateInputs": [
+        "world_state"
+      ],
+      "stateOutputs": [
+        "new_world_state"
+      ],
+      "name": "DELVE(@)",
+      "purpose": "世界の原図とプレイルール、ボーナス・情報・関係をつなぐシグニチャシステム",
+      "playerChoice": "世界の原図とプレイルール、ボーナス・情報・関係をつなぐシグニチャシステムの変化を示す選択肢を提供する"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 733439,
-      "lastMs": 96032,
+      "totalMs": 831678,
+      "lastMs": 98239,
       "lastError": null,
-      "updatedAt": "2026-10-08T20:59:29.745Z"
+      "updatedAt": "2026-10-08T21:01:07.986Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:47:16.280Z",
-  "updatedAt": "2026-10-08T20:59:29.746Z",
+  "updatedAt": "2026-10-08T21:01:07.986Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1953,7 +1966,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T20:59:29.745Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:01:07.986Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
