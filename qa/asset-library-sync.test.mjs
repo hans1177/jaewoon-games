@@ -296,7 +296,7 @@ test('NPC object menus and world action wheel never fabricate available actions 
  assert.match(wheel,/actions=\{\}/);
  assert.match(wheel,/local function sync\(state\)/);
  assert.match(wheel,/row\.available~=false/);
- assert.match(wheel,/options\.onSelect\(current\.id,current\)/);
+ assert.match(wheel,/options\.onSelect\(actionId,current\)/);
  assert.match(wheel,/root:SetAttribute\("BoundActionCount",#actions\)/);
  for(const text of [npc,menu,wheel]){
    assert.match(text,/OwnsInteractionAuthority",false/);
