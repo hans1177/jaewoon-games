@@ -305,25 +305,124 @@
           "playerChoice": "Player chooses the optimal play pattern and decision-making framework to maximize the effectiveness of their defense strategy, considering the threat level, reward value, and next selection, while incorporating emergent gameplay and dynamic state transitions."
         }
       ]
+    },
+    "local_authoring_parts::50fba990de0ff3093d1af6e3476a65ce53cb2c0a43015d9955c8d286fef92978:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::9640857abd118edc205c570948019daf802207c23ff61316dadfcc95d72b5b1e:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "INPUT: Read the incoming insect wave and its threat pattern.",
+        "ACTION: Place or adjust defenders and spend limited resources on the highest-value counter.",
+        "RESULT: World state change and next selection"
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE",
+            "THREAT_LEVEL"
+          ],
+          "stateOutputs": [
+            "MODIFIED_DEFENDER_LAYOUT",
+            "RESOURCES_ALLOCATED"
+          ],
+          "name": "WAVE_DEFENSE_READABILITY",
+          "purpose": "Establishes the core gameplay mechanism for wave-based defense, ensuring readability and meaningful placement choices.",
+          "playerChoice": "Player chooses which insect to target, based on threat level, and allocates resources to optimize defense strategy."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE",
+            "THREAT_LEVEL",
+            "REWARD_VALUE"
+          ],
+          "stateOutputs": [
+            "MODIFIED_DEFENDER_LAYOUT",
+            "RESOURCES_ALLOCATED",
+            "NEXT_SELECTION"
+          ],
+          "name": "WAVE_DEFENSE_MASTERY",
+          "purpose": "Establishes the core gameplay mechanism for wave-based defense, ensuring mastery through strategic decision-making and reward-based progression.",
+          "playerChoice": "Player chooses which insect to target, based on threat level and reward value, and allocates resources to optimize defense strategy with a focus on long-term progression."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE",
+            "THREAT_LEVEL",
+            "REWARD_VALUE",
+            "NEXT_SELECTION"
+          ],
+          "stateOutputs": [
+            "MODIFIED_DEFENDER_LAYOUT",
+            "RESOURCES_ALLOCATED",
+            "NEXT_SELECTION"
+          ],
+          "name": "WAVE_DEFENSE_STRATEGY",
+          "purpose": "Establishes the core gameplay mechanism for wave-based defense, ensuring strategic decision-making and reward-based progression through the use of advanced play patterns and complex decision-making frameworks.",
+          "playerChoice": "Player chooses the optimal play pattern and decision-making framework to maximize the effectiveness of their defense strategy, considering the threat level, reward value, and next selection."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE",
+            "THREAT_LEVEL",
+            "REWARD_VALUE",
+            "NEXT_SELECTION"
+          ],
+          "stateOutputs": [
+            "MODIFIED_DEFENDER_LAYOUT",
+            "RESOURCES_ALLOCATED",
+            "NEXT_SELECTION"
+          ],
+          "name": "WAVE_DEFENSE_ADVANCED_PLAY",
+          "purpose": "Establishes the core gameplay mechanism for wave-based defense, ensuring advanced play patterns and complex decision-making frameworks through the use of emergent gameplay and dynamic state transitions.",
+          "playerChoice": "Player chooses the optimal play pattern and decision-making framework to maximize the effectiveness of their defense strategy, considering the threat level, reward value, and next selection, while incorporating emergent gameplay and dynamic state transitions."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE",
+            "THREAT_LEVEL",
+            "REWARD_VALUE",
+            "NEXT_SELECTION"
+          ],
+          "stateOutputs": [
+            "MODIFIED_DEFENDER_LAYOUT",
+            "RESOURCES_ALLOCATED",
+            "NEXT_SELECTION"
+          ],
+          "name": "WAVE_DEFENSE_ADVANCED_PLAY",
+          "purpose": "Establishes the core gameplay mechanism for wave-based defense, ensuring advanced play patterns and complex decision-making frameworks through the use of emergent gameplay and dynamic state transitions.",
+          "playerChoice": "Player chooses the optimal play pattern and decision-making framework to maximize the effectiveness of their defense strategy, considering the threat level, reward value, and next selection, while incorporating emergent gameplay and dynamic state transitions."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 917771,
-      "lastMs": 110959,
+      "totalMs": 1009844,
+      "lastMs": 92073,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:02:37.368Z"
+      "updatedAt": "2026-10-08T13:04:09.445Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:47:19.560Z",
-  "updatedAt": "2026-10-08T13:02:37.371Z",
+  "updatedAt": "2026-10-08T13:04:09.454Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2518,12 +2617,50 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:02:37.371Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계한다. 게임의 중심 행동은 'Read the incoming insect wave and its threat pattern.'이며, 이는 플레이어가 세계 상태와 다음 선택을 바꾼다. 게임의 시그니처 시스템은 MAIN/A/B/c/DELVE(@)로 구성되어 있으며, 각 시스템은 구체적인 규칙과 상태 변화를 포함한다. 게임의 핵심 재미는 단순 반복과 다른 경로·위험·결과를 만드는 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고, 성장은 새 행동·경로·조합·관계·발견·대응법을 열어 다양한 콘텐츠를 다르게 사용하게 한다. 게임의 플레이어 역할은 '곤충 디펜스에서 플레이어는 Read the incoming insect wave and its threat pattern.의 주체가 되어 세계 상태와 다음 선택을 바꾼다.'로, 이는 플레이어가 실제로 무엇을 하는지 명확하게 정의된다. 게임의 시그니처 세계 규칙은 '플레이어의 Read the incoming insect wave and its threat pattern.과 선택이 SINGLE_DEFENSE_STRATEGY의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.'로, 이는 게임의 구조와 규칙을 정의한다. 게임의 핵심 재미는 '성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견·대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.'로, 이는 게임의 플레이어 경험을 구체화한다. 게임의 시그니처 시스템은 'MAIN/A/B/c/DELVE(@)'로 구성되어 있으며, 각 시스템은 구체적인 규칙과 상태 변화를 포함한다. 게임의 핵심 재미는 'SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고 RPG식 시스템을 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다.'로, 이는 게임의 구조와 규칙을 정의한다. 게",
+      "playerFantasy": "곤충 디펜스에서 플레이어는 Read the incoming insect wave and its threat pattern.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 이는 플레이어가 실제로 무엇을 하는지 명확하게 정의된다. 게임의 핵심 재미는 단순 반복과 다른 경로·위험·결과를 만드는 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고, 성장은 새 행동·경로·조합·관계·발견·대응법을 열어 다양한 콘텐츠를 다르게 사용하게 한다.",
+      "coreFun": "Read the incoming insect wave and its threat pattern.의 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임의 중심 플레이. 플레이어는 세계 상태와 다음 선택을 바꾼다. 이는 게임의 핵심 재미를 단순 반복과 다른 경로·위험·결과로 만드는 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고, 성장은 새 행동·경로·조합·관계·발견·대응법을 열어 다양한 콘텐츠를 다르게 사용하게 한다.",
+      "coreLoop": [
+        "INPUT: Read the incoming insect wave and its threat pattern.",
+        "ACTION: Place or adjust defenders and spend limited resources on the highest-value counter.",
+        "RESULT: World state change and next selection"
+      ],
+      "multiplayerMode": "COOP"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T13:04:09.448Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
