@@ -69,25 +69,42 @@
       "name": "Progression Dynamics System",
       "purpose": "Enables dynamic progression through evolving gameplay mechanics, adaptive challenge layers, and emergent narrative progression",
       "playerChoice": "Select and refine the next progression choice based on evolving build, enemy pressure, and run outcomes"
+    },
+    "local_authoring_parts::6b15d78b384341a682209a39831de825921bcadb8d1d6ebac009a5d6d774c86f:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "currentBuild",
+        "enemyPressure",
+        "runRewards"
+      ],
+      "stateOutputs": [
+        "nextProgressionChoice",
+        "modifiedBuild",
+        "updatedRunResult"
+      ],
+      "name": "Progression Dynamics System B",
+      "purpose": "Enables dynamic progression through evolving gameplay mechanics, adaptive challenge layers, and emergent narrative progression",
+      "playerChoice": "Select and refine the next progression choice based on evolving build, enemy pressure, and run outcomes"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 892331,
-      "lastMs": 96660,
+      "totalMs": 988423,
+      "lastMs": 96092,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:48:47.881Z"
+      "updatedAt": "2026-10-08T08:50:23.975Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:33:55.519Z",
-  "updatedAt": "2026-10-08T08:48:47.882Z",
+  "updatedAt": "2026-10-08T08:50:23.975Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2286,7 +2303,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:48:47.881Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:50:23.975Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
