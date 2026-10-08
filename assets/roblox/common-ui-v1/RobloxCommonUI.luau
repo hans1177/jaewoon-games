@@ -3367,9 +3367,78 @@ function RobloxCommonUI.CreateStashTransferQueue(options)
 end
 
 function RobloxCommonUI.CreateMenuSystemSwitcherDrawer(options)
-  local root,parts=deepSystemPanel(options,"MENU_SYSTEM_SWITCHER_DRAWER","MENU_SYSTEM_SWITCHER_DRAWER","시스템 전환",{"인벤토리","장비","지도","퀘스트","제작","도감"})
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,inner=RobloxCommonUI.CreatePanel({
+    name=options.name or "MenuSystemSwitcherDrawer",
+    size=options.size or UDim2.new(1,-24,1,-24),theme=theme,clipsDescendants=true
+  })
+  tag(root,"MENU_SYSTEM_SWITCHER_DRAWER")
+  commonText(inner,"Title",options.title or "시스템 전환",UDim2.fromOffset(12,8),
+    UDim2.new(1,-24,0,36),theme.Text,20,true)
+  local scroller=Instance.new("ScrollingFrame")
+  scroller.Name="SystemButtons"
+  scroller.Position=UDim2.fromOffset(10,52)
+  scroller.Size=UDim2.new(1,-20,1,-64)
+  scroller.BackgroundTransparency=1;scroller.BorderSizePixel=0
+  scroller.ScrollBarThickness=4;scroller.Active=true
+  scroller.ScrollingDirection=Enum.ScrollingDirection.Y
+  scroller.CanvasSize=UDim2.fromOffset(0,0)
+  scroller.AutomaticCanvasSize=Enum.AutomaticSize.Y
+  scroller.Parent=inner
+  local layout=commonList(scroller,false,8)
+  layout.VerticalAlignment=Enum.VerticalAlignment.Top
+  local buttons,rows={},{}
+  local selectedId=tostring(options.selectedId or "")
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    rows=type(state.systems)=="table"and state.systems or {}
+    if state.selectedId~=nil then selectedId=tostring(state.selectedId)end
+    for index,row in ipairs(rows)do
+      if not buttons[index]then
+        local button=RobloxCommonUI.CreateTabButton({
+          name="System"..index,text="",size=UDim2.new(1,-8,0,52),theme=theme
+        })
+        button.LayoutOrder=index;button.Parent=scroller;buttons[index]=button
+        local capturedIndex=index
+        button.Activated:Connect(function()
+          local current=rows[capturedIndex]
+          if not current then return end
+          local id=type(current)=="table"and tostring(current.id or capturedIndex)or tostring(capturedIndex)
+          if type(current)=="table"and current.enabled==false then return end
+          selectedId=id
+          sync({systems=rows,selectedId=id})
+          if type(options.onSelect)=="function"then options.onSelect(id,current)end
+        end)
+      end
+      local button=buttons[index]
+      local id=type(row)=="table"and tostring(row.id or index)or tostring(index)
+      local title=type(row)=="table"and (row.title or row.label or row.name)or row
+      local enabled=type(row)~="table"or row.enabled~=false
+      button.Name="System"..index
+      button.LayoutOrder=index
+      button.Text=tostring(title or id)
+      button.BackgroundColor3=id==selectedId and theme.Primary or theme.PanelRaised
+      button.Active=enabled
+      button.AutoButtonColor=enabled
+      button.Visible=true
+      button:SetAttribute("SystemId",id)
+      button:SetAttribute("Available",enabled)
+      button:SetAttribute("MinimumTouchHeight",48)
+      local underline=button:FindFirstChild("SelectedUnderline")
+      if underline then underline.Visible=id==selectedId end
+    end
+    for index=#rows+1,#buttons do buttons[index].Visible=false end
+    root:SetAttribute("CurrentSystemId",selectedId)
+    root:SetAttribute("BoundSystemCount",#rows)
+  end
+  sync({systems=options.systems or {"인벤토리","장비","지도","퀘스트","제작","도감"},selectedId=selectedId})
+  root:SetAttribute("PresentationRole","MENU_SYSTEM_SWITCHER_DRAWER")
   root:SetAttribute("OwnsSystemAuthority",false)
-  return root,parts
+  root:SetAttribute("OwnsNavigationAuthority",false)
+  root:SetAttribute("OwnsSaveAuthority",false)
+  root:SetAttribute("OwnsRemoteAuthority",false)
+  return root,{inner=inner,list=scroller,labels=buttons,buttons=buttons,Sync=sync}
 end
 
 function RobloxCommonUI.CreateNavigationBreadcrumbBackstack(options)
