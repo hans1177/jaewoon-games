@@ -417,25 +417,42 @@
       "name": "Survival Core System",
       "purpose": "Reinforce the core gameplay loop through daily choices in a mobile survival roguelite, with progression based on real-time combat and resource management.",
       "playerChoice": "Select upgrades, build combinations, or skill trees that affect current strategy while navigating enemy pressure and evolving threats."
+    },
+    "local_authoring_parts::0fedf73b19c876dc51bf3494a9630c2bebfa437d24418cc0a081572704fffc86:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount"
+      ],
+      "stateOutputs": [
+        "BuildProgression",
+        "RunResult",
+        "GameEndCondition"
+      ],
+      "name": "Survival Core System",
+      "purpose": "Reinforce the core gameplay loop through daily choices in a mobile survival roguelite, with progression based on real-time combat and resource management.",
+      "playerChoice": "Select upgrades, build combinations, or skill trees that affect current strategy while navigating enemy pressure and evolving threats."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1039242,
-      "lastMs": 100597,
+      "totalMs": 1139435,
+      "lastMs": 100193,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:10:57.283Z"
+      "updatedAt": "2026-10-08T18:12:37.477Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:53:37.989Z",
-  "updatedAt": "2026-10-08T18:10:57.283Z",
+  "updatedAt": "2026-10-08T18:12:37.477Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2694,7 +2711,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:10:57.283Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:12:37.477Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
