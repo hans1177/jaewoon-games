@@ -319,6 +319,9 @@ for(const building of generated.buildings){
   assert.ok(roadKeys.has(building.roadAccess.x+','+building.roadAccess.z));
   assert.deepEqual(building.doorway.roadCell,building.roadAccess);
   assert.equal(building.doorway.roadAdjacencyVerified,true);
+  assert.equal(building.doorway.roadSlopeVerified,true);
+  assert.equal(building.doorway.roadSurfaceY,generated.terrain[building.roadAccess.z*seedWorld.width+building.roadAccess.x].elevation*8);
+  assert.ok(Math.abs(building.doorway.riseToFoundationY)<=Math.tan(35*Math.PI/180)*seedWorld.cellSize+.0001);
   assert.equal(building.doorway.runtimeNavigationVerified,false);
   assert.equal(building.doorway.facing,building.doorFacing);
   assert.equal(building.interactionBinding.kind,'ENTER');
