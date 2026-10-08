@@ -94,25 +94,196 @@
       "name": "직접 채집 - 주민 자동화 - 병영 강화",
       "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득하며, 고용된 주민은 생산 직업에 배치되어 반복 노동을 자동화함.",
       "playerChoice": "직접 채집 -> 자동화 적용 -> 거점 점령 -> 협력적 공략 -> 왕국 확장"
+    },
+    "local_authoring_parts::0058d81f01266ffe4d91837625ede36821e735c75a91478cd05408bfb8b731a1:signatureSystems:4": {
+      "id": "COZY_CHIBI_KINGDOM_DELVE_V1",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "INPUT: 직접 채집 → STATE: 나무/식량 획득 및 주민 고용"
+      ],
+      "stateOutputs": [
+        "OUTPUT: 생산성 증대 → STATE: 병사 모집 시작",
+        "STATE: 병사 모집 완료 → INPUT: 거점 선택"
+      ],
+      "name": "직접 채집 - 주민 자동화 - 병영 강화",
+      "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득하며, 고용된 주민은 생산 직업에 배置되어 반복 노동을 자동화함.",
+      "playerChoice": "직접 채집 -> 자동화 적용 -> 거점 점령 -> 협력적 공략 -> 왕국 확장"
+    },
+    "local_authoring_parts::bbe0522e729cf4cf78fd824ca40423cbcdcf6378c1967dd1f42c987257c07f67:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무/식량 획득 및 주민 고용"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 생산성 증대 → STATE: 병사 모집 시작",
+            "STATE: 본사 모집 완료 → INPUT: 거점 선택"
+          ],
+          "name": "직접 채집 - 주민 자동화 - 병영 강화",
+          "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득하며, 고용된 주민은 생산 직업에 배치되어 반복 노동을 자동화함.",
+          "playerChoice": "주민 영입 -> 자동화 적용 -> 거점 점령 -> 협력적 공략 -> 왕국 확장"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무/식량 획득 및 주민 고용"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 생산성 증대 → STATE: 병사 모집 시작",
+            "STATE: 본사 모집 완료 → INPUT: 거점 선택"
+          ],
+          "name": "직접 채집 - 주민 자동화 - 병영 강화",
+          "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득하며, 고용된 주민은 생산 직업에 배치되어 반복 노동을 자동화함.",
+          "playerChoice": "주민 영입 -> 자동화 적용 -> 거점 점령 -> 협력적 공략 -> 왕국 확장"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무/식량 획득 및 주민 고용"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 생산성 증대 → STATE: 병사 모집 시작",
+            "STATE: 본사 모집 완료 → INPUT: 거점 선택"
+          ],
+          "name": "직접 채집 - 주민 자동화 - 병영 강화",
+          "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득하며, 고용된 주민은 생산 직업에 배치되어 반복 노동을 자동화함.",
+          "playerChoice": "주민 영입 -> 자동화 적용 -> 거점 점령 -> 협력적 공략 -> 왕국 확장"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무/식량 획득 및 주민 고용"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 생산성 증대 → STATE: 병사 모집 시작",
+            "STATE: 병사 모집 완료 → INPUT: 거점 선택"
+          ],
+          "name": "직접 채집 - 주민 자동화 - 병영 강화",
+          "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득하며, 고용된 주민은 생산 직업에 배치되어 반복 노동을 자동화함.",
+          "playerChoice": "직접 채집 -> 자동화 적용 -> 거점 점령 -> 협력적 공략 -> 왕국 확장"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_DELVE_V1",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무/식량 획득 및 주민 고용"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 생산성 증대 → STATE: 병사 모집 시작",
+            "STATE: 병사 모집 완료 → INPUT: 거점 선택"
+          ],
+          "name": "직접 채집 - 주민 자동화 - 병영 강화",
+          "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득하며, 고용된 주민은 생산 직업에 배置되어 반복 노동을 자동화함.",
+          "playerChoice": "직접 채집 -> 자동화 적용 -> 거점 점령 -> 협력적 공략 -> 왕국 확장"
+        }
+      ]
+    },
+    "local_authoring_parts::d529121fe6307c2f448febdbcf4b44cb62b251b08eaf57d8a1b19eb7b4254e69:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT: 직접 채집 → STATE: 나무/식량 획득 및 주민 고용",
+        "SELECT: 주민 영입 → ACTION: 자동화 적용",
+        "OUTPUT: 생산성 증대 → STATE: 병사 모집 시작",
+        "STATE: 병사 모집 완료 → INPUT: 거점 선택",
+        "ACTION: 거점 점령 → OUTPUT: 보상 획득",
+        "STATE: 보상 획득 → INPUT: 다음 거점 선택",
+        "ACTION: 거점 점령 → OUTPUT: 왕국 확장"
+      ],
+      "signatureSystems": [
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무/식량 획득 및 주민 고용"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 생산성 증대 → STATE: 병사 모집 시작",
+            "STATE: 본사 모집 완료 → INPUT: 거점 선택"
+          ],
+          "name": "직접 채집 - 주민 자동화 - 병영 강화",
+          "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득하며, 고용된 주민은 생산 직업에 배치되어 반복 노동을 자동화함.",
+          "playerChoice": "주민 영입 -> 자동화 적용 -> 거점 점령 -> 협력적 공략 -> 왕국 확장"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무/식량 획득 및 주민 고용"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 생산성 증대 → STATE: 병사 모집 시작",
+            "STATE: 본사 모집 완료 → INPUT: 거점 선택"
+          ],
+          "name": "직접 채집 - 주민 자동화 - 병영 강화",
+          "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득하며, 고용된 주민은 생산 직업에 배치되어 반복 노동을 자동화함.",
+          "playerChoice": "주민 영입 -> 자동화 적용 -> 거점 점령 -> 협력적 공략 -> 왕국 확장"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무/식량 획득 및 주민 고용"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 생산성 증대 → STATE: 병사 모집 시작",
+            "STATE: 본사 모집 완료 → INPUT: 거점 선택"
+          ],
+          "name": "직접 채집 - 주민 자동화 - 병영 강화",
+          "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득하며, 고용된 주민은 생산 직업에 배치되어 반복 노동을 자동화함.",
+          "playerChoice": "주민 영입 -> 자동화 적용 -> 거점 점령 -> 협력적 공략 -> 왕국 확장"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무/식량 획득 및 주민 고용"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 생산성 증대 → STATE: 병사 모집 시작",
+            "STATE: 병사 모집 완료 → INPUT: 거점 선택"
+          ],
+          "name": "직접 채집 - 주민 자동화 - 병영 강화",
+          "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득하며, 고용된 주민은 생산 직업에 배치되어 반복 노동을 자동화함.",
+          "playerChoice": "직접 채집 -> 자동화 적용 -> 거점 점령 -> 협력적 공략 -> 왕국 확장"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_DELVE_V1",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무/식량 획득 및 주민 고용"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 생산성 증대 → STATE: 병사 모집 시작",
+            "STATE: 병사 모집 완료 → INPUT: 거점 선택"
+          ],
+          "name": "직접 채집 - 주민 자동화 - 병영 강화",
+          "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득하며, 고용된 주민은 생산 직업에 배置되어 반복 노동을 자동화함.",
+          "playerChoice": "직접 채집 -> 자동화 적용 -> 거점 점령 -> 협력적 공략 -> 왕국 확장"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 353684,
-      "lastMs": 47526,
+      "totalMs": 406463,
+      "lastMs": 52779,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:38:27.764Z"
+      "updatedAt": "2026-10-08T18:39:20.543Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:32:33.971Z",
-  "updatedAt": "2026-10-08T18:38:27.764Z",
+  "updatedAt": "2026-10-08T18:39:20.545Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -667,7 +838,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:38:27.764Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:39:20.545Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
