@@ -1013,25 +1013,43 @@
         "PlayerChoice"
       ],
       "fromSystem": "MAIN/A/B/c/DELVE"
+    },
+    "local_authoring_parts::62a296c41e5bc5946b257401bea1d2532ae23b29fb923c96f8d29198d0183649:toSystem,trigger,stateChange": {
+      "toSystem": "A",
+      "trigger": "Player chooses a core gameplay action that drives the survival run and determines the next progression choice.",
+      "stateChange": "PlayerChoice updates to next progression choice."
+    },
+    "local_authoring_parts::7339f186bc8fa11d41f160e781054adc2fb1eb0420ce85b6fdc50e3d23f54a92:systemInterconnections:4": {
+      "fromId": "MAIN",
+      "toId": "A",
+      "stateKeys": [
+        "BuildProgress",
+        "RunProgress",
+        "PlayerChoice"
+      ],
+      "fromSystem": "MAIN/A/B/c/DELVE",
+      "toSystem": "A",
+      "trigger": "Player chooses a core gameplay action that drives the survival run and determines the next progression choice.",
+      "stateChange": "PlayerChoice updates to next progression choice."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 32,
-      "successes": 31,
+      "calls": 33,
+      "successes": 32,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 3710645,
-      "lastMs": 92427,
+      "totalMs": 3803648,
+      "lastMs": 93003,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T16:46:36.889Z"
+      "updatedAt": "2026-10-08T16:48:09.894Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:58:27.660Z",
-  "updatedAt": "2026-10-08T16:46:36.889Z",
+  "updatedAt": "2026-10-08T16:48:09.902Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3337,7 +3355,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 2
+    "designer_draft_slices::systems-progression": 3
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3375,10 +3393,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:46:36.889Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T16:48:09.897Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
