@@ -2000,19 +2000,48 @@ function RobloxCommonUI.CreateCharacterDetailScreen(options)
   options=options or {}
   local theme=cloneTheme(options.theme)
   local root,body=surfaceShell(options,"CHARACTER_DETAIL_SCREEN","CHARACTER_DETAIL_SCREEN")
+  -- 좁은 화면/가로 모드: 캐릭터 전체 정보와 추가 상태가 한 스크롤 안에 존재한다.
+  local scroll=Instance.new("ScrollingFrame")
+  scroll.Name="CharacterScroll";scroll.Size=UDim2.fromScale(1,1)
+  scroll.BackgroundTransparency=1;scroll.BorderSizePixel=0;scroll.ScrollBarThickness=4
+  scroll.ScrollingDirection=Enum.ScrollingDirection.Y
+  scroll.AutomaticCanvasSize=Enum.AutomaticSize.Y;scroll.CanvasSize=UDim2.fromOffset(0,0)
+  scroll.Active=true;scroll.Parent=body
   local sheet=RobloxCommonUI.CreateCharacterSheet({
     name="CharacterDetail",size=UDim2.new(0.58,-8,1,0),theme=theme,
     characterName=options.displayName,stats=options.stats or {}
   })
-  sheet.Parent=body
+  sheet.Parent=scroll
   local details=Instance.new("Frame")
-  details.Name="DetailStats";details.Position=UDim2.new(0.58,8,0,0);details.Size=UDim2.new(0.42,-8,1,0)
-  details.BackgroundColor3=theme.PanelInset;details.BorderSizePixel=0;details.Parent=body;corner(details,theme.Corner)
+  details.Name="DetailStats";details.Position=UDim2.new(0.58,8,0,0)
+  details.Size=UDim2.new(0.42,-8,1,0);details.BackgroundColor3=theme.PanelInset
+  details.BorderSizePixel=0;details.Parent=scroll;corner(details,theme.Corner)
   local rows=options.detailRows or {"상태","역할","장비 요약","효과","진행도","최근 획득"}
   local labels={}
   for i,name in ipairs(rows)do
-    labels[i]=commonText(details,"Row"..i,name,UDim2.fromOffset(16,12+(i-1)*44),UDim2.new(1,-32,0,36),i==1 and theme.Accent or theme.Text,14,i==1)
+    labels[i]=commonText(details,"Row"..i,name,UDim2.fromOffset(16,12+(i-1)*44),
+      UDim2.new(1,-32,0,36),i==1 and theme.Accent or theme.Text,14,i==1)
   end
+  local statCount=0
+  local function layout()
+    local compact=body.AbsoluteSize.X<560
+    local sheetHeight=math.max(330,160+statCount*30)
+    local detailHeight=math.max(72,#rows*44+20)
+    if compact then
+      sheet.Position=UDim2.fromOffset(0,0)
+      sheet.Size=UDim2.new(1,-8,0,sheetHeight)
+      details.Position=UDim2.fromOffset(0,sheetHeight+12)
+      details.Size=UDim2.new(1,-8,0,detailHeight)
+    else
+      local height=math.max(body.AbsoluteSize.Y,sheetHeight,detailHeight)
+      sheet.Position=UDim2.fromOffset(0,0)
+      sheet.Size=UDim2.new(0.58,-8,0,height)
+      details.Position=UDim2.new(0.58,8,0,0)
+      details.Size=UDim2.new(0.42,-8,0,height)
+    end
+    root:SetAttribute("MobileStackedLayout",compact)
+  end
+  body:GetPropertyChangedSignal("AbsoluteSize"):Connect(layout)
   local inner=sheet:FindFirstChild("InnerSurface")
   local function sync(state)
     state=type(state)=="table"and state or {}
@@ -2044,12 +2073,15 @@ function RobloxCommonUI.CreateCharacterDetailScreen(options)
       end
     end
     for i,label in ipairs(labels)do label.Text=tostring((state.details or {})[i]or "")end
+    statCount=#(state.stats or {})
+    layout()
     root:SetAttribute("CharacterStateRevision",tostring(state.revision or "UNKNOWN"))
   end
   sync(options.character or {})
+  root:SetAttribute("TouchScrollable",true)
   root:SetAttribute("OwnsCharacterStats",false)
   root:SetAttribute("OwnsProgressionAuthority",false)
-  return root,{sheet=sheet,details=details,Sync=sync}
+  return root,{sheet=sheet,details=details,scroll=scroll,Sync=sync}
 end
 
 function RobloxCommonUI.CreateMapFullScreen(options)
