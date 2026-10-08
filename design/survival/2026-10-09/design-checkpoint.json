@@ -552,25 +552,40 @@
     },
     "local_authoring_parts::bf8a93a2bc741d0f0f31a07a5537f903a2f779942ab217a945e38603cab9510c:trigger": {
       "trigger": "RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다."
+    },
+    "local_authoring_parts::bf8a93a2bc741d0f0f31a07a5537f903a2f779942ab217a945e38603cab9510c:stateChange": {
+      "stateChange": "RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다."
+    },
+    "local_authoring_parts::9b2329190799441cf1506fb9943f423900fe505af2bba9aaac88cd6344b35077:systemInterconnections:3": {
+      "fromId": "SURVIVAL_04_SIGNATURE_SYSTEM",
+      "toId": "SURVIVAL_04_SIGNATURE_SYSTEM",
+      "stateKeys": [
+        "RUN_REWARDS",
+        "UPGRADES"
+      ],
+      "fromSystem": "SURVIVAL_04_SIGNATURE_SYSTEM",
+      "toSystem": "SURVIVAL_04_SIGNATURE_SYSTEM",
+      "trigger": "RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다.",
+      "stateChange": "RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 39,
-      "successes": 39,
+      "calls": 40,
+      "successes": 40,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2837564,
-      "lastMs": 48560,
+      "totalMs": 2885938,
+      "lastMs": 48374,
       "lastError": null,
-      "updatedAt": "2026-10-08T23:16:20.887Z"
+      "updatedAt": "2026-10-08T23:17:09.269Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:43:07.484Z",
-  "updatedAt": "2026-10-08T23:16:20.887Z",
+  "updatedAt": "2026-10-08T23:17:09.271Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2949,7 +2964,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T23:16:20.887Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T23:17:09.271Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
