@@ -97,25 +97,316 @@
       "name": "Material Causal Grammar C",
       "purpose": "Plays out the player's exploration of a dangerous small-scale habitat, where risks are taken and resources are acquired through gathering or fighting.",
       "playerChoice": "Take a risk to gather or fight, then convert the result into survival tools or a safer route."
+    },
+    "local_authoring_parts::e94bb5eff494224c7d3824c4414777b9a1a99d73261cd5f233ddcdc830354435:signatureSystems:4": {
+      "id": "MATERIAL_CAUSAL_GRAMMAR_DELVE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "INPUT: Explore a dangerous small-scale habitat and identify food, material and昆虫",
+        "SELECT: Take a risk to gather or fight, then convert the result into survival工具或"
+      ],
+      "stateOutputs": [
+        "STATE CHANGE: Main status is modified by A/B/c interactions",
+        "ACTION: Continue exploring with new knowledge and resources"
+      ],
+      "name": "Material Causal Grammar DELVE",
+      "purpose": "Plays out the player's exploration of a dangerous small-scale habitat, where risks are taken and resources are acquired through gathering or fighting.",
+      "playerChoice": "Take a risk to gather or fight, then convert the result into survival tools or a safer route."
+    },
+    "local_authoring_parts::9142d75a0a181cae89135c546855853bcaa39943e96f5487676ea755548eea0a:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT: Explore a dangerous small-scale habitat and identify food, material and昆虫",
+            "SELECT: Take a risk to gather or fight, then convert the result into survival工具或",
+            "OUTPUT: Status change based on risk assessment and resource acquisition"
+          ],
+          "stateOutputs": [
+            "STATE CHANGE: Main status is modified by A/B/c interactions",
+            "ACTION: Continue exploring with new knowledge and resources"
+          ],
+          "name": "Material Causal Grammar",
+          "purpose": "Plays out the player's exploration of a dangerous small-scale habitat, where risks are taken and resources are acquired through gathering or fighting.",
+          "playerChoice": "Take a risk to gather or fight, then convert the result into survival tools or a safer route."
+        },
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT: Explore a dangerous small-scale habitat and identify food, material and昆虫",
+            "SELECT: Take a risk to gather or fight, then convert the result into survival工具或"
+          ],
+          "stateOutputs": [
+            "STATE CHANGE: Main status is modified by A/B/c interactions",
+            "ACTION: Continue exploring with new knowledge and resources"
+          ],
+          "name": "Material Causal Grammar",
+          "purpose": "Plays out the player's exploration of a dangerous small-scale habitat, where risks are taken and resources are acquired through gathering or fighting.",
+          "playerChoice": "Take a risk to gather or fight, then convert the result into survival tools or a safer route."
+        },
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR_B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT: Explore a dangerous small-scale habitat and identify food, material and昆虫",
+            "SELECT: Take a risk to gather or fight, then convert the result into survival工具或"
+          ],
+          "stateOutputs": [
+            "STATE CHANGE: Main status is modified by A/B/c interactions",
+            "ACTION: Continue exploring with new knowledge and resources"
+          ],
+          "name": "Material Causal Grammar B",
+          "purpose": "Plays out the player's exploration of a dangerous small-scale habitat, where risks are taken and resources are acquired through gathering or fighting.",
+          "playerChoice": "Take a risk to gather or fight, then convert the result into survival tools or a safer route."
+        },
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR_C",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT: Explore a dangerous small-scale habitat and identify food, material and昆虫",
+            "SELECT: Take a risk to gather or fight, then convert the result into survival工具或"
+          ],
+          "stateOutputs": [
+            "STATE CHANGE: Main status is modified by A/B/c interactions",
+            "ACTION: Continue exploring with new knowledge and resources"
+          ],
+          "name": "Material Causal Grammar C",
+          "purpose": "Plays out the player's exploration of a dangerous small-scale habitat, where risks are taken and resources are acquired through gathering or fighting.",
+          "playerChoice": "Take a risk to gather or fight, then convert the result into survival tools or a safer route."
+        },
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR_DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT: Explore a dangerous small-scale habitat and identify food, material and昆虫",
+            "SELECT: Take a risk to gather or fight, then convert the result into survival工具或"
+          ],
+          "stateOutputs": [
+            "STATE CHANGE: Main status is modified by A/B/c interactions",
+            "ACTION: Continue exploring with new knowledge and resources"
+          ],
+          "name": "Material Causal Grammar DELVE",
+          "purpose": "Plays out the player's exploration of a dangerous small-scale habitat, where risks are taken and resources are acquired through gathering or fighting.",
+          "playerChoice": "Take a risk to gather or fight, then convert the result into survival tools or a safer route."
+        }
+      ]
+    },
+    "local_authoring_parts::493d7c31d79ffbdc5a1bf7e6b3a1daa1b2a6b623913cf40b64bd4e17eb8f70b8:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT: Explore a dangerous small-scale habitat and identify food, material and insect threats.",
+        "SELECT: Take a risk to gather or fight, then convert the result into survival tools or a safer route.",
+        "OUTPUT: Status change based on risk assessment and resource acquisition.",
+        "STATE CHANGE: Main status is modified by A/B/c interactions.",
+        "ACTION: Continue exploring with new knowledge and resources."
+      ],
+      "signatureSystems": [
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT: Explore a dangerous small-scale habitat and identify food, material and昆虫",
+            "SELECT: Take a risk to gather or fight, then convert the result into survival工具或",
+            "OUTPUT: Status change based on risk assessment and resource acquisition"
+          ],
+          "stateOutputs": [
+            "STATE CHANGE: Main status is modified by A/B/c interactions",
+            "ACTION: Continue exploring with new knowledge and resources"
+          ],
+          "name": "Material Causal Grammar",
+          "purpose": "Plays out the player's exploration of a dangerous small-scale habitat, where risks are taken and resources are acquired through gathering or fighting.",
+          "playerChoice": "Take a risk to gather or fight, then convert the result into survival tools or a safer route."
+        },
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT: Explore a dangerous small-scale habitat and identify food, material and昆虫",
+            "SELECT: Take a risk to gather or fight, then convert the result into survival工具或"
+          ],
+          "stateOutputs": [
+            "STATE CHANGE: Main status is modified by A/B/c interactions",
+            "ACTION: Continue exploring with new knowledge and resources"
+          ],
+          "name": "Material Causal Grammar",
+          "purpose": "Plays out the player's exploration of a dangerous small-scale habitat, where risks are taken and resources are acquired through gathering or fighting.",
+          "playerChoice": "Take a risk to gather or fight, then convert the result into survival tools or a safer route."
+        },
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR_B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT: Explore a dangerous small-scale habitat and identify food, material and昆虫",
+            "SELECT: Take a risk to gather or fight, then convert the result into survival工具或"
+          ],
+          "stateOutputs": [
+            "STATE CHANGE: Main status is modified by A/B/c interactions",
+            "ACTION: Continue exploring with new knowledge and resources"
+          ],
+          "name": "Material Causal Grammar B",
+          "purpose": "Plays out the player's exploration of a dangerous small-scale habitat, where risks are taken and resources are acquired through gathering or fighting.",
+          "playerChoice": "Take a risk to gather or fight, then convert the result into survival tools or a safer route."
+        },
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR_C",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT: Explore a dangerous small-scale habitat and identify food, material and昆虫",
+            "SELECT: Take a risk to gather or fight, then convert the result into survival工具或"
+          ],
+          "stateOutputs": [
+            "STATE CHANGE: Main status is modified by A/B/c interactions",
+            "ACTION: Continue exploring with new knowledge and resources"
+          ],
+          "name": "Material Causal Grammar C",
+          "purpose": "Plays out the player's exploration of a dangerous small-scale habitat, where risks are taken and resources are acquired through gathering or fighting.",
+          "playerChoice": "Take a risk to gather or fight, then convert the result into survival tools or a safer route."
+        },
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR_DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT: Explore a dangerous small-scale habitat and identify food, material and昆虫",
+            "SELECT: Take a risk to gather or fight, then convert the result into survival工具或"
+          ],
+          "stateOutputs": [
+            "STATE CHANGE: Main status is modified by A/B/c interactions",
+            "ACTION: Continue exploring with new knowledge and resources"
+          ],
+          "name": "Material Causal Grammar DELVE",
+          "purpose": "Plays out the player's exploration of a dangerous small-scale habitat, where risks are taken and resources are acquired through gathering or fighting.",
+          "playerChoice": "Take a risk to gather or fight, then convert the result into survival tools or a safer route."
+        }
+      ]
+    },
+    "local_authoring_parts::493d7c31d79ffbdc5a1bf7e6b3a1daa1b2a6b623913cf40b64bd4e17eb8f70b8:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::eba89ee69d2ee680e3f55f7b0871ef9ecce052a2625cea844702fd0945cfd2c7:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "INPUT: Explore a dangerous small-scale habitat and identify food, material and insect threats.",
+        "SELECT: Take a risk to gather or fight, then convert the result into survival tools or a safer route.",
+        "OUTPUT: Status change based on risk assessment and resource acquisition.",
+        "STATE CHANGE: Main status is modified by A/B/c interactions.",
+        "ACTION: Continue exploring with new knowledge and resources."
+      ],
+      "signatureSystems": [
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT: Explore a dangerous small-scale habitat and identify food, material and昆虫",
+            "SELECT: Take a risk to gather or fight, then convert the result into survival工具或",
+            "OUTPUT: Status change based on risk assessment and resource acquisition"
+          ],
+          "stateOutputs": [
+            "STATE CHANGE: Main status is modified by A/B/c interactions",
+            "ACTION: Continue exploring with new knowledge and resources"
+          ],
+          "name": "Material Causal Grammar",
+          "purpose": "Plays out the player's exploration of a dangerous small-scale habitat, where risks are taken and resources are acquired through gathering or fighting.",
+          "playerChoice": "Take a risk to gather or fight, then convert the result into survival tools or a safer route."
+        },
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT: Explore a dangerous small-scale habitat and identify food, material and昆虫",
+            "SELECT: Take a risk to gather or fight, then convert the result into survival工具或"
+          ],
+          "stateOutputs": [
+            "STATE CHANGE: Main status is modified by A/B/c interactions",
+            "ACTION: Continue exploring with new knowledge and resources"
+          ],
+          "name": "Material Causal Grammar",
+          "purpose": "Plays out the player's exploration of a dangerous small-scale habitat, where risks are taken and resources are acquired through gathering or fighting.",
+          "playerChoice": "Take a risk to gather or fight, then convert the result into survival tools or a safer route."
+        },
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR_B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT: Explore a dangerous small-scale habitat and identify food, material and昆虫",
+            "SELECT: Take a risk to gather or fight, then convert the result into survival工具或"
+          ],
+          "stateOutputs": [
+            "STATE CHANGE: Main status is modified by A/B/c interactions",
+            "ACTION: Continue exploring with new knowledge and resources"
+          ],
+          "name": "Material Causal Grammar B",
+          "purpose": "Plays out the player's exploration of a dangerous small-scale habitat, where risks are taken and resources are acquired through gathering or fighting.",
+          "playerChoice": "Take a risk to gather or fight, then convert the result into survival tools or a safer route."
+        },
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR_C",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT: Explore a dangerous small-scale habitat and identify food, material and昆虫",
+            "SELECT: Take a risk to gather or fight, then convert the result into survival工具或"
+          ],
+          "stateOutputs": [
+            "STATE CHANGE: Main status is modified by A/B/c interactions",
+            "ACTION: Continue exploring with new knowledge and resources"
+          ],
+          "name": "Material Causal Grammar C",
+          "purpose": "Plays out the player's exploration of a dangerous small-scale habitat, where risks are taken and resources are acquired through gathering or fighting.",
+          "playerChoice": "Take a risk to gather or fight, then convert the result into survival tools or a safer route."
+        },
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR_DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT: Explore a dangerous small-scale habitat and identify food, material and昆虫",
+            "SELECT: Take a risk to gather or fight, then convert the result into survival工具或"
+          ],
+          "stateOutputs": [
+            "STATE CHANGE: Main status is modified by A/B/c interactions",
+            "ACTION: Continue exploring with new knowledge and resources"
+          ],
+          "name": "Material Causal Grammar DELVE",
+          "purpose": "Plays out the player's exploration of a dangerous small-scale habitat, where risks are taken and resources are acquired through gathering or fighting.",
+          "playerChoice": "Take a risk to gather or fight, then convert the result into survival tools or a safer route."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::ba9be3c2084a693cf32e6c3a939ab3d7b412c77dae9f9f6ea1a24af091e5b98e:signatureSystems:0": {
+      "id": "MATERIAL_CAUSAL_GRAMMAR_DELVE",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "EXPLORED_HABITAT",
+        "IDENTIFIED_FOOD_THREAT",
+        "DETECTED_MATERIAL_RISK",
+        "NOTIFIED_INSECT_DANGER"
+      ],
+      "stateOutputs": [
+        "MODIFIED_SURVIVAL_TOOL_SET",
+        "CHANGED_ROUTE_PLAN",
+        "UPDATED_ECOLOGY_INSIGHT"
+      ],
+      "name": "DELVE",
+      "purpose": "Explore a dangerous small-scale habitat and identify food, material and insect threats.",
+      "playerChoice": "Choose to gather or fight, then convert the result into survival tools or a safer route."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 316517,
-      "lastMs": 39694,
+      "totalMs": 425413,
+      "lastMs": 38958,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:50:55.376Z"
+      "updatedAt": "2026-10-08T17:52:44.284Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:45:38.832Z",
-  "updatedAt": "2026-10-08T17:50:55.376Z",
+  "updatedAt": "2026-10-08T17:52:44.284Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2343,12 +2634,161 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:50:55.376Z",
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_MAIN_A_B_c_DELVE_REQUIRED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "counts": {
+            "MAIN": 1,
+            "A": 1,
+            "B": 1,
+            "c": 1,
+            "DELVE": 1
+          },
+          "systemCount": 5,
+          "statesReady": false
+        },
+        "requiredAction": "메인 중심 행동, A/B 서로 다른 두 축, c 보조 변주, @ 발견·숙련을 기존 규칙에 맞춰 최소 5개 고유 시스템과 실제 상태 입력·출력으로 작성한다. 기존 밸런스·저장·진행은 유지한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR.stateInputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR.stateInputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR_B.stateInputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR_B.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR_C.stateInputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR_C.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR_DELVE.stateInputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.MATERIAL_CAUSAL_GRAMMAR_DELVE.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 생존 게임으로 완전히 처음부터 다시 설계한다. 그 중심 행동은 'Explore a dangerous small-scale habitat and identify food, material and insect threats.'이며, 두 대축 A/B는 'Take a risk to gather or fight, then convert the result into survival tools or a safer route.'와 'Use what was learned about the ecosystem to survive stronger pressure and reach the next meaningful objective.'로 구성된다. 보조 요소 c는 이들을 변주하며, 파고들기 @는 발견·숙련·재방문의 깊이를 나타낸다. 세계 규칙은 플레이어의 선택 결과가 다음 상태에 영향을 주는 방식으로 설계되어야 한다.",
+      "playerFantasy": "플레이어는 곤충 생존기를 경험하는 독자의 시점에서, 위험과 선택 사이의 균형을 맞추며, 먹이사슬과 생태계의 복잡성에 직면해야 한다. 그는 단순히 살아남기보다, 진입할 수 있는 세계의 정체성과 관계를 탐색하며, 이 모든 것이 자신의 존재와 의미로 연결된다.",
+      "coreFun": "플레이어는 곤충 생존기를 경험하는 독자의 시점에서, 위험과 선택 사이의 균형을 맞추며, 먹이사슬과 생태계의 복잡성에 직면해야 한다. 그는 단순히 살아남기보다, 진입할 수 있는 세계의 정체성과 관계를 탐색하며, 이 모든 것이 자신의 존재와 의미로 연결된다. 중심 행동은 'Explore a dangerous small-scale habitat and identify food, material and insect threats.'이며, 두 대축 A/B는 'Take a risk to gather or fight, then convert the result into survival tools or a safer route.'와 'Use what was learned about the ecosystem to survive stronger pressure and reach the next meaningful objective.'로 구성된다. 보조 요소 c는 이들을 변주하며, 파고들기 @는 발견·숙련·재방문의 깊이를 나타낸다. 세계 규칙은 플레이어의 선택 결과가 다음 상태에 영향을 주는 방식으로 설계되어야 한다.",
+      "coreLoop": [
+        "INPUT: Explore a dangerous small-scale habitat and identify food, material and insect threats.",
+        "SELECT: Take a risk to gather or fight, then convert the result into survival tools or a safer route.",
+        "OUTPUT: Status change based on risk assessment and resource acquisition.",
+        "STATE CHANGE: Main status is modified by A/B/c interactions.",
+        "ACTION: Continue exploring with new knowledge and resources."
+      ],
+      "multiplayerMode": "HYBRID"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T17:52:44.284Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
