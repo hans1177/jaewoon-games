@@ -1,6 +1,8 @@
+// 파일명: qa/company-design-gate-scoring-v2.test.mjs
+// 설계 게이트 점수와 필수 문법·멀티·공간 그래픽 회귀 검증
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {DESIGN_GATE_WEIGHTS,DESIGN_DIRECT_SCORE_LEVELS,DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT,scoreDesignGateV2} from '../tools/company-design-gate-scoring-v2.mjs';
+import {DESIGN_GATE_WEIGHTS,DESIGN_DIRECT_SCORE_LEVELS,DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT,scoreDesignGateV2,validateDesignAuthoringContent} from '../tools/company-design-gate-scoring-v2.mjs';
 
 assert.equal(Object.keys(DESIGN_GATE_WEIGHTS).length,11);
 assert.equal(Object.values(DESIGN_GATE_WEIGHTS).reduce((a,b)=>a+b,0),100);
@@ -141,3 +143,60 @@ for(const platform of ['UNITY','ROBLOX','FORTNITE_UEFN']){
   assert.ok(platformResult.evidenceLevels.PLATFORM_FIT_DESIGN>=80,`${platform} platform fit should be connected`);
   assert.ok(!platformResult.criticalAxisFailures.includes('PLATFORM_FIT_DESIGN'),`${platform} must not fail solely because identifier is shorter than prose fields`);
 }
+
+
+const authoredSpatialDesign=()=>{
+  const roles=['MAIN','A','B','c','DELVE'];
+  return {
+    multiplayerMode:'COOP',
+    signatureSystems:roles.map((grammarRole,index)=>({
+      id:'AUTHORED_ROLE_'+index,grammarRole,
+      name:'기존 중심 규칙 '+grammarRole,
+      purpose:'플레이어의 기존 행동과 선택이 실제 게임 상태를 바꾸고 다음 선택으로 이어지는 역할을 기술한다.',
+      playerChoice:'플레이어가 기존 게임에서 원래 허용된 선택을 수행한 뒤 결과를 확인한다.',
+      stateInputs:['WorldState'],stateOutputs:['WorldState']
+    })),
+    platformProfiles:{
+      UNITY:{
+        unityWebSpatialPresentation:{
+          dimension:'2.5D',
+          worldDepth:'실제 월드 오브젝트를 전경·중경·후경에 분리하고 깊이 정렬과 시차를 지역·이동 반응에 연동한다.',
+          cameraAndOcclusion:'등각 투영 카메라가 깊이 좌표를 사용하고 앞쪽 물체가 뒤 캐릭터를 가리는 실제 가림 판정을 적용한다.',
+          lightingAndMaterials:'기존 월드 오브젝트의 표면별 재질과 방향 광원, 지면 접지 그림자를 유지해 명암과 높이를 인식시킨다.',
+          mobileWebglEvidence:'실제 모바일 브라우저에서 같은 유니티 웹 빌드를 실행하고 깊이·가림·조명·터치·프레임과 변경 전후를 비교한다.'
+        }
+      }
+    }
+  };
+};
+const requiredAuthoringFields=['multiplayerMode','signatureSystems','platformProfiles'];
+const forcedDesignSeed={MULTIPLAYER_DESIGN_MODE:'SINGLE'};
+const authoredRejections=(candidate)=>validateDesignAuthoringContent({
+  seed:forcedDesignSeed,design:candidate,fields:requiredAuthoringFields,multiplayerRequired:true
+});
+const validSpatial=authoredSpatialDesign();
+assert.deepEqual(
+  authoredRejections(validSpatial).filter(row=>[
+    'DESIGN_MULTIPLAYER_CONTRADICTION','DESIGN_MAIN_A_B_c_DELVE_REQUIRED','DESIGN_UNITY_WEB_SPATIAL_DEPTH_REQUIRED'
+  ].includes(row.code)),[],
+  'structured design evidence does not imply actual multiplayer or browser runtime PASS'
+);
+const singleOnly=authoredSpatialDesign();
+singleOnly.multiplayerMode='SINGLE';
+assert.ok(authoredRejections(singleOnly).some(row=>row.code==='DESIGN_MULTIPLAYER_CONTRADICTION'));
+const noDelve=authoredSpatialDesign();
+noDelve.signatureSystems.pop();
+assert.ok(authoredRejections(noDelve).some(row=>row.code==='DESIGN_MAIN_A_B_c_DELVE_REQUIRED'));
+const duplicateAxis=authoredSpatialDesign();
+duplicateAxis.signatureSystems[2].grammarRole='A';
+assert.ok(authoredRejections(duplicateAxis).some(row=>row.code==='DESIGN_MAIN_A_B_c_DELVE_REQUIRED'));
+const flatWorld=authoredSpatialDesign();
+flatWorld.platformProfiles.UNITY.unityWebSpatialPresentation.dimension='2D';
+assert.ok(authoredRejections(flatWorld).some(row=>row.code==='DESIGN_UNITY_WEB_SPATIAL_DEPTH_REQUIRED'));
+const markerOnly=authoredSpatialDesign();
+markerOnly.platformProfiles.UNITY.unityWebSpatialPresentation.worldDepth='2.5D';
+assert.ok(authoredRejections(markerOnly).some(row=>row.code==='DESIGN_UNITY_WEB_SPATIAL_DEPTH_REQUIRED'));
+const true3d=authoredSpatialDesign();
+true3d.platformProfiles.UNITY.unityWebSpatialPresentation.dimension='3D';
+assert.equal(authoredRejections(true3d).some(row=>row.code==='DESIGN_UNITY_WEB_SPATIAL_DEPTH_REQUIRED'),false);
+console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
