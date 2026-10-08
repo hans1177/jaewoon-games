@@ -34,25 +34,43 @@
         "플레이어는 다음 웨이브의 패턴을 읽고, 콜리드 라인, 공명 연결, 또는 업그레이드 중 가장 가치가 있는 위치를 선택하여 방어 전략을 조정해야 한다.",
         "선택은 다음 웨이브의 패턴과 전략적 결과를 기반으로, 방어 성능을 최적화하고, 다음 전략의 선택에 기초하여 전반적인 방어 전략을 재설계해야 한다."
       ]
+    },
+    "local_authoring_parts::2f49ffd56895baaf3cf2ad85329df316941c1d95ebf4432d79739f4c6d333b1c:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "attackPattern",
+        "crystalDefensePlacement",
+        "crystalDefenseResonance",
+        "crystalDefenseUpgrades"
+      ],
+      "stateOutputs": [
+        "defensiveStrategy",
+        "nextAttackPattern",
+        "playerChoice"
+      ],
+      "name": "공명 연결 시스템",
+      "purpose": "플레이어가 다음 웨이브의 패턴을 읽고, 콜리드 라인, 공명 연결, 또는 업그레이드 중 가장 가치가 있는 위치를 선택하여 방어 전략을 조정해야 한다.",
+      "playerChoice": "다음 웨이브의 패턴과 전략적 결과를 기반으로, 방어 성능을 최적화하고, 다음 전략의 선택에 기초하여 전반적인 방어 전략을 재설계해야 한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 478463,
-      "lastMs": 68395,
+      "totalMs": 554237,
+      "lastMs": 75774,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:07:08.677Z"
+      "updatedAt": "2026-10-08T12:08:24.452Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:59:10.064Z",
-  "updatedAt": "2026-10-08T12:07:08.677Z",
+  "updatedAt": "2026-10-08T12:08:24.452Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2243,7 +2261,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:07:08.677Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:08:24.452Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
