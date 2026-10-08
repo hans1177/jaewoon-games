@@ -784,25 +784,115 @@
     "local_authoring_parts::e426cdfd5d34cfdf28e10314c6e239b980f8a142a4b2e58d754903aa9ba2ee06:progressionLoop,resourceFlow": {
       "progressionLoop": "플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다.",
       "resourceFlow": "게임 내에서 MAIN/A/B/C의 선택 결과와 세계 인과법칙에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 한다."
+    },
+    "local_authoring_parts::e426cdfd5d34cfdf28e10314c6e239b980f8a142a4b2e58d754903aa9ba2ee06:balanceRules": {
+      "balanceRules": "플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다. 이 과정에서 사용자는 단일 행동으로 세계 상태를 변환시키며, 결과에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 한다."
+    },
+    "local_authoring_parts::4e02c9fdc64b419a75af700c7d37fdfe6ba4a48973e5b30b0d07ecd4a02f7ef0:progressionEconomyBalance": {
+      "progressionLoop": "플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다.",
+      "resourceFlow": "게임 내에서 MAIN/A/B/C의 선택 결과와 세계 인과법칙에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 한다.",
+      "balanceRules": "플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다. 이 과정에서 사용자는 단일 행동으로 세계 상태를 변환시키며, 결과에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 한다."
+    },
+    "local_authoring_parts::36d95df313e6306b5464cf04b2406a9f8a658d086da91b200a3e4232c1e968e5:progressionEconomyBalance": {
+      "progressionEconomyBalance": {
+        "progressionLoop": "플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다.",
+        "resourceFlow": "게임 내에서 MAIN/A/B/C의 선택 결과와 세계 인과법칙에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 한다.",
+        "balanceRules": "플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다. 이 과정에서 사용자는 단일 행동으로 세계 상태를 변환시키며, 결과에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 한다."
+      }
+    },
+    "local_authoring_parts::d347ac694a092c7836728ac405c833d5f4c33fedc960d9c20addc925b1f44123:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "START_STATE",
+          "toId": "RUN_STATE",
+          "stateKeys": [
+            "NEXT_WORLD_STATE",
+            "NEW_CHOICE_STATE",
+            "PROGRESSION_STATE"
+          ],
+          "fromSystem": "SIGNATURE_SYSTEM_0",
+          "toSystem": "SIGNATURE_SYSTEM_0",
+          "trigger": "RESULT_STATE",
+          "stateChange": "FROM_START_TO_RUN"
+        },
+        {
+          "fromId": "START_STATE",
+          "toId": "RUN_STATE",
+          "stateKeys": [
+            "NEXT_WORLD_STATE",
+            "NEW_CHOICE_STATE",
+            "PROGRESSION_STATE"
+          ],
+          "fromSystem": "SIGNATURE_SYSTEM_0",
+          "toSystem": "SIGNATURE_SYSTEM_0",
+          "trigger": "RESULT_STATE",
+          "stateChange": "FROM_START_TO_RUN"
+        },
+        {
+          "fromId": "START_STATE",
+          "toId": "RUN_STATE",
+          "stateKeys": [
+            "NEXT_WORLD_STATE",
+            "NEW_CHOICE_STATE",
+            "PROGRESSION_STATE"
+          ],
+          "fromSystem": "SIGNATURE_SYSTEM_0",
+          "toSystem": "SIGNATURE_SYSTEM_0",
+          "trigger": "RESULT_STATE",
+          "stateChange": "FROM_START_TO_RUN"
+        },
+        {
+          "fromId": "START_STATE",
+          "toId": "RUN_STATE",
+          "stateKeys": [
+            "NEXT_WORLD_STATE",
+            "NEW_CHOICE_STATE",
+            "PROGRESSION_STATE"
+          ],
+          "fromSystem": "SIGNATURE_SYSTEM_0",
+          "toSystem": "SIGNATURE_SYSTEM_3",
+          "trigger": "GAMEPLAY_TRIGGER",
+          "stateChange": "FROM_RESULT_TO_RUN"
+        },
+        {
+          "fromId": "START_STATE",
+          "toId": "RUN_STATE",
+          "stateKeys": [
+            "NEXT_WORLD_STATE",
+            "NEW_CHOICE_STATE",
+            "PROGRESSION_STATE"
+          ],
+          "fromSystem": "SIGNATURE_SYSTEM_0",
+          "toSystem": "SIGNATURE_SYSTEM_0",
+          "trigger": "RESULT_STATE",
+          "stateChange": "FROM_START_TO_RUN"
+        }
+      ],
+      "progressionDirection": "게임 내에서 MAIN/A/B/C의 선택 결과와 세계 인과법칙에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 합니다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다.",
+        "resourceFlow": "게임 내에서 MAIN/A/B/C의 선택 결과와 세계 인과법칙에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 한다.",
+        "balanceRules": "플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다. 이 과정에서 사용자는 단일 행동으로 세계 상태를 변환시키며, 결과에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 한다."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 25,
-      "successes": 22,
+      "calls": 26,
+      "successes": 23,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2241124,
-      "lastMs": 67692,
+      "totalMs": 2308219,
+      "lastMs": 67095,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T22:43:17.954Z"
+      "updatedAt": "2026-10-08T22:44:25.051Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T22:05:56.751Z",
-  "updatedAt": "2026-10-08T22:43:17.954Z",
+  "updatedAt": "2026-10-08T22:44:25.056Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2728,7 +2818,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T22:43:17.954Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T22:44:25.056Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
