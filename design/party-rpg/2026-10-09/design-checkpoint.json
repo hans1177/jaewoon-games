@@ -418,25 +418,39 @@
     },
     "local_authoring_parts::f532f24084508ffef22e4e014db8cbb08609a215318c223a389544fe68e51743:trigger": {
       "trigger": "systemInterconnections[0].stateChange"
+    },
+    "local_authoring_parts::f532f24084508ffef22e4e014db8cbb08609a215318c223a389544fe68e51743:stateChange": {
+      "stateChange": "시스템 간 상태 변화가 발생하며, SIGNATURE_SYSTEM_0에서 BOARD_STATE로 전환되어야 한다."
+    },
+    "local_authoring_parts::0518d1ff1cdcecd6f832a36cdd12d3e91a69cf97f9f0cabf57109406126b166d:systemInterconnections:0": {
+      "fromId": "SIGNATURE_SYSTEM_0",
+      "toId": "BOARD_STATE",
+      "stateKeys": [
+        "BOARD_STATE"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_0 → BOARD_STATE",
+      "toSystem": "BOARD_STATE",
+      "trigger": "systemInterconnections[0].stateChange",
+      "stateChange": "시스템 간 상태 변화가 발생하며, SIGNATURE_SYSTEM_0에서 BOARD_STATE로 전환되어야 한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 17,
+      "calls": 18,
+      "successes": 18,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1222478,
-      "lastMs": 88100,
+      "totalMs": 1310413,
+      "lastMs": 87935,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:52:03.072Z"
+      "updatedAt": "2026-10-08T21:53:31.008Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:31:40.536Z",
-  "updatedAt": "2026-10-08T21:52:03.072Z",
+  "updatedAt": "2026-10-08T21:53:31.010Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2876,7 +2890,7 @@
       "progressionDirection": "{\"from\": \"START_GAME\", \"to\": \"MATCH_GAME\"}"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T21:52:03.072Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:53:31.010Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
