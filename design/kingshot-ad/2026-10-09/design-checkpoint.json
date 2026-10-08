@@ -589,25 +589,41 @@
         "Main state"
       ],
       "fromSystem": "MAIN"
+    },
+    "local_authoring_parts::2ddc3ac7f60fb069ef1fe3cb221c198a48bfcba3a63f73ae66df242bbecc2b3d:toSystem,trigger,stateChange": {
+      "toSystem": "A",
+      "trigger": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+      "stateChange": "Main state is transformed into a new defensive configuration based on player strategy and resource allocation."
+    },
+    "local_authoring_parts::c445774d95e601b763e2813d187052336bf84b3d4b37039fae362fb05cb36164:systemInterconnections:3": {
+      "fromId": "MAIN",
+      "toId": "A",
+      "stateKeys": [
+        "Main state"
+      ],
+      "fromSystem": "MAIN",
+      "toSystem": "A",
+      "trigger": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+      "stateChange": "Main state is transformed into a new defensive configuration based on player strategy and resource allocation."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 19,
+      "calls": 21,
+      "successes": 20,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2063948,
-      "lastMs": 92319,
+      "totalMs": 2156266,
+      "lastMs": 92318,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T18:21:45.004Z"
+      "updatedAt": "2026-10-08T18:23:17.323Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:47:20.978Z",
-  "updatedAt": "2026-10-08T18:21:45.004Z",
+  "updatedAt": "2026-10-08T18:23:17.325Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2957,7 +2973,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:21:45.004Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:23:17.325Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
