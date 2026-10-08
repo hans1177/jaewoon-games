@@ -36,25 +36,38 @@
         "STATE CHANGE: MAIN의 결과를 다음 위험·보상·자원 또는 경로 상태로 바꾼다.",
         "NEXT CHOICE: Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
       ]
+    },
+    "local_authoring_parts::0985df9e131803cbbf1cb1eeeaeca8170993afa6bfc1cc6ec74085a0a3fc1b52:signatureSystems:0": {
+      "id": "ACTION_SURVIVAL_ROGUELITE",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "RUN_RESULT"
+      ],
+      "stateOutputs": [
+        "GAME_STATE_CHANGE"
+      ],
+      "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure",
+      "purpose": "Player initiates the core gameplay experience by engaging in a survival-based action sequence that impacts the game state.",
+      "playerChoice": "Initiate the survival run with dynamic upgrades and strategic positioning to influence the game's progression."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 353053,
-      "lastMs": 64183,
+      "totalMs": 390709,
+      "lastMs": 37656,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:05:11.984Z"
+      "updatedAt": "2026-10-08T19:05:49.641Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:59:18.858Z",
-  "updatedAt": "2026-10-08T19:05:11.984Z",
+  "updatedAt": "2026-10-08T19:05:49.641Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2253,7 +2266,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T19:05:11.984Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:05:49.641Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
