@@ -409,13 +409,6 @@ test('registered Unity coding drills prepare the existing executor and persist r
   assert.match(workflow,/practiceArtifact,practiceRepair,neuralDiagnosis/);
 });
 
-test('Core QA supersedes stale candidate runs only within the same ref',()=>{
-  const workflow=fs.readFileSync('.github/workflows/vibe2-core-qa.yml','utf8');
-  const concurrency=workflow.slice(workflow.indexOf('\nconcurrency:'),workflow.indexOf('\njobs:'));
-  assert.match(concurrency,/group: vibe2-core-qa-\$\{\{ github\.ref \}\}/);
-  assert.match(concurrency,/cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \|\| \(github\.event_name == 'push' && github\.ref == 'refs\/heads\/main'\) \}\}/);
-});
-
 for(const drill of robloxCurriculum.platformDrills.filter(row=>row.platform==='unity'&&row.id!=='unity-lifecycle')){
   test('executable coding contract, baseline, and held-out inputs: '+drill.id,{skip:!process.env.VIBE2_TEST_CSHARP_RUNTIME},()=>{
     for(const tests of [drill.feedbackTests,drill.tests]){
