@@ -266,25 +266,111 @@
           "playerChoice": "Collect run rewards or experience and choose upgrades... 또는 Combine upgrades into a stronger build..."
         }
       ]
+    },
+    "local_authoring_parts::d0eb3d84b686ae17b110ab9170bc353067589aae9998b78ceb3376901d7ac0b5:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::ccb602d5c03b8879b1cd4505e73a11f633e89b8db5ee2667c8f54bde9ad3ca32:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "INPUT: 플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이라는 중심 행동을 수행하며, 선택 결과가 다음 상태로 이어지는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 재미와 시스템 연결을 확정한다.",
+        "SELECT: 'Collect run rewards or experience and choose upgrades...' 또는 'Combine upgrades into a stronger build...' 등의 A/B/c 서브요소를 통해 실제 게임 상태 변화를 구현한다.",
+        "OUTPUT: 주제적이고 체계적인 설계 원본인 '보석 생존전'에서 벗어나, 매 순간의 선택이 다음 상태로 이어지는 게임의 씨앗을 형성한다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT: 플레이어가 'Fight through an escalating horde in a short real-time survivalrun"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 주제적이고 체계적인 설계 원본인 '보석 생존전'에서 벗어나, 매 순간의 선택이 다음 상태로 이어지는 게임의 씨앗을 형성한다."
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "플레이어의 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.과 선택이 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades... 또는 Combine upgrades into a stronger build..."
+        },
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT: 플레이어가 'Fight through an escalating horde in a short real-time survivalrun",
+            "INPUT: 플레이어가 'positioning around enemy pressure'"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 주제적이고 체계적인 설계 원본인 '보석 생존전'에서 벗어나, 매 순간의 선택이 다음 상태로 이어지는 게임의 씨앗을 형성한다.",
+            "OUTPUT: ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음狀態"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "플레이어의 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.과 선택이 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades... 또는 Combine upgrades into a stronger build..."
+        },
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT: 플레이어가 'Fight through an escalating horde in a short real-time survivalrun",
+            "INPUT: 플레이어가 'positioning around enemy pressure'"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 주제적이고 체계적인 설계 원본인 '보석 생존전'에서 벗어나, 매 순간의 선택이 다음 상태로 이어지는 게임의 씨앗을 형성한다.",
+            "OUTPUT: ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음狀態"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "플레이어의 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.과 선택이 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades... 또는 Combine upgrades into a stronger build..."
+        },
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT: 플레이어가 'Fight through an escalating horde in a short real-time survivalrun",
+            "INPUT: 플레이어가 'positioning around enemy pressure'"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 주제적이고 체계적인 설계 원본인 '보석 생존전'에서 벗어나, 매 순간의 선택이 다음 상태로 이어지는 게임의 씨앗을 형성한다.",
+            "OUTPUT: ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음狀態"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "플레이어의 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades... 또는 Combine upgrades into a stronger build..."
+        },
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT: 플레이어가 'Fight through an escalating horde in a short real-time survivalrun",
+            "INPUT: 플레이어가 'positioning around enemy pressure'"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 주제적이고 체계적인 설계 원본인 '보석 생존전'에서 벗어나, 매 순간의 선택이 다음 상태로 이어지는 게임의 씨앗을 형성한다.",
+            "OUTPUT: ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음狀態"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "플레이어의 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades... 또는 Combine upgrades into a stronger build..."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 867805,
-      "lastMs": 113131,
+      "totalMs": 956431,
+      "lastMs": 88626,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:58:13.788Z"
+      "updatedAt": "2026-10-08T17:59:42.419Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:43:45.948Z",
-  "updatedAt": "2026-10-08T17:58:13.791Z",
+  "updatedAt": "2026-10-08T17:59:42.429Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2479,12 +2565,244 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:58:13.791Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_MAIN_A_B_c_DELVE_REQUIRED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "counts": {
+            "MAIN": 1,
+            "A": 1,
+            "B": 1,
+            "c": 1,
+            "DELVE": 1
+          },
+          "systemCount": 5,
+          "statesReady": false
+        },
+        "requiredAction": "메인 중심 행동, A/B 서로 다른 두 축, c 보조 변주, @ 발견·숙련을 기존 규칙에 맞춰 최소 5개 고유 시스템과 실제 상태 입력·출력으로 작성한다. 기존 밸런스·저장·진행은 유지한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.KARMA_RETURN.stateInputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.KARMA_RETURN.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.KARMA_RETURN.stateOutputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.KARMA_RETURN.stateOutputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.KARMA_RETURN.stateInputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.KARMA_RETURN.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.KARMA_RETURN.stateOutputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.KARMA_RETURN.stateOutputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.KARMA_RETURN.stateInputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.KARMA_RETURN.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.KARMA_RETURN.stateOutputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.KARMA_RETURN.stateOutputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.KARMA_RETURN.stateInputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.KARMA_RETURN.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.KARMA_RETURN.stateOutputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.KARMA_RETURN.stateOutputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.KARMA_RETURN.stateInputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.KARMA_RETURN.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems.KARMA_RETURN.stateOutputs",
+          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
+        },
+        "requiredAction": "signatureSystems.KARMA_RETURN.stateOutputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "보석 생존전은 플레이어가 단순한 수집 및 전투 루틴에서 벗어나, 매 순간의 선택이 다음 상태로 이어지는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 재미와 시스템 연결을 확정하는 단일 Game Designer AI이다. 게임의 정체성은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이라는 중심 행동에 기반하며, 대표 선택인 'Collect run rewards or experience and choose upgrades...'과 'Combine upgrades into a stronger build...' 등의 A/B/c 서브요소를 통해 실제 게임 상태 변화를 구현한다. 게임의 씨앗은 주제적이고 체계적인 설계 원본이며, 공통 원본은 ACTION_SURVIVAL_ROGUELITE의 핵심 재미를 최우선으로 두고, RPG식 시스템은 강제하지 않으며 장르에 맞게 조정된다.",
+      "playerFantasy": "보석 생존전은 플레이어가 단순한 수집 및 전투 루틴에서 벗어나, 매 순간의 선택이 다음 상태로 이어지는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 재미와 시스템 연결을 확정하는 단일 Game Designer AI이다. 게임의 정체성은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이라는 중심 행동에 기반하며, 대표 선택인 'Collect run rewards or experience and choose upgrades...'과 'Combine upgrades into a stronger build...' 등의 A/B/c 서브요소를 통해 실제 게임 상태 변화를 구현한다. 게임의 씨앗은 주제적이고 체계적인 설계 원본이며, 공통 원본은 ACTION_SURVIVAL_ROGUELITE의 핵심 재미를 최우선으로 두고, RPG식 시스템은 강제하지 않으며 장르에 맞게 조정된다.",
+      "coreFun": "플레이어가 단순한 수집 및 전투 루틴에서 벗어나, 매 순간의 선택이 다음 상태로 이어지는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 재미와 시스템 연결을 확정하는 단일 Game Designer AI이다. 게임의 정체성은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이라는 중심 행동에 기반하며, 대표 선택인 'Collect run rewards or experience and choose upgrades...'과 'Combine upgrades into a stronger build...' 등의 A/B/c 서브요소를 통해 실제 게임 상태 변화를 구현한다. 게임의 씨앗은 주제적이고 체계적인 설계 원본이며, 공통 원본은 ACTION_SURVIVAL_ROGUELITE의 핵심 재미를 최우선으로 두고, RPG식 시스템은 강제하지 않으며 장르에 맞게 조정된다.",
+      "coreLoop": [
+        "INPUT: 플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이라는 중심 행동을 수행하며, 선택 결과가 다음 상태로 이어지는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 재미와 시스템 연결을 확정한다.",
+        "SELECT: 'Collect run rewards or experience and choose upgrades...' 또는 'Combine upgrades into a stronger build...' 등의 A/B/c 서브요소를 통해 실제 게임 상태 변화를 구현한다.",
+        "OUTPUT: 주제적이고 체계적인 설계 원본인 '보석 생존전'에서 벗어나, 매 순간의 선택이 다음 상태로 이어지는 게임의 씨앗을 형성한다."
+      ],
+      "multiplayerMode": "HYBRID"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T17:59:42.422Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_MAIN_A_B_c_DELVE_REQUIRED,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_RULE_STATE_MISSING",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
