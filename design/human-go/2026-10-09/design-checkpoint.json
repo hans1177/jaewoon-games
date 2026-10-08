@@ -34,25 +34,38 @@
         "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/ NEXT CHOICE",
         "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/ NEXT CHOICE"
       ]
+    },
+    "local_authoring_parts::28e8993aa6738e0f5824a288c7d787a1db2dd785a3557899c21b8153282a93ff:signatureSystems:0": {
+      "id": "KARMA_RETURN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+      ],
+      "stateOutputs": [
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+      ],
+      "name": "KARMA RETURN",
+      "purpose": "ACTION RESULT DELAY TO SUBSEQUENT STATES",
+      "playerChoice": "USE ACTION RESULT TO ALTER MAIN AND A/B/C STATES"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 205867,
-      "lastMs": 25929,
+      "totalMs": 238235,
+      "lastMs": 32368,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:47:47.362Z"
+      "updatedAt": "2026-10-08T17:48:19.731Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:44:21.449Z",
-  "updatedAt": "2026-10-08T17:47:47.362Z",
+  "updatedAt": "2026-10-08T17:48:19.731Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1980,7 +1993,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:47:47.362Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:48:19.731Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
