@@ -156,9 +156,12 @@ namespace JaewoonGames.DaechungRpg
             var width = Mathf.Max(1f, Mathf.Min(safe.width - 24f, 760f * scale));
             var left = safe.xMin + (safe.width - width) * 0.5f;
             var topY = safe.yMin + 12f;
-            var topHeight = Mathf.Min(194f * scale, safe.height * 0.29f);
-            var controlsY = Mathf.Max(topY + topHeight + 12f, safe.yMin + safe.height * 0.50f);
-            var tabsHeight = Mathf.Max(48f, 38f * scale);
+            var compactLandscape = safe.width > safe.height && safe.height < 540f;
+            var topHeight = compactLandscape ? Mathf.Min(88f, safe.height * 0.24f) :
+                Mathf.Min(194f * scale, safe.height * 0.29f);
+            var controlsY = compactLandscape ? topY + topHeight + 8f :
+                Mathf.Max(topY + topHeight + 12f, safe.yMin + safe.height * 0.50f);
+            var tabsHeight = compactLandscape ? 48f : Mathf.Max(48f, 38f * scale);
             var tabsRect = new Rect(left, controlsY, width, tabsHeight);
 
             var margin = Mathf.Max(12f, safe.width * 0.04f);
@@ -186,11 +189,20 @@ namespace JaewoonGames.DaechungRpg
             GUI.skin.button.fixedHeight = Mathf.Max(48f, 42f * scale);
 
             GUILayout.BeginArea(new Rect(left, topY, width, topHeight), GUI.skin.box);
-            GUILayout.Label("DAECHUNG RPG · ANIMATED PROTOTYPE");
-            if (safe.height > 560f)
-                GUILayout.Label("Combat / growth / save / regions + verified animated actors");
-            DrawPlayerStatus();
-            GUILayout.Label("ASSET  " + (_visuals != null ? _visuals.StatusText : "STARTING"));
+            if (compactLandscape)
+            {
+                var player = _core.Player;
+                GUILayout.Label("DAECHUNG RPG");
+                GUILayout.Label($"LV {player.level}   HP {player.currentHp}/{_core.GetMaxHp()}   GOLD {player.gold}");
+            }
+            else
+            {
+                GUILayout.Label("DAECHUNG RPG · ANIMATED PROTOTYPE");
+                if (safe.height > 560f)
+                    GUILayout.Label("Combat / growth / save / regions + verified animated actors");
+                DrawPlayerStatus();
+                GUILayout.Label("ASSET  " + (_visuals != null ? _visuals.StatusText : "STARTING"));
+            }
             GUILayout.EndArea();
 
             // 탭 자체도 충분한 터치 높이를 유지한다. 변경하지 않은 탭의 스크롤 위치는 보존한다.
