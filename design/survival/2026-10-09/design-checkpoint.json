@@ -701,25 +701,52 @@
     },
     "local_authoring_parts::58610ef04785e953548e6ba258816b8b9e15310837aafa8c0fe05c127863e933:newGameplay": {
       "newGameplay": "RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다."
+    },
+    "local_authoring_parts::58610ef04785e953548e6ba258816b8b9e15310837aafa8c0fe05c127863e933:systemImpact": {
+      "systemImpact": "RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다."
+    },
+    "local_authoring_parts::70d7a8df9dd0fc330b14cffb2348e1c979e1da57bccb648f4bb19670315c84f4:contentExpansionPlan:2": {
+      "milestone": "RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다.",
+      "newGameplay": "RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다.",
+      "systemImpact": "RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다."
+    },
+    "local_authoring_parts::4b6b78ab9ec3bb235e06565f129f1776d4c4dd3eaeba272310fa1c0f48a6b61e:contentExpansionPlan": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다.",
+          "newGameplay": "RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다.",
+          "systemImpact": "RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다."
+        },
+        {
+          "milestone": "RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다.",
+          "newGameplay": "RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다.",
+          "systemImpact": "RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다."
+        },
+        {
+          "milestone": "RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다.",
+          "newGameplay": "RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다.",
+          "systemImpact": "RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 55,
-      "successes": 55,
+      "calls": 56,
+      "successes": 56,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3600494,
-      "lastMs": 49772,
+      "totalMs": 3649746,
+      "lastMs": 49252,
       "lastError": null,
-      "updatedAt": "2026-10-08T23:29:03.854Z"
+      "updatedAt": "2026-10-08T23:29:53.108Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:43:07.484Z",
-  "updatedAt": "2026-10-08T23:29:03.854Z",
+  "updatedAt": "2026-10-08T23:29:53.117Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2921,57 +2948,6 @@
   "sliceRepairFeedback": {
     "designer_draft_slices::systems-progression": [
       {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[0].milestone",
-          "value": "FIGHT_THROUGH_ELEVATED_HORDE"
-        },
-        "requiredAction": "contentExpansionPlan[0].milestone의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[1].milestone",
-          "value": "FIGHT_THROUGH_ELEVATED_HORDE_B"
-        },
-        "requiredAction": "contentExpansionPlan[1].milestone의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[2].milestone",
-          "value": "CROSS_PATH_CONVERGENCE"
-        },
-        "requiredAction": "contentExpansionPlan[2].milestone의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
         "code": "DESIGN_STATE_EXCHANGE_BROKEN",
         "kind": "HARD_GATE",
         "axis": "CORE_LOOP_DESIGN",
@@ -2996,9 +2972,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SURVIVAL_02_SIGNATURE_SYSTEM→SURVIVAL_03_SIGNATURE_SYSTEM의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SURVIVAL_02_SIGNATURE_SYSTEM→SURVIVAL_02_SIGNATURE_SYSTEM의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SURVIVAL_02_SIGNATURE_SYSTEM→SURVIVAL_03_SIGNATURE_SYSTEM의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SURVIVAL_02_SIGNATURE_SYSTEM→SURVIVAL_02_SIGNATURE_SYSTEM의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3013,9 +2989,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SURVIVAL_03_SIGNATURE_SYSTEM→SURVIVAL_04_SIGNATURE_SYSTEM의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SURVIVAL_03_SIGNATURE_SYSTEM→SURVIVAL_03_SIGNATURE_SYSTEM의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SURVIVAL_03_SIGNATURE_SYSTEM→SURVIVAL_04_SIGNATURE_SYSTEM의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SURVIVAL_03_SIGNATURE_SYSTEM→SURVIVAL_03_SIGNATURE_SYSTEM의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3030,9 +3006,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SURVIVAL_04_SIGNATURE_SYSTEM→SURVIVAL_05_SIGNATURE_SYSTEM의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SURVIVAL_04_SIGNATURE_SYSTEM→SURVIVAL_04_SIGNATURE_SYSTEM의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SURVIVAL_04_SIGNATURE_SYSTEM→SURVIVAL_05_SIGNATURE_SYSTEM의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SURVIVAL_04_SIGNATURE_SYSTEM→SURVIVAL_04_SIGNATURE_SYSTEM의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3047,9 +3023,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SURVIVAL_01_SIGNATURE_SYSTEM→SURVIVAL_02_SIGNATURE_SYSTEM의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SURVIVAL_05_SIGNATURE_SYSTEM→SURVIVAL_05_SIGNATURE_SYSTEM의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SURVIVAL_01_SIGNATURE_SYSTEM→SURVIVAL_02_SIGNATURE_SYSTEM의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SURVIVAL_05_SIGNATURE_SYSTEM→SURVIVAL_05_SIGNATURE_SYSTEM의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3077,7 +3053,7 @@
   },
   "sliceRepairAttempts": {
     "local_authoring_parts::a83335c7fb080b831b98ef84d8717c1bef1bc3178a8865c80590eb4b76b043ed:signatureSystems:4": 1,
-    "designer_draft_slices::systems-progression": 1
+    "designer_draft_slices::systems-progression": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3087,6 +3063,23 @@
         "resourceFlow": "RUN_REWARDS",
         "balanceRules": "MINIMIZE_RESOURCE_LOSS, MAXIMIZE_PROGRESSION_GAIN"
       },
+      "contentExpansionPlan": [
+        {
+          "milestone": "RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다.",
+          "newGameplay": "RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다.",
+          "systemImpact": "RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다."
+        },
+        {
+          "milestone": "RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다.",
+          "newGameplay": "RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다.",
+          "systemImpact": "RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다."
+        },
+        {
+          "milestone": "RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다.",
+          "newGameplay": "RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다.",
+          "systemImpact": "RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다."
+        }
+      ],
       "failureRetryRisk": {
         "failureStates": [
           "RUN_REWARDS",
@@ -3098,10 +3091,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T23:29:03.854Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T23:29:53.113Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
