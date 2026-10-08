@@ -1,0 +1,129 @@
+{
+  "version": 1,
+  "gameId": "fifty-days",
+  "date": "2026-10-08",
+  "seedId": "OWNER-ALL-DESIGN-RESET-FIFTY-DAYS-20260917",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "ollama:qwen3:1.7b",
+  "singleAuthor": true,
+  "sourceStage": "identity-core",
+  "phase": "designer_draft",
+  "status": "AUTHORED_CANDIDATE",
+  "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
+  "originalSource": null,
+  "fingerprint": "ec3b5e38e7e3f61960e4a1debcd5fe54c5fe416933f44e501c334d67530cb76f",
+  "engineDigest": "d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904",
+  "contentDigest": "a4deb3598483db0fb9af89fed72249308065d99f437b9e26592a7bb62d59fe97",
+  "externalSeedRequired": false,
+  "designPass": false,
+  "runtimePass": false,
+  "content": {
+    "identity": "50일은 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 플레이어는 지속적으로 반복되는 선택과 위험·보상의 연결을 통해 핵심 재미를 구축하며, 이는 모바일에서도 즉시 이해되는 입력과 피드백의 반복적인 구조로 설계된다. 게임의 정체성은 주요 행동과 선택의 상호작용, 상황별 예외, 조합의 새로운 용도, 여러 유효한 해법, 숙련으로 바뀌는 선택, 발견 후 다음 질문으로 이어지는 방식으로 구체화된다. 이는 게임의 시스템과 규칙이 서로 상호작용하며, 주요 행동 MAIN은 coreFun과 coreLoop을 통해 구체화된다. 게임의 시스템은 MAIN/A/B/c/DELVE(@) 각각의 역할을 포함하며, 각각의 상태 변화와 대응은 실제 상태 키를 기반으로 정의된다. 게임의 규칙은 공유 규칙을 따르며, 시그니처 세계 규칙은 coreLoop/signatureSystems와 직접 연결되어야 한다. 게임의 설계는 기존 원본의 규칙과 수치를 보존하며, MAIN/A/B/c/@와 causalDNA의 연결은 현재 필드가 담당하는 범위에서 실제 상태 변화로 유지된다. 게임의 설계는 학문을 가르치거나 학문 소재를 넣는 것이 아니라, 게임 자체를 오래 연구할 만한 규칙·관계·응용의 층위로 깊이가 확보된다. 게임의 시스템은 주요 행동 MAIN, 독립된 상태를 교환하는 두 대축 A/B, 보조 요소 c, 파고들기 @로 구성되며, 각각의 상태 변화와 대응은 실제 상태 키를 기반으로 정의된다. 게임의 규칙은 기존 원본의 규칙과 수치를 보존하며, 시그니처의 purpose/playerChoice에 발동 조건·자원·시간·전조·상대 대응과 플레이어의 대안을 담고, MAIN은 coreFun/coreLoop, A/B는 signatureSystems/systemIner",
+    "playerFantasy": "50일은 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 플레이어는 지속적으로 반복되는 선택과 위험·보상의 연결을 통해 핵심 재미를 구축하며, 이는 모바일에서도 즉시 이해되는 입력과 피드백의 반복적인 구조로 설계된다. 게임의 정체성은 주요 행동과 선택의 상호작용, 상황별 예외, 조합의 새로운 용도, 여러 유효한 해법, 숙련으로 바뀌는 선택, 발견 후 다음 질문으로 이어지는 방식으로 구체화된다. 이는 게임의 시스템과 규칙이 서로 상호작용하며, 주요 행동 MAIN은 coreFun과 coreLoop을 통해 구체화된다. 게임의 시스템은 MAIN/A/B/c/DELVE(@) 각각의 역할을 포함하며, 각각의 상태 변화와 대응은 실제 상태 키를 기반으로 정의된다. 게임의 규칙은 공유 규칙을 따르며, 시그니처 세계 규칙은 coreLoop/signatureSystems와 직접 연결되어야 한다. 게임의 설계는 기존 원본의 규칙과 수치를 보존하며, MAIN/A/B/c/@와 causalDNA의 연결은 현재 필드가 담당하는 범위에서 실제 상태 변화로 유지된다. 게임의 설계는 학문을 가르치거나 학문 소재를 넣는 것이 아니라, 게임 자체를 오래 연구할 만한 규칙·관계·응용의 층위로 깊이가 확보된다. 게임의 시스템은 주요 행동 MAIN, 독립된 상태를 교환하는 두 대축 A/B, 보조 요소 c, 파고들기 @로 구성되며, 각각의 상태 변화와 대응은 실제 상태 키를 기반으로 정의된다. 게임의 규칙은 기존 원본의 규칙과 수치를 보존하며, 시그니처의 purpose/player",
+    "coreFun": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.과 Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용을 구체화한 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 재미와 시스템 연결을 확정한다. 이는 플레이어가 지속적으로 반복되는 선택과 위험·보상의 연결을 통해 핵심 재미를 구축하며, 이는 모바일에서도 즉시 이해되는 입력과 피드백의 반복적인 구조로 설계된다. 게임의 정체성은 주요 행동 MAIN은 coreFun과 coreLoop을 통해 구체화되며, 시그니처 세계 규칙은 coreLoop/signatureSystems와 직접 연결되어야 한다. 게임의 시스템은 MAIN/A/B/c/DELVE(@) 각각의 역할을 포함하며, 각각의 상태 변화와 대응은 실제 상태 키를 기반으로 정의된다. 게임의 규칙은 공유 규칙을 따르며, 시그니처의 purpose/playerChoice에 발동 조건·자원·시간·전조·상대 대응과 플레이어의 대안을 담고, MAIN은 coreFun/coreLoop, A/B는 signatureSystems/systemInterconnections에서 실제 상태 교환으로 증명된다. 게임의 설계는 기존 원본의 규칙과 수치를 보존하며, MAIN/A/B/c/@와 causalDNA의 연결은 현재 필드가 담당하는 범위에서 실제 상태 변화로 유지된다. 게임의 설계는 학문을 가르치거나 학문 소재를 넣는 것이 아니라, 게임 자체를 오래 연구할",
+    "coreLoop": [
+      "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+      "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+    ],
+    "signatureSystems": [
+      {
+        "id": "signatureSystems[0]",
+        "grammarRole": "MAIN",
+        "stateInputs": [
+          "currentBuild",
+          "enemyPressure",
+          "runRewards",
+          "upgradeChoices"
+        ],
+        "stateOutputs": [
+          "nextProgressionChoice",
+          "updatedBuild",
+          "survivedWave",
+          "convertedRunResult"
+        ],
+        "name": "BuildSynergySystem",
+        "purpose": "Facilitates dynamic build evolution through strategic upgrade selection, survival optimization, and progression conversion",
+        "playerChoice": "Select upgrades, perks, weapons, or skills that transform the current build to enhance survival capabilities and unlock new progression paths"
+      },
+      {
+        "id": "signatureSystems[1]",
+        "grammarRole": "A",
+        "stateInputs": [
+          "currentBuild",
+          "enemyPressure",
+          "runRewards",
+          "upgradeChoices"
+        ],
+        "stateOutputs": [
+          "nextProgressionChoice",
+          "updatedBuild",
+          "survivedWave",
+          "convertedRunResult"
+        ],
+        "name": "ProgressionConversionSystem",
+        "purpose": "Enables dynamic progression through the conversion of run results into new game states, maintaining the core loop and ensuring progression is both meaningful and achievable.",
+        "playerChoice": "Select and combine upgrades, perks, weapons, or skills that transform the current build to unlock new progression paths and ensure survival in subsequent waves."
+      },
+      {
+        "id": "signatureSystems[2]",
+        "grammarRole": "B",
+        "stateInputs": [
+          "currentBuild",
+          "enemyPressure",
+          "runRewards",
+          "upgradeChoices"
+        ],
+        "stateOutputs": [
+          "nextProgressionChoice",
+          "updatedBuild",
+          "survivedWave",
+          "convertedRunResult"
+        ],
+        "name": "ProgressionExpansionSystem",
+        "purpose": "Enables dynamic progression through the expansion of game states, introducing new gameplay mechanics and narrative layers that evolve with each progression step. This system ensures that the core loop remains intact while allowing for the introduction of new elements that enhance player engagement and narrative depth.",
+        "playerChoice": "Select and combine upgrades, perks, weapons, or skills that not only transform the current build but also introduce new gameplay mechanics, narrative elements, or strategic options that expand the game's potential and create new progression paths."
+      },
+      {
+        "id": "signatureSystems[3]",
+        "grammarRole": "c",
+        "stateInputs": [
+          "currentBuild",
+          "enemyPressure",
+          "runRewards",
+          "upgradeChoices"
+        ],
+        "stateOutputs": [
+          "nextProgressionChoice",
+          "updatedBuild",
+          "survivedWave",
+          "convertedRunResult"
+        ],
+        "name": "ProgressionDiscoverySystem",
+        "purpose": "Enables dynamic progression through the discovery of new gameplay mechanics, narrative layers, and strategic options that evolve with each progression step. This system ensures that the core loop remains intact while allowing for the introduction of new elements that enhance player engagement and narrative depth.",
+        "playerChoice": "Select and combine upgrades, perks, weapons, or skills that not only transform the current build but also introduce new gameplay mechanics, narrative elements, or strategic options that evolve with each progression step. This discovery system allows players to explore new possibilities, uncover hidden strategies, and create unique progression paths that reflect the dynamic nature of the game."
+      },
+      {
+        "id": "signatureSystems[4]",
+        "grammarRole": "DELVE",
+        "stateInputs": [
+          "currentBuild",
+          "enemyPressure",
+          "runRewards",
+          "upgradeChoices"
+        ],
+        "stateOutputs": [
+          "nextProgressionChoice",
+          "updatedBuild",
+          "survivedWave",
+          "convertedRunResult"
+        ],
+        "name": "ProgressionDiscoverySystem",
+        "purpose": "Enables dynamic progression through the discovery of new gameplay mechanics, narrative layers, and strategic options that evolve with each progression step. This system ensures that the core loop remains intact while allowing for the introduction of new elements that enhance player engagement and narrative depth.",
+        "playerChoice": "Select and combine upgrades, perks, weapons, or skills that not only transform the current build but also introduce new gameplay mechanics, narrative elements, or strategic options that evolve with each progression step. This discovery system allows players to explore new possibilities, uncover hidden strategies, and create unique progression paths that reflect the dynamic nature of the game."
+      }
+    ],
+    "multiplayerMode": "HYBRID"
+  },
+  "updatedAt": "2026-10-08T07:50:56.975Z"
+}
