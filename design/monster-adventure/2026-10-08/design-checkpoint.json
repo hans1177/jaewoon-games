@@ -106,25 +106,236 @@
       "name": "c",
       "purpose": "이를 통해 플레이어의 선택과 세계 규칙 간의 상호작용을 구체화하고, 게임의 깊이를 확보한다",
       "playerChoice": "이를 통해 플레이어의 선택과 세계 규칙 간의 상호작용을 구체화하고, 게임의 깊이를 확보한다"
+    },
+    "local_authoring_parts::eb79bed293fcc4a7559a777cf4fa547c2dd5a5717a3f32505086a4ea983bbdbd:signatureSystems:4": {
+      "id": "DELVE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount"
+      ],
+      "stateOutputs": [
+        "Score",
+        "Distance",
+        "Reward",
+        "ProgressionBenefit"
+      ],
+      "name": "DELVE",
+      "purpose": "게임의 깊이를 확보하고, 플레이어의 선택과 세계 규칙 간의 상호작용을 구체화한다",
+      "playerChoice": "이를 통해 플레이어의 선택과 세계 규칙 간의 상호작용을 구체화하고, 게임의 깊이를 확보한다"
+    },
+    "local_authoring_parts::aeee1953a358e724d8fb2d8023212e7357e5bf3943679d998671e5dc96cd2e5c:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "MAIN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "Score",
+            "Distance",
+            "Reward",
+            "ProgressionBenefit"
+          ],
+          "name": "MAIN",
+          "purpose": "기존의 인과문법을 비튼다",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        },
+        {
+          "id": "MAIN",
+          "grammarRole": "A",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "Score",
+            "Distance",
+            "Reward",
+            "ProgressionBenefit"
+          ],
+          "name": "MAIN",
+          "purpose": "기존의 인과문법을 비튼다",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        },
+        {
+          "id": "B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "Score",
+            "Distance",
+            "Reward",
+            "ProgressionBenefit"
+          ],
+          "name": "B",
+          "purpose": "기존의 인과문법을 비튼다",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "c",
+          "grammarRole": "c",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "Score",
+            "Distance",
+            "Reward",
+            "ProgressionBenefit"
+          ],
+          "name": "c",
+          "purpose": "이를 통해 플레이어의 선택과 세계 규칙 간의 상호작용을 구체화하고, 게임의 깊이를 확보한다",
+          "playerChoice": "이를 통해 플레이어의 선택과 세계 규칙 간의 상호작용을 구체화하고, 게임의 깊이를 확보한다"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "Score",
+            "Distance",
+            "Reward",
+            "ProgressionBenefit"
+          ],
+          "name": "DELVE",
+          "purpose": "게임의 깊이를 확보하고, 플레이어의 선택과 세계 규칙 간의 상호작용을 구체화한다",
+          "playerChoice": "이를 통해 플레이어의 선택과 세계 규칙 간의 상호작용을 구체화하고, 게임의 깊이를 확보한다"
+        }
+      ]
+    },
+    "local_authoring_parts::f4d782c4d0808e6d95680a6a5f5cbe1e9c34af2caf9e67d771fe6d668b3d0be2:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "signatureSystems": [
+        {
+          "id": "MAIN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "Score",
+            "Distance",
+            "Reward",
+            "ProgressionBenefit"
+          ],
+          "name": "MAIN",
+          "purpose": "기존의 인과문법을 비튼다",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        },
+        {
+          "id": "MAIN",
+          "grammarRole": "A",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "Score",
+            "Distance",
+            "Reward",
+            "ProgressionBenefit"
+          ],
+          "name": "MAIN",
+          "purpose": "기존의 인과문법을 비튼다",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        },
+        {
+          "id": "B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "Score",
+            "Distance",
+            "Reward",
+            "ProgressionBenefit"
+          ],
+          "name": "B",
+          "purpose": "기존의 인과문법을 비튼다",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "c",
+          "grammarRole": "c",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "Score",
+            "Distance",
+            "Reward",
+            "ProgressionBenefit"
+          ],
+          "name": "c",
+          "purpose": "이를 통해 플레이어의 선택과 세계 규칙 간의 상호작용을 구체화하고, 게임의 깊이를 확보한다",
+          "playerChoice": "이를 통해 플레이어의 선택과 세계 규칙 간의 상호작용을 구체화하고, 게임의 깊이를 확보한다"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "Score",
+            "Distance",
+            "Reward",
+            "ProgressionBenefit"
+          ],
+          "name": "DELVE",
+          "purpose": "게임의 깊이를 확보하고, 플레이어의 선택과 세계 규칙 간의 상호작용을 구체화한다",
+          "playerChoice": "이를 통해 플레이어의 선택과 세계 규칙 간의 상호작용을 구체화하고, 게임의 깊이를 확보한다"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 903959,
-      "lastMs": 99496,
+      "totalMs": 1002063,
+      "lastMs": 98104,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:14:11.149Z"
+      "updatedAt": "2026-10-08T13:15:49.254Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:59:07.154Z",
-  "updatedAt": "2026-10-08T13:14:11.149Z",
+  "updatedAt": "2026-10-08T13:15:49.257Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2210,7 +2421,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:14:11.149Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:15:49.257Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
