@@ -1,0 +1,99 @@
+{
+  "version": 1,
+  "gameId": "crystal-defense",
+  "date": "2026-10-09",
+  "seedId": "OWNER-ENROLL-CRYSTAL-DEFENSE-20260913",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "ollama:qwen3:1.7b",
+  "singleAuthor": true,
+  "sourceStage": "identity-core",
+  "phase": "designer_draft",
+  "status": "AUTHORED_CANDIDATE",
+  "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
+  "originalSource": null,
+  "fingerprint": "cb0eef27f5d82d55156e7677162ab25fbe9be0b2f95c3178e9d78042c46fc471",
+  "engineDigest": "095ef19579f8737b9f588a24419948d2c32ca87934148e55fede6ceec471ddff",
+  "contentDigest": "d7dccad81e4a7962d1a7e25f8e66c3b532fde7b67f4851984cc28cdb6446fd5f",
+  "externalSeedRequired": false,
+  "designPass": false,
+  "runtimePass": false,
+  "content": {
+    "identity": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다. 게임은 단순한 웨이브 디펜스에서 시작해 플레이어가 '현재 선택'에 따라 다음 상태를 바꾼다. 중심 행동은 READ THE NEXT ATTACK PATTERN AND CHOOSE WHERE CRISTAL DEFENSES CREATE MOST VALUE이다. 두 대축은 SPEND LIMITED RESOURCES ON PLACEMENT, RESONANCE OR UPGRADES와 SURVIVE THE WAVE AND USE THE RESULT TO PREPARE A DIFFERENT COUNTER FOR THE NEXT THREAT이며, 보조 요소는 @인 것으로 구성된다. 세계 규칙은 MAIN×A×B×c의 관계를 기반으로 하며, 인과법칙은 주요 인물의 목표·두려움·비밀을 통해 실제 선택과 관계 변화로 나타난다.",
+    "playerFantasy": "플레이어는 웨이브 디펜스에서 단순히 방어를 하는 것이 아니라, '현재 선택'에 따라 다음 상태를 바꾸는 독자적인 전략을 실행해야 한다. 중심 행동은 '현재 선택'을 하여 '다음 상태'를 결정하는 데서 시작하며, 이 과정에서는 주요 인물의 목표·두려움·비밀이 실제 선택과 관계 변화로 나타난다. 두 대축은 'SPEND LIMITED RESOURCES ON PLACEMENT, RESONANCE OR UPGRADES'와 'SURVIVE THE WAVE AND USE THE RESULT TO PREPARE A DIFFERENT COUNTER FOR THE NEXT THREAT'이며, 보조 요소는 '@'로 구성된다.",
+    "coreFun": "플레이어는 웨이브 디펜스에서 단순히 방어를 하는 것이 아니라, '현재 선택'에 따라 다음 상태를 바꾸는 독자적인 전략을 실행해야 한다. 중심 행동은 '현재 선택'을 하여 '다음 상태'를 결정하는 데서 시작하며, 이 과정에서는 주요 인물의 목표·두려움·비밀이 실제 선택과 관계 변화로 나타난다. 두 대축은 'SPEND LIMITED RESOURCES ON PLACEMENT, RESONANCE OR UPGRADES'와 'SURVIVE THE WAVE AND USE THE RESULT TO PREPARE A DIFFERENT COUNTER FOR THE NEXT THREAT'이며, 보조 요소는 '@'로 구성된다. 세계 규칙은 MAIN×A×B×c의 관계를 기반으로 하며, 인과법칙은 주요 인물의 목표·두려움·비밀을 통해 실제 선택과 관계 변화로 나타난다.",
+    "coreLoop": [
+      "INPUT: 플레이어가 '현재 선택'을 하며, 주요 인물의 목표·두려움·비밀을 기반으로 다음 상태를 결정해야 한다.",
+      "SELECT: 'SPEND LIMITED RESOURCES ON PLACEMENT, RESONANCE OR UPGRADES' 또는 'SURVIVE THE WAVE AND USE THE RESULT TO PREPARE A DIFFERENT COUNTER FOR THE NEXT THREAT' 중 하나를 선택한다.",
+      "OUTPUT: 선택 결과에 따라 세계 상태가 변환되고, 이는 주요 인물의 목표와 두려움이 실제 선택과 관계 변화로 나타난다."
+    ],
+    "signatureSystems": [
+      {
+        "id": "SIGNATURE_SYSTEM_0",
+        "grammarRole": "MAIN",
+        "stateInputs": [
+          "CURRENT_SELECTION"
+        ],
+        "stateOutputs": [
+          "NEXT_WORLD_STATE"
+        ],
+        "name": "DEFENSE_STRATEGY_CORE",
+        "purpose": "MANAGE DEFENSE STRATEGIES BASED ON PLAYER CHOICE AND GAME CONTEXT",
+        "playerChoice": "SELECT BETWEEN 'SPEND LIMITED RESOURCES ON PLACEMENT, RESONANCE OR UPGRADES' OR 'SURVIVE THE WAVE AND USE THE RESULT TO PREPARE A DIFFERENT COUNTER FOR THE NEXT THREAT'"
+      },
+      {
+        "id": "SIGNATURE_SYSTEM_1",
+        "grammarRole": "A",
+        "stateInputs": [
+          "CURRENT_SELECTION"
+        ],
+        "stateOutputs": [
+          "NEXT_WORLD_STATE"
+        ],
+        "name": "DEFENSE_STRATEGY_CORE",
+        "purpose": "MANAGE DEFENSE STRATEGIES BASED ON PLAYER CHOICE AND GAME CONTEXT",
+        "playerChoice": "SELECT BETWEEN 'SPEND LIMITED RESOURCES ON PLACEMENT, RESONANCE OR UPGRADES' OR 'SURVIVE THE WAVE AND USE THE RESULT TO PREPARE A DIFFERENT COUNTER FOR THE NEXT THREAT'"
+      },
+      {
+        "id": "SIGNATURE_SYSTEM_2",
+        "grammarRole": "B",
+        "stateInputs": [
+          "CURRENT_SELECTION"
+        ],
+        "stateOutputs": [
+          "NEXT_WORLD_STATE"
+        ],
+        "name": "DEFENSE_STRATEGY_CORE_B",
+        "purpose": "MANAGE DEFENSE STRATEGIES BASED ON PLAYER CHOICE AND GAME CONTEXT",
+        "playerChoice": "SELECT BETWEEN 'SURVIVE THE WAVE AND USE THE RESULT TO PREPARE A DIFFERENT COUNTER FOR THE NEXT THREAT' OR 'SPEND LIMITED RESOURCES ON PLACEMENT, RESONANCE OR UPGRADES'"
+      },
+      {
+        "id": "SIGNATURE_SYSTEM_3",
+        "grammarRole": "c",
+        "stateInputs": [
+          "CURRENT_SELECTION"
+        ],
+        "stateOutputs": [
+          "NEXT_WORLD_STATE"
+        ],
+        "name": "DEFENSE_STRATEGY_CORE_C",
+        "purpose": "MANAGE DEFENSE STRATEGIES BASED ON PLAYER CHOICE AND GAME CONTEXT",
+        "playerChoice": "SELECT BETWEEN 'SURVIVE THE WAVE AND USE THE RESULT TO PREPARE A DIFFERENT COUNTER FOR THE NEXT THREAT' OR 'SPEND LIMITED RESOURCES ON PLACEMENT, RESONANCE OR UPGRADES'"
+      },
+      {
+        "id": "SIGNATURE_SYSTEM_4",
+        "grammarRole": "DELVE",
+        "stateInputs": [
+          "CURRENT_SELECTION"
+        ],
+        "stateOutputs": [
+          "NEXT_WORLD_STATE"
+        ],
+        "name": "DEFENSE_STRATEGY_CORE_DELVE",
+        "purpose": "MANAGE DEFENSE STRATEGIES BASED ON PLAYER CHOICE AND GAME CONTEXT",
+        "playerChoice": "SELECT BETWEEN 'SURVIVE THE WAVE AND USE THE RESULT TO PREPARE A DIFFERENT COUNTER FOR THE NEXT THREAT' OR 'SPEND LIMITED RESOURCES ON PLACEMENT, RESONANCE OR UPGRADES'"
+      }
+    ],
+    "multiplayerMode": "HYBRID"
+  },
+  "updatedAt": "2026-10-08T18:52:41.206Z"
+}
