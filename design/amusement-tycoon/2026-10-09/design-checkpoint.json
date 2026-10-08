@@ -73,25 +73,38 @@
       "name": "RESULT_BASED_ON_RESULT",
       "purpose": "Finish or fail, receive a score or reward, unlock small progression benefit and retry with minimal friction",
       "playerChoice": "Play a brief run with readable feedback, collect rewards, make small risk or route choice before end"
+    },
+    "local_authoring_parts::28b8a0962de0cf58b003d3ab18efa042b35fdac474b70ceab3d655de90909f29:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "START_INPUT"
+      ],
+      "stateOutputs": [
+        "UNLOCK_SMALL_PROGRESSION_BENEFIT"
+      ],
+      "name": "SEQUENTIAL_REWARD_PATH",
+      "purpose": "RESULT_BASED_ON_RESULT",
+      "playerChoice": "SELECT_ROUTE_OR_RISK"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 690539,
-      "lastMs": 247432,
+      "totalMs": 786317,
+      "lastMs": 95778,
       "lastError": null,
-      "updatedAt": "2026-10-08T22:18:36.868Z"
+      "updatedAt": "2026-10-08T22:20:12.648Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T22:07:06.296Z",
-  "updatedAt": "2026-10-08T22:18:36.868Z",
+  "updatedAt": "2026-10-08T22:20:12.648Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2015,7 +2028,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T22:18:36.868Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T22:20:12.648Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
