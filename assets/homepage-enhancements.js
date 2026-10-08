@@ -184,7 +184,7 @@ async function bindAvailableUnityWebSurfaces(catalog){
     for(const href of [`/web-games/${id}/unity/`,`/web-games/${id}/`]){
     try{
       const indexResponse=await probeFetch(`${href}index.html?ts=${stamp}`,{cache:'no-store'});
-      if(!indexResponse.ok)return;
+      if(!indexResponse.ok)continue;
       const html=await indexResponse.text();
       let complete=false;
       try{
