@@ -707,25 +707,98 @@
           "stateChange": "FROM_START_TO_RUN"
         }
       ]
+    },
+    "local_authoring_parts::487200477adf6cd43cb3d5431438f72c418a77062fd63ca0e978f043daeb57ec:progressionDirection": {
+      "progressionDirection": "게임 내에서 MAIN/A/B/C의 선택 결과와 세계 인과법칙에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 합니다."
+    },
+    "local_authoring_parts::36d95df313e6306b5464cf04b2406a9f8a658d086da91b200a3e4232c1e968e5:systemInterconnections,progressionDirection": {
+      "systemInterconnections": [
+        {
+          "fromId": "START_STATE",
+          "toId": "RUN_STATE",
+          "stateKeys": [
+            "NEXT_WORLD_STATE",
+            "NEW_CHOICE_STATE",
+            "PROGRESSION_STATE"
+          ],
+          "fromSystem": "SIGNATURE_SYSTEM_0",
+          "toSystem": "SIGNATURE_SYSTEM_0",
+          "trigger": "RESULT_STATE",
+          "stateChange": "FROM_START_TO_RUN"
+        },
+        {
+          "fromId": "START_STATE",
+          "toId": "RUN_STATE",
+          "stateKeys": [
+            "NEXT_WORLD_STATE",
+            "NEW_CHOICE_STATE",
+            "PROGRESSION_STATE"
+          ],
+          "fromSystem": "SIGNATURE_SYSTEM_0",
+          "toSystem": "SIGNATURE_SYSTEM_0",
+          "trigger": "RESULT_STATE",
+          "stateChange": "FROM_START_TO_RUN"
+        },
+        {
+          "fromId": "START_STATE",
+          "toId": "RUN_STATE",
+          "stateKeys": [
+            "NEXT_WORLD_STATE",
+            "NEW_CHOICE_STATE",
+            "PROGRESSION_STATE"
+          ],
+          "fromSystem": "SIGNATURE_SYSTEM_0",
+          "toSystem": "SIGNATURE_SYSTEM_0",
+          "trigger": "RESULT_STATE",
+          "stateChange": "FROM_START_TO_RUN"
+        },
+        {
+          "fromId": "START_STATE",
+          "toId": "RUN_STATE",
+          "stateKeys": [
+            "NEXT_WORLD_STATE",
+            "NEW_CHOICE_STATE",
+            "PROGRESSION_STATE"
+          ],
+          "fromSystem": "SIGNATURE_SYSTEM_0",
+          "toSystem": "SIGNATURE_SYSTEM_3",
+          "trigger": "GAMEPLAY_TRIGGER",
+          "stateChange": "FROM_RESULT_TO_RUN"
+        },
+        {
+          "fromId": "START_STATE",
+          "toId": "RUN_STATE",
+          "stateKeys": [
+            "NEXT_WORLD_STATE",
+            "NEW_CHOICE_STATE",
+            "PROGRESSION_STATE"
+          ],
+          "fromSystem": "SIGNATURE_SYSTEM_0",
+          "toSystem": "SIGNATURE_SYSTEM_0",
+          "trigger": "RESULT_STATE",
+          "stateChange": "FROM_START_TO_RUN"
+        }
+      ],
+      "progressionDirection": "게임 내에서 MAIN/A/B/C의 선택 결과와 세계 인과법칙에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 23,
-      "successes": 20,
+      "calls": 24,
+      "successes": 21,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2115918,
-      "lastMs": 54723,
+      "totalMs": 2173432,
+      "lastMs": 57514,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T22:41:12.742Z"
+      "updatedAt": "2026-10-08T22:42:10.259Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T22:05:56.751Z",
-  "updatedAt": "2026-10-08T22:41:12.744Z",
+  "updatedAt": "2026-10-08T22:42:10.260Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2651,7 +2724,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T22:41:12.744Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T22:42:10.260Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
