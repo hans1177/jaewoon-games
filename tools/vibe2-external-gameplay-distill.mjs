@@ -143,8 +143,12 @@ function main() {
       project: `external-commercial-${game.id}`,
       difficulty: 'production-reference',
       instruction: `실제 상용 모바일 게임 ${game.title}의 black-box 런타임 관찰을 근거로, 보이는 동작을 Unity에서 독립 구현할 때 필요한 코드 책임 경계를 설명하라. 내부 코드나 에셋을 추출했다고 가정하지 마라.`,
-      input: `category=${game.category}; inputProfile=${game.inputProfile}; officialStoreInstall=PASS; launch=PASS; foreground=PASS; processAliveAfter=PASS; crashOrANR=NONE; visualChange=${row.visualChange ? 'OBSERVED' : 'NOT_CONFIRMED'}`,
-      output: lesson.output,
+      input: `category=${game.category}; inputProfile=${game.inputProfile}; officialStoreInstall=PASS; launch=PASS; foreground=PASS; processAliveAfter=PASS; crashOrANR=NONE; visualChange=${row.visualChange ? 'OBSERVED' : 'NOT_CONFIRMED'}; deliveredInputs=${(row.inputTrace||[]).filter(event=>event.inputDelivered===true).length}/${(row.inputTrace||[]).length}; implementationVerified=NO`,
+      output: ['관찰 범위는 앱 실행·전경 상태·입력 시도 및 전달 상태·캡처 변화 여부다. 아래 구현 원칙은 관찰에 대한 독립 설계 제안이며, 해당 게임의 내부 코드·물리·모션 곡선을 확인했다는 뜻이 아니다.',lesson.output.replace('관찰된 ', '이 장르의 ')].join('\n'),
+      observationScope:row.observationScope||'APP_LAUNCH_AND_SCREENSHOT_PAIR',
+      measuredInputCount:(row.inputTrace||[]).filter(event=>event.inputDelivered===true).length,
+      unmeasured:row.unmeasured||['PHYSICS_PARAMETERS','ANIMATION_CURVES','ACTION_HIT_TIMING','MENU_SEMANTICS','INTERNAL_IMPLEMENTATION'],
+      implementationInferenceVerified:false,
       sourceRevision: `external-playtest-${runId}-${game.id}`,
       provenance: {
         sourceKind: 'commercial-runtime-reference',
@@ -156,6 +160,7 @@ function main() {
         playtestRunId: runId,
         beforeScreenshotSha256: row.beforeScreenshotSha256 || '',
         afterScreenshotSha256: row.afterScreenshotSha256 || '',
+        inputTrace:(row.inputTrace||[]).slice(0,8).map(event=>({sequence:event.sequence,input:event.input,inputDelivered:event.inputDelivered===true,screenshotSha256:event.screenshotSha256,foreground:event.foreground===true})),
         codeExtracted: false,
         binaryRedistributed: false,
         evidenceRetention: row.evidenceRetention || 'EPHEMERAL_ARTIFACT_ONLY'

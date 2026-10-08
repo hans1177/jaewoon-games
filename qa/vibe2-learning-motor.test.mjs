@@ -694,7 +694,7 @@ test('learning motor exposes Roblox touch character and UI native domains',()=>{
 
 test('Roblox code practice is cloud-production oriented and covers advanced native coding domains',()=>{
   const curriculum=JSON.parse(fs.readFileSync('company-learning/roblox-practice.json','utf8'));
-  assert.equal(curriculum.version,4);
+  assert.equal(curriculum.version,5);
   assert.equal(curriculum.productionRuntimeAuthority,'ROBLOX_OFFICIAL_CLOUD_API_ONLY');
   assert.equal(curriculum.studioRequired,false);
   assert.equal(curriculum.studioProductionEvidenceAccepted,false);
@@ -2024,7 +2024,8 @@ test('platform fault cards enter existing practice queue with executable route c
   const idle=buildIdlePracticeQueue({});
   const cards=idle.drills.filter(row=>row.kind==='PLATFORM_CODE_REPAIR');
   assert.deepEqual([...new Set(cards.map(row=>row.platformProfile))].sort(),['unity','web']);
-  assert.equal(cards.filter(row=>row.platformProfile==='unity').length,5);
+  const curriculum=JSON.parse(fs.readFileSync('company-learning/roblox-practice.json','utf8'));
+  assert.deepEqual(cards.filter(row=>row.platformProfile==='unity').map(row=>row.id).sort(),curriculum.platformDrills.filter(row=>row.platform==='unity').map(row=>row.id).sort());
   for(const card of cards){
     const injected=injectIdlePracticeTask({tasks:[]},{drills:[card]});
     assert.equal(injected.added,true);

@@ -97,6 +97,8 @@
         alpha: new MotionSpring(finite(options.alpha, 1), { stiffness: 220, damping: 30, ...spring }),
       };
       this.time = 0;
+      this.presentationTime = 0;
+      this.afterimageDuration = clamp(finite(options.afterimageDuration, .12), .02, .5);
       this.motionScale = clamp(finite(options.motionScale, 1), 0, 2);
       this.reducedMotion = Boolean(options.reducedMotion);
       this.lowPower = Boolean(options.lowPower);
@@ -115,7 +117,7 @@
       this.land = { time: 0, duration: 0.2, strength: 1 };
       this.flash = 0;
       this.history = [];
-      this.maxHistory = Math.max(2, Math.floor(finite(options.afterimageSamples, 8)));
+      this.maxHistory = clamp(Math.floor(finite(options.afterimageSamples, 8)), 2, 64);
       this.lastSample = this.sample();
     }
 
@@ -200,9 +202,11 @@
 
     update(dt) {
       const delta = clamp(finite(dt), 0, 0.1);
-      const wasPaused = this.visualPause > 0;
+      if (delta === 0) return this.lastSample;
+      const pausedDelta = Math.min(delta, this.visualPause);
       this.visualPause = Math.max(0, this.visualPause - delta);
-      const motionDelta = wasPaused ? 0 : delta;
+      const motionDelta = delta - pausedDelta;
+      this.presentationTime += delta;
       this.time += motionDelta;
       for (const spring of Object.values(this.channels)) spring.update(delta);
       const follow = 1 - Math.exp(-delta * 12 * this.profile.inertialization);
@@ -213,8 +217,12 @@
       this.flash = Math.max(0, this.flash - delta * 8);
       this.contactPulse = Math.max(0, this.contactPulse - delta * 6);
       this.lastSample = this.sample();
-      this.history.unshift({ ...this.lastSample, age: 0 });
-      this.history = this.history.slice(0, this.maxHistory).map((entry, index) => ({ ...entry, age: index / Math.max(1, this.maxHistory - 1) }));
+      if (this.lodTier === 'FAR' || this.lodTier === 'OFFSCREEN') this.history = [];
+      else {
+        this.history.unshift({ ...this.lastSample, sampledAt: this.presentationTime, age: 0 });
+        this.history = this.history.filter(entry => this.presentationTime - entry.sampledAt < this.afterimageDuration)
+          .slice(0, this.maxHistory).map(entry => ({ ...entry, age: (this.presentationTime - entry.sampledAt) / this.afterimageDuration }));
+      }
       return this.lastSample;
     }
 
@@ -307,7 +315,7 @@
       const intensity = this.profile.afterimageIntensity;
       return this.history.slice(1, n + 1).map((sample, index) => ({
         ...sample,
-        alpha: clamp(alpha * intensity * (1 - index / Math.max(1, n)), 0, 1),
+        alpha: clamp(finite(alpha, .22) * intensity * (1 - sample.age), 0, 1),
       }));
     }
   }

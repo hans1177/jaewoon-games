@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import crypto from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 
@@ -141,11 +142,13 @@ function screenSize(){
   const m=String(r.stdout||'').match(/(\d+)x(\d+)/);
   return{w:m?Number(m[1]):1080,h:m?Number(m[2]):2400};
 }
-function input(cmd){remoteShell('cmd input '+cmd,{allowFailure:true});}
-function performInput(profile,size){
+function input(cmd){return remoteShell('cmd input '+cmd,{allowFailure:true});}
+export async function performInput(profile,size,{execute=input,observe=()=>({}),wait=sleep}={}){
+  if(!Number.isFinite(size.w)||!Number.isFinite(size.h)||size.w<1||size.h<1)throw new Error('INPUT_SCREEN_SIZE_INVALID');
+  const commands=[];
   const w=size.w,h=size.h,cx=Math.floor(w*.5),cy=Math.floor(h*.55),left=Math.floor(w*.30),right=Math.floor(w*.70),top=Math.floor(h*.35),bottom=Math.floor(h*.75);
-  const swipe=(x1,y1,x2,y2,d=300)=>input('swipe '+[Math.floor(x1),Math.floor(y1),Math.floor(x2),Math.floor(y2),d].join(' '));
-  const tap=(x,y)=>input('tap '+Math.floor(x)+' '+Math.floor(y));
+  const swipe=(x1,y1,x2,y2,d=300)=>commands.push('swipe '+[Math.floor(x1),Math.floor(y1),Math.floor(x2),Math.floor(y2),d].join(' '));
+  const tap=(x,y)=>commands.push('tap '+Math.floor(x)+' '+Math.floor(y));
   switch(profile){
     case'RUNNER':swipe(cx,cy,cx,top,250);swipe(cx,cy,left,cy,250);swipe(cx,cy,right,cy,250);swipe(cx,cy,cx,bottom,250);break;
     case'MATCH3':swipe(w*.38,h*.56,w*.52,h*.56,300);swipe(w*.52,h*.62,w*.52,h*.50,300);swipe(w*.60,h*.56,w*.46,h*.56,300);break;
@@ -161,6 +164,17 @@ function performInput(profile,size){
     case'CARD_TAP':tap(w*.30,h*.70);tap(w*.50,h*.70);tap(w*.70,h*.70);break;
     default:swipe(cx,cy,right,cy,300);
   }
+  const trace=[];
+  for(const [index,command] of commands.entries()){
+    const start=Date.now(),result=await execute(command);
+    const commandElapsedMs=Date.now()-start;
+    await wait(180);
+    const sample=await observe(index);
+    trace.push({sequence:index+1,input:command,inputDelivered:result?.status===0,commandElapsedMs,
+      screenshotSha256:/^[a-f0-9]{64}$/.test(sample.screenshotSha256||'')?sample.screenshotSha256:null,
+      foreground:sample.foreground===true});
+  }
+  return trace;
 }
 function resolveLauncher(packageId){
   const r=remoteShell('cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.LAUNCHER '+shellQuote(packageId),{allowFailure:true});
@@ -209,7 +223,10 @@ async function playOne(game,outDir,size){
   const beforeFile=path.join(gameDir,'before.png');
   const beforeHash=screenshot(beforeFile);
   const focusBefore=focusText();
-  performInput(game.inputProfile,size);
+  const inputTrace=await performInput(game.inputProfile,size,{observe:index=>({
+    screenshotSha256:screenshot(path.join(gameDir,'input-'+(index+1)+'.png')),
+    foreground:focusText().includes(packageId)
+  })});
   await sleep(6000);
   const afterFile=path.join(gameDir,'after.png');
   const afterHash=screenshot(afterFile);
@@ -222,7 +239,8 @@ async function playOne(game,outDir,size){
     installPass:true,installReason,launchPass,
     foregroundPass:focusBefore.includes(packageId)||focusAfter.includes(packageId),
     processAliveAfter:Boolean(pid),visualChange:beforeHash!==afterHash,noCrash:noCrash(logs,packageId),
-    inputProfile:game.inputProfile,beforeScreenshotSha256:beforeHash,afterScreenshotSha256:afterHash,
+    inputProfile:game.inputProfile,inputTrace,observationScope:'APP_LAUNCH_AND_BOUNDED_INPUT_TRACE',
+    unmeasured:['PHYSICS_PARAMETERS','ANIMATION_CURVES','ACTION_HIT_TIMING','MENU_SEMANTICS','INTERNAL_IMPLEMENTATION'],beforeScreenshotSha256:beforeHash,afterScreenshotSha256:afterHash,
     evidenceRetention:'EPHEMERAL_ARTIFACT_ONLY',binaryRedistributed:false,codeExtracted:false,
     deliveryAuthority:'GOOGLE_PLAY_NATIVE_FDFE',deliveryBroker:DELIVERY_BASE,
     observedAt:new Date().toISOString()
@@ -260,4 +278,4 @@ async function main(){
   console.log('EXTERNAL_MOBILE_PLAYTEST_TOTAL='+results.length);
   if(pass<1)throw new Error('EXTERNAL_MOBILE_PLAYTEST_NO_VALID_RUNTIME_SAMPLE');
 }
-main().catch(error=>{console.error(error?.stack||error?.message||String(error));process.exitCode=1;});
+if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href)main().catch(error=>{console.error(error?.stack||error?.message||String(error));process.exitCode=1;});

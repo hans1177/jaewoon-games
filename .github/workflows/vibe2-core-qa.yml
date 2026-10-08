@@ -290,6 +290,8 @@ jobs:
       - name: Syntax check
         run: |
           set -euo pipefail
+          node qa/external-mobile-free-game-playtest-workflow.test.mjs
+          node --test qa/jaewoon-motion-engine.test.cjs
           node --check assets/vibe-engine-adapter.js
           node --check assets/vibe-workbench.js
           node --check assets/vibe-core-runtime.js
@@ -550,5 +552,3 @@ jobs:
           path: ${{ runner.temp }}/vibe2-coding-repair-benchmark.json
           if-no-files-found: error
           retention-days: 14
-
-

@@ -582,13 +582,30 @@ end`),
 return function(rootId, allowed, maxDepth)
     assert(allowed[rootId] and maxDepth >= 1)
     local stack = {rootId}
+    local selection = {}
+    local modal = false
     return {
         current = function() return stack[#stack] end,
+        rememberFocus = function(id)
+            if type(id) ~= "string" or #id > 128 then return false end
+            selection[stack[#stack]] = id; return true
+        end,
+        restoreFocus = function(isAvailable, fallback)
+            local id = selection[stack[#stack]]
+            if id and isAvailable(id) then return id end
+            return fallback and isAvailable(fallback) and fallback or nil
+        end,
+        setModal = function(value) modal = value == true end,
         open = function(id)
-            if not allowed[id] or #stack >= maxDepth or stack[#stack] == id then return false end
+            if modal or not allowed[id] or stack[#stack] == id then return false end
+            for index, prior in ipairs(stack) do
+                if prior == id then for i=#stack,index+1,-1 do table.remove(stack,i) end; return true end
+            end
+            if #stack >= maxDepth then return false end
             table.insert(stack, id); return true
         end,
         back = function()
+            if modal then modal=false; return stack[#stack] end
             if #stack > 1 then table.remove(stack) end
             return stack[#stack]
         end,

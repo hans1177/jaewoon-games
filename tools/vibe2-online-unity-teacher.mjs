@@ -137,8 +137,8 @@ export function buildPracticeTeacherSamples({ drillsFile, outDir, maxPractice = 
   const codeDrills=(curriculum.platformDrills||[]).filter(row=>row.platform==='unity'&&row.reference&&row.scenario);
   let implementationWritten=0;
   for(const drill of codeDrills.slice(0,Math.max(0,maxPractice-written))){
-    const revision=createHash('sha256').update(JSON.stringify({scenario:drill.scenario,broken:drill.broken,reference:drill.reference})).digest('hex');
-    const sample={version:2,instruction:drill.scenario,input:drill.broken,output:drill.reference,
+    const revision=createHash('sha256').update(JSON.stringify({scenario:drill.scenario,supportCode:drill.supportCode||'',broken:drill.broken,reference:drill.reference})).digest('hex');
+    const sample={version:2,instruction:drill.scenario,input:[drill.supportCode ? 'Harness-provided types (do not redeclare):\n'+drill.supportCode : '',drill.broken].filter(Boolean).join('\n\n'),output:drill.reference,
       taskType:'unity',difficulty:'regression',lifecycle:'active',teacher:true,synthetic:true,practiceOnly:true,
       sourceKind:'teacher',runtimePromotionAllowed:false,project:'unity-code-implementation-practice',
       teacherId:'GPT-authored-executable-practice',sourceRevision:'code-practice:'+revision,

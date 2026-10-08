@@ -372,6 +372,50 @@
         "float y;for(int low=-10;low<10;low++){Check(Practice.Place(low,low+3,1.5f,-4,.25f,out y));float bottom=y+low*1.5f;Check(bottom>-3.751f&&bottom<-3.749f);}",
         "float y;Check(!Practice.Place(2,1,1,0,0,out y));Check(!Practice.Place(0,1,-1,0,0,out y));Check(!Practice.Place(0,1,1,0,-1,out y));Check(!Practice.Place(float.NaN,1,1,0,0,out y));Check(!Practice.Place(0,float.PositiveInfinity,1,0,0,out y));Check(!Practice.Place(0,1,1,float.NaN,0,out y));Check(!Practice.Place(-float.MaxValue,1,2,0,0,out y)&&y==0);"
       ]
+    },
+    {
+      "id": "unity-hitstop-frame-budget",
+      "platform": "unity",
+      "level": "응용",
+      "failure": "HITSTOP_FRAME_PARTITION_DRIFT",
+      "domains": [
+        "MOTION",
+        "ACTION_TIMING",
+        "PHYSICS_PRESENTATION"
+      ],
+      "scenario": "Implement public static class Practice with bool Step(double delta,double pause,out double remainingPause,out double activeDelta). Consume only min(delta,pause) seconds of a presentation hitstop; activeDelta is the remaining part of this frame. Reject negative, NaN or infinite inputs, set both outputs to zero and return false. Zero delta is valid. Never freeze a whole frame just because pause was positive at frame start. Hitstop affects presentation time only; authoritative physics, damage and input must use their own clock.",
+      "broken": "public static class Practice { public static bool Step(double delta,double pause,out double remainingPause,out double activeDelta){remainingPause=pause-delta;activeDelta=pause>0?0:delta;return true;} }",
+      "reference": "public static class Practice { public static bool Step(double delta,double pause,out double remainingPause,out double activeDelta){remainingPause=0;activeDelta=0;if(double.IsNaN(delta)||double.IsInfinity(delta)||double.IsNaN(pause)||double.IsInfinity(pause)||delta<0||pause<0)return false;double used=delta<pause?delta:pause;remainingPause=pause-used;activeDelta=delta-used;return true;} }",
+      "supportCode": "",
+      "feedbackTests": [
+        "double p,a;Check(Practice.Step(.1,.025,out p,out a));Check(p==0&&a>.074999&&a<.075001);Check(!Practice.Step(-1,0,out p,out a)&&p==0&&a==0);"
+      ],
+      "tests": [
+        "for(int n=1;n<60;n++){double p=.15,total=0;for(int i=0;i<n;i++){double next,a;Check(Practice.Step(.5/n,p,out next,out a));p=next;total+=a;}Check(p==0&&total>.349999&&total<.350001);}",
+        "double p,a;foreach(double bad in new double[]{double.NaN,double.PositiveInfinity,double.NegativeInfinity,-.1}){Check(!Practice.Step(bad,1,out p,out a)&&p==0&&a==0);Check(!Practice.Step(1,bad,out p,out a)&&p==0&&a==0);}Check(Practice.Step(0,2,out p,out a)&&p==2&&a==0);Check(Practice.Step(3,0,out p,out a)&&p==0&&a==3);"
+      ]
+    },
+    {
+      "id": "unity-menu-modal-focus",
+      "platform": "unity",
+      "level": "응용",
+      "failure": "MENU_MODAL_BACK_FOCUS_LEAK",
+      "domains": [
+        "UI_STATE",
+        "INPUT_OWNERSHIP",
+        "MENU_NAVIGATION"
+      ],
+      "scenario": "Implement public static class Practice with int Back(MenuState s,bool[] available,int fallback). Harness supplies MenuState with public bool Modal; public int Depth; public int[] SavedFocus. Depth is the current stack index. Reject null/malformed state, null availability, negative or out-of-range Depth by returning -1 without mutation. If Modal is true, close only the modal and keep Depth. Otherwise decrement Depth if above zero. Restore SavedFocus at the resulting Depth only when it is a valid available index; else use fallback if valid and available, else -1. Never modify either array. A hidden or disabled control is unavailable. This pure state transition is not native UI runtime proof.",
+      "broken": "public static class Practice { public static int Back(MenuState s,bool[] available,int fallback){s.Depth--;s.Modal=false;return s.SavedFocus[s.Depth];} }",
+      "reference": "public static class Practice { public static int Back(MenuState s,bool[] available,int fallback){if(s==null||s.SavedFocus==null||available==null||s.Depth<0||s.Depth>=s.SavedFocus.Length)return -1;if(s.Modal)s.Modal=false;else if(s.Depth>0)s.Depth--;int focus=s.SavedFocus[s.Depth];if(focus>=0&&focus<available.Length&&available[focus])return focus;if(fallback>=0&&fallback<available.Length&&available[fallback])return fallback;return -1;} }",
+      "supportCode": "public class MenuState { public bool Modal; public int Depth; public int[] SavedFocus; }",
+      "feedbackTests": [
+        "var s=new MenuState{Modal=true,Depth=1,SavedFocus=new int[]{0,2}};var a=new bool[]{true,false,true};Check(Practice.Back(s,a,0)==2&&!s.Modal&&s.Depth==1);Check(Practice.Back(s,a,0)==0&&s.Depth==0);"
+      ],
+      "tests": [
+        "for(int n=1;n<15;n++){var f=new int[n];for(int i=0;i<n;i++)f[i]=i;var a=new bool[n];a[0]=true;var s=new MenuState{Modal=true,Depth=n-1,SavedFocus=f};Check(Practice.Back(s,a,0)==0&&s.Depth==n-1&&!s.Modal);for(int i=n-1;i>=0;i--){Check(Practice.Back(s,a,0)==0);Check(s.Depth==(i>0?i-1:0));}for(int i=0;i<n;i++)Check(f[i]==i&&a[i]==(i==0));}",
+        "Check(Practice.Back(null,new bool[0],0)==-1);var s=new MenuState{Modal=true,Depth=2,SavedFocus=new int[]{0}};Check(Practice.Back(s,new bool[]{true},0)==-1&&s.Modal&&s.Depth==2);s.Depth=0;Check(Practice.Back(s,null,0)==-1&&s.Modal);s.SavedFocus[0]=99;Check(Practice.Back(s,new bool[]{false},0)==-1&&!s.Modal&&s.Depth==0);"
+      ]
     }
   ],
   "productionRuntimeAuthority": "ROBLOX_OFFICIAL_CLOUD_API_ONLY",

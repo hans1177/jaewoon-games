@@ -81,3 +81,23 @@ test('directional hit reaction keeps body-region presentation data local to the 
   assert.equal(sample.hitBodyRegion, 'HEAD');
   assert.notEqual(sample.rotation, 0);
 });
+
+
+test('hit-stop expiry consumes only its remaining duration across frame partitions',()=>{
+  const whole=new JaewoonMotionRig(),split=new JaewoonMotionRig();
+  for(const rig of [whole,split]){rig.triggerAttack({duration:.4});rig.triggerContact({hitStopMs:35});}
+  whole.update(.08);for(let i=0;i<8;i++)split.update(.01);
+  assert.ok(Math.abs(whole.attack.time-split.attack.time)<1e-9);
+  assert.ok(Math.abs(whole.time-split.time)<1e-9);
+  assert.ok(whole.time>0);
+});
+
+test('afterimage lifetime is elapsed-time based and dormant frames cannot grow history',()=>{
+  const rig=new JaewoonMotionRig({afterimageSamples:500,afterimageDuration:.05});
+  rig.update(.01);rig.update(.01);const before=rig.history.length;
+  rig.update(0);rig.update(NaN);assert.equal(rig.history.length,before);
+  assert.equal(rig.maxHistory,64);
+  rig.update(.06);assert.equal(rig.afterimages().length,0);
+  rig.setLod({tier:'OFFSCREEN'});rig.update(.01);assert.equal(rig.history.length,0);
+  assert.ok(Number.isFinite(rig.sample().x));
+});
