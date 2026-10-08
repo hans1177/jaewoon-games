@@ -34,25 +34,42 @@
         "PROCESS: 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE의 핵심 루프로 연결되며, 이는 생존, 전략, 성장, 대응 등 다양한 판타지를 담고 있다.",
         "OUTPUT: 시그니처 상호작용을 통해 플레이어의 선택과 위험·보상, 성장의 조합을 통해 반복 가능한 핵심 루프를 구축한다."
       ]
+    },
+    "local_authoring_parts::744f624ee926fbe1af8e39a48d38327529abf0f8e014b19a25475a180dc845f5:signatureSystems:0": {
+      "id": "KARMA_RETURN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "MAIN의 결과가 다음 상태로 이어지는 시그니처 상호작용",
+        "보상은 발견과 이해에 따른 약속",
+        "다음 선택은 반복 루프의 다음 단계"
+      ],
+      "stateOutputs": [
+        "시그니처 상호작용을 통해 반복 가능한 핵심 루프 구축",
+        "플레이어의 선택과 위험·보상, 성장의 조합을 통해 다양한 경로 열기",
+        "주요 인과법칙과 보조 요소를 통해 시스템의 반복 루프 구축"
+      ],
+      "name": "KARMA_RETURN",
+      "purpose": "플레이어의 선택과 위험·보상, 성장의 조합을 통해 반복 가능한 핵심 루프 구축",
+      "playerChoice": "시그니처 상호작용을 통해 반복 가능한 핵심 루프 구축"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 431949,
-      "lastMs": 67651,
+      "totalMs": 481795,
+      "lastMs": 49846,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:49:48.069Z"
+      "updatedAt": "2026-10-08T08:50:37.916Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:42:36.090Z",
-  "updatedAt": "2026-10-08T08:49:48.069Z",
+  "updatedAt": "2026-10-08T08:50:37.916Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2251,7 +2268,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:49:48.069Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:50:37.916Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
