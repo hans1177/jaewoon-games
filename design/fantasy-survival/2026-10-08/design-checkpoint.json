@@ -741,25 +741,82 @@
         ],
         "antiMonotonyRule": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하, 플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결, 시그니처 상호작용 결과, 다음 상태와 접근 가능성이 바뀐 월드 상태를 실제 상태 변화로 반영하여, 이전 선택과 현재 상태의 관계를 유동적으로 조정하며, 새로운 플레이와 기존 시스템 영향을 구체적으로 설명한다."
       }
+    },
+    "local_authoring_parts::a4dda755b323c7b841ce1e8109f689151e97264f5e3314b167e54cf1f89d0a45:strategy,label,concept,playerFantasy": {
+      "strategy": {
+        "routeEdges": [
+          {
+            "from": "월드 상태 (18000×12000 마력숲 월드, 수정 지역, 화산, 세계수, 연구소, 퀘스트 공간)",
+            "to": "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결"
+          },
+          {
+            "from": "월드 상태 (18000×12000 마력숲 월드, 수정 지역, 화산, 세계수, 연구소, 퀘스트 공간)",
+            "to": "다음 상태와 접근 가능성이 바뀐 월드 상태"
+          }
+        ],
+        "resourceSites": [
+          {
+            "stateKey": "월드 상태",
+            "regionId": "18000×12000 마력숲 월드"
+          },
+          {
+            "stateKey": "플레이어 이동",
+            "regionId": "수정 지역"
+          },
+          {
+            "stateKey": "채집",
+            "regionId": "화산"
+          },
+          {
+            "stateKey": "전투",
+            "regionId": "세계수"
+          },
+          {
+            "stateKey": "제작",
+            "regionId": "동굴"
+          },
+          {
+            "stateKey": "퀘스트 상태",
+            "regionId": "연구소"
+          }
+        ],
+        "cooperation": [
+          {
+            "ruleId": "SIGNATURE_FIGHT_SURVIVAL",
+            "regionId": "18000×12000 마력숲 월드",
+            "abilityId": "FIGHT_SURVIVAL"
+          }
+        ],
+        "advantage": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하",
+        "cost": "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결",
+        "bestSituation": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하"
+      },
+      "label": "PLAN_A",
+      "concept": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하",
+      "playerFantasy": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하"
+    },
+    "local_authoring_parts::846fe374b30ace55becb4356c1060c590d577e59e100feb6acb931457ab03be9:genreDirection,coreLoopShift": {
+      "genreDirection": "ACTION_SURVIVAL_ROGUELITE",
+      "coreLoopShift": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 13,
+      "calls": 19,
+      "successes": 15,
       "failures": 4,
       "timeouts": 4,
       "jsonFailures": 0,
-      "totalMs": 2923850,
-      "lastMs": 75639,
+      "totalMs": 3187702,
+      "lastMs": 99221,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T15:28:09.281Z"
+      "updatedAt": "2026-10-08T15:32:33.148Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:15:14.939Z",
-  "updatedAt": "2026-10-08T15:28:09.291Z",
+  "updatedAt": "2026-10-08T15:32:33.148Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2962,7 +3019,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T15:28:09.286Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:32:33.148Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
