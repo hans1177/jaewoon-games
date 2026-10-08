@@ -98,25 +98,46 @@
       "name": "생존 환경 조절 시스템",
       "purpose": "플레이어가 실제 야생 환경과 동물 행동, 날씨, 체온, 식수와 부상을 관리하는 월드 상태를 조절하고, 이 상태 변화에 따른 보상, 위험, 다음 선택을 결정하는 시스템",
       "playerChoice": "월드 상태, 대상, 자원, 위험, 진행 상태를 조절하고, 보상, 위험, 다음 선택을 결정하는 선택을 하며, 이 상태 변화에 따른 다음 목표, 지역, 상호작용, 전략 선택을 이어간다"
+    },
+    "local_authoring_parts::02a42596483d4d1eafdacccddbea7319881b6c7bd450cfc25805f543c2edcaee:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "c",
+      "stateInputs": [
+        "월드 상태",
+        "대상",
+        "자원",
+        "위험",
+        "진행 상태"
+      ],
+      "stateOutputs": [
+        "월드 상태",
+        "대상",
+        "자원",
+        "위험",
+        "진행 상태"
+      ],
+      "name": "생존 환경 재해석 시스템",
+      "purpose": "플레이어가 실제 야생 환경과 동물 행동, 날씨, 체온, 식수와 부상을 관리하는 월드 상태를 조절하고, 이 상태 변화에 따른 보상, 위험, 다음 선택을 결정하는 시스템",
+      "playerChoice": "월드 상태, 대상, 자원, 위험, 진행 상태를 재해석하고, 이 상태 변화에 따른 보상, 위험, 다음 선택을 결정하는 선택을 하며, 이 상태 변화에 따른 다음 목표, 지역, 상호작용, 전략 선택을 이어간다"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 471176,
-      "lastMs": 46296,
+      "totalMs": 525371,
+      "lastMs": 54195,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:24:12.159Z"
+      "updatedAt": "2026-10-08T08:25:06.355Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:16:20.952Z",
-  "updatedAt": "2026-10-08T08:24:12.159Z",
+  "updatedAt": "2026-10-08T08:25:06.355Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2174,7 +2195,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:24:12.159Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:25:06.355Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
