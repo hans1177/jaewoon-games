@@ -226,6 +226,71 @@ test('equipment slots stay scrollable and authority-safe on narrow mobile screen
  assert.doesNotMatch(body,/DataStoreService|FireServer|SetAsync|UpdateAsync|RenderStepped/);
 });
 
+test('quest and crafting menus render only owner-supplied state and never invent quests or recipes',()=>{
+ const source=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const section=(first,next)=>source.slice(source.indexOf('function RobloxCommonUI.'+first+'(options)'),
+   source.indexOf('function RobloxCommonUI.'+next+'(options)'));
+ const quests=section('CreateQuestLog','CreateCraftingFullScreen');
+ const craft=section('CreateCraftingFullScreen','CreateShopFullScreen');
+ assert.match(quests,/sync\(options\.quests or \{\}\)/);
+ assert.match(quests,/row\.active==true/);
+ assert.match(quests,/row\.completed==true/);
+ assert.match(quests,/root:SetAttribute\("BoundQuestCount",#shown\)/);
+ assert.match(quests,/card:SetAttribute\("BoundQuestId",tostring\(row\.id or ""\)\)/);
+ assert.match(quests,/current\.canTrack==true and type\(options\.onTrack\)=="function"/);
+ assert.match(quests,/options\.onTrack\(current\.id,current\)/);
+ assert.match(quests,/for i=#shown\+1,#cards do cards\[i\]\.Visible=false end/);
+ assert.doesNotMatch(quests,/title="퀘스트 "\.\.i|description="목표와 진행 상태"/);
+ assert.match(craft,/sync\(options\.recipes or \{\}\)/);
+ assert.match(craft,/search:GetPropertyChangedSignal\("Text"\):Connect/);
+ assert.match(craft,/current\.craftable==true and type\(options\.onCraft\)=="function"/);
+ assert.match(craft,/options\.onCraft\(current\.id,current\)/);
+ assert.match(craft,/root:SetAttribute\("BoundRecipeCount",#shown\)/);
+ assert.match(craft,/row\.ingredientsText or row\.requirements/);
+ assert.doesNotMatch(craft,/title="제작 항목 "\.\.i/);
+ for(const body of [quests,craft]){
+   assert.match(body,/return root,\{/);
+   assert.match(body,/Sync=sync/);
+   assert.match(body,/OwnsSaveAuthority",false/);
+   assert.match(body,/OwnsRemoteAuthority",false/);
+   assert.match(body,/TouchScrollable",true/);
+   assert.doesNotMatch(body,/DataStoreService|FireServer|UpdateAsync|SetAsync|while true/);
+ }
+});
+
+test('party tycoon farm and defense menus synchronize real source values without owning gameplay',()=>{
+ const source=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const section=(first,next)=>source.slice(source.indexOf('function RobloxCommonUI.'+first+'(options)'),
+   source.indexOf('function RobloxCommonUI.'+next+'(options)'));
+ const party=section('CreatePartyRoleOverview','CreateRouteRiskPreview');
+ const building=section('CreateBuildCatalogPanel','CreateBuildPieceCard');
+ const farm=section('CreateFarmPlotPanel','CreateAnimalHousingPanel');
+ const wave=section('CreateWaveForecastRibbon','CreateStatusEffectTimeline');
+ assert.match(party,/sync\(options\.party or \{\}\)/);
+ assert.match(party,/state\.members/);
+ assert.match(party,/root:SetAttribute\("BoundPartyMemberCount",#members\)/);
+ assert.match(party,/current\.canSelect==true and type\(options\.onSelect\)=="function"/);
+ assert.match(party,/OwnsPartyAuthority",false/);
+ assert.doesNotMatch(party,/\{"전투 역할","지원 역할","현재 상태","중복\/빈 역할"\}/);
+ assert.match(building,/sync\(options\.buildings or \{\}\)/);
+ assert.match(building,/root:SetAttribute\("BoundBuildingCount",#rows\)/);
+ assert.match(building,/current\.available==true/);
+ assert.match(building,/OwnsPlacementAuthority",false/);
+ assert.doesNotMatch(building,/\{"기초","벽\/문\/창","천장\/지붕"/);
+ assert.match(farm,/sync\(options\.plot or \{\}\)/);
+ assert.match(farm,/root:SetAttribute\("BoundPlotId",tostring\(state\.id or ""\)\)/);
+ assert.match(farm,/state\.canHarvest==true and type\(options\.onHarvest\)=="function"/);
+ assert.match(farm,/OwnsFarmingAuthority",false/);
+ assert.match(wave,/sync\(options\.wave or \{\}\)/);
+ assert.match(wave,/root:SetAttribute\("WaveStateRevision"/);
+ assert.match(wave,/OwnsWaveAuthority",false/);
+ for(const body of [party,building,farm,wave]){
+   assert.match(body,/Sync=sync/);
+   assert.match(body,/OwnsRemoteAuthority",false/);
+   assert.doesNotMatch(body,/DataStoreService|FireServer|UpdateAsync|SetAsync|RunService/);
+ }
+});
+
 test('Vibe common character equipment inventory and trading screens sync exact owner state and actions',()=>{
  const script=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
  const section=(a,b)=>script.slice(script.indexOf('function RobloxCommonUI.'+a+'(options)'),script.indexOf('function RobloxCommonUI.'+b+'(options)'));
