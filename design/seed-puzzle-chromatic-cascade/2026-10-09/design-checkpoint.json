@@ -676,25 +676,52 @@
     },
     "local_authoring_parts::0aa962f1c1721b31cefaeb4b936103d07d10f871355bb76a19eba23e0cc659f8:newGameplay": {
       "newGameplay": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정에서, CORE-01 시스템의 START_BOARD 상태를 CORE-02 시스템의 START_MATCH 상태로 전환합니다."
+    },
+    "local_authoring_parts::0aa962f1c1721b31cefaeb4b936103d07d10f871355bb76a19eba23e0cc659f8:systemImpact": {
+      "systemImpact": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정에서, CORE-01 시스템의 START_BOARD 상태를 CORE-02 시스템의 START_MATCH 상태로 전환합니다."
+    },
+    "local_authoring_parts::5d3e57c435bd36c847ce7b9b2f90bf55b5b671d2e4af3f774785e5041f39dcc3:contentExpansionPlan:2": {
+      "milestone": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정",
+      "newGameplay": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정에서, CORE-01 시스템의 START_BOARD 상태를 CORE-02 시스템의 START_MATCH 상태로 전환합니다.",
+      "systemImpact": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정에서, CORE-01 시스템의 START_BOARD 상태를 CORE-02 시스템의 START_MATCH 상태로 전환합니다."
+    },
+    "local_authoring_parts::0a5efaa1e59df9833d337f918a2e74d643ee40d692a91bb668e110577705c8cc:contentExpansionPlan": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정",
+          "newGameplay": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정에서, CORE-01 시스템의 START_BOARD 상태를 CORE-02 시스템의 START_MATCH 상태로 전환합니다.",
+          "systemImpact": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정에서, CORE-01 시스템의 START_BOARD 상태를 CORE-02 시스템의 START_MATCH 상태로 전환합니다."
+        },
+        {
+          "milestone": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정",
+          "newGameplay": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정에서, CORE-01 시스템의 START_BOARD 상태를 CORE-02 시스템의 START_MATCH 상태로 전환합니다.",
+          "systemImpact": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정에서, CORE-01 시스템의 START_BOARD 상태를 CORE-02 시스템의 START_MATCH 상태로 전환합니다."
+        },
+        {
+          "milestone": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정",
+          "newGameplay": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정에서, CORE-01 시스템의 START_BOARD 상태를 CORE-02 시스템의 START_MATCH 상태로 전환합니다.",
+          "systemImpact": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정에서, CORE-01 시스템의 START_BOARD 상태를 CORE-02 시스템의 START_MATCH 상태로 전환합니다."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 54,
-      "successes": 54,
+      "calls": 55,
+      "successes": 55,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2021398,
-      "lastMs": 34665,
+      "totalMs": 2055744,
+      "lastMs": 34346,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:56:47.162Z"
+      "updatedAt": "2026-10-08T21:57:21.510Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:23:05.545Z",
-  "updatedAt": "2026-10-08T21:56:47.162Z",
+  "updatedAt": "2026-10-08T21:57:21.513Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3139,7 +3166,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T21:56:47.162Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:57:21.513Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
