@@ -12,25 +12,32 @@
   "tasks": {
     "local_authoring_parts::377028dcfb09ecb50aab11c80e01e1c58c2f2e82d7b0b86e91b5d60aab40c501:identity": {
       "identity": "휴먼 GO!은 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 플레이어는 기존의 점수나 관문을 승계하지 않고, 새로운 핵심 재미와 시스템 연결을 확정하며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 이 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하여, 단순 반복보다는 경로·위험·결과를 다변화한 반복 가능한 학문적 루프를 구축한다."
+    },
+    "local_authoring_parts::377028dcfb09ecb50aab11c80e01e1c58c2f2e82d7b0b86e91b5d60aab40c501:playerFantasy": {
+      "playerFantasy": "휴먼 GO!은 기존의 점수나 관문을 승계하지 않고, 새로운 핵심 재미와 시스템 연결을 확정하며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 플레이어는 모바일에서도 즉시 이해되는 입력과 피드백을 제공하여, 단순 반복보다는 경로·위험·결과를 다변화한 반복 가능한 학문적 루프를 구축한다."
+    },
+    "local_authoring_parts::5dbb8fa775e409d8f522a1af2209de0d60000a174636b936da206d52b628c1f3:identity,playerFantasy": {
+      "identity": "휴먼 GO!은 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 플레이어는 기존의 점수나 관문을 승계하지 않고, 새로운 핵심 재미와 시스템 연결을 확정하며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 이 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하여, 단순 반복보다는 경로·위험·결과를 다변화한 반복 가능한 학문적 루프를 구축한다.",
+      "playerFantasy": "휴먼 GO!은 기존의 점수나 관문을 승계하지 않고, 새로운 핵심 재미와 시스템 연결을 확정하며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 플레이어는 모바일에서도 즉시 이해되는 입력과 피드백을 제공하여, 단순 반복보다는 경로·위험·결과를 다변화한 반복 가능한 학문적 루프를 구축한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 203635,
-      "lastMs": 203635,
+      "totalMs": 235303,
+      "lastMs": 31668,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:59:19.696Z"
+      "updatedAt": "2026-10-08T21:59:51.365Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:55:56.047Z",
-  "updatedAt": "2026-10-08T21:59:19.696Z",
+  "updatedAt": "2026-10-08T21:59:51.366Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2229,7 +2236,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:59:19.696Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:59:51.366Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
