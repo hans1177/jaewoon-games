@@ -34,25 +34,40 @@
         "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하게 되어, 변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택으로 이어간다.",
         "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하게 되었으며, 변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택으로 이어간다."
       ]
+    },
+    "local_authoring_parts::b3eedb7cdf6d5a0d84366d8b7d4343c5945a7222609772ad2ee6f65e361bb77f:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "worldState",
+        "targetGoal"
+      ],
+      "stateOutputs": [
+        "newWorldState",
+        "nextTargetGoal"
+      ],
+      "name": "OPEN_WORLD_ADAPTATION_SYSTEM",
+      "purpose": "게임 루프 기반의 반복 가능한 플레이 흐름을 구현하며, 입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 연결을 포함함",
+      "playerChoice": "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하게 되어, 변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택으로 이어간다"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 138042,
-      "lastMs": 31717,
+      "totalMs": 158653,
+      "lastMs": 20611,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:50:19.500Z"
+      "updatedAt": "2026-10-08T21:50:40.112Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:48:01.443Z",
-  "updatedAt": "2026-10-08T21:50:19.500Z",
+  "updatedAt": "2026-10-08T21:50:40.112Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2110,7 +2125,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:50:19.500Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:50:40.112Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
