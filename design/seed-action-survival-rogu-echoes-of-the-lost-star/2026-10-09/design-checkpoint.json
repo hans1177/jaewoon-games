@@ -64,25 +64,40 @@
       "name": "ACTION_SURVIVAL_ROGUELITE_PHASE_TRANSITION",
       "purpose": "플레이어가 단순한 생존 로그라이트에서 전략적 탐험과 성장의 핵심 루프를 만드는 시그니처 세계 규칙입니다.",
       "playerChoice": "Run result and enemy pressure determine the progression choice and state change effect."
+    },
+    "local_authoring_parts::c526fc46bf4b6f49cedf860ade5817b0923afb1bcf49bd23ad0f6146697f426b:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "RUN_RESULT",
+        "ENEMY_PRESSURE"
+      ],
+      "stateOutputs": [
+        "PROGRESSION_CHOICE",
+        "STATE_CHANGE_EFFECT"
+      ],
+      "name": "ACTION_SURVIVAL_ROGUELITE_PHASE_TRANSITION_B",
+      "purpose": "플레이어가 단순한 생존 로그라이트에서 전략적 탐험과 성장의 핵심 루프를 만드는 시그니처 세계 규칙입니다.",
+      "playerChoice": "Run result and enemy pressure determine the progression choice and state change effect."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 469215,
-      "lastMs": 54071,
+      "totalMs": 529169,
+      "lastMs": 59954,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:20:34.669Z"
+      "updatedAt": "2026-10-08T19:21:34.625Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T19:12:45.424Z",
-  "updatedAt": "2026-10-08T19:20:34.669Z",
+  "updatedAt": "2026-10-08T19:21:34.625Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2281,7 +2296,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T19:20:34.669Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:21:34.625Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
