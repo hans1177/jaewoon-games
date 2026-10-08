@@ -100,7 +100,7 @@ export function candidateDiagnostics(error,language){
   return selected.slice(0,4).map(line=>line.replace(/(?:[A-Za-z]:)?[\w.\/\\-]*[\/\\](Candidate\.cs|Program\.cs|candidate\.luau|check\.luau)/g,'$1').replace(/\bProgram\.cs/g,'Harness.cs').replace(/\s*\[.*?\.csproj\]/g,'').replace(/[\u0000-\u001f\u007f]/g,' ').trim().slice(0,300));
 }
 
-export function evaluatePracticeAnswer(value={}, {drill=null,luauBinary=process.env.VIBE2_LUAU_BINARY||'luau'}={}){
+export function evaluatePracticeAnswer(value={}, {drill=null,luauBinary=process.env.VIBE2_LUAU_BINARY||'luau',fixtureCache=null}={}){
   value=value&&typeof value==='object'?value:{};
   const tests=Array.isArray(value.tests)?value.tests.map(clean).filter(Boolean):[];
   const reusable=Array.isArray(value.reusablePatterns)?value.reusablePatterns.map(clean).filter(Boolean):[];
@@ -121,11 +121,17 @@ export function evaluatePracticeAnswer(value={}, {drill=null,luauBinary=process.
     }else{
       const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-csharp-'));
       try{
-        execFileSync('docker',['image','inspect','mcr.microsoft.com/dotnet/sdk:8.0'],{timeout:10000,stdio:'ignore'});
+        const executorImage=execFileSync('docker',['image','inspect','--format','{{.Id}}','mcr.microsoft.com/dotnet/sdk:8.0'],{timeout:10000,encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();
+        // 같은 수정 세션의 기준 코드만 재사용한다. 생성 후보는 항상 새로 실행한다.
+        const fixtureKey=sha256(JSON.stringify({executorImage,broken:drill.broken,reference:drill.reference,supportCode:drill.supportCode,tests:drill.tests}));
+        const cachedFixture=fixtureCache?.get(fixtureKey);
+        codeVerification.executedPrograms=0;codeVerification.reusedFixturePrograms=0;
         const outcomes={};
         fs.writeFileSync(path.join(dir,'Practice.csproj'),'<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>true</EnableDefaultCompileItems></PropertyGroup></Project>');
         fs.writeFileSync(path.join(dir,'NuGet.Config'),'<configuration><packageSources><clear /></packageSources></configuration>');
         for(const [kind,source] of Object.entries({baseline:drill.broken,reference:drill.reference,candidate:code})){
+          if(kind!=='candidate'&&cachedFixture?.baseline===false&&cachedFixture?.reference===true){outcomes[kind]=cachedFixture[kind];codeVerification.reusedFixturePrograms++;continue;}
+          codeVerification.executedPrograms++;
           fs.chmodSync(dir,0o755);
           const proof=crypto.randomBytes(16).toString('hex');
           fs.writeFileSync(path.join(dir,'Candidate.cs'),source);
@@ -137,6 +143,7 @@ export function evaluatePracticeAnswer(value={}, {drill=null,luauBinary=process.
           }catch(error){outcomes[kind]=false;if(kind==='candidate')codeVerification.diagnostics=candidateDiagnostics(error,'csharp');}
           finally{try{execFileSync('docker',['rm','-f',container],{timeout:5000,stdio:'ignore'});}catch{}}
         }
+        if(outcomes.baseline===false&&outcomes.reference===true)fixtureCache?.set(fixtureKey,Object.freeze({baseline:false,reference:true}));
         codeVerification.baselineRejected=!outcomes.baseline;
         codeVerification.referencePassed=outcomes.reference;
         codeVerification.passedTests=outcomes.candidate?drill.tests.length:0;
@@ -275,6 +282,7 @@ export async function runPracticeRepairSession({order={},drill=null,model=DEFAUL
   const limit=canRepair?Math.max(1,Math.min(3,Number(maxAttempts)||1)):1;
   const attempts=[];
   const candidateHistory=[];
+  const fixtureCache=new Map();
   const format={type:'object',additionalProperties:false,properties:{
     diagnosis:{type:'string',minLength:12},strategy:{type:'string',minLength:12},
     tests:{type:'array',minItems:3,items:{type:'string',minLength:1}},
@@ -295,12 +303,12 @@ export async function runPracticeRepairSession({order={},drill=null,model=DEFAUL
     try{parsed=parseJson(raw);}catch{parsed={};validJson=false;}
     if(captureCandidates)candidateHistory.push({index:index+1,code:String(parsed.code||'').slice(0,24000),generationError});
     const publicDrill=canRepair?{...drill,tests:drill.feedbackTests}:drill;
-    const feedback=validJson?evaluate(parsed,{drill:publicDrill}):{pass:false,codeVerification:{reason:'OUTPUT_JSON_INVALID'}};
+    const feedback=validJson?evaluate(parsed,{drill:publicDrill,fixtureCache}):{pass:false,codeVerification:{reason:'OUTPUT_JSON_INVALID'}};
     // Do not spend another model call on a missing executor or a defective fixture.
     const verification=feedback.codeVerification;
     const infrastructure=/EXECUTOR_UNAVAILABLE/.test(verification?.reason||'')
       ||(verification?.reason==='REGRESSION_OR_FIXTURE_FAILED'&&(!verification.baselineRejected||!verification.referencePassed));
-    if(index===0)firstHidden=validJson?evaluate(parsed,{drill}):{pass:false};
+    if(index===0)firstHidden=validJson?evaluate(parsed,{drill,fixtureCache}):{pass:false};
     evaluation=feedback;
     attempts.push({index:index+1,inference,generationError,responseSha256:sha256(raw),candidateSha256:sha256(String(parsed.code||parsed.artifactHtml||'')),unchangedFailedImplementation:index>0&&attempts.at(-1).publicPass!==true&&attempts.at(-1).candidateSha256===sha256(String(parsed.code||parsed.artifactHtml||'')),publicPass:feedback.pass===true,feedback:generationError?'MODEL_REQUEST_FAILED':validJson?(!feedback.pass&&verification?.pass===true?'ANSWER_CONTRACT_FAILED':verification?.reason||(!feedback.pass?'ANSWER_CONTRACT_FAILED':'PASS')):'OUTPUT_JSON_INVALID',failedPublicTests:verification?.failedTests?.slice(0,8)||[],publicDiagnostics:verification?.diagnostics?.slice(0,4)||[],answerErrors:feedback.answerErrors||[],elapsedMs:Date.now()-started});
     if(feedback.pass||infrastructure||generationError||index+1>=limit)break;
@@ -320,7 +328,7 @@ export async function runPracticeRepairSession({order={},drill=null,model=DEFAUL
     messages=[{role:'user',content:repairBase},{role:'assistant',content:JSON.stringify(parsed)},{role:'user',content:repairPrompt}];
     prompt=repairBase+'\nPREVIOUS ANSWER (untrusted): '+JSON.stringify(parsed)+'\n'+repairPrompt;
   }
-  const finalHidden=attempts.length===1?firstHidden:evaluate(parsed,{drill});
+  const finalHidden=attempts.length===1?firstHidden:evaluate(parsed,{drill,fixtureCache});
   evaluation={...finalHidden,pass:finalHidden?.pass===true&&evaluation.pass===true};
   return {parsed,raw,evaluation,...(captureCandidates?{candidateHistory}:{}),repairEvidence:{version:1,engineRevision:'VIBE2_CODING_PRACTICE_2.3',modelWeightsChanged:false,
     execution:responseFile?'FIXTURE_REPLAY':request===requestPracticeModel?'LOCAL_OLLAMA':'INJECTED_TEST_PROVIDER',

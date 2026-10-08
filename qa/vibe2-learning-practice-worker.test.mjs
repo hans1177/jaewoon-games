@@ -321,6 +321,24 @@ test('C# compiler diagnostics expose duplicate harness type to public repair',{s
   assert(result.codeVerification.diagnostics.some(line=>/CS0101/.test(line)),JSON.stringify(result));
 });
 
+test('C# fixture reuse executes every candidate and invalidates changed acceptance inputs',{skip:!process.env.VIBE2_TEST_CSHARP_RUNTIME},()=>{
+  const source=robloxCurriculum.platformDrills.find(row=>row.id==='unity-menu-batch-transaction');
+  const drill={...source,tests:source.feedbackTests},fixtureCache=new Map();
+  const first=evaluatePracticeAnswer({...practiceAnswer,code:drill.reference},{drill,fixtureCache});
+  assert.equal(first.pass,true,JSON.stringify(first.codeVerification));
+  assert.equal(first.codeVerification.executedPrograms,3);
+  const failed=evaluatePracticeAnswer({...practiceAnswer,code:drill.broken},{drill,fixtureCache});
+  assert.equal(failed.pass,false,'cached reference success must never become candidate success');
+  assert.equal(failed.codeVerification.executedPrograms,1);
+  assert.equal(failed.codeVerification.reusedFixturePrograms,2);
+  const changed=evaluatePracticeAnswer({...practiceAnswer,code:drill.reference},{drill:{...drill,tests:[...drill.tests,'Check(false);']},fixtureCache});
+  assert.equal(changed.pass,false);
+  assert.equal(changed.codeVerification.referencePassed,false);
+  assert.equal(changed.codeVerification.executedPrograms,3);
+  assert.equal(changed.codeVerification.reusedFixturePrograms,0);
+  assert.equal(fixtureCache.size,1,'failed fixture verification must not be retained');
+});
+
 test('registered Unity coding drills prepare the existing executor and persist repair evidence',()=>{
   const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
   assert.match(workflow,/platformDrills\?\.some\(d=>d\.id===id&&d\.platform==='unity'\)/);
