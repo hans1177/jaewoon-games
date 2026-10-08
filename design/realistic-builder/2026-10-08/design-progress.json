@@ -9,10 +9,10 @@
   "completedPhases": [],
   "completedPhaseCount": 0,
   "cachedTaskCount": 21,
-  "lastSuccessfulModelCallAt": "2026-10-08T13:18:57.241Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T13:23:46.745Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "designerSeed": {
     "file": "design/realistic-builder/2026-10-08/design-seed.json",
     "contentDigest": "5e79cfc120c89a95ae3a56b5c1f763f4a91ff9a02ab0cdcc58b1b829ccdc37d4",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 15,
-      "successes": 15,
+      "calls": 16,
+      "successes": 16,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1637094,
-      "lastMs": 96394,
+      "totalMs": 1926592,
+      "lastMs": 289498,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:18:57.239Z"
+      "updatedAt": "2026-10-08T13:23:46.745Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T13:18:57.247Z"
+  "updatedAt": "2026-10-08T13:23:46.750Z"
 }
