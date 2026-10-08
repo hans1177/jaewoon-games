@@ -187,6 +187,28 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
     if(different.length<2)reject('DESIGN_ALTERNATIVES_DUPLICATED','IDEA_AND_DISTINCTNESS',['designAlternatives','selectedDesignPlan'],{plans:[alternatives[i].label,alternatives[j].label],differentAxes:different},'원본 규칙을 보존하면서 루프·동선·대응법·성장 중 최소 두 항목의 실제 플레이 접근이 다른 대안을 작성하고 선택 근거를 갱신한다.');
   }
   const requirements=designPlayabilityRequirements(seed,sourceText);
+  // 보존형 표현 설계도 A/B 상태 교환과 MAIN/c/@ 연결을 실제 원본 경로로 설명해야 한다.
+  if(selected.has('systemInterconnections')&&!requirements.required){
+    const systems=list(design.signatureSystems);
+    const byRule=new Map(systems.map(row=>[row.id,row]));
+    const graph=new Map(systems.map(row=>[row.id,[]]));
+    const edges=list(design.systemInterconnections);
+    let connected=edges.length>=5&&systems.length>=5;
+    for(const edge of edges){
+      const from=byRule.get(edge.fromId),to=byRule.get(edge.toId),keys=list(edge.stateKeys);
+      if(!from||!to||!keys.length||keys.some(key=>!list(from.stateOutputs).includes(key)||!list(to.stateInputs).includes(key)))connected=false;
+      else graph.get(edge.fromId).push(edge.toId);
+    }
+    const reaches=(from,to)=>{const queue=[from],seen=new Set();while(queue.length){const id=queue.shift();if(id===to)return true;if(seen.has(id))continue;seen.add(id);queue.push(...(graph.get(id)||[]));}return false;};
+    const main=systems.find(row=>row.grammarRole==='MAIN')?.id;
+    const a=systems.find(row=>row.grammarRole==='A')?.id;
+    const b=systems.find(row=>row.grammarRole==='B')?.id;
+    if(!connected||!main||!a||!b||!reaches(a,b)||!reaches(b,a)||systems.some(row=>!reaches(main,row.id)&&!reaches(row.id,main))){
+      reject('DESIGN_PRESERVATION_GRAMMAR_GRAPH_DISCONNECTED','SYSTEM_INTERCONNECTION_DESIGN',['systemInterconnections'],
+        {edgeCount:edges.length,connected},
+        '기존 규칙의 실제 상태 출력과 입력으로 MAIN/A/B/c/@를 연결하고 A/B 양방향 상태 교환을 증명한다. 임시 가짜 기능이나 새 보상을 만들지 않는다.');
+    }
+  }
   const detailed=requirements.required&&(requirePlayableContract||seed.designInputMode==='OWNER_BRIEF_AND_ORIGINAL_ONLY'||design.designIntegrityPlan?.authoringVersion===2||list(design.signatureSystems).some(row=>row.grammarRole));
   const chosen=design.selectedDesignPlan;
   if(chosen){
