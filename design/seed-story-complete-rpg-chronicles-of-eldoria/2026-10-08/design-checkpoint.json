@@ -83,25 +83,42 @@
       "name": "B",
       "purpose": "PLAYER_LEGITIMACY_AND_REGION_CONTROL determines actual political stability and legitimacy in the game world",
       "playerChoice": "PLAYER_LEGITIMACY_AND_REGION_CONTROL"
+    },
+    "local_authoring_parts::e23854294e83dfae9204af6b0a3ea753d517f13ea2ceb846834753c633485326:signatureSystems:3": {
+      "id": "C",
+      "grammarRole": "c",
+      "stateInputs": [
+        "EXPLORATION_PROGRESS",
+        "CHARACTER_INTERACTION",
+        "STORY_PROGRESS",
+        "INFORMATION_ACQUISITION"
+      ],
+      "stateOutputs": [
+        "WORLD_STATE_TRANSITION",
+        "PLAYER_GROWTH_EFFECT"
+      ],
+      "name": "C",
+      "purpose": "EXPLORATION_PROGRESS, CHARACTER_INTERACTION, STORY_PROGRESS, INFORMATION_ACQUISITION의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용을 통해, 플레이어의 선택과 세계 규칙의 상호작용을 통해 구현되는 반복 가능한 핵심 루프를 구체화한다.",
+      "playerChoice": "EXPLORATION_PROGRESS, CHARACTER_INTERACTION, STORY_PROGRESS, INFORMATION_ACQUISITION"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 828315,
-      "lastMs": 206462,
+      "totalMs": 935738,
+      "lastMs": 107423,
       "lastError": null,
-      "updatedAt": "2026-10-08T09:09:37.858Z"
+      "updatedAt": "2026-10-08T09:11:25.282Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:55:49.512Z",
-  "updatedAt": "2026-10-08T09:09:37.858Z",
+  "updatedAt": "2026-10-08T09:11:25.282Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2333,7 +2350,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T09:09:37.858Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:11:25.282Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
