@@ -425,25 +425,42 @@
       "name": "CORE_4_4",
       "purpose": "플레이어가 반복적으로 수행하는 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 기반으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 이는 시그니처 세계 규칙과 핵심 루프를 통해 플레이어의 선택과 세계 상태의 변화를 연결하는 게임 구조이다.",
       "playerChoice": "플레이어가 반복적으로 수행하는 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 기반으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 이는 시그니처 세계 규칙과 핵심 루프를 통해 플레이어의 선택과 세계 상태의 변화를 연결하는 게임 구조이다."
+    },
+    "local_authoring_parts::2f9a30b5f3935203f15c86ec4740638269ffebca80575b284915630c1e644499:signatureSystems:1": {
+      "id": "CORE_4_4",
+      "grammarRole": "A",
+      "stateInputs": [
+        "OPENING: 플레이어가 게임을 시작하여 'Fight through an escalating horde in a short real-time ",
+        "DEVELOPMENT: 플레이어는 선택 결과에 따라 보상·위험·다음 선택을 경험합니다.",
+        "RESOLUTION: 게임은 반복적인 선택과 상태 변화를 통해 플레이어의 목표를 달성합니다."
+      ],
+      "stateOutputs": [
+        "OPENING: 플레이어가 게임을 시작하여 'Fight through an escalating horde in a short real-time ",
+        "DEVELOPMENT: 플레이어는 선택 결과에 따라 보상·위험·다음 선택을 경험합니다.",
+        "RESOLUTION: 게임은 반복적인 선택과 상태 변화를 통해 플레이어의 목표를 달성합니다."
+      ],
+      "name": "CORE_4_4",
+      "purpose": "플레이어가 반복적으로 수행하는 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 기반으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 이는 시그니처 세계 규칙과 핵심 루프를 통해 플레이어의 선택과 세계 상태의 변화를 연결하는 게임 구조이다.",
+      "playerChoice": "플레이어가 반복적으로 수행하는 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 기반으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 이는 시그니처 세계 규칙과 핵심 루프를 통해 플레이어의 선택과 세계 상태의 변화를 연결하는 게임 구조이다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 544895,
-      "lastMs": 50999,
+      "totalMs": 600052,
+      "lastMs": 55157,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:51:30.200Z"
+      "updatedAt": "2026-10-08T12:52:25.359Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:42:25.217Z",
-  "updatedAt": "2026-10-08T12:51:30.200Z",
+  "updatedAt": "2026-10-08T12:52:25.359Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2763,7 +2780,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:51:30.200Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:52:25.359Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
