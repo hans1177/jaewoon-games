@@ -482,25 +482,42 @@
       "name": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense",
       "purpose": "Player adapts their defense strategy to the current enemy composition, protects the objective, and clears the stage or boss to unlock more challenging defense options.",
       "playerChoice": "Select defensive placements that match the current enemy type and wave composition, prioritize protecting the objective, and choose actions that clear the stage or boss to unlock new defense strategies."
+    },
+    "local_authoring_parts::8e857885690f6f06406cf40f54f42db657b7a59ecd47f6924ee1d3391afb6e87:signatureSystems:4": {
+      "id": "READ_NEXT_ENEMY_WAVE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "EnemyWaveType",
+        "PlayerSelection",
+        "CurrentMapState"
+      ],
+      "stateOutputs": [
+        "NextMapState",
+        "ResourcePool",
+        "DefenseStrategy"
+      ],
+      "name": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+      "purpose": "Player chooses which enemy wave to face and where to place defenses to protect the objective.",
+      "playerChoice": "Select a specific enemy wave and choose a defensive placement strategy that covers the threatened route."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 19,
+      "calls": 20,
+      "successes": 20,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1990884,
-      "lastMs": 103273,
+      "totalMs": 2090873,
+      "lastMs": 99989,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:45:46.785Z"
+      "updatedAt": "2026-10-08T15:47:26.776Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:52:01.924Z",
-  "updatedAt": "2026-10-08T15:45:46.785Z",
+  "updatedAt": "2026-10-08T15:47:26.784Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2716,7 +2733,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 2
+    "designer_draft_slices::identity-core": 3
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2731,10 +2748,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:45:46.785Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T15:47:26.778Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
