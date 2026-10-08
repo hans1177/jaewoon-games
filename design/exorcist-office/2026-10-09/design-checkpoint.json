@@ -305,25 +305,223 @@
           "playerChoice": "START → RUN → PROGRESSION BENEFIT 순환 구조 포함."
         }
       ]
+    },
+    "local_authoring_parts::9b24a17c467c3416c4a981a3e02e212e4f6706edb06d57d378fa9c2de800cdd4:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::f41c5ebb6577c5ac60d3ad7c3aacbef8921fe6caca4616c8f5c7bccd04ef5da2:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "START",
+            "RUN",
+            "FINISH/FAIL",
+            "RESTART"
+          ],
+          "stateOutputs": [
+            "SCORE/REWARD",
+            "RISK/ROUTE CHOICE",
+            "PROGRESSION BENEFIT"
+          ],
+          "name": "시그니처 시스템",
+          "purpose": "플레이어가 시작 즉시 단순 한 손 tap 또는 swipe 입력 및 점수, 거리, 혹은 짧은 세션 목표 중심으로 플레이하여 세계 상태와 다음 선택을 바꾼다.",
+          "playerChoice": "START → RUN → FINISH/FAIL → RESTART 순환 구조 포함."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "START",
+            "RUN",
+            "PROGRESSION BENEFIT"
+          ],
+          "stateOutputs": [
+            "SCORE/REWARD",
+            "RISK/ROUTE CHOICE",
+            "PROGRESSION BENEFIT"
+          ],
+          "name": "시그니처 시스템 2",
+          "purpose": "플레이어가 시작 즉시 단순 한 손 tap 또는 swipe 입력 및 점수, 거리, 혹은 짧은 세션 목표 중심으로 플레이하여 세계 상태와 다음 선택을 바꾼다.",
+          "playerChoice": "START → RUN → PROGRESSION BENEFIT 순환 구조 포함."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "START",
+            "RUN",
+            "PROGRESSION BENEFIT"
+          ],
+          "stateOutputs": [
+            "SCORE/REWARD",
+            "RISK/ROUTE CHOICE",
+            "PROGRESSION BENEFIT"
+          ],
+          "name": "시그니처 시스템 2",
+          "purpose": "플레이어가 시작 즉시 단순 한 손 tap 또는 swipe 입력 및 점수, 거리, 혹은 짧은 세션 목표 중심으로 플레이하여 세계 상태와 다음 선택을 바꾼다.",
+          "playerChoice": "START → RUN → PROGRESSION BENEFIT 순환 구조 포함."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "START",
+            "RUN",
+            "PROGRESSION BENEFIT"
+          ],
+          "stateOutputs": [
+            "SCORE/REWARD",
+            "RISK/ROUTE CHOICE",
+            "PROGRESSION BENEFIT"
+          ],
+          "name": "시그니처 시스템 3",
+          "purpose": "플레이어가 시작 즉시 단순 한 손 tap 또는 swipe 입력 및 점수, 거리, 혹은 짧은 세션 목표 중심으로 플레이하여 세계 상태와 다음 선택을 바꾼다.",
+          "playerChoice": "START → RUN → PROGRESSION BENEFIT 순환 구조 포함."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "START",
+            "RUN",
+            "PROGRESSION BENEFIT"
+          ],
+          "stateOutputs": [
+            "SCORE/REWARD",
+            "RISK/ROUTE CHOICE",
+            "PROGRESSION BENEFIT"
+          ],
+          "name": "시그니처 시스템 4",
+          "purpose": "플레이어가 시작 즉시 단순 한 손 tap 또는 swipe 입력 및 점수, 거리, 혹은 짧은 세션 목표 중심으로 플레이하여 세계 상태와 다음 선택을 바꾼다.",
+          "playerChoice": "START → RUN → PROGRESSION BENEFIT 순환 구조 포함."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "퇴마 사무소 - 시작 즉시 단순 한 손 tap 또는 swipe 입력 및 점수, 거리, 짧은 세션 목표 중심으로 플레이어 역할 재설명 및 시그니처 세계 규칙 연결됨에 따라 독특한 핵심 재미 및 시스템 연결 확정됨. 게임 정체성: 캐릭터, 장소, 주제, 기능, 관계의 복합적 표현. 대표 행동: 시작 즉시 단순 한 손 tap 또는 swipe 입력, 대표 선택: 짧은 런 중 피드백, 보상, 위험, 다음 선택 연결. 시그니처 세계 규칙: START → RUN → FINISH/FAIL → RESTART 순환 구조 포함. 진입 방식: 모바일에서 즉시 이해 가능한 기본적인 입력과 피드백 제공. 시스템 구성: MAIN × A × B × c + @ 형태로 이루어진 복합장르. 원본 규칙 및 수치를 모두 유지하며 설계 깊이와 구조는 최초 설계부터 지속적으로 확보됨.",
+      "playerFantasy": "퇴마 사무소에서 플레이어는 시작 즉시 단순 한 손 tap 또는 swipe 입력과 점수, 거리, 혹은 짧은 세션 목표 중심으로 플레이하여 세계 상태와 다음 선택을 바꾼다. 이 행동은 모바일 환경에서 즉시 이해 가능한 기본적인 입력과 피드백 제공을 통해 게임의 핵심 재미와 시스템 연결을 확정하며, 대표 행동은 'START'로, 대표 선택은 'RUN', 보상은 'SCORE/REWARD', 위험은 'RISK/ROUTE CHOICE', 다음 선택은 'RESTART'이다.",
+      "coreFun": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.과 Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용",
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "START",
+            "RUN",
+            "FINISH/FAIL",
+            "RESTART"
+          ],
+          "stateOutputs": [
+            "SCORE/REWARD",
+            "RISK/ROUTE CHOICE",
+            "PROGRESSION BENEFIT"
+          ],
+          "name": "시그니처 시스템",
+          "purpose": "플레이어가 시작 즉시 단순 한 손 tap 또는 swipe 입력 및 점수, 거리, 혹은 짧은 세션 목표 중심으로 플레이하여 세계 상태와 다음 선택을 바꾼다.",
+          "playerChoice": "START → RUN → FINISH/FAIL → RESTART 순환 구조 포함."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "START",
+            "RUN",
+            "PROGRESSION BENEFIT"
+          ],
+          "stateOutputs": [
+            "SCORE/REWARD",
+            "RISK/ROUTE CHOICE",
+            "PROGRESSION BENEFIT"
+          ],
+          "name": "시그니처 시스템 2",
+          "purpose": "플레이어가 시작 즉시 단순 한 손 tap 또는 swipe 입력 및 점수, 거리, 혹은 짧은 세션 목표 중심으로 플레이하여 세계 상태와 다음 선택을 바꾼다.",
+          "playerChoice": "START → RUN → PROGRESSION BENEFIT 순환 구조 포함."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "START",
+            "RUN",
+            "PROGRESSION BENEFIT"
+          ],
+          "stateOutputs": [
+            "SCORE/REWARD",
+            "RISK/ROUTE CHOICE",
+            "PROGRESSION BENEFIT"
+          ],
+          "name": "시그니처 시스템 2",
+          "purpose": "플레이어가 시작 즉시 단순 한 손 tap 또는 swipe 입력 및 점수, 거리, 혹은 짧은 세션 목표 중심으로 플레이하여 세계 상태와 다음 선택을 바꾼다.",
+          "playerChoice": "START → RUN → PROGRESSION BENEFIT 순환 구조 포함."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "START",
+            "RUN",
+            "PROGRESSION BENEFIT"
+          ],
+          "stateOutputs": [
+            "SCORE/REWARD",
+            "RISK/ROUTE CHOICE",
+            "PROGRESSION BENEFIT"
+          ],
+          "name": "시그니처 시스템 3",
+          "purpose": "플레이어가 시작 즉시 단순 한 손 tap 또는 swipe 입력 및 점수, 거리, 혹은 짧은 세션 목표 중심으로 플레이하여 세계 상태와 다음 선택을 바꾼다.",
+          "playerChoice": "START → RUN → PROGRESSION BENEFIT 순환 구조 포함."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "START",
+            "RUN",
+            "PROGRESSION BENEFIT"
+          ],
+          "stateOutputs": [
+            "SCORE/REWARD",
+            "RISK/ROUTE CHOICE",
+            "PROGRESSION BENEFIT"
+          ],
+          "name": "시그니처 시스템 4",
+          "purpose": "플레이어가 시작 즉시 단순 한 손 tap 또는 swipe 입력 및 점수, 거리, 혹은 짧은 세션 목표 중심으로 플레이하여 세계 상태와 다음 선택을 바꾼다.",
+          "playerChoice": "START → RUN → PROGRESSION BENEFIT 순환 구조 포함."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
-      "failures": 0,
-      "timeouts": 0,
+      "calls": 12,
+      "successes": 10,
+      "failures": 2,
+      "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 652303,
-      "lastMs": 101154,
-      "lastError": null,
-      "updatedAt": "2026-10-08T18:18:35.657Z"
+      "totalMs": 1341516,
+      "lastMs": 300098,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
+      "updatedAt": "2026-10-08T18:30:04.886Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:07:43.322Z",
-  "updatedAt": "2026-10-08T18:18:35.659Z",
+  "updatedAt": "2026-10-08T18:30:04.886Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2243,12 +2441,26 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:18:35.659Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:20:04.703Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/exorcist-office/2026-10-09/design-seed.json",
+    "contentDigest": "3cdc25c833754d9083f5b9ebff5ef79a4141df2c308f9bf66b4dfb30e0b1d083",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  },
+  "localAuthoringSplits": {
+    "2f87f6d2dc13b3467ab5f0c67e809b143c1d3dae0ce6a2a5236b36b2af75a039": true,
+    "e1a6877397ec9bf5d10a41d5591eda7601e780a0edb70f82eeb0dcae4c8b94df": true
+  }
 }
