@@ -430,17 +430,22 @@ for(const drill of robloxCurriculum.platformDrills.filter(row=>row.platform==='u
 test('live Vibe coding: first attempt versus public-feedback repair on held-out inputs',{skip:!process.env.VIBE2_LIVE_CODING_BENCHMARK,timeout:1500000},async()=>{
   assert(!process.env.VIBE2_MODEL_RESPONSE_FILE,'fixture replay cannot be a live benchmark');
   const cases=[];
-  for(const id of ['save','unity-menu-batch-transaction','unity-reward-prerequisites']){
+  const ids=['save','unity-menu-batch-transaction','unity-reward-prerequisites'];
+  const report={version:1,kind:'vibe2-executed-coding-repair-benchmark',model:process.env.VIBE2_LOCAL_MODEL||'qwen3:1.7b',sourceCommit:process.env.GITHUB_SHA||null,
+    expectedSampleCount:ids.length,measurementComplete:false,sampleCount:0,firstAttemptPass:0,finalPass:0,recovered:0,regressed:0,modelCalls:0,
+    modelWeightsChanged:false,generalizationVerified:false,productionPromotionAllowed:false,cases};
+  const reportFile=path.join(process.env.RUNNER_TEMP||os.tmpdir(),'vibe2-coding-repair-benchmark.json');
+  fs.writeFileSync(reportFile,JSON.stringify(report,null,2)+'\n');
+  for(const id of ids){
     const drill=[...robloxCurriculum.drills,...robloxCurriculum.platformDrills].find(row=>row.id===id);
     const result=await runPracticeRepairSession({order:{executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE] execute repair benchmark'},drill,captureCandidates:true});
     cases.push({id,...result.repairEvidence,candidates:result.candidateHistory});
+    Object.assign(report,{sampleCount:cases.length,firstAttemptPass:cases.filter(x=>x.firstAttemptPass).length,finalPass:cases.filter(x=>x.finalPass).length,
+      recovered:cases.filter(x=>x.recovered).length,regressed:cases.filter(x=>x.regressed).length,modelCalls:cases.reduce((n,x)=>n+x.modelCalls,0),measurementComplete:cases.length===ids.length});
+    fs.writeFileSync(reportFile,JSON.stringify(report,null,2)+'\n');
   }
-  const report={version:1,kind:'vibe2-executed-coding-repair-benchmark',model:process.env.VIBE2_LOCAL_MODEL||'qwen3:1.7b',sourceCommit:process.env.GITHUB_SHA||null,
-    sampleCount:cases.length,firstAttemptPass:cases.filter(x=>x.firstAttemptPass).length,finalPass:cases.filter(x=>x.finalPass).length,
-    recovered:cases.filter(x=>x.recovered).length,regressed:cases.filter(x=>x.regressed).length,modelCalls:cases.reduce((n,x)=>n+x.modelCalls,0),
-    modelWeightsChanged:false,generalizationVerified:false,productionPromotionAllowed:false,cases};
-  fs.writeFileSync(path.join(process.env.RUNNER_TEMP||os.tmpdir(),'vibe2-coding-repair-benchmark.json'),JSON.stringify(report,null,2)+'\n');
   console.log('VIBE2_LIVE_CODING_BENCHMARK='+JSON.stringify({...report,cases:cases.map(({candidates,...evidence})=>evidence)}));
+  assert.equal(report.measurementComplete,true);
   assert(cases.every(row=>row.execution==='LOCAL_OLLAMA'));
   assert.equal(report.regressed,0,'a repair must not lose an already passing implementation');
   assert(report.finalPass>0,'no generated implementation passed; do not claim coding improvement');
