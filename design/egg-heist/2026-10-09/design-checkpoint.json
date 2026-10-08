@@ -430,25 +430,41 @@
         "world_state"
       ],
       "fromSystem": "DELVE(@): 탐험, 위험, 성공, 실패, 성장 상태 관리 및 변환을 위한 시스템입니다."
+    },
+    "local_authoring_parts::f4cff7183748c63117921a4db303ce6ca49e1c705aac736f233f99018f0a317d:toSystem,trigger,stateChange": {
+      "toSystem": "DELVE(@): 세계의 역사, 지역, 캐릭터, 아이템 등 다양한 요소와 연결되어 있으며, 탐험, 위험, 성공, 실패, 성장 상태가 일관되게 강화된다.",
+      "trigger": "world_state",
+      "stateChange": "new_world_state"
+    },
+    "local_authoring_parts::7794471a773fce6c1a602f9d0a2406912e4a2b5bb249dae5741e780f4a6a8279:systemInterconnections:1": {
+      "fromId": "signatureSystems[0]",
+      "toId": "signatureSystems[1]",
+      "stateKeys": [
+        "world_state"
+      ],
+      "fromSystem": "DELVE(@): 탐험, 위험, 성공, 실패, 성장 상태 관리 및 변환을 위한 시스템입니다.",
+      "toSystem": "DELVE(@): 세계의 역사, 지역, 캐릭터, 아이템 등 다양한 요소와 연결되어 있으며, 탐험, 위험, 성공, 실패, 성장 상태가 일관되게 강화된다.",
+      "trigger": "world_state",
+      "stateChange": "new_world_state"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 14,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1434470,
-      "lastMs": 92946,
+      "totalMs": 1527226,
+      "lastMs": 92756,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:11:10.805Z"
+      "updatedAt": "2026-10-08T21:12:43.562Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:47:16.280Z",
-  "updatedAt": "2026-10-08T21:11:10.805Z",
+  "updatedAt": "2026-10-08T21:12:43.563Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2461,7 +2477,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T21:11:10.805Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:12:43.563Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
