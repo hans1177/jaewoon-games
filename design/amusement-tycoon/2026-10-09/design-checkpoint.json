@@ -242,25 +242,181 @@
           "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
         }
       ]
+    },
+    "local_authoring_parts::b905b3ba4eb7a53de740460368323d6a69a374a092643b962ef58ed40a5d0ae7:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::4990accc65fe1c6f417b82f4bfa70a821f6ca53b4256fbe729ec68886e0cc264:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "INPUT: Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.\n",
+        "STATE CHANGE: Player's action triggers immediate state transition to next level of gameplay.",
+        "OUTPUT: Visible feedback (score, distance, or brief run result) and new choice set for the next step."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEXT_GAMEPLAY_STATE"
+          ],
+          "name": "CASUAL_PLAYSPACE_TRANSITION",
+          "purpose": "Player's action triggers immediate state transition to next level of gameplay.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEXT_GAMEPLAY_STATE"
+          ],
+          "name": "CASUAL_PLAYSPACE_TRANSITION_A",
+          "purpose": "Player's action triggers immediate state transition to next level of gameplay.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEXT_GAMEPLAY_STATE"
+          ],
+          "name": "CASUAL_PLAYSPACE_TRANSITION_B",
+          "purpose": "Player's action triggers immediate state transition to next level of gameplay.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEXT_GAMEPLAY_STATE"
+          ],
+          "name": "CASUAL_PLAYSPACE_TRANSITION_C",
+          "purpose": "Player's action triggers immediate state transition to next level of gameplay.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEXT_GAMEPLAY_STATE"
+          ],
+          "name": "CASUAL_PLAYSPACE_TRANSITION_DELVE",
+          "purpose": "Player's action triggers immediate state transition to next level of gameplay.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "놀이공원 타이쿤을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.\n\n플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 주체가 되어 세계 상태와 다음 선택을 바꾼다.\n\n대표 행동: Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.\n 대표 선택: Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.\n 시그니처 세계 규칙: 플레이어의 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.과 선택이 CASUAL의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.",
+      "playerFantasy": "플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 주체가 되어 세계 상태와 다음 선택을 바꾼다.\n\n대표 행동: Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.\n 대표 선택: Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.\n 시그니처 세계 규칙: 플레이어의 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.과 선택이 CASUAL의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.",
+      "coreFun": "플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 주체가 되어 세계 상태와 다음 선택을 바꾼다.\n\n대표 행동: Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.\n 대표 선택: Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.\n 시그니처 세계 규칙: 플레이어의 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.과 선택이 CASUAL의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.",
+      "coreLoop": [
+        "INPUT: Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.\n",
+        "STATE CHANGE: Player's action triggers immediate state transition to next level of gameplay.",
+        "OUTPUT: Visible feedback (score, distance, or brief run result) and new choice set for the next step."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEXT_GAMEPLAY_STATE"
+          ],
+          "name": "CASUAL_PLAYSPACE_TRANSITION",
+          "purpose": "Player's action triggers immediate state transition to next level of gameplay.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEXT_GAMEPLAY_STATE"
+          ],
+          "name": "CASUAL_PLAYSPACE_TRANSITION_A",
+          "purpose": "Player's action triggers immediate state transition to next level of gameplay.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEXT_GAMEPLAY_STATE"
+          ],
+          "name": "CASUAL_PLAYSPACE_TRANSITION_B",
+          "purpose": "Player's action triggers immediate state transition to next level of gameplay.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEXT_GAMEPLAY_STATE"
+          ],
+          "name": "CASUAL_PLAYSPACE_TRANSITION_C",
+          "purpose": "Player's action triggers immediate state transition to next level of gameplay.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEXT_GAMEPLAY_STATE"
+          ],
+          "name": "CASUAL_PLAYSPACE_TRANSITION_DELVE",
+          "purpose": "Player's action triggers immediate state transition to next level of gameplay.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 698038,
-      "lastMs": 95611,
+      "totalMs": 785039,
+      "lastMs": 87001,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:23:33.037Z"
+      "updatedAt": "2026-10-08T19:25:00.042Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T19:11:54.966Z",
-  "updatedAt": "2026-10-08T19:23:33.040Z",
+  "updatedAt": "2026-10-08T19:25:00.052Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2180,12 +2336,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T19:23:33.040Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:25:00.045Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/amusement-tycoon/2026-10-09/design-seed.json",
+    "contentDigest": "02ab8cbe84c0dfc4f2148c3abe8b9cee57ba4aed825639d33ad47932ed925fa4",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
