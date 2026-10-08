@@ -916,25 +916,28 @@
         "riskPressure": "Players face a risk of failure if they choose the wrong enemy type to counter, requiring them to balance between resource allocation and strategic insight.",
         "recoveryRules": "Players can recover by revisiting the threat pattern, adjusting defenders, or experimenting with different enemy types to find the optimal counterplay."
       }
+    },
+    "local_authoring_parts::b671f3811d63884009b4b23679c2a66933b285d431f619c668dddda0d9ca7448:fromId": {
+      "fromId": "Read the incoming insect wave and its threat pattern."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 32,
-      "successes": 29,
+      "calls": 33,
+      "successes": 30,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2918869,
-      "lastMs": 55556,
+      "totalMs": 2949925,
+      "lastMs": 31056,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T15:38:15.705Z"
+      "updatedAt": "2026-10-08T15:38:46.769Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:47:19.560Z",
-  "updatedAt": "2026-10-08T15:38:15.711Z",
+  "updatedAt": "2026-10-08T15:38:46.769Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3360,10 +3363,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:38:15.707Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:38:46.769Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
