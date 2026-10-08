@@ -621,25 +621,28 @@
         "riskPressure": "플레이어는 선택을 하기 전에 보상을 얻거나 진척을 받는 것이 중요하다. 만약 선택되지 않으면 보상이나 진척이 없고, 다음 탐구거리로 이어지는 구조이다.",
         "recoveryRules": "재도전은 간단한 입력과 작은 위험 또는 기회비용으로 이루어지고 있으며, 보상은 단기성과 세션 목표를 통해 제공된다."
       }
+    },
+    "local_authoring_parts::74db5314b77dc16ab5fe32d885ba4524821519f28300ca8c9d5b2d3b7a683298:fromId": {
+      "fromId": "systemInterconnections[0]"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 12,
+      "calls": 14,
+      "successes": 13,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1382490,
-      "lastMs": 142791,
+      "totalMs": 1469764,
+      "lastMs": 87274,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T19:34:50.132Z"
+      "updatedAt": "2026-10-08T19:36:17.414Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T19:11:47.590Z",
-  "updatedAt": "2026-10-08T19:34:50.138Z",
+  "updatedAt": "2026-10-08T19:36:17.414Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2946,10 +2949,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T19:34:50.133Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:36:17.414Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
