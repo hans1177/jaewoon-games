@@ -62,25 +62,38 @@
       "name": "START_BOARD_LEVEL_WITH_PLAYER_CHOICE",
       "purpose": "Player's choice affects the game space and world state change.",
       "playerChoice": "Select a specific path, strategy, or goal to navigate the board level."
+    },
+    "local_authoring_parts::7e7fdc65dd3b4cb8e2cb2b18f3b64c94df2ab0299b25bb3cf10a5de7bcec2f25:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "GAME_SPACE"
+      ],
+      "stateOutputs": [
+        "WORLD_STATE_CHANGE"
+      ],
+      "name": "START_BOARD_LEVEL_WITH_PLAYER_CHOICE_AND_CORE_FUN_EFFECT",
+      "purpose": "Player choice and core fun effect integration",
+      "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 645283,
-      "lastMs": 237791,
+      "totalMs": 742508,
+      "lastMs": 97225,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:28:58.411Z"
+      "updatedAt": "2026-10-08T21:30:35.638Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:18:13.104Z",
-  "updatedAt": "2026-10-08T21:28:58.411Z",
+  "updatedAt": "2026-10-08T21:30:35.638Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2117,7 +2130,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:28:58.411Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:30:35.638Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
