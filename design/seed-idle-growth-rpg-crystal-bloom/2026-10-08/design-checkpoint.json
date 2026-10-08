@@ -593,25 +593,43 @@
         "progressionCycle"
       ],
       "fromSystem": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_0\",\"toSystem\":\"IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_1\","
+    },
+    "local_authoring_parts::41171e921684bb02fb43a2cf61c8531f255f5d35e0c2767418fa1862ca467f37:toSystem,trigger,stateChange": {
+      "toSystem": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_1",
+      "trigger": "playerChoice",
+      "stateChange": "progressionCycle"
+    },
+    "local_authoring_parts::7663367306d27f56e280b257e2ae96a6159069ef70085e2bb90613ede8873d4e:systemInterconnections:0": {
+      "fromId": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_0",
+      "toId": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_1",
+      "stateKeys": [
+        "worldState",
+        "playerChoice",
+        "progressionCycle"
+      ],
+      "fromSystem": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_0\",\"toSystem\":\"IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_1\",",
+      "toSystem": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_1",
+      "trigger": "playerChoice",
+      "stateChange": "progressionCycle"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 17,
+      "calls": 18,
+      "successes": 18,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 796954,
-      "lastMs": 34117,
+      "totalMs": 827654,
+      "lastMs": 30700,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:24:33.623Z"
+      "updatedAt": "2026-10-08T10:25:04.324Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:11:16.431Z",
-  "updatedAt": "2026-10-08T10:24:33.623Z",
+  "updatedAt": "2026-10-08T10:25:04.325Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2990,7 +3008,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:24:33.623Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:25:04.325Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
