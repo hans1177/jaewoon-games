@@ -1918,19 +1918,61 @@ function RobloxCommonUI.CreateEquipmentFullScreen(options)
   options=options or {}
   local theme=cloneTheme(options.theme)
   local root,body=surfaceShell(options,"EQUIPMENT_FULL_SCREEN","EQUIPMENT_FULL_SCREEN")
-  local sheet=RobloxCommonUI.CreateCharacterSheet({name="CharacterSummary",size=UDim2.new(0.46,-8,1,0),theme=theme});sheet.Parent=body
-  local slots=Instance.new("Frame");slots.Name="EquipmentSlots";slots.Position=UDim2.new(0.46,8,0,0);slots.Size=UDim2.new(0.54,-8,1,0);slots.BackgroundTransparency=1;slots.Parent=body
-  local grid=Instance.new("UIGridLayout");grid.CellSize=UDim2.new(0.5,-6,0,110);grid.CellPadding=UDim2.fromOffset(10,10);grid.SortOrder=Enum.SortOrder.LayoutOrder;grid.Parent=slots
+  local sheet=RobloxCommonUI.CreateCharacterSheet({
+    name="CharacterSummary",size=UDim2.new(0.46,-8,1,0),theme=theme,
+    characterName=options.characterName,stats=options.stats or {}
+  })
+  sheet.Parent=body
+  -- 모바일: 장비가 많거나 화면 높이가 짧아도 슬롯을 잘라내지 않는다.
+  local scroll=Instance.new("ScrollingFrame")
+  scroll.Name="EquipmentScroll"
+  scroll.BackgroundTransparency=1;scroll.BorderSizePixel=0
+  scroll.ScrollBarThickness=4;scroll.Active=true
+  scroll.ScrollingDirection=Enum.ScrollingDirection.Y
+  scroll.AutomaticCanvasSize=Enum.AutomaticSize.Y
+  scroll.CanvasSize=UDim2.fromOffset(0,0)
+  scroll.Parent=body
+  local slots=Instance.new("Frame")
+  slots.Name="EquipmentSlots";slots.Size=UDim2.new(1,-8,0,0)
+  slots.BackgroundTransparency=1;slots.Parent=scroll
+  local grid=Instance.new("UIGridLayout")
+  grid.CellSize=UDim2.new(0.5,-6,0,110)
+  grid.CellPadding=UDim2.fromOffset(10,10)
+  grid.SortOrder=Enum.SortOrder.LayoutOrder;grid.Parent=slots
   local names=options.slots or {"무기","보조","머리","몸","장갑","신발","장신구","특수"}
   local built,state={},{}
   for i,label in ipairs(names)do
-    local slot=RobloxCommonUI.CreateEquipmentSlot({name="Equipment"..i,label=label,size=UDim2.new(1,0,1,0),theme=theme})
+    local slot=RobloxCommonUI.CreateEquipmentSlot({
+      name="Equipment"..i,label=label,size=UDim2.new(1,0,1,0),theme=theme
+    })
     slot.LayoutOrder=i;slot.Parent=slots;built[i]=slot
     slot.Activated:Connect(function()
       local row=state[i]
-      if row and row.id and type(options.onEquip)=="function"then options.onEquip(row.id,row)end
+      if row and row.id and row.locked~=true and type(options.onEquip)=="function"then
+        options.onEquip(row.id,row)
+      end
     end)
   end
+  local function layout()
+    local compact=body.AbsoluteSize.X<560
+    sheet.Visible=not compact
+    if compact then
+      scroll.Position=UDim2.fromOffset(0,0)
+      scroll.Size=UDim2.fromScale(1,1)
+      grid.CellSize=UDim2.new(0.5,-6,0,92)
+    else
+      sheet.Size=UDim2.new(0.46,-8,1,0)
+      scroll.Position=UDim2.new(0.46,8,0,0)
+      scroll.Size=UDim2.new(0.54,-8,1,0)
+      grid.CellSize=UDim2.new(0.5,-6,0,110)
+    end
+    root:SetAttribute("MobileStackedLayout",compact)
+  end
+  grid:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    slots.Size=UDim2.new(1,-8,0,grid.AbsoluteContentSize.Y+10)
+  end)
+  body:GetPropertyChangedSignal("AbsoluteSize"):Connect(layout)
+  layout()
   local function sync(items)
     state=type(items)=="table"and items or {}
     for index,slot in ipairs(built)do
@@ -1948,9 +1990,10 @@ function RobloxCommonUI.CreateEquipmentFullScreen(options)
     root:SetAttribute("BoundEquipmentCount",#state)
   end
   sync(options.equipment or {})
+  root:SetAttribute("TouchScrollable",true)
   root:SetAttribute("OwnsEquipAuthority",false)
   root:SetAttribute("OwnsSaveAuthority",false)
-  return root,{sheet=sheet,slots=built,Sync=sync}
+  return root,{sheet=sheet,slots=built,scroll=scroll,Sync=sync}
 end
 
 function RobloxCommonUI.CreateCharacterDetailScreen(options)
