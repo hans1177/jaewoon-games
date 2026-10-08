@@ -9,23 +9,23 @@
   "completedPhases": [],
   "completedPhaseCount": 0,
   "cachedTaskCount": 0,
-  "lastSuccessfulModelCallAt": "2026-10-08T02:34:53.014Z",
-  "failedPhase": "designer_draft_slices",
+  "lastSuccessfulModelCallAt": "2026-10-08T02:36:12.465Z",
+  "failedPhase": "designer_draft",
   "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_ROLE_MISSING,DESIGN_RULE_ROLE_MISSING",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_ROLE_MISSING,DESIGN_RULE_ROLE_MISSING,DESIGN_RULE_ROLE_MISSING",
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 125837,
-      "lastMs": 125837,
+      "totalMs": 205284,
+      "lastMs": 79447,
       "lastError": null,
-      "updatedAt": "2026-10-08T02:34:53.014Z"
+      "updatedAt": "2026-10-08T02:36:12.465Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T02:34:53.018Z"
+  "updatedAt": "2026-10-08T02:36:12.467Z"
 }
