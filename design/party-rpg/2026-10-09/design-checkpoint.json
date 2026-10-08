@@ -34,25 +34,51 @@
         "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
         "@ Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
       ]
+    },
+    "local_authoring_parts::5edd8b9674b19d17bf517d3597ecfddcf586fe2bd036172ec2153afa2b9883bf:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "BOARD_STATE"
+      ],
+      "stateOutputs": [
+        "NEW_BOARD_STATE"
+      ],
+      "name": "START_GAME",
+      "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+      "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+    },
+    "local_authoring_parts::5edd8b9674b19d17bf517d3597ecfddcf586fe2bd036172ec2153afa2b9883bf:signatureSystems:1": {
+      "id": "SIGNATURE_SYSTEM_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "BOARD_STATE"
+      ],
+      "stateOutputs": [
+        "NEW_BOARD_STATE"
+      ],
+      "name": "MATCH_GAME",
+      "purpose": "MAIN × A × B × c의 관계에서 선택 결과가 다음 상태로 연결하는 첫 번째 대축",
+      "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective with a clear goal and limited moves, obstacles, or another visible puzzle constraint in the current state of the game."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 288342,
-      "lastMs": 35077,
+      "totalMs": 350649,
+      "lastMs": 32191,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:36:28.900Z"
+      "updatedAt": "2026-10-08T21:37:31.210Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:31:40.536Z",
-  "updatedAt": "2026-10-08T21:36:28.900Z",
+  "updatedAt": "2026-10-08T21:37:31.210Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2089,7 +2115,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:36:28.900Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:37:31.210Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
