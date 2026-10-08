@@ -35,25 +35,44 @@
         "COLLECT RUN REWARDS/EXPERIENCE AND CHOOSE UPGRADS, PERKS, WEAPONS, OR SKILLS THAT CHANGE THE CURRENT BUILD",
         "COMBINE UPGRADS INTO STRONGER BUILD, SURVIVE HARDER WAVES OR BOSS, THEN CONVERT RUN RESULT INTO NEXT PROGRESSION CHOICE"
       ]
+    },
+    "local_authoring_parts::a311d40a59f17d913ae85cce9cce34387cd0dacd000441faf4aea507ec761f9a:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "ENEMY_PRESSURE",
+        "HORDE_SIZE",
+        "TIME_LIMIT",
+        "RUN_RESULT"
+      ],
+      "stateOutputs": [
+        "BUILD_COMBINATION",
+        "WORLD_RELATIONSHIP",
+        "OPTIONAL_MASTERY",
+        "NEXT_OPEN_QUESTION"
+      ],
+      "name": "Survival Progression System",
+      "purpose": "Facilitates dynamic build progression through real-time survival challenges, with player choice in resource allocation and strategic adaptation.",
+      "playerChoice": "Player selects upgrades, perks, weapons, or skills that influence the current build, affecting survival outcomes and progression choices."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 669268,
-      "lastMs": 107985,
+      "totalMs": 780615,
+      "lastMs": 111347,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:19:20.482Z"
+      "updatedAt": "2026-10-08T13:21:11.831Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:08:11.184Z",
-  "updatedAt": "2026-10-08T13:19:20.482Z",
+  "updatedAt": "2026-10-08T13:21:11.831Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2252,7 +2271,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:19:20.482Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:21:11.831Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
