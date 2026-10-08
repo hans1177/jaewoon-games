@@ -8,11 +8,11 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 21,
-  "lastSuccessfulModelCallAt": "2026-10-08T11:09:21.474Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "cachedTaskCount": 22,
+  "lastSuccessfulModelCallAt": "2026-10-08T11:11:06.357Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "designerSeed": {
     "file": "design/horror-escape-room/2026-10-08/design-seed.json",
     "contentDigest": "77477f582f8f772f43030f128480f341cc8aa3fcef70c515e517a36880441fe0",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 16,
+      "calls": 17,
+      "successes": 17,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1414984,
-      "lastMs": 203726,
+      "totalMs": 1519862,
+      "lastMs": 104878,
       "lastError": null,
-      "updatedAt": "2026-10-08T11:09:21.474Z"
+      "updatedAt": "2026-10-08T11:11:06.357Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T11:09:21.478Z"
+  "updatedAt": "2026-10-08T11:11:06.359Z"
 }
