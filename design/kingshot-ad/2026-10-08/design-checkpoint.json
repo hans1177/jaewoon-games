@@ -569,25 +569,164 @@
       "name": "EnemyWaveDefenderB",
       "purpose": "플레이어가 다음 적군 파워를 예측하고, 위험을 감지하여 적절한 방어 구조를 생성하는 데 사용되는 시스템입니다. 이 시스템은 게임의 핵심 재미인 성장, 위험, 보상의 반복 루프를 구현하며, 주어진 상황에서 전략적 선택을 통해 보상의 기회를 확보합니다.",
       "playerChoice": "적군 파워를 예측하여 방어 구조를 생성하거나, 전략적 전개를 변경하여 보상의 기회를 확보합니다. 이 선택은 다음 월드 상태를 바꿉니다. 예: '적군 파워가 3번 증가하면, 방어 위치를 2개 더 확장해야 한다.'"
+    },
+    "local_authoring_parts::6b7f9f7703b862794d0e20330e5f0a3af8b46723c75c0d34afa7a763249f3375:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "c",
+      "stateInputs": [
+        "enemyWaveType",
+        "threatenedRoute",
+        "currentDefenses",
+        "resourcesAvailable"
+      ],
+      "stateOutputs": [
+        "nextDefensesPlaced",
+        "resourcesSpent",
+        "newDefensiveStrategy"
+      ],
+      "name": "EnemyWaveDefenderC",
+      "purpose": "플레이어가 다음 적군 파워를 예측하고, 위험을 감지하여 적절한 방어 구조를 생성하는 데 사용되는 보조 요소입니다. 이 시스템은 게임의 핵심 재미인 성장, 위험, 보상의 반복 루프를 구현하며, MAIN 및 A/B의 상태 변화에 따라 전략적 선택을 조정하여 보상의 기회를 확보합니다.",
+      "playerChoice": "적군 파워를 예측하여 방어 구조를 생성하거나, 전략적 전개를 변경하여 보상의 기회를 확보합니다. 이 선택은 다음 월드 상태를 바꿉니다. 예: '적군 파워가 3번 증가하면, 방어 위치를 2개 더 확장해야 한다.'"
+    },
+    "local_authoring_parts::6b7f9f7703b862794d0e20330e5f0a3af8b46723c75c0d34afa7a763249f3375:signatureSystems:4": {
+      "id": "signatureSystems[4]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "enemyWaveType",
+        "threatenedRoute",
+        "currentDefenses",
+        "resourcesAvailable"
+      ],
+      "stateOutputs": [
+        "nextDefensesPlaced",
+        "resourcesSpent",
+        "newDefensiveStrategy"
+      ],
+      "name": "EnemyWaveDefenderDelve",
+      "purpose": "플레이어가 다음 적군 파워를 예측하고, 위험을 감지하여 적절한 방어 구조를 생성하는 데 사용되는 보조 요소입니다. 이 시스템은 게임의 학문 소재를 넣는 것이 아니라, 게임 자체를 오래 연구할 만한 규칙·관계·응용의 층위를 포함하며, MAIN 및 A/B의 상태 변화에 따라 전략적 선택을 조정하여 보상의 기회를 확보합니다.",
+      "playerChoice": "적군 파워를 예측하여 방어 구조를 생성하거나, 전략적 전개를 변경하여 보상의 기회를 확보합니다. 이 선택은 다음 월드 상태를 바꿉니다. 예: '적군 파워가 3번 증가하면, 방어 위치를 2개 더 확장해야 한다.'"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "킹샷 광고풍의 핵심 재미와 시스템 연결을 확정한 고유한 정체성입니다. 게임은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY의 반복 가능한 핵심 루프를 구현합니다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공합니다. 게임의 핵심 재미는 성장, 위험, 보상의 연결된 반복 루프로 구성됩니다. 게임의 세계 규칙은 플레이어의 선택과 MAIN, A, B, c의 상태 변화를 연결하여 실제 월드 상태 변화를 만듭니다. 게임의 정체성은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'과 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'의 결과가 서로 영향을 주는 시그니처 상호작용을 포함합니다. 게임의 정체성은 시그니처 시스템, MAIN, A, B, c, DELVE(@)의 관계를 실제 상태 변화로 구체화합니다. 게임의 정체성은 학문 소재를 넣는 것이 아니라 게임 자체를 오래 연구할 만한 규칙·관계·응용의 층위를 포함합니다. 게임의 정체성은 시그니처의 purpose/playerChoice에 발동 조건·자원·시간·전조·상대 대응과 플레이어의 대안을 담고 있으며, MAIN은 coreFun/coreLoop, A/B는 signatureSystems/systemInterconnections에서 실제 상태 교환으로 증명합니다. c는 독립 대축이 아닌 서브요소로 MAIN/A/B를 변주하고, @는 contentExp",
+      "playerFantasy": "플레이어는 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY의 반복 가능한 핵심 루프를 구현하는 게임에서, 즉시 이해되는 입력과 피드백을 제공하는 게임을 플레이해야 합니다. 게임의 핵심 재미는 성장, 위험, 보상의 연결된 반복 루프로 구성되며, 이는 게임의 세계 규칙과 플레이어의 선택, MAIN, A, B, c의 상태 변화를 연결하여 실제 월드 상태 변화를 만듭니다. 게임의 정체성은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'과 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'의 결과가 서로 영향을 주는 시그니처 상호작용을 포함하며, 이는 시그니처 시스템, MAIN, A, B, c, DELVE(@)의 관계를 실제 상태 변화로 구체화합니다. 게임의 정체성은 학문 소재를 넣는 것이 아니라 게임 자체를 오래 연구할 만한 규칙·관계·응용의 층위를 포함하며, 이는 시그니처의 purpose/playerChoice에 발동 조건·자원·시간·전조·상대 대응과 플레이어의 대안을 담고 있습니다. 게임의 정체성은 MAIN은 coreFun/coreLoop, A/B는 signatureSystems/systemInterconnections에서",
+      "coreFun": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.과 Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.의 결과가 서로 영향을 주는 시그니처 상호작용을 포함하며, 이는 시그니처 시스템, MAIN, A, B, c, DELVE(@)의 관계를 실제 상태 변화로 구체화합니다. 게임의 정체성은 학문 소재를 넣는 것이 아니라 게임 자체를 오래 연구할 만한 규칙·관계·응용의 층위를 포함하며, 이는 시그니처의 purpose/playerChoice에 발동 조건·자원·시간·전조·상대 대응과 플레이어의 대안을 담고 있습니다. 게임의 정체성은 MAIN은 coreFun/coreLoop, A/B는 signatureSystems/systemInterconnections에서 실제 상태 교환으로 증명합니다. c는 독립 대축이 아닌 서브요소로 MAIN/A/B를 변주하고, @는 contentExpansionPlan/progressionDirection에서 숨은 조합·숙련·재방문·재해석·고급 운용으로 드러나야 한다. 게임의 핵심 재미는 성장, 위험, 보상의 연결된 반복 루프로 구성되며, 이는 게임의 세계 규칙과 플레이어의 선택, MAIN, A, B, c의 상태 변화를 연결하여 실제 월드 상태 변화를 만듭니다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 학문 소재를 넣는 것이 아니라 게임 자체를 오래 연구할 만한 규칙·관계·응용의 층위를 포함합니다. 게임의 정체성은 'Read the下次敌",
+      "coreLoop": [
+        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+      ],
+      "multiplayerMode": "COOP",
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "enemyWaveType",
+            "threatenedRoute",
+            "currentDefenses",
+            "resourcesAvailable"
+          ],
+          "stateOutputs": [
+            "nextDefensesPlaced",
+            "resourcesSpent",
+            "newDefensiveStrategy"
+          ],
+          "name": "EnemyWaveDefender",
+          "purpose": "플레이어가 다음 적군 파워를 예측하고, 위험을 감지하여 적절한 방어 구조를 생성하는 데 사용되는 시스템입니다. 이 시스템은 게임의 핵심 재미인 성장, 위험, 보상의 반복 루프를 구현합니다.",
+          "playerChoice": "적군 파워를 예측하여 방어 구조를 생성하거나, 전략적 전개를 변경하여 보상의 기회를 확보합니다. 이 선택은 다음 월드 상태를 바꿉니다. 예: '적군 파워가 3번 증가하면, 방어 위치를 2개 더 확장해야 한다.'"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "enemyWaveType",
+            "threatenedRoute",
+            "currentDefenses",
+            "resourcesAvailable"
+          ],
+          "stateOutputs": [
+            "nextDefensesPlaced",
+            "resourcesSpent",
+            "newDefensiveStrategy"
+          ],
+          "name": "EnemyWaveDefender",
+          "purpose": "플레이어가 다음 적군 파워를 예측하고, 위험을 감지하여 적절한 방어 구조를 생성하는 데 사용되는 시스템입니다. 이 시스템은 게임의 핵심 재미인 성장, 위험, 보상의 반복 루프를 구현합니다.",
+          "playerChoice": "적군 파워를 예측하여 방어 구조를 생성하거나, 전략적 전개를 변경하여 보상의 기회를 확보합니다. 이 선택은 다음 월드 상태를 바꿉니다. 예: '적군 파워가 3번 증가하면, 방어 위치를 2개 더 확장해야 한다.'"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "enemyWaveType",
+            "threatenedRoute",
+            "currentDefenses",
+            "resourcesAvailable"
+          ],
+          "stateOutputs": [
+            "nextDefensesPlaced",
+            "resourcesSpent",
+            "newDefensiveStrategy"
+          ],
+          "name": "EnemyWaveDefenderB",
+          "purpose": "플레이어가 다음 적군 파워를 예측하고, 위험을 감지하여 적절한 방어 구조를 생성하는 데 사용되는 시스템입니다. 이 시스템은 게임의 핵심 재미인 성장, 위험, 보상의 반복 루프를 구현하며, 주어진 상황에서 전략적 선택을 통해 보상의 기회를 확보합니다.",
+          "playerChoice": "적군 파워를 예측하여 방어 구조를 생성하거나, 전략적 전개를 변경하여 보상의 기회를 확보합니다. 이 선택은 다음 월드 상태를 바꿉니다. 예: '적군 파워가 3번 증가하면, 방어 위치를 2개 더 확장해야 한다.'"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "enemyWaveType",
+            "threatenedRoute",
+            "currentDefenses",
+            "resourcesAvailable"
+          ],
+          "stateOutputs": [
+            "nextDefensesPlaced",
+            "resourcesSpent",
+            "newDefensiveStrategy"
+          ],
+          "name": "EnemyWaveDefenderC",
+          "purpose": "플레이어가 다음 적군 파워를 예측하고, 위험을 감지하여 적절한 방어 구조를 생성하는 데 사용되는 보조 요소입니다. 이 시스템은 게임의 핵심 재미인 성장, 위험, 보상의 반복 루프를 구현하며, MAIN 및 A/B의 상태 변화에 따라 전략적 선택을 조정하여 보상의 기회를 확보합니다.",
+          "playerChoice": "적군 파워를 예측하여 방어 구조를 생성하거나, 전략적 전개를 변경하여 보상의 기회를 확보합니다. 이 선택은 다음 월드 상태를 바꿉니다. 예: '적군 파워가 3번 증가하면, 방어 위치를 2개 더 확장해야 한다.'"
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "enemyWaveType",
+            "threatenedRoute",
+            "currentDefenses",
+            "resourcesAvailable"
+          ],
+          "stateOutputs": [
+            "nextDefensesPlaced",
+            "resourcesSpent",
+            "newDefensiveStrategy"
+          ],
+          "name": "EnemyWaveDefenderDelve",
+          "purpose": "플레이어가 다음 적군 파워를 예측하고, 위험을 감지하여 적절한 방어 구조를 생성하는 데 사용되는 보조 요소입니다. 이 시스템은 게임의 학문 소재를 넣는 것이 아니라, 게임 자체를 오래 연구할 만한 규칙·관계·응용의 층위를 포함하며, MAIN 및 A/B의 상태 변화에 따라 전략적 선택을 조정하여 보상의 기회를 확보합니다.",
+          "playerChoice": "적군 파워를 예측하여 방어 구조를 생성하거나, 전략적 전개를 변경하여 보상의 기회를 확보합니다. 이 선택은 다음 월드 상태를 바꿉니다. 예: '적군 파워가 3번 증가하면, 방어 위치를 2개 더 확장해야 한다.'"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 18,
+      "calls": 20,
+      "successes": 20,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1959631,
-      "lastMs": 113265,
+      "totalMs": 2193723,
+      "lastMs": 118522,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:49:13.350Z"
+      "updatedAt": "2026-10-08T15:53:07.446Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:25:16.552Z",
-  "updatedAt": "2026-10-08T15:49:13.350Z",
+  "updatedAt": "2026-10-08T15:53:07.455Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2781,47 +2920,21 @@
   "sliceDependencies": {
     "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
   },
-  "sliceRepairFeedback": {
-    "designer_draft_slices::identity-core": [
-      {
-        "code": "DESIGN_RULE_STATE_MISSING",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "signatureSystems",
-          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
-        },
-        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "signatureSystems"
-        ]
-      }
-    ]
-  },
+  "sliceRepairFeedback": {},
   "sliceRepairAttempts": {
     "designer_draft_slices::identity-core": 2
   },
-  "slicePartialResults": {
-    "designer_draft_slices::identity-core": {
-      "identity": "킹샷 광고풍의 핵심 재미와 시스템 연결을 확정한 고유한 정체성입니다. 게임은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY의 반복 가능한 핵심 루프를 구현합니다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공합니다. 게임의 핵심 재미는 성장, 위험, 보상의 연결된 반복 루프로 구성됩니다. 게임의 세계 규칙은 플레이어의 선택과 MAIN, A, B, c의 상태 변화를 연결하여 실제 월드 상태 변화를 만듭니다. 게임의 정체성은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'과 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'의 결과가 서로 영향을 주는 시그니처 상호작용을 포함합니다. 게임의 정체성은 시그니처 시스템, MAIN, A, B, c, DELVE(@)의 관계를 실제 상태 변화로 구체화합니다. 게임의 정체성은 학문 소재를 넣는 것이 아니라 게임 자체를 오래 연구할 만한 규칙·관계·응용의 층위를 포함합니다. 게임의 정체성은 시그니처의 purpose/playerChoice에 발동 조건·자원·시간·전조·상대 대응과 플레이어의 대안을 담고 있으며, MAIN은 coreFun/coreLoop, A/B는 signatureSystems/systemInterconnections에서 실제 상태 교환으로 증명합니다. c는 독립 대축이 아닌 서브요소로 MAIN/A/B를 변주하고, @는 contentExp",
-      "playerFantasy": "플레이어는 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY의 반복 가능한 핵심 루프를 구현하는 게임에서, 즉시 이해되는 입력과 피드백을 제공하는 게임을 플레이해야 합니다. 게임의 핵심 재미는 성장, 위험, 보상의 연결된 반복 루프로 구성되며, 이는 게임의 세계 규칙과 플레이어의 선택, MAIN, A, B, c의 상태 변화를 연결하여 실제 월드 상태 변화를 만듭니다. 게임의 정체성은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'과 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'의 결과가 서로 영향을 주는 시그니처 상호작용을 포함하며, 이는 시그니처 시스템, MAIN, A, B, c, DELVE(@)의 관계를 실제 상태 변화로 구체화합니다. 게임의 정체성은 학문 소재를 넣는 것이 아니라 게임 자체를 오래 연구할 만한 규칙·관계·응용의 층위를 포함하며, 이는 시그니처의 purpose/playerChoice에 발동 조건·자원·시간·전조·상대 대응과 플레이어의 대안을 담고 있습니다. 게임의 정체성은 MAIN은 coreFun/coreLoop, A/B는 signatureSystems/systemInterconnections에서",
-      "coreFun": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.과 Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.의 결과가 서로 영향을 주는 시그니처 상호작용을 포함하며, 이는 시그니처 시스템, MAIN, A, B, c, DELVE(@)의 관계를 실제 상태 변화로 구체화합니다. 게임의 정체성은 학문 소재를 넣는 것이 아니라 게임 자체를 오래 연구할 만한 규칙·관계·응용의 층위를 포함하며, 이는 시그니처의 purpose/playerChoice에 발동 조건·자원·시간·전조·상대 대응과 플레이어의 대안을 담고 있습니다. 게임의 정체성은 MAIN은 coreFun/coreLoop, A/B는 signatureSystems/systemInterconnections에서 실제 상태 교환으로 증명합니다. c는 독립 대축이 아닌 서브요소로 MAIN/A/B를 변주하고, @는 contentExpansionPlan/progressionDirection에서 숨은 조합·숙련·재방문·재해석·고급 운용으로 드러나야 한다. 게임의 핵심 재미는 성장, 위험, 보상의 연결된 반복 루프로 구성되며, 이는 게임의 세계 규칙과 플레이어의 선택, MAIN, A, B, c의 상태 변화를 연결하여 실제 월드 상태 변화를 만듭니다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 학문 소재를 넣는 것이 아니라 게임 자체를 오래 연구할 만한 규칙·관계·응용의 층위를 포함합니다. 게임의 정체성은 'Read the下次敌",
-      "coreLoop": [
-        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
-        "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
-        "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
-      ],
-      "multiplayerMode": "COOP"
-    }
-  },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:49:13.350Z",
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-08T15:53:07.448Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
-  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/kingshot-ad/2026-10-08/design-seed.json",
+    "contentDigest": "1aae028bc9857f0aa17f80c6c16e9383f1de74a51e3d2b3f7dbf8df7407626a8",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }

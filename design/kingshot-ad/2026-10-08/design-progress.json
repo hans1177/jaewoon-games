@@ -8,25 +8,30 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 23,
-  "lastSuccessfulModelCallAt": "2026-10-08T15:49:13.350Z",
+  "cachedTaskCount": 26,
+  "lastSuccessfulModelCallAt": "2026-10-08T15:53:07.448Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
-  "designerSeed": null,
+  "designerSeed": {
+    "file": "design/kingshot-ad/2026-10-08/design-seed.json",
+    "contentDigest": "1aae028bc9857f0aa17f80c6c16e9383f1de74a51e3d2b3f7dbf8df7407626a8",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 18,
+      "calls": 20,
+      "successes": 20,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1959631,
-      "lastMs": 113265,
+      "totalMs": 2193723,
+      "lastMs": 118522,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:49:13.350Z"
+      "updatedAt": "2026-10-08T15:53:07.446Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T15:49:13.351Z"
+  "updatedAt": "2026-10-08T15:53:07.457Z"
 }
