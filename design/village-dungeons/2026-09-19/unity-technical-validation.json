@@ -5,12 +5,12 @@
   "pass": true,
   "validated": true,
   "target": "UNITY_ANDROID_TECHNICAL_VALIDATION",
-  "checkedAt": "2026-10-05T23:35:12.636Z",
+  "checkedAt": "2026-10-08T03:10:30.957Z",
   "sourceBinding": {
-    "upstreamBuildRunId": 37329995366,
-    "sourceCommit": "52781386814bf56ff5deb3797aa5135c8973d3ca",
-    "sourceTreeSha": "1fa099be90bca0d6070606b310b00f6e7a2e3467",
-    "apkSha256": "d96afb3acbf57a9365c590c9dcf1170339fa339244fec06205dad45bb239b499",
+    "upstreamBuildRunId": 37718774143,
+    "sourceCommit": "04623b035875623f657f3fa05016fef0a24ce594",
+    "sourceTreeSha": "57c7dadd0192776ffed87efded27501ef98157cd",
+    "apkSha256": "84a42254c0c010fa2c71ab5b4de7004f71ada90fcc5b9e49f6dc263827a061f4",
     "sameBinding": true
   },
   "foundationAdapter": {
@@ -125,7 +125,7 @@
     "MEMORY_HEAT_LOADING": {
       "state": "PASS_WITH_LIMITATION",
       "provider": "ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO",
-      "maxAllocatedMemoryBytes": 53732031,
+      "maxAllocatedMemoryBytes": 52689048,
       "loading": "PASS",
       "heat": "EMULATOR_ONLY_NOT_PHYSICAL_DEVICE",
       "limitation": "Physical-device thermal behavior remains a RELEASE_CONFIRMED device-validation concern."
@@ -177,9 +177,9 @@
     "Physical-device thermal behavior is not inferred from emulator evidence."
   ],
   "provenance": {
-    "buildInfo": "/tmp/unity-build/village-dungeons-android-cloud-37329995366-1/build-info.json",
-    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-37329995366/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
-    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-37329995366/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
+    "buildInfo": "/tmp/unity-build/village-dungeons-android-cloud-37718774143-1/build-info.json",
+    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-37718774143/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
+    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-37718774143/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
     "projectPath": "unity-games/village-dungeons"
   }
 }
