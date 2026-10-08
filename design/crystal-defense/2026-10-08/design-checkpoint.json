@@ -965,25 +965,51 @@
       "toSystem": "crystalDefensePlacementSystem",
       "trigger": "readNextAttackPattern",
       "stateChange": "attackPattern → crystalDefensePlacement"
+    },
+    "local_authoring_parts::40372b23c7825aa323a632365460ab70eb4aac0908a9ca8c27dd87bb9c67f4ae:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "attackPattern",
+      "toId": "crystalDefensePlacement",
+      "stateKeys": [
+        "attackPattern",
+        "crystalDefensePlacement"
+      ],
+      "fromSystem": "attackPatternSystem, crystalDefensePlacementSystem, resourceFlow:crystalDefensePlacement"
+    },
+    "local_authoring_parts::40372b23c7825aa323a632365460ab70eb4aac0908a9ca8c27dd87bb9c67f4ae:toSystem,trigger,stateChange": {
+      "toSystem": "crystalDefensePlacementSystem",
+      "trigger": "readNextAttackPattern",
+      "stateChange": "attackPattern → crystalDefensePlacement"
+    },
+    "local_authoring_parts::32c70e82e29f6cdb924d3b332e4323d2164cb6d608b1a178fbcf9d6c15ee1959:systemInterconnections:2": {
+      "fromId": "attackPattern",
+      "toId": "crystalDefensePlacement",
+      "stateKeys": [
+        "attackPattern",
+        "crystalDefensePlacement"
+      ],
+      "fromSystem": "attackPatternSystem, crystalDefensePlacementSystem, resourceFlow:crystalDefensePlacement",
+      "toSystem": "crystalDefensePlacementSystem",
+      "trigger": "readNextAttackPattern",
+      "stateChange": "attackPattern → crystalDefensePlacement"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 37,
-      "successes": 36,
+      "calls": 39,
+      "successes": 38,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3276397,
-      "lastMs": 94871,
+      "totalMs": 3470301,
+      "lastMs": 95933,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T16:13:41.905Z"
+      "updatedAt": "2026-10-08T16:16:55.813Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:59:10.064Z",
-  "updatedAt": "2026-10-08T16:13:41.907Z",
+  "updatedAt": "2026-10-08T16:16:55.815Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3321,7 +3347,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:13:41.907Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:16:55.815Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
