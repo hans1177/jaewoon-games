@@ -64,25 +64,40 @@
       "name": "BUILD_UPGRADE_SYSTEM",
       "purpose": "플레이어의 '진행' - 선택 -> 상태 변화를 구체화한 반복 가능한 핵심 루프",
       "playerChoice": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+    },
+    "local_authoring_parts::511a852a05f9fd4580639a7bd799f4beaad1d3a3f9ce8de4323b2def2ccd6111:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "B",
+      "stateInputs": [
+        "BUILD_UPGRADE",
+        "NEXT_PROGRESSION_CHOICE"
+      ],
+      "stateOutputs": [
+        "BUILD_UPGRADE",
+        "NEXT_PROGRESSION_CHOICE"
+      ],
+      "name": "PROGRESSION_SYSTEM",
+      "purpose": "플레이어의 '진행' - 선택 -> 상태 변화를 구체화한 반복 가능한 핵심 루프",
+      "playerChoice": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 460022,
-      "lastMs": 31446,
+      "totalMs": 558494,
+      "lastMs": 98472,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:29:28.030Z"
+      "updatedAt": "2026-10-08T13:31:06.503Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:21:47.979Z",
-  "updatedAt": "2026-10-08T13:29:28.030Z",
+  "updatedAt": "2026-10-08T13:31:06.503Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2281,7 +2296,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:29:28.030Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:31:06.503Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
