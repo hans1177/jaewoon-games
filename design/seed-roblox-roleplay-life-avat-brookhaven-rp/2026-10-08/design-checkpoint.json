@@ -857,25 +857,44 @@
         "RUN_RESULT"
       ],
       "fromSystem": "Survival Progression System (signatureSystems[0])"
+    },
+    "local_authoring_parts::208068203e1b95fa8893469d15eb3089266b70ea96eecda366f7c3424c29387f:toSystem,trigger,stateChange": {
+      "toSystem": "Survival Progression System (signatureSystems[0])",
+      "trigger": "ENEMY_PRESSURE",
+      "stateChange": "BUILD_COMBINATION"
+    },
+    "local_authoring_parts::97a054976f6ad644e75d9489dca26c09f13c2253024945c166d72d6044eb3b72:systemInterconnections:4": {
+      "fromId": "ENEMY_PRESSURE",
+      "toId": "BUILD_COMBINATION",
+      "stateKeys": [
+        "ENEMY_PRESSURE",
+        "HORDE_SIZE",
+        "TIME_LIMIT",
+        "RUN_RESULT"
+      ],
+      "fromSystem": "Survival Progression System (signatureSystems[0])",
+      "toSystem": "Survival Progression System (signatureSystems[0])",
+      "trigger": "ENEMY_PRESSURE",
+      "stateChange": "BUILD_COMBINATION"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 26,
-      "successes": 24,
+      "calls": 27,
+      "successes": 25,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 3063289,
-      "lastMs": 63590,
+      "totalMs": 3123557,
+      "lastMs": 60268,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T15:14:59.478Z"
+      "updatedAt": "2026-10-08T15:15:59.748Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:08:11.184Z",
-  "updatedAt": "2026-10-08T15:14:59.478Z",
+  "updatedAt": "2026-10-08T15:15:59.755Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3101,9 +3120,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "ENEMY_PRESSURE→WORLD_RELATIONSHIP의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "ENEMY_PRESSURE→BUILD_COMBINATION의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: ENEMY_PRESSURE→WORLD_RELATIONSHIP의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: ENEMY_PRESSURE→BUILD_COMBINATION의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3118,9 +3137,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "RUN_RESULT→NEXT_OPEN_QUESTION의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "ENEMY_PRESSURE→BUILD_COMBINATION의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: RUN_RESULT→NEXT_OPEN_QUESTION의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: ENEMY_PRESSURE→BUILD_COMBINATION의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3135,9 +3154,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "BUILD_COMBINATION→OPTIONAL_MASTERY의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "ENEMY_PRESSURE→BUILD_COMBINATION의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: BUILD_COMBINATION→OPTIONAL_MASTERY의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: ENEMY_PRESSURE→BUILD_COMBINATION의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3152,9 +3171,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "RUN_RESULT→PROGRESSION_CHOICE의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "ENEMY_PRESSURE→BUILD_COMBINATION의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: RUN_RESULT→PROGRESSION_CHOICE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: ENEMY_PRESSURE→BUILD_COMBINATION의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3181,7 +3200,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 1
+    "designer_draft_slices::systems-progression": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3223,10 +3242,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:14:59.478Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T15:15:59.751Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {

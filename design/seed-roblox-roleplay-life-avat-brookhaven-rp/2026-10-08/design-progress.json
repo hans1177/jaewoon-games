@@ -8,11 +8,11 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 37,
-  "lastSuccessfulModelCallAt": "2026-10-08T15:14:59.478Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "cachedTaskCount": 39,
+  "lastSuccessfulModelCallAt": "2026-10-08T15:15:59.751Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "designerSeed": {
     "file": "design/seed-roblox-roleplay-life-avat-brookhaven-rp/2026-10-08/design-seed.json",
     "contentDigest": "04672423276ee081ac821d6af3d71c134f6aeaf0079ba1afdc75d5d4956170a9",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 26,
-      "successes": 24,
+      "calls": 27,
+      "successes": 25,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 3063289,
-      "lastMs": 63590,
+      "totalMs": 3123557,
+      "lastMs": 60268,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T15:14:59.478Z"
+      "updatedAt": "2026-10-08T15:15:59.748Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T15:14:59.479Z"
+  "updatedAt": "2026-10-08T15:15:59.756Z"
 }
