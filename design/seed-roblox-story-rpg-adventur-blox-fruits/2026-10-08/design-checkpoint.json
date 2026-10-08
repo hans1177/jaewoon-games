@@ -27,25 +27,32 @@
       "identity": "Shardbound Odyssey은 플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다. 게임의 핵심 재미는 성장과 반복의 루프를 통해 구현되며, 플레이어는 즉시 상태 변화를 경험하고, 이는 세계의 원인과 규칙에 따라 영향을 미친다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 플레이어는 선택의 결과가 다음 상태와 접근 가능성을 바꾸는 시그니처 상호작용을 경험할 수 있다. 게임의 정체성은 게임의 구조와 규칙에 기반하고, 플레이어의 역할과 선택은 게임의 핵심 루프와 연결되어 있다.",
       "playerFantasy": "Shardbound Odyssey은 플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다. 게임의 핵심 재미는 성장과 반복의 루프를 통해 구현되며, 플레이어는 즉시 상태 변화를 경험하고, 이는 세계의 원인과 규칙에 따라 영향을 미친다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 플레이어는 선택의 결과가 다음 상태와 접근 가능성을 바꾸는 시그니처 상호작용을 경험할 수 있다. 게임의 정체성은 게임의 구조와 규칙에 기반하고, 플레이어의 역할과 선택은 게임의 핵심 루프와 연결되어 있다.",
       "coreFun": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.의 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다. 게임의 핵심 재미는 성장과 반복의 루프를 통해 구현되며, 플레이어는 즉시 상태 변화를 경험하고, 이는 세계의 원인과 규칙에 따라 영향을 미친다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 플레이어는 선택의 결과가 다음 상태와 접근 가능성을 바꾸는 시그니처 상호작용을 경험할 수 있다. 게임의 정체성은 게임의 구조와 규칙에 기반하고, 플레이어의 역할과 선택은 게임의 핵심 루프와 연결되어 있다."
+    },
+    "local_authoring_parts::ff7229d4f85241b26d4c67d7dff451f0c41c6c625f8b9e6188479a1a1c52ed06:coreLoop": {
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 281236,
-      "lastMs": 44689,
+      "totalMs": 323118,
+      "lastMs": 41882,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:12:57.816Z"
+      "updatedAt": "2026-10-08T12:13:39.701Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:08:16.555Z",
-  "updatedAt": "2026-10-08T12:12:57.817Z",
+  "updatedAt": "2026-10-08T12:13:39.701Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2082,7 +2089,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:12:57.817Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:13:39.701Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
