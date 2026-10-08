@@ -37,9 +37,93 @@ function chooseRepresentative(rows=[],impactProfiles=new Map()){
     ||clean(a.id).localeCompare(clean(b.id)))[0]||null;
 }
 
+
+/* ── 게임별 F0~F9 원인 분류: 검증되지 않은 단계는 절대 PASS로 판단하지 않는다. ── */
+function developmentFloorSnapshot(developmentQueue={}) {
+  const items=Array.isArray(developmentQueue?.items)?developmentQueue.items:[];
+  const rows=[];
+  for(const item of items){
+    if(clean(item.productionClass).toUpperCase()!=='DEVELOPMENT_CONFIRMED'||clean(item.status).toUpperCase()==='DISABLED')continue;
+    const gameId=clean(item.gameId),revision=clean(item.robloxSourceCommit),artifact=clean(item.robloxBuildArtifactIdentity);
+    const f0=item.robloxFoundationF0Evidence||{},candidate=item.robloxRuntimeCandidateEvidence||{};
+    const buildExact=item.robloxBuildOrPackagePassed===true&&item.robloxBuildPreflightPassed===true
+      &&revision!==''&&artifact.startsWith('sha256:')&&clean(item.robloxBuildSourceRevision)===revision;
+    const f0Exact=buildExact&&item.robloxFoundationF0Passed===true
+      &&clean(f0.sourceRevision)===revision&&clean(f0.artifactIdentity)===artifact
+      &&Number(f0.artifactRunId||0)>0;
+    const candidateExact=f0Exact&&candidate.published===true
+      &&clean(candidate.sourceRevision)===revision&&clean(candidate.artifactIdentity)===artifact
+      &&Number(candidate.versionNumber||0)>0&&clean(candidate.placeId)!=='';
+    const qualityBlocked=f0Exact&&item.robloxQualityBuildUpRequired===true
+      &&clean(item.robloxQualityBuildUpSourceRevision)===revision;
+    const signature=clean(item.robloxFailureSignature);
+    let stage,classification,repair;
+    if(!buildExact){
+      stage='TARGET_PLATFORM_BUILD_OR_PACKAGE';
+      classification=/asset.binding/i.test(signature)?'SOURCE_ASSET_BINDING':'BUILD_OR_SOURCE_IDENTITY_INVALID';
+      repair='REPAIR_EXACT_SOURCE_PACKAGE_THEN_REVALIDATE_F0';
+    }else if(!f0Exact){
+      stage='F0_SOURCE_PREFLIGHT';
+      classification='F0_NOT_VERIFIED_FOR_EXACT_PACKAGE';
+      repair='RETRY_F0_WITH_EXACT_SOURCE_AND_ARTIFACT';
+    }else if(qualityBlocked){
+      stage='SOURCE_QUALITY_BUILD_UP';
+      classification='QUALITY_GATE_BLOCKS_CANDIDATE_HANDOFF';
+      repair='REPAIR_RESPONSIBLE_GAMEPLAY_SOURCE_AND_REVALIDATE';
+    }else if(!candidateExact){
+      stage='PRIVATE_RUNTIME_CANDIDATE_DEPLOY';
+      classification='F0_PASSED_CANDIDATE_NOT_PUBLISHED';
+      repair='DISPATCH_EXISTING_PRIVATE_VALIDATION_FOR_EXACT_ARTIFACT';
+    }else if(signature==='ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE'){
+      stage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+      classification='EXTERNAL_RUNTIME_TRANSIENT';
+      repair='RETRY_SAME_CANDIDATE_ENGINE_PROBE_WITH_REAL_EVIDENCE';
+    }else{
+      stage=clean(item.robloxFailureStage)||'F1_F9_PLATFORM_VERIFICATION';
+      classification='RUNTIME_OR_QA_EVIDENCE_REQUIRED';
+      repair='RESUME_EXACT_UNVERIFIED_FLOOR';
+    }
+    const unityEvidence=item.unityF0ThroughF9Evidence||{};
+    const unityF9Reported=item.unityF9ReleaseRegressionPassed===true;
+    const unityF9Bound=unityF9Reported
+      &&/^sha256:[0-9a-f]{64}$/i.test(clean(unityEvidence.artifactIdentity))
+      &&/^[0-9a-f]{40}$/i.test(clean(unityEvidence.sourceRevision));
+    rows.push({
+      gameId,platform:'ROBLOX',stage,failureSignature:signature||null,classification,repair,
+      exactBuildCheckpoint:buildExact,exactF0Checkpoint:f0Exact,exactCandidateCheckpoint:candidateExact,
+      qualitySourceRepairRequired:qualityBlocked,
+      unityF9Reported,unityF9EvidenceIdentityBound:unityF9Bound,
+      unityF9IndependentRuntimeReviewRequired:true,
+      automaticPassClaim:false
+    });
+  }
+  const cohorts=new Map();
+  for(const row of rows){
+    if(!row.failureSignature)continue;
+    const key=[row.platform,row.stage,row.failureSignature].join('|');
+    if(!cohorts.has(key))cohorts.set(key,[]);
+    cohorts.get(key).push(row.gameId);
+  }
+  const commonFailureCohorts=[...cohorts.entries()]
+    .filter(([,ids])=>ids.length>=2)
+    .map(([key,ids])=>({key,gameIds:ids,representativeGameId:[...ids].sort()[0],size:ids.length,verifiedFixRequiredBeforeCohortReuse:true}))
+    .sort((a,b)=>b.size-a.size||a.key.localeCompare(b.key));
+  return{
+    total:rows.length,exactF0Count:rows.filter(x=>x.exactF0Checkpoint).length,
+    f0RepairCount:rows.filter(x=>!x.exactF0Checkpoint).length,
+    pendingCandidateCount:rows.filter(x=>x.classification==='F0_PASSED_CANDIDATE_NOT_PUBLISHED').length,
+    qualityBlockedCount:rows.filter(x=>x.qualitySourceRepairRequired).length,
+    exactCandidateCount:rows.filter(x=>x.exactCandidateCheckpoint).length,
+    unityF9ReportedCount:rows.filter(x=>x.unityF9Reported).length,
+    unityF9IdentityBoundCount:rows.filter(x=>x.unityF9EvidenceIdentityBound).length,
+    rows,commonFailureCohorts
+  };
+}
+
 export function analyzeSystemAiBottlenecks({
   systemAiQueue={tasks:[]},
   gameQueue={tasks:[]},
+  developmentQueue={items:[]},
   maxBatch=32,
   leaseMinutes=30,
   at=Date.now(),
@@ -88,6 +172,7 @@ export function analyzeSystemAiBottlenecks({
     disjointQueued.push(task);
   }
 
+  const development=developmentFloorSnapshot(developmentQueue);
   const caretakerBacklog={};
   for(const task of gameTasks){
     if(task?.postReleaseFocused!==true||terminal(task.status))continue;
@@ -142,6 +227,9 @@ export function analyzeSystemAiBottlenecks({
   });
   const actions=[];
   if(stale.length)actions.push('RECLAIM_STALE_RESERVATIONS');
+  if(development.commonFailureCohorts.length)actions.push('DEVELOPMENT_FLOOR_COMMON_FAILURE_CANARY');
+  if(development.pendingCandidateCount)actions.push('RECOVER_VERIFIED_F0_PRIVATE_RUNTIME_HANDOFF');
+  if(development.qualityBlockedCount)actions.push('REPAIR_SOURCE_QUALITY_BEFORE_RUNTIME_HANDOFF');
   if(commonFailureCohorts.length)actions.push('REPRESENTATIVE_CANARY_FOR_COMMON_FAILURE');
   if(recommendedBatch>0)actions.push('REFILL_FREE_SYSTEM_AI_CAPACITY');
   if(caretakerHotspots.length)actions.push('PRIORITIZE_PER_GAME_CARETAKER_BACKLOG');
@@ -165,6 +253,7 @@ export function analyzeSystemAiBottlenecks({
     representativeCanaryTaskIds:uniq(commonFailureCohorts.map(x=>x.representativeTaskId)),
     disjointQueuedTaskIds:disjointQueued.map(t=>clean(t.id)).filter(Boolean),
     caretakerHotspots,
+    development,
     workflow:{pendingRuns,reservationWaitMs,fanInWaitMs,supervisorReviewWaitMs,observedRunnerQueuedRuns,runnerQueuedRuns,runnerInProgressRuns,observedPrimaryGameQueuedRuns,primaryGameQueuedRuns,joblessOrphanQueuedRuns,joblessOrphanPrimaryRuns,duplicateWorkflowRuns,stalePrimaryRuns,runnerPressure},
     configuredBatch:configured,
     reserveCeiling,
@@ -205,6 +294,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const result=analyzeSystemAiBottlenecks({
     systemAiQueue:readJson(clean(a['system-ai'])||clean(a.queue),{tasks:[]}),
     gameQueue:readJson(clean(a['game-queue']),{tasks:[]}),
+    developmentQueue:readJson(clean(a['development-queue']),{items:[]}),
     maxBatch:Number(a.max||32),
     leaseMinutes:Number(a['lease-minutes']||30),
     workflowMetrics:{
@@ -223,6 +313,12 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   });
   if(clean(a.output)){fs.mkdirSync(path.dirname(a.output),{recursive:true});fs.writeFileSync(a.output,JSON.stringify(result,null,2)+'\n');}
   console.log('SYSTEM_AI_BOTTLENECK_QUEUE_DEPTH='+result.queueDepth.queued);
+  console.log('SYSTEM_AI_DEVELOPMENT_FLOOR_GAMES='+result.development.total);
+  console.log('SYSTEM_AI_DEVELOPMENT_F0_EXACT='+result.development.exactF0Count);
+  console.log('SYSTEM_AI_DEVELOPMENT_F0_REPAIR_REQUIRED='+result.development.f0RepairCount);
+  console.log('SYSTEM_AI_DEVELOPMENT_F0_CANDIDATE_HANDOFF_PENDING='+result.development.pendingCandidateCount);
+  console.log('SYSTEM_AI_DEVELOPMENT_QUALITY_GATE_BLOCKED='+result.development.qualityBlockedCount);
+  console.log('SYSTEM_AI_DEVELOPMENT_SHARED_FAILURE_COHORTS='+result.development.commonFailureCohorts.length);
   console.log('SYSTEM_AI_BOTTLENECK_STALE_RESERVATIONS='+result.staleReservations.length);
   console.log('SYSTEM_AI_BOTTLENECK_COMMON_FAILURE_COHORTS='+result.commonFailureCohorts.length);
   console.log('SYSTEM_AI_BOTTLENECK_RECOMMENDED_BATCH='+result.recommendedBatch);
