@@ -626,25 +626,41 @@
     },
     "local_authoring_parts::1d109ae1902ce57944004eb5efcff81cbe7d5c6c4fdbe108af27765bd41d0ab0:trigger": {
       "trigger": "플레이어의 '진행' 선택이 '판정: 위험' 선택과 'OUTPUT: 보상' 선택을 연결하는 과정에서, '진행' 상태 변화가 '위험' 판정을 반영하고, '보상' 결과가 다음 선택을 유도하는 방식으로 이루어진다. 이 과정에서 '진행'은 상태 변화를 일으키는 원인, '위험'은 상태 변화를 유도하는 조건, '보상'은 다음 선택을 결정하는 결과로, '진행·위험·보상'의 순차적 연결이 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 재미를 구현한다."
+    },
+    "local_authoring_parts::1d109ae1902ce57944004eb5efcff81cbe7d5c6c4fdbe108af27765bd41d0ab0:stateChange": {
+      "stateChange": "플레이어의 '진행' 선택이 '판정: 위험' 선택과 'OUTPUT: 보상' 선택을 연결하는 과정에서, '진행' 상태 변화가 '위험' 판정을 반영하고, '보상' 결과가 다음 선택을 유도하는 방식으로 이루어진다. 이 과정에서 '진행'은 상태 변화를 일으키는 원인, '위험'은 상태 변화를 유도하는 조건, '보상'은 다음 선택을 결정하는 결과로, '진행·위험·보상'의 순차적 연결이 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 재미를 구현한다."
+    },
+    "local_authoring_parts::dbec50b11fda81442dbce55e27a3147a7a804c6a141235985e1af13b46acc628:systemInterconnections:0": {
+      "fromId": "CORE-LOOP-1",
+      "toId": "CORE-LOOP-2",
+      "stateKeys": [
+        "플레이어의 '진행' - 선택",
+        "판정: '위험' - 선택",
+        "OUTPUT: '보상' - 선택"
+      ],
+      "fromSystem": "CORE-LOOP-1 → CORE-LOOP-2",
+      "toSystem": "CORE-LOOP-2",
+      "trigger": "플레이어의 '진행' 선택이 '판정: 위험' 선택과 'OUTPUT: 보상' 선택을 연결하는 과정에서, '진행' 상태 변화가 '위험' 판정을 반영하고, '보상' 결과가 다음 선택을 유도하는 방식으로 이루어진다. 이 과정에서 '진행'은 상태 변화를 일으키는 원인, '위험'은 상태 변화를 유도하는 조건, '보상'은 다음 선택을 결정하는 결과로, '진행·위험·보상'의 순차적 연결이 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 재미를 구현한다.",
+      "stateChange": "플레이어의 '진행' 선택이 '판정: 위험' 선택과 'OUTPUT: 보상' 선택을 연결하는 과정에서, '진행' 상태 변화가 '위험' 판정을 반영하고, '보상' 결과가 다음 선택을 유도하는 방식으로 이루어진다. 이 과정에서 '진행'은 상태 변화를 일으키는 원인, '위험'은 상태 변화를 유도하는 조건, '보상'은 다음 선택을 결정하는 결과로, '진행·위험·보상'의 순차적 연결이 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 재미를 구현한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 27,
-      "successes": 27,
+      "calls": 28,
+      "successes": 28,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2731207,
-      "lastMs": 101120,
+      "totalMs": 2831832,
+      "lastMs": 100625,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:34:31.306Z"
+      "updatedAt": "2026-10-08T15:36:11.933Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:21:47.979Z",
-  "updatedAt": "2026-10-08T15:34:31.306Z",
+  "updatedAt": "2026-10-08T15:36:11.935Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3109,7 +3125,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:34:31.306Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:36:11.935Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
