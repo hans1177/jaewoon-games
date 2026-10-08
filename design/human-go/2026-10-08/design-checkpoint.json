@@ -3,30 +3,18 @@
   "gameId": "human-go",
   "date": "2026-10-08",
   "seedId": "OWNER-FULL-REBUILD-HUMAN-GO-20260916",
-  "fingerprint": "91593563e3de1eb9b2af01e4c62e2e32976924cf691cebf3e968029657e5a6e0",
+  "fingerprint": "4757e6a58a1a4a7495b273a1c9fac2f9cd907485ab172da36f4efa6c552a1334",
   "policyDigest": "0fda28f71ac3a214ad795ba2e2df1e0f6e7da837204b05182cdebecce33c9ade",
   "engineDigest": "d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
   "tasks": {},
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 0,
-      "failures": 1,
-      "timeouts": 1,
-      "jsonFailures": 0,
-      "totalMs": 300074,
-      "lastMs": 300074,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T07:48:51.231Z"
-    }
-  },
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-08T07:43:51.137Z",
-  "updatedAt": "2026-10-08T07:48:51.237Z",
+  "createdAt": "2026-10-08T12:17:47.490Z",
+  "updatedAt": "2026-10-08T12:17:47.504Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1949,12 +1937,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms"
+  }
 }
