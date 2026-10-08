@@ -480,25 +480,59 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::2d14fcb96cda043d2fa7a41c4b7e8941220492f37fc3b315672b2d4c727dd831:signatureSystems:0": {
+      "id": "COLOR_CHAIN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or a可见的",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new"
+      ],
+      "stateOutputs": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or a可见的",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new"
+      ],
+      "name": "Color Chain",
+      "purpose": "A puzzle game where player choices directly alter the world state, creating emergent gameplay through recursive level progression.",
+      "playerChoice": "Player selects a level configuration, and the outcome alters the world state, leading to new levels and emergent gameplay."
+    },
+    "local_authoring_parts::2d14fcb96cda043d2fa7a41c4b7e8941220492f37fc3b315672b2d4c727dd831:signatureSystems:1": {
+      "id": "COLOR_CHAIN",
+      "grammarRole": "A",
+      "stateInputs": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or a可见的",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new"
+      ],
+      "stateOutputs": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or a可见的",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new"
+      ],
+      "name": "Color Chain",
+      "purpose": "A puzzle game where player choices directly alter the world state, creating emergent gameplay through recursive level progression.",
+      "playerChoice": "Player selects a level configuration, and the outcome alters the world state, leading to new levels and emergent gameplay."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1039770,
-      "lastMs": 57636,
+      "totalMs": 1201417,
+      "lastMs": 81042,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:11:01.251Z"
+      "updatedAt": "2026-10-08T13:13:42.909Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:53:41.331Z",
-  "updatedAt": "2026-10-08T13:11:01.260Z",
+  "updatedAt": "2026-10-08T13:13:42.909Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2571,10 +2605,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:11:01.254Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:13:42.909Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
