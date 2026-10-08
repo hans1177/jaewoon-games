@@ -516,25 +516,40 @@
       "name": "SIGNATURE_SYSTEM_DESIGN",
       "purpose": "게임 내에서 사용되는 규칙 ID와 읽는 상태·바꾸는 상태를 명확히 정의하여, 게임의 핵심 루프와 규칙 구조를 안정적으로 유지한다.",
       "playerChoice": "[\"Rule ID Assignment\",\"State Transition\"]"
+    },
+    "local_authoring_parts::4df48f7f1295ec79ae0b5f9d8de810d37ca9b564e913c0843f8b48e01dc9bb97:signatureSystems:2": {
+      "id": "RULE_03",
+      "grammarRole": "B",
+      "stateInputs": [
+        "READABLE_STATE",
+        "MODIFIABLE_STATE"
+      ],
+      "stateOutputs": [
+        "READABLE_STATE",
+        "MODIFIABLE_STATE"
+      ],
+      "name": "SIGNATURE_SYSTEM_DESIGN",
+      "purpose": "게임 내에서 사용되는 규칙 ID와 읽는 상태·바꾸는 상태를 명확히 정의하여, 게임의 핵심 루프와 규칙 구조를 안정적으로 유지한다.",
+      "playerChoice": "[\"Rule ID Assignment\",\"State Transition\"]"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1347858,
-      "lastMs": 94981,
+      "totalMs": 1445033,
+      "lastMs": 97175,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:14:07.999Z"
+      "updatedAt": "2026-10-08T13:15:45.175Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:51:40.085Z",
-  "updatedAt": "2026-10-08T13:14:07.999Z",
+  "updatedAt": "2026-10-08T13:15:45.175Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2924,7 +2939,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:14:07.999Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:15:45.175Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
