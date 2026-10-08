@@ -480,7 +480,7 @@ jobs:
           const targetDue=String(process.env.TARGET_DESIGN_EVOLUTION_DUE||'').trim().toLowerCase()==='true';
           const selectedBaseline=Number(process.env.TARGET_BASELINE_REVIEW_AT||0);
           const supersededByNewerPass=latestPassAt>selectedBaseline&&selectedBaseline>0;
-          const targetStillCurrent=!seed||String(seed.seedId)===seedId;
+          const targetStillCurrent=!String(seed?.seedId||'').trim()||String(seed.seedId)===seedId;
           const shouldRun=Boolean(targetStillCurrent&&targetDue&&!supersededByNewerPass);
           console.log(`should_run=${shouldRun?'true':'false'}`);
           console.log(`design_evolution_reason=${String(process.env.TARGET_DESIGN_EVOLUTION_REASON||'UNKNOWN')}`);

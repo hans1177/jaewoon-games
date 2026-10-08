@@ -41,7 +41,11 @@ function resolveDesignerSeedInput({state,gameId,catalog,brief='',root='.'}){
   if(!/^[a-z0-9][a-z0-9-]*$/.test(gameId))throw new Error('DESIGN_GAME_ID_INVALID');
   if((catalog?.permanentRemovalPolicy?.ids||[]).includes(gameId))throw new Error(`DESIGN_GAME_REMOVED: ${gameId}`);
   const existing=activeSeedForGame(state,gameId);
-  if(existing)return{seed:existing,created:false};
+  if(existing){
+    const restoredId=!clean(existing.seedId);
+    if(restoredId)existing.seedId=`DESIGNER-${gameId.toUpperCase()}`;
+    return{seed:existing,created:restoredId};
+  }
   const ownerInput=ownerDesignResetSeedForGame(gameId,path.join(root,'owner-design-reset-queue.json'));
   const catalogEntry=(catalog?.games||[]).find(row=>row.id===gameId);
   if(!ownerInput&&!catalogEntry&&!clean(brief))throw new Error(`DESIGN_BRIEF_OR_ORIGINAL_REQUIRED: ${gameId}`);

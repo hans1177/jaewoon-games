@@ -22,7 +22,7 @@ const assertDesignSchema=runInNewContext(design.slice(design.indexOf('function a
 test('design admission accepts a missing seed while skipping superseded work and retaining final review',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
   const decision=workflow.split('\n').filter(line=>/const (targetStillCurrent|shouldRun)=/.test(line)).join('\n');
-  for(const [seed,due,superseded,expected] of [[null,true,false,true],[{seedId:'current'},true,false,true],[{seedId:'newer'},true,false,false],[null,false,false,false],[null,true,true,false]]){
+  for(const [seed,due,superseded,expected] of [[null,true,false,true],[{},true,false,true],[{seedId:'current'},true,false,true],[{seedId:'newer'},true,false,false],[null,false,false,false],[null,true,true,false]]){
     assert.equal(runInNewContext(decision+'\nshouldRun',{seed,seedId:'current',targetDue:due,supersededByNewerPass:superseded}),expected);
   }
   assert.doesNotMatch(workflow,/DESIGN_SEED_NORMALIZATION_STAGE=PRE_DESIGN|name: Static strict contracts/);
@@ -67,6 +67,9 @@ test('designer can start without a pre-authored seed and preserves the original 
     assert.equal(input.seed.seedAuthoring.externalSeedRequired,false);
     assert.equal(resolve({state,gameId:'demo',catalog,root}).created,false);
     assert.equal(state.seeds.length,1,'resume must keep the same intake identity');
+    delete input.seed.seedId;
+    assert.equal(resolve({state,gameId:'demo',catalog,root}).seed.seedId,'DESIGNER-DEMO');
+    assert.equal(state.seeds.length,1,'restoring routing identity must not duplicate the seed');
     const fresh=resolve({state,gameId:'new-concept',catalog,root,brief:'수중 탐험 게임의 씨앗부터 직접 설계해'});
     assert.equal(fresh.created,true);assert.equal(fresh.seed.OWNER_LATEST_DESIGN_REQUEST,'수중 탐험 게임의 씨앗부터 직접 설계해');
     assert.throws(()=>resolve({state,gameId:'unknown',catalog,root}),/DESIGN_BRIEF_OR_ORIGINAL_REQUIRED/);
