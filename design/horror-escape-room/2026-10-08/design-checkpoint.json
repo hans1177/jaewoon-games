@@ -12,21 +12,21 @@
   "tasks": {},
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
+      "calls": 3,
       "successes": 1,
-      "failures": 1,
+      "failures": 2,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 189021,
-      "lastMs": 100703,
+      "totalMs": 252130,
+      "lastMs": 63109,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T03:30:47.327Z"
+      "updatedAt": "2026-10-08T03:31:50.437Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T03:27:38.135Z",
-  "updatedAt": "2026-10-08T03:30:47.327Z",
+  "updatedAt": "2026-10-08T03:31:50.437Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -789,6 +789,7 @@
   "failedTask": "identity-core",
   "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_MULTIPLAYER_CONTRADICTION,DESIGN_RULE_ROLE_MISSING",
   "localAuthoringSplits": {
-    "40adebefb095241ccf2d93d91744de513d0d9fb625ca3a97be5438677427c44e": true
+    "40adebefb095241ccf2d93d91744de513d0d9fb625ca3a97be5438677427c44e": true,
+    "3e2aa0c9e099bc8f8ee7797bd084e31d2875b4e2dba0fc61b09f22718bea580e": true
   }
 }
