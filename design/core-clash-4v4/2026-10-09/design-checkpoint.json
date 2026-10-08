@@ -34,25 +34,39 @@
         "SELECT: 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'",
         "OUTPUT: 시그니처 세계 규칙인 'Risk vs Reward'에 연결되어 위험/보상/다음 선택의 순환적 관계를 형성."
       ]
+    },
+    "local_authoring_parts::50e14484c17c5a1fac1ffb0f9745c82c8f31e028508bdcb4be9541da324147b1:signatureSystems:0": {
+      "id": "MATERIAL_CAUSAL_GRAMMAR",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "INPUT: 플레이어가 희망과 두려움 사이에서 빠져 있는 인간의 정체성과 선택을 직접 경험하게 된다.",
+        "SELECT: 'Collect run rewards or experience and choose upgrades, perks, weapons,或"
+      ],
+      "stateOutputs": [
+        "OUTPUT: 시그니처 세계 규칙인 'Risk vs Reward'에 연결되어 위험/보상/다음 선택의 순환적 관계를 형성."
+      ],
+      "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "purpose": "플레이어가 희망과 두려움 사이에서 빠져 있는 인간의 정체성과 선택을 직접 경험하게 되며, 이는 기존 게임 원본의 단순한 생존 개념보다 더 복잡한 심리적 관계와 현실적인 위험/보상 체계로 재설계된다.",
+      "playerChoice": "'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 402081,
-      "lastMs": 58560,
+      "totalMs": 481736,
+      "lastMs": 79655,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:46:51.085Z"
+      "updatedAt": "2026-10-08T18:48:10.741Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:40:08.976Z",
-  "updatedAt": "2026-10-08T18:46:51.085Z",
+  "updatedAt": "2026-10-08T18:48:10.741Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2251,7 +2265,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:46:51.085Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:48:10.741Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
