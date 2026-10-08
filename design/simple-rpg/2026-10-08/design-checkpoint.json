@@ -598,25 +598,143 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::2abbf2ca4055032887ba44eae2a8a987bb754bbb177445444c9e5823f44e3388:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "MAIN",
+          "toId": "A",
+          "stateKeys": [
+            "boardPattern",
+            "goal",
+            "moves",
+            "obstacles",
+            "puzzleConstraint"
+          ],
+          "fromSystem": "Board Puzzle System",
+          "toSystem": "Board Puzzle System",
+          "trigger": "Player selects moves, creates combos, and manages obstacles to achieve the goal and unlock new levels or stages.",
+          "stateChange": "Player-controlled puzzle progression through a grid or board level with clear objective and constraints."
+        },
+        {
+          "fromId": "A",
+          "toId": "B",
+          "stateKeys": [
+            "boardPattern",
+            "goal",
+            "moves",
+            "obstacles",
+            "puzzleConstraint"
+          ],
+          "fromSystem": "Board Puzzle System",
+          "toSystem": "Board Puzzle System",
+          "trigger": "Player clears the level goal to earn rewards or unlock the next stage, then faces a new board pattern or obstacle combination.",
+          "stateChange": "Player-controlled puzzle progression through a grid or board level with clear objective and constraints."
+        },
+        {
+          "fromId": "B",
+          "toId": "C",
+          "stateKeys": [
+            "boardPattern",
+            "goal",
+            "moves",
+            "obstacles",
+            "puzzleConstraint"
+          ],
+          "fromSystem": "Board Puzzle System",
+          "toSystem": "Puzzle Progression System",
+          "trigger": "Player selects and manages puzzle elements to achieve the goal, create combos, and adapt to new board patterns and constraints.",
+          "stateChange": "Player-controlled puzzle progression through a grid or board level with clear objective and constraints."
+        },
+        {
+          "fromId": "C",
+          "toId": "DELVE",
+          "stateKeys": [
+            "boardPattern",
+            "goal",
+            "moves",
+            "obstacles",
+            "puzzleConstraint"
+          ],
+          "fromSystem": "Puzzle Progression System",
+          "toSystem": "Puzzle Progression System",
+          "trigger": "Player selects and manages puzzle elements to achieve the goal, create combos, and adapt to new board patterns and constraints.",
+          "stateChange": "Player-controlled puzzle progression through a grid or board level with clear objective and constraints."
+        },
+        {
+          "fromId": "DELVE",
+          "toId": "MAIN",
+          "stateKeys": [
+            "boardPattern",
+            "goal",
+            "moves",
+            "obstacles",
+            "puzzleConstraint"
+          ],
+          "fromSystem": "Puzzle Progression System",
+          "toSystem": "Board Puzzle System",
+          "trigger": "Player selects and manages puzzle elements to achieve the goal, create combos, and adapt to new board patterns and constraints.",
+          "stateChange": "Player-controlled puzzle progression through a grid or board level with clear objective and constraints."
+        }
+      ],
+      "progressionDirection": "Linear",
+      "progressionEconomyBalance": {
+        "progressionLoop": "Player-controlled puzzle progression through a grid or board level with clear objective and constraints.",
+        "resourceFlow": "Player selects moves, creates combos, and manages obstacles to achieve the goal and unlock new levels or stages.",
+        "balanceRules": "Player-controlled puzzle progression through a grid or board level with clear objective and constraints."
+      }
+    },
+    "local_authoring_parts::2abbf2ca4055032887ba44eae2a8a987bb754bbb177445444c9e5823f44e3388:contentExpansionPlan,failureRetryRisk": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "Discovery of Initial Puzzle Constraints",
+          "newGameplay": "Introduce a dynamic board pattern that evolves with each playthrough, offering a unique visual and spatial experience.",
+          "systemImpact": "The board pattern becomes more complex with each level, introducing new obstacles and puzzle elements that challenge the player's adaptability."
+        },
+        {
+          "milestone": "Emergent Combo Mechanics",
+          "newGameplay": "Implement a system where players can create and manage combos of moves, leading to unexpected and rewarding outcomes.",
+          "systemImpact": "The game introduces a combo system that allows players to unlock new levels and stages by creating sequences of moves that are visually and mechanically satisfying."
+        },
+        {
+          "milestone": "Adaptive Obstacle System",
+          "newGameplay": "Design an obstacle system that changes with each playthrough, requiring players to adapt their strategies and decision-making processes.",
+          "systemImpact": "The obstacles become more unpredictable and require players to think creatively, enhancing the depth and complexity of the gameplay."
+        },
+        {
+          "milestone": "Player-Driven Progression",
+          "newGameplay": "Create a progression system that allows players to explore different paths and outcomes, encouraging exploration and experimentation.",
+          "systemImpact": "The game introduces a variety of paths and outcomes, allowing players to experience different versions of the same level or stage, enhancing replayability and engagement."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "Player fails to clear the level goal due to complex obstacle combinations or insufficient move strategies.",
+          "Player encounters a new board pattern that is too difficult to navigate within the given constraints."
+        ],
+        "retryFlow": "Players can retry the level with different strategies, or the game can introduce new puzzle constraints to make the level more challenging.",
+        "riskPressure": "The game introduces a system where players can earn rewards or unlock new stages by successfully completing the level, creating a natural incentive to retry or explore new paths.",
+        "recoveryRules": "If a player fails to clear the level, they can choose to retry with a different set of moves or obstacles, or the game can introduce a new puzzle constraint to make the level more challenging."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 10,
+      "calls": 13,
+      "successes": 12,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1480212,
-      "lastMs": 300044,
+      "totalMs": 1903599,
+      "lastMs": 132223,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T08:51:58.229Z"
+      "updatedAt": "2026-10-08T08:59:01.618Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:27:17.966Z",
-  "updatedAt": "2026-10-08T08:51:58.229Z",
+  "updatedAt": "2026-10-08T08:59:01.623Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2650,15 +2768,163 @@
     }
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "e091a099c471e8bf8cdb878d00d47875e08c96b89ff5bde0f7ed671dbd01eab9"
   },
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:46:58.178Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "MAIN→A의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: MAIN→A의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "A→B의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: A→B의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "B→C의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: B→C의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "C→DELVE의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: C→DELVE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "DELVE→MAIN의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: DELVE→MAIN의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::systems-progression": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "Linear",
+      "progressionEconomyBalance": {
+        "progressionLoop": "Player-controlled puzzle progression through a grid or board level with clear objective and constraints.",
+        "resourceFlow": "Player selects moves, creates combos, and manages obstacles to achieve the goal and unlock new levels or stages.",
+        "balanceRules": "Player-controlled puzzle progression through a grid or board level with clear objective and constraints."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "Discovery of Initial Puzzle Constraints",
+          "newGameplay": "Introduce a dynamic board pattern that evolves with each playthrough, offering a unique visual and spatial experience.",
+          "systemImpact": "The board pattern becomes more complex with each level, introducing new obstacles and puzzle elements that challenge the player's adaptability."
+        },
+        {
+          "milestone": "Emergent Combo Mechanics",
+          "newGameplay": "Implement a system where players can create and manage combos of moves, leading to unexpected and rewarding outcomes.",
+          "systemImpact": "The game introduces a combo system that allows players to unlock new levels and stages by creating sequences of moves that are visually and mechanically satisfying."
+        },
+        {
+          "milestone": "Adaptive Obstacle System",
+          "newGameplay": "Design an obstacle system that changes with each playthrough, requiring players to adapt their strategies and decision-making processes.",
+          "systemImpact": "The obstacles become more unpredictable and require players to think creatively, enhancing the depth and complexity of the gameplay."
+        },
+        {
+          "milestone": "Player-Driven Progression",
+          "newGameplay": "Create a progression system that allows players to explore different paths and outcomes, encouraging exploration and experimentation.",
+          "systemImpact": "The game introduces a variety of paths and outcomes, allowing players to experience different versions of the same level or stage, enhancing replayability and engagement."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "Player fails to clear the level goal due to complex obstacle combinations or insufficient move strategies.",
+          "Player encounters a new board pattern that is too difficult to navigate within the given constraints."
+        ],
+        "retryFlow": "Players can retry the level with different strategies, or the game can introduce new puzzle constraints to make the level more challenging.",
+        "riskPressure": "The game introduces a system where players can earn rewards or unlock new stages by successfully completing the level, creating a natural incentive to retry or explore new paths.",
+        "recoveryRules": "If a player fails to clear the level, they can choose to retry with a different set of moves or obstacles, or the game can introduce a new puzzle constraint to make the level more challenging."
+      }
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T08:59:01.619Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
