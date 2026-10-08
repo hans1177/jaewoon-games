@@ -498,25 +498,67 @@
       "name": "초원 런 보스 봉인 해제 조건",
       "purpose": "1번 초원 랜덤런의 EXIT에는 금빛 큰뿔이 등장한다. 황금뿔 돌진은 패링 가능, 대지 짓밟기는 패링/막기 불가, 삼연속 돌진은 연속 대응을 요구한다.",
       "playerChoice": "1번 초원 랜덤런의 EXIT에 금빛 큰뿔이 등장하는 상태를 선택하거나, 황금뿔 돌진을 선택하여 패링/막기/삼연속 돌진을 수행한다."
+    },
+    "local_authoring_parts::f9f9b872d05e94c0f912271ebc601d0a80fbce556fd6472e2dab0ab0b041a06f:signatureSystems:3": {
+      "id": "RPG_FANTASY_PORTAL_WORLD_C",
+      "grammarRole": "c",
+      "stateInputs": [
+        "RoomCode",
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount",
+        "SkillSlot1",
+        "SkillSlot2",
+        "SkillSlot3"
+      ],
+      "stateOutputs": [
+        "SkillSlot1",
+        "SkillSlot2",
+        "SkillSlot3"
+      ],
+      "name": "초원 런 보스 봉인 해제 조건",
+      "purpose": "1번 초원 랜덤런의 EXIT에는 금빛 큰뿔이 등장한다. 황금뿔 돌진은 패링 가능, 대지 짓밟기는 패링/막기 불가, 삼연속 돌진은 연속 대응을 요구한다.",
+      "playerChoice": "1번 초원 랜덤런의 EXIT에 금빛 큰뿔이 등장하는 상태를 선택하거나, 황금뿔 돌진을 선택하여 패링/막기/삼연속 돌진을 수행한다."
+    },
+    "local_authoring_parts::f9f9b872d05e94c0f912271ebc601d0a80fbce556fd6472e2dab0ab0b041a06f:signatureSystems:4": {
+      "id": "RPG_FANTASY_PORTAL_WORLD_D",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "RoomCode",
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount",
+        "SkillSlot1",
+        "SkillSlot2",
+        "SkillSlot3"
+      ],
+      "stateOutputs": [
+        "SkillSlot1",
+        "SkillSlot2",
+        "SkillSlot3"
+      ],
+      "name": "초원 런 보스 봉인 해제 조건",
+      "purpose": "1번 초원 랜덤런의 EXIT에는 금빛 큰뿔이 등장한다. 황금뿔 돌진은 패링 가능, 대지 짓밟기는 패링/막기 불가, 삼연속 돌진은 연속 대응을 요구한다.",
+      "playerChoice": "1번 초원 랜덤런의 EXIT에 금빛 큰뿔이 등장하는 상태를 선택하거나, 황금뿔 돌진을 선택하여 패링/막기/삼연속 돌진을 수행한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 13,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1177759,
-      "lastMs": 105399,
+      "totalMs": 1389045,
+      "lastMs": 105913,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:59:39.373Z"
+      "updatedAt": "2026-10-08T16:03:10.661Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T15:40:01.570Z",
-  "updatedAt": "2026-10-08T15:59:39.373Z",
+  "updatedAt": "2026-10-08T16:03:10.666Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1956,7 +1998,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -1976,10 +2018,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:59:39.373Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T16:03:10.663Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
