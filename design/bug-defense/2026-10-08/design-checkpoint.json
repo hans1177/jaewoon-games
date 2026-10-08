@@ -70,25 +70,59 @@
       "name": "Wave Defense Readability",
       "purpose": "Player's action and resulting threat pattern determine the world state transformation.",
       "playerChoice": "Read and interpret the threat pattern, then adjust defenders based on resource availability."
+    },
+    "local_authoring_parts::516b738208eeded0f9b3f0e543e7ab2943870340530195f59c6a132270f834e3:signatureSystems:2": {
+      "id": "wave_defense_readability",
+      "grammarRole": "B",
+      "stateInputs": [
+        "threat_pattern",
+        "defender_position",
+        "resource_pool"
+      ],
+      "stateOutputs": [
+        "defended_state",
+        "player_experience",
+        "strategic_advantage"
+      ],
+      "name": "Wave Defense Readability",
+      "purpose": "The player's action and resulting threat pattern determine the world state transformation.",
+      "playerChoice": "Interpret the threat pattern, then adjust defenders based on resource availability."
+    },
+    "local_authoring_parts::516b738208eeded0f9b3f0e543e7ab2943870340530195f59c6a132270f834e3:signatureSystems:3": {
+      "id": "wave_defense_readability",
+      "grammarRole": "c",
+      "stateInputs": [
+        "threat_pattern",
+        "defender_position",
+        "resource_pool"
+      ],
+      "stateOutputs": [
+        "defended_state",
+        "player_experience",
+        "strategic_advantage"
+      ],
+      "name": "Wave Defense Readability",
+      "purpose": "The player's action and resulting threat pattern determine the world state transformation.",
+      "playerChoice": "Interpret the threat pattern, then adjust defenders based on resource availability."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 511175,
-      "lastMs": 96956,
+      "totalMs": 704390,
+      "lastMs": 96761,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:14:30.372Z"
+      "updatedAt": "2026-10-08T10:17:43.590Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:05:59.166Z",
-  "updatedAt": "2026-10-08T10:14:30.372Z",
+  "updatedAt": "2026-10-08T10:17:43.591Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2287,7 +2321,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T10:14:30.372Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:17:43.590Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
