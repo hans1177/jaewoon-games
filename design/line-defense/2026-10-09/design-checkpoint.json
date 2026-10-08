@@ -476,25 +476,37 @@
     },
     "local_authoring_parts::6e06a542aa5982223b0fafc862b8675290336171356b8dff10ec8364d67fbe01:fromId": {
       "fromId": "ENEMY_WAVE"
+    },
+    "local_authoring_parts::6e06a542aa5982223b0fafc862b8675290336171356b8dff10ec8364d67fbe01:toId": {
+      "toId": "BATTLE_STATUS"
+    },
+    "local_authoring_parts::6e06a542aa5982223b0fafc862b8675290336171356b8dff10ec8364d67fbe01:stateKeys": {
+      "stateKeys": [
+        "ENEMY_WAVE",
+        "BATTLE_STATUS"
+      ]
+    },
+    "local_authoring_parts::6e06a542aa5982223b0fafc862b8675290336171356b8dff10ec8364d67fbe01:fromSystem": {
+      "fromSystem": "CORE_LOOP_DESIGN"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 835450,
-      "lastMs": 60011,
+      "totalMs": 1017183,
+      "lastMs": 60096,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:13:26.743Z"
+      "updatedAt": "2026-10-08T21:16:28.480Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:59:31.174Z",
-  "updatedAt": "2026-10-08T21:13:26.743Z",
+  "updatedAt": "2026-10-08T21:16:28.480Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2903,7 +2915,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T21:13:26.743Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:16:28.480Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
