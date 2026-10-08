@@ -94,25 +94,203 @@
       "name": "INVESTIGATE_THREAT_PATTERN",
       "purpose": "Player's strategic decision impacts future world state through delayed consequences.",
       "playerChoice": "Investigate the enemy threat pattern and adjust defender positions and resource distribution to optimize survival rates and strategy evolution."
+    },
+    "local_authoring_parts::80022b36efc072dcdf5e0bd7a845716e706c3178368f1e2d59d2f1571bf1c154:signatureSystems:4": {
+      "id": "DELVE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "threat pattern",
+        "defender configuration"
+      ],
+      "stateOutputs": [
+        "resource allocation",
+        "enemy behavior analysis"
+      ],
+      "name": "ENEMY_BEHAVIOR_ANALYSIS",
+      "purpose": "Player's strategic decision impacts future world state through delayed consequences.",
+      "playerChoice": "Analyze enemy threat patterns and adjust defender positions and resource distribution to optimize survival rates and strategy evolution."
+    },
+    "local_authoring_parts::cabe2a044761b96410781fc90f766fa6392565f1606b7956fd6fd4e6d69c1c23:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "threat pattern",
+            "defender configuration"
+          ],
+          "stateOutputs": [
+            "resource allocation",
+            "enemy behavior analysis"
+          ],
+          "name": "KARMA RETURN",
+          "purpose": "Player's strategic decision impacts future world state through delayed consequences.",
+          "playerChoice": "Adjust defender positions and resource distribution based on enemy threat patterns, with long-term effects on survival rates and strategy evolution."
+        },
+        {
+          "id": "MANDATE_LEGITIMACY",
+          "grammarRole": "A",
+          "stateInputs": [
+            "threat pattern",
+            "defender configuration"
+          ],
+          "stateOutputs": [
+            "resource allocation",
+            "enemy behavior analysis"
+          ],
+          "name": "MANDATE LEGITIMACY",
+          "purpose": "Player's strategic decision impacts future world state through delayed consequences.",
+          "playerChoice": "Adjust defender positions and resource distribution based on enemy threat patterns, with long-term effects on survival rates and strategy evolution."
+        },
+        {
+          "id": "INVESTIGATE_THREAT_PATTERN",
+          "grammarRole": "B",
+          "stateInputs": [
+            "threat pattern",
+            "defender configuration"
+          ],
+          "stateOutputs": [
+            "resource allocation",
+            "enemy behavior analysis"
+          ],
+          "name": "INVESTIGATE_THREAT_PATTERN",
+          "purpose": "Player's strategic decision impacts future world state through delayed consequences.",
+          "playerChoice": "Investigate the enemy threat pattern and adjust defender positions and resource distribution to optimize survival rates and strategy evolution."
+        },
+        {
+          "id": "INVESTIGATE_THREAT_PATTERN",
+          "grammarRole": "c",
+          "stateInputs": [
+            "threat pattern",
+            "defender configuration"
+          ],
+          "stateOutputs": [
+            "resource allocation",
+            "enemy behavior analysis"
+          ],
+          "name": "INVESTIGATE_THREAT_PATTERN",
+          "purpose": "Player's strategic decision impacts future world state through delayed consequences.",
+          "playerChoice": "Investigate the enemy threat pattern and adjust defender positions and resource distribution to optimize survival rates and strategy evolution."
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "threat pattern",
+            "defender configuration"
+          ],
+          "stateOutputs": [
+            "resource allocation",
+            "enemy behavior analysis"
+          ],
+          "name": "ENEMY_BEHAVIOR_ANALYSIS",
+          "purpose": "Player's strategic decision impacts future world state through delayed consequences.",
+          "playerChoice": "Analyze enemy threat patterns and adjust defender positions and resource distribution to optimize survival rates and strategy evolution."
+        }
+      ]
+    },
+    "local_authoring_parts::70e1a2841a65f2c9dd075b86ce66021befbf238cf80f86a2da44472b94bb2240:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT: Read the incoming insect wave and its threat pattern.\nSTATE CHANGE: World state shifts based on player's interpretation of the wave's structure and danger level.\nOUTPUT: Player selects defensive strategy (place/adjust defenders, spend resources).\nACTION: Player makes strategic decision that alters world state for future encounters.",
+        "INPUT: Survive the wave, learn from leaks or losses.\nSTATE CHANGE: Player gains knowledge about enemy patterns and resource allocation.\nOUTPUT: Player prepares new defense strategy using learned information.\nACTION: Player implements new strategy that modifies world state for subsequent waves.",
+        "INPUT: Use reward to prepare a materially different next defense decision.\nSTATE CHANGE: Player configures defenses with optimized resource distribution.\nOUTPUT: Player achieves improved survival rate in upcoming waves.\nACTION: Player executes new strategy that reconfigures world state for future battles."
+      ],
+      "signatureSystems": [
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "threat pattern",
+            "defender configuration"
+          ],
+          "stateOutputs": [
+            "resource allocation",
+            "enemy behavior analysis"
+          ],
+          "name": "KARMA RETURN",
+          "purpose": "Player's strategic decision impacts future world state through delayed consequences.",
+          "playerChoice": "Adjust defender positions and resource distribution based on enemy threat patterns, with long-term effects on survival rates and strategy evolution."
+        },
+        {
+          "id": "MANDATE_LEGITIMACY",
+          "grammarRole": "A",
+          "stateInputs": [
+            "threat pattern",
+            "defender configuration"
+          ],
+          "stateOutputs": [
+            "resource allocation",
+            "enemy behavior analysis"
+          ],
+          "name": "MANDATE LEGITIMACY",
+          "purpose": "Player's strategic decision impacts future world state through delayed consequences.",
+          "playerChoice": "Adjust defender positions and resource distribution based on enemy threat patterns, with long-term effects on survival rates and strategy evolution."
+        },
+        {
+          "id": "INVESTIGATE_THREAT_PATTERN",
+          "grammarRole": "B",
+          "stateInputs": [
+            "threat pattern",
+            "defender configuration"
+          ],
+          "stateOutputs": [
+            "resource allocation",
+            "enemy behavior analysis"
+          ],
+          "name": "INVESTIGATE_THREAT_PATTERN",
+          "purpose": "Player's strategic decision impacts future world state through delayed consequences.",
+          "playerChoice": "Investigate the enemy threat pattern and adjust defender positions and resource distribution to optimize survival rates and strategy evolution."
+        },
+        {
+          "id": "INVESTIGATE_THREAT_PATTERN",
+          "grammarRole": "c",
+          "stateInputs": [
+            "threat pattern",
+            "defender configuration"
+          ],
+          "stateOutputs": [
+            "resource allocation",
+            "enemy behavior analysis"
+          ],
+          "name": "INVESTIGATE_THREAT_PATTERN",
+          "purpose": "Player's strategic decision impacts future world state through delayed consequences.",
+          "playerChoice": "Investigate the enemy threat pattern and adjust defender positions and resource distribution to optimize survival rates and strategy evolution."
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "threat pattern",
+            "defender configuration"
+          ],
+          "stateOutputs": [
+            "resource allocation",
+            "enemy behavior analysis"
+          ],
+          "name": "ENEMY_BEHAVIOR_ANALYSIS",
+          "purpose": "Player's strategic decision impacts future world state through delayed consequences.",
+          "playerChoice": "Analyze enemy threat patterns and adjust defender positions and resource distribution to optimize survival rates and strategy evolution."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 806064,
-      "lastMs": 98249,
+      "totalMs": 903285,
+      "lastMs": 97221,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:45:26.441Z"
+      "updatedAt": "2026-10-08T18:47:03.664Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:32:00.339Z",
-  "updatedAt": "2026-10-08T18:45:26.441Z",
+  "updatedAt": "2026-10-08T18:47:03.666Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2311,7 +2489,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:45:26.441Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:47:03.666Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
