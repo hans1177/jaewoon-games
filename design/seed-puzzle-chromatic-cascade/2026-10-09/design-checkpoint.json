@@ -60,25 +60,38 @@
       "name": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
       "purpose": "To enable players to strategically engage with the game through combination of matching and logical reasoning.",
       "playerChoice": "Players can choose to either form complete matches or execute carefully planned puzzle sequences that lead to progress in the game."
+    },
+    "local_authoring_parts::6e91fb9b02d8e7d49bc7bf3a966266b2f2064e8306cfec04b4cb418a868eba3a:signatureSystems:2": {
+      "id": "CORE-03",
+      "grammarRole": "B",
+      "stateInputs": [
+        "START_BOARD"
+      ],
+      "stateOutputs": [
+        "END_BOARD"
+      ],
+      "name": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+      "purpose": "Player choice and strategic planning in a puzzle context.",
+      "playerChoice": "Selecting optimal moves that lead to progress and avoid pitfalls in the game state transition process."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 272103,
-      "lastMs": 92533,
+      "totalMs": 362333,
+      "lastMs": 90230,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:27:37.747Z"
+      "updatedAt": "2026-10-08T21:29:07.978Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:23:05.545Z",
-  "updatedAt": "2026-10-08T21:27:37.747Z",
+  "updatedAt": "2026-10-08T21:29:07.978Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2115,7 +2128,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:27:37.747Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:29:07.978Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
