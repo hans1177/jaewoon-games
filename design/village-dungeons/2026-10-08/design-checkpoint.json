@@ -69,25 +69,42 @@
       "name": "반복적 보상 및 진보 시스템",
       "purpose": "플레이어의 선택이 반복적 보상과 진보를 통해 게임의 핵심 재미를 강화하며, 이 과정에서 다양한 선택과 결과가 상호작용하여 게임의 루프를 확장한다",
       "playerChoice": "플레이어는 반복적 보상과 진보를 통해 게임의 핵심 재미를 강화하는 선택을 하며, 이 선택은 다음 월드 상태 변화와 연결되어야 한다"
+    },
+    "local_authoring_parts::324ac973bfeb0e02b909b7026dee36395c89c14aff917991367fb47bcf4eba97:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_03",
+      "grammarRole": "B",
+      "stateInputs": [
+        "RUN_DURATION",
+        "REWARD_TYPE",
+        "PROGRESSION_BENEFIT_TYPE"
+      ],
+      "stateOutputs": [
+        "NEXT_WORLD_STATE",
+        "REWARD",
+        "PROGRESSION_BENEFIT"
+      ],
+      "name": "다양한 선택과 결과의 조합 시스템",
+      "purpose": "플레이어의 선택이 다양한 선택과 결과의 조합을 통해 게임의 루프를 확장하며, 이 과정에서 새로운 용도, 조합, 숙련, 재방문, 재해석, 고급 운용을 생성하여 게임의 깊이를 강화한다",
+      "playerChoice": "플레이어는 다양한 선택과 결과의 조합을 통해 게임의 루프를 확장하는 선택을 하며, 이 선택은 새로운 용도, 조합, 숙련, 재방문, 재해석, 고급 운용을 생성하여 게임의 깊이를 강화해야 한다"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 463582,
-      "lastMs": 73172,
+      "totalMs": 552077,
+      "lastMs": 88495,
       "lastError": null,
-      "updatedAt": "2026-10-08T09:00:43.131Z"
+      "updatedAt": "2026-10-08T09:02:11.628Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:52:59.507Z",
-  "updatedAt": "2026-10-08T09:00:43.131Z",
+  "updatedAt": "2026-10-08T09:02:11.628Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2164,7 +2181,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T09:00:43.131Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:02:11.628Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
