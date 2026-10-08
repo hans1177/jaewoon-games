@@ -738,25 +738,40 @@
     },
     "local_authoring_parts::508729823c67ce10556d217d46c258b8bc3796649d12480f98f61496bceffcf9:trigger": {
       "trigger": "Player-selected board patterns or obstacle combinations that determine the next level's state and objective."
+    },
+    "local_authoring_parts::508729823c67ce10556d217d46c258b8bc3796649d12480f98f61496bceffcf9:stateChange": {
+      "stateChange": "Player selects a board pattern or obstacle combination that determines the next level's state and objective. The selection is validated through immediate feedback, and the resulting state is transitioned to the next level. This action establishes the core mechanism by which player choices drive the evolution of the game world."
+    },
+    "local_authoring_parts::7a612277020891f4d655abdde3160f40fb34d54b74a45596733658aca690166c:systemInterconnections:0": {
+      "fromId": "Board State Transition System",
+      "toId": "Clear the level goal to earn rewards or unlock the next stage, then face a new板",
+      "stateKeys": [
+        "Board State Transition System",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new板"
+      ],
+      "fromSystem": "Board State Transition System",
+      "toSystem": "Player-selected board patterns or obstacle combinations that determine the next level's state and objective.",
+      "trigger": "Player-selected board patterns or obstacle combinations that determine the next level's state and objective.",
+      "stateChange": "Player selects a board pattern or obstacle combination that determines the next level's state and objective. The selection is validated through immediate feedback, and the resulting state is transitioned to the next level. This action establishes the core mechanism by which player choices drive the evolution of the game world."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 29,
-      "successes": 28,
+      "calls": 30,
+      "successes": 29,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2083277,
-      "lastMs": 62827,
+      "totalMs": 2153916,
+      "lastMs": 70639,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T10:30:12.454Z"
+      "updatedAt": "2026-10-08T10:31:23.096Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:01:25.970Z",
-  "updatedAt": "2026-10-08T10:30:12.454Z",
+  "updatedAt": "2026-10-08T10:31:23.098Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3002,7 +3017,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:30:12.454Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:31:23.098Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
