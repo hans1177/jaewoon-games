@@ -406,21 +406,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 226828,
-      "lastMs": 13059,
+      "totalMs": 361373,
+      "lastMs": 134545,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:09:18.022Z"
+      "updatedAt": "2026-10-08T21:11:32.576Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:05:30.914Z",
-  "updatedAt": "2026-10-08T21:09:18.030Z",
+  "updatedAt": "2026-10-08T21:11:32.580Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2475,15 +2475,158 @@
     "assetFacts": {}
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "d7612691bbcc0ad65b08ec34758044c3e27b2db9acd24da5a16e64369394b742"
   },
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:09:18.024Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "wild-survival_systems_0→wild-survival_systems_1의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: wild-survival_systems_0→wild-survival_systems_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "wild-survival_systems_1→wild-survival_systems_2의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: wild-survival_systems_1→wild-survival_systems_2의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "wild-survival_systems_2→wild-survival_systems_3의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: wild-survival_systems_2→wild-survival_systems_3의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "wild-survival_systems_3→wild-survival_systems_4의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: wild-survival_systems_3→wild-survival_systems_4의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "wild-survival_systems_4→wild-survival_systems_5의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: wild-survival_systems_4→wild-survival_systems_5의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::systems-progression": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "선형 진행",
+      "progressionEconomyBalance": {
+        "progressionLoop": "진입 -> 선택 -> 변화 -> 보상/위험 -> 다음 선택",
+        "resourceFlow": "월드·대상·자원·위험·진행 상태가 변환된다",
+        "balanceRules": "보상은 단기 성공, 세션 목표, 선택적 장기 숙련에서 서로 다른 플레이 변화를 주되 해당 장르와 기존 저장·밸런스를 보존한다"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "야생 생존의 실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변환된다.",
+          "newGameplay": "실제 입력 및 상호작용 결과로 월드 상태와 자원의 변화를 기반으로 재방문 가능한 목표·지역·전략 선택을 생성함.",
+          "systemImpact": "플레이어는 현재 상황을 이해하고, 재방문에 따른 새로운 목표와 전략 선택을 유도하며, 과거의 경험과 현대의 환경 간의 연결성을 강화하여 깊은 숙련과 전략적 결정을 유도함."
+        },
+        {
+          "milestone": "재방문에 따른 새로운 조합, 숨은 조합, 고급 운용을 통해 게임 루프를 확장하고 발전시킨다.",
+          "newGameplay": "재방문에 따른 새로운 조합, 숨은 조합, 고급 운용을 통해 게임 루프를 확장하고 발전시킨다.",
+          "systemImpact": "플레이어는 재방문에 따른 새로운 조합, 숨은 조합, 고급 운용을 통해 게임 루프를 확장하고 발전시킴."
+        },
+        {
+          "milestone": "생존 상태 변환 시스템 (주체)에서 실질적인 입력 및 선택을 처리하며 월드 상태가 변화한다.",
+          "newGameplay": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변환된다.",
+          "systemImpact": "월드 상태에 대한 실질적 입력 및 선택이 이루어지며, 진입 -> 선택 -> 변화 -> 보상/위험 -> 다음 선택 순서로 월드 상태가 변환됨."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "월드 상태의 변화가 실패하여 플레이어는 새로운 목표와 전략 선택을 유도함.",
+          "재방문에 따른 새로운 조합, 숨은 조합, 고급 운용으로 인해 게임 루프가 다시 시작되거나 확장됨."
+        ],
+        "retryFlow": "실패 후 재접속과 저장이 적용되어, 이전의 경험과 현대의 환경 간의 연결성을 강화하여, 더 깊은 숙련과 전략적 결정을 유도함.",
+        "riskPressure": "보상 또는 위험 발생 후, 다음 목표·지역·상호작용·전략 선택이 생성되어 게임 루프가 계속 진행됨.",
+        "recoveryRules": "플레이어는 실패 후 재접속과 저장을 통해, 과거의 경험과 현대의 환境 간의 연결성을 강화하여, 더 깊은 숙련과 전략적 결정을 유도함."
+      }
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T21:11:32.576Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
