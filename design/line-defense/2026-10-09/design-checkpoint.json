@@ -66,25 +66,41 @@
       "name": "MODULAR_DEFENSIVE_ADAPTATION",
       "purpose": "Player adapts defense to enemy types and wave composition, protects the objective, and clears the stage or boss to unlock harder defense choices.",
       "playerChoice": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+    },
+    "local_authoring_parts::b1611210a8f3b57566c79020bb666fc89eba3aba701b076a51c6fb25b8cc5c8c:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "ENEMY_WAVE",
+        "TOWER_PLACEMENT"
+      ],
+      "stateOutputs": [
+        "BATTLE_STATUS",
+        "RESOURCE_POOL",
+        "DEFENSE_STRATEGY"
+      ],
+      "name": "ADAPTIVE_DEFENSIVE_ADJUSTMENT",
+      "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
+      "playerChoice": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 344609,
-      "lastMs": 41952,
+      "totalMs": 392354,
+      "lastMs": 47745,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:05:15.874Z"
+      "updatedAt": "2026-10-08T21:06:03.620Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:59:31.174Z",
-  "updatedAt": "2026-10-08T21:05:15.874Z",
+  "updatedAt": "2026-10-08T21:06:03.620Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2279,7 +2295,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:05:15.874Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:06:03.620Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
