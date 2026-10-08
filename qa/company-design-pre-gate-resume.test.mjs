@@ -320,7 +320,7 @@ test('cloned MAIN A B c DELVE rules repair only invalid role and retain valid ch
   const repaired=await author('designer','원본 게임의 자원·저장·멀티 규칙 보존',schema,{predict:1600,includeAssetContext:false});
   assert.deepEqual(calls.slice(previousCalls).map(row=>row.role),['B','c']);
   assert.equal(new Set(repaired.signatureSystems.map(row=>row.id)).size,5);
-  assert.deepEqual(repaired.signatureSystems.find(row=>row.grammarRole==='c').stateInputs,['WoodCount']);
+  assert.deepEqual(JSON.parse(JSON.stringify(repaired.signatureSystems.find(row=>row.grammarRole==='c').stateInputs)),['WoodCount']);
   assert.equal(Object.keys(checkpoint.tasks).length,5,'valid roles stay in the original checkpoint');
 });
 
