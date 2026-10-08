@@ -183,3 +183,16 @@ test('Daechung real Unity renderer exposes only measured draw calls and polygons
   assert.match(runtime,/_drawCallsRecorder\.Dispose\(\)/);
   assert.match(runtime,/_trianglesRecorder\.Dispose\(\)/);
 });
+
+test('native Unity canvas UI stays inside mobile bounds with real runtime measurements',()=>{
+  const runtime=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs',import.meta.url),'utf8');
+  assert.match(runtime,/UI_BOUNDS game=daechung-rpg surface=UNITY_ONGUI/);
+  assert.match(runtime,/controlsHeight = Mathf\.Max\(1f, Screen\.height - controlsY - 12f\)/);
+  assert.match(runtime,/buttonWidth = Mathf\.Min\(Mathf\.Max\(1f, Screen\.width - margin \* 2f\)/);
+  assert.match(source,/const nativeUiMarker=markers\.slice\(\)\.reverse\(\)\.find/);
+  assert.match(source,/const nativeUiOffscreen=nativeUiMeasured/);
+  assert.match(source,/withinNativeViewport\(nativeUiRect\.controlsLeft,nativeUiRect\.controlsY,nativeUiRect\.controlsWidth,nativeUiRect\.controlsHeight\)/);
+  assert.match(source,/nativeUiMissing=gameId==='daechung-rpg'&&!nativeUiMeasured/);
+  assert.match(source,/nativeUnityUi:\{measurementState:nativeUiMeasured\?'UNITY_ONGUI_RUNTIME':'NOT_MEASURED'/);
+  assert.match(source,/nativeUiOffscreen\|\|nativeUiMissing/);
+});
