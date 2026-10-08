@@ -157,25 +157,29 @@
           "validationEvidence": "Unity 프로젝트의 네이티브/WebGL 실행 증거"
         }
       }
+    },
+    "local_authoring_parts::27d772bbd2873403e41ece36d7ce1af09994bcea41809060ef5b20af19523fed:role,designAuthority": {
+      "role": "WEB_DETAILED_GAME_ORIGINAL",
+      "designAuthority": "GAME_DESIGN_REFERENCE_NOT_SOURCE_CODE_AUTHORITY"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 673412,
-      "lastMs": 133156,
+      "totalMs": 763913,
+      "lastMs": 90501,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T01:49:17.840Z"
+      "updatedAt": "2026-10-08T01:50:48.342Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T01:38:04.183Z",
-  "updatedAt": "2026-10-08T01:49:17.840Z",
+  "updatedAt": "2026-10-08T01:50:48.342Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1597,7 +1601,7 @@
   },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T01:47:04.679Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T01:50:48.342Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
