@@ -320,25 +320,42 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::ab761fede12e64ed80329ea3eec6f3e5def58e0b2115990066ba8665b5ff27f9:signatureSystems:0": {
+      "id": "SHARDBOUND_ODYSSEY_REIMAGINED_PUZZLE_LOOP_WITH_DYNAMIC_BOARD_STATES_AND_PLAYER_A",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "BOARD_STATE_1",
+        "BOARD_STATE_2",
+        "BOARD_STATE_3"
+      ],
+      "stateOutputs": [
+        "STATE_CHANGE_1",
+        "STATE_CHANGE_2",
+        "STATE_CHANGE_3"
+      ],
+      "name": "Board State Transition System",
+      "purpose": "플레이어가 매 게임 시작 시 새로운 레벨을 설정하며, 단순한 목표에 한해 제한된 이동, 장애물, 또는 명확한 퀴즈 형태로 접근할 수 있는 PUZZLE 게임입니다. 선택 결과가 다음 월드 상태를 바꾸며, 성장은 즉각적인 상태 변화와 새 행동/경로/조합/관계/대응법의 열림을 통해 이루어집니다.",
+      "playerChoice": "Start a new board level with a clear goal, limited moves, obstacles, or a visible puzzle constraint. Make matches or deliberate puzzle moves to solve the current objective. Clear the goal to earn rewards and unlock the next stage."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 452840,
-      "lastMs": 26741,
+      "totalMs": 561938,
+      "lastMs": 109098,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:52:30.555Z"
+      "updatedAt": "2026-10-08T17:54:19.664Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:44:57.674Z",
-  "updatedAt": "2026-10-08T17:52:30.565Z",
+  "updatedAt": "2026-10-08T17:54:19.664Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2435,10 +2452,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T17:52:30.557Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_MAIN_A_B_c_DELVE_REQUIRED,DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:54:19.664Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
