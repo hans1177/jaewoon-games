@@ -631,25 +631,41 @@
         "Read the incoming insect wave and its threat pattern."
       ],
       "fromSystem": "MAIN"
+    },
+    "local_authoring_parts::6a925e2f6ee7ceff6418d1b7b047ac575c3698971f2df7c5f703d38725f5b3bc:toSystem,trigger,stateChange": {
+      "toSystem": "A",
+      "trigger": "Read the incoming insect wave and its threat pattern.",
+      "stateChange": "World state change and next selection."
+    },
+    "local_authoring_parts::740245746d5a1545ed6affffc3902f7b4886ca90c9980575a4564faef0034789:systemInterconnections:3": {
+      "fromId": "MAIN",
+      "toId": "A",
+      "stateKeys": [
+        "Read the incoming insect wave and its threat pattern."
+      ],
+      "fromSystem": "MAIN",
+      "toSystem": "A",
+      "trigger": "Read the incoming insect wave and its threat pattern.",
+      "stateChange": "World state change and next selection."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 25,
-      "successes": 22,
+      "calls": 26,
+      "successes": 23,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2667249,
-      "lastMs": 33959,
+      "totalMs": 2700660,
+      "lastMs": 33411,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T15:34:04.065Z"
+      "updatedAt": "2026-10-08T15:34:37.478Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:47:19.560Z",
-  "updatedAt": "2026-10-08T15:34:04.065Z",
+  "updatedAt": "2026-10-08T15:34:37.480Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2852,7 +2868,7 @@
     "designer_draft_slices::identity-core": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T15:34:04.065Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:34:37.480Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
