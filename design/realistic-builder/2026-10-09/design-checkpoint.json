@@ -488,25 +488,28 @@
       "toSystem": "WORLD_STATE_CHANGE",
       "trigger": "플레이어가 희망에 빠진 실시간 생존 게임에서 점점 더 어려워지는 적군과 맞서며 생명을 걸어가는 중심 행동을 수행하며, 선택의 결과로 다음 상태와 세계 규칙을 바꾼다.",
       "stateChange": "플레이어가 희망에 빠진 실시간 생존 게임에서 점점 더 어려워지는 적군과 맞서며 생명을 걸어가는 중심 행동을 수행하며, 선택의 결과로 다음 상태와 세계 규칙을 바꾼다."
+    },
+    "local_authoring_parts::b9f7a1d718ad2178cd7ea6a0064f1c0696fc0e610f010408e9f5de33bd747dce:fromId": {
+      "fromId": "PLAYER_ACTION"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 18,
+      "calls": 19,
+      "successes": 19,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 706396,
-      "lastMs": 35216,
+      "totalMs": 737854,
+      "lastMs": 31458,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:59:45.297Z"
+      "updatedAt": "2026-10-08T19:00:16.757Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:47:58.761Z",
-  "updatedAt": "2026-10-08T18:59:45.298Z",
+  "updatedAt": "2026-10-08T19:00:16.757Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3062,7 +3065,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:59:45.298Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:00:16.757Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
