@@ -91,25 +91,44 @@
       "name": "선택 결과 변환 시스템 (B)",
       "purpose": "MAIN의 선택 결과가 A/B/c 서브요소와 비용 구조로 연결하는 첫 번째 대축을 실제 상태 교환으로 증명합니다.",
       "playerChoice": "Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter."
+    },
+    "local_authoring_parts::5c884b3ba2429ffb83f213a645a6a9988c301ff906bb26a6c44faa7f469cdf5b:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "EXPLORATION_STATE",
+        "CHARACTER_INTERACTION_STATE",
+        "QUEST_ACCEPTANCE_STATE",
+        "INFORMATION_DISCOVERY_STATE"
+      ],
+      "stateOutputs": [
+        "CONTENT_EXPANSION_STATE",
+        "PLAYABLE_CONTENT_CHANGE_STATE",
+        "MAINTAINABLE_PLAYABILITY_STATE",
+        "UNLOCKED_CONTENT_PATH_STATE"
+      ],
+      "name": "내용 확장 및 플레이 가능성 시스템",
+      "purpose": "플레이어가 탐험, 위험, 성공, 실패, 성장 상태에서 즉각적인 결과를 얻으며, 지역, 인물, 적, 아이템 등 다양한 요소들을 만나며 세계의 역사, 생활, 경제, 지역 기능에 대한 이해를 쌓는 중심 행동을 통해 반복 가능한 핵심 루프를 형성하는 STORY_COMPLETE_RPG 게임이다.",
+      "playerChoice": "내용 확장을 선택하여 새로운 해석과 의미를 제공하고, 이로 인해 다음 상태로 전환할 수 있다. 이러한 선택은 플레이어에게 감각적으로 강화되는 소리와 음악을 통해 느껴진다. 또한, 이 선택은 내용의 깊이와 다양성을 증대시키고, 숙련으로 바뀌는 선택을 가능하게 한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 475936,
-      "lastMs": 43574,
+      "totalMs": 538751,
+      "lastMs": 62815,
       "lastError": null,
-      "updatedAt": "2026-10-08T20:58:42.521Z"
+      "updatedAt": "2026-10-08T20:59:45.338Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:50:46.559Z",
-  "updatedAt": "2026-10-08T20:58:42.521Z",
+  "updatedAt": "2026-10-08T20:59:45.338Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2341,7 +2360,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T20:58:42.521Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T20:59:45.338Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
