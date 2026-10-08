@@ -726,25 +726,36 @@
         "riskPressure": "Enemy pressure increases by 10% per round",
         "recoveryRules": "Player choices in resource allocation and strategic adaptation influence the progression of the game, creating a feedback loop that drives deeper engagement and exploration."
       }
+    },
+    "local_authoring_parts::e3d48c53b90328c70322286f369af58b7759396256a06987342c7c37f1c9928d:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "ENEMY_PRESSURE",
+      "toId": "BUILD_COMBINATION",
+      "stateKeys": [
+        "ENEMY_PRESSURE",
+        "HORDE_SIZE",
+        "TIME_LIMIT",
+        "RUN_RESULT"
+      ],
+      "fromSystem": "Survival Progression System (signatureSystems[0])"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 15,
+      "calls": 18,
+      "successes": 16,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 2470383,
-      "lastMs": 109169,
+      "totalMs": 2570656,
+      "lastMs": 100273,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T13:49:21.635Z"
+      "updatedAt": "2026-10-08T13:51:01.919Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:08:11.184Z",
-  "updatedAt": "2026-10-08T13:49:21.644Z",
+  "updatedAt": "2026-10-08T13:51:01.919Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3092,10 +3103,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:49:21.640Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:51:01.919Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
