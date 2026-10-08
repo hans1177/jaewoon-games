@@ -463,25 +463,67 @@
       "name": "주사위 전투 보드 시그니처 시스템",
       "purpose": "플레이어가 실제 선택에 기반하여 진행·위험·보상을 연결하는 반복 가능한 루프를 구축하며, 주사위 전략 게임의 점수나 관문을 승계하지 않고 새로운 시스템을 설계합니다.",
       "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. 이 과정에서 대표 선택과 세계 규칙이 결합되어 다른 경로와 결과를 만든다. 성장은 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다."
+    },
+    "local_authoring_parts::b440994f34db08001368faf87310531545e88bc6246f996ac3d071747622b3bd:signatureSystems:3": {
+      "id": "dice-battle-board",
+      "grammarRole": "c",
+      "stateInputs": [
+        "boardState",
+        "goal",
+        "movesLeft",
+        "obstacles",
+        "comboScore"
+      ],
+      "stateOutputs": [
+        "newBoardState",
+        "newGoal",
+        "newMovesLeft",
+        "newObstacles",
+        "newComboScore"
+      ],
+      "name": "주사위 전투 보드 시그니처 시스템",
+      "purpose": "플레이어가 실제 선택에 기반하여 진행·위험·보상을 연결하는 반복 가능한 루프를 구축하며, 주사위 전략 게임의 점수나 관문을 승계하지 않고 새로운 시스템을 설계합니다.",
+      "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. 이 과정에서 대표 선택과 세계 규칙이 결합되어 다른 경로와 결과를 만든다. 성장은 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다."
+    },
+    "local_authoring_parts::b440994f34db08001368faf87310531545e88bc6246f996ac3d071747622b3bd:signatureSystems:4": {
+      "id": "dice-battle-board",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "boardState",
+        "goal",
+        "movesLeft",
+        "obstacles",
+        "comboScore"
+      ],
+      "stateOutputs": [
+        "newBoardState",
+        "newGoal",
+        "newMovesLeft",
+        "newObstacles",
+        "newComboScore"
+      ],
+      "name": "주사위 전투 보드 시그니처 시스템",
+      "purpose": "플레이어가 실제 선택에 기반하여 진행·위험·보상을 연결하는 반복 가능한 루프를 구축하며, 주사위 전략 게임의 점수나 관문을 승계하지 않고 새로운 시스템을 설계합니다.",
+      "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. 이 과정에서 대표 선택과 세계 규칙이 결합되어 다른 경로와 결과를 만든다. 성장은 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 13,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 469504,
-      "lastMs": 41695,
+      "totalMs": 558095,
+      "lastMs": 44886,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:09:54.695Z"
+      "updatedAt": "2026-10-08T18:11:23.288Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:02:05.035Z",
-  "updatedAt": "2026-10-08T18:09:54.695Z",
+  "updatedAt": "2026-10-08T18:11:23.293Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2458,7 +2500,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2473,10 +2515,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:09:54.695Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T18:11:23.289Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_MAIN_A_B_c_DELVE_REQUIRED,DESIGN_RULE_STATE_MISSING",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
