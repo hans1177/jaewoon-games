@@ -592,25 +592,43 @@
         "ecologicalInsight"
       ],
       "fromSystem": "GAMEPLAY_SKETCH v4"
+    },
+    "local_authoring_parts::fa7945454d1021254333f676e15dc510feda096760e0e07d4be697d834decb39:toSystem,trigger,stateChange": {
+      "toSystem": "GAMEPLAY_SKETCH v4",
+      "trigger": "EcoRiskHandler",
+      "stateChange": "survivalTool, safeRoute, ecologicalInsight"
+    },
+    "local_authoring_parts::8d9a05eb0170633e645c5f7e03e364d7b6e11997f16098e12310fdb621a0b113:systemInterconnections:3": {
+      "fromId": "MAIN",
+      "toId": "A",
+      "stateKeys": [
+        "survivalTool",
+        "safeRoute",
+        "ecologicalInsight"
+      ],
+      "fromSystem": "GAMEPLAY_SKETCH v4",
+      "toSystem": "GAMEPLAY_SKETCH v4",
+      "trigger": "EcoRiskHandler",
+      "stateChange": "survivalTool, safeRoute, ecologicalInsight"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 17,
+      "calls": 21,
+      "successes": 18,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2313425,
-      "lastMs": 60936,
+      "totalMs": 2372064,
+      "lastMs": 58639,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T12:40:44.618Z"
+      "updatedAt": "2026-10-08T12:41:43.259Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:02:11.066Z",
-  "updatedAt": "2026-10-08T12:40:44.618Z",
+  "updatedAt": "2026-10-08T12:41:43.261Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2844,7 +2862,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:40:44.618Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:41:43.261Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
