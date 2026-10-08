@@ -222,6 +222,7 @@ jobs:
     timeout-minutes: 2
     outputs:
       parallelism_only: ${{ steps.scope.outputs.parallelism_only }}
+      coding_benchmark: ${{ steps.scope.outputs.coding_benchmark }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -250,6 +251,11 @@ jobs:
           fi
           git cat-file -e "$base_sha^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$base_sha"
           git diff --name-only "$base_sha" HEAD > /tmp/vibe2-core-qa-files.txt
+          coding_benchmark=NO
+          if grep -Eq '^(tools/vibe2-learning-practice-worker\.mjs|company-learning/roblox-practice\.json|qa/vibe2-learning-practice-worker\.test\.mjs)$' /tmp/vibe2-core-qa-files.txt; then
+            coding_benchmark=YES
+          fi
+          echo "coding_benchmark=$coding_benchmark" >> "$GITHUB_OUTPUT"
           if [ -s /tmp/vibe2-core-qa-files.txt ] && ! grep -Ev '^(\.github/workflows/vibe2-(continuous-core|24h-runner|parallelism-contract-qa)\.yml|qa/vibe2-parallelism-(main|20)-contract\.test\.mjs)$' /tmp/vibe2-core-qa-files.txt | grep -q .; then
             parallelism_only=YES
           fi
@@ -420,6 +426,7 @@ jobs:
           node --test qa/vibe2-code-pattern-ingest.test.mjs
           node --test qa/vibe2-learning-practice-worker.test.mjs
           node --test qa/vibe2-practice-distillation.test.mjs
+          node --test qa/vibe2-practice-weight-learning.test.mjs
           node --test qa/vibe2-external-ai-distillation.test.mjs
           node --test qa/vibe2-fast-distillation-stage.test.mjs qa/vibe2-distillation-status.test.mjs qa/vibe2-weight-learning.test.mjs
           node --test qa/vibe2-web-experience-ingest.test.mjs
@@ -465,7 +472,7 @@ jobs:
     if: ${{ needs.scope.outputs.parallelism_only != 'YES' }}
     name: Practice fault cards runtime
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -494,5 +501,27 @@ jobs:
           VIBE2_TEST_LUAU_COMPILER="$VIBE2_LUAU_COMPILER" node --test --test-name-pattern="internal motion sampler" qa/vibe2-source-worker.test.mjs
           node --test qa/vibe3-roblox-studio-lessons.test.mjs
           node --test qa/vibe2-learning-practice-worker.test.mjs
+      - name: Prepare the existing local Vibe model for coding measurement
+        if: needs.scope.outputs.coding_benchmark == 'YES'
+        uses: ./.github/actions/prepare-ollama
+        with:
+          model: qwen3:1.7b
+          cache-model: 'true'
+          pull-model: 'true'
+          preload-model: 'true'
+      - name: Measure actual generated implementations and repairs
+        if: needs.scope.outputs.coding_benchmark == 'YES'
+        env:
+          VIBE2_LIVE_CODING_BENCHMARK: '1'
+          VIBE2_LOCAL_MODEL: qwen3:1.7b
+        run: node --test --test-name-pattern="live Vibe coding" qa/vibe2-learning-practice-worker.test.mjs
+      - name: Preserve coding performance evidence
+        if: always() && needs.scope.outputs.coding_benchmark == 'YES'
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-coding-repair-benchmark
+          path: ${{ runner.temp }}/vibe2-coding-repair-benchmark.json
+          if-no-files-found: error
+          retention-days: 14
 
 

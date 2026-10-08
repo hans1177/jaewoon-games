@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { buildDistilledStructuralSample, discoverStructuralCandidates, isVerifiedStructuralSource } from './vibe2-structural-repair-distillation.mjs';
 
@@ -83,7 +84,7 @@ export function loadTeacherPracticeDrills(file) {
   });
 }
 
-export function buildPracticeTeacherSamples({ drillsFile, outDir, maxPractice = 96 }) {
+export function buildPracticeTeacherSamples({ drillsFile, outDir, maxPractice = 96, codeDrillsFile = new URL('../company-learning/roblox-practice.json',import.meta.url) }) {
   const drills = loadTeacherPracticeDrills(drillsFile).slice(0, Math.max(0, maxPractice));
   fs.mkdirSync(outDir, { recursive: true });
   let written = 0;
@@ -129,7 +130,25 @@ export function buildPracticeTeacherSamples({ drillsFile, outDir, maxPractice = 
     writeJson(path.join(outDir, `${clean(drill.id).replace(/[^A-Za-z0-9._-]/g, '_')}.json`), sample);
     written += 1;
   }
-  return { practiceCandidateCount: drills.length, practiceWritten: written };
+  // Implementation targets enter only the existing synthetic PRACTICE_ONLY route.
+  // Acceptance fixtures stay out of model inputs and training targets.
+  const curriculum=readJson(codeDrillsFile);
+  if(curriculum.authority!=='PRACTICE_ONLY'||curriculum.runtimePromotionAllowed!==false)throw new Error('code practice authority mismatch');
+  const codeDrills=(curriculum.platformDrills||[]).filter(row=>row.platform==='unity'&&row.reference&&row.scenario);
+  let implementationWritten=0;
+  for(const drill of codeDrills.slice(0,Math.max(0,maxPractice-written))){
+    const revision=createHash('sha256').update(JSON.stringify({scenario:drill.scenario,broken:drill.broken,reference:drill.reference})).digest('hex');
+    const sample={version:2,instruction:drill.scenario,input:drill.broken,output:drill.reference,
+      taskType:'unity',difficulty:'regression',lifecycle:'active',teacher:true,synthetic:true,practiceOnly:true,
+      sourceKind:'teacher',runtimePromotionAllowed:false,project:'unity-code-implementation-practice',
+      teacherId:'GPT-authored-executable-practice',sourceRevision:'code-practice:'+revision,
+      sampleKind:'CODE_IMPLEMENTATION',familyId:drill.id,
+      provenance:{sourceKind:'teacher',sourceRevision:'code-practice:'+revision,drillId:drill.id,familyId:drill.id},
+      qa:{teacherReview:'PASS',independentQa:'NOT_APPLICABLE',browserQa:'NOT_APPLICABLE',runtime:'NOT_APPLICABLE'},
+      verification:{practiceOnly:true,productionEvidence:false,hiddenTestsIncluded:false}};
+    writeJson(path.join(outDir,'gpt-u-code-'+drill.id+'.json'),sample);implementationWritten++;
+  }
+  return { practiceCandidateCount: drills.length+codeDrills.length, practiceWritten: written+implementationWritten,implementationWritten };
 }
 
 export function buildOnlineTeacherAnalysis(record, lessons) {

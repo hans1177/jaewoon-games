@@ -9,6 +9,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
+import { learningGuidance } from './vibe2-learning-motor.mjs';
 
 const clean=v=>String(v??'').trim();
 const DEFAULT_MODEL=process.env.VIBE2_LOCAL_MODEL||'qwen3:1.7b';
@@ -42,6 +43,7 @@ export function buildPracticePrompt(order={}, {drill=null}={}){
       : drill?`Return repaired ${unityDrill?'C# class Practice':'Luau module'} source in the code field. Do not edit repository files.`:'Do not edit files.',
     'Do not claim production pass. Do not invent runtime evidence.',
     'Your answer is untrusted practice knowledge until independently verified and distilled; do not claim it is reusable canonical knowledge.',
+    learningGuidance(order.unifiedLearning||{}),
     webArtifact
       ? 'Return JSON only with keys: diagnosis, strategy, tests, avoidPatterns, reusablePatterns, artifactHtml. artifactHtml must be a complete self-contained HTML document with inline CSS and JavaScript.'
       : drill?'Return JSON only with keys: diagnosis, strategy, tests, avoidPatterns, reusablePatterns, code. code must implement exactly the requested function or class.':'Solve the drill by returning JSON only with keys: diagnosis, strategy, tests, avoidPatterns, reusablePatterns.',
@@ -49,14 +51,16 @@ export function buildPracticePrompt(order={}, {drill=null}={}){
     webArtifact?'The artifact must have visible state change from a tappable button, clear text feedback in [data-practice-value] or #score, responsive viewport, and no fetch/WebSocket/external http(s) URLs. Mark the primary button with data-practice-action. A real mobile browser will tap it and rotate the viewport.':'',
     previousArtifactScoreFromOrder(order)!==null?`Previous verified artifact score=${previousArtifactScoreFromOrder(order)}. ${drill?'Preserve or improve this quality while solving fresh hidden input and lifecycle variants; do not exceed the 100-point scale.':'Improve the artifact beyond this score while keeping the drill goal.'}`:'',
     'WORK ORDER:',
-    drill?JSON.stringify({id:drill.id,level:drill.level,scenario:drill.scenario,brokenCode:drill.broken}):clean(order.goal).slice(0,12000)
+    drill?JSON.stringify({id:drill.id,level:drill.level,scenario:drill.scenario,brokenCode:drill.broken}):clean(order.goal).slice(0,12000),
+    drill?.feedbackTests?.length?'PUBLIC EXAMPLES (hidden acceptance inputs are separate):\n'+drill.feedbackTests.join('\n'):'',
+    drill?'Before writing code, identify the state owner, validate before mutation, and preserve unrelated state. Return the complete requested implementation.':''
   ].filter(Boolean).join('\n');
 }
 
-async function requestModel(prompt,{model=DEFAULT_MODEL,responseFile='',timeoutMs=DEFAULT_TIMEOUT,maxPredict=1200}={}){
+export async function requestPracticeModel(prompt,{model=DEFAULT_MODEL,responseFile='',timeoutMs=DEFAULT_TIMEOUT,maxPredict=1200}={}){
   const fake=clean(responseFile||process.env.VIBE2_MODEL_RESPONSE_FILE);
   if(fake)return fs.readFileSync(fake,'utf8');
-  const body=JSON.stringify({model,prompt,stream:false,think:false,options:{num_predict:maxPredict,temperature:.12}});
+  const body=JSON.stringify({model,prompt,stream:false,think:false,format:'json',options:{num_ctx:8192,num_predict:maxPredict,temperature:.12,seed:20261008}});
   return await new Promise((resolve,reject)=>{
     const req=http.request({hostname:'127.0.0.1',port:11434,path:'/api/generate',method:'POST',headers:{'content-type':'application/json','content-length':Buffer.byteLength(body)}},res=>{
       let data='';res.setEncoding('utf8');res.on('data',x=>data+=x);res.on('end',()=>{
@@ -91,7 +95,7 @@ export function evaluatePracticeAnswer(value={}, {drill=null,luauBinary=process.
           fs.chmodSync(dir,0o755);
           const proof=crypto.randomBytes(16).toString('hex');
           fs.writeFileSync(path.join(dir,'Candidate.cs'),source);
-          fs.writeFileSync(path.join(dir,'Program.cs'),'public class PracticeState { public bool Active,InputEnabled,Paused; public int Subscriptions,LiveObjects,Score,SavedScore; } public class Program { static void Check(bool ok){if(!ok)throw new System.Exception("assert");} static void Main(){'+drill.tests.map(body=>'{'+body+'}').join('')+'System.Console.WriteLine("'+proof+'");}}');
+          fs.writeFileSync(path.join(dir,'Program.cs'),(drill.supportCode||'public class PracticeState { public bool Active,InputEnabled,Paused; public int Subscriptions,LiveObjects,Score,SavedScore; }')+' public class Program { static void Check(bool ok){if(!ok)throw new System.Exception("assert");} static void Main(){'+drill.tests.map(body=>'{'+body+'}').join('')+'System.Console.WriteLine("'+proof+'");}}');
           const container='vibe-practice-'+crypto.randomBytes(8).toString('hex');
           try{
             const output=execFileSync('docker',['run','--rm','--name',container,'--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','128','--memory','768m','--cpus','1','--user','65534:65534','--tmpfs','/tmp:rw,exec,size=384m,mode=1777','-e','DOTNET_CLI_HOME=/tmp','-e','DOTNET_CLI_TELEMETRY_OPTOUT=1','-e','DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1','--mount','type=bind,src='+dir+',dst=/input,readonly','mcr.microsoft.com/dotnet/sdk:8.0','sh','-c','cp /input/* /tmp/; cd /tmp; dotnet run --project Practice.csproj --verbosity quiet'],{timeout:45000,maxBuffer:131072,encoding:'utf8',stdio:['ignore','pipe','pipe']});
@@ -228,15 +232,53 @@ export async function evaluateWebPracticeArtifact(html='',previousScore=null,{dr
   };
 }
 
+// Only public examples may drive repairs. Hidden checks never enter a repair prompt.
+// Same-task recovery is measured separately from unseen-task generalization.
+export async function runPracticeRepairSession({order={},drill=null,model=DEFAULT_MODEL,responseFile='',request=requestPracticeModel,evaluate=evaluatePracticeAnswer,maxAttempts=3}={}){
+  responseFile=clean(responseFile||process.env.VIBE2_MODEL_RESPONSE_FILE);
+  const basePrompt=buildPracticePrompt(order,{drill});
+  const canRepair=Boolean(!responseFile&&drill?.platform!=='web'&&drill?.feedbackTests?.length);
+  const limit=canRepair?Math.max(1,Math.min(3,Number(maxAttempts)||1)):1;
+  const attempts=[];
+  let prompt=basePrompt,parsed={},raw='',evaluation={pass:false},firstHidden=null;
+  for(let index=0;index<limit;index++){
+    const started=Date.now();
+    raw=await request(prompt,{model,responseFile,maxPredict:drill||clean(order.executionRoute)==='learning-web-artifact'?3072:1200});
+    let validJson=true;
+    try{parsed=parseJson(raw);}catch{parsed={};validJson=false;}
+    const publicDrill=canRepair?{...drill,tests:drill.feedbackTests}:drill;
+    const feedback=validJson?evaluate(parsed,{drill:publicDrill}):{pass:false,codeVerification:{reason:'OUTPUT_JSON_INVALID'}};
+    // Do not spend another model call on a missing executor or a defective fixture.
+    const verification=feedback.codeVerification;
+    const infrastructure=/EXECUTOR_UNAVAILABLE/.test(verification?.reason||'')
+      ||(verification?.reason==='REGRESSION_OR_FIXTURE_FAILED'&&(!verification.baselineRejected||!verification.referencePassed));
+    if(index===0)firstHidden=validJson?evaluate(parsed,{drill}):{pass:false};
+    evaluation=feedback;
+    attempts.push({index:index+1,responseSha256:sha256(raw),candidateSha256:sha256(String(parsed.code||parsed.artifactHtml||'')),publicPass:feedback.pass===true,feedback:validJson?(verification?.reason||(!feedback.pass?'ANSWER_CONTRACT_FAILED':'PASS')):'OUTPUT_JSON_INVALID',elapsedMs:Date.now()-started});
+    if(feedback.pass||infrastructure||index+1>=limit)break;
+    const previous=String(parsed.code||'').slice(0,24000);
+    prompt=[basePrompt,'REPAIR USING PUBLIC EXAMPLES ONLY:',
+      'The last attempt failed: '+attempts.at(-1).feedback,
+      'Reproduce each public example against your code. Identify the first incorrect transition, repair its cause, then recheck every public example. Hidden tests and reference answers are not available.',
+      previous?'YOUR PREVIOUS CODE:\n'+previous:'The previous response was not a usable complete JSON implementation.'
+    ].join('\n');
+  }
+  const finalHidden=attempts.length===1?firstHidden:evaluate(parsed,{drill});
+  evaluation={...finalHidden,pass:finalHidden?.pass===true&&evaluation.pass===true};
+  return {parsed,raw,evaluation,repairEvidence:{version:1,engineRevision:'VIBE2_CODING_PRACTICE_2.2',modelWeightsChanged:false,
+    execution:responseFile?'FIXTURE_REPLAY':request===requestPracticeModel?'LOCAL_OLLAMA':'INJECTED_TEST_PROVIDER',
+    maxAttempts:limit,modelCalls:attempts.length,firstAttemptPass:firstHidden?.pass===true,finalPass:evaluation.pass===true,
+    recovered:firstHidden?.pass!==true&&evaluation.pass===true,regressed:firstHidden?.pass===true&&evaluation.pass!==true,
+    hiddenChecksUsedForRepair:false,generalizationVerified:false,comparisonScope:'SAME_TASK_PUBLIC_FEEDBACK_REPAIR',attempts}};
+}
+
 export async function runLearningPractice({workOrderFile='.vibe2/work-order.json',outputFile='/tmp/vibe2-learning-practice-result.json',artifactDir='/tmp/vibe2-practice-web-artifact',model=DEFAULT_MODEL,responseFile=''}={}){
   const order=readJson(workOrderFile);
   const drillId=clean(order?.selectedTask?.codingPracticeDrill||order?.codingPracticeDrill||order?.selectedTask?.robloxPracticeDrill||order?.robloxPracticeDrill);
   const curriculum=drillId?readJson(new URL('../company-learning/roblox-practice.json',import.meta.url)):null;
   const drill=curriculum?[...curriculum.drills,...(curriculum.platformDrills||[])].find(row=>row.id===drillId)||null:null;
   if(drillId&&!drill)throw new Error('UNKNOWN_ROBLOX_PRACTICE_DRILL');
-  const raw=await requestModel(buildPracticePrompt(order,{drill}),{model,responseFile,maxPredict:drill||clean(order.executionRoute)==='learning-web-artifact'?3072:1200});
-  const parsed=parseJson(raw);
-  const evaluation=evaluatePracticeAnswer(parsed,{drill});
+  const {raw,parsed,evaluation,repairEvidence}=await runPracticeRepairSession({order,drill,model,responseFile});
   const webArtifact=clean(order.executionRoute)==='learning-web-artifact';
   const previousArtifactScore=previousArtifactScoreFromOrder(order);
   let artifact=null;
@@ -272,8 +314,8 @@ export async function runLearningPractice({workOrderFile='.vibe2/work-order.json
     knowledgeState:'UNTRUSTED_PRACTICE_OUTPUT',rawModelOutputSha256,rawModelOutputStored:false,
     candidateLessonsVerified:false,retrievalEligible:false,masteryCreditEligible:false,canonicalTrainingEligible:false,
     independentVerificationRequired:true,distillationRequiredBeforeReuse:true,
-    evaluation:evaluation.pass?'PASS':'FAIL',...evaluation,artifact,
-    nextPracticeSignal:webArtifact?(artifact?.validation?.nextPracticeSignal||'RETRY_CAUSAL_VARIATION'):'NEXT_CAUSAL_PRACTICE',
+    evaluation:evaluation.pass?'PASS':'FAIL',...evaluation,artifact,repairEvidence,
+    nextPracticeSignal:webArtifact?(artifact?.validation?.nextPracticeSignal||'RETRY_CAUSAL_VARIATION'):evaluation.pass?'NEXT_CAUSAL_PRACTICE':'RETRY_CAUSAL_VARIATION',
     authority:'practice-only-no-production-promotion'
   };
   writeJson(outputFile,result);

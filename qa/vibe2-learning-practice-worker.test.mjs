@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {buildPracticePrompt,evaluatePracticeAnswer,evaluateWebPracticeArtifact,runLearningPractice} from '../tools/vibe2-learning-practice-worker.mjs';
+import {buildPracticePrompt,evaluatePracticeAnswer,evaluateWebPracticeArtifact,runLearningPractice,runPracticeRepairSession} from '../tools/vibe2-learning-practice-worker.mjs';
 
 test('practice accepts analysis or isolated Web artifact routes but rejects production source route',()=>{
   assert.throws(()=>buildPracticePrompt({executionRoute:'text-source-worker',goal:'[VIBE_LEARNING_PRACTICE] x'}),/analysis-only or learning-web-artifact/);
@@ -179,4 +179,69 @@ test('Unity prose and unsafe API source cannot pass a code drill',()=>{
   const drill=robloxCurriculum.platformDrills.find(row=>row.platform==='unity');
   assert.equal(evaluatePracticeAnswer(practiceAnswer,{drill}).pass,false);
   assert.equal(evaluatePracticeAnswer({...practiceAnswer,code:'System.Environment.Exit(0);'},{drill}).pass,false);
+});
+
+test('repair uses public execution feedback without leaking hidden checks or reference answers',async()=>{
+  const drill={id:'opaque',platform:'unity',scenario:'Implement the requested state transition.',broken:'BROKEN',reference:'PRIVATE_REFERENCE',feedbackTests:['PUBLIC_EXAMPLE'],tests:['PRIVATE_ACCEPTANCE']};
+  const prompts=[];
+  const request=async prompt=>{prompts.push(prompt);return JSON.stringify({...practiceAnswer,code:prompts.length===1?'WRONG':'FIXED'});};
+  const evaluate=(answer)=>({pass:answer.code==='FIXED',codeVerification:{pass:answer.code==='FIXED',baselineRejected:true,referencePassed:true,reason:answer.code==='FIXED'?'VERIFIED_LOGIC_ONLY':'REGRESSION_OR_FIXTURE_FAILED'}});
+  const result=await runPracticeRepairSession({order:{executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE]'},drill,request,evaluate});
+  assert.equal(result.repairEvidence.firstAttemptPass,false);
+  assert.equal(result.repairEvidence.finalPass,true);
+  assert.equal(result.repairEvidence.recovered,true);
+  assert.equal(result.repairEvidence.execution,'INJECTED_TEST_PROVIDER');
+  assert.equal(prompts.length,2);
+  for(const prompt of prompts){assert(!prompt.includes('PRIVATE_REFERENCE'));assert(!prompt.includes('PRIVATE_ACCEPTANCE'));}
+  assert(prompts[1].includes('WRONG'));
+  assert(!JSON.stringify(result.repairEvidence).includes('FIXED'));
+});
+
+test('hidden-only failure never becomes a repair oracle and missing executors do not waste retries',async()=>{
+  const drill={id:'opaque',platform:'unity',scenario:'state',broken:'broken',reference:'private',feedbackTests:['public'],tests:['hidden']};
+  for(const infrastructure of [false,true]){
+    let calls=0;
+    const result=await runPracticeRepairSession({order:{executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE]'},drill,
+      request:async()=>{calls++;return JSON.stringify({...practiceAnswer,code:'partial'});},
+      evaluate:(_,options)=>({pass:!infrastructure&&options.drill.tests[0]==='public',codeVerification:{reason:infrastructure?'CSHARP_EXECUTOR_UNAVAILABLE':'REGRESSION_OR_FIXTURE_FAILED',baselineRejected:true,referencePassed:true}})});
+    assert.equal(calls,1);assert.equal(result.repairEvidence.finalPass,false);
+    assert.equal(result.repairEvidence.hiddenChecksUsedForRepair,false);
+  }
+});
+
+test('repair budget is bounded and malformed responses remain failures',async()=>{
+  let calls=0;
+  const drill={platform:'unity',feedbackTests:['public'],tests:['private']};
+  const result=await runPracticeRepairSession({order:{executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE]'},drill,maxAttempts:99,request:async()=>{calls++;return 'not JSON';},evaluate:()=>({pass:false})});
+  assert.equal(calls,3);assert.equal(result.evaluation.pass,false);
+});
+
+for(const drill of robloxCurriculum.platformDrills.filter(row=>row.platform==='unity'&&row.id!=='unity-lifecycle')){
+  test('executable coding contract, baseline, and held-out inputs: '+drill.id,{skip:!process.env.VIBE2_TEST_CSHARP_RUNTIME},()=>{
+    for(const tests of [drill.feedbackTests,drill.tests]){
+      const contract={...drill,tests};
+      const fixed=evaluatePracticeAnswer({...practiceAnswer,code:drill.reference},{drill:contract});
+      assert.equal(fixed.pass,true,JSON.stringify(fixed.codeVerification));
+      assert.equal(evaluatePracticeAnswer({...practiceAnswer,code:drill.broken},{drill:contract}).pass,false);
+    }
+  });
+}
+
+test('live Vibe coding: first attempt versus public-feedback repair on held-out inputs',{skip:!process.env.VIBE2_LIVE_CODING_BENCHMARK,timeout:1500000},async()=>{
+  assert(!process.env.VIBE2_MODEL_RESPONSE_FILE,'fixture replay cannot be a live benchmark');
+  const cases=[];
+  for(const id of ['save','unity-menu-batch-transaction','unity-reward-prerequisites']){
+    const drill=[...robloxCurriculum.drills,...robloxCurriculum.platformDrills].find(row=>row.id===id);
+    const result=await runPracticeRepairSession({order:{executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE] execute repair benchmark'},drill});
+    cases.push({id,...result.repairEvidence});
+  }
+  const report={version:1,kind:'vibe2-executed-coding-repair-benchmark',model:process.env.VIBE2_LOCAL_MODEL||'qwen3:1.7b',sourceCommit:process.env.GITHUB_SHA||null,
+    sampleCount:cases.length,firstAttemptPass:cases.filter(x=>x.firstAttemptPass).length,finalPass:cases.filter(x=>x.finalPass).length,
+    recovered:cases.filter(x=>x.recovered).length,regressed:cases.filter(x=>x.regressed).length,modelCalls:cases.reduce((n,x)=>n+x.modelCalls,0),
+    modelWeightsChanged:false,generalizationVerified:false,productionPromotionAllowed:false,cases};
+  fs.writeFileSync(path.join(process.env.RUNNER_TEMP||os.tmpdir(),'vibe2-coding-repair-benchmark.json'),JSON.stringify(report,null,2)+'\n');
+  console.log('VIBE2_LIVE_CODING_BENCHMARK='+JSON.stringify(report));
+  assert(cases.every(row=>row.execution==='LOCAL_OLLAMA'));
+  assert.equal(report.regressed,0,'a repair must not lose an already passing implementation');
+  assert(report.finalPass>0,'no generated implementation passed; do not claim coding improvement');
 });
