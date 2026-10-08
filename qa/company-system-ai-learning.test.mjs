@@ -390,3 +390,56 @@ test('System AI workflow binds canonical distilled advisory knowledge into every
   assert.match(workflow,/--learning-context=\/tmp\/system-ai-learning-context\.json/);
 });
 
+/* ── 기존 14개 방법 재사용 및 검증된 F0~F9 수리 지식만 학습 ── */
+test('System AI learns two hypotheses for exact Roblox failures without inventing a passed floor',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  for(const [signature,stage] of [
+    ['ROBLOX_F0_SOURCE_PREFLIGHT_FAILED','F0_SOURCE_PREFLIGHT'],
+    ['ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING','PRIVATE_RUNTIME_CANDIDATE_DEPLOY'],
+    ['ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE','TARGET_PLATFORM_RUNTIME_FOUNDATION'],
+    ['roblox-package-asset-binding-failed','TARGET_PLATFORM_BUILD_OR_PACKAGE']
+  ]){
+    const context=buildSystemAiLearningContext({
+      task:{id:'floor-'+signature,taskType:'bottleneck-repair',gameId:'demo',target:'roblox',
+        goal:'repair exact game F0-F9 stage',failureSignature:signature,responsibleFiles:['tools/company-development-roblox-build-preflight.mjs']},
+      policyInput:policy,experienceInput:{records:[]},codePatternsInput:{patterns:[]},masteryInput:{}
+    });
+    assert.equal(context.bottleneckPlaybook.methods.length,14);
+    assert.equal(context.floorRecovery.stage,stage);
+    assert.equal(context.floorRecovery.hypotheses.length,2);
+    assert.equal(context.floorRecovery.independentVerificationRequired,true);
+    assert.equal(context.floorRecovery.verifiedSuccessPromotionOnly,true);
+    assert.equal(context.authorityExpanded,false);
+    assert.match(context.guidance,/EXACT F0-F9 RECOVERY/);
+  }
+});
+
+test('System AI promotes failure-specific successful repair only after independently accepted evidence',()=>{
+  const task={
+    id:'floor-verified',taskType:'bottleneck-repair',department:'engineering',
+    status:'done',lastOutcome:'PRIMARY_AI_ACCEPTED',
+    goal:'repair Roblox exact source F0 preflight',failureStage:'F0_SOURCE_PREFLIGHT',
+    failureSignature:'ROBLOX_F0_SOURCE_PREFLIGHT_FAILED',
+    failedStrategyFingerprints:['a'.repeat(64)],
+    responsibleFiles:['tools/company-development-roblox-build-preflight.mjs'],
+    verificationCommands:['node --test qa/company-system-ai-evolution.test.mjs'],
+    evidence:['primary-ai-review:PASS','verification:success','actions-run:193',
+      'changed-file:tools/company-development-roblox-build-preflight.mjs','source-mutation-sha:abcdef0123']
+  };
+  const pending=promoteVerifiedSystemAiLearning({
+    systemAiInput:{tasks:[{...task,status:'awaiting-supervisor',lastOutcome:'PASS',evidence:task.evidence.filter(x=>x!=='primary-ai-review:PASS')}]},
+    experienceInput:{records:[]},libraryInput:{patterns:[]},masteryInput:{}
+  });
+  assert.equal(pending.experienceAdded,0);
+  assert.equal(pending.patternsAdded,0);
+  const verified=promoteVerifiedSystemAiLearning({
+    systemAiInput:{tasks:[task]},experienceInput:{records:[]},libraryInput:{patterns:[]},masteryInput:{}
+  });
+  assert.equal(verified.experienceAdded,1);
+  assert.equal(verified.patternsAdded,1);
+  assert.match(verified.experience.records[0].problem,/verified-stage:F0_SOURCE_PREFLIGHT/);
+  assert.match(verified.experience.records[0].problem,/verified-signature:ROBLOX_F0_SOURCE_PREFLIGHT_FAILED/);
+  assert.ok(verified.experience.records[0].avoidPatterns.includes('FAILED_STRATEGY_SHA256_'+'a'.repeat(64)));
+  assert.ok(verified.library.patterns[0].tags.includes('f0_source_preflight'));
+  assert.equal(verified.queue.tasks[0].learningPromotion,'PROMOTED');
+});
