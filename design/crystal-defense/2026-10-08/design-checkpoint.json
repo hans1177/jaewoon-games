@@ -523,25 +523,125 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::ec1bcb9d81d316b6f3e087f4560ea59d0c5a02af60c5e2e16a564b5ff617cca2:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "attackPattern",
+          "toId": "crystalDefensePlacement",
+          "stateKeys": [
+            "defensiveStrategy",
+            "nextAttackPattern",
+            "playerChoice"
+          ],
+          "fromSystem": "attackPattern",
+          "toSystem": "crystalDefensePlacement",
+          "trigger": "readNextAttackPattern",
+          "stateChange": "chooseOptimalPlacement"
+        },
+        {
+          "fromId": "attackPattern",
+          "toId": "crystalDefenseResonance",
+          "stateKeys": [
+            "defensiveStrategy",
+            "nextAttackPattern",
+            "playerChoice"
+          ],
+          "fromSystem": "attackPattern",
+          "toSystem": "crystalDefenseResonance",
+          "trigger": "readNextAttackPattern",
+          "stateChange": "chooseOptimalResonance"
+        },
+        {
+          "fromId": "attackPattern",
+          "toId": "crystalDefenseUpgrades",
+          "stateKeys": [
+            "defensiveStrategy",
+            "nextAttackPattern",
+            "playerChoice"
+          ],
+          "fromSystem": "attackPattern",
+          "toSystem": "crystalDefenseUpgrades",
+          "trigger": "readNextAttackPattern",
+          "stateChange": "chooseOptimalUpgrades"
+        },
+        {
+          "fromId": "attackPattern",
+          "toId": "defensiveStrategy",
+          "stateKeys": [
+            "nextAttackPattern",
+            "playerChoice"
+          ],
+          "fromSystem": "attackPattern",
+          "toSystem": "defensiveStrategy",
+          "trigger": "evaluateDefensiveStrategy",
+          "stateChange": "refineDefensivePlan"
+        },
+        {
+          "fromId": "crystalDefensePlacement",
+          "toId": "defensiveStrategy",
+          "stateKeys": [
+            "defensiveStrategy",
+            "nextAttackPattern",
+            "playerChoice"
+          ],
+          "fromSystem": "crystalDefensePlacement",
+          "toSystem": "defensiveStrategy",
+          "trigger": "optimizeDefensiveStrategy",
+          "stateChange": "refineDefensivePlan"
+        },
+        {
+          "fromId": "crystalDefenseResonance",
+          "toId": "defensiveStrategy",
+          "stateKeys": [
+            "defensiveStrategy",
+            "nextAttackPattern",
+            "playerChoice"
+          ],
+          "fromSystem": "crystalDefenseResonance",
+          "toSystem": "defensiveStrategy",
+          "trigger": "optimizeDefensiveStrategy",
+          "stateChange": "refineDefensivePlan"
+        },
+        {
+          "fromId": "crystalDefenseUpgrades",
+          "toId": "defensiveStrategy",
+          "stateKeys": [
+            "defensiveStrategy",
+            "nextAttackPattern",
+            "playerChoice"
+          ],
+          "fromSystem": "crystalDefenseUpgrades",
+          "toSystem": "defensiveStrategy",
+          "trigger": "optimizeDefensiveStrategy",
+          "stateChange": "refineDefensivePlan"
+        }
+      ],
+      "progressionDirection": "systems-progression",
+      "progressionEconomyBalance": {
+        "progressionLoop": "readNextAttackPattern",
+        "resourceFlow": "crystalDefensePlacement",
+        "balanceRules": "optimizeDefensiveStrategy"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 10,
+      "calls": 12,
+      "successes": 11,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1144793,
-      "lastMs": 221293,
+      "totalMs": 1269592,
+      "lastMs": 124799,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T12:18:15.024Z"
+      "updatedAt": "2026-10-08T12:20:19.824Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:59:10.064Z",
-  "updatedAt": "2026-10-08T12:18:15.024Z",
+  "updatedAt": "2026-10-08T12:20:19.824Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2734,7 +2834,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:14:33.724Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:20:19.824Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
