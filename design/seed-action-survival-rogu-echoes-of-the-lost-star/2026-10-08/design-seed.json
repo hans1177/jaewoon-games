@@ -1,0 +1,108 @@
+{
+  "version": 1,
+  "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+  "date": "2026-10-08",
+  "seedId": "OWNER-ALL-DESIGN-RESET-SEED-ACTION-SURVIVAL-ROGU-ECHOES-OF-THE-LOST-STAR-20260917",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "ollama:qwen3:1.7b",
+  "singleAuthor": true,
+  "sourceStage": "identity-core",
+  "phase": "designer_draft",
+  "status": "AUTHORED_CANDIDATE",
+  "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
+  "originalSource": null,
+  "fingerprint": "935aa96fbaf32790d4e6e6ededeca327831feee3ce1fe4d214854b5785c2cb0f",
+  "engineDigest": "d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904",
+  "contentDigest": "68a1e691e168f30448c7beafda87419754a3342b7e26f0dbeae99eedf79fcda7",
+  "externalSeedRequired": false,
+  "designPass": false,
+  "runtimePass": false,
+  "content": {
+    "identity": "잃어버린 별의 메아리 - 반복적 생존 로그라이트의 핵심 재미와 시스템 연결을 확정한 정체성 및 플레이어 판타지의 구체적 표현입니다. 게임의 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, 선택 결과는 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE의 핵심 루프로 연결됩니다. 게임의 시스템은 주요 인과법칙과 보조 요소를 통해 반복 가능한 핵심 루프를 구축합니다. 게임의 세계는 역사·문화·경제·지역 기능을 기반으로 한 시스템으로, 플레이어의 선택과 위험·보상, 성장의 조합을 통해 다양한 경로를 열어 재미를 제공합니다. 게임의 플레이어 역할은 생존, 전략, 성장, 대응 등 다양한 판타지를 담고 있으며, 이는 게임의 반복 루프와 시스템 연결을 강화합니다. 게임의 시스템은 주요 인과법칙과 보조 요소를 통해 반복 가능한 핵심 루프를 구축하며, 플레이어의 선택과 위험·보상, 성장의 조합을 통해 다양한 경로를 열어 재미를 제공합니다. 게임의 시스템은 주요 인과법칙과 보조 요소를 통해 반복 가능한 핵심 루프를 구축하며, 플레이어의 선택과 위험·보상, 성장의 조합을 통해 다양한 경로를 열어 재미를 제공합니다. 게임의 시스템은 주요 인과법칙과 보조 요소를 통해 반복 가능한 핵심 루프를 구축하며, 플레이어의 선택과 위험·보상, 성장의 조합을 통해 다양한 경로를 열어 재미를 제공합니다. 게임의 시스템은 주요 인과법칙과 보조 요소를 통해 반복 가능한 핵심 루프를 구축하며, 플레이어의 선택과 위험·보상, 성장의 조합을 통해 다양한 경로를 열어 재미를 제공합니다. 게임의 시스템은 주요 인과법칙과 보조 요소를 통해 반복 가능한 핵심 루프를 구축하며, 플레이어의 선택과 위험·보상, 성장의 조합을 통해 다양한 경로를 열어 재미를 제공합니다. 게임의 시스템은 주요 인과법칙과 보조 요소를 통해 반복 가능한 핵",
+    "playerFantasy": "잃어버린 별의 메아리에서 플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이라는 중심 행동을 수행하며, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE의 핵심 루프로 연결됩니다. 이는 생존, 전략, 성장, 대응 등 다양한 판타지를 담고 있으며, 이는 게임의 반복 루프와 시스템 연결을 강화합니다. 게임의 세계는 역사·문화·경제·지역 기능을 기반으로 한 시스템으로, 플레이어의 선택과 위험·보상, 성장의 조합을 통해 다양한 경로를 열어 재미를 제공합니다.",
+    "coreFun": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.과 Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용을 구축하며, 이는 플레이어의 선택과 위험·보상, 성장의 조합을 통해 반복 가능한 핵심 루프를 구축한다. 이는 주요 인과법칙과 보조 요소를 통해 시스템의 반복 루프를 구축하며, 플레이어의 선택과 위험·보상, 성장의 조합을 통해 다양한 경로를 열어 재미를 제공한다.",
+    "coreLoop": [
+      "INPUT: 플레이어의 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이 주체가 되어 세계 상태와 다음 선택을 바꾼다.",
+      "PROCESS: 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE의 핵심 루프로 연결되며, 이는 생존, 전략, 성장, 대응 등 다양한 판타지를 담고 있다.",
+      "OUTPUT: 시그니처 상호작용을 통해 플레이어의 선택과 위험·보상, 성장의 조합을 통해 반복 가능한 핵심 루프를 구축한다."
+    ],
+    "signatureSystems": [
+      {
+        "id": "identity-core",
+        "grammarRole": "MAIN",
+        "stateInputs": [
+          "PlayerAction: 'Fight through an escalating horde in a short real-time survival r"
+        ],
+        "stateOutputs": [
+          "WorldState: ACTION_SURVIVAL_ROGUELITE progression state",
+          "PlayerChoice: Upgrade, Perk, Weapon, Skill selection"
+        ],
+        "name": "ACTION_SURVIVAL_ROGUELITE",
+        "purpose": "A dynamic, evolving survival gameplay system where players strategically manage their build, navigate escalating threats, and convert survival outcomes into progression choices.",
+        "playerChoice": "Strategically upgrade your build, manage resources, and adapt to the evolving threat landscape to maximize survival and progression."
+      },
+      {
+        "id": "signatureSystems[1]",
+        "grammarRole": "A",
+        "stateInputs": [
+          "PlayerAction: 'Fight through an escalating horde in a short real-time survival r",
+          "PlayerAction: 'Collect run rewards or experience and choose upgrades, perks, w"
+        ],
+        "stateOutputs": [
+          "WorldState: ACTION_SURVIVAL_ROGUELITE progression state",
+          "PlayerChoice: Upgrade, Perk, Weapon, Skill selection"
+        ],
+        "name": "ACTION_SURVIVAL_ROGUELITE",
+        "purpose": "A dynamic, evolving survival gameplay system where players strategically manage their build, navigate escalating threats, and convert survival outcomes into progression choices.",
+        "playerChoice": "Strategically upgrade your build, manage resources, and adapt to the evolving threat landscape to maximize survival and progression."
+      },
+      {
+        "id": "signatureSystems[2]",
+        "grammarRole": "B",
+        "stateInputs": [
+          "PlayerAction: 'Fight through an escalating horde in a short real-time survival r",
+          "PlayerAction: 'Collect run rewards or experience and choose upgrades, perks, w"
+        ],
+        "stateOutputs": [
+          "WorldState: ACTION_SURVIVAL_ROGUELITE progression state",
+          "PlayerChoice: Upgrade, Perk, Weapon, Skill selection"
+        ],
+        "name": "ACTION_SURVIVAL_ROGUELITE",
+        "purpose": "A dynamic, evolving survival gameplay system where players strategically manage their build, navigate escalating threats, and convert survival outcomes into progression choices.",
+        "playerChoice": "Strategically upgrade your build, manage resources, and adapt to the evolving threat landscape to maximize survival and progression."
+      },
+      {
+        "id": "signatureSystems[3]",
+        "grammarRole": "c",
+        "stateInputs": [
+          "PlayerAction: 'Fight through an escalating horde in a short real-time survival r",
+          "PlayerAction: 'Collect run rewards or experience and choose upgrades, perks, w"
+        ],
+        "stateOutputs": [
+          "WorldState: ACTION_SURVIVAL_ROGUELITE progression state",
+          "PlayerChoice: Upgrade, Perk, Weapon, Skill selection"
+        ],
+        "name": "ACTION_SURVIVAL_ROGUELITE",
+        "purpose": "A dynamic, evolving survival gameplay system where players strategically manage their build, navigate escalating threats, and convert survival outcomes into progression choices.",
+        "playerChoice": "Strategically upgrade your build, manage resources, and adapt to the evolving threat landscape to maximize survival and progression."
+      },
+      {
+        "id": "signatureSystems[4]",
+        "grammarRole": "DELVE",
+        "stateInputs": [
+          "PlayerAction: 'Fight through an escalating horde in a short real-time survival r",
+          "PlayerAction: 'Collect run rewards or experience and choose upgrades, perks, w"
+        ],
+        "stateOutputs": [
+          "WorldState: ACTION_SURVIVAL_ROGUELITE progression state",
+          "PlayerChoice: Upgrade, Perk, Weapon, Skill selection"
+        ],
+        "name": "ACTION_SURVIVAL_ROGUELITE",
+        "purpose": "A dynamic, evolving survival gameplay system where players strategically manage their build, navigate escalating threats, and convert survival outcomes into progression choices.",
+        "playerChoice": "Strategically upgrade your build, manage resources, and adapt to the evolving threat landscape to maximize survival and progression."
+      }
+    ],
+    "multiplayerMode": "COOP"
+  },
+  "updatedAt": "2026-10-08T09:08:06.031Z"
+}
