@@ -3,30 +3,18 @@
   "gameId": "horror-escape-room",
   "date": "2026-10-08",
   "seedId": "OWNER-DESIGN-HORROR-ESCAPE-ROOM",
-  "fingerprint": "92346453b518ba3021f0ccac540380c2189f552156b202a11dcc5b05d89aca31",
-  "policyDigest": "524921abde9db321009b633c6deac710193bc08f349f75e5f35d842ede53a716",
-  "engineDigest": "8dcc3fb07f12cee67ad39a733674fed643406c00244fe48abbf168d5a7fa165c",
+  "fingerprint": "0a08aa14445e1442815851f996bd8aad0a16f18ce2e6097516db98daf8680d32",
+  "policyDigest": "0fda28f71ac3a214ad795ba2e2df1e0f6e7da837204b05182cdebecce33c9ade",
+  "engineDigest": "8c8ca966a8888e75b243fb5bc484ff1748c693b0bdfc1b940335641ea6aebba6",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
   "tasks": {},
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 0,
-      "failures": 3,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 336432,
-      "lastMs": 65062,
-      "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T05:20:22.673Z"
-    }
-  },
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-08T05:14:46.221Z",
-  "updatedAt": "2026-10-08T05:20:22.682Z",
+  "createdAt": "2026-10-08T05:44:27.996Z",
+  "updatedAt": "2026-10-08T05:44:28.120Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -738,16 +726,5 @@
       }
     },
     "assetFacts": {}
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "localAuthoringSplits": {
-    "2ab2a9d0cc363efba70615e85bde4f12770b6f470b468de21da2e2c6b578d61f": true,
-    "c1b03d29d9c534deea926bf0a7598a15740b736a439f0731cfa3df1134205ecc": true
-  },
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED"
+  }
 }
