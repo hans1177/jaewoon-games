@@ -552,25 +552,40 @@
     },
     "local_authoring_parts::208f39dbba97098753c2be3ea5f0546e35b2e60ac0bee587749e74c645311476:trigger": {
       "trigger": "VILLAGE_RESOURCES→NEW_VILLAGE_FUNCTION의 상태 변화가 실제 발생했으며, 이 과정에서 주민들의 생활 연결망이 확장되는 방식으로 이루어진다."
+    },
+    "local_authoring_parts::208f39dbba97098753c2be3ea5f0546e35b2e60ac0bee587749e74c645311476:stateChange": {
+      "stateChange": "VILLAGE_RESOURCES→NEW_VILLAGE_FUNCTION의 상태 변화가 실제 발생했으며, 이 과정에서 주민들의 생활 연결망이 확장되는 방식으로 이루어진다."
+    },
+    "local_authoring_parts::a312896bb68cfb24b86b54c3e9887a5980cf4f77559a35d63a7c8e4ee05ccaf8:systemInterconnections:3": {
+      "fromId": "VILLAGE_RESOURCES→NEW_VILLAGE_FUNCTION",
+      "toId": "NEW_VILLAGE_FUNCTION",
+      "stateKeys": [
+        "VILLAGE_RESOURCES",
+        "NEW_VILLAGE_FUNCTION"
+      ],
+      "fromSystem": "RESOURCE_TO_VILLAGE_PROGRESSION",
+      "toSystem": "RESOURCE_TO_VILLAGE_PROGRESSION",
+      "trigger": "VILLAGE_RESOURCES→NEW_VILLAGE_FUNCTION의 상태 변화가 실제 발생했으며, 이 과정에서 주민들의 생활 연결망이 확장되는 방식으로 이루어진다.",
+      "stateChange": "VILLAGE_RESOURCES→NEW_VILLAGE_FUNCTION의 상태 변화가 실제 발생했으며, 이 과정에서 주민들의 생활 연결망이 확장되는 방식으로 이루어진다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 38,
-      "successes": 38,
+      "calls": 39,
+      "successes": 39,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2330987,
-      "lastMs": 59712,
+      "totalMs": 2389935,
+      "lastMs": 58948,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:24:57.167Z"
+      "updatedAt": "2026-10-08T18:25:56.117Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:46:05.904Z",
-  "updatedAt": "2026-10-08T18:24:57.167Z",
+  "updatedAt": "2026-10-08T18:25:56.118Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3042,7 +3057,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:24:57.167Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:25:56.118Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
