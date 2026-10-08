@@ -404,25 +404,38 @@
       "name": "KARMA RETURN C",
       "purpose": "보석 생존전에서 매 순간의 선택이 다음 상태로 이어지는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 재미와 시스템 연결을 확정하는 단일 Game Designer AI이다.",
       "playerChoice": "Collect run rewards or experience and choose upgrades... 또는 Combine upgrades into a stronger build..."
+    },
+    "local_authoring_parts::ad92821576fbb3aab6f828a2ed469ac7932e2f2d1fd19051ab748f6a8252e83a:signatureSystems:4": {
+      "id": "KARMA_RETURN_DELVE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "플레이어가 'Fight through an escalating horde in a short real-time survival run while"
+      ],
+      "stateOutputs": [
+        "플레이어가 'Collect run rewards or experience and choose upgrades...' 또는 'Combine "
+      ],
+      "name": "KARMA RETURN DELVE",
+      "purpose": "보석 생존전에서 매 순간의 선택이 다음 상태로 이어지는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 재미와 시스템 연결을 확정하는 단일 Game Designer AI이다.",
+      "playerChoice": "Collect run rewards or experience and choose upgrades... 또는 Combine upgrades into a stronger build..."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 14,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1362081,
-      "lastMs": 100529,
+      "totalMs": 1463384,
+      "lastMs": 101303,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:06:28.086Z"
+      "updatedAt": "2026-10-08T18:08:09.390Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:43:45.948Z",
-  "updatedAt": "2026-10-08T18:06:28.086Z",
+  "updatedAt": "2026-10-08T18:08:09.396Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2647,176 +2660,6 @@
         ]
       },
       {
-        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "signatureSystems.KARMA_RETURN.stateInputs",
-          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
-        },
-        "requiredAction": "signatureSystems.KARMA_RETURN.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "signatureSystems"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "signatureSystems.KARMA_RETURN.stateOutputs",
-          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
-        },
-        "requiredAction": "signatureSystems.KARMA_RETURN.stateOutputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "signatureSystems"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "signatureSystems.KARMA_RETURN.stateInputs",
-          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
-        },
-        "requiredAction": "signatureSystems.KARMA_RETURN.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "signatureSystems"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "signatureSystems.KARMA_RETURN.stateOutputs",
-          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
-        },
-        "requiredAction": "signatureSystems.KARMA_RETURN.stateOutputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "signatureSystems"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "signatureSystems.KARMA_RETURN.stateInputs",
-          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
-        },
-        "requiredAction": "signatureSystems.KARMA_RETURN.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "signatureSystems"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "signatureSystems.KARMA_RETURN.stateOutputs",
-          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
-        },
-        "requiredAction": "signatureSystems.KARMA_RETURN.stateOutputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "signatureSystems"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "signatureSystems.KARMA_RETURN.stateInputs",
-          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
-        },
-        "requiredAction": "signatureSystems.KARMA_RETURN.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "signatureSystems"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "signatureSystems.KARMA_RETURN.stateOutputs",
-          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
-        },
-        "requiredAction": "signatureSystems.KARMA_RETURN.stateOutputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "signatureSystems"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "signatureSystems.KARMA_RETURN.stateInputs",
-          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
-        },
-        "requiredAction": "signatureSystems.KARMA_RETURN.stateInputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "signatureSystems"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "signatureSystems.KARMA_RETURN.stateOutputs",
-          "detail": "플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다"
-        },
-        "requiredAction": "signatureSystems.KARMA_RETURN.stateOutputs: 플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "signatureSystems"
-        ]
-      },
-      {
         "code": "DESIGN_RULE_STATE_MISSING",
         "kind": "HARD_GATE",
         "axis": "CORE_LOOP_DESIGN",
@@ -2836,7 +2679,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2851,10 +2694,10 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:06:28.086Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T18:08:09.391Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_MAIN_A_B_c_DELVE_REQUIRED,DESIGN_RULE_STATE_MISSING",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
