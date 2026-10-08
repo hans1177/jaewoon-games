@@ -64,25 +64,55 @@
       "name": "Enemy Adaptation System",
       "purpose": "Facilitates dynamic defense strategy adjustments based on enemy type and wave composition.",
       "playerChoice": "Adapt defense strategy in real-time to counter evolving threats and optimize resource allocation before pressure increases."
+    },
+    "local_authoring_parts::ed4dcb187c6dd79ac57600710a1368c002c730deac96f2ab6c5119def4e21f1a:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "threatened route",
+        "enemy wave",
+        "towers or defenders",
+        "lanes or positions",
+        "resources",
+        "upgrades",
+        "new placements",
+        "tactical changes",
+        "enemy types",
+        "wave composition",
+        "objective",
+        "stage or boss"
+      ],
+      "stateOutputs": [
+        "new state",
+        "updated defense strategy",
+        "resource allocation",
+        "tactical adjustments",
+        "enemy adaptation",
+        "game progression",
+        "unlocking harder defense choices"
+      ],
+      "name": "Enemy Adaptation System",
+      "purpose": "Facilitates dynamic defense strategy adjustments based on enemy type and wave composition.",
+      "playerChoice": "Adapt defense strategy in real-time to counter evolving threats and optimize resource allocation before pressure increases."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 566648,
-      "lastMs": 106367,
+      "totalMs": 674143,
+      "lastMs": 107495,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:34:48.189Z"
+      "updatedAt": "2026-10-08T10:36:35.685Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:25:21.512Z",
-  "updatedAt": "2026-10-08T10:34:48.189Z",
+  "updatedAt": "2026-10-08T10:36:35.685Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2277,7 +2307,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T10:34:48.189Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:36:35.685Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
