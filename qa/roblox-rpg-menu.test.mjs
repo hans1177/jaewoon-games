@@ -97,6 +97,7 @@ local parent=Instance.new('PlayerGui')
 local gui=Instance.new('ScreenGui');gui.AbsoluteSize=Vector2.new(393,852);gui.Parent=parent
 local player=Instance.new('Player');player.Parent=parent
 player:SetAttribute('WeaponTier',1);player:SetAttribute('ArmorTier',1);player:SetAttribute('Level',1)
+player:SetAttribute('Gold',250);player:SetAttribute('CurrentZone',0)
 local backpack=Instance.new('Backpack');backpack.Parent=player
 local character=Instance.new('Model');player.Character=character
 local humanoid=Instance.new('Humanoid');humanoid.Health=100;humanoid.Parent=character
@@ -105,10 +106,23 @@ humanoid.EquipTool=function(_,tool)equipped+=1;tool.Parent=character end
 humanoid.UnequipTools=function()for _,tool in ipairs(character:GetChildren())do if tool:IsA('Tool')then tool.Parent=backpack end end end
 local tool=Instance.new('Tool');tool.Name='실제 도구';tool.Parent=backpack
 local allowed=false;local combat=true
-local api=Menu.install({Portals={},Classes={}},gui,player,{canOpen=function()return allowed end,onOpen=function(open)combat=not open end})
+local weaponOrders=0;local armorOrders=0
+local api=Menu.install({Portals={},Classes={},WeaponPrices={50,120,240},ArmorPrices={45,110,220}},gui,player,{
+ canOpen=function()return allowed end,onOpen=function(open)combat=not open end,
+ buyWeapon=function()weaponOrders+=1 end,buyArmor=function()armorOrders+=1 end
+})
 local function find(name)for i=#instances,1,-1 do if instances[i].Name==name and instances[i].Parent then return instances[i]end end error('missing '..name)end
 api.button.Activated:Fire();assert(not api.isOpen())
 allowed=true;api.button.Activated:Fire();assert(api.isOpen() and not combat)
+find('Tab3').Activated:Fire()
+assert(find('CharacterSummary').Text:find('Lv.1',1,true))
+find('Tab4').Activated:Fire()
+assert(find('ShopSummary').Text:find('골드 250',1,true))
+find('BuyWeapon').Activated:Fire();find('BuyArmor').Activated:Fire()
+assert(weaponOrders==1 and armorOrders==1,'shop callbacks belong to client owner')
+player:SetAttribute('Gold',0)
+assert(not find('BuyWeapon').Active and not find('BuyArmor').Active,'no client-side false purchase')
+find('Tab1').Activated:Fire()
 local stableSlot=find('InventorySlot1');player:SetAttribute('Gold',10);assert(find('InventorySlot1')==stableSlot)
 find('Filter3').Activated:Fire();find('ItemAction').Activated:Fire();assert(equipped==1 and tool.Parent==character)
 find('ItemAction').Activated:Fire();assert(tool.Parent==backpack)
