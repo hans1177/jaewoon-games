@@ -741,25 +741,43 @@
     },
     "local_authoring_parts::10b491d7c35823b0869c98c9173aacfe1578c44648a3df36f93ff014c331ca8c:toSystem": {
       "toSystem": "SIGNATURE_SYSTEM_DESIGN"
+    },
+    "local_authoring_parts::10b491d7c35823b0869c98c9173aacfe1578c44648a3df36f93ff014c331ca8c:trigger": {
+      "trigger": "CORE_LOOP_DESIGN → SIGNATURE_SYSTEM_DESIGN의 출력과 입력 상태가 연결되지 않음. 원본 규칙에서 CORE_LOOP_DESIGN의 출력 상태는 READABLE_STATE 및 MODIFIABLE_STATE로, SIGNATURE_SYSTEM_DESIGN의 입력 상태는 READABLE_STATE 및 MODIFIABLE_STATE로 명확히 정의되어 있으며, 이 두 시스템 간의 상태 교환은 현재 설계에서 명확히 구체화되지 않았음."
+    },
+    "local_authoring_parts::10b491d7c35823b0869c98c9173aacfe1578c44648a3df36f93ff014c331ca8c:stateChange": {
+      "stateChange": "CORE_LOOP_DESIGN의 출력 상태는 READABLE_STATE 및 MODIFIABLE_STATE로, SIGNATURE_SYSTEM_DESIGN의 입력 상태는 READABLE_STATE 및 MODIFIABLE_STATE로 명확히 정의되어 있으며, 이 두 시스템 간의 상태 교환은 현재 설계에서 명확히 구체화되지 않았음. 원본 규칙에서 CORE_LOOP_DESIGN의 출력 상태는 READABLE_STATE 및 MODIFIABLE_STATE로, SIGNATURE_SYSTEM_DESIGN의 입력 상태는 READABLE_STATE 및 MODIFIABLE_STATE로 명확히 정의되어 있으며, 이 두 시스템 간의 상태 교환은 현재 설계에서 명"
+    },
+    "local_authoring_parts::8ad55fae78fd246158e9246c45aa7c7ba3eb68d9e335514146fa30813d694d59:systemInterconnections:2": {
+      "fromId": "RULE_01",
+      "toId": "RULE_02",
+      "stateKeys": [
+        "CORE_LOOP_DESIGN: READABLE_STATE",
+        "SIGNATURE_SYSTEM_DESIGN: READABLE_STATE"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN",
+      "toSystem": "SIGNATURE_SYSTEM_DESIGN",
+      "trigger": "CORE_LOOP_DESIGN → SIGNATURE_SYSTEM_DESIGN의 출력과 입력 상태가 연결되지 않음. 원본 규칙에서 CORE_LOOP_DESIGN의 출력 상태는 READABLE_STATE 및 MODIFIABLE_STATE로, SIGNATURE_SYSTEM_DESIGN의 입력 상태는 READABLE_STATE 및 MODIFIABLE_STATE로 명확히 정의되어 있으며, 이 두 시스템 간의 상태 교환은 현재 설계에서 명확히 구체화되지 않았음.",
+      "stateChange": "CORE_LOOP_DESIGN의 출력 상태는 READABLE_STATE 및 MODIFIABLE_STATE로, SIGNATURE_SYSTEM_DESIGN의 입력 상태는 READABLE_STATE 및 MODIFIABLE_STATE로 명확히 정의되어 있으며, 이 두 시스템 간의 상태 교환은 현재 설계에서 명확히 구체화되지 않았음. 원본 규칙에서 CORE_LOOP_DESIGN의 출력 상태는 READABLE_STATE 및 MODIFIABLE_STATE로, SIGNATURE_SYSTEM_DESIGN의 입력 상태는 READABLE_STATE 및 MODIFIABLE_STATE로 명확히 정의되어 있으며, 이 두 시스템 간의 상태 교환은 현재 설계에서 명"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 35,
-      "successes": 35,
+      "calls": 37,
+      "successes": 37,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3306727,
-      "lastMs": 60460,
+      "totalMs": 3469704,
+      "lastMs": 85831,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:35:17.940Z"
+      "updatedAt": "2026-10-08T15:38:00.921Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:51:40.085Z",
-  "updatedAt": "2026-10-08T15:35:17.940Z",
+  "updatedAt": "2026-10-08T15:38:00.924Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3342,7 +3360,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:35:17.940Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:38:00.924Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
