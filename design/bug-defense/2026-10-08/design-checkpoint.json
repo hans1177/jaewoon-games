@@ -66,25 +66,43 @@
       "name": "WAVE_DEFENSE_MASTERY",
       "purpose": "Establishes the core gameplay mechanism for wave-based defense, ensuring mastery through strategic decision-making and reward-based progression.",
       "playerChoice": "Player chooses which insect to target, based on threat level and reward value, and allocates resources to optimize defense strategy with a focus on long-term progression."
+    },
+    "local_authoring_parts::1260bee3ee39bd05f3753bed97da3f92b7004ba4dcc2d0e42108cf18c179d99e:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "B",
+      "stateInputs": [
+        "INCOMING_INSECT_WAVE",
+        "THREAT_LEVEL",
+        "REWARD_VALUE",
+        "NEXT_SELECTION"
+      ],
+      "stateOutputs": [
+        "MODIFIED_DEFENDER_LAYOUT",
+        "RESOURCES_ALLOCATED",
+        "NEXT_SELECTION"
+      ],
+      "name": "WAVE_DEFENSE_STRATEGY",
+      "purpose": "Establishes the core gameplay mechanism for wave-based defense, ensuring strategic decision-making and reward-based progression through the use of advanced play patterns and complex decision-making frameworks.",
+      "playerChoice": "Player chooses the optimal play pattern and decision-making framework to maximize the effectiveness of their defense strategy, considering the threat level, reward value, and next selection."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 587190,
-      "lastMs": 107642,
+      "totalMs": 696469,
+      "lastMs": 109279,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:57:06.783Z"
+      "updatedAt": "2026-10-08T12:58:56.064Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:47:19.560Z",
-  "updatedAt": "2026-10-08T12:57:06.784Z",
+  "updatedAt": "2026-10-08T12:58:56.064Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2283,7 +2301,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:57:06.783Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:58:56.064Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
