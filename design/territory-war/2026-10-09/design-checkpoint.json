@@ -50,25 +50,41 @@
       "name": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.",
       "purpose": "Read the current border pressure and choose one territory objective.",
       "playerChoice": "Select a territory objective based on the current border pressure and regional characteristics."
+    },
+    "local_authoring_parts::24fe65c821c630e13b4473bb7d52056f17354d642c51d16d734bc768bf5c63bb:signatureSystems:1": {
+      "id": "territory-war",
+      "grammarRole": "A",
+      "stateInputs": [
+        "currentBorderPressure"
+      ],
+      "stateOutputs": [
+        "selectedTerritoryObjective",
+        "resourceDistribution",
+        "movementPaths",
+        "riskRewardRatio"
+      ],
+      "name": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.",
+      "purpose": "Read the current border pressure and choose one territory objective.",
+      "playerChoice": "Select a territory objective based on the current border pressure and regional characteristics."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 413972,
-      "lastMs": 70942,
+      "totalMs": 483451,
+      "lastMs": 69479,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:47:33.762Z"
+      "updatedAt": "2026-10-08T18:48:43.264Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:40:39.764Z",
-  "updatedAt": "2026-10-08T18:47:33.762Z",
+  "updatedAt": "2026-10-08T18:48:43.264Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2092,7 +2108,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:47:33.762Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:48:43.264Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
