@@ -82,25 +82,39 @@
       "name": "시그니처 시스템 2",
       "purpose": "플레이어가 선택한 업그레이드, 키트, 스킬, 또는 보상이 현재 빌드에 영향을 미치며, 이 선택은 다음 월드 상태로 이어지는 반복 가능한 핵심 루프를 구축한다.",
       "playerChoice": "플레이어는 선택한 업그레이드, 키트, 스킬, 또는 보상이 현재 빌드에 적용되어, 다음 월드 상태로 이어지는 반복 가능한 핵심 루프를 구축한다."
+    },
+    "local_authoring_parts::e94754ebe28b6f46713044c0169e254db4c49b1c675055e826dede763ed339a2:signatureSystems:3": {
+      "id": "c",
+      "grammarRole": "c",
+      "stateInputs": [
+        "RunResult",
+        "ProgressionChoice"
+      ],
+      "stateOutputs": [
+        "NextProgressionChoice"
+      ],
+      "name": "시그니처 시스템 3",
+      "purpose": "플레이어가 선택한 업그레이드, 키트, 스킬, 또는 보상이 현재 빌드에 영향을 미치며, 이 선택은 다음 월드 상태로 이어지는 반복 가능한 핵심 루프를 구축한다.",
+      "playerChoice": "플레이어는 선택한 업그레이드, 키트, 스킬, 또는 보상이 현재 빌드에 적용되어, 다음 월드 상태로 이어지는 반복 가능한 핵심 루프를 구축한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 811365,
-      "lastMs": 102294,
+      "totalMs": 916116,
+      "lastMs": 104751,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:19:11.006Z"
+      "updatedAt": "2026-10-08T10:20:55.758Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:05:39.607Z",
-  "updatedAt": "2026-10-08T10:19:11.006Z",
+  "updatedAt": "2026-10-08T10:20:55.758Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2299,7 +2313,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T10:19:11.006Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:20:55.758Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
