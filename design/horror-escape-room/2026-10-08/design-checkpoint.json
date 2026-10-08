@@ -621,25 +621,95 @@
           "playerChoice": "인물/몬스터 역할 선호 선택 및 AI 충원"
         }
       ]
+    },
+    "local_authoring_parts::14c0446540a7ed7b0bffc9950fdc80bba5e457364c382dc440f2379a1b06e388:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "CORE_LOOP_0",
+          "toId": "CORE_LOOP_1",
+          "stateKeys": [
+            "ACTION",
+            "REWARD"
+          ],
+          "fromSystem": "CORE_LOOP_0",
+          "toSystem": "CORE_LOOP_1",
+          "trigger": "ACTION: 감염 공격/정화",
+          "stateChange": "인물/몬스터 역할 변화"
+        },
+        {
+          "fromId": "CORE_LOOP_1",
+          "toId": "CORE_LOOP_2",
+          "stateKeys": [
+            "ACTION",
+            "REWARD"
+          ],
+          "fromSystem": "CORE_LOOP_1",
+          "toSystem": "CORE_LOOP_2",
+          "trigger": "ACTION: 감염 공격/정화",
+          "stateChange": "인물/몬스터 역할 변화"
+        },
+        {
+          "fromId": "CORE_LOOP_2",
+          "toId": "CORE_LOOP_3",
+          "stateKeys": [
+            "ACTION",
+            "REWARD"
+          ],
+          "fromSystem": "CORE_LOOP_2",
+          "toSystem": "CORE_LOOP_3",
+          "trigger": "ACTION: 감염 공격/정화",
+          "stateChange": "인물/몬스터 역할 변화"
+        },
+        {
+          "fromId": "CORE_LOOP_3",
+          "toId": "CORE_LOOP_4",
+          "stateKeys": [
+            "ACTION",
+            "REWARD"
+          ],
+          "fromSystem": "CORE_LOOP_3",
+          "toSystem": "CORE_LOOP_4",
+          "trigger": "ACTION: 감염 공격/정화",
+          "stateChange": "인물/몬스터 역할 변화"
+        },
+        {
+          "fromId": "CORE_LOOP_4",
+          "toId": "CORE_LOOP_DELVE",
+          "stateKeys": [
+            "ACTION",
+            "REWARD"
+          ],
+          "fromSystem": "CORE_LOOP_4",
+          "toSystem": "CORE_LOOP_DELVE",
+          "trigger": "ACTION: 감염 공격/정화",
+          "stateChange": "인물/몬스터 역할 변화"
+        }
+      ],
+      "progressionDirection": "실시간 인물/몬스터 역할 변화를 통해 감염 공격과 정화로 인한 인원 구성의 실시간 변화",
+      "progressionEconomyBalance": {
+        "progressionLoop": "감염 공격/정화의 실시간 상태 변화를 통해 인물/몬스터 역할의 읽고 바꾸는 상태를 처리",
+        "resourceFlow": "감염 공격은 몬스터의 서버 권한으로, 정화는 인간의 역할로 이루어진다",
+        "balanceRules": "감염 공격은 몬스터의 서버 권한으로, 정화는 인간의 역할로 이루어진다"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 15,
+      "calls": 17,
+      "successes": 16,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1928252,
-      "lastMs": 300100,
+      "totalMs": 2017084,
+      "lastMs": 88832,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T07:18:55.941Z"
+      "updatedAt": "2026-10-08T07:20:24.775Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T06:46:47.632Z",
-  "updatedAt": "2026-10-08T07:18:55.941Z",
+  "updatedAt": "2026-10-08T07:20:24.775Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1360,7 +1430,7 @@
     "designer_draft_slices::identity-core": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T07:13:55.836Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T07:20:24.775Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
