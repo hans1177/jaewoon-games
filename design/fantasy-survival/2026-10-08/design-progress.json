@@ -8,11 +8,11 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 13,
-  "lastSuccessfulModelCallAt": "2026-10-08T08:08:54.201Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT",
+  "cachedTaskCount": 14,
+  "lastSuccessfulModelCallAt": "2026-10-08T08:09:54.315Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "designerSeed": {
     "file": "design/fantasy-survival/2026-10-08/design-seed.json",
     "contentDigest": "a4d075cd4531ff244285e8ac19f627fe221940ff3727f6cb8dfb13ea0aebb500",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 974030,
-      "lastMs": 277420,
+      "totalMs": 1034139,
+      "lastMs": 60109,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:08:54.201Z"
+      "updatedAt": "2026-10-08T08:09:54.315Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T08:08:54.205Z"
+  "updatedAt": "2026-10-08T08:09:54.317Z"
 }
