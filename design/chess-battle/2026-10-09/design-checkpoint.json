@@ -274,25 +274,203 @@
           "playerChoice": "Player chooses a move that alters the board's spatial relationships, triggering new strategies and growth opportunities based on threat information and current board state."
         }
       ]
+    },
+    "local_authoring_parts::c1a686a8ccd912ee91423ad6c9c85274dbcee8d2b5b4bb0ab2b7c31fa7eaec49:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::7b7ecbc75af399a0490eacdef763b7a747bdf705619f8de9522a85010f7e5526:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 연결",
+        "체스의 실제 플레이 공간은 PUZZLE 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성된다.",
+        "플레이어는 Read the board and enemy threat information.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다.",
+        "탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "boardState",
+            "threatInfo"
+          ],
+          "stateOutputs": [
+            "strategyPath",
+            "growthPotential"
+          ],
+          "name": "WorldStateMapper",
+          "purpose": "Mapping the dynamic world state to player experience through evolving board configuration and strategic path generation.",
+          "playerChoice": "Player chooses a move that alters the board's spatial relationships, triggering new strategies and growth opportunities based on threat information and current board state."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "boardState",
+            "threatInfo"
+          ],
+          "stateOutputs": [
+            "strategyPath",
+            "growthPotential"
+          ],
+          "name": "DynamicWorldMapper",
+          "purpose": "Mapping the dynamic world state to player experience through evolving board configuration and strategic path generation.",
+          "playerChoice": "Player chooses a move that alters the board's spatial relationships, triggering new strategies and growth opportunities based on threat information and current board state."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "boardState",
+            "threatInfo"
+          ],
+          "stateOutputs": [
+            "strategyPath",
+            "growthPotential"
+          ],
+          "name": "DynamicStrategicMapper",
+          "purpose": "Mapping the dynamic strategic context to player experience through evolving board configuration and strategic path generation.",
+          "playerChoice": "Player chooses a move that alters the board's spatial relationships, triggering new strategies and growth opportunities based on threat information and current board state."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "boardState",
+            "threatInfo"
+          ],
+          "stateOutputs": [
+            "strategyPath",
+            "growthPotential"
+          ],
+          "name": "EvolvingStrategicMapper",
+          "purpose": "Mapping the dynamic strategic context to player experience through evolving board configuration and strategic path generation.",
+          "playerChoice": "Player chooses a move that alters the board's spatial relationships, triggering new strategies and growth opportunities based on threat information and current board state."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "boardState",
+            "threatInfo"
+          ],
+          "stateOutputs": [
+            "strategyPath",
+            "growthPotential"
+          ],
+          "name": "EvolvingStrategicMapper",
+          "purpose": "Mapping the dynamic strategic context to player experience through evolving board configuration and strategic path generation.",
+          "playerChoice": "Player chooses a move that alters the board's spatial relationships, triggering new strategies and growth opportunities based on threat information and current board state."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다. 플레이어는 Read the board and enemy threat information.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다. 체스의 실제 플레이 공간은 PUZZLE 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성된다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법 중 장르에 맞는 가능성을 열어 간접적으로 사용하게 한다.",
+      "playerFantasy": "체스 배틀에서 플레이어는 Read the board and enemy threat information.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다. 체스의 실제 플레이 공간은 PUZZLE 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성된다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법 중 장르에 맞는 가능성을 열어 간접적으로 사용하게 한다.",
+      "coreFun": "체스 배틀에서 플레이어는 Read the board and enemy threat information.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다. 체스의 실제 플레이 공간은 PUZZLE 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성된다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다.",
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 연결",
+        "체스의 실제 플레이 공간은 PUZZLE 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성된다.",
+        "플레이어는 Read the board and enemy threat information.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다.",
+        "탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "boardState",
+            "threatInfo"
+          ],
+          "stateOutputs": [
+            "strategyPath",
+            "growthPotential"
+          ],
+          "name": "WorldStateMapper",
+          "purpose": "Mapping the dynamic world state to player experience through evolving board configuration and strategic path generation.",
+          "playerChoice": "Player chooses a move that alters the board's spatial relationships, triggering new strategies and growth opportunities based on threat information and current board state."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "boardState",
+            "threatInfo"
+          ],
+          "stateOutputs": [
+            "strategyPath",
+            "growthPotential"
+          ],
+          "name": "DynamicWorldMapper",
+          "purpose": "Mapping the dynamic world state to player experience through evolving board configuration and strategic path generation.",
+          "playerChoice": "Player chooses a move that alters the board's spatial relationships, triggering new strategies and growth opportunities based on threat information and current board state."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "boardState",
+            "threatInfo"
+          ],
+          "stateOutputs": [
+            "strategyPath",
+            "growthPotential"
+          ],
+          "name": "DynamicStrategicMapper",
+          "purpose": "Mapping the dynamic strategic context to player experience through evolving board configuration and strategic path generation.",
+          "playerChoice": "Player chooses a move that alters the board's spatial relationships, triggering new strategies and growth opportunities based on threat information and current board state."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "boardState",
+            "threatInfo"
+          ],
+          "stateOutputs": [
+            "strategyPath",
+            "growthPotential"
+          ],
+          "name": "EvolvingStrategicMapper",
+          "purpose": "Mapping the dynamic strategic context to player experience through evolving board configuration and strategic path generation.",
+          "playerChoice": "Player chooses a move that alters the board's spatial relationships, triggering new strategies and growth opportunities based on threat information and current board state."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "boardState",
+            "threatInfo"
+          ],
+          "stateOutputs": [
+            "strategyPath",
+            "growthPotential"
+          ],
+          "name": "EvolvingStrategicMapper",
+          "purpose": "Mapping the dynamic strategic context to player experience through evolving board configuration and strategic path generation.",
+          "playerChoice": "Player chooses a move that alters the board's spatial relationships, triggering new strategies and growth opportunities based on threat information and current board state."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1064539,
-      "lastMs": 105559,
+      "totalMs": 1164043,
+      "lastMs": 99504,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:16:20.396Z"
+      "updatedAt": "2026-10-08T18:17:59.903Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:58:35.822Z",
-  "updatedAt": "2026-10-08T18:16:20.398Z",
+  "updatedAt": "2026-10-08T18:17:59.914Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2417,12 +2595,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:16:20.398Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:17:59.906Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/chess-battle/2026-10-09/design-seed.json",
+    "contentDigest": "42e1c0f0c5187bd7c8694b6d864962c7018fdcf30612ed2f17f3544a26bbf8a4",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
