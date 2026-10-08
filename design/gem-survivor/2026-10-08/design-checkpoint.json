@@ -362,25 +362,143 @@
           "playerChoice": "Select upgrades, perks, weapons, or skills that reconfigure the current build to survive harder waves or a boss, and convert the run result into the next progression choice."
         }
       ]
+    },
+    "local_authoring_parts::bffd64ff952d1a76cc265ba157ec361da4fad4cb829aab5dae1c7d99fa1da04e:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::5b56e252fee6a57418b95ec1d971d275ab5a2c6a54af4d7086676e4b80913986:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+      ],
+      "signatureSystems": [
+        {
+          "id": "DELVE(@)",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "currentBuild",
+            "enemyPressure",
+            "runResult",
+            "upgradeSet",
+            "waveDifficulty"
+          ],
+          "stateOutputs": [
+            "nextProgressionChoice",
+            "newBuild",
+            "updatedUpgrades",
+            "modifiedPerks",
+            "rewardsCollected"
+          ],
+          "name": "DELVE(@)",
+          "purpose": "Player choice that transforms current build into new progression choice through upgrade, perk, or skill selection.",
+          "playerChoice": "Select upgrades, perks, weapons, or skills that reconfigure the current build to survive harder waves or a boss, and convert the run result into the next progression choice."
+        },
+        {
+          "id": "DELVE(@)",
+          "grammarRole": "A",
+          "stateInputs": [
+            "currentBuild",
+            "enemyPressure",
+            "runResult",
+            "upgradeSet",
+            "waveDifficulty"
+          ],
+          "stateOutputs": [
+            "nextProgressionChoice",
+            "newBuild",
+            "updatedUpgrades",
+            "modifiedPerks",
+            "rewardsCollected"
+          ],
+          "name": "DELVE(@)",
+          "purpose": "Player choice that transforms current build into new progression choice through upgrade, perk, or skill selection.",
+          "playerChoice": "Select upgrades, perks, weapons, or skills that reconfigure the current build to survive harder waves or a boss, and convert the run result into the next progression choice."
+        },
+        {
+          "id": "DELVE(@)",
+          "grammarRole": "B",
+          "stateInputs": [
+            "currentBuild",
+            "enemyPressure",
+            "runResult",
+            "upgradeSet",
+            "waveDifficulty"
+          ],
+          "stateOutputs": [
+            "nextProgressionChoice",
+            "newBuild",
+            "updatedUpgrades",
+            "modifiedPerks",
+            "rewardsCollected"
+          ],
+          "name": "DELVE(@)",
+          "purpose": "Player choice that transforms current build into new progression choice through upgrade, perk, or skill selection.",
+          "playerChoice": "Select upgrades, perks, weapons, or skills that reconfigure the current build to survive harder waves or a boss, and convert the run result into the next progression choice."
+        },
+        {
+          "id": "DELVE(@)",
+          "grammarRole": "c",
+          "stateInputs": [
+            "currentBuild",
+            "enemyPressure",
+            "runResult",
+            "upgradeSet",
+            "waveDifficulty"
+          ],
+          "stateOutputs": [
+            "nextProgressionChoice",
+            "newBuild",
+            "updatedUpgrades",
+            "modifiedPerks",
+            "rewardsCollected"
+          ],
+          "name": "DELVE(@)",
+          "purpose": "Player choice that transforms current build into new progression choice through upgrade, perk, or skill selection.",
+          "playerChoice": "Select upgrades, perks, weapons, or skills that reconfigure the current build to survive harder waves or a boss, and convert the run result into the next progression choice."
+        },
+        {
+          "id": "DELVE(@)",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "currentBuild",
+            "enemyPressure",
+            "runResult",
+            "upgradeSet",
+            "waveDifficulty"
+          ],
+          "stateOutputs": [
+            "nextProgressionChoice",
+            "newBuild",
+            "updatedUpgrades",
+            "modifiedPerks",
+            "rewardsCollected"
+          ],
+          "name": "DELVE(@)",
+          "purpose": "Player choice that transforms current build into new progression choice through upgrade, perk, or skill selection.",
+          "playerChoice": "Select upgrades, perks, weapons, or skills that reconfigure the current build to survive harder waves or a boss, and convert the run result into the next progression choice."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1031182,
-      "lastMs": 102124,
+      "totalMs": 1119736,
+      "lastMs": 88554,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:21:50.179Z"
+      "updatedAt": "2026-10-08T12:23:18.737Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:04:38.961Z",
-  "updatedAt": "2026-10-08T12:21:50.182Z",
+  "updatedAt": "2026-10-08T12:23:18.748Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2575,12 +2693,50 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:21:50.182Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "보석 생존전의 핵심 재미와 시스템 연결을 확정한 고유한 정체성입니다. 게임은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임입니다. 플레이어는 보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의하며, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프를 경험합니다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공합니다. 게임의 정체성은 보석 생존전의 원본과 동일하며, MAIN/A/B/c/@와 규칙·상태·진행·멀티 의미는 원본에서만 작성됩니다. 게임의 플랫폼별 구현 제약은 같은 원본의 플랫폼별 구현 제약에 따라 적용됩니다. 게임의 정체성은 보존하며, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않습니다. 게임의 정체성은 보존하며, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않습니다. 게임의 정체성은 보존하며, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않습니다. 게임의 정체성은 보존하며, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않습니다. 게임의 정체성은 보존하며, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않습니다. 게임의 정체성은 보존하며, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않습니다. 게임의 정체성은 보존하며, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않습니다. 게임의 정체성은 보존하며, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않습니다. 게임의 정체성은 보존하며, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않습니다. 게임의 정체성은 보존하며, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않습니다. 게임의 정체성은 보존하며, 설계 수정은 기존 검증",
+      "playerFantasy": "플레이어는 보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의하며, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프를 경험합니다. 게임은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임입니다. 플레이어는 보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의하며, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프를 경험합니다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공합니다.",
+      "coreFun": "보석 생존전은 플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 플레이어는 보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의하며, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프를 경험한다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, MAIN/A/B/c/@와 규칙·상태·진행·멀티 의미는 원본에서만 작성된다. 게임의 정체성은 보석 생존전의 원본과 동일하며, 플랫폼별 구현 제약은 같은 원본의 플랫폼별 구현 제약에 따라 적용된다. 게임의 정체성은 보존되며, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 게임의 정체성은 보존하며, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 게임의 정체성은 보존하며, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 게임의 정체성은 보존하며, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 게임의 정체성은 보존하며, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 게임의 정체성은 보존하며, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 게임의 정체성은 보존하며, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 게임의 정체성은 보존하며, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 게임의 정체성은 보존하며, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 게임의 정체성은 보존하며, 설계 수정은 기존 검증",
+      "coreLoop": [
+        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+      ],
+      "multiplayerMode": "COOP"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T12:23:18.741Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
