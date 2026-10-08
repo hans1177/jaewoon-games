@@ -693,25 +693,43 @@
         "coreFun"
       ],
       "fromSystem": "Vibe 폴리시 시스템 (보완)"
+    },
+    "local_authoring_parts::bc9b0a853f6adf0401b84b206f4dcf343b91c6af699e007f9bb744aceb613775:toSystem,trigger,stateChange": {
+      "toSystem": "Vibe 폴리시 시스템 (보완)",
+      "trigger": "게임 진행 중",
+      "stateChange": "기존 마력숲 생존기 세계관 및 게임 규칙 복사 후, Vibe 폴리시 기반 새로운 플레이 패턴 개발"
+    },
+    "local_authoring_parts::c51a13bab521a2e91c7a4bd74e94a19730805cdbd63f98a63dd00d96b4570e7d:systemInterconnections:4": {
+      "fromId": "signatureSystems[0]",
+      "toId": "signatureSystems[3]",
+      "stateKeys": [
+        "gameProgress",
+        "playerFantasy",
+        "coreFun"
+      ],
+      "fromSystem": "Vibe 폴리시 시스템 (보완)",
+      "toSystem": "Vibe 폴리시 시스템 (보완)",
+      "trigger": "게임 진행 중",
+      "stateChange": "기존 마력숲 생존기 세계관 및 게임 규칙 복사 후, Vibe 폴리시 기반 새로운 플레이 패턴 개발"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 22,
-      "successes": 21,
+      "calls": 23,
+      "successes": 22,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2407417,
-      "lastMs": 94051,
+      "totalMs": 2503256,
+      "lastMs": 95839,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T22:12:38.290Z"
+      "updatedAt": "2026-10-08T22:14:14.131Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:32:30.796Z",
-  "updatedAt": "2026-10-08T22:12:38.290Z",
+  "updatedAt": "2026-10-08T22:14:14.139Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2932,7 +2950,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 1
+    "designer_draft_slices::systems-progression": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -2971,10 +2989,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T22:12:38.290Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T22:14:14.134Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PRESERVATION_GRAMMAR_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
