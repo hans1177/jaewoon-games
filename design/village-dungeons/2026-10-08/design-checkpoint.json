@@ -72,25 +72,44 @@
       "name": "KARMA_RETURN",
       "purpose": "Player action that triggers world origin, rules, rewards, risks, and growth",
       "playerChoice": "Start immediately with simple one-thumb tap or swipe input and clear score, distance, or session goal"
+    },
+    "local_authoring_parts::027d85f9ac07e08c25396151a468655cd2f80acffe5861b20bb5324c5e84108c:signatureSystems:2": {
+      "id": "KARMA_RETURN",
+      "grammarRole": "B",
+      "stateInputs": [
+        "score",
+        "distance",
+        "session"
+      ],
+      "stateOutputs": [
+        "world_origin",
+        "rules",
+        "rewards",
+        "risks",
+        "growth"
+      ],
+      "name": "KARMA_RETURN",
+      "purpose": "Player action that triggers world origin, rules, rewards, risks, and growth",
+      "playerChoice": "Start immediately with simple one-thumb tap or swipe input and clear score, distance, or session goal"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 238453,
-      "lastMs": 34840,
+      "totalMs": 274862,
+      "lastMs": 36409,
       "lastError": null,
-      "updatedAt": "2026-10-08T09:58:23.605Z"
+      "updatedAt": "2026-10-08T09:59:00.015Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T09:54:25.050Z",
-  "updatedAt": "2026-10-08T09:58:23.605Z",
+  "updatedAt": "2026-10-08T09:59:00.015Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2167,7 +2186,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T09:58:23.605Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:59:00.015Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
