@@ -12,25 +12,32 @@
   "tasks": {
     "local_authoring_parts::33e067983b8270aaca9838f72e3144a96439c3e9d5f042721ad1f87275ec8c93:identity": {
       "identity": "작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 생존 게임으로 완전히 처음부터 다시 설계한다."
+    },
+    "local_authoring_parts::33e067983b8270aaca9838f72e3144a96439c3e9d5f042721ad1f87275ec8c93:playerFantasy": {
+      "playerFantasy": "곤충 생존기에서는 플레이어가 작은 세계에서 살아남는 데 최선을 다해, 위험에 노출되어도 희망적인 결과로 이끄는 선택을 하는 독자적 생존 게임이다. 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하며, 탐험, 수집, 귀환의 순환 중 하나를 선택하는 것이 주요 플레이 방식이다."
+    },
+    "local_authoring_parts::0192de5fe13809f8137ac28c8054c6f27f982bd4bb4494f47aedfaa42bb9daf1:identity,playerFantasy": {
+      "identity": "작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 생존 게임으로 완전히 처음부터 다시 설계한다.",
+      "playerFantasy": "곤충 생존기에서는 플레이어가 작은 세계에서 살아남는 데 최선을 다해, 위험에 노출되어도 희망적인 결과로 이끄는 선택을 하는 독자적 생존 게임이다. 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하며, 탐험, 수집, 귀환의 순환 중 하나를 선택하는 것이 주요 플레이 방식이다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 201921,
-      "lastMs": 201921,
+      "totalMs": 231027,
+      "lastMs": 29106,
       "lastError": null,
-      "updatedAt": "2026-10-08T22:01:19.048Z"
+      "updatedAt": "2026-10-08T22:01:48.155Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:57:57.113Z",
-  "updatedAt": "2026-10-08T22:01:19.048Z",
+  "updatedAt": "2026-10-08T22:01:48.156Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2262,7 +2269,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T22:01:19.048Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T22:01:48.156Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
