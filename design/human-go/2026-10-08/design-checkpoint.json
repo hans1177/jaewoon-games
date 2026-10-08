@@ -52,25 +52,43 @@
       "name": "Human GO",
       "purpose": "Collect, discover, and grow a light-hearted exploration game focused on human behavior and relationships.",
       "playerChoice": "Explore a compact activity space and discover a person, task, or collectible opportunity."
+    },
+    "local_authoring_parts::5153ac5c91c3567c310dec88a6eedf78ae420b6f20afff87229e8c6337be1d24:signatureSystems:1": {
+      "id": "human-go",
+      "grammarRole": "A",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount"
+      ],
+      "stateOutputs": [
+        "ExploreActivitySpace",
+        "DiscoverPerson",
+        "DiscoverTask",
+        "DiscoverCollectible"
+      ],
+      "name": "Human GO",
+      "purpose": "Collect, discover, and grow a light-hearted exploration game focused on human behavior and relationships.",
+      "playerChoice": "Explore a compact activity space and discover a person, task, or collectible opportunity."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 605631,
-      "lastMs": 99377,
+      "totalMs": 704249,
+      "lastMs": 98618,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:27:53.150Z"
+      "updatedAt": "2026-10-08T12:29:31.769Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:17:47.490Z",
-  "updatedAt": "2026-10-08T12:27:53.150Z",
+  "updatedAt": "2026-10-08T12:29:31.769Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1998,7 +2016,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:27:53.150Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:29:31.769Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
