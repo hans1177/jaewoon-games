@@ -27,25 +27,48 @@
       "identity": "수정의 개화은 플레이어가 Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 IDLE_GROWTH_RPG 게임이다.\n\n플레이어의 Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.과 선택이 IDLE_GROWTH_RPG의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.\n\n성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.\n\n세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다.\n\n탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다.\n\n적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
       "playerFantasy": "플레이어는 Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 IDLE_GROWTH_RPG 게임이다.\n\n플레이어의 Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.과 선택이 IDLE_GROWTH_RPG의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.\n\n성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.\n\n세계의 역사·생활·경제·지역 기능이 학문적으로 이해할 수 있는 방식으로 구체화되어 있으며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 시각 언어로 표현하고 있다.\n\n탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화하며, 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
       "coreFun": "플레이어는 Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 IDLE_GROWTH_RPG 게임이다.\n\n플레이어의 Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.과 선택이 IDLE_GROWTH_RPG의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.\n\n성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.\n\n세계의 역사·생활·경제·지역 기능이 학문적으로 이해할 수 있는 방식으로 구체화되어 있으며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 시각 언어로 표현하고 있다.\n\n탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화하며, 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다."
+    },
+    "local_authoring_parts::3fee510c310a918485f5ee495d9c0f9d641cc86f71af532808c3fa8472a1d18b:coreLoop": {
+      "coreLoop": [
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE",
+        "PLAYERS FIGHT AUTO & GENERATE PROGRESSION RESOURCES BETWEEN ACTIVE SESSIONS",
+        "CLAIM REWARDS, UPGRAD LEVEL/SKILL, EQUIP GEAR, CHOOSE NEXT INVESTMENT"
+      ]
+    },
+    "local_authoring_parts::1a192c44f3f9dc799ee71383882dea7be693940a178ed96b19e241ca1925bf9b:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "PLAYER_FRICTION",
+        "INFORMATION_HIERARCHY",
+        "CONTEXTUAL_ACTIONS"
+      ],
+      "stateOutputs": [
+        "BATCH_PREVIEW_AND_COMMIT",
+        "INTERRUPTION_AND_RETURN"
+      ],
+      "name": "IDLE_GROWTH_RPG_CORE_SYSTEM",
+      "purpose": "Establishes the core mechanics of idle growth through automatic progression and reward systems.",
+      "playerChoice": "CHOOSE_NEXT_INVESTMENT_OR_UPGRADE_LEVEL_SKILL_EQUIP_GEAR_CLAIM_REWARDS_PLAYERS_FIGHT_AUTO_GENERATE_PROGRESSION_RESOURCES_BETWEEN_ACTIVE_SESSIONS_ASK_FOR_NEW_ROLES_OR_PATHS_UNLOCK_ANOTHER_GROWTH_LAYER_COLLECT_NEXT_IDLE_CYCLE_RETROFIT_THE_GAME_TO_MATCH_THE_WORLD_STATE_CHANGE_DURING_PLAYING_WITHOUT_LOSS_OF_PROGRESSION_DIRECTION_AND_CONTENT_EXPANSION_PLAN_ANNOTATION_SAVED_PROGRESS_VISIBLE_CONDITIONS_EXPLICIT_GUARANTEED_MILESTONES_DUPLICATE_"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 160053,
-      "lastMs": 39312,
+      "totalMs": 228570,
+      "lastMs": 43763,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:47:48.986Z"
+      "updatedAt": "2026-10-08T18:48:57.507Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:45:08.916Z",
-  "updatedAt": "2026-10-08T18:47:48.987Z",
+  "updatedAt": "2026-10-08T18:48:57.507Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2277,7 +2300,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:47:48.987Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:48:57.507Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
