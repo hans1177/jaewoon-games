@@ -271,8 +271,54 @@ jobs:
           passed="${#passed_ids[@]}"
           echo "ROBLOX_CHANGED_SOURCE_REVALIDATED=$passed"
           if [[ "$passed" == '1' ]]; then
-            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="${passed_ids[0]}"
-            echo "ROBLOX_CANONICAL_RUNTIME_REDISPATCH=EXACT:${passed_ids[0]}"
+            game_id="${passed_ids[0]}"
+            git fetch --no-tags --depth=1 origin main
+            current_main="$(git rev-parse origin/main)"
+            title="Roblox runtime · $game_id"
+            gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime.yml/runs?per_page=100" > /tmp/roblox-runtime-dispatch-runs.json
+            TITLE="$title" CURRENT_MAIN="$current_main" node <<'NODE' > /tmp/roblox-runtime-stale-queued-ids
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/roblox-runtime-dispatch-runs.json','utf8'));
+          const queuedStates=new Set(['queued','pending','requested']);
+          const title=String(process.env.TITLE||'');
+          const currentMain=String(process.env.CURRENT_MAIN||'');
+          for(const run of payload.workflow_runs||[]){
+            if(!queuedStates.has(String(run.status||'').toLowerCase()))continue;
+            if(String(run.display_title||'')!==title)continue;
+            if(String(run.head_sha||'')===currentMain)continue;
+            console.log(run.id);
+          }
+          NODE
+            cancelled=0
+            while read -r run_id; do
+              [ -n "$run_id" ] || continue
+              if gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/cancel" >/dev/null 2>&1; then
+                cancelled=$((cancelled+1))
+                echo "ROBLOX_CANONICAL_RUNTIME_STALE_QUEUED_CANCELLED=$game_id:$run_id"
+              fi
+            done < /tmp/roblox-runtime-stale-queued-ids
+            echo "ROBLOX_CANONICAL_RUNTIME_STALE_QUEUED_CANCEL_COUNT=$game_id:$cancelled"
+
+            active_current="$(TITLE="$title" CURRENT_MAIN="$current_main" node - <<'NODE'
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/roblox-runtime-dispatch-runs.json','utf8'));
+          const activeStates=new Set(['queued','pending','requested','waiting','in_progress']);
+          const title=String(process.env.TITLE||'');
+          const currentMain=String(process.env.CURRENT_MAIN||'');
+          const found=(payload.workflow_runs||[]).some(run=>
+            activeStates.has(String(run.status||'').toLowerCase())
+            &&String(run.display_title||'')===title
+            &&String(run.head_sha||'')===currentMain
+          );
+          process.stdout.write(found?'yes':'no');
+          NODE
+            )"
+            if [ "$active_current" = 'yes' ]; then
+              echo "ROBLOX_CANONICAL_RUNTIME_REDISPATCH=DEDUPED_CURRENT:$game_id:$current_main"
+            else
+              gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$game_id"
+              echo "ROBLOX_CANONICAL_RUNTIME_REDISPATCH=EXACT:$game_id:$current_main"
+            fi
           elif [[ "$passed" =~ ^[2-9][0-9]*$ || "$passed" =~ ^[1-9][0-9]+$ ]]; then
             gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
             echo 'ROBLOX_CANONICAL_RUNTIME_REDISPATCH=BATCH'
