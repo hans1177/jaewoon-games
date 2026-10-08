@@ -23,6 +23,36 @@ import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { buildVibeAssetProductionPlan, assetProductionGuidance, inspectVibeSourceGlb } from '../tools/vibe2-asset-production-plan.mjs';
 import { createVibeContinuousQueue } from '../assets/vibe-continuous-queue.js';
 import { robloxDeterministicPresentationEligible } from '../tools/vibe2-source-worker.mjs';
+
+test('Vibe source performance tasks retain distinct Unity Web, Unity Android and Roblox source/runtime contracts',()=>{
+  const context={files:[{path:'GameCore.cs',content:'public void Update() {}',editable:true}]};
+  const options={verifiedExternalLearningContract:{block:''}};
+  const unityWeb=buildPrompt({target:'unity',goal:'GPU 렌더링 병목 최적화',selectedTask:{firstStageUnityWeb:true}},context,['GameCore.cs'],options);
+  assert.match(unityWeb,/PLATFORM PERFORMANCE SOURCE IMPLEMENTATION BEGIN/);
+  assert.match(unityWeb,/Surface=UNITY_WEB/);
+  assert.match(unityWeb,/web-games is build output only/);
+  assert.match(unityWeb,/Do NOT assume ComputeShader, indirect drawing, native threads/);
+  assert.match(unityWeb,/Render interpolation is visual-only/);
+  assert.match(unityWeb,/performance UNVERIFIED/);
+  assert.doesNotMatch(unityWeb,/Surface=UNITY_APP/);
+
+  const unityApp=buildPrompt({target:'unity',goal:'프레임 성능 최적화',selectedTask:{firstStageUnityWeb:false}},context,['GameCore.cs'],options);
+  assert.match(unityApp,/Surface=UNITY_APP/);
+  assert.match(unityApp,/Jobs\/Burst\/ECS require existing compatible packages/);
+  assert.match(unityApp,/UnityEngine Transform\/scene APIs stay on the main thread/);
+  assert.doesNotMatch(unityApp,/Surface=UNITY_WEB/);
+
+  const roblox=buildPrompt({target:'roblox',goal:'몬스터 AI 병목 최적화',selectedTask:{}},{files:[{path:'server/Game.server.luau',content:'local enemies={}',editable:true}]},['server/Game.server.luau'],options);
+  assert.match(roblox,/Surface=ROBLOX/);
+  assert.match(roblox,/keep combat, movement validation, rewards and persistence server-authoritative/);
+  assert.match(roblox,/Do not generate Unity C#, DOTS\/ECS, DX12\/Vulkan/);
+  assert.doesNotMatch(roblox,/Surface=UNITY_APP/);
+
+  const normal=buildPrompt({target:'unity',goal:'기존 상점 버튼 수정',selectedTask:{}},context,['GameCore.cs'],options);
+  assert.doesNotMatch(normal,/PLATFORM PERFORMANCE SOURCE IMPLEMENTATION BEGIN/);
+  const legacyWeb=buildPrompt({target:'web',goal:'렌더링 최적화'},{files:[]},[],options);
+  assert.doesNotMatch(legacyWeb,/Surface=UNITY_WEB/);
+});
 import { expandPresentationResponsibleFiles } from '../tools/vibe2-continuous-runner.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
 
