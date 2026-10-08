@@ -120,25 +120,271 @@
       "name": "Forest Defense Progression System",
       "purpose": "A dynamic system that evolves game progression based on enemy wave patterns, resource availability, and defensive strategy adjustments. It allows players to enhance the game experience through iterative strategy refinement and resource expansion.",
       "playerChoice": "Refine defensive positions, expand resource pools, reduce threat levels, and enhance game progression through iterative strategy adjustments and resource management."
+    },
+    "local_authoring_parts::92eb5ed99b2c52f4b27c47212f131d1b2e833c9239f10ba3883e2ba994adc29e:signatureSystems:4": {
+      "id": "forest-defense-delve-system",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "enemyWaveCount",
+        "defenderPosition",
+        "resourcePool",
+        "threatLevel",
+        "defensiveStrategy"
+      ],
+      "stateOutputs": [
+        "defensiveStrategyUpdated",
+        "resourcePoolExpanded",
+        "threatLevelReduced",
+        "defenderPositionRevised",
+        "gameProgressionEnhanced"
+      ],
+      "name": "Forest Defense Delve System",
+      "purpose": "A dynamic system that evolves game progression based on enemy wave patterns, resource availability, and defensive strategy adjustments. It allows players to enhance the game experience through iterative strategy refinement and resource management.",
+      "playerChoice": "Refine defensive positions, expand resource pools, reduce threat levels, and enhance game progression through iterative strategy adjustments and resource management."
+    },
+    "local_authoring_parts::ea3455f8ec434ca3ae2e886c94328cd4741f0f8cb786cb15e7f5183ca49b50f5:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "forest-defense-signature-system-1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "enemyWaveCount",
+            "defenderPosition",
+            "resourcePool",
+            "threatLevel",
+            "defensiveStrategy"
+          ],
+          "stateOutputs": [
+            "defensiveStrategyUpdated",
+            "resourcePoolExpanded",
+            "threatLevelReduced",
+            "defenderPositionRevised",
+            "gameProgressionEnhanced"
+          ],
+          "name": "Forest Defense Strategy System",
+          "purpose": "Player-controlled defensive strategy evolution based on enemy wave composition and resource availability.",
+          "playerChoice": "Select and revise defensive positions, upgrade resources, or adjust strategies in real-time based on threat levels and enemy wave patterns."
+        },
+        {
+          "id": "forest-defense-signature-system-2",
+          "grammarRole": "A",
+          "stateInputs": [
+            "enemyWaveCount",
+            "defenderPosition",
+            "resourcePool",
+            "threatLevel",
+            "defensiveStrategy"
+          ],
+          "stateOutputs": [
+            "defensiveStrategyUpdated",
+            "resourcePoolExpanded",
+            "threatLevelReduced",
+            "defenderPositionRevised",
+            "gameProgressionEnhanced"
+          ],
+          "name": "Dynamic Defensive Strategy System",
+          "purpose": "A real-time adaptive system that evolves defensive strategies based on enemy wave composition, resource availability, and threat levels. It allows players to dynamically adjust positions, upgrade resources, or modify strategies in response to changing game conditions.",
+          "playerChoice": "Adjust defensive positions, upgrade resources, or modify strategies in real-time based on threat levels and enemy wave patterns."
+        },
+        {
+          "id": "forest-defense-signature-system-3",
+          "grammarRole": "B",
+          "stateInputs": [
+            "enemyWaveCount",
+            "defenderPosition",
+            "resourcePool",
+            "threatLevel",
+            "defensiveStrategy"
+          ],
+          "stateOutputs": [
+            "defensiveStrategyUpdated",
+            "resourcePoolExpanded",
+            "threatLevelReduced",
+            "defenderPositionRevised",
+            "gameProgressionEnhanced"
+          ],
+          "name": "Dynamic Defensive Strategy System",
+          "purpose": "A real-time adaptive system that evolves defensive strategies based on enemy wave composition, resource availability, and threat levels. It allows players to dynamically adjust positions, upgrade resources, or modify strategies in response to changing game conditions.",
+          "playerChoice": "Adjust defensive positions, upgrade resources, or modify strategies in real-time based on threat levels and enemy wave patterns."
+        },
+        {
+          "id": "forest-defense-signature-system-3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "enemyWaveCount",
+            "defenderPosition",
+            "resourcePool",
+            "threatLevel",
+            "defensiveStrategy"
+          ],
+          "stateOutputs": [
+            "defensiveStrategyUpdated",
+            "resourcePoolExpanded",
+            "threatLevelReduced",
+            "defenderPositionRevised",
+            "gameProgressionEnhanced"
+          ],
+          "name": "Forest Defense Progression System",
+          "purpose": "A dynamic system that evolves game progression based on enemy wave patterns, resource availability, and defensive strategy adjustments. It allows players to enhance the game experience through iterative strategy refinement and resource expansion.",
+          "playerChoice": "Refine defensive positions, expand resource pools, reduce threat levels, and enhance game progression through iterative strategy adjustments and resource management."
+        },
+        {
+          "id": "forest-defense-delve-system",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "enemyWaveCount",
+            "defenderPosition",
+            "resourcePool",
+            "threatLevel",
+            "defensiveStrategy"
+          ],
+          "stateOutputs": [
+            "defensiveStrategyUpdated",
+            "resourcePoolExpanded",
+            "threatLevelReduced",
+            "defenderPositionRevised",
+            "gameProgressionEnhanced"
+          ],
+          "name": "Forest Defense Delve System",
+          "purpose": "A dynamic system that evolves game progression based on enemy wave patterns, resource availability, and defensive strategy adjustments. It allows players to enhance the game experience through iterative strategy refinement and resource management.",
+          "playerChoice": "Refine defensive positions, expand resource pools, reduce threat levels, and enhance game progression through iterative strategy adjustments and resource management."
+        }
+      ]
+    },
+    "local_authoring_parts::ba4e250e23478606b6a86ed5780ca11ffff57427138f029f90ea1970dc0f3445:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "입력: 다음 적의 웨이브를 읽고, 방어 구조를 조정하여 위험을 줄이는 선택",
+        "상태변화: 방어 구조의 변화로 인해 위험 수치가 감소",
+        "보상: 적의 수가 감소하여 자원이 축적되고, 방어 구조를 업그레이드하거나 재조정할 수 있음",
+        "위험: 방어 구조가 악화되면, 방어 전략이 복잡해지고, 방어 전략이 악화될 수 있음",
+        "다음 선택: 방어 전략을 재조정하거나, 방어 구조를 재설계하여 다음 웨이브를 대비할 수 있음"
+      ],
+      "signatureSystems": [
+        {
+          "id": "forest-defense-signature-system-1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "enemyWaveCount",
+            "defenderPosition",
+            "resourcePool",
+            "threatLevel",
+            "defensiveStrategy"
+          ],
+          "stateOutputs": [
+            "defensiveStrategyUpdated",
+            "resourcePoolExpanded",
+            "threatLevelReduced",
+            "defenderPositionRevised",
+            "gameProgressionEnhanced"
+          ],
+          "name": "Forest Defense Strategy System",
+          "purpose": "Player-controlled defensive strategy evolution based on enemy wave composition and resource availability.",
+          "playerChoice": "Select and revise defensive positions, upgrade resources, or adjust strategies in real-time based on threat levels and enemy wave patterns."
+        },
+        {
+          "id": "forest-defense-signature-system-2",
+          "grammarRole": "A",
+          "stateInputs": [
+            "enemyWaveCount",
+            "defenderPosition",
+            "resourcePool",
+            "threatLevel",
+            "defensiveStrategy"
+          ],
+          "stateOutputs": [
+            "defensiveStrategyUpdated",
+            "resourcePoolExpanded",
+            "threatLevelReduced",
+            "defenderPositionRevised",
+            "gameProgressionEnhanced"
+          ],
+          "name": "Dynamic Defensive Strategy System",
+          "purpose": "A real-time adaptive system that evolves defensive strategies based on enemy wave composition, resource availability, and threat levels. It allows players to dynamically adjust positions, upgrade resources, or modify strategies in response to changing game conditions.",
+          "playerChoice": "Adjust defensive positions, upgrade resources, or modify strategies in real-time based on threat levels and enemy wave patterns."
+        },
+        {
+          "id": "forest-defense-signature-system-3",
+          "grammarRole": "B",
+          "stateInputs": [
+            "enemyWaveCount",
+            "defenderPosition",
+            "resourcePool",
+            "threatLevel",
+            "defensiveStrategy"
+          ],
+          "stateOutputs": [
+            "defensiveStrategyUpdated",
+            "resourcePoolExpanded",
+            "threatLevelReduced",
+            "defenderPositionRevised",
+            "gameProgressionEnhanced"
+          ],
+          "name": "Dynamic Defensive Strategy System",
+          "purpose": "A real-time adaptive system that evolves defensive strategies based on enemy wave composition, resource availability, and threat levels. It allows players to dynamically adjust positions, upgrade resources, or modify strategies in response to changing game conditions.",
+          "playerChoice": "Adjust defensive positions, upgrade resources, or modify strategies in real-time based on threat levels and enemy wave patterns."
+        },
+        {
+          "id": "forest-defense-signature-system-3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "enemyWaveCount",
+            "defenderPosition",
+            "resourcePool",
+            "threatLevel",
+            "defensiveStrategy"
+          ],
+          "stateOutputs": [
+            "defensiveStrategyUpdated",
+            "resourcePoolExpanded",
+            "threatLevelReduced",
+            "defenderPositionRevised",
+            "gameProgressionEnhanced"
+          ],
+          "name": "Forest Defense Progression System",
+          "purpose": "A dynamic system that evolves game progression based on enemy wave patterns, resource availability, and defensive strategy adjustments. It allows players to enhance the game experience through iterative strategy refinement and resource expansion.",
+          "playerChoice": "Refine defensive positions, expand resource pools, reduce threat levels, and enhance game progression through iterative strategy adjustments and resource management."
+        },
+        {
+          "id": "forest-defense-delve-system",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "enemyWaveCount",
+            "defenderPosition",
+            "resourcePool",
+            "threatLevel",
+            "defensiveStrategy"
+          ],
+          "stateOutputs": [
+            "defensiveStrategyUpdated",
+            "resourcePoolExpanded",
+            "threatLevelReduced",
+            "defenderPositionRevised",
+            "gameProgressionEnhanced"
+          ],
+          "name": "Forest Defense Delve System",
+          "purpose": "A dynamic system that evolves game progression based on enemy wave patterns, resource availability, and defensive strategy adjustments. It allows players to enhance the game experience through iterative strategy refinement and resource management.",
+          "playerChoice": "Refine defensive positions, expand resource pools, reduce threat levels, and enhance game progression through iterative strategy adjustments and resource management."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 987874,
-      "lastMs": 101357,
+      "totalMs": 1090258,
+      "lastMs": 102384,
       "lastError": null,
-      "updatedAt": "2026-10-08T09:06:35.635Z"
+      "updatedAt": "2026-10-08T09:08:18.021Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:50:07.728Z",
-  "updatedAt": "2026-10-08T09:06:35.635Z",
+  "updatedAt": "2026-10-08T09:08:18.024Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2333,7 +2579,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T09:06:35.635Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:08:18.024Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
