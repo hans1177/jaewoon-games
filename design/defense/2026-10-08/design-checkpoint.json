@@ -654,25 +654,38 @@
       "name": "방어 전략 조정",
       "purpose": "플레이어가 다음 적의 웨이브를 읽고, 방어 구조를 조정하여 위험을 줄이는 단일 방어 전략을 실행하는 데 사용된다.",
       "playerChoice": "방어 구조를 조정하거나, 방어 전략을 재조정하여 다음 웨이브를 대비한다."
+    },
+    "local_authoring_parts::72378bd8f08107719e85761c1fc6a95dcefdb46e60a0ed528cfa32e03a1713b1:signatureSystems:1": {
+      "id": "coreLoop_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "입력: 다음 적의 웨이브를 읽고, 방어 구조를 조정하여 위험을 줄이는 선택"
+      ],
+      "stateOutputs": [
+        "상태변화: 방어 구조의 변화로 인해 위험 수치가 감소"
+      ],
+      "name": "방어 전략 재조정",
+      "purpose": "플레이어가 다음 적의 웨이브를 읽고, 방어 구조를 조정하여 위험을 줄이는 단일 방어 전략을 실행하는 데 사용된다.",
+      "playerChoice": "방어 구조를 재조정하거나, 방어 전략을 재설계하여 다음 웨이브를 대비한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 21,
-      "successes": 21,
+      "calls": 22,
+      "successes": 22,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2303565,
-      "lastMs": 27333,
+      "totalMs": 2405598,
+      "lastMs": 102033,
       "lastError": null,
-      "updatedAt": "2026-10-08T09:57:07.447Z"
+      "updatedAt": "2026-10-08T09:58:49.482Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:50:07.728Z",
-  "updatedAt": "2026-10-08T09:57:07.447Z",
+  "updatedAt": "2026-10-08T09:58:49.482Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2905,7 +2918,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T09:57:07.447Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:58:49.482Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
