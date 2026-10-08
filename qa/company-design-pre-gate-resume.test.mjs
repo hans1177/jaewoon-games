@@ -827,6 +827,27 @@ test('mandatory multiplayer upgrades legacy single input but preserves existing 
   }
 });
 
+test('isolated grammar fields retain the current role without supplying authored rules',async()=>{
+  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
+  const checkpoint={tasks:{}},calls=[];
+  const author=runInNewContext(source+'\ncallLocalDesignerModel',{
+    createHash,designAssetLibraryContext:{sha256:'library'},localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'local',
+    designerRoute:{id:'ollama:local'},designCheckpoint:checkpoint,modelCallStats:[],console:{log(){}},clean:String,
+    parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,assertSchemaValue:assertDesignSchema,recordModelHealth(){},persistDesignCheckpoint(){},
+    runCheckpointTask:async(phase,id,work)=>work(),
+    requestLocalDesignerRaw:async(prompt,{schema})=>{
+      const role=prompt.match(/CURRENT_GRAMMAR_ROLE=(MAIN|A|B|c|DELVE)/)?.[1];
+      assert.ok(role);calls.push(role);
+      const field=Object.keys(schema.properties)[0];
+      return JSON.stringify({[field]:field==='grammarRole'?role:`designer-generated-${role}`});
+    }
+  });
+  const schema={type:'object',required:['signatureSystems'],properties:{signatureSystems:{type:'array',minItems:5,items:{type:'object',required:['id','grammarRole'],properties:{id:{type:'string'},grammarRole:{type:'string',enum:['MAIN','A','B','c','DELVE']}},additionalProperties:false}}},additionalProperties:false};
+  const result=await author('designer','original game rules',schema,{isolateFields:true});
+  assert.deepEqual(Array.from(result.signatureSystems,row=>row.id),['MAIN','A','B','c','DELVE'].map(role=>`designer-generated-${role}`));
+  assert.equal(calls.length,10);
+});
+
 test('bootstrap creative diagnostics do not stop designer intake or fake a design pass and copying still fails',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'designer-intake-diagnostic-'));
   try{

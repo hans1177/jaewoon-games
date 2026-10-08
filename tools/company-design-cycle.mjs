@@ -1146,7 +1146,7 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
           const fixed=fact||grammarRole?{...(fact||{}),...(grammarRole?{grammarRole}:{})}:human?{humanId:human.id,humanTool:human.tool}:{};
           for(const [key,value] of Object.entries(fixed))if(value!==undefined&&itemSchema.properties?.[key])itemSchema={...itemSchema,properties:{...itemSchema.properties,[key]:{...itemSchema.properties[key],enum:[value]}}};
           const value=await runCheckpointTask('local_authoring_parts',`${identity}:${field}:${index}`,()=>callLocalDesignerModel(
-            system,`${user}\nLOCAL_OUTPUT_PATH=${field}[${index}]\nPREVIOUS_ARRAY_ITEMS=${JSON.stringify(rows)}\n이번 응답은 이 배열 항목의 객체 하나만 출력한다. 이전 항목과 역할·접근을 구분하고 필수 설계 깊이를 유지한다.`,itemSchema,{predict,temperature,numCtx,isolateFields}
+            system,`${user}\nLOCAL_OUTPUT_PATH=${field}[${index}]\nPREVIOUS_ARRAY_ITEMS=${JSON.stringify(rows)}\n${grammarRole?`CURRENT_GRAMMAR_ROLE=${grammarRole}\n이 항목은 ${grammarRole} 역할만 설계한다. 앞 항목의 id·name·purpose·playerChoice를 복사하지 않는다. 서로 다른 실제 규칙 ID와 대표 선택을 직접 작성하고 읽는 상태와 바꾸는 상태를 명시한다. 이 역할은 하위 필드를 따로 작성할 때도 유지한다.\n`:''}이번 응답은 이 배열 항목의 객체 하나만 출력한다. 이전 항목과 역할·접근을 구분하고 필수 설계 깊이를 유지한다.`,itemSchema,{predict,temperature,numCtx,isolateFields}
           ));
           rows.push(value);
         }
