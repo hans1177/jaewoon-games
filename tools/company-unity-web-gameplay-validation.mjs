@@ -86,9 +86,13 @@ const pageErrors=[];
 const failedRequests=[];
 
 try{
-  const {chromium}=await import('playwright');
+  // 실제 Android Chrome 사용자 에이전트를 사용해 Unity WebGL의 모바일 템플릿 경로를 실행한다.
+  const {chromium,devices}=await import('playwright');
+  const androidChrome=devices['Pixel 5'];
+  if(!androidChrome?.userAgent?.includes('Android'))throw new Error('UNITY_WEB_QA_ANDROID_PROFILE_MISSING');
+  const mobileViewport={width:390,height:844};
   const browser=await chromium.launch({headless:true});
-  const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+  const page=await browser.newPage({...androidChrome,viewport:mobileViewport});
   page.on('console',msg=>{
     const text=String(msg.text()||'');
     if(text.includes('JAEWOON_UNITY_WEB_QA ')||text.includes('UNITY_WEB_WORLD='))markers.push(text);
@@ -108,6 +112,22 @@ try{
   await page.waitForSelector('canvas',{state:'visible',timeout:90000});
   await page.waitForTimeout(4000);
   const bootMilliseconds=Date.now()-bootStartedAt;
+
+  // 바탕화면용 960px 템플릿이 모바일 화면에 축소되어도 터치 로그만으로 통과시키지 않는다.
+  const mobileLayout=await page.evaluate(()=>({
+    userAgent:navigator.userAgent,
+    innerWidth:window.innerWidth,
+    documentWidth:document.documentElement.scrollWidth,
+    visualWidth:window.visualViewport?.width??window.innerWidth,
+    viewportMeta:document.querySelector('meta[name="viewport"]')?.getAttribute('content')||'',
+    unityContainerClass:document.querySelector('#unity-container')?.className||'',
+  }));
+  if(!mobileLayout.userAgent.includes('Android')||
+     Math.abs(mobileLayout.innerWidth-mobileViewport.width)>2||
+     mobileLayout.documentWidth>mobileViewport.width+2||
+     mobileLayout.visualWidth>mobileViewport.width+2){
+    throw new Error('UNITY_WEB_QA_ANDROID_VIEWPORT_MISMATCH:'+JSON.stringify({mobileViewport,mobileLayout}));
+  }
 
   const boot=()=>markers.some(x=>x.includes(' BOOT ')&&x.includes(`game=${gameId}`)&&x.includes('status=PASS'));
   if(!boot())throw new Error('UNITY_WEB_QA_BOOT_MARKER_MISSING');
@@ -137,6 +157,9 @@ try{
   }
   const touchX=canvasBox.x+(canvasBox.width*mobileTargetX);
   const touchY=canvasBox.y+(canvasBox.height*mobileTargetY);
+  if(touchX<0||touchX>=mobileViewport.width||touchY<0||touchY>=mobileViewport.height){
+    throw new Error('UNITY_WEB_QA_REAL_MOBILE_ACTION_OFFSCREEN:'+JSON.stringify({touchX,touchY,mobileViewport,canvasBox}));
+  }
 
   let gameplayStartInput='KEYBOARD_DIGIT1';
   await canvas.focus();
@@ -232,7 +255,7 @@ try{
 
   if(screenshot){
     fs.mkdirSync(path.dirname(screenshot),{recursive:true});
-    await page.screenshot({path:screenshot,fullPage:true});
+    await page.screenshot({path:screenshot,fullPage:false});
   }
 
   const evidence={
@@ -267,7 +290,8 @@ try{
     saveRestore:{pass:true,persistentChangedKeys,restoredKeys},
     mobile:{
       pass:mobileInputObserved,
-      viewport:{width:390,height:844},
+      viewport:mobileViewport,
+      layout:mobileLayout,
       touch:true,
       target:{role:'action',x:mobileTargetX,y:mobileTargetY,canvasBox,touchPoint:{x:touchX,y:touchY}},
       actualBrowserTouchDispatched:true,

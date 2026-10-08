@@ -100,3 +100,24 @@ test('approved environment deployment identity comes from the existing checked-o
   assert.match(workflow,/if layout\.get\('layoutStatus'\)!='STATIC_LAYOUT_PROPOSED'/);
   assert.match(workflow,/\(root\/'unity-web-deploy-manifest\.json'\)\.write_text/);
 });
+
+test('Unity Web mobile QA selects the Android Chrome mobile branch and rejects offscreen actions',()=>{
+  // 모바일 기기 크기만 지정하면 기본 데스크톱 UA 때문에 Unity가 960px 템플릿으로 진입한다.
+  assert.match(source,/const \{chromium,devices\}=await import\('playwright'\)/);
+  assert.match(source,/const androidChrome=devices\['Pixel 5'\]/);
+  assert.match(source,/androidChrome\?\.userAgent\?\.includes\('Android'\)/);
+  assert.match(source,/browser\.newPage\(\{\.\.\.androidChrome,viewport:mobileViewport\}\)/);
+  assert.match(source,/UNITY_WEB_QA_ANDROID_VIEWPORT_MISMATCH/);
+  assert.match(source,/mobileLayout\.documentWidth>mobileViewport\.width\+2/);
+  assert.match(source,/UNITY_WEB_QA_REAL_MOBILE_ACTION_OFFSCREEN/);
+  assert.match(source,/touchX>=mobileViewport\.width/);
+  assert.match(source,/touchY>=mobileViewport\.height/);
+  assert.match(source,/layout:mobileLayout/);
+  assert.match(source,/await page\.screenshot\(\{path:screenshot,fullPage:false\}\)/);
+  assert.doesNotMatch(source,/fullPage:true/);
+  const browserStart=source.indexOf('const androidChrome=devices');
+  const boot=source.indexOf('UNITY_WEB_QA_BOOT_MARKER_MISSING');
+  const realMobileBounds=source.indexOf('UNITY_WEB_QA_REAL_MOBILE_ACTION_OFFSCREEN');
+  const tap=source.indexOf('await page.touchscreen.tap(touchX,touchY)');
+  assert.ok(browserStart>=0&&boot>browserStart&&realMobileBounds>boot&&tap>realMobileBounds);
+});
