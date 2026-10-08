@@ -627,25 +627,105 @@
     "local_authoring_parts::334bcfd25f1a1d56b0fca9304b1355b32ed1203b808924f4707b962875282ebe:progressionLoop,resourceFlow": {
       "progressionLoop": "마을 준비 → 포탈 전투 → Lv.15 1차 전직 → 보스 격파/동료 해금 → 동료 3명 조합 → Lv.40 2차 완성형 → Lv.60 만렙/숙련",
       "resourceFlow": "마을 퀘스트와 장비 준비 → 포탈 사냥터 이동 → 몬스터 전투 → 보스 처치 → 파티 구성 → 보상 분배 → 귀환/회복/강화"
+    },
+    "local_authoring_parts::334bcfd25f1a1d56b0fca9304b1355b32ed1203b808924f4707b962875282ebe:balanceRules": {
+      "balanceRules": "마을 퀘스트와 장비 준비 → 포탈 사냥터 이동 → 몬스터 전투 → 보스 처치 → 파티 구성 → 보상 분배 → 귀환/회복/강화"
+    },
+    "local_authoring_parts::0b38b6f5ef2109848dc86ec4ca19f96cdd91d970262853803760b462749fde84:progressionEconomyBalance": {
+      "progressionLoop": "마을 준비 → 포탈 전투 → Lv.15 1차 전직 → 보스 격파/동료 해금 → 동료 3명 조합 → Lv.40 2차 완성형 → Lv.60 만렙/숙련",
+      "resourceFlow": "마을 퀘스트와 장비 준비 → 포탈 사냥터 이동 → 몬스터 전투 → 보스 처치 → 파티 구성 → 보상 분배 → 귀환/회복/강화",
+      "balanceRules": "마을 퀘스트와 장비 준비 → 포탈 사냥터 이동 → 몬스터 전투 → 보스 처치 → 파티 구성 → 보상 분배 → 귀환/회복/강화"
+    },
+    "local_authoring_parts::52493322a51eb0fe0ce51e3ea4c4ebcf5bf79de0f948fea0adebb291b77bbcff:progressionEconomyBalance": {
+      "progressionEconomyBalance": {
+        "progressionLoop": "마을 준비 → 포탈 전투 → Lv.15 1차 전직 → 보스 격파/동료 해금 → 동료 3명 조합 → Lv.40 2차 완성형 → Lv.60 만렙/숙련",
+        "resourceFlow": "마을 퀘스트와 장비 준비 → 포탈 사냥터 이동 → 몬스터 전투 → 보스 처치 → 파티 구성 → 보상 분배 → 귀환/회복/강화",
+        "balanceRules": "마을 퀘스트와 장비 준비 → 포탈 사냥터 이동 → 몬스터 전투 → 보스 처치 → 파티 구성 → 보상 분배 → 귀환/회복/강화"
+      }
+    },
+    "local_authoring_parts::72e6b7a276785d629c0f1b9d828859228e45ff16d0e47cbe0ef15d0d35da6636:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "identity-core",
+          "toId": "signature-systems-1",
+          "stateKeys": [
+            "signatureSystems"
+          ],
+          "fromSystem": "identity-core",
+          "toSystem": "signature-systems-1",
+          "trigger": "AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG",
+          "stateChange": "AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG에서, 플레이어는 4직업/전직 실루엣을 유지하며, AI 동료는 격파한 보스의 고유 실루엣과 핵심 이펙트를 축소·정리해 그대로 동료 정체성으로 사용한다."
+        },
+        {
+          "fromId": "identity-core",
+          "toId": "signature-systems-2",
+          "stateKeys": [
+            "signatureSystems"
+          ],
+          "fromSystem": "identity-core",
+          "toSystem": "signature-systems-2",
+          "trigger": "포탈 사냥터 이동",
+          "stateChange": "5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성하는 과정에서, 플레이어는 사냥터의 위치와 조건을 파악하고, 파티 구성에 필요한 자원과 전략을 수립한다."
+        },
+        {
+          "fromId": "identity-core",
+          "toId": "signature-systems-3",
+          "stateKeys": [
+            "signatureSystems"
+          ],
+          "fromSystem": "identity-core",
+          "toSystem": "signature-systems-3",
+          "trigger": "보스 공략",
+          "stateChange": "AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG에서, 플레이어는 4직업/전직 실루엣을 유지하며, AI 동료는 격파한 보스의 고유 실루엣과 핵심 이펙트를 축소·정리해 그대로 동료 정체성으로 사용한다."
+        },
+        {
+          "fromId": "identity-core",
+          "toId": "signature-systems-4",
+          "stateKeys": [
+            "signatureSystems"
+          ],
+          "fromSystem": "identity-core",
+          "toSystem": "signature-systems-4",
+          "trigger": "보스 첫 처치로 AI 동료 해금",
+          "stateChange": "AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG에서, 플레이어는 4직업/전직 실루엣을 유지하며, AI 동료는 격파한 보스의 고유 실루엣과 핵심 이펙트를 축소·정리해 그대로 동료 정체성으로 사용한다."
+        },
+        {
+          "fromId": "identity-core",
+          "toId": "signature-systems-5",
+          "stateKeys": [
+            "signatureSystems"
+          ],
+          "fromSystem": "identity-core",
+          "toSystem": "signature-systems-5",
+          "trigger": "보스 동료 해금",
+          "stateChange": "AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG에서, 플레이어는 4직업/전직 실루엣을 유지하며, AI 동료는 격파한 보스의 고유 실루엣과 핵심 이펙트를 축소·정리해 그대로 동료 정체성으로 사용한다."
+        }
+      ],
+      "progressionDirection": "마을 준비 → 포탈 전투 → Lv.15 1차 전직 → 보스 격파/동료 해금 → 동료 3명 조합 → Lv.40 2차 완성형 → Lv.60 만렙/숙련",
+      "progressionEconomyBalance": {
+        "progressionLoop": "마을 준비 → 포탈 전투 → Lv.15 1차 전직 → 보스 격파/동료 해금 → 동료 3명 조합 → Lv.40 2차 완성형 → Lv.60 만렙/숙련",
+        "resourceFlow": "마을 퀘스트와 장비 준비 → 포탈 사냥터 이동 → 몬스터 전투 → 보스 처치 → 파티 구성 → 보상 분배 → 귀환/회복/강화",
+        "balanceRules": "마을 퀘스트와 장비 준비 → 포탈 사냥터 이동 → 몬스터 전투 → 보스 처치 → 파티 구성 → 보상 분배 → 귀환/회복/강화"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 17,
+      "calls": 20,
+      "successes": 18,
       "failures": 2,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2071114,
-      "lastMs": 53404,
+      "totalMs": 2090279,
+      "lastMs": 19165,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T10:49:38.386Z"
+      "updatedAt": "2026-10-08T10:49:57.554Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:15:07.214Z",
-  "updatedAt": "2026-10-08T10:49:38.386Z",
+  "updatedAt": "2026-10-08T10:49:57.559Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2068,7 +2148,7 @@
     "designer_draft_slices::identity-core": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T10:49:38.386Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:49:57.559Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
