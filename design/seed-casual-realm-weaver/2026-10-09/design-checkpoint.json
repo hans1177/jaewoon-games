@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::7b248a398fb62c62b975f0d157a33dc71c60315577877b2b86b30dcd93f552a7:identity": {
+      "identity": "세계의 직조자 - 캐주얼 세계 창조 게임\n\n플레이어는 즉시 시작하여 단순한 한 손 tap 또는 swipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표를 중심으로 플레이합니다.\n\n핵심 재미: 선택 결과가 다음 월드 상태로 연결되는 반복 가능한 핵심 루프\n\n입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 연결\n\n플레이어 역할: 즉시 시작하며 단순한 행동과 피드백을 통해 세계 상태와 다음 선택을 바꾼다.\n\n시그니처 시스템:\n- START (MAIN)\n- RUN (A)\n- FINISH/FAIL (B)\n- @ (DELVE)\n\n기존 원본 규칙 및 수치를 유지하고, 새로운 설계는 기존 구조에만 적용된다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 81780,
+      "lastMs": 81780,
+      "lastError": null,
+      "updatedAt": "2026-10-08T20:55:21.962Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:54:00.064Z",
-  "updatedAt": "2026-10-08T20:54:00.122Z",
+  "updatedAt": "2026-10-08T20:55:21.962Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1933,5 +1949,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-08T20:55:21.962Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
