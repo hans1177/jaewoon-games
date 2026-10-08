@@ -321,6 +321,7 @@ test('approved Unity Web design generates playable-scene visual data in canonica
     assert.equal(manifest.releaseOrDeploymentAuthority,false);
     assert.equal(manifest.buildMethod,'UnityWebFloorBuild.BuildWeb');
     assert.equal(layout.version,1);
+    assert.equal(layout.mobile,true);
     assert.equal(layout.heights.length,576);
     assert.equal(layout.types.length,576);
     assert.ok(layout.types.some(type=>type===1),'approved mountain must include ridge');
@@ -340,6 +341,7 @@ test('approved Unity Web design generates playable-scene visual data in canonica
     assert.match(runtime,/roads.vertices=roadV.ToArray\(\)/);
     assert.match(runtime,/baked.CombineMeshes\(models\[k\].ToArray\(\),true,true\)/);
     assert.match(runtime,/collider=UNCHANGED save=UNCHANGED native_qa=REQUIRED/);
+    assert.match(runtime,/data\.mobile&&\(data\.width>48/);
     assert.doesNotMatch(runtime,/BuildApprovedWorldVisuals\(\);[\s\S]*UNITY_WEB_WORLD=PASS/);
     assert.match(runtime,/PlayerPrefs\.Save\(\)/);
     assert.match(runtime,/status=REPAIR_REQUIRED reason=BOOTSTRAP_ONLY_GAMEPLAY_NOT_IMPLEMENTED/);
