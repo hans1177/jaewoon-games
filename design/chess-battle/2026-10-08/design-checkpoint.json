@@ -903,25 +903,47 @@
     },
     "local_authoring_parts::b2b75377053895744f74c0739017bfcab6a74cedb749dea0c1a60ec1f53646b4:trigger": {
       "trigger": "READ_BOARD_AND_THREAT_INFO_TRIGGERED"
+    },
+    "local_authoring_parts::b2b75377053895744f74c0739017bfcab6a74cedb749dea0c1a60ec1f53646b4:stateChange": {
+      "stateChange": "BOARD_STATE_UPDATED_BY_READ_BOARD_AND_THREAT_INFO_TRIGGERED"
+    },
+    "local_authoring_parts::f9fa77743e728fdc82678dbc337c79e7d8e2e991511ad8b2211b00fad5828175:systemInterconnections:3": {
+      "fromId": "identity-core",
+      "toId": "SIGNATURE_SYSTEMS_1",
+      "stateKeys": [
+        "boardState",
+        "enemyThreats",
+        "playerChoice",
+        "updatedBoardState",
+        "newMove",
+        "nextTurn"
+      ],
+      "fromSystem": "BOARD_READING_CORE_LOOP",
+      "toSystem": "SIGNATURE_SYSTEMS_1",
+      "trigger": "READ_BOARD_AND_THREAT_INFO_TRIGGERED",
+      "stateChange": "BOARD_STATE_UPDATED_BY_READ_BOARD_AND_THREAT_INFO_TRIGGERED"
+    },
+    "local_authoring_parts::e9c5f9bc2c8369d40a98e5d3e76ebe46be283f7ad5a96d081976a0acd26008c4:fromId": {
+      "fromId": "identity-core"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 50,
-      "successes": 49,
+      "calls": 52,
+      "successes": 51,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 4233607,
-      "lastMs": 59427,
+      "totalMs": 4350978,
+      "lastMs": 58728,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T15:35:25.496Z"
+      "updatedAt": "2026-10-08T15:37:22.871Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:56:03.898Z",
-  "updatedAt": "2026-10-08T15:35:25.496Z",
+  "updatedAt": "2026-10-08T15:37:22.871Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3366,7 +3388,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:35:25.496Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:37:22.871Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
