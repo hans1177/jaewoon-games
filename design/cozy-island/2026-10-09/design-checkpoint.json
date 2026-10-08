@@ -365,25 +365,38 @@
       "name": "주민 고용 및 생산성 증대",
       "purpose": "플레이어가 직접 나무와 식량을 채집하여 주민을 고용하고, 그로 인해 생산성을 증대시키며, 병사를 모집하여 지역 기지를 점령하게 되고, 이 과정에서 각각 다른 적들과 보상을 가진 5개 거점을 순차적으로 점령하여 왕국을 확장시킨다.",
       "playerChoice": "직접 나무와 식량을 채집하여 주민을 고용하고, 그로 인해 생산성을 증대시키며, 병사를 모집하여 지역 기지를 점령하게 되고, 이 과정에서 각각 다른 적들과 보상을 가진 5개 거점을 순차적으로 점령하여 왕국을 확장시킨다."
+    },
+    "local_authoring_parts::16e34c702e0e7a7f1ce2cdd679912b22641a614ffe3ad74ebd5b7bd88b8c5d58:signatureSystems:1": {
+      "id": "COZY_CHIBI_KINGDOM_DELVE_V1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "나무/식량 획득 및 주민 고용"
+      ],
+      "stateOutputs": [
+        "병사 모집 시작"
+      ],
+      "name": "주민 고용 및 생산성 증대",
+      "purpose": "플레이어가 직접 나무와 식량을 채집하여 주민을 고용하고, 그로 인해 생산성을 증대시키며, 병사를 모집하여 지역 기지를 점령하게 되고, 이 과정에서 각각 다른 적들과 보상을 가진 5개 거점을 순차적으로 점령하여 왕국을 확장시킨다.",
+      "playerChoice": "직접 나무와 식량을 채집하여 주민을 고용하고, 그로 인해 생산성을 증대시키며, 병사를 모집하여 지역 기지를 점령하게 되고, 이 과정에서 각각 다른 적들과 보상을 가진 5개 거점을 순차적으로 점령하여 왕국을 확장시킨다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 572772,
-      "lastMs": 137615,
+      "totalMs": 653347,
+      "lastMs": 80575,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:42:06.964Z"
+      "updatedAt": "2026-10-08T18:43:27.539Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:32:33.971Z",
-  "updatedAt": "2026-10-08T18:42:06.964Z",
+  "updatedAt": "2026-10-08T18:43:27.539Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1172,7 +1185,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:42:06.964Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:43:27.539Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
