@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::22d04b79ecdf6cd9d9c634a822e9326e4fc569046e9a519204af952535822eac:identity": {
+      "identity": "퇴마 사무소 - 시작 즉시 단순 한 손 tap 또는 swipe 입력 및 점수, 거리, 짧은 세션 목표 중심으로 플레이어 역할 재설명 및 시그니처 세계 규칙 연결됨에 따라 독특한 핵심 재미 및 시스템 연결 확정됨. 게임 정체성: 캐릭터, 장소, 주제, 기능, 관계의 복합적 표현. 대표 행동: 시작 즉시 단순 한 손 tap 또는 swipe 입력, 대표 선택: 짧은 런 중 피드백, 보상, 위험, 다음 선택 연결. 시그니처 세계 규칙: START → RUN → FINISH/FAIL → RESTART 순환 구조 포함. 진입 방식: 모바일에서 즉시 이해 가능한 기본적인 입력과 피드백 제공. 시스템 구성: MAIN × A × B × c + @ 형태로 이루어진 복합장르. 원본 규칙 및 수치를 모두 유지하며 설계 깊이와 구조는 최초 설계부터 지속적으로 확보됨."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 217118,
+      "lastMs": 217118,
+      "lastError": null,
+      "updatedAt": "2026-10-08T18:11:20.459Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:07:43.322Z",
-  "updatedAt": "2026-10-08T18:07:43.336Z",
+  "updatedAt": "2026-10-08T18:11:20.459Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1933,5 +1949,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-08T18:11:20.459Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
