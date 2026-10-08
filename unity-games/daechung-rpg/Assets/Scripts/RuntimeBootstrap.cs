@@ -390,6 +390,10 @@ namespace JaewoonGames.DaechungRpg
             }
 
             _core.SetRegion(regionId);
+            // 이동 직후 관련 메뉴를 앞에 보여준다. 게임 상태·보상·저장 의미는 그대로 둔다.
+            _menuScrollPositions[_menuPage] = _scroll;
+            _menuPage = regionId == "town" ? 0 : 1;
+            _scroll = _menuScrollPositions[_menuPage];
             _visuals?.SetRegionVisual(regionId);
             Debug.Log($"JAEWOON_UNITY_WEB_QA REGION game=daechung-rpg region={regionId}");
             _enemy = null;
@@ -465,6 +469,9 @@ namespace JaewoonGames.DaechungRpg
             {
                 _core.Player.currentHp = _core.GetMaxHp();
                 _core.SetRegion("town");
+                _menuScrollPositions[_menuPage] = _scroll;
+                _menuPage = 0;
+                _scroll = _menuScrollPositions[_menuPage];
                 _visuals?.SetRegionVisual("town");
                 _enemy = null;
                 _enemyHp = 0;
