@@ -52,6 +52,8 @@ test('실제 제작 애니메이션 시트의 크기와 비어 있지 않은 픽
 test('2.5D 카메라·실제 공간 지형·지역별 깊이 표현과 WebGL 성능 게이트를 유지한다', () => {
     assert.match(visuals, /camera\.orthographic\s*=\s*false/);
     assert.match(visuals, /camera\.transform\.LookAt/);
+    assert.match(visuals, /_sceneCamera\.fieldOfView = Mathf\.Clamp/);
+    assert.match(visuals, /_lastCameraAspect = _sceneCamera\.aspect/);
     assert.match(visuals, /new GameObject\("DaechungDepthGround"\)/);
     assert.match(visuals, /new GameObject\("DaechungDepthPath"\)/);
     assert.match(visuals, /AddComponent<MeshFilter>\(\)/);
