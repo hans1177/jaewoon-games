@@ -789,25 +789,44 @@
         "AreaType"
       ],
       "fromSystem": "VillageProgressionSystem"
+    },
+    "local_authoring_parts::8807395c62bda13580760dee5bf7b77281eaf3dbbc03640ff52b26649586e3cd:toSystem,trigger,stateChange": {
+      "toSystem": "VillageProgressionSystem",
+      "trigger": "Select a new village goal",
+      "stateChange": "Acquire a focused set of resources, and unlock a new resident, activity, or area to proceed to the next stage of village development"
+    },
+    "local_authoring_parts::0936980b567fc52de662cd2e84770a0c98db062592ea62654e92e82d7e9f7964:systemInterconnections:3": {
+      "fromId": "signatureSystems[3]",
+      "toId": "signatureSystems[4]",
+      "stateKeys": [
+        "VillageFunction",
+        "ResidentCount",
+        "ActivityType",
+        "AreaType"
+      ],
+      "fromSystem": "VillageProgressionSystem",
+      "toSystem": "VillageProgressionSystem",
+      "trigger": "Select a new village goal",
+      "stateChange": "Acquire a focused set of resources, and unlock a new resident, activity, or area to proceed to the next stage of village development"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 28,
-      "successes": 28,
+      "calls": 29,
+      "successes": 29,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2502425,
-      "lastMs": 32934,
+      "totalMs": 2537541,
+      "lastMs": 35116,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:07:13.720Z"
+      "updatedAt": "2026-10-08T16:07:48.838Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:36:39.832Z",
-  "updatedAt": "2026-10-08T16:07:13.721Z",
+  "updatedAt": "2026-10-08T16:07:48.840Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3034,7 +3053,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:07:13.720Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:07:48.840Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
