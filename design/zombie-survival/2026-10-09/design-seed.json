@@ -1,0 +1,119 @@
+{
+  "version": 1,
+  "gameId": "zombie-survival",
+  "date": "2026-10-09",
+  "seedId": "OWNER-ALL-DESIGN-RESET-ZOMBIE-SURVIVAL-20260917",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "ollama:qwen3:1.7b",
+  "singleAuthor": true,
+  "sourceStage": "identity-core",
+  "phase": "designer_draft",
+  "status": "AUTHORED_CANDIDATE",
+  "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
+  "originalSource": null,
+  "fingerprint": "753de48a4cfb322be14876620bcfaae0297907de9147b12ac415cc7c01beb56b",
+  "engineDigest": "095ef19579f8737b9f588a24419948d2c32ca87934148e55fede6ceec471ddff",
+  "contentDigest": "4d7f4933fa25430abf11d27719bb30ac79ae1c63ea67fda7a84b88240fbaca26",
+  "externalSeedRequired": false,
+  "designPass": false,
+  "runtimePass": false,
+  "content": {
+    "identity": "좀비 생존기의 핵심 재미를 실제 플레이 선택으로 재정의, 진입·위험·보상이 서로 연결되는 반복 가능한 핵심 루프, 모바일에서도 즉시 이해되는 입력과 피드백을 포함하는 복합장르의 정체성입니다. 게임은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이라는 중심 행동을 바탕으로, 대표 선택인 'Collect run rewards or experience and choose upgrades...'와 'Combine upgrades into a stronger build...' 등의 두 대축 A/B 사이에서 상태 변화를 일관되게 이어갑니다. 보조 요소 c는 MAIN/A/B의 관계를 상황별로 변주하며, @ 파고들기는 발견·숙련·재방문 깊이로 역할을 구분합니다. 세계 규칙은 인과법칙에 기반하여, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 합니다. 시그니처 시스템은 최소 5개의 서로 다른 기존 또는 신규 시스템을 각각 포함하고, 저장·보상·진행을 임의 변경하지 않습니다. 게임은 단순 반복보다는 경쟁·소속·명예 등 인간 갈등을 감정적 발판으로 활용하며, 플레이어의 이해도와 숙련도에 따라 다양한 결과를 가능하게 합니다.",
+    "playerFantasy": "플레이어는 매일 선택을 내리며 30일간 좀비 아포칼립스 생존 게임에서 살아남아야 하는 역할을 수행합니다. 이 과정에서 주체가 되는 플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이라는 중심 행동을 바탕으로, 대표 선택인 'Collect run rewards or experience and choose upgrades...'와 'Combine upgrades into a stronger build...' 등의 두 대축 A/B 사이에서 상태 변화를 일관되게 이어갑니다. 보조 요소 c는 MAIN/A/B의 관계를 상황별로 변주하며, @ 파고들기는 발견·숙련·재방문 깊이로 역할을 구분합니다. 세계 규칙은 인과법칙에 기반하여, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 합니다.",
+    "coreFun": "플레이어는 매일 선택을 내리며 30일간 좀비 아포칼립스 생존 게임에서 살아남아야 하는 역할을 수행합니다. 이 과정에서 주체가 되는 플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이라는 중심 행동을 바탕으로, 대표 선택인 'Collect run rewards or experience and choose upgrades...'와 'Combine upgrades into a stronger build...' 등의 두 대축 A/B 사이에서 상태 변화를 일관되게 이어갑니다. 보조 요소 c는 MAIN/A/B의 관계를 상황별로 변주하며, @ 파고들기는 발견·숙련·재방문 깊이로 역할을 구분합니다. 세계 규칙은 인과법칙에 기반하여, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 합니다.",
+    "coreLoop": [
+      "입력 -> 선택 -> 상태변화 -> 보상/위험/다음 선택",
+      "플레이어가 매일 선택을 내리며 30일간 좀비 아포칼립스 생존 게임에서 살아남아야 하는 역할을 수행합니다.",
+      "보조 요소 c는 MAIN/A/B의 관계를 상황별로 변주하며, @ 파고들기는 발견·숙련·재방문 깊이로 역할을 구분합니다."
+    ],
+    "signatureSystems": [
+      {
+        "id": "identity-core",
+        "grammarRole": "MAIN",
+        "stateInputs": [
+          "HumanCount",
+          "MonsterCount",
+          "EliminatedCount"
+        ],
+        "stateOutputs": [
+          "BuildProgression",
+          "RunResult",
+          "GameEndCondition"
+        ],
+        "name": "Survival Core System",
+        "purpose": "Reinforce the core gameplay loop through daily choices in a mobile survival roguelite, with progression based on real-time combat and resource management.",
+        "playerChoice": "Select upgrades, build combinations, or skill trees that affect current strategy while navigating enemy pressure and evolving threats."
+      },
+      {
+        "id": "signatureSystems[1]",
+        "grammarRole": "A",
+        "stateInputs": [
+          "HumanCount",
+          "MonsterCount",
+          "EliminatedCount"
+        ],
+        "stateOutputs": [
+          "BuildProgression",
+          "RunResult",
+          "GameEndCondition"
+        ],
+        "name": "Survival Core System",
+        "purpose": "Reinforce the core gameplay loop through daily choices in a mobile survival roguelite, with progression based on real-time combat and resource management.",
+        "playerChoice": "Select upgrades, build combinations, or skill trees that affect current strategy while navigating enemy pressure and evolving threats."
+      },
+      {
+        "id": "signatureSystems[2]",
+        "grammarRole": "B",
+        "stateInputs": [
+          "HumanCount",
+          "MonsterCount",
+          "EliminatedCount"
+        ],
+        "stateOutputs": [
+          "BuildProgression",
+          "RunResult",
+          "GameEndCondition"
+        ],
+        "name": "Survival Core System",
+        "purpose": "Reinforce the core gameplay loop through daily choices in a mobile survival roguelite, with progression based on real-time combat and resource management.",
+        "playerChoice": "Select upgrades, build combinations, or skill trees that affect current strategy while navigating enemy pressure and evolving threats."
+      },
+      {
+        "id": "signatureSystems[3]",
+        "grammarRole": "c",
+        "stateInputs": [
+          "HumanCount",
+          "MonsterCount",
+          "EliminatedCount"
+        ],
+        "stateOutputs": [
+          "BuildProgression",
+          "RunResult",
+          "GameEndCondition"
+        ],
+        "name": "Survival Core System",
+        "purpose": "Reinforce the core gameplay loop through daily choices in a mobile survival roguelite, with progression based on real-time combat and resource management.",
+        "playerChoice": "Select upgrades, build combinations, or skill trees that affect current strategy while navigating enemy pressure and evolving threats."
+      },
+      {
+        "id": "signatureSystems[4]",
+        "grammarRole": "DELVE",
+        "stateInputs": [
+          "HumanCount",
+          "MonsterCount",
+          "EliminatedCount"
+        ],
+        "stateOutputs": [
+          "BuildProgression",
+          "RunResult",
+          "GameEndCondition"
+        ],
+        "name": "Survival Core System",
+        "purpose": "Reinforce the core gameplay loop through daily choices in a mobile survival roguelite, with progression based on real-time combat and resource management.",
+        "playerChoice": "Select upgrades, build combinations, or skill trees that affect current strategy while navigating enemy pressure and evolving threats."
+      }
+    ],
+    "multiplayerMode": "HYBRID"
+  },
+  "updatedAt": "2026-10-08T18:17:37.299Z"
+}
