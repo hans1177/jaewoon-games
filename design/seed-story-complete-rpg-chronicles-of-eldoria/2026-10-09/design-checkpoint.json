@@ -548,25 +548,105 @@
         }
       ],
       "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::a77c0879a4bcc4d387489c281c314270aad2ed6a041cc1ccf512115121ac4b36:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "EXPLORATION_STATE",
+          "toId": "LOCATION_CHANGE_STATE",
+          "stateKeys": [
+            "EXPLORATION_STATE",
+            "CHARACTER_INTERACTION_STATE",
+            "QUEST_ACCEPTANCE_STATE",
+            "INFORMATION_DISCOVERY_STATE"
+          ],
+          "fromSystem": "EXPLORATION_SYSTEM",
+          "toSystem": "LOCATION_TRANSITION_SYSTEM",
+          "trigger": "EXPLORED_AREA",
+          "stateChange": "LOCATED_NEW_REGION"
+        },
+        {
+          "fromId": "CHARACTER_INTERACTION_STATE",
+          "toId": "ITEM_GAINED_STATE",
+          "stateKeys": [
+            "EXPLORATION_STATE",
+            "CHARACTER_INTERACTION_STATE",
+            "QUEST_ACCEPTANCE_STATE",
+            "INFORMATION_DISCOVERY_STATE"
+          ],
+          "fromSystem": "INTERACTION_SYSTEM",
+          "toSystem": "ITEM_ACQUISITION_SYSTEM",
+          "trigger": "CHARACTER_RELATED_EVENT",
+          "stateChange": "ACQUIRED_ITEM"
+        },
+        {
+          "fromId": "QUEST_ACCEPTANCE_STATE",
+          "toId": "SKILL_ACQUIRED_STATE",
+          "stateKeys": [
+            "EXPLORATION_STATE",
+            "CHARACTER_INTERACTION_STATE",
+            "QUEST_ACCEPTANCE_STATE",
+            "INFORMATION_DISCOVERY_STATE"
+          ],
+          "fromSystem": "QUEST_SYSTEM",
+          "toSystem": "SKILL_GROWTH_SYSTEM",
+          "trigger": "QUEST_COMPLETED",
+          "stateChange": "GAINED_SKILL"
+        },
+        {
+          "fromId": "ENEMY_DEFEATED_STATE",
+          "toId": "ENEMY_DEFeated_STATE",
+          "stateKeys": [
+            "EXPLORATION_STATE",
+            "CHARACTER_INTERACTION_STATE",
+            "QUEST_ACCEPTANCE_STATE",
+            "INFORMATION_DISCOVERY_STATE"
+          ],
+          "fromSystem": "BATTLE_SYSTEM",
+          "toSystem": "STATUS_UPGRADE_SYSTEM",
+          "trigger": "ENEMY_KILLED",
+          "stateChange": "UPGRADED_STATUSES"
+        },
+        {
+          "fromId": "EXPLORATION_STATE",
+          "toId": "CONTENT_EXPANSION_STATE",
+          "stateKeys": [
+            "EXPLORATION_STATE",
+            "CHARACTER_INTERACTION_STATE",
+            "QUEST_ACCEPTANCE_STATE",
+            "INFORMATION_DISCOVERY_STATE"
+          ],
+          "fromSystem": "EXPLORATION_SYSTEM",
+          "toSystem": "EXPANSION_SYSTEM",
+          "trigger": "NEW_CONTENT_DISCOVERED",
+          "stateChange": "EXTENDED_WORLD_VIEW"
+        }
+      ],
+      "progressionDirection": "SEQUENTIAL",
+      "progressionEconomyBalance": {
+        "progressionLoop": "REPEATABLE",
+        "resourceFlow": "CONTINUOUS",
+        "balanceRules": "BALANCED"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 10,
+      "calls": 12,
+      "successes": 11,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1177388,
-      "lastMs": 300101,
+      "totalMs": 1318448,
+      "lastMs": 141060,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T21:10:23.994Z"
+      "updatedAt": "2026-10-08T21:12:45.056Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:50:46.559Z",
-  "updatedAt": "2026-10-08T21:10:23.994Z",
+  "updatedAt": "2026-10-08T21:12:45.056Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2800,7 +2880,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:05:23.883Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:12:45.056Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
