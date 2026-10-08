@@ -501,25 +501,38 @@
       "name": "Readable World State Change",
       "purpose": "Establishes the core gameplay mechanism where the game transitions between world states based on readable feedback and player choices.",
       "playerChoice": "Players choose to transition to a new world state based on readable feedback and their choices."
+    },
+    "local_authoring_parts::4c77a4a257aaf09e40ae16252ae81e754ff238df2e5dfb210b1b80f990c23f93:signatureSystems:2": {
+      "id": "READABLE_WORLD_STATE_CHANGE",
+      "grammarRole": "B",
+      "stateInputs": [
+        "readable world state"
+      ],
+      "stateOutputs": [
+        "change in world state"
+      ],
+      "name": "Readable World State Change",
+      "purpose": "Establishes the core gameplay mechanism where the game transitions between world states based on readable feedback and player choices.",
+      "playerChoice": "Players choose to transition to a new world state based on readable feedback and their choices."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 17,
+      "calls": 18,
+      "successes": 18,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2076823,
-      "lastMs": 97020,
+      "totalMs": 2173763,
+      "lastMs": 96940,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:39:22.625Z"
+      "updatedAt": "2026-10-08T15:40:59.567Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:41:26.595Z",
-  "updatedAt": "2026-10-08T15:39:22.625Z",
+  "updatedAt": "2026-10-08T15:40:59.567Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2479,7 +2492,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:39:22.625Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:40:59.567Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
