@@ -1026,25 +1026,52 @@
         "stage or boss"
       ],
       "fromSystem": "systemInterconnections[0]"
+    },
+    "local_authoring_parts::2ee5164087c298dba19594140b041cd883f178d8bd57090c04ba6dd8c0f2d78b:toSystem,trigger,stateChange": {
+      "toSystem": "systemInterconnections[0]_toSystem_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0",
+      "trigger": "threatened route → new state",
+      "stateChange": "threatened route → new state"
+    },
+    "local_authoring_parts::acb3f6eb27473ef08f64f64b4cbf8192ffbc270e4a31d32efcfc54b7ba95109e:systemInterconnections:4": {
+      "fromId": "threatened route",
+      "toId": "new state",
+      "stateKeys": [
+        "threatened route",
+        "enemy wave",
+        "towers or defenders",
+        "lanes or positions",
+        "resources",
+        "upgrades",
+        "new placements",
+        "tactical changes",
+        "enemy types",
+        "wave composition",
+        "objective",
+        "stage or boss"
+      ],
+      "fromSystem": "systemInterconnections[0]",
+      "toSystem": "systemInterconnections[0]_toSystem_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0",
+      "trigger": "threatened route → new state",
+      "stateChange": "threatened route → new state"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 20,
+      "calls": 21,
+      "successes": 21,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2227471,
-      "lastMs": 94692,
+      "totalMs": 2333252,
+      "lastMs": 105781,
       "lastError": null,
-      "updatedAt": "2026-10-08T11:02:29.063Z"
+      "updatedAt": "2026-10-08T11:04:14.846Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:25:21.512Z",
-  "updatedAt": "2026-10-08T11:02:29.063Z",
+  "updatedAt": "2026-10-08T11:04:14.854Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3266,9 +3293,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "resources→updated defense strategy의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "threatened route→new state의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: resources→updated defense strategy의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: threatened route→new state의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3283,9 +3310,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "enemy types→tactical adjustments의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "threatened route→new state의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: enemy types→tactical adjustments의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: threatened route→new state의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3300,9 +3327,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "objective→game progression의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "threatened route→new state의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: objective→game progression의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: threatened route→new state의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3317,9 +3344,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "enemy types→enemy adaptation의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "threatened route→new state의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: enemy types→enemy adaptation의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: threatened route→new state의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3346,7 +3373,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 1
+    "designer_draft_slices::systems-progression": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3390,10 +3417,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T11:02:29.063Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T11:04:14.849Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
