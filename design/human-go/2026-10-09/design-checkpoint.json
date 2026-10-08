@@ -47,25 +47,38 @@
       "name": "KARMA RETURN",
       "purpose": "ACTION RESULT DELAY TO SUBSEQUENT STATES",
       "playerChoice": "USE ACTION RESULT TO ALTER MAIN AND A/B/C STATES"
+    },
+    "local_authoring_parts::28e8993aa6738e0f5824a288c7d787a1db2dd785a3557899c21b8153282a93ff:signatureSystems:1": {
+      "id": "MANDATE_LEGITIMACY",
+      "grammarRole": "A",
+      "stateInputs": [
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+      ],
+      "stateOutputs": [
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+      ],
+      "name": "MANDATE LEGITIMACY",
+      "purpose": "POWER OF AUTHORITY BASED ON CONSENT, ORDER, AND POPULARITY",
+      "playerChoice": "USE POWER TO ALTER ESTATE, RELATIONSHIP, OR GOAL STATUS"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 238235,
-      "lastMs": 32368,
+      "totalMs": 273771,
+      "lastMs": 35536,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:48:19.731Z"
+      "updatedAt": "2026-10-08T17:48:55.268Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:44:21.449Z",
-  "updatedAt": "2026-10-08T17:48:19.731Z",
+  "updatedAt": "2026-10-08T17:48:55.268Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1993,7 +2006,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:48:19.731Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:48:55.268Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
