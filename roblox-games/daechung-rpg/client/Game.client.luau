@@ -648,6 +648,73 @@ multi.Visible=false -- The party menu owns the same server-authoritative code ac
 local hint=Instance.new("TextLabel");hint.Name="WorldHint";hint.AnchorPoint=Vector2.new(0,1);hint.Position=UDim2.new(0,8,1,-10);hint.Size=touchEnabled and UDim2.fromOffset(170,32)or UDim2.fromOffset(220,34);hint.BackgroundColor3=Color3.fromRGB(25,28,35);hint.BackgroundTransparency=.3;hint.TextColor3=Color3.fromRGB(226,230,235);hint.TextSize=11;hint.Font=Enum.Font.Gotham;hint.TextWrapped=true;hint.Text="마을 포탈로 이동 · AI는 두 번 터치해 파티 초대";hint.Parent=gui;corner(hint,9)
 if touchEnabled then task.delay(9,function()if hint.Parent then hint.Visible=false end end)end
 
+-- 메인: 서버가 검증한 NPC 발화를 화면에 짧게 표시하며 원래 조작은 중단하지 않는다.
+local npcSpeechToken=0
+local npcSpeech=Instance.new("TextLabel")
+npcSpeech.Name="NPCSpeech";npcSpeech.AnchorPoint=Vector2.new(.5,0)
+npcSpeech.Position=touchEnabled and UDim2.new(.5,0,0,144)or UDim2.new(.5,0,0,56)
+npcSpeech.Size=touchEnabled and UDim2.fromOffset(286,72)or UDim2.fromOffset(360,74)
+npcSpeech.BackgroundColor3=Color3.fromRGB(26,35,32);npcSpeech.BackgroundTransparency=.10
+npcSpeech.TextColor3=Color3.fromRGB(228,244,224);npcSpeech.TextSize=14;npcSpeech.TextWrapped=true
+npcSpeech.Font=Enum.Font.GothamBold;npcSpeech.Visible=false;npcSpeech.ZIndex=18
+npcSpeech.Parent=gui;corner(npcSpeech,12);stroke(npcSpeech,.45)
+local function showNpcSpeech()
+ local line=tostring(p:GetAttribute("NPCSpeech")or"")
+ if line==""then return end
+ npcSpeechToken+=1;local token=npcSpeechToken
+ npcSpeech.Text=line;npcSpeech.Visible=true
+ task.delay(3.6,function()if npcSpeech.Parent and token==npcSpeechToken then npcSpeech.Visible=false end end)
+end
+
+-- 연출: 기존 보스 실제 조우 이벤트만 카메라 시야와 자막으로 보여준다.
+-- 입력·전투 상태·보상·페이즈·네트워크 상태는 이 컷신이 변경하지 않는다.
+local bossSceneToken=0
+local bossCamera=nil
+local bossCameraFov=nil
+local bossScene=Instance.new("Frame")
+bossScene.Name="BossCinematic";bossScene.AnchorPoint=Vector2.new(.5,.5)
+bossScene.Position=UDim2.fromScale(.5,.32)
+bossScene.Size=touchEnabled and UDim2.new(.92,0,0,142)or UDim2.fromOffset(480,155)
+bossScene.BackgroundColor3=Color3.fromRGB(35,21,32)
+bossScene.BackgroundTransparency=.06;bossScene.Visible=false;bossScene.ZIndex=30
+bossScene.Parent=gui;corner(bossScene,15);stroke(bossScene,.22)
+local bossText=Instance.new("TextLabel")
+bossText.Name="BossDialogue";bossText.Size=UDim2.new(1,-18,1,-57)
+bossText.Position=UDim2.fromOffset(9,9);bossText.BackgroundTransparency=1
+bossText.Font=Enum.Font.GothamBold;bossText.TextSize=touchEnabled and 16 or 19
+bossText.TextWrapped=true;bossText.TextColor3=Color3.fromRGB(255,215,171)
+bossText.ZIndex=31;bossText.Parent=bossScene
+local bossSkip=button(bossScene,"건너뛰기",Color3.fromRGB(87,66,79))
+bossSkip.Name="SkipBossCinematic";bossSkip.Size=UDim2.fromOffset(120,48)
+bossSkip.AnchorPoint=Vector2.new(.5,1);bossSkip.Position=UDim2.new(.5,0,1,-8)
+bossSkip.ZIndex=32
+local function endBossCinematic()
+ bossSceneToken+=1
+ bossScene.Visible=false
+ if bossCamera and bossCamera.Parent and bossCameraFov then
+  TweenService:Create(bossCamera,TweenInfo.new(.3),{FieldOfView=bossCameraFov}):Play()
+ end
+ bossCamera=nil;bossCameraFov=nil
+end
+bossSkip.Activated:Connect(endBossCinematic)
+local function showBossCinematic()
+ local id=tostring(p:GetAttribute("BossIntroId")or"")
+ local line=tostring(p:GetAttribute("BossIntroLine")or"")
+ if id==""or line==""then return end
+ -- 원본 메시지를 서버에서 수신한 뒤 3초간 강조. 기존 2인 동기화 증거와 무관하다.
+ if bossScene.Visible then endBossCinematic()end
+ bossSceneToken+=1;local token=bossSceneToken
+ bossText.Text=line:sub(1,260);bossScene.Visible=true
+ bossCamera=workspace.CurrentCamera
+ if bossCamera then
+  bossCameraFov=bossCamera.FieldOfView
+  TweenService:Create(bossCamera,TweenInfo.new(.6,Enum.EasingStyle.Quad),{FieldOfView=math.max(42,bossCameraFov-12)}):Play()
+ end
+ task.delay(3.2,function()if token==bossSceneToken then endBossCinematic()end end)
+end
+p:GetAttributeChangedSignal("BossIntroId"):Connect(showBossCinematic)
+
+
 local rpgMenu=RPGMenu.install(C,gui,p,{
  sounds={actionSfx,hitSfx,skillSfx,levelSfx},
  canOpen=function()return startupOverlay.Parent==nil and not classPanel.Visible end,
@@ -719,6 +786,7 @@ if p.Character then task.defer(bindChar,p.Character)end;p.CharacterAdded:Connect
 p:GetAttributeChangedSignal("FeedbackEvent"):Connect(function()
  local v=tostring(p:GetAttribute("FeedbackEvent")or"")
  if v:find("LEVEL_UP")then levelSfx:Play()elseif v:find("PARRY")then skillSfx:Play()elseif v:find("GUARD_BREAK")then hitSfx:Play()elseif v:find("ATTACK")or v:find("KILL")then hitSfx:Play()end
+ if v:find("NPC_INITIATED_TALK",1,true)or v:find("NPC_DIALOGUE",1,true)then showNpcSpeech()end
 end)
 
 remote.OnClientEvent:Connect(function(kind,snapshot)

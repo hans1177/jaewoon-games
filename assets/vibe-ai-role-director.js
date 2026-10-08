@@ -808,7 +808,8 @@ export function createVibeIndividualActivityPlan({actor={},world={},importance='
 
 export function planVibeLivingActorDirector({
   actor={},player={},world={},relationship={},memory=[],history=[],recentFailures=[],recentAdvice=[],recentContent=[],
-  importance='foreground',gameRating='GENERAL',causalEvent=null,causalKnowledge={},allowEventProposal=false,allowQuestProposal=false
+  importance='foreground',gameRating='GENERAL',causalEvent=null,causalKnowledge={},allowEventProposal=false,allowQuestProposal=false,
+  party={},storyBeat={},bossScene={}
 }={}){
   const role=actor.role||'npc';
   const companion=/companion|ally/.test(cleanText(role).toLowerCase());
@@ -842,6 +843,18 @@ export function planVibeLivingActorDirector({
       ]))
     : baseRelationship;
   const effectiveEmotion=causal?.perceived?cleanText(causal.emotionAfter||actor.emotion||world.emotion||'calm'):cleanText(actor.emotion||world.emotion||'calm');
+  // 메인: 등장인물의 제안과 보스 연출은 이미 작성된 사실과 게임 엔진의 사건에만 연결한다.
+  // AI가 새 보상·퀘스트 상태·파티 슬롯·보스 전투 규칙을 만들지 않는다.
+  const isSocialActor=!monster||companion;
+  const partyEligible=isSocialActor&&party?.engineApproved===true&&party?.recruitable===true
+    &&Number.isInteger(party.openSlots)&&party.openSlots>0&&cleanText(player.id);
+  const narrativeEligible=isSocialActor&&storyBeat?.engineApproved===true
+    &&cleanText(storyBeat.id)&&cleanText(storyBeat.sourceEventId);
+  const cutsceneEligible=/boss/.test(cleanText(role).toLowerCase())
+    &&bossScene?.engineApproved===true&&cleanText(bossScene.sourceEventId)
+    &&cleanText(bossScene.id)&&cleanText(bossScene.authoredDialogue);
+  const authoredAnchors=Array.isArray(world.authoredAnchors)?world.authoredAnchors:actor.anchors||[];
+  const livingRoute=createVibeActorWorldAnchors({actor,anchors:authoredAnchors});
   const effectiveWorld=Object.freeze({
     ...world,
     emotion:effectiveEmotion,
@@ -861,6 +874,39 @@ export function planVibeLivingActorDirector({
     actor:createVibeLivingActorContract(actor),
     selfhood:companion?createVibeCompanionSelfhoodDNA(actor):createVibeActorSelfModel(actor),
     activity:createVibeIndividualActivityPlan({actor,world:effectiveWorld,importance}),
+    // 안내·파티·스토리 대화는 플레이어 선택과 원래 책임 함수의 승인이 있어야 실제 진행한다.
+    socialInitiative:Object.freeze({
+      actor:actor.id||actor.name||'actor',
+      canInitiateConversation:isSocialActor&&world.playerVisible===true,
+      proposedPartyInvitation:partyEligible?Object.freeze({actorId:actor.id||actor.name||'actor',playerId:cleanText(player.id),openSlots:party.openSlots,candidateOnly:true}):null,
+      proposedStoryConversation:narrativeEligible?Object.freeze({actorId:actor.id||actor.name||'actor',beatId:cleanText(storyBeat.id),sourceEventId:cleanText(storyBeat.sourceEventId),candidateOnly:true}):null,
+      observedPlayerHelpOnly:true,
+      playerMayDeclineWhenOptional:true,
+      dialogueCooldownRequired:true,
+      engineOwnsPartyQuestAndPersistentState:true,
+      gameplayAuthority:false
+    }),
+    // 자유로운 마을 생활은 존재하는 좌표·길·건물을 재사용하며 이동·충돌 판정에 간섭하지 않는다.
+    roaming:Object.freeze({
+      anchors:livingRoute.anchors,
+      routeMayChangeFromDutyRelationshipOrLocalEvent:true,
+      fixedSpawnOnlyForbiddenWhenWorldSupportsRoaming:true,
+      destinationMustExistInAuthoredWorld:true,
+      navigationAndCollisionRemainEngineOwned:true,
+      offscreenUpdatesAreBounded:true,
+      gameplayAuthority:false
+    }),
+    bossPresentation:cutsceneEligible?Object.freeze({
+      actorId:actor.id||actor.name||'actor',
+      sceneId:cleanText(bossScene.id),sourceEventId:cleanText(bossScene.sourceEventId),
+      dialogue:cleanText(bossScene.authoredDialogue).slice(0,320),
+      shots:Object.freeze(['arena-wide','boss-reveal','reaction-close','return-to-play']),
+      maxDurationMs:Math.max(800,Math.min(6500,Math.round(Number(bossScene.maxDurationMs)||3200))),
+      skipAllowed:true,
+      presentationOnly:true,
+      phaseThresholdAndAttackPatternsEngineOnly:true,
+      gameplayAuthority:false
+    }):null,
     playerModel,
     relationship:relationshipFrame,
     guidance:createVibeGameplayGuidanceFrame({actor,playerModel,world:effectiveWorld,recentFailures,recentAdvice,gameRating}),
