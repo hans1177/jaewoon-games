@@ -364,25 +364,60 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::00094cc98f02a0cc5508dc79d31949e055c9304bf44ed10e484ece850557c37c:signatureSystems:0": {
+      "id": "signatureSystems",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score,距离,",
+        "stateOutput",
+        "readState",
+        "changeState",
+        "playerChoice",
+        "name",
+        "purpose",
+        "accessibility",
+        "progression",
+        "multiplayerMode",
+        "coreLoop",
+        "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당항"
+      ],
+      "stateOutputs": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score,距离,",
+        "stateOutput",
+        "readState",
+        "changeState",
+        "playerChoice",
+        "name",
+        "purpose",
+        "accessibility",
+        "progression",
+        "multiplayerMode",
+        "coreLoop",
+        "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당항"
+      ],
+      "name": "Signature Systems",
+      "purpose": "This system defines the core rules and progression mechanics that govern the game's behavior, ensuring consistency, clarity, and player progression through structured interactions and state transitions. It maintains the original rule set while introducing new elements of progression, expansion, and multi-layered meaning.",
+      "playerChoice": "Choose a simple one-thumb tap or swipe input to set a score, distance, or short-session goal. This action directly influences the next world state and accessibility, linking player intentions to system state changes. Progression is achieved through numerical increases, new behaviors, combinations, relationships, discoveries, or responses, allowing the same content to be used in different ways. The game is designed with mobile-friendly, "
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1274095,
-      "lastMs": 42629,
+      "totalMs": 1380948,
+      "lastMs": 106853,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:47:28.288Z"
+      "updatedAt": "2026-10-08T12:49:15.152Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:26:14.109Z",
-  "updatedAt": "2026-10-08T12:47:28.297Z",
+  "updatedAt": "2026-10-08T12:49:15.152Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2342,10 +2377,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:47:28.291Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:49:15.152Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
